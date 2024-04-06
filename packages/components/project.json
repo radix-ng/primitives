@@ -1,0 +1,90 @@
+{
+    "name": "components",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "packages/components",
+    "prefix": "kbq",
+    "tags": [],
+    "projectType": "library",
+    "targets": {
+        "build": {
+            "executor": "@nx/angular:package",
+            "outputs": [
+                "{workspaceRoot}/dist/{projectRoot}"
+            ],
+            "options": {
+                "project": "packages/components/ng-package.json"
+            },
+            "configurations": {
+                "production": {
+                    "tsConfig": "packages/components/tsconfig.lib.prod.json"
+                },
+                "development": {
+                    "tsConfig": "packages/components/tsconfig.lib.json"
+                }
+            },
+            "defaultConfiguration": "production"
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": [
+                "{workspaceRoot}/coverage/{projectRoot}"
+            ],
+            "options": {
+                "jestConfig": "packages/components/jest.config.ts"
+            }
+        },
+        "lint": {
+            "executor": "@nx/eslint:lint",
+            "outputs": [
+                "{options.outputFile}"
+            ]
+        },
+        "storybook": {
+            "executor": "@storybook/angular:start-storybook",
+            "options": {
+                "port": 4400,
+                "configDir": "packages/components/.storybook",
+                "browserTarget": "components:build-storybook",
+                "compodoc": false
+            },
+            "configurations": {
+                "ci": {
+                    "quiet": true
+                }
+            }
+        },
+        "build-storybook": {
+            "executor": "@storybook/angular:build-storybook",
+            "outputs": ["{options.outputDir}"],
+            "options": {
+                "outputDir": "dist/storybook/ui-components",
+                "configDir": "packages/components/.storybook",
+                "browserTarget": "components:build-storybook",
+                "compodoc": false
+            },
+            "configurations": {
+                "ci": {
+                    "quiet": true
+                }
+            }
+        },
+        "test-storybook": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "test-storybook -c packages/components/.storybook --url=http://localhost:4400"
+            }
+        },
+        "static-storybook": {
+            "executor": "@nx/web:file-server",
+            "options": {
+                "buildTarget": "components:build-storybook",
+                "staticFilePath": "dist/storybook/ui-components"
+            },
+            "configurations": {
+                "ci": {
+                    "buildTarget": "components:build-storybook:ci"
+                }
+            }
+        }
+    }
+}

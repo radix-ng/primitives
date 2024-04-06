@@ -1,0 +1,25 @@
+{
+    "$schema": "https://json.schemastore.org/prettierrc.json",
+    "singleQuote": true,
+    "printWidth": 100,
+    "useTabs": false,
+    "tabWidth": 4,
+    "trailingComma": "none",
+    "bracketSpacing": true,
+    "endOfLine": "lf",
+    "overrides": [
+        {
+            "files": [".component.html", ".page.html"],
+            "options": {
+                "parser": "angular"
+            }
+        },
+        {
+            "files": ["*.html"],
+            "options": {
+                "parser": "html",
+                "singleQuote": false
+            }
+        }
+    ]
+}
