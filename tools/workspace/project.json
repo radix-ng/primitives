@@ -1,0 +1,72 @@
+{
+    "name": "workspace",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "tools/workspace/src",
+    "projectType": "library",
+    "targets": {
+        "build": {
+            "executor": "@nx/js:tsc",
+            "outputs": [
+                "{options.outputPath}"
+            ],
+            "options": {
+                "outputPath": "dist/tools/workspace-plugins",
+                "main": "tools/workspace/src/index.ts",
+                "tsConfig": "tools/workspace/tsconfig.lib.json",
+                "assets": [
+                    "tools/workspace/*.md",
+                    {
+                        "input": "./tools/workspace/src",
+                        "glob": "**/!(*.ts)",
+                        "output": "./src"
+                    },
+                    {
+                        "input": "./tools/workspace/src",
+                        "glob": "**/*.d.ts",
+                        "output": "./src"
+                    },
+                    {
+                        "input": "./tools/workspace",
+                        "glob": "generators.json",
+                        "output": "."
+                    },
+                    {
+                        "input": "./tools/workspace",
+                        "glob": "executors.json",
+                        "output": "."
+                    }
+                ]
+            }
+        },
+        "lint": {
+            "executor": "@nx/eslint:lint",
+            "outputs": [
+                "{options.outputFile}"
+            ],
+            "options": {
+                "lintFilePatterns": [
+                    "tools/workspace/**/*.ts",
+                    "tools/workspace/package.json",
+                    "tools/workspace/generators.json"
+                ]
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": [
+                "{workspaceRoot}/coverage/{projectRoot}"
+            ],
+            "options": {
+                "jestConfig": "tools/workspace/jest.config.ts",
+                "passWithNoTests": true
+            },
+            "configurations": {
+                "ci": {
+                    "ci": true,
+                    "codeCoverage": true
+                }
+            }
+        }
+    },
+    "tags": []
+}

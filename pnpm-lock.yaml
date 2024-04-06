@@ -11,6 +11,9 @@ importers:
       '@angular/animations':
         specifier: 17.3.3
         version: 17.3.3(@angular/core@17.3.3)
+      '@angular/cdk':
+        specifier: ^17.3.3
+        version: 17.3.3(@angular/common@17.3.3)(@angular/core@17.3.3)(rxjs@7.8.1)
       '@angular/common':
         specifier: 17.3.3
         version: 17.3.3(@angular/core@17.3.3)(rxjs@7.8.1)
@@ -500,6 +503,21 @@ packages:
     dependencies:
       '@angular/core': 17.3.3(rxjs@7.8.1)(zone.js@0.14.4)
       tslib: 2.6.2
+
+  /@angular/cdk@17.3.3(@angular/common@17.3.3)(@angular/core@17.3.3)(rxjs@7.8.1):
+    resolution: {integrity: sha512-hfS9pwaNE6CTZqP3FBh9tZPbuf//bDqZ5IpMzscfDFrwX8ycxBiI3znH/rFSf9l1rL0OQGoqWWNVfJCT+RrukA==}
+    peerDependencies:
+      '@angular/common': ^17.0.0 || ^18.0.0
+      '@angular/core': ^17.0.0 || ^18.0.0
+      rxjs: ^6.5.3 || ^7.4.0
+    dependencies:
+      '@angular/common': 17.3.3(@angular/core@17.3.3)(rxjs@7.8.1)
+      '@angular/core': 17.3.3(rxjs@7.8.1)(zone.js@0.14.4)
+      rxjs: 7.8.1
+      tslib: 2.6.2
+    optionalDependencies:
+      parse5: 7.1.2
+    dev: false
 
   /@angular/cli@17.3.3:
     resolution: {integrity: sha512-veIGK2sRm0SfiLHeftx0W0xC3N8uxoqxXiSG57V6W2wIFN/fKm3aRq3sa8phz7vxUzoKGqyZh6hsT7ybkjgkGA==}

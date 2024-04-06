@@ -1,1 +1,0 @@
-# @koobiq/components/label

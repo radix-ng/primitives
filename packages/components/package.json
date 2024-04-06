@@ -1,8 +1,0 @@
-{
-    "name": "@koobiq/components",
-    "version": "0.0.1",
-    "peerDependencies": {
-        "@angular/core": "^17.3.3"
-    },
-    "sideEffects": false
-}

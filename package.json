@@ -1,14 +1,15 @@
 {
-    "name": "koobiq-angular-primitives",
+    "name": "ng-radix-primitives",
     "version": "0.0.0",
     "license": "MIT",
     "scripts": {
-        "storybook": "nx run components:storybook",
-        "build": "nx run components:build"
+        "storybook": "nx run primitives:storybook",
+        "build": "nx run primitives:build"
     },
     "private": true,
     "dependencies": {
         "@angular/animations": "17.3.3",
+        "@angular/cdk": "^17.3.3",
         "@angular/common": "17.3.3",
         "@angular/compiler": "17.3.3",
         "@angular/core": "17.3.3",

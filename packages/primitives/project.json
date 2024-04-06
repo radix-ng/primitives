@@ -1,7 +1,7 @@
 {
-    "name": "components",
+    "name": "primitives",
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
-    "sourceRoot": "packages/components",
+    "sourceRoot": "packages/primitives",
     "prefix": "kbq",
     "tags": [],
     "projectType": "library",
@@ -12,14 +12,14 @@
                 "{workspaceRoot}/dist/{projectRoot}"
             ],
             "options": {
-                "project": "packages/components/ng-package.json"
+                "project": "packages/primitives/ng-package.json"
             },
             "configurations": {
                 "production": {
-                    "tsConfig": "packages/components/tsconfig.lib.prod.json"
+                    "tsConfig": "packages/primitives/tsconfig.lib.prod.json"
                 },
                 "development": {
-                    "tsConfig": "packages/components/tsconfig.lib.json"
+                    "tsConfig": "packages/primitives/tsconfig.lib.json"
                 }
             },
             "defaultConfiguration": "production"
@@ -30,7 +30,7 @@
                 "{workspaceRoot}/coverage/{projectRoot}"
             ],
             "options": {
-                "jestConfig": "packages/components/jest.config.ts"
+                "jestConfig": "packages/primitives/jest.config.ts"
             }
         },
         "lint": {
@@ -43,8 +43,8 @@
             "executor": "@storybook/angular:start-storybook",
             "options": {
                 "port": 4400,
-                "configDir": "packages/components/.storybook",
-                "browserTarget": "components:build-storybook",
+                "configDir": "packages/primitives/.storybook",
+                "browserTarget": "primitives:build-storybook",
                 "compodoc": false
             },
             "configurations": {
@@ -57,9 +57,9 @@
             "executor": "@storybook/angular:build-storybook",
             "outputs": ["{options.outputDir}"],
             "options": {
-                "outputDir": "dist/storybook/ui-components",
-                "configDir": "packages/components/.storybook",
-                "browserTarget": "components:build-storybook",
+                "outputDir": "dist/storybook/ui-primitives",
+                "configDir": "packages/primitives/.storybook",
+                "browserTarget": "primitives:build-storybook",
                 "compodoc": false
             },
             "configurations": {
@@ -71,18 +71,18 @@
         "test-storybook": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "test-storybook -c packages/components/.storybook --url=http://localhost:4400"
+                "command": "test-storybook -c packages/primitives/.storybook --url=http://localhost:4400"
             }
         },
         "static-storybook": {
             "executor": "@nx/web:file-server",
             "options": {
-                "buildTarget": "components:build-storybook",
-                "staticFilePath": "dist/storybook/ui-components"
+                "buildTarget": "primitives:build-storybook",
+                "staticFilePath": "dist/storybook/ui-primitives"
             },
             "configurations": {
                 "ci": {
-                    "buildTarget": "components:build-storybook:ci"
+                    "buildTarget": "primitives:build-storybook:ci"
                 }
             }
         }
