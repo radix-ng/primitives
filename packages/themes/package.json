@@ -1,0 +1,66 @@
+{
+    "name": "@ng-radix/themes",
+    "version": "0.0.2",
+    "type": "commonjs",
+    "main": "./dist/cjs/index.js",
+    "types": "./dist/cjs/index.d.ts",
+    "module": "./dist/esm/index.js",
+    "style": "./styles.css",
+    "exports": {
+        ".": {
+            "require": {
+                "types": "./dist/cjs/index.d.ts",
+                "default": "./dist/cjs/index.js"
+            },
+            "import": {
+                "types": "./dist/esm/index.d.ts",
+                "default": "./dist/esm/index.js"
+            }
+        },
+        "./*": "./*"
+    },
+    "sideEffects": false,
+    "license": "MIT",
+    "files": [
+        "src/**",
+        "dist/**",
+        "tokens/**",
+        "layout/**",
+        "*.css",
+        "postcss-breakpoints.cjs",
+        "postcss-whitespace.cjs"
+    ],
+    "scripts": {
+        "build": "yarn build:css",
+        "build:css:components": "postcss src/components/index.css -o components.css",
+        "dev": "yarn dev:css",
+        "dev:css": "postcss src/styles/index.css -o styles.css --watch",
+        "lint": "yarn lint:js && yarn lint:css",
+        "lint:css": "stylelint \"src/**/*.css\"",
+        "clean": "rm -rf .turbo node_modules dist layout *.css",
+        "prepublishOnly": "yarn lint"
+    },
+    "dependencies": {
+        "@radix-ui/colors": "^3.0.0",
+        "@radix-ui/themes": "^3.0.2"
+    },
+    "devDependencies": {
+        "autoprefixer": "^10.4.19",
+        "esbuild": "^0.20.0",
+        "eslint": "^8.15.0",
+        "eslint-config-custom": "*",
+        "eslint-plugin-require-extensions": "^0.1.3",
+        "postcss": "^8.4.33",
+        "postcss-cli": "^11.0.0",
+        "postcss-combine-duplicated-selectors": "^10.0.3",
+        "postcss-custom-media": "^10.0.2",
+        "postcss-discard-empty": "^6.0.1",
+        "postcss-import": "^16.0.0",
+        "postcss-nesting": "^12.0.2",
+        "stylelint": "^16.1.0",
+        "typescript": "^5.3.3"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

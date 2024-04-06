@@ -1,6 +1,9 @@
 {
     "name": "@ng-radix/primitives",
     "version": "0.0.1",
+    "publishConfig": {
+        "access": "public"
+    },
     "peerDependencies": {
         "@angular/core": "^17.3.3",
         "@angular/cdk": "^17.3.3"
