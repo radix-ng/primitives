@@ -5,6 +5,7 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideCheck } from '@ng-icons/lucide';
 import { LabelDirective } from '../../label/label.directive';
 import classNames from 'classnames';
+import { NgIf } from '@angular/common';
 
 @Component({
     selector: 'kbq-checkbox',
@@ -25,16 +26,18 @@ import classNames from 'classnames';
                         name="lucideCheck"
                     ></ng-icon>
                 </button>
+                <input *ngIf="isFormControl" />
                 Check Item
             </label>
         </div>
     `,
     standalone: true,
-    imports: [LabelDirective, CheckboxDirective, CheckboxIndicatorDirective, NgIconComponent],
+    imports: [NgIf, LabelDirective, CheckboxDirective, CheckboxIndicatorDirective, NgIconComponent],
     providers: [provideIcons({ lucideCheck })]
 })
 export class CheckboxComponent {
     checked = false;
+    isFormControl = false;
 
     getClassnames(): string {
         return classNames(
