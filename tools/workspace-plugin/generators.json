@@ -1,5 +1,10 @@
 {
     "generators": {
+        "library": {
+            "factory": "./src/generators/library/generator",
+            "schema": "./src/generators/library/schema.json",
+            "description": "Create a new component"
+        },
         "directive": {
             "factory": "./src/generators/directive/generator",
             "schema": "./src/generators/directive/schema.json",

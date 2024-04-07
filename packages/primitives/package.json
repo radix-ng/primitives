@@ -1,5 +1,5 @@
 {
-    "name": "@ng-radix/primitives",
+    "name": "@radix-ng/primitives",
     "version": "0.0.1",
     "publishConfig": {
         "access": "public"

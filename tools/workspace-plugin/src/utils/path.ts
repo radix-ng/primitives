@@ -4,6 +4,7 @@ export function getSourceRoot(tree: Tree, entrypoint: string): string {
     return joinPathFragments(
         getWorkspaceLayout(tree).libsDir,
         'primitives',
-        names(entrypoint).fileName
+        names(entrypoint).fileName,
+        'src'
     );
 }
