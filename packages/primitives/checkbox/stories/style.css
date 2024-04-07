@@ -44,9 +44,12 @@
     --gray-a12: color(display-p3 0 0 0 / 0.875);
     --white-a3: color(display-p3 1 1 1/0.15);
     --white-a4: color(display-p3 1 1 1/0.2);
+    --indigo-8: color(display-p3 0.569 0.639 0.916);
     --indigo-9: color(display-p3 0.276 0.384 0.837);
     --indigo-indicator: var(--indigo-9);
     --accent-indicator: var(--indigo-indicator);
+    --accent-8: var(--indigo-8);
+    --focus-8: var(--accent-8);
     --scaling: 1;
     --space-4: calc(16px * var(--scaling));
     --radius-factor: 1;
@@ -240,6 +243,23 @@
 
         & :where(.rt-BaseCheckboxIndicator) {
             color: var(--gray-a8);
+        }
+    }
+}
+
+.rt-CheckboxRoot {
+    &:where(:focus-visible) {
+        &::before {
+            outline: 2px solid var(--focus-8);
+            outline-offset: 2px;
+        }
+    }
+
+    &:where(:disabled) {
+        cursor: var(--cursor-disabled);
+
+        &::before {
+            background-color: var(--gray-a3);
         }
     }
 }

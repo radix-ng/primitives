@@ -4,6 +4,7 @@
     "license": "MIT",
     "scripts": {
         "storybook": "nx run primitives:storybook",
+        "build-storybook": "nx run primitives:build-storybook",
         "build": "nx run primitives:build"
     },
     "private": true,
@@ -44,8 +45,8 @@
         "@nx/js": "18.2.2",
         "@nx/storybook": "18.2.2",
         "@nx/workspace": "18.2.2",
-        "@radix-ui/themes": "^3.0.2",
         "@radix-ui/colors": "^3.0.0",
+        "@radix-ui/themes": "^3.0.2",
         "@schematics/angular": "17.3.3",
         "@storybook/addon-essentials": "^7.6.17",
         "@storybook/addon-interactions": "^7.6.17",
@@ -65,6 +66,7 @@
         "@typescript-eslint/eslint-plugin": "7.5.0",
         "@typescript-eslint/parser": "7.5.0",
         "autoprefixer": "^10.4.0",
+        "chromatic": "^11.3.0",
         "classnames": "^2.5.1",
         "clsx": "^2.1.0",
         "esbuild": "^0.19.2",
