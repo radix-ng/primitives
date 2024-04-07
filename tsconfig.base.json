@@ -15,7 +15,7 @@
         "skipDefaultLibCheck": true,
         "baseUrl": ".",
         "paths": {
-            "@ng-radix/workspace-plugin": ["tools/workspace-plugin/src/index.ts"]
+            "@radix-ng/workspace-plugin": ["tools/workspace-plugin/src/index.ts"]
         }
     },
     "exclude": ["node_modules", "tmp"]
