@@ -1,70 +1,56 @@
 {
-    "name": "koobiq",
+    "name": "docs",
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
     "projectType": "application",
-    "prefix": "koobiq",
-    "sourceRoot": "apps/koobiq/src",
+    "prefix": "docs",
+    "sourceRoot": "apps/docs/src",
     "tags": [],
     "targets": {
         "build": {
-            "executor": "@angular-devkit/build-angular:application",
-            "outputs": ["{options.outputPath}"],
+            "dependsOn": ["^build"],
+            "executor": "@nx/vite:build",
+            "outputs": [
+                "{options.outputPath}",
+                "{workspaceRoot}/dist/apps/docs/.nitro",
+                "{workspaceRoot}/dist/apps/docs/ssr",
+                "{workspaceRoot}/dist/apps/docs/analog"
+            ],
             "options": {
-                "outputPath": "dist/apps/koobiq",
-                "index": "apps/koobiq/src/index.html",
-                "browser": "apps/koobiq/src/main.ts",
-                "polyfills": ["zone.js"],
-                "tsConfig": "apps/koobiq/tsconfig.app.json",
-                "inlineStyleLanguage": "scss",
-                "assets": ["apps/koobiq/src/favicon.ico", "apps/koobiq/src/assets"],
-                "styles": ["apps/koobiq/src/styles.scss"],
-                "scripts": [],
-                "server": "apps/koobiq/src/main.server.ts",
-                "prerender": true,
-                "ssr": {
-                    "entry": "apps/koobiq/server.ts"
-                }
+                "configFile": "apps/docs/vite.config.mts",
+                "outputPath": "dist/apps/docs"
             },
+            "defaultConfiguration": "production",
             "configurations": {
-                "production": {
-                    "budgets": [
-                        {
-                            "type": "initial",
-                            "maximumWarning": "500kb",
-                            "maximumError": "1mb"
-                        },
-                        {
-                            "type": "anyComponentStyle",
-                            "maximumWarning": "2kb",
-                            "maximumError": "4kb"
-                        }
-                    ],
-                    "outputHashing": "all"
-                },
                 "development": {
-                    "optimization": false,
-                    "extractLicenses": false,
-                    "sourceMap": true
+                    "mode": "development"
+                },
+                "production": {
+                    "sourcemap": false,
+                    "mode": "production"
                 }
-            },
-            "defaultConfiguration": "production"
+            }
         },
         "serve": {
-            "executor": "@angular-devkit/build-angular:dev-server",
-            "configurations": {
-                "production": {
-                    "buildTarget": "koobiq:build:production"
-                },
-                "development": {
-                    "buildTarget": "koobiq:build:development"
-                }
+            "executor": "@nx/vite:dev-server",
+            "defaultConfiguration": "development",
+            "options": {
+                "buildTarget": "docs:build",
+                "port": 4200
             },
-            "defaultConfiguration": "development"
+            "configurations": {
+                "development": {
+                    "buildTarget": "docs:build:development",
+                    "hmr": true
+                },
+                "production": {
+                    "buildTarget": "docs:build:production"
+                }
+            }
         },
         "extract-i18n": {
             "executor": "@angular-devkit/build-angular:extract-i18n",
             "options": {
-                "buildTarget": "koobiq:build"
+                "buildTarget": "docs:build"
             }
         },
         "lint": {
@@ -75,7 +61,7 @@
             "executor": "@nx/jest:jest",
             "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
             "options": {
-                "jestConfig": "apps/koobiq/jest.config.ts"
+                "jestConfig": "apps/docs/jest.config.ts"
             }
         }
     }
