@@ -7,6 +7,7 @@
         "storybook": "nx run primitives:storybook",
         "build-storybook": "nx run primitives:build-storybook",
         "build": "nx run primitives:build",
+        "workspace-plugin:build": "nx run workspace-plugin:build",
         "docs:dev": "nx serve docs"
     },
     "private": true,
@@ -45,6 +46,7 @@
         "@angular/language-service": "17.3.3",
         "@ng-icons/core": "^27.2.0",
         "@ng-icons/lucide": "^27.2.0",
+        "@nx/devkit": "^18.2.3",
         "@nx/esbuild": "18.2.2",
         "@nx/eslint": "18.2.2",
         "@nx/eslint-plugin": "18.2.2",

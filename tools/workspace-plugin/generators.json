@@ -1,0 +1,9 @@
+{
+    "generators": {
+        "directive": {
+            "factory": "./src/generators/directive/generator",
+            "schema": "./src/generators/directive/schema.json",
+            "description": "Create a new directive"
+        }
+    }
+}

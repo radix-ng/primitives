@@ -1,5 +1,5 @@
 {
-    "name": "@ng-radix/workspace",
+    "name": "@radix-ng/workspace-plugin",
     "version": "0.0.1",
     "type": "commonjs",
     "generators": "./generators.json"
