@@ -1,11 +1,13 @@
 import type { StorybookConfig } from '@storybook/angular';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const StylexPlugin = require('@stylexjs/webpack-plugin');
 
 const config: StorybookConfig = {
-    stories: ['../**/*.stories.@(js|jsx|ts|tsx|mdx)'],
+    stories: ['../.docs/**/*.docs.mdx', '../**/*.docs.mdx', '../**/*.stories.@(js|ts)'],
 
-    addons: ['@storybook/addon-essentials', '@storybook/addon-styling-webpack'],
+    addons: [
+        { name: '@storybook/addon-essentials' },
+        '@storybook/addon-docs',
+        '@storybook/addon-backgrounds'
+    ],
 
     framework: {
         name: '@storybook/angular',
@@ -15,27 +17,6 @@ const config: StorybookConfig = {
     core: {
         builder: '@storybook/builder-webpack5',
         disableTelemetry: true
-    },
-
-    webpackFinal: async (config) => {
-        config.plugins = config.plugins || [];
-        config.plugins.push(
-            new StylexPlugin({
-                filename: 'styles.[contenthash].css',
-                dev: config.mode === 'development',
-                runtimeInjection: false,
-                classNamePrefix: 'x',
-                unstable_moduleResolution: {
-                    type: 'commonJS',
-                    rootDir: __dirname
-                }
-            })
-        );
-        return config;
-    },
-
-    docs: {
-        autodocs: true
     }
 };
 

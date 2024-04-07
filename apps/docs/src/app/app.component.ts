@@ -1,14 +1,16 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { NxWelcomeComponent } from './nx-welcome.component';
+import { RouterOutlet } from '@angular/router';
+import { HeaderComponent } from './shared/header/header.component';
 
 @Component({
-  standalone: true,
-  imports: [NxWelcomeComponent, RouterModule],
-  selector: 'koobiq-root',
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
+    standalone: true,
+    imports: [RouterOutlet, HeaderComponent],
+    selector: 'radix-ng-root',
+    template: `
+        <radix-ng-docs-header />
+        <div>
+            <router-outlet />
+        </div>
+    `
 })
-export class AppComponent {
-  title = 'koobiq';
-}
+export class AppComponent {}

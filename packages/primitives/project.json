@@ -2,7 +2,7 @@
     "name": "primitives",
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
     "sourceRoot": "packages/primitives",
-    "prefix": "kbq",
+    "prefix": "rdx",
     "tags": [],
     "projectType": "library",
     "targets": {

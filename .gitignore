@@ -2,6 +2,7 @@
 .firebase
 packages/themes/*.css
 
+documentation.json
 dependency-graph.png
 
 # turbo

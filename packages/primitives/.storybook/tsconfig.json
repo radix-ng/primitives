@@ -1,7 +1,9 @@
 {
     "extends": "../tsconfig.json",
     "compilerOptions": {
-        "emitDecoratorMetadata": true
+        "emitDecoratorMetadata": true,
+        "resolveJsonModule": true,
+        "allowSyntheticDefaultImports": true
     },
     "exclude": [
         "../**/*.spec.ts"

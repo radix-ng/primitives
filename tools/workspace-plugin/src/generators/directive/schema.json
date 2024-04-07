@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "$id": "Directive",
+    "title": "",
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "The name of the directive.",
+            "$default": {
+                "$source": "argv",
+                "index": 0
+            },
+            "x-prompt": "What name would you like to use?"
+        },
+        "entrypoint": {
+            "type": "string",
+            "description": "The entrypoint to add the directive to.",
+            "$default": {
+                "$source": "argv",
+                "index": 1
+            },
+            "x-prompt": "What entrypoint should the directive be added to?"
+        }
+    },
+    "required": [
+        "name",
+        "entrypoint"
+    ]
+}

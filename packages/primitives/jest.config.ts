@@ -1,8 +1,8 @@
 /* eslint-disable */
 export default {
     displayName: 'primitives',
-    preset: '../../jest.preset.js',
-    setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
+    preset: '../../jest.preset.cjs',
+    setupFilesAfterEnv: ['<rootDir>/test-setup.ts'],
     coverageDirectory: '../../coverage/packages/primitives',
     transform: {
         '^.+\\.(ts|mjs|js|html)$': [
