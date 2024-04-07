@@ -1,5 +1,5 @@
 import { InjectionToken, inject } from '@angular/core';
-import type { CheckboxDirective } from '../checkbox.directive';
+import type { CheckboxDirective } from './checkbox.directive';
 
 export const CheckboxToken = new InjectionToken<CheckboxDirective>('CheckboxToken');
 

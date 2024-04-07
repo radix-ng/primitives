@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
 
-import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { lucideCheck } from '@ng-icons/lucide';
 import { LabelDirective } from '../../label/label.directive';
 import { SwitchDirective } from '../switch.directive';
 import { SwitchThumbDirective } from '../switch-thumb.directive';
@@ -60,8 +58,7 @@ import { SwitchThumbDirective } from '../switch-thumb.directive';
         </label>
     `,
     standalone: true,
-    imports: [LabelDirective, SwitchDirective, SwitchThumbDirective, NgIconComponent],
-    providers: [provideIcons({ lucideCheck })]
+    imports: [LabelDirective, SwitchDirective, SwitchThumbDirective]
 })
 export class SwitchComponent {
     checked = true;

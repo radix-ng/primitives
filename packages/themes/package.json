@@ -1,22 +1,12 @@
 {
     "name": "@ng-radix/themes",
     "version": "0.0.2",
+    "publishConfig": {
+        "access": "public"
+    },
     "type": "commonjs",
-    "main": "./dist/cjs/index.js",
-    "types": "./dist/cjs/index.d.ts",
-    "module": "./dist/esm/index.js",
     "style": "./styles.css",
     "exports": {
-        ".": {
-            "require": {
-                "types": "./dist/cjs/index.d.ts",
-                "default": "./dist/cjs/index.js"
-            },
-            "import": {
-                "types": "./dist/esm/index.d.ts",
-                "default": "./dist/esm/index.js"
-            }
-        },
         "./*": "./*"
     },
     "sideEffects": false,
@@ -24,21 +14,16 @@
     "files": [
         "src/**",
         "dist/**",
-        "tokens/**",
-        "layout/**",
         "*.css",
         "postcss-breakpoints.cjs",
         "postcss-whitespace.cjs"
     ],
     "scripts": {
-        "build": "yarn build:css",
+        "build:css:index": "postcss src/styles/index.css -o styles.css",
         "build:css:components": "postcss src/components/index.css -o components.css",
-        "dev": "yarn dev:css",
         "dev:css": "postcss src/styles/index.css -o styles.css --watch",
-        "lint": "yarn lint:js && yarn lint:css",
         "lint:css": "stylelint \"src/**/*.css\"",
-        "clean": "rm -rf .turbo node_modules dist layout *.css",
-        "prepublishOnly": "yarn lint"
+        "clean": "rm -rf .turbo node_modules dist layout *.css"
     },
     "dependencies": {
         "@radix-ui/colors": "^3.0.0",
@@ -59,8 +44,5 @@
         "postcss-nesting": "^12.0.2",
         "stylelint": "^16.1.0",
         "typescript": "^5.3.3"
-    },
-    "publishConfig": {
-        "access": "public"
     }
 }

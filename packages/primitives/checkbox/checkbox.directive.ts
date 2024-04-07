@@ -7,7 +7,7 @@ import {
     booleanAttribute
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { CheckboxToken } from './stories/checkbox.token';
+import { CheckboxToken } from './checkbox.token';
 
 @Directive({
     selector: 'button[kbqCheckbox]',

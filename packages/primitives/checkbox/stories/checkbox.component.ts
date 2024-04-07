@@ -4,42 +4,44 @@ import { CheckboxIndicatorDirective } from '../checkbox-indicator.directive';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideCheck } from '@ng-icons/lucide';
 import { LabelDirective } from '../../label/label.directive';
+import classNames from 'classnames';
 
 @Component({
     selector: 'kbq-checkbox',
-    styles: `
-        button {
-            all: unset;
-        }
-
-        .CheckboxRoot {
-            background-color: white;
-            width: 25px;
-            height: 25px;
-            border-radius: 4px;
-
-            box-shadow: 0 2px 10px color(display-p3 0 0 0/0.5);
-        }
-        .CheckboxRoot:hover {
-            background-color: color(display-p3 0.417 0.341 0.784);
-        }
-        .CheckboxRoot:focus {
-            box-shadow: 0 0 0 2px black;
-        }
-    `,
+    styleUrls: ['style.css'],
     template: `
-        <label kbqLabel>
-            <button class="CheckboxRoot" kbqCheckbox [(checked)]="checked">
-                <input kbqCheckboxIndicator id="uniqId" />
-                <ng-icon kbqCheckboxIndicator name="lucideCheck"></ng-icon>
-            </button>
-            Check Item
-        </label>
+        <div class="radix-themes light-theme">
+            <label kbqLabel>
+                <button
+                    class="{{ getClassnames() }}"
+                    data-accent-color
+                    kbqCheckbox
+                    [(checked)]="checked"
+                >
+                    <ng-icon
+                        kbqCheckboxIndicator
+                        class="rt-BaseCheckboxIndicator rt-CheckboxIndicator"
+                        name="lucideCheck"
+                    ></ng-icon>
+                </button>
+                Check Item
+            </label>
+        </div>
     `,
     standalone: true,
     imports: [LabelDirective, CheckboxDirective, CheckboxIndicatorDirective, NgIconComponent],
     providers: [provideIcons({ lucideCheck })]
 })
 export class CheckboxComponent {
-    checked = true;
+    checked = false;
+
+    getClassnames(): string {
+        return classNames(
+            'rt-reset',
+            'rt-BaseCheckboxRoot',
+            'rt-CheckboxRoot',
+            'rt-r-size-2',
+            'rt-variant-classic'
+        );
+    }
 }

@@ -15,10 +15,6 @@
         "skipDefaultLibCheck": true,
         "baseUrl": ".",
         "paths": {
-            "@koobiq/components/button": ["packages/components/button/src/index.ts"],
-            "@koobiq/components/core": ["packages/components/core/src/index.ts"],
-            "@koobiq/components/radio": ["packages/components/radio/src/index.ts"],
-            "@koobiq/theme": ["packages/theme/src/index.ts"],
             "@ng-radix/workspace": ["tools/workspace/src/index.ts"]
         }
     },

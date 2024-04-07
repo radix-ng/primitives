@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
-import { injectCheckbox } from './stories/checkbox.token';
+import { Directive, HostBinding, Optional } from '@angular/core';
+import { injectCheckbox } from './checkbox.token';
 
 @Directive({
     selector: '[kbqCheckboxIndicator]',
@@ -7,9 +7,7 @@ import { injectCheckbox } from './stories/checkbox.token';
     host: {
         '[style.pointer-events]': '"none"',
         '[attr.data-state]': 'checkbox.state',
-        '[attr.data-disabled]': 'checkbox.disabled ? "" : null',
-        type: 'checkbox',
-        '[attr.aria-hidden]': 'true'
+        '[attr.data-disabled]': 'checkbox.disabled ? "" : null'
     }
 })
 export class CheckboxIndicatorDirective {

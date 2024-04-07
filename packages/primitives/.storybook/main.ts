@@ -5,7 +5,7 @@ const StylexPlugin = require('@stylexjs/webpack-plugin');
 const config: StorybookConfig = {
     stories: ['../**/*.stories.@(js|jsx|ts|tsx|mdx)'],
 
-    addons: ['@storybook/addon-essentials', '@storybook/addon-interactions'],
+    addons: ['@storybook/addon-essentials', '@storybook/addon-styling-webpack'],
 
     framework: {
         name: '@storybook/angular',
