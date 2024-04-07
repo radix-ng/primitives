@@ -19,6 +19,7 @@ import classNames from 'classnames';
                     [(checked)]="checked"
                 >
                     <ng-icon
+                        color="white"
                         kbqCheckboxIndicator
                         class="rt-BaseCheckboxIndicator rt-CheckboxIndicator"
                         name="lucideCheck"
