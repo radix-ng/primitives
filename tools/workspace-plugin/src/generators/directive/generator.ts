@@ -9,7 +9,7 @@ export async function directiveGenerator(tree: Tree, options: DirectiveGenerator
         project: 'primitives',
         flat: false,
         export: false,
-        prefix: 'kbq',
+        prefix: 'rdx',
         standalone: true,
         path: getSourceRoot(tree, options.entrypoint)
     });

@@ -19,7 +19,7 @@
                     "error",
                     {
                         "type": "attribute",
-                        "prefix": "kbq",
+                        "prefix": "rdx",
                         "style": "camelCase"
                     }
                 ],
@@ -27,7 +27,7 @@
                     "error",
                     {
                         "type": "element",
-                        "prefix": "kbq",
+                        "prefix": "rdx",
                         "style": "kebab-case"
                     }
                 ]

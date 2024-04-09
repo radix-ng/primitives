@@ -12,7 +12,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { SwitchToken } from './switch.token';
 
 @Directive({
-    selector: '[kbqSwitch]',
+    selector: '[rdxSwitch]',
     standalone: true,
     providers: [
         { provide: SwitchToken, useExisting: SwitchDirective },

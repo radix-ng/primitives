@@ -18,7 +18,7 @@ import { injectRovingFocusGroup } from './roving-focus-group.token';
 import { RovingFocusItemToken } from './roving-focus-item.token';
 
 @Directive({
-    selector: '[kbqRovingFocusItem]',
+    selector: '[rdxRovingFocusItem]',
     standalone: true,
     providers: [{ provide: RovingFocusItemToken, useExisting: RovingFocusItemDirective }]
 })

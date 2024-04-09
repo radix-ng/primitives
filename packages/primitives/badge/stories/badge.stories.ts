@@ -1,6 +1,6 @@
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
-import { BadgeDirective } from '../badge.directive';
+import { BadgeDirective } from '../src/badge.directive';
 
 export default {
     component: BadgeDirective,
@@ -39,9 +39,9 @@ export const Default: Story = {
 <style>
 
 </style>
-<div kbqBadge variant="default" [styles]="customStyles">Default Badge</div>
+<div rdxBadge variant="default" [styles]="customStyles">Default Badge</div>
 
-<div kbqBadge variant="secondary" [styles]="customStyles">Default Badge</div>
+<div rdxBadge variant="secondary" [styles]="customStyles">Default Badge</div>
 `
     })
 };

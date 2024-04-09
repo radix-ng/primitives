@@ -2,7 +2,7 @@ import { Directive } from '@angular/core';
 import { injectSwitch } from './switch.token';
 
 @Directive({
-    selector: '[kbqSwitchThumb]',
+    selector: '[rdxSwitchThumb]',
     standalone: true,
     host: {
         '[attr.data-state]': 'switch.checked ? "checked" : "unchecked"',

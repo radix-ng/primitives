@@ -1,1 +1,1 @@
-export * from './stylex-classname.directive';
+export * from './src/stylex-classname.directive';

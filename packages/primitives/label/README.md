@@ -1,1 +1,1 @@
-# @ng-radix/components/label
+# @radix-ng/primitives/label

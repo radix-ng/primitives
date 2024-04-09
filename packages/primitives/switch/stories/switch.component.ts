@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 
-import { LabelDirective } from '../../label/label.directive';
-import { SwitchDirective } from '../switch.directive';
-import { SwitchThumbDirective } from '../switch-thumb.directive';
+import { LabelDirective } from '../../label/src/label.directive';
+import { SwitchDirective } from '../src/switch.directive';
+import { SwitchThumbDirective } from '../src/switch-thumb.directive';
 
 @Component({
-    selector: 'kbq-switch',
+    selector: 'rdx-switch',
     styles: `
         button {
             all: unset;
@@ -50,10 +50,10 @@ import { SwitchThumbDirective } from '../switch-thumb.directive';
 
     `,
     template: `
-        <label kbqLabel class="Label" style="display: flex; align-items: center;">
+        <label rdxLabel class="Label" style="display: flex; align-items: center;">
             Airplane mode
-            <button class="SwitchRoot" kbqSwitch [(checked)]="checked">
-                <span class="SwitchThumb" kbqSwitchThumb></span>
+            <button class="SwitchRoot" rdxSwitch [(checked)]="checked">
+                <span class="SwitchThumb" rdxSwitchThumb></span>
             </button>
         </label>
     `,

@@ -19,7 +19,7 @@ interface BadgeVariantStyles {
 }
 
 @Directive({
-    selector: '[kbqBadge]',
+    selector: '[rdxBadge]',
     standalone: true
 })
 export class BadgeDirective implements OnChanges {

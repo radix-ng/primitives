@@ -18,19 +18,13 @@ import type { RovingFocusItemDirective } from './roving-focus-item.directive';
 import { RovingFocusGroupToken } from './roving-focus-group.token';
 
 @Directive({
-    selector: '[kbqRovingFocusGroup]',
+    selector: '[rdxRovingFocusGroup]',
     standalone: true,
     providers: [{ provide: RovingFocusGroupToken, useExisting: RovingFocusGroupDirective }]
 })
 export class RovingFocusGroupDirective implements OnInit, OnChanges, OnDestroy {
-    /**
-     * Access the directionality service.
-     */
     private readonly directionality = inject(Directionality);
 
-    /**
-     * Access the destroyRef
-     */
     private readonly destroyRef = inject(DestroyRef);
 
     /**
@@ -60,7 +54,6 @@ export class RovingFocusGroupDirective implements OnInit, OnChanges, OnDestroy {
     ngOnInit(): void {
         this.keyManager.withWrap(this.wrap);
 
-        // update the key manager orientation
         this.setOrientation(this.orientation);
 
         // update the key manager orientation if the document direction changes
@@ -73,12 +66,10 @@ export class RovingFocusGroupDirective implements OnInit, OnChanges, OnDestroy {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        // update the key manager orientation
         if ('orientation' in changes) {
             this.setOrientation(this.orientation);
         }
 
-        // update the key manager wrap
         if ('wrap' in changes) {
             this.keyManager.withWrap(this.wrap);
         }
@@ -89,7 +80,7 @@ export class RovingFocusGroupDirective implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Register a the roving focus item.
+     * Register a roving focus item.
      * @param item The roving focus item to register.
      */
     register(item: RovingFocusItemDirective): void {
@@ -103,7 +94,7 @@ export class RovingFocusGroupDirective implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Unregister a the roving focus item.
+     * Unregister a roving focus item.
      * @param item The roving focus item to unregister.
      */
     unregister(item: RovingFocusItemDirective): void {

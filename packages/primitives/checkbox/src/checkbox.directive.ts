@@ -10,7 +10,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CheckboxToken } from './checkbox.token';
 
 @Directive({
-    selector: 'button[kbqCheckbox]',
+    selector: 'button[rdxCheckbox]',
     standalone: true,
     providers: [
         { provide: CheckboxToken, useExisting: CheckboxDirective },

@@ -1,3 +1,3 @@
-# @ng-radix/components/core
+# @radix-ng/primitives/core
 
-Secondary entry point of `@ng-radix/components`. It can be used by importing from `@ng-radix/components/core`.
+Secondary entry point of `@radix-ng/primitives`. It can be used by importing from `@ng-radix/components/core`.

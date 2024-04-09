@@ -1,7 +1,7 @@
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { CommonModule } from '@angular/common';
 
-import { CheckboxComponent } from './stories/checkbox.component';
+import { CheckboxComponent } from './checkbox.component';
 
 export default {
     component: CheckboxComponent,
@@ -16,9 +16,9 @@ export default {
 type Story = StoryObj<CheckboxComponent>;
 
 export const Default: Story = {
-    render: (args) => ({
+    render: () => ({
         template: `
-        <kbq-checkbox></kbq-checkbox>
+        <rdx-checkbox></rdx-checkbox>
 
 `
     })

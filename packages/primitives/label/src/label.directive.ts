@@ -13,7 +13,7 @@ interface ControlValueAccessorWithElement extends ControlValueAccessor {
 }
 
 @Directive({
-    selector: 'label[kbqLabel]',
+    selector: 'label[rdxLabel]',
     standalone: true
 })
 export class LabelDirective implements AfterContentInit {
@@ -34,7 +34,7 @@ export class LabelDirective implements AfterContentInit {
     }
 
     // prevent text selection when double-clicking label
-    // The main problem with double clicks in a web app is that
+    // The main problem with double-clicks in a web app is that
     // you will have to create special code to handle this on touch enabled devices.
     @HostListener('mousedown', ['$event'])
     onMouseDown(event: MouseEvent): void {

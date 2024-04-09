@@ -1,27 +1,27 @@
 import { Component } from '@angular/core';
-import { CheckboxDirective } from '../checkbox.directive';
-import { CheckboxIndicatorDirective } from '../checkbox-indicator.directive';
+import { CheckboxDirective } from '../src/checkbox.directive';
+import { CheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideCheck } from '@ng-icons/lucide';
-import { LabelDirective } from '../../label/label.directive';
+import { LabelDirective } from '../../label/src/label.directive';
 import classNames from 'classnames';
 import { NgIf } from '@angular/common';
 
 @Component({
-    selector: 'kbq-checkbox',
+    selector: 'rdx-checkbox',
     styleUrls: ['style.css'],
     template: `
         <div class="radix-themes light-theme">
-            <label kbqLabel>
+            <label rdxLabel>
                 <button
                     class="{{ getClassnames() }}"
                     data-accent-color
-                    kbqCheckbox
+                    rdxCheckbox
                     [(checked)]="checked"
                 >
                     <ng-icon
                         color="white"
-                        kbqCheckboxIndicator
+                        rdxCheckboxIndicator
                         class="rt-BaseCheckboxIndicator rt-CheckboxIndicator"
                         name="lucideCheck"
                     ></ng-icon>

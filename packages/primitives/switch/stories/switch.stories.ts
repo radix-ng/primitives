@@ -16,9 +16,9 @@ export default {
 type Story = StoryObj<SwitchComponent>;
 
 export const Default: Story = {
-    render: (args) => ({
+    render: () => ({
         template: `
-        <kbq-switch></kbq-switch>
+        <rdx-switch></rdx-switch>
         `
     })
 };

@@ -1,5 +1,5 @@
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { LabelDirective } from '../label.directive';
+import { LabelDirective } from '../src/label.directive';
 import { StylexClassnameDirective } from '../../core';
 import stylex from '@stylexjs/stylex';
 import { CommonModule } from '@angular/common';
@@ -46,7 +46,7 @@ input {
 }
 </style>
 
-    <label kbqLabel [kbqStylexProps]="styles">First Name
+    <label rdxLabel [rdxStylexProps]="styles">First Name
         <input type="text" id="uniqId" />
     </label>
 
