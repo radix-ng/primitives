@@ -5,6 +5,19 @@ import docJson from './documentation.json';
 setCompodocJson(docJson);
 
 const preview: Preview = {
+    decorators: [
+        (Story, context) => {
+            const storyAnchor = `anchor--${context.id}`;
+            const existAnchor = context.canvasElement.closest(`#${storyAnchor}`);
+            const storyContainer = context.canvasElement.closest('.sbdocs');
+
+            if (!existAnchor && storyContainer) {
+                storyContainer.id = storyAnchor;
+            }
+
+            return Story(context);
+        }
+    ],
     parameters: {
         backgrounds: {
             default: 'blue',

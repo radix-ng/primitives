@@ -16,10 +16,18 @@ export default {
 type Story = StoryObj<LabelDirective>;
 
 export const Default: Story = {
-    render: (args) => ({
-        props: {
-            ...args
-        },
+    parameters: {
+        backgrounds: {
+            default: 'black',
+            values: [
+                {
+                    name: 'black',
+                    value: 'linear-gradient(330deg,color(display-p3 0.523 0.318 0.751) 0,color(display-p3 0.276 0.384 0.837) 100%)'
+                }
+            ]
+        }
+    },
+    render: () => ({
         template: `
 <style>
 
