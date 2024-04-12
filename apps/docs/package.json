@@ -3,5 +3,34 @@
     "version": "0.0.1",
     "private": true,
     "dependencies": {
+        "@analogjs/content": "^1.1.2",
+        "@analogjs/platform": "^1.1.2",
+        "@analogjs/router": "^1.1.2",
+        "@analogjs/vite-plugin-angular": "^1.1.2",
+        "@angular/platform-browser": "17.3.3",
+        "@angular/platform-browser-dynamic": "17.3.3",
+        "@angular/platform-server": "17.3.3",
+        "@angular/ssr": "17.3.3",
+        "@angular/animations": "17.3.3",
+        "@angular/common": "17.3.3",
+        "@angular/compiler": "17.3.3",
+        "@angular/core": "17.3.3",
+        "@angular/forms": "17.3.3",
+        "@angular/router": "17.3.3",
+        "express": "~4.19.2",
+        "isomorphic-fetch": "^3.0.0",
+        "rxjs": "~7.8.0",
+        "tslib": "^2.3.0",
+        "zone.js": "0.14.4"
+    },
+    "devDependencies": {
+        "@types/express": "4.17.14",
+        "@vitest/coverage-v8": "^1.4.0",
+        "@vitest/ui": "^1.4.0",
+        "tailwindcss": "^3.4.3",
+        "vite": "^5.2.8",
+        "vite-plugin-eslint": "^1.8.1",
+        "vite-tsconfig-paths": "^4.3.2",
+        "vitest": "^1.4.0"
     }
 }

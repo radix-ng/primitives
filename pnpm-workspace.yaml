@@ -1,3 +1,4 @@
 packages:
+    - "apps/docs/**"
     - "packages/themes/**"
     - "!**/dist/**"
