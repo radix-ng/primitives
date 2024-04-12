@@ -57,7 +57,7 @@
             "executor": "@storybook/angular:build-storybook",
             "outputs": ["{options.outputDir}"],
             "options": {
-                "outputDir": "dist/storybook/ui-primitives",
+                "outputDir": "dist/storybook/primitives",
                 "configDir": "packages/primitives/.storybook",
                 "browserTarget": "primitives:build-storybook",
                 "compodoc": false
@@ -78,7 +78,7 @@
             "executor": "@nx/web:file-server",
             "options": {
                 "buildTarget": "primitives:build-storybook",
-                "staticFilePath": "dist/storybook/ui-primitives"
+                "staticFilePath": "dist/storybook/primitives"
             },
             "configurations": {
                 "ci": {
