@@ -19,6 +19,18 @@ const preview: Preview = {
         }
     ],
     parameters: {
+        docs: {
+            toc: {
+                contentsSelector: '.sbdocs-content',
+                headingSelector: 'h2, h3',
+                ignoreSelector: '#primary',
+                title: 'On this page',
+                disable: false,
+                unsafeTocbotOptions: {
+                    orderedList: false
+                }
+            }
+        },
         backgrounds: {
             default: 'blue',
             values: [
@@ -31,6 +43,11 @@ const preview: Preview = {
                     value: '#ffffff'
                 }
             ]
+        },
+        options: {
+            storySort: {
+                order: ['Overview', ['Introduction', 'Installation'], 'Primitives']
+            }
         }
     }
 };
