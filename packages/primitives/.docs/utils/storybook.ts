@@ -16,3 +16,15 @@ export const excludeRegex = (array?: string[]): RegExp => {
 export const separatorExclude: RegExp = excludeRegex([]);
 
 export const labelExclude: RegExp = excludeRegex(['onMouseDown', 'htmlFor']);
+
+export const switchExclude: RegExp = excludeRegex([
+    'elementRef',
+    'isButton',
+    'onChange',
+    'onTouched',
+    'onKeyDown',
+    'registerOnTouched',
+    'registerOnChange',
+    'setDisabledState',
+    'writeValue'
+]);

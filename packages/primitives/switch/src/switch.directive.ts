@@ -41,12 +41,14 @@ export class SwitchDirective implements ControlValueAccessor {
 
     /**
      * Determine if the switch is checked.
+     * The controlled state of the switch.
      * @default false
      */
     @Input({ transform: booleanAttribute }) checked = false;
 
     /**
      * Determine if the switch is disabled.
+     * When true, prevents the user from interacting with the switch.
      * @default false
      */
     @Input({ transform: booleanAttribute }) disabled = false;

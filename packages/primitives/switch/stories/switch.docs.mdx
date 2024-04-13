@@ -1,0 +1,56 @@
+import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/addon-docs';
+import * as SwitchDirectiveStories from "./switch.stories";
+import { SwitchDirective } from '../src/switch.directive';
+import { switchExclude } from '../../.docs/utils/storybook';
+
+<Meta
+    title="Primitives/Switch"
+/>
+
+# Switch
+#### A control that allows the user to toggle between checked and not checked.
+
+<Canvas sourceState='hidden' of={SwitchDirectiveStories.Default}></Canvas>
+
+## Features
+- ✅ Full keyboard navigation.
+- ✅ Can be controlled or uncontrolled.
+
+## Import
+
+Get started with importing the directives:
+
+```typescript
+import { SwitchDirective, SwitchThumbDirective } from '@radix-ng/primitives/switch';
+```
+
+## Examples
+
+```html
+<label rdxLabel htmlFor="airplane-mode">Airplane mode</label>
+<button rdxSwitch [(checked)]="checked" id="airplane-mode">
+    <span rdxSwitchThumb></span>
+</button>
+
+```
+## API Reference
+
+### SwitchDirective
+<ArgTypes exclude={switchExclude} of={SwitchDirective} />
+
+### ThumbDirective
+
+## Accessibility
+
+Adheres to the [`switch` role requirements](https://www.w3.org/WAI/ARIA/apg/patterns/switch).
+
+### Keyboard Interactions
+
+<Markdown>
+{`
+| Key | Description |
+| ----------- | --------- |
+| Space       | Toggles the component's state.        |
+| Enter       | Toggles the component's state.    |
+`}
+</Markdown>

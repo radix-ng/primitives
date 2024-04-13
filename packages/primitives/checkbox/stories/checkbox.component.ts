@@ -3,7 +3,7 @@ import { CheckboxDirective } from '../src/checkbox.directive';
 import { CheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideCheck } from '@ng-icons/lucide';
-import { LabelDirective } from '../../label/src/label.directive';
+import { LabelDirective } from '../../label';
 import classNames from 'classnames';
 import { NgIf } from '@angular/common';
 
@@ -26,7 +26,6 @@ import { NgIf } from '@angular/common';
                         name="lucideCheck"
                     ></ng-icon>
                 </button>
-                <input *ngIf="isFormControl" />
                 Check Item
             </label>
         </div>

@@ -64,12 +64,13 @@ button {
 }
 
 </style>
-<label rdxLabel class="Label">
+
+<label rdxLabel htmlFor="airplane-mode" class="Label">
     Airplane mode
-    <button class="SwitchRoot" rdxSwitch [(checked)]="checked">
-        <span class="SwitchThumb" rdxSwitchThumb></span>
+    <button rdxSwitch [(checked)]="checked" id="airplane-mode" class="SwitchRoot">
+        <span rdxSwitchThumb class="SwitchThumb"></span>
     </button>
 </label>
-        `
+`
     })
 };
