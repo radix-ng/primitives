@@ -1,37 +1,16 @@
-import {
-    AfterContentInit,
-    ContentChild,
-    Directive,
-    ElementRef,
-    HostListener,
-    Optional
-} from '@angular/core';
-import { ControlValueAccessor, NgControl } from '@angular/forms';
-
-interface ControlValueAccessorWithElement extends ControlValueAccessor {
-    el?: ElementRef;
-}
+import { Directive, ElementRef, HostListener, Input, Optional } from '@angular/core';
 
 @Directive({
     selector: 'label[rdxLabel]',
-    standalone: true
+    standalone: true,
+    host: {
+        '[attr.for]': 'htmlFor ? htmlFor : null'
+    }
 })
-export class LabelDirective implements AfterContentInit {
-    @ContentChild(NgControl) control: NgControl | undefined;
+export class LabelDirective {
+    @Input() htmlFor = '';
 
     constructor(@Optional() private el: ElementRef) {}
-
-    ngAfterContentInit(): void {
-        const accessor: ControlValueAccessorWithElement = this.control
-            ?.valueAccessor as ControlValueAccessorWithElement;
-
-        if (accessor && accessor.el && this.el.nativeElement) {
-            const inputElement: HTMLElement = accessor.el.nativeElement;
-            if (inputElement.id) {
-                this.el.nativeElement.setAttribute('for', inputElement.id);
-            }
-        }
-    }
 
     // prevent text selection when double-clicking label
     // The main problem with double-clicks in a web app is that

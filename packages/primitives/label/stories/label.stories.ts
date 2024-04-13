@@ -49,9 +49,9 @@ label {
 }
 </style>
 
-<label rdxLabel >First Name
-    <input type="text" class="Input" id="uniqId" />
-</label>
+<label rdxLabel >First Name </label>
+<input type="text" class="Input" id="uniqId" />
+
 `
     })
 };
