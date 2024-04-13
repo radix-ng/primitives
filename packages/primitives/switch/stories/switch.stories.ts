@@ -59,10 +59,12 @@ button {
     color: white;
     font-size: 15px;
     line-height: 1;
+    display: flex;
+    align-items: center;
 }
 
 </style>
-<label rdxLabel class="Label" style="display: flex; align-items: center;">
+<label rdxLabel class="Label">
     Airplane mode
     <button class="SwitchRoot" rdxSwitch [(checked)]="checked">
         <span class="SwitchThumb" rdxSwitchThumb></span>
