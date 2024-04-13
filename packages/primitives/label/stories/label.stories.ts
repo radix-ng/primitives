@@ -1,10 +1,16 @@
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { LabelDirective } from '../src/label.directive';
 import { CommonModule } from '@angular/common';
+import { labelExclude } from '../../.docs/utils/storybook';
 
 export default {
     component: LabelDirective,
     title: 'Primitives/Label',
+    parameters: {
+        controls: {
+            exclude: labelExclude
+        }
+    },
     decorators: [
         moduleMetadata({
             imports: [LabelDirective, CommonModule]
@@ -49,7 +55,7 @@ label {
 }
 </style>
 
-<label rdxLabel >First Name </label>
+<label rdxLabel htmlFor="uniqId">First Name </label>
 <input type="text" class="Input" id="uniqId" />
 
 `

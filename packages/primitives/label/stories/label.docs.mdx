@@ -1,0 +1,40 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs';
+import * as LabelDirectiveStories from "./label.stories";
+import { LabelDirective } from '../src/label.directive';
+
+<Meta
+    title="Primitives/Label"
+/>
+
+# Label
+#### Renders an accessible label associated with controls.
+
+<Canvas sourceState='hidden' of={LabelDirectiveStories.Default}></Canvas>
+
+## Features
+- Text selection is prevented when double-clicking label.
+
+## Import
+
+Get started with importing the directive:
+
+```typescript
+import { LabelDirective } from '@radix-ng/primitives/label';
+```
+
+## Examples
+
+```html
+<label rdxLabel htmlFor="uniqId">First name</label>
+<input type="text" class="Input" id="uniqId" />
+
+```
+## API Reference
+
+<ArgTypes exclude={['onMouseDown']} of={LabelDirective} />
+
+## Accessibility
+
+This component is based on the native `label` element, it will automatically apply the correct labelling
+when wrapping controls or using the `for` attribute. For your own custom controls
+to work correctly, ensure they use native elements such as `button` or `input` as a base.

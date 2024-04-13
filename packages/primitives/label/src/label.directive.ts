@@ -8,6 +8,10 @@ import { Directive, ElementRef, HostListener, Input, Optional } from '@angular/c
     }
 })
 export class LabelDirective {
+    /**
+     * The id of the element the label is associated with.
+     * @default '-'
+     */
     @Input() htmlFor = '';
 
     constructor(@Optional() private el: ElementRef) {}

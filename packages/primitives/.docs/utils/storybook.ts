@@ -8,17 +8,11 @@
 export const excludeRegex = (array?: string[]): RegExp => {
     const joined: string | null = array ? array.join('|') : null;
 
-    const joinedWithRegexOr: string = `|^(${joined})$`;
+    const joinedWithRegexOr = `|^(${joined})$`;
 
-    const regex = new RegExp(`(^(?:_|ng)[a-zA-Z0-9]\\w+)${joinedWithRegexOr}`);
-
-    return regex;
+    return new RegExp(`(^(?:_|ng)[a-zA-Z0-9]\\w+)${joinedWithRegexOr}`);
 };
 
-export const separatorExclude: RegExp = excludeRegex([
-    'fragmentId',
-    'handleClick',
-    'handleBlur',
-    'handleFocus',
-    'link'
-]);
+export const separatorExclude: RegExp = excludeRegex([]);
+
+export const labelExclude: RegExp = excludeRegex(['onMouseDown', 'htmlFor']);
