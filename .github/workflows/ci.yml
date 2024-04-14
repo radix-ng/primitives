@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  actions: read
+  contents: read
+  packages: read
+
+jobs:
+  main:
+    if: ${{ !startsWith(github.event.head_commit.message, 'chore(release)') }}
+    name: Main
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup
+
+      - name: Build Primitives
+        run: pnpm primitives:build
+
+      - name: Test Primitives
+        run: pnpm primitives:test

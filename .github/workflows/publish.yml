@@ -1,0 +1,35 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - '*@*.*.*'
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write # needed for provenance data generation
+
+jobs:
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup
+
+      - name: Print Environment Info
+        run: npx nx report
+
+      - name: Build
+        run: pnpm primitives:build
+
+      - name: Publish package
+        run: npx nx release publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
