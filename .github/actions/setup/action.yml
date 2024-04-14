@@ -1,4 +1,4 @@
-name: Setup
+name: Setup pnpm
 description: Common setup steps used by our workflows
 runs:
   using: composite
@@ -17,4 +17,4 @@ runs:
 
     - name: Install node dependencies
       shell: bash
-      run: pnpm install
+      run: pnpm i --frozen-lockfile
