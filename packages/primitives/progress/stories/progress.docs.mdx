@@ -1,0 +1,66 @@
+import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/addon-docs';
+import { ProgressDirective } from '../src/progress.directive';
+import { ProgressIndicatorDirective } from '../src/progress-indicator.directive';
+import * as ProgressDirectiveStories from "./progress.stories";
+
+<Meta
+    title="Primitives/Progress"
+/>
+
+# Progress
+#### Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.
+
+<Canvas sourceState='hidden' of={ProgressDirectiveStories.Default}></Canvas>
+
+## Features
+- ✅ Provides context for assistive technology to read the progress of a task.
+
+## Usage
+
+Get started with importing the directive:
+
+```typescript
+import { ProgressDirective, ProgressIndicatorDirective } from '@radix-ng/primitives/progress';
+```
+
+## Example
+
+```html
+<div rdxProgress [rdxProgressValue]="progress" class="ProgressRoot">
+    <div rdxProgressIndicator
+        [style.transform]="'translateX(-' + (100 - progress) +'%)'"
+        class="ProgressIndicator"
+    ></div>
+</div>
+```
+## API Reference
+
+### ProgressDirective
+<ArgTypes of={ProgressDirective} />
+
+<Markdown>
+    {`
+| Data Attribute | Value |
+| ----------- | --------- |
+| [data-state]    | "complete" or "indeterminate" or "loading"   |
+| [data-value]    | The current value          |
+| [data-max] |  The max value     |
+`}
+</Markdown>
+
+### ProgressIndicatorDirective
+Used to show the progress visually. It also makes progress accessible to assistive technologies.
+
+<Markdown>
+    {`
+| Data Attribute | Value |
+| ----------- | --------- |
+| [data-state]    | "complete" or "indeterminate" or "loading"   |
+| [data-value]    | The current value          |
+| [data-max] |  The max value     |
+`}
+</Markdown>
+
+## Accessibility
+
+Adheres to the [`progressbar` role requirements](https://www.w3.org/WAI/ARIA/apg/patterns/meter).
