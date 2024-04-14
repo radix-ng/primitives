@@ -1,9 +1,22 @@
 {
     "name": "@radix-ng/primitives",
     "version": "0.0.1",
+    "license": "MIT",
     "publishConfig": {
         "access": "public"
     },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/radix-ng/primitives.git",
+        "directory": "packages/primitives"
+    },
+    "keywords": [
+        "components",
+        "ui",
+        "angular",
+        "radix-ng",
+        "headless"
+    ],
     "peerDependencies": {
         "@angular/core": "^17.3.3",
         "@angular/cdk": "^17.3.3"

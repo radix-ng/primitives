@@ -81,5 +81,27 @@
             "style": "scss"
         }
     },
-    "useInferencePlugins": false
+    "useInferencePlugins": false,
+    "release": {
+        "releaseTagPattern": "{projectName}@{version}",
+        "changelog": {
+            "automaticFromRef": true
+        },
+        "groups": {
+            "packages": {
+                "projects": ["primitives"],
+                "projectsRelationship": "independent",
+                "changelog": {
+                    "createRelease": "github",
+                    "file": "{projectRoot}/CHANGELOG.md",
+                    "renderOptions": {
+                        "authors": false
+                    }
+                },
+                "version": {
+                    "conventionalCommits": true
+                }
+            }
+        }
+    }
 }
