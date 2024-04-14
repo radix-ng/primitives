@@ -6,6 +6,13 @@
     "tags": [],
     "projectType": "library",
     "targets": {
+        "nx-release-publish": {
+            "executor": "@nx/js:release-publish",
+            "options": {
+                "packageRoot": "./dist/primitives",
+                "registry": "https://registry.npmjs.org/"
+            }
+        },
         "build": {
             "executor": "@nx/angular:package",
             "outputs": [

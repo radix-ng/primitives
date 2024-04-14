@@ -18,8 +18,8 @@
         "headless"
     ],
     "peerDependencies": {
-        "@angular/core": "^17.3.3",
-        "@angular/cdk": "^17.3.3"
+        "@angular/core": "^17.0.0",
+        "@angular/cdk": "^17.0.0"
     },
     "sideEffects": false
 }
