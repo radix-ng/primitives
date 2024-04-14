@@ -1,0 +1,35 @@
+import { ArgTypes, Meta } from '@storybook/addon-docs';
+
+<Meta
+    title="Utilities/Visually Hidden"
+/>
+
+# Visually Hidden
+#### Hides content from the screen in an accessible way.
+
+
+## Features
+- ✅ Visually hides content while preserving it for assistive technology.
+
+
+## Import
+
+Get started with importing the directive:
+
+```typescript
+import { VisuallyHiddenDirective } from '@radix-ng/primitives/visually-hidden';
+```
+
+## Examples
+
+```html
+<button aria-label="Open menu">
+    <span rdxVisuallyHidden>Open menu</span>
+    <svg> <!-- Menu Icon --> </svg>
+</button>
+
+```
+
+## Accessibility
+
+This is useful in certain scenarios as an alternative to traditional labelling with aria-label or aria-labelledby.
