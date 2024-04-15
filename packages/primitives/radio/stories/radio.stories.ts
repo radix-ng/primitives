@@ -24,6 +24,35 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: `
+<form>
+    <div rdxRadioGroup [(rdxRadioGroupValue)]="value" class="RadioGroupRoot" aria-label="View density">
+        <div style="display: flex; align-items: center;">
+            <button rdxRadioItem class="RadioGroupItem" value="default" id="r1">
+                <div rdxRadioIndicator class="RadioGroupIndicator"></div>
+            </button>
+            <label rdxLabel htmlFor="r1" class="Label">
+              Default
+            </label>
+        </div>
+        <div style="display: flex; align-items: center;">
+            <button rdxRadioItem class="RadioGroupItem" value="comfortable" id="r2">
+                 <div rdxRadioIndicator class="RadioGroupIndicator"></div>
+            </button>
+            <label rdxLabel htmlFor="r2" class="Label">
+              Comfortable
+            </label>
+        </div>
+        <div style="display: flex; align-items: center;">
+            <button rdxRadioItem class="RadioGroupItem" value="compact" id="r3">
+                 <div rdxRadioIndicator class="RadioGroupIndicator"></div>
+            </button>
+            <label rdxLabel htmlFor="r3" class="Label">
+              Compact
+            </label>
+        </div>
+    </div>
+</form>
+
 <style>
 /* reset */
 button {
@@ -77,37 +106,7 @@ button {
   line-height: 1;
   padding-left: 15px;
 }
-
-
 </style>
-<form>
-    <div rdxRadioGroup [(rdxRadioGroupValue)]="value" class="RadioGroupRoot" aria-label="View density">
-        <div style="display: flex; align-items: center;">
-            <button rdxRadioItem class="RadioGroupItem" value="default" id="r1">
-                <div rdxRadioIndicator class="RadioGroupIndicator"></div>
-            </button>
-            <label rdxLabel htmlFor="r1" class="Label">
-              Default
-            </label>
-        </div>
-        <div style="display: flex; align-items: center;">
-            <button rdxRadioItem class="RadioGroupItem" value="comfortable" id="r2">
-                 <div rdxRadioIndicator class="RadioGroupIndicator"></div>
-            </button>
-            <label rdxLabel htmlFor="r2" class="Label">
-              Comfortable
-            </label>
-        </div>
-        <div style="display: flex; align-items: center;">
-            <button rdxRadioItem class="RadioGroupItem" value="compact" id="r3">
-                 <div rdxRadioIndicator class="RadioGroupIndicator"></div>
-            </button>
-            <label rdxLabel htmlFor="r3" class="Label">
-              Compact
-            </label>
-        </div>
-    </div>
-</form>
 `
     })
 };
