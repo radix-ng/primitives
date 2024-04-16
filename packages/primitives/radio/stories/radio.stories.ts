@@ -24,6 +24,7 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: `
+<div class="light light-theme">
 <form>
     <div rdxRadioGroup [(rdxRadioGroupValue)]="value" class="RadioGroupRoot" aria-label="View density">
         <div style="display: flex; align-items: center;">
@@ -52,6 +53,7 @@ export const Default: Story = {
         </div>
     </div>
 </form>
+</div>
 
 <style>
 /* reset */
@@ -70,10 +72,10 @@ button {
   width: 25px;
   height: 25px;
   border-radius: 100%;
-  box-shadow: 0 2px 10px color(display-p3 0 0 0 / 0.5);
+  box-shadow: 0 2px 10px var(--black-a7);
 }
 .RadioGroupItem:hover {
-  background-color: color(display-p3 0.953 0.943 0.993);
+  background-color: var(--violet-3);
 }
 .RadioGroupItem:focus {
   box-shadow: 0 0 0 2px black;
@@ -93,7 +95,7 @@ button {
   width: 11px;
   height: 11px;
   border-radius: 50%;
-  background-color: color(display-p3 0.383 0.317 0.702);
+  background-color: var(--violet-11);
 }
 
 .RadioGroupIndicator[data-state="unchecked"] {

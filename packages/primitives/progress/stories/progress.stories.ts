@@ -30,7 +30,7 @@ export const Default: Story = {
 .ProgressRoot {
   position: relative;
   overflow: hidden;
-  background: color(display-p3 0 0 0 / 0.7);;
+  background: var(--black-a9);
   border-radius: 99999px;
   width: 300px;
   height: 25px;
@@ -48,11 +48,13 @@ export const Default: Story = {
 }
 </style>
 
-<div rdxProgress [rdxProgressValue]="progress" class="ProgressRoot">
-    <div rdxProgressIndicator
-        [style.transform]="'translateX(-' + (100 - progress) +'%)'"
-        class="ProgressIndicator"
-    ></div>
+<div class="light light-theme">
+    <div rdxProgress [rdxProgressValue]="progress" class="ProgressRoot">
+        <div rdxProgressIndicator
+            [style.transform]="'translateX(-' + (100 - progress) +'%)'"
+            class="ProgressIndicator"
+        ></div>
+    </div>
 </div>
 `
     })

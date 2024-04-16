@@ -26,11 +26,11 @@ button {
 .SwitchRoot {
     width: 42px;
     height: 25px;
-    background-color: color(display-p3 0 0 0/0.7);
+    background-color: var(--black-a9);
     border-radius: 9999px;
     margin-left: 15px;
     position: relative;
-    box-shadow: 0 2px 10px color(display-p3 0 0 0/0.5);
+    box-shadow: 0 2px 10px var(--black-a7);
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 .SwitchRoot:focus {
@@ -46,7 +46,7 @@ button {
     height: 21px;
     background-color: white;
     border-radius: 9999px;
-    box-shadow: 0 2px 2px color(display-p3 0 0 0/0.5);
+    box-shadow: 0 2px 2px var(--black-a7);
     transition: transform 100ms;
     transform: translateX(2px);
     will-change: transform;
@@ -65,12 +65,14 @@ button {
 
 </style>
 
+<div class="light light-theme">
 <label rdxLabel htmlFor="airplane-mode" class="Label">
     Airplane mode
     <button rdxSwitch [(checked)]="checked" id="airplane-mode" class="SwitchRoot">
         <span rdxSwitchThumb class="SwitchThumb"></span>
     </button>
 </label>
+</div>
 `
     })
 };

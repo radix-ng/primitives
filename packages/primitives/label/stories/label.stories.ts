@@ -43,8 +43,16 @@ input {
   font-size: 15px;
   line-height: 1;
   color: white;
-  background-color: color(display-p3 0 0 0/0.3);
-  box-shadow: 0 0 0 1px color(display-p3 0 0 0/0.7);
+  background-color: var(--black-a5);
+  box-shadow: 0 0 0 1px var(--black-a9);
+}
+
+.Input:focus {
+  box-shadow: 0 0 0 2px black;
+}
+.Input::selection {
+  background-color: var(--black-a9);
+  color: white;
 }
 
 label {
@@ -55,9 +63,10 @@ label {
 }
 </style>
 
-<label rdxLabel htmlFor="uniqId">First Name </label>
-<input type="text" class="Input" id="uniqId" />
-
+<div class="light light-theme">
+    <label rdxLabel htmlFor="uniqId">First Name </label>
+    <input type="text" class="Input" id="uniqId" />
+</div>
 `
     })
 };

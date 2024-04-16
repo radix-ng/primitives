@@ -16,23 +16,12 @@ export default {
 type Story = StoryObj<LabelDirective>;
 
 export const Default: Story = {
-    parameters: {
-        backgrounds: {
-            default: 'black',
-            values: [
-                {
-                    name: 'black',
-                    value: 'linear-gradient(330deg,color(display-p3 0.523 0.318 0.751) 0,color(display-p3 0.276 0.384 0.837) 100%)'
-                }
-            ]
-        }
-    },
     render: () => ({
         template: `
 <style>
 
 .SeparatorRoot {
-  background-color: white;
+  background-color: var(--violet-6);;
 }
 .SeparatorRoot[data-orientation='horizontal'] {
   height: 1px;
@@ -50,7 +39,8 @@ export const Default: Story = {
 }
 
 </style>
-<div style="width: 100%; max-width: 300px; margin: 0 15px;">
+<div class="light light-theme">
+  <div style="width: 100%; max-width: 300px; margin: 0 15px;">
     <div class="Text">
       Radix Primitives
     </div>
@@ -85,7 +75,7 @@ export const Default: Story = {
       </div>
     </div>
   </div>
-
+</div>
 `
     })
 };
