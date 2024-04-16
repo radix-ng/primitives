@@ -19,7 +19,15 @@
                 "{workspaceRoot}/dist/{projectRoot}"
             ],
             "options": {
-                "project": "packages/primitives/ng-package.json"
+                "project": "packages/primitives/ng-package.json",
+                "styles": [
+                    "@radix-ui/themes/styles.css"
+                ],
+                "stylePreprocessorOptions": {
+                    "includePaths": [
+                        "node_modules/"
+                    ]
+                }
             },
             "configurations": {
                 "production": {
@@ -67,7 +75,15 @@
                 "outputDir": "dist/storybook/primitives",
                 "configDir": "packages/primitives/.storybook",
                 "browserTarget": "primitives:build-storybook",
-                "compodoc": false
+                "compodoc": false,
+                "styles": [
+                    "@radix-ui/themes/styles.css"
+                ],
+                "stylePreprocessorOptions": {
+                    "includePaths": [
+                        "node_modules/"
+                    ]
+                }
             },
             "configurations": {
                 "ci": {

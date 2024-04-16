@@ -30,13 +30,18 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: `
-<div style="display: flex; align-items: center;">
-    <button class="CheckboxRoot" rdxCheckbox id="r1" [(checked)]="checked">
-        <ng-icon rdxCheckboxIndicator class="CheckboxIndicator" name="radixCheck"></ng-icon>
-    </button>
-    <label rdxLabel htmlFor="r1" class="Label">Check Item</label>
+<div class="light light-theme">
+    <form>
+        <div style="display: flex; align-items: center;">
+            <button class="CheckboxRoot" rdxCheckbox id="r1" [(checked)]="checked">
+                <ng-icon rdxCheckboxIndicator class="CheckboxIndicator" name="radixCheck"></ng-icon>
+                <input type="checkbox" aria-hidden="true" tabindex="-1" value="on" rdxCheckboxIndicator
+                style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0; width: 25px; height: 25px;"/>
+            </button>
+            <label rdxLabel htmlFor="r1" class="Label">Check Item</label>
+        </div>
+    </form>
 </div>
-
 <style>
 button {
     all: unset;
@@ -50,17 +55,17 @@ button {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 10px color(display-p3 0 0 0 / 0.5);
+    box-shadow: 0 2px 10px var(--black-a7);
 }
 .CheckboxRoot:hover {
-    background-color: color(display-p3 0.953 0.943 0.993);
+    background-color: var(--violet-3);
 }
 .CheckboxRoot:focus {
     box-shadow: 0 0 0 2px black;
 }
 
 .CheckboxIndicator {
-    color: color(display-p3 0.383 0.317 0.702);
+    color: var(--violet-11);
 }
 
 .CheckboxIndicator[data-state='unchecked'] {
