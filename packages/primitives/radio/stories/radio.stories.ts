@@ -30,6 +30,7 @@ export const Default: Story = {
         <div style="display: flex; align-items: center;">
             <button rdxRadioItem class="RadioGroupItem" value="default" id="r1">
                 <div rdxRadioIndicator class="RadioGroupIndicator"></div>
+                <input rdxRadioIndicator type="radio" aria-hidden="true" tabindex="-1" value="default" class="Input">
             </button>
             <label rdxLabel htmlFor="r1" class="Label">
               Default
@@ -38,6 +39,7 @@ export const Default: Story = {
         <div style="display: flex; align-items: center;">
             <button rdxRadioItem class="RadioGroupItem" value="comfortable" id="r2">
                  <div rdxRadioIndicator class="RadioGroupIndicator"></div>
+                 <input rdxRadioIndicator type="radio" aria-hidden="true" tabindex="-1" value="comfortable" class="Input">
             </button>
             <label rdxLabel htmlFor="r2" class="Label">
               Comfortable
@@ -46,6 +48,7 @@ export const Default: Story = {
         <div style="display: flex; align-items: center;">
             <button rdxRadioItem class="RadioGroupItem" value="compact" id="r3">
                  <div rdxRadioIndicator class="RadioGroupIndicator"></div>
+                 <input rdxRadioIndicator type="radio" aria-hidden="true" tabindex="-1" value="compact" class="Input">
             </button>
             <label rdxLabel htmlFor="r3" class="Label">
               Compact
@@ -100,6 +103,16 @@ button {
 
 .RadioGroupIndicator[data-state="unchecked"] {
  display: none;
+}
+
+.Input {
+    transform: translateX(-100%);
+    position: absolute;
+    pointer-events: none;
+    opacity: 0;
+    margin: 0;
+    width: 25px;
+    height: 25px;
 }
 
 .Label {
