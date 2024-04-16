@@ -1,4 +1,4 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 import { LabelDirective } from '../../label';
 import { SwitchDirective } from '../src/switch.directive';
@@ -9,7 +9,13 @@ export default {
     decorators: [
         moduleMetadata({
             imports: [LabelDirective, SwitchDirective, SwitchThumbDirective]
-        })
+        }),
+        componentWrapperDecorator(
+            (story) =>
+                `<div class="radix-themes light light-theme"
+                      data-radius="medium"
+                      data-scaling="100%">${story}</div>`
+        )
     ]
 } as Meta;
 
@@ -65,14 +71,12 @@ button {
 
 </style>
 
-<div class="light light-theme">
 <label rdxLabel htmlFor="airplane-mode" class="Label">
     Airplane mode
     <button rdxSwitch [(checked)]="checked" id="airplane-mode" class="SwitchRoot">
         <span rdxSwitchThumb class="SwitchThumb"></span>
     </button>
 </label>
-</div>
 `
     })
 };

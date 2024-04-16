@@ -1,4 +1,4 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { LabelDirective } from '../src/label.directive';
 import { CommonModule } from '@angular/common';
 import { labelExclude } from '../../.docs/utils/storybook';
@@ -14,7 +14,13 @@ export default {
     decorators: [
         moduleMetadata({
             imports: [LabelDirective, CommonModule]
-        })
+        }),
+        componentWrapperDecorator(
+            (story) =>
+                `<div class="radix-themes light light-theme"
+                      data-radius="medium"
+                      data-scaling="100%">${story}</div>`
+        )
     ]
 } as Meta<LabelDirective>;
 

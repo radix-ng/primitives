@@ -1,5 +1,5 @@
 import { LabelDirective } from '../../label';
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { CommonModule } from '@angular/common';
 import { SeparatorDirective } from '../src/separator.directive';
 
@@ -9,7 +9,13 @@ export default {
     decorators: [
         moduleMetadata({
             imports: [SeparatorDirective, CommonModule]
-        })
+        }),
+        componentWrapperDecorator(
+            (story) =>
+                `<div class="radix-themes light light-theme"
+                      data-radius="medium"
+                      data-scaling="100%">${story}</div>`
+        )
     ]
 } as Meta<LabelDirective>;
 
@@ -39,7 +45,6 @@ export const Default: Story = {
 }
 
 </style>
-<div class="light light-theme">
   <div style="width: 100%; max-width: 300px; margin: 0 15px;">
     <div class="Text">
       Radix Primitives
@@ -75,7 +80,6 @@ export const Default: Story = {
       </div>
     </div>
   </div>
-</div>
 `
     })
 };

@@ -1,4 +1,4 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 import { LabelDirective } from '../../label';
 import { RadioItemDirective } from '../src/radio-item.directive';
@@ -15,7 +15,13 @@ export default {
                 RadioIndicatorDirective,
                 RadioGroupDirective
             ]
-        })
+        }),
+        componentWrapperDecorator(
+            (story) =>
+                `<div class="radix-themes light light-theme"
+                      data-radius="medium"
+                      data-scaling="100%">${story}</div>`
+        )
     ]
 } as Meta;
 
@@ -24,7 +30,6 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: `
-<div class="light light-theme">
 <form>
     <div rdxRadioGroup [(rdxRadioGroupValue)]="value" class="RadioGroupRoot" aria-label="View density">
         <div style="display: flex; align-items: center;">
@@ -56,7 +61,6 @@ export const Default: Story = {
         </div>
     </div>
 </form>
-</div>
 
 <style>
 /* reset */
