@@ -1,4 +1,4 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 import { BADGE } from '../../.storybook/helpers/bages-config';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -6,6 +6,8 @@ import { radixCheck } from '@ng-icons/radix-icons';
 import { LabelDirective } from '../../label';
 import { CheckboxDirective } from '../src/checkbox.directive';
 import { CheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
+
+import { CheckboxReactiveFormsExample } from './checkbox-group.component';
 
 export default {
     title: 'Primitives/Checkbox',
@@ -18,10 +20,18 @@ export default {
                 LabelDirective,
                 CheckboxDirective,
                 CheckboxIndicatorDirective,
-                NgIconComponent
+                NgIconComponent,
+                CheckboxReactiveFormsExample
             ],
             providers: [provideIcons({ radixCheck })]
-        })
+        }),
+        componentWrapperDecorator(
+            (story) =>
+                `<div class="radix-themes light light-theme radix-themes-default-fonts"
+                      data-accent-color="indigo"
+                      data-radius="medium"
+                      data-scaling="100%">${story}</div>`
+        )
     ]
 } as Meta;
 
@@ -30,7 +40,6 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: `
-<div class="light light-theme">
     <form>
         <div style="display: flex; align-items: center;">
             <button class="CheckboxRoot" rdxCheckbox id="r1" [(checked)]="checked">
@@ -41,7 +50,6 @@ export const Default: Story = {
             <label rdxLabel htmlFor="r1" class="Label">Check Item</label>
         </div>
     </form>
-</div>
 <style>
 button {
     all: unset;
@@ -79,6 +87,16 @@ button {
     line-height: 1;
 }
 </style>
+`
+    })
+};
+
+export const CheckboxGroup: Story = {
+    render: () => ({
+        template: `
+
+<checkbox-groups-forms-example></checkbox-groups-forms-example>
+
 `
     })
 };
