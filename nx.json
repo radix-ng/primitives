@@ -97,9 +97,6 @@
                     "renderOptions": {
                         "authors": false
                     }
-                },
-                "version": {
-                    "conventionalCommits": true
                 }
             }
         }
