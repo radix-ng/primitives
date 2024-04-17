@@ -7,9 +7,16 @@ import { HeaderComponent } from './shared/header/header.component';
     imports: [RouterOutlet, HeaderComponent],
     selector: 'radix-ng-root',
     template: `
-        <radix-ng-docs-header />
-        <div>
-            <router-outlet />
+        <div
+            class="radix-themes light light-theme relative flex min-h-screen flex-col bg-background"
+            data-radius="medium"
+            data-scaling="100%"
+            data-accent-color="gray"
+        >
+            <radix-ng-docs-header />
+            <div>
+                <router-outlet />
+            </div>
         </div>
     `
 })

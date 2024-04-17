@@ -1,0 +1,31 @@
+
+# Theming
+
+Use CSS Variables to customize the look and feel of your application.
+Install [Radix Themes](https://www.radix-ui.com/themes/docs/overview/getting-started) and start building in minutes.
+
+
+## 1. Install Radix Themes
+```bash
+npm install @radix-ui/themes
+```
+
+## 2. Import the CSS file
+Import the global CSS file at the root of your application.
+
+
+```bash
+import '@radix-ui/themes/styles.css';
+```
+
+For NX added to `build.options`
+```JSON
+"styles": [
+    "@radix-ui/themes/styles.css"
+],
+"stylePreprocessorOptions": {
+    "includePaths": [
+        "node_modules/"
+    ]
+}
+```

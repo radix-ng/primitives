@@ -17,7 +17,15 @@
             ],
             "options": {
                 "configFile": "apps/docs/vite.config.mts",
-                "outputPath": "dist/apps/docs"
+                "outputPath": "dist/apps/docs",
+                "styles": [
+                    "@radix-ui/themes/styles.css"
+                ],
+                "stylePreprocessorOptions": {
+                    "includePaths": [
+                        "node_modules/"
+                    ]
+                }
             },
             "defaultConfiguration": "production",
             "configurations": {

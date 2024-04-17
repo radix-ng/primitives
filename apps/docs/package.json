@@ -19,6 +19,7 @@
         "@angular/router": "17.3.3",
         "express": "~4.19.2",
         "isomorphic-fetch": "^3.0.0",
+        "@radix-ui/themes": "^3.0.2",
         "rxjs": "~7.8.0",
         "tslib": "^2.3.0",
         "zone.js": "0.14.4"
