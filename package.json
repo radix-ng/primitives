@@ -17,8 +17,10 @@
         "----Others-------": "-----------------------------------------------------------------------",
         "compodoc:json": "compodoc -p ./packages/primitives/tsconfig.json -e json -d ./packages/primitives/.storybook",
         "docs:dev": "nx serve docs",
-        "docs:showcase-taxonomy": "nx serve showcase-taxonomy",
-        "prepare": "husky"
+        "prepare": "husky",
+        "----showcase taxonomy--": "-----------------------------------------------------------------",
+        "showcase-taxonomy:serve": "nx serve showcase-taxonomy",
+        "showcase-taxonomy:build": "nx build showcase-taxonomy"
     },
     "dependencies": {
         "@angular/animations": "17.3.3",
