@@ -1,16 +1,14 @@
 import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/addon-docs';
 import * as RadioDirectiveStories from "./radio.stories";
 
-import { switchExclude } from '../../.docs/utils/storybook';
 import { RadioGroupDirective } from '../src/radio-group.directive';
 import { RadioItemDirective } from '../src/radio-item.directive';
-import { RadioIndicatorDirective } from '../src/radio-indicator.directive';
 
 <Meta
-    title="Primitives/Radio"
+    title="Primitives/Radio Group"
 />
 
-# Radio
+# Radio Group
 #### A set of checkable buttons—known as radio buttons—where no more than one of the buttons can be checked at a time.
 
 
@@ -26,7 +24,7 @@ import { RadioIndicatorDirective } from '../src/radio-indicator.directive';
 Get started with importing the directives:
 
 ```typescript
-import { CheckboxGroupDirective, RadioItemDirectiveб, RadioIndicatorDirective } from '@radix-ng/primitives/radio';
+import { RadioItemDirectiveб, RadioIndicatorDirective } from '@radix-ng/primitives/radio';
 ```
 
 ## Anatomy

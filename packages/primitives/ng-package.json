@@ -3,5 +3,8 @@
     "dest": "../../dist/primitives",
     "lib": {
         "entryFile": "index.ts"
-    }
+    },
+    "allowedNonPeerDependencies": [
+        "@floating-ui/dom"
+    ]
 }
