@@ -17,6 +17,7 @@
         "----Others-------": "-----------------------------------------------------------------------",
         "compodoc:json": "compodoc -p ./packages/primitives/tsconfig.json -e json -d ./packages/primitives/.storybook",
         "docs:dev": "nx serve docs",
+        "docs:showcase-taxonomy": "nx serve showcase-taxonomy",
         "prepare": "husky"
     },
     "dependencies": {
@@ -30,7 +31,9 @@
         "@angular/platform-browser-dynamic": "17.3.3",
         "@angular/router": "17.3.3",
         "@floating-ui/dom": "^1.6.3",
+        "class-variance-authority": "^0.7.0",
         "rxjs": "~7.8.0",
+        "tailwind-merge": "^2.2.2",
         "tslib": "^2.3.0",
         "zone.js": "~0.14.3"
     },
