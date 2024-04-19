@@ -17,7 +17,7 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 
 
 ## Showcase
-Angualr version [Taxonomy](https://github.com/shadcn-ui/taxonomy) – [link](https://6621996d0db2dc3275bca64a--lucky-alpaca-d6d9e5.netlify.app/)
+Angualr version [Taxonomy](https://github.com/shadcn-ui/taxonomy) – [https://primitives-taxonomy.vercel.app/](https://primitives-taxonomy.vercel.app/)
 
 ### Community
 
