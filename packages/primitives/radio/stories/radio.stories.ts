@@ -6,7 +6,7 @@ import { RadioIndicatorDirective } from '../src/radio-indicator.directive';
 import { RadioGroupDirective } from '../src/radio-group.directive';
 
 export default {
-    title: 'Primitives/Radio',
+    title: 'Primitives/Radio Group',
     decorators: [
         moduleMetadata({
             imports: [
