@@ -20,9 +20,7 @@
             "@radix-ng/primitives/overlay": ["packages/primitives/overlay/index.ts"],
             "@radix-ng/primitives/roving-focus": ["packages/primitives/roving-focus/index.ts"],
             "@radix-ng/workspace-plugin": ["tools/workspace-plugin/src/index.ts"],
-            "@taxonomy/*": [
-                "apps/showcase-taxonomy/src/app/*"
-            ]
+            "@taxonomy/*": ["apps/showcase-taxonomy/src/app/*"]
         }
     },
     "exclude": ["node_modules", "tmp"]

@@ -1,3 +1,12 @@
+## 0.3.0 (2024-04-20)
+
+
+### 🚀 Features
+
+- added overlay and tooltip ([e993fb3](https://github.com/radix-ng/primitives/commit/e993fb3))
+
+- **avatar:** added primitive ([f76e8e9](https://github.com/radix-ng/primitives/commit/f76e8e9))
+
 ## 0.2.0 (2024-04-16)
 
 ### 🚀 Features
