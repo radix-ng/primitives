@@ -17,9 +17,34 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 
 
 ## Showcase
-Angualr version [Taxonomy](https://github.com/shadcn-ui/taxonomy) – [https://primitives-taxonomy.vercel.app/](https://primitives-taxonomy.vercel.app/)
+Angular version [Taxonomy](https://github.com/shadcn-ui/taxonomy) – [https://primitives-taxonomy.vercel.app/](https://primitives-taxonomy.vercel.app/)
 
-### Community
+
+## Project structure
+
+```angular2html
+.
+├── apps
+│   ├── docs               (landing and docs)
+│   └── showcase-taxonomy  (showcase Taxonomy app)
+└── packages
+    ├── components         (primitives with custom styling)
+    │   ├── button
+    │   └── checkbox
+    └── primitives         (headless UI without any styling)
+        ├── checkbox
+        ├── label
+        ├── overlay
+        ├── progress
+        ├── radio
+        ├── roving-focus
+        ├── separator
+        ├── switch
+        ├── tooltip
+        └── visually-hidden
+```
+
+## Community
 
 We're excited to see the community adopt, raise issues, and provide feedback.
 Whether it's a feature request, bug report, or a project to showcase, please get involved!
