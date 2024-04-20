@@ -13,6 +13,17 @@ import { Meta } from '@storybook/addon-docs';
 -   ✅ Fallback part accepts any children.
 -   ✅ Optionally delay fallback rendering to avoid content flashing.
 
+## Global Configuration
+
+You can configure the default options for all avatars in your application by using the `provideRdxAvatarConfig` function in a providers array.
+
+```ts
+import { provideRdxAvatarConfig } from '@radix-ng/primitives/avatar';
+
+bootstrapApplication(AppComponent, {
+  providers: [provideRdxAvatarConfig({ delay: 1000 })]
+});
+```
 
 ## Anatomy
 
