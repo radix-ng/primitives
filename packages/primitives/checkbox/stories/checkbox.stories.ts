@@ -1,12 +1,11 @@
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { radixCheck } from '@ng-icons/radix-icons';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 import { BADGE } from '../../.storybook/helpers/bages-config';
-import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { radixCheck } from '@ng-icons/radix-icons';
 import { LabelDirective } from '../../label';
-import { CheckboxDirective } from '../src/checkbox.directive';
 import { CheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
-
+import { CheckboxDirective } from '../src/checkbox.directive';
 import { CheckboxReactiveFormsExample } from './checkbox-group.component';
 
 export default {

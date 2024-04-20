@@ -1,21 +1,21 @@
 import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/addon-docs';
-import * as CheckboxDirectiveStories from "./checkbox.stories";
-import { CheckboxDirective } from '../src/checkbox.directive';
 
-<Meta
-    title="Primitives/Checkbox"
-/>
+import { CheckboxDirective } from '../src/checkbox.directive';
+import * as CheckboxDirectiveStories from './checkbox.stories';
+
+<Meta title="Primitives/Checkbox" />
 
 # Checkbox
+
 #### A control that allows the user to toggle between checked and not checked.
 
-
-<Canvas sourceState='hidden' of={CheckboxDirectiveStories.Default}></Canvas>
+<Canvas sourceState="hidden" of={CheckboxDirectiveStories.Default}></Canvas>
 
 ## Features
-- ✅ Full keyboard navigation.
-- ✅ Supports indeterminate state.
-- ✅ Can be controlled or uncontrolled.
+
+-   ✅ Full keyboard navigation.
+-   ✅ Supports indeterminate state.
+-   ✅ Can be controlled or uncontrolled.
 
 ## Import
 
@@ -31,17 +31,17 @@ import { CheckboxDirective, CheckboxIndicatorDirective } from '@radix-ng/primiti
 <button rdxCheckbox [(checked)]="checked">
     <ng-icon rdxCheckboxIndicator name="radixCheck"></ng-icon>
 </button>
-
 ```
+
 ## API Reference
 
 ### CheckboxDirective
+
 <ArgTypes of={CheckboxDirective} />
 
 ### CheckboxIndicatorDirective
 
 ### RadioIndicatorDirective
-
 
 ## Accessibility
 
@@ -50,7 +50,7 @@ Adheres to the [tri-state Checkbox WAI-ARIA design pattern](https://www.w3.org/W
 ### Keyboard Interactions
 
 <Markdown>
-{`
+    {`
 | Key | Description |
 | ----------- | --------- |
 | Space       | Checks/unchecks the checkbox.        |

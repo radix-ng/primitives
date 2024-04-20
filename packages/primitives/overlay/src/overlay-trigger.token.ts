@@ -1,4 +1,5 @@
-import { InjectionToken, inject } from '@angular/core';
+import { inject, InjectionToken } from '@angular/core';
+
 import type { OverlayTriggerDirective } from './overlay-trigger.directive';
 
 export const OverlayTriggerToken = new InjectionToken<OverlayTriggerDirective>(

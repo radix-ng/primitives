@@ -1,4 +1,5 @@
-import { InjectionToken, Provider, inject } from '@angular/core';
+import { inject, InjectionToken, Provider } from '@angular/core';
+
 import { Placement } from '@floating-ui/dom';
 
 export const TooltipConfigToken = new InjectionToken<TooltipConfig>('TooltipConfig');

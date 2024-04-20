@@ -1,21 +1,22 @@
 import { FocusKeyManager } from '@angular/cdk/a11y';
 import { Directionality } from '@angular/cdk/bidi';
 import {
+    booleanAttribute,
     DestroyRef,
     Directive,
+    inject,
     Input,
     OnChanges,
     OnDestroy,
     OnInit,
     QueryList,
-    SimpleChanges,
-    booleanAttribute,
-    inject
+    SimpleChanges
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs';
-import type { RovingFocusItemDirective } from './roving-focus-item.directive';
+
 import { RovingFocusGroupToken } from './roving-focus-group.token';
+import type { RovingFocusItemDirective } from './roving-focus-item.directive';
 
 @Directive({
     selector: '[rdxRovingFocusGroup]',

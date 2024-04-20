@@ -1,9 +1,10 @@
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { radixPlus } from '@ng-icons/radix-icons';
+import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+
+import { TooltipArrowDirective } from '../src/tooltip-arrow.directive';
 import { TooltipTriggerDirective } from '../src/tooltip-trigger.directive';
 import { TooltipDirective } from '../src/tooltip.directive';
-import { TooltipArrowDirective } from '../src/tooltip-arrow.directive';
 
 export default {
     title: 'Primitives/Tooltip',

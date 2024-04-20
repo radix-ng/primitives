@@ -1,18 +1,20 @@
 /* eslint-disable @angular-eslint/no-input-rename */
 import {
+    booleanAttribute,
     Directive,
     HostListener,
-    Input,
-    OnInit,
-    TemplateRef,
-    booleanAttribute,
     inject,
-    numberAttribute
+    Input,
+    numberAttribute,
+    OnInit,
+    TemplateRef
 } from '@angular/core';
+
 import { Placement } from '@floating-ui/dom';
 import { OverlayTriggerDirective } from '@radix-ng/primitives/overlay';
-import { injectTooltipConfig } from './tooltip.config';
+
 import { TooltipTriggerToken } from './tooltip-trigger.token';
+import { injectTooltipConfig } from './tooltip.config';
 
 @Directive({
     selector: '[rdxTooltipTrigger]',

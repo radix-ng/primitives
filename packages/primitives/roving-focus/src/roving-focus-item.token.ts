@@ -1,4 +1,5 @@
-import { InjectionToken, inject } from '@angular/core';
+import { inject, InjectionToken } from '@angular/core';
+
 import type { RovingFocusItemDirective } from './roving-focus-item.directive';
 
 export const RovingFocusItemToken = new InjectionToken<RovingFocusItemDirective>(

@@ -1,6 +1,8 @@
-import { LabelDirective } from '../../label';
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { CommonModule } from '@angular/common';
+
+import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+
+import { LabelDirective } from '../../label';
 import { SeparatorDirective } from '../src/separator.directive';
 
 export default {

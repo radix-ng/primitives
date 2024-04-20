@@ -1,4 +1,5 @@
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+
 import { RdxCheckboxComponent } from '../src/checkbox';
 
 export default {

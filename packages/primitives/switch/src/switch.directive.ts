@@ -1,14 +1,15 @@
 import {
+    booleanAttribute,
     Directive,
     ElementRef,
     EventEmitter,
     HostListener,
+    inject,
     Input,
-    Output,
-    booleanAttribute,
-    inject
+    Output
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+
 import { SwitchToken } from './switch.token';
 
 @Directive({

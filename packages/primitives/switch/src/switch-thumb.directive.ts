@@ -1,4 +1,5 @@
 import { Directive } from '@angular/core';
+
 import { injectSwitch } from './switch.token';
 
 @Directive({

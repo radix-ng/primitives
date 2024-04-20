@@ -1,9 +1,9 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 import { LabelDirective } from '../../label';
-import { RadioItemDirective } from '../src/radio-item.directive';
-import { RadioIndicatorDirective } from '../src/radio-indicator.directive';
 import { RadioGroupDirective } from '../src/radio-group.directive';
+import { RadioIndicatorDirective } from '../src/radio-indicator.directive';
+import { RadioItemDirective } from '../src/radio-item.directive';
 
 export default {
     title: 'Primitives/Radio Group',

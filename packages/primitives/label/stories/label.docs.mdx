@@ -1,18 +1,19 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs';
-import * as LabelDirectiveStories from "./label.stories";
-import { LabelDirective } from '../src/label.directive';
 
-<Meta
-    title="Primitives/Label"
-/>
+import { LabelDirective } from '../src/label.directive';
+import * as LabelDirectiveStories from './label.stories';
+
+<Meta title="Primitives/Label" />
 
 # Label
+
 #### Renders an accessible label associated with controls.
 
-<Canvas sourceState='hidden' of={LabelDirectiveStories.Default}></Canvas>
+<Canvas sourceState="hidden" of={LabelDirectiveStories.Default}></Canvas>
 
 ## Features
-- ✅ Text selection is prevented when double-clicking label.
+
+-   ✅ Text selection is prevented when double-clicking label.
 
 ## Import
 
@@ -27,8 +28,8 @@ import { LabelDirective } from '@radix-ng/primitives/label';
 ```html
 <label rdxLabel htmlFor="uniqId">First name</label>
 <input type="text" class="Input" id="uniqId" />
-
 ```
+
 ## API Reference
 
 <ArgTypes exclude={['onMouseDown']} of={LabelDirective} />

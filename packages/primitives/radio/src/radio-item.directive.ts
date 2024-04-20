@@ -1,8 +1,10 @@
-import { Directive, HostListener, Input, booleanAttribute } from '@angular/core';
-import { injectRadioGroup } from './radio-group.token';
-import { RadioItemToken } from './radio-item.token';
+import { booleanAttribute, Directive, HostListener, Input } from '@angular/core';
+
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { RovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
+
+import { injectRadioGroup } from './radio-group.token';
+import { RadioItemToken } from './radio-item.token';
 
 @Directive({
     selector: 'button[rdxRadioItem]',

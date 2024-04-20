@@ -1,5 +1,7 @@
 import { Directive, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+
 import { OverlayDirective } from '@radix-ng/primitives/overlay';
+
 import { injectTooltipTrigger } from './tooltip-trigger.token';
 
 /**

@@ -1,4 +1,5 @@
-import { InjectionToken, inject } from '@angular/core';
+import { inject, InjectionToken } from '@angular/core';
+
 import type { ProgressDirective } from './progress.directive';
 
 export const ProgressToken = new InjectionToken<ProgressDirective>('ProgressDirective');

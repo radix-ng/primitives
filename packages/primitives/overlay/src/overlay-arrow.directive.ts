@@ -1,7 +1,9 @@
-import { Directive, ElementRef, OnDestroy, OnInit, inject } from '@angular/core';
+import { Directive, ElementRef, inject, OnDestroy, OnInit } from '@angular/core';
+
 import { Placement } from '@floating-ui/dom';
-import { injectOverlayTrigger } from './overlay-trigger.token';
+
 import { OverlayArrowToken } from './overlay-arrow.token';
+import { injectOverlayTrigger } from './overlay-trigger.token';
 
 @Directive({
     selector: '[rdxOverlayArrow]',

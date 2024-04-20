@@ -1,6 +1,7 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { ProgressDirective } from '../src/progress.directive';
+
 import { ProgressIndicatorDirective } from '../src/progress-indicator.directive';
+import { ProgressDirective } from '../src/progress.directive';
 
 export default {
     title: 'Primitives/Progress',

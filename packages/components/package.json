@@ -6,9 +6,7 @@
         "@angular/core": "^17.3.0",
         "@radix-ng/primitives": "^0.2.0"
     },
-    "devDependencies": {
-
-    },
+    "devDependencies": {},
     "dependencies": {
         "tslib": "^2.3.0"
     },

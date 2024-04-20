@@ -1,19 +1,20 @@
 import { FocusableOption } from '@angular/cdk/a11y';
 import {
+    booleanAttribute,
     ChangeDetectorRef,
     DestroyRef,
     Directive,
     ElementRef,
     HostBinding,
     HostListener,
-    Input,
-    OnDestroy,
-    OnInit,
-    booleanAttribute,
     inject,
-    numberAttribute
+    Input,
+    numberAttribute,
+    OnDestroy,
+    OnInit
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
 import { injectRovingFocusGroup } from './roving-focus-group.token';
 import { RovingFocusItemToken } from './roving-focus-item.token';
 

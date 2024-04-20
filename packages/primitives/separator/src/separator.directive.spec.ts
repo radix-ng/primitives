@@ -1,7 +1,8 @@
-import { SeparatorDirective } from './separator.directive';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Component, DebugElement } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+
+import { SeparatorDirective } from './separator.directive';
 
 @Component({
     template:

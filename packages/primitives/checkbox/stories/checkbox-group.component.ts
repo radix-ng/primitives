@@ -1,11 +1,13 @@
+import { JsonPipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { JsonPipe } from '@angular/common';
-import { LabelDirective } from '@radix-ng/primitives/label';
-import { CheckboxDirective } from '../src/checkbox.directive';
-import { CheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
+
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { radixCheck } from '@ng-icons/radix-icons';
+import { LabelDirective } from '@radix-ng/primitives/label';
+
+import { CheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
+import { CheckboxDirective } from '../src/checkbox.directive';
 
 @Component({
     // eslint-disable-next-line @angular-eslint/component-selector

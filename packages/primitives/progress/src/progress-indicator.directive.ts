@@ -1,4 +1,5 @@
 import { Directive } from '@angular/core';
+
 import { injectProgress } from './progress.token';
 
 @Directive({

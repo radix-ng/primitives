@@ -1,4 +1,5 @@
-import { InjectionToken, inject } from '@angular/core';
+import { inject, InjectionToken } from '@angular/core';
+
 import type { SwitchDirective } from './switch.directive';
 
 export const SwitchToken = new InjectionToken<SwitchDirective>('SwitchToken');

@@ -1,8 +1,8 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 import { LabelDirective } from '../../label';
-import { SwitchDirective } from '../src/switch.directive';
 import { SwitchThumbDirective } from '../src/switch-thumb.directive';
+import { SwitchDirective } from '../src/switch.directive';
 
 export default {
     title: 'Primitives/Switch',

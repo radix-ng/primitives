@@ -1,4 +1,4 @@
-import { Directive, ElementRef, OnInit, inject } from '@angular/core';
+import { Directive, ElementRef, inject, OnInit } from '@angular/core';
 
 @Directive({
     selector: '[rdxVisuallyHidden]',

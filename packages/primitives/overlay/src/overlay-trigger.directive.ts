@@ -2,32 +2,34 @@
 import { DomPortalOutlet, TemplatePortal } from '@angular/cdk/portal';
 import {
     ApplicationRef,
+    booleanAttribute,
     ComponentFactoryResolver,
     Directive,
     ElementRef,
     EmbeddedViewRef,
+    inject,
     Injector,
     Input,
+    numberAttribute,
     StaticProvider,
     TemplateRef,
-    ViewContainerRef,
-    booleanAttribute,
-    inject,
-    numberAttribute
+    ViewContainerRef
 } from '@angular/core';
+
 import {
-    Middleware,
-    Placement,
     arrow,
     autoUpdate,
     computePosition,
     flip,
+    Middleware,
     offset,
+    Placement,
     shift
 } from '@floating-ui/dom';
+
 import type { OverlayArrowDirective } from './overlay-arrow.directive';
-import type { OverlayDirective } from './overlay.directive';
 import { OverlayTriggerToken } from './overlay-trigger.token';
+import type { OverlayDirective } from './overlay.directive';
 
 @Directive({
     selector: '[rdxOverlayTrigger]',

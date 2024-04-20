@@ -1,7 +1,9 @@
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { LabelDirective } from '../src/label.directive';
 import { CommonModule } from '@angular/common';
+
+import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+
 import { labelExclude } from '../../.docs/utils/storybook';
+import { LabelDirective } from '../src/label.directive';
 
 export default {
     component: LabelDirective,

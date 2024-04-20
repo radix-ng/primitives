@@ -1,4 +1,5 @@
 import { Directive, Input, numberAttribute } from '@angular/core';
+
 import { ProgressToken } from './progress.token';
 
 @Directive({
@@ -45,7 +46,7 @@ export class ProgressDirective {
         return this.value == null
             ? 'indeterminate'
             : this.value === this.max
-            ? 'complete'
-            : 'loading';
+              ? 'complete'
+              : 'loading';
     }
 }

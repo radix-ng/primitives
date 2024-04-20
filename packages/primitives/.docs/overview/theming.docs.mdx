@@ -1,8 +1,6 @@
 import { Meta } from '@storybook/addon-docs';
 
-<Meta
-    title="Overview/Theming"
-/>
+<Meta title="Overview/Theming" />
 
 # Theming
 
@@ -12,27 +10,29 @@ Use CSS Variables to customize the look and feel of your application.
 2. Using Radix Themes
 
 ## 1. Write own Theme and Styles for components
+
 // TODO
 
-
 ## 2. Using Radix Themes
+
 Install [Radix Themes](https://www.radix-ui.com/themes/docs/overview/getting-started) and start building in minutes.
 
-
 ### Install Radix Themes
+
 ```bash
 npm install @radix-ui/themes
 ```
 
 ### Import the CSS file
-Import the global CSS file at the root of your application.
 
+Import the global CSS file at the root of your application.
 
 ```bash
 import '@radix-ui/themes/styles.css';
 ```
 
 For NX added to `build.options`
+
 ```JSON
 "styles": [
     "@radix-ui/themes/styles.css"

@@ -1,4 +1,5 @@
-import { Directive, ElementRef, OnDestroy, OnInit, inject } from '@angular/core';
+import { Directive, ElementRef, inject, OnDestroy, OnInit } from '@angular/core';
+
 import { injectOverlayTrigger } from './overlay-trigger.token';
 import { OverlayToken } from './overlay.token';
 

@@ -1,4 +1,4 @@
-import { Directive, Input, booleanAttribute } from '@angular/core';
+import { booleanAttribute, Directive, Input } from '@angular/core';
 
 @Directive({
     selector: '[rdxSeparator]',

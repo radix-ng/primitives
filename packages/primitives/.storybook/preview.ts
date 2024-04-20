@@ -1,5 +1,6 @@
-import { Preview } from '@storybook/angular';
 import { setCompodocJson } from '@storybook/addon-docs/angular';
+import { Preview } from '@storybook/angular';
+
 import docJson from './documentation.json';
 import { badgesConfig } from './helpers/bages-config';
 

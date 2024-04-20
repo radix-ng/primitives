@@ -1,19 +1,20 @@
 import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/addon-docs';
-import { ProgressDirective } from '../src/progress.directive';
-import { ProgressIndicatorDirective } from '../src/progress-indicator.directive';
-import * as ProgressDirectiveStories from "./progress.stories";
 
-<Meta
-    title="Primitives/Progress"
-/>
+import { ProgressIndicatorDirective } from '../src/progress-indicator.directive';
+import { ProgressDirective } from '../src/progress.directive';
+import * as ProgressDirectiveStories from './progress.stories';
+
+<Meta title="Primitives/Progress" />
 
 # Progress
+
 #### Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.
 
-<Canvas sourceState='hidden' of={ProgressDirectiveStories.Default}></Canvas>
+<Canvas sourceState="hidden" of={ProgressDirectiveStories.Default}></Canvas>
 
 ## Features
-- ✅ Provides context for assistive technology to read the progress of a task.
+
+-   ✅ Provides context for assistive technology to read the progress of a task.
 
 ## Usage
 
@@ -27,15 +28,18 @@ import { ProgressDirective, ProgressIndicatorDirective } from '@radix-ng/primiti
 
 ```html
 <div rdxProgress [rdxProgressValue]="progress" class="ProgressRoot">
-    <div rdxProgressIndicator
+    <div
+        rdxProgressIndicator
         [style.transform]="'translateX(-' + (100 - progress) +'%)'"
         class="ProgressIndicator"
     ></div>
 </div>
 ```
+
 ## API Reference
 
 ### ProgressDirective
+
 <ArgTypes of={ProgressDirective} />
 
 <Markdown>
@@ -49,6 +53,7 @@ import { ProgressDirective, ProgressIndicatorDirective } from '@radix-ng/primiti
 </Markdown>
 
 ### ProgressIndicatorDirective
+
 Used to show the progress visually. It also makes progress accessible to assistive technologies.
 
 <Markdown>

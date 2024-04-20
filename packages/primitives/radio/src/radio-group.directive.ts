@@ -1,14 +1,16 @@
 import {
+    booleanAttribute,
     Directive,
     EventEmitter,
     HostListener,
     Input,
-    Output,
-    booleanAttribute
+    Output
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { RovingFocusGroupDirective } from '@radix-ng/primitives/roving-focus';
+
 import { RadioGroupToken } from './radio-group.token';
 
 @Directive({

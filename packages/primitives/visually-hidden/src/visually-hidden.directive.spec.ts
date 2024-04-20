@@ -1,7 +1,8 @@
-import { VisuallyHiddenDirective } from './visually-hidden.directive';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Component, DebugElement } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+
+import { VisuallyHiddenDirective } from './visually-hidden.directive';
 
 @Component({
     template: '<span rdxVisuallyHidden>Hidden content</span>'
