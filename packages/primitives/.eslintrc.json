@@ -9,6 +9,7 @@
                 "plugin:@angular-eslint/template/process-inline-templates"
             ],
             "rules": {
+                "@angular-eslint/no-input-rename": "off",
                 "@angular-eslint/directive-selector": [
                     "error",
                     {

@@ -11,6 +11,7 @@
         {
             "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
             "rules": {
+                "@angular-eslint/no-input-rename": "off",
                 "@nx/enforce-module-boundaries": [
                     "error",
                     {
