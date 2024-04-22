@@ -44,13 +44,14 @@ export class RdxRovingFocusGroupDirective implements OnInit, OnChanges, OnDestro
      * Determine the orientation of the roving focus group.
      * @default vertical
      */
-    @Input() orientation: 'horizontal' | 'vertical' = 'vertical';
+    @Input({ alias: 'rdxRovingFocusGroupOrientation' }) orientation: 'horizontal' | 'vertical' =
+        'vertical';
 
     /**
      * Determine if focus should wrap when the end or beginning is reached.
      * @default true
      */
-    @Input({ transform: booleanAttribute }) wrap = true;
+    @Input({ alias: 'rdxRovingFocusGroupWrap', transform: booleanAttribute }) wrap = true;
 
     ngOnInit(): void {
         this.keyManager.withWrap(this.wrap);

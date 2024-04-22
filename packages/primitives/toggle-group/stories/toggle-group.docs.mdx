@@ -1,0 +1,85 @@
+import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/addon-docs';
+import * as ToggleGroupDirectiveStories from './toggle-group.stories';
+import { RdxToggleGroupDirective } from '../src/toggle-group.directive';
+import { RdxToggleGroupButtonDirective } from '../src/toggle-group-button.directive';
+import { toggleGroupButtonExclude, toggleGroupExclude } from '../../.docs/utils/storybook';
+
+<Meta title="Primitives/Toggle Group" />
+
+# Toggle Group
+
+#### A set of two-state buttons that can be toggled on or off.
+
+<Canvas sourceState="hidden" of={ToggleGroupDirectiveStories.Default}></Canvas>
+
+## Features
+
+-   ✅ Full keyboard navigation.
+-   ✅ Supports horizontal/vertical orientation.
+-   ✅ Support single and multiple pressed buttons.
+-   ✅ Can be controlled or uncontrolled.
+
+## Import
+
+Get started with importing the directives:
+
+```typescript
+import { RdxToggleGroupDirective, RdxToggleGroupButtonDirective, RdxToggleGroupMultiDirective } from '@radix-ng/primitives/toggle-group';
+```
+
+## Examples
+
+```html
+<div rdxToggleGroup rdxToggleGroupValue="center" aria-label="Text alignment">
+    <button rdxToggleGroupButton rdxToggleGroupButtonValue="left" aria-label="Left aligned">
+        <ng-icon name="radixTextAlignLeft"></ng-icon>
+    </button>
+    <button rdxToggleGroupButton rdxToggleGroupButtonValue="center" aria-label="Center aligned">
+        <ng-icon name="radixTextAlignCenter"></ng-icon>
+    </button>
+    <button rdxToggleGroupButton rdxToggleGroupButtonValue="right" aria-label="Right aligned">
+        <ng-icon name="radixTextAlignRight"></ng-icon>
+    </button>
+</div>
+```
+
+## API Reference
+
+### RdxToggleGroupDirective
+
+<ArgTypes exclude={toggleGroupExclude} of={RdxToggleGroupDirective} />
+
+<Markdown>
+    {`
+| Data Attribute | Value |
+| ----------- | --------- |
+| [data-orientation]       | "vertical" or "horizontal"   |
+`}
+</Markdown>
+
+### RdxToggleGroupButtonDirective
+
+<ArgTypes exclude={toggleGroupButtonExclude} of={RdxToggleGroupButtonDirective} />
+
+## Accessibility
+
+Uses [roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.2/examples/radio/radio.html) to manage focus movement among items.
+
+### Keyboard Interactions
+
+<Markdown>
+    {`
+| Key | Description |
+| ----------- | --------- |
+| Tab         | Moves focus to either the pressed item or the first item in the group. |
+| Space       | Activates/deactivates the item.       |
+| Enter       | Activates/deactivates the item.  |
+| ArrowDown   |    Moves focus to the next item in the group. |
+| ArrowRight  | Moves focus to the next item in the group. |
+| ArrowUp     | Moves focus to the previous item in the group. |
+| ArrowLeft   | Moves focus to the previous item in the group.  |
+| Home        | Moves focus to the first item. |
+| End         | Moves focus to the last item.  |
+
+`}
+</Markdown>
