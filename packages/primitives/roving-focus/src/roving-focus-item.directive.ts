@@ -16,14 +16,14 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { injectRovingFocusGroup } from './roving-focus-group.token';
-import { RovingFocusItemToken } from './roving-focus-item.token';
+import { RdxRovingFocusItemToken } from './roving-focus-item.token';
 
 @Directive({
     selector: '[rdxRovingFocusItem]',
     standalone: true,
-    providers: [{ provide: RovingFocusItemToken, useExisting: RovingFocusItemDirective }]
+    providers: [{ provide: RdxRovingFocusItemToken, useExisting: RdxRovingFocusItemDirective }]
 })
-export class RovingFocusItemDirective implements OnInit, OnDestroy, FocusableOption {
+export class RdxRovingFocusItemDirective implements OnInit, OnDestroy, FocusableOption {
     /**
      * Access the group the roving focus item belongs to.
      */

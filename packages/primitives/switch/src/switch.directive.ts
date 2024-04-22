@@ -10,14 +10,14 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-import { SwitchToken } from './switch.token';
+import { RdxSwitchToken } from './rdxSwitchToken';
 
 @Directive({
     selector: '[rdxSwitch]',
     standalone: true,
     providers: [
-        { provide: SwitchToken, useExisting: SwitchDirective },
-        { provide: NG_VALUE_ACCESSOR, useExisting: SwitchDirective, multi: true }
+        { provide: RdxSwitchToken, useExisting: RdxSwitchDirective },
+        { provide: NG_VALUE_ACCESSOR, useExisting: RdxSwitchDirective, multi: true }
     ],
     host: {
         role: 'switch',
@@ -29,7 +29,7 @@ import { SwitchToken } from './switch.token';
         '(focus)': 'onTouched?.()'
     }
 })
-export class SwitchDirective implements ControlValueAccessor {
+export class RdxSwitchDirective implements ControlValueAccessor {
     /**
      * Access the element ref.
      */

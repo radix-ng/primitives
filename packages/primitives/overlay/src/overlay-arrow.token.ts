@@ -1,5 +1,7 @@
 import { InjectionToken } from '@angular/core';
 
-import type { OverlayArrowDirective } from './overlay-arrow.directive';
+import type { RdxOverlayArrowDirective } from './overlay-arrow.directive';
 
-export const OverlayArrowToken = new InjectionToken<OverlayArrowDirective>('OverlayArrowToken');
+export const RdxOverlayArrowToken = new InjectionToken<RdxOverlayArrowDirective>(
+    'RdxOverlayArrowToken'
+);

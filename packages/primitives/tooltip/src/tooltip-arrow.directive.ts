@@ -1,10 +1,10 @@
 import { Directive } from '@angular/core';
 
-import { OverlayArrowDirective } from '@radix-ng/primitives/overlay';
+import { RdxOverlayArrowDirective } from '@radix-ng/primitives/overlay';
 
 @Directive({
     selector: '[rdxTooltipArrow]',
     standalone: true,
-    hostDirectives: [OverlayArrowDirective]
+    hostDirectives: [RdxOverlayArrowDirective]
 })
 export class TooltipArrowDirective {}

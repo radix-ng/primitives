@@ -11,7 +11,7 @@ import { injectRadioItem } from './radio-item.token';
         '[attr.data-disabled]': 'radioItem.disabled ? "" : null'
     }
 })
-export class RadioIndicatorDirective {
+export class RdxRadioIndicatorDirective {
     /**
      * Access the radio group.
      */

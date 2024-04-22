@@ -1,16 +1,16 @@
 import { booleanAttribute, Directive, HostListener, Input } from '@angular/core';
 
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { RovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
+import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 
 import { injectRadioGroup } from './radio-group.token';
-import { RadioItemToken } from './radio-item.token';
+import { RdxRadioItemToken } from './radio-item.token';
 
 @Directive({
     selector: 'button[rdxRadioItem]',
     standalone: true,
-    hostDirectives: [RovingFocusItemDirective],
-    providers: [{ provide: RadioItemToken, useExisting: RadioItemDirective }],
+    hostDirectives: [RdxRovingFocusItemDirective],
+    providers: [{ provide: RdxRadioItemToken, useExisting: RdxRadioItemDirective }],
     host: {
         type: 'button',
         role: 'radio',
@@ -19,7 +19,7 @@ import { RadioItemToken } from './radio-item.token';
         '[attr.data-state]': 'radioGroup.value === value ? "checked" : "unchecked"'
     }
 })
-export class RadioItemDirective {
+export class RdxRadioItemDirective {
     /**
      * Access the radio group.
      */

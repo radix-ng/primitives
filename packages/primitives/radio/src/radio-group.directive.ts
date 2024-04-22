@@ -9,25 +9,25 @@ import {
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { RovingFocusGroupDirective } from '@radix-ng/primitives/roving-focus';
+import { RdxRovingFocusGroupDirective } from '@radix-ng/primitives/roving-focus';
 
-import { RadioGroupToken } from './radio-group.token';
+import { RdxRadioGroupToken } from './radio-group.token';
 
 @Directive({
     selector: '[rdxRadioGroup]',
     standalone: true,
     providers: [
-        { provide: RadioGroupToken, useExisting: RadioGroupDirective },
-        { provide: NG_VALUE_ACCESSOR, useExisting: RadioGroupDirective, multi: true }
+        { provide: RdxRadioGroupToken, useExisting: RdxRadioGroupDirective },
+        { provide: NG_VALUE_ACCESSOR, useExisting: RdxRadioGroupDirective, multi: true }
     ],
-    hostDirectives: [RovingFocusGroupDirective],
+    hostDirectives: [RdxRovingFocusGroupDirective],
     host: {
         role: 'radiogroup',
         '[attr.aria-orientation]': 'orientation',
         '[attr.data-disabled]': 'disabled ? "" : null'
     }
 })
-export class RadioGroupDirective implements ControlValueAccessor {
+export class RdxRadioGroupDirective implements ControlValueAccessor {
     /**
      * The value of the radio group.
      */

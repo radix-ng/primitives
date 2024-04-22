@@ -1,11 +1,11 @@
 import { inject, InjectionToken } from '@angular/core';
 
-import type { RovingFocusItemDirective } from './roving-focus-item.directive';
+import type { RdxRovingFocusItemDirective } from './roving-focus-item.directive';
 
-export const RovingFocusItemToken = new InjectionToken<RovingFocusItemDirective>(
-    'RovingFocusItemToken'
+export const RdxRovingFocusItemToken = new InjectionToken<RdxRovingFocusItemDirective>(
+    'RdxRovingFocusItemToken'
 );
 
-export function injectRovingFocusItem(): RovingFocusItemDirective {
-    return inject(RovingFocusItemToken);
+export function injectRovingFocusItem(): RdxRovingFocusItemDirective {
+    return inject(RdxRovingFocusItemToken);
 }

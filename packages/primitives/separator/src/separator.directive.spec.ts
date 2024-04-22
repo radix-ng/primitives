@@ -2,7 +2,7 @@ import { Component, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
-import { SeparatorDirective } from './separator.directive';
+import { RdxSeparatorDirective } from './separator.directive';
 
 @Component({
     template:
@@ -21,7 +21,7 @@ describe('SeparatorDirective', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [TestComponent],
-            imports: [SeparatorDirective]
+            imports: [RdxSeparatorDirective]
         }).compileComponents();
     });
 
@@ -33,7 +33,7 @@ describe('SeparatorDirective', () => {
     });
 
     it('should create an instance', () => {
-        const directive = new SeparatorDirective();
+        const directive = new RdxSeparatorDirective();
         expect(directive).toBeTruthy();
     });
 

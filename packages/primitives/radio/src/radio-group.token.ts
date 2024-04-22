@@ -1,9 +1,9 @@
 import { inject, InjectionToken } from '@angular/core';
 
-import type { RadioGroupDirective } from './radio-group.directive';
+import type { RdxRadioGroupDirective } from './radio-group.directive';
 
-export const RadioGroupToken = new InjectionToken<RadioGroupDirective>('RadioGroupToken');
+export const RdxRadioGroupToken = new InjectionToken<RdxRadioGroupDirective>('RdxRadioGroupToken');
 
-export function injectRadioGroup(): RadioGroupDirective {
-    return inject(RadioGroupToken);
+export function injectRadioGroup(): RdxRadioGroupDirective {
+    return inject(RdxRadioGroupToken);
 }

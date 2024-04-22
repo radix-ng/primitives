@@ -1,9 +1,9 @@
 import { inject, InjectionToken } from '@angular/core';
 
-import type { RadioItemDirective } from './radio-item.directive';
+import type { RdxRadioItemDirective } from './radio-item.directive';
 
-export const RadioItemToken = new InjectionToken<RadioItemDirective>('RadioItemToken');
+export const RdxRadioItemToken = new InjectionToken<RdxRadioItemDirective>('RadioItemToken');
 
-export function injectRadioItem(): RadioItemDirective {
-    return inject(RadioItemToken);
+export function injectRadioItem(): RdxRadioItemDirective {
+    return inject(RdxRadioItemToken);
 }

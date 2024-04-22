@@ -1,6 +1,6 @@
 import { Directive } from '@angular/core';
 
-import { injectSwitch } from './switch.token';
+import { injectSwitch } from './rdxSwitchToken';
 
 @Directive({
     selector: '[rdxSwitchThumb]',
@@ -10,7 +10,7 @@ import { injectSwitch } from './switch.token';
         '[attr.data-disabled]': 'switch.disabled ? "true" : null'
     }
 })
-export class SwitchThumbDirective {
+export class RdxSwitchThumbDirective {
     /**
      * Access the switch directive.
      */

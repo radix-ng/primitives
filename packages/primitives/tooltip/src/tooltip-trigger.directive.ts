@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 
 import { Placement } from '@floating-ui/dom';
-import { OverlayTriggerDirective } from '@radix-ng/primitives/overlay';
+import { RdxOverlayTriggerDirective } from '@radix-ng/primitives/overlay';
 
 import { TooltipTriggerToken } from './tooltip-trigger.token';
 import { injectTooltipConfig } from './tooltip.config';
@@ -24,7 +24,7 @@ import { injectTooltipConfig } from './tooltip.config';
     },
     hostDirectives: [
         {
-            directive: OverlayTriggerDirective,
+            directive: RdxOverlayTriggerDirective,
             inputs: [
                 'rdxOverlayTrigger: rdxTooltipTrigger',
                 'rdxOverlayDisabled: rdxTooltipDisabled',
@@ -43,7 +43,7 @@ export class TooltipTriggerDirective implements OnInit {
     /**
      * Access the overlay trigger directive
      */
-    private readonly overlayTrigger = inject(OverlayTriggerDirective);
+    private readonly overlayTrigger = inject(RdxOverlayTriggerDirective);
 
     /**
      * Access the global tooltip configuration

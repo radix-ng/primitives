@@ -1,11 +1,11 @@
 import { Directive, Input, numberAttribute } from '@angular/core';
 
-import { ProgressToken } from './progress.token';
+import { RdxProgressToken } from './progress.token';
 
 @Directive({
     selector: '[rdxProgress]',
     standalone: true,
-    providers: [{ provide: ProgressToken, useExisting: ProgressDirective }],
+    providers: [{ provide: RdxProgressToken, useExisting: RdxProgressDirective }],
     host: {
         role: 'progressbar',
         '[attr.aria-valuemax]': 'max',
@@ -17,7 +17,7 @@ import { ProgressToken } from './progress.token';
         '[attr.data-max]': 'max'
     }
 })
-export class ProgressDirective {
+export class RdxProgressDirective {
     /**
      * Define the progress value.
      */

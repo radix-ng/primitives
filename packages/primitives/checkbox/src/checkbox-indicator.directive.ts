@@ -11,6 +11,6 @@ import { injectCheckbox } from './checkbox.token';
         '[attr.data-disabled]': 'checkbox.disabled ? "" : null'
     }
 })
-export class CheckboxIndicatorDirective {
+export class RdxCheckboxIndicatorDirective {
     protected readonly checkbox = injectCheckbox();
 }

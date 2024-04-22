@@ -27,9 +27,9 @@ import {
     shift
 } from '@floating-ui/dom';
 
-import type { OverlayArrowDirective } from './overlay-arrow.directive';
-import { OverlayTriggerToken } from './overlay-trigger.token';
-import type { OverlayDirective } from './overlay.directive';
+import type { RdxOverlayArrowDirective } from './overlay-arrow.directive';
+import { RdxOverlayTriggerToken } from './overlay-trigger.token';
+import type { RdxOverlayDirective } from './overlay.directive';
 
 @Directive({
     selector: '[rdxOverlayTrigger]',
@@ -39,7 +39,7 @@ import type { OverlayDirective } from './overlay.directive';
         '[attr.data-state]': 'state'
     }
 })
-export class OverlayTriggerDirective {
+export class RdxOverlayTriggerDirective {
     /**
      * Access the application ref
      */
@@ -121,12 +121,12 @@ export class OverlayTriggerDirective {
     /**
      * Store the overlay content instance.
      */
-    private overlay: OverlayDirective | null = null;
+    private overlay: RdxOverlayDirective | null = null;
 
     /**
      * Store the overlay arrow instance.
      */
-    private arrow: OverlayArrowDirective | null = null;
+    private arrow: RdxOverlayArrowDirective | null = null;
 
     /**
      * Store the view ref
@@ -194,7 +194,7 @@ export class OverlayTriggerDirective {
                 parent: this.injector,
                 providers: [
                     {
-                        provide: OverlayTriggerToken,
+                        provide: RdxOverlayTriggerToken,
                         useValue: this
                     },
                     ...this.providers
@@ -304,7 +304,7 @@ export class OverlayTriggerDirective {
      * @param overlay The overlay to register.
      * @internal
      */
-    registerOverlay(overlay: OverlayDirective): void {
+    registerOverlay(overlay: RdxOverlayDirective): void {
         this.overlay = overlay;
     }
 
@@ -321,7 +321,7 @@ export class OverlayTriggerDirective {
      * @param arrow The arrow to register.
      * @internal
      */
-    registerArrow(arrow: OverlayArrowDirective): void {
+    registerArrow(arrow: RdxOverlayArrowDirective): void {
         this.arrow = arrow;
     }
 

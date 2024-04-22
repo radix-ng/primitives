@@ -4,10 +4,10 @@ import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { radixCheck } from '@ng-icons/radix-icons';
-import { LabelDirective } from '@radix-ng/primitives/label';
+import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
-import { CheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
-import { CheckboxDirective } from '../src/checkbox.directive';
+import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
+import { RdxCheckboxDirective } from '../src/checkbox.directive';
 
 @Component({
     // eslint-disable-next-line @angular-eslint/component-selector
@@ -90,9 +90,9 @@ import { CheckboxDirective } from '../src/checkbox.directive';
         FormsModule,
         ReactiveFormsModule,
         JsonPipe,
-        LabelDirective,
-        CheckboxDirective,
-        CheckboxIndicatorDirective,
+        RdxLabelDirective,
+        RdxCheckboxDirective,
+        RdxCheckboxIndicatorDirective,
         NgIconComponent
     ],
     providers: [provideIcons({ radixCheck })]

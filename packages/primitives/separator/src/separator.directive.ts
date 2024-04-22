@@ -9,7 +9,7 @@ import { booleanAttribute, Directive, Input } from '@angular/core';
         '[attr.data-orientation]': 'orientation'
     }
 })
-export class SeparatorDirective {
+export class RdxSeparatorDirective {
     /**
      * The orientation of the separator.
      * @default 'horizontal'

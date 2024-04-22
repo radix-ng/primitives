@@ -3,9 +3,9 @@ import { radixCheck } from '@ng-icons/radix-icons';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 import { BADGE } from '../../.storybook/helpers/bages-config';
-import { LabelDirective } from '../../label';
-import { CheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
-import { CheckboxDirective } from '../src/checkbox.directive';
+import { RdxLabelDirective } from '../../label';
+import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
+import { RdxCheckboxDirective } from '../src/checkbox.directive';
 import { CheckboxReactiveFormsExample } from './checkbox-group.component';
 
 export default {
@@ -16,9 +16,9 @@ export default {
     decorators: [
         moduleMetadata({
             imports: [
-                LabelDirective,
-                CheckboxDirective,
-                CheckboxIndicatorDirective,
+                RdxLabelDirective,
+                RdxCheckboxDirective,
+                RdxCheckboxIndicatorDirective,
                 NgIconComponent,
                 CheckboxReactiveFormsExample
             ],

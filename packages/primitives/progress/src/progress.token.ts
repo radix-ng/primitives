@@ -1,9 +1,9 @@
 import { inject, InjectionToken } from '@angular/core';
 
-import type { ProgressDirective } from './progress.directive';
+import type { RdxProgressDirective } from './progress.directive';
 
-export const ProgressToken = new InjectionToken<ProgressDirective>('ProgressDirective');
+export const RdxProgressToken = new InjectionToken<RdxProgressDirective>('RdxProgressDirective');
 
-export function injectProgress(): ProgressDirective {
-    return inject(ProgressToken);
+export function injectProgress(): RdxProgressDirective {
+    return inject(RdxProgressToken);
 }

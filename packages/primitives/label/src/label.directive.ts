@@ -7,7 +7,7 @@ import { Directive, ElementRef, HostListener, Input, Optional } from '@angular/c
         '[attr.for]': 'htmlFor ? htmlFor : null'
     }
 })
-export class LabelDirective {
+export class RdxLabelDirective {
     /**
      * The id of the element the label is associated with.
      * @default '-'

@@ -2,15 +2,15 @@ import { Directive, ElementRef, inject, OnDestroy, OnInit } from '@angular/core'
 
 import { Placement } from '@floating-ui/dom';
 
-import { OverlayArrowToken } from './overlay-arrow.token';
+import { RdxOverlayArrowToken } from './overlay-arrow.token';
 import { injectOverlayTrigger } from './overlay-trigger.token';
 
 @Directive({
     selector: '[rdxOverlayArrow]',
     standalone: true,
-    providers: [{ provide: OverlayArrowToken, useExisting: OverlayArrowDirective }]
+    providers: [{ provide: RdxOverlayArrowToken, useExisting: RdxOverlayArrowDirective }]
 })
-export class OverlayArrowDirective implements OnInit, OnDestroy {
+export class RdxOverlayArrowDirective implements OnInit, OnDestroy {
     /**
      * Access the arrow element
      */

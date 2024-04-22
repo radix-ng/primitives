@@ -1,13 +1,13 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
-import { ProgressIndicatorDirective } from '../src/progress-indicator.directive';
-import { ProgressDirective } from '../src/progress.directive';
+import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
+import { RdxProgressDirective } from '../src/progress.directive';
 
 export default {
     title: 'Primitives/Progress',
     decorators: [
         moduleMetadata({
-            imports: [ProgressDirective, ProgressIndicatorDirective]
+            imports: [RdxProgressDirective, RdxProgressIndicatorDirective]
         }),
         componentWrapperDecorator(
             (story) =>

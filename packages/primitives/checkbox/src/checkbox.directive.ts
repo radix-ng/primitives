@@ -8,14 +8,14 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-import { CheckboxToken } from './checkbox.token';
+import { RdxCheckboxToken } from './checkbox.token';
 
 @Directive({
     selector: 'button[rdxCheckbox]',
     standalone: true,
     providers: [
-        { provide: CheckboxToken, useExisting: CheckboxDirective },
-        { provide: NG_VALUE_ACCESSOR, useExisting: CheckboxDirective, multi: true }
+        { provide: RdxCheckboxToken, useExisting: RdxCheckboxDirective },
+        { provide: NG_VALUE_ACCESSOR, useExisting: RdxCheckboxDirective, multi: true }
     ],
     host: {
         type: 'button',
@@ -26,7 +26,7 @@ import { CheckboxToken } from './checkbox.token';
         '[attr.data-state]': 'state'
     }
 })
-export class CheckboxDirective implements ControlValueAccessor {
+export class RdxCheckboxDirective implements ControlValueAccessor {
     /**
      * Defines whether the checkbox is checked.
      */

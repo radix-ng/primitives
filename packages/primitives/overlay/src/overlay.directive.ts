@@ -1,14 +1,14 @@
 import { Directive, ElementRef, inject, OnDestroy, OnInit } from '@angular/core';
 
 import { injectOverlayTrigger } from './overlay-trigger.token';
-import { OverlayToken } from './overlay.token';
+import { RdxOverlayToken } from './overlay.token';
 
 @Directive({
     selector: '[rdxOverlay]',
     standalone: true,
-    providers: [{ provide: OverlayToken, useExisting: OverlayDirective }]
+    providers: [{ provide: RdxOverlayToken, useExisting: RdxOverlayDirective }]
 })
-export class OverlayDirective implements OnInit, OnDestroy {
+export class RdxOverlayDirective implements OnInit, OnDestroy {
     /**
      * Access the overlay element
      */

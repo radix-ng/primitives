@@ -11,6 +11,6 @@ import { injectProgress } from './progress.token';
         '[attr.data-max]': 'progress.max'
     }
 })
-export class ProgressIndicatorDirective {
+export class RdxProgressIndicatorDirective {
     protected readonly progress = injectProgress();
 }

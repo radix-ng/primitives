@@ -15,15 +15,15 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs';
 
-import { RovingFocusGroupToken } from './roving-focus-group.token';
-import type { RovingFocusItemDirective } from './roving-focus-item.directive';
+import { RdxRovingFocusGroupToken } from './roving-focus-group.token';
+import type { RdxRovingFocusItemDirective } from './roving-focus-item.directive';
 
 @Directive({
     selector: '[rdxRovingFocusGroup]',
     standalone: true,
-    providers: [{ provide: RovingFocusGroupToken, useExisting: RovingFocusGroupDirective }]
+    providers: [{ provide: RdxRovingFocusGroupToken, useExisting: RdxRovingFocusGroupDirective }]
 })
-export class RovingFocusGroupDirective implements OnInit, OnChanges, OnDestroy {
+export class RdxRovingFocusGroupDirective implements OnInit, OnChanges, OnDestroy {
     private readonly directionality = inject(Directionality);
 
     private readonly destroyRef = inject(DestroyRef);
@@ -32,13 +32,13 @@ export class RovingFocusGroupDirective implements OnInit, OnChanges, OnDestroy {
      * Create a query list of all the roving focus items.
      * We don't use ContentChildren as dynamically added items may not be in the correct order.
      */
-    private readonly items = new QueryList<RovingFocusItemDirective>();
+    private readonly items = new QueryList<RdxRovingFocusItemDirective>();
 
     /**
      * Create the focus key manager instance.
      * @internal
      */
-    readonly keyManager = new FocusKeyManager<RovingFocusItemDirective>(this.items);
+    readonly keyManager = new FocusKeyManager<RdxRovingFocusItemDirective>(this.items);
 
     /**
      * Determine the orientation of the roving focus group.
@@ -84,7 +84,7 @@ export class RovingFocusGroupDirective implements OnInit, OnChanges, OnDestroy {
      * Register a roving focus item.
      * @param item The roving focus item to register.
      */
-    register(item: RovingFocusItemDirective): void {
+    register(item: RdxRovingFocusItemDirective): void {
         // add the item to the query list by sort the items based on their order
         this.items.reset([...this.items.toArray(), item].sort((a, b) => a.order - b.order));
 
@@ -98,7 +98,7 @@ export class RovingFocusGroupDirective implements OnInit, OnChanges, OnDestroy {
      * Unregister a roving focus item.
      * @param item The roving focus item to unregister.
      */
-    unregister(item: RovingFocusItemDirective): void {
+    unregister(item: RdxRovingFocusItemDirective): void {
         // determine if the item being removed is the active item
         const isActive = this.keyManager.activeItem === item;
 

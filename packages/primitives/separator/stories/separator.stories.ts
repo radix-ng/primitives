@@ -2,15 +2,15 @@ import { CommonModule } from '@angular/common';
 
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
-import { LabelDirective } from '../../label';
-import { SeparatorDirective } from '../src/separator.directive';
+import { RdxLabelDirective } from '../../label';
+import { RdxSeparatorDirective } from '../src/separator.directive';
 
 export default {
-    component: SeparatorDirective,
+    component: RdxSeparatorDirective,
     title: 'Primitives/Separator',
     decorators: [
         moduleMetadata({
-            imports: [SeparatorDirective, CommonModule]
+            imports: [RdxSeparatorDirective, CommonModule]
         }),
         componentWrapperDecorator(
             (story) =>
@@ -19,9 +19,9 @@ export default {
                       data-scaling="100%">${story}</div>`
         )
     ]
-} as Meta<LabelDirective>;
+} as Meta<RdxLabelDirective>;
 
-type Story = StoryObj<LabelDirective>;
+type Story = StoryObj<RdxLabelDirective>;
 
 export const Default: Story = {
     render: () => ({

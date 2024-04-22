@@ -4,7 +4,7 @@ import { Directive, ElementRef, inject, OnInit } from '@angular/core';
     selector: '[rdxVisuallyHidden]',
     standalone: true
 })
-export class VisuallyHiddenDirective implements OnInit {
+export class RdxVisuallyHiddenDirective implements OnInit {
     /**
      * Access the element.
      */

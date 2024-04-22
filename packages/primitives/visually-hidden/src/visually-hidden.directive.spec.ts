@@ -2,7 +2,7 @@ import { Component, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
-import { VisuallyHiddenDirective } from './visually-hidden.directive';
+import { RdxVisuallyHiddenDirective } from './visually-hidden.directive';
 
 @Component({
     template: '<span rdxVisuallyHidden>Hidden content</span>'
@@ -17,7 +17,7 @@ describe('VisuallyHiddenDirective', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [TestComponent],
-            imports: [VisuallyHiddenDirective]
+            imports: [RdxVisuallyHiddenDirective]
         }).compileComponents();
     });
 
