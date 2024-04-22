@@ -13,7 +13,7 @@ import {
 import { Placement } from '@floating-ui/dom';
 import { RdxOverlayTriggerDirective } from '@radix-ng/primitives/overlay';
 
-import { TooltipTriggerToken } from './tooltip-trigger.token';
+import { RdxTooltipTriggerToken } from './tooltip-trigger.token';
 import { injectTooltipConfig } from './tooltip.config';
 
 @Directive({
@@ -39,7 +39,7 @@ import { injectTooltipConfig } from './tooltip.config';
         }
     ]
 })
-export class TooltipTriggerDirective implements OnInit {
+export class RdxTooltipTriggerDirective implements OnInit {
     /**
      * Access the overlay trigger directive
      */
@@ -108,7 +108,7 @@ export class TooltipTriggerDirective implements OnInit {
 
     ngOnInit(): void {
         this.overlayTrigger.registerProvider({
-            provide: TooltipTriggerToken,
+            provide: RdxTooltipTriggerToken,
             useValue: this
         });
     }

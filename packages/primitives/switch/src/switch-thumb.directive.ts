@@ -1,6 +1,6 @@
 import { Directive } from '@angular/core';
 
-import { injectSwitch } from './rdxSwitchToken';
+import { injectSwitch } from './switch.token';
 
 @Directive({
     selector: '[rdxSwitchThumb]',

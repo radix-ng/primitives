@@ -18,7 +18,7 @@ let uniqueId = 0;
         role: 'tooltip'
     }
 })
-export class TooltipDirective implements OnInit, OnChanges {
+export class RdxTooltipDirective implements OnInit, OnChanges {
     /**
      * Access the tooltip trigger
      */

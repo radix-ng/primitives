@@ -1,11 +1,11 @@
 import { inject, InjectionToken } from '@angular/core';
 
-import type { TooltipTriggerDirective } from './tooltip-trigger.directive';
+import type { RdxTooltipTriggerDirective } from './tooltip-trigger.directive';
 
-export const TooltipTriggerToken = new InjectionToken<TooltipTriggerDirective>(
-    'TooltipTriggerToken'
+export const RdxTooltipTriggerToken = new InjectionToken<RdxTooltipTriggerDirective>(
+    'RdxTooltipTriggerToken'
 );
 
-export function injectTooltipTrigger(): TooltipTriggerDirective {
-    return inject(TooltipTriggerToken);
+export function injectTooltipTrigger(): RdxTooltipTriggerDirective {
+    return inject(RdxTooltipTriggerToken);
 }

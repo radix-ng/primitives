@@ -7,4 +7,4 @@ import { RdxOverlayArrowDirective } from '@radix-ng/primitives/overlay';
     standalone: true,
     hostDirectives: [RdxOverlayArrowDirective]
 })
-export class TooltipArrowDirective {}
+export class RdxTooltipArrowDirective {}

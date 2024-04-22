@@ -2,9 +2,9 @@ import { inject, InjectionToken, Provider } from '@angular/core';
 
 import { Placement } from '@floating-ui/dom';
 
-export const TooltipConfigToken = new InjectionToken<TooltipConfig>('TooltipConfig');
+export const TooltipConfigToken = new InjectionToken<RdxTooltipConfig>('TooltipConfig');
 
-export interface TooltipConfig {
+export interface RdxTooltipConfig {
     /**
      * Define the offset of the tooltip relative to the trigger.
      * @default 4
@@ -42,7 +42,7 @@ export interface TooltipConfig {
     container: HTMLElement;
 }
 
-const defaultTooltipConfig: TooltipConfig = {
+const defaultTooltipConfig: RdxTooltipConfig = {
     offset: 4,
     placement: 'top',
     showDelay: 0,
@@ -56,7 +56,7 @@ const defaultTooltipConfig: TooltipConfig = {
  * @param config The Tooltip configuration
  * @returns The provider
  */
-export function provideTooltipConfig(config: Partial<TooltipConfig>): Provider[] {
+export function provideTooltipConfig(config: Partial<RdxTooltipConfig>): Provider[] {
     return [
         {
             provide: TooltipConfigToken,
@@ -69,6 +69,6 @@ export function provideTooltipConfig(config: Partial<TooltipConfig>): Provider[]
  * Inject the Tooltip configuration
  * @returns The global Tooltip configuration
  */
-export function injectTooltipConfig(): TooltipConfig {
+export function injectTooltipConfig(): RdxTooltipConfig {
     return inject(TooltipConfigToken, { optional: true }) ?? defaultTooltipConfig;
 }

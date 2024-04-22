@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-import { RdxSwitchToken } from './rdxSwitchToken';
+import { RdxSwitchToken } from './switch.token';
 
 @Directive({
     selector: '[rdxSwitch]',

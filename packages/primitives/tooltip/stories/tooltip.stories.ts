@@ -2,9 +2,9 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { radixPlus } from '@ng-icons/radix-icons';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
-import { TooltipArrowDirective } from '../src/tooltip-arrow.directive';
-import { TooltipTriggerDirective } from '../src/tooltip-trigger.directive';
-import { TooltipDirective } from '../src/tooltip.directive';
+import { RdxTooltipArrowDirective } from '../src/tooltip-arrow.directive';
+import { RdxTooltipTriggerDirective } from '../src/tooltip-trigger.directive';
+import { RdxTooltipDirective } from '../src/tooltip.directive';
 
 export default {
     title: 'Primitives/Tooltip',
@@ -12,9 +12,9 @@ export default {
         moduleMetadata({
             imports: [
                 NgIconComponent,
-                TooltipTriggerDirective,
-                TooltipDirective,
-                TooltipArrowDirective
+                RdxTooltipTriggerDirective,
+                RdxTooltipDirective,
+                RdxTooltipArrowDirective
             ],
             providers: [provideIcons({ radixPlus })]
         }),
