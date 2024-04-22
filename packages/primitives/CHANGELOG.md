@@ -1,3 +1,10 @@
+## 0.4.0 (2024-04-22)
+
+
+### 🚀 Features
+
+- **toggle:** added Toggle primitive ([f9a98dc](https://github.com/radix-ng/primitives/commit/f9a98dc))
+
 ## 0.3.0 (2024-04-20)
 
 
