@@ -6,8 +6,7 @@ const config: StorybookConfig = {
     addons: [
         '@storybook/addon-essentials',
         '@storybook/addon-docs',
-        '@storybook/addon-backgrounds',
-        '@geometricpanda/storybook-addon-badges'
+        '@storybook/addon-backgrounds'
     ],
 
     framework: {

@@ -2,7 +2,6 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { radixCheck } from '@ng-icons/radix-icons';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
-import { BADGE } from '../../.storybook/helpers/bages-config';
 import { RdxLabelDirective } from '../../label';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
 import { RdxCheckboxDirective } from '../src/checkbox.directive';
@@ -10,9 +9,6 @@ import { CheckboxReactiveFormsExample } from './checkbox-group.component';
 
 export default {
     title: 'Primitives/Checkbox',
-    parameters: {
-        badges: [BADGE.SOON]
-    },
     decorators: [
         moduleMetadata({
             imports: [

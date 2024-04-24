@@ -15,7 +15,8 @@ const config: StorybookConfig = {
             }
         },
         '@storybook/addon-backgrounds',
-        '@geometricpanda/storybook-addon-badges'
+        '@storybook/addon-mdx-gfm',
+        '@chromatic-com/storybook'
     ],
 
     framework: {
@@ -24,7 +25,6 @@ const config: StorybookConfig = {
     },
 
     core: {
-        builder: '@storybook/builder-webpack5',
         disableTelemetry: true
     }
 };
