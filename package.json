@@ -68,7 +68,7 @@
         "@nx/js": "18.2.4",
         "@nx/plugin": "18.2.4",
         "@nx/storybook": "18.2.4",
-        "@nx/vite": "18.2.4",
+        "@nx/vite": "18.3.3",
         "@nx/workspace": "18.2.4",
         "@radix-ui/colors": "^3.0.0",
         "@radix-ui/themes": "^3.0.2",
