@@ -85,8 +85,8 @@ importers:
         specifier: ^19.2.1
         version: 19.2.1(@types/node@18.16.9)(typescript@5.4.4)
       '@commitlint/config-conventional':
-        specifier: ^19.1.0
-        version: 19.1.0
+        specifier: ^19.2.2
+        version: 19.2.2
       '@compodoc/compodoc':
         specifier: ^1.1.23
         version: 1.1.23(typescript@5.4.4)
@@ -2482,8 +2482,8 @@ packages:
       - typescript
     dev: true
 
-  /@commitlint/config-conventional@19.1.0:
-    resolution: {integrity: sha512-KIKD2xrp6Uuk+dcZVj3++MlzIr/Su6zLE8crEDQCZNvWHNQSeeGbzOlNtsR32TUy6H3JbP7nWgduAHCaiGQ6EA==}
+  /@commitlint/config-conventional@19.2.2:
+    resolution: {integrity: sha512-mLXjsxUVLYEGgzbxbxicGPggDuyWNkf25Ht23owXIH+zV2pv1eJuzLK3t1gDY5Gp6pxdE60jZnWUY5cvgL3ufw==}
     engines: {node: '>=v18'}
     dependencies:
       '@commitlint/types': 19.0.3
@@ -15871,8 +15871,6 @@ packages:
       webpack: '*'
     peerDependenciesMeta:
       webpack:
-        optional: true
-      webpack-sources:
         optional: true
     dependencies:
       webpack: 5.90.3(@swc/core@1.3.100)(esbuild@0.20.1)

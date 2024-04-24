@@ -52,7 +52,7 @@
         "@angular/compiler-cli": "17.3.3",
         "@angular/language-service": "17.3.3",
         "@commitlint/cli": "^19.2.1",
-        "@commitlint/config-conventional": "^19.1.0",
+        "@commitlint/config-conventional": "^19.2.2",
         "@compodoc/compodoc": "^1.1.23",
         "@geometricpanda/storybook-addon-badges": "^2.0.2",
         "@ianvs/prettier-plugin-sort-imports": "^4.2.1",
