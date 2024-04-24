@@ -15,6 +15,7 @@
         "skipDefaultLibCheck": true,
         "baseUrl": ".",
         "paths": {
+            "@radix-ng/primitives/radio": ["packages/primitives/radio/index.ts"],
             "@radix-ng/primitives/checkbox": ["packages/primitives/checkbox/index.ts"],
             "@radix-ng/primitives/label": ["packages/primitives/label/index.ts"],
             "@radix-ng/primitives/overlay": ["packages/primitives/overlay/index.ts"],
