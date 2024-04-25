@@ -1,0 +1,42 @@
+<script lang="ts">
+    import { RouteMeta } from '@analogjs/router';
+    import { TxButtonDirective } from '../components/ui';
+    import { TxMainNavComponent } from '../components/main-nav.component';
+    import { RouterOutlet } from '@angular/router';
+    import { inject } from '@angular/core';
+    import { DOCUMENT } from '@angular/common';
+
+    export const routeMeta: RouteMeta = {
+        title: 'Index Page'
+    };
+
+    defineMetadata({
+        imports: [TxButtonDirective, TxMainNavComponent, RouterOutlet]
+    });
+
+    const document = inject(DOCUMENT);
+
+    const isLoginPage = document.location.href === '/login';
+
+</script>
+<template>
+    @if (!isLoginPage) {
+        <div class="flex min-h-screen flex-col">
+            <header class="container z-40 bg-background">
+                <div class="flex h-20 items-center justify-between py-6">
+                    <main-nav></main-nav>
+                    <nav>
+                        <a href="/login" txBtn variant="secondary" size="sm" class="px-4">
+                            Login
+                        </a>
+                    </nav>
+                </div>
+            </header>
+            <main class="flex-1">
+                <router-outlet />
+            </main>
+        </div>
+    } @else {
+        <router-outlet />
+    }
+</template>

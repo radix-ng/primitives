@@ -1,22 +1,16 @@
+import { provideHttpClient, withFetch } from '@angular/common/http';
 import { ApplicationConfig } from '@angular/core';
-import {
-    PreloadAllModules,
-    provideRouter,
-    withInMemoryScrolling,
-    withPreloading
-} from '@angular/router';
-import { appRoutes } from './app.routes';
-import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideHttpClient } from '@angular/common/http';
+import { provideClientHydration } from '@angular/platform-browser';
+import { withViewTransitions } from '@angular/router';
+
+import { provideContent, withMarkdownRenderer } from '@analogjs/content';
+import { provideFileRouter } from '@analogjs/router';
 
 export const appConfig: ApplicationConfig = {
     providers: [
-        provideAnimations(),
-        provideHttpClient(),
-        provideRouter(
-            appRoutes,
-            withPreloading(PreloadAllModules),
-            withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })
-        )
+        provideClientHydration(),
+        provideContent(withMarkdownRenderer()),
+        provideHttpClient(withFetch()),
+        provideFileRouter(withViewTransitions())
     ]
 };
