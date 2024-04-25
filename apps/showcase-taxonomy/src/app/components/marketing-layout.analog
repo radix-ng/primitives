@@ -16,8 +16,7 @@
 
     const document = inject(DOCUMENT);
 
-    const isLoginPage = document.location.href === '/login';
-
+    const isLoginPage = document.location.pathname === '/login';
 </script>
 <template>
     @if (!isLoginPage) {
