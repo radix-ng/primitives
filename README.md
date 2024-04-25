@@ -17,7 +17,7 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 
 
 ## Showcase
-Angular version [Taxonomy](https://github.com/shadcn-ui/taxonomy) – [https://primitives-taxonomy.vercel.app/](https://primitives-taxonomy.vercel.app/)
+AnalogJS version [Taxonomy](https://github.com/shadcn-ui/taxonomy) – [https://primitives-taxonomy.vercel.app/](https://primitives-taxonomy.vercel.app/)
 
 
 ## Project structure
