@@ -28,10 +28,10 @@ Angular version [Taxonomy](https://github.com/shadcn-ui/taxonomy) – [https://p
 │   ├── docs               (landing and docs)
 │   └── showcase-taxonomy  (showcase Taxonomy app)
 └── packages
-    ├── components         (primitives with custom styling)
+    ├── components         (components based on primitives with custom styling)
     │   ├── button
     │   └── checkbox
-    └── primitives         (headless UI without any styling)
+    └── primitives         (headless primitives UI without any styling)
         ├── checkbox
         ├── label
         ├── overlay
@@ -43,6 +43,32 @@ Angular version [Taxonomy](https://github.com/shadcn-ui/taxonomy) – [https://p
         ├── tooltip
         └── visually-hidden
 ```
+## Primitives Roadmap
+- [x] Accordion
+- [ ] Alert Dialog
+- [x] Avatar
+- [x] Checkbox
+- [ ] Collapsible
+- [ ] Context Menu
+- [ ] Dialog
+- [ ] Dropdown
+- [ ] Hover Card
+- [x] Label
+- [ ] Menubar
+- [ ] Navigation Menu
+- [ ] Popover
+- [x] Progress
+- [x] Radio
+- [ ] Select
+- [x] Separator
+- [x] Switch
+- [ ] Tabs
+- [ ] Toast
+- [x] Toggle
+- [x] Toggle Group
+- [ ] Toolbar
+- [ ] Tooltip
+
 
 ## Community
 
