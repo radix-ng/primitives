@@ -6,7 +6,7 @@ import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@a
     template: `
         <div class="flex gap-6 md:gap-10">
             <a href="/" class="hidden items-center space-x-2 md:flex">
-                <span class="hidden font-bold sm:inline-block"> Taxonomy </span>
+                <span class="hidden font-bold sm:inline-block">Taxonomy</span>
             </a>
             <nav class="hidden gap-6 md:flex">
                 <!-- Items -->
@@ -17,6 +17,6 @@ import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@a
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MainNavComponent {
+export class TxMainNavComponent {
     @Input() navigation: [] = [];
 }

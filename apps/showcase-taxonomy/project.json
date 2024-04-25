@@ -7,57 +7,60 @@
     "tags": [],
     "targets": {
         "build": {
-            "executor": "@angular-devkit/build-angular:application",
-            "outputs": ["{options.outputPath}"],
+            "executor": "@analogjs/platform:vite",
+            "outputs": [
+                "{options.outputPath}",
+                "{workspaceRoot}/dist/showcase-taxonomy/.nitro",
+                "{workspaceRoot}/dist/showcase-taxonomy/ssr",
+                "{workspaceRoot}/dist/showcase-taxonomy/analog"
+            ],
             "options": {
-                "outputPath": "dist/apps/showcase-taxonomy",
-                "index": "apps/showcase-taxonomy/src/index.html",
-                "browser": "apps/showcase-taxonomy/src/main.ts",
-                "polyfills": ["zone.js"],
-                "tsConfig": "apps/showcase-taxonomy/tsconfig.app.json",
-                "inlineStyleLanguage": "scss",
+                "main": "./apps/showcase-taxonomy/src/main.ts",
+                "configFile": "./apps/showcase-taxonomy/vite.config.ts",
+                "outputPath": "dist/showcase-taxonomy/client",
                 "assets": [
-                    "apps/showcase-taxonomy/src/favicon.ico",
-                    "apps/showcase-taxonomy/src/assets"
+                    {
+                        "glob": "**/*",
+                        "input": "src/public/assets",
+                        "output": "/assets/"
+                    },
+                    {
+                        "glob": "favicon.ico",
+                        "input": "src/",
+                        "output": "/"
+                    }
                 ],
-                "styles": ["apps/showcase-taxonomy/src/styles.scss"],
-                "scripts": []
+                "styles": [
+                    "apps/showcase-taxonomy/src/styles.scss"
+                ]
             },
+            "defaultConfiguration": "production",
             "configurations": {
-                "production": {
-                    "budgets": [
-                        {
-                            "type": "initial",
-                            "maximumWarning": "500kb",
-                            "maximumError": "1mb"
-                        },
-                        {
-                            "type": "anyComponentStyle",
-                            "maximumWarning": "2kb",
-                            "maximumError": "4kb"
-                        }
-                    ],
-                    "outputHashing": "all"
-                },
                 "development": {
-                    "optimization": false,
-                    "extractLicenses": false,
-                    "sourceMap": true
+                    "mode": "development"
+                },
+                "production": {
+                    "sourcemap": false,
+                    "mode": "production"
                 }
-            },
-            "defaultConfiguration": "production"
+            }
         },
         "serve": {
-            "executor": "@angular-devkit/build-angular:dev-server",
+            "executor": "@analogjs/platform:vite-dev-server",
+            "defaultConfiguration": "development",
+            "options": {
+                "buildTarget": "showcase-taxonomy:build",
+                "port": 4200
+            },
             "configurations": {
+                "development": {
+                    "buildTarget": "showcase-taxonomy:build:development",
+                    "hmr": true
+                },
                 "production": {
                     "buildTarget": "showcase-taxonomy:build:production"
-                },
-                "development": {
-                    "buildTarget": "showcase-taxonomy:build:development"
                 }
-            },
-            "defaultConfiguration": "development"
+            }
         },
         "extract-i18n": {
             "executor": "@angular-devkit/build-angular:extract-i18n",
@@ -66,14 +69,22 @@
             }
         },
         "lint": {
-            "executor": "@nx/eslint:lint"
+            "executor": "@nx/linter:eslint",
+            "outputs": [
+                "{options.outputFile}"
+            ],
+            "options": {
+                "lintFilePatterns": [
+                    "./apps/showcase-taxonomy/**/*.ts",
+                    "./apps/showcase-taxonomy/**/*.html"
+                ]
+            }
         },
         "test": {
-            "executor": "@nx/jest:jest",
-            "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-            "options": {
-                "jestConfig": "apps/showcase-taxonomy/jest.config.ts"
-            }
+            "executor": "@analogjs/platform:vitest",
+            "outputs": [
+                "{projectRoot}/showcase-taxonomy/coverage"
+            ]
         }
     }
 }

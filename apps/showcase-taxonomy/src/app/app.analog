@@ -1,0 +1,12 @@
+<script lang="ts">
+    import MarketingLayout from './components/marketing-layout.analog' with { analog: 'imports' };
+
+    import { RouterOutlet } from '@angular/router';
+
+    defineMetadata({ imports: [RouterOutlet] });
+
+</script>
+
+<template>
+    <MarketingLayout />
+</template>
