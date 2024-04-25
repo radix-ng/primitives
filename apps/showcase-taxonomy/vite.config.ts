@@ -36,7 +36,9 @@ export default defineConfig(({ mode }) => {
                     routes: ['/', '/login', '/pricing', ...postRoutes.en]
                 },
                 nitro: {
-                    preset: 'node-server'
+                    preset: 'vercel',
+                    serveStatic: false,
+                    externals: { inline: ['zone.js/node', 'tslib'] }
                 }
             }),
             nxViteTsPaths(),
