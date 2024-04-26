@@ -1,5 +1,4 @@
 # Radix Angular
-
 <p>
     <a href="https://www.npmjs.com/package/@radix-ng/primitives">
         <img src="https://img.shields.io/npm/dm/@radix-ng/primitives.svg?style=flat-round" alt="npm downloads">
@@ -24,31 +23,21 @@ AnalogJS version [Taxonomy](https://github.com/shadcn-ui/taxonomy) – [https://
 ```angular2html
 .
 ├── apps
-│   ├── docs               (landing and docs)
-│   └── showcase-taxonomy  (showcase Taxonomy app)
+│   ├── docs               (//TODO: landing and docs)
+│   └── showcase-taxonomy  (AnalogJS showcase Taxonomy app)
 └── packages
     ├── components         (components based on primitives with custom styling)
-    │   ├── button
-    │   └── checkbox
     └── primitives         (headless primitives UI without any styling)
-        ├── checkbox
-        ├── label
-        ├── progress
-        ├── radio
-        ├── roving-focus
-        ├── separator
-        ├── switch
-        ├── tooltip
-        └── visually-hidden
 ```
+
 ## Primitives Roadmap
-- [x] Accordion
+- [x] Accordion        (needs a11y support)
 - [ ] Alert Dialog
 - [x] Avatar
-- [x] Checkbox
+- [x] Checkbox         (need it more adaptation for FormGroup)
 - [ ] Collapsible
 - [ ] Context Menu
-- [ ] Dialog
+- [ ] Dialog           (will be based on angular/cdk)
 - [ ] Dropdown
 - [ ] Hover Card
 - [x] Label
