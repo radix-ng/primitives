@@ -1,5 +1,7 @@
 import { booleanAttribute, Directive, Input } from '@angular/core';
 
+export type SeparatorOrientation = 'horizontal' | 'vertical';
+
 @Directive({
     selector: '[rdxSeparator]',
     standalone: true,
@@ -14,7 +16,7 @@ export class RdxSeparatorDirective {
      * The orientation of the separator.
      * @default 'horizontal'
      */
-    @Input('rdxSeparatorOrientation') orientation: 'horizontal' | 'vertical' = 'horizontal';
+    @Input('rdxSeparatorOrientation') orientation: SeparatorOrientation = 'horizontal';
 
     /**
      * Whether the separator is for decoration purposes. If true, the separator will not be included in the accessibility tree.

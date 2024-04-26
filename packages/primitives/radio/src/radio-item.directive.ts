@@ -6,14 +6,18 @@ import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 import { injectRadioGroup } from './radio-group.token';
 import { RdxRadioItemToken } from './radio-item.token';
 
+// Increasing integer for generating unique ids for radio components.
+let nextUniqueId = 0;
+
 @Directive({
-    selector: 'button[rdxRadioItem]',
+    selector: '[rdxRadioItem]',
     standalone: true,
     hostDirectives: [RdxRovingFocusItemDirective],
     providers: [{ provide: RdxRadioItemToken, useExisting: RdxRadioItemDirective }],
     host: {
         type: 'button',
         role: 'radio',
+        '[attr.id]': 'id',
         '[attr.aria-checked]': 'radioGroup.value === value ? "true" : "false"',
         '[attr.data-disabled]': 'disabled ? "" : null',
         '[attr.data-state]': 'radioGroup.value === value ? "checked" : "unchecked"'
@@ -25,6 +29,9 @@ export class RdxRadioItemDirective {
      */
     protected readonly radioGroup = injectRadioGroup();
 
+    /** The unique ID for the radio button. */
+    @Input() id: string | undefined;
+
     /**
      * The value of the radio item.
      */
@@ -35,6 +42,12 @@ export class RdxRadioItemDirective {
      * @default false
      */
     @Input({ transform: booleanAttribute }) disabled = false;
+
+    private readonly uniqueId: string = `rdx-radio-${++nextUniqueId}`;
+
+    constructor() {
+        this.id = this.uniqueId;
+    }
 
     /**
      * Handle keydown events.
