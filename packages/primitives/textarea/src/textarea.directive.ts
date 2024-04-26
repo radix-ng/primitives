@@ -17,7 +17,7 @@ import { Subject } from 'rxjs';
 
 import { RdxFormFieldControl } from '../../form-field';
 import { RdxTextareaBase } from './textarea-base';
-import { RDX_TEXTAREA_VALUE_ACCESSOR } from './token-accessor';
+import { RDX_TEXTAREA_VALUE_ACCESSOR } from './textarea.token';
 
 let nextUniqueId = 0;
 

@@ -90,7 +90,6 @@ export class RdxRovingFocusItemDirective implements OnInit, OnDestroy, Focusable
 
     /**
      * Focus the roving focus item.
-     * @param origin The origin of the focus request.
      * @internal
      */
     focus(): void {
