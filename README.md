@@ -33,7 +33,6 @@ AnalogJS version [Taxonomy](https://github.com/shadcn-ui/taxonomy) – [https://
     └── primitives         (headless primitives UI without any styling)
         ├── checkbox
         ├── label
-        ├── overlay
         ├── progress
         ├── radio
         ├── roving-focus
