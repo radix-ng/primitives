@@ -1,5 +1,6 @@
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import {
+    booleanAttribute,
     Directive,
     DoCheck,
     ElementRef,
@@ -64,23 +65,11 @@ export class RdxTextareaDirective
      */
     @Input() placeholder: string | undefined;
 
+    @Input({ transform: booleanAttribute }) required = false;
+
+    @Input() id = `rdx-textarea-${nextUniqueId++}`;
+
     private _disabled = false;
-
-    private _required = false;
-
-    /**
-     * Implemented as part of FormFieldControl.
-     * @docs-private
-     */
-    @Input()
-    get required(): boolean {
-        return this._required;
-    }
-
-    set required(value: boolean) {
-        this._required = coerceBooleanProperty(value);
-    }
-
     /**
      * Implemented as part of FormFieldControl.
      * @docs-private
@@ -103,8 +92,6 @@ export class RdxTextareaDirective
         }
     }
 
-    private valueAccessor: { value: any };
-
     @Input()
     get value(): string {
         return this.valueAccessor.value;
@@ -117,26 +104,13 @@ export class RdxTextareaDirective
         }
     }
 
-    protected uid = `rdx-textarea-${nextUniqueId++}`;
-    private _id = '';
     protected previousNativeValue: any;
-
-    /**
-     * Implemented as part of FormFieldControl.
-     * @docs-private
-     */
-    @Input()
-    get id(): string {
-        return this._id;
-    }
-
-    set id(value: string) {
-        this._id = value || this.uid;
-    }
+    private valueAccessor: { value: any };
 
     constructor(
         protected elementRef: ElementRef,
         @Optional() @Self() ngControl: NgControl,
+        // Prepare for working with FormField
         @Optional() parentForm: NgForm,
         @Optional() parentFormGroup: FormGroupDirective,
         @Optional() @Self() @Inject(RDX_TEXTAREA_VALUE_ACCESSOR) inputValueAccessor: any
@@ -155,11 +129,10 @@ export class RdxTextareaDirective
     }
 
     private setBaseStyles() {
+        // Chrome textarea height sizing fix
         const baseStyles = {
-            '-webkit-appearance': 'none', // Chrome textarea height sizing fix
-            'vertical-align': 'bottom',
-            'box-sizing': 'border-box',
-            'overflow-y': 'hidden'
+            '-webkit-appearance': 'none',
+            'vertical-align': 'bottom'
         };
 
         Object.assign(this.elementRef.nativeElement.style, baseStyles);
