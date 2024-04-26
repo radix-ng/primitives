@@ -1,5 +1,6 @@
 import {
     booleanAttribute,
+    ChangeDetectorRef,
     Directive,
     EventEmitter,
     HostListener,
@@ -65,6 +66,8 @@ export class RdxRadioGroupDirective implements ControlValueAccessor {
      */
     private onTouched?: () => void;
 
+    constructor(private readonly changeDetector: ChangeDetectorRef) {}
+
     /**
      * Select a radio item.
      * @param value The value of the radio item to select.
@@ -82,6 +85,7 @@ export class RdxRadioGroupDirective implements ControlValueAccessor {
      */
     writeValue(value: string): void {
         this.value = value;
+        this.changeDetector.markForCheck();
     }
 
     /**
@@ -104,6 +108,7 @@ export class RdxRadioGroupDirective implements ControlValueAccessor {
      */
     setDisabledState(isDisabled: boolean): void {
         this.disabled = isDisabled;
+        this.changeDetector.markForCheck();
     }
 
     /**

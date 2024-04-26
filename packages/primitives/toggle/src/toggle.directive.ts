@@ -16,10 +16,15 @@ let uniqueId = 0;
         type: 'button',
         '[attr.aria-pressed]': 'pressed',
         '[attr.data-state]': 'pressed ? "on" : "off"',
-        '[attr.data-disabled]': 'disabled'
+        '[attr.data-disabled]': 'disabled',
+        '[attr.aria-label]': 'ariaLabel',
+        '[attr.aria-labelledby]': 'ariaLabelledby'
     }
 })
 export class RdxToggleDirective {
+    @Input() ariaLabel = undefined;
+
+    @Input() ariaLabelledby = undefined;
     /**
      * Whether the toggle is pressed.
      * @default false
@@ -45,12 +50,13 @@ export class RdxToggleDirective {
      * Toggle the pressed state.
      */
     @HostListener('click')
-    toggle(): void {
+    toggle(event: MouseEvent): void {
         if (this.disabled) {
             return;
         }
-
         this.pressed = !this.pressed;
         this.pressedChange.emit(this.pressed);
+
+        event.stopPropagation();
     }
 }
