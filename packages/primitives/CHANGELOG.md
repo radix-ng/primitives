@@ -1,3 +1,17 @@
+## 0.5.0 (2024-04-26)
+
+
+### 🚀 Features
+
+- added Accordion primitive ([2e95121](https://github.com/radix-ng/primitives/commit/2e95121))
+
+- **toggle-group:** added Toggle Group primitive ([88a38d3](https://github.com/radix-ng/primitives/commit/88a38d3))
+
+
+### 🩹 Fixes
+
+- **label:** added setter for UniqueId ([774c82f](https://github.com/radix-ng/primitives/commit/774c82f))
+
 ## 0.4.0 (2024-04-22)
 
 
