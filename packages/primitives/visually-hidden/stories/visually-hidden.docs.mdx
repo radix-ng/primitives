@@ -13,19 +13,22 @@ import { Meta } from '@storybook/addon-docs';
 
 ## Import
 
-Get started with importing the directive:
+Screen readers and other assistive technology skip elements that have display: none, visibility: hidden, opacity: 0, height: 0, or width: 0. In some cases you may need to visually hide an element while keeping it available to assistive technology.
+You can do so using the a11y-visually-hidden Sass mixin, which emits the .cdk-visually-hidden CSS class:
 
-```typescript
-import { RdxVisuallyHiddenDirective } from '@radix-ng/primitives/visually-hidden';
+```css
+@use '@angular/cdk';
+
+@include cdk.a11y-visually-hidden();
 ```
+
 
 ## Examples
 
 ```html
-<button aria-label="Open menu">
-    <span rdxVisuallyHidden>Open menu</span>
-    <svg><!-- Menu Icon --></svg>
-</button>
+<div class="custom-checkbox">
+  <input type="checkbox" class="cdk-visually-hidden">
+</div>
 ```
 
 ## Accessibility

@@ -7,12 +7,10 @@ import {
     TestBed,
     tick
 } from '@angular/core/testing';
-import { FormBuilder, FormGroup, FormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 
 import { RdxTextareaDirective } from './textarea.directive';
-
-const MIN_TEXTAREA_HEIGHT = 80;
 
 function createComponent<T>(
     component: Type<T>,

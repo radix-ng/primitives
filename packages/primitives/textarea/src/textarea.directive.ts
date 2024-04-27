@@ -6,6 +6,7 @@ import {
     ElementRef,
     EventEmitter,
     Inject,
+    InjectionToken,
     Input,
     OnChanges,
     OnDestroy,
@@ -16,11 +17,13 @@ import {
 import { FormGroupDirective, NgControl, NgForm } from '@angular/forms';
 import { Subject } from 'rxjs';
 
-import { RdxFormFieldControl } from '../../form-field';
 import { RdxTextareaBase } from './textarea-base';
-import { RDX_TEXTAREA_VALUE_ACCESSOR } from './textarea.token';
 
 let nextUniqueId = 0;
+
+export const RDX_TEXTAREA_VALUE_ACCESSOR = new InjectionToken<{ value: any }>(
+    'RDX_TEXTAREA_VALUE_ACCESSOR'
+);
 
 @Directive({
     selector: 'textarea[rdxTextarea]',
@@ -34,12 +37,11 @@ let nextUniqueId = 0;
 
         '(blur)': 'onBlur()',
         '(focus)': 'focusChanged(true)'
-    },
-    providers: [{ provide: RdxFormFieldControl, useExisting: RdxTextareaDirective }]
+    }
 })
 export class RdxTextareaDirective
     extends RdxTextareaBase
-    implements RdxFormFieldControl<any>, OnInit, OnChanges, OnDestroy, DoCheck
+    implements OnInit, OnChanges, OnDestroy, DoCheck
 {
     /**
      * Implemented as part of FormFieldControl.

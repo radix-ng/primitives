@@ -19,7 +19,7 @@ export class RdxSeparatorDirective {
     @Input('rdxSeparatorOrientation') orientation: SeparatorOrientation = 'horizontal';
 
     /**
-     * Whether the separator is for decoration purposes. If true, the separator will not be included in the accessibility tree.
+     * If true, the separator will not be included in the accessibility tree.
      * @default false
      */
     @Input({ alias: 'rdxSeparatorDecorative', transform: booleanAttribute }) decorative = false;

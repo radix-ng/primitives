@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 export class RdxTextareaBase {
     /**
      * Emits whenever the component state changes and should cause the parent
-     * form-field to update. Implemented as part of `KbqFormFieldControl`.
+     * form-field to update. Implemented as part of `FormFieldControl`.
      * @docs-private
      */
     readonly stateChanges = new Subject<void>();

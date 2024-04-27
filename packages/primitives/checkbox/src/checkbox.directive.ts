@@ -10,6 +10,8 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { RdxCheckboxToken } from './checkbox.token';
 
+export type CheckboxState = 'unchecked' | 'checked' | 'indeterminate';
+
 @Directive({
     selector: 'button[rdxCheckbox]',
     standalone: true,
@@ -56,7 +58,7 @@ export class RdxCheckboxDirective implements ControlValueAccessor {
     /**
      * Determine the state
      */
-    get state(): 'checked' | 'unchecked' | 'indeterminate' {
+    get state(): CheckboxState {
         if (this.indeterminate) {
             return 'indeterminate';
         }
