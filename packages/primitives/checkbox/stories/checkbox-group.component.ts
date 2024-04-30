@@ -14,7 +14,7 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
     template: `
         <section [formGroup]="personality">
             <p>
-                <label LabelRoot class="Label">
+                <label LabelRoot class="Label" htmlFor="r1">
                     <button class="CheckboxRoot" rdxCheckbox formControlName="fun">
                         <ng-icon
                             rdxCheckboxIndicator
@@ -24,6 +24,7 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
                         <input
                             rdxCheckboxIndicator
                             type="checkbox"
+                            id="r1"
                             aria-hidden="true"
                             tabindex="-1"
                             class="Input"
@@ -33,7 +34,7 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
                 </label>
             </p>
             <p>
-                <label LabelRoot class="Label">
+                <label LabelRoot class="Label" htmlFor="r2">
                     <button class="CheckboxRoot" rdxCheckbox formControlName="serious">
                         <ng-icon
                             rdxCheckboxIndicator
@@ -42,6 +43,7 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
                         ></ng-icon>
                         <input
                             rdxCheckboxIndicator
+                            id="r2"
                             type="checkbox"
                             aria-hidden="true"
                             tabindex="-1"
@@ -52,7 +54,7 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
                 </label>
             </p>
             <p>
-                <label LabelRoot class="Label">
+                <label LabelRoot class="Label" htmlFor="r3">
                     <button class="CheckboxRoot" rdxCheckbox formControlName="smart">
                         <ng-icon
                             rdxCheckboxIndicator
@@ -61,6 +63,7 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
                         ></ng-icon>
                         <input
                             rdxCheckboxIndicator
+                            id="r3"
                             type="checkbox"
                             aria-hidden="true"
                             tabindex="-1"
