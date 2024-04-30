@@ -8,7 +8,7 @@ import {
     OnDestroy
 } from '@angular/core';
 
-import { Thumb } from './slide.types';
+import { Thumb } from './slider.types';
 
 @Directive({
     standalone: true

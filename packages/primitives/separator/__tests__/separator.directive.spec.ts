@@ -2,14 +2,14 @@ import { Component, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
-import { RdxSeparatorDirective } from './separator.directive';
+import { Orientation, RdxSeparatorRootDirective } from '../src/separator.directive';
 
 @Component({
     template:
-        '<div rdxSeparator [rdxSeparatorOrientation]="orientation" [rdxSeparatorDecorative]="decorative"></div>'
+        '<div SeparatorRoot [rdxOrientation]="orientation" [rdxDecorative]="decorative"></div>'
 })
 class TestComponent {
-    orientation: 'horizontal' | 'vertical' = 'horizontal';
+    orientation: Orientation = 'horizontal';
     decorative = false;
 }
 
@@ -21,7 +21,7 @@ describe('SeparatorDirective', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [TestComponent],
-            imports: [RdxSeparatorDirective]
+            imports: [RdxSeparatorRootDirective]
         }).compileComponents();
     });
 
@@ -33,7 +33,7 @@ describe('SeparatorDirective', () => {
     });
 
     it('should create an instance', () => {
-        const directive = new RdxSeparatorDirective();
+        const directive = new RdxSeparatorRootDirective();
         expect(directive).toBeTruthy();
     });
 

@@ -1,16 +1,16 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
-import { RdxLabelDirective } from '../../label';
-import { RdxRadioGroupDirective } from '../src/radio-group.directive';
+import { RdxLabelRootDirective } from '../../label';
 import { RdxRadioIndicatorDirective } from '../src/radio-indicator.directive';
 import { RdxRadioItemDirective } from '../src/radio-item.directive';
+import { RdxRadioGroupDirective } from '../src/radio-root.directive';
 
 export default {
     title: 'Primitives/Radio Group',
     decorators: [
         moduleMetadata({
             imports: [
-                RdxLabelDirective,
+                RdxLabelRootDirective,
                 RdxRadioItemDirective,
                 RdxRadioIndicatorDirective,
                 RdxRadioGroupDirective
@@ -31,31 +31,31 @@ export const Default: Story = {
     render: () => ({
         template: `
 <form>
-    <div rdxRadioGroup [(rdxRadioGroupValue)]="value" class="RadioGroupRoot" aria-label="View density">
+    <div RadioRoot [(rdxRadioGroupValue)]="value" class="RadioGroupRoot" aria-label="View density">
         <div style="display: flex; align-items: center;">
-            <button rdxRadioItem class="RadioGroupItem" value="default" id="r1">
-                <div rdxRadioIndicator class="RadioGroupIndicator"></div>
-                <input rdxRadioIndicator type="radio" aria-hidden="true" tabindex="-1" value="default" class="Input">
+            <button RadioItem class="RadioGroupItem" value="default" id="r1">
+                <div RadioIndicator class="RadioGroupIndicator"></div>
+                <input RadioIndicator type="radio" aria-hidden="true" tabindex="-1" value="default" class="Input">
             </button>
-            <label rdxLabel htmlFor="r1" class="Label">
+            <label LabelRoot htmlFor="r1" class="Label">
               Default
             </label>
         </div>
         <div style="display: flex; align-items: center;">
-            <button rdxRadioItem class="RadioGroupItem" value="comfortable" id="r2">
-                 <div rdxRadioIndicator class="RadioGroupIndicator"></div>
-                 <input rdxRadioIndicator type="radio" aria-hidden="true" tabindex="-1" value="comfortable" class="Input">
+            <button RadioItem class="RadioGroupItem" value="comfortable" id="r2">
+                 <div RadioIndicator class="RadioGroupIndicator"></div>
+                 <input RadioIndicator type="radio" aria-hidden="true" tabindex="-1" value="comfortable" class="Input">
             </button>
-            <label rdxLabel htmlFor="r2" class="Label">
+            <label LabelRoot htmlFor="r2" class="Label">
               Comfortable
             </label>
         </div>
         <div style="display: flex; align-items: center;">
-            <button rdxRadioItem class="RadioGroupItem" value="compact" id="r3">
-                 <div rdxRadioIndicator class="RadioGroupIndicator"></div>
-                 <input rdxRadioIndicator type="radio" aria-hidden="true" tabindex="-1" value="compact" class="Input">
+            <button RadioItem class="RadioGroupItem" value="compact" id="r3">
+                 <div RadioIndicator class="RadioGroupIndicator"></div>
+                 <input RadioIndicator type="radio" aria-hidden="true" tabindex="-1" value="compact" class="Input">
             </button>
-            <label rdxLabel htmlFor="r3" class="Label">
+            <label LabelRoot htmlFor="r3" class="Label">
               Compact
             </label>
         </div>

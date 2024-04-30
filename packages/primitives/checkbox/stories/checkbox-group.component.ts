@@ -4,18 +4,17 @@ import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { radixCheck } from '@ng-icons/radix-icons';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
+import { RdxLabelRootDirective } from '@radix-ng/primitives/label';
 
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
 import { RdxCheckboxDirective } from '../src/checkbox.directive';
 
 @Component({
-    // eslint-disable-next-line @angular-eslint/component-selector
     selector: 'checkbox-groups-forms-example',
     template: `
         <section [formGroup]="personality">
             <p>
-                <label rdxLabel class="Label">
+                <label LabelRoot class="Label">
                     <button class="CheckboxRoot" rdxCheckbox formControlName="fun">
                         <ng-icon
                             rdxCheckboxIndicator
@@ -34,7 +33,7 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
                 </label>
             </p>
             <p>
-                <label rdxLabel class="Label">
+                <label LabelRoot class="Label">
                     <button class="CheckboxRoot" rdxCheckbox formControlName="serious">
                         <ng-icon
                             rdxCheckboxIndicator
@@ -53,7 +52,7 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
                 </label>
             </p>
             <p>
-                <label rdxLabel class="Label">
+                <label LabelRoot class="Label">
                     <button class="CheckboxRoot" rdxCheckbox formControlName="smart">
                         <ng-icon
                             rdxCheckboxIndicator
@@ -90,14 +89,13 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
         FormsModule,
         ReactiveFormsModule,
         JsonPipe,
-        RdxLabelDirective,
+        RdxLabelRootDirective,
         RdxCheckboxDirective,
         RdxCheckboxIndicatorDirective,
         NgIconComponent
     ],
     providers: [provideIcons({ radixCheck })]
 })
-// eslint-disable-next-line @angular-eslint/component-class-suffix
 export class CheckboxReactiveFormsExample {
     personality = this.formBuilder.group({
         fun: false,

@@ -2,11 +2,11 @@ import { Component, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
-import { RdxToggleDirective } from './toggle.directive';
+import { RdxToggleRootDirective } from '../src/toggle-root.directive';
 
 @Component({
     template:
-        '<button rdxToggle [rdxTogglePressed]="pressed" [rdxToggleDisabled]="disabled" (rdxToggleOnPressedChange)="onToggle($event)">Toggle</button>'
+        '<button ToggleRoot [rdxTogglePressed]="pressed" [rdxToggleDisabled]="disabled" (rdxToggleOnPressedChange)="onToggle($event)">Toggle</button>'
 })
 class TestComponent {
     pressed = false;
@@ -24,7 +24,7 @@ describe('RdxToggleDirective', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RdxToggleDirective],
+            imports: [RdxToggleRootDirective],
             declarations: [TestComponent]
         }).compileComponents();
     });
@@ -37,7 +37,7 @@ describe('RdxToggleDirective', () => {
     });
 
     it('should create an instance', () => {
-        const directive = new RdxToggleDirective();
+        const directive = new RdxToggleRootDirective();
         expect(directive).toBeTruthy();
     });
 

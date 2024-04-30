@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 import { labelExclude } from '../../.docs/utils/storybook';
-import { RdxLabelDirective } from '../src/label.directive';
+import { RdxLabelRootDirective } from '../src/label-root.directive';
 
 export default {
-    component: RdxLabelDirective,
+    component: RdxLabelRootDirective,
     title: 'Primitives/Label',
     parameters: {
         controls: {
@@ -15,7 +15,7 @@ export default {
     },
     decorators: [
         moduleMetadata({
-            imports: [RdxLabelDirective, CommonModule]
+            imports: [RdxLabelRootDirective, CommonModule]
         }),
         componentWrapperDecorator(
             (story) =>
@@ -24,9 +24,9 @@ export default {
                       data-scaling="100%">${story}</div>`
         )
     ]
-} as Meta<RdxLabelDirective>;
+} as Meta<RdxLabelRootDirective>;
 
-type Story = StoryObj<RdxLabelDirective>;
+type Story = StoryObj<RdxLabelRootDirective>;
 
 export const Default: Story = {
     render: (args) => ({
@@ -72,7 +72,7 @@ label {
 </style>
 
 <div class="light light-theme">
-    <label rdxLabel htmlFor="uniqId">First Name </label>
+    <label LabelRoot htmlFor="uniqId">First Name </label>
     <input type="text" class="Input" id="uniqId" />
 </div>
 `

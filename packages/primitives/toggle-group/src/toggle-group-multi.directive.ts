@@ -90,7 +90,7 @@ export class RdxToggleGroupMultiDirective
     private onChange?: (value: ReadonlyArray<string>) => void;
 
     /**
-     * The touched callback.
+     * onTouch function registered via registerOnTouch (ControlValueAccessor).
      */
     protected onTouched?: () => void;
 

@@ -2,13 +2,13 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { radixFontItalic } from '@ng-icons/radix-icons';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
-import { RdxToggleDirective } from '../src/toggle.directive';
+import { RdxToggleRootDirective } from '../src/toggle-root.directive';
 
 export default {
     title: 'Primitives/Toggle',
     decorators: [
         moduleMetadata({
-            imports: [RdxToggleDirective, NgIconComponent],
+            imports: [RdxToggleRootDirective, NgIconComponent],
             providers: [provideIcons({ radixFontItalic })]
         }),
         componentWrapperDecorator(
@@ -61,7 +61,7 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: `
-<button rdxToggle aria-label="Toggle italic" class="Toggle">
+<button ToggleRoot aria-label="Toggle italic" class="Toggle">
     <ng-icon name="radixFontItalic"></ng-icon>
 </button>
 `
@@ -71,7 +71,7 @@ export const Default: Story = {
 export const State: Story = {
     render: () => ({
         template: `
-<button rdxToggle [rdxTogglePressed]="pressed" aria-label="Toggle italic" class="Toggle">
+<button ToggleRoot [rdxTogglePressed]="pressed" aria-label="Toggle italic" class="Toggle">
     <ng-icon name="radixFontItalic"></ng-icon>
 </button>
 `

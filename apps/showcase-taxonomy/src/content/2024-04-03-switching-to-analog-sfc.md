@@ -761,8 +761,8 @@ export class ContactFormComponent {
       ? 'A message is required'
       : undefined;
 
-  const canSubmit = injectStore(contactForm, (state) => state.canSubmit);
-  const isSubmitting = injectStore(contactForm, (state) => state.isSubmitting);
+  const canSubmit = injectStore(contactForm, (_state) => _state.canSubmit);
+  const isSubmitting = injectStore(contactForm, (_state) => _state.isSubmitting);
 
   function submitForm(event: SubmitEvent) {
     event.preventDefault();
@@ -807,12 +807,12 @@ export class ContactFormComponent {
                 (input)="name.api.handleChange($any($event).target.value)"
                 [id]="name.api.name"
                 [name]="name.api.name"
-                [value]="name.api.state.value"
+                [value]="name.api._state.value"
                 class="input input-bordered w-full"
                 placeholder="{{ t('type-here') }}"
                 type="text"
               />
-              @if (name.api.state.meta.touchedErrors.length > 0) {
+              @if (name.api._state.meta.touchedErrors.length > 0) {
               <label class="label">
               <span class="label-text-alt text-error font-bold">{{
                   t('name-error')
@@ -838,13 +838,13 @@ export class ContactFormComponent {
                 (input)="email.api.handleChange($any($event).target.value)"
                 [id]="email.api.name"
                 [name]="email.api.name"
-                [value]="email.api.state.value"
+                [value]="email.api._state.value"
                 class="input input-bordered w-full"
                 placeholder="{{ t('email-placeholder') }}"
                 type="email"
               />
-              @if (email.api.state.meta.errors.length > 0) {
-              @if (email.api.state.meta.errors[0].includes('required')) {
+              @if (email.api._state.meta.errors.length > 0) {
+              @if (email.api._state.meta.errors[0].includes('required')) {
               <label class="label">
               <span class="label-text-alt text-error font-bold">{{
                   t('email-error-one')
@@ -877,10 +877,10 @@ export class ContactFormComponent {
                 (input)="message.api.handleChange($any($event).target.value)"
                 [id]="message.api.name"
                 [name]="message.api.name"
-                [value]="message.api.state.value"
+                [value]="message.api._state.value"
                 class="textarea textarea-bordered h-24 text-base"
                 placeholder="{{ t('say-hi') }}"></textarea>
-              @if (message.api.state.meta.touchedErrors.length > 0) {
+              @if (message.api._state.meta.touchedErrors.length > 0) {
               <label class="label">
               <span class="label-text-alt text-error font-bold">{{
                   t('message-error')
@@ -977,8 +977,8 @@ These are validation functions. As you can see, we create one and return the res
 And finally, we come to the part where we handle the form submission, and we declare some handy utilities for our UX.
 
 ```ts
-const canSubmit = injectStore(contactForm, (state) => state.canSubmit);
-const isSubmitting = injectStore(contactForm, (state) => state.isSubmitting);
+const canSubmit = injectStore(contactForm, (_state) => _state.canSubmit);
+const isSubmitting = injectStore(contactForm, (_state) => _state.isSubmitting);
 
 function submitForm(event: SubmitEvent) {
   event.preventDefault();
@@ -987,7 +987,7 @@ function submitForm(event: SubmitEvent) {
 }
 ```
 
-I believe the names of the variables and functions largely explain their purpose, but let's dive a bit deeper. Here, we declare two constants that are signals, computed from our form state. This is particularly helpful as it assists us in managing the UI state, enabling us to respond appropriately to user events.
+I believe the names of the variables and functions largely explain their purpose, but let's dive a bit deeper. Here, we declare two constants that are signals, computed from our form _state. This is particularly helpful as it assists us in managing the UI _state, enabling us to respond appropriately to user events.
 
 And finally the template integration, i'll include only one since the others are pretty much the same:
 
@@ -1009,12 +1009,12 @@ And finally the template integration, i'll include only one since the others are
       (input)="name.api.handleChange($any($event).target.value)"
       [id]="name.api.name"
       [name]="name.api.name"
-      [value]="name.api.state.value"
+      [value]="name.api._state.value"
       class="input input-bordered w-full"
       placeholder="{{ t('type-here') }}"
       type="text"
     />
-    @if (name.api.state.meta.touchedErrors.length > 0) {
+    @if (name.api._state.meta.touchedErrors.length > 0) {
     <label class="label">
               <span class="label-text-alt text-error font-bold">{{
                   t('name-error')
@@ -1040,7 +1040,7 @@ And finally the template integration, i'll include only one since the others are
 </div>
 ```
 
-In this section, we integrate everything into the template. The **tanstackField** directive works its magic, handling form validation **onBlur**. Additionally, you can observe how the utilities we declared affect the state of our buttons. If the form isn't ready for submission, the button will be disabled, and if the form is in the process of "submitting," the button will display a neat loading animation.
+In this section, we integrate everything into the template. The **tanstackField** directive works its magic, handling form validation **onBlur**. Additionally, you can observe how the utilities we declared affect the _state of our buttons. If the form isn't ready for submission, the button will be disabled, and if the form is in the process of "submitting," the button will display a neat loading animation.
 
 ## 🌟 Conclusion: The Path Ahead with Analog
 

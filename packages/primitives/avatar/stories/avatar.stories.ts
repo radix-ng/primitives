@@ -2,13 +2,13 @@ import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@stor
 
 import { RdxAvatarFallbackDirective } from '../src/avatar-fallback.directive';
 import { RdxAvatarImageDirective } from '../src/avatar-image.directive';
-import { RdxAvatarDirective } from '../src/avatar.directive';
+import { RdxAvatarRootDirective } from '../src/avatar-root.directive';
 
 export default {
     title: 'Primitives/Avatar',
     decorators: [
         moduleMetadata({
-            imports: [RdxAvatarDirective, RdxAvatarImageDirective, RdxAvatarFallbackDirective]
+            imports: [RdxAvatarRootDirective, RdxAvatarImageDirective, RdxAvatarFallbackDirective]
         }),
         componentWrapperDecorator(
             (story) =>
@@ -26,26 +26,26 @@ export const Default: Story = {
     render: () => ({
         template: `
 <div style=" display: flex; gap: 20px">
-    <span rdxAvatar class="AvatarRoot">
-      <img rdxAvatarImage
+    <span AvatarRoot class="AvatarRoot">
+      <img AvatarImage
             src="https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?&w=128&h=128&dpr=2&q=80"
             alt="Colm Tuite"
             class="AvatarImage" />
-      <span rdxAvatarFallback class="AvatarFallback" rdxAvatarFallbackDelay="600">CT</span>
+      <span AvatarFallback class="AvatarFallback" rdxDelayMs="600">CT</span>
     </span>
 
-    <span rdxAvatar class="AvatarRoot">
-          <img rdxAvatarImage
+    <span AvatarRoot class="AvatarRoot">
+          <img AvatarImage
             class="AvatarImage"
             src="https://images.unsplash.com/photo-1511485977113-f34c92461ad9?ixlib=rb-1.2.1&w=128&h=128&dpr=2&q=80"
             alt="Pedro Duarte"
           />
-          <span rdxAvatarFallback class="AvatarFallback" rdxAvatarFallbackDelay="600">
+          <span AvatarFallback class="AvatarFallback" rdxDelayMs="600">
             JD
           </span>
         </span>
-    <span rdxAvatar class="AvatarRoot">
-      <span rdxAvatarFallback class="AvatarFallback">PD</span>
+    <span AvatarRoot class="AvatarRoot">
+      <span AvatarFallback class="AvatarFallback">PD</span>
     </span>
 </div>
 <style>

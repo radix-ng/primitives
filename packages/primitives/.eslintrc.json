@@ -11,22 +11,7 @@
             "rules": {
                 "@angular-eslint/no-input-rename": "off",
                 "@angular-eslint/no-output-rename": "off",
-                "@angular-eslint/directive-selector": [
-                    "error",
-                    {
-                        "type": "attribute",
-                        "prefix": "rdx",
-                        "style": "camelCase"
-                    }
-                ],
-                "@angular-eslint/component-selector": [
-                    "error",
-                    {
-                        "type": "element",
-                        "prefix": "rdx",
-                        "style": "kebab-case"
-                    }
-                ],
+                "@angular-eslint/no-output-on-prefix": "off",
                 "@angular-eslint/no-host-metadata-property": "off"
             }
         },

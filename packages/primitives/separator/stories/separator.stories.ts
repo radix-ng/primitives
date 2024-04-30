@@ -2,15 +2,15 @@ import { CommonModule } from '@angular/common';
 
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
-import { RdxLabelDirective } from '../../label';
-import { RdxSeparatorDirective } from '../src/separator.directive';
+import { RdxLabelRootDirective } from '../../label';
+import { RdxSeparatorRootDirective } from '../src/separator.directive';
 
 export default {
-    component: RdxSeparatorDirective,
+    component: RdxSeparatorRootDirective,
     title: 'Primitives/Separator',
     decorators: [
         moduleMetadata({
-            imports: [RdxSeparatorDirective, CommonModule]
+            imports: [RdxSeparatorRootDirective, CommonModule]
         }),
         componentWrapperDecorator(
             (story) =>
@@ -19,9 +19,9 @@ export default {
                       data-scaling="100%">${story}</div>`
         )
     ]
-} as Meta<RdxLabelDirective>;
+} as Meta<RdxLabelRootDirective>;
 
-type Story = StoryObj<RdxLabelDirective>;
+type Story = StoryObj<RdxLabelRootDirective>;
 
 export const Default: Story = {
     render: () => ({
@@ -54,7 +54,7 @@ export const Default: Story = {
     <div class="Text" style="font-weight: 500;">
       An open-source UI component library.
     </div>
-    <div rdxSeparator
+    <div SeparatorRoot
         class="SeparatorRoot"
         style="margin: 15px 0;"
     ></div>
@@ -62,19 +62,19 @@ export const Default: Story = {
       <div class="Text">
         Blog
       </div>
-      <div rdxSeparator
+      <div SeparatorRoot
         class="SeparatorRoot"
-        rdxSeparatorDecorative="decorative"
-        rdxSeparatorOrientation="vertical"
+        rdxDecorative="decorative"
+        rdxOrientation="vertical"
         style="margin: 0 15px;"
       ></div>
       <div class="Text">
         Docs
       </div>
-      <div rdxSeparator
+      <div SeparatorRoot
         class="SeparatorRoot"
-        rdxSeparatorDecorative="decorative"
-        rdxSeparatorOrientation="vertical"
+        rdxDecorative="decorative"
+        rdxOrientation="vertical"
         style="margin: 0 15px;"
       ></div>
       <div class="Text">

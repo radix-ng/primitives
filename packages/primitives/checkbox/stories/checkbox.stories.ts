@@ -2,7 +2,7 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { radixCheck } from '@ng-icons/radix-icons';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
-import { RdxLabelDirective } from '../../label';
+import { RdxLabelRootDirective } from '../../label';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
 import { RdxCheckboxDirective } from '../src/checkbox.directive';
 import { CheckboxReactiveFormsExample } from './checkbox-group.component';
@@ -12,7 +12,7 @@ export default {
     decorators: [
         moduleMetadata({
             imports: [
-                RdxLabelDirective,
+                RdxLabelRootDirective,
                 RdxCheckboxDirective,
                 RdxCheckboxIndicatorDirective,
                 NgIconComponent,
@@ -42,7 +42,7 @@ export const Default: Story = {
                 <input type="checkbox" aria-hidden="true" tabindex="-1" value="on" rdxCheckboxIndicator
                 style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0; width: 25px; height: 25px;"/>
             </button>
-            <label rdxLabel htmlFor="r1" class="Label">Check Item</label>
+            <label LabelRoot htmlFor="r1" class="Label">Check Item</label>
         </div>
     </form>
 <style>

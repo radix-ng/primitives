@@ -4,6 +4,8 @@ import {
     Directive,
     EventEmitter,
     HostListener,
+    inject,
+    InjectionToken,
     Input,
     Output
 } from '@angular/core';
@@ -12,10 +14,25 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { RdxRovingFocusGroupDirective } from '@radix-ng/primitives/roving-focus';
 
-import { RdxRadioGroupToken } from './radio-group.token';
+export const RdxRadioGroupToken = new InjectionToken<RdxRadioGroupDirective>('RdxRadioGroupToken');
+
+export function injectRadioGroup(): RdxRadioGroupDirective {
+    return inject(RdxRadioGroupToken);
+}
+
+interface RadioGroupProps {
+    name?: string;
+    disabled?: boolean;
+    // TODO: dir?: string;
+    // TODO: loop?: string;
+    defaultValue?: string;
+    value?: string;
+    onValueChange?: EventEmitter<string>;
+}
 
 @Directive({
-    selector: '[rdxRadioGroup]',
+    selector: 'div[RadioRoot]',
+    exportAs: 'RadioRoot',
     standalone: true,
     providers: [
         { provide: RdxRadioGroupToken, useExisting: RdxRadioGroupDirective },
@@ -24,35 +41,30 @@ import { RdxRadioGroupToken } from './radio-group.token';
     hostDirectives: [RdxRovingFocusGroupDirective],
     host: {
         role: 'radiogroup',
-        '[attr.aria-orientation]': 'orientation',
-        '[attr.data-disabled]': 'disabled ? "" : null'
+        '[attr.aria-orientation]': '_orientation',
+        '[attr.data-disabled]': 'disabled ? "" : null',
+
+        '(focusout)': '_onFocusout()'
     }
 })
-export class RdxRadioGroupDirective implements ControlValueAccessor {
-    /**
-     * The value of the radio group.
-     */
-    @Input('rdxRadioGroupValue') value?: string;
+export class RdxRadioGroupDirective implements RadioGroupProps, ControlValueAccessor {
+    @Input('rdxValue') value?: string;
+
+    @Input({ alias: 'rdxDisabled', transform: booleanAttribute }) disabled = false;
 
     /**
-     * Whether the radio group is disabled.
+     * The orientation of the radio group only vertical.
+     * Horizontal radio buttons can sometimes be challenging to scan and localize.
+     * The horizontal arrangement of radio buttons may also lead to difficulties in determining which
+     * label corresponds to which button: whether the label is above or below the button.
+     * @default 'vertical'
      */
-    @Input({
-        alias: 'rdxRadioGroupDisabled',
-        transform: booleanAttribute
-    })
-    disabled = false;
-
-    /**
-     * The orientation of the radio group.
-     * @default 'horizontal'
-     */
-    @Input('rdxRadioGroupOrientation') orientation: 'horizontal' | 'vertical' = 'horizontal';
+    readonly _orientation = 'vertical';
 
     /**
      * Event emitted when the value of the radio group changes.
      */
-    @Output('rdxRadioGroupValueChange') readonly valueChange = new EventEmitter<string>();
+    @Output('rdxOnValueChange') readonly onValueChange = new EventEmitter<string>();
 
     /**
      * The callback function to call when the value of the radio group changes.
@@ -74,7 +86,7 @@ export class RdxRadioGroupDirective implements ControlValueAccessor {
      */
     select(value: string): void {
         this.value = value;
-        this.valueChange.emit(value);
+        this.onValueChange.emit(value);
         this.onChange?.(value);
     }
 
@@ -112,11 +124,9 @@ export class RdxRadioGroupDirective implements ControlValueAccessor {
     }
 
     /**
-     * When focus leaves the radio group, mark it as touched.
-     * @internal
+     * When focus leaves the radio group.
      */
-    @HostListener('focusout')
-    protected onFocusout(): void {
+    _onFocusout(): void {
         this.onTouched?.();
     }
 }

@@ -25,6 +25,7 @@ export const RDX_TEXTAREA_VALUE_ACCESSOR = new InjectionToken<{ value: any }>(
     'RDX_TEXTAREA_VALUE_ACCESSOR'
 );
 
+// TODO Move to angular/cdk Input
 @Directive({
     selector: 'textarea[rdxTextarea]',
     exportAs: 'rdxTextarea',
@@ -53,23 +54,17 @@ export class RdxTextareaDirective
      * Implemented as part of FormFieldControl.
      * @docs-private
      */
-    override readonly stateChanges: Subject<void> = new Subject<void>();
-
-    /**
-     * Implemented as part of FormFieldControl.
-     * @docs-private
-     */
-    controlType = 'textarea';
-
-    /**
-     * Implemented as part of FormFieldControl.
-     * @docs-private
-     */
     @Input() placeholder: string | undefined;
 
     @Input({ transform: booleanAttribute }) required = false;
 
     @Input() id = `rdx-textarea-${nextUniqueId++}`;
+
+    /**
+     * Implemented as part of FormFieldControl.
+     * @docs-private
+     */
+    override readonly stateChanges: Subject<void> = new Subject<void>();
 
     private _disabled = false;
     /**
@@ -119,8 +114,6 @@ export class RdxTextareaDirective
     ) {
         super(parentForm, parentFormGroup, ngControl);
 
-        // If no input value accessor was explicitly specified, use the element as the textarea value
-        // accessor.
         this.valueAccessor = inputValueAccessor || this.elementRef.nativeElement;
 
         this.previousNativeValue = this.value;

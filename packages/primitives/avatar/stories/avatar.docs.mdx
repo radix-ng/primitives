@@ -12,7 +12,7 @@ import * as AvatarDirectiveStories from './avatar.stories';
 
 -   ✅ Automatic and manual control over when the image renders.
 -   ✅ Fallback part accepts any children.
--   ✅ Optionally delay fallback rendering to avoid content flashing.
+-   ✅ Optionally delayMs fallback rendering to avoid content flashing.
 
 ## Global Configuration
 
@@ -22,15 +22,15 @@ You can configure the default options for all avatars in your application by usi
 import { provideRdxAvatarConfig } from '@radix-ng/primitives/avatar';
 
 bootstrapApplication(AppComponent, {
-  providers: [provideRdxAvatarConfig({ delay: 1000 })]
+  providers: [provideRdxAvatarConfig({ delayMs: 1000 })]
 });
 ```
 
 ## Anatomy
 
 ```html
-<span rdxAvatar>
-  <img rdxAvatarImage src="..." alt="..." />
-  <span rdxAvatarFallback>Angular</span>
+<span AvatarRoot>
+  <img AvatarImage src="..." alt="..." />
+  <span AvatarFallback>Angular</span>
 </span>
 ```

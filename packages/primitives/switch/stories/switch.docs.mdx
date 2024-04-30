@@ -1,7 +1,7 @@
 import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/addon-docs';
 
 import { switchExclude } from '../../.docs/utils/storybook';
-import { RdxSwitchDirective } from '../src/switch.directive';
+import { RdxSwitchRootDirective } from '../src/switch-root.directive';
 import * as SwitchDirectiveStories from './switch.stories';
 
 <Meta title="Primitives/Switch" />
@@ -22,23 +22,23 @@ import * as SwitchDirectiveStories from './switch.stories';
 Get started with importing the directives:
 
 ```typescript
-import { RdxSwitchDirective, RdxSwitchThumbDirective } from '@radix-ng/primitives/switch';
+import { RdxSwitchRootDirective, RdxSwitchThumbDirective } from '@radix-ng/primitives/switch';
 ```
 
 ## Examples
 
 ```html
-<label rdxLabel htmlFor="airplane-mode">Airplane mode</label>
-<button rdxSwitch [(checked)]="checked" id="airplane-mode">
-    <span rdxSwitchThumb></span>
+<label LabelRoot htmlFor="airplane-mode">Airplane mode</label>
+<button SwitchRoot [(checked)]="checked" id="airplane-mode">
+    <span SwitchThumb></span>
 </button>
 ```
 
 ## API Reference
 
-### RdxSwitchDirective
+### RdxSwitchRootDirective
 
-<ArgTypes exclude={switchExclude} of={RdxSwitchDirective} />
+<ArgTypes exclude={switchExclude} of={RdxSwitchRootDirective} />
 
 <Markdown>
     {`

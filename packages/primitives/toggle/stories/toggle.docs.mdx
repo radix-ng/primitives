@@ -1,12 +1,12 @@
 import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/addon-docs';
 import * as ToggleDirectiveStories from './toggle.stories';
-import { RdxToggleDirective } from '../src/toggle.directive';
+import { RdxToggleRootDirective } from '../src/toggle-root.directive';
 
 <Meta title="Primitives/Toggle" />
 
 # Toggle
 
-#### A two-state button that can be either on or off.
+#### A two-_state button that can be either on or off.
 
 <Canvas sourceState="hidden" of={ToggleDirectiveStories.Default}></Canvas>
 
@@ -20,22 +20,22 @@ import { RdxToggleDirective } from '../src/toggle.directive';
 Get started with importing the directives:
 
 ```typescript
-import { RdxToggleDirective } from '@radix-ng/primitives/toggle';
+import { RdxToggleRootDirective } from '@radix-ng/primitives/toggle';
 ```
 
 ## Examples
 
 ```html
-<button rdxToggle aria-label="Toggle italic">
+<button ToggleRoot aria-label="Toggle italic">
     <icon />
 </button>
 ```
 
 ## API Reference
 
-### RdxToggleDirective
+### RdxToggleRootDirective
 
-<ArgTypes of={RdxToggleDirective} />
+<ArgTypes of={RdxToggleRootDirective} />
 
 <Markdown>
     {`

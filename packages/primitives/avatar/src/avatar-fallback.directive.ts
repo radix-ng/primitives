@@ -1,40 +1,45 @@
-import { Directive, Input, numberAttribute, OnDestroy, OnInit } from '@angular/core';
+import {
+    Directive,
+    inject,
+    Input,
+    NgZone,
+    numberAttribute,
+    OnDestroy,
+    OnInit
+} from '@angular/core';
 
+import { injectAvatar } from './avatar-root.directive';
 import { injectAvatarConfig } from './avatar.config';
-import { RdxAvatarState } from './avatar.directive';
-import { injectAvatar } from './avatar.token';
+
+export interface AvatarFallbackProps {
+    delayMs?: number;
+}
 
 @Directive({
-    selector: '[rdxAvatarFallback]',
+    selector: 'span[AvatarFallback]',
+    exportAs: 'AvatarFallback',
     standalone: true,
     host: {
         '[style.display]': 'visible ? null : "none"'
     }
 })
-export class RdxAvatarFallbackDirective implements OnInit, OnDestroy {
-    /**
-     * Access the avatar
-     */
+export class RdxAvatarFallbackDirective implements AvatarFallbackProps, OnInit, OnDestroy {
     private readonly avatar = injectAvatar();
 
-    /**
-     * Access the global configuration.
-     */
     private readonly config = injectAvatarConfig();
 
-    /**
-     * Define a delay before the fallback is shown. This is useful to only show the fallback for those with slower connections.
-     * @default 0
-     */
-    @Input({ alias: 'rdxAvatarFallbackDelay', transform: numberAttribute }) delay: number =
-        this.config.delay;
+    private readonly ngZone = inject(NgZone);
 
     /**
-     * Determine if this element should be hidden.
+     * Define a delay before the fallback is shown.
+     * This is useful to only show the fallback for those with slower connections.
+     * @default 0
      */
+    @Input({ alias: 'rdxDelayMs', transform: numberAttribute }) delayMs: number =
+        this.config.delayMs;
+
     protected get visible(): boolean {
-        // we need to check if the element can render and if the avatar is not in a loaded state
-        return this.delayElapsed && this.avatar.state !== RdxAvatarState.Loaded;
+        return this.delayElapsed && this.avatar._state() !== 'loaded';
     }
 
     /**
@@ -42,18 +47,19 @@ export class RdxAvatarFallbackDirective implements OnInit, OnDestroy {
      */
     private delayElapsed = false;
 
-    /**
-     * Store the timeout id.
-     */
     private timeoutId: number | null = null;
 
     ngOnInit(): void {
-        this.timeoutId = window.setTimeout(() => (this.delayElapsed = true), this.delay);
+        this.ngZone.runOutsideAngular(() => {
+            this.timeoutId = window.setTimeout(() => (this.delayElapsed = true), this.delayMs);
+        });
     }
 
     ngOnDestroy(): void {
-        if (this.timeoutId) {
-            window.clearTimeout(this.timeoutId);
-        }
+        this.ngZone.run(() => {
+            if (this.timeoutId) {
+                window.clearTimeout(this.timeoutId);
+            }
+        });
     }
 }

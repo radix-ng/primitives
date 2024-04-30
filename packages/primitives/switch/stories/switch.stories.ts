@@ -1,14 +1,14 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
-import { RdxLabelDirective } from '../../label';
+import { RdxLabelRootDirective } from '../../label';
+import { RdxSwitchRootDirective } from '../src/switch-root.directive';
 import { RdxSwitchThumbDirective } from '../src/switch-thumb.directive';
-import { RdxSwitchDirective } from '../src/switch.directive';
 
 export default {
     title: 'Primitives/Switch',
     decorators: [
         moduleMetadata({
-            imports: [RdxLabelDirective, RdxSwitchDirective, RdxSwitchThumbDirective]
+            imports: [RdxLabelRootDirective, RdxSwitchRootDirective, RdxSwitchThumbDirective]
         }),
         componentWrapperDecorator(
             (story) =>
@@ -71,10 +71,10 @@ button {
 
 </style>
 
-<label rdxLabel htmlFor="airplane-mode" class="Label">
+<label LabelRoot htmlFor="airplane-mode" class="Label">
     Airplane mode
-    <button rdxSwitch [(checked)]="checked" id="airplane-mode" class="SwitchRoot">
-        <span rdxSwitchThumb class="SwitchThumb"></span>
+    <button SwitchRoot checked="checked" id="airplane-mode" class="SwitchRoot">
+        <span SwitchThumb class="SwitchThumb"></span>
     </button>
 </label>
 `

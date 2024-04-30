@@ -1,18 +1,18 @@
 import { Component, PLATFORM_ID } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RdxAvatarFallbackDirective } from './avatar-fallback.directive';
-import { RdxAvatarDirective } from './avatar.directive';
+import { RdxAvatarFallbackDirective } from '../src/avatar-fallback.directive';
+import { RdxAvatarRootDirective } from '../src/avatar-root.directive';
 
 @Component({
     selector: 'rdx-mock-component',
     standalone: true,
-    imports: [RdxAvatarFallbackDirective, RdxAvatarDirective],
+    imports: [RdxAvatarFallbackDirective, RdxAvatarRootDirective],
     template: `
-        <div rdxAvatar>
-            <span *rdxAvatarFallback>fallback</span>
-            <span rdxAvatarFallback>fallback2</span>
-        </div>
+        <span AvatarRoot>
+            <span AvatarFallback>fallback</span>
+            <span AvatarFallback>fallback2</span>
+        </span>
     `
 })
 class RdxMockComponent {}

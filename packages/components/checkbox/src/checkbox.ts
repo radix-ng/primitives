@@ -3,14 +3,14 @@ import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { radixCheck } from '@ng-icons/radix-icons';
 import { RdxCheckboxDirective, RdxCheckboxIndicatorDirective } from '@radix-ng/primitives/checkbox';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
+import { RdxLabelRootDirective } from '@radix-ng/primitives/label';
 
 @Component({
     selector: 'rdx-checkbox',
     exportAs: 'rdxCheckbox',
     standalone: true,
     imports: [
-        RdxLabelDirective,
+        RdxLabelRootDirective,
         RdxCheckboxDirective,
         RdxCheckboxIndicatorDirective,
         NgIconComponent
@@ -18,7 +18,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
     providers: [provideIcons({ radixCheck })],
     styleUrl: 'style.css',
     template: `
-        <label rdxLabel class="Label">
+        <label LabelRoot class="Label">
             <button
                 class="CheckboxRoot"
                 rdxCheckbox

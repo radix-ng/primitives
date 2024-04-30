@@ -10,7 +10,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 
-import { RdxTextareaDirective } from './textarea.directive';
+import { RdxTextareaDirective } from '../src/textarea.directive';
 
 function createComponent<T>(
     component: Type<T>,

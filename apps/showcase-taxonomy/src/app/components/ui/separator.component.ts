@@ -1,6 +1,6 @@
 import { computed, Directive, Input, input } from '@angular/core';
 
-import { RdxSeparatorDirective } from '@radix-ng/primitives/separator';
+import { RdxSeparatorRootDirective } from '@radix-ng/primitives/separator';
 import { twMerge } from '@taxonomy/components/utils/twMerge';
 import { ClassValue } from 'clsx';
 
@@ -9,8 +9,8 @@ import { ClassValue } from 'clsx';
     standalone: true,
     hostDirectives: [
         {
-            directive: RdxSeparatorDirective,
-            inputs: ['rdxSeparatorOrientation: txOrientation', 'rdxSeparatorDecorative']
+            directive: RdxSeparatorRootDirective,
+            inputs: ['rdxOrientation: txOrientation', 'rdxDecorative']
         }
     ],
     host: {

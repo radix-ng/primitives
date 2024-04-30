@@ -5,9 +5,8 @@ import {
     DestroyRef,
     Directive,
     ElementRef,
-    HostBinding,
-    HostListener,
     inject,
+    InjectionToken,
     Input,
     numberAttribute,
     OnDestroy,
@@ -15,12 +14,23 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import { injectRovingFocusGroup } from './roving-focus-group.token';
-import { RdxRovingFocusItemToken } from './roving-focus-item.token';
+import { injectRovingFocusGroup } from './roving-focus-group.directive';
+
+const RdxRovingFocusItemToken = new InjectionToken<RdxRovingFocusItemDirective>(
+    'RdxRovingFocusItemToken'
+);
+
+export function injectRovingFocusItem(): RdxRovingFocusItemDirective {
+    return inject(RdxRovingFocusItemToken);
+}
 
 @Directive({
     selector: '[rdxRovingFocusItem]',
     standalone: true,
+    host: {
+        '(onKeydown)': '_onKeydown($event)',
+        '[attr.tabindex]': '_tabindex()'
+    },
     providers: [{ provide: RdxRovingFocusItemToken, useExisting: RdxRovingFocusItemDirective }]
 })
 export class RdxRovingFocusItemDirective implements OnInit, OnDestroy, FocusableOption {
@@ -54,38 +64,31 @@ export class RdxRovingFocusItemDirective implements OnInit, OnDestroy, Focusable
      */
     @Input({ transform: booleanAttribute }) disabled = false;
 
-    /**
-     * Derive the tabindex of the roving focus item.
-     * @internal
-     */
-    @HostBinding('attr.tabindex')
-    get tabindex(): number {
-        return this.group.keyManager.activeItem === this ? 0 : -1;
-    }
-
     ngOnInit(): void {
-        // register the roving focus item with the group
         this.group.register(this);
 
-        // listen for changes to the active item and run change detection
         this.group.keyManager.change
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => this.changeDetectorRef.markForCheck());
     }
 
     ngOnDestroy(): void {
-        // unregister the roving focus item with the group
         this.group.unregister(this);
     }
 
     /**
      * Handle key events on the roving focus item.
      * @param event The key event.
-     * @internal
      */
-    @HostListener('keydown', ['$event'])
-    onKeydown(event: KeyboardEvent): void {
+    _onKeydown(event: KeyboardEvent): void {
         this.group.onKeydown(event);
+    }
+
+    /**
+     * Derive the tabindex of the roving focus item.
+     */
+    _tabindex(): number {
+        return this.group.keyManager.activeItem === this ? 0 : -1;
     }
 
     /**

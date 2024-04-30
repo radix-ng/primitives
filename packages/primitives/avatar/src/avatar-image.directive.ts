@@ -1,45 +1,51 @@
-import { Directive, ElementRef, HostListener, inject, OnInit } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, inject, OnInit, Output } from '@angular/core';
 
-import { RdxAvatarState } from './avatar.directive';
-import { injectAvatar } from './avatar.token';
+import { ImageLoadingStatus, injectAvatar } from './avatar-root.directive';
+
+export interface AvatarImageProps {
+    onLoadingStatusChange?: EventEmitter<ImageLoadingStatus>;
+}
 
 @Directive({
-    selector: 'img[rdxAvatarImage]',
-    standalone: true
+    selector: 'img[AvatarImage]',
+    exportAs: 'AvatarImage',
+    standalone: true,
+    host: {
+        '(load)': '_onLoad()',
+        '(error)': '_onError()'
+    }
 })
-export class RdxAvatarImageDirective implements OnInit {
-    /**
-     * Access the avatar
-     */
+export class RdxAvatarImageDirective implements AvatarImageProps, OnInit {
     private readonly avatar = injectAvatar();
 
-    /**
-     * Access the image element ref.
-     */
     private readonly elementRef = inject<ElementRef<HTMLImageElement>>(ElementRef);
 
+    /* By default, it will only render when it has loaded.
+     * You can use the `onLoadingStatusChange` handler if you need more control.
+     */
+    @Output() onLoadingStatusChange = new EventEmitter<ImageLoadingStatus>();
+
     ngOnInit(): void {
-        // mark the avatar as loading
-        this.avatar.setState(RdxAvatarState.Loading);
+        this.avatar._setState('loading');
 
-        // if there is no src, we can report this as an error
         if (!this.elementRef.nativeElement.src) {
-            this.avatar.setState(RdxAvatarState.Error);
+            this.avatar._setState('error');
         }
 
-        // if the image has already loaded, we can report this to the avatar
         if (this.elementRef.nativeElement.complete) {
-            this.avatar.setState(RdxAvatarState.Loaded);
+            this.avatar._setState('loaded');
         }
+
+        this.onLoadingStatusChange.emit(this.avatar._state());
     }
 
-    @HostListener('load')
-    protected onLoad(): void {
-        this.avatar.setState(RdxAvatarState.Loaded);
+    _onLoad(): void {
+        this.avatar._setState('loaded');
+        this.onLoadingStatusChange.emit('loaded');
     }
 
-    @HostListener('error')
-    protected onError(): void {
-        this.avatar.setState(RdxAvatarState.Error);
+    _onError(): void {
+        this.avatar._setState('error');
+        this.onLoadingStatusChange.emit('error');
     }
 }

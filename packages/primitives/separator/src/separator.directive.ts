@@ -1,26 +1,34 @@
 import { booleanAttribute, Directive, Input } from '@angular/core';
 
-export type SeparatorOrientation = 'horizontal' | 'vertical';
+const DEFAULT_ORIENTATION = 'horizontal';
+const ORIENTATIONS = ['horizontal', 'vertical'] as const;
+
+export type Orientation = (typeof ORIENTATIONS)[number];
+
+export interface SeparatorProps {
+    /**
+     * Either `vertical` or `horizontal`. Defaults to `horizontal`.
+     */
+    orientation?: Orientation;
+    /**
+     * Whether the component is purely decorative. When true, accessibility-related attributes
+     * are updated so that the rendered element is removed from the accessibility tree.
+     */
+    decorative?: boolean;
+}
 
 @Directive({
-    selector: '[rdxSeparator]',
+    selector: 'div[SeparatorRoot]',
     standalone: true,
     host: {
         '[attr.role]': 'decorative ? "none" : "separator"',
+        // `aria-orientation` defaults to `horizontal` so we only need it if `orientation` is vertical
         '[attr.aria-orientation]': '!decorative && orientation === "vertical" ? "vertical" : null',
         '[attr.data-orientation]': 'orientation'
     }
 })
-export class RdxSeparatorDirective {
-    /**
-     * The orientation of the separator.
-     * @default 'horizontal'
-     */
-    @Input('rdxSeparatorOrientation') orientation: SeparatorOrientation = 'horizontal';
+export class RdxSeparatorRootDirective implements SeparatorProps {
+    @Input('rdxOrientation') orientation: Orientation = DEFAULT_ORIENTATION;
 
-    /**
-     * If true, the separator will not be included in the accessibility tree.
-     * @default false
-     */
-    @Input({ alias: 'rdxSeparatorDecorative', transform: booleanAttribute }) decorative = false;
+    @Input({ alias: 'rdxDecorative', transform: booleanAttribute }) decorative = false;
 }

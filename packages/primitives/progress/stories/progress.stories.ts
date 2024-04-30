@@ -1,13 +1,13 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
-import { RdxProgressDirective } from '../src/progress.directive';
+import { RdxProgressRootDirective } from '../src/progress-root.directive';
 
 export default {
     title: 'Primitives/Progress',
     decorators: [
         moduleMetadata({
-            imports: [RdxProgressDirective, RdxProgressIndicatorDirective]
+            imports: [RdxProgressRootDirective, RdxProgressIndicatorDirective]
         }),
         componentWrapperDecorator(
             (story) =>
@@ -55,8 +55,8 @@ export const Default: Story = {
 }
 </style>
 
-<div rdxProgress [rdxProgressValue]="progress" class="ProgressRoot">
-    <div rdxProgressIndicator
+<div ProgressRoot [rdxValue]="progress" class="ProgressRoot">
+    <div ProgressIndicator
         [style.transform]="'translateX(-' + (100 - progress) +'%)'"
         class="ProgressIndicator"
     ></div>

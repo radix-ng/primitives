@@ -5,6 +5,7 @@ import {
     DestroyRef,
     Directive,
     inject,
+    InjectionToken,
     Input,
     OnChanges,
     OnDestroy,
@@ -15,8 +16,17 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs';
 
-import { RdxRovingFocusGroupToken } from './roving-focus-group.token';
 import type { RdxRovingFocusItemDirective } from './roving-focus-item.directive';
+
+export type Orientation = 'horizontal' | 'vertical';
+
+const RdxRovingFocusGroupToken = new InjectionToken<RdxRovingFocusGroupDirective>(
+    'RdxRovingFocusToken'
+);
+
+export function injectRovingFocusGroup(): RdxRovingFocusGroupDirective {
+    return inject(RdxRovingFocusGroupToken);
+}
 
 @Directive({
     selector: '[rdxRovingFocusGroup]',
@@ -34,18 +44,13 @@ export class RdxRovingFocusGroupDirective implements OnInit, OnChanges, OnDestro
      */
     private readonly items = new QueryList<RdxRovingFocusItemDirective>();
 
-    /**
-     * Create the focus key manager instance.
-     * @internal
-     */
     readonly keyManager = new FocusKeyManager<RdxRovingFocusItemDirective>(this.items);
 
     /**
      * Determine the orientation of the roving focus group.
      * @default vertical
      */
-    @Input({ alias: 'rdxRovingFocusGroupOrientation' }) orientation: 'horizontal' | 'vertical' =
-        'vertical';
+    @Input({ alias: 'rdxRovingFocusGroupOrientation' }) orientation: Orientation = 'vertical';
 
     /**
      * Determine if focus should wrap when the end or beginning is reached.
@@ -58,7 +63,6 @@ export class RdxRovingFocusGroupDirective implements OnInit, OnChanges, OnDestro
 
         this.setOrientation(this.orientation);
 
-        // update the key manager orientation if the document direction changes
         this.directionality.change
             .pipe(
                 filter(() => this.orientation === 'horizontal'),
@@ -86,10 +90,8 @@ export class RdxRovingFocusGroupDirective implements OnInit, OnChanges, OnDestro
      * @param item The roving focus item to register.
      */
     register(item: RdxRovingFocusItemDirective): void {
-        // add the item to the query list by sort the items based on their order
         this.items.reset([...this.items.toArray(), item].sort((a, b) => a.order - b.order));
 
-        // if this is the first item, make it the active item
         if (this.items.length === 1) {
             this.keyManager.updateActiveItem(item);
         }
@@ -100,13 +102,10 @@ export class RdxRovingFocusGroupDirective implements OnInit, OnChanges, OnDestro
      * @param item The roving focus item to unregister.
      */
     unregister(item: RdxRovingFocusItemDirective): void {
-        // determine if the item being removed is the active item
         const isActive = this.keyManager.activeItem === item;
 
-        // remove the item from the query list
         this.items.reset(this.items.toArray().filter((i) => i !== item));
 
-        // if the item being removed is the active item, make the first item the active item
         if (isActive) {
             this.keyManager.updateActiveItem(0);
         }
@@ -125,7 +124,7 @@ export class RdxRovingFocusGroupDirective implements OnInit, OnChanges, OnDestro
      * Set the orientation of the roving focus group.
      * @param orientation The orientation of the roving focus group.
      */
-    setOrientation(orientation: 'horizontal' | 'vertical'): void {
+    setOrientation(orientation: Orientation): void {
         this.orientation = orientation;
 
         if (orientation === 'horizontal') {

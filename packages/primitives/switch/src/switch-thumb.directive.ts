@@ -1,18 +1,16 @@
 import { Directive } from '@angular/core';
 
-import { injectSwitch } from './switch.token';
+import { injectSwitch } from './switch-root.directive';
 
 @Directive({
-    selector: '[rdxSwitchThumb]',
+    selector: 'span[SwitchThumb]',
+    exportAs: 'SwitchThumb',
     standalone: true,
     host: {
-        '[attr.data-state]': 'switch.checked ? "checked" : "unchecked"',
-        '[attr.data-disabled]': 'switch.disabled ? "true" : null'
+        '[attr.data-disabled]': 'switchRoot.disabled ? "true" : null',
+        '[attr.data-state]': 'switchRoot.checked ? "checked" : "unchecked"'
     }
 })
 export class RdxSwitchThumbDirective {
-    /**
-     * Access the switch directive.
-     */
-    protected readonly switch = injectSwitch();
+    protected readonly switchRoot = injectSwitch();
 }

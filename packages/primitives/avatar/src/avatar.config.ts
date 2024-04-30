@@ -2,14 +2,15 @@ import { inject, InjectionToken, Provider } from '@angular/core';
 
 export interface RdxAvatarConfig {
     /**
-     * Define a delay before the fallback is shown. This is useful to only show the fallback for those with slower connections.
+     * Define a delay before the fallback is shown.
+     * This is useful to only show the fallback for those with slower connections.
      * @default 0
      */
-    delay: number;
+    delayMs: number;
 }
 
 export const defaultAvatarConfig: RdxAvatarConfig = {
-    delay: 0
+    delayMs: 0
 };
 
 export const RdxAvatarConfigToken = new InjectionToken<RdxAvatarConfig>('RdxAvatarConfigToken');
