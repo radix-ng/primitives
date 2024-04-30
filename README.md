@@ -31,7 +31,7 @@ AnalogJS version [Taxonomy](https://github.com/shadcn-ui/taxonomy) – [https://
 ```
 
 ## Primitives Roadmap
-- [x] Accordion        (needs a11y support)
+- [ ] Accordion        ((will be based on angular/cdk))
 - [ ] Alert Dialog
 - [x] Avatar
 - [x] Checkbox         (need it more adaptation for FormGroup)
