@@ -73,7 +73,7 @@ button {
 
 <label LabelRoot htmlFor="airplane-mode" class="Label">
     Airplane mode
-    <button SwitchRoot checked="checked" id="airplane-mode" class="SwitchRoot">
+    <button SwitchRoot [(checked)]="checked" id="airplane-mode" class="SwitchRoot">
         <span SwitchThumb class="SwitchThumb"></span>
     </button>
 </label>

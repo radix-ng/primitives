@@ -40,7 +40,8 @@ export interface SwitchProps {
         '[attr.data-disabled]': 'disabled ? "true" : null',
         '[attr.disabled]': 'disabled ? disabled : null',
 
-        '(focus)': 'onTouched?.()'
+        '(focus)': '_onTouched?.()',
+        '(click)': '_toggle()'
     }
 })
 export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor {
@@ -60,14 +61,14 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
     /**
      * onTouch function registered via registerOnTouch (ControlValueAccessor).
      */
-    protected onTouched?: () => void;
+    _onTouched?: () => void;
 
     registerOnChange(fn: (checked: boolean) => void): void {
         this._controlValueAccessorChangeFn = fn;
     }
 
     registerOnTouched(fn: () => void): void {
-        this.onTouched = fn;
+        this._onTouched = fn;
     }
 
     writeValue(checked: boolean): void {
@@ -76,5 +77,14 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
 
     setDisabledState(isDisabled: boolean): void {
         this.disabled = isDisabled;
+    }
+
+    _toggle(): void {
+        if (this.disabled) {
+            return;
+        }
+
+        this.checked = !this.checked;
+        this._controlValueAccessorChangeFn?.(this.checked);
     }
 }

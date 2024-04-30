@@ -28,8 +28,8 @@ let nextUniqueId = 0;
         '[attr.data-disabled]': 'disabled ? "" : null',
         '[attr.data-state]': 'radioGroup.value === value ? "checked" : "unchecked"',
 
-        '(onFocus)': '_onFocus()',
-        '(onClick)': '_onClick()',
+        '(focus)': '_onFocus()',
+        '(click)': '_onClick()',
         '(keydown)': '_onKeydown($event)'
     }
 })
@@ -54,6 +54,7 @@ export class RdxRadioItemDirective {
     }
 
     _onClick(): void {
+        console.log('click');
         this.radioGroup.select(this.value);
     }
 }

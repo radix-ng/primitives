@@ -5,7 +5,7 @@ import { Directive, ElementRef, inject, input } from '@angular/core';
     exportAs: 'LabelRoot',
     standalone: true,
     host: {
-        '[attr.for]': 'htmlFor ? htmlFor : null',
+        '[attr.for]': 'htmlFor ? htmlFor() : null',
         '(mousedown)': 'onMouseDown($event)'
     }
 })
