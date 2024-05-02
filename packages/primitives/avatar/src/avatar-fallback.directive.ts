@@ -1,15 +1,21 @@
 import {
     Directive,
-    inject,
+    Inject,
     Input,
     NgZone,
     numberAttribute,
     OnDestroy,
-    OnInit
+    OnInit,
+    Optional
 } from '@angular/core';
 
-import { injectAvatar } from './avatar-root.directive';
-import { injectAvatarConfig } from './avatar.config';
+import { RDX_AVATAR_TOKEN, RdxAvatarRootDirective } from './avatar-root.directive';
+import {
+    defaultAvatarConfig,
+    PROVIDE_AVATAR_CONFIG,
+    RDX_AVATAR_CONFIG_TOKEN,
+    RdxAvatarConfig
+} from './avatar.config';
 
 export interface AvatarFallbackProps {
     delayMs?: number;
@@ -19,17 +25,12 @@ export interface AvatarFallbackProps {
     selector: 'span[AvatarFallback]',
     exportAs: 'AvatarFallback',
     standalone: true,
+    providers: [PROVIDE_AVATAR_CONFIG],
     host: {
         '[style.display]': 'visible ? null : "none"'
     }
 })
 export class RdxAvatarFallbackDirective implements AvatarFallbackProps, OnInit, OnDestroy {
-    private readonly avatar = injectAvatar();
-
-    private readonly config = injectAvatarConfig();
-
-    private readonly ngZone = inject(NgZone);
-
     /**
      * Define a delay before the fallback is shown.
      * This is useful to only show the fallback for those with slower connections.
@@ -48,6 +49,14 @@ export class RdxAvatarFallbackDirective implements AvatarFallbackProps, OnInit, 
     private delayElapsed = false;
 
     private timeoutId: number | null = null;
+
+    constructor(
+        private ngZone: NgZone,
+        @Inject(RDX_AVATAR_TOKEN) private avatar: RdxAvatarRootDirective,
+        @Optional() @Inject(RDX_AVATAR_CONFIG_TOKEN) private config: RdxAvatarConfig
+    ) {
+        this.config = config || defaultAvatarConfig;
+    }
 
     ngOnInit(): void {
         this.ngZone.runOutsideAngular(() => {
