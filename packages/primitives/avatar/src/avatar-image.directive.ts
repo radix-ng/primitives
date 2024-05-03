@@ -1,10 +1,6 @@
-import { Directive, ElementRef, EventEmitter, Inject, OnInit, Output } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, inject, OnInit, Output } from '@angular/core';
 
-import {
-    ImageLoadingStatus,
-    RDX_AVATAR_TOKEN,
-    RdxAvatarRootDirective
-} from './avatar-root.directive';
+import { ImageLoadingStatus, injectAvatar } from './avatar-root.directive';
 
 export interface AvatarImageProps {
     onLoadingStatusChange?: EventEmitter<ImageLoadingStatus>;
@@ -20,15 +16,14 @@ export interface AvatarImageProps {
     }
 })
 export class RdxAvatarImageDirective implements AvatarImageProps, OnInit {
+    private readonly avatar = injectAvatar();
+
+    private readonly elementRef = inject<ElementRef<HTMLImageElement>>(ElementRef);
+
     /* By default, it will only render when it has loaded.
      * You can use the `onLoadingStatusChange` handler if you need more control.
      */
     @Output() onLoadingStatusChange = new EventEmitter<ImageLoadingStatus>();
-
-    constructor(
-        private elementRef: ElementRef<HTMLImageElement>,
-        @Inject(RDX_AVATAR_TOKEN) private readonly avatar: RdxAvatarRootDirective
-    ) {}
 
     ngOnInit(): void {
         this.avatar._setState('loading');

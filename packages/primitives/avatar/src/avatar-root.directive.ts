@@ -1,6 +1,10 @@
-import { Directive, InjectionToken, signal } from '@angular/core';
+import { Directive, inject, InjectionToken, signal } from '@angular/core';
 
-export const RDX_AVATAR_TOKEN = new InjectionToken<RdxAvatarRootDirective>('RDX_AVATAR_TOKEN');
+const RdxAvatarToken = new InjectionToken<RdxAvatarRootDirective>('RdxAvatarToken');
+
+export function injectAvatar(): RdxAvatarRootDirective {
+    return inject(RdxAvatarToken);
+}
 
 export type ImageLoadingStatus = 'idle' | 'loading' | 'loaded' | 'error';
 
@@ -8,7 +12,7 @@ export type ImageLoadingStatus = 'idle' | 'loading' | 'loaded' | 'error';
     selector: 'span[AvatarRoot]',
     exportAs: 'AvatarRoot',
     standalone: true,
-    providers: [{ provide: RDX_AVATAR_TOKEN, useExisting: RdxAvatarRootDirective }]
+    providers: [{ provide: RdxAvatarToken, useExisting: RdxAvatarRootDirective }]
 })
 export class RdxAvatarRootDirective {
     /**

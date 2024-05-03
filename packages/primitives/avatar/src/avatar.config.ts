@@ -1,4 +1,4 @@
-import { InjectionToken, Provider } from '@angular/core';
+import { inject, InjectionToken, Provider } from '@angular/core';
 
 export interface RdxAvatarConfig {
     /**
@@ -13,11 +13,17 @@ export const defaultAvatarConfig: RdxAvatarConfig = {
     delayMs: 0
 };
 
-export const RDX_AVATAR_CONFIG_TOKEN = new InjectionToken<RdxAvatarConfig>(
-    'RDX_AVATAR_CONFIG_TOKEN'
-);
+export const RdxAvatarConfigToken = new InjectionToken<RdxAvatarConfig>('RdxAvatarConfigToken');
 
-export const PROVIDE_AVATAR_CONFIG: Provider = {
-    provide: RDX_AVATAR_CONFIG_TOKEN,
-    useValue: defaultAvatarConfig
-};
+export function provideRdxAvatarConfig(config: Partial<RdxAvatarConfig>): Provider[] {
+    return [
+        {
+            provide: RdxAvatarConfigToken,
+            useValue: { ...defaultAvatarConfig, ...config }
+        }
+    ];
+}
+
+export function injectAvatarConfig(): RdxAvatarConfig {
+    return inject(RdxAvatarConfigToken, { optional: true }) ?? defaultAvatarConfig;
+}
