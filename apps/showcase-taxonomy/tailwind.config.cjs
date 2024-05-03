@@ -1,6 +1,6 @@
 const { createGlobPatternsForDependencies } = require('@nx/angular/tailwind');
 const { join } = require('path');
-
+const plugin = require("tailwindcss/plugin");
 const { fontFamily } = require('tailwindcss/defaultTheme');
 
 /** @type {import('tailwindcss').Config} */
@@ -58,8 +58,39 @@ module.exports = {
                 lg: `var(--radius)`,
                 md: `calc(var(--radius) - 2px)`,
                 sm: "calc(var(--radius) - 4px)",
-            }
+            },
+            fontFamily: {
+                sans: ["Inter", ...fontFamily.sans],
+                heading: ["CalSans-SemiBold", ...fontFamily.sans],
+            },
         },
     },
-    plugins: [require('tailwindcss'), require('autoprefixer')]
+    plugins: [require('tailwindcss'), require("@tailwindcss/typography"), require('autoprefixer'), plugin(function ({ addBase, theme }) {
+        addBase({
+            "@font-face": {
+                fontFamily: "Inter",
+                fontStyle: "normal",
+                fontWeight: 400,
+                src: "url(/assets/fonts/Inter-Regular.ttf)",
+            }
+        });
+
+        addBase({
+            "@font-face": {
+                fontFamily: "Inter Bold",
+                fontStyle: "normal",
+                fontWeight: 600,
+                src: "url(/assets/fonts/Inter-Bold.ttf)",
+            }
+        });
+
+        addBase({
+            "@font-face": {
+                fontFamily: "CalSans-SemiBold",
+                fontStyle: "normal",
+                fontWeight: 600,
+                src: "url(public/assets/fonts/CalSans-SemiBold.ttf)",
+            }
+        });
+    })]
 };

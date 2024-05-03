@@ -1,0 +1,17 @@
+<script lang="ts">
+    import { RouterLink, RouterOutlet } from '@angular/router';
+    import { RouteMeta } from '@analogjs/router';
+
+    export const routeMeta: RouteMeta = {
+        title: 'Blog',
+        meta: [{ name: 'description', content: 'Blog Posts' }],
+    };
+
+    defineMetadata({
+        imports: [RouterLink, RouterOutlet],
+    });
+</script>
+
+<template>
+    <router-outlet />
+</template>

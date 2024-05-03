@@ -1,0 +1,51 @@
+<script lang="ts">
+    import { ContentRenderer, injectContent } from '@analogjs/content';
+    import { MarkdownComponent } from '@analogjs/content' with { analog: 'imports' };
+
+    import { PostAttributes } from './models';
+    import { RouteMeta } from '@analogjs/router';
+    import { AsyncPipe, NgFor, NgIf, NgOptimizedImage } from '@angular/common';
+    import { inject } from '@angular/core';
+    import { map } from 'rxjs';
+
+    export const routeMeta: RouteMeta = {
+        title: 'Blog',
+        meta: [{ name: 'description', content: 'Blog Post' }]
+    };
+
+    defineMetadata({
+        imports: [MarkdownComponent, NgOptimizedImage, AsyncPipe, NgIf, NgFor]
+    });
+
+    const renderer = inject(ContentRenderer);
+
+    const post$ = injectContent<PostAttributes>();
+
+
+    const toc$ = this.post$.pipe(
+        map(() => {
+            return this.renderer.getContentHeadings();
+        })
+    );
+</script>
+
+<template>
+
+    <ng-container *ngIf="post$ | async as post">
+        <ng-container *ngIf="toc$ | async as toc"></ng-container>
+        <article class="container relative max-w-3xl py-6 lg:py-10">
+
+            <img
+                [ngSrc]="post.attributes.coverImage"
+                alt="{{post.attributes.title}}"
+                width="804"
+                height="452"
+                class="rounded-md border bg-muted transition-colors"
+            />
+
+            <analog-markdown class="blog-post" [content]="post.content"></analog-markdown>
+            <hr class="mt-12" />
+        </article>
+    </ng-container>
+
+</template>

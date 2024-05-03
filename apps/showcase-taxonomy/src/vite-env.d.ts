@@ -1,4 +1,17 @@
 /// <reference types="vite/client" />
+
+interface ImportMetaEnv {
+    readonly VITE_ANALOG_PUBLIC_BASE_URL: string;
+}
+
+interface ImportMeta {
+    readonly env: ImportMetaEnv;
+}
+
+interface ImportAttributes {
+    analog: 'imports' | 'providers' | 'viewProviders' | 'exposes';
+}
+
 declare global {
     import type { Component } from '@angular/core';
 

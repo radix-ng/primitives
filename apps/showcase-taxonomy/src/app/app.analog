@@ -1,5 +1,5 @@
 <script lang="ts">
-    import MarketingLayout from './components/marketing-layout.analog' with { analog: 'imports' };
+    import MainLayout from './components/main-layout.analog' with { analog: 'imports' };
 
     import { RouterOutlet } from '@angular/router';
 
@@ -8,5 +8,5 @@
 </script>
 
 <template>
-    <MarketingLayout />
+    <MainLayout />
 </template>

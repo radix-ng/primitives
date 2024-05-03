@@ -213,6 +213,9 @@ importers:
       '@swc/helpers':
         specifier: ~0.5.2
         version: 0.5.8
+      '@tailwindcss/typography':
+        specifier: ^0.5.13
+        version: 0.5.13
       '@testing-library/angular':
         specifier: ^15.2.0
         version: 15.2.0(@angular/common@17.3.3)(@angular/core@17.3.3)(@angular/platform-browser@17.3.3)(@angular/router@17.3.3)
@@ -7524,6 +7527,17 @@ packages:
       defer-to-connect: 2.0.1
     dev: true
 
+  /@tailwindcss/typography@0.5.13:
+    resolution: {integrity: sha512-ADGcJ8dX21dVVHIwTRgzrcunY6YY9uSlAHHGVKvkA+vLc5qLwEszvKts40lx7z0qc4clpjclwLeK5rVCV2P/uw==}
+    peerDependencies:
+      tailwindcss: '>=3.0.0 || insiders'
+    dependencies:
+      lodash.castarray: 4.4.0
+      lodash.isplainobject: 4.0.6
+      lodash.merge: 4.6.2
+      postcss-selector-parser: 6.0.10
+    dev: true
+
   /@testing-library/angular@15.2.0(@angular/common@17.3.3)(@angular/core@17.3.3)(@angular/platform-browser@17.3.3)(@angular/router@17.3.3):
     resolution: {integrity: sha512-FqLMyS8FYYR/6FOSZrmUW7NCFIYSYZyg2MFd8S5PZcUNdfoPRaNY6nEmeuyoiQn6IveKUKCH3vTfOIeI16nxHg==}
     peerDependencies:
@@ -14794,6 +14808,10 @@ packages:
     resolution: {integrity: sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==}
     dev: true
 
+  /lodash.castarray@4.4.0:
+    resolution: {integrity: sha512-aVx8ztPv7/2ULbArGJ2Y42bG1mEQ5mGjpdvrbJcJFU3TbYybe+QlLS4pst9zV52ymy2in1KpFPiZnAOATxD4+Q==}
+    dev: true
+
   /lodash.debounce@4.0.8:
     resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}
 
@@ -17779,6 +17797,14 @@ packages:
     dependencies:
       balanced-match: 1.0.2
       postcss: 8.4.32
+    dev: true
+
+  /postcss-selector-parser@6.0.10:
+    resolution: {integrity: sha512-IQ7TZdoaqbT+LCpShg46jnZVlhWD2w6iQYAcYXfHARZ7X1t/UGhhceQDs5X0cGqKvYlHNOuv7Oa1xmb0oQuA3w==}
+    engines: {node: '>=4'}
+    dependencies:
+      cssesc: 3.0.0
+      util-deprecate: 1.0.2
     dev: true
 
   /postcss-selector-parser@6.0.13:
