@@ -89,7 +89,7 @@ module.exports = {
                 fontFamily: "CalSans-SemiBold",
                 fontStyle: "normal",
                 fontWeight: 600,
-                src: "url(public/assets/fonts/CalSans-SemiBold.ttf)",
+                src: "url(/assets/fonts/CalSans-SemiBold.ttf)",
             }
         });
     })]

@@ -12,7 +12,7 @@ import { Component } from '@angular/core';
                     <p class="text-center text-sm leading-loose md:text-left">
                         Built by
                         <a
-                            href="{siteConfig.links.twitter}"
+                            href="https://twitter.com/shadcn"
                             target="_blank"
                             rel="noreferrer"
                             class="font-medium underline underline-offset-4"
@@ -39,7 +39,7 @@ import { Component } from '@angular/core';
                         </a>
                         . The source code is available on
                         <a
-                            href="{siteConfig.links.github}"
+                            href="https://github.com/radix-ng/primitives/tree/main/apps/showcase-taxonomy"
                             target="_blank"
                             rel="noreferrer"
                             class="font-medium underline underline-offset-4"

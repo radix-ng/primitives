@@ -8,5 +8,5 @@
 </script>
 
 <template>
-    <MainLayout />
+    <tx-main-layout />
 </template>

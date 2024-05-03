@@ -11,6 +11,7 @@
     };
 
     defineMetadata({
+        selector: 'tx-main-layout',
         imports: [TxMainNavComponent, TxSiteFooterComponent, RouterOutlet]
     });
 
