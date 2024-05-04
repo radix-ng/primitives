@@ -3,7 +3,6 @@ import {
     ChangeDetectorRef,
     Directive,
     EventEmitter,
-    HostListener,
     inject,
     InjectionToken,
     Input,
