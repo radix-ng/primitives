@@ -3,10 +3,10 @@
 
     import { RouterOutlet } from '@angular/router';
 
-    defineMetadata({ imports: [RouterOutlet] });
+    defineMetadata({ selector: 'tx-app', imports: [RouterOutlet] });
 
 </script>
 
 <template>
-    <tx-main-layout />
+    <tx-main-layout></tx-main-layout>
 </template>

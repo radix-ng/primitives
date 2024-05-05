@@ -53,6 +53,9 @@ importers:
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
+      lucide-angular:
+        specifier: ^0.378.0
+        version: 0.378.0(@angular/common@17.3.3)(@angular/core@17.3.3)
       rxjs:
         specifier: ~7.8.0
         version: 7.8.1
@@ -14958,6 +14961,17 @@ packages:
   /lru-cache@7.18.3:
     resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
     engines: {node: '>=12'}
+
+  /lucide-angular@0.378.0(@angular/common@17.3.3)(@angular/core@17.3.3):
+    resolution: {integrity: sha512-d/9qjQWq4zM9L6xGwLQnVKWhIIrXFhJvts2BQdBPccLrAti7AYpILxelp8O2zXSPtCi+B9aJWpizGkTcl3qqaw==}
+    peerDependencies:
+      '@angular/common': 13.x - 17.x
+      '@angular/core': 13.x - 17.x
+    dependencies:
+      '@angular/common': 17.3.3(@angular/core@17.3.3)(rxjs@7.8.1)
+      '@angular/core': 17.3.3(rxjs@7.8.1)(zone.js@0.14.4)
+      tslib: 2.6.2
+    dev: false
 
   /lunr@2.3.9:
     resolution: {integrity: sha512-zTU3DaZaF3Rt9rhN3uBMGQD3dD2/vFQqnvZCDv4dl5iOzq2IZQqTxu90r4E5J+nP70J3ilqVCrbho2eWaeW8Ow==}

@@ -22,7 +22,7 @@
 <template>
     @if (!isLoginPage) {
         <div class="flex min-h-screen flex-col">
-            <main-nav />
+            <tx-main-nav></tx-main-nav>
             <main class="flex-1">
                 <router-outlet />
             </main>
