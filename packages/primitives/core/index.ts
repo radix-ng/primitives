@@ -1,3 +1,3 @@
-export * from './src/accessor/default-value-accessor.directive';
-export * from './src/accessor/noop-value-accessor.directive';
 export * from './src/inject-ng-control';
+export * from './src/auto-focus.directive';
+export * from './src/accessor/provide-value-accessor';

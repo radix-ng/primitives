@@ -56,7 +56,7 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
     /**
      * The method to be called in order to update ngModel.
      */
-    _controlValueAccessorChangeFn?: (checked: boolean) => void;
+    _onChange?: (checked: boolean) => void;
 
     /**
      * onTouch function registered via registerOnTouch (ControlValueAccessor).
@@ -64,7 +64,7 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
     _onTouched?: () => void;
 
     registerOnChange(fn: (checked: boolean) => void): void {
-        this._controlValueAccessorChangeFn = fn;
+        this._onChange = fn;
     }
 
     registerOnTouched(fn: () => void): void {
@@ -85,6 +85,6 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
         }
 
         this.checked = !this.checked;
-        this._controlValueAccessorChangeFn?.(this.checked);
+        this._onChange?.(this.checked);
     }
 }

@@ -9,6 +9,9 @@
         "storybook:primitives": "pnpm run compodoc:json && nx run primitives:storybook",
         "storybook:components": "nx run components:storybook",
         "build-storybook": "pnpm run compodoc:json && nx run primitives:build-storybook",
+        "----showcase taxonomy--": "-----------------------------------------------------------------",
+        "showcase-taxonomy:serve": "nx serve showcase-taxonomy",
+        "showcase-taxonomy:build": "nx build showcase-taxonomy",
         "----Primitives---": "-----------------------------------------------------------------------",
         "primitives:build": "nx run primitives:build",
         "primitives:test": "nx run primitives:test",
@@ -19,10 +22,7 @@
         "docs:dev": "nx serve docs",
         "prepare": "husky",
         "format:check": "prettier --check packages/**/** --cache",
-        "format:write": "prettier --write packages/**/** --cache",
-        "----showcase taxonomy--": "-----------------------------------------------------------------",
-        "showcase-taxonomy:serve": "nx serve showcase-taxonomy",
-        "showcase-taxonomy:build": "nx build showcase-taxonomy"
+        "format:write": "prettier --write packages/**/** --cache"
     },
     "dependencies": {
         "@analogjs/content": "1.2.2",
@@ -123,6 +123,7 @@
         "postcss-preset-env": "~7.5.0",
         "postcss-url": "~10.1.3",
         "prettier": "^3.2.5",
+        "prettier-plugin-organize-attributes": "^1.0.0",
         "prettier-plugin-tailwindcss": "^0.5.14",
         "rollup-plugin-typescript-paths": "^1.5.0",
         "rollup-plugin-visualizer": "^5.12.0",
