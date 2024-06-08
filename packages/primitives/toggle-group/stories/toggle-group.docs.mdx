@@ -1,4 +1,4 @@
-import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/addon-docs';
+import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
 import * as ToggleGroupDirectiveStories from './toggle-group.stories';
 import { RdxToggleGroupDirective } from '../src/toggle-group.directive';
 import { RdxToggleGroupButtonDirective } from '../src/toggle-group-button.directive';
@@ -8,16 +8,16 @@ import { toggleGroupButtonExclude, toggleGroupExclude } from '../../.docs/utils/
 
 # Toggle Group
 
-#### A set of two-_state buttons that can be toggled on or off.
+#### A set of two-\_state buttons that can be toggled on or off.
 
-<Canvas sourceState="hidden" of={ToggleGroupDirectiveStories.Default}></Canvas>
+<Canvas sourceState="hidden" of={ToggleGroupDirectiveStories.Default} />
 
 ## Features
 
--   ✅ Full keyboard navigation.
--   ✅ Supports horizontal/vertical orientation.
--   ✅ Support single and multiple pressed buttons.
--   ✅ Can be controlled or uncontrolled.
+* ✅ Full keyboard navigation.
+* ✅ Supports horizontal/vertical orientation.
+* ✅ Support single and multiple pressed buttons.
+* ✅ Can be controlled or uncontrolled.
 
 ## Import
 
@@ -50,11 +50,11 @@ import { RdxToggleGroupDirective, RdxToggleGroupButtonDirective, RdxToggleGroupM
 <ArgTypes exclude={toggleGroupExclude} of={RdxToggleGroupDirective} />
 
 <Markdown>
-    {`
-| Data Attribute | Value |
-| ----------- | --------- |
-| [data-orientation]       | "vertical" or "horizontal"   |
-`}
+  {`
+  | Data Attribute | Value |
+  | ----------- | --------- |
+  | [data-orientation]       | "vertical" or "horizontal"   |
+  `}
 </Markdown>
 
 ### RdxToggleGroupButtonDirective
@@ -68,18 +68,18 @@ Uses [roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.2/examples/rad
 ### Keyboard Interactions
 
 <Markdown>
-    {`
-| Key | Description |
-| ----------- | --------- |
-| Tab         | Moves focus to either the pressed item or the first item in the group. |
-| Space       | Activates/deactivates the item.       |
-| Enter       | Activates/deactivates the item.  |
-| ArrowDown   |    Moves focus to the next item in the group. |
-| ArrowRight  | Moves focus to the next item in the group. |
-| ArrowUp     | Moves focus to the previous item in the group. |
-| ArrowLeft   | Moves focus to the previous item in the group.  |
-| Home        | Moves focus to the first item. |
-| End         | Moves focus to the last item.  |
+  {`
+  | Key | Description |
+  | ----------- | --------- |
+  | Tab         | Moves focus to either the pressed item or the first item in the group. |
+  | Space       | Activates/deactivates the item.       |
+  | Enter       | Activates/deactivates the item.  |
+  | ArrowDown   |    Moves focus to the next item in the group. |
+  | ArrowRight  | Moves focus to the next item in the group. |
+  | ArrowUp     | Moves focus to the previous item in the group. |
+  | ArrowLeft   | Moves focus to the previous item in the group.  |
+  | Home        | Moves focus to the first item. |
+  | End         | Moves focus to the last item.  |
 
-`}
+  `}
 </Markdown>

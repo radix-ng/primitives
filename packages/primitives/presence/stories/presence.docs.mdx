@@ -1,8 +1,9 @@
-import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/addon-docs';
+import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
 
 <Meta title="Primitives/Presence" />
 
 # Presence
+
 The `usePresence` function is a utility designed to manage transitions and animations
 for DOM elements in an Angular application.
 It provides a consistent way to handle animations, ensuring that they run correctly within Angular's zone.
@@ -33,6 +34,7 @@ export const usePresence = <T>(
   * transitionTimerDelayMs (number, optional): An optional delay (in milliseconds) to be added to the transition timer. Default value is 5.
 
 ## Notes
+
 * Transition Context: The context object can hold any additional data required for the transition. It allows for flexible and reusable transition logic.
 * Zone Management: Running transition logic outside Angular's zone prevents unnecessary change detection cycles, improving performance.
 * Customizable Delay: The optional transitionTimerDelayMs allows for fine-tuning the transition timing.

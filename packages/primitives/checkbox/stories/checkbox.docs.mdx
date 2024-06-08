@@ -1,4 +1,4 @@
-import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/addon-docs';
+import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
 
 import { RdxCheckboxDirective } from '../src/checkbox.directive';
 import * as CheckboxDirectiveStories from './checkbox.stories';
@@ -9,13 +9,13 @@ import * as CheckboxDirectiveStories from './checkbox.stories';
 
 #### A control that allows the user to toggle between checked and not checked.
 
-<Canvas sourceState="hidden" of={CheckboxDirectiveStories.Default}></Canvas>
+<Canvas sourceState="hidden" of={CheckboxDirectiveStories.Default} />
 
 ## Features
 
--   ✅ Full keyboard navigation.
--   ✅ Supports indeterminate _state.
--   ✅ Can be controlled or uncontrolled.
+* ✅ Full keyboard navigation.
+* ✅ Supports indeterminate \_state.
+* ✅ Can be controlled or uncontrolled.
 
 ## Import
 
@@ -45,14 +45,14 @@ import { RdxCheckboxDirective, RdxCheckboxIndicatorDirective } from '@radix-ng/p
 
 ## Accessibility
 
-Adheres to the [tri-_state Checkbox WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/checkbox).
+Adheres to the [tri-\_state Checkbox WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/checkbox).
 
 ### Keyboard Interactions
 
 <Markdown>
-    {`
-| Key | Description |
-| ----------- | --------- |
-| Space       | Checks/unchecks the checkbox.        |
-`}
+  {`
+  | Key | Description |
+  | ----------- | --------- |
+  | Space       | Checks/unchecks the checkbox.        |
+  `}
 </Markdown>

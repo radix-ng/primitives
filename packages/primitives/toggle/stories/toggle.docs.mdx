@@ -1,4 +1,4 @@
-import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/addon-docs';
+import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
 import * as ToggleDirectiveStories from './toggle.stories';
 import { RdxToggleRootDirective } from '../src/toggle-root.directive';
 
@@ -6,14 +6,14 @@ import { RdxToggleRootDirective } from '../src/toggle-root.directive';
 
 # Toggle
 
-#### A two-_state button that can be either on or off.
+#### A two-\_state button that can be either on or off.
 
-<Canvas sourceState="hidden" of={ToggleDirectiveStories.Default}></Canvas>
+<Canvas sourceState="hidden" of={ToggleDirectiveStories.Default} />
 
 ## Features
 
--   ✅ Full keyboard navigation.
--   ✅ Can be controlled or uncontrolled.
+* ✅ Full keyboard navigation.
+* ✅ Can be controlled or uncontrolled.
 
 ## Import
 
@@ -38,12 +38,12 @@ import { RdxToggleRootDirective } from '@radix-ng/primitives/toggle';
 <ArgTypes of={RdxToggleRootDirective} />
 
 <Markdown>
-    {`
-| Data Attribute | Value |
-| ----------- | --------- |
-| [data-state]       | "on" or "off"   |
-| [data-disabled]    | Present when disabled      |
-`}
+  {`
+  | Data Attribute | Value |
+  | ----------- | --------- |
+  | [data-state]       | "on" or "off"   |
+  | [data-disabled]    | Present when disabled      |
+  `}
 </Markdown>
 
 ## Accessibility
@@ -51,10 +51,10 @@ import { RdxToggleRootDirective } from '@radix-ng/primitives/toggle';
 ### Keyboard Interactions
 
 <Markdown>
-    {`
-| Key | Description |
-| ----------- | --------- |
-| Space       | Activates/deactivates the toggle.       |
-| Enter       | Activates/deactivates the toggle.  |
-`}
+  {`
+  | Key | Description |
+  | ----------- | --------- |
+  | Space       | Activates/deactivates the toggle.       |
+  | Enter       | Activates/deactivates the toggle.  |
+  `}
 </Markdown>

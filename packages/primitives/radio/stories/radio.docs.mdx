@@ -1,4 +1,4 @@
-import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/addon-docs';
+import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
 
 import * as RadioDirectiveStories from './radio.stories';
 
@@ -11,13 +11,13 @@ import { RdxRadioItemDirective } from '../src/radio-item.directive';
 
 #### A set of checkable buttons—known as radio buttons—where no more than one of the buttons can be checked at a time.
 
-<Canvas sourceState="hidden" of={RadioDirectiveStories.Default}></Canvas>
+<Canvas sourceState="hidden" of={RadioDirectiveStories.Default} />
 
 ## Features
 
--   ✅ Full keyboard navigation.
--   ✅ Supports horizontal/vertical orientation.
--   ✅ Can be controlled or uncontrolled.
+* ✅ Full keyboard navigation.
+* ✅ Supports horizontal/vertical orientation.
+* ✅ Can be controlled or uncontrolled.
 
 ## Import
 
@@ -57,14 +57,14 @@ and uses [roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.2/examples
 ### Keyboard Interactions
 
 <Markdown>
-    {`
-| Key | Description |
-| ----------- | --------- |
-| Tab         | Moves focus to either the checked radio item or the first radio item in the group. |
-| Space       | When focus is on an unchecked radio item, checks it.        |
-| ArrowDown   | Moves focus and checks the next radio item in the group.    |
-| ArrowRight  |  Moves focus and checks the next radio item in the group.   |
-| ArrowUp     |  Moves focus to the previous radio item in the group.       |
-| ArrowLeft   |  Moves focus to the previous radio item in the group.       |
-`}
+  {`
+  | Key | Description |
+  | ----------- | --------- |
+  | Tab         | Moves focus to either the checked radio item or the first radio item in the group. |
+  | Space       | When focus is on an unchecked radio item, checks it.        |
+  | ArrowDown   | Moves focus and checks the next radio item in the group.    |
+  | ArrowRight  |  Moves focus and checks the next radio item in the group.   |
+  | ArrowUp     |  Moves focus to the previous radio item in the group.       |
+  | ArrowLeft   |  Moves focus to the previous radio item in the group.       |
+  `}
 </Markdown>

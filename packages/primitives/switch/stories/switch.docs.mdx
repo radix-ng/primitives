@@ -1,4 +1,4 @@
-import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/addon-docs';
+import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
 
 import { switchExclude } from '../../.docs/utils/storybook';
 import { RdxSwitchRootDirective } from '../src/switch-root.directive';
@@ -10,12 +10,12 @@ import * as SwitchDirectiveStories from './switch.stories';
 
 #### A control that allows the user to toggle between checked and not checked.
 
-<Canvas sourceState="hidden" of={SwitchDirectiveStories.Default}></Canvas>
+<Canvas sourceState="hidden" of={SwitchDirectiveStories.Default} />
 
 ## Features
 
--   ✅ Full keyboard navigation.
--   ✅ Can be controlled or uncontrolled.
+* ✅ Full keyboard navigation.
+* ✅ Can be controlled or uncontrolled.
 
 ## Import
 
@@ -41,23 +41,23 @@ import { RdxSwitchRootDirective, RdxSwitchThumbDirective } from '@radix-ng/primi
 <ArgTypes exclude={switchExclude} of={RdxSwitchRootDirective} />
 
 <Markdown>
-    {`
-| Data Attribute | Value |
-| ----------- | --------- |
-| [data-state]       | "checked" or "unchecked"   |
-| [data-disabled]    | Present when disabled      |
-`}
+  {`
+  | Data Attribute | Value |
+  | ----------- | --------- |
+  | [data-state]       | "checked" or "unchecked"   |
+  | [data-disabled]    | Present when disabled      |
+  `}
 </Markdown>
 
 ### ThumbDirective
 
 <Markdown>
-    {`
-| Data Attribute | Value |
-| ----------- | --------- |
-| [data-state]       | "checked" or "unchecked"   |
-| [data-disabled]    | Present when disabled      |
-`}
+  {`
+  | Data Attribute | Value |
+  | ----------- | --------- |
+  | [data-state]       | "checked" or "unchecked"   |
+  | [data-disabled]    | Present when disabled      |
+  `}
 </Markdown>
 
 ## Accessibility
@@ -67,10 +67,10 @@ Adheres to the [`switch` role requirements](https://www.w3.org/WAI/ARIA/apg/patt
 ### Keyboard Interactions
 
 <Markdown>
-    {`
-| Key | Description |
-| ----------- | --------- |
-| Space       | Toggles the component's state.        |
-| Enter       | Toggles the component's state.    |
-`}
+  {`
+  | Key | Description |
+  | ----------- | --------- |
+  | Space       | Toggles the component's state.        |
+  | Enter       | Toggles the component's state.    |
+  `}
 </Markdown>

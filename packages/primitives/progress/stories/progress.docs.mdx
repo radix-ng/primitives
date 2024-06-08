@@ -1,4 +1,4 @@
-import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/addon-docs';
+import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
 
 import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
 import { RdxProgressRootDirective } from '../src/progress-root.directive';
@@ -10,11 +10,11 @@ import * as ProgressDirectiveStories from './progress.stories';
 
 #### Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.
 
-<Canvas sourceState="hidden" of={ProgressDirectiveStories.Default}></Canvas>
+<Canvas sourceState="hidden" of={ProgressDirectiveStories.Default} />
 
 ## Features
 
--   ✅ Provides context for assistive technology to read the progress of a task.
+* ✅ Provides context for assistive technology to read the progress of a task.
 
 ## Usage
 
@@ -43,13 +43,13 @@ import { RdxProgressRootDirective, RdxProgressIndicatorDirective } from '@radix-
 <ArgTypes of={RdxProgressRootDirective} />
 
 <Markdown>
-    {`
-| Data Attribute | Value |
-| ----------- | --------- |
-| [data-state]    | "complete" or "indeterminate" or "loading"   |
-| [data-value]    | The current value          |
-| [data-max] |  The max value     |
-`}
+  {`
+  | Data Attribute | Value |
+  | ----------- | --------- |
+  | [data-state]    | "complete" or "indeterminate" or "loading"   |
+  | [data-value]    | The current value          |
+  | [data-max] |  The max value     |
+  `}
 </Markdown>
 
 ### RdxProgressIndicatorDirective
@@ -57,13 +57,13 @@ import { RdxProgressRootDirective, RdxProgressIndicatorDirective } from '@radix-
 Used to show the progress visually. It also makes progress accessible to assistive technologies.
 
 <Markdown>
-    {`
-| Data Attribute | Value |
-| ----------- | --------- |
-| [data-state]    | "complete" or "indeterminate" or "loading"   |
-| [data-value]    | The current value          |
-| [data-max] |  The max value     |
-`}
+  {`
+  | Data Attribute | Value |
+  | ----------- | --------- |
+  | [data-state]    | "complete" or "indeterminate" or "loading"   |
+  | [data-value]    | The current value          |
+  | [data-max] |  The max value     |
+  `}
 </Markdown>
 
 ## Accessibility
