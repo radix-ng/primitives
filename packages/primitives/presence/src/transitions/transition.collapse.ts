@@ -1,5 +1,5 @@
-import { TransitionStartFn } from './types';
-import { triggerReflow } from './utils';
+import { TransitionStartFn } from '../types';
+import { triggerReflow } from '../utils';
 
 export type CollapseContext = {
     direction: 'show' | 'hide';
@@ -52,12 +52,12 @@ export const transitionCollapsing: TransitionStartFn<CollapseContext> = (
         // Fix the height before starting the animation
         element.style[dimension] = direction !== 'show' ? maxSize : '0px';
 
-        classList.remove('collapse', 'collapsing', 'show');
+        classList.remove(COLLAPSE_CLASS, COLLAPSING_CLASS, 'show');
 
         triggerReflow(element);
 
         // Start the animation
-        classList.add('collapsing');
+        classList.add(COLLAPSING_CLASS);
     }
 
     element.style[dimension] = direction === 'show' ? maxSize : '0px';

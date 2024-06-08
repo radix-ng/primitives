@@ -1,7 +1,7 @@
 import { Component, ElementRef, NgZone, OnInit } from '@angular/core';
 
 import { usePresence } from '../src/presence';
-import { CollapseContext, transitionCollapsing } from '../src/transition.collapse';
+import { CollapseContext, transitionCollapsing } from '../src/transitions/transition.collapse';
 
 @Component({
     selector: 'app-presence',
