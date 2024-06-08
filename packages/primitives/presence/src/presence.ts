@@ -70,7 +70,7 @@ const usePresence = <T>(
     const running = TransitionsMap.get(element);
 
     if (running) {
-        switch (options.state) {
+        switch (state) {
             case 'continue':
                 return EMPTY;
             case 'stop':
