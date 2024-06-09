@@ -1,0 +1,53 @@
+import { Overlay, OverlayRef } from '@angular/cdk/overlay';
+import { TemplatePortal } from '@angular/cdk/portal';
+import { Injectable, TemplateRef, ViewContainerRef } from '@angular/core';
+
+@Injectable({
+    providedIn: 'root'
+})
+export class AlertDialogService {
+    private overlayRef: OverlayRef | null | undefined;
+    private dialogContent:
+        | {
+              viewContainerRef: ViewContainerRef;
+              template: TemplateRef<any>;
+          }
+        | undefined;
+
+    constructor(private overlay: Overlay) {}
+
+    setDialogContent(viewContainerRef: ViewContainerRef, template: TemplateRef<any>) {
+        this.dialogContent = { viewContainerRef, template };
+    }
+
+    open() {
+        if (!this.dialogContent) {
+            throw new Error('Dialog content is not set');
+        }
+
+        this.overlayRef = this.overlay.create({
+            hasBackdrop: true,
+            backdropClass: 'cdk-overlay-dark-backdrop',
+            positionStrategy: this.overlay
+                .position()
+                .global()
+                .centerHorizontally()
+                .centerVertically()
+        });
+
+        const templatePortal = new TemplatePortal(
+            this.dialogContent.template,
+            this.dialogContent.viewContainerRef
+        );
+        this.overlayRef.attach(templatePortal);
+
+        this.overlayRef.backdropClick().subscribe(() => this.close());
+    }
+
+    close() {
+        if (this.overlayRef) {
+            this.overlayRef.dispose();
+            this.overlayRef = null;
+        }
+    }
+}

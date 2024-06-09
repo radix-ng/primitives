@@ -62,7 +62,10 @@
                 "configDir": "packages/primitives/.storybook",
                 "browserTarget": "primitives:build-storybook",
                 "compodoc": false,
-                "styles": ["@radix-ui/themes/styles.css"],
+                "styles": [
+                    "@radix-ui/themes/styles.css",
+                    "@angular/cdk/overlay-prebuilt.css"
+                ],
                 "stylePreprocessorOptions": {
                     "includePaths": ["node_modules/"]
                 }
