@@ -29,13 +29,16 @@ Import the global CSS file at the root of your application.
 
 ```bash
 import '@radix-ui/themes/styles.css';
+import '@angular/cdk/overlay-prebuilt.css';
 ```
 
 For NX added to `build.options`
 
 ```JSON
 "styles": [
-    "@radix-ui/themes/styles.css"
+    "@radix-ui/themes/styles.css",
+     // For styling overlay, `cdk-overlay-dark-backdrop`
+    "@angular/cdk/overlay-prebuilt.css"
 ],
 "stylePreprocessorOptions": {
     "includePaths": [
