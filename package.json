@@ -67,7 +67,7 @@
         "@nrwl/nx-plugin": "18.3.5",
         "@nx/angular": "18.3.5",
         "@nx/devkit": "18.3.5",
-        "@nx/esbuild": "18.3.5",
+        "@nx/esbuild": "19.2.2",
         "@nx/eslint": "18.3.5",
         "@nx/eslint-plugin": "18.3.5",
         "@nx/jest": "18.3.5",
