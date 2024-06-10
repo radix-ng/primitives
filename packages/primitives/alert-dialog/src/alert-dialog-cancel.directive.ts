@@ -1,15 +1,17 @@
-import { Directive, HostListener } from '@angular/core';
+import { Directive, inject } from '@angular/core';
 
 import { AlertDialogService } from './alert-dialog.service';
 
 @Directive({
     selector: '[rdxAlertDialogCancel]',
-    standalone: true
+    standalone: true,
+    host: {
+        '(click)': 'onClick()'
+    }
 })
 export class AlertDialogCancelDirective {
-    constructor(private alertDialogService: AlertDialogService) {}
+    private readonly alertDialogService = inject(AlertDialogService);
 
-    @HostListener('click')
     onClick() {
         this.alertDialogService.close();
     }

@@ -1,4 +1,4 @@
-import { Directive, ElementRef, Input, Renderer2 } from '@angular/core';
+import { Directive, ElementRef, inject, Input, Renderer2 } from '@angular/core';
 
 @Directive({
     selector: '[rdxAlertDialogContent]',
@@ -8,12 +8,10 @@ import { Directive, ElementRef, Input, Renderer2 } from '@angular/core';
     }
 })
 export class AlertDialogContentDirective {
-    @Input('appAlertDialogContent') set maxWidth(value: string) {
-        this.renderer.setStyle(this.el.nativeElement, 'maxWidth', value);
-    }
+    private readonly renderer = inject(Renderer2);
+    private readonly elementRef = inject(ElementRef);
 
-    constructor(
-        private el: ElementRef,
-        private renderer: Renderer2
-    ) {}
+    @Input() set maxWidth(value: string) {
+        this.renderer.setStyle(this.elementRef.nativeElement, 'maxWidth', value);
+    }
 }
