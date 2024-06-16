@@ -22,7 +22,7 @@
         "@angular/cdk": "^17.0.0"
     },
     "dependencies": {
-        "@floating-ui/dom": "^1.6.3"
+
     },
     "sideEffects": false
 }
