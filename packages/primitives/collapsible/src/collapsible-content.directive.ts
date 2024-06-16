@@ -4,6 +4,6 @@ import { Directive, ElementRef, inject } from '@angular/core';
     selector: '[CollapsibleContent]',
     standalone: true
 })
-export class RdxCollapsibleContentDirective /*implements OnInit*/ {
+export class RdxCollapsibleContentDirective {
     elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 }

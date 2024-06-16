@@ -20,7 +20,7 @@ export class RdxCollapsibleTriggerDirective {
     }
 
     getState(): RdxCollapsibleState {
-        return this.collapsible.isOpen() ? 'open' : 'closed';
+        return this.collapsible.getState();
     }
 
     getDisabled(): string | undefined {
