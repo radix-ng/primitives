@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { RdxCollapsibleContentDirective } from '../src/collapsible-content.directive';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
@@ -81,12 +81,6 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
         </div>
     `
 })
-export class RdxCollapsibleAnimationComponent implements AfterViewInit {
+export class RdxCollapsibleAnimationComponent {
     isOpen = true;
-    @ViewChild(RdxCollapsibleContentDirective)
-    private readonly collapsibleContent?: RdxCollapsibleContentDirective;
-
-    ngAfterViewInit(): void {
-        console.log(this.collapsibleContent?.elementRef);
-    }
 }
