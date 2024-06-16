@@ -64,7 +64,7 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: `
-            <div class="CollapsibleRoot" CollapsibleRoot [open]="false">
+            <div class="CollapsibleRoot" CollapsibleRoot [open]="true">
 
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                 <span class="Text" style="color: white">&#64;peduarte starred 3 repositories</span>

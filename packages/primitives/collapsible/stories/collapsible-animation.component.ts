@@ -56,7 +56,7 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
             class="CollapsibleRoot"
             CollapsibleRoot
             #collapsibleRoot="collapsibleRoot"
-            [open]="isOpen"
+            [open]="true"
         >
             <div style="display: flex; align-items: center; justify-content: space-between;">
                 <span class="Text" style="color: white">&#64;peduarte starred 3 repositories</span>
@@ -81,6 +81,4 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
         </div>
     `
 })
-export class RdxCollapsibleAnimationComponent {
-    isOpen = true;
-}
+export class RdxCollapsibleAnimationComponent {}
