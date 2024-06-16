@@ -18,6 +18,8 @@ export function injectCollapsible(): RdxCollapsibleRootDirective {
     return inject(RdxCollapsibleRootDirective);
 }
 
+export type RdxCollapsibleState = 'open' | 'closed';
+
 @Directive({
     selector: '[CollapsibleRoot]',
     standalone: true,
@@ -50,7 +52,7 @@ export class RdxCollapsibleRootDirective {
         this.setPresence();
     }
 
-    getState(): string {
+    getState(): RdxCollapsibleState {
         return this._open ? 'open' : 'closed';
     }
 

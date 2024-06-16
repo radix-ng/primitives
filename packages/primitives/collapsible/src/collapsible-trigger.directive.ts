@@ -1,6 +1,6 @@
 import { Directive } from '@angular/core';
 
-import { injectCollapsible } from './collapsible-root.directive';
+import { injectCollapsible, RdxCollapsibleState } from './collapsible-root.directive';
 
 @Directive({
     selector: '[CollapsibleTrigger]',
@@ -18,7 +18,7 @@ export class RdxCollapsibleTriggerDirective {
         this.collapsible.setOpen();
     }
 
-    getState(): string {
+    getState(): RdxCollapsibleState {
         return this.collapsible.isOpen() ? 'open' : 'closed';
     }
 }
