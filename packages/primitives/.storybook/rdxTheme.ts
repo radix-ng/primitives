@@ -9,8 +9,6 @@ export default create({
     colorPrimary: '#272E35',
     colorSecondary: '#272E35',
 
-    fontBase: '"Inter", sans-serif',
-
     appBg: '#ffffff',
     appContentBg: '#ffffff',
     appBorderColor: '#EAEDF0',
