@@ -1,15 +1,14 @@
 import {
+    AfterViewInit,
     ContentChild,
     Directive,
     EventEmitter,
     inject,
     InjectionToken,
     Input,
-    NgZone,
     Output
 } from '@angular/core';
 
-import { transitionCollapsing, usePresence } from '../../presence';
 import { RdxCollapsibleContentDirective } from './collapsible-content.directive';
 
 const RdxCollapsibleToken = new InjectionToken<RdxCollapsibleRootDirective>('RdxCollapsibleToken');
@@ -28,8 +27,7 @@ export type RdxCollapsibleState = 'open' | 'closed';
         '[attr.data-state]': 'getState()'
     }
 })
-export class RdxCollapsibleRootDirective {
-    private readonly ngZone = inject(NgZone);
+export class RdxCollapsibleRootDirective implements AfterViewInit {
     private _open = false;
     @Input() disabled = false;
     @Input() set open(value: boolean) {
@@ -42,7 +40,15 @@ export class RdxCollapsibleRootDirective {
     @Output() openChange = new EventEmitter<boolean>();
     @ContentChild(RdxCollapsibleContentDirective) contentDirective?: RdxCollapsibleContentDirective;
 
+    ngAfterViewInit(): void {
+        this.setPresence();
+    }
+
     setOpen(value?: boolean) {
+        if (this.disabled) {
+            return;
+        }
+
         if (value === undefined) {
             this.open = !this._open;
         } else {
@@ -64,20 +70,12 @@ export class RdxCollapsibleRootDirective {
         if (!this.contentDirective) {
             return;
         }
+        this.contentDirective.elementRef.nativeElement.setAttribute('data-state', this.getState());
 
-        const direction = this._open ? 'show' : 'hide';
-
-        usePresence(
-            this.ngZone,
-            this.contentDirective.elementRef.nativeElement,
-            transitionCollapsing,
-            {
-                context: {
-                    direction,
-                    dimension: 'height'
-                },
-                animation: true
-            }
-        ).subscribe();
+        if (this.isOpen()) {
+            this.contentDirective.elementRef.nativeElement.removeAttribute('hidden');
+        } else {
+            this.contentDirective.elementRef.nativeElement.setAttribute('hidden', '');
+        }
     }
 }

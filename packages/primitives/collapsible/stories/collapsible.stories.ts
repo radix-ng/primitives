@@ -56,15 +56,32 @@ export default {
                         box-shadow: 0 2px 10px var(--black-a7);
                     }
 
-                    .collapse-content {
+                    .CollapsibleContent {
                         overflow: hidden;
-                        transition: height 0.5s ease-in-out;
                     }
-                    .collapse:not(.show) {
-                        display: none;
+                    .CollapsibleContent[data-state='open'] {
+                        animation: slideDown 300ms ease-out;
                     }
-                    .show {
-                        height: auto;
+                    .CollapsibleContent[data-state='closed'] {
+                        animation: slideUp 300ms ease-out;
+                    }
+
+                    @keyframes slideDown {
+                        from {
+                            height: 0;
+                        }
+                        to {
+                            height: 120px;
+                        }
+                    }
+
+                    @keyframes slideUp {
+                        from {
+                            height: 120px;
+                        }
+                        to {
+                            height: 0;
+                        }
                     }
                 </style>`
         )
@@ -76,7 +93,7 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: `
-            <div class="CollapsibleRoot" CollapsibleRoot [open]="true">
+            <div class="CollapsibleRoot" CollapsibleRoot [open]="false">
 
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                 <span class="Text" style="color: white">&#64;peduarte starred 3 repositories</span>
@@ -87,7 +104,34 @@ export const Default: Story = {
                     <span class="Text">&#64;radix-ui/primitives</span>
                 </div>
 
-                <div CollapsibleContent class="collapse-content">
+                <div CollapsibleContent>
+                    <div class="Repository">
+                        <span class="Text">&#64;radix-ui/colors</span>
+                    </div>
+                    <div class="Repository">
+                        <span class="Text">&#64;stitches/react</span>
+                    </div>
+                </div>
+            </div>
+        `
+    })
+};
+
+export const Animation: Story = {
+    render: () => ({
+        template: `
+            <div class="CollapsibleRoot" CollapsibleRoot [open]="false">
+
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span class="Text" style="color: white">&#64;peduarte starred 3 repositories</span>
+                <button class="IconButton" CollapsibleTrigger></button>
+                </div>
+
+                <div class="Repository">
+                    <span class="Text">&#64;radix-ui/primitives</span>
+                </div>
+
+                <div CollapsibleContent class="CollapsibleContent">
                     <div class="Repository">
                         <span class="Text">&#64;radix-ui/colors</span>
                     </div>

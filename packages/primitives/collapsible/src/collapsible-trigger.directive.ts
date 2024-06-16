@@ -8,7 +8,8 @@ import { injectCollapsible, RdxCollapsibleState } from './collapsible-root.direc
     host: {
         '(click)': 'onOpenToggle()',
         '[attr.data-state]': 'getState()',
-        '[attr.aria-expanded]': 'getState() === "open" ? "true" : "false"'
+        '[attr.aria-expanded]': 'getState() === "open" ? "true" : "false"',
+        '[disabled]': 'getDisabled()'
     }
 })
 export class RdxCollapsibleTriggerDirective {
@@ -20,5 +21,9 @@ export class RdxCollapsibleTriggerDirective {
 
     getState(): RdxCollapsibleState {
         return this.collapsible.isOpen() ? 'open' : 'closed';
+    }
+
+    getDisabled(): string | undefined {
+        return this.collapsible.disabled ? 'disabled' : undefined;
     }
 }
