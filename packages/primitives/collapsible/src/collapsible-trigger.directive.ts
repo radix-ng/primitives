@@ -6,7 +6,9 @@ import { injectCollapsible } from './collapsible-root.directive';
     selector: '[CollapsibleTrigger]',
     standalone: true,
     host: {
-        '(click)': 'onOpenToggle()'
+        '(click)': 'onOpenToggle()',
+        '[attr.data-state]': 'getState()',
+        '[attr.aria-expanded]': 'getState() === "open" ? "true" : "false"'
     }
 })
 export class RdxCollapsibleTriggerDirective {
@@ -14,5 +16,9 @@ export class RdxCollapsibleTriggerDirective {
 
     onOpenToggle(): void {
         this.collapsible.setOpen();
+    }
+
+    getState(): string {
+        return this.collapsible.isOpen() ? 'open' : 'closed';
     }
 }
