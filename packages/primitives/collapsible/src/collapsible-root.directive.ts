@@ -8,6 +8,7 @@ import {
     Input,
     Output
 } from '@angular/core';
+import { asyncScheduler } from 'rxjs';
 
 import { RdxCollapsibleContentDirective } from './collapsible-content.directive';
 
@@ -22,6 +23,7 @@ export type RdxCollapsibleState = 'open' | 'closed';
 @Directive({
     selector: '[CollapsibleRoot]',
     standalone: true,
+    exportAs: 'collapsibleRoot',
     providers: [{ provide: RdxCollapsibleToken, useExisting: RdxCollapsibleRootDirective }],
     host: {
         '[attr.data-state]': 'getState()'
@@ -70,12 +72,19 @@ export class RdxCollapsibleRootDirective implements AfterViewInit {
         if (!this.contentDirective) {
             return;
         }
+
         this.contentDirective.elementRef.nativeElement.setAttribute('data-state', this.getState());
 
         if (this.isOpen()) {
             this.contentDirective.elementRef.nativeElement.removeAttribute('hidden');
         } else {
-            this.contentDirective.elementRef.nativeElement.setAttribute('hidden', '');
+            asyncScheduler.schedule(() => {
+                const animations = this.contentDirective?.elementRef.nativeElement.getAnimations();
+
+                if (animations === undefined || animations.length === 0) {
+                    this.contentDirective?.elementRef.nativeElement.setAttribute('hidden', '');
+                }
+            });
         }
     }
 }
