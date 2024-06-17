@@ -10,7 +10,10 @@ import {
 } from '@angular/core';
 import { asyncScheduler } from 'rxjs';
 
-import { RdxCollapsibleContentDirective } from './collapsible-content.directive';
+import {
+    RdxCollapsibleContentDirective,
+    RdxCollapsibleContentToken
+} from './collapsible-content.directive';
 
 const RdxCollapsibleToken = new InjectionToken<RdxCollapsibleRootDirective>('RdxCollapsibleToken');
 
@@ -40,7 +43,7 @@ export class RdxCollapsibleRootDirective implements AfterViewInit {
         this._open = value;
     }
     @Output() openChange = new EventEmitter<boolean>();
-    @ContentChild(RdxCollapsibleContentDirective) contentDirective?: RdxCollapsibleContentDirective;
+    @ContentChild(RdxCollapsibleContentToken) contentDirective?: RdxCollapsibleContentDirective;
 
     ngAfterViewInit(): void {
         this.setPresence();

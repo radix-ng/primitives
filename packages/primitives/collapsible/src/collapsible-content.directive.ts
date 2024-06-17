@@ -1,8 +1,15 @@
-import { Directive, ElementRef, inject } from '@angular/core';
+import { Directive, ElementRef, inject, InjectionToken } from '@angular/core';
+
+export const RdxCollapsibleContentToken = new InjectionToken<RdxCollapsibleContentDirective>(
+    'RdxCollapsibleContentToken'
+);
 
 @Directive({
     selector: '[CollapsibleContent]',
-    standalone: true
+    standalone: true,
+    providers: [
+        { provide: RdxCollapsibleContentToken, useExisting: RdxCollapsibleContentDirective }
+    ]
 })
 export class RdxCollapsibleContentDirective {
     elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
