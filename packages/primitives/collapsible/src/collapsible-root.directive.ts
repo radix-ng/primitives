@@ -1,6 +1,6 @@
 import {
     AfterViewInit,
-    ContentChild,
+    contentChild,
     Directive,
     EventEmitter,
     inject,
@@ -10,10 +10,7 @@ import {
 } from '@angular/core';
 import { asyncScheduler } from 'rxjs';
 
-import {
-    RdxCollapsibleContentDirective,
-    RdxCollapsibleContentToken
-} from './collapsible-content.directive';
+import { RdxCollapsibleContentToken } from './collapsible-content.directive';
 
 const RdxCollapsibleToken = new InjectionToken<RdxCollapsibleRootDirective>('RdxCollapsibleToken');
 
@@ -33,6 +30,7 @@ export type RdxCollapsibleState = 'open' | 'closed';
     }
 })
 export class RdxCollapsibleRootDirective implements AfterViewInit {
+    private readonly contentDirective = contentChild.required(RdxCollapsibleContentToken);
     private _open = false;
     @Input() disabled = false;
     @Input() set open(value: boolean) {
@@ -43,7 +41,6 @@ export class RdxCollapsibleRootDirective implements AfterViewInit {
         this._open = value;
     }
     @Output() openChange = new EventEmitter<boolean>();
-    @ContentChild(RdxCollapsibleContentToken) contentDirective?: RdxCollapsibleContentDirective;
 
     ngAfterViewInit(): void {
         this.setPresence();
@@ -76,16 +73,19 @@ export class RdxCollapsibleRootDirective implements AfterViewInit {
             return;
         }
 
-        this.contentDirective.elementRef.nativeElement.setAttribute('data-state', this.getState());
+        this.contentDirective().elementRef.nativeElement.setAttribute(
+            'data-state',
+            this.getState()
+        );
 
         if (this.isOpen()) {
-            this.contentDirective.elementRef.nativeElement.removeAttribute('hidden');
+            this.contentDirective().elementRef.nativeElement.removeAttribute('hidden');
         } else {
             asyncScheduler.schedule(() => {
-                const animations = this.contentDirective?.elementRef.nativeElement.getAnimations();
+                const animations = this.contentDirective().elementRef.nativeElement.getAnimations();
 
                 if (animations === undefined || animations.length === 0) {
-                    this.contentDirective?.elementRef.nativeElement.setAttribute('hidden', '');
+                    this.contentDirective().elementRef.nativeElement.setAttribute('hidden', '');
                 }
             });
         }
