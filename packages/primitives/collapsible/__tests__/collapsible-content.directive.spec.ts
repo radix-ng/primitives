@@ -10,7 +10,7 @@ import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
     imports: [RdxCollapsibleRootDirective, RdxCollapsibleContentDirective],
     template: `
         <div CollapsibleRoot>
-            <button CollapsibleContent>Content</button>
+            <div CollapsibleContent>Content</div>
         </div>
     `
 })
