@@ -25,13 +25,13 @@ type Story = StoryObj<RdxCollapsibleAnimationComponent>;
 export const Default: Story = {
     render: () => ({
         template: `
-<div class="radix-themes light light-theme radix-themes-default-fonts"
-    data-accent-color="indigo"
-    data-radius="medium"
-    data-scaling="100%"
->
-    <rdx-collapsible-animation></rdx-collapsible-animation>
-</div>
-`
+            <div class="radix-themes light light-theme radix-themes-default-fonts"
+                data-accent-color="indigo"
+                data-radius="medium"
+                data-scaling="100%"
+            >
+                <rdx-collapsible-animation></rdx-collapsible-animation>
+            </div>
+        `
     })
 };
