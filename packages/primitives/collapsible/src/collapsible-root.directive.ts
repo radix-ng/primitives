@@ -1,5 +1,4 @@
 import {
-    AfterViewInit,
     contentChild,
     Directive,
     EventEmitter,
@@ -29,7 +28,7 @@ export type RdxCollapsibleState = 'open' | 'closed';
         '[attr.data-state]': 'getState()'
     }
 })
-export class RdxCollapsibleRootDirective implements AfterViewInit {
+export class RdxCollapsibleRootDirective {
     private readonly contentDirective = contentChild.required(RdxCollapsibleContentToken);
     private _open = false;
     @Input() disabled = false;
@@ -39,12 +38,9 @@ export class RdxCollapsibleRootDirective implements AfterViewInit {
         }
 
         this._open = value;
-    }
-    @Output() openChange = new EventEmitter<boolean>();
-
-    ngAfterViewInit(): void {
         this.setPresence();
     }
+    @Output() openChange = new EventEmitter<boolean>();
 
     setOpen(value?: boolean) {
         if (this.disabled) {
