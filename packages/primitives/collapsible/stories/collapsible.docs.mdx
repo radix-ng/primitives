@@ -1,0 +1,24 @@
+import { Canvas, Meta } from '@storybook/blocks';
+import * as CollapsibleStories from './collapsible.stories'
+
+<Meta title='Primitives/Collapsible' />
+
+# Collapsible
+
+#### An interactive component which expands/collapses a panel.
+
+<Canvas sourceState='hidden' of={CollapsibleStories.Default} />
+
+## Features
+
+* ✅ Full keyboard navigation.
+* ✅ Can be controlled or uncontrolled.
+
+## Anatomy
+
+```html
+<div CollapsibleRoot [open]="...">
+    <button CollapsibleTrigger>Trigger</button>
+    <div CollapsibleContent>Content</div>
+</div>
+```
