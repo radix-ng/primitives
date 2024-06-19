@@ -13,16 +13,32 @@ import { injectCollapsible, RdxCollapsibleState } from './collapsible-root.direc
     }
 })
 export class RdxCollapsibleTriggerDirective {
+    /**
+     * Reference to CollapsibleRoot
+     * @private
+     * @ignore
+     */
     private readonly collapsible = injectCollapsible();
 
+    /**
+     * Called on trigger clicked
+     */
     onOpenToggle(): void {
         this.collapsible.setOpen();
     }
 
+    /**
+     * Returns current directive state (open | closed)
+     * @ignore
+     */
     getState(): RdxCollapsibleState {
         return this.collapsible.getState();
     }
 
+    /**
+     * Returns current trigger state
+     * @ignore
+     */
     getDisabled(): string | undefined {
         return this.collapsible.disabled ? 'disabled' : undefined;
     }

@@ -1,5 +1,8 @@
-import { Canvas, Meta } from '@storybook/blocks';
+import { ArgTypes, Canvas, Meta } from '@storybook/blocks';
 import * as CollapsibleStories from './collapsible.stories'
+import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
+import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.directive';
+import { RdxCollapsibleContentDirective } from '../src/collapsible-content.directive';
 
 <Meta title='Primitives/Collapsible' />
 
@@ -22,3 +25,29 @@ import * as CollapsibleStories from './collapsible.stories'
     <div CollapsibleContent>Content</div>
 </div>
 ```
+
+## Import
+
+Get started with importing the directives:
+
+```typescript
+import {
+    RdxCollapsibleRootDirective,
+    RdxCollapsibleTriggerDirective,
+    RdxCollapsibleContentDirective
+} from '@radix-ng/primitives/collapsible';
+```
+
+## API Reference
+
+## RdxCollapsibleRootDirective
+
+<ArgTypes of={RdxCollapsibleRootDirective} />
+
+## RdxCollapsibleTriggerDirective
+
+<ArgTypes of={RdxCollapsibleTriggerDirective} />
+
+## RdxCollapsibleContentDirective
+
+<ArgTypes of={RdxCollapsibleContentDirective} />

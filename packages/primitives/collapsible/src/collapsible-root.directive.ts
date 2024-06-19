@@ -29,9 +29,29 @@ export type RdxCollapsibleState = 'open' | 'closed';
     }
 })
 export class RdxCollapsibleRootDirective {
+    /**
+     * Reference to RdxCollapsibleContent directive
+     * @private
+     * @ignore
+     */
     private readonly contentDirective = contentChild.required(RdxCollapsibleContentToken);
+
+    /**
+     * Stores collapsible state
+     * @private
+     * @ignore
+     */
     private _open = false;
+
+    /**
+     * Determines whether a directive is available for interaction
+     */
     @Input() disabled = false;
+
+    /**
+     * Sets the state of the directive. `true` - expanded, `false` - collapsed
+     * @param {boolean} value
+     */
     @Input() set open(value: boolean) {
         if (value !== this._open) {
             this.openChange.emit(value);
@@ -40,8 +60,16 @@ export class RdxCollapsibleRootDirective {
         this._open = value;
         this.setPresence();
     }
+
+    /**
+     * Emitted with new value when directive state changed
+     */
     @Output() openChange = new EventEmitter<boolean>();
 
+    /**
+     * Allows to change directive state
+     * @param {boolean | undefined} value
+     */
     setOpen(value?: boolean) {
         if (this.disabled) {
             return;
@@ -56,14 +84,25 @@ export class RdxCollapsibleRootDirective {
         this.setPresence();
     }
 
+    /**
+     * Returns directive state (open | closed)
+     */
     getState(): RdxCollapsibleState {
         return this._open ? 'open' : 'closed';
     }
 
+    /**
+     * Returns current directive state
+     */
     isOpen(): boolean {
         return this._open;
     }
 
+    /**
+     * Controls visibility of content
+     * @private
+     * @ignore
+     */
     private setPresence(): void {
         if (!this.contentDirective) {
             return;

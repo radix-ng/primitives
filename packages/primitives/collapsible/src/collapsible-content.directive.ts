@@ -12,5 +12,8 @@ export const RdxCollapsibleContentToken = new InjectionToken<RdxCollapsibleConte
     ]
 })
 export class RdxCollapsibleContentDirective {
+    /**
+     * Reference to CollapsibleContent host element
+     */
     elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 }
