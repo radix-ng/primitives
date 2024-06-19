@@ -1,8 +1,12 @@
+import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
+
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 import { RdxCollapsibleContentDirective } from '../src/collapsible-content.directive';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.directive';
+import { RdxCollapsibleAnimationComponent } from './collapsible-animation.component';
+import { RdxCollapsibleExternalTriggeringComponent } from './collapsible-external-triggering.component';
 
 export default {
     title: 'Primitives/Collapsible',
@@ -11,8 +15,14 @@ export default {
             imports: [
                 RdxCollapsibleRootDirective,
                 RdxCollapsibleTriggerDirective,
-                RdxCollapsibleContentDirective
-            ]
+                RdxCollapsibleContentDirective,
+
+                RdxCollapsibleExternalTriggeringComponent,
+                RdxCollapsibleAnimationComponent,
+
+                BrowserAnimationsModule
+            ],
+            providers: [provideAnimations()]
         }),
         componentWrapperDecorator(
             (story) => `
@@ -99,6 +109,34 @@ export const Default: Story = {
                         <span class="Text">&#64;stitches/react</span>
                     </div>
                 </div>
+            </div>
+        `
+    })
+};
+
+export const ExternalTrigger: Story = {
+    render: () => ({
+        template: `
+            <div class="radix-themes light light-theme radix-themes-default-fonts"
+                data-accent-color="indigo"
+                data-radius="medium"
+                data-scaling="100%"
+            >
+                <rdx-collapsible-external-triggering></rdx-collapsible-external-triggering>
+            </div>
+        `
+    })
+};
+
+export const Animation: Story = {
+    render: () => ({
+        template: `
+            <div class="radix-themes light light-theme radix-themes-default-fonts"
+                data-accent-color="indigo"
+                data-radius="medium"
+                data-scaling="100%"
+            >
+                <rdx-collapsible-animation></rdx-collapsible-animation>
             </div>
         `
     })
