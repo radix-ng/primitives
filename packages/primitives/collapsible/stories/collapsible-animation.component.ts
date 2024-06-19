@@ -37,6 +37,22 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
             box-shadow: 0 2px 10px var(--black-a7);
         }
 
+        .IconButton[data-state='closed'] {
+            background-color: white;
+        }
+
+        .IconButton[data-state='open'] {
+            background-color: var(--violet-3);
+        }
+
+        .IconButton:hover {
+            background-color: var(--violet-3);
+        }
+
+        .IconButton:focus {
+            box-shadow: 0 0 0 2px black;
+        }
+
         .Text {
             color: var(--violet-11);
             font-size: 15px;

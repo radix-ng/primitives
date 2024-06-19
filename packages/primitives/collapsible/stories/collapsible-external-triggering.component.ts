@@ -25,6 +25,22 @@ import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
             padding: 4px;
         }
 
+        .ExternalTrigger[data-state='closed'] {
+            background-color: white;
+        }
+
+        .ExternalTrigger[data-state='open'] {
+            background-color: var(--violet-3);
+        }
+
+        .ExternalTrigger:hover {
+            background-color: var(--violet-3);
+        }
+
+        .ExternalTrigger:focus {
+            box-shadow: 0 0 0 2px black;
+        }
+
         .Text {
             color: var(--violet-11);
             font-size: 15px;
