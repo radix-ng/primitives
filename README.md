@@ -39,11 +39,11 @@ AnalogJS version [Taxonomy](https://github.com/shadcn-ui/taxonomy) – [https://
 ```
 
 ## Primitives Roadmap
-- [ ] Accordion        ((will be based on angular/cdk))
-- [ ] Alert Dialog
+- [ ] Accordion        (will be based on angular/cdk)
+- [x] Alert Dialog
 - [x] Avatar
 - [x] Checkbox         (need it more adaptation for FormGroup)
-- [ ] Collapsible
+- [x] Collapsible
 - [ ] Context Menu
 - [ ] Dialog           (will be based on angular/cdk)
 - [ ] Dropdown
