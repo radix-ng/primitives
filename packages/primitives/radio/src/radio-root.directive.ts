@@ -1,6 +1,5 @@
 import {
     booleanAttribute,
-    ChangeDetectorRef,
     Directive,
     EventEmitter,
     inject,
@@ -42,14 +41,17 @@ interface RadioGroupProps {
         role: 'radiogroup',
         '[attr.aria-orientation]': '_orientation',
         '[attr.data-disabled]': 'disabled ? "" : null',
+        '[attr.dir]': 'dir',
 
         '(focusout)': '_onFocusout()'
     }
 })
 export class RdxRadioGroupDirective implements RadioGroupProps, ControlValueAccessor {
-    @Input('rdxValue') value?: string;
+    @Input() value?: string;
 
-    @Input({ alias: 'rdxDisabled', transform: booleanAttribute }) disabled = false;
+    @Input({ transform: booleanAttribute }) disabled = false;
+
+    @Input() dir?: string;
 
     /**
      * The orientation of the radio group only vertical.
@@ -61,9 +63,9 @@ export class RdxRadioGroupDirective implements RadioGroupProps, ControlValueAcce
     readonly _orientation = 'vertical';
 
     /**
-     * Event emitted when the value of the radio group changes.
+     * Event handler called when the value changes.
      */
-    @Output('rdxOnValueChange') readonly onValueChange = new EventEmitter<string>();
+    @Output() readonly onValueChange = new EventEmitter<string>();
 
     /**
      * The callback function to call when the value of the radio group changes.
@@ -76,8 +78,6 @@ export class RdxRadioGroupDirective implements RadioGroupProps, ControlValueAcce
      * @internal
      */
     private onTouched?: () => void;
-
-    constructor(private readonly changeDetector: ChangeDetectorRef) {}
 
     /**
      * Select a radio item.
@@ -96,7 +96,6 @@ export class RdxRadioGroupDirective implements RadioGroupProps, ControlValueAcce
      */
     writeValue(value: string): void {
         this.value = value;
-        this.changeDetector.markForCheck();
     }
 
     /**
@@ -119,7 +118,6 @@ export class RdxRadioGroupDirective implements RadioGroupProps, ControlValueAcce
      */
     setDisabledState(isDisabled: boolean): void {
         this.disabled = isDisabled;
-        this.changeDetector.markForCheck();
     }
 
     /**

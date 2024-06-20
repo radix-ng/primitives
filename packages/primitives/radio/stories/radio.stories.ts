@@ -4,6 +4,7 @@ import { RdxLabelRootDirective } from '../../label';
 import { RdxRadioIndicatorDirective } from '../src/radio-indicator.directive';
 import { RdxRadioItemDirective } from '../src/radio-item.directive';
 import { RdxRadioGroupDirective } from '../src/radio-root.directive';
+import { RadioGroupComponent } from './radio-group.component';
 
 export default {
     title: 'Primitives/Radio Group',
@@ -13,7 +14,9 @@ export default {
                 RdxLabelRootDirective,
                 RdxRadioItemDirective,
                 RdxRadioIndicatorDirective,
-                RdxRadioGroupDirective
+                RdxRadioGroupDirective,
+
+                RadioGroupComponent
             ]
         }),
         componentWrapperDecorator(
@@ -31,7 +34,7 @@ export const Default: Story = {
     render: () => ({
         template: `
 <form>
-    <div RadioRoot [(rdxRadioGroupValue)]="value" class="RadioGroupRoot" aria-label="View density">
+    <div RadioRoot [(ngModel)]="value" class="RadioGroupRoot" aria-label="View density">
         <div style="display: flex; align-items: center;">
             <button RadioItem class="RadioGroupItem" value="default" id="r1">
                 <div RadioIndicator class="RadioGroupIndicator"></div>
@@ -127,5 +130,11 @@ button {
 }
 </style>
 `
+    })
+};
+
+export const RadioGroup: Story = {
+    render: () => ({
+        template: `<radio-groups-forms-example></radio-groups-forms-example>`
     })
 };
