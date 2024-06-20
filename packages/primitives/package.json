@@ -1,6 +1,6 @@
 {
     "name": "@radix-ng/primitives",
-    "version": "0.5.0",
+    "version": "0.6.0",
     "license": "MIT",
     "publishConfig": {
         "access": "public"
@@ -21,8 +21,6 @@
         "@angular/core": "^17.0.0",
         "@angular/cdk": "^17.0.0"
     },
-    "dependencies": {
-
-    },
+    "dependencies": {},
     "sideEffects": false
 }

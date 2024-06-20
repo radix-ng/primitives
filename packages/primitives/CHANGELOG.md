@@ -1,3 +1,14 @@
+## 0.6.0 (2024-06-20)
+
+
+### 🚀 Features
+
+- based for Textarea ([fcd14e1](https://github.com/radix-ng/primitives/commit/fcd14e1))
+
+- added beta presence ([55b4a75](https://github.com/radix-ng/primitives/commit/55b4a75))
+
+- **alert-dialog:** poc code ([f314588](https://github.com/radix-ng/primitives/commit/f314588))
+
 ## 0.5.0 (2024-04-26)
 
 
