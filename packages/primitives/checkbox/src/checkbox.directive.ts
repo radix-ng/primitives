@@ -4,7 +4,9 @@ import {
     EventEmitter,
     HostListener,
     Input,
-    Output
+    OnChanges,
+    Output,
+    SimpleChanges
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
@@ -28,7 +30,7 @@ export type CheckboxState = 'unchecked' | 'checked' | 'indeterminate';
         '[attr.data-state]': 'state'
     }
 })
-export class RdxCheckboxDirective implements ControlValueAccessor {
+export class RdxCheckboxDirective implements ControlValueAccessor, OnChanges {
     /**
      * Defines whether the checkbox is checked.
      */
@@ -37,8 +39,7 @@ export class RdxCheckboxDirective implements ControlValueAccessor {
     /**
      * Defines whether the checkbox is indeterminate.
      */
-    @Input({ transform: booleanAttribute })
-    indeterminate = false;
+    @Input({ transform: booleanAttribute }) indeterminate = false;
 
     /**
      * Defines whether the checkbox is disabled.
@@ -87,11 +88,14 @@ export class RdxCheckboxDirective implements ControlValueAccessor {
 
     @HostListener('click')
     onClick(): void {
+        if (this.disabled) {
+            return;
+        }
+
         this.checked = this.indeterminate ? true : !this.checked;
         this.checkedChange.emit(this.checked);
         this.onChange?.(this.checked);
 
-        // if the checkbox was indeterminate, it isn't anymore
         if (this.indeterminate) {
             this.indeterminate = false;
             this.indeterminateChange.emit(this.indeterminate);
@@ -101,6 +105,15 @@ export class RdxCheckboxDirective implements ControlValueAccessor {
     @HostListener('blur')
     onBlur(): void {
         this.onTouched?.();
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['checked'] && !changes['checked'].isFirstChange()) {
+            this.checkedChange.emit(this.checked);
+        }
+        if (changes['indeterminate'] && !changes['indeterminate'].isFirstChange()) {
+            this.indeterminateChange.emit(this.indeterminate);
+        }
     }
 
     /**

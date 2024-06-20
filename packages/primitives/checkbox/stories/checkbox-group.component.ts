@@ -99,7 +99,7 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
     ],
     providers: [provideIcons({ radixCheck })]
 })
-export class CheckboxReactiveFormsExample {
+export class CheckboxReactiveFormsExampleComponent {
     personality = this.formBuilder.group({
         fun: false,
         serious: false,

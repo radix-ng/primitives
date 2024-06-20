@@ -5,7 +5,7 @@ import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@stor
 import { RdxLabelRootDirective } from '../../label';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
 import { RdxCheckboxDirective } from '../src/checkbox.directive';
-import { CheckboxReactiveFormsExample } from './checkbox-group.component';
+import { CheckboxReactiveFormsExampleComponent } from './checkbox-group.component';
 
 export default {
     title: 'Primitives/Checkbox',
@@ -16,7 +16,7 @@ export default {
                 RdxCheckboxDirective,
                 RdxCheckboxIndicatorDirective,
                 NgIconComponent,
-                CheckboxReactiveFormsExample
+                CheckboxReactiveFormsExampleComponent
             ],
             providers: [provideIcons({ radixCheck })]
         }),
@@ -35,16 +35,17 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: `
-    <form>
-        <div style="display: flex; align-items: center;">
-            <button class="CheckboxRoot" rdxCheckbox id="r1" [(checked)]="checked">
-                <ng-icon rdxCheckboxIndicator class="CheckboxIndicator" name="radixCheck"></ng-icon>
-                <input type="checkbox" aria-hidden="true" tabindex="-1" value="on" rdxCheckboxIndicator
-                style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0; width: 25px; height: 25px;"/>
-            </button>
-            <label LabelRoot htmlFor="r1" class="Label">Check Item</label>
-        </div>
-    </form>
+<form>
+    <div style="display: flex; align-items: center;">
+        <button class="CheckboxRoot" rdxCheckbox id="r1" [(checked)]="checked">
+            <ng-icon rdxCheckboxIndicator class="CheckboxIndicator" name="radixCheck"></ng-icon>
+            <input type="checkbox" aria-hidden="true" tabindex="-1" value="on" rdxCheckboxIndicator
+            style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0; width: 25px; height: 25px;"/>
+        </button>
+        <label LabelRoot htmlFor="r1" class="Label">Check Item</label>
+    </div>
+</form>
+
 <style>
 button {
     all: unset;
