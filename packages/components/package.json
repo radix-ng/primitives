@@ -4,9 +4,11 @@
     "peerDependencies": {
         "@angular/common": "^17.3.0",
         "@angular/core": "^17.3.0",
-        "@radix-ng/primitives": "^0.2.0"
+        "@radix-ng/primitives": "workspace:*"
     },
-    "devDependencies": {},
+    "devDependencies": {
+        "@radix-ng/primitives": "workspace:*"
+    },
     "dependencies": {
         "tslib": "^2.3.0"
     },
