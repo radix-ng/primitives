@@ -1,7 +1,10 @@
 {
     "extends": "./tsconfig.lib.json",
     "compilerOptions": {
-        "declarationMap": false
+        "declarationMap": false,
+        "paths": {
+            "@radix-ng/primitives/*": ["./dist/primitives/*"]
+        }
     },
     "angularCompilerOptions": {
         "compilationMode": "partial"
