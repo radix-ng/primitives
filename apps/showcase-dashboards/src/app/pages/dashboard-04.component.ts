@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
 import { ShInputDirective } from '@radix-ng/shadcn/input';
+import { LucideAngularModule } from 'lucide-angular';
 
 import {
     CardContentDirective,
@@ -10,12 +11,14 @@ import {
     CardFooterDirective,
     CardHeaderDirective,
     CardTitleDirective
-} from './components/ui/card.component';
+} from '../components/ui/card.component';
 
 @Component({
     selector: 'app-dashboard-04',
     standalone: true,
     imports: [
+        LucideAngularModule,
+
         CardDirective,
         CardHeaderDirective,
         CardTitleDirective,

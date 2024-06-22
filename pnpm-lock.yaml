@@ -50,9 +50,6 @@ importers:
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
-      lucide-angular:
-        specifier: ^0.396.0
-        version: 0.396.0(@angular/common@18.0.4)(@angular/core@18.0.4)
       rxjs:
         specifier: ~7.8.1
         version: 7.8.1
@@ -276,6 +273,9 @@ importers:
       jsonc-eslint-parser:
         specifier: ^2.1.0
         version: 2.4.0
+      lucide-angular:
+        specifier: ^0.396.0
+        version: 0.396.0(@angular/common@18.0.4)(@angular/core@18.0.4)
       ng-packagr:
         specifier: 18.0.0
         version: 18.0.0(@angular/compiler-cli@18.0.4)(tailwindcss@3.4.3)(tslib@2.6.2)(typescript@5.4.4)
@@ -18280,7 +18280,7 @@ packages:
       '@angular/common': 18.0.4(@angular/core@18.0.4)(rxjs@7.8.1)
       '@angular/core': 18.0.4(rxjs@7.8.1)(zone.js@0.14.4)
       tslib: 2.6.2
-    dev: false
+    dev: true
 
   /lunr@2.3.9:
     resolution: {integrity: sha512-zTU3DaZaF3Rt9rhN3uBMGQD3dD2/vFQqnvZCDv4dl5iOzq2IZQqTxu90r4E5J+nP70J3ilqVCrbho2eWaeW8Ow==}

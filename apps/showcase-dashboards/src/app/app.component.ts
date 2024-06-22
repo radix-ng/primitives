@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 import { ThemeToggleComponent } from './components/theme-toggle.component';
-import { DashboardComponent } from './dashboard-04.component';
+import { DashboardComponent } from './pages/dashboard-04.component';
 
 @Component({
     standalone: true,
