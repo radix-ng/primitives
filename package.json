@@ -9,7 +9,7 @@
         "storybook:primitives": "pnpm run compodoc:json && nx run primitives:storybook",
         "storybook:components": "nx run components:storybook",
         "build-storybook": "pnpm run compodoc:json && nx run primitives:build-storybook",
-        "----showcase taxonomy--": "-----------------------------------------------------------------",
+        "----showcases----------": "-----------------------------------------------------------------",
         "showcase-taxonomy:serve": "nx serve showcase-taxonomy",
         "showcase-taxonomy:build": "nx build showcase-taxonomy",
         "showcase-dashboard:serve": "nx serve showcase-dashboards",
@@ -28,8 +28,8 @@
         "format:write": "prettier --write packages/**/** --cache"
     },
     "dependencies": {
-        "@analogjs/content": "1.4.0",
-        "@analogjs/router": "1.4.0",
+        "@analogjs/content": "1.5.0",
+        "@analogjs/router": "1.5.0",
         "@angular/animations": "18.0.4",
         "@angular/cdk": "18.0.4",
         "@angular/common": "18.0.4",
@@ -49,8 +49,8 @@
         "zone.js": "~0.14.3"
     },
     "devDependencies": {
-        "@analogjs/platform": "1.4.0",
-        "@analogjs/vite-plugin-angular": "1.4.0",
+        "@analogjs/platform": "1.5.0",
+        "@analogjs/vite-plugin-angular": "1.5.0",
         "@angular-devkit/build-angular": "18.0.5",
         "@angular-devkit/core": "18.0.5",
         "@angular-devkit/schematics": "18.0.5",
