@@ -21,7 +21,8 @@
             "@radix-ng/primitives/radio": ["packages/primitives/radio/index.ts"],
             "@radix-ng/primitives/roving-focus": ["packages/primitives/roving-focus/index.ts"],
             "@radix-ng/primitives/separator": ["packages/primitives/separator/index.ts"],
-            "@taxonomy/*": ["apps/showcase-taxonomy/src/app/*"]
+            "@taxonomy/*": ["apps/showcase-taxonomy/src/app/*"],
+            "@radix-ng/shadcn/core": ["packages/shadcn/core/index.ts"]
         }
     },
     "exclude": ["node_modules", "tmp"]

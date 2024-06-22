@@ -3,8 +3,8 @@
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
     "sourceRoot": "packages/primitives",
     "prefix": "rdx",
-    "tags": [],
     "projectType": "library",
+    "tags": [],
     "targets": {
         "nx-release-publish": {
             "executor": "@nx/js:release-publish",

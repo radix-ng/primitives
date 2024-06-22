@@ -1,0 +1,37 @@
+{
+    "name": "@radix-ng/shadcn",
+    "version": "0.1.0",
+    "license": "MIT",
+    "publishConfig": {
+        "access": "public"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/radix-ng/primitives.git",
+        "directory": "packages/shadcn"
+    },
+    "keywords": [
+        "components",
+        "ui",
+        "angular",
+        "radix-ng",
+        "headless",
+        "shadcn"
+    ],
+    "peerDependencies": {
+        "@angular/core": "^17.0.0",
+        "@angular/cdk": "^17.0.0",
+        "@radix-ng/primitives": "workspace:*"
+    },
+    "dependencies": {
+        "class-variance-authority": "^0.7.0",
+        "clsx": "^2.1.1",
+        "tailwind-merge": "^2.3.0"
+    },
+    "devDependencies": {
+        "@angular/core": "^17.0.0",
+        "@angular/cdk": "^17.0.0",
+        "@radix-ng/primitives": "workspace:*"
+    },
+    "sideEffects": false
+}
