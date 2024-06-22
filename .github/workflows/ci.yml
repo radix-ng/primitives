@@ -28,5 +28,14 @@ jobs:
       - name: Build Primitives
         run: pnpm primitives:build
 
+      - name: Build shadcn
+        run: pnpm shadcn:build
+
+      - name: Build taxonomy
+        run: pnpm showcase-taxonomy:build
+
+      - name: Build dashboard
+        run: pnpm showcase-dashboard:build
+
       - name: Test Primitives
         run: pnpm primitives:test
