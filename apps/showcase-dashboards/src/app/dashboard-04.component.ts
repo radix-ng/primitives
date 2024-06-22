@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
 
+import { ShButtonDirective } from '@radix-ng/shadcn/button';
+import { ShInputDirective } from '@radix-ng/shadcn/input';
+
 import {
     CardContentDirective,
     CardDescriptionDirective,
@@ -18,7 +21,10 @@ import {
         CardTitleDirective,
         CardDescriptionDirective,
         CardContentDirective,
-        CardFooterDirective
+        CardFooterDirective,
+
+        ShInputDirective,
+        ShButtonDirective
     ],
     templateUrl: './dashboard-04.component.html'
 })

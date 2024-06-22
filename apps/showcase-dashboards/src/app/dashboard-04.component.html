@@ -43,9 +43,10 @@
             <form class="ml-auto flex-1 sm:flex-initial">
                 <div class="relative">
                     <input
-                        type="search"
+                        shInput
+                        [type]="'search'"
                         placeholder="Search products..."
-                        class="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]"
+                        [class]="'pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]'"
                     />
                 </div>
             </form>
@@ -80,11 +81,11 @@
                     </div>
                     <div CardContent>
                         <form>
-                            <input placeholder="Store Name" />
+                            <input shInput placeholder="Store Name" />
                         </form>
                     </div>
                     <div CardFooter class="border-t px-6 py-4">
-                        <Button>Save</Button>
+                        <button shButton>Save</button>
                     </div>
                 </div>
 
@@ -99,6 +100,7 @@
                     <div CardContent>
                         <form class="flex flex-col gap-4">
                             <input
+                                shInput
                                 placeholder="Project Name"
                             />
                             <div class="flex items-center space-x-2">
@@ -111,7 +113,7 @@
                         </form>
                     </div>
                     <div CardFooter class="border-t px-6 py-4">
-                        <Button>Save</Button>
+                        <button shButton >Save</button>
                     </div>
                 </div>
             </div>

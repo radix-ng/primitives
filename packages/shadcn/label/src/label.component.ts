@@ -1,3 +1,5 @@
+// This code is an adaptation of code from https://ui.shadcn.com/docs.
+
 import { computed, Directive, input } from '@angular/core';
 
 import { RdxLabelRootDirective } from '@radix-ng/primitives/label';
@@ -22,7 +24,7 @@ const variants = cva(
         '[class]': 'computedClass()'
     }
 })
-export class LabelDirective {
+export class ShLabelDirective {
     readonly userClass = input<ClassValue>('', { alias: 'class' });
     protected computedClass = computed(() => twMerge(variants(), this.userClass()));
 }
