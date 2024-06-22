@@ -1,6 +1,4 @@
 packages:
     - "apps/docs/**"
-    - "packages/components/**"
-    - "packages/primitives/**"
-    - "packages/shadcn/**"
+    - "packages/**"
     - "!**/dist/**"

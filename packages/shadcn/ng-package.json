@@ -3,6 +3,5 @@
     "dest": "../../dist/shadcn",
     "lib": {
         "entryFile": "index.ts"
-    },
-    "allowedNonPeerDependencies": []
+    }
 }
