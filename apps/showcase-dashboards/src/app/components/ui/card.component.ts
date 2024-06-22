@@ -1,6 +1,6 @@
 import { computed, Directive, input } from '@angular/core';
 
-import { twMerge } from '@radix-ng/shadcn/core';
+import { cn } from '@radix-ng/shadcn/core';
 import { cva } from 'class-variance-authority';
 import { ClassValue } from 'clsx';
 
@@ -59,5 +59,5 @@ const cardFooterVariants = cva('flex items-center p-6 pt-0');
 })
 export class CardFooterDirective {
     readonly userClass = input<ClassValue>('', { alias: 'class' });
-    protected computedClass = computed(() => twMerge(cardFooterVariants(), this.userClass()));
+    protected computedClass = computed(() => cn(cardFooterVariants(), this.userClass()));
 }

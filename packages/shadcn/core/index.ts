@@ -1,1 +1,1 @@
-export * from './src/twMerge';
+export * from './src/cn';

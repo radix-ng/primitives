@@ -2,7 +2,7 @@
 
 import { computed, Directive, input } from '@angular/core';
 
-import { twMerge } from '@radix-ng/shadcn/core';
+import { cn } from '@radix-ng/shadcn/core';
 import { cva } from 'class-variance-authority';
 import { ClassValue } from 'clsx';
 
@@ -22,5 +22,5 @@ export class ShInputDirective {
     readonly type = input<string>('text');
     readonly userClass = input<ClassValue>('', { alias: 'class' });
 
-    protected computedClass = computed(() => twMerge(variants(), this.userClass()));
+    protected computedClass = computed(() => cn(variants(), this.userClass()));
 }

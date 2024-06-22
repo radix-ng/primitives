@@ -2,7 +2,7 @@
 
 import { computed, Directive, input, signal } from '@angular/core';
 
-import { twMerge } from '@radix-ng/shadcn/core';
+import { cn } from '@radix-ng/shadcn/core';
 import { cva, type VariantProps } from 'class-variance-authority';
 import type { ClassValue } from 'clsx';
 
@@ -50,7 +50,7 @@ export class ShButtonDirective {
     readonly size = input<ButtonVariants['size']>('default');
 
     protected computedClass = computed(() =>
-        twMerge(
+        cn(
             variants({ variant: this.variant(), size: this.size() }),
             this._settableClass(),
             this.userClass()
