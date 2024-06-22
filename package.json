@@ -96,7 +96,7 @@
         "@storybook/theming": "^8.1.6",
         "@swc-node/register": "1.9.2",
         "@swc/cli": "0.3.14",
-        "@swc/core": "1.5.7",
+        "@swc/core": "1.6.5",
         "@swc/helpers": "0.5.11",
         "@tailwindcss/typography": "^0.5.13",
         "@testing-library/angular": "^15.2.0",
