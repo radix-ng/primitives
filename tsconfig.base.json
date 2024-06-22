@@ -17,14 +17,12 @@
         "paths": {
             "@radix-ng/components/theme": ["packages/components/theme/index.ts"],
             "@radix-ng/primitives/checkbox": ["packages/primitives/checkbox/index.ts"],
-            "@radix-ng/primitives/label": ["packages/primitives/label/index.ts"],
             "@radix-ng/primitives/radio": ["packages/primitives/radio/index.ts"],
             "@radix-ng/primitives/roving-focus": ["packages/primitives/roving-focus/index.ts"],
             "@radix-ng/primitives/separator": ["packages/primitives/separator/index.ts"],
             "@taxonomy/*": ["apps/showcase-taxonomy/src/app/*"],
             "@radix-ng/shadcn/core": ["packages/shadcn/core/index.ts"],
             "@radix-ng/shadcn/input": ["packages/shadcn/input/index.ts"],
-            "@radix-ng/shadcn/label": ["packages/shadcn/label/index.ts"],
             "@radix-ng/shadcn/button": ["packages/shadcn/button/index.ts"]
         }
     },

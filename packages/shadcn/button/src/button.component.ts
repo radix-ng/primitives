@@ -1,10 +1,10 @@
 // This code is an adaptation of code from https://ui.shadcn.com/docs.
 
-import { computed, Directive, input } from '@angular/core';
+import { computed, Directive, input, signal } from '@angular/core';
 
 import { twMerge } from '@radix-ng/shadcn/core';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { ClassValue } from 'clsx';
+import type { ClassValue } from 'clsx';
 
 const variants = cva(
     'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
@@ -50,13 +50,15 @@ export class ShButtonDirective {
     readonly size = input<ButtonVariants['size']>('default');
 
     protected computedClass = computed(() =>
-        twMerge(variants({ variant: this.variant() }), this.userClass())
+        twMerge(
+            variants({ variant: this.variant(), size: this.size() }),
+            this._settableClass(),
+            this.userClass()
+        )
     );
 
-    // set variant(value: ButtonVariants['variant']) {
-    //     this._variant.set(value);
-    // }
-    // get variant() {
-    //     return this._variant();
-    // }
+    private readonly _settableClass = signal<ClassValue>('');
+    setClass(value: ClassValue) {
+        this._settableClass.set(value);
+    }
 }

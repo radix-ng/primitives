@@ -23,15 +23,13 @@
         "@angular/cdk": "^17.0.0",
         "@radix-ng/primitives": "workspace:*"
     },
-    "dependencies": {
-        "class-variance-authority": "^0.7.0",
-        "clsx": "^2.1.1",
-        "tailwind-merge": "^2.3.0"
-    },
     "devDependencies": {
         "@angular/core": "^17.0.0",
         "@angular/cdk": "^17.0.0",
-        "@radix-ng/primitives": "workspace:*"
+        "@radix-ng/primitives": "workspace:*",
+        "class-variance-authority": "^0.7.0",
+        "clsx": "^2.1.1",
+        "tailwind-merge": "^2.3.0"
     },
     "sideEffects": false
 }
