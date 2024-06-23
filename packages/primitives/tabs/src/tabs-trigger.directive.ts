@@ -1,0 +1,56 @@
+import { BooleanInput } from '@angular/cdk/coercion';
+import {
+    booleanAttribute,
+    computed,
+    Directive,
+    inject,
+    Input,
+    input,
+    InputSignalWithTransform
+} from '@angular/core';
+
+import { TABS_CONTEXT_TOKEN } from './tabs-context.service';
+
+interface TabsTriggerProps {
+    // When true, prevents the user from interacting with the tab.
+    disabled: InputSignalWithTransform<boolean, BooleanInput>;
+}
+
+@Directive({
+    selector: '[TabsTrigger]',
+    standalone: true,
+    host: {
+        type: 'button',
+        role: 'tab',
+        '[attr.aria-selected]': 'selected()',
+        '[attr.data-state]': "selected() ? 'active' : 'inactive'",
+        '(mousedown)': 'onMouseDown($event)',
+        '(keydown)': 'onKeyDown($event)'
+    }
+})
+export class RdxTabsTriggerDirective implements TabsTriggerProps {
+    private readonly tabsContext = inject(TABS_CONTEXT_TOKEN);
+
+    readonly value = input.required<string>();
+
+    readonly disabled = input<boolean, BooleanInput>(false, {
+        transform: booleanAttribute
+    });
+
+    protected readonly selected = computed(() => this.tabsContext.value$() === this.value());
+
+    protected onMouseDown(event: MouseEvent) {
+        if (!this.disabled() && event.button === 0 && !event.ctrlKey) {
+            this.tabsContext?.setValue(this.value());
+        } else {
+            // prevent focus to avoid accidental activation
+            event.preventDefault();
+        }
+    }
+
+    protected onKeyDown(event: KeyboardEvent) {
+        if ([' ', 'Enter'].includes(event.key)) {
+            this.tabsContext?.setValue(this.value());
+        }
+    }
+}
