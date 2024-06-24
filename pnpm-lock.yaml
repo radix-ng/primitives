@@ -115,8 +115,8 @@ importers:
         specifier: ^27.2.0
         version: 27.2.0
       '@ng-icons/radix-icons':
-        specifier: ^27.3.1
-        version: 27.3.1
+        specifier: ^28.0.0
+        version: 28.0.0
       '@nrwl/nx-plugin':
         specifier: 19.3.1
         version: 19.3.1(@swc-node/register@1.9.2)(@swc/core@1.5.7)(@types/node@18.16.9)(eslint@8.57.0)(nx@19.3.1)(ts-node@10.9.1)(typescript@5.4.4)(verdaccio@5.29.0)
@@ -6787,8 +6787,8 @@ packages:
       tslib: 2.6.2
     dev: true
 
-  /@ng-icons/radix-icons@27.3.1:
-    resolution: {integrity: sha512-TMkMqF0aph9ik6wP7/64U9suE1OKuZ1/7pp4ryL2pMzi9I9dGticYwtw3Lv9u0EcuqH4blu8PKfZpOaQ4+FMug==}
+  /@ng-icons/radix-icons@28.0.0:
+    resolution: {integrity: sha512-v83nsH5Lkhzh8dLwT+uzIkc02vltpk1B1onC29BC/XulUlPmclp2MwMas/DH43I+QGDGxmIDbq5GLfWEbW9Cew==}
     dependencies:
       tslib: 2.6.2
     dev: true
@@ -17958,8 +17958,6 @@ packages:
     peerDependenciesMeta:
       webpack:
         optional: true
-      webpack-sources:
-        optional: true
     dependencies:
       webpack: 5.90.3(@swc/core@1.5.7)(esbuild@0.19.5)
       webpack-sources: 3.2.3
@@ -17971,8 +17969,6 @@ packages:
       webpack: '*'
     peerDependenciesMeta:
       webpack:
-        optional: true
-      webpack-sources:
         optional: true
     dependencies:
       webpack: 5.91.0(@swc/core@1.5.7)(esbuild@0.21.3)
