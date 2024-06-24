@@ -181,8 +181,8 @@ importers:
         specifier: ^8.1.6
         version: 8.1.6(@types/jest@29.5.11)(jest@29.7.0)(vitest@1.5.2)
       '@storybook/addon-storysource':
-        specifier: ^8.1.6
-        version: 8.1.6
+        specifier: ^8.1.10
+        version: 8.1.10
       '@storybook/angular':
         specifier: ^8.1.6
         version: 8.1.6(@angular-devkit/architect@0.1800.5)(@angular-devkit/build-angular@18.0.5)(@angular-devkit/core@18.0.5)(@angular/cli@18.0.5)(@angular/common@18.0.4)(@angular/compiler-cli@18.0.4)(@angular/compiler@18.0.4)(@angular/core@18.0.4)(@angular/forms@18.0.4)(@angular/platform-browser-dynamic@18.0.4)(@angular/platform-browser@18.0.4)(@swc/core@1.5.7)(esbuild@0.19.5)(prettier@3.2.5)(react-dom@18.2.0)(react@18.2.0)(rxjs@7.8.1)(typescript@5.4.4)(zone.js@0.14.4)
@@ -9711,10 +9711,10 @@ packages:
       ts-dedent: 2.2.0
     dev: true
 
-  /@storybook/addon-storysource@8.1.6:
-    resolution: {integrity: sha512-Ia/KH1bjdABtZjG/ql5nlB2IHpIuMJae1Etp6Mq90Le9Dy4+F8exjCKRf+M3LrsDokTlobgcEBslHjCKj6Wjuw==}
+  /@storybook/addon-storysource@8.1.10:
+    resolution: {integrity: sha512-mTnPAj+as3Hm2V5EhARrZq3eeA5lAsJ0GBZiq4mV9mKBeMXyNDzx54/a8xBWg15CiTJ3Y9RdTz6fFHxJP/mlHw==}
     dependencies:
-      '@storybook/source-loader': 8.1.6
+      '@storybook/source-loader': 8.1.10
       estraverse: 5.3.0
       tiny-invariant: 1.3.3
     dev: true
@@ -9927,6 +9927,16 @@ packages:
       - webpack-cli
     dev: true
 
+  /@storybook/channels@8.1.10:
+    resolution: {integrity: sha512-CxZE4XrQoe+F+S2mo8Z9HTvFZKfKHIIiwYfoXKCryVp2U/z7ZKrely2PbfxWsrQvF3H0+oegfYYhYRHRiM21Zw==}
+    dependencies:
+      '@storybook/client-logger': 8.1.10
+      '@storybook/core-events': 8.1.10
+      '@storybook/global': 5.0.0
+      telejson: 7.2.0
+      tiny-invariant: 1.3.3
+    dev: true
+
   /@storybook/channels@8.1.6:
     resolution: {integrity: sha512-CzDnP6qfI8OC8pGUk+wPUzLPYcKhX8XbriF2gBtwl6qVM8YfkHP2mLTiDYDwBIi0rLuUbSm/SpILXQ/ouOHOGw==}
     dependencies:
@@ -9984,6 +9994,12 @@ packages:
       - react-dom
       - supports-color
       - utf-8-validate
+    dev: true
+
+  /@storybook/client-logger@8.1.10:
+    resolution: {integrity: sha512-sVXCOo7jnlCgRPOcMlQGODAEt6ipPj+8xGkRUws0kie77qiDld1drLSB6R380dWc9lUrbv9E1GpxCd/Y4ZzSJQ==}
+    dependencies:
+      '@storybook/global': 5.0.0
     dev: true
 
   /@storybook/client-logger@8.1.6:
@@ -10077,6 +10093,13 @@ packages:
     transitivePeerDependencies:
       - encoding
       - supports-color
+    dev: true
+
+  /@storybook/core-events@8.1.10:
+    resolution: {integrity: sha512-aS4zsBVyJds74+rAW0IfTEjULDCQwXecVpQfv11B8/89/07s3bOPssGGoTtCTaN4pHbduywE6MxbmFvTmXOFCA==}
+    dependencies:
+      '@storybook/csf': 0.1.8
+      ts-dedent: 2.2.0
     dev: true
 
   /@storybook/core-events@8.1.6:
@@ -10304,11 +10327,11 @@ packages:
       qs: 6.11.2
     dev: true
 
-  /@storybook/source-loader@8.1.6:
-    resolution: {integrity: sha512-lKJ3vUsETsKMR9lpCyrB51Js/1W94fZjIDXNnslgLpoxhCIT4MB1eDRNa6DGynTIzhajG3ZIGymqOj/gRr3xdg==}
+  /@storybook/source-loader@8.1.10:
+    resolution: {integrity: sha512-UZW6bZWUVDu9rTnBV9ujyYs8ezjQlXzGk7j42zlqLrJIXzTxMa5rZKV8t4HaTeA2RzXIraNdM2UQOq0o5IHmCw==}
     dependencies:
       '@storybook/csf': 0.1.8
-      '@storybook/types': 8.1.6
+      '@storybook/types': 8.1.10
       estraverse: 5.3.0
       lodash: 4.17.21
       prettier: 3.2.5
@@ -10370,11 +10393,19 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: true
 
+  /@storybook/types@8.1.10:
+    resolution: {integrity: sha512-UJ97iqI+0Mk13I6ayd3TaBfSFBkWnEauwTnFMQe1dN/L3wTh8laOBaLa0Vr3utRSnt2b5hpcw/nq7azB/Gx4Yw==}
+    dependencies:
+      '@storybook/channels': 8.1.10
+      '@types/express': 4.17.21
+      file-system-cache: 2.3.0
+    dev: true
+
   /@storybook/types@8.1.6:
     resolution: {integrity: sha512-cWpS9+x1pxCO39spR8QmumMK2ub2p5cvMtrRvWaIjBFPbCwm2CvjBXFWIra2veBCZTxUKJ9VWxvi7pzRHjN/nw==}
     dependencies:
       '@storybook/channels': 8.1.6
-      '@types/express': 4.17.14
+      '@types/express': 4.17.21
       file-system-cache: 2.3.0
 
   /@swc-node/core@1.13.1(@swc/core@1.5.7)(@swc/types@0.1.7):
@@ -10843,14 +10874,6 @@ packages:
       '@types/range-parser': 1.2.7
       '@types/send': 0.17.4
 
-  /@types/express@4.17.14:
-    resolution: {integrity: sha512-TEbt+vaPFQ+xpxFLFssxUDXj5cWCxZJjIcB7Yg0k0GMHGtgtQgpvx/MUQUeAkNbA9AAGrwkAsoeItdTgS7FMyg==}
-    dependencies:
-      '@types/body-parser': 1.19.5
-      '@types/express-serve-static-core': 4.17.41
-      '@types/qs': 6.9.10
-      '@types/serve-static': 1.15.5
-
   /@types/express@4.17.21:
     resolution: {integrity: sha512-ejlPM315qwLpaQlQDTjPdsUFSc6ZsP4AN6AlWnogPjQ7CVi7PYF3YVz+CY3jE2pwYf7E/7HlDAN0rV2GxTG0HQ==}
     dependencies:
@@ -10858,7 +10881,6 @@ packages:
       '@types/express-serve-static-core': 4.17.41
       '@types/qs': 6.9.10
       '@types/serve-static': 1.15.5
-    dev: true
 
   /@types/graceful-fs@4.1.9:
     resolution: {integrity: sha512-olP3sd1qOEe5dXTSaFvQG+02VdRXcdytWLAZsAq1PecU8uqQAhkrnbli7DagjtXKW/Bl7YJbUsa8MPcuc8LHEQ==}
@@ -16333,25 +16355,6 @@ packages:
       - supports-color
     dev: true
 
-  /http-proxy-middleware@2.0.6(@types/express@4.17.14):
-    resolution: {integrity: sha512-ya/UeJ6HVBYxrgYotAZo1KvPWlgB48kUJLDePFeneHsVujFaW5WNj2NgWCAE//B1Dl02BIfYlpNgBy8Kf8Rjmw==}
-    engines: {node: '>=12.0.0'}
-    peerDependencies:
-      '@types/express': ^4.17.13
-    peerDependenciesMeta:
-      '@types/express':
-        optional: true
-    dependencies:
-      '@types/express': 4.17.14
-      '@types/http-proxy': 1.17.14
-      http-proxy: 1.18.1(debug@4.3.4)
-      is-glob: 4.0.3
-      is-plain-obj: 3.0.0
-      micromatch: 4.0.5
-    transitivePeerDependencies:
-      - debug
-    dev: true
-
   /http-proxy-middleware@2.0.6(@types/express@4.17.21):
     resolution: {integrity: sha512-ya/UeJ6HVBYxrgYotAZo1KvPWlgB48kUJLDePFeneHsVujFaW5WNj2NgWCAE//B1Dl02BIfYlpNgBy8Kf8Rjmw==}
     engines: {node: '>=12.0.0'}
@@ -17958,8 +17961,6 @@ packages:
     peerDependenciesMeta:
       webpack:
         optional: true
-      webpack-sources:
-        optional: true
     dependencies:
       webpack: 5.90.3(@swc/core@1.5.7)(esbuild@0.19.5)
       webpack-sources: 3.2.3
@@ -17971,8 +17972,6 @@ packages:
       webpack: '*'
     peerDependenciesMeta:
       webpack:
-        optional: true
-      webpack-sources:
         optional: true
     dependencies:
       webpack: 5.91.0(@swc/core@1.5.7)(esbuild@0.21.3)
@@ -24071,7 +24070,7 @@ packages:
     dependencies:
       '@types/bonjour': 3.5.13
       '@types/connect-history-api-fallback': 1.5.4
-      '@types/express': 4.17.14
+      '@types/express': 4.17.21
       '@types/serve-index': 1.9.4
       '@types/serve-static': 1.15.5
       '@types/sockjs': 0.3.36
@@ -24086,7 +24085,7 @@ packages:
       express: 4.19.2
       graceful-fs: 4.2.11
       html-entities: 2.4.0
-      http-proxy-middleware: 2.0.6(@types/express@4.17.14)
+      http-proxy-middleware: 2.0.6(@types/express@4.17.21)
       ipaddr.js: 2.1.0
       launch-editor: 2.6.1
       open: 8.4.2
