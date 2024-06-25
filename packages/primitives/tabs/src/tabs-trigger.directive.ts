@@ -22,20 +22,30 @@ interface TabsTriggerProps {
     host: {
         type: 'button',
         role: 'tab',
+        '[id]': 'triggerId',
         '[attr.aria-selected]': 'selected()',
+        '[attr.aria-controls]': 'contentId()',
+        '[attr.data-disabled]': "disabled() ? '' : undefined",
         '[attr.data-state]': "selected() ? 'active' : 'inactive'",
         '(mousedown)': 'onMouseDown($event)',
         '(keydown)': 'onKeyDown($event)'
     }
 })
 export class RdxTabsTriggerDirective implements TabsTriggerProps {
-    private readonly tabsContext = inject(TABS_CONTEXT_TOKEN);
+    protected readonly tabsContext = inject(TABS_CONTEXT_TOKEN);
 
     readonly value = input.required<string>();
 
     readonly disabled = input<boolean, BooleanInput>(false, {
         transform: booleanAttribute
     });
+
+    protected readonly contentId = computed(
+        () => `${this.tabsContext.getBaseId()}-content-${this.value()}`
+    );
+    protected readonly triggerId = computed(
+        () => `${this.tabsContext.getBaseId()}-trigger-${this.value}`
+    );
 
     protected readonly selected = computed(() => this.tabsContext.value$() === this.value());
 

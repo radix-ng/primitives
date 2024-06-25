@@ -8,11 +8,13 @@ import { TABS_CONTEXT_TOKEN } from './tabs-context.service';
     host: {
         role: 'tabpanel',
         tabindex: '0',
+        '[id]': 'tabsContext.getBaseId()',
+        '[attr.aria-labelledby]': 'tabsContext.getBaseId()',
         '[hidden]': '!selected()'
     }
 })
 export class RdxTabsContentDirective {
-    private readonly tabsContext = inject(TABS_CONTEXT_TOKEN);
+    protected readonly tabsContext = inject(TABS_CONTEXT_TOKEN);
 
     readonly value = input.required<string>();
 

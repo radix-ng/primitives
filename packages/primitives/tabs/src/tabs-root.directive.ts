@@ -29,14 +29,31 @@ export interface TabsProps {
 @Directive({
     selector: '[TabsRoot]',
     standalone: true,
-    providers: [{ provide: TABS_CONTEXT_TOKEN, useExisting: TabsContextService }]
+    providers: [{ provide: TABS_CONTEXT_TOKEN, useExisting: TabsContextService }],
+    host: {
+        '[attr.data-orientation]': 'orientation',
+        '[attr.dir]': 'dir'
+    }
 })
 export class RdxTabsRootDirective implements OnInit {
     private readonly tabsContext = inject(TABS_CONTEXT_TOKEN);
 
+    @Input() value?: string;
+    @Input() defaultValue?: string;
     @Input() orientation = 'horizontal';
+    @Input() dir?: string;
 
     ngOnInit() {
         this.tabsContext.setOrientation(this.orientation);
+
+        if (this.dir) {
+            this.tabsContext.setDir(this.dir);
+        }
+
+        if (this.value) {
+            this.tabsContext.setValue(this.value);
+        } else if (this.defaultValue) {
+            this.tabsContext.setValue(this.defaultValue);
+        }
     }
 }

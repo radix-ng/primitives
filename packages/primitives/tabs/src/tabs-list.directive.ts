@@ -1,4 +1,4 @@
-import { Directive, ElementRef, inject, OnInit } from '@angular/core';
+import { Directive, inject } from '@angular/core';
 
 import { TABS_CONTEXT_TOKEN } from './tabs-context.service';
 
@@ -11,15 +11,11 @@ interface TabsListProps {
     selector: '[TabsList]',
     standalone: true,
     host: {
-        role: 'tablist'
+        role: 'tablist',
+        '[attr.aria-orientation]': 'tabsContext.orientation$()',
+        '[attr.data-orientation]': 'tabsContext.orientation$()'
     }
 })
-export class RdxTabsListDirective implements OnInit {
-    private readonly tabsContext = inject(TABS_CONTEXT_TOKEN);
-
-    ngOnInit() {
-        if (this.tabsContext) {
-            /* empty */
-        }
-    }
+export class RdxTabsListDirective {
+    protected readonly tabsContext = inject(TABS_CONTEXT_TOKEN);
 }
