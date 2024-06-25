@@ -1,4 +1,4 @@
-import { Directive, inject, Input, OnInit } from '@angular/core';
+import { Directive, effect, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 
 import { TABS_CONTEXT_TOKEN, TabsContextService } from './tabs-context.service';
 
@@ -42,6 +42,18 @@ export class RdxTabsRootDirective implements OnInit {
     @Input() defaultValue?: string;
     @Input() orientation = 'horizontal';
     @Input() dir?: string;
+
+    // Event handler called when the value changes.
+    @Output() onValueChange = new EventEmitter<string>();
+
+    constructor() {
+        effect(() => {
+            const value = this.tabsContext.value$();
+            if (value !== undefined) {
+                this.onValueChange.emit(value);
+            }
+        });
+    }
 
     ngOnInit() {
         this.tabsContext.setOrientation(this.orientation);
