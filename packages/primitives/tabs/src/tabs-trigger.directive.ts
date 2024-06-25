@@ -4,7 +4,6 @@ import {
     computed,
     Directive,
     inject,
-    Input,
     input,
     InputSignalWithTransform
 } from '@angular/core';

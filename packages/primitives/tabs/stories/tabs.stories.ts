@@ -32,7 +32,7 @@ export const Default: Story = {
     render: (args) => ({
         props: args,
         template: `
-<div TabsRoot class="TabsRoot">
+<div TabsRoot defaultValue="tab1" class="TabsRoot">
     <div TabsList class="TabsList">
         <button TabsTrigger value="tab1" class="TabsTrigger">Tab 1</button>
         <button TabsTrigger value="tab2" class="TabsTrigger">Tab 2</button>
