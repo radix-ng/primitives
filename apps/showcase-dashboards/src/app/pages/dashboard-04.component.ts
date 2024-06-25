@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
+import { ShCheckboxComponent } from '@radix-ng/shadcn/checkbox';
 import { ShInputDirective } from '@radix-ng/shadcn/input';
 import { LucideAngularModule } from 'lucide-angular';
 
@@ -27,7 +28,8 @@ import {
         CardFooterDirective,
 
         ShInputDirective,
-        ShButtonDirective
+        ShButtonDirective,
+        ShCheckboxComponent
     ],
     templateUrl: './dashboard-04.component.html'
 })
