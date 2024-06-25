@@ -34,11 +34,51 @@ export const Default: Story = {
         template: `
 <div TabsRoot defaultValue="tab1" class="TabsRoot">
     <div TabsList class="TabsList">
-        <button TabsTrigger value="tab1" class="TabsTrigger">Tab 1</button>
-        <button TabsTrigger value="tab2" class="TabsTrigger">Tab 2</button>
+        <button TabsTrigger value="tab1" class="TabsTrigger">Account</button>
+        <button TabsTrigger value="tab2" class="TabsTrigger">Password</button>
     </div>
-    <div TabsContent class="TabsContent" value="tab1">Content 1</div>
-    <div TabsContent class="TabsContent" value="tab2">Content 2</div>
+    <div TabsContent class="TabsContent" value="tab1">
+    <p class="Text">Make changes to your account here. Click save when you're done.</p>
+      <fieldset class="Fieldset">
+        <label class="Label" for="name">
+          Name
+        </label>
+        <input class="Input" id="name" value="Pedro Duarte" />
+      </fieldset>
+      <fieldset class="Fieldset">
+        <label class="Label" for="username">
+          Username
+        </label>
+        <input class="Input" id="username" value="@peduarte" />
+      </fieldset>
+      <div style="display: flex; margin-top: 20px; justify-content: flex-end; ">
+        <button class="Button green">Save changes</button>
+      </div>
+</div>
+    <div TabsContent class="TabsContent" value="tab2">
+        <p class="Text">Change your password here. After saving, you'll be logged out.</p>
+        <fieldset class="Fieldset">
+            <label class="Label" for="currentPassword">
+              Current password
+            </label>
+            <input class="Input" id="currentPassword" type="password" />
+        </fieldset>
+        <fieldset class="Fieldset">
+            <label class="Label" for="newPassword">
+              New password
+            </label>
+            <input class="Input" id="newPassword" type="password" />
+          </fieldset>
+          <fieldset class="Fieldset">
+            <label class="Label" for="confirmPassword">
+              Confirm password
+            </label>
+            <input class="Input" id="confirmPassword" type="password" />
+          </fieldset>
+          <div style="display: flex; margin-top: 20px; justify-content: flex-end;">
+            <button class="Button green">Change password</button>
+          </div>
+    </div>
 </div>
 
 <style>
@@ -107,6 +147,67 @@ input {
 .TabsContent:focus {
     box-shadow: 0 0 0 2px black;
 }
+
+.Text {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: var(--mauve-11);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.Fieldset {
+  margin-bottom: 15px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.Label {
+  font-size: 13px;
+  line-height: 1;
+  margin-bottom: 10px;
+  color: var(--violet-12);
+  display: block;
+}
+
+.Input {
+  flex: 1 0 auto;
+  border-radius: 4px;
+  padding: 0 10px;
+  font-size: 15px;
+  line-height: 1;
+  color: var(--violet-11);
+  box-shadow: 0 0 0 1px var(--violet-7);
+  height: 35px;
+}
+.Input:focus {
+  box-shadow: 0 0 0 2px var(--violet-8);
+}
+
+.Button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  padding: 0 15px;
+  font-size: 15px;
+  line-height: 1;
+  font-weight: 500;
+  height: 35px;
+}
+.Button.green {
+  background-color: var(--green-4);
+  color: var(--green-11);
+}
+.Button.green:hover {
+  background-color: var(--green-5);
+}
+.Button.green:focus {
+  box-shadow: 0 0 0 2px var(--green-7);
+}
+
 </style>
 `
     })
