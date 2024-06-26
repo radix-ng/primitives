@@ -1,10 +1,8 @@
 import { Component } from '@angular/core';
 
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
-import { ShCheckboxComponent } from '@radix-ng/shadcn/checkbox';
 import { ShInputDirective } from '@radix-ng/shadcn/input';
 import { ShLabelDirective } from '@radix-ng/shadcn/label';
-import { LucideAngularModule } from 'lucide-angular';
 
 import {
     CardContentDirective,
@@ -16,11 +14,10 @@ import {
 } from '../components/ui/card.component';
 
 @Component({
-    selector: 'app-dashboard-04',
+    selector: 'app-authentication-2',
     standalone: true,
+    templateUrl: './authentication-02.component.html',
     imports: [
-        LucideAngularModule,
-
         CardDirective,
         CardHeaderDirective,
         CardTitleDirective,
@@ -30,9 +27,7 @@ import {
 
         ShInputDirective,
         ShButtonDirective,
-        ShLabelDirective,
-        ShCheckboxComponent
-    ],
-    templateUrl: './dashboard-04.component.html'
+        ShLabelDirective
+    ]
 })
-export class DashboardComponent {}
+export class Authentication02Component {}
