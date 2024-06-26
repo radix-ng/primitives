@@ -17,7 +17,7 @@ import { Meta } from '@storybook/blocks';
 Screen readers and other assistive technology skip elements that have display: none, visibility: hidden, opacity: 0, height: 0, or width: 0. In some cases you may need to visually hide an element while keeping it available to assistive technology.
 You can do so using the a11y-visually-hidden Sass mixin, which emits the .cdk-visually-hidden CSS class:
 
-```css
+```scss
 @use '@angular/cdk';
 
 @include cdk.a11y-visually-hidden();

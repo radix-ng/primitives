@@ -4,6 +4,8 @@ import {
     ContentChildren,
     Directive,
     EventEmitter,
+    inject,
+    InjectionToken,
     Input,
     OnChanges,
     OnInit,
@@ -51,30 +53,30 @@ export class RdxToggleGroupDirective
     /**
      * The selected toggle button.
      */
-    @Input('rdxToggleGroupValue') value: string | null = null;
+    @Input() value: string | null = null;
 
     /**
      * The orientation of the toggle group.
      * @default 'horizontal'
      */
-    @Input('rdxToggleGroupOrientation') orientation: 'horizontal' | 'vertical' = 'horizontal';
+    @Input() orientation: 'horizontal' | 'vertical' = 'horizontal';
 
     /**
      * Whether the toggle group is disabled.
      * @default false
      */
-    @Input({ alias: 'rdxToggleGroupDisabled', transform: booleanAttribute }) disabled = false;
+    @Input({ transform: booleanAttribute }) disabled = false;
 
     /**
      * Whether the toggle group roving focus should wrap.
      * @default true
      */
-    @Input({ alias: 'rdxToggleGroupWrap', transform: booleanAttribute }) wrap = true;
+    @Input({ transform: booleanAttribute }) wrap = true;
 
     /**
      * Event emitted when the selected toggle button changes.
      */
-    @Input('rdxToggleGroupValueChange') readonly valueChange = new EventEmitter<string | null>();
+    @Input() readonly valueChange = new EventEmitter<string | null>();
 
     /**
      * Access the buttons in the toggle group.

@@ -29,27 +29,25 @@ export interface ToggleProps {
         '[attr.data-state]': 'pressed ? "on" : "off"',
         '[attr.data-disabled]': 'disabled',
 
-        '(click)': '_toggle($event)'
+        '(click)': 'toggle($event)'
     }
 })
 export class RdxToggleRootDirective implements ToggleProps {
-    @Input({ alias: 'rdxTogglePressed', transform: booleanAttribute }) pressed = false;
+    @Input({ transform: booleanAttribute }) pressed = false;
 
-    @Input({ alias: 'rdxToggleDisabled', transform: booleanAttribute }) disabled = false;
+    @Input({ transform: booleanAttribute }) disabled = false;
 
     @Input() id = 'rdx-toggle-' + uniqueId++;
     /**
      * Event emitted when the toggle is pressed.
      */
-    @Output('rdxToggleOnPressedChange') readonly onPressedChange = new EventEmitter<boolean>();
+    @Output() readonly onPressedChange = new EventEmitter<boolean>();
 
-    _toggle(event: MouseEvent): void {
+    protected toggle(event: MouseEvent): void {
         if (this.disabled) {
             return;
         }
         this.pressed = !this.pressed;
         this.onPressedChange.emit(this.pressed);
-
-        event.stopPropagation();
     }
 }

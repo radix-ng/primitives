@@ -1,7 +1,8 @@
 import {
     booleanAttribute,
     Directive,
-    HostListener,
+    inject,
+    InjectionToken,
     Input,
     OnChanges,
     SimpleChanges
@@ -26,7 +27,9 @@ import { injectToggleGroup } from './toggle-group.token';
         '[attr.aria-disabled]': 'disabled || toggleGroup.disabled',
         '[attr.data-disabled]': 'disabled || toggleGroup.disabled',
         '[attr.data-state]': 'checked ? "on" : "off"',
-        '[attr.data-orientation]': 'toggleGroup.orientation'
+        '[attr.data-orientation]': 'toggleGroup.orientation',
+
+        '(click)': 'toggle()'
     }
 })
 export class RdxToggleGroupButtonDirective implements OnChanges {
@@ -43,13 +46,13 @@ export class RdxToggleGroupButtonDirective implements OnChanges {
     /**
      * The value of this toggle button.
      */
-    @Input({ alias: 'rdxToggleGroupButtonValue', required: true }) value!: string;
+    @Input({ required: true }) value!: string;
 
     /**
      * Whether this toggle button is disabled.
      * @default false
      */
-    @Input({ alias: 'rdxToggleGroupButtonDisabled', transform: booleanAttribute }) disabled = false;
+    @Input({ transform: booleanAttribute }) disabled = false;
 
     /**
      * Whether this toggle button is checked.
@@ -64,10 +67,6 @@ export class RdxToggleGroupButtonDirective implements OnChanges {
         }
     }
 
-    /**
-     * Toggle this toggle button.
-     */
-    @HostListener('click')
     toggle(): void {
         if (this.disabled) {
             return;
