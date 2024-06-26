@@ -6,7 +6,7 @@ import { RdxToggleRootDirective } from '../src/toggle-root.directive';
 
 @Component({
     template:
-        '<button ToggleRoot [rdxTogglePressed]="pressed" [rdxToggleDisabled]="disabled" (rdxToggleOnPressedChange)="onToggle($event)">Toggle</button>'
+        '<button ToggleRoot [pressed]="pressed" [disabled]="disabled" (onPressedChange)="onToggle($event)">Toggle</button>'
 })
 class TestComponent {
     pressed = false;
