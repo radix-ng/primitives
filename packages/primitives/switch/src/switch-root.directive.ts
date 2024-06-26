@@ -5,6 +5,8 @@ import {
     inject,
     InjectionToken,
     Input,
+    model,
+    ModelSignal,
     Output
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -16,14 +18,13 @@ export function injectSwitch(): RdxSwitchRootDirective {
 }
 
 export interface SwitchProps {
-    checked?: boolean;
+    checked?: ModelSignal<boolean>;
     defaultChecked?: boolean;
     required?: boolean;
     onCheckedChange?: EventEmitter<boolean>;
 }
 
 @Directive({
-    // TODO: added Forms input
     selector: 'button[SwitchRoot]',
     exportAs: 'SwitchRoot',
     standalone: true,
@@ -33,21 +34,21 @@ export interface SwitchProps {
     ],
     host: {
         role: 'switch',
-
-        '[attr.aria-checked]': 'checked',
+        type: 'button',
+        '[attr.aria-checked]': 'checked()',
         '[attr.aria-required]': 'required',
-        '[attr.data-state]': 'checked ? "checked" : "unchecked"',
+        '[attr.data-state]': 'checked() ? "checked" : "unchecked"',
         '[attr.data-disabled]': 'disabled ? "true" : null',
         '[attr.disabled]': 'disabled ? disabled : null',
 
         '(focus)': '_onTouched?.()',
-        '(click)': '_toggle()'
+        '(click)': 'toggle()'
     }
 })
 export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor {
     @Input({ transform: booleanAttribute }) required = false;
 
-    @Input({ transform: booleanAttribute }) checked = false;
+    readonly checked = model<boolean>(false);
 
     @Input({ transform: booleanAttribute }) disabled = false;
 
@@ -72,19 +73,19 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
     }
 
     writeValue(checked: boolean): void {
-        this.checked = checked;
+        this.checked.set(checked);
     }
 
     setDisabledState(isDisabled: boolean): void {
         this.disabled = isDisabled;
     }
 
-    _toggle(): void {
+    protected toggle(): void {
         if (this.disabled) {
             return;
         }
 
-        this.checked = !this.checked;
-        this._onChange?.(this.checked);
+        this.checked.set(!this.checked());
+        this._onChange?.(this.checked());
     }
 }
