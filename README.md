@@ -25,7 +25,7 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 
 ## Showcase
 1. [Taxonomy](https://github.com/shadcn-ui/taxonomy) build with AnalogJS – [https://primitives-taxonomy.vercel.app/](https://primitives-taxonomy.vercel.app/)
-2. [Dashboards](https://ui.shadcn.com/blocks) based on shadcn - [https://dashboard-showcase-weld.vercel.app](https://dashboard-showcase-weld.vercel.app)
+2. [Blocks](https://ui.shadcn.com/blocks) based on shadcn - [https://blocks-showcase.vercel.app/](https://blocks-showcase.vercel.app/)
 
 
 ## Project structure
