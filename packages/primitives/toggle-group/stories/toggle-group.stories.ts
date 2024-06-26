@@ -86,14 +86,14 @@ export const Default: Story = {
     render: () => ({
         template: `
 
-    <div rdxToggleGroup rdxToggleGroupValue="center" aria-label="Text alignment" class="ToggleGroup">
-        <button rdxToggleGroupButton rdxToggleGroupButtonValue="left" aria-label="Left aligned" class="ToggleGroupItem" >
+    <div rdxToggleGroup value="center" aria-label="Text alignment" class="ToggleGroup">
+        <button rdxToggleGroupButton value="left" aria-label="Left aligned" class="ToggleGroupItem" >
             <ng-icon name="radixTextAlignLeft"></ng-icon>
         </button>
-        <button rdxToggleGroupButton rdxToggleGroupButtonValue="center" aria-label="Center aligned" class="ToggleGroupItem">
+        <button rdxToggleGroupButton value="center" aria-label="Center aligned" class="ToggleGroupItem">
             <ng-icon name="radixTextAlignCenter"></ng-icon>
         </button>
-        <button rdxToggleGroupButton rdxToggleGroupButtonValue="right" aria-label="Right aligned" class="ToggleGroupItem">
+        <button rdxToggleGroupButton value="right" aria-label="Right aligned" class="ToggleGroupItem">
             <ng-icon name="radixTextAlignRight"></ng-icon>
         </button>
     </div>
