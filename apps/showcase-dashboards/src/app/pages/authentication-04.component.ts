@@ -13,11 +13,15 @@ import {
 import { ShInputDirective } from '@radix-ng/shadcn/input';
 import { ShLabelDirective } from '@radix-ng/shadcn/label';
 
+import { BlockToolbarComponent } from '../components/block-toolbar.component';
+
 @Component({
     selector: 'app-authentication-4',
     standalone: true,
     templateUrl: './authentication-04.component.html',
     imports: [
+        BlockToolbarComponent,
+
         CardDirective,
         CardHeaderDirective,
         CardTitleDirective,

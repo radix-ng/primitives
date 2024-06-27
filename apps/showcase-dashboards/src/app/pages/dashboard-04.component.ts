@@ -14,11 +14,14 @@ import { ShInputDirective } from '@radix-ng/shadcn/input';
 import { ShLabelDirective } from '@radix-ng/shadcn/label';
 import { LucideAngularModule } from 'lucide-angular';
 
+import { BlockToolbarComponent } from '../components/block-toolbar.component';
+
 @Component({
     selector: 'app-dashboard-04',
     standalone: true,
     imports: [
         LucideAngularModule,
+        BlockToolbarComponent,
 
         CardDirective,
         CardHeaderDirective,
