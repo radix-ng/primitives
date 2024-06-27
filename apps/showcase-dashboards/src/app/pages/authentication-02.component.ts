@@ -1,9 +1,6 @@
 import { Component } from '@angular/core';
 
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
-import { ShInputDirective } from '@radix-ng/shadcn/input';
-import { ShLabelDirective } from '@radix-ng/shadcn/label';
-
 import {
     CardContentDirective,
     CardDescriptionDirective,
@@ -11,7 +8,9 @@ import {
     CardFooterDirective,
     CardHeaderDirective,
     CardTitleDirective
-} from '../components/ui/card.component';
+} from '@radix-ng/shadcn/card';
+import { ShInputDirective } from '@radix-ng/shadcn/input';
+import { ShLabelDirective } from '@radix-ng/shadcn/label';
 
 @Component({
     selector: 'app-authentication-2',

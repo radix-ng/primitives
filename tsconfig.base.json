@@ -26,6 +26,7 @@
             "@radix-ng/shadcn/input": ["packages/shadcn/input/index.ts"],
             "@radix-ng/shadcn/checkbox": ["packages/shadcn/checkbox/index.ts"],
             "@radix-ng/shadcn/label": ["packages/shadcn/label/index.ts"],
+            "@radix-ng/shadcn/card": ["packages/shadcn/card/index.ts"],
             "@taxonomy/*": ["apps/showcase-taxonomy/src/app/*"]
         }
     },
