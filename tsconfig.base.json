@@ -22,11 +22,11 @@
             "@radix-ng/primitives/roving-focus": ["packages/primitives/roving-focus/index.ts"],
             "@radix-ng/primitives/separator": ["packages/primitives/separator/index.ts"],
             "@radix-ng/shadcn/button": ["packages/shadcn/button/index.ts"],
+            "@radix-ng/shadcn/card": ["packages/shadcn/card/index.ts"],
+            "@radix-ng/shadcn/checkbox": ["packages/shadcn/checkbox/index.ts"],
             "@radix-ng/shadcn/core": ["packages/shadcn/core/index.ts"],
             "@radix-ng/shadcn/input": ["packages/shadcn/input/index.ts"],
-            "@radix-ng/shadcn/checkbox": ["packages/shadcn/checkbox/index.ts"],
             "@radix-ng/shadcn/label": ["packages/shadcn/label/index.ts"],
-            "@radix-ng/shadcn/card": ["packages/shadcn/card/index.ts"],
             "@taxonomy/*": ["apps/showcase-taxonomy/src/app/*"]
         }
     },

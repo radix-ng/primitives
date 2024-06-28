@@ -1,0 +1,15 @@
+{
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "emitDecoratorMetadata": true,
+        "resolveJsonModule": true
+    },
+    "exclude": ["../**/*.spec.ts"],
+    "include": [
+        "../../../packages/primitives/**/*.stories.ts",
+        "../../../packages/primitives/**/*.stories.tsx",
+        "../../../packages/primitives/**/*.stories.mdx",
+        "../../../packages/primitives/**/*.directive.ts",
+        "*.ts"
+    ]
+}
