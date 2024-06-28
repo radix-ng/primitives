@@ -39,60 +39,6 @@
         "lint": {
             "executor": "@nx/eslint:lint",
             "outputs": ["{options.outputFile}"]
-        },
-        "storybook": {
-            "executor": "@storybook/angular:start-storybook",
-            "options": {
-                "port": 4400,
-                "configDir": "packages/primitives/.storybook",
-                "browserTarget": "primitives:build-storybook",
-                "compodoc": false
-            },
-            "configurations": {
-                "ci": {
-                    "quiet": true
-                }
-            }
-        },
-        "build-storybook": {
-            "executor": "@storybook/angular:build-storybook",
-            "outputs": ["{options.outputDir}"],
-            "options": {
-                "outputDir": "dist/storybook/primitives",
-                "configDir": "packages/primitives/.storybook",
-                "browserTarget": "primitives:build-storybook",
-                "compodoc": false,
-                "styles": [
-                    "@radix-ui/themes/styles.css",
-                    "@angular/cdk/overlay-prebuilt.css"
-                ],
-                "stylePreprocessorOptions": {
-                    "includePaths": ["node_modules/"]
-                }
-            },
-            "configurations": {
-                "ci": {
-                    "quiet": true
-                }
-            }
-        },
-        "test-storybook": {
-            "executor": "nx:run-commands",
-            "options": {
-                "command": "test-storybook -c packages/primitives/.storybook --url=http://localhost:4400"
-            }
-        },
-        "static-storybook": {
-            "executor": "@nx/web:file-server",
-            "options": {
-                "buildTarget": "primitives:build-storybook",
-                "staticFilePath": "dist/storybook/primitives"
-            },
-            "configurations": {
-                "ci": {
-                    "buildTarget": "primitives:build-storybook:ci"
-                }
-            }
         }
     }
 }
