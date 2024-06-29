@@ -94,7 +94,7 @@
         },
         "groups": {
             "packages": {
-                "projects": ["primitives"],
+                "projects": ["primitives", "shadcn"],
                 "projectsRelationship": "independent",
                 "changelog": {
                     "createRelease": "github",

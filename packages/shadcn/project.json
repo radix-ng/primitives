@@ -6,6 +6,13 @@
     "projectType": "library",
     "tags": [],
     "targets": {
+        "nx-release-publish": {
+            "executor": "@nx/js:release-publish",
+            "options": {
+                "packageRoot": "./dist/shadcn",
+                "registry": "https://registry.npmjs.org/"
+            }
+        },
         "build": {
             "executor": "nx:run-commands",
             "options": { "commands": [] },
