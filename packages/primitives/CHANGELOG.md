@@ -1,3 +1,10 @@
+## 0.7.0 (2024-06-29)
+
+
+### 🚀 Features
+
+- **tabs:** added Tabs ([#38](https://github.com/radix-ng/primitives/pull/38))
+
 ## 0.6.0 (2024-06-20)
 
 
