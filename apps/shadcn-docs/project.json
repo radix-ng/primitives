@@ -1,20 +1,20 @@
 {
-    "name": "storybook-shadcn",
+    "name": "shadcn-docs",
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
     "projectType": "application",
     "prefix": "app",
-    "sourceRoot": "apps/storybook-shadcn/src",
+    "sourceRoot": "apps/shadcn-docs/src",
     "tags": [],
     "targets": {
         "build": {
             "executor": "@ng-doc/builder:application",
             "outputs": ["{options.outputPath}"],
             "options": {
-                "outputPath": "dist/apps/storybook-shadcn",
-                "index": "apps/storybook-shadcn/src/index.html",
-                "browser": "apps/storybook-shadcn/src/main.ts",
+                "outputPath": "dist/apps/shadcn-docs",
+                "index": "apps/shadcn-docs/src/index.html",
+                "browser": "apps/shadcn-docs/src/main.ts",
                 "polyfills": ["zone.js"],
-                "tsConfig": "apps/storybook-shadcn/tsconfig.app.json",
+                "tsConfig": "apps/shadcn-docs/tsconfig.app.json",
                 "inlineStyleLanguage": "scss",
                 "assets": [
                     {
@@ -32,15 +32,15 @@
                         "input": "ng-doc/docs/assets",
                         "output": "assets/ng-doc"
                     },
-                    "apps/storybook-shadcn/src/favicon.ico",
-                    "apps/storybook-shadcn/src/assets"
+                    "apps/shadcn-docs/src/favicon.ico",
+                    "apps/shadcn-docs/src/assets"
                 ],
-                "styles": ["node_modules/@ng-doc/app/styles/global.css", "apps/storybook-shadcn/src/styles.scss"],
+                "styles": ["node_modules/@ng-doc/app/styles/global.css", "apps/shadcn-docs/src/styles.scss"],
                 "scripts": [],
-                "server": "apps/storybook-shadcn/src/main.server.ts",
+                "server": "apps/shadcn-docs/src/main.server.ts",
                 "prerender": true,
                 "ssr": {
-                    "entry": "apps/storybook-shadcn/server.ts"
+                    "entry": "apps/shadcn-docs/server.ts"
                 },
                 "allowedCommonJsDependencies": ["@ng-doc/core"]
             },
@@ -73,10 +73,10 @@
             "executor": "@ng-doc/builder:dev-server",
             "configurations": {
                 "production": {
-                    "buildTarget": "storybook-shadcn:build:production"
+                    "buildTarget": "shadcn-docs:build:production"
                 },
                 "development": {
-                    "buildTarget": "storybook-shadcn:build:development"
+                    "buildTarget": "shadcn-docs:build:development"
                 }
             },
             "defaultConfiguration": "development"
@@ -84,7 +84,7 @@
         "extract-i18n": {
             "executor": "@angular-devkit/build-angular:extract-i18n",
             "options": {
-                "buildTarget": "storybook-shadcn:build"
+                "buildTarget": "shadcn-docs:build"
             }
         },
         "lint": {

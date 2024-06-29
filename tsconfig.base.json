@@ -16,8 +16,8 @@
         "baseUrl": ".",
         "allowSyntheticDefaultImports": true,
         "paths": {
-            "@ng-doc/generated": ["ng-doc/storybook-shadcn/index.ts"],
-            "@ng-doc/generated/*": ["ng-doc/storybook-shadcn/*"],
+            "@ng-doc/generated": ["ng-doc/shadcn-docs/index.ts"],
+            "@ng-doc/generated/*": ["ng-doc/shadcn-docs/*"],
             "@radix-ng/components/theme": ["packages/components/theme/index.ts"],
             "@radix-ng/primitives/checkbox": ["packages/primitives/checkbox/index.ts"],
             "@radix-ng/primitives/label": ["packages/primitives/label/index.ts"],
