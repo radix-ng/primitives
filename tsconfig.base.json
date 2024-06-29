@@ -14,7 +14,10 @@
         "skipLibCheck": true,
         "skipDefaultLibCheck": true,
         "baseUrl": ".",
+        "allowSyntheticDefaultImports": true,
         "paths": {
+            "@ng-doc/generated": ["ng-doc/storybook-shadcn/index.ts"],
+            "@ng-doc/generated/*": ["ng-doc/storybook-shadcn/*"],
             "@radix-ng/components/theme": ["packages/components/theme/index.ts"],
             "@radix-ng/primitives/checkbox": ["packages/primitives/checkbox/index.ts"],
             "@radix-ng/primitives/label": ["packages/primitives/label/index.ts"],

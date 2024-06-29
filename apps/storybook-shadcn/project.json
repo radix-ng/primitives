@@ -1,0 +1,94 @@
+{
+    "name": "storybook-shadcn",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "projectType": "application",
+    "prefix": "app",
+    "sourceRoot": "apps/storybook-shadcn/src",
+    "tags": [],
+    "targets": {
+        "build": {
+            "executor": "@ng-doc/builder:application",
+            "outputs": ["{options.outputPath}"],
+            "options": {
+                "outputPath": "dist/apps/storybook-shadcn",
+                "index": "apps/storybook-shadcn/src/index.html",
+                "browser": "apps/storybook-shadcn/src/main.ts",
+                "polyfills": ["zone.js"],
+                "tsConfig": "apps/storybook-shadcn/tsconfig.app.json",
+                "inlineStyleLanguage": "scss",
+                "assets": [
+                    {
+                        "glob": "**/*",
+                        "input": "node_modules/@ng-doc/app/assets",
+                        "output": "assets/ng-doc/app"
+                    },
+                    {
+                        "glob": "**/*",
+                        "input": "node_modules/@ng-doc/ui-kit/assets",
+                        "output": "assets/ng-doc/ui-kit"
+                    },
+                    {
+                        "glob": "**/*",
+                        "input": "ng-doc/docs/assets",
+                        "output": "assets/ng-doc"
+                    },
+                    "apps/storybook-shadcn/src/favicon.ico",
+                    "apps/storybook-shadcn/src/assets"
+                ],
+                "styles": ["node_modules/@ng-doc/app/styles/global.css", "apps/storybook-shadcn/src/styles.scss"],
+                "scripts": [],
+                "server": "apps/storybook-shadcn/src/main.server.ts",
+                "prerender": true,
+                "ssr": {
+                    "entry": "apps/storybook-shadcn/server.ts"
+                },
+                "allowedCommonJsDependencies": ["@ng-doc/core"]
+            },
+            "configurations": {
+                "production": {
+                    "budgets": [
+                        {
+                            "type": "initial",
+                            "maximumWarning": "500kb",
+                            "maximumError": "1mb"
+                        },
+                        {
+                            "type": "anyComponentStyle",
+                            "maximumWarning": "2kb",
+                            "maximumError": "4kb"
+                        }
+                    ],
+                    "outputHashing": "all"
+                },
+                "development": {
+                    "optimization": false,
+                    "extractLicenses": false,
+                    "sourceMap": true,
+                    "namedChunks": true
+                }
+            },
+            "defaultConfiguration": "production"
+        },
+        "serve": {
+            "executor": "@ng-doc/builder:dev-server",
+            "configurations": {
+                "production": {
+                    "buildTarget": "storybook-shadcn:build:production"
+                },
+                "development": {
+                    "buildTarget": "storybook-shadcn:build:development"
+                }
+            },
+            "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+            "executor": "@angular-devkit/build-angular:extract-i18n",
+            "options": {
+                "buildTarget": "storybook-shadcn:build"
+            }
+        },
+        "lint": {
+            "executor": "@nx/eslint:lint"
+        }
+    }
+}

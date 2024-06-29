@@ -75,3 +75,7 @@ yarn-error.log*
 .idea
 dist
 esm
+
+
+# NgDoc files
+/ng-doc
