@@ -29,6 +29,9 @@ jobs:
       - name: Build
         run: pnpm primitives:build
 
+      - name: Build shadcn
+        run: pnpm shadcn:build
+
       - name: Publish package
         run: npx nx release publish
         env:
