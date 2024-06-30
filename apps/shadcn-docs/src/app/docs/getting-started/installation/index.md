@@ -2,7 +2,7 @@
 How to install dependencies and structure your app.
 
 > **Warning**
-> This library works only with Angular 17+.
+> This library works only with Angular 18+.
 
 ```bash
 npm install @radix-ng/shadcn tailwind-merge class-variance-authority clsx
@@ -18,6 +18,8 @@ npm install -D tailwindcss postcss autoprefixer
 
 ### Configure tailwind.config.js
 
+Please note that `@radix-ng/shadcn` needs to be added to the `content`.
+
 ```js
 const { fontFamily } = require('tailwindcss/defaultTheme.js');
 
@@ -25,6 +27,7 @@ const { fontFamily } = require('tailwindcss/defaultTheme.js');
 module.exports = {
     content: [
         join(__dirname, 'src/**/!(*.stories|*.spec).{ts,html,md}'),
+        './node_modules/@radix-ng/shadcn/**/*.{mjs,js}',
         ...createGlobPatternsForDependencies(__dirname)
     ],
     theme: {
