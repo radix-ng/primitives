@@ -41,7 +41,7 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 ```
 
 ## Primitives Roadmap
-- [ ] Accordion        (will be based on angular/cdk)
+- [ ] Accordion        (In progess) (will be based on angular/cdk)
 - [x] Alert Dialog
 - [x] Avatar
 - [x] Checkbox         (need it more adaptation for FormGroup)
@@ -51,15 +51,15 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 - [ ] Dropdown
 - [ ] Hover Card
 - [x] Label
-- [ ] Menubar
+- [ ] Menubar          (In progess)
 - [ ] Navigation Menu
 - [ ] Popover
 - [x] Progress
 - [x] Radio
-- [ ] Select
+- [ ] Select           (In progess)
 - [x] Separator
 - [x] Switch
-- [ ] Tabs
+- [x] Tabs
 - [ ] Toast
 - [x] Toggle
 - [x] Toggle Group
