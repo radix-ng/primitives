@@ -27,6 +27,9 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 1. [Taxonomy](https://github.com/shadcn-ui/taxonomy) build with AnalogJS – [https://primitives-taxonomy.vercel.app/](https://primitives-taxonomy.vercel.app/)
 2. [Blocks](https://ui.shadcn.com/blocks) based on shadcn - [https://blocks-showcase.vercel.app/](https://blocks-showcase.vercel.app/)
 
+## Components
+1. [shadcn/ui](https://ui.shadcn.com/) Angular version – [https://shadcn.radix-ng.com](https://shadcn.radix-ng.com/)
+2. Radix Components ...'soon'
 
 ## Project structure
 
