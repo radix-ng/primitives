@@ -392,7 +392,7 @@ importers:
         specifier: ^18.0.0
         version: 18.0.4(rxjs@7.8.1)(zone.js@0.14.4)
       '@radix-ng/primitives':
-        specifier: 0.7.0
+        specifier: workspace:*
         version: link:../primitives
       class-variance-authority:
         specifier: ^0.7.0
@@ -18365,8 +18365,6 @@ packages:
     peerDependenciesMeta:
       webpack:
         optional: true
-      webpack-sources:
-        optional: true
     dependencies:
       webpack: 5.90.3(@swc/core@1.5.7)(esbuild@0.19.5)
       webpack-sources: 3.2.3
@@ -18378,8 +18376,6 @@ packages:
       webpack: '*'
     peerDependenciesMeta:
       webpack:
-        optional: true
-      webpack-sources:
         optional: true
     dependencies:
       webpack: 5.91.0(@swc/core@1.5.7)(esbuild@0.21.3)
