@@ -30,7 +30,7 @@ import {
         <ng-doc-root>
             <ng-doc-navbar [leftContent]="leftContent" [rightContent]="rightContent">
                 <ng-template #leftContent>
-                    <h3 style="margin: 0">shadcn/ui Angular</h3>
+                    <h3 style="margin: 0">shadcn/ui</h3>
                 </ng-template>
                 <ng-template #rightContent>
                     <div class="flex gap-4">

@@ -24,7 +24,7 @@ export const appConfig: ApplicationConfig = {
         provideClientHydration(),
 
         provideNgDocContext(),
-        provideNgDocApp({ defaultThemeId: NG_DOC_NIGHT_THEME.id }),
+        provideNgDocApp(),
         provideSearchEngine(NgDocDefaultSearchEngine),
         providePageSkeleton(NG_DOC_DEFAULT_PAGE_SKELETON),
         provideMainPageProcessor(NG_DOC_DEFAULT_PAGE_PROCESSORS),

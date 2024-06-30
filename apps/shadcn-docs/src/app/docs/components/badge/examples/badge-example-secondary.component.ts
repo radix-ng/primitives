@@ -5,6 +5,6 @@ import { ShBadgeDirective } from '@radix-ng/shadcn/badge';
 @Component({
     standalone: true,
     imports: [ShBadgeDirective],
-    templateUrl: './badge-example.component.html'
+    templateUrl: './badge-example-secondary.component.html'
 })
-export class BadgeExampleComponent {}
+export class BadgeExampleSecondaryComponent {}
