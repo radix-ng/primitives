@@ -11,6 +11,11 @@
 ### Secondary
 {{ NgDocActions.demo("ButtonExampleSecondaryComponent", { defaultTab: "HTML", expanded: true}) }}
 
+### Destructive
+{{ NgDocActions.demo("ButtonExampleDestructiveComponent", { defaultTab: "HTML", expanded: true}) }}
+
 ### Outline
 {{ NgDocActions.demo("ButtonExampleOutlineComponent", { defaultTab: "HTML", expanded: true}) }}
 
+### Ghost
+{{ NgDocActions.demo("ButtonExampleGhostComponent", { defaultTab: "HTML", expanded: true}) }}

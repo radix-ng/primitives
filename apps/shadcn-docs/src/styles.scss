@@ -52,7 +52,7 @@
 
 @layer base {
     * {
-        // @apply border-border not works with NG-doc?;
+        // @apply border-border not work ng-doc;
         box-sizing: border-box;
         border: 0 solid;
     }
