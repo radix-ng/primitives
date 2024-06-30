@@ -5,7 +5,15 @@ How to install dependencies and structure your app.
 > This library works only with Angular 17+.
 
 ```bash
-npm install @radix-ng/shadcn
+npm install @radix-ng/shadcn tailwind-merge class-variance-authority clsx
+```
+
+### Add Tailwind to project
+
+https://tailwindcss.com/docs/guides/angular
+
+```bash
+npm install -D tailwindcss postcss autoprefixer
 ```
 
 ### Configure tailwind.config.js
