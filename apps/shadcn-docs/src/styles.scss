@@ -52,7 +52,9 @@
 
 @layer base {
     * {
-        @apply border-border;
+        // @apply border-border not works with NG-doc?;
+        box-sizing: border-box;
+        border: 0 solid;
     }
     html {
         @apply scroll-smooth;
