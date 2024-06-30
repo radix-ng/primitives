@@ -1,10 +1,9 @@
 // This code is an adaptation of code from https://ui.shadcn.com/docs.
 
-import { computed, Directive, input, signal } from '@angular/core';
+import { computed, Directive, input } from '@angular/core';
 
 import { cn } from '@radix-ng/shadcn/core';
 import { cva, type VariantProps } from 'class-variance-authority';
-import type { ClassValue } from 'clsx';
 
 const variants = cva(
     'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
@@ -33,7 +32,10 @@ const variants = cva(
     }
 );
 
-export type ButtonVariants = VariantProps<typeof variants>;
+type ButtonProps = VariantProps<typeof variants>;
+
+export type ShButtonSize = NonNullable<ButtonProps['size']>;
+export type ShButtonVariant = NonNullable<ButtonProps['variant']>;
 
 @Directive({
     selector: '[shButton]',
@@ -43,22 +45,13 @@ export type ButtonVariants = VariantProps<typeof variants>;
     }
 })
 export class ShButtonDirective {
-    readonly userClass = input<ClassValue>('', { alias: 'class' });
+    readonly class = input<string>();
 
-    readonly variant = input<ButtonVariants['variant']>('default');
+    readonly variant = input<ShButtonVariant>('default');
 
-    readonly size = input<ButtonVariants['size']>('default');
+    readonly size = input<ShButtonSize>('default');
 
     protected computedClass = computed(() =>
-        cn(
-            variants({ variant: this.variant(), size: this.size() }),
-            this._settableClass(),
-            this.userClass()
-        )
+        cn(variants({ variant: this.variant(), size: this.size(), class: this.class() }))
     );
-
-    private readonly _settableClass = signal<ClassValue>('');
-    setClass(value: ClassValue) {
-        this._settableClass.set(value);
-    }
 }

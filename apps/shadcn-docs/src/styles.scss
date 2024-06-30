@@ -49,3 +49,17 @@
         --ring: 240 4.9% 83.9%;
     }
 }
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    html {
+        @apply scroll-smooth;
+    }
+    body {
+        @apply bg-background text-foreground;
+        font-synthesis-weight: none;
+        text-rendering: optimizeLegibility;
+    }
+}
