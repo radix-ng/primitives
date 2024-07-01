@@ -30,6 +30,7 @@
         --ng-doc-sidebar-background: hsl(var(--background));
         --ng-doc-navbar-background: hsl(var(--background));
         --ng-doc-demo-displayer-background: hsl(var(--background));
+        --ng-doc-demo-displayer-border: 1px solid hsl(var(--border));
     }
 
     .dark {
@@ -57,6 +58,7 @@
         --ng-doc-sidebar-background: hsl(var(--background));
         --ng-doc-navbar-background: hsl(var(--background));
         --ng-doc-demo-displayer-background: hsl(var(--background));
+        --ng-doc-demo-displayer-border: 1px solid hsl(var(--border));
     }
 }
 
