@@ -2,12 +2,12 @@ import { Component } from '@angular/core';
 
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
 import {
-    CardContentDirective,
-    CardDescriptionDirective,
-    CardDirective,
-    CardFooterDirective,
-    CardHeaderDirective,
-    CardTitleDirective
+    ShCardContentDirective,
+    ShCardDescriptionDirective,
+    ShCardDirective,
+    ShCardFooterDirective,
+    ShCardHeaderDirective,
+    ShCardTitleDirective
 } from '@radix-ng/shadcn/card';
 import { ShCheckboxComponent } from '@radix-ng/shadcn/checkbox';
 import { ShInputDirective } from '@radix-ng/shadcn/input';
@@ -23,12 +23,12 @@ import { BlockToolbarComponent } from '../components/block-toolbar.component';
         LucideAngularModule,
         BlockToolbarComponent,
 
-        CardDirective,
-        CardHeaderDirective,
-        CardTitleDirective,
-        CardDescriptionDirective,
-        CardContentDirective,
-        CardFooterDirective,
+        ShCardDirective,
+        ShCardHeaderDirective,
+        ShCardTitleDirective,
+        ShCardDescriptionDirective,
+        ShCardContentDirective,
+        ShCardFooterDirective,
 
         ShInputDirective,
         ShButtonDirective,

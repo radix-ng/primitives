@@ -3,12 +3,12 @@ import { Component } from '@angular/core';
 
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
 import {
-    CardContentDirective,
-    CardDescriptionDirective,
-    CardDirective,
-    CardFooterDirective,
-    CardHeaderDirective,
-    CardTitleDirective
+    ShCardContentDirective,
+    ShCardDescriptionDirective,
+    ShCardDirective,
+    ShCardFooterDirective,
+    ShCardHeaderDirective,
+    ShCardTitleDirective
 } from '@radix-ng/shadcn/card';
 import { ShInputDirective } from '@radix-ng/shadcn/input';
 import { ShLabelDirective } from '@radix-ng/shadcn/label';
@@ -22,12 +22,12 @@ import { BlockToolbarComponent } from '../components/block-toolbar.component';
     imports: [
         BlockToolbarComponent,
 
-        CardDirective,
-        CardHeaderDirective,
-        CardTitleDirective,
-        CardDescriptionDirective,
-        CardContentDirective,
-        CardFooterDirective,
+        ShCardDirective,
+        ShCardHeaderDirective,
+        ShCardTitleDirective,
+        ShCardDescriptionDirective,
+        ShCardContentDirective,
+        ShCardFooterDirective,
 
         ShInputDirective,
         ShButtonDirective,

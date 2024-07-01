@@ -2,62 +2,62 @@ import { computed, Directive, input } from '@angular/core';
 
 import { cn } from '@radix-ng/shadcn/core';
 import { cva } from 'class-variance-authority';
-import { ClassValue } from 'clsx';
 
 @Directive({
-    selector: '[Card]',
+    selector: '[shCard]',
     standalone: true,
     host: {
         '[class]': "'bg-card text-card-foreground rounded-xl border shadow'"
     }
 })
-export class CardDirective {}
+export class ShCardDirective {}
 
 @Directive({
-    selector: '[CardHeader]',
+    selector: '[shCardHeader]',
     standalone: true,
     host: {
         '[class]': "'flex flex-col space-y-1.5 p-6'"
     }
 })
-export class CardHeaderDirective {}
+export class ShCardHeaderDirective {}
 
 @Directive({
-    selector: '[CardTitle]',
+    selector: '[shCardTitle]',
     standalone: true,
     host: {
         '[class]': "'font-semibold leading-none tracking-tight'"
     }
 })
-export class CardTitleDirective {}
+export class ShCardTitleDirective {}
 
 @Directive({
-    selector: '[CardDescription]',
+    selector: '[shCardDescription]',
     standalone: true,
     host: {
         '[class]': "'text-sm text-muted-foreground'"
     }
 })
-export class CardDescriptionDirective {}
+export class ShCardDescriptionDirective {}
 
 @Directive({
-    selector: '[CardContent]',
+    selector: '[shCardContent]',
     standalone: true,
     host: {
         '[class]': "'p-6 pt-0'"
     }
 })
-export class CardContentDirective {}
+export class ShCardContentDirective {}
 
 const cardFooterVariants = cva('flex items-center p-6 pt-0');
 @Directive({
-    selector: '[CardFooter]',
+    selector: '[shCardFooter]',
     standalone: true,
     host: {
         '[class]': 'computedClass()'
     }
 })
-export class CardFooterDirective {
-    readonly userClass = input<ClassValue>('', { alias: 'class' });
-    protected computedClass = computed(() => cn(cardFooterVariants(), this.userClass()));
+export class ShCardFooterDirective {
+    readonly class = input<string>();
+
+    protected computedClass = computed(() => cn(cardFooterVariants({ class: this.class() })));
 }
