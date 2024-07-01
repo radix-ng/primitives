@@ -12,6 +12,7 @@ import {
     NgDocIconComponent,
     NgDocTooltipDirective
 } from '@ng-doc/ui-kit';
+import { ShButtonDirective } from '@radix-ng/shadcn/button';
 
 import { ThemeSwitcherComponent } from './ui/theme-switcher/theme-switcher.component';
 
@@ -28,7 +29,8 @@ import { ThemeSwitcherComponent } from './ui/theme-switcher/theme-switcher.compo
         NgDocThemeToggleComponent,
         NgDocIconComponent,
 
-        ThemeSwitcherComponent
+        ThemeSwitcherComponent,
+        ShButtonDirective
     ],
     template: `
         <ng-doc-root>
@@ -75,10 +77,11 @@ import { ThemeSwitcherComponent } from './ui/theme-switcher/theme-switcher.compo
                     <div class="flex gap-4">
                         <app-doc-theme-toggle />
                         <a
+                            shButton
                             href="https://github.com/radix-ng/primitives"
-                            ng-doc-button-icon
                             ngDocTooltip="Repository on GitHub"
-                            size="large"
+                            variant="ghost"
+                            size="icon"
                             target="_blank"
                         >
                             <ng-doc-icon [size]="24" customIcon="github"></ng-doc-icon>
