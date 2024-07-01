@@ -19,3 +19,6 @@
 
 ### Ghost
 {{ NgDocActions.demo("ButtonExampleGhostComponent", { defaultTab: "HTML", expanded: true}) }}
+
+### Link
+{{ NgDocActions.demo("ButtonExampleLinkComponent", { defaultTab: "HTML", expanded: true}) }}
