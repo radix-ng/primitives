@@ -1,3 +1,7 @@
+## 0.4.0 (2024-07-01)
+
+This was a version bump only for shadcn to align it with other projects, there were no code changes.
+
 ## 0.3.0 (2024-06-30)
 
 
