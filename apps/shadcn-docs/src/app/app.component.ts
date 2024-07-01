@@ -13,6 +13,8 @@ import {
     NgDocTooltipDirective
 } from '@ng-doc/ui-kit';
 
+import { ThemeSwitcherComponent } from './ui/theme-switcher/theme-switcher.component';
+
 @Component({
     standalone: true,
     selector: 'app-root',
@@ -24,17 +26,23 @@ import {
         NgDocButtonIconComponent,
         NgDocTooltipDirective,
         NgDocThemeToggleComponent,
-        NgDocIconComponent
+        NgDocIconComponent,
+
+        ThemeSwitcherComponent
     ],
     template: `
         <ng-doc-root>
-            <ng-doc-navbar [leftContent]="leftContent" [rightContent]="rightContent">
+            <ng-doc-navbar
+                class="bg-background sticky top-0 z-20"
+                [leftContent]="leftContent"
+                [rightContent]="rightContent"
+            >
                 <ng-template #leftContent>
                     <h3 style="margin: 0">shadcn/ui</h3>
                 </ng-template>
                 <ng-template #rightContent>
                     <div class="flex gap-4">
-                        <ng-doc-theme-toggle />
+                        <app-doc-theme-toggle />
                         <a
                             href="https://github.com/radix-ng/primitives"
                             ng-doc-button-icon

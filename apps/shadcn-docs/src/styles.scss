@@ -25,6 +25,11 @@
         --input: 240 5.9% 90%;
         --ring: 240 5% 64.9%;
         --radius: 0.5rem;
+
+        --ng-doc-code-background: unset;
+        --ng-doc-sidebar-background: hsl(var(--background));
+        --ng-doc-navbar-background: hsl(var(--background));
+        --ng-doc-demo-displayer-background: hsl(var(--background));
     }
 
     .dark {
@@ -47,20 +52,47 @@
         --border: 240 3.7% 15.9%;
         --input: 240 3.7% 15.9%;
         --ring: 240 4.9% 83.9%;
+
+        --ng-doc-code-background: unset;
+        --ng-doc-sidebar-background: hsl(var(--background));
+        --ng-doc-navbar-background: hsl(var(--background));
+        --ng-doc-demo-displayer-background: hsl(var(--background));
     }
 }
 
 @layer base {
     * {
-        // @apply border-border not work ng-doc;
+        //@apply border-border;
         box-sizing: border-box;
         border: 0 solid;
     }
     html {
         @apply scroll-smooth;
+        background-color: var(--background);
     }
+
     body {
+        @apply bg-background text-foreground;
+        height: unset;
+        min-height: 100vh;
         font-synthesis-weight: none;
         text-rendering: optimizeLegibility;
+    }
+
+    [type=button],[type=reset],[type=submit],button {
+        -webkit-appearance: button;
+        background-color: transparent;
+        background-image: none;
+        cursor: pointer;
+
+        font-family: inherit;
+        font-feature-settings: inherit;
+        font-variation-settings: inherit;
+        font-size: 100%;
+        font-weight: inherit;
+        line-height: inherit;
+        color: inherit;
+        margin: 0;
+        padding: 0
     }
 }

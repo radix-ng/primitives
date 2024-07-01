@@ -35,13 +35,20 @@
                     "apps/shadcn-docs/src/favicon.ico",
                     "apps/shadcn-docs/src/assets"
                 ],
-                "styles": ["node_modules/@ng-doc/app/styles/global.css", "apps/shadcn-docs/src/styles.scss"],
+                "styles": [
+                    "node_modules/@ng-doc/app/styles/global.css", "apps/shadcn-docs/src/styles.scss",
+                    {
+                        "bundleName": "ngdoc-light",
+                        "inject": false,
+                        "input": "apps/shadcn-docs/src/styles/themes/ngdoc-light.scss"
+                    },
+                    {
+                        "bundleName": "ngdoc-dark",
+                        "inject": false,
+                        "input": "apps/shadcn-docs/src/styles/themes/ngdoc-dark.scss"
+                    }
+                ],
                 "scripts": [],
-                "server": "apps/shadcn-docs/src/main.server.ts",
-                "prerender": true,
-                "ssr": {
-                    "entry": "apps/shadcn-docs/server.ts"
-                },
                 "allowedCommonJsDependencies": ["@ng-doc/core"]
             },
             "configurations": {

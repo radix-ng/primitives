@@ -21,10 +21,21 @@ export const appConfig: ApplicationConfig = {
         provideZoneChangeDetection({ eventCoalescing: true }),
         provideAnimations(),
         provideHttpClient(withFetch()),
-        provideClientHydration(),
 
         provideNgDocContext(),
-        provideNgDocApp(),
+        provideNgDocApp({
+            themes: [
+                {
+                    path: 'ngdoc-light.css',
+                    id: 'light'
+                },
+                {
+                    path: 'ngdoc-dark.css',
+                    id: 'dark'
+                }
+            ],
+            defaultThemeId: 'light'
+        }),
         provideSearchEngine(NgDocDefaultSearchEngine),
         providePageSkeleton(NG_DOC_DEFAULT_PAGE_SKELETON),
         provideMainPageProcessor(NG_DOC_DEFAULT_PAGE_PROCESSORS),
