@@ -26,7 +26,7 @@
         --ring: 240 5% 64.9%;
         --radius: 0.5rem;
 
-        --ng-doc-code-background: unset;
+        --ng-doc-code-background: theme('colors.zinc.950');
         --ng-doc-sidebar-background: hsl(var(--background));
         --ng-doc-navbar-background: hsl(var(--background));
         --ng-doc-demo-displayer-background: hsl(var(--background));
@@ -54,7 +54,7 @@
         --input: 240 3.7% 15.9%;
         --ring: 240 4.9% 83.9%;
 
-        --ng-doc-code-background: unset;
+        --ng-doc-code-background: theme('colors.zinc.900');
         --ng-doc-sidebar-background: hsl(var(--background));
         --ng-doc-navbar-background: hsl(var(--background));
         --ng-doc-demo-displayer-background: hsl(var(--background));
