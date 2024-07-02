@@ -6,14 +6,12 @@ import { provideRouter, withInMemoryScrolling, withViewTransitions } from '@angu
 import {
     NG_DOC_DEFAULT_PAGE_PROCESSORS,
     NG_DOC_DEFAULT_PAGE_SKELETON,
-    NgDocDefaultSearchEngine,
     provideMainPageProcessor,
     provideNgDocApp,
-    providePageSkeleton,
-    provideSearchEngine
+    providePageSkeleton
 } from '@ng-doc/app';
 import { NG_DOC_ROUTING, provideNgDocContext } from '@ng-doc/generated';
-import { Check, LucideAngularModule, Package2 } from 'lucide-angular';
+import { Check, LucideAngularModule } from 'lucide-angular';
 
 export const appConfig: ApplicationConfig = {
     providers: [
@@ -40,7 +38,6 @@ export const appConfig: ApplicationConfig = {
             ],
             defaultThemeId: 'light'
         }),
-        provideSearchEngine(NgDocDefaultSearchEngine),
         providePageSkeleton(NG_DOC_DEFAULT_PAGE_SKELETON),
         provideMainPageProcessor(NG_DOC_DEFAULT_PAGE_PROCESSORS),
         provideRouter(
