@@ -1,0 +1,68 @@
+{
+    "name": "storybook-radix",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "projectType": "application",
+    "prefix": "app",
+    "sourceRoot": "./",
+    "tags": [],
+    "targets": {
+        "storybook": {
+            "executor": "@storybook/angular:start-storybook",
+            "options": {
+                "port": 4400,
+                "configDir": "apps/storybook-radix/.storybook",
+                "browserTarget": "storybook-radix:build-storybook",
+                "compodoc": true,
+                "compodocArgs": ["-e", "json", "-d", "apps/storybook-radix/.storybook"]
+            },
+            "configurations": {
+                "ci": {
+                    "quiet": true
+                }
+            }
+        },
+        "build-storybook": {
+            "executor": "@storybook/angular:build-storybook",
+            "outputs": ["{options.outputDir}"],
+            "options": {
+                "outputDir": "dist/storybook-radix",
+                "configDir": "apps/storybook-radix/.storybook",
+                "browserTarget": "storybook-radix:build-storybook",
+                "compodoc": true,
+                "compodocArgs": ["-e", "json", "-d", "apps/storybook-radix/.storybook"],
+                "styles": [
+                    "@radix-ui/themes/styles.css",
+                    "@angular/cdk/overlay-prebuilt.css"
+                ],
+                "stylePreprocessorOptions": {
+                    "includePaths": ["node_modules/"]
+                }
+
+            },
+            "configurations": {
+                "ci": {
+                    "quiet": true
+                }
+            }
+        },
+        "test-storybook": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "test-storybook -c apps/storybook-radix/.storybook --url=http://localhost:4400"
+            }
+        },
+        "static-storybook": {
+            "executor": "@nx/web:file-server",
+            "options": {
+                "buildTarget": "storybook-radix:build-storybook",
+                "staticFilePath": "dist/storybook-radix",
+                "spa": true
+            },
+            "configurations": {
+                "ci": {
+                    "buildTarget": "storybook-radix:build-storybook:ci"
+                }
+            }
+        }
+    }
+}
