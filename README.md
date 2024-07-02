@@ -1,9 +1,6 @@
 # Radix Angular
-<p>
-    <a href="https://www.npmjs.com/package/@radix-ng/primitives">
-        <img src="https://img.shields.io/npm/dm/@radix-ng/primitives.svg?style=flat-round" alt="npm downloads">
-    </a>
-</p>
+[![downloads](https://img.shields.io/npm/dm/@radix-ng/primitives.svg?style=flat-round)](https://www.npmjs.com/package/@radix-ng/primitives)
+[![downloads](https://img.shields.io/npm/dm/@radix-ng/shadcn.svg?style=flat-round)](https://www.npmjs.com/package/@radix-ng/shadcn)
 
 > This version is not yet stable.
 > 
