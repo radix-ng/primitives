@@ -2,7 +2,6 @@ import { computed, Directive, input } from '@angular/core';
 
 import { cn } from '@radix-ng/shadcn/core';
 import { cva, VariantProps } from 'class-variance-authority';
-import { ClassValue } from 'clsx';
 
 export const badgeVariants = cva(
     'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
@@ -24,7 +23,9 @@ export const badgeVariants = cva(
     }
 );
 
-type BadgeVariants = VariantProps<typeof badgeVariants>;
+type BadgeProps = VariantProps<typeof badgeVariants>;
+
+export type ShBadgeVariant = NonNullable<BadgeProps['variant']>;
 
 @Directive({
     selector: '[shBadge]',
@@ -34,10 +35,10 @@ type BadgeVariants = VariantProps<typeof badgeVariants>;
     }
 })
 export class ShBadgeDirective {
-    readonly userClass = input<ClassValue>('', { alias: 'class' });
-    readonly variant = input<BadgeVariants['variant']>('default');
+    readonly class = input<string>();
+    readonly variant = input<ShBadgeVariant>('default');
 
     protected computedClass = computed(() =>
-        cn(badgeVariants({ variant: this.variant() }), this.userClass())
+        cn(badgeVariants({ variant: this.variant(), class: this.class() }))
     );
 }

@@ -84,7 +84,7 @@
                     </div>
                     <div shCardContent>
                         <form>
-                            <input shInput placeholder="Store Name" />
+                            <input shInput type="text" placeholder="Store Name" />
                         </form>
                     </div>
                     <div shCardFooter class="border-t px-6 py-4">
@@ -104,10 +104,11 @@
                         <form class="flex flex-col gap-4">
                             <input
                                 shInput
+                                type="text"
                                 placeholder="Project Name"
                             />
                             <div class="flex items-center space-x-2">
-                                <shCheckbox class="flex" idLabel="include"></shCheckbox>
+                                <sh-checkbox class="flex" idLabel="include"></sh-checkbox>
                                 <label
                                     for="include"
                                     class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"

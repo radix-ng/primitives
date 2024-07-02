@@ -1,17 +1,16 @@
 // This code is an adaptation of code from https://ui.shadcn.com/docs.
 
-import { Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
 import { RdxCheckboxDirective, RdxCheckboxIndicatorDirective } from '@radix-ng/primitives/checkbox';
 import { cn } from '@radix-ng/shadcn/core';
 import { cva } from 'class-variance-authority';
-import { ClassValue } from 'clsx';
 import { LucideAngularModule } from 'lucide-angular';
 
 const variants = cva('');
 
 @Component({
-    selector: 'shCheckbox',
+    selector: 'sh-checkbox',
     standalone: true,
     imports: [RdxCheckboxDirective, RdxCheckboxIndicatorDirective, LucideAngularModule],
     host: {
@@ -38,11 +37,13 @@ const variants = cva('');
             />
         </button>
     `,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './checkbox.styles.scss'
 })
 export class ShCheckboxComponent {
     readonly idLabel = input<string>();
 
-    readonly userClass = input<ClassValue>('', { alias: 'class' });
-    protected computedClass = computed(() => cn(variants(), this.userClass()));
+    readonly class = input<string>();
+
+    protected computedClass = computed(() => cn(variants({ class: this.class() })));
 }

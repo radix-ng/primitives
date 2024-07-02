@@ -301,8 +301,8 @@ importers:
         specifier: ^2.1.0
         version: 2.4.0
       lucide-angular:
-        specifier: ^0.396.0
-        version: 0.396.0(@angular/common@18.0.4)(@angular/core@18.0.4)
+        specifier: ^0.400.0
+        version: 0.400.0(@angular/common@18.0.4)(@angular/core@18.0.4)
       ng-packagr:
         specifier: 18.0.0
         version: 18.0.0(@angular/compiler-cli@18.0.4)(tailwindcss@3.4.3)(tslib@2.6.2)(typescript@5.4.4)
@@ -403,6 +403,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      lucide-angular:
+        specifier: ^0.400.0
+        version: 0.400.0(@angular/common@18.0.4)(@angular/core@18.0.4)
       tailwind-merge:
         specifier: ^2.3.0
         version: 2.3.0
@@ -18679,8 +18682,8 @@ packages:
     engines: {node: '>=12'}
     dev: true
 
-  /lucide-angular@0.396.0(@angular/common@18.0.4)(@angular/core@18.0.4):
-    resolution: {integrity: sha512-xMrbNA69wr3FKQV2ieAn6q1f1DsZNc1toJSV953ZeAms/HRiSaAyCxHlHZv0GAockJbi6HcBr6gqgLivggYIqA==}
+  /lucide-angular@0.400.0(@angular/common@18.0.4)(@angular/core@18.0.4):
+    resolution: {integrity: sha512-TL6FJr4iHX2weB96i8a3/FJ9KIJEQNPBmPKxEIFSy9ECtKKzHyQcQIQt+UwlfTykrVysNcvOBecQnvPDY7khYg==}
     peerDependencies:
       '@angular/common': 13.x - 18.x
       '@angular/core': 13.x - 18.x
