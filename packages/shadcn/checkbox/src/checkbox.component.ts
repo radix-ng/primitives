@@ -24,7 +24,7 @@ const variants = cva('');
             <lucide-angular
                 rdxCheckboxIndicator
                 name="check"
-                class="flex h-4 w-4 items-center justify-center text-current data-[state=unchecked]:hidden"
+                class="flex h-4 items-center justify-center text-current data-[state=unchecked]:hidden"
             ></lucide-angular>
             <input
                 rdxCheckboxIndicator
