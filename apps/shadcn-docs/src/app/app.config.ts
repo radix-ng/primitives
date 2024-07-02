@@ -1,5 +1,5 @@
 import { provideHttpClient, withFetch } from '@angular/common/http';
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, withInMemoryScrolling, withViewTransitions } from '@angular/router';
 
@@ -13,12 +13,18 @@ import {
     provideSearchEngine
 } from '@ng-doc/app';
 import { NG_DOC_ROUTING, provideNgDocContext } from '@ng-doc/generated';
+import { Check, LucideAngularModule, Package2 } from 'lucide-angular';
 
 export const appConfig: ApplicationConfig = {
     providers: [
         provideZoneChangeDetection({ eventCoalescing: true }),
         provideAnimations(),
         provideHttpClient(withFetch()),
+
+        importProvidersFrom(
+            // todo: remove this as soon as lucide properly supports Angular standalone components.
+            LucideAngularModule.pick({ Check })
+        ),
 
         provideNgDocContext(),
         provideNgDocApp({
