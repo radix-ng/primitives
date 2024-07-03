@@ -144,16 +144,23 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: `
-            <div class="AccordionRoot" AccordionRoot [defaultValue]="item2" [type]="'single'">
+            <div class="AccordionRoot" AccordionRoot [defaultValue]="[item2, item3]" [type]="'single'">
                 <div #item1="AccordionItem" class="AccordionItem" AccordionItem>
                     <span class="AccordionTrigger" type="button" AccordionTrigger>Is it accessible?</span>
-                    <div class="AccordionContent" AccordionContent>Yes. It adheres to the WAI-ARIA design pattern.</div>
+                    <div class="AccordionContent" AccordionContent>
+                        <div class="AccordionContentText">
+                            Yes. It adheres to the WAI-ARIA design pattern.
+                        </div>
+                    </div>
+
                 </div>
 
                 <div #item2="AccordionItem" class="AccordionItem" AccordionItem>
                     <span class="AccordionTrigger" type="button" AccordionTrigger>Is it unstyled?</span>
                     <div class="AccordionContent" AccordionContent>
-                        Yes. It's unstyled by default, giving you freedom over the look and feel.
+                        <div class="AccordionContentText">
+                            Yes. It's unstyled by default, giving you freedom over the look and feel.
+                        </div>
                     </div>
                 </div>
 

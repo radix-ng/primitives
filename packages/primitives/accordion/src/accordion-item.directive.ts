@@ -1,5 +1,7 @@
-import { Directive, inject, InjectionToken, Input } from '@angular/core';
+import { CdkAccordion } from '@angular/cdk/accordion';
+import { contentChild, Directive, inject, InjectionToken, Input } from '@angular/core';
 
+import { RdxAccordionContentToken } from './accordion-content.directive';
 import { RdxAccordionOrientation } from './accordion-root.directive';
 
 export type RdxAccordionItemState = 'open' | 'closed';
@@ -23,9 +25,11 @@ export function injectAccordionItem(): RdxAccordionItemDirective {
         '[attr.data-state]': 'state',
         '[attr.data-disabled]': 'disabled ?? undefined',
         '[attr.data-orientation]': 'orientation'
-    }
+    },
+    hostDirectives: [CdkAccordion]
 })
 export class RdxAccordionItemDirective {
+    private rdxContent = contentChild(RdxAccordionContentToken);
     state: RdxAccordionItemState = 'closed';
     orientation: RdxAccordionOrientation = 'vertical';
     @Input() disabled = false;
@@ -40,5 +44,7 @@ export class RdxAccordionItemDirective {
         } else {
             this.state = state;
         }
+
+        this.rdxContent()?.setOpen(this.state);
     }
 }

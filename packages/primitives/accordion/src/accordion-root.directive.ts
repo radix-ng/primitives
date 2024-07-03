@@ -29,17 +29,13 @@ export class RdxAccordionRootDirective implements OnInit {
     @Input() type: RdxAccordionType = 'single';
     @Input() collapsible = false;
     @Input() set value(value: RdxAccordionItemDirective | RdxAccordionItemDirective[] | undefined) {
-        const changed = value !== this._value;
-
         if (value !== undefined) {
             this._value = Array.isArray(value) ? value : [value];
         } else {
             this._value = [];
         }
 
-        if (changed) {
-            this.onValueChange(this._value);
-        }
+        this.onValueChange(this._value);
     }
     @Input() set orientation(orientation: RdxAccordionOrientation | undefined) {
         this._orientation = orientation ?? 'vertical';
