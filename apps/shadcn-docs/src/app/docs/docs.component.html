@@ -49,8 +49,7 @@
             </nav>
         </ng-template>
         <ng-template #rightContent>
-            <div class="flex gap-4">
-                <app-doc-theme-toggle />
+            <nav class="flex items-center">
                 <a
                     shButton
                     href="https://github.com/radix-ng/primitives"
@@ -61,7 +60,8 @@
                 >
                     <ng-doc-icon [size]="24" customIcon="github"></ng-doc-icon>
                 </a>
-            </div>
+                <app-doc-theme-toggle />
+            </nav>
         </ng-template>
     </ng-doc-navbar>
     <ng-doc-sidebar></ng-doc-sidebar>
