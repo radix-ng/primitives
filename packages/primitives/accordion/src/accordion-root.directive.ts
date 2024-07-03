@@ -27,7 +27,7 @@ export class RdxAccordionRootDirective implements OnInit {
     private _value: RdxAccordionItemDirective[] = [];
     @Input() defaultValue?: RdxAccordionItemDirective[] = [];
     @Input() type: RdxAccordionType = 'single';
-    @Input() collapsible = false;
+    @Input() collapsible = true;
     @Input() set value(value: RdxAccordionItemDirective | RdxAccordionItemDirective[] | undefined) {
         if (value !== undefined) {
             this._value = Array.isArray(value) ? value : [value];
@@ -52,17 +52,17 @@ export class RdxAccordionRootDirective implements OnInit {
 
     onValueChange(value: RdxAccordionItemDirective[]): void {
         if (this.type === 'single') {
-            this.accordionItems().forEach((accordionItem) => accordionItem.setOpen('closed'));
-        }
+            const currentValue = value.length > 0 ? value[0] : undefined;
 
-        if (value.length >= 1) {
-            if (this.type === 'single') {
-                value[0].setOpen('open');
-            }
-
-            if (this.type === 'multiple') {
-                value.forEach((valueItem) => valueItem.setOpen('open'));
-            }
+            this.accordionItems().forEach((accordionItem) => {
+                if (accordionItem === currentValue) {
+                    accordionItem.setOpen();
+                } else {
+                    accordionItem.setOpen('closed');
+                }
+            });
+        } else {
+            value.forEach((valueItem) => valueItem.setOpen());
         }
     }
 

@@ -27,8 +27,6 @@ export class RdxAccordionContentDirective {
     cdkAccordionItem = inject(RdxCdkAccordionItemToken);
 
     setOpen(state?: RdxAccordionItemState | undefined): void {
-        console.log('setOpen', state);
-
         if (state === undefined) {
             this.state = this.state === 'open' ? 'closed' : 'open';
         } else {

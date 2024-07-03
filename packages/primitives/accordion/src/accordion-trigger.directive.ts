@@ -18,6 +18,10 @@ export class RdxAccordionTriggerDirective {
     private readonly accordionItem = injectAccordionItem();
 
     onClick(): void {
+        if (!this.accordionRoot.collapsible) {
+            return;
+        }
+
         this.accordionRoot.value = [this.accordionItem];
     }
 

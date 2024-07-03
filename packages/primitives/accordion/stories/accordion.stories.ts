@@ -144,7 +144,7 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: `
-            <div class="AccordionRoot" AccordionRoot [defaultValue]="[item2, item3]" [type]="'single'">
+            <div class="AccordionRoot" AccordionRoot [defaultValue]="[item2, item3]" [type]="'multiple'">
                 <div #item1="AccordionItem" class="AccordionItem" AccordionItem>
                     <span class="AccordionTrigger" type="button" AccordionTrigger>Is it accessible?</span>
                     <div class="AccordionContent" AccordionContent>
