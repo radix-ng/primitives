@@ -5,7 +5,7 @@ import { booleanAttribute, Directive, input, Input } from '@angular/core';
 @Directive({
     selector: '[MenuBarTrigger]',
     standalone: true,
-    hostDirectives: [CdkMenuTrigger],
+    hostDirectives: [{ directive: CdkMenuTrigger, inputs: ['cdkMenuTriggerFor: MenuBarTrigger'] }],
     host: {
         type: 'button',
         role: 'menuitem',

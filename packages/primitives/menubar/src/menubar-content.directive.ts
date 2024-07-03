@@ -1,10 +1,10 @@
-import { CdkMenuItem } from '@angular/cdk/menu';
+import { CdkMenu } from '@angular/cdk/menu';
 import { Directive } from '@angular/core';
 
 @Directive({
     selector: '[MenuBarContent]',
     standalone: true,
-    hostDirectives: [CdkMenuItem],
+    hostDirectives: [CdkMenu],
     host: {}
 })
 export class RdxMenuBarContentDirective {}

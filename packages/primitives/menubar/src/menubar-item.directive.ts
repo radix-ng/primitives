@@ -14,4 +14,4 @@ import { Directive } from '@angular/core';
         '[attr.data-state]': 'false'
     }
 })
-export class RdxMenuBarDirective {}
+export class RdxMenuItemDirective {}
