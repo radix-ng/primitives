@@ -18,7 +18,10 @@ export const RdxAccordionContentToken = new InjectionToken<RdxAccordionContentDi
         }
     ],
     host: {
-        '[style.display]': 'cdkAccordionItem.expanded ? "" : "none"'
+        '[attr.hidden]': 'cdkAccordionItem.expanded ? undefined : ""',
+        '[attr.data-state]': 'state'
+        /*'[attr.data-disabled]': 'accordionItem.disabled',*/
+        /*'[attr.data-orientation]': 'accordionItem.getOrientation'*/
     },
     hostDirectives: [RdxCdkAccordionItem]
 })
