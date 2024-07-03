@@ -1,5 +1,5 @@
 import { CdkMenuBar } from '@angular/cdk/menu';
-import { Directive } from '@angular/core';
+import { Directive, input } from '@angular/core';
 
 @Directive({
     selector: '[MenuBarRoot]',
@@ -7,7 +7,9 @@ import { Directive } from '@angular/core';
     hostDirectives: [CdkMenuBar],
     host: {
         tabindex: '0',
-        '[attr.data-orientation]': "'horizontal'"
+        '[attr.data-orientation]': 'orientation()'
     }
 })
-export class RdxMenuBarDirective {}
+export class RdxMenuBarDirective {
+    readonly orientation = input<'horizontal' | 'vertical'>('horizontal');
+}

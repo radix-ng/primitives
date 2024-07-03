@@ -10,7 +10,7 @@ export default {
         }),
         componentWrapperDecorator(
             (story) => `
-                <div class="radix-themes light light-theme radix-themes-default-fonts"
+                <div class="radix-themes light light-theme radix-themes-default-fonts rt-Flex rt-r-ai-start rt-r-jc-center rt-r-position-relative"
                     data-accent-color="indigo"
                     data-radius="medium"
                     data-scaling="100%"
@@ -27,7 +27,6 @@ export const Default: Story = {
     render: () => ({
         template: `
 <div MenuBarRoot class="MenubarRoot">
-  <!-- #docregion file-trigger -->
   <button class="MenubarTrigger" MenuBarItem [MenuBarTrigger]="file">
     File
   </button>
@@ -38,22 +37,27 @@ export const Default: Story = {
 
 <ng-template #file>
   <div class="MenubarContent" MenuBarContent>
-    <button class="MenubarItem" MenuBarItem>New Tab <div class="RightSlot">⌘ T</div></button>
+    <button class="MenubarItem" MenuBarItem>
+        New Tab <div class="RightSlot">⌘ T</div>
+    </button>
     <button class="MenubarItem" MenuBarItem [MenuBarTrigger]="share">
         Share <div class="RightSlot">></div>
     </button>
-    <hr />
+    <div SeparatorRoot class="MenubarSeparator"></div>
     <button class="MenubarItem" MenuBarItem>Open</button>
     <button class="MenubarItem" MenuBarItem>Make a Copy</button>
-    <hr />
+    <div SeparatorRoot class="MenubarSeparator"></div>
+    <button class="MenubarItem" MenuBarItem>
+        Print… <div class="RightSlot">⌘ P</div>
+    </button>
   </div>
 </ng-template>
 
 <ng-template #edit>
   <div class="MenubarContent" MenuBarContent>
-    <button class="MenubarItem" MenuBarItem>Undo</button>
-    <button class="MenubarItem" MenuBarItem>Redo</button>
-    <hr />
+    <button class="MenubarItem" MenuBarItem>Undo <div class="RightSlot">⌘ Z</div></button>
+    <button class="MenubarItem" MenuBarItem>Redo <div class="RightSlot">⇧ ⌘ Z</div></button>
+    <div SeparatorRoot class="MenubarSeparator"></div>
     <button class="MenubarItem" MenuBarItem>Cut</button>
     <button class="MenubarItem" MenuBarItem>Copy</button>
     <button class="MenubarItem" MenuBarItem>Paste</button>
@@ -61,10 +65,10 @@ export const Default: Story = {
 </ng-template>
 
 <ng-template #share>
-  <div class="MenubarContent" MenuBarContent>
+  <div class="MenubarSubContent" MenuBarContent>
     <button class="MenubarItem" MenuBarItem>Undo</button>
     <button class="MenubarItem" MenuBarItem>Redo</button>
-    <hr />
+    <div SeparatorRoot class="MenubarSeparator"></div>
     <button class="MenubarItem" MenuBarItem>Cut</button>
     <button class="MenubarItem" MenuBarItem>Copy</button>
     <button class="MenubarItem" MenuBarItem>Paste</button>
@@ -100,15 +104,20 @@ button {
   gap: 2px;
 }
 
+.MenubarTrigger[data-highlighted],
+.MenubarTrigger[data-state='open'] {
+  background-color: var(--violet-4);
+}
+
 .MenubarContent,
 .MenubarSubContent {
+  flex-direction: column;
+  display: inline-flex;
   min-width: 220px;
   background-color: white;
   border-radius: 6px;
   padding: 5px;
   box-shadow: 0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2);
-  animation-duration: 400ms;
-  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform, opacity;
 }
 
@@ -136,10 +145,25 @@ button {
   padding-left: 20px;
 }
 
+.MenubarItem:hover {
+  background-color: var(--violet-11);
+  color: white;
+}
+
+.MenubarSeparator {
+  height: 1px;
+  background-color: var(--violet-6);
+  margin: 5px;
+}
+
 .RightSlot {
   margin-left: auto;
   padding-left: 20px;
   color: var(--mauve-9);
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  justify-content: flex-end;
 }
 
 </style>
