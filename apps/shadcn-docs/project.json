@@ -80,10 +80,16 @@
             "executor": "@ng-doc/builder:dev-server",
             "configurations": {
                 "production": {
-                    "buildTarget": "shadcn-docs:build:production"
+                    "buildTarget": "shadcn-docs:build:production",
+                    "ngDoc": {
+                        "config": "apps/shadcn-docs/ng-doc.config.ts"
+                    }
                 },
                 "development": {
-                    "buildTarget": "shadcn-docs:build:development"
+                    "buildTarget": "shadcn-docs:build:development",
+                    "ngDoc": {
+                        "config": "apps/shadcn-docs/ng-doc.config.ts"
+                    }
                 }
             },
             "defaultConfiguration": "development"

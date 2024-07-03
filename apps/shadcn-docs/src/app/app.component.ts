@@ -1,46 +1,46 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-
+import { JsonPipe } from '@angular/common';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import {
-    NgDocNavbarComponent,
-    NgDocRootComponent,
-    NgDocSidebarComponent,
-    NgDocThemeToggleComponent
-} from '@ng-doc/app';
-import {
-    NgDocButtonIconComponent,
-    NgDocIconComponent,
-    NgDocTooltipDirective
-} from '@ng-doc/ui-kit';
-import { ShButtonDirective } from '@radix-ng/shadcn/button';
+    NavigationEnd,
+    NavigationStart,
+    Router,
+    RouterLink,
+    RouterLinkActive,
+    RouterOutlet
+} from '@angular/router';
 
-import { ThemeSwitcherComponent } from './ui/theme-switcher/theme-switcher.component';
+import { NgDocNavbarComponent, NgDocRootComponent, NgDocSidebarComponent } from '@ng-doc/app';
+
+import { ThemeService } from './services/theme.service';
 
 @Component({
-    standalone: true,
     selector: 'app-root',
+    standalone: true,
     imports: [
+        RouterOutlet,
+        JsonPipe,
         RouterLink,
         RouterLinkActive,
-        RouterOutlet,
-
         NgDocRootComponent,
         NgDocNavbarComponent,
-        NgDocSidebarComponent,
-        NgDocButtonIconComponent,
-        NgDocTooltipDirective,
-        NgDocThemeToggleComponent,
-        NgDocIconComponent,
-
-        ThemeSwitcherComponent,
-        ShButtonDirective
+        NgDocSidebarComponent
     ],
-    templateUrl: './app.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    templateUrl: './app.component.html'
 })
-export class AppComponent {
-    protected readonly routes: { path: string; exact?: boolean; label: string }[] = [
-        { path: '/getting-started/installation', exact: true, label: 'Docs' },
-        { path: '/blocks', label: 'Blocks' }
-    ];
+export class AppComponent implements OnInit {
+    themeService = inject(ThemeService);
+    router = inject(Router);
+
+    title = 'easy-form-demo';
+    loading = signal(false);
+
+    ngOnInit() {
+        this.router.events.subscribe((event) => {
+            if (event instanceof NavigationStart) {
+                this.loading.set(true);
+            } else if (event instanceof NavigationEnd) {
+                this.loading.set(false);
+            }
+        });
+    }
 }
