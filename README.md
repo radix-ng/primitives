@@ -14,6 +14,7 @@
 Radix Primitives is a low-level UI component library with a focus on accessibility, customization and developer experience.
 You can use these components either as the base layer of your design system, or adopt them incrementally.
 
+Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/categories).
 
 ## Documentation
 
@@ -22,26 +23,27 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 
 ## Showcase
 1. [Taxonomy](https://github.com/shadcn-ui/taxonomy) build with AnalogJS – [https://primitives-taxonomy.vercel.app/](https://primitives-taxonomy.vercel.app/)
-2. [Blocks](https://ui.shadcn.com/blocks) based on shadcn - [https://blocks-showcase.vercel.app/](https://blocks-showcase.vercel.app/)
+2. [shadcn/ui blocks](https://ui.shadcn.com/blocks) - [https://blocks-showcase.vercel.app/](https://blocks-showcase.vercel.app/)
 
 ## Components
 1. [shadcn/ui](https://ui.shadcn.com/) Angular version – [https://shadcn.radix-ng.com](https://shadcn.radix-ng.com/)
-2. Radix Components ...'soon'
+2. RadixUI Components ...'soon'
 
 ## Project structure
 
 ```angular2html
 .
 ├── apps
-│   ├── docs               (//TODO: landing and docs)
+│   ├── shadcn-docs        (docs for shadcn/ui, based on ng-doc)
 │   └── showcase-taxonomy  (AnalogJS showcase Taxonomy app)
 └── packages
     ├── components         (components based on primitives with custom styling)
+    ├── shadcn             (shadcn/ui port)
     └── primitives         (headless primitives UI without any styling)
 ```
 
 ## Primitives Roadmap
-- [ ] Accordion        (In progess) (will be based on angular/cdk)
+- [ ] Accordion        (In progess) (based on angular/cdk)
 - [x] Alert Dialog
 - [x] Avatar
 - [x] Checkbox         (need it more adaptation for FormGroup)
@@ -51,7 +53,7 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 - [ ] Dropdown
 - [ ] Hover Card
 - [x] Label
-- [ ] Menubar          (In progess)
+- [ ] Menubar          (In progess) (based on angular/cdk)
 - [ ] Navigation Menu
 - [ ] Popover
 - [x] Progress
