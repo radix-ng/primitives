@@ -42,7 +42,7 @@ import { ThemeSwitcherComponent } from '../ui/theme-switcher/theme-switcher.comp
 export class DocsComponent {
     protected readonly routes: { path: string; exact?: boolean; label: string }[] = [
         { path: '/docs', exact: true, label: 'Docs' },
-        { path: '/blocks', label: 'Blocks' }
+        { path: '/', label: 'Blocks' }
     ];
 }
 
