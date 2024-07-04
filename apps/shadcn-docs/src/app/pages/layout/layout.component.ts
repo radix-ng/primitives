@@ -40,6 +40,7 @@ import { ThemeSwitcherComponent } from '../../ui/theme-switcher/theme-switcher.c
 export class LayoutComponent {
     protected readonly routes: { path: string; exact?: boolean; label: string }[] = [
         { path: '/docs', exact: true, label: 'Docs' },
+        { path: '/docs/components/badge', exact: true, label: 'Components' },
         { path: '/', label: 'Blocks' }
     ];
 }
