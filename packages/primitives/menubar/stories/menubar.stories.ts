@@ -47,7 +47,7 @@ export const Default: Story = {
     <button class="MenubarCheckboxItem inset" MenubarCheckboxItem>
         Always Show Full URLs
     </button>
-    <div SeparatorRoot class="MenubarSeparator"></div>
+    <div MenubarSeparator class="MenubarSeparator"></div>
     <button class="MenubarItem" MenuBarItem>Reload <div class="RightSlot">⌘ R</div></button>
   </div>
 </ng-template>
@@ -63,11 +63,11 @@ export const Default: Story = {
     <button class="MenubarItem" MenuBarItem disabled>
         New Incognito Window
     </button>
-    <div SeparatorRoot class="MenubarSeparator"></div>
+    <div MenubarSeparator class="MenubarSeparator"></div>
     <button class="MenubarItem" MenuBarItem [MenuBarTrigger]="share">
         Share <div class="RightSlot">></div>
     </button>
-    <div SeparatorRoot class="MenubarSeparator"></div>
+    <div MenubarSeparator class="MenubarSeparator"></div>
     <button class="MenubarItem" MenuBarItem>
         Print… <div class="RightSlot">⌘ P</div>
     </button>
@@ -78,7 +78,7 @@ export const Default: Story = {
   <div class="MenubarContent" MenuBarContent>
     <button class="MenubarItem" MenuBarItem>Undo <div class="RightSlot">⌘ Z</div></button>
     <button class="MenubarItem" MenuBarItem>Redo <div class="RightSlot">⇧ ⌘ Z</div></button>
-    <div SeparatorRoot class="MenubarSeparator"></div>
+    <div MenubarSeparator class="MenubarSeparator"></div>
     <button class="MenubarItem" MenuBarItem>Cut</button>
     <button class="MenubarItem" MenuBarItem>Copy</button>
     <button class="MenubarItem" MenuBarItem>Paste</button>
@@ -89,7 +89,7 @@ export const Default: Story = {
   <div class="MenubarSubContent" MenuBarContent>
     <button class="MenubarItem" MenuBarItem>Undo</button>
     <button class="MenubarItem" MenuBarItem>Redo</button>
-    <div SeparatorRoot class="MenubarSeparator"></div>
+    <div MenubarSeparator class="MenubarSeparator"></div>
     <button class="MenubarItem" MenuBarItem>Cut</button>
     <button class="MenubarItem" MenuBarItem>Copy</button>
     <button class="MenubarItem" MenuBarItem>Paste</button>
