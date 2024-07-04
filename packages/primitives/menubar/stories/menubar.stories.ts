@@ -42,7 +42,7 @@ export const Default: Story = {
 <ng-template #view>
   <div class="MenubarContent" MenuBarContent>
     <button class="MenubarCheckboxItem inset" MenubarCheckboxItem>
-        Always Show Bookmarks Bar
+        Always Show Bookmarks Bar <span></span>
     </button>
     <button class="MenubarCheckboxItem inset" MenubarCheckboxItem>
         Always Show Full URLs

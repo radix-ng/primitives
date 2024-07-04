@@ -35,8 +35,6 @@ export class RdxMenubarItemCheckboxDirective {
         effect(() => {
             this.cdkMenuItemCheckbox.checked = this.checked();
             this.cdkMenuItemCheckbox.disabled = this.disabled();
-
-            console.log(this.cdkMenuItemCheckbox.checked);
         });
     }
 }
