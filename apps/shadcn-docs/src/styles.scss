@@ -103,3 +103,26 @@
         text-decoration: inherit;
     }
 }
+
+.ng-doc-demo {
+    display: flex;
+    min-height: 350px;
+    padding: 10px;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+h1.ngde {
+    font-weight: 700;
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+    letter-spacing: -.025em;
+}
+
+strong.ngde {
+    color: hsl(var(--muted-foreground));
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    font-weight: 400;
+}

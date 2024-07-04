@@ -5,12 +5,7 @@ import { ShButtonDirective, ShButtonVariant } from '@radix-ng/shadcn/button';
 @Component({
     standalone: true,
     imports: [ShButtonDirective],
-    templateUrl: './button-example.component.html',
-    styles: `
-        :host {
-            @apply flex min-h-[350px] w-full items-center justify-center p-10;
-        }
-    `
+    templateUrl: './button-example.component.html'
 })
 export class ButtonExampleComponent {
     // @Input()

@@ -3,7 +3,7 @@
 :root {
     --ng-doc-base-0: #ffffff;
     --ng-doc-base-1: hsl(var(--background));
-    --ng-doc-base-2: #f3f3f3;
+    --ng-doc-base-2: hsl(var(--background));
     --ng-doc-base-3: #a9a9a9;
     --ng-doc-base-4: #a4a4a4;
     --ng-doc-base-5: #d9d9d9;
@@ -17,7 +17,7 @@
     --ng-doc-text-selection: rgba(110, 110, 110, 0.5);
 
     --ng-doc-shadow-color: none;
-    --ng-doc-link-color: #30a5ff;
+    --ng-doc-link-color: hsl(var(--primary));
     --ng-doc-inline-code-background: #606060;
 
     --ng-doc-primary: hsl(var(--primary));

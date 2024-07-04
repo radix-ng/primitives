@@ -6,11 +6,6 @@ import { ShLabelDirective } from '@radix-ng/shadcn/label';
 @Component({
     standalone: true,
     imports: [ShCheckboxComponent, ShLabelDirective],
-    templateUrl: './checkbox-example.component.html',
-    styles: `
-        :host {
-            @apply flex min-h-[350px] w-full items-center justify-center p-10;
-        }
-    `
+    templateUrl: './checkbox-example.component.html'
 })
 export class CheckboxExampleComponent {}
