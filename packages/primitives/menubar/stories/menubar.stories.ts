@@ -3,7 +3,7 @@ import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@stor
 import { MenubarModule } from '../index';
 
 export default {
-    title: 'Primitives/Menubar',
+    title: 'Primitives/Menubar [In Progress]',
     decorators: [
         moduleMetadata({
             imports: [MenubarModule]

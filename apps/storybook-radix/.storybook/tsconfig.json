@@ -10,6 +10,7 @@
         "../../../packages/primitives/**/*.stories.tsx",
         "../../../packages/primitives/**/*.stories.mdx",
         "../../../packages/primitives/**/*.directive.ts",
-        "*.ts"
+        "*.ts",
+        "*.tsx"
     ]
 }

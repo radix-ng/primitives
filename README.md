@@ -48,7 +48,7 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 - [x] Avatar
 - [x] Checkbox                       (adaptation for FormGroup)
 - [x] Collapsible
-  - [ ] Context Menu   (next)        (based on angular/cdk)
+- [ ] Context Menu     (next)        (based on angular/cdk)
 - [ ] Dialog                         (based on angular/cdk)
 - [ ] Dropdown         (In progress) (based on angular/cdk)
 - [ ] Hover Card

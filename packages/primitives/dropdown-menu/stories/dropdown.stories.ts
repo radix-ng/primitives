@@ -5,7 +5,7 @@ import { LucideAngularModule, Menu } from 'lucide-angular';
 import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.directive';
 
 export default {
-    title: 'Primitives/Dropdown Menu',
+    title: 'Primitives/Dropdown Menu [In progress]',
     decorators: [
         moduleMetadata({
             imports: [
