@@ -20,13 +20,12 @@ Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/cate
 
 Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 
-
 ## Showcase
 1. [Taxonomy](https://github.com/shadcn-ui/taxonomy) build with AnalogJS – [https://primitives-taxonomy.vercel.app/](https://primitives-taxonomy.vercel.app/)
 2. [shadcn/ui blocks](https://ui.shadcn.com/blocks) - [https://blocks-showcase.vercel.app/](https://blocks-showcase.vercel.app/)
 
 ## Components
-1. [shadcn/ui](https://ui.shadcn.com/) Angular version – [https://shadcn.radix-ng.com](https://shadcn.radix-ng.com/)
+1. [shadcn/ui](https://ui.shadcn.com/) Angular version – [https://www.shadcn-ng.com/](https://www.shadcn-ng.com/)
 2. RadixUI Components ...'soon'
 
 ## Project structure
