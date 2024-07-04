@@ -19,6 +19,7 @@ import {
         type: 'button',
         tabindex: '0',
         '[attr.data-orientation]': "'horizontal'",
+        '[attr.data-disabled]': "disabledState() ? '' : undefined",
         '[disabled]': 'disabledState()'
     }
 })

@@ -57,12 +57,16 @@ export const Default: Story = {
     <button class="MenubarItem" MenuBarItem>
         New Tab <div class="RightSlot">⌘ T</div>
     </button>
+    <button class="MenubarItem" MenuBarItem>
+        New Window <div class="RightSlot">⌘ N</div>
+    </button>
+    <button class="MenubarItem" MenuBarItem disabled>
+        New Incognito Window
+    </button>
+    <div SeparatorRoot class="MenubarSeparator"></div>
     <button class="MenubarItem" MenuBarItem [MenuBarTrigger]="share">
         Share <div class="RightSlot">></div>
     </button>
-    <div SeparatorRoot class="MenubarSeparator"></div>
-    <button class="MenubarItem" MenuBarItem>Open</button>
-    <button class="MenubarItem" MenuBarItem>Make a Copy</button>
     <div SeparatorRoot class="MenubarSeparator"></div>
     <button class="MenubarItem" MenuBarItem>
         Print… <div class="RightSlot">⌘ P</div>
@@ -160,6 +164,14 @@ button {
 .MenubarCheckboxItem.inset,
 .MenubarRadioItem.inset {
   padding-left: 20px;
+}
+
+.MenubarItem[data-disabled],
+.MenubarSubTrigger[data-disabled],
+.MenubarCheckboxItem[data-disabled],
+.MenubarRadioItem[data-disabled] {
+  color: var(--mauve-8);
+  pointer-events: none;
 }
 
 .MenubarItem:hover {
