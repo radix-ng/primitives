@@ -25,12 +25,22 @@
             </a>
             <nav class="flex items-center gap-4 text-sm lg:gap-6">
                 @for (route of routes; track route.path) {
-                    <a [routerLink]="route.path"
-                       [routerLinkActiveOptions]="{exact: route.exact ?? false}"
-                       routerLinkActive="text-foreground"
-                       class="transition-colors hover:text-foreground/80 text-foreground/60">
-                        {{ route.label }}
-                    </a>
+                    @if (route.external) {
+                        <a [href]="route.path"
+                           target="_blank"
+                           class="transition-colors hover:text-foreground/80"
+                           [class]="isActive(route) ? 'text-foreground' : 'text-foreground/60'">
+                            {{ route.label }}
+                        </a>
+                    } @else {
+                        <a [routerLink]="route.path"
+                           [routerLinkActiveOptions]="{exact: route.exact ?? false}"
+                           routerLinkActive="text-foreground"
+                           class="transition-colors hover:text-foreground/80"
+                           [class]="isActive(route) ? 'text-foreground' : 'text-foreground/60'">
+                            {{ route.label }}
+                        </a>
+                    }
                 }
             </nav>
         </ng-template>

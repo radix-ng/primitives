@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet, Routes } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet, Routes } from '@angular/router';
 
 import {
     NgDocNavbarComponent,
@@ -40,11 +40,25 @@ import { ThemeSwitcherComponent } from '../ui/theme-switcher/theme-switcher.comp
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DocsComponent {
-    protected readonly routes: { path: string; exact?: boolean; label: string }[] = [
-        { path: '/docs', exact: true, label: 'Docs' },
+    private readonly router = inject(Router);
+
+    protected readonly routes: {
+        path: string;
+        exact?: boolean;
+        external?: boolean;
+        label: string;
+    }[] = [
+        { path: '/docs/getting-started/installation', exact: true, label: 'Docs' },
         { path: '/docs/components/badge', exact: true, label: 'Components' },
-        { path: '/', label: 'Blocks' }
+        { path: 'https://blocks-showcase.vercel.app/', external: true, label: 'Blocks' }
     ];
+
+    isActive(route: { path: string; exact?: boolean; label: string; external?: boolean }): boolean {
+        if (route.external) {
+            return false;
+        }
+        return this.router.url === route.path;
+    }
 }
 
 const routes: Routes = [
