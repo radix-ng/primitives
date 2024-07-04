@@ -50,7 +50,7 @@ export class DocsComponent {
     }[] = [
         { path: '/docs/getting-started/installation', exact: true, label: 'Docs' },
         { path: '/docs/components/badge', exact: true, label: 'Components' },
-        { path: 'https://blocks-showcase.vercel.app/', external: true, label: 'Blocks' }
+        { path: 'https://blocks.shadcn-ng.com/', external: true, label: 'Blocks' }
     ];
 
     isActive(route: { path: string; exact?: boolean; label: string; external?: boolean }): boolean {
