@@ -1,10 +1,10 @@
 import { Directive } from '@angular/core';
 
-import { RdxSeparatorRootDirective } from '@radix-ng/primitives/separator';
+import { RdxMenuSeparatorDirective } from '@radix-ng/primitives/menu';
 
 @Directive({
     selector: '[MenubarSeparator]',
     standalone: true,
-    hostDirectives: [RdxSeparatorRootDirective]
+    hostDirectives: [RdxMenuSeparatorDirective]
 })
 export class RdxMenubarSeparatorDirective {}

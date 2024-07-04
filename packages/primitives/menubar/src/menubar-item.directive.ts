@@ -1,38 +1,13 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { CdkMenuItem } from '@angular/cdk/menu';
-import {
-    booleanAttribute,
-    computed,
-    Directive,
-    effect,
-    inject,
-    input,
-    signal
-} from '@angular/core';
+import { booleanAttribute, Directive, input } from '@angular/core';
+
+import { RdxMenuItemDirective } from '@radix-ng/primitives/menu';
 
 @Directive({
     selector: '[MenuBarItem]',
     standalone: true,
-    hostDirectives: [CdkMenuItem],
-    host: {
-        role: 'menuitem',
-        type: 'button',
-        tabindex: '0',
-        '[attr.data-orientation]': "'horizontal'",
-        '[attr.data-disabled]': "disabledState() ? '' : undefined",
-        '[disabled]': 'disabledState()'
-    }
+    hostDirectives: [{ directive: RdxMenuItemDirective, inputs: ['rdxDisabled: disabled '] }]
 })
-export class RdxMenuItemDirective {
-    private readonly cdkMenuItem = inject(CdkMenuItem, { host: true });
-
+export class RdxMenuBarItemDirective {
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
-
-    protected readonly disabledState = computed(() => this.disabled());
-
-    constructor() {
-        effect(() => {
-            this.cdkMenuItem.disabled = this.disabled();
-        });
-    }
 }
