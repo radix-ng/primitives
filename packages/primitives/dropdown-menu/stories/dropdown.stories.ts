@@ -1,0 +1,157 @@
+import { MenuModule } from '@radix-ng/primitives/menu';
+import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { LucideAngularModule, Menu } from 'lucide-angular';
+
+import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.directive';
+
+export default {
+    title: 'Primitives/Dropdown Menu',
+    decorators: [
+        moduleMetadata({
+            imports: [
+                MenuModule,
+                RdxDropdownMenuTriggerDirective,
+                LucideAngularModule,
+                LucideAngularModule.pick({ Menu })
+            ]
+        }),
+        componentWrapperDecorator(
+            (story) => `
+                <div class="radix-themes light light-theme radix-themes-default-fonts rt-Flex rt-r-ai-start rt-r-jc-center rt-r-position-relative"
+                    data-accent-color="indigo"
+                    data-radius="medium"
+                    data-scaling="100%"
+                >
+                    ${story}
+                </div>`
+        )
+    ]
+} as Meta;
+
+type Story = StoryObj;
+
+export const Default: Story = {
+    render: () => ({
+        template: `
+<div MenuBarRoot>
+  <button [DropdownMenuTrigger]="file" class="IconButton" aria-label="Customise options">
+    <lucide-angular size="16" name="menu" style="height: 1.3rem;"></lucide-angular>
+  </button>
+</div>
+
+<ng-template #file>
+  <div class="DropdownMenuContent" Menu>
+    <button class="DropdownMenuItem" MenuItem>
+        New Tab <div class="RightSlot">⌘ T</div>
+    </button>
+    <button class="DropdownMenuItem" MenuItem>
+        New Window <div class="RightSlot">⌘ N</div>
+    </button>
+    <button class="DropdownMenuItem" MenuItem disabled>
+        New Incognito Window
+    </button>
+    <div MenubarSeparator class="DropdownMenuSeparator"></div>
+    <button class="DropdownMenuSubTrigger" MenuItem [DropdownMenuTrigger]="share">
+        Share <div class="RightSlot">></div>
+    </button>
+    <div MenubarSeparator class="DropdownMenuSeparator"></div>
+    <button class="DropdownMenuItem" MenuItem>
+        Print… <div class="RightSlot">⌘ P</div>
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #share>
+  <div class="DropdownMenuSubContent" Menu>
+    <button class="DropdownMenuItem" MenuItem>Undo</button>
+    <button class="DropdownMenuItem" MenuItem>Redo</button>
+    <div MenubarSeparator class="DropdownMenuSeparator"></div>
+    <button class="DropdownMenuItem" MenuItem>Cut</button>
+    <button class="DropdownMenuItem" MenuItem>Copy</button>
+    <button class="DropdownMenuItem" MenuItem>Paste</button>
+  </div>
+</ng-template>
+
+<style>
+/* reset */
+button {
+  all: unset;
+}
+
+.DropdownMenuContent,
+.DropdownMenuSubContent {
+  min-width: 220px;
+  background-color: white;
+  border-radius: 6px;
+  padding: 5px;
+  box-shadow: 0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2);
+}
+
+.DropdownMenuItem,
+.DropdownMenuCheckboxItem,
+.DropdownMenuRadioItem,
+.DropdownMenuSubTrigger {
+  font-size: 13px;
+  line-height: 1;
+  color: var(--violet-11);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  height: 25px;
+  position: relative;
+  padding: 0 5px 0 25px;
+  user-select: none;
+  outline: none;
+}
+
+.DropdownMenuItem:hover {
+  background-color: var(--violet-11);
+  color: white;
+}
+
+.DropdownMenuSeparator {
+  height: 1px;
+  background-color: var(--violet-6);
+  margin: 5px;
+}
+
+.IconButton {
+  font-family: inherit;
+  border-radius: 100%;
+  height: 35px;
+  width: 35px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--violet-11);
+  background-color: white;
+  box-shadow: 0 2px 10px var(--black-a7);
+}
+
+.DropdownMenuSubTrigger[data-state='open'] {
+  background-color: var(--violet-4);
+  color: var(--violet-11);
+}
+
+.IconButton:hover {
+  background-color: var(--violet-3);
+}
+
+.IconButton:focus {
+  box-shadow: 0 0 0 2px black;
+}
+
+.RightSlot {
+  margin-left: auto;
+  padding-left: 20px;
+  color: var(--mauve-9);
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+</style>
+`
+    })
+};
