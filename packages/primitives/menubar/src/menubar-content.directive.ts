@@ -4,7 +4,6 @@ import { Directive } from '@angular/core';
 @Directive({
     selector: '[MenuBarContent]',
     standalone: true,
-    hostDirectives: [CdkMenu],
-    host: {}
+    hostDirectives: [CdkMenu]
 })
 export class RdxMenuBarContentDirective {}

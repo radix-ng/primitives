@@ -10,11 +10,12 @@ import { booleanAttribute, Directive, inject, input, Input } from '@angular/core
         type: 'button',
         role: 'menuitem',
         '[attr.aria-haspopup]': "'menu'",
-        '[attr.data-disabled]': "disabled() ? '' : undefined",
+        '[attr.aria-expanded]': 'cdkTrigger.isOpen()',
         '[attr.data-state]': "cdkTrigger.isOpen() ? 'open': 'close'",
+        '[attr.data-disabled]': "disabled() ? '' : undefined",
         '[disabled]': 'disabled()',
 
-        '(onpointerdown)': 'onPointerDown($event)'
+        '(pointerdown)': 'onPointerDown($event)'
     }
 })
 export class RdxMenuBarTriggerDirective {
@@ -25,8 +26,15 @@ export class RdxMenuBarTriggerDirective {
     });
 
     onPointerDown($event: MouseEvent) {
-        if (!this.disabled && $event.button === 0 && !$event.ctrlKey) {
+        // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
+        // but not when the control key is pressed (avoiding MacOS right click)
+        if (!this.disabled() && $event.button === 0 && !$event.ctrlKey) {
             /* empty */
+            if (!this.cdkTrigger.isOpen()) {
+                // prevent trigger focusing when opening
+                // this allows the content to be given focus without competition
+                $event.preventDefault();
+            }
         }
     }
 }

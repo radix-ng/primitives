@@ -1,5 +1,14 @@
+import { BooleanInput } from '@angular/cdk/coercion';
 import { CdkMenuItem } from '@angular/cdk/menu';
-import { Directive, inject, input, signal } from '@angular/core';
+import {
+    booleanAttribute,
+    computed,
+    Directive,
+    effect,
+    inject,
+    input,
+    signal
+} from '@angular/core';
 
 @Directive({
     selector: '[MenuBarItem]',
@@ -9,14 +18,20 @@ import { Directive, inject, input, signal } from '@angular/core';
         role: 'menuitem',
         type: 'button',
         tabindex: '0',
-        '[attr.aria-expanded]': 'false',
         '[attr.data-orientation]': "'horizontal'",
-        '[attr.data-state]': 'false',
-        '[disabled]': 'disabled'
+        '[disabled]': 'disabledState()'
     }
 })
 export class RdxMenuItemDirective {
     private readonly cdkMenuItem = inject(CdkMenuItem, { host: true });
 
-    protected disabled = this.cdkMenuItem.disabled;
+    readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    protected readonly disabledState = computed(() => this.disabled());
+
+    constructor() {
+        effect(() => {
+            this.cdkMenuItem.disabled = this.disabled();
+        });
+    }
 }

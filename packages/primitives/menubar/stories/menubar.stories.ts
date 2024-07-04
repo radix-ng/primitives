@@ -33,7 +33,24 @@ export const Default: Story = {
   <button class="MenubarTrigger" MenuBarItem [MenuBarTrigger]="edit">
     Edit
   </button>
+
+  <button class="MenubarTrigger" MenuBarItem [MenuBarTrigger]="view">
+    View
+  </button>
 </div>
+
+<ng-template #view>
+  <div class="MenubarContent" MenuBarContent>
+    <button class="MenubarCheckboxItem inset" MenubarCheckboxItem>
+        Always Show Bookmarks Bar
+    </button>
+    <button class="MenubarCheckboxItem inset" MenubarCheckboxItem>
+        Always Show Full URLs
+    </button>
+    <div SeparatorRoot class="MenubarSeparator"></div>
+    <button class="MenubarItem" MenuBarItem>Reload <div class="RightSlot">⌘ R</div></button>
+  </div>
+</ng-template>
 
 <ng-template #file>
   <div class="MenubarContent" MenuBarContent>
