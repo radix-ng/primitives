@@ -132,3 +132,15 @@ strong.ngde {
     line-height: 1.75rem;
     font-weight: 400;
 }
+
+ng-doc-dot {
+    visibility: hidden;
+}
+
+ng-doc-sidebar-item .ng-doc-text {
+    color: hsl(var(--muted-foreground));
+}
+
+ng-doc-sidebar-item .ng-doc-sidebar-link.active .ng-doc-text  {
+    color: hsl(var(--foreground));
+}
