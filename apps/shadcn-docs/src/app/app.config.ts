@@ -23,7 +23,7 @@ import {
     providePageSkeleton
 } from '@ng-doc/app';
 import { NG_DOC_ROUTING, provideNgDocContext } from '@ng-doc/generated';
-import { Check, LucideAngularModule } from 'lucide-angular';
+import { Check, ChevronRight, LucideAngularModule, MoreHorizontal, Slash } from 'lucide-angular';
 
 import { routes } from './app.routes';
 
@@ -43,7 +43,7 @@ export const appConfig: ApplicationConfig = {
 
         importProvidersFrom(
             // todo: remove this as soon as lucide properly supports Angular standalone components.
-            LucideAngularModule.pick({ Check })
+            LucideAngularModule.pick({ Slash, Check, MoreHorizontal, ChevronRight })
         ),
 
         provideNgDocContext(),

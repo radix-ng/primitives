@@ -102,6 +102,12 @@
         color: inherit;
         text-decoration: inherit;
     }
+
+    menu,ol,ul {
+        list-style: none;
+        margin: 0;
+        padding: 0
+    }
 }
 
 .ng-doc-demo {

@@ -31,6 +31,7 @@
             "@radix-ng/shadcn/card": ["packages/shadcn/card/index.ts"],
             "@radix-ng/shadcn/checkbox": ["packages/shadcn/checkbox/index.ts"],
             "@radix-ng/shadcn/core": ["packages/shadcn/core/index.ts"],
+            "@radix-ng/shadcn/breadcrumb": ["packages/shadcn/breadcrumb/index.ts"],
             "@radix-ng/shadcn/input": ["packages/shadcn/input/index.ts"],
             "@radix-ng/shadcn/label": ["packages/shadcn/label/index.ts"],
             "@radix-ng/shadcn/table": ["packages/shadcn/table/index.ts"],
