@@ -98,12 +98,12 @@ export default {
                         color: var(--mauve-11);
                         background-color: var(--mauve-2);
                     }
-                    .AccordionContent[data-state='open'] {
+                    /*.AccordionContent[data-state='open'] {
                         animation: slideDown 300ms cubic-bezier(0.87, 0, 0.13, 1);
                     }
                     .AccordionContent[data-state='closed'] {
                         animation: slideUp 300ms cubic-bezier(0.87, 0, 0.13, 1);
-                    }
+                    }*/
 
                     .AccordionContentText {
                         padding: 15px 20px;
@@ -144,10 +144,12 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: `
-            <div class="AccordionRoot" AccordionRoot [defaultValue]="[item2, item3]" [type]="'multiple'">
+            <div class="AccordionRoot" AccordionRoot [defaultValue]="[item2]" [type]="'single'" [orientation]="'horizontal'">
                 <div #item1="AccordionItem" class="AccordionItem" AccordionItem>
-                    <span class="AccordionTrigger" type="button" AccordionTrigger>Is it accessible?</span>
-                    <div class="AccordionContent" AccordionContent>
+                    <div class="AccordionHeader" AccordionHeader>
+                        <button class="AccordionTrigger" type="button" AccordionTrigger>Is it accessible?</button>
+                    </div>
+                    <div #content1="AccordionContent" class="AccordionContent" AccordionContent >
                         <div class="AccordionContentText">
                             Yes. It adheres to the WAI-ARIA design pattern.
                         </div>
@@ -156,8 +158,10 @@ export const Default: Story = {
                 </div>
 
                 <div #item2="AccordionItem" class="AccordionItem" AccordionItem>
-                    <span class="AccordionTrigger" type="button" AccordionTrigger>Is it unstyled?</span>
-                    <div class="AccordionContent" AccordionContent>
+                    <div class="AccordionHeader" AccordionHeader>
+                        <button class="AccordionTrigger" type="button" AccordionTrigger>Is it unstyled?</button>
+                    </div>
+                    <div #content2="AccordionContent" class="AccordionContent" AccordionContent>
                         <div class="AccordionContentText">
                             Yes. It's unstyled by default, giving you freedom over the look and feel.
                         </div>
@@ -165,8 +169,10 @@ export const Default: Story = {
                 </div>
 
                 <div #item3="AccordionItem" class="AccordionItem" AccordionItem>
-                    <span class="AccordionTrigger" type="button" AccordionTrigger>Can it be animated?</span>
-                    <div class="AccordionContent" AccordionContent>
+                    <div class="AccordionHeader" AccordionHeader>
+                        <button class="AccordionTrigger" type="button" AccordionTrigger>Can it be animated?</button>
+                    </div>
+                    <div #content3="AccordionContent" class="AccordionContent" AccordionContent>
                         <div class="AccordionContentText">
                             Yes! You can animate the Accordion with CSS or JavaScript.
                         </div>

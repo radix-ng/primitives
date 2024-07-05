@@ -23,13 +23,13 @@ export function injectAccordionItem(): RdxAccordionItemDirective {
     ],
     host: {
         '[attr.data-state]': 'state',
-        '[attr.data-disabled]': 'disabled ?? undefined',
+        '[attr.data-disabled]': 'getDisabled()',
         '[attr.data-orientation]': 'orientation'
     },
     hostDirectives: [CdkAccordion]
 })
 export class RdxAccordionItemDirective {
-    private rdxContent = contentChild(RdxAccordionContentToken);
+    private accordionContent = contentChild.required(RdxAccordionContentToken);
     state: RdxAccordionItemState = 'closed';
     orientation: RdxAccordionOrientation = 'vertical';
     @Input() disabled = false;
@@ -45,6 +45,16 @@ export class RdxAccordionItemDirective {
             this.state = state;
         }
 
-        this.rdxContent()?.setOpen(this.state);
+        this.accordionContent().setOpen(this.state);
+    }
+
+    getDisabled(): string | undefined {
+        return this.disabled ? '' : undefined;
+    }
+
+    setOrientation(orientation: RdxAccordionOrientation) {
+        this.orientation = orientation;
+
+        this.accordionContent().orientation = orientation;
     }
 }

@@ -39,8 +39,8 @@ export class RdxAccordionRootDirective implements OnInit {
     }
     @Input() set orientation(orientation: RdxAccordionOrientation | undefined) {
         this._orientation = orientation ?? 'vertical';
-        this.accordionItems().forEach(
-            (accordionItem) => (accordionItem.orientation = this._orientation)
+        this.accordionItems().forEach((accordionItem) =>
+            accordionItem.setOrientation(this._orientation)
         );
     }
 
