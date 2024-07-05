@@ -10,6 +10,8 @@ import {
     ShBreadcrumbSeparatorComponent
 } from './src/breadcrumb.directive';
 
+export * from './src/breadcrumb.directive';
+
 const breadcrumbImports = [
     ShBreadcrumbDirective,
     ShBreadcrumbItemDirective,
