@@ -18,9 +18,11 @@ import {
 import {
     NG_DOC_DEFAULT_PAGE_PROCESSORS,
     NG_DOC_DEFAULT_PAGE_SKELETON,
+    NgDocDefaultSearchEngine,
     provideMainPageProcessor,
     provideNgDocApp,
-    providePageSkeleton
+    providePageSkeleton,
+    provideSearchEngine
 } from '@ng-doc/app';
 import { NG_DOC_ROUTING, provideNgDocContext } from '@ng-doc/generated';
 import { Check, ChevronRight, LucideAngularModule, MoreHorizontal, Slash } from 'lucide-angular';
@@ -46,6 +48,7 @@ export const appConfig: ApplicationConfig = {
             LucideAngularModule.pick({ Slash, Check, MoreHorizontal, ChevronRight })
         ),
 
+        provideSearchEngine(NgDocDefaultSearchEngine),
         provideNgDocContext(),
         provideNgDocApp({
             themes: [
