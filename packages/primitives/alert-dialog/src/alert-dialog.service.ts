@@ -42,7 +42,6 @@ export class AlertDialogService {
         this.overlayRef.attach(templatePortal);
 
         this.overlayRef.keydownEvents().subscribe((event) => {
-            console.log(event.key, event.code);
             if (event.key === 'Escape' || event.code === 'Escape') {
                 this.close();
             }
