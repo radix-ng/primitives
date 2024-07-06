@@ -1,3 +1,14 @@
+## 0.7.2 (2024-07-06)
+
+
+### 🚀 Features
+
+- added Menubar base primitive ([0db991f](https://github.com/radix-ng/primitives/commit/0db991f))
+
+- added Menu base primitive ([c7e395e](https://github.com/radix-ng/primitives/commit/c7e395e))
+
+- **menubar:** added MenuBar ([#44](https://github.com/radix-ng/primitives/pull/44))
+
 ## 0.7.1 (2024-06-30)
 
 This was a version bump only for primitives to align it with other projects, there were no code changes.
