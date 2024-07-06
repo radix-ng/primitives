@@ -14,6 +14,7 @@ export * from './src/menubar-content.directive';
 export * from './src/menubar-item.directive';
 export * from './src/menubar-item-checkbox.directive';
 export * from './src/menubar-item-radio.directive';
+export * from './src/menubar-radio-group.directive';
 export * from './src/menubar-item-indicator.directive';
 export * from './src/menubar-root.directive';
 export * from './src/menubar-separator.directive';
