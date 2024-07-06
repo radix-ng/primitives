@@ -41,6 +41,11 @@ export class AlertDialogService {
         );
         this.overlayRef.attach(templatePortal);
 
+        this.overlayRef.keydownEvents().subscribe((event) => {
+            if (event.key === 'Escape' || event.code === 'Escape') {
+                this.close();
+            }
+        });
         this.overlayRef.backdropClick().subscribe(() => this.close());
     }
 
