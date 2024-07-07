@@ -14,14 +14,14 @@ export class ThemeService {
     colorScheme = localStorage.getItem('color-scheme') || 'dark';
 
     constructor() {
-        document.querySelector('html')?.classList.toggle('dark', this.colorScheme === 'dark');
+        document.querySelector('body')?.classList.toggle('dark', this.colorScheme === 'dark');
 
         this.ngDocTheme.set(this.colorScheme, false);
     }
 
     toggleColorScheme() {
         this.colorScheme = this.colorScheme === 'light' ? 'dark' : 'light';
-        document.querySelector('html')?.classList.toggle('dark', this.colorScheme === 'dark');
+        document.querySelector('body')?.classList.toggle('dark', this.colorScheme === 'dark');
 
         localStorage.setItem('color-scheme', this.colorScheme);
         this.ngDocTheme.set(this.colorScheme, false);

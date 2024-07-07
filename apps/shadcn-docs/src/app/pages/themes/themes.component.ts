@@ -10,6 +10,7 @@ import {
 } from '@radix-ng/shadcn/card';
 import { cn } from '@radix-ng/shadcn/core';
 import { themes } from '@radix-ng/shadcn/theme';
+import { LucideAngularModule } from 'lucide-angular';
 
 import { ConfigService } from '../../services/config.service';
 import { ThemeService } from '../../services/theme.service';
@@ -23,7 +24,8 @@ import { ThemeService } from '../../services/theme.service';
         ShCardHeaderDirective,
         ShCardTitleDirective,
         ShCardContentDirective,
-        ShButtonDirective
+        ShButtonDirective,
+        LucideAngularModule
     ],
     templateUrl: './themes.component.html'
 })
@@ -33,6 +35,9 @@ export class ThemesComponent {
 
     themes = themes;
     radius = ['0', '0.3', '0.5', '0.75', '1.0'];
+
+    currentThemeName = this.config.getConfig().theme;
+    currentThemeRadius = this.config.getConfig().radius;
 
     mode = this.themeService.colorScheme;
 
@@ -44,6 +49,8 @@ export class ThemesComponent {
             theme: theme.name
         });
 
+        this.currentThemeName = theme.name;
+
         this.themeService.updateTheme(this.config.getConfig());
     }
 
@@ -53,6 +60,10 @@ export class ThemesComponent {
             radius: parseFloat(radius)
         });
 
+        this.currentThemeRadius = parseFloat(radius);
+
         this.themeService.updateTheme(this.config.getConfig());
     }
+
+    protected readonly parseFloat = parseFloat;
 }

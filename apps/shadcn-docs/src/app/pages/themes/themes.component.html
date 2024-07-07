@@ -18,11 +18,15 @@
                                     shButton
                                     variant="outline"
                                     size="sm"
+                                    [class]="cn('justify-start', theme.name === currentThemeName && 'border-2 border-primary')"
                                     (click)="onClickChangeTheme(theme)"
                                     [style.--theme-primary]="'hsl(' + theme.activeColor[mode === 'dark' ? 'dark' : 'light'] + ')'"
                                     >
                                     <span
                                         [class]="cn('mr-1 flex h-5 w-5 shrink-0 -translate-x-1 items-center justify-center rounded-full bg-[--theme-primary]')">
+                                        @if (theme.name === currentThemeName) {
+                                            <lucide-angular name="check" class="h-4 w-4 text-white"></lucide-angular>
+                                        }
                                     </span>
                                     {{theme.label}}
                                 </button>
@@ -39,6 +43,8 @@
                             shButton
                             variant="outline"
                             size="sm"
+                            [class]="cn(
+                            currentThemeRadius ===  parseFloat(value) && 'border-2 border-primary')"
                             (click)="onClickChangeRadiusTheme(value)">
                             {{value}}
                         </button>
