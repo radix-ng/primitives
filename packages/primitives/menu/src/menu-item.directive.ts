@@ -42,7 +42,7 @@ export class RdxMenuItemDirective {
 
     // Event handler called when the user selects an item (via mouse or keyboard).
     @Output()
-    onSelect = new this.cdkMenuItem.triggered();
+    onSelect = this.cdkMenuItem.triggered;
 
     constructor() {
         effect(() => {
