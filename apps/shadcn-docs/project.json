@@ -36,7 +36,9 @@
                     "apps/shadcn-docs/src/assets"
                 ],
                 "styles": [
-                    "node_modules/@ng-doc/app/styles/global.css", "apps/shadcn-docs/src/styles.scss",
+                    "node_modules/@ng-doc/app/styles/global.css",
+                    "apps/shadcn-docs/src/styles.scss",
+                    "apps/shadcn-docs/src/styles/themes/sh-themes.css",
                     {
                         "bundleName": "ngdoc-light",
                         "inject": false,

@@ -54,7 +54,6 @@ export class RdxRadioItemDirective {
     }
 
     _onClick(): void {
-        console.log('click');
         this.radioGroup.select(this.value);
     }
 }
