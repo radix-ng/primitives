@@ -11,8 +11,7 @@
             style="display: inline-block; vertical-align: top; text-decoration: inherit; max-width: 532px;">Hand-picked themes that you can copy and paste into your apps.</span>
             <div class="flex w-full items-center justify-center space-x-4 py-4 ">
                 <div class="flex items-center space-x-2">
-                    <div class="hidden md:flex">
-                        <div class="mr-2 hidden items-center space-x-0.5 lg:flex">
+                    <div class=" items-center space-x-2 flex">
                             @for (theme of themes; track theme) {
                                 <button
                                     shButton
@@ -32,7 +31,6 @@
                                 </button>
                             }
                         </div>
-                    </div>
                 </div>
             </div>
             <div class="space-y-0.5">
@@ -44,7 +42,7 @@
                             variant="outline"
                             size="sm"
                             [class]="cn(
-                            currentThemeRadius ===  parseFloat(value) && 'border-2 border-primary')"
+                            currentThemeRadius === parseFloat(value) && 'border-2 border-primary')"
                             (click)="onClickChangeRadiusTheme(value)">
                             {{value}}
                         </button>

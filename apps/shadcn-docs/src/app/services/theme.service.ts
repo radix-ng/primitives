@@ -42,7 +42,7 @@ export class ThemeService {
         }
 
         const radius = config ? config.radius : this.config.getConfig().radius;
-        if (radius) {
+        if (radius !== undefined) {
             themeWrapper?.style.setProperty('--radius', `${radius}rem`);
         }
     }
