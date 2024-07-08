@@ -1,6 +1,5 @@
-import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { radixCheck } from '@ng-icons/radix-icons';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { Check, Dot, LucideAngularModule } from 'lucide-angular';
 
 import { RdxLabelRootDirective } from '../../label';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
@@ -15,10 +14,10 @@ export default {
                 RdxLabelRootDirective,
                 RdxCheckboxDirective,
                 RdxCheckboxIndicatorDirective,
-                NgIconComponent,
+                LucideAngularModule,
+                LucideAngularModule.pick({ Check }),
                 CheckboxReactiveFormsExampleComponent
-            ],
-            providers: [provideIcons({ radixCheck })]
+            ]
         }),
         componentWrapperDecorator(
             (story) =>
@@ -38,7 +37,7 @@ export const Default: Story = {
 <form>
     <div style="display: flex; align-items: center;">
         <button class="CheckboxRoot" rdxCheckbox id="r1" [(checked)]="checked">
-            <ng-icon rdxCheckboxIndicator class="CheckboxIndicator" name="radixCheck"></ng-icon>
+            <lucide-angular rdxCheckboxIndicator class="CheckboxIndicator" size="16" name="check"></lucide-angular>
             <input type="checkbox" aria-hidden="true" tabindex="-1" value="on" rdxCheckboxIndicator
             style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0; width: 25px; height: 25px;"/>
         </button>
@@ -69,6 +68,8 @@ button {
 }
 
 .CheckboxIndicator {
+    align-items: center;
+    display: flex;
     color: var(--violet-11);
 }
 

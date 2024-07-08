@@ -2,9 +2,8 @@ import { JsonPipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { radixCheck } from '@ng-icons/radix-icons';
 import { RdxLabelRootDirective } from '@radix-ng/primitives/label';
+import { LucideAngularModule } from 'lucide-angular';
 
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
 import { RdxCheckboxDirective } from '../src/checkbox.directive';
@@ -16,11 +15,12 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
             <p>
                 <label LabelRoot class="Label" htmlFor="r1">
                     <button class="CheckboxRoot" rdxCheckbox formControlName="fun">
-                        <ng-icon
+                        <lucide-angular
                             rdxCheckboxIndicator
                             class="CheckboxIndicator"
-                            name="radixCheck"
-                        ></ng-icon>
+                            size="16"
+                            name="check"
+                        ></lucide-angular>
                         <input
                             rdxCheckboxIndicator
                             type="checkbox"
@@ -36,11 +36,12 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
             <p>
                 <label LabelRoot class="Label" htmlFor="r2">
                     <button class="CheckboxRoot" rdxCheckbox formControlName="serious">
-                        <ng-icon
+                        <lucide-angular
                             rdxCheckboxIndicator
                             class="CheckboxIndicator"
-                            name="radixCheck"
-                        ></ng-icon>
+                            size="16"
+                            name="check"
+                        ></lucide-angular>
                         <input
                             rdxCheckboxIndicator
                             id="r2"
@@ -56,11 +57,12 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
             <p>
                 <label LabelRoot class="Label" htmlFor="r3">
                     <button class="CheckboxRoot" rdxCheckbox formControlName="smart">
-                        <ng-icon
+                        <lucide-angular
                             rdxCheckboxIndicator
                             class="CheckboxIndicator"
-                            name="radixCheck"
-                        ></ng-icon>
+                            size="16"
+                            name="check"
+                        ></lucide-angular>
                         <input
                             rdxCheckboxIndicator
                             id="r3"
@@ -95,9 +97,8 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
         RdxLabelRootDirective,
         RdxCheckboxDirective,
         RdxCheckboxIndicatorDirective,
-        NgIconComponent
-    ],
-    providers: [provideIcons({ radixCheck })]
+        LucideAngularModule
+    ]
 })
 export class CheckboxReactiveFormsExampleComponent {
     personality = this.formBuilder.group({

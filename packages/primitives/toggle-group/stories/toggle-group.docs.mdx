@@ -30,15 +30,15 @@ import { RdxToggleGroupDirective, RdxToggleGroupButtonDirective, RdxToggleGroupM
 ## Examples
 
 ```html
-<div rdxToggleGroup rdxToggleGroupValue="center" aria-label="Text alignment">
-    <button rdxToggleGroupButton rdxToggleGroupButtonValue="left" aria-label="Left aligned">
-        <ng-icon name="radixTextAlignLeft"></ng-icon>
+<div rdxToggleGroup value="center" aria-label="Text alignment" class="ToggleGroup">
+    <button rdxToggleGroupButton value="left" aria-label="Left aligned" class="ToggleGroupItem" >
+        <lucide-icon name="align-left" size="16"></lucide-icon>
     </button>
-    <button rdxToggleGroupButton rdxToggleGroupButtonValue="center" aria-label="Center aligned">
-        <ng-icon name="radixTextAlignCenter"></ng-icon>
+    <button rdxToggleGroupButton value="center" aria-label="Center aligned" class="ToggleGroupItem">
+        <lucide-icon name="align-center" size="16"></lucide-icon>
     </button>
-    <button rdxToggleGroupButton rdxToggleGroupButtonValue="right" aria-label="Right aligned">
-        <ng-icon name="radixTextAlignRight"></ng-icon>
+    <button rdxToggleGroupButton value="right" aria-label="Right aligned" class="ToggleGroupItem">
+        <lucide-icon name="align-right" size="16"></lucide-icon>
     </button>
 </div>
 ```

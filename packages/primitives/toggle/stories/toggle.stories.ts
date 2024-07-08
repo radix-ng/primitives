@@ -1,6 +1,5 @@
-import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { radixFontItalic } from '@ng-icons/radix-icons';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { Italic, LucideAngularModule } from 'lucide-angular';
 
 import { RdxToggleRootDirective } from '../src/toggle-root.directive';
 
@@ -8,8 +7,11 @@ export default {
     title: 'Primitives/Toggle',
     decorators: [
         moduleMetadata({
-            imports: [RdxToggleRootDirective, NgIconComponent],
-            providers: [provideIcons({ radixFontItalic })]
+            imports: [
+                RdxToggleRootDirective,
+                LucideAngularModule,
+                LucideAngularModule.pick({ Italic })
+            ]
         }),
         componentWrapperDecorator(
             (story) =>
@@ -62,7 +64,7 @@ export const Default: Story = {
     render: () => ({
         template: `
 <button ToggleRoot aria-label="Toggle italic" class="Toggle">
-    <ng-icon name="radixFontItalic"></ng-icon>
+    <lucide-angular name="italic" size="16"></lucide-angular>
 </button>
 `
     })
@@ -71,8 +73,8 @@ export const Default: Story = {
 export const State: Story = {
     render: () => ({
         template: `
-<button ToggleRoot [rdxTogglePressed]="pressed" aria-label="Toggle italic" class="Toggle">
-    <ng-icon name="radixFontItalic"></ng-icon>
+<button ToggleRoot [pressed]="pressed" aria-label="Toggle italic" class="Toggle">
+    <lucide-angular name="italic" size="16"></lucide-angular>
 </button>
 `
     })

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
@@ -32,7 +32,6 @@ import { ThemeService } from '../../services/theme.service';
 export class ThemesComponent {
     private readonly themeService = inject(ThemeService);
     private readonly config = inject(ConfigService);
-    private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
     themes = themes;
     radius = ['0', '0.3', '0.5', '0.75', '1.0'];
@@ -64,8 +63,6 @@ export class ThemesComponent {
         this.currentThemeRadius = parseFloat(radius);
 
         this.themeService.updateTheme(this.config.getConfig());
-
-        this.changeDetectorRef.markForCheck();
     }
 
     protected readonly parseFloat = parseFloat;

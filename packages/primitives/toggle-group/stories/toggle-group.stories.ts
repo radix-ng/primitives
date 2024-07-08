@@ -1,10 +1,5 @@
-import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import {
-    radixTextAlignCenter,
-    radixTextAlignLeft,
-    radixTextAlignRight
-} from '@ng-icons/radix-icons';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { AlignCenter, AlignLeft, AlignRight, LucideAngularModule } from 'lucide-angular';
 
 import { RdxToggleGroupButtonDirective } from '../src/toggle-group-button.directive';
 import { RdxToggleGroupMultiDirective } from '../src/toggle-group-multi.directive';
@@ -15,13 +10,12 @@ export default {
     decorators: [
         moduleMetadata({
             imports: [
-                NgIconComponent,
                 RdxToggleGroupDirective,
                 RdxToggleGroupButtonDirective,
-                RdxToggleGroupMultiDirective
-            ],
-            providers: [
-                provideIcons({ radixTextAlignLeft, radixTextAlignCenter, radixTextAlignRight })
+                RdxToggleGroupMultiDirective,
+
+                LucideAngularModule,
+                LucideAngularModule.pick({ AlignRight, AlignLeft, AlignCenter })
             ]
         }),
         componentWrapperDecorator(
@@ -88,13 +82,13 @@ export const Default: Story = {
 
     <div rdxToggleGroup value="center" aria-label="Text alignment" class="ToggleGroup">
         <button rdxToggleGroupButton value="left" aria-label="Left aligned" class="ToggleGroupItem" >
-            <ng-icon name="radixTextAlignLeft"></ng-icon>
+            <lucide-icon name="align-left" size="16"></lucide-icon>
         </button>
         <button rdxToggleGroupButton value="center" aria-label="Center aligned" class="ToggleGroupItem">
-            <ng-icon name="radixTextAlignCenter"></ng-icon>
+            <lucide-icon name="align-center" size="16"></lucide-icon>
         </button>
         <button rdxToggleGroupButton value="right" aria-label="Right aligned" class="ToggleGroupItem">
-            <ng-icon name="radixTextAlignRight"></ng-icon>
+            <lucide-icon name="align-right" size="16"></lucide-icon>
         </button>
     </div>
 
