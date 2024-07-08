@@ -16,11 +16,11 @@ export class RdxAccordionHeaderDirective {
     private readonly accordionItem = injectAccordionItem();
 
     getState(): RdxAccordionItemState {
-        return this.accordionItem.state;
+        return this.accordionItem.state();
     }
 
     getDisabled(): string | undefined {
-        return this.accordionItem.disabled ? 'true' : undefined;
+        return this.accordionItem.disabled() ? '' : undefined;
     }
 
     getOrientation(): RdxAccordionOrientation {

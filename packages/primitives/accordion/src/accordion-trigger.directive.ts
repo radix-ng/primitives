@@ -26,11 +26,11 @@ export class RdxAccordionTriggerDirective {
     }
 
     getState(): RdxAccordionItemState {
-        return this.accordionItem.state;
+        return this.accordionItem.state();
     }
 
     getDisabled(): boolean | undefined {
-        return this.accordionItem.disabled || undefined;
+        return this.accordionItem.disabled() || undefined;
     }
 
     getOrientation(): RdxAccordionOrientation {

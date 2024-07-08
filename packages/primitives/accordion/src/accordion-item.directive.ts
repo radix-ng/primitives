@@ -1,5 +1,5 @@
 import { CdkAccordion } from '@angular/cdk/accordion';
-import { contentChild, Directive, inject, InjectionToken, Input } from '@angular/core';
+import { contentChild, Directive, inject, InjectionToken, input, signal } from '@angular/core';
 
 import { RdxAccordionContentToken } from './accordion-content.directive';
 import { RdxAccordionOrientation } from './accordion-root.directive';
@@ -22,34 +22,30 @@ export function injectAccordionItem(): RdxAccordionItemDirective {
         { provide: RdxAccordionItemToken, useExisting: RdxAccordionItemDirective, multi: true }
     ],
     host: {
-        '[attr.data-state]': 'state',
-        '[attr.data-disabled]': 'getDisabled()',
+        '[attr.data-state]': 'state()',
+        '[attr.data-disabled]': 'disabled() ? "" : undefined',
         '[attr.data-orientation]': 'orientation'
     },
     hostDirectives: [CdkAccordion]
 })
 export class RdxAccordionItemDirective {
     private accordionContent = contentChild.required(RdxAccordionContentToken);
-    state: RdxAccordionItemState = 'closed';
+    state = signal<RdxAccordionItemState>('closed');
+    disabled = input(false);
     orientation: RdxAccordionOrientation = 'vertical';
-    @Input() disabled = false;
 
     setOpen(state?: RdxAccordionItemState) {
-        if (this.disabled) {
+        if (this.disabled()) {
             return;
         }
 
         if (state === undefined) {
-            this.state = this.state === 'open' ? 'closed' : 'open';
+            this.state.update(() => (this.state() === 'open' ? 'closed' : 'open'));
         } else {
-            this.state = state;
+            this.state.update(() => state);
         }
 
-        this.accordionContent().setOpen(this.state);
-    }
-
-    getDisabled(): string | undefined {
-        return this.disabled ? '' : undefined;
+        this.accordionContent().setOpen(this.state());
     }
 
     setOrientation(orientation: RdxAccordionOrientation) {
