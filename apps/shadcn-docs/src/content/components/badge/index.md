@@ -2,7 +2,7 @@
 
 **Displays a badge or a component that looks like a badge.**
 
-{{ NgDocActions.demo("BadgeExampleComponent", { defaultTab: "HTML", expanded: true}) }}
+{{ NgDocActions.demo("BadgeExampleComponent", { defaultTab: "HTML", expanded: false}) }}
 
 ## Usage
 
@@ -18,8 +18,8 @@ import { ShBadgeDirective } from "@radix-ng/shadcn/badge"
 
 ### Secondary
 
-{{ NgDocActions.demo("BadgeExampleSecondaryComponent", { defaultTab: "HTML", expanded: true}) }}
+{{ NgDocActions.demo("BadgeExampleSecondaryComponent", { defaultTab: "HTML", expanded: false}) }}
 
 ### Destructive
 
-{{ NgDocActions.demo("BadgeExampleDestructiveComponent", { defaultTab: "HTML", expanded: true}) }}
+{{ NgDocActions.demo("BadgeExampleDestructiveComponent", { defaultTab: "HTML", expanded: false}) }}

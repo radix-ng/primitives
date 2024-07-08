@@ -17,6 +17,7 @@ export type InputType =
     | 'number'
     | 'password'
     | 'tel'
+    | 'file'
     | 'search'
     | 'text';
 

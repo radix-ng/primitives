@@ -123,6 +123,14 @@
     width: 100%;
 }
 
+.ng-doc-demo > ng-component {
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    padding: 2.5rem;
+}
+
 strong.ngde {
     color: hsl(var(--muted-foreground));
     font-size: 1.125rem;

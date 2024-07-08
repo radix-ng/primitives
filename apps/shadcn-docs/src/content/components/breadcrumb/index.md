@@ -2,7 +2,7 @@
 **Displays the path to the current resource using a hierarchy of links.**
 
 
-{{ NgDocActions.demo("BreadcrumbExampleComponent", { defaultTab: "HTML", expanded: true}) }}
+{{ NgDocActions.demo("BreadcrumbExampleComponent", { defaultTab: "HTML", expanded: false}) }}
 
 ## Usage
 
@@ -32,4 +32,4 @@ import {
 
 Use a custom component as children for `<li shBreadcrumbSeparator />` to create a custom separator.
 
-{{ NgDocActions.demo("BreadcrumbCustomSeparatorExampleComponent", { defaultTab: "HTML", expanded: true}) }}
+{{ NgDocActions.demo("BreadcrumbCustomSeparatorExampleComponent", { defaultTab: "HTML", expanded: false}) }}
