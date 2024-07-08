@@ -98,12 +98,12 @@ export default {
                         color: var(--mauve-11);
                         background-color: var(--mauve-2);
                     }
-                    /*.AccordionContent[data-state='open'] {
+                    .AccordionContent[data-state='open'] {
                         animation: slideDown 300ms cubic-bezier(0.87, 0, 0.13, 1);
                     }
                     .AccordionContent[data-state='closed'] {
                         animation: slideUp 300ms cubic-bezier(0.87, 0, 0.13, 1);
-                    }*/
+                    }
 
                     .AccordionContentText {
                         padding: 15px 20px;
@@ -122,13 +122,13 @@ export default {
                             height: 0;
                         }
                         to {
-                            height: var(--radix-accordion-content-height);
+                            height: var(--radix-accordion-content-height, 50px);
                         }
                     }
 
                     @keyframes slideUp {
                         from {
-                            height: var(--radix-accordion-content-height);
+                            height: var(--radix-accordion-content-height, 50px);
                         }
                         to {
                             height: 0;
@@ -144,7 +144,7 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: `
-            <div class="AccordionRoot" AccordionRoot [defaultValue]="[item2]" [type]="'single'" [orientation]="'horizontal'">
+            <div class="AccordionRoot" AccordionRoot [defaultValue]="[item2, item3]" [type]="'single'" [orientation]="'horizontal'">
                 <div #item1="AccordionItem" class="AccordionItem" AccordionItem>
                     <div class="AccordionHeader" AccordionHeader>
                         <button class="AccordionTrigger" type="button" AccordionTrigger>Is it accessible?</button>
