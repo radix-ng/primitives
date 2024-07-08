@@ -81,8 +81,6 @@
         text-rendering: optimizeLegibility;
     }
 
-
-
     [type=button],[type=reset],[type=submit],button {
         -webkit-appearance: button;
         background-color: transparent;
@@ -109,6 +107,10 @@
         list-style: none;
         margin: 0;
         padding: 0
+    }
+
+    blockquote, dd, dl, figure, h1, h2, h3, h4, h5, h6, hr, p, pre {
+        margin: 0;
     }
 }
 

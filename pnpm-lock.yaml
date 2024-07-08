@@ -132,12 +132,6 @@ importers:
       '@ianvs/prettier-plugin-sort-imports':
         specifier: ^4.2.1
         version: 4.2.1(prettier@3.2.5)
-      '@ng-icons/core':
-        specifier: ^27.2.0
-        version: 27.2.0
-      '@ng-icons/radix-icons':
-        specifier: ^27.3.1
-        version: 27.3.1
       '@nrwl/nx-plugin':
         specifier: 19.3.1
         version: 19.3.1(@swc-node/register@1.9.2)(@swc/core@1.5.7)(@types/node@18.16.9)(eslint@8.57.0)(nx@19.3.1)(ts-node@10.9.1)(typescript@5.4.4)(verdaccio@5.29.0)
@@ -6925,18 +6919,6 @@ packages:
       unist-util-filter: 4.0.1
       unist-util-visit: 4.1.2
     dev: false
-
-  /@ng-icons/core@27.2.0:
-    resolution: {integrity: sha512-GDA769ItJPU4IGnwSa4wiSHKEM74UwzwpZmL897XpxLaFUHDaU6a0LL3h+kHTBdrDIiTgVFEsTaQ0alCO2L1IA==}
-    dependencies:
-      tslib: 2.6.2
-    dev: true
-
-  /@ng-icons/radix-icons@27.3.1:
-    resolution: {integrity: sha512-TMkMqF0aph9ik6wP7/64U9suE1OKuZ1/7pp4ryL2pMzi9I9dGticYwtw3Lv9u0EcuqH4blu8PKfZpOaQ4+FMug==}
-    dependencies:
-      tslib: 2.6.2
-    dev: true
 
   /@ng-web-apis/common@2.0.1(@angular/common@18.0.4)(@angular/core@18.0.4)(rxjs@7.8.1):
     resolution: {integrity: sha512-DqnH+zZFFKeINpbFIzCrBTYksP+7FqrHxWo2+jIXfMLjSngwZ6WYz3F4N9s+tFc8mKe8I1/P7pZtxD7fqSPtlA==}

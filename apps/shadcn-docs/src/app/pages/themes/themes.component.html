@@ -11,26 +11,24 @@
             style="display: inline-block; vertical-align: top; text-decoration: inherit; max-width: 532px;">Hand-picked themes that you can copy and paste into your apps.</span>
             <div class="flex w-full items-center justify-center space-x-4 py-4 ">
                 <div class="flex items-center space-x-2">
-                    <div class=" items-center space-x-2 flex">
-                            @for (theme of themes; track theme) {
-                                <button
-                                    shButton
-                                    variant="outline"
-                                    size="sm"
-                                    [class]="cn('justify-start', theme.name === currentThemeName && 'border-2 border-primary')"
-                                    (click)="onClickChangeTheme(theme)"
-                                    [style.--theme-primary]="'hsl(' + theme.activeColor[mode === 'dark' ? 'dark' : 'light'] + ')'"
-                                    >
-                                    <span
-                                        [class]="cn('mr-1 flex h-5 w-5 shrink-0 -translate-x-1 items-center justify-center rounded-full bg-[--theme-primary]')">
-                                        @if (theme.name === currentThemeName) {
-                                            <lucide-angular name="check" class="h-4 w-4 text-white"></lucide-angular>
-                                        }
-                                    </span>
-                                    {{theme.label}}
-                                </button>
-                            }
-                        </div>
+                    @for (theme of themes; track theme) {
+                        <button
+                            shButton
+                            variant="outline"
+                            size="sm"
+                            [class]="cn('justify-start', theme.name === currentThemeName && 'border-2 border-primary')"
+                            (click)="onClickChangeTheme(theme)"
+                            [style.--theme-primary]="'hsl(' + theme.activeColor[mode === 'dark' ? 'dark' : 'light'] + ')'"
+                            >
+                            <span
+                                [class]="cn('mr-1 flex h-5 w-5 shrink-0 -translate-x-1 items-center justify-center rounded-full bg-[--theme-primary]')">
+                                @if (theme.name === currentThemeName) {
+                                    <lucide-angular name="check" class="h-4 text-white"></lucide-angular>
+                                }
+                            </span>
+                            {{theme.label}}
+                        </button>
+                    }
                 </div>
             </div>
             <div class="space-y-0.5">
@@ -78,6 +76,12 @@
                                     </p>
                                     <div class="h-[80px]"></div>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                            <div class="space-y-4 xl:space-y-4">
+                                <!--ChatCard-->
+                                <app-card-chat></app-card-chat>
                             </div>
                         </div>
                     </div>

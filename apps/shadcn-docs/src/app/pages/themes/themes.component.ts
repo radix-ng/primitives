@@ -14,6 +14,7 @@ import { LucideAngularModule } from 'lucide-angular';
 
 import { ConfigService } from '../../services/config.service';
 import { ThemeService } from '../../services/theme.service';
+import { CardChatComponent } from './cards/card-chat.component';
 
 @Component({
     selector: 'app-home',
@@ -25,7 +26,8 @@ import { ThemeService } from '../../services/theme.service';
         ShCardTitleDirective,
         ShCardContentDirective,
         ShButtonDirective,
-        LucideAngularModule
+        LucideAngularModule,
+        CardChatComponent
     ],
     templateUrl: './themes.component.html'
 })

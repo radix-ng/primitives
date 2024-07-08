@@ -12,14 +12,19 @@ import { cva } from 'class-variance-authority';
 })
 export class ShCardDirective {}
 
+const cardHeaderVariants = cva('flex flex-col space-y-1.5 p-6');
 @Directive({
     selector: '[shCardHeader]',
     standalone: true,
     host: {
-        '[class]': "'flex flex-col space-y-1.5 p-6'"
+        '[class]': 'computedClass()'
     }
 })
-export class ShCardHeaderDirective {}
+export class ShCardHeaderDirective {
+    readonly class = input<string>();
+
+    protected computedClass = computed(() => cn(cardHeaderVariants({ class: this.class() })));
+}
 
 @Directive({
     selector: '[shCardTitle]',
