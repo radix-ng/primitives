@@ -1,3 +1,4 @@
+import { CdkAccordionItem } from '@angular/cdk/accordion';
 import {
     Directive,
     effect,
@@ -11,7 +12,6 @@ import { animationFrameScheduler } from 'rxjs';
 
 import { RdxAccordionItemState } from './accordion-item.directive';
 import { RdxAccordionOrientation } from './accordion-root.directive';
-import { RdxCdkAccordionItem, RdxCdkAccordionItemToken } from './cdk-accordion-item.directive';
 
 export const RdxAccordionContentToken = new InjectionToken<RdxAccordionContentDirective>(
     'RdxAccordionContentToken'
@@ -21,25 +21,19 @@ export const RdxAccordionContentToken = new InjectionToken<RdxAccordionContentDi
     selector: '[AccordionContent]',
     standalone: true,
     exportAs: 'AccordionContent',
-    providers: [
-        { provide: RdxAccordionContentToken, useExisting: RdxAccordionContentDirective },
-        {
-            provide: RdxCdkAccordionItemToken,
-            useExisting: RdxCdkAccordionItem
-        }
-    ],
+    providers: [{ provide: RdxAccordionContentToken, useExisting: RdxAccordionContentDirective }],
     host: {
         '[attr.data-state]': 'state()',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
         '[attr.data-orientation]': 'orientation'
     },
-    hostDirectives: [RdxCdkAccordionItem]
+    hostDirectives: [CdkAccordionItem]
 })
 export class RdxAccordionContentDirective {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     state = signal<RdxAccordionItemState>('closed');
     disabled = input(false);
-    cdkAccordionItem = inject(RdxCdkAccordionItemToken);
+    accordionItem = inject(CdkAccordionItem);
     orientation: RdxAccordionOrientation = 'vertical';
 
     constructor() {
