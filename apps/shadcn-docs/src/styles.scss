@@ -81,6 +81,8 @@
         text-rendering: optimizeLegibility;
     }
 
+
+
     [type=button],[type=reset],[type=submit],button {
         -webkit-appearance: button;
         background-color: transparent;
@@ -102,6 +104,12 @@
         color: inherit;
         text-decoration: inherit;
     }
+
+    menu,ol,ul {
+        list-style: none;
+        margin: 0;
+        padding: 0
+    }
 }
 
 .ng-doc-demo {
@@ -113,16 +121,45 @@
     width: 100%;
 }
 
-h1.ngde {
-    font-weight: 700;
-    font-size: 2.25rem;
-    line-height: 2.5rem;
-    letter-spacing: -.025em;
-}
-
 strong.ngde {
     color: hsl(var(--muted-foreground));
     font-size: 1.125rem;
     line-height: 1.75rem;
     font-weight: 400;
+}
+
+ng-doc-dot {
+    visibility: hidden;
+}
+
+ng-doc-sidebar-item .ng-doc-text {
+    color: hsl(var(--muted-foreground));
+}
+
+ng-doc-sidebar-item .ng-doc-sidebar-link.active .ng-doc-text  {
+    color: hsl(var(--foreground));
+}
+
+ng-doc-page .ng-doc-page-wrapper h1 {
+    @apply scroll-m-20 text-4xl font-bold tracking-tight;
+}
+
+ng-doc-page .ng-doc-page-wrapper h2 {
+    @apply font-heading mt-12 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight first:mt-0;
+}
+
+ng-doc-page .ng-doc-page-wrapper h3 {
+    @apply font-heading mt-8 scroll-m-20 text-xl font-semibold tracking-tight;
+}
+
+ng-doc-search {
+    display: none;
+}
+
+.ng-doc-navbar-center {
+    padding: 0 !important;
+}
+
+.ng-doc-menu {
+    margin-left: 4px !important;
 }

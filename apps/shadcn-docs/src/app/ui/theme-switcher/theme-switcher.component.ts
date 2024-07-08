@@ -15,9 +15,9 @@ import { ThemeService } from '../../services/theme.service';
             type="button"
             variant="ghost"
             size="icon"
-            (click)="themeService.toggleTheme()"
+            (click)="themeService.toggleColorScheme()"
         >
-            @if (themeService.theme === 'light') {
+            @if (themeService.colorScheme === 'light') {
                 <ng-doc-icon customIcon="moon"></ng-doc-icon>
             } @else {
                 <ng-doc-icon customIcon="sun"></ng-doc-icon>

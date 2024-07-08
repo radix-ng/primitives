@@ -9,19 +9,44 @@
             class="max-w-[750px] text-center text-lg font-light text-foreground" data-br=":r106:"
             data-brr="1"
             style="display: inline-block; vertical-align: top; text-decoration: inherit; max-width: 532px;">Hand-picked themes that you can copy and paste into your apps.</span>
-            <div class="flex w-full items-center justify-center space-x-4 py-4 md:pb-10">
+            <div class="flex w-full items-center justify-center space-x-4 py-4 ">
                 <div class="flex items-center space-x-2">
-                    <div class="hidden md:flex">
-                        <div class="mr-2 hidden items-center space-x-0.5 lg:flex">
-                            <button
-                                class="flex h-9 w-9 items-center justify-center rounded-full border-2 text-xs border-[--theme-primary]"
-                                style="--theme-primary: hsl(240 5.9% 10%)">
-                                <span class="lex h-6 w-6 items-center justify-center rounded-full bg-[--theme-primary]">
-
-                                </span>
-                            </button>
+                    <div class=" items-center space-x-2 flex">
+                            @for (theme of themes; track theme) {
+                                <button
+                                    shButton
+                                    variant="outline"
+                                    size="sm"
+                                    [class]="cn('justify-start', theme.name === currentThemeName && 'border-2 border-primary')"
+                                    (click)="onClickChangeTheme(theme)"
+                                    [style.--theme-primary]="'hsl(' + theme.activeColor[mode === 'dark' ? 'dark' : 'light'] + ')'"
+                                    >
+                                    <span
+                                        [class]="cn('mr-1 flex h-5 w-5 shrink-0 -translate-x-1 items-center justify-center rounded-full bg-[--theme-primary]')">
+                                        @if (theme.name === currentThemeName) {
+                                            <lucide-angular name="check" class="h-4 w-4 text-white"></lucide-angular>
+                                        }
+                                    </span>
+                                    {{theme.label}}
+                                </button>
+                            }
                         </div>
-                    </div>
+                </div>
+            </div>
+            <div class="space-y-0.5">
+                <label class="text-s">Radius</label>
+                <div class="grid grid-cols-5 gap-2">
+                    @for (value of radius; track value) {
+                        <button
+                            shButton
+                            variant="outline"
+                            size="sm"
+                            [class]="cn(
+                            currentThemeRadius === parseFloat(value) && 'border-2 border-primary')"
+                            (click)="onClickChangeRadiusTheme(value)">
+                            {{value}}
+                        </button>
+                    }
                 </div>
             </div>
         </section>

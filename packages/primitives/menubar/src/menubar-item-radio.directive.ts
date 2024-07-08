@@ -1,5 +1,5 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { CdkMenuItemCheckbox } from '@angular/cdk/menu';
+import { CdkMenuItemRadio } from '@angular/cdk/menu';
 import {
     booleanAttribute,
     computed,
@@ -11,30 +11,31 @@ import {
 } from '@angular/core';
 
 @Directive({
-    selector: '[MenubarCheckboxItem]',
+    selector: '[MenubarItemRadio]',
     standalone: true,
-    hostDirectives: [CdkMenuItemCheckbox],
+    hostDirectives: [CdkMenuItemRadio],
     host: {
-        role: 'menuitemcheckbox',
+        role: 'menuitemradio',
+        '[attr.aria-checked]': 'checked()',
         '[attr.data-state]': 'checked() ? "checked": "unchecked"',
         '[disabled]': 'disabledState()'
     }
 })
-export class RdxMenubarItemCheckboxDirective {
-    private readonly cdkMenuItemCheckbox = inject(CdkMenuItemCheckbox, { host: true });
+export class RdxMenubarItemRadioDirective {
+    private readonly cdkMenuItemRadio = inject(CdkMenuItemRadio, { host: true });
 
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
     readonly checked = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     protected readonly disabledState = computed(() => this.disabled || this.disabled$());
 
-    protected readonly checked$ = signal(this.cdkMenuItemCheckbox.checked);
-    protected readonly disabled$ = signal(this.cdkMenuItemCheckbox.disabled);
+    protected readonly checked$ = signal(this.cdkMenuItemRadio.checked);
+    protected readonly disabled$ = signal(this.cdkMenuItemRadio.disabled);
 
     constructor() {
         effect(() => {
-            this.cdkMenuItemCheckbox.checked = this.checked();
-            this.cdkMenuItemCheckbox.disabled = this.disabled();
+            this.cdkMenuItemRadio.checked = this.checked();
+            this.cdkMenuItemRadio.disabled = this.disabled();
         });
     }
 }

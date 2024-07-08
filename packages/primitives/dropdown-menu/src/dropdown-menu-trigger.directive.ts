@@ -12,7 +12,7 @@ import { booleanAttribute, Directive, inject, input, Input } from '@angular/core
         type: 'button',
         '[attr.aria-haspopup]': "'menu'",
         '[attr.aria-expanded]': 'cdkTrigger.isOpen()',
-        '[attr.data-state]': "cdkTrigger.isOpen() ? 'open': 'close'",
+        '[attr.data-state]': "cdkTrigger.isOpen() ? 'open': 'closed'",
         '[attr.data-disabled]': "disabled() ? '' : undefined",
         '[disabled]': 'disabled()',
 

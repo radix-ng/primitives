@@ -48,7 +48,8 @@ export class LayoutComponent {
     }[] = [
         { path: '/docs/getting-started/installation', exact: true, label: 'Docs' },
         { path: '/docs/components/badge', exact: true, label: 'Components' },
-        { path: 'https://blocks.shadcn-ng.com/', external: true, label: 'Blocks' }
+        { path: 'https://blocks.shadcn-ng.com/', external: true, label: 'Blocks' },
+        { path: '/themes', exact: true, label: 'Themes' }
     ];
 
     isActive(route: { path: string; exact?: boolean; label: string; external?: boolean }): boolean {

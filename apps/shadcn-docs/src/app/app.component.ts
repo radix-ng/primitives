@@ -11,6 +11,7 @@ import {
 
 import { NgDocNavbarComponent, NgDocRootComponent, NgDocSidebarComponent } from '@ng-doc/app';
 
+import { ConfigService } from './services/config.service';
 import { ThemeService } from './services/theme.service';
 
 @Component({
@@ -25,14 +26,18 @@ import { ThemeService } from './services/theme.service';
         NgDocNavbarComponent,
         NgDocSidebarComponent
     ],
+    providers: [ConfigService],
     templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
-    themeService = inject(ThemeService);
-    router = inject(Router);
+    private readonly router = inject(Router);
+    private readonly themeService = inject(ThemeService);
 
-    title = 'easy-form-demo';
-    loading = signal(false);
+    private loading = signal(false);
+
+    constructor() {
+        this.themeService.updateTheme();
+    }
 
     ngOnInit() {
         this.router.events.subscribe((event) => {

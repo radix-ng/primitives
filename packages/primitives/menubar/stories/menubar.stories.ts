@@ -1,4 +1,5 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { Check, Dot, LucideAngularModule } from 'lucide-angular';
 
 import { MenubarModule } from '../index';
 
@@ -6,7 +7,7 @@ export default {
     title: 'Primitives/Menubar [In Progress]',
     decorators: [
         moduleMetadata({
-            imports: [MenubarModule]
+            imports: [MenubarModule, LucideAngularModule, LucideAngularModule.pick({ Check, Dot })]
         }),
         componentWrapperDecorator(
             (story) => `
@@ -33,19 +34,36 @@ export const Default: Story = {
   <button class="MenubarTrigger" MenuBarItem [MenuBarTrigger]="edit">
     Edit
   </button>
-
   <button class="MenubarTrigger" MenuBarItem [MenuBarTrigger]="view">
     View
   </button>
+  <button class="MenubarTrigger" MenuBarItem [MenuBarTrigger]="profiles">
+    Profiles
+  </button>
 </div>
+
+<ng-template #profiles>
+  <div class="MenubarContent" MenuBarContent>
+    <div MenubarRadioGroup>
+        <button class="MenubarRadioItem inset" MenubarItemRadio>
+            <lucide-icon class="MenubarItemIndicator" name="dot"/>Andy
+        </button>
+        <button class="MenubarRadioItem inset" MenubarItemRadio checked>
+            <lucide-icon class="MenubarItemIndicator" name="dot"/>Luis
+        </button>
+    </div>
+    <div MenubarSeparator class="MenubarSeparator"></div>
+    <button MenuBarItem class="MenubarItem inset">Edit</button>
+  </div>
+</ng-template>
 
 <ng-template #view>
   <div class="MenubarContent" MenuBarContent>
     <button class="MenubarCheckboxItem inset" MenubarCheckboxItem>
-        Always Show Bookmarks Bar <span></span>
+        <lucide-icon class="MenubarItemIndicator" size="16" name="check" />Always Show Bookmarks Bar
     </button>
-    <button class="MenubarCheckboxItem inset" MenubarCheckboxItem>
-        Always Show Full URLs
+    <button class="MenubarCheckboxItem inset" MenubarCheckboxItem checked>
+        <lucide-icon class="MenubarItemIndicator" size="16" name="check" />Always Show Full URLs
     </button>
     <div MenubarSeparator class="MenubarSeparator"></div>
     <button class="MenubarItem" MenuBarItem>Reload <div class="RightSlot">⌘ R</div></button>
@@ -174,6 +192,17 @@ button {
   pointer-events: none;
 }
 
+.MenubarItemIndicator {
+  position: absolute;
+  left: 0;
+  width: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.MenubarRadioItem:hover,
+.MenubarCheckboxItem:hover,
 .MenubarItem:hover {
   background-color: var(--violet-11);
   color: white;

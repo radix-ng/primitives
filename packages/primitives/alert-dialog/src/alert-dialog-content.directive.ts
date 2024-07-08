@@ -1,10 +1,17 @@
+import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { Directive, ElementRef, inject, Input, Renderer2 } from '@angular/core';
 
 @Directive({
     selector: '[rdxAlertDialogContent]',
+    hostDirectives: [
+        {
+            directive: CdkTrapFocus
+        }
+    ],
     standalone: true,
     host: {
-        '[attr.data-state]': 'open'
+        '[attr.data-state]': 'open',
+        '[attr.cdkTrapFocusAutoCapture]': 'true'
     }
 })
 export class AlertDialogContentDirective {
