@@ -42,7 +42,7 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 ```
 
 ## Primitives Roadmap
-- [ ] Accordion        (In progress) (based on angular/cdk)
+- [x] Accordion        (based on angular/cdk)
 - [x] Alert Dialog
 - [x] Avatar
 - [x] Checkbox                       (adaptation for FormGroup)
