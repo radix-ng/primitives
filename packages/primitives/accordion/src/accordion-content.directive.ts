@@ -6,6 +6,7 @@ import {
     inject,
     InjectionToken,
     input,
+    OnInit,
     signal
 } from '@angular/core';
 import { animationFrameScheduler } from 'rxjs';
@@ -29,8 +30,9 @@ export const RdxAccordionContentToken = new InjectionToken<RdxAccordionContentDi
     },
     hostDirectives: [CdkAccordionItem]
 })
-export class RdxAccordionContentDirective {
+export class RdxAccordionContentDirective implements OnInit {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    private initialized = signal(false);
     state = signal<RdxAccordionItemState>('closed');
     disabled = input(false);
     accordionItem = inject(CdkAccordionItem);
@@ -44,23 +46,43 @@ export class RdxAccordionContentDirective {
         });
     }
 
+    ngOnInit(): void {
+        this.togglePresence();
+    }
+
     setOpen(state?: RdxAccordionItemState | undefined): void {
         if (this.disabled()) {
             return;
         }
 
         if (state === undefined) {
-            if (this.state() === 'open') {
-                this.state.update(() => 'closed');
-            } else {
-                this.state.update(() => 'open');
-            }
+            this.state.update(() => (this.state() === 'open' ? 'closed' : 'open'));
         } else {
             this.state.update(() => state);
         }
     }
 
+    private initialize(): void {
+        if (!this.initialized()) {
+            this.togglePresence();
+
+            animationFrameScheduler.schedule(() => {
+                this.elementRef.nativeElement
+                    .getAnimations()
+                    .forEach((animation) => animation.cancel());
+
+                this.initialized.set(true);
+            });
+        }
+    }
+
     private setPresence(): void {
+        if (!this.initialized()) {
+            this.initialize();
+
+            return;
+        }
+
         animationFrameScheduler.schedule(() => {
             const animations = this.elementRef.nativeElement.getAnimations();
 
@@ -87,13 +109,17 @@ export class RdxAccordionContentDirective {
             }
 
             Promise.all(animations.map((animation) => animation.finished)).then(() => {
-                if (this.state() === 'open') {
-                    this.show();
-                } else {
-                    this.hide();
-                }
+                this.togglePresence();
             });
         });
+    }
+
+    private togglePresence(): void {
+        if (this.state() === 'open') {
+            this.show();
+        } else {
+            this.hide();
+        }
     }
 
     private show(): void {
