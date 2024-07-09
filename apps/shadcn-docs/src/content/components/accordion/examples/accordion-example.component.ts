@@ -1,9 +1,6 @@
 import { Component } from '@angular/core';
 
-import {
-    RdxAccordionContentDirective,
-    RdxAccordionRootDirective
-} from '@radix-ng/primitives/accordion';
+import { RdxAccordionRootDirective } from '@radix-ng/primitives/accordion';
 import {
     ShAccordionContent,
     ShAccordionItemDirective,
@@ -16,7 +13,6 @@ import {
         RdxAccordionRootDirective,
         ShAccordionItemDirective,
         ShAccordionTrigger,
-        RdxAccordionContentDirective,
         ShAccordionContent
     ],
     templateUrl: './accordion-example.component.html'

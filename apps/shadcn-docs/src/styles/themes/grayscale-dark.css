@@ -182,3 +182,7 @@ code.hljs {
 pre code .line {
     color: rgb(255, 255, 255);
 }
+
+pre code .line.highlighted {
+    background-color: rgba(63,63,70,.5);
+}
