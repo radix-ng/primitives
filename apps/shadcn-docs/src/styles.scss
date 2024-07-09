@@ -112,6 +112,11 @@
     blockquote, dd, dl, figure, h1, h2, h3, h4, h5, h6, hr, p, pre {
         margin: 0;
     }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-size: inherit;
+        font-weight: inherit;
+    }
 }
 
 .ng-doc-demo {
@@ -150,15 +155,15 @@ ng-doc-sidebar-item .ng-doc-sidebar-link.active .ng-doc-text  {
     color: hsl(var(--foreground));
 }
 
-ng-doc-page .ng-doc-page-wrapper h1 {
+ng-doc-page .ng-doc-page-wrapper > h1 {
     @apply scroll-m-20 text-4xl font-bold tracking-tight;
 }
 
-ng-doc-page .ng-doc-page-wrapper h2 {
+ng-doc-page .ng-doc-page-wrapper > h2 {
     @apply font-heading mt-12 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight first:mt-0;
 }
 
-ng-doc-page .ng-doc-page-wrapper h3 {
+ng-doc-page .ng-doc-page-wrapper > h3 {
     @apply font-heading mt-8 scroll-m-20 text-xl font-semibold tracking-tight;
 }
 

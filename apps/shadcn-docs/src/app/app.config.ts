@@ -27,6 +27,7 @@ import {
 import { NG_DOC_ROUTING, provideNgDocContext } from '@ng-doc/generated';
 import {
     Check,
+    ChevronDown,
     ChevronRight,
     LucideAngularModule,
     MoreHorizontal,
@@ -52,7 +53,14 @@ export const appConfig: ApplicationConfig = {
 
         importProvidersFrom(
             // todo: remove this as soon as lucide properly supports Angular standalone components.
-            LucideAngularModule.pick({ Plus, Slash, Check, MoreHorizontal, ChevronRight })
+            LucideAngularModule.pick({
+                Plus,
+                Slash,
+                Check,
+                MoreHorizontal,
+                ChevronRight,
+                ChevronDown
+            })
         ),
 
         provideSearchEngine(NgDocDefaultSearchEngine),
