@@ -58,4 +58,11 @@ export class LayoutComponent {
         }
         return this.router.url === route.path;
     }
+
+    getRouteClasses(route: any): string {
+        const baseClasses = this.isActive(route) ? 'text-foreground' : 'text-foreground/60';
+        const additionalClasses =
+            route.path === '/docs/getting-started/installation' ? ' hidden md:block' : '';
+        return baseClasses + additionalClasses;
+    }
 }

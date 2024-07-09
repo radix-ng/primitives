@@ -29,7 +29,7 @@
                         <a [href]="route.path"
                            target="_blank"
                            class="transition-colors hover:text-foreground/80"
-                           [class]="isActive(route) ? 'text-foreground' : 'text-foreground/60'">
+                           [class]="getRouteClasses(route)">
                             {{ route.label }}
                         </a>
                     } @else {
@@ -37,7 +37,7 @@
                            [routerLinkActiveOptions]="{exact: route.exact ?? false}"
                            routerLinkActive="text-foreground"
                            class="transition-colors hover:text-foreground/80"
-                           [class]="isActive(route) ? 'text-foreground' : 'text-foreground/60'">
+                           [class]="getRouteClasses(route)">
                             {{ route.label }}
                         </a>
                     }
