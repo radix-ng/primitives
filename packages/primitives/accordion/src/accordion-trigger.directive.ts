@@ -31,7 +31,9 @@ export class RdxAccordionTriggerDirective {
             return;
         }
 
-        this.accordionRoot.value = [this.accordionItem];
+        if (this.accordionItem.value) {
+            this.accordionRoot.value = [this.accordionItem.value];
+        }
     }
 
     /**

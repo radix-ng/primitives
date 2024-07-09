@@ -1,5 +1,13 @@
 import { CdkAccordion } from '@angular/cdk/accordion';
-import { contentChild, Directive, inject, InjectionToken, input, signal } from '@angular/core';
+import {
+    contentChild,
+    Directive,
+    inject,
+    InjectionToken,
+    Input,
+    input,
+    signal
+} from '@angular/core';
 
 import { RdxAccordionContentToken } from './accordion-content.directive';
 import { RdxAccordionOrientation } from './accordion-root.directive';
@@ -45,6 +53,8 @@ export class RdxAccordionItemDirective {
      * @ignore
      */
     orientation: RdxAccordionOrientation = 'vertical';
+
+    @Input() value?: string;
 
     /**
      * Changes current item state

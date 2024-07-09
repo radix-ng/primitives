@@ -1,6 +1,6 @@
 import { contentChildren, Directive, inject, InjectionToken, Input, OnInit } from '@angular/core';
 
-import { RdxAccordionItemDirective, RdxAccordionItemToken } from './accordion-item.directive';
+import { RdxAccordionItemToken } from './accordion-item.directive';
 
 export type RdxAccordionType = 'single' | 'multiple';
 export type RdxAccordionOrientation = 'horizontal' | 'vertical';
@@ -36,11 +36,11 @@ export class RdxAccordionRootDirective implements OnInit {
      * @private
      * @ignore
      */
-    private _value: RdxAccordionItemDirective[] = [];
+    private _value: string[] = [];
     /**
      * The value of the item to expand when initially rendered and type is "single". Use when you do not need to control the state of the items.
      */
-    @Input() defaultValue?: RdxAccordionItemDirective[] = [];
+    @Input() defaultValue?: string[] = [];
     /**
      * Determines whether one or multiple items can be opened at the same time.
      */
@@ -52,7 +52,7 @@ export class RdxAccordionRootDirective implements OnInit {
     /**
      * The controlled value of the item to expand
      */
-    @Input() set value(value: RdxAccordionItemDirective | RdxAccordionItemDirective[] | undefined) {
+    @Input() set value(value: string | string[] | undefined) {
         if (value !== undefined) {
             this._value = Array.isArray(value) ? value : [value];
         } else {
@@ -83,19 +83,25 @@ export class RdxAccordionRootDirective implements OnInit {
     /**
      * @ignore
      */
-    onValueChange(value: RdxAccordionItemDirective[]): void {
+    onValueChange(value: string[]): void {
         if (this.type === 'single') {
             const currentValue = value.length > 0 ? value[0] : undefined;
 
             this.accordionItems().forEach((accordionItem) => {
-                if (accordionItem === currentValue) {
+                if (accordionItem.value === currentValue) {
                     accordionItem.setOpen();
                 } else {
                     accordionItem.setOpen('closed');
                 }
             });
         } else {
-            value.forEach((valueItem) => valueItem.setOpen());
+            value.forEach((valueItem) => {
+                this.accordionItems().forEach((accordionItem) => {
+                    if (accordionItem.value === valueItem) {
+                        accordionItem.setOpen();
+                    }
+                });
+            });
         }
     }
 
