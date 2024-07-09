@@ -1,11 +1,11 @@
 import { computed, Injectable, InjectionToken, signal } from '@angular/core';
 
-export const TABS_CONTEXT_TOKEN = new InjectionToken<TabsContextService>('TabsContext');
+export const TABS_CONTEXT_TOKEN = new InjectionToken<RdxTabsContextService>('TabsContext');
 
 @Injectable({
     providedIn: 'root'
 })
-export class TabsContextService {
+export class RdxTabsContextService {
     private baseId = this.generateId();
     private value = signal<string | undefined>(undefined);
     private orientation = signal<string>('horizontal');

@@ -26,6 +26,7 @@
             "@radix-ng/primitives/radio": ["packages/primitives/radio/index.ts"],
             "@radix-ng/primitives/roving-focus": ["packages/primitives/roving-focus/index.ts"],
             "@radix-ng/primitives/separator": ["packages/primitives/separator/index.ts"],
+            "@radix-ng/primitives/tabs": ["packages/primitives/tabs/index.ts"],
             "@radix-ng/shadcn/badge": ["packages/shadcn/badge/index.ts"],
             "@radix-ng/shadcn/breadcrumb": ["packages/shadcn/breadcrumb/index.ts"],
             "@radix-ng/shadcn/button": ["packages/shadcn/button/index.ts"],
@@ -35,6 +36,7 @@
             "@radix-ng/shadcn/input": ["packages/shadcn/input/index.ts"],
             "@radix-ng/shadcn/label": ["packages/shadcn/label/index.ts"],
             "@radix-ng/shadcn/table": ["packages/shadcn/table/index.ts"],
+            "@radix-ng/shadcn/tabs": ["packages/shadcn/tabs/index.ts"],
             "@radix-ng/shadcn/theme": ["packages/shadcn/theme/index.ts"],
             "@taxonomy/*": ["apps/showcase-taxonomy/src/app/*"]
         }

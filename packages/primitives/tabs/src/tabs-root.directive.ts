@@ -1,6 +1,6 @@
 import { Directive, effect, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 
-import { TABS_CONTEXT_TOKEN, TabsContextService } from './tabs-context.service';
+import { RdxTabsContextService, TABS_CONTEXT_TOKEN } from './tabs-context.service';
 
 export interface TabsProps {
     /** The value for the selected tab, if controlled */
@@ -29,7 +29,7 @@ export interface TabsProps {
 @Directive({
     selector: '[TabsRoot]',
     standalone: true,
-    providers: [{ provide: TABS_CONTEXT_TOKEN, useExisting: TabsContextService }],
+    providers: [{ provide: TABS_CONTEXT_TOKEN, useExisting: RdxTabsContextService }],
     host: {
         '[attr.data-orientation]': 'orientation',
         '[attr.dir]': 'dir'

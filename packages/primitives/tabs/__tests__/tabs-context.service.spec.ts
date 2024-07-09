@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { TabsContextService } from '../src/tabs-context.service';
+import { RdxTabsContextService } from '../src/tabs-context.service';
 
 describe('TabsContextService', () => {
-    let service: TabsContextService;
+    let service: RdxTabsContextService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({});
-        service = TestBed.inject(TabsContextService);
+        service = TestBed.inject(RdxTabsContextService);
     });
 
     it('should be created', () => {
