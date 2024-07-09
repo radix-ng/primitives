@@ -14,9 +14,18 @@ import { injectAccordionRoot, RdxAccordionOrientation } from './accordion-root.d
     }
 })
 export class RdxAccordionTriggerDirective {
+    /**
+     * @ignore
+     */
     private readonly accordionRoot = injectAccordionRoot();
+    /**
+     * @ignore
+     */
     private readonly accordionItem = injectAccordionItem();
 
+    /**
+     * Fires when trigger clicked
+     */
     onClick(): void {
         if (!this.accordionRoot.collapsible) {
             return;
@@ -25,14 +34,23 @@ export class RdxAccordionTriggerDirective {
         this.accordionRoot.value = [this.accordionItem];
     }
 
+    /**
+     * @ignore
+     */
     getState(): RdxAccordionItemState {
         return this.accordionItem.state();
     }
 
+    /**
+     * @ignore
+     */
     getDisabled(): boolean | undefined {
         return this.accordionItem.disabled() || undefined;
     }
 
+    /**
+     * @ignore
+     */
     getOrientation(): RdxAccordionOrientation {
         return this.accordionRoot.getOrientation();
     }

@@ -31,11 +31,29 @@ export const RdxAccordionContentToken = new InjectionToken<RdxAccordionContentDi
     hostDirectives: [CdkAccordionItem]
 })
 export class RdxAccordionContentDirective implements OnInit {
+    /**
+     * @ignore
+     */
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    /**
+     * @ignore
+     */
     private initialized = signal(false);
+    /**
+     * Current item state
+     */
     state = signal<RdxAccordionItemState>('closed');
+    /**
+     * When true, prevents the user from interacting with the accordion and all its items.
+     */
     disabled = input(false);
+    /**
+     * @ignore
+     */
     accordionItem = inject(CdkAccordionItem);
+    /**
+     * @ignore
+     */
     orientation: RdxAccordionOrientation = 'vertical';
 
     constructor() {
@@ -46,10 +64,16 @@ export class RdxAccordionContentDirective implements OnInit {
         });
     }
 
+    /**
+     * @ignore
+     */
     ngOnInit(): void {
         this.togglePresence();
     }
 
+    /**
+     * @ignore
+     */
     setOpen(state?: RdxAccordionItemState | undefined): void {
         if (this.disabled()) {
             return;
@@ -62,6 +86,9 @@ export class RdxAccordionContentDirective implements OnInit {
         }
     }
 
+    /**
+     * @ignore
+     */
     private initialize(): void {
         if (!this.initialized()) {
             this.togglePresence();
@@ -76,6 +103,9 @@ export class RdxAccordionContentDirective implements OnInit {
         }
     }
 
+    /**
+     * @ignore
+     */
     private setPresence(): void {
         if (!this.initialized()) {
             this.initialize();
@@ -114,6 +144,9 @@ export class RdxAccordionContentDirective implements OnInit {
         });
     }
 
+    /**
+     * @ignore
+     */
     private togglePresence(): void {
         if (this.state() === 'open') {
             this.show();
@@ -122,10 +155,16 @@ export class RdxAccordionContentDirective implements OnInit {
         }
     }
 
+    /**
+     * @ignore
+     */
     private show(): void {
         this.elementRef.nativeElement.removeAttribute('hidden');
     }
 
+    /**
+     * @ignore
+     */
     private hide(): void {
         this.elementRef.nativeElement.setAttribute('hidden', '');
     }

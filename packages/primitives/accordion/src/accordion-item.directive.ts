@@ -29,11 +29,26 @@ export function injectAccordionItem(): RdxAccordionItemDirective {
     hostDirectives: [CdkAccordion]
 })
 export class RdxAccordionItemDirective {
+    /**
+     * @ignore
+     */
     private accordionContent = contentChild.required(RdxAccordionContentToken);
+    /**
+     * Current item state
+     */
     state = signal<RdxAccordionItemState>('closed');
+    /**
+     * When true, prevents the user from interacting with the item.
+     */
     disabled = input(false);
+    /**
+     * @ignore
+     */
     orientation: RdxAccordionOrientation = 'vertical';
 
+    /**
+     * Changes current item state
+     */
     setOpen(state?: RdxAccordionItemState) {
         if (this.disabled()) {
             return;
@@ -48,6 +63,9 @@ export class RdxAccordionItemDirective {
         this.accordionContent().setOpen(this.state());
     }
 
+    /**
+     * @ignore
+     */
     setOrientation(orientation: RdxAccordionOrientation) {
         this.orientation = orientation;
 

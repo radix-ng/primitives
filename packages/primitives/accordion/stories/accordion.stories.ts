@@ -86,6 +86,7 @@ export default {
                         color: var(--violet-11);
                         box-shadow: 0 1px 0 var(--mauve-6);
                         background-color: white;
+                        cursor: default;
                     }
 
                     .AccordionTrigger:hover {

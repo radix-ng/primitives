@@ -1,0 +1,78 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/blocks';
+import * as AccordionStories from './accordion.stories'
+import { RdxAccordionRootDirective } from '../src/accordion-root.directive';
+import { RdxAccordionItemDirective } from '../src/accordion-item.directive';
+import { RdxAccordionHeaderDirective } from '../src/accordion-header.directive';
+import { RdxAccordionTriggerDirective } from '../src/accordion-trigger.directive';
+import { RdxAccordionContentDirective } from '../src/accordion-content.directive';
+
+<Meta title='Primitives/Accordion' />
+
+# Accordion
+
+#### A vertically stacked set of interactive headings that each reveal an associated section of content.
+
+## Single
+
+<Canvas sourceState='hidden' of={AccordionStories.Default} />
+
+## Multiple
+
+<Canvas sourceState='hidden' of={AccordionStories.Multiple} />
+
+## Features
+
+* ❌ Full keyboard navigation.
+* ✅ Supports horizontal/vertical orientation.
+* ✅ Supports Right to Left direction.
+* ✅ Can expand one or multiple items.
+* ✅ Can be controlled or uncontrolled.
+
+## Anatomy
+
+```html
+<div AccordionRoot>
+    <div AccordionItem>
+        <div AccordionHeader>
+            <button AccordionTrigger></button>
+        </div>
+        <div AccordionContent></div>
+    </div>
+</div>
+```
+
+## Import
+
+Get started with importing the directives:
+
+```typescript
+import {
+    RdxAccordionRootDirective,
+    RdxAccordionItemDirective,
+    RdxAccordionHeaderDirective,
+    RdxAccordionTriggerDirective,
+    RdxAccordionContentDirective
+} from '@radix-ng/primitives/accordion';
+```
+
+## API Reference
+
+## RdxAccordionRootDirective
+
+<ArgTypes of={RdxAccordionRootDirective} />
+
+## RdxAccordionItemDirective
+
+<ArgTypes of={RdxAccordionItemDirective} />
+
+## RdxAccordionHeaderDirective
+
+<ArgTypes of={RdxAccordionHeaderDirective} />
+
+## RdxAccordionTriggerDirective
+
+<ArgTypes of={RdxAccordionTriggerDirective} />
+
+## RdxAccordionContentDirective
+
+<ArgTypes of={RdxAccordionContentDirective} />

@@ -13,16 +13,28 @@ import { RdxAccordionOrientation } from './accordion-root.directive';
     }
 })
 export class RdxAccordionHeaderDirective {
+    /**
+     * @ignore
+     */
     private readonly accordionItem = injectAccordionItem();
 
+    /**
+     * @ignore
+     */
     getState(): RdxAccordionItemState {
         return this.accordionItem.state();
     }
 
+    /**
+     * @ignore
+     */
     getDisabled(): string | undefined {
         return this.accordionItem.disabled() ? '' : undefined;
     }
 
+    /**
+     * @ignore
+     */
     getOrientation(): RdxAccordionOrientation {
         return this.accordionItem.orientation;
     }
