@@ -1,3 +1,10 @@
+## 0.5.1 (2024-07-10)
+
+
+### 🧱 Updated Dependencies
+
+- Updated primitives to 0.8.1
+
 ## 0.4.1 (2024-07-06)
 
 

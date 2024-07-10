@@ -1,3 +1,7 @@
+## 0.8.1 (2024-07-10)
+
+This was a version bump only for primitives to align it with other projects, there were no code changes.
+
 ## 0.7.2 (2024-07-06)
 
 
