@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet, Routes } from '@angular/router';
 
 import {
+    NgDocCustomSidebarDirective,
     NgDocNavbarComponent,
     NgDocRootComponent,
     NgDocSidebarComponent,
@@ -15,6 +16,7 @@ import {
 } from '@ng-doc/ui-kit';
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
 
+import { CustomSidebarComponent } from '../ui/custom-sidebar.component';
 import { ThemeSwitcherComponent } from '../ui/theme-switcher/theme-switcher.component';
 
 @Component({
@@ -34,7 +36,9 @@ import { ThemeSwitcherComponent } from '../ui/theme-switcher/theme-switcher.comp
         NgDocIconComponent,
 
         ThemeSwitcherComponent,
-        ShButtonDirective
+        ShButtonDirective,
+        CustomSidebarComponent,
+        NgDocCustomSidebarDirective
     ],
     templateUrl: './docs.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -49,7 +53,7 @@ export class DocsComponent {
         label: string;
     }[] = [
         { path: '/docs/getting-started/installation', exact: true, label: 'Docs' },
-        { path: '/docs/components/badge', exact: true, label: 'Components' },
+        { path: '/docs/components/accordion', exact: true, label: 'Components' },
         { path: 'https://blocks.shadcn-ng.com/', external: true, label: 'Blocks' },
         { path: '/themes', exact: true, label: 'Themes' }
     ];

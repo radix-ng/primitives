@@ -47,7 +47,7 @@ export class LayoutComponent {
         label: string;
     }[] = [
         { path: '/docs/getting-started/installation', exact: true, label: 'Docs' },
-        { path: '/docs/components/badge', exact: true, label: 'Components' },
+        { path: '/docs/components/accordion', exact: true, label: 'Components' },
         { path: 'https://blocks.shadcn-ng.com/', external: true, label: 'Blocks' },
         { path: '/themes', exact: true, label: 'Themes' }
     ];
