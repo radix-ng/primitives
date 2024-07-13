@@ -10,6 +10,8 @@ import { TABS_CONTEXT_TOKEN } from './tabs-context.service';
         tabindex: '0',
         '[id]': 'tabsContext.getBaseId()',
         '[attr.aria-labelledby]': 'tabsContext.getBaseId()',
+        '[attr.data-state]': 'selected() ? "active" : "inactive"',
+        '[attr.data-orientation]': 'tabsContext.orientation$()',
         '[hidden]': '!selected()'
     }
 })
