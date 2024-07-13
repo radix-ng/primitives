@@ -31,7 +31,8 @@ module.exports = {
                 'deps-dev',
                 'changelog',
                 'ci',
-                'build'
+                'build',
+                'theme'
             ]
         ]
     }

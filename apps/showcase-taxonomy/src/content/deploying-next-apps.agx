@@ -7,6 +7,12 @@ coverImage: /images/blog/blog-post-3.jpg
 date: 2023-01-02
 ---
 
+<script lang="ts">
+    import { TestComponent } from '../app/components/ui/test.component.js'
+</script>
+
+<template lang="md">
+<app-test-component></app-test-component>
 
 Until now, trying to style an article, document, or blog post with Tailwind has been a tedious task that required a keen eye for typography and a lot of complex custom CSS.
 
@@ -63,7 +69,7 @@ Something a wise person once told me about typography is:
 
 It's probably important that images look okay here by default as well:
 
-<Image
+<image
 src="/images/blog/blog-post-4.jpg"
 width="718"
 height="404"
@@ -213,3 +219,4 @@ A link like www.example.com or https://example.com would automatically be conver
 
 This works for email links too: contact@example.com.
 
+</template>
