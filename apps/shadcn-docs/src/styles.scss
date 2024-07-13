@@ -119,8 +119,9 @@
     }
 
     ng-doc-sidenav {
-        @apply container;
+        @apply lg:container;
     }
+
 }
 
 .ng-doc-demo {

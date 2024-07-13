@@ -9,7 +9,7 @@ import { NG_DOC_CONTEXT } from '@ng-doc/app';
     imports: [RouterLinkActive, RouterLink],
     template: `
         <aside
-            class="fixed top-14 z-30 -ml-2 hidden h-[calc(100vh-3.5rem)] w-full shrink-0 md:sticky md:block"
+            class="fixed top-14 z-30 -ml-2 hidden h-[calc(100vh-3.5rem)] w-full shrink-0 lg:sticky lg:block"
         >
             <div class="relative h-full overflow-hidden py-6 pr-6 lg:py-8">
                 <div class="w-full">
@@ -32,6 +32,28 @@ import { NG_DOC_CONTEXT } from '@ng-doc/app';
                         </div>
                     }
                 </div>
+            </div>
+        </aside>
+        <aside class="bg-background w-full">
+            <div class="h-[100vh] overflow-hidden p-10 pb-10">
+                @for (category of navigationItems; track category) {
+                    <div class="pb-4">
+                        <h4 class="mb-1 rounded-md px-2 py-1 text-sm font-semibold">
+                            {{ category.title }}
+                        </h4>
+                        <div class="grid grid-flow-row auto-rows-max text-sm">
+                            @for (item of category.children; track item) {
+                                <a
+                                    [class]="getRouteClasses(item)"
+                                    [routerLink]="[item?.route ?? '']"
+                                    routerLinkActive="active"
+                                >
+                                    {{ item.title }}
+                                </a>
+                            }
+                        </div>
+                    </div>
+                }
             </div>
         </aside>
     `
