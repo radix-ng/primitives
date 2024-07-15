@@ -5,7 +5,7 @@
 > This library works only with Angular 18+.
 
 ```bash
-npm install @radix-ng/shadcn tailwind-merge class-variance-authority clsx
+npm install @radix-ng/shadcn @tailwindcss/typography tailwind-merge class-variance-authority clsx
 ```
 
 ### Add Tailwind to project
