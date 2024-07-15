@@ -41,7 +41,7 @@
         "@angular/platform-browser-dynamic": "18.0.4",
         "@angular/platform-server": "18.0.4",
         "@angular/router": "18.0.4",
-        "@angular/ssr": "18.0.4",
+        "@angular/ssr": "18.1.0",
         "@ng-doc/app": "17.6.14",
         "@ng-doc/builder": "17.6.14",
         "@ng-doc/core": "17.6.14",
