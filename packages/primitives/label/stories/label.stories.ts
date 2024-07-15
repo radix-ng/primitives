@@ -34,6 +34,9 @@ export const Default: Story = {
             ...args
         },
         template: `
+<label LabelRoot htmlFor="uniqId">First Name </label>
+<input type="text" class="Input" id="uniqId" />
+
 <style>
 input {
   all: unset;
@@ -70,11 +73,6 @@ label {
     font-weight: 500;
 }
 </style>
-
-<div class="light light-theme">
-    <label LabelRoot htmlFor="uniqId">First Name </label>
-    <input type="text" class="Input" id="uniqId" />
-</div>
 `
     })
 };
