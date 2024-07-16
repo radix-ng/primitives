@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
 import { RdxDropdownMenuTriggerDirective } from '@radix-ng/primitives/dropdown-menu';
+import { RdxMenuGroupDirective } from '@radix-ng/primitives/menu';
 import { RdxMenuBarDirective } from '@radix-ng/primitives/menubar';
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
 import {
@@ -21,7 +22,8 @@ import {
         ShDropdownMenuSeparator,
         ShDropdownMenuLabel,
         ShDropdownMenuItem,
-        ShDropdownMenuShortcut
+        ShDropdownMenuShortcut,
+        RdxMenuGroupDirective
     ],
     templateUrl: './dropdown-example.component.html'
 })

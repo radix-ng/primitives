@@ -49,7 +49,14 @@ export class ShDropdownMenuSubContent {
     );
 }
 
-const dropdownMenuLabelVariants = cva('px-2 py-1.5 text-sm font-semibold');
+const dropdownMenuLabelVariants = cva('px-2 py-1.5 text-sm font-semibold', {
+    variants: {
+        inset: { true: 'pl-8', false: '' }
+    },
+    defaultVariants: {
+        inset: false
+    }
+});
 
 @Directive({
     selector: '[shDropdownMenuLabel]',
@@ -61,14 +68,23 @@ const dropdownMenuLabelVariants = cva('px-2 py-1.5 text-sm font-semibold');
 })
 export class ShDropdownMenuLabel {
     readonly class = input<string>();
+    readonly inset = input<boolean>(false);
 
     protected computedClass = computed(() =>
-        cn(dropdownMenuLabelVariants({ class: this.class() }))
+        cn(dropdownMenuLabelVariants({ inset: this.inset(), class: this.class() }))
     );
 }
 
 const dropdownMenuItemVariants = cva(
-    'relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
+    'relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+    {
+        variants: {
+            inset: { true: 'pl-8', false: '' }
+        },
+        defaultVariants: {
+            inset: false
+        }
+    }
 );
 
 @Directive({
@@ -81,8 +97,11 @@ const dropdownMenuItemVariants = cva(
 })
 export class ShDropdownMenuItem {
     readonly class = input<string>();
+    readonly inset = input<boolean>(false);
 
-    protected computedClass = computed(() => cn(dropdownMenuItemVariants({ class: this.class() })));
+    protected computedClass = computed(() =>
+        cn(dropdownMenuItemVariants({ inset: this.inset(), class: this.class() }))
+    );
 }
 
 const dropdownMenuSeparatorVariants = cva('-mx-1 my-1 h-px bg-muted');
