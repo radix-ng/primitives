@@ -41,7 +41,8 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
     └── primitives         (headless primitives UI without any styling)
 ```
 
-## Primitives Roadmap
+## Roadmap
+### Primitives 
 - [x] Accordion        (based on angular/cdk)
 - [x] Alert Dialog
 - [x] Avatar
@@ -67,6 +68,8 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 - [ ] Toolbar
 - [ ] Tooltip
 
+### Forms
+- [ ] use validations framework – [https://vestjs.dev/](https://vestjs.dev/), [Angular example](https://github.com/simplifiedcourses/ngx-vest-forms)
 
 ## Community
 
