@@ -6,6 +6,7 @@ import { RdxLabelRootDirective } from '@radix-ng/primitives/label';
 import { LucideAngularModule } from 'lucide-angular';
 
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
+import { RdxCheckboxInputDirective } from '../src/checkbox-input.directive';
 import { RdxCheckboxDirective } from '../src/checkbox.directive';
 
 @Component({
@@ -14,63 +15,42 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
         <section [formGroup]="personality">
             <p>
                 <label LabelRoot class="Label" htmlFor="r1">
-                    <button class="CheckboxRoot" rdxCheckbox formControlName="fun">
+                    <button CheckboxRoot class="CheckboxRoot" formControlName="fun">
                         <lucide-angular
-                            rdxCheckboxIndicator
+                            CheckboxIndicator
                             class="CheckboxIndicator"
                             size="16"
                             name="check"
                         ></lucide-angular>
-                        <input
-                            rdxCheckboxIndicator
-                            type="checkbox"
-                            id="r1"
-                            aria-hidden="true"
-                            tabindex="-1"
-                            class="Input"
-                        />
+                        <input CheckboxInput id="r1" class="Input" />
                     </button>
                     Fun
                 </label>
             </p>
             <p>
                 <label LabelRoot class="Label" htmlFor="r2">
-                    <button class="CheckboxRoot" rdxCheckbox formControlName="serious">
+                    <button CheckboxRoot class="CheckboxRoot" formControlName="serious">
                         <lucide-angular
-                            rdxCheckboxIndicator
+                            CheckboxIndicator
                             class="CheckboxIndicator"
                             size="16"
                             name="check"
                         ></lucide-angular>
-                        <input
-                            rdxCheckboxIndicator
-                            id="r2"
-                            type="checkbox"
-                            aria-hidden="true"
-                            tabindex="-1"
-                            class="Input"
-                        />
+                        <input CheckboxInput id="r2" class="Input" />
                     </button>
                     Serious
                 </label>
             </p>
             <p>
                 <label LabelRoot class="Label" htmlFor="r3">
-                    <button class="CheckboxRoot" rdxCheckbox formControlName="smart">
+                    <button CheckboxRoot class="CheckboxRoot" formControlName="smart">
                         <lucide-angular
-                            rdxCheckboxIndicator
+                            CheckboxIndicator
                             class="CheckboxIndicator"
                             size="16"
                             name="check"
                         ></lucide-angular>
-                        <input
-                            rdxCheckboxIndicator
-                            id="r3"
-                            type="checkbox"
-                            aria-hidden="true"
-                            tabindex="-1"
-                            class="Input"
-                        />
+                        <input CheckboxInput id="r3" class="Input" />
                     </button>
                     Smart
                 </label>
@@ -82,6 +62,7 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
         </section>
 
         <button
+            data-accent-color="cyan"
             class="rt-reset rt-BaseButton rt-r-size-2 rt-variant-solid rt-Button"
             (click)="toggleDisable()"
         >
@@ -97,7 +78,8 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
         RdxLabelRootDirective,
         RdxCheckboxDirective,
         RdxCheckboxIndicatorDirective,
-        LucideAngularModule
+        LucideAngularModule,
+        RdxCheckboxInputDirective
     ]
 })
 export class CheckboxReactiveFormsExampleComponent {

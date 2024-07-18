@@ -2,7 +2,11 @@
 
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
-import { RdxCheckboxDirective, RdxCheckboxIndicatorDirective } from '@radix-ng/primitives/checkbox';
+import {
+    RdxCheckboxDirective,
+    RdxCheckboxIndicatorDirective,
+    RdxCheckboxInputDirective
+} from '@radix-ng/primitives/checkbox';
 import { cn } from '@radix-ng/shadcn/core';
 import { cva } from 'class-variance-authority';
 import { LucideAngularModule } from 'lucide-angular';
@@ -12,22 +16,27 @@ const variants = cva('');
 @Component({
     selector: 'sh-checkbox',
     standalone: true,
-    imports: [RdxCheckboxDirective, RdxCheckboxIndicatorDirective, LucideAngularModule],
+    imports: [
+        RdxCheckboxDirective,
+        RdxCheckboxIndicatorDirective,
+        LucideAngularModule,
+        RdxCheckboxInputDirective
+    ],
     host: {
         '[class]': 'computedClass()'
     },
     template: `
         <button
-            rdxCheckbox
+            CheckboxRoot
             class="border-primary ring-offset-background focus-visible:ring-ring data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground peer h-4 w-4 shrink-0 rounded-sm border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
             <lucide-angular
-                rdxCheckboxIndicator
+                CheckboxIndicator
                 name="check"
                 class="flex h-4 items-center justify-center text-current data-[state=unchecked]:hidden"
             ></lucide-angular>
             <input
-                rdxCheckboxIndicator
+                CheckboxInput
                 type="checkbox"
                 aria-hidden="true"
                 tabindex="-1"

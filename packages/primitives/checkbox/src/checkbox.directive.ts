@@ -1,8 +1,10 @@
 import {
     booleanAttribute,
+    computed,
     Directive,
     EventEmitter,
     HostListener,
+    input,
     Input,
     OnChanges,
     Output,
@@ -14,25 +16,27 @@ import { RdxCheckboxToken } from './checkbox.token';
 
 export type CheckboxState = 'unchecked' | 'checked' | 'indeterminate';
 
+let idIterator = 0;
+
 @Directive({
-    selector: 'button[rdxCheckbox]',
+    selector: '[CheckboxRoot]',
     standalone: true,
     providers: [
         { provide: RdxCheckboxToken, useExisting: RdxCheckboxDirective },
         { provide: NG_VALUE_ACCESSOR, useExisting: RdxCheckboxDirective, multi: true }
     ],
     host: {
-        type: 'button',
-        role: 'checkbox',
-        '[disabled]': 'disabled',
-        '[attr.aria-checked]': 'indeterminate ? "mixed" : checked',
         '[attr.data-disabled]': 'disabled ? "" : null',
-        '[attr.data-state]': 'state'
+        '[attr.data-state]': 'state',
+
+        '(keydown)': 'onKeyDown($event)',
+        '(click)': 'onClick()',
+        '(blur)': 'onBlur()'
     }
 })
 export class RdxCheckboxDirective implements ControlValueAccessor, OnChanges {
     /**
-     * Defines whether the checkbox is checked.
+     * The controlled checked state of the checkbox. Must be used in conjunction with onCheckedChange.
      */
     @Input({ transform: booleanAttribute }) checked = false;
 
@@ -45,6 +49,8 @@ export class RdxCheckboxDirective implements ControlValueAccessor, OnChanges {
      * Defines whether the checkbox is disabled.
      */
     @Input({ transform: booleanAttribute }) disabled = false;
+
+    @Input({ transform: booleanAttribute }) required = false;
 
     /**
      * Event emitted when the checkbox checked state changes.
@@ -78,16 +84,14 @@ export class RdxCheckboxDirective implements ControlValueAccessor, OnChanges {
      */
     private onTouched?: () => void;
 
-    @HostListener('keydown', ['$event'])
-    onKeydown(event: KeyboardEvent): void {
+    protected onKeyDown(event: KeyboardEvent): void {
         // According to WAI ARIA, Checkboxes don't activate on enter keypress
         if (event.key === 'Enter') {
             event.preventDefault();
         }
     }
 
-    @HostListener('click')
-    onClick(): void {
+    protected onClick(): void {
         if (this.disabled) {
             return;
         }
@@ -102,8 +106,7 @@ export class RdxCheckboxDirective implements ControlValueAccessor, OnChanges {
         }
     }
 
-    @HostListener('blur')
-    onBlur(): void {
+    protected onBlur(): void {
         this.onTouched?.();
     }
 
