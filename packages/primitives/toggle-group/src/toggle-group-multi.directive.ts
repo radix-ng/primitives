@@ -45,6 +45,7 @@ export class RdxToggleGroupMultiDirective
 {
     /**
      * Access the roving focus group
+     * @ignore
      */
     private readonly rovingFocusGroup = injectRovingFocusGroup();
 
@@ -80,20 +81,26 @@ export class RdxToggleGroupMultiDirective
 
     /**
      * Access the buttons in the toggle group.
+     * @ignore
      */
     @ContentChildren(RdxToggleGroupButtonToken)
     protected buttons?: QueryList<RdxToggleGroupButtonDirective>;
 
     /**
      * The value change callback.
+     * @ignore
      */
     private onChange?: (value: ReadonlyArray<string>) => void;
 
     /**
      * onTouch function registered via registerOnTouch (ControlValueAccessor).
+     * @ignore
      */
     protected onTouched?: () => void;
 
+    /**
+     * @ignore
+     */
     ngOnInit(): void {
         // the toggle button group has a default orientation of horizontal
         // whereas the roving focus group has a default orientation of vertical
@@ -103,12 +110,18 @@ export class RdxToggleGroupMultiDirective
         this.rovingFocusGroup.setOrientation(this.orientation);
     }
 
+    /**
+     * @ignore
+     */
     ngOnChanges(changes: SimpleChanges): void {
         if ('disabled' in changes) {
             this.buttons?.forEach((button) => button.updateDisabled());
         }
     }
 
+    /**
+     * @ignore
+     */
     ngAfterContentInit(): void {
         if (this.disabled) {
             this.buttons?.forEach((button) => button.updateDisabled());
@@ -119,7 +132,7 @@ export class RdxToggleGroupMultiDirective
      * Determine if a value is selected.
      * @param value The value to check.
      * @returns Whether the value is selected.
-     * @internal
+     * @ignore
      */
     isSelected(value: string): boolean {
         return this.value.includes(value);
@@ -128,7 +141,7 @@ export class RdxToggleGroupMultiDirective
     /**
      * Toggle a value.
      * @param value The value to toggle.
-     * @internal
+     * @ignore
      */
     toggle(value: string): void {
         if (this.disabled) {
@@ -146,7 +159,7 @@ export class RdxToggleGroupMultiDirective
     /**
      * Select a value from Angular forms.
      * @param value The value to select.
-     * @internal
+     * @ignore
      */
     writeValue(value: ReadonlyArray<string>): void {
         this.value = value;
@@ -155,7 +168,7 @@ export class RdxToggleGroupMultiDirective
     /**
      * Register a callback to be called when the value changes.
      * @param fn The callback to register.
-     * @internal
+     * @ignore
      */
     registerOnChange(fn: (value: ReadonlyArray<string>) => void): void {
         this.onChange = fn;
@@ -164,7 +177,7 @@ export class RdxToggleGroupMultiDirective
     /**
      * Register a callback to be called when the toggle group is touched.
      * @param fn The callback to register.
-     * @internal
+     * @ignore
      */
     registerOnTouched(fn: () => void): void {
         this.onTouched = fn;
@@ -173,7 +186,7 @@ export class RdxToggleGroupMultiDirective
     /**
      * Set the disabled state of the toggle group.
      * @param isDisabled Whether the toggle group is disabled.
-     * @internal
+     * @ignore
      */
     setDisabledState(isDisabled: boolean): void {
         this.disabled = isDisabled;

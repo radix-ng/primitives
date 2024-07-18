@@ -2,7 +2,6 @@ import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
 import * as ToggleGroupDirectiveStories from './toggle-group.stories';
 import { RdxToggleGroupDirective } from '../src/toggle-group.directive';
 import { RdxToggleGroupButtonDirective } from '../src/toggle-group-button.directive';
-import { toggleGroupButtonExclude, toggleGroupExclude } from '../../.docs/utils/storybook';
 
 <Meta title="Primitives/Toggle Group" />
 
@@ -47,7 +46,7 @@ import { RdxToggleGroupDirective, RdxToggleGroupButtonDirective, RdxToggleGroupM
 
 ### RdxToggleGroupDirective
 
-<ArgTypes exclude={toggleGroupExclude} of={RdxToggleGroupDirective} />
+<ArgTypes of={RdxToggleGroupDirective} />
 
 <Markdown>
   {`
@@ -59,7 +58,7 @@ import { RdxToggleGroupDirective, RdxToggleGroupButtonDirective, RdxToggleGroupM
 
 ### RdxToggleGroupButtonDirective
 
-<ArgTypes exclude={toggleGroupButtonExclude} of={RdxToggleGroupButtonDirective} />
+<ArgTypes of={RdxToggleGroupButtonDirective} />
 
 ## Accessibility
 

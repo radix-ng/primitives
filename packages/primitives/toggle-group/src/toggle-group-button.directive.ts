@@ -1,12 +1,4 @@
-import {
-    booleanAttribute,
-    Directive,
-    inject,
-    InjectionToken,
-    Input,
-    OnChanges,
-    SimpleChanges
-} from '@angular/core';
+import { booleanAttribute, Directive, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 import {
     injectRovingFocusItem,
@@ -35,11 +27,13 @@ import { injectToggleGroup } from './toggle-group.token';
 export class RdxToggleGroupButtonDirective implements OnChanges {
     /**
      * Access the toggle group.
+     * @ignore
      */
     protected readonly toggleGroup = injectToggleGroup();
 
     /**
      * Access the roving focus item.
+     * @ignore
      */
     private readonly rovingFocusItem = injectRovingFocusItem();
 
@@ -61,12 +55,18 @@ export class RdxToggleGroupButtonDirective implements OnChanges {
         return this.toggleGroup.isSelected(this.value);
     }
 
+    /**
+     * @ignore
+     */
     ngOnChanges(changes: SimpleChanges): void {
         if ('disabled' in changes) {
             this.updateDisabled();
         }
     }
 
+    /**
+     * @ignore
+     */
     toggle(): void {
         if (this.disabled) {
             return;
@@ -78,6 +78,7 @@ export class RdxToggleGroupButtonDirective implements OnChanges {
     /**
      * Ensure the disabled state is propagated to the roving focus item.
      * @internal
+     * @ignore
      */
     updateDisabled(): void {
         this.rovingFocusItem.disabled = this.disabled || this.toggleGroup.disabled;

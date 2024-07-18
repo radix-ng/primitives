@@ -2,7 +2,7 @@ import type { StorybookConfig } from '@storybook/angular';
 
 const config: StorybookConfig = {
     stories: [
-        '../../../packages/primitives/.docs/**/*.docs.mdx',
+        '../docs/**/*.docs.mdx',
         '../../../packages/primitives/**/*.docs.mdx',
         '../../../packages/primitives/**/*.stories.@(js|ts)'
     ],

@@ -17,8 +17,10 @@ export default {
                 RdxCheckboxDirective,
                 RdxCheckboxIndicatorDirective,
                 RdxCheckboxInputDirective,
+
                 LucideAngularModule,
                 LucideAngularModule.pick({ Check, Minus }),
+
                 CheckboxReactiveFormsExampleComponent,
                 CheckboxIndeterminateComponent
             ]
