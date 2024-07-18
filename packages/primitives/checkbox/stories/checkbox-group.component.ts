@@ -29,7 +29,11 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
             </p>
             <p>
                 <label LabelRoot class="Label" htmlFor="r2">
-                    <button CheckboxRoot class="CheckboxRoot" formControlName="serious">
+                    <button
+                        CheckboxRoot
+                        class="CheckboxRoot rt-BaseCheckboxRoot rt-CheckboxRoot"
+                        formControlName="serious"
+                    >
                         <lucide-angular
                             CheckboxIndicator
                             class="CheckboxIndicator"
@@ -57,7 +61,7 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
             </p>
         </section>
         <section class="Label" [formGroup]="personality">
-            <h4>You chose:</h4>
+            <h4>You chose:&nbsp;</h4>
             {{ personality.value | json }}
         </section>
 

@@ -35,15 +35,7 @@ const variants = cva('');
                 name="check"
                 class="flex h-4 items-center justify-center text-current data-[state=unchecked]:hidden"
             ></lucide-angular>
-            <input
-                CheckboxInput
-                type="checkbox"
-                aria-hidden="true"
-                tabindex="-1"
-                [id]="idLabel()"
-                value="on"
-                class="cdk-visually-hidden"
-            />
+            <input CheckboxInput [id]="idLabel()" value="on" class="cdk-visually-hidden" />
         </button>
     `,
     changeDetection: ChangeDetectionStrategy.OnPush,

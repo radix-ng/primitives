@@ -31,6 +31,7 @@
                 "compodoc": true,
                 "compodocArgs": ["-e", "json", "-d", "apps/storybook-radix/.storybook"],
                 "styles": [
+                    "apps/storybook-radix/.storybook/main.scss",
                     "@radix-ui/themes/styles.css",
                     "@angular/cdk/overlay-prebuilt.css"
                 ],

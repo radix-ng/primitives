@@ -26,11 +26,12 @@ let idIterator = 0;
         { provide: NG_VALUE_ACCESSOR, useExisting: RdxCheckboxDirective, multi: true }
     ],
     host: {
+        '[disabled]': 'disabled',
         '[attr.data-disabled]': 'disabled ? "" : null',
         '[attr.data-state]': 'state',
 
         '(keydown)': 'onKeyDown($event)',
-        '(click)': 'onClick()',
+        '(click)': 'onClick($event)',
         '(blur)': 'onBlur()'
     }
 })
@@ -91,7 +92,7 @@ export class RdxCheckboxDirective implements ControlValueAccessor, OnChanges {
         }
     }
 
-    protected onClick(): void {
+    protected onClick($event: MouseEvent): void {
         if (this.disabled) {
             return;
         }
@@ -104,6 +105,8 @@ export class RdxCheckboxDirective implements ControlValueAccessor, OnChanges {
             this.indeterminate = false;
             this.indeterminateChange.emit(this.indeterminate);
         }
+
+        $event.preventDefault();
     }
 
     protected onBlur(): void {

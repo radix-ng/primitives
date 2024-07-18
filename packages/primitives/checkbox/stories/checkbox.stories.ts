@@ -43,8 +43,7 @@ export const Default: Story = {
     <div style="display: flex; align-items: center;">
         <button CheckboxRoot class="CheckboxRoot" id="r1" [(checked)]="checked">
             <lucide-angular CheckboxIndicator class="CheckboxIndicator" size="16" name="check"></lucide-angular>
-            <input CheckboxInput type="checkbox"
-            style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0; width: 25px; height: 25px;"/>
+            <input CheckboxInput type="checkbox" class="cdk-visually-hidden"/>
         </button>
         <label LabelRoot htmlFor="r1" class="Label">Check Item</label>
     </div>
@@ -94,6 +93,7 @@ button {
 };
 
 export const CheckboxGroup: Story = {
+    name: 'With Reactive forms',
     render: () => ({
         template: `<checkbox-groups-forms-example></checkbox-groups-forms-example>`
     })

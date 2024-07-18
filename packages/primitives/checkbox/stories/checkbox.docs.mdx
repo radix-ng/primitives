@@ -28,8 +28,9 @@ import { RdxCheckboxDirective, RdxCheckboxIndicatorDirective } from '@radix-ng/p
 ## Anatomy
 
 ```html
-<button rdxCheckbox [(checked)]="checked">
-    <lucide-angular rdxCheckboxIndicator name="check"></lucide-angular>
+<button CheckboxRoot [(checked)]="checked">
+    <lucide-angular CheckboxIndicator name="check"></lucide-angular>
+    <input CheckboxInput type="checkbox" class="cdk-visually-hidden"/>
 </button>
 ```
 
