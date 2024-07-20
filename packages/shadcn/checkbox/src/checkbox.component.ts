@@ -43,14 +43,20 @@ const variants = cva('flex');
             class="border-primary ring-offset-background focus-visible:ring-ring data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground peer h-4 w-4 shrink-0 rounded-sm border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             [checked]="checked()"
             [indeterminate]="indeterminate()"
-            (checkedChange)="onChange($event)"
+            (checkedChange)="onCheckedChange($event)"
+            (indeterminateChange)="onIndeterminateChange($event)"
         >
             <lucide-angular
                 CheckboxIndicator
                 [name]="iconName()"
                 class="flex h-4 items-center justify-center text-current data-[state=unchecked]:hidden"
             ></lucide-angular>
-            <input CheckboxInput [id]="id()" value="on" class="cdk-visually-hidden" />
+            <input
+                CheckboxInput
+                [id]="id()"
+                [value]="checked.asReadonly()"
+                class="cdk-visually-hidden"
+            />
         </button>
     `,
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -80,10 +86,16 @@ export class ShCheckboxComponent {
         );
     }
 
-    protected onChange(event: boolean): void {
+    protected onCheckedChange(event: boolean): void {
         this.checked.set(event);
         this.checkedChange.emit(event);
 
+        this.updateIconName();
+    }
+
+    protected onIndeterminateChange(event: boolean): void {
+        this.checked.set(false);
+        this.indeterminate.set(event);
         this.updateIconName();
     }
 
