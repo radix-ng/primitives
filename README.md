@@ -71,6 +71,9 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 ### Forms
 - [ ] use validations framework – [https://vestjs.dev/](https://vestjs.dev/), [Angular example](https://github.com/simplifiedcourses/ngx-vest-forms)
 
+### DataGrid
+- [ ] (In progress) with [Tanstack Table](https://tanstack.com/table/latest), [https://shadcn-datagrid.vercel.app/](https://shadcn-datagrid.vercel.app/)
+
 ## Community
 
 We're excited to see the community adopt, raise issues, and provide feedback.
