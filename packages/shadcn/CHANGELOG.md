@@ -1,3 +1,10 @@
+## 0.5.3 (2024-07-20)
+
+
+### 🩹 Fixes
+
+- **shadcn:** checkbox indeterminate state ([ef6cc4d](https://github.com/radix-ng/primitives/commit/ef6cc4d))
+
 ## 0.5.2 (2024-07-20)
 
 
