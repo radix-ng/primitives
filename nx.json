@@ -88,22 +88,22 @@
     },
     "useInferencePlugins": false,
     "release": {
-        "releaseTagPattern": "{projectName}@{version}",
-        "changelog": {
-            "automaticFromRef": true
+        "projectsRelationship": "independent",
+        "projects": ["shadcn", "primitives"],
+        "version": {
+            "conventionalCommits": true
         },
-        "groups": {
-            "packages": {
-                "projects": ["primitives", "shadcn"],
-                "projectsRelationship": "independent",
-                "changelog": {
-                    "createRelease": "github",
-                    "file": "{projectRoot}/CHANGELOG.md",
-                    "renderOptions": {
-                        "authors": false
-                    }
+        "changelog": {
+            "projectChangelogs": {
+                "createRelease": "github",
+                "renderOptions": {
+                    "commitReferences": true,
+                    "authors": false
                 }
             }
+        },
+        "git": {
+            "commitMessage": "chore(release): publish [skip ci]"
         }
     }
 }
