@@ -1,3 +1,12 @@
+## 0.8.2 (2024-07-20)
+
+
+### 🚀 Features
+
+- **primitives:** upd Checkbox added input primitive and upd docs for imdeterminate ([e7d1279](https://github.com/radix-ng/primitives/commit/e7d1279))
+
+- **shadcn:** updated checkbox indeterminate state ([497659d](https://github.com/radix-ng/primitives/commit/497659d))
+
 ## 0.8.1 (2024-07-10)
 
 This was a version bump only for primitives to align it with other projects, there were no code changes.

@@ -1,3 +1,19 @@
+## 0.5.2 (2024-07-20)
+
+
+### 🚀 Features
+
+- **shadcn:** added part of typography ([8150f40](https://github.com/radix-ng/primitives/commit/8150f40))
+
+- **primitives:** upd Checkbox added input primitive and upd docs for imdeterminate ([e7d1279](https://github.com/radix-ng/primitives/commit/e7d1279))
+
+- **shadcn:** updated checkbox indeterminate state ([497659d](https://github.com/radix-ng/primitives/commit/497659d))
+
+
+### 🧱 Updated Dependencies
+
+- Updated primitives to 0.8.2
+
 ## 0.5.1 (2024-07-10)
 
 
