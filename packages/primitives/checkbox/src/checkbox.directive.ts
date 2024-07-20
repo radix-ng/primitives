@@ -1,10 +1,7 @@
 import {
     booleanAttribute,
-    computed,
     Directive,
     EventEmitter,
-    HostListener,
-    input,
     Input,
     OnChanges,
     Output,
@@ -15,8 +12,6 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { RdxCheckboxToken } from './checkbox.token';
 
 export type CheckboxState = 'unchecked' | 'checked' | 'indeterminate';
-
-let idIterator = 0;
 
 @Directive({
     selector: '[CheckboxRoot]',

@@ -9,3 +9,6 @@
 
 ### With text
 {{ NgDocActions.demo("CheckboxExampleWithTextComponent", { defaultTab: "HTML", expanded: false}) }}
+
+### Indeterminate state
+{{ NgDocActions.demo("CheckboxExampleIndeterminateComponent", { defaultTab: "HTML", expanded: false}) }}

@@ -1,6 +1,7 @@
 import { NgDocPage } from '@ng-doc/core';
 
 import ExamplesCategory from '../ng-doc.category';
+import { CheckboxExampleIndeterminateComponent } from './examples/checkbox-example-indeterminate.component';
 import { CheckboxExampleWithTextComponent } from './examples/checkbox-example-withtext.component';
 import { CheckboxExampleComponent } from './examples/checkbox-example.component';
 
@@ -10,7 +11,8 @@ const CheckboxPage: NgDocPage = {
     category: ExamplesCategory,
     demos: {
         CheckboxExampleComponent,
-        CheckboxExampleWithTextComponent
+        CheckboxExampleWithTextComponent,
+        CheckboxExampleIndeterminateComponent
     },
     keyword: 'CheckboxPage'
 };

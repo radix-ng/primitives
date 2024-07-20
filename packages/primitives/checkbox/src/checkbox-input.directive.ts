@@ -16,7 +16,8 @@ import { injectCheckbox } from './checkbox.token';
         '[attr.aria-checked]': 'checkbox.indeterminate ? "mixed" : checkbox.checked',
         '[attr.aria-required]': 'checkbox.required ? "" : null',
         '[attr.data-state]': 'checkbox.state',
-        '[attr.data-disabled]': 'checkbox.disabled ? "" : null'
+        '[attr.data-disabled]': 'checkbox.disabled ? "" : null',
+        '[attr.value]': 'value()'
     }
 })
 export class RdxCheckboxInputDirective {
@@ -26,4 +27,13 @@ export class RdxCheckboxInputDirective {
     protected readonly elementId = computed(() =>
         this.id() ? this.id() : `rdx-checkbox-${this.id()}`
     );
+
+    protected readonly value = computed(() => {
+        const state = this.checkbox.state;
+        if (state === 'indeterminate') {
+            return '';
+        }
+
+        return state ? 'on' : 'off';
+    });
 }

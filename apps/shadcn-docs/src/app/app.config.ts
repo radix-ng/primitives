@@ -30,6 +30,7 @@ import {
     ChevronDown,
     ChevronRight,
     LucideAngularModule,
+    Minus,
     MoreHorizontal,
     Plus,
     Slash
@@ -55,6 +56,7 @@ export const appConfig: ApplicationConfig = {
             // todo: remove this as soon as lucide properly supports Angular standalone components.
             LucideAngularModule.pick({
                 Plus,
+                Minus,
                 Slash,
                 Check,
                 MoreHorizontal,
