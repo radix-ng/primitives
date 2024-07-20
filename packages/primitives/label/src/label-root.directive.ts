@@ -1,4 +1,4 @@
-import { Directive, ElementRef, inject, Input, input } from '@angular/core';
+import { computed, Directive, ElementRef, inject, input } from '@angular/core';
 
 let idIterator = 0;
 
@@ -7,14 +7,14 @@ let idIterator = 0;
     exportAs: 'LabelRoot',
     standalone: true,
     host: {
-        '[attr.id]': 'this.id',
+        '[attr.id]': 'this.elementId()',
         '[attr.for]': 'htmlFor ? htmlFor() : null',
         '(mousedown)': 'onMouseDown($event)'
     }
 })
 export class RdxLabelRootDirective {
-    @Input() id = `rdx-label-${idIterator++}`;
-
+    readonly id = input<string>(`rdx-label-${idIterator++}`);
+    protected readonly elementId = computed(() => (this.id() ? this.id() : null));
     /**
      * The id of the element the label is associated with.
      * @default '-'

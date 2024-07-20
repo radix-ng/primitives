@@ -9,6 +9,9 @@ import { RdxMenuItemDirective } from '@radix-ng/primitives/menu';
     hostDirectives: [{ directive: RdxMenuItemDirective, inputs: ['rdxDisabled: disabled '] }]
 })
 export class RdxDropdownMenuItemDirective {
+    /*
+     * When true, prevents the user from interacting with the item.
+     */
     readonly disabled = input<boolean, BooleanInput>(false, {
         transform: booleanAttribute,
         alias: 'rdxDisabled'
