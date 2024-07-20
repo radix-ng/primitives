@@ -103,7 +103,7 @@
             }
         },
         "git": {
-            "commitMessage": "chore(release): publish [skip ci]"
+            "commitMessage": "chore(release): publish"
         }
     }
 }
