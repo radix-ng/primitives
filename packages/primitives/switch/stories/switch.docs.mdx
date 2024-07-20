@@ -22,7 +22,7 @@ import * as SwitchDirectiveStories from './switch.stories';
 Get started with importing the directives:
 
 ```typescript
-import { RdxSwitchRootDirective, RdxSwitchThumbDirective } from '@radix-ng/primitives/switch';
+import { RdxSwitchRootDirective, RdxSwitchThumbDirective, RdxSwitchInputDirective } from '@radix-ng/primitives/switch';
 ```
 
 ## Examples
@@ -30,6 +30,14 @@ import { RdxSwitchRootDirective, RdxSwitchThumbDirective } from '@radix-ng/primi
 ```html
 <label LabelRoot htmlFor="airplane-mode">Airplane mode</label>
 <button SwitchRoot [(checked)]="checked" id="airplane-mode">
+    <span SwitchThumb></span>
+</button>
+```
+
+```html
+<label LabelRoot htmlFor="airplane-mode">Airplane mode</label>
+<button SwitchRoot [(checked)]="checked" id="airplane-mode">
+    <input SwitchInput />
     <span SwitchThumb></span>
 </button>
 ```

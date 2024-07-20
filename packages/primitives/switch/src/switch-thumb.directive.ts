@@ -7,7 +7,7 @@ import { injectSwitch } from './switch-root.directive';
     exportAs: 'SwitchThumb',
     standalone: true,
     host: {
-        '[attr.data-disabled]': 'switchRoot.disabled ? "true" : null',
+        '[attr.data-disabled]': 'switchRoot.disabledState() ? "true" : null',
         '[attr.data-state]': 'switchRoot.checked() ? "checked" : "unchecked"'
     }
 })

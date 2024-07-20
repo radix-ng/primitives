@@ -9,13 +9,15 @@ import { injectSwitch } from './switch-root.directive';
     host: {
         type: 'checkbox',
         tabindex: '-1',
+        '[attr.defaultChecked]': 'switchRoot.checked()',
         '[attr.aria-checked]': 'switchRoot.checked()',
         '[attr.aria-hidden]': 'true',
-        '[attr.aria-required]': 'switchRoot.required',
+        '[attr.aria-required]': 'switchRoot.required()',
         '[attr.data-state]': 'switchRoot.checked() ? "checked" : "unchecked"',
-        '[attr.data-disabled]': 'switchRoot.disabled ? "true" : null',
-        '[attr.disabled]': 'switchRoot.disabled ? switchRoot.disabled : null',
-        style: 'position: absolute; pointerEvents: none; opacity: 0; margin: 0;'
+        '[attr.data-disabled]': 'switchRoot.disabledState() ? "true" : null',
+        '[attr.disabled]': 'switchRoot.disabledState() ? switchRoot.disabledState() : null',
+        '[attr.value]': 'switchRoot.checked() ? "on" : "off"',
+        style: 'transform: translateX(-100%); position: absolute; overflow: hidden; pointerEvents: none; opacity: 0; margin: 0;'
     }
 })
 export class RdxSwitchInputDirective {
