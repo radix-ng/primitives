@@ -1,3 +1,10 @@
+## 0.5.4 (2024-07-20)
+
+
+### 🩹 Fixes
+
+- **shadcn:** revert checkbox changes ([4576512](https://github.com/radix-ng/primitives/commit/4576512))
+
 ## 0.5.3 (2024-07-20)
 
 
