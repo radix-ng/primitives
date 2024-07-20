@@ -25,7 +25,7 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 2. [shadcn/ui blocks](https://ui.shadcn.com/blocks) - [https://blocks.shadcn-ng.com/](https://blocks.shadcn-ng.com/)
 
 ## Components
-1. [shadcn/ui](https://ui.shadcn.com/) Angular version – [https://www.shadcn-ng.com/](https://www.shadcn-ng.com/)
+1. [shadcn/ui](https://ui.shadcn.com/) Angular version – [https://shadcn-ng.com/](https://shadcn-ng.com/)
 2. RadixUI Components ...'soon'
 
 ## Project structure
