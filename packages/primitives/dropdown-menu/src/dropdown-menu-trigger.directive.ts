@@ -7,7 +7,13 @@ import { outputFromObservable } from '@angular/core/rxjs-interop';
     selector: '[DropdownMenuTrigger]',
     standalone: true,
     hostDirectives: [
-        { directive: CdkMenuTrigger, inputs: ['cdkMenuTriggerFor: DropdownMenuTrigger'] }
+        {
+            directive: CdkMenuTrigger,
+            inputs: [
+                'cdkMenuTriggerFor: DropdownMenuTrigger',
+                'cdkMenuPosition: DropdownMenuPosition'
+            ]
+        }
     ],
     host: {
         type: 'button',

@@ -42,7 +42,15 @@ export const Default: Story = {
     render: () => ({
         template: `
 
-<button [DropdownMenuTrigger]="file" class="IconButton" aria-label="Customise options">
+<button [DropdownMenuTrigger]="file"
+        [DropdownMenuPosition]="[{
+            originX: 'start',
+            originY: 'bottom',
+            overlayX: 'start',
+            overlayY: 'top',
+            offsetY: 4
+        }]"
+      class="IconButton" aria-label="Customise options">
     <lucide-angular size="16" name="menu" style="height: 1.3rem;"></lucide-angular>
 </button>
 
