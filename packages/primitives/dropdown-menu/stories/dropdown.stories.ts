@@ -1,3 +1,4 @@
+import { RdxDropdownMenuDirective } from '@radix-ng/primitives/dropdown-menu';
 import { MenuModule } from '@radix-ng/primitives/menu';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { LucideAngularModule, Menu } from 'lucide-angular';
@@ -17,6 +18,7 @@ export default {
                 RdxDropdownMenuItemDirective,
                 RdxDropdownMenuSeparatorDirective,
                 RdxDropdownMenuContentDirective,
+                RdxDropdownMenuDirective,
                 LucideAngularModule,
                 LucideAngularModule.pick({ Menu })
             ]
@@ -39,11 +41,10 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: `
-<div MenuBarRoot>
-  <button [DropdownMenuTrigger]="file" class="IconButton" aria-label="Customise options">
+
+<button [DropdownMenuTrigger]="file" class="IconButton" aria-label="Customise options">
     <lucide-angular size="16" name="menu" style="height: 1.3rem;"></lucide-angular>
-  </button>
-</div>
+</button>
 
 <ng-template #file>
   <div class="DropdownMenuContent" DropdownMenuContent>

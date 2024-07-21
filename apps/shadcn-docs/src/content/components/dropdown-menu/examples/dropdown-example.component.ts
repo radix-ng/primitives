@@ -1,3 +1,4 @@
+import { CdkMenu } from '@angular/cdk/menu';
 import { Component } from '@angular/core';
 
 import { RdxDropdownMenuTriggerDirective } from '@radix-ng/primitives/dropdown-menu';
@@ -23,9 +24,34 @@ import {
         ShDropdownMenuLabel,
         ShDropdownMenuItem,
         ShDropdownMenuShortcut,
-        RdxMenuGroupDirective
+        RdxMenuGroupDirective,
+
+        CdkMenu
     ],
-    templateUrl: './dropdown-example.component.html'
+    template: `
+        <button shButton variant="outline" [DropdownMenuTrigger]="menu">Open</button>
+
+        <ng-template #menu>
+            <div shDropdownMenuContent class="w-56">
+                <div shDropdownMenuLabel>My Account</div>
+                <div shDropdownMenuSeparator></div>
+                <div MenuGroup>
+                    <div shDropdownMenuItem>
+                        <span>Profile</span>
+                        <span shDropdownMenuShortcut>⇧⌘P</span>
+                    </div>
+                    <div shDropdownMenuItem>
+                        <span>Billing</span>
+                        <span shDropdownMenuShortcut>⌘B</span>
+                    </div>
+                    <div shDropdownMenuItem>
+                        <span>Keyboard shortcuts</span>
+                        <span shDropdownMenuShortcut>⌘K</span>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    `
 })
 export class DropdownExampleComponent {
     protected readonly RdxDropdownMenuTriggerDirective = RdxDropdownMenuTriggerDirective;
