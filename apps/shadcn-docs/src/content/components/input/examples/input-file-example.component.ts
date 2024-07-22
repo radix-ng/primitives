@@ -6,6 +6,11 @@ import { ShLabelDirective } from '@radix-ng/shadcn/label';
 @Component({
     standalone: true,
     imports: [ShInputDirective, ShLabelDirective],
-    templateUrl: './input-file-example.component.html'
+    template: `
+        <div class="grid w-full max-w-sm items-center gap-1.5">
+            <label shLabel htmlFor="picture">Picture</label>
+            <input shInput id="picture" type="file" />
+        </div>
+    `
 })
 export class InputFileExampleComponent {}

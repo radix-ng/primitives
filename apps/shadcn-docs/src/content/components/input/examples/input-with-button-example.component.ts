@@ -6,6 +6,11 @@ import { ShInputDirective } from '@radix-ng/shadcn/input';
 @Component({
     standalone: true,
     imports: [ShInputDirective, ShButtonDirective],
-    templateUrl: './input-with-button-example.component.html'
+    template: `
+        <div class="flex w-full max-w-sm items-center space-x-2">
+            <input shInput type="email" placeholder="Email" />
+            <button shButton type="submit">Subscribe</button>
+        </div>
+    `
 })
 export class InputWithButtonExampleComponent {}

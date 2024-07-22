@@ -5,6 +5,8 @@ import { ShBadgeDirective } from '@radix-ng/shadcn/badge';
 @Component({
     standalone: true,
     imports: [ShBadgeDirective],
-    templateUrl: './badge-example-destructive.component.html'
+    template: `
+        <div shBadge variant="destructive">Destructive</div>
+    `
 })
 export class BadgeExampleDestructiveComponent {}

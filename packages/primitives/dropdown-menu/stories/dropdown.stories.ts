@@ -42,7 +42,7 @@ export const Default: Story = {
     render: () => ({
         template: `
 
-<button [DropdownMenuTrigger]="file"
+<button [DropdownMenuTrigger]="menu"
         [DropdownMenuPosition]="[{
             originX: 'start',
             originY: 'bottom',
@@ -50,11 +50,11 @@ export const Default: Story = {
             overlayY: 'top',
             offsetY: 4
         }]"
-      class="IconButton" aria-label="Customise options">
+        class="IconButton" aria-label="Customise options">
     <lucide-angular size="16" name="menu" style="height: 1.3rem;"></lucide-angular>
 </button>
 
-<ng-template #file>
+<ng-template #menu>
   <div class="DropdownMenuContent" DropdownMenuContent>
     <button class="DropdownMenuItem" DropdownMenuItem>
         New Tab <div class="RightSlot">⌘ T</div>

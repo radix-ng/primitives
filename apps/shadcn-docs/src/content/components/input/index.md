@@ -2,7 +2,7 @@
 
 **Displays a form input field or a component that looks like an input field.**
 
-{{ NgDocActions.demo("InputExampleComponent", { defaultTab: "HTML", expanded: false}) }}
+{{ NgDocActions.demo("InputExampleComponent", { expanded: false}) }}
 
 ## Usage
 
@@ -17,10 +17,10 @@ import { ShInputDirective } from '@radix-ng/shadcn/input';
 ## Examples
 
 ### File
-{{ NgDocActions.demo("InputFileExampleComponent", { defaultTab: "HTML", expanded: false}) }}
+{{ NgDocActions.demo("InputFileExampleComponent", { expanded: false}) }}
 
 ### With Label
-{{ NgDocActions.demo("InputWithLabelExampleComponent", { defaultTab: "HTML", expanded: false}) }}
+{{ NgDocActions.demo("InputWithLabelExampleComponent", { expanded: false}) }}
 
 ### With Button
-{{ NgDocActions.demo("InputWithButtonExampleComponent", { defaultTab: "HTML", expanded: false}) }}
+{{ NgDocActions.demo("InputWithButtonExampleComponent", { expanded: false}) }}

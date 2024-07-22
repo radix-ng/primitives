@@ -6,6 +6,11 @@ import { ShLabelDirective } from '@radix-ng/shadcn/label';
 @Component({
     standalone: true,
     imports: [ShInputDirective, ShLabelDirective],
-    templateUrl: './input-with-label-example.component.html'
+    template: `
+        <div class="grid w-full max-w-sm items-center gap-1.5">
+            <label shLabel htmlFor="email">Email</label>
+            <input shInput type="email" id="email" />
+        </div>
+    `
 })
 export class InputWithLabelExampleComponent {}

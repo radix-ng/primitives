@@ -1,6 +1,6 @@
 # {{ NgDocPage.title }}
 
-{{ NgDocActions.demo("AccordionExampleComponent", { defaultTab: "HTML", expanded: false}) }}
+{{ NgDocActions.demo("AccordionExampleComponent", { expanded: false}) }}
 
 ## Installation
 

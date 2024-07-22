@@ -2,23 +2,23 @@
 
 **Displays a button or a component that looks like a button.**
 
-{{ NgDocActions.demo("ButtonExampleComponent", { defaultTab: "HTML", expanded: false}) }}
+{{ NgDocActions.demo("ButtonExampleComponent", { expanded: false}) }}
 
 
 ## Examples
 
 
 ### Secondary
-{{ NgDocActions.demo("ButtonExampleSecondaryComponent", { defaultTab: "HTML", expanded: false}) }}
+{{ NgDocActions.demo("ButtonExampleSecondaryComponent", { expanded: false}) }}
 
 ### Destructive
-{{ NgDocActions.demo("ButtonExampleDestructiveComponent", { defaultTab: "HTML", expanded: false}) }}
+{{ NgDocActions.demo("ButtonExampleDestructiveComponent", { expanded: false}) }}
 
 ### Outline
-{{ NgDocActions.demo("ButtonExampleOutlineComponent", { defaultTab: "HTML", expanded: false}) }}
+{{ NgDocActions.demo("ButtonExampleOutlineComponent", { expanded: false}) }}
 
 ### Ghost
-{{ NgDocActions.demo("ButtonExampleGhostComponent", { defaultTab: "HTML", expanded: false}) }}
+{{ NgDocActions.demo("ButtonExampleGhostComponent", { expanded: false}) }}
 
 ### Link
-{{ NgDocActions.demo("ButtonExampleLinkComponent", { defaultTab: "HTML", expanded: false}) }}
+{{ NgDocActions.demo("ButtonExampleLinkComponent", { expanded: false}) }}
