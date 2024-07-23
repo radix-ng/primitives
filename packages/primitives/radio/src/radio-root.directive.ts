@@ -9,9 +9,6 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { RdxRovingFocusGroupDirective } from '@radix-ng/primitives/roving-focus';
-
 export const RdxRadioGroupToken = new InjectionToken<RdxRadioGroupDirective>('RdxRadioGroupToken');
 
 export function injectRadioGroup(): RdxRadioGroupDirective {
@@ -36,7 +33,6 @@ interface RadioGroupProps {
         { provide: RdxRadioGroupToken, useExisting: RdxRadioGroupDirective },
         { provide: NG_VALUE_ACCESSOR, useExisting: RdxRadioGroupDirective, multi: true }
     ],
-    hostDirectives: [RdxRovingFocusGroupDirective],
     host: {
         role: 'radiogroup',
         '[attr.aria-orientation]': '_orientation',

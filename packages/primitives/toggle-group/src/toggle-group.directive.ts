@@ -4,20 +4,12 @@ import {
     ContentChildren,
     Directive,
     EventEmitter,
-    inject,
-    InjectionToken,
     Input,
     OnChanges,
-    OnInit,
     QueryList,
     SimpleChanges
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-
-import {
-    injectRovingFocusGroup,
-    RdxRovingFocusGroupDirective
-} from '@radix-ng/primitives/roving-focus';
 
 import type { RdxToggleGroupButtonDirective } from './toggle-group-button.directive';
 import { RdxToggleGroupButtonToken } from './toggle-group-button.token';
@@ -26,12 +18,6 @@ import { RdxToggleGroupToken } from './toggle-group.token';
 @Directive({
     selector: '[rdxToggleGroup]',
     standalone: true,
-    hostDirectives: [
-        {
-            directive: RdxRovingFocusGroupDirective,
-            inputs: ['rdxRovingFocusGroupWrap:wrap', 'rdxRovingFocusGroupOrientation:orientation']
-        }
-    ],
     providers: [
         { provide: RdxToggleGroupToken, useExisting: RdxToggleGroupDirective },
         { provide: NG_VALUE_ACCESSOR, useExisting: RdxToggleGroupDirective, multi: true }
@@ -42,14 +28,7 @@ import { RdxToggleGroupToken } from './toggle-group.token';
         '(focusout)': 'onTouched?.()'
     }
 })
-export class RdxToggleGroupDirective
-    implements OnInit, OnChanges, AfterContentInit, ControlValueAccessor
-{
-    /**
-     * Access the roving focus group
-     */
-    private readonly rovingFocusGroup = injectRovingFocusGroup();
-
+export class RdxToggleGroupDirective implements OnChanges, AfterContentInit, ControlValueAccessor {
     /**
      * The selected toggle button.
      */
@@ -93,15 +72,6 @@ export class RdxToggleGroupDirective
      * onTouch function registered via registerOnTouch (ControlValueAccessor).
      */
     protected onTouched?: () => void;
-
-    ngOnInit(): void {
-        // the toggle button group has a default orientation of horizontal
-        // whereas the roving focus group has a default orientation of vertical
-        // if the toggle button group input is not defined, the orientation will not be set
-        // in the roving focus group and the default vertical orientation will be used.
-        // we must initially set the orientation of the roving focus group to match the toggle button group orientation
-        this.rovingFocusGroup.setOrientation(this.orientation);
-    }
 
     ngOnChanges(changes: SimpleChanges): void {
         if ('disabled' in changes) {

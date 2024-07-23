@@ -6,16 +6,10 @@ import {
     EventEmitter,
     Input,
     OnChanges,
-    OnInit,
     QueryList,
     SimpleChanges
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-
-import {
-    injectRovingFocusGroup,
-    RdxRovingFocusGroupDirective
-} from '@radix-ng/primitives/roving-focus';
 
 import type { RdxToggleGroupButtonDirective } from './toggle-group-button.directive';
 import { RdxToggleGroupButtonToken } from './toggle-group-button.token';
@@ -24,12 +18,6 @@ import { RdxToggleGroupToken } from './toggle-group.token';
 @Directive({
     selector: '[rdxToggleGroupMulti]',
     standalone: true,
-    hostDirectives: [
-        {
-            directive: RdxRovingFocusGroupDirective,
-            inputs: ['rdxRovingFocusGroupWrap:wrap', 'rdxRovingFocusGroupOrientation:orientation']
-        }
-    ],
     providers: [
         { provide: RdxToggleGroupToken, useExisting: RdxToggleGroupMultiDirective },
         { provide: NG_VALUE_ACCESSOR, useExisting: RdxToggleGroupMultiDirective, multi: true }
@@ -41,14 +29,8 @@ import { RdxToggleGroupToken } from './toggle-group.token';
     }
 })
 export class RdxToggleGroupMultiDirective
-    implements OnInit, OnChanges, AfterContentInit, ControlValueAccessor
+    implements OnChanges, AfterContentInit, ControlValueAccessor
 {
-    /**
-     * Access the roving focus group
-     * @ignore
-     */
-    private readonly rovingFocusGroup = injectRovingFocusGroup();
-
     /**
      * The selected toggle button.
      */
@@ -97,18 +79,6 @@ export class RdxToggleGroupMultiDirective
      * @ignore
      */
     protected onTouched?: () => void;
-
-    /**
-     * @ignore
-     */
-    ngOnInit(): void {
-        // the toggle button group has a default orientation of horizontal
-        // whereas the roving focus group has a default orientation of vertical
-        // if the toggle button group input is not defined, the orientation will not be set
-        // in the roving focus group and the default vertical orientation will be used.
-        // we must initially set the orientation of the roving focus group to match the toggle button group orientation
-        this.rovingFocusGroup.setOrientation(this.orientation);
-    }
 
     /**
      * @ignore

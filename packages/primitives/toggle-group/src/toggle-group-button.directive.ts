@@ -1,17 +1,11 @@
 import { booleanAttribute, Directive, Input, OnChanges, SimpleChanges } from '@angular/core';
 
-import {
-    injectRovingFocusItem,
-    RdxRovingFocusItemDirective
-} from '@radix-ng/primitives/roving-focus';
-
 import { RdxToggleGroupButtonToken } from './toggle-group-button.token';
 import { injectToggleGroup } from './toggle-group.token';
 
 @Directive({
     selector: 'button[rdxToggleGroupButton]',
     standalone: true,
-    hostDirectives: [RdxRovingFocusItemDirective],
     providers: [{ provide: RdxToggleGroupButtonToken, useExisting: RdxToggleGroupButtonDirective }],
     host: {
         role: 'radio',
@@ -30,12 +24,6 @@ export class RdxToggleGroupButtonDirective implements OnChanges {
      * @ignore
      */
     protected readonly toggleGroup = injectToggleGroup();
-
-    /**
-     * Access the roving focus item.
-     * @ignore
-     */
-    private readonly rovingFocusItem = injectRovingFocusItem();
 
     /**
      * The value of this toggle button.
@@ -60,7 +48,7 @@ export class RdxToggleGroupButtonDirective implements OnChanges {
      */
     ngOnChanges(changes: SimpleChanges): void {
         if ('disabled' in changes) {
-            this.updateDisabled();
+            // TODO
         }
     }
 
@@ -81,6 +69,6 @@ export class RdxToggleGroupButtonDirective implements OnChanges {
      * @ignore
      */
     updateDisabled(): void {
-        this.rovingFocusItem.disabled = this.disabled || this.toggleGroup.disabled;
+        // TODO
     }
 }

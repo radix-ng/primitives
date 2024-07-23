@@ -1,8 +1,5 @@
 import { booleanAttribute, Directive, inject, InjectionToken, Input } from '@angular/core';
 
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
-
 import { injectRadioGroup } from './radio-root.directive';
 
 export const RdxRadioItemToken = new InjectionToken<RdxRadioItemDirective>('RadioItemToken');
@@ -18,7 +15,6 @@ let nextUniqueId = 0;
     selector: '[RadioItem]',
     exportAs: 'RadioItem',
     standalone: true,
-    hostDirectives: [RdxRovingFocusItemDirective],
     providers: [{ provide: RdxRadioItemToken, useExisting: RdxRadioItemDirective }],
     host: {
         type: 'button',
