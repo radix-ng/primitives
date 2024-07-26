@@ -42,8 +42,10 @@ export const Default: Story = {
     render: () => ({
         template: `
 <button [DropdownMenuTrigger]="menu"
+        sideOffset="4"
+        alignOffset="-5"
         class="IconButton" aria-label="Customise options">
-    <lucide-angular size="16" name="menu" style="height: 1.3rem;"></lucide-angular>
+    <lucide-angular size="16" name="menu" style="height: 1.2rem;"></lucide-angular>
 </button>
 
 <ng-template #menu>
