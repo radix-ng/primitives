@@ -41,15 +41,7 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: `
-
 <button [DropdownMenuTrigger]="menu"
-        [DropdownMenuPosition]="[{
-            originX: 'start',
-            originY: 'bottom',
-            overlayX: 'start',
-            overlayY: 'top',
-            offsetY: 4
-        }]"
         class="IconButton" aria-label="Customise options">
     <lucide-angular size="16" name="menu" style="height: 1.3rem;"></lucide-angular>
 </button>
@@ -66,7 +58,12 @@ export const Default: Story = {
         New Incognito Window
     </button>
     <div MenubarSeparator class="DropdownMenuSeparator"></div>
-    <button class="DropdownMenuSubTrigger" DropdownMenuItem [DropdownMenuTrigger]="share">
+    <button
+        class="DropdownMenuSubTrigger"
+        DropdownMenuItem
+        [DropdownMenuTrigger]="share"
+        [side]="'right'"
+    >
         Share <div class="RightSlot">></div>
     </button>
     <div MenubarSeparator class="DropdownMenuSeparator"></div>
