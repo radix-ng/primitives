@@ -29,22 +29,7 @@ import {
         CdkMenu
     ],
     template: `
-        <button
-            shButton
-            variant="outline"
-            [DropdownMenuTrigger]="menu"
-            [DropdownMenuPosition]="[
-                {
-                    originX: 'start',
-                    originY: 'bottom',
-                    overlayX: 'start',
-                    overlayY: 'top',
-                    offsetY: 4
-                }
-            ]"
-        >
-            Open
-        </button>
+        <button shButton variant="outline" [DropdownMenuTrigger]="menu">Open</button>
 
         <ng-template #menu>
             <div shDropdownMenuContent class="w-56">
