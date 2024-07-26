@@ -31,8 +31,8 @@
         "stylelint:fix": "yarn run stylelint --fix"
     },
     "dependencies": {
-        "@analogjs/content": "1.6.1",
-        "@analogjs/router": "1.6.1",
+        "@analogjs/content": "1.6.4",
+        "@analogjs/router": "1.6.4",
         "@angular/animations": "18.0.4",
         "@angular/cdk": "18.0.4",
         "@angular/common": "18.0.4",
@@ -44,10 +44,10 @@
         "@angular/platform-server": "18.0.4",
         "@angular/router": "18.0.4",
         "@angular/ssr": "18.0.4",
-        "@ng-doc/app": "17.6.14",
-        "@ng-doc/builder": "17.6.14",
-        "@ng-doc/core": "17.6.14",
-        "@ng-doc/ui-kit": "17.6.14",
+        "@ng-doc/app": "17.6.16",
+        "@ng-doc/builder": "17.6.16",
+        "@ng-doc/core": "17.6.16",
+        "@ng-doc/ui-kit": "17.6.16",
         "@storybook/test": "^8.1.6",
         "class-variance-authority": "^0.7.0",
         "express": "4.19.2",
@@ -58,8 +58,8 @@
         "zone.js": "~0.14.3"
     },
     "devDependencies": {
-        "@analogjs/platform": "1.6.1",
-        "@analogjs/vite-plugin-angular": "1.6.1",
+        "@analogjs/platform": "1.6.4",
+        "@analogjs/vite-plugin-angular": "1.6.4",
         "@angular-devkit/build-angular": "18.0.5",
         "@angular-devkit/core": "18.0.5",
         "@angular-devkit/schematics": "18.0.5",
