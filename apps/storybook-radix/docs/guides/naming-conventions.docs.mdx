@@ -1,0 +1,52 @@
+import { Meta } from '@storybook/addon-docs';
+
+
+<Meta title="Guides/Naming Conventions" />
+
+
+# Naming Conventions for Directives
+This document outlines the naming conventions for Angular directives within the Radix project.
+Consistent naming conventions help maintain code readability, improve collaboration, and ensure that all developers understand the purpose and scope of each directive.
+
+## Prefix for Directives
+All custom directives in the Radix project must use the prefix `rdx`.
+This prefix helps distinguish Radix directives from native Angular directives and those from third-party libraries.
+
+## Naming Format
+The general format for naming a directive is as follows:
+
+```html
+rdx<DirectiveName>
+```
+
+Where:
+* `rdx` is the prefix for Radix directives.
+* `directiveName` is a descriptive name in camelCase that indicates the purpose or functionality of the directive.
+
+## Guidelines
+1. Descriptive Names: Choose a name that clearly describes the directive’s functionality. Avoid abbreviations that are not universally understood.
+2. camelCase: Use camelCase for the directive class name and the selector. The prefix rdx is lowercase, and the directive name starts with a lowercase letter.
+3. Avoid Conflicts: Ensure that the directive name does not conflict with any existing native Angular directives or third-party library directives.
+4. Documentation: Provide clear documentation and examples for each directive in the codebase to help other developers understand its usage.
+
+By adhering to these naming conventions and guidelines, we can maintain a clean, organized, and understandable codebase for this project.
+
+## Examples
+
+1. **Highlight Directive**: This directive adds a highlight color to an element.
+
+* Directive Class Name: `RdxHighlightDirective`
+* Selector: `[rdxHighlight]`
+
+```html
+<p rdxHighlight="lightblue">This text will be highlighted in light blue.</p>
+```
+
+2. **Tooltip Directive**: This directive shows a tooltip when hovering over an element.
+
+* Directive Class Name: RdxTooltipDirective
+* Selector: [rdxTooltip]
+
+```html
+<button rdxTooltip="Click to submit">Submit</button>
+```
