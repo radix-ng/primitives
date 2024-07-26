@@ -77,7 +77,9 @@
 
     body {
         @apply bg-background text-foreground;
-        font-feature-settings: "rlig" 1, "calt" 1;
+        font-feature-settings:
+            'rlig' 1,
+            'calt' 1;
     }
 
     .blog-post {
@@ -103,7 +105,7 @@
             }
 
             blockquote {
-                @apply mt-6 border-l-2 pl-6 italic [&>*]:text-muted-foreground;
+                @apply [&>*]:text-muted-foreground mt-6 border-l-2 pl-6 italic;
             }
 
             code {
@@ -131,7 +133,7 @@
             }
 
             tr {
-                @apply m-0 border-t p-0 even:bg-muted;
+                @apply even:bg-muted m-0 border-t p-0;
             }
 
             th {
@@ -146,17 +148,9 @@
                 // @apply mb-4 mt-6 overflow-x-auto rounded-lg border bg-black py-4;
             }
 
-
-            code {
-                @apply relative rounded border px-[0.3rem] py-[0.2rem] font-mono text-sm;
-            }
-
             hr {
                 @apply my-4 md:my-8;
             }
         }
     }
 }
-
-
-
