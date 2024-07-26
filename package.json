@@ -26,7 +26,9 @@
         "----Others-------": "-----------------------------------------------------------------------",
         "prepare": "husky",
         "format:check": "prettier --check packages/**/** --cache",
-        "format:write": "prettier --write packages/**/** --cache"
+        "format:write": "prettier --write packages/**/** --cache",
+        "stylelint": "stylelint '**/*.{css,scss}'",
+        "stylelint:fix": "yarn run stylelint --fix"
     },
     "dependencies": {
         "@analogjs/content": "1.6.1",
