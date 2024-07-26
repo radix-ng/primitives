@@ -6,11 +6,11 @@ export function injectAvatar(): RdxAvatarRootDirective {
     return inject(RdxAvatarToken);
 }
 
-export type ImageLoadingStatus = 'idle' | 'loading' | 'loaded' | 'error';
+export type RdxImageLoadingStatus = 'idle' | 'loading' | 'loaded' | 'error';
 
 @Directive({
-    selector: 'span[AvatarRoot]',
-    exportAs: 'AvatarRoot',
+    selector: 'span[rdxAvatarRoot]',
+    exportAs: 'rdxAvatarRoot',
     standalone: true,
     providers: [{ provide: RdxAvatarToken, useExisting: RdxAvatarRootDirective }]
 })
@@ -20,7 +20,7 @@ export class RdxAvatarRootDirective {
      * To set a new status, use the `setState` method of the component.
      * @internal
      */
-    readonly _state = signal<ImageLoadingStatus>('idle');
+    readonly _state = signal<RdxImageLoadingStatus>('idle');
 
     /**
      * Set the avatar state.
@@ -29,7 +29,7 @@ export class RdxAvatarRootDirective {
      * @returns void This method does not return a value.
      * @internal
      */
-    _setState(state: ImageLoadingStatus): void {
+    _setState(state: RdxImageLoadingStatus): void {
         this._state.set(state);
     }
 }

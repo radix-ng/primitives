@@ -9,15 +9,15 @@ import { RdxAvatarRootDirective } from '../src/avatar-root.directive';
     standalone: true,
     imports: [RdxAvatarFallbackDirective, RdxAvatarRootDirective],
     template: `
-        <span AvatarRoot>
-            <span AvatarFallback>fallback</span>
-            <span AvatarFallback>fallback2</span>
+        <span rdxAvatarRoot>
+            <span rdxAvatarFallback>fallback</span>
+            <span rdxAvatarFallback>fallback2</span>
         </span>
     `
 })
 class RdxMockComponent {}
 
-describe('BrnAvatarFallbackDirective', () => {
+describe('RdxAvatarFallbackDirective', () => {
     let component: RdxMockComponent;
     let fixture: ComponentFixture<RdxMockComponent>;
 

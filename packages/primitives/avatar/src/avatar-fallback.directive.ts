@@ -11,19 +11,19 @@ import {
 import { injectAvatar } from './avatar-root.directive';
 import { injectAvatarConfig } from './avatar.config';
 
-export interface AvatarFallbackProps {
+export interface RdxAvatarFallbackProps {
     delayMs?: number;
 }
 
 @Directive({
-    selector: 'span[AvatarFallback]',
-    exportAs: 'AvatarFallback',
+    selector: 'span[rdxAvatarFallback]',
+    exportAs: 'rdxAvatarFallback',
     standalone: true,
     host: {
         '[style.display]': 'visible ? null : "none"'
     }
 })
-export class RdxAvatarFallbackDirective implements AvatarFallbackProps, OnInit, OnDestroy {
+export class RdxAvatarFallbackDirective implements RdxAvatarFallbackProps, OnInit, OnDestroy {
     private readonly avatar = injectAvatar();
 
     private readonly config = injectAvatarConfig();
