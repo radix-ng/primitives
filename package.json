@@ -4,11 +4,6 @@
     "license": "MIT",
     "private": true,
     "type": "module",
-    "engines": {
-        "node": "18.19.1",
-        "pnpm": "8.15.9"
-    },
-    "packageManager": "pnpm@8.15.9",
     "scripts": {
         "----Storybook----": "-----------------------------------------------------------------------",
         "storybook:primitives": "nx run storybook-radix:storybook",
