@@ -1,0 +1,4 @@
+dist
+node_modules
+
+apps/shadcn-docs/src/styles/themes/*.css

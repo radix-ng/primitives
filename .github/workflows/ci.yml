@@ -39,3 +39,7 @@ jobs:
 
       - name: Test Primitives
         run: pnpm primitives:test
+
+      - name: Linters
+        run: |
+          pnpm run stylelint

@@ -68,6 +68,7 @@
         box-sizing: border-box;
         border: 0 solid hsl(var(--border));
     }
+
     html {
         @apply scroll-smooth;
         background-color: var(--background);
@@ -81,7 +82,10 @@
         text-rendering: optimizeLegibility;
     }
 
-    [type=button],[type=reset],[type=submit],button {
+    [type='button'],
+    [type='reset'],
+    [type='submit'],
+    button {
         -webkit-appearance: button;
         background-color: transparent;
         background-image: none;
@@ -95,7 +99,7 @@
         line-height: inherit;
         color: inherit;
         margin: 0;
-        padding: 0
+        padding: 0;
     }
 
     a {
@@ -103,17 +107,36 @@
         text-decoration: inherit;
     }
 
-    menu,ol,ul {
+    menu,
+    ol,
+    ul {
         list-style: none;
         margin: 0;
-        padding: 0
+        padding: 0;
     }
 
-    blockquote, dd, dl, figure, h1, h2, h3, h4, h5, h6, hr, p, pre {
+    blockquote,
+    dd,
+    dl,
+    figure,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    hr,
+    p,
+    pre {
         margin: 0;
     }
 
-    h1, h2, h3, h4, h5, h6 {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
         font-size: inherit;
         font-weight: inherit;
     }
@@ -121,7 +144,6 @@
     ng-doc-sidenav {
         @apply lg:container;
     }
-
 }
 
 .ng-doc-demo {
@@ -156,7 +178,7 @@ ng-doc-sidebar-item .ng-doc-text {
     color: hsl(var(--muted-foreground));
 }
 
-ng-doc-sidebar-item .ng-doc-sidebar-link.active .ng-doc-text  {
+ng-doc-sidebar-item .ng-doc-sidebar-link.active .ng-doc-text {
     color: hsl(var(--foreground));
 }
 

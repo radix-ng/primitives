@@ -16,8 +16,7 @@ import { Dashboard06Component } from './pages/dashboard-06.component';
         ThemeToggleComponent
     ],
     selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrl: './app.component.scss'
+    templateUrl: './app.component.html'
 })
 export class AppComponent {
     title = 'showcase-dashboards';
