@@ -74,9 +74,7 @@ export default defineConfig({
             social: {
                 github: 'https://github.com/radix-ng/primitives',
             },
-            customCss: ['./src/tailwind.css'],
             sidebar: [
-
                 {
                     label: 'Overview',
                     collapsed: true,
