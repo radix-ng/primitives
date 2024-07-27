@@ -59,7 +59,7 @@ import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
         <button class="ExternalTrigger" (click)="open = !open">External Trigger</button>
         <div
             class="CollapsibleRoot"
-            CollapsibleRoot
+            rdxCollapsibleRoot
             #collapsibleRoot="collapsibleRoot"
             [open]="open"
         >
@@ -71,7 +71,7 @@ import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
                 <span class="Text">&#64;radix-ui/primitives</span>
             </div>
 
-            <div CollapsibleContent>
+            <div rdxCollapsibleContent>
                 <div class="Repository">
                     <span class="Text">&#64;radix-ui/colors</span>
                 </div>

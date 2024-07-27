@@ -4,7 +4,7 @@ import { injectAccordionItem, RdxAccordionItemState } from './accordion-item.dir
 import { RdxAccordionOrientation } from './accordion-root.directive';
 
 @Directive({
-    selector: '[AccordionHeader]',
+    selector: '[rdxAccordionHeader]',
     standalone: true,
     host: {
         '[attr.data-state]': 'getState()',

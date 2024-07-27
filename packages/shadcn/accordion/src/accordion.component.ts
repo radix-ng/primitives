@@ -32,8 +32,8 @@ const accordionTriggerVariants = cva(
     selector: 'sh-accordion-trigger',
     standalone: true,
     template: `
-        <h3 AccordionHeader class="flex">
-            <button AccordionTrigger type="button" [class]="computedClass()">
+        <h3 rdxAccordionHeader class="flex">
+            <button rdxAccordionTrigger type="button" [class]="computedClass()">
                 <ng-content></ng-content>
                 <lucide-angular
                     name="chevron-down"
@@ -44,7 +44,7 @@ const accordionTriggerVariants = cva(
     `,
     imports: [RdxAccordionHeaderDirective, RdxAccordionTriggerDirective, LucideAngularModule]
 })
-export class ShAccordionTrigger {
+export class ShAccordionTriggerComponent {
     readonly class = input<string>();
     protected computedClass = computed(() => cn(accordionTriggerVariants({ class: this.class() })));
 }
@@ -61,4 +61,4 @@ export class ShAccordionTrigger {
         <div class="pb-4 pt-0"><ng-content></ng-content></div>
     `
 })
-export class ShAccordionContent {}
+export class ShAccordionContentComponent {}

@@ -90,18 +90,18 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: `
-            <div class="CollapsibleRoot" CollapsibleRoot [open]="true">
+            <div class="CollapsibleRoot" rdxCollapsibleRoot [open]="true">
 
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                 <span class="Text" style="color: white">&#64;peduarte starred 3 repositories</span>
-                <button class="IconButton" CollapsibleTrigger></button>
+                <button class="IconButton" rdxCollapsibleTrigger></button>
                 </div>
 
                 <div class="Repository">
                     <span class="Text">&#64;radix-ui/primitives</span>
                 </div>
 
-                <div CollapsibleContent>
+                <div rdxCollapsibleContent>
                     <div class="Repository">
                         <span class="Text">&#64;radix-ui/colors</span>
                     </div>

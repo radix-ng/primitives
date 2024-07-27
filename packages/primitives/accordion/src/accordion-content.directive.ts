@@ -19,9 +19,9 @@ export const RdxAccordionContentToken = new InjectionToken<RdxAccordionContentDi
 );
 
 @Directive({
-    selector: '[AccordionContent]',
+    selector: '[rdxAccordionContent]',
     standalone: true,
-    exportAs: 'AccordionContent',
+    exportAs: 'rdxAccordionContent',
     providers: [{ provide: RdxAccordionContentToken, useExisting: RdxAccordionContentDirective }],
     host: {
         '[attr.data-state]': 'state()',

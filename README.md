@@ -68,6 +68,27 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 - [ ] Toolbar
 - [ ] Tooltip
 
+| Primitive     | Description | Status         | Due date      |
+|---------------|-------------|----------------|---------------|
+| Accordion     |             | ✅              |               |
+| Alert Dialog  |             | beta           |               |
+| Avatar        |             | ✅              |               |
+| Checkbox      |             | beta           |               |
+| Collapsible   |             | ✅              |               |
+| Context Menu  |             |                |               |
+| Dialog        |             |                |               |
+| Dropdown      |             | 🚀 In Progress |               |
+| Hover Card    |             |                |               |
+
+...
+
+
+
+**Status Legend**
+✅ Completed
+🚀 In Progress
+🛠 In Review
+
 ### Forms
 - [ ] use validations framework – [https://vestjs.dev/](https://vestjs.dev/), [Angular example](https://github.com/simplifiedcourses/ngx-vest-forms)
 

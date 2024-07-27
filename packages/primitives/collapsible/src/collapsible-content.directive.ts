@@ -5,7 +5,7 @@ export const RdxCollapsibleContentToken = new InjectionToken<RdxCollapsibleConte
 );
 
 @Directive({
-    selector: '[CollapsibleContent]',
+    selector: '[rdxCollapsibleContent]',
     standalone: true,
     providers: [
         { provide: RdxCollapsibleContentToken, useExisting: RdxCollapsibleContentDirective }

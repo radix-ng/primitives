@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 
 import { RdxAccordionRootDirective } from '@radix-ng/primitives/accordion';
 import {
-    ShAccordionContent,
+    ShAccordionContentComponent,
     ShAccordionItemDirective,
-    ShAccordionTrigger
+    ShAccordionTriggerComponent
 } from '@radix-ng/shadcn/accordion';
 
 @Component({
@@ -12,11 +12,11 @@ import {
     imports: [
         RdxAccordionRootDirective,
         ShAccordionItemDirective,
-        ShAccordionTrigger,
-        ShAccordionContent
+        ShAccordionTriggerComponent,
+        ShAccordionContentComponent
     ],
     template: `
-        <div AccordionRoot class="w-full">
+        <div rdxAccordionRoot class="w-full">
             <div shAccordionItem shValue="item-1">
                 <sh-accordion-trigger>Is it accessible?</sh-accordion-trigger>
                 <div sh-accordion-content>Yes. It adheres to the WAI-ARIA design pattern.</div>

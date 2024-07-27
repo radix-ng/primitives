@@ -20,7 +20,7 @@ export function injectCollapsible(): RdxCollapsibleRootDirective {
 export type RdxCollapsibleState = 'open' | 'closed';
 
 @Directive({
-    selector: '[CollapsibleRoot]',
+    selector: '[rdxCollapsibleRoot]',
     standalone: true,
     exportAs: 'collapsibleRoot',
     providers: [{ provide: RdxCollapsibleToken, useExisting: RdxCollapsibleRootDirective }],

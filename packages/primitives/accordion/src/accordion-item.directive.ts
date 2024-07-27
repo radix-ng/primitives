@@ -23,9 +23,9 @@ export function injectAccordionItem(): RdxAccordionItemDirective {
 }
 
 @Directive({
-    selector: '[AccordionItem]',
+    selector: '[rdxAccordionItem]',
     standalone: true,
-    exportAs: 'AccordionItem',
+    exportAs: 'rdxAccordionItem',
     providers: [
         { provide: RdxAccordionItemToken, useExisting: RdxAccordionItemDirective, multi: true }
     ],

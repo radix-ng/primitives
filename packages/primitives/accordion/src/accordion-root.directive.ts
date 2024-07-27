@@ -14,7 +14,7 @@ export function injectAccordionRoot(): RdxAccordionRootDirective {
 }
 
 @Directive({
-    selector: '[AccordionRoot]',
+    selector: '[rdxAccordionRoot]',
     standalone: true,
     providers: [{ provide: RdxAccordionRootToken, useExisting: RdxAccordionRootDirective }],
     host: {

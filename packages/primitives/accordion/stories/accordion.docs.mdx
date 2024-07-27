@@ -2,7 +2,6 @@ import { ArgTypes, Canvas, Meta } from '@storybook/blocks';
 import * as AccordionStories from './accordion.stories'
 import { RdxAccordionRootDirective } from '../src/accordion-root.directive';
 import { RdxAccordionItemDirective } from '../src/accordion-item.directive';
-import { RdxAccordionHeaderDirective } from '../src/accordion-header.directive';
 import { RdxAccordionTriggerDirective } from '../src/accordion-trigger.directive';
 import { RdxAccordionContentDirective } from '../src/accordion-content.directive';
 
@@ -31,12 +30,12 @@ import { RdxAccordionContentDirective } from '../src/accordion-content.directive
 ## Anatomy
 
 ```html
-<div AccordionRoot>
-    <div AccordionItem>
-        <div AccordionHeader>
-            <button AccordionTrigger></button>
+<div rdxAccordionRoot>
+    <div rdxAccordionItem>
+        <div rdxAccordionHeader>
+            <button rdxAccordionTrigger></button>
         </div>
-        <div AccordionContent></div>
+        <div rdxAccordionContent></div>
     </div>
 </div>
 ```

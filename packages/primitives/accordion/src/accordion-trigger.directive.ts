@@ -4,7 +4,7 @@ import { injectAccordionItem, RdxAccordionItemState } from './accordion-item.dir
 import { injectAccordionRoot, RdxAccordionOrientation } from './accordion-root.directive';
 
 @Directive({
-    selector: '[AccordionTrigger]',
+    selector: '[rdxAccordionTrigger]',
     standalone: true,
     host: {
         '(click)': 'onClick()',

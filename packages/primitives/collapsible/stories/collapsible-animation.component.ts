@@ -70,13 +70,13 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
     template: `
         <div
             class="CollapsibleRoot"
-            CollapsibleRoot
+            rdxCollapsibleRoot
             #collapsibleRoot="collapsibleRoot"
             [open]="true"
         >
             <div style="display: flex; align-items: center; justify-content: space-between;">
                 <span class="Text" style="color: white">&#64;peduarte starred 3 repositories</span>
-                <button class="IconButton" CollapsibleTrigger></button>
+                <button class="IconButton" rdxCollapsibleTrigger></button>
             </div>
 
             <div class="Repository">
@@ -84,7 +84,7 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
             </div>
 
             <div
-                CollapsibleContent
+                rdxCollapsibleContent
                 [@contentExpansion]="collapsibleRoot.isOpen() ? 'expanded' : 'collapsed'"
             >
                 <div class="Repository">
