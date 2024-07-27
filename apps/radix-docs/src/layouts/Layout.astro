@@ -1,4 +1,5 @@
 ---
+import "../styles/base.css";
 import Sidebar from '../components/Sidebar.astro';
 
 export interface Props {
@@ -13,11 +14,48 @@ const { title = "Fitzsimons dot dev" } = Astro.props as Props;
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" initial-scale="1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+
+    <link
+        rel="preload"
+        href="https://cdn.workos.com/fonts/untitled-sans-regular-v2.woff2"
+        as="font"
+        type="font/woff2"
+        crossOrigin="anonymous"
+    />
+    <link
+        rel="preload"
+        href="https://cdn.workos.com/fonts/untitled-sans-medium-v2.woff2"
+        as="font"
+        type="font/woff2"
+        crossOrigin="anonymous"
+    />
+
+    <style>
+        @font-face {
+            font-family: 'Untitled Sans';
+            font-weight: 400;
+            font-display: swap;
+            src: url('https://cdn.workos.com/fonts/untitled-sans-regular-v2.woff2') format('woff2');
+        }
+
+        @font-face {
+            font-family: 'Untitled Sans';
+            font-weight: 500;
+            font-display: swap;
+            src: url('https://cdn.workos.com/fonts/untitled-sans-medium-v2.woff2') format('woff2');
+        }
+
+        @font-face {
+            font-family: 'Untitled Sans';
+            font-weight: 700;
+            font-display: swap;
+            src: url('https://cdn.workos.com/fonts/untitled-sans-medium-v2.woff2') format('woff2');
+        }
+    </style>
   </head>
-  <body class="bg-[#fff] font-poppins">
+  <body>
     <Sidebar />
     <slot />
   </body>
