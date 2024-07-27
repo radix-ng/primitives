@@ -1,0 +1,25 @@
+---
+import { Astro } from 'astro';
+
+const posts = await Astro.glob('../content/docs/**/*.mdx');
+
+const processedPosts = posts.map((post) => {
+    return {
+        title: post.frontmatter.title,
+        slug: post.frontmatter.slug,
+
+    };
+});
+
+---
+
+<aside>
+    <h2>Posts</h2>
+    <ul>
+        {processedPosts.map((post) => (
+            <li >
+                <a >{post.title}</a>
+            </li>
+        ))}
+    </ul>
+</aside>

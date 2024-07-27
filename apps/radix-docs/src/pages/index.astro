@@ -1,0 +1,13 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+
+const post = await import(`../content/docs/test-component.mdx`);
+const { default: Content } = post;
+
+---
+
+<Layout>
+    <section class="bg-sky-900">Test</section>
+    <Content />
+</Layout>

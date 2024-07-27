@@ -1,0 +1,45 @@
+---
+title: 'Installation'
+slug: 'installation'
+description: .
+---
+
+# Installation
+
+A quick tutorial to walk through installing the packages, as well as the supported plugins.
+
+## Installing the packages
+
+```bash
+npm install @radix-ng/primitives @angular/cdk
+```
+
+## Import the parts
+
+```typescript
+import { Component } from '@angular/core';
+import { bootstrapApplication } from '@angular/platform-browser';
+
+import 'zone.js';
+
+import { RdxLabelRootDirective } from '@radix-ng/primitives/label';
+
+@Component({
+    selector: 'app-root',
+    standalone: true,
+    imports: [RdxLabelRootDirective],
+    template: `
+        <h1>Hello from {{ name }}!</h1>
+        <a target="_blank" href="https://angular.dev/overview">Learn more about Angular</a>
+        <div>
+            <label LabelRoot htmlFor="uniqId">First Name</label>
+            <input type="text" class="Input" id="uniqId" />
+        </div>
+    `
+})
+export class App {
+    name = 'Angular';
+}
+
+bootstrapApplication(App);
+```
