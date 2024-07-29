@@ -32,7 +32,7 @@
         "@radix-ng/primitives": "workspace:*",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.1",
-        "lucide-angular": "^0.400.0",
+        "lucide-angular": "^0.417.0",
         "tailwind-merge": "^2.3.0"
     },
     "sideEffects": false
