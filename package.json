@@ -117,7 +117,7 @@
         "@typescript-eslint/eslint-plugin": "7.17.0",
         "@typescript-eslint/parser": "7.17.0",
         "@typescript-eslint/utils": "7.17.0",
-        "autoprefixer": "^10.4.0",
+        "autoprefixer": "^10.4.19",
         "chromatic": "^11.3.0",
         "clsx": "^2.1.1",
         "esbuild": "^0.19.2",
