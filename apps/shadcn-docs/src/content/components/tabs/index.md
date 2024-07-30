@@ -6,10 +6,10 @@
 
 ```typescript
 import {
-    ShTabsContentDirective,
-    ShTabsDirective,
-    ShTabsListDirective,
-    ShTabsTriggerDirective
+  ShTabsContentDirective,
+  ShTabsDirective,
+  ShTabsListDirective,
+  ShTabsTriggerDirective
 } from '@radix-ng/shadcn/tabs';
 ```
 
@@ -21,35 +21,35 @@ import { ShTabsModule } from '@radix-ng/shadcn/tabs';
 
 ```html
 <div
-    shTabs
-    shDefaultValue="account"
-    class="w-[400px]"
+  shTabs
+  shDefaultValue="account"
+  class="w-[400px]"
 >
-    <div shTabsList>
-        <div
-            shTabsTrigger
-            shValue="account"
-        >
-            Account
-        </div>
-        <div
-            shTabsTrigger
-            shValue="password"
-        >
-            Password
-        </div>
+  <div shTabsList>
+    <div
+      shTabsTrigger
+      shValue="account"
+    >
+      Account
     </div>
     <div
-        shTabsContent
-        shValue="account"
+      shTabsTrigger
+      shValue="password"
     >
-        Make changes to your account here.
+      Password
     </div>
-    <div
-        shTabsContent
-        shValue="password"
-    >
-        Change your password here.
-    </div>
+  </div>
+  <div
+    shTabsContent
+    shValue="account"
+  >
+    Make changes to your account here.
+  </div>
+  <div
+    shTabsContent
+    shValue="password"
+  >
+    Change your password here.
+  </div>
 </div>
 ```

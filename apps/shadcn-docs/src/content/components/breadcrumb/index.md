@@ -16,13 +16,13 @@ Or standalone `imports`
 
 ```ts
 import {
-    ShBreadcrumbDirective,
-    ShBreadcrumbEllipsisComponent,
-    ShBreadcrumbItemDirective,
-    ShBreadcrumbLinkDirective,
-    ShBreadcrumbListDirective,
-    ShBreadcrumbPageDirective,
-    ShBreadcrumbSeparatorComponent
+  ShBreadcrumbDirective,
+  ShBreadcrumbEllipsisComponent,
+  ShBreadcrumbItemDirective,
+  ShBreadcrumbLinkDirective,
+  ShBreadcrumbListDirective,
+  ShBreadcrumbPageDirective,
+  ShBreadcrumbSeparatorComponent
 } from '@radix-ng/shadcn/breadcrumb';
 ```
 

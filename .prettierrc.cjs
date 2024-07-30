@@ -23,6 +23,12 @@ const config = {
             }
         },
         {
+            files: ['*.md'],
+            options: {
+                tabWidth: 2
+            }
+        },
+        {
             files: ['.component.html', '.page.html'],
             options: {
                 parser: 'angular'

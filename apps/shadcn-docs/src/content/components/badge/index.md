@@ -12,10 +12,10 @@ import { ShBadgeDirective } from '@radix-ng/shadcn/badge';
 
 ```html
 <div
-    shBadge
-    variant="outline"
+  shBadge
+  variant="outline"
 >
-    Badge
+  Badge
 </div>
 ```
 

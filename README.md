@@ -47,30 +47,30 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 
 ### Primitives
 
--   [x] Accordion (based on angular/cdk)
--   [x] Alert Dialog
--   [x] Avatar
--   [x] Checkbox (adaptation for FormGroup)
--   [x] Collapsible
--   [ ] Context Menu (next) (based on angular/cdk)
--   [ ] Dialog (based on angular/cdk)
--   [ ] Dropdown (In progress) (based on angular/cdk)
--   [ ] Hover Card
--   [x] Label
--   [ ] Menubar (In progress) (based on angular/cdk)
--   [ ] Navigation Menu
--   [ ] Popover
--   [x] Progress
--   [x] Radio (adaptation for FormGroup)
--   [ ] Select (In progress)
--   [x] Separator
--   [x] Switch
--   [x] Tabs
--   [ ] Toast
--   [x] Toggle
--   [x] Toggle Group
--   [ ] Toolbar
--   [ ] Tooltip
+- [x] Accordion (based on angular/cdk)
+- [x] Alert Dialog
+- [x] Avatar
+- [x] Checkbox (adaptation for FormGroup)
+- [x] Collapsible
+- [ ] Context Menu (next) (based on angular/cdk)
+- [ ] Dialog (based on angular/cdk)
+- [ ] Dropdown (In progress) (based on angular/cdk)
+- [ ] Hover Card
+- [x] Label
+- [ ] Menubar (In progress) (based on angular/cdk)
+- [ ] Navigation Menu
+- [ ] Popover
+- [x] Progress
+- [x] Radio (adaptation for FormGroup)
+- [ ] Select (In progress)
+- [x] Separator
+- [x] Switch
+- [x] Tabs
+- [ ] Toast
+- [x] Toggle
+- [x] Toggle Group
+- [ ] Toolbar
+- [ ] Tooltip
 
 | Primitive    | Description | Status         | Due date |
 | ------------ | ----------- | -------------- | -------- |
@@ -93,20 +93,20 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 
 ### Forms
 
--   [ ] use validations framework – [https://vestjs.dev/](https://vestjs.dev/), [Angular example](https://github.com/simplifiedcourses/ngx-vest-forms)
+- [ ] use validations framework – [https://vestjs.dev/](https://vestjs.dev/), [Angular example](https://github.com/simplifiedcourses/ngx-vest-forms)
 
 ### DataGrid
 
--   [ ] (In progress) with [Tanstack Table](https://tanstack.com/table/latest), [https://shadcn-datagrid.vercel.app/](https://shadcn-datagrid.vercel.app/)
+- [ ] (In progress) with [Tanstack Table](https://tanstack.com/table/latest), [https://shadcn-datagrid.vercel.app/](https://shadcn-datagrid.vercel.app/)
 
 ## Community
 
 We're excited to see the community adopt, raise issues, and provide feedback.
 Whether it's a feature request, bug report, or a project to showcase, please get involved!
 
--   [Join our Discord](https://discord.gg/NaJb2XRWX9)
--   [Join our Telegram](https://t.me/radixng)
--   [GitHub Discussions](https://github.com/radix-ng/primitives/discussions)
+- [Join our Discord](https://discord.gg/NaJb2XRWX9)
+- [Join our Telegram](https://t.me/radixng)
+- [GitHub Discussions](https://github.com/radix-ng/primitives/discussions)
 
 ## License
 
