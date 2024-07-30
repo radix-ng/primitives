@@ -1,4 +1,5 @@
 # Installation
+
 **How to install dependencies and structure your app.**
 
 > **Warning**
@@ -25,27 +26,27 @@ npm install -D tailwindcss postcss autoprefixer
 const { shadcnUIPlugin } = require('@radix-ng/shadcn/theme');
 
 module.exports = {
-    content: [
-        // yours config paths ...
-        // Added all components
-        './node_modules/@radix-ng/shadcn/**/*.{mjs,js}',
-        // OR
-        // to optimize the bundle size, add the components that you use
-        './node_modules/@radix-ng/shadcn/**/(button|label|checkbox)/*.{mjs,js}',
-    ],
-    theme: {
-        extend: {}
-    },
-    plugins: [shadcnUIPlugin()]
+  content: [
+    // yours config paths ...
+    // Added all components
+    './node_modules/@radix-ng/shadcn/**/*.{mjs,js}',
+    // OR
+    // to optimize the bundle size, add the components that you use
+    './node_modules/@radix-ng/shadcn/**/(button|label|checkbox)/*.{mjs,js}'
+  ],
+  theme: {
+    extend: {}
+  },
+  plugins: [shadcnUIPlugin()]
 };
 ```
 
 ### Configure styles
+
 Add the following to your **global styles** `src/styles.css` file
 
 ```css
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 ```

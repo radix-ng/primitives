@@ -11,3 +11,7 @@
 /.nx/cache
 
 /.nx/workspace-data
+
+CHANGELOG.md
+
+apps/shadcn-docs/src/styles/themes/*.css

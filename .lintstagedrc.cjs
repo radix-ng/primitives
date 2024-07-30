@@ -1,3 +1,4 @@
 module.exports = {
-    '*.{css,scss}': 'stylelint --fix'
+    '*.{css,scss,md,yml,json,js,cjs,mjs}': 'prettier --write',
+    '*.{css,scss}': 'stylelint --max-warnings=0 --fix'
 };

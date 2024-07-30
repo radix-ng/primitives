@@ -30,9 +30,7 @@
                         "output": "/"
                     }
                 ],
-                "styles": [
-                    "apps/showcase-taxonomy/src/styles.scss"
-                ]
+                "styles": ["apps/showcase-taxonomy/src/styles.scss"]
             },
             "defaultConfiguration": "production",
             "configurations": {
@@ -70,21 +68,14 @@
         },
         "lint": {
             "executor": "@nx/linter:eslint",
-            "outputs": [
-                "{options.outputFile}"
-            ],
+            "outputs": ["{options.outputFile}"],
             "options": {
-                "lintFilePatterns": [
-                    "./apps/showcase-taxonomy/**/*.ts",
-                    "./apps/showcase-taxonomy/**/*.html"
-                ]
+                "lintFilePatterns": ["./apps/showcase-taxonomy/**/*.ts", "./apps/showcase-taxonomy/**/*.html"]
             }
         },
         "test": {
             "executor": "@analogjs/platform:vitest",
-            "outputs": [
-                "{projectRoot}/showcase-taxonomy/coverage"
-            ]
+            "outputs": ["{projectRoot}/showcase-taxonomy/coverage"]
         }
     }
 }

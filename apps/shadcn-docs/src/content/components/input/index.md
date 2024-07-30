@@ -17,10 +17,13 @@ import { ShInputDirective } from '@radix-ng/shadcn/input';
 ## Examples
 
 ### File
+
 {{ NgDocActions.demo("InputFileExampleComponent", { expanded: false}) }}
 
 ### With Label
+
 {{ NgDocActions.demo("InputWithLabelExampleComponent", { expanded: false}) }}
 
 ### With Button
+
 {{ NgDocActions.demo("InputWithButtonExampleComponent", { expanded: false}) }}

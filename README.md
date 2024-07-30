@@ -1,13 +1,13 @@
 # Radix Angular
+
 [![downloads](https://img.shields.io/npm/dm/@radix-ng/primitives.svg?style=flat-round)](https://www.npmjs.com/package/@radix-ng/primitives)
 [![downloads](https://img.shields.io/npm/dm/@radix-ng/shadcn.svg?style=flat-round)](https://www.npmjs.com/package/@radix-ng/shadcn)
 
 > This version is not yet stable.
-> 
+>
 > It is very important for me to maintain API compatibility provided by the Radix primitives.
 > However, there are some features that I would prefer not to carry over.
 > For example, the horizontal arrangement of radio buttons — I have indicated the reason in the code as to why this should be avoided.
-
 
 > Radix-NG is an unofficial Angular port of [Radix UI](https://www.radix-ui.com/), thus we share the same principal and vision when building primitives.
 
@@ -21,10 +21,12 @@ Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/cate
 Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 
 ## Showcase
+
 1. [Taxonomy](https://github.com/shadcn-ui/taxonomy) build with AnalogJS – [https://primitives-taxonomy.vercel.app/](https://primitives-taxonomy.vercel.app/)
 2. [shadcn/ui blocks](https://ui.shadcn.com/blocks) - [https://blocks.shadcn-ng.com/](https://blocks.shadcn-ng.com/)
 
 ## Components
+
 1. [shadcn/ui](https://ui.shadcn.com/) Angular version – [https://shadcn-ng.com/](https://shadcn-ng.com/)
 2. RadixUI Components ...'soon'
 
@@ -42,23 +44,25 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 ```
 
 ## Roadmap
-### Primitives 
-- [x] Accordion        (based on angular/cdk)
+
+### Primitives
+
+- [x] Accordion (based on angular/cdk)
 - [x] Alert Dialog
 - [x] Avatar
-- [x] Checkbox                       (adaptation for FormGroup)
+- [x] Checkbox (adaptation for FormGroup)
 - [x] Collapsible
-- [ ] Context Menu     (next)        (based on angular/cdk)
-- [ ] Dialog                         (based on angular/cdk)
-- [ ] Dropdown         (In progress) (based on angular/cdk)
+- [ ] Context Menu (next) (based on angular/cdk)
+- [ ] Dialog (based on angular/cdk)
+- [ ] Dropdown (In progress) (based on angular/cdk)
 - [ ] Hover Card
 - [x] Label
-- [ ] Menubar          (In progress) (based on angular/cdk)
+- [ ] Menubar (In progress) (based on angular/cdk)
 - [ ] Navigation Menu
 - [ ] Popover
 - [x] Progress
-- [x] Radio                          (adaptation for FormGroup)
-- [ ] Select           (In progress)
+- [x] Radio (adaptation for FormGroup)
+- [ ] Select (In progress)
 - [x] Separator
 - [x] Switch
 - [x] Tabs
@@ -68,21 +72,19 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 - [ ] Toolbar
 - [ ] Tooltip
 
-| Primitive     | Description | Status         | Due date      |
-|---------------|-------------|----------------|---------------|
-| Accordion     |             | ✅              |               |
-| Alert Dialog  |             | beta           |               |
-| Avatar        |             | ✅              |               |
-| Checkbox      |             | beta           |               |
-| Collapsible   |             | ✅              |               |
-| Context Menu  |             |                |               |
-| Dialog        |             |                |               |
-| Dropdown      |             | 🚀 In Progress |               |
-| Hover Card    |             |                |               |
+| Primitive    | Description | Status         | Due date |
+| ------------ | ----------- | -------------- | -------- |
+| Accordion    |             | ✅             |          |
+| Alert Dialog |             | beta           |          |
+| Avatar       |             | ✅             |          |
+| Checkbox     |             | beta           |          |
+| Collapsible  |             | ✅             |          |
+| Context Menu |             |                |          |
+| Dialog       |             |                |          |
+| Dropdown     |             | 🚀 In Progress |          |
+| Hover Card   |             |                |          |
 
 ...
-
-
 
 **Status Legend**
 ✅ Completed
@@ -90,9 +92,11 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 🛠 In Review
 
 ### Forms
+
 - [ ] use validations framework – [https://vestjs.dev/](https://vestjs.dev/), [Angular example](https://github.com/simplifiedcourses/ngx-vest-forms)
 
 ### DataGrid
+
 - [ ] (In progress) with [Tanstack Table](https://tanstack.com/table/latest), [https://shadcn-datagrid.vercel.app/](https://shadcn-datagrid.vercel.app/)
 
 ## Community

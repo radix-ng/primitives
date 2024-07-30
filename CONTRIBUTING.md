@@ -16,6 +16,7 @@ You can fork this repo by clicking the fork button in the top right corner of th
 ```bash
 git clone https://github.com/your-username/primitives.git
 ```
+
 ### Navigate to project directory
 
 ```bash
