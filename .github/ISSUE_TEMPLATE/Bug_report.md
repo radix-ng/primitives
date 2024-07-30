@@ -15,7 +15,6 @@ about: 'Create a bug report'
 
 ### Reproducible example
 
-
 ### Suggested solution
 
 <!-- How could we solve this bug? What changes would need to made? -->
@@ -29,7 +28,7 @@ about: 'Create a bug report'
 <!-- Very important for us to help you debug. Please fill this out! -->
 
 | Software         | Name(s) | Version |
-|------------------| ------- | ------- |
+| ---------------- | ------- | ------- |
 | Package(s)       |         |         |
 | Angular          | n/a     |         |
 | Browser          |         |         |

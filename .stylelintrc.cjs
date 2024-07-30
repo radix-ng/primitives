@@ -1,8 +1,6 @@
 // @ts-check
 
-/**
- * @type {import('stylelint').Config}
- */
+/** @type {import('stylelint').Config} */
 const config = {
     defaultSeverity: 'error',
     allowEmptyInput: true,

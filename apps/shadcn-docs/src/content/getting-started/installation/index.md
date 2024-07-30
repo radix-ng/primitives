@@ -1,4 +1,5 @@
 # Installation
+
 **How to install dependencies and structure your app.**
 
 > **Warning**
@@ -31,7 +32,7 @@ module.exports = {
         './node_modules/@radix-ng/shadcn/**/*.{mjs,js}',
         // OR
         // to optimize the bundle size, add the components that you use
-        './node_modules/@radix-ng/shadcn/**/(button|label|checkbox)/*.{mjs,js}',
+        './node_modules/@radix-ng/shadcn/**/(button|label|checkbox)/*.{mjs,js}'
     ],
     theme: {
         extend: {}
@@ -41,11 +42,11 @@ module.exports = {
 ```
 
 ### Configure styles
+
 Add the following to your **global styles** `src/styles.css` file
 
 ```css
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 ```

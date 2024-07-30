@@ -4,11 +4,12 @@
 
 {{ NgDocActions.demo("CheckboxExampleComponent", { expanded: false}) }}
 
-
 ## Examples
 
 ### With text
+
 {{ NgDocActions.demo("CheckboxExampleWithTextComponent", { expanded: false}) }}
 
 ### Indeterminate state
+
 {{ NgDocActions.demo("CheckboxExampleIndeterminateComponent", { expanded: false}) }}

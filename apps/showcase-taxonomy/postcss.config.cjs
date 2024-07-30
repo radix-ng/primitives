@@ -3,8 +3,8 @@ const { join } = require('path');
 module.exports = {
     plugins: {
         tailwindcss: {
-            config: join(__dirname, 'tailwind.config.cjs'),
+            config: join(__dirname, 'tailwind.config.cjs')
         },
-        autoprefixer: {},
-    },
+        autoprefixer: {}
+    }
 };

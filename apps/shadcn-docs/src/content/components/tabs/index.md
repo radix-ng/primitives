@@ -4,13 +4,13 @@
 
 ## Usage
 
-
 ```typescript
 import {
-    ShTabsDirective,
     ShTabsContentDirective,
+    ShTabsDirective,
     ShTabsListDirective,
-    ShTabsTriggerDirective } from '@radix-ng/shadcn/tabs';
+    ShTabsTriggerDirective
+} from '@radix-ng/shadcn/tabs';
 ```
 
 or use `@NgModule`
@@ -20,12 +20,36 @@ import { ShTabsModule } from '@radix-ng/shadcn/tabs';
 ```
 
 ```html
-<div shTabs shDefaultValue="account" class="w-[400px]">
+<div
+    shTabs
+    shDefaultValue="account"
+    class="w-[400px]"
+>
     <div shTabsList>
-        <div shTabsTrigger shValue="account">Account</div>
-        <div shTabsTrigger shValue="password">Password</div>
+        <div
+            shTabsTrigger
+            shValue="account"
+        >
+            Account
+        </div>
+        <div
+            shTabsTrigger
+            shValue="password"
+        >
+            Password
+        </div>
     </div>
-    <div shTabsContent shValue="account">Make changes to your account here.</div>
-    <div shTabsContent shValue="password">Change your password here.</div>
+    <div
+        shTabsContent
+        shValue="account"
+    >
+        Make changes to your account here.
+    </div>
+    <div
+        shTabsContent
+        shValue="password"
+    >
+        Change your password here.
+    </div>
 </div>
 ```

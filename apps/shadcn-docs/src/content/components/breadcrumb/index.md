@@ -1,16 +1,16 @@
 # {{ NgDocPage.title }}
-**Displays the path to the current resource using a hierarchy of links.**
 
+**Displays the path to the current resource using a hierarchy of links.**
 
 {{ NgDocActions.demo("BreadcrumbExampleComponent", { expanded: false}) }}
 
 ## Usage
 
 `@NgModule`
+
 ```ts
 import { ShBreadcrumbModule } from '@radix-ng/shadcn/breadcrumb';
 ```
-
 
 Or standalone `imports`
 

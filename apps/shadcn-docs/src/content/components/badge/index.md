@@ -7,11 +7,16 @@
 ## Usage
 
 ```ts
-import { ShBadgeDirective } from "@radix-ng/shadcn/badge"
+import { ShBadgeDirective } from '@radix-ng/shadcn/badge';
 ```
 
 ```html
-<div shBadge variant="outline">Badge</div>
+<div
+    shBadge
+    variant="outline"
+>
+    Badge
+</div>
 ```
 
 ## Examples

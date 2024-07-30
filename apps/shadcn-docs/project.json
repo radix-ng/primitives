@@ -34,6 +34,7 @@
                     },
                     "apps/shadcn-docs/src/favicon.ico",
                     "apps/shadcn-docs/src/assets"
+
                 ],
                 "styles": [
                     "@angular/cdk/overlay-prebuilt.css",

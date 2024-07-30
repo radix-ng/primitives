@@ -42,4 +42,5 @@ jobs:
 
       - name: Linters
         run: |
+          pnpm run prettier
           pnpm run stylelint
