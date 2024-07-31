@@ -31,7 +31,7 @@
         "shadcn:build": "nx run shadcn:build",
         "----Others-------": "-----------------------------------------------------------------------",
         "prepare": "husky",
-        "prettier": "prettier '**/*.{css,scss,md,yml,json,js,cjs,mjs}' --check",
+        "prettier": "prettier '**/*.{css,scss,md,yml,json,js,cjs,mjs,html}' --check",
         "prettier:fix": "pnpm run prettier --write",
         "stylelint": "stylelint '**/*.{css,scss}'",
         "stylelint:fix": "pnpm run stylelint --fix"

@@ -1,32 +1,52 @@
 <main class="flex-1">
     <div class="container relative">
-        <section
-            class="mx-auto flex max-w-[980px] flex-col items-center gap-2 py-8 md:py-12 md:pb-8 lg:py-14 lg:pb-20">
-            <h1 class="text-center text-3xl font-bold leading-tight tracking-tighter md:text-5xl lg:leading-[1.1] hidden md:block">
-                Add colors. Make it yours.</h1>
-            <h1 class="text-center text-3xl font-bold leading-tight tracking-tighter md:text-5xl lg:leading-[1.1] md:hidden">
-                Make it yours</h1><span
-            class="max-w-[750px] text-center text-lg font-light text-foreground" data-br=":r106:"
-            data-brr="1"
-            style="display: inline-block; vertical-align: top; text-decoration: inherit; max-width: 532px;">Hand-picked themes that you can copy and paste into your apps.</span>
-            <div class="flex w-full items-center justify-center space-x-4 py-4 ">
+        <section class="mx-auto flex max-w-[980px] flex-col items-center gap-2 py-8 md:py-12 md:pb-8 lg:py-14 lg:pb-20">
+            <h1
+                class="hidden text-center text-3xl font-bold leading-tight tracking-tighter md:block md:text-5xl lg:leading-[1.1]"
+            >
+                Add colors. Make it yours.
+            </h1>
+            <h1
+                class="text-center text-3xl font-bold leading-tight tracking-tighter md:hidden md:text-5xl lg:leading-[1.1]"
+            >
+                Make it yours
+            </h1>
+            <span
+                data-br=":r106:"
+                data-brr="1"
+                style="display: inline-block; vertical-align: top; text-decoration: inherit; max-width: 532px"
+                class="text-foreground max-w-[750px] text-center text-lg font-light"
+            >
+                Hand-picked themes that you can copy and paste into your apps.
+            </span>
+            <div class="flex w-full items-center justify-center space-x-4 py-4">
                 <div class="flex items-center space-x-2">
                     @for (theme of themes; track theme) {
                         <button
                             shButton
-                            variant="outline"
                             size="sm"
-                            [class]="cn('justify-start', theme.name === currentThemeName && 'border-2 border-primary')"
+                            variant="outline"
+                            [class]="cn('justify-start', theme.name === currentThemeName && 'border-primary border-2')"
+                            [style.--theme-primary]="
+                                'hsl(' + theme.activeColor[mode === 'dark' ? 'dark' : 'light'] + ')'
+                            "
                             (click)="onClickChangeTheme(theme)"
-                            [style.--theme-primary]="'hsl(' + theme.activeColor[mode === 'dark' ? 'dark' : 'light'] + ')'"
-                            >
+                        >
                             <span
-                                [class]="cn('mr-1 flex h-5 w-5 shrink-0 -translate-x-1 items-center justify-center rounded-full bg-[--theme-primary]')">
+                                [class]="
+                                    cn(
+                                        'mr-1 flex h-5 w-5 shrink-0 -translate-x-1 items-center justify-center rounded-full bg-[--theme-primary]'
+                                    )
+                                "
+                            >
                                 @if (theme.name === currentThemeName) {
-                                    <lucide-angular name="check" class="h-4 text-white"></lucide-angular>
+                                    <lucide-angular
+                                        name="check"
+                                        class="h-4 text-white"
+                                    ></lucide-angular>
                                 }
                             </span>
-                            {{theme.label}}
+                            {{ theme.label }}
                         </button>
                     }
                 </div>
@@ -37,12 +57,12 @@
                     @for (value of radius; track value) {
                         <button
                             shButton
-                            variant="outline"
                             size="sm"
-                            [class]="cn(
-                            currentThemeRadius === parseFloat(value) && 'border-2 border-primary')"
-                            (click)="onClickChangeRadiusTheme(value)">
-                            {{value}}
+                            variant="outline"
+                            [class]="cn(currentThemeRadius === parseFloat(value) && 'border-primary border-2')"
+                            (click)="onClickChangeRadiusTheme(value)"
+                        >
+                            {{ value }}
                         </button>
                     }
                 </div>
@@ -54,26 +74,38 @@
                     <div class="space-y-4 lg:col-span-4 xl:col-span-6 xl:space-y-4">
                         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-2">
                             <div shCard>
-                                <div shCardHeader class="flex flex-row justify-between space-y-0 pb-2">
-                                    <h3 shCardTitle class="text-base font-normal">Total Revenue</h3>
+                                <div
+                                    shCardHeader
+                                    class="flex flex-row justify-between space-y-0 pb-2"
+                                >
+                                    <h3
+                                        shCardTitle
+                                        class="text-base font-normal"
+                                    >
+                                        Total Revenue
+                                    </h3>
                                 </div>
                                 <div shCardContent>
                                     <div class="text-2xl font-bold">$15,231.89</div>
-                                    <p class="text-xs text-muted-foreground">
-                                        +20.1% from last month
-                                    </p>
+                                    <p class="text-muted-foreground text-xs">+20.1% from last month</p>
                                     <div class="h-[80px]"></div>
                                 </div>
                             </div>
                             <div shCard>
-                                <div shCardHeader class="flex flex-row justify-between space-y-0 pb-2">
-                                    <h3 shCardTitle class="text-base font-normal">Subscriptions</h3>
+                                <div
+                                    shCardHeader
+                                    class="flex flex-row justify-between space-y-0 pb-2"
+                                >
+                                    <h3
+                                        shCardTitle
+                                        class="text-base font-normal"
+                                    >
+                                        Subscriptions
+                                    </h3>
                                 </div>
                                 <div shCardContent>
                                     <div class="text-2xl font-bold">+2350</div>
-                                    <p class="text-xs text-muted-foreground">
-                                        +180.1% from last month
-                                    </p>
+                                    <p class="text-muted-foreground text-xs">+180.1% from last month</p>
                                     <div class="h-[80px]"></div>
                                 </div>
                             </div>
@@ -87,9 +119,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="space-y-4 lg:col-span-6 xl:col-span-5 xl:space-y-4">
-
-                    </div>
+                    <div class="space-y-4 lg:col-span-6 xl:col-span-5 xl:space-y-4"></div>
                 </div>
             </div>
         </div>

@@ -1,5 +1,23 @@
 // @ts-check
 
+/** @type {import('prettier-plugin-organize-attributes').PrettierPluginOrganizeAttributesParserOptions} */
+const organizeAttributesPluginAngularConfig = {
+    attributeGroups: [
+        '$ANGULAR_STRUCTURAL_DIRECTIVE',
+        '$ANGULAR_ELEMENT_REF',
+        '$ID',
+        '$DEFAULT',
+        '$CLASS',
+        '$ANGULAR_INPUT',
+        '$ANGULAR_TWO_WAY_BINDING',
+        '$ANGULAR_OUTPUT',
+        '$ANGULAR_ANIMATION',
+        '$ANGULAR_ANIMATION_INPUT'
+    ],
+    attributeSort: 'ASC',
+    attributeIgnoreCase: true
+};
+
 /** @type {import('prettier').Options} */
 const config = {
     printWidth: 120,
@@ -10,6 +28,7 @@ const config = {
     singleAttributePerLine: true,
     htmlWhitespaceSensitivity: 'ignore',
     plugins: [
+        'prettier-plugin-organize-attributes',
         '@ianvs/prettier-plugin-sort-imports',
         'prettier-plugin-tailwindcss',
         // should be last
@@ -29,16 +48,17 @@ const config = {
             }
         },
         {
-            files: ['.component.html', '.page.html'],
+            files: ['*.html'],
             options: {
-                parser: 'angular'
+                parser: 'angular',
+                ...organizeAttributesPluginAngularConfig
             }
         },
         {
-            files: ['*.html'],
+            files: ['index.html'],
             options: {
                 parser: 'html',
-                singleQuote: false
+                singleAttributePerLine: false
             }
         }
     ],

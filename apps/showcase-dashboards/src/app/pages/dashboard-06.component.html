@@ -1,85 +1,143 @@
 <app-block-toolbar blockName="dashboard-6"></app-block-toolbar>
 
-<div class="w-full h-[800px] flex p-4 lg:p-0 rounded-lg border bg-background border-border">
-    <div class="flex w-full flex-col bg-muted/40">
-
+<div class="bg-background border-border flex h-[800px] w-full rounded-lg border p-4 lg:p-0">
+    <div class="bg-muted/40 flex w-full flex-col">
         <div class="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
-            <header class="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-            </header>
+            <header
+                class="bg-background sticky top-0 z-30 flex h-14 items-center gap-4 border-b px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6"
+            ></header>
             <main class="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-
-                <div shCard x-chunk="A list of products in a table with actions. Each row has an image, name, status, price, total sales, created at and actions.">
+                <div
+                    shCard
+                    x-chunk="A list of products in a table with actions. Each row has an image, name, status, price, total sales, created at and actions."
+                >
                     <div shCardHeader>
                         <div shCardTitle>Products</div>
-                        <div shCardDescription>
-                            Manage your products and view their sales performance.
-                        </div>
+                        <div shCardDescription>Manage your products and view their sales performance.</div>
                     </div>
                     <div shCardContent>
                         <div class="relative w-full overflow-auto">
                             <table Table>
                                 <thead TableHeader>
                                     <tr TableRow>
-                                        <th TableHead class="hidden w-[100px] sm:table-cell">
+                                        <th
+                                            TableHead
+                                            class="hidden w-[100px] sm:table-cell"
+                                        >
                                             <span class="sr-only">Image</span>
                                         </th>
                                         <th TableHead>Name</th>
                                         <th TableHead>Status</th>
-                                        <th TableHead class="hidden md:table-cell">Price</th>
-                                        <th TableHead class="hidden md:table-cell">Total Sales</th>
-                                        <th TableHead class="sr-only">Actions</th>
+                                        <th
+                                            TableHead
+                                            class="hidden md:table-cell"
+                                        >
+                                            Price
+                                        </th>
+                                        <th
+                                            TableHead
+                                            class="hidden md:table-cell"
+                                        >
+                                            Total Sales
+                                        </th>
+                                        <th
+                                            TableHead
+                                            class="sr-only"
+                                        >
+                                            Actions
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody TableBody>
                                     <tr TableRow>
-                                        <td TableCell class="hidden sm:table-cell">
+                                        <td
+                                            TableCell
+                                            class="hidden sm:table-cell"
+                                        >
                                             <img
                                                 alt="Product image"
-                                                class="aspect-square rounded-md object-cover"
                                                 height="64"
                                                 ngSrc="assets/placeholder.svg"
                                                 width="64"
+                                                class="aspect-square rounded-md object-cover"
                                             />
                                         </td>
-                                        <td TableCell class="font-medium">
+                                        <td
+                                            TableCell
+                                            class="font-medium"
+                                        >
                                             Laser Lemonade Machine
                                         </td>
                                         <td TableCell>
-                                            <div shBadge variant="outline">Draft</div>
+                                            <div
+                                                shBadge
+                                                variant="outline"
+                                            >
+                                                Draft
+                                            </div>
                                         </td>
-                                        <td TableCell class="hidden md:table-cell">
+                                        <td
+                                            TableCell
+                                            class="hidden md:table-cell"
+                                        >
                                             $499.99
                                         </td>
-                                        <td TableCell class="hidden md:table-cell">
+                                        <td
+                                            TableCell
+                                            class="hidden md:table-cell"
+                                        >
                                             25
                                         </td>
-                                        <td TableCell class="hidden md:table-cell">
+                                        <td
+                                            TableCell
+                                            class="hidden md:table-cell"
+                                        >
                                             2023-07-12 10:42 AM
                                         </td>
                                     </tr>
                                     <tr TableRow>
-                                        <td TableCell class="hidden sm:table-cell">
+                                        <td
+                                            TableCell
+                                            class="hidden sm:table-cell"
+                                        >
                                             <img
                                                 alt="Product image"
-                                                class="aspect-square rounded-md object-cover"
                                                 height="64"
                                                 ngSrc="assets/placeholder.svg"
                                                 width="64"
+                                                class="aspect-square rounded-md object-cover"
                                             />
                                         </td>
-                                        <td TableCell class="font-medium">
+                                        <td
+                                            TableCell
+                                            class="font-medium"
+                                        >
                                             AeroGlow Desk Lamp
                                         </td>
                                         <td TableCell>
-                                            <div shBadge variant="outline">Active</div>
+                                            <div
+                                                shBadge
+                                                variant="outline"
+                                            >
+                                                Active
+                                            </div>
                                         </td>
-                                        <td TableCell class="hidden md:table-cell">
+                                        <td
+                                            TableCell
+                                            class="hidden md:table-cell"
+                                        >
                                             $39.99
                                         </td>
-                                        <td TableCell class="hidden md:table-cell">
+                                        <td
+                                            TableCell
+                                            class="hidden md:table-cell"
+                                        >
                                             50
                                         </td>
-                                        <td TableCell class="hidden md:table-cell">
+                                        <td
+                                            TableCell
+                                            class="hidden md:table-cell"
+                                        >
                                             2023-11-29 08:15 AM
                                         </td>
                                     </tr>

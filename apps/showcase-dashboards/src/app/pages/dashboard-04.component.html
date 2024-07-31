@@ -1,8 +1,10 @@
 <app-block-toolbar blockName="dashboard-4"></app-block-toolbar>
 
-<div class="flex w-full flex-col relative rounded-lg border bg-background border-border">
+<div class="bg-background border-border relative flex w-full flex-col rounded-lg border">
     <header class="sticky top-0 flex h-16 items-center gap-4 border-b px-4 md:px-6">
-        <nav class="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
+        <nav
+            class="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6"
+        >
             <a
                 href="#"
                 class="flex items-center gap-2 text-lg font-semibold md:text-base"
@@ -12,33 +14,33 @@
             </a>
             <a
                 href="#"
-                class="text-muted-foreground transition-colors hover:text-foreground"
+                class="text-muted-foreground hover:text-foreground transition-colors"
             >
-            Dashboard
+                Dashboard
             </a>
             <a
                 href="#"
-                class="text-muted-foreground transition-colors hover:text-foreground"
+                class="text-muted-foreground hover:text-foreground transition-colors"
             >
-            Orders
+                Orders
             </a>
             <a
                 href="#"
-                class="text-muted-foreground transition-colors hover:text-foreground"
+                class="text-muted-foreground hover:text-foreground transition-colors"
             >
-            Products
+                Products
             </a>
             <a
                 href="#"
-                class="text-muted-foreground transition-colors hover:text-foreground"
+                class="text-muted-foreground hover:text-foreground transition-colors"
             >
-            Customers
+                Customers
             </a>
             <a
                 href="#"
-                class="text-foreground transition-colors hover:text-foreground"
+                class="text-foreground hover:text-foreground transition-colors"
             >
-            Settings
+                Settings
             </a>
         </nav>
 
@@ -46,27 +48,28 @@
             <form class="ml-auto flex-1 sm:flex-initial">
                 <div class="relative">
                     <input
-                        shInput
-                        [type]="'search'"
                         placeholder="Search products..."
+                        shInput
                         [class]="'pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]'"
+                        [type]="'search'"
                     />
                 </div>
             </form>
         </div>
     </header>
 
-    <main class="flex flex-1 flex-col gap-4 bg-muted/40 p-4 md:gap-8 md:p-10">
+    <main class="bg-muted/40 flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-10">
         <div class="mx-auto grid w-full max-w-6xl gap-2">
             <h1 class="text-3xl font-semibold">Settings</h1>
         </div>
 
         <div class="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
-            <nav
-                class="grid gap-4 text-sm text-muted-foreground"
-            >
-                <a href="#" class="font-semibold text-primary">
-                General
+            <nav class="text-muted-foreground grid gap-4 text-sm">
+                <a
+                    href="#"
+                    class="text-primary font-semibold"
+                >
+                    General
                 </a>
                 <a href="#">Security</a>
                 <a href="#">Integrations</a>
@@ -75,40 +78,53 @@
                 <a href="#">Advanced</a>
             </nav>
             <div class="grid gap-6">
-                <div shCard x-chunk="dashboard-04-chunk-1">
+                <div
+                    shCard
+                    x-chunk="dashboard-04-chunk-1"
+                >
                     <div shCardHeader>
                         <div shCardTitle>Store Name</div>
-                        <div shCardDescription>
-                            Used to identify your store in the marketplace.
-                        </div>
+                        <div shCardDescription>Used to identify your store in the marketplace.</div>
                     </div>
                     <div shCardContent>
                         <form>
-                            <input shInput type="text" placeholder="Store Name" />
+                            <input
+                                placeholder="Store Name"
+                                shInput
+                                type="text"
+                            />
                         </form>
                     </div>
-                    <div shCardFooter class="border-t px-6 py-4">
+                    <div
+                        shCardFooter
+                        class="border-t px-6 py-4"
+                    >
                         <button shButton>Save</button>
                     </div>
                 </div>
 
-                <div shCard x-chunk="dashboard-04-chunk-2">
+                <div
+                    shCard
+                    x-chunk="dashboard-04-chunk-2"
+                >
                     <div shCardHeader>
                         <div shCardTitle>Plugins Directory</div>
                         <div shCardDescription>
-                            The directory within your project, in which your plugins are
-                            located.
+                            The directory within your project, in which your plugins are located.
                         </div>
                     </div>
                     <div shCardContent>
                         <form class="flex flex-col gap-4">
                             <input
+                                placeholder="Project Name"
                                 shInput
                                 type="text"
-                                placeholder="Project Name"
                             />
                             <div class="flex items-center space-x-2">
-                                <sh-checkbox class="flex" idLabel="include"></sh-checkbox>
+                                <sh-checkbox
+                                    idLabel="include"
+                                    class="flex"
+                                ></sh-checkbox>
                                 <label
                                     for="include"
                                     class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -118,8 +134,11 @@
                             </div>
                         </form>
                     </div>
-                    <div shCardFooter class="border-t px-6 py-4">
-                        <button shButton >Save</button>
+                    <div
+                        shCardFooter
+                        class="border-t px-6 py-4"
+                    >
+                        <button shButton>Save</button>
                     </div>
                 </div>
             </div>

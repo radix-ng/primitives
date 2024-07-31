@@ -1,23 +1,44 @@
 <ng-doc-root [sidebar]="false">
     <ng-doc-navbar
-        class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-background/60"
         data-glass-effect="false"
+        class="supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 backdrop-blur"
         [leftContent]="leftContent"
         [rightContent]="rightContent"
     >
         <ng-template #leftContent>
-            <a class="mr-6 flex items-center space-x-2" href="/">
-                <svg class="h-6 w-6" viewBox="0 0 256 256" fill="none"
-                     xmlns="http://www.w3.org/2000/svg">
+            <a
+                href="/"
+                class="mr-6 flex items-center space-x-2"
+            >
+                <svg
+                    fill="none"
+                    viewBox="0 0 256 256"
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                >
                     <g clip-path="url(#clip0_102_1338)">
-                        <path d="M208 128L128 208" stroke="#E90464" stroke-width="16"
-                              stroke-linecap="round" stroke-linejoin="round"></path>
-                        <path d="M192 40L40 192" stroke="#E90464" stroke-width="16"
-                              stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path
+                            d="M208 128L128 208"
+                            stroke="#E90464"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="16"
+                        ></path>
+                        <path
+                            d="M192 40L40 192"
+                            stroke="#E90464"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="16"
+                        ></path>
                     </g>
                     <defs>
                         <clipPath id="clip0_102_1338">
-                            <rect width="256" height="256" fill="white"></rect>
+                            <rect
+                                fill="white"
+                                height="256"
+                                width="256"
+                            ></rect>
                         </clipPath>
                     </defs>
                 </svg>
@@ -26,18 +47,22 @@
             <nav class="flex items-center gap-4 text-sm lg:gap-6">
                 @for (route of routes; track route.path) {
                     @if (route.external) {
-                        <a [href]="route.path"
-                           target="_blank"
-                           class="transition-colors hover:text-foreground/80"
-                           [class]="getRouteClasses(route)">
+                        <a
+                            target="_blank"
+                            class="hover:text-foreground/80 transition-colors"
+                            [class]="getRouteClasses(route)"
+                            [href]="route.path"
+                        >
                             {{ route.label }}
                         </a>
                     } @else {
-                        <a [routerLink]="route.path"
-                           [routerLinkActiveOptions]="{exact: route.exact ?? false}"
-                           routerLinkActive="text-foreground"
-                           class="transition-colors hover:text-foreground/80"
-                           [class]="getRouteClasses(route)">
+                        <a
+                            routerLinkActive="text-foreground"
+                            class="hover:text-foreground/80 transition-colors"
+                            [class]="getRouteClasses(route)"
+                            [routerLink]="route.path"
+                            [routerLinkActiveOptions]="{ exact: route.exact ?? false }"
+                        >
                             {{ route.label }}
                         </a>
                     }
@@ -47,14 +72,17 @@
         <ng-template #rightContent>
             <nav class="flex items-center">
                 <a
-                    shButton
                     href="https://github.com/radix-ng/primitives"
                     ngDocTooltip="Repository on GitHub"
-                    variant="ghost"
+                    shButton
                     size="icon"
                     target="_blank"
+                    variant="ghost"
                 >
-                    <ng-doc-icon [size]="24" customIcon="github"></ng-doc-icon>
+                    <ng-doc-icon
+                        customIcon="github"
+                        [size]="24"
+                    ></ng-doc-icon>
                 </a>
                 <app-doc-theme-toggle />
             </nav>

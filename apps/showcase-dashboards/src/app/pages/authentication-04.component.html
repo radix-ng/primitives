@@ -1,49 +1,73 @@
 <app-block-toolbar blockName="authentication-4"></app-block-toolbar>
 
-<div class="w-full h-[800px] flex  p-4 lg:p-0 rounded-lg border bg-background border-border">
+<div class="bg-background border-border flex h-[800px] w-full rounded-lg border p-4 lg:p-0">
     <div class="w-full lg:grid lg:min-h-[600px] xl:min-h-[800px]">
         <div class="flex items-center justify-center py-12">
             <div class="mx-auto grid w-[350px] gap-6">
                 <div class="grid gap-2 text-center">
                     <h1 class="text-3xl font-bold">Login</h1>
-                    <p class="text-balance text-muted-foreground">
-                        Enter your email below to login to your account
-                    </p>
+                    <p class="text-muted-foreground text-balance">Enter your email below to login to your account</p>
                 </div>
                 <div class="grid gap-4">
                     <div class="grid gap-2">
-                        <label shLabel htmlFor="email">Email</label>
+                        <label
+                            htmlFor="email"
+                            shLabel
+                        >
+                            Email
+                        </label>
                         <input
-                            shInput
                             id="email"
-                            type="email"
                             placeholder="m@example.com"
                             required
+                            shInput
+                            type="email"
                         />
                     </div>
                     <div class="grid gap-2">
                         <div class="flex items-center">
-                            <label shLabel htmlFor="password">Password</label>
+                            <label
+                                htmlFor="password"
+                                shLabel
+                            >
+                                Password
+                            </label>
                             <a
                                 href="/forgot-password"
                                 class="ml-auto inline-block text-sm underline"
                             >
-                            Forgot your password?
+                                Forgot your password?
                             </a>
                         </div>
-                        <input shInput id="password" type="password" required />
+                        <input
+                            id="password"
+                            required
+                            shInput
+                            type="password"
+                        />
                     </div>
-                    <button shButton type="submit" class="w-full">
+                    <button
+                        shButton
+                        type="submit"
+                        class="w-full"
+                    >
                         Login
                     </button>
-                    <button shButton variant="outline" class="w-full">
+                    <button
+                        shButton
+                        variant="outline"
+                        class="w-full"
+                    >
                         Login with Google
                     </button>
                 </div>
                 <div class="mt-4 text-center text-sm">
                     Don&apos;t have an account?
-                    <a href="#" class="underline">
-                    Sign up
+                    <a
+                        href="#"
+                        class="underline"
+                    >
+                        Sign up
                     </a>
                 </div>
             </div>
@@ -51,10 +75,10 @@
     </div>
     <div class="bg-muted lg:block">
         <img
-            ngSrc="assets/placeholder.svg"
             alt="Image"
-            width="1920"
             height="1080"
+            ngSrc="assets/placeholder.svg"
+            width="1920"
             class="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />
     </div>
