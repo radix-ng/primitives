@@ -1,48 +1,82 @@
 <app-block-toolbar blockName="authentication-2"></app-block-toolbar>
 
-<div class="w-full h-[600px] flex items-center justify-center px-4 rounded-lg border bg-background border-border">
-        <div shCard class="mx-auto max-w-sm">
-            <div shCardHeader>
-                <div shCardTitle class="text-2xl">Login</div>
-                <div shCardDescription>
-                    Enter your email below to login to your account
-                </div>
+<div class="bg-background border-border flex h-[600px] w-full items-center justify-center rounded-lg border px-4">
+    <div
+        shCard
+        class="mx-auto max-w-sm"
+    >
+        <div shCardHeader>
+            <div
+                shCardTitle
+                class="text-2xl"
+            >
+                Login
             </div>
-            <div shCardContent>
-                <div class="grid gap-4">
-                    <div class="grid gap-2">
-                        <label shLabel htmlFor="email">Email</label>
-                        <input
-                            shInput
-                            id="email"
-                            type="email"
-                            placeholder="m@example.com"
-                            required
-                        />
-                    </div>
-                    <div class="grid gap-2">
-                        <div class="flex items-center">
-                            <label shLabel htmlFor="password">Password</label>
-                            <a href="#" class="ml-auto inline-block text-sm underline">
+            <div shCardDescription>Enter your email below to login to your account</div>
+        </div>
+        <div shCardContent>
+            <div class="grid gap-4">
+                <div class="grid gap-2">
+                    <label
+                        htmlFor="email"
+                        shLabel
+                    >
+                        Email
+                    </label>
+                    <input
+                        id="email"
+                        placeholder="m@example.com"
+                        required
+                        shInput
+                        type="email"
+                    />
+                </div>
+                <div class="grid gap-2">
+                    <div class="flex items-center">
+                        <label
+                            htmlFor="password"
+                            shLabel
+                        >
+                            Password
+                        </label>
+                        <a
+                            href="#"
+                            class="ml-auto inline-block text-sm underline"
+                        >
                             Forgot your password?
-                            </a>
-                        </div>
-                        <input shInput id="password" type="password" required />
+                        </a>
                     </div>
-                    <button shButton type="submit" class="w-full">
-                        Login
-                    </button>
-                    <button shButton variant="outline" class="w-full">
-                        Login with Google
-                    </button>
+                    <input
+                        id="password"
+                        required
+                        shInput
+                        type="password"
+                    />
                 </div>
-                <div class="mt-4 text-center text-sm">
-                    Don&apos;t have an account?
-                    <a href="#" class="underline">
+                <button
+                    shButton
+                    type="submit"
+                    class="w-full"
+                >
+                    Login
+                </button>
+                <button
+                    shButton
+                    variant="outline"
+                    class="w-full"
+                >
+                    Login with Google
+                </button>
+            </div>
+            <div class="mt-4 text-center text-sm">
+                Don&apos;t have an account?
+                <a
+                    href="#"
+                    class="underline"
+                >
                     Sign up
-                    </a>
-                </div>
+                </a>
             </div>
         </div>
-
+    </div>
 </div>

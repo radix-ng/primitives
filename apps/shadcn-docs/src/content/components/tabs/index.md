@@ -21,9 +21,9 @@ import { ShTabsModule } from '@radix-ng/shadcn/tabs';
 
 ```html
 <div
+  class="w-[400px]"
   shTabs
   shDefaultValue="account"
-  class="w-[400px]"
 >
   <div shTabsList>
     <div
