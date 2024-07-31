@@ -57,7 +57,8 @@ const config = {
         {
             files: ['index.html'],
             options: {
-                parser: 'html'
+                parser: 'html',
+                singleAttributePerLine: false
             }
         }
     ],
