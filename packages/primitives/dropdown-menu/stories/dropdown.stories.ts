@@ -1,5 +1,3 @@
-import { RdxDropdownMenuDirective } from '@radix-ng/primitives/dropdown-menu';
-import { MenuModule } from '@radix-ng/primitives/menu';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { LucideAngularModule, Menu } from 'lucide-angular';
 import { RdxDropdownMenuContentDirective } from '../src/dropdown-menu-content.directive';
@@ -12,12 +10,10 @@ export default {
     decorators: [
         moduleMetadata({
             imports: [
-                MenuModule,
                 RdxDropdownMenuTriggerDirective,
                 RdxDropdownMenuItemDirective,
                 RdxDropdownMenuSeparatorDirective,
                 RdxDropdownMenuContentDirective,
-                RdxDropdownMenuDirective,
                 LucideAngularModule,
                 LucideAngularModule.pick({ Menu })
             ]
@@ -40,7 +36,7 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: `
-<button [DropdownMenuTrigger]="menu"
+<button [rdxDropdownMenuTrigger]="menu"
         sideOffset="4"
         alignOffset="-5"
         class="IconButton" aria-label="Customise options">
@@ -48,40 +44,40 @@ export const Default: Story = {
 </button>
 
 <ng-template #menu>
-  <div class="DropdownMenuContent" DropdownMenuContent>
-    <button class="DropdownMenuItem" DropdownMenuItem>
+  <div class="DropdownMenuContent" rdxDropdownMenuContent>
+    <button class="DropdownMenuItem" rdxDropdownMenuItem>
         New Tab <div class="RightSlot">⌘ T</div>
     </button>
-    <button class="DropdownMenuItem" DropdownMenuItem>
+    <button class="DropdownMenuItem" rdxDropdownMenuItem>
         New Window <div class="RightSlot">⌘ N</div>
     </button>
-    <button class="DropdownMenuItem" DropdownMenuItem disabled>
+    <button class="DropdownMenuItem" rdxDropdownMenuItem disabled>
         New Incognito Window
     </button>
-    <div MenubarSeparator class="DropdownMenuSeparator"></div>
+    <div rdxDropdownMenuSeparator class="DropdownMenuSeparator"></div>
     <button
         class="DropdownMenuSubTrigger"
-        DropdownMenuItem
-        [DropdownMenuTrigger]="share"
+        rdxDropdownMenuItem
+        [rdxDropdownMenuTrigger]="share"
         [side]="'right'"
     >
         Share <div class="RightSlot">></div>
     </button>
-    <div MenubarSeparator class="DropdownMenuSeparator"></div>
-    <button class="DropdownMenuItem" DropdownMenuItem>
+    <div rdxDropdownMenuSeparator class="DropdownMenuSeparator"></div>
+    <button class="DropdownMenuItem" rdxDropdownMenuItem>
         Print… <div class="RightSlot">⌘ P</div>
     </button>
   </div>
 </ng-template>
 
 <ng-template #share>
-  <div class="DropdownMenuSubContent" DropdownMenuContent>
-    <button class="DropdownMenuItem" DropdownMenuItem>Undo</button>
-    <button class="DropdownMenuItem" DropdownMenuItem>Redo</button>
-    <div MenubarSeparator class="DropdownMenuSeparator"></div>
-    <button class="DropdownMenuItem" DropdownMenuItem>Cut</button>
-    <button class="DropdownMenuItem" DropdownMenuItem>Copy</button>
-    <button class="DropdownMenuItem" DropdownMenuItem>Paste</button>
+  <div class="DropdownMenuSubContent" rdxDropdownMenuContent>
+    <button class="DropdownMenuItem" rdxDropdownMenuItem>Undo</button>
+    <button class="DropdownMenuItem" rdxDropdownMenuItem>Redo</button>
+    <div rdxDropdownMenuSeparator class="DropdownMenuSeparator"></div>
+    <button class="DropdownMenuItem" rdxDropdownMenuItem>Cut</button>
+    <button class="DropdownMenuItem" rdxDropdownMenuItem>Copy</button>
+    <button class="DropdownMenuItem" rdxDropdownMenuItem>Paste</button>
   </div>
 </ng-template>
 
@@ -120,6 +116,7 @@ button {
   outline: none;
 }
 
+[data-highlighted],
 .DropdownMenuItem:hover {
   background-color: var(--violet-11);
   color: white;

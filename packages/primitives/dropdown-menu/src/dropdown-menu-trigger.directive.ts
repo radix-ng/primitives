@@ -59,12 +59,12 @@ const dropdownPositions: Record<DropdownSide, ConnectedPosition> = {
 };
 
 @Directive({
-    selector: '[DropdownMenuTrigger]',
+    selector: '[rdxDropdownMenuTrigger]',
     standalone: true,
     hostDirectives: [
         {
             directive: CdkMenuTrigger,
-            inputs: ['cdkMenuTriggerFor: DropdownMenuTrigger']
+            inputs: ['cdkMenuTriggerFor: rdxDropdownMenuTrigger']
         }
     ],
     host: {

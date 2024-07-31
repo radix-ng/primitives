@@ -1,10 +1,9 @@
-import { CdkTargetMenuAim } from '@angular/cdk/menu';
+import { CdkMenu, CdkTargetMenuAim } from '@angular/cdk/menu';
 import { Directive } from '@angular/core';
-import { RdxMenuContentDirective } from '@radix-ng/primitives/menu';
 
 @Directive({
-    selector: '[DropdownMenuContent]',
+    selector: '[rdxDropdownMenuContent]',
     standalone: true,
-    hostDirectives: [RdxMenuContentDirective, CdkTargetMenuAim]
+    hostDirectives: [CdkMenu, CdkTargetMenuAim]
 })
 export class RdxDropdownMenuContentDirective {}
