@@ -29,7 +29,7 @@ import {
         CdkMenu
     ],
     template: `
-        <button shButton variant="outline" [DropdownMenuTrigger]="menu">Open</button>
+        <button shButton variant="outline" [rdxDropdownMenuTrigger]="menu">Open</button>
 
         <ng-template #menu>
             <div shDropdownMenuContent class="w-56">
