@@ -55,8 +55,11 @@ export const Default: Story = {
         New Incognito Window
     </button>
     <div rdxDropdownMenuSeparator class="DropdownMenuSeparator"></div>
+    <div class="DropdownMenuLabel" rdxDropdownMenuLabel>
+        Label
+    </div>
     <button
-        class="DropdownMenuSubTrigger"
+        class="DropdownMenuItem DropdownMenuSubTrigger"
         rdxDropdownMenuItem
         [rdxDropdownMenuTrigger]="share"
         [side]="'right'"
@@ -116,7 +119,6 @@ button {
   outline: none;
 }
 
-[data-highlighted],
 .DropdownMenuItem:hover {
   background-color: var(--violet-11);
   color: white;
@@ -139,6 +141,13 @@ button {
   height: 1px;
   background-color: var(--violet-6);
   margin: 5px;
+}
+
+.DropdownMenuLabel {
+  padding-left: 25px;
+  font-size: 12px;
+  line-height: 25px;
+  color: var(--mauve-11);
 }
 
 .IconButton {
