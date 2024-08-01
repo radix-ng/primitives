@@ -1,40 +1,34 @@
-import { BooleanInput } from '@angular/cdk/coercion';
+import { CdkMenuItem } from '@angular/cdk/menu';
 import {
-    booleanAttribute,
     Directive,
     ElementRef,
-    inject,
-    input
+    inject
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import { RdxMenuItemDirective } from '@radix-ng/primitives/menu';
 import { RdxDropdownMenuContentDirective } from './dropdown-menu-content.directive';
 
 @Directive({
     selector: '[rdxDropdownMenuItem]',
     standalone: true,
-    hostDirectives: [{ directive: RdxMenuItemDirective, inputs: ['rdxDisabled: disabled '] }],
+    hostDirectives: [{ directive: CdkMenuItem, inputs: ['cdkMenuItemDisabled: disabled '] }],
     host: {
-        '(pointermove)': 'onPointerMove()',
-        '(focus)': 'menu.highlighted.next(this)',
-        '(blur)': 'menu.highlighted.next(this)',
-        '[attr.data-highlighted]': 'highlighted ? "" : null',
         type: 'button',
+        role: 'menuitem',
+        // todo horizontal ?
+        '[attr.data-orientation]': '"vertical"',
+        '[attr.data-highlighted]': 'highlighted ? "" : null',
+        '[attr.data-disabled]': 'cdkMenuItem.disabled ? "" : null',
+        '[attr.disabled]': 'cdkMenuItem.disabled ? "" : null',
+        '(pointermove)': 'onPointerMove()',
+        '(focus)': 'menu.highlighted.next(this)'
     }
 })
 export class RdxDropdownMenuItemDirective {
     protected readonly menu = inject(RdxDropdownMenuContentDirective);
+    protected readonly cdkMenuItem = inject(CdkMenuItem);
 
     highlighted = false;
-
-    /*
-     * When true, prevents the user from interacting with the item.
-     */
-    readonly disabled = input<boolean, BooleanInput>(false, {
-        transform: booleanAttribute,
-        alias: 'rdxDisabled'
-    });
 
     get nativeElement(): HTMLElement {
         return this.elementRef.nativeElement;
