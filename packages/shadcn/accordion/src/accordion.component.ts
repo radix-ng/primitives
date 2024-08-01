@@ -1,5 +1,4 @@
 import { Component, computed, Directive, input } from '@angular/core';
-
 import {
     RdxAccordionContentDirective,
     RdxAccordionHeaderDirective,
@@ -32,12 +31,19 @@ const accordionTriggerVariants = cva(
     selector: 'sh-accordion-trigger',
     standalone: true,
     template: `
-        <h3 rdxAccordionHeader class="flex">
-            <button rdxAccordionTrigger type="button" [class]="computedClass()">
+        <h3
+            class="flex"
+            rdxAccordionHeader
+        >
+            <button
+                [class]="computedClass()"
+                rdxAccordionTrigger
+                type="button"
+            >
                 <ng-content></ng-content>
                 <lucide-angular
-                    name="chevron-down"
                     class="group h-4 shrink-0 transition-transform duration-200"
+                    name="chevron-down"
                 ></lucide-angular>
             </button>
         </h3>

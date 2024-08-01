@@ -1,6 +1,5 @@
 import { CdkMenu } from '@angular/cdk/menu';
 import { Component } from '@angular/core';
-
 import { RdxDropdownMenuTriggerDirective } from '@radix-ng/primitives/dropdown-menu';
 import { RdxMenuGroupDirective } from '@radix-ng/primitives/menu';
 import { RdxMenuBarDirective } from '@radix-ng/primitives/menubar';
@@ -25,14 +24,22 @@ import {
         ShDropdownMenuItem,
         ShDropdownMenuShortcut,
         RdxMenuGroupDirective,
-
         CdkMenu
     ],
     template: `
-        <button shButton variant="outline" [DropdownMenuTrigger]="menu">Open</button>
+        <button
+            [DropdownMenuTrigger]="menu"
+            shButton
+            variant="outline"
+        >
+            Open
+        </button>
 
         <ng-template #menu>
-            <div shDropdownMenuContent class="w-56">
+            <div
+                class="w-56"
+                shDropdownMenuContent
+            >
                 <div shDropdownMenuLabel>My Account</div>
                 <div shDropdownMenuSeparator></div>
                 <div MenuGroup>

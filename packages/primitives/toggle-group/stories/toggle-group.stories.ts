@@ -1,6 +1,5 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { AlignCenter, AlignLeft, AlignRight, LucideAngularModule } from 'lucide-angular';
-
 import { RdxToggleGroupButtonDirective } from '../src/toggle-group-button.directive';
 import { RdxToggleGroupMultiDirective } from '../src/toggle-group-multi.directive';
 import { RdxToggleGroupDirective } from '../src/toggle-group.directive';
@@ -13,7 +12,6 @@ export default {
                 RdxToggleGroupDirective,
                 RdxToggleGroupButtonDirective,
                 RdxToggleGroupMultiDirective,
-
                 LucideAngularModule,
                 LucideAngularModule.pick({ AlignRight, AlignLeft, AlignCenter })
             ]

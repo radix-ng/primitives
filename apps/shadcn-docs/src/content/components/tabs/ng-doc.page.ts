@@ -1,5 +1,4 @@
 import { NgDocPage } from '@ng-doc/core';
-
 import ExamplesCategory from '../ng-doc.category';
 import { TabsExampleComponent } from './examples/tabs-example.component';
 

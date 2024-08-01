@@ -1,5 +1,4 @@
 import { Component, ElementRef, NgZone, OnInit } from '@angular/core';
-
 import { usePresence } from '../src/presence';
 import { CollapseContext, transitionCollapsing } from '../src/transitions/transition.collapse';
 
@@ -20,6 +19,7 @@ import { CollapseContext, transitionCollapsing } from '../src/transitions/transi
                 height: auto;
             }
         `
+
     ]
 })
 export class PresenceComponent implements OnInit {

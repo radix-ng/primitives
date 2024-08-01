@@ -1,6 +1,5 @@
 /* eslint-disable @angular-eslint/directive-selector */
 import { computed, Directive, input } from '@angular/core';
-
 import { cn } from '@radix-ng/shadcn/core';
 import { cva } from 'class-variance-authority';
 import { ClassValue } from 'clsx';
@@ -58,9 +57,7 @@ export class TableFooterDirective {
     protected computedClass = computed(() => cn(tfootVariants(), this.userClass()));
 }
 
-const trVariants = cva(
-    'border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted'
-);
+const trVariants = cva('border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted');
 @Directive({
     selector: 'tr[TableRow]',
     standalone: true,

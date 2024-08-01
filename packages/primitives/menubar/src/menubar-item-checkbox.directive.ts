@@ -1,14 +1,6 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { CdkMenuItemCheckbox } from '@angular/cdk/menu';
-import {
-    booleanAttribute,
-    computed,
-    Directive,
-    effect,
-    inject,
-    input,
-    signal
-} from '@angular/core';
+import { booleanAttribute, computed, Directive, effect, inject, input, signal } from '@angular/core';
 
 @Directive({
     selector: '[MenubarCheckboxItem]',

@@ -1,13 +1,4 @@
-import {
-    AfterViewInit,
-    Directive,
-    ElementRef,
-    inject,
-    Input,
-    NgZone,
-    OnDestroy
-} from '@angular/core';
-
+import { AfterViewInit, Directive, ElementRef, inject, Input, NgZone, OnDestroy } from '@angular/core';
 import { Thumb } from './slider.types';
 
 @Directive({

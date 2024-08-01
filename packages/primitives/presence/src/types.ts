@@ -13,12 +13,8 @@ type TransitionContext<T> = {
     context: T;
 };
 
-type TransitionStartFn<T = any> = (
-    element: HTMLElement,
-    animation: boolean,
-    context: T
-) => TransitionEndFn | void;
+type TransitionStartFn<T = any> = (element: HTMLElement, animation: boolean, context: T) => TransitionEndFn | void;
 
 type TransitionEndFn = () => void;
 
-export { TransitionStartFn, TransitionEndFn, TransitionContext, TransitionOptions };
+export { TransitionContext, TransitionEndFn, TransitionOptions, TransitionStartFn };

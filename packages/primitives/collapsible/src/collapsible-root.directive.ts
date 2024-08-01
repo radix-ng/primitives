@@ -1,14 +1,5 @@
-import {
-    contentChild,
-    Directive,
-    EventEmitter,
-    inject,
-    InjectionToken,
-    Input,
-    Output
-} from '@angular/core';
+import { contentChild, Directive, EventEmitter, inject, InjectionToken, Input, Output } from '@angular/core';
 import { asyncScheduler } from 'rxjs';
-
 import { RdxCollapsibleContentToken } from './collapsible-content.directive';
 
 const RdxCollapsibleToken = new InjectionToken<RdxCollapsibleRootDirective>('RdxCollapsibleToken');
@@ -108,10 +99,7 @@ export class RdxCollapsibleRootDirective {
             return;
         }
 
-        this.contentDirective().elementRef.nativeElement.setAttribute(
-            'data-state',
-            this.getState()
-        );
+        this.contentDirective().elementRef.nativeElement.setAttribute('data-state', this.getState());
 
         if (this.isOpen()) {
             this.contentDirective().elementRef.nativeElement.removeAttribute('hidden');

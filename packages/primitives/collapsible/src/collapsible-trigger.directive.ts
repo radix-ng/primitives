@@ -1,5 +1,4 @@
 import { Directive } from '@angular/core';
-
 import { injectCollapsible, RdxCollapsibleState } from './collapsible-root.directive';
 
 @Directive({

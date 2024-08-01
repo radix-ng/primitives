@@ -8,7 +8,10 @@ export const RdxCollapsibleContentToken = new InjectionToken<RdxCollapsibleConte
     selector: '[rdxCollapsibleContent]',
     standalone: true,
     providers: [
-        { provide: RdxCollapsibleContentToken, useExisting: RdxCollapsibleContentDirective }
+        {
+            provide: RdxCollapsibleContentToken,
+            useExisting: RdxCollapsibleContentDirective
+        }
     ]
 })
 export class RdxCollapsibleContentDirective {

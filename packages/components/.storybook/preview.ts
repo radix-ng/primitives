@@ -14,6 +14,7 @@ const preview: Preview = {
 
             return Story(context);
         }
+
     ],
     parameters: {
         docs: {

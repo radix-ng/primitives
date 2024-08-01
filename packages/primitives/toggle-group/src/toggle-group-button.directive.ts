@@ -1,5 +1,4 @@
 import { booleanAttribute, Directive, Input, OnChanges, SimpleChanges } from '@angular/core';
-
 import { RdxToggleGroupButtonToken } from './toggle-group-button.token';
 import { injectToggleGroup } from './toggle-group.token';
 

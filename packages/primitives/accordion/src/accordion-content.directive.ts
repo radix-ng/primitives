@@ -1,22 +1,10 @@
 import { CdkAccordionItem } from '@angular/cdk/accordion';
-import {
-    Directive,
-    effect,
-    ElementRef,
-    inject,
-    InjectionToken,
-    input,
-    OnInit,
-    signal
-} from '@angular/core';
+import { Directive, effect, ElementRef, inject, InjectionToken, input, OnInit, signal } from '@angular/core';
 import { animationFrameScheduler } from 'rxjs';
-
 import { RdxAccordionItemState } from './accordion-item.directive';
 import { RdxAccordionOrientation } from './accordion-root.directive';
 
-export const RdxAccordionContentToken = new InjectionToken<RdxAccordionContentDirective>(
-    'RdxAccordionContentToken'
-);
+export const RdxAccordionContentToken = new InjectionToken<RdxAccordionContentDirective>('RdxAccordionContentToken');
 
 @Directive({
     selector: '[rdxAccordionContent]',
@@ -94,9 +82,7 @@ export class RdxAccordionContentDirective implements OnInit {
             this.togglePresence();
 
             animationFrameScheduler.schedule(() => {
-                this.elementRef.nativeElement
-                    .getAnimations()
-                    .forEach((animation) => animation.cancel());
+                this.elementRef.nativeElement.getAnimations().forEach((animation) => animation.cancel());
 
                 this.initialized.set(true);
             });
@@ -125,15 +111,9 @@ export class RdxAccordionContentDirective implements OnInit {
                 const height = `${this.elementRef.nativeElement.scrollHeight /*rect.height*/}px`;
                 const width = `${rect.width}px`;
 
-                this.elementRef.nativeElement.style.setProperty(
-                    '--radix-accordion-content-height',
-                    height
-                );
+                this.elementRef.nativeElement.style.setProperty('--radix-accordion-content-height', height);
 
-                this.elementRef.nativeElement.style.setProperty(
-                    '--radix-accordion-content-width',
-                    width
-                );
+                this.elementRef.nativeElement.style.setProperty('--radix-accordion-content-width', width);
 
                 this.hide();
             }

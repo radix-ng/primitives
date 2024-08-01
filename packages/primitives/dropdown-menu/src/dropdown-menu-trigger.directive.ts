@@ -1,12 +1,8 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { CdkMenuTrigger } from '@angular/cdk/menu';
-import {
-    ConnectedPosition,
-    VerticalConnectionPos
-} from '@angular/cdk/overlay';
+import { ConnectedPosition, VerticalConnectionPos } from '@angular/cdk/overlay';
 import { booleanAttribute, Directive, inject, Input, input } from '@angular/core';
 import { outputFromObservable } from '@angular/core/rxjs-interop';
-
 
 enum DropdownSide {
     Top = 'top',
@@ -25,9 +21,9 @@ const mapRdxAlignToCdkPosition = {
     start: 'top',
     center: 'center',
     end: 'bottom'
-}
+};
 
-const dropdownPositions: Record<DropdownSide, ConnectedPosition>  = {
+const dropdownPositions: Record<DropdownSide, ConnectedPosition> = {
     top: {
         originX: 'start',
         originY: 'top',
@@ -60,7 +56,7 @@ const dropdownPositions: Record<DropdownSide, ConnectedPosition>  = {
         offsetX: 0,
         offsetY: 0
     }
-}
+};
 
 @Directive({
     selector: '[DropdownMenuTrigger]',
@@ -111,8 +107,9 @@ export class RdxDropdownMenuTriggerDirective {
         if (this.isVertical) {
             this.defaultPosition.overlayX = this.defaultPosition.originX = value;
         } else {
-            this.defaultPosition.overlayY = this.defaultPosition.originY =
-                mapRdxAlignToCdkPosition[value] as VerticalConnectionPos;
+            this.defaultPosition.overlayY = this.defaultPosition.originY = mapRdxAlignToCdkPosition[
+                value
+            ] as VerticalConnectionPos;
         }
     }
 
@@ -154,8 +151,7 @@ export class RdxDropdownMenuTriggerDirective {
     constructor() {
         // todo priority
         this.cdkMenuTrigger.menuPosition = [
-            { ...dropdownPositions[DropdownSide.Bottom] }
-        ];
+            { ...dropdownPositions[DropdownSide.Bottom] }];
     }
 
     onPointerDown($event: MouseEvent) {

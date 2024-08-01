@@ -1,5 +1,4 @@
 import { computed, Directive, Input, input } from '@angular/core';
-
 import {
     RdxTabsContentDirective,
     RdxTabsListDirective,

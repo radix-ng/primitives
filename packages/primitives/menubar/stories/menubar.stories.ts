@@ -1,6 +1,5 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { Check, Dot, LucideAngularModule } from 'lucide-angular';
-
 import { MenubarModule } from '../index';
 
 export default {

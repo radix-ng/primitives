@@ -1,7 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-
 import { NgDocThemeService } from '@ng-doc/app';
-
 import { ConfigService } from './config.service';
 
 @Injectable({

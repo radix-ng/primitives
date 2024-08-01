@@ -1,14 +1,6 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { CdkMenuItem } from '@angular/cdk/menu';
-import {
-    booleanAttribute,
-    computed,
-    Directive,
-    effect,
-    inject,
-    input,
-    Output
-} from '@angular/core';
+import { booleanAttribute, computed, Directive, effect, inject, input, Output } from '@angular/core';
 
 type radixProps = {
     disabled: boolean;

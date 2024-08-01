@@ -56,7 +56,7 @@ function getTransitionDurationMs(element: HTMLElement): number {
     return (transitionDelaySec + transitionDurationSec) * 1000;
 }
 
-export { runInZone, getTransitionDurationMs };
+export { getTransitionDurationMs, runInZone };
 
 export function triggerReflow(element: HTMLElement) {
     return (element || document.body).getBoundingClientRect();

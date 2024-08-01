@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-
 import {
     ShTypographyH1Directive,
     ShTypographyH2Directive,

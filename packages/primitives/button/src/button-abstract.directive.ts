@@ -1,12 +1,4 @@
-import {
-    booleanAttribute,
-    Directive,
-    ElementRef,
-    EventEmitter,
-    inject,
-    Input,
-    Output
-} from '@angular/core';
+import { booleanAttribute, Directive, ElementRef, EventEmitter, inject, Input, Output } from '@angular/core';
 
 type ButtonType = 'button' | 'submit' | 'reset';
 

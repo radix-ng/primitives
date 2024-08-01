@@ -1,10 +1,5 @@
 import { provideHttpClient, withFetch } from '@angular/common/http';
-import {
-    ApplicationConfig,
-    importProvidersFrom,
-    isDevMode,
-    provideZoneChangeDetection
-} from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, isDevMode, provideZoneChangeDetection } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import {
     NoPreloading,
@@ -14,7 +9,6 @@ import {
     withPreloading,
     withViewTransitions
 } from '@angular/router';
-
 import {
     NG_DOC_DEFAULT_PAGE_PROCESSORS,
     NG_DOC_DEFAULT_PAGE_SKELETON,
@@ -35,7 +29,6 @@ import {
     Plus,
     Slash
 } from 'lucide-angular';
-
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {

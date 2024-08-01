@@ -1,10 +1,7 @@
 import { TransitionStartFn } from '../types';
 import { triggerReflow } from '../utils';
 
-export const toastFadeInTransition: TransitionStartFn = (
-    element: HTMLElement,
-    animation: boolean
-) => {
+export const toastFadeInTransition: TransitionStartFn = (element: HTMLElement, animation: boolean) => {
     const { classList } = element;
 
     if (animation) {

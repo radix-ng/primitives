@@ -1,6 +1,5 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, inject, OnInit, Renderer2 } from '@angular/core';
-
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
 
 @Component({
@@ -8,7 +7,11 @@ import { ShButtonDirective } from '@radix-ng/shadcn/button';
     standalone: true,
     imports: [ShButtonDirective],
     template: `
-        <button shButton variant="secondary" (click)="toggleTheme()">
+        <button
+            (click)="toggleTheme()"
+            shButton
+            variant="secondary"
+        >
             {{ isDarkMode ? 'Light Mode' : 'Dark Mode' }}
         </button>
     `,

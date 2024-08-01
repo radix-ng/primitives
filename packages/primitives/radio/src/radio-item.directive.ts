@@ -1,5 +1,4 @@
 import { booleanAttribute, Directive, inject, InjectionToken, Input } from '@angular/core';
-
 import { injectRadioGroup } from './radio-root.directive';
 
 export const RdxRadioItemToken = new InjectionToken<RdxRadioItemDirective>('RadioItemToken');

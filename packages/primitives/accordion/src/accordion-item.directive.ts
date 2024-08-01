@@ -1,22 +1,11 @@
 import { CdkAccordion } from '@angular/cdk/accordion';
-import {
-    contentChild,
-    Directive,
-    inject,
-    InjectionToken,
-    Input,
-    input,
-    signal
-} from '@angular/core';
-
+import { contentChild, Directive, inject, InjectionToken, Input, input, signal } from '@angular/core';
 import { RdxAccordionContentToken } from './accordion-content.directive';
 import { RdxAccordionOrientation } from './accordion-root.directive';
 
 export type RdxAccordionItemState = 'open' | 'closed';
 
-export const RdxAccordionItemToken = new InjectionToken<RdxAccordionItemDirective>(
-    'RdxAccordionItemToken'
-);
+export const RdxAccordionItemToken = new InjectionToken<RdxAccordionItemDirective>('RdxAccordionItemToken');
 
 export function injectAccordionItem(): RdxAccordionItemDirective {
     return inject(RdxAccordionItemDirective);
@@ -27,7 +16,11 @@ export function injectAccordionItem(): RdxAccordionItemDirective {
     standalone: true,
     exportAs: 'rdxAccordionItem',
     providers: [
-        { provide: RdxAccordionItemToken, useExisting: RdxAccordionItemDirective, multi: true }
+        {
+            provide: RdxAccordionItemToken,
+            useExisting: RdxAccordionItemDirective,
+            multi: true
+        }
     ],
     host: {
         '[attr.data-state]': 'state()',

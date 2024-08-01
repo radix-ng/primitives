@@ -1,5 +1,4 @@
 import { computed, Directive, input } from '@angular/core';
-
 import { cn } from '@radix-ng/shadcn/core';
 import { cva, VariantProps } from 'class-variance-authority';
 
@@ -9,8 +8,7 @@ const alertVariants = cva(
         variants: {
             variant: {
                 default: 'bg-background text-foreground',
-                destructive:
-                    'border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive'
+                destructive: 'border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive'
             }
         },
         defaultVariants: {
@@ -34,9 +32,7 @@ export class ShAlertDirective {
     readonly class = input<string>();
     readonly variant = input<ShAlertVariant>('default');
 
-    protected computedClass = computed(() =>
-        cn(alertVariants({ variant: this.variant(), class: this.class() }))
-    );
+    protected computedClass = computed(() => cn(alertVariants({ variant: this.variant(), class: this.class() })));
 }
 
 const alertTitleVariants = cva('mb-1 font-medium leading-none tracking-tight');

@@ -1,7 +1,5 @@
 import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
-
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-
 import { RdxAccordionContentDirective } from '../src/accordion-content.directive';
 import { RdxAccordionHeaderDirective } from '../src/accordion-header.directive';
 import { RdxAccordionItemDirective } from '../src/accordion-item.directive';
@@ -18,7 +16,6 @@ export default {
                 RdxAccordionHeaderDirective,
                 RdxAccordionTriggerDirective,
                 RdxAccordionContentDirective,
-
                 BrowserAnimationsModule
             ],
             providers: [provideAnimations()]

@@ -1,9 +1,7 @@
 import { Component, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
 import { RdxLabelRootDirective } from '@radix-ng/primitives/label';
 import { LucideAngularModule } from 'lucide-angular';
-
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input.directive';
 import { RdxCheckboxDirective } from '../src/checkbox.directive';
@@ -11,29 +9,37 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
 @Component({
     selector: 'checkbox-indeterminate-example',
     template: `
-        <label LabelRoot class="Label" htmlFor="r1">
+        <label
+            class="Label"
+            LabelRoot
+            htmlFor="r1"
+        >
             <button
-                CheckboxRoot
                 class="CheckboxRoot"
                 [(indeterminate)]="indeterminate"
                 [(ngModel)]="checked"
+                CheckboxRoot
             >
                 <lucide-angular
-                    CheckboxIndicator
                     class="CheckboxIndicator"
-                    size="16"
                     [name]="iconName()"
+                    CheckboxIndicator
+                    size="16"
                 ></lucide-angular>
-                <input CheckboxInput id="r1" class="Input" />
+                <input
+                    class="Input"
+                    id="r1"
+                    CheckboxInput
+                />
             </button>
             I'm a checkbox
         </label>
 
         <p>
             <button
-                data-accent-color="cyan"
                 class="rt-reset rt-BaseButton rt-r-size-2 rt-variant-solid rt-Button"
                 (click)="toggleIndeterminate()"
+                data-accent-color="cyan"
             >
                 Toggle Indeterminate state
             </button>

@@ -1,5 +1,4 @@
 import { computed, Directive, input } from '@angular/core';
-
 import {
     RdxDropdownMenuContentDirective,
     RdxDropdownMenuItemDirective,
@@ -24,9 +23,7 @@ const dropdownMenuContentVariants = cva(
 export class ShDropdownMenuContent {
     readonly class = input<string>();
 
-    protected computedClass = computed(() =>
-        cn(dropdownMenuContentVariants({ class: this.class() }))
-    );
+    protected computedClass = computed(() => cn(dropdownMenuContentVariants({ class: this.class() })));
 }
 
 const dropdownMenuSubContentVariants = cva(
@@ -44,9 +41,7 @@ const dropdownMenuSubContentVariants = cva(
 export class ShDropdownMenuSubContent {
     readonly class = input<string>();
 
-    protected computedClass = computed(() =>
-        cn(dropdownMenuSubContentVariants({ class: this.class() }))
-    );
+    protected computedClass = computed(() => cn(dropdownMenuSubContentVariants({ class: this.class() })));
 }
 
 const dropdownMenuLabelVariants = cva('px-2 py-1.5 text-sm font-semibold', {
@@ -116,9 +111,7 @@ const dropdownMenuSeparatorVariants = cva('-mx-1 my-1 h-px bg-muted');
 export class ShDropdownMenuSeparator {
     readonly class = input<string>();
 
-    protected computedClass = computed(() =>
-        cn(dropdownMenuSeparatorVariants({ class: this.class() }))
-    );
+    protected computedClass = computed(() => cn(dropdownMenuSeparatorVariants({ class: this.class() })));
 }
 
 const dropdownMenuShortcutVariants = cva('ml-auto text-xs tracking-widest opacity-60');
@@ -132,7 +125,5 @@ const dropdownMenuShortcutVariants = cva('ml-auto text-xs tracking-widest opacit
 export class ShDropdownMenuShortcut {
     readonly class = input<string>();
 
-    protected computedClass = computed(() =>
-        cn(dropdownMenuShortcutVariants({ class: this.class() }))
-    );
+    protected computedClass = computed(() => cn(dropdownMenuShortcutVariants({ class: this.class() })));
 }

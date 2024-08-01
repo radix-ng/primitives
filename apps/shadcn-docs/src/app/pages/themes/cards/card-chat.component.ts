@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
 import {
     ShCardContentDirective,
@@ -23,15 +22,26 @@ import { LucideAngularModule } from 'lucide-angular';
     ],
     template: `
         <div shCard>
-            <div shCardHeader class="flex flex-row items-center">
+            <div
+                class="flex flex-row items-center"
+                shCardHeader
+            >
                 <div class="flex items-center space-x-4">
                     <div>
                         <p class="text-sm font-medium leading-none">Sofia Davis</p>
                         <p class="text-muted-foreground text-sm">m&#64;example.com</p>
                     </div>
                 </div>
-                <button shButton size="icon" variant="outline" class="ml-auto rounded-full">
-                    <lucide-angular name="plus" class="h-4"></lucide-angular>
+                <button
+                    class="ml-auto rounded-full"
+                    shButton
+                    size="icon"
+                    variant="outline"
+                >
+                    <lucide-angular
+                        class="h-4"
+                        name="plus"
+                    ></lucide-angular>
                     <span class="sr-only">New message</span>
                 </button>
             </div>
@@ -42,9 +52,7 @@ import { LucideAngularModule } from 'lucide-angular';
                             [class]="
                                 cn(
                                     'flex w-max max-w-[75%] flex-col gap-2 rounded-lg px-3 py-2 text-sm',
-                                    message.role === 'user'
-                                        ? 'bg-primary text-primary-foreground ml-auto'
-                                        : 'bg-muted'
+                                    message.role === 'user' ? 'bg-primary text-primary-foreground ml-auto' : 'bg-muted'
                                 )
                             "
                         >

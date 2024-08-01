@@ -1,5 +1,4 @@
 import { computed, Directive, inject, input } from '@angular/core';
-
 import { TABS_CONTEXT_TOKEN } from './tabs-context.service';
 
 @Directive({

@@ -4,9 +4,7 @@ import { FormControlDirective, FormControlName, NgControl, NgModel } from '@angu
 export function injectNgControl(params: {
     optional: true;
 }): FormControlDirective | FormControlName | NgModel | undefined;
-export function injectNgControl(params: {
-    optional: false;
-}): FormControlDirective | FormControlName | NgModel;
+export function injectNgControl(params: { optional: false }): FormControlDirective | FormControlName | NgModel;
 export function injectNgControl(): FormControlDirective | FormControlName | NgModel;
 
 export function injectNgControl(params?: { optional: true } | { optional: false }) {
@@ -26,7 +24,5 @@ export function injectNgControl(params?: { optional: true } | { optional: false 
         return undefined;
     }
 
-    throw new Error(
-        'NgControl is not an instance of FormControlDirective, FormControlName or NgModel'
-    );
+    throw new Error('NgControl is not an instance of FormControlDirective, FormControlName or NgModel');
 }

@@ -10,7 +10,6 @@ import {
     model,
     Output
 } from '@angular/core';
-
 import {
     RdxCheckboxDirective,
     RdxCheckboxIndicatorDirective,
@@ -39,22 +38,22 @@ const variants = cva('flex');
     },
     template: `
         <button
-            CheckboxRoot
             class="border-primary ring-offset-background focus-visible:ring-ring data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground peer h-4 w-4 shrink-0 rounded-sm border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             [checked]="checked()"
             [indeterminate]="indeterminate()"
             (checkedChange)="onChange($event)"
+            CheckboxRoot
         >
             <lucide-angular
-                CheckboxIndicator
-                [name]="iconName()"
                 class="flex h-4 items-center justify-center text-current data-[state=unchecked]:hidden"
+                [name]="iconName()"
+                CheckboxIndicator
             ></lucide-angular>
             <input
-                CheckboxInput
+                class="cdk-visually-hidden"
                 [id]="id()"
                 [value]="checked.asReadonly()"
-                class="cdk-visually-hidden"
+                CheckboxInput
             />
         </button>
     `,

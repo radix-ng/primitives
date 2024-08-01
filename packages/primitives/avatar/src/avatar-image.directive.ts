@@ -1,5 +1,4 @@
 import { Directive, ElementRef, EventEmitter, inject, OnInit, Output } from '@angular/core';
-
 import { injectAvatar, RdxImageLoadingStatus } from './avatar-root.directive';
 
 export interface RdxAvatarImageProps {

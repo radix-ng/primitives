@@ -1,5 +1,4 @@
 import { Directive, effect, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
-
 import { RdxTabsContextService, TABS_CONTEXT_TOKEN } from './tabs-context.service';
 
 export interface TabsProps {

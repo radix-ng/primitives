@@ -1,6 +1,5 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, Directive, input } from '@angular/core';
-
 import { RdxMenuItemDirective } from '@radix-ng/primitives/menu';
 
 @Directive({

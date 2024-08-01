@@ -1,5 +1,4 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-
 import { RdxLabelRootDirective } from '../../label';
 import { RdxRadioIndicatorDirective } from '../src/radio-indicator.directive';
 import { RdxRadioItemDirective } from '../src/radio-item.directive';
@@ -15,7 +14,6 @@ export default {
                 RdxRadioItemDirective,
                 RdxRadioIndicatorDirective,
                 RdxRadioGroupDirective,
-
                 RadioGroupComponent
             ]
         }),

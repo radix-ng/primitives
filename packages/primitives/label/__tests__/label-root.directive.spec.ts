@@ -1,7 +1,6 @@
 import { Component, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-
 import { RdxLabelRootDirective } from '../src/label-root.directive';
 
 /* Explanation:
@@ -18,7 +17,10 @@ import { RdxLabelRootDirective } from '../src/label-root.directive';
         <label LabelRoot>
             Test Label
             <div>Click Me</div>
-            <input type="button" value="Button" />
+            <input
+                type="button"
+                value="Button"
+            />
         </label>
     `
 })

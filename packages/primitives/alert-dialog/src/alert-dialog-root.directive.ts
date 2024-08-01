@@ -1,5 +1,4 @@
 import { Directive, inject, Input, TemplateRef, ViewContainerRef } from '@angular/core';
-
 import { AlertDialogService } from './alert-dialog.service';
 
 @Directive({

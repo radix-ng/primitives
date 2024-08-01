@@ -1,5 +1,4 @@
 import { Directive } from '@angular/core';
-
 import { injectAccordionItem, RdxAccordionItemState } from './accordion-item.directive';
 import { injectAccordionRoot, RdxAccordionOrientation } from './accordion-root.directive';
 

@@ -1,17 +1,5 @@
 import { NgZone } from '@angular/core';
-import {
-    EMPTY,
-    endWith,
-    filter,
-    fromEvent,
-    Observable,
-    of,
-    race,
-    Subject,
-    takeUntil,
-    timer
-} from 'rxjs';
-
+import { EMPTY, endWith, filter, fromEvent, Observable, of, race, Subject, takeUntil, timer } from 'rxjs';
 import { TransitionContext, TransitionEndFn, TransitionOptions, TransitionStartFn } from './types';
 import { getTransitionDurationMs, runInZone } from './utils';
 
@@ -128,4 +116,4 @@ const completeTransition = (element: HTMLElement) => {
     TransitionsMap.get(element)?.complete();
 };
 
-export { usePresence, completeTransition };
+export { completeTransition, usePresence };

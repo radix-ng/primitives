@@ -1,5 +1,4 @@
 import { Component, ElementRef, inject, NgZone, OnInit } from '@angular/core';
-
 import { usePresence } from '../src/presence';
 import { CollapseContext, transitionCollapsing } from '../src/transitions/transition.collapse';
 
@@ -9,7 +8,12 @@ import { CollapseContext, transitionCollapsing } from '../src/transitions/transi
     template: `
         <div>
             <button (click)="toggle()">Toggle</button>
-            <div #collapseContent class="collapse-content">Content to be collapsed</div>
+            <div
+                class="collapse-content"
+                #collapseContent
+            >
+                Content to be collapsed
+            </div>
         </div>
     `,
     styles: [
@@ -25,6 +29,7 @@ import { CollapseContext, transitionCollapsing } from '../src/transitions/transi
                 height: auto;
             }
         `
+
     ]
 })
 export class PresenceStoryComponent implements OnInit {

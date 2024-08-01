@@ -1,6 +1,5 @@
 import { NgIf } from '@angular/common';
 import { Component, computed, Directive, input } from '@angular/core';
-
 import { cn } from '@radix-ng/shadcn/core';
 import { cva } from 'class-variance-authority';
 import { LucideAngularModule } from 'lucide-angular';
@@ -91,7 +90,11 @@ const breadcrumbSeparatorVariants = cva('');
             <span #ref><ng-content></ng-content></span>
         </ng-container>
         <ng-container *ngIf="ref.children.length == 0">
-            <lucide-angular name="ChevronRight" size="16" class="flex h-3.5"></lucide-angular>
+            <lucide-angular
+                class="flex h-3.5"
+                name="ChevronRight"
+                size="16"
+            ></lucide-angular>
         </ng-container>
     `,
     host: {
@@ -103,9 +106,7 @@ const breadcrumbSeparatorVariants = cva('');
 export class ShBreadcrumbSeparatorComponent {
     readonly class = input<string>();
 
-    protected computedClass = computed(() =>
-        cn(breadcrumbSeparatorVariants({ class: this.class() }))
-    );
+    protected computedClass = computed(() => cn(breadcrumbSeparatorVariants({ class: this.class() })));
 }
 
 // BreadcrumbEllipsis ----------------------------------------------------------------------
@@ -116,7 +117,10 @@ const breadcrumbEllipsisVariants = cva('flex h-9 w-9 items-center justify-center
     imports: [LucideAngularModule],
     template: `
         <!--        <span role="presentation" aria-hidden="true" [class]="computedClass()">-->
-        <lucide-angular name="MoreHorizontal" class="h-4 w-4"></lucide-angular>
+        <lucide-angular
+            class="h-4 w-4"
+            name="MoreHorizontal"
+        ></lucide-angular>
         <span class="sr-only">More</span>
         <!--        </span>-->
     `,
@@ -129,7 +133,5 @@ const breadcrumbEllipsisVariants = cva('flex h-9 w-9 items-center justify-center
 export class ShBreadcrumbEllipsisComponent {
     readonly class = input<string>();
 
-    protected computedClass = computed(() =>
-        cn(breadcrumbEllipsisVariants({ class: this.class() }))
-    );
+    protected computedClass = computed(() => cn(breadcrumbEllipsisVariants({ class: this.class() })));
 }

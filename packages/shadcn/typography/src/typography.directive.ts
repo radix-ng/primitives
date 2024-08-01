@@ -1,7 +1,5 @@
 import { computed, Directive, input } from '@angular/core';
-
 import { cn } from '@radix-ng/shadcn/core';
-
 import { h1Variants, h2Variants, ulVariants } from './styles';
 
 @Directive({
