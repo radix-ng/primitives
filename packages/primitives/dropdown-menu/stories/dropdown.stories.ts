@@ -48,7 +48,7 @@ export const Default: Story = {
     <button class="DropdownMenuItem" rdxDropdownMenuItem>
         New Tab <div class="RightSlot">⌘ T</div>
     </button>
-    <button class="DropdownMenuItem" rdxDropdownMenuItem>
+    <button class="DropdownMenuItem" rdxDropdownMenuItem disabled>
         New Window <div class="RightSlot">⌘ N</div>
     </button>
     <button class="DropdownMenuItem" rdxDropdownMenuItem>
@@ -120,6 +120,19 @@ button {
 .DropdownMenuItem:hover {
   background-color: var(--violet-11);
   color: white;
+}
+
+.DropdownMenuItem[data-disabled],
+.DropdownMenuCheckboxItem[data-disabled],
+.DropdownMenuRadioItem[data-disabled] {
+  color: var(--mauve-8);
+  pointer-events: none;
+}
+.DropdownMenuItem[data-highlighted],
+.DropdownMenuCheckboxItem[data-highlighted],
+.DropdownMenuRadioItem[data-highlighted] {
+  background-color: var(--violet-9);
+  color: var(--violet-1);
 }
 
 .DropdownMenuSeparator {
