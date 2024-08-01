@@ -1,26 +1,53 @@
-import { BooleanInput } from '@angular/cdk/coercion';
-import { booleanAttribute, Directive, input } from '@angular/core';
-import { RdxMenuItemDirective } from '@radix-ng/primitives/menu';
+import { CdkMenuItem } from '@angular/cdk/menu';
+import { Directive, ElementRef, EventEmitter, inject, Output } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+import { RdxDropdownMenuContentDirective } from './dropdown-menu-content.directive';
 
 @Directive({
     selector: '[rdxDropdownMenuItem]',
     standalone: true,
-    hostDirectives: [{ directive: RdxMenuItemDirective, inputs: ['rdxDisabled: disabled '] }],
+    // todo hostDirectives + extends
+    hostDirectives: [{ directive: CdkMenuItem, inputs: ['cdkMenuItemDisabled: disabled'] }],
     host: {
-        '(focus)': 'isFocused = true',
-        '(blur)': 'isFocused = false',
-        '[attr.data-highlighted]': 'isFocused ? "" : null',
         type: 'button',
+        // todo horizontal ?
+        '[attr.data-orientation]': '"vertical"',
+        '[attr.data-highlighted]': 'highlighted ? "" : null',
+        '[attr.data-disabled]': 'cdkMenuItem.disabled ? "" : null',
+        '[attr.disabled]': 'cdkMenuItem.disabled ? "" : null',
+        '(pointermove)': 'onPointerMove()',
+        '(focus)': 'menu.highlighted.next(this)',
+        '(keydown)': 'onKeydown($event)'
     }
 })
 export class RdxDropdownMenuItemDirective {
-    isFocused = false;
+    protected readonly menu = inject(RdxDropdownMenuContentDirective);
+    protected readonly cdkMenuItem = inject(CdkMenuItem);
+    protected readonly nativeElement = inject(ElementRef).nativeElement;
 
-    /*
-     * When true, prevents the user from interacting with the item.
-     */
-    readonly disabled = input<boolean, BooleanInput>(false, {
-        transform: booleanAttribute,
-        alias: 'rdxDisabled'
-    });
+    highlighted = false;
+
+    @Output() readonly onSelect = new EventEmitter<void>();
+
+    constructor() {
+        this.menu.highlighted.pipe(takeUntilDestroyed()).subscribe((value) => {
+            if (value !== this) {
+                this.highlighted = false;
+            }
+        });
+
+        this.cdkMenuItem.triggered.subscribe(this.onSelect);
+    }
+
+    protected onPointerMove() {
+        this.nativeElement.focus({ preventScroll: true });
+        this.menu.updateActiveItem(this.cdkMenuItem);
+    }
+
+    protected onKeydown(event: KeyboardEvent) {
+        if (this.nativeElement.tagName !== 'BUTTON' && ['Enter', ' '].includes(event.key)) {
+            event.preventDefault();
+        }
+    }
 }

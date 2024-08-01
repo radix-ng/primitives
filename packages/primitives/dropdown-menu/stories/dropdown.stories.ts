@@ -51,7 +51,7 @@ export const Default: Story = {
     <button class="DropdownMenuItem" rdxDropdownMenuItem>
         New Window <div class="RightSlot">⌘ N</div>
     </button>
-    <button class="DropdownMenuItem" rdxDropdownMenuItem disabled>
+    <button class="DropdownMenuItem" rdxDropdownMenuItem>
         New Incognito Window
     </button>
     <div rdxDropdownMenuSeparator class="DropdownMenuSeparator"></div>
