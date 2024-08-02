@@ -11,7 +11,8 @@ import { RdxDropdownMenuContentDirective } from './dropdown-menu-content.directi
 @Directive({
     selector: '[rdxDropdownMenuItem]',
     standalone: true,
-    hostDirectives: [{ directive: CdkMenuItem, inputs: ['cdkMenuItemDisabled: disabled '] }],
+    // todo hostDirectives + extends
+    hostDirectives: [{ directive: CdkMenuItem, inputs: ['cdkMenuItemDisabled: disabled'] }],
     host: {
         type: 'button',
         role: 'menuitem',
@@ -24,7 +25,7 @@ import { RdxDropdownMenuContentDirective } from './dropdown-menu-content.directi
         '(focus)': 'menu.highlighted.next(this)'
     }
 })
-export class RdxDropdownMenuItemDirective {
+export class RdxDropdownMenuItemDirective extends CdkMenuItem {
     protected readonly menu = inject(RdxDropdownMenuContentDirective);
     protected readonly cdkMenuItem = inject(CdkMenuItem);
 
@@ -35,6 +36,8 @@ export class RdxDropdownMenuItemDirective {
     }
 
     constructor(private elementRef: ElementRef) {
+        super();
+
         this.menu.highlighted
             .pipe(takeUntilDestroyed())
             .subscribe((value) => {
