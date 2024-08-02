@@ -7,13 +7,16 @@ import * as AvatarDirectiveStories from './avatar.stories';
 
 #### An image element with a fallback for representing the user.
 
-<Canvas sourceState="hidden" of={AvatarDirectiveStories.Default} />
+<Canvas
+  sourceState="hidden"
+  of={AvatarDirectiveStories.Default}
+/>
 
 ## Features
 
-* ✅ Automatic and manual control over when the image renders.
-* ✅ Fallback part accepts any children.
-* ✅ Optionally delayMs fallback rendering to avoid content flashing.
+- ✅ Automatic and manual control over when the image renders.
+- ✅ Fallback part accepts any children.
+- ✅ Optionally delayMs fallback rendering to avoid content flashing.
 
 ## Global Configuration
 
@@ -31,7 +34,11 @@ bootstrapApplication(AppComponent, {
 
 ```html
 <span rdxAvatarRoot>
-  <img rdxAvatarImage src="..." alt="..." />
+  <img
+    rdxAvatarImage
+    src="..."
+    alt="..."
+  />
   <span rdxAvatarFallback>Angular</span>
 </span>
 ```

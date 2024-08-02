@@ -1,5 +1,4 @@
 import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
-
 import { switchExclude } from '../../../../apps/storybook-radix/docs/utils/storybook';
 import { RdxSwitchRootDirective } from '../src/switch-root.directive';
 import * as SwitchDirectiveStories from './switch.stories';
@@ -10,12 +9,15 @@ import * as SwitchDirectiveStories from './switch.stories';
 
 #### A control that allows the user to toggle between checked and not checked.
 
-<Canvas sourceState="hidden" of={SwitchDirectiveStories.Default} />
+<Canvas
+  sourceState="hidden"
+  of={SwitchDirectiveStories.Default}
+/>
 
 ## Features
 
-* ✅ Full keyboard navigation.
-* ✅ Can be controlled or uncontrolled.
+- ✅ Full keyboard navigation.
+- ✅ Can be controlled or uncontrolled.
 
 ## Import
 
@@ -28,17 +30,35 @@ import { RdxSwitchRootDirective, RdxSwitchThumbDirective, RdxSwitchInputDirectiv
 ## Examples
 
 ```html
-<label LabelRoot htmlFor="airplane-mode">Airplane mode</label>
-<button SwitchRoot [(checked)]="checked" id="airplane-mode">
-    <span SwitchThumb></span>
+<label
+  LabelRoot
+  htmlFor="airplane-mode"
+>
+  Airplane mode
+</label>
+<button
+  id="airplane-mode"
+  SwitchRoot
+  [(checked)]="checked"
+>
+  <span SwitchThumb></span>
 </button>
 ```
 
 ```html
-<label LabelRoot htmlFor="airplane-mode">Airplane mode</label>
-<button SwitchRoot [(checked)]="checked" id="airplane-mode">
-    <input SwitchInput />
-    <span SwitchThumb></span>
+<label
+  LabelRoot
+  htmlFor="airplane-mode"
+>
+  Airplane mode
+</label>
+<button
+  id="airplane-mode"
+  SwitchRoot
+  [(checked)]="checked"
+>
+  <input SwitchInput />
+  <span SwitchThumb></span>
 </button>
 ```
 
@@ -46,7 +66,10 @@ import { RdxSwitchRootDirective, RdxSwitchThumbDirective, RdxSwitchInputDirectiv
 
 ### RdxSwitchRootDirective
 
-<ArgTypes exclude={switchExclude} of={RdxSwitchRootDirective} />
+<ArgTypes
+  exclude={switchExclude}
+  of={RdxSwitchRootDirective}
+/>
 
 <Markdown>
   {`

@@ -1,5 +1,4 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/blocks';
-
 import { RdxSeparatorRootDirective } from '../src/separator.directive';
 import * as SeparatorDirectiveStories from './separator.stories';
 
@@ -9,11 +8,14 @@ import * as SeparatorDirectiveStories from './separator.stories';
 
 #### Visually or semantically separates content.
 
-<Canvas sourceState="hidden" of={SeparatorDirectiveStories.Default} />
+<Canvas
+  sourceState="hidden"
+  of={SeparatorDirectiveStories.Default}
+/>
 
 ## Features
 
-* ✅ Supports horizontal and vertical orientations.
+- ✅ Supports horizontal and vertical orientations.
 
 ## Usage
 
@@ -26,7 +28,11 @@ import { RdxSeparatorRootDirective } from '@radix-ng/primitives/separator';
 ## Examples
 
 ```html
-<div SeparatorRoot rdxDecorative="decorative" rdxOrientation="vertical"></div>
+<div
+  SeparatorRoot
+  rdxDecorative="decorative"
+  rdxOrientation="vertical"
+></div>
 ```
 
 ## API Reference

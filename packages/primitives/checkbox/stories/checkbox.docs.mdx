@@ -1,5 +1,4 @@
 import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
-
 import { RdxCheckboxDirective } from '../src/checkbox.directive';
 import * as CheckboxDirectiveStories from './checkbox.stories';
 
@@ -9,13 +8,16 @@ import * as CheckboxDirectiveStories from './checkbox.stories';
 
 #### A control that allows the user to toggle between checked and not checked.
 
-<Canvas sourceState="hidden" of={CheckboxDirectiveStories.Default} />
+<Canvas
+  sourceState="hidden"
+  of={CheckboxDirectiveStories.Default}
+/>
 
 ## Features
 
-* ✅ Full keyboard navigation.
-* ✅ Supports indeterminate \_state.
-* ✅ Can be controlled or uncontrolled.
+- ✅ Full keyboard navigation.
+- ✅ Supports indeterminate \_state.
+- ✅ Can be controlled or uncontrolled.
 
 ## Import
 
@@ -28,9 +30,19 @@ import { RdxCheckboxDirective, RdxCheckboxIndicatorDirective } from '@radix-ng/p
 ## Anatomy
 
 ```html
-<button CheckboxRoot [(checked)]="checked">
-    <lucide-angular CheckboxIndicator name="check"></lucide-angular>
-    <input CheckboxInput type="checkbox" class="cdk-visually-hidden"/>
+<button
+  CheckboxRoot
+  [(checked)]="checked"
+>
+  <lucide-angular
+    CheckboxIndicator
+    name="check"
+  ></lucide-angular>
+  <input
+    class="cdk-visually-hidden"
+    CheckboxInput
+    type="checkbox"
+  />
 </button>
 ```
 

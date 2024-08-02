@@ -42,7 +42,7 @@ const config = {
             }
         },
         {
-            files: ['*.md'],
+            files: ['*.md', '*.mdx'],
             options: {
                 tabWidth: 2
             }

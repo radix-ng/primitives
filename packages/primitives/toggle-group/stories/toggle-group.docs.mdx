@@ -9,36 +9,72 @@ import { RdxToggleGroupButtonDirective } from '../src/toggle-group-button.direct
 
 #### A set of two-\_state buttons that can be toggled on or off.
 
-<Canvas sourceState="hidden" of={ToggleGroupDirectiveStories.Default} />
+<Canvas
+  sourceState="hidden"
+  of={ToggleGroupDirectiveStories.Default}
+/>
 
 ## Features
 
-* ✅ Full keyboard navigation.
-* ✅ Supports horizontal/vertical orientation.
-* ✅ Support single and multiple pressed buttons.
-* ✅ Can be controlled or uncontrolled.
+- ✅ Full keyboard navigation.
+- ✅ Supports horizontal/vertical orientation.
+- ✅ Support single and multiple pressed buttons.
+- ✅ Can be controlled or uncontrolled.
 
 ## Import
 
 Get started with importing the directives:
 
 ```typescript
-import { RdxToggleGroupDirective, RdxToggleGroupButtonDirective, RdxToggleGroupMultiDirective } from '@radix-ng/primitives/toggle-group';
+import {
+  RdxToggleGroupDirective,
+  RdxToggleGroupButtonDirective,
+  RdxToggleGroupMultiDirective
+} from '@radix-ng/primitives/toggle-group';
 ```
 
 ## Examples
 
 ```html
-<div rdxToggleGroup value="center" aria-label="Text alignment" class="ToggleGroup">
-    <button rdxToggleGroupButton value="left" aria-label="Left aligned" class="ToggleGroupItem" >
-        <lucide-icon name="align-left" size="16"></lucide-icon>
-    </button>
-    <button rdxToggleGroupButton value="center" aria-label="Center aligned" class="ToggleGroupItem">
-        <lucide-icon name="align-center" size="16"></lucide-icon>
-    </button>
-    <button rdxToggleGroupButton value="right" aria-label="Right aligned" class="ToggleGroupItem">
-        <lucide-icon name="align-right" size="16"></lucide-icon>
-    </button>
+<div
+  class="ToggleGroup"
+  rdxToggleGroup
+  value="center"
+  aria-label="Text alignment"
+>
+  <button
+    class="ToggleGroupItem"
+    rdxToggleGroupButton
+    value="left"
+    aria-label="Left aligned"
+  >
+    <lucide-icon
+      name="align-left"
+      size="16"
+    ></lucide-icon>
+  </button>
+  <button
+    class="ToggleGroupItem"
+    rdxToggleGroupButton
+    value="center"
+    aria-label="Center aligned"
+  >
+    <lucide-icon
+      name="align-center"
+      size="16"
+    ></lucide-icon>
+  </button>
+  <button
+    class="ToggleGroupItem"
+    rdxToggleGroupButton
+    value="right"
+    aria-label="Right aligned"
+  >
+    <lucide-icon
+      name="align-right"
+      size="16"
+    ></lucide-icon>
+  </button>
 </div>
 ```
 
@@ -79,6 +115,5 @@ Uses [roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.2/examples/rad
   | ArrowLeft   | Moves focus to the previous item in the group.  |
   | Home        | Moves focus to the first item. |
   | End         | Moves focus to the last item.  |
-
   `}
 </Markdown>

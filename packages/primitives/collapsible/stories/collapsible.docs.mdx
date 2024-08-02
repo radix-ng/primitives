@@ -1,28 +1,34 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/blocks';
-import * as CollapsibleStories from './collapsible.stories'
+import * as CollapsibleStories from './collapsible.stories';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.directive';
 import { RdxCollapsibleContentDirective } from '../src/collapsible-content.directive';
 
-<Meta title='Primitives/Collapsible' />
+<Meta title="Primitives/Collapsible" />
 
 # Collapsible
 
 #### An interactive component which expands/collapses a panel.
 
-<Canvas sourceState='hidden' of={CollapsibleStories.Default} />
+<Canvas
+  sourceState="hidden"
+  of={CollapsibleStories.Default}
+/>
 
 ## Features
 
-* ✅ Full keyboard navigation.
-* ✅ Can be controlled or uncontrolled.
+- ✅ Full keyboard navigation.
+- ✅ Can be controlled or uncontrolled.
 
 ## Anatomy
 
 ```html
-<div rdxCollapsibleRoot [open]="...">
-    <button rdxCollapsibleTrigger>Trigger</button>
-    <div rdxCollapsibleContent>Content</div>
+<div
+  rdxCollapsibleRoot
+  [open]="..."
+>
+  <button rdxCollapsibleTrigger>Trigger</button>
+  <div rdxCollapsibleContent>Content</div>
 </div>
 ```
 
@@ -32,9 +38,9 @@ Get started with importing the directives:
 
 ```typescript
 import {
-    RdxCollapsibleRootDirective,
-    RdxCollapsibleTriggerDirective,
-    RdxCollapsibleContentDirective
+  RdxCollapsibleRootDirective,
+  RdxCollapsibleTriggerDirective,
+  RdxCollapsibleContentDirective
 } from '@radix-ng/primitives/collapsible';
 ```
 
