@@ -25,7 +25,8 @@ import {
             <div class="DropdownMenuContent" rdxDropdownMenuContent>
                 <button class="DropdownMenuItem"
                         rdxDropdownMenuItemCheckbox
-                        [rdxDropdownMenuItemChecked]="itemState"
+                        [rdxChecked]="itemState"
+                        (rdxCheckedChange)="onCheckedChange($event)"
                         (click)="itemState = !itemState">
                     <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
                         <lucide-icon size="16" name="check"></lucide-icon>
@@ -38,7 +39,8 @@ import {
                 <button
                     class="DropdownMenuItem"
                     rdxDropdownMenuItemCheckbox
-                    [rdxDropdownMenuItemChecked]="itemState2"
+                    [rdxChecked]="itemState2"
+                    (rdxCheckedChange)="onCheckedChange($event)"
                     (click)="itemState2 = !itemState2"
                 >
                     <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
@@ -79,4 +81,8 @@ import {
 export class DropdownMenuItemCheckboxExampleComponent {
     itemState = true;
     itemState2 = false;
+
+    onCheckedChange(value: boolean) {
+        console.log('rdxCheckedChange', value);
+    }
 }
