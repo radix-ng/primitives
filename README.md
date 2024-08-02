@@ -2,6 +2,7 @@
 
 [![downloads](https://img.shields.io/npm/dm/@radix-ng/primitives.svg?style=flat-round)](https://www.npmjs.com/package/@radix-ng/primitives)
 [![downloads](https://img.shields.io/npm/dm/@radix-ng/shadcn.svg?style=flat-round)](https://www.npmjs.com/package/@radix-ng/shadcn)
+[![Discord Chat](https://img.shields.io/discord/1231525968586346567.svg?color=5865F2&logo=discord&logoColor=FFFFFF)](https://discord.gg/NaJb2XRWX9)
 
 > This version is not yet stable.
 >
