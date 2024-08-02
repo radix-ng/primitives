@@ -8,12 +8,7 @@ import { CollapseContext, transitionCollapsing } from '../src/transitions/transi
     template: `
         <div>
             <button (click)="toggle()">Toggle</button>
-            <div
-                class="collapse-content"
-                #collapseContent
-            >
-                Content to be collapsed
-            </div>
+            <div class="collapse-content" #collapseContent>Content to be collapsed</div>
         </div>
     `,
     styles: [

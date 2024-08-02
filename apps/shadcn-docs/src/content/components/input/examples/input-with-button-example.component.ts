@@ -7,17 +7,8 @@ import { ShInputDirective } from '@radix-ng/shadcn/input';
     imports: [ShInputDirective, ShButtonDirective],
     template: `
         <div class="flex w-full max-w-sm items-center space-x-2">
-            <input
-                shInput
-                type="email"
-                placeholder="Email"
-            />
-            <button
-                shButton
-                type="submit"
-            >
-                Subscribe
-            </button>
+            <input shInput type="email" placeholder="Email" />
+            <button shButton type="submit">Subscribe</button>
         </div>
     `
 })

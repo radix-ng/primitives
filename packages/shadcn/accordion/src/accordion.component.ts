@@ -31,15 +31,8 @@ const accordionTriggerVariants = cva(
     selector: 'sh-accordion-trigger',
     standalone: true,
     template: `
-        <h3
-            class="flex"
-            rdxAccordionHeader
-        >
-            <button
-                [class]="computedClass()"
-                rdxAccordionTrigger
-                type="button"
-            >
+        <h3 class="flex" rdxAccordionHeader>
+            <button [class]="computedClass()" rdxAccordionTrigger type="button">
                 <ng-content></ng-content>
                 <lucide-angular
                     class="group h-4 shrink-0 transition-transform duration-200"

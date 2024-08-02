@@ -24,17 +24,17 @@ export const usePresence = <T>(
 
 ### Parameters
 
-* `zone` (NgZone): Angular's NgZone service, which is used to manage change detection and ensure that transitions and animations are run outside of Angular's zone, avoiding unnecessary change detection cycles.
-* `element` (HTMLElement): The DOM element that the transition will be applied to.
-* startFn (`TransitionStartFn<T>`): A function that initiates the transition. It takes the element, the animation flag, and the context as parameters, and returns a cleanup function (TransitionEndFn) to be called when the transition ends.
-* options (`TransitionOptions<T>`): An object containing options for the transition.
-  * context (T): A context object that provides additional information needed for the transition.
-  * animation (boolean): A boolean indicating whether the transition should include animation.
-  * state ('stop' | 'continue'): Specifies whether to stop any running transition ('stop') or continue with the current one ('continue'). The default value is 'stop'.
-  * transitionTimerDelayMs (number, optional): An optional delay (in milliseconds) to be added to the transition timer. Default value is 5.
+- `zone` (NgZone): Angular's NgZone service, which is used to manage change detection and ensure that transitions and animations are run outside of Angular's zone, avoiding unnecessary change detection cycles.
+- `element` (HTMLElement): The DOM element that the transition will be applied to.
+- startFn (`TransitionStartFn<T>`): A function that initiates the transition. It takes the element, the animation flag, and the context as parameters, and returns a cleanup function (TransitionEndFn) to be called when the transition ends.
+- options (`TransitionOptions<T>`): An object containing options for the transition.
+  - context (T): A context object that provides additional information needed for the transition.
+  - animation (boolean): A boolean indicating whether the transition should include animation.
+  - state ('stop' | 'continue'): Specifies whether to stop any running transition ('stop') or continue with the current one ('continue'). The default value is 'stop'.
+  - transitionTimerDelayMs (number, optional): An optional delay (in milliseconds) to be added to the transition timer. Default value is 5.
 
 ## Notes
 
-* Transition Context: The context object can hold any additional data required for the transition. It allows for flexible and reusable transition logic.
-* Zone Management: Running transition logic outside Angular's zone prevents unnecessary change detection cycles, improving performance.
-* Customizable Delay: The optional transitionTimerDelayMs allows for fine-tuning the transition timing.
+- Transition Context: The context object can hold any additional data required for the transition. It allows for flexible and reusable transition logic.
+- Zone Management: Running transition logic outside Angular's zone prevents unnecessary change detection cycles, improving performance.
+- Customizable Delay: The optional transitionTimerDelayMs allows for fine-tuning the transition timing.

@@ -90,11 +90,7 @@ const breadcrumbSeparatorVariants = cva('');
             <span #ref><ng-content></ng-content></span>
         </ng-container>
         <ng-container *ngIf="ref.children.length == 0">
-            <lucide-angular
-                class="flex h-3.5"
-                name="ChevronRight"
-                size="16"
-            ></lucide-angular>
+            <lucide-angular class="flex h-3.5" name="ChevronRight" size="16"></lucide-angular>
         </ng-container>
     `,
     host: {
@@ -117,10 +113,7 @@ const breadcrumbEllipsisVariants = cva('flex h-9 w-9 items-center justify-center
     imports: [LucideAngularModule],
     template: `
         <!--        <span role="presentation" aria-hidden="true" [class]="computedClass()">-->
-        <lucide-angular
-            class="h-4 w-4"
-            name="MoreHorizontal"
-        ></lucide-angular>
+        <lucide-angular class="h-4 w-4" name="MoreHorizontal"></lucide-angular>
         <span class="sr-only">More</span>
         <!--        </span>-->
     `,

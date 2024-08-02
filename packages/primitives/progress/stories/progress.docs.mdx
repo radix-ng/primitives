@@ -1,5 +1,4 @@
 import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
-
 import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
 import { RdxProgressRootDirective } from '../src/progress-root.directive';
 import * as ProgressDirectiveStories from './progress.stories';
@@ -14,7 +13,7 @@ import * as ProgressDirectiveStories from './progress.stories';
 
 ## Features
 
-* ✅ Provides context for assistive technology to read the progress of a task.
+- ✅ Provides context for assistive technology to read the progress of a task.
 
 ## Usage
 
@@ -27,12 +26,8 @@ import { RdxProgressRootDirective, RdxProgressIndicatorDirective } from '@radix-
 ## Example
 
 ```html
-<div ProgressRoot [rdxValue]="progress" class="ProgressRoot">
-    <div
-        ProgressIndicator
-        [style.transform]="'translateX(-' + (100 - progress) +'%)'"
-        class="ProgressIndicator"
-    ></div>
+<div class="ProgressRoot" ProgressRoot [rdxValue]="progress">
+  <div class="ProgressIndicator" ProgressIndicator [style.transform]="'translateX(-' + (100 - progress) +'%)'"></div>
 </div>
 ```
 

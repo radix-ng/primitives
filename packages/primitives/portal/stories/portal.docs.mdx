@@ -8,17 +8,19 @@ import { Meta } from '@storybook/blocks';
 
 ## Features
 
-* ✅ Render any Angular component or template outside of your App's main structure.
-* ✅ Appends to a custom container element, which can be configured as needed.
+- ✅ Render any Angular component or template outside of your App's main structure.
+- ✅ Appends to a custom container element, which can be configured as needed.
 
 ## Installation
 
 To use the [Angular CDK Portal](https://material.angular.io/cdk/portal/overview), first install the CDK package:
+
 ```bash
 npm install @angular/cdk
 ```
 
 ## Basic Usage
+
 ### Defining a Portal
 
 First, create the component or template that you want to render in a different location:
@@ -29,14 +31,16 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'component-portal-content',
   standalone: true,
-  template: `<p>This is portal content!</p>`,
+  template: `
+    <p>This is portal content!</p>
+  `
 })
 export class PortalContentComponent {}
 ```
 
 ### Using the Portal
-In your main component, set up the portal and the outlet:
 
+In your main component, set up the portal and the outlet:
 
 ```typescript
 // app.component.ts
@@ -52,7 +56,7 @@ import { PortalContentComponent } from './portal-content.component';
       <app-portal-content></app-portal-content>
     </ng-template>
     <div #portalOutlet></div>
-  `,
+  `
 })
 export class AppComponent implements AfterViewInit {
   private readonly appRef = inject(ApplicationRef);
@@ -64,11 +68,7 @@ export class AppComponent implements AfterViewInit {
   private host: DomPortalOutlet;
 
   ngAfterViewInit() {
-    this.host = new DomPortalOutlet(
-      this.portalOutlet.element.nativeElement,
-      this.injector,
-      this.appRef
-    );
+    this.host = new DomPortalOutlet(this.portalOutlet.element.nativeElement, this.injector, this.appRef);
     this.host.attach(this.portal);
   }
 }
@@ -79,7 +79,7 @@ export class AppComponent implements AfterViewInit {
 The Angular CDK Portal utility consists of a few key elements:
 
 1. **Portal**:
-An Angular directive (`CdkPortal`) that defines the content to be rendered elsewhere.
+   An Angular directive (`CdkPortal`) that defines the content to be rendered elsewhere.
 
 2. **Portal Outlet**:
-An Angular directive (`CdkPortalOutlet`) or a host (`DomPortalOutlet`) where the portal content will be rendered.
+   An Angular directive (`CdkPortalOutlet`) or a host (`DomPortalOutlet`) where the portal content will be rendered.

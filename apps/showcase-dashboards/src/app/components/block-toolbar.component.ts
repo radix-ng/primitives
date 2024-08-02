@@ -4,10 +4,7 @@ import { Component, Input } from '@angular/core';
     selector: 'app-block-toolbar',
     standalone: true,
     template: `
-        <div
-            class="mb-4 flex flex-col items-center gap-4 sm:flex-row"
-            id="{{ blockName }}"
-        >
+        <div class="mb-4 flex flex-col items-center gap-4 sm:flex-row" id="{{ blockName }}">
             <div class="flex items-center gap-2">
                 <a href="#{{ blockName }}">
                     <div

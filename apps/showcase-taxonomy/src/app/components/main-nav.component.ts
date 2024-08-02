@@ -11,10 +11,7 @@ import { LucideAngularModule } from 'lucide-angular';
         <header class="bg-background container z-40">
             <div class="flex h-20 items-center justify-between py-6">
                 <div class="flex gap-6 md:gap-10">
-                    <a
-                        class="hidden items-center space-x-2 md:flex"
-                        href="/"
-                    >
+                    <a class="hidden items-center space-x-2 md:flex" href="/">
                         <svg
                             class="lucide lucide-command"
                             xmlns="http://www.w3.org/2000/svg"
@@ -48,11 +45,7 @@ import { LucideAngularModule } from 'lucide-angular';
                             Blog
                         </a>
                     </nav>
-                    <button
-                        class="flex items-center space-x-2 md:hidden"
-                        (click)="toggleMenu()"
-                        type="button"
-                    >
+                    <button class="flex items-center space-x-2 md:hidden" (click)="toggleMenu()" type="button">
                         @if (showMobileMenu) {
                             <lucide-icon name="x"></lucide-icon>
                         }
@@ -63,15 +56,7 @@ import { LucideAngularModule } from 'lucide-angular';
                     }
                 </div>
                 <nav>
-                    <a
-                        class="px-4"
-                        href="/login"
-                        txBtn
-                        variant="secondary"
-                        size="sm"
-                    >
-                        Login
-                    </a>
+                    <a class="px-4" href="/login" txBtn variant="secondary" size="sm">Login</a>
                 </nav>
             </div>
         </header>

@@ -8,37 +8,14 @@ import { RdxRadioGroupDirective, RdxRadioIndicatorDirective, RdxRadioItemDirecti
     selector: 'radio-groups-forms-example',
     standalone: true,
     template: `
-        <div
-            class="RadioGroupRoot"
-            [(ngModel)]="hotelRoom"
-            RadioRoot
-            aria-label="View density"
-        >
+        <div class="RadioGroupRoot" [(ngModel)]="hotelRoom" RadioRoot aria-label="View density">
             @for (room of rooms; track room) {
                 <div class="RadioGroup">
-                    <button
-                        class="RadioGroupItem"
-                        [value]="room"
-                        [id]="room"
-                        RadioItem
-                    >
-                        <div
-                            class="RadioGroupIndicator"
-                            RadioIndicator
-                        ></div>
-                        <input
-                            class="Input"
-                            RadioIndicator
-                            type="radio"
-                            aria-hidden="true"
-                            tabindex="-1"
-                        />
+                    <button class="RadioGroupItem" [value]="room" [id]="room" RadioItem>
+                        <div class="RadioGroupIndicator" RadioIndicator></div>
+                        <input class="Input" RadioIndicator type="radio" aria-hidden="true" tabindex="-1" />
                     </button>
-                    <label
-                        class="Label"
-                        [htmlFor]="room"
-                        LabelRoot
-                    >
+                    <label class="Label" [htmlFor]="room" LabelRoot>
                         {{ room }}
                     </label>
                 </div>

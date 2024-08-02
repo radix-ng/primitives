@@ -9,28 +9,15 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
 @Component({
     selector: 'checkbox-indeterminate-example',
     template: `
-        <label
-            class="Label"
-            LabelRoot
-            htmlFor="r1"
-        >
-            <button
-                class="CheckboxRoot"
-                [(indeterminate)]="indeterminate"
-                [(ngModel)]="checked"
-                CheckboxRoot
-            >
+        <label class="Label" LabelRoot htmlFor="r1">
+            <button class="CheckboxRoot" [(indeterminate)]="indeterminate" [(ngModel)]="checked" CheckboxRoot>
                 <lucide-angular
                     class="CheckboxIndicator"
                     [name]="iconName()"
                     CheckboxIndicator
                     size="16"
                 ></lucide-angular>
-                <input
-                    class="Input"
-                    id="r1"
-                    CheckboxInput
-                />
+                <input class="Input" id="r1" CheckboxInput />
             </button>
             I'm a checkbox
         </label>

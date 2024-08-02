@@ -15,10 +15,7 @@ import { Component } from '@angular/core';
                     >
                         Features
                     </a>
-                    <a
-                        class="flex w-full items-center rounded-md p-2 text-sm font-medium hover:underline"
-                        href="/blog"
-                    >
+                    <a class="flex w-full items-center rounded-md p-2 text-sm font-medium hover:underline" href="/blog">
                         Blog
                     </a>
                 </nav>

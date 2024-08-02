@@ -7,11 +7,7 @@ import { ShButtonDirective } from '@radix-ng/shadcn/button';
     standalone: true,
     imports: [ShButtonDirective],
     template: `
-        <button
-            (click)="toggleTheme()"
-            shButton
-            variant="secondary"
-        >
+        <button (click)="toggleTheme()" shButton variant="secondary">
             {{ isDarkMode ? 'Light Mode' : 'Dark Mode' }}
         </button>
     `,

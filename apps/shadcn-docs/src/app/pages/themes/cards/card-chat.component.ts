@@ -22,26 +22,15 @@ import { LucideAngularModule } from 'lucide-angular';
     ],
     template: `
         <div shCard>
-            <div
-                class="flex flex-row items-center"
-                shCardHeader
-            >
+            <div class="flex flex-row items-center" shCardHeader>
                 <div class="flex items-center space-x-4">
                     <div>
                         <p class="text-sm font-medium leading-none">Sofia Davis</p>
                         <p class="text-muted-foreground text-sm">m&#64;example.com</p>
                     </div>
                 </div>
-                <button
-                    class="ml-auto rounded-full"
-                    shButton
-                    size="icon"
-                    variant="outline"
-                >
-                    <lucide-angular
-                        class="h-4"
-                        name="plus"
-                    ></lucide-angular>
+                <button class="ml-auto rounded-full" shButton size="icon" variant="outline">
+                    <lucide-angular class="h-4" name="plus"></lucide-angular>
                     <span class="sr-only">New message</span>
                 </button>
             </div>

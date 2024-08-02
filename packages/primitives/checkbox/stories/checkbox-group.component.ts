@@ -12,37 +12,21 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
     template: `
         <section [formGroup]="personality">
             <p>
-                <label
-                    class="Label"
-                    LabelRoot
-                    htmlFor="r1"
-                >
-                    <button
-                        class="CheckboxRoot"
-                        CheckboxRoot
-                        formControlName="fun"
-                    >
+                <label class="Label" LabelRoot htmlFor="r1">
+                    <button class="CheckboxRoot" CheckboxRoot formControlName="fun">
                         <lucide-angular
                             class="CheckboxIndicator"
                             CheckboxIndicator
                             size="16"
                             name="check"
                         ></lucide-angular>
-                        <input
-                            class="Input cdk-visually-hidden"
-                            id="r1"
-                            CheckboxInput
-                        />
+                        <input class="Input cdk-visually-hidden" id="r1" CheckboxInput />
                     </button>
                     Fun
                 </label>
             </p>
             <p>
-                <label
-                    class="Label"
-                    LabelRoot
-                    htmlFor="r2"
-                >
+                <label class="Label" LabelRoot htmlFor="r2">
                     <button
                         class="CheckboxRoot rt-BaseCheckboxRoot rt-CheckboxRoot"
                         CheckboxRoot
@@ -54,46 +38,27 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
                             size="16"
                             name="check"
                         ></lucide-angular>
-                        <input
-                            class="Input cdk-visually-hidden"
-                            id="r2"
-                            CheckboxInput
-                        />
+                        <input class="Input cdk-visually-hidden" id="r2" CheckboxInput />
                     </button>
                     Serious
                 </label>
             </p>
             <p>
-                <label
-                    class="Label"
-                    LabelRoot
-                    htmlFor="r3"
-                >
-                    <button
-                        class="CheckboxRoot"
-                        CheckboxRoot
-                        formControlName="smart"
-                    >
+                <label class="Label" LabelRoot htmlFor="r3">
+                    <button class="CheckboxRoot" CheckboxRoot formControlName="smart">
                         <lucide-angular
                             class="CheckboxIndicator"
                             CheckboxIndicator
                             size="16"
                             name="check"
                         ></lucide-angular>
-                        <input
-                            class="Input cdk-visually-hidden"
-                            id="r3"
-                            CheckboxInput
-                        />
+                        <input class="Input cdk-visually-hidden" id="r3" CheckboxInput />
                     </button>
                     Smart
                 </label>
             </p>
         </section>
-        <section
-            class="Label"
-            [formGroup]="personality"
-        >
+        <section class="Label" [formGroup]="personality">
             <h4>You chose:&nbsp;</h4>
             {{ personality.value | json }}
         </section>

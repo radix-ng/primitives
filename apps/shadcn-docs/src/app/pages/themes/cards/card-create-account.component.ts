@@ -29,35 +29,14 @@ import { LucideAngularModule } from 'lucide-angular';
     ],
     template: `
         <div shCard>
-            <div
-                class="space-y-1"
-                shCardHeader
-            >
-                <div
-                    class="text-2xl"
-                    shCardTitle
-                >
-                    Create an account
-                </div>
+            <div class="space-y-1" shCardHeader>
+                <div class="text-2xl" shCardTitle>Create an account</div>
                 <div shCardDescription>Enter your email below to create your account</div>
             </div>
-            <div
-                class="grid gap-4"
-                shCardContent
-            >
+            <div class="grid gap-4" shCardContent>
                 <div class="grid grid-cols-2 gap-6">
-                    <button
-                        shButton
-                        variant="outline"
-                    >
-                        Github
-                    </button>
-                    <button
-                        shButton
-                        variant="outline"
-                    >
-                        Google
-                    </button>
+                    <button shButton variant="outline">Github</button>
+                    <button shButton variant="outline">Google</button>
                 </div>
                 <div class="relative">
                     <div class="absolute inset-0 flex items-center">
@@ -68,40 +47,16 @@ import { LucideAngularModule } from 'lucide-angular';
                     </div>
                 </div>
                 <div class="grid gap-2">
-                    <label
-                        shLabel
-                        htmlFor="email"
-                    >
-                        Email
-                    </label>
-                    <input
-                        id="email"
-                        shInput
-                        type="email"
-                        placeholder="m@example.com"
-                    />
+                    <label shLabel htmlFor="email">Email</label>
+                    <input id="email" shInput type="email" placeholder="m@example.com" />
                 </div>
                 <div class="grid gap-2">
-                    <label
-                        shLabel
-                        htmlFor="password"
-                    >
-                        Password
-                    </label>
-                    <input
-                        id="password"
-                        shInput
-                        type="password"
-                    />
+                    <label shLabel htmlFor="password">Password</label>
+                    <input id="password" shInput type="password" />
                 </div>
             </div>
             <div shCardFooter>
-                <button
-                    class="w-full"
-                    shButton
-                >
-                    Create account
-                </button>
+                <button class="w-full" shButton>Create account</button>
             </div>
         </div>
     `

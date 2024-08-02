@@ -1,5 +1,4 @@
 import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
-
 import { switchExclude } from '../../../../apps/storybook-radix/docs/utils/storybook';
 import { RdxSwitchRootDirective } from '../src/switch-root.directive';
 import * as SwitchDirectiveStories from './switch.stories';
@@ -14,8 +13,8 @@ import * as SwitchDirectiveStories from './switch.stories';
 
 ## Features
 
-* ✅ Full keyboard navigation.
-* ✅ Can be controlled or uncontrolled.
+- ✅ Full keyboard navigation.
+- ✅ Can be controlled or uncontrolled.
 
 ## Import
 
@@ -29,16 +28,16 @@ import { RdxSwitchRootDirective, RdxSwitchThumbDirective, RdxSwitchInputDirectiv
 
 ```html
 <label LabelRoot htmlFor="airplane-mode">Airplane mode</label>
-<button SwitchRoot [(checked)]="checked" id="airplane-mode">
-    <span SwitchThumb></span>
+<button id="airplane-mode" SwitchRoot [(checked)]="checked">
+  <span SwitchThumb></span>
 </button>
 ```
 
 ```html
 <label LabelRoot htmlFor="airplane-mode">Airplane mode</label>
-<button SwitchRoot [(checked)]="checked" id="airplane-mode">
-    <input SwitchInput />
-    <span SwitchThumb></span>
+<button id="airplane-mode" SwitchRoot [(checked)]="checked">
+  <input SwitchInput />
+  <span SwitchThumb></span>
 </button>
 ```
 
