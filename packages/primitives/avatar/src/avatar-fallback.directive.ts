@@ -1,13 +1,4 @@
-import {
-    Directive,
-    inject,
-    Input,
-    NgZone,
-    numberAttribute,
-    OnDestroy,
-    OnInit
-} from '@angular/core';
-
+import { Directive, inject, Input, NgZone, numberAttribute, OnDestroy, OnInit } from '@angular/core';
 import { injectAvatar } from './avatar-root.directive';
 import { injectAvatarConfig } from './avatar.config';
 
@@ -35,8 +26,7 @@ export class RdxAvatarFallbackDirective implements RdxAvatarFallbackProps, OnIni
      * This is useful to only show the fallback for those with slower connections.
      * @default 0
      */
-    @Input({ alias: 'rdxDelayMs', transform: numberAttribute }) delayMs: number =
-        this.config.delayMs;
+    @Input({ alias: 'rdxDelayMs', transform: numberAttribute }) delayMs: number = this.config.delayMs;
 
     protected get visible(): boolean {
         return this.delayElapsed && this.avatar._state() !== 'loaded';

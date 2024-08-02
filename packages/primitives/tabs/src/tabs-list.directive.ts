@@ -1,5 +1,4 @@
 import { Directive, inject } from '@angular/core';
-
 import { TABS_CONTEXT_TOKEN } from './tabs-context.service';
 
 interface TabsListProps {

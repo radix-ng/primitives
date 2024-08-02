@@ -2,7 +2,6 @@ import { RdxDropdownMenuDirective } from '@radix-ng/primitives/dropdown-menu';
 import { MenuModule } from '@radix-ng/primitives/menu';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { LucideAngularModule, Menu } from 'lucide-angular';
-
 import { RdxDropdownMenuContentDirective } from '../src/dropdown-menu-content.directive';
 import { RdxDropdownMenuItemDirective } from '../src/dropdown-menu-item.directive';
 import { RdxDropdownMenuSeparatorDirective } from '../src/dropdown-menu-separator.directive';

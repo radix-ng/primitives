@@ -10,7 +10,6 @@ import {
     SimpleChanges
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-
 import type { RdxToggleGroupButtonDirective } from './toggle-group-button.directive';
 import { RdxToggleGroupButtonToken } from './toggle-group-button.token';
 import { RdxToggleGroupToken } from './toggle-group.token';

@@ -1,8 +1,6 @@
 import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 import { provideRouter } from '@angular/router';
-
 import { Check, LucideAngularModule, Package2 } from 'lucide-angular';
-
 import { appRoutes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {

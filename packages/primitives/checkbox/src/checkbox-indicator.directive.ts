@@ -1,5 +1,4 @@
 import { Directive } from '@angular/core';
-
 import { injectCheckbox } from './checkbox.token';
 
 @Directive({

@@ -1,5 +1,4 @@
 import { NgDocPage } from '@ng-doc/core';
-
 import ExamplesCategory from '../ng-doc.category';
 import { ButtonExampleDestructiveComponent } from './examples/button-example-destructive.component';
 import { ButtonExampleGhostComponent } from './examples/button-example-ghost.component';

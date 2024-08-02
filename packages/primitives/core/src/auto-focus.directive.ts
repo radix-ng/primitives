@@ -74,9 +74,7 @@ function getRequestAnimationFrame(): typeof requestAnimationFrame {
 
     const prefix = availablePrefixes.filter((key) => `${key}RequestAnimationFrame` in window)[0];
 
-    return prefix
-        ? (window as any)[`${prefix}RequestAnimationFrame`]
-        : requestAnimationFramePolyfill();
+    return prefix ? (window as any)[`${prefix}RequestAnimationFrame`] : requestAnimationFramePolyfill();
 }
 
 // Get the requestAnimationFrame function or its polyfill.

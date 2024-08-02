@@ -10,7 +10,6 @@ import {
     SimpleChanges
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-
 import type { RdxToggleGroupButtonDirective } from './toggle-group-button.directive';
 import { RdxToggleGroupButtonToken } from './toggle-group-button.token';
 import { RdxToggleGroupToken } from './toggle-group.token';
@@ -28,9 +27,7 @@ import { RdxToggleGroupToken } from './toggle-group.token';
         '(focusout)': 'onTouched?.()'
     }
 })
-export class RdxToggleGroupMultiDirective
-    implements OnChanges, AfterContentInit, ControlValueAccessor
-{
+export class RdxToggleGroupMultiDirective implements OnChanges, AfterContentInit, ControlValueAccessor {
     /**
      * The selected toggle button.
      */
@@ -57,9 +54,7 @@ export class RdxToggleGroupMultiDirective
     /**
      * Event emitted when the selected toggle button changes.
      */
-    @Input('rdxToggleGroupMultiValueChange') readonly valueChange = new EventEmitter<
-        ReadonlyArray<string>
-    >();
+    @Input('rdxToggleGroupMultiValueChange') readonly valueChange = new EventEmitter<ReadonlyArray<string>>();
 
     /**
      * Access the buttons in the toggle group.
@@ -118,9 +113,7 @@ export class RdxToggleGroupMultiDirective
             return;
         }
 
-        this.value = this.value.includes(value)
-            ? this.value.filter((v) => v !== value)
-            : [...this.value, value];
+        this.value = this.value.includes(value) ? this.value.filter((v) => v !== value) : [...this.value, value];
 
         this.valueChange.emit(this.value);
         this.onChange?.(this.value);

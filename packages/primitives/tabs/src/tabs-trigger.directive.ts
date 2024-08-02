@@ -1,13 +1,5 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import {
-    booleanAttribute,
-    computed,
-    Directive,
-    inject,
-    input,
-    InputSignalWithTransform
-} from '@angular/core';
-
+import { booleanAttribute, computed, Directive, inject, input, InputSignalWithTransform } from '@angular/core';
 import { TABS_CONTEXT_TOKEN } from './tabs-context.service';
 
 interface TabsTriggerProps {
@@ -41,12 +33,8 @@ export class RdxTabsTriggerDirective implements TabsTriggerProps {
         transform: booleanAttribute
     });
 
-    protected readonly contentId = computed(
-        () => `${this.tabsContext.getBaseId()}-content-${this.value()}`
-    );
-    protected readonly triggerId = computed(
-        () => `${this.tabsContext.getBaseId()}-trigger-${this.value}`
-    );
+    protected readonly contentId = computed(() => `${this.tabsContext.getBaseId()}-content-${this.value()}`);
+    protected readonly triggerId = computed(() => `${this.tabsContext.getBaseId()}-trigger-${this.value}`);
 
     protected readonly selected = computed(() => this.tabsContext.value$() === this.value());
 

@@ -1,6 +1,4 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { fn } from '@storybook/test';
-
 import { RdxTabsContentDirective } from '../src/tabs-content.directive';
 import { RdxTabsListDirective } from '../src/tabs-list.directive';
 import { RdxTabsRootDirective } from '../src/tabs-root.directive';

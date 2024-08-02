@@ -1,14 +1,5 @@
-import {
-    booleanAttribute,
-    Directive,
-    EventEmitter,
-    Input,
-    OnChanges,
-    Output,
-    SimpleChanges
-} from '@angular/core';
+import { booleanAttribute, Directive, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-
 import { RdxCheckboxToken } from './checkbox.token';
 
 export type CheckboxState = 'unchecked' | 'checked' | 'indeterminate';

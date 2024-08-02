@@ -1,10 +1,8 @@
 import { JsonPipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-
 import { RdxLabelRootDirective } from '@radix-ng/primitives/label';
 import { LucideAngularModule } from 'lucide-angular';
-
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input.directive';
 import { RdxCheckboxDirective } from '../src/checkbox.directive';
@@ -14,61 +12,96 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
     template: `
         <section [formGroup]="personality">
             <p>
-                <label LabelRoot class="Label" htmlFor="r1">
-                    <button CheckboxRoot class="CheckboxRoot" formControlName="fun">
+                <label
+                    class="Label"
+                    LabelRoot
+                    htmlFor="r1"
+                >
+                    <button
+                        class="CheckboxRoot"
+                        CheckboxRoot
+                        formControlName="fun"
+                    >
                         <lucide-angular
-                            CheckboxIndicator
                             class="CheckboxIndicator"
+                            CheckboxIndicator
                             size="16"
                             name="check"
                         ></lucide-angular>
-                        <input CheckboxInput id="r1" class="Input cdk-visually-hidden" />
+                        <input
+                            class="Input cdk-visually-hidden"
+                            id="r1"
+                            CheckboxInput
+                        />
                     </button>
                     Fun
                 </label>
             </p>
             <p>
-                <label LabelRoot class="Label" htmlFor="r2">
+                <label
+                    class="Label"
+                    LabelRoot
+                    htmlFor="r2"
+                >
                     <button
-                        CheckboxRoot
                         class="CheckboxRoot rt-BaseCheckboxRoot rt-CheckboxRoot"
+                        CheckboxRoot
                         formControlName="serious"
                     >
                         <lucide-angular
-                            CheckboxIndicator
                             class="CheckboxIndicator"
+                            CheckboxIndicator
                             size="16"
                             name="check"
                         ></lucide-angular>
-                        <input CheckboxInput id="r2" class="Input cdk-visually-hidden" />
+                        <input
+                            class="Input cdk-visually-hidden"
+                            id="r2"
+                            CheckboxInput
+                        />
                     </button>
                     Serious
                 </label>
             </p>
             <p>
-                <label LabelRoot class="Label" htmlFor="r3">
-                    <button CheckboxRoot class="CheckboxRoot" formControlName="smart">
+                <label
+                    class="Label"
+                    LabelRoot
+                    htmlFor="r3"
+                >
+                    <button
+                        class="CheckboxRoot"
+                        CheckboxRoot
+                        formControlName="smart"
+                    >
                         <lucide-angular
-                            CheckboxIndicator
                             class="CheckboxIndicator"
+                            CheckboxIndicator
                             size="16"
                             name="check"
                         ></lucide-angular>
-                        <input CheckboxInput id="r3" class="Input cdk-visually-hidden" />
+                        <input
+                            class="Input cdk-visually-hidden"
+                            id="r3"
+                            CheckboxInput
+                        />
                     </button>
                     Smart
                 </label>
             </p>
         </section>
-        <section class="Label" [formGroup]="personality">
+        <section
+            class="Label"
+            [formGroup]="personality"
+        >
             <h4>You chose:&nbsp;</h4>
             {{ personality.value | json }}
         </section>
 
         <button
-            data-accent-color="cyan"
             class="rt-reset rt-BaseButton rt-r-size-2 rt-variant-solid rt-Button"
             (click)="toggleDisable()"
+            data-accent-color="cyan"
         >
             Toggle disabled state
         </button>

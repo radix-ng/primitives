@@ -1,6 +1,6 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { CdkMenuTrigger } from '@angular/cdk/menu';
-import { booleanAttribute, Directive, inject, input, Input } from '@angular/core';
+import { booleanAttribute, Directive, inject, input } from '@angular/core';
 
 @Directive({
     selector: '[MenuBarTrigger]',

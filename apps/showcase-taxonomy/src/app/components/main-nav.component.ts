@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-
 import { MobileNavComponent } from '@taxonomy/components/mobile-nav';
 import { TxButtonDirective } from '@taxonomy/components/ui';
 import { LucideAngularModule } from 'lucide-angular';
@@ -12,8 +11,12 @@ import { LucideAngularModule } from 'lucide-angular';
         <header class="bg-background container z-40">
             <div class="flex h-20 items-center justify-between py-6">
                 <div class="flex gap-6 md:gap-10">
-                    <a href="/" class="hidden items-center space-x-2 md:flex">
+                    <a
+                        class="hidden items-center space-x-2 md:flex"
+                        href="/"
+                    >
                         <svg
+                            class="lucide lucide-command"
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
                             height="24"
@@ -23,7 +26,6 @@ import { LucideAngularModule } from 'lucide-angular';
                             stroke-width="2"
                             stroke-linecap="round"
                             stroke-linejoin="round"
-                            class="lucide lucide-command"
                         >
                             <path
                                 d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"
@@ -34,22 +36,22 @@ import { LucideAngularModule } from 'lucide-angular';
                     <nav class="hidden gap-6 md:flex">
                         <!-- Items -->
                         <a
-                            href="/#features"
                             class="hover:text-foreground/80 text-foreground/60 flex items-center text-lg font-medium transition-colors sm:text-sm"
+                            href="/#features"
                         >
                             Features
                         </a>
                         <a
-                            href="/blog"
                             class="hover:text-foreground/80 text-foreground/60 flex items-center text-lg font-medium transition-colors sm:text-sm"
+                            href="/blog"
                         >
                             Blog
                         </a>
                     </nav>
                     <button
-                        type="button"
                         class="flex items-center space-x-2 md:hidden"
                         (click)="toggleMenu()"
+                        type="button"
                     >
                         @if (showMobileMenu) {
                             <lucide-icon name="x"></lucide-icon>
@@ -61,7 +63,15 @@ import { LucideAngularModule } from 'lucide-angular';
                     }
                 </div>
                 <nav>
-                    <a href="/login" txBtn variant="secondary" size="sm" class="px-4">Login</a>
+                    <a
+                        class="px-4"
+                        href="/login"
+                        txBtn
+                        variant="secondary"
+                        size="sm"
+                    >
+                        Login
+                    </a>
                 </nav>
             </div>
         </header>

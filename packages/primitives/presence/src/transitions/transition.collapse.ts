@@ -76,10 +76,7 @@ export const transitionCollapsing: TransitionStartFn<CollapseContext> = (
  * @param dimension - The dimension ('width' or 'height') to measure.
  * @returns The size of the dimension in pixels.
  */
-function measureCollapsingElementDimensionPx(
-    element: HTMLElement,
-    dimension: 'width' | 'height'
-): string {
+function measureCollapsingElementDimensionPx(element: HTMLElement, dimension: 'width' | 'height'): string {
     // SSR fix
     if (typeof navigator === 'undefined') {
         return '0px';

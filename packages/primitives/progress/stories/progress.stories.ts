@@ -1,5 +1,4 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-
 import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
 import { RdxProgressRootDirective } from '../src/progress-root.directive';
 

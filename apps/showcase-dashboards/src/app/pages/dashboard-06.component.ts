@@ -1,6 +1,5 @@
 import { NgOptimizedImage } from '@angular/common';
 import { Component } from '@angular/core';
-
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
 import {
     ShCardContentDirective,
@@ -22,7 +21,6 @@ import {
     TableHeaderDirective,
     TableRowDirective
 } from '@radix-ng/shadcn/table';
-
 import { ShBadgeDirective } from '../../../../../packages/shadcn/badge/src/badge.direcitve';
 import { BlockToolbarComponent } from '../components/block-toolbar.component';
 
@@ -32,19 +30,16 @@ import { BlockToolbarComponent } from '../components/block-toolbar.component';
     templateUrl: './dashboard-06.component.html',
     imports: [
         BlockToolbarComponent,
-
         ShCardDirective,
         ShCardHeaderDirective,
         ShCardTitleDirective,
         ShCardDescriptionDirective,
         ShCardContentDirective,
         ShCardFooterDirective,
-
         ShInputDirective,
         ShButtonDirective,
         ShLabelDirective,
         ShBadgeDirective,
-
         TableDirective,
         TableHeaderDirective,
         TableBodyDirective,
@@ -53,7 +48,6 @@ import { BlockToolbarComponent } from '../components/block-toolbar.component';
         TableHeadDirective,
         TableCellDirective,
         TableCaptionDirective,
-
         NgOptimizedImage
     ]
 })

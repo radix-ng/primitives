@@ -1,5 +1,4 @@
 import { computed, Directive, input } from '@angular/core';
-
 import { injectCheckbox } from './checkbox.token';
 
 @Directive({
@@ -24,9 +23,7 @@ export class RdxCheckboxInputDirective {
     protected readonly checkbox = injectCheckbox();
 
     readonly id = input<string>();
-    protected readonly elementId = computed(() =>
-        this.id() ? this.id() : `rdx-checkbox-${this.id()}`
-    );
+    protected readonly elementId = computed(() => (this.id() ? this.id() : `rdx-checkbox-${this.id()}`));
 
     protected readonly value = computed(() => {
         const state = this.checkbox.state;

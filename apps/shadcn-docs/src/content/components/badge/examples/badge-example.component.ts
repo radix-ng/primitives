@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-
 import { ShBadgeDirective } from '@radix-ng/shadcn/badge';
 
 @Component({

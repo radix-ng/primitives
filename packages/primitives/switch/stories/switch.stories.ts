@@ -1,5 +1,4 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-
 import { RdxLabelRootDirective } from '../../label';
 import { RdxSwitchInputDirective } from '../src/switch-input.directive';
 import { RdxSwitchRootDirective } from '../src/switch-root.directive';

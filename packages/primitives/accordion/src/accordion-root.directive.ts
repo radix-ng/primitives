@@ -1,13 +1,10 @@
 import { contentChildren, Directive, inject, InjectionToken, Input, OnInit } from '@angular/core';
-
 import { RdxAccordionItemToken } from './accordion-item.directive';
 
 export type RdxAccordionType = 'single' | 'multiple';
 export type RdxAccordionOrientation = 'horizontal' | 'vertical';
 
-export const RdxAccordionRootToken = new InjectionToken<RdxAccordionRootDirective>(
-    'RdxAccordionRootDirective'
-);
+export const RdxAccordionRootToken = new InjectionToken<RdxAccordionRootDirective>('RdxAccordionRootDirective');
 
 export function injectAccordionRoot(): RdxAccordionRootDirective {
     return inject(RdxAccordionRootDirective);
@@ -66,9 +63,7 @@ export class RdxAccordionRootDirective implements OnInit {
      */
     @Input() set orientation(orientation: RdxAccordionOrientation | undefined) {
         this._orientation = orientation ?? 'vertical';
-        this.accordionItems().forEach((accordionItem) =>
-            accordionItem.setOrientation(this._orientation)
-        );
+        this.accordionItems().forEach((accordionItem) => accordionItem.setOrientation(this._orientation));
     }
 
     /**

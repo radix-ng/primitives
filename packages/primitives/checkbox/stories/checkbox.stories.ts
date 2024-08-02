@@ -1,6 +1,5 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { Check, LucideAngularModule, Minus } from 'lucide-angular';
-
 import { RdxLabelRootDirective } from '../../label';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input.directive';
@@ -17,10 +16,8 @@ export default {
                 RdxCheckboxDirective,
                 RdxCheckboxIndicatorDirective,
                 RdxCheckboxInputDirective,
-
                 LucideAngularModule,
                 LucideAngularModule.pick({ Check, Minus }),
-
                 CheckboxReactiveFormsExampleComponent,
                 CheckboxIndeterminateComponent
             ]

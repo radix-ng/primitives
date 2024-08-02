@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-
 import { ShCheckboxComponent } from '@radix-ng/shadcn/checkbox';
 import { ShLabelDirective } from '@radix-ng/shadcn/label';
 
@@ -11,15 +10,13 @@ import { ShLabelDirective } from '@radix-ng/shadcn/label';
             <sh-checkbox id="terms1"></sh-checkbox>
             <div class="grid gap-1.5 leading-none">
                 <label
+                    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     shLabel
                     htmlFor="terms1"
-                    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                     Accept terms and conditions
                 </label>
-                <p class="text-muted-foreground mt-0 text-sm">
-                    You agree to our Terms of Service and Privacy Policy.
-                </p>
+                <p class="text-muted-foreground mt-0 text-sm">You agree to our Terms of Service and Privacy Policy.</p>
             </div>
         </div>
     `

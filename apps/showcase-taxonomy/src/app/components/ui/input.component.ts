@@ -1,5 +1,4 @@
 import { computed, Directive, input } from '@angular/core';
-
 import { twMerge } from '@taxonomy/components/utils/twMerge';
 import { cva } from 'class-variance-authority';
 import { ClassValue } from 'clsx';

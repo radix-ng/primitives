@@ -1,5 +1,4 @@
 import { computed, Directive, input, Input, signal } from '@angular/core';
-
 import { cva, VariantProps } from 'class-variance-authority';
 import { ClassValue } from 'clsx';
 
@@ -39,9 +38,7 @@ export type ButtonVariants = VariantProps<typeof buttonVariants>;
 export class TxButtonDirective {
     public readonly userClass = input<ClassValue>('', { alias: 'class' });
 
-    protected _computedClass = computed(() =>
-        buttonVariants({ variant: this._variant(), size: this._size() })
-    );
+    protected _computedClass = computed(() => buttonVariants({ variant: this._variant(), size: this._size() }));
 
     private readonly _variant = signal<ButtonVariants['variant']>('default');
     @Input()

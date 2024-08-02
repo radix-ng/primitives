@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-
 import { ThemeToggleComponent } from './components/theme-toggle.component';
 import { Authentication02Component } from './pages/authentication-02.component';
 import { Authentication04Component } from './pages/authentication-04.component';

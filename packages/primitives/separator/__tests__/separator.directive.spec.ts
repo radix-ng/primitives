@@ -1,12 +1,10 @@
 import { Component, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-
 import { Orientation, RdxSeparatorRootDirective } from '../src/separator.directive';
 
 @Component({
-    template:
-        '<div SeparatorRoot [rdxOrientation]="orientation" [rdxDecorative]="decorative"></div>'
+    template: '<div SeparatorRoot [rdxOrientation]="orientation" [rdxDecorative]="decorative"></div>'
 })
 class TestComponent {
     orientation: Orientation = 'horizontal';

@@ -1,10 +1,5 @@
 import { NgModule } from '@angular/core';
-
-import {
-    ShAlertDescriptionDirective,
-    ShAlertDirective,
-    ShAlertTitleDirective
-} from './src/alert.directive';
+import { ShAlertDescriptionDirective, ShAlertDirective, ShAlertTitleDirective } from './src/alert.directive';
 
 export * from './src/alert.directive';
 

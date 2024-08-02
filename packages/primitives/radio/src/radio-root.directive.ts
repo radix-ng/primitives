@@ -1,12 +1,4 @@
-import {
-    booleanAttribute,
-    Directive,
-    EventEmitter,
-    inject,
-    InjectionToken,
-    Input,
-    Output
-} from '@angular/core';
+import { booleanAttribute, Directive, EventEmitter, inject, InjectionToken, Input, Output } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 export const RdxRadioGroupToken = new InjectionToken<RdxRadioGroupDirective>('RdxRadioGroupToken');

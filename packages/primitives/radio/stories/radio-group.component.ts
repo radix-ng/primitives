@@ -1,32 +1,46 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
 import { RdxLabelRootDirective } from '@radix-ng/primitives/label';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import {
-    RdxRadioGroupDirective,
-    RdxRadioIndicatorDirective,
-    RdxRadioItemDirective
-} from '@radix-ng/primitives/radio';
+import { RdxRadioGroupDirective, RdxRadioIndicatorDirective, RdxRadioItemDirective } from '@radix-ng/primitives/radio';
 
 @Component({
     selector: 'radio-groups-forms-example',
     standalone: true,
     template: `
-        <div RadioRoot [(ngModel)]="hotelRoom" class="RadioGroupRoot" aria-label="View density">
+        <div
+            class="RadioGroupRoot"
+            [(ngModel)]="hotelRoom"
+            RadioRoot
+            aria-label="View density"
+        >
             @for (room of rooms; track room) {
                 <div class="RadioGroup">
-                    <button RadioItem class="RadioGroupItem" [value]="room" [id]="room">
-                        <div RadioIndicator class="RadioGroupIndicator"></div>
+                    <button
+                        class="RadioGroupItem"
+                        [value]="room"
+                        [id]="room"
+                        RadioItem
+                    >
+                        <div
+                            class="RadioGroupIndicator"
+                            RadioIndicator
+                        ></div>
                         <input
+                            class="Input"
                             RadioIndicator
                             type="radio"
                             aria-hidden="true"
                             tabindex="-1"
-                            class="Input"
                         />
                     </button>
-                    <label LabelRoot [htmlFor]="room" class="Label">{{ room }}</label>
+                    <label
+                        class="Label"
+                        [htmlFor]="room"
+                        LabelRoot
+                    >
+                        {{ room }}
+                    </label>
                 </div>
             }
         </div>

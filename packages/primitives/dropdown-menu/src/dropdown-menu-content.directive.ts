@@ -1,6 +1,5 @@
 import { CdkTargetMenuAim } from '@angular/cdk/menu';
 import { Directive } from '@angular/core';
-
 import { RdxMenuContentDirective } from '@radix-ng/primitives/menu';
 
 @Directive({

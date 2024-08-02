@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.directive';
 

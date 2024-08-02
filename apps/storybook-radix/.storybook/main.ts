@@ -20,6 +20,7 @@ const config: StorybookConfig = {
         },
         '@storybook/addon-backgrounds',
         '@chromatic-com/storybook'
+
     ],
 
     framework: {

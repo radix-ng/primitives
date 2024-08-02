@@ -1,6 +1,5 @@
 import { Component, PLATFORM_ID } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { RdxAvatarFallbackDirective } from '../src/avatar-fallback.directive';
 import { RdxAvatarRootDirective } from '../src/avatar-root.directive';
 
@@ -22,9 +21,7 @@ describe('RdxAvatarFallbackDirective', () => {
     let fixture: ComponentFixture<RdxMockComponent>;
 
     beforeEach(() => {
-        fixture = TestBed.overrideProvider(PLATFORM_ID, { useValue: 'browser' }).createComponent(
-            RdxMockComponent
-        );
+        fixture = TestBed.overrideProvider(PLATFORM_ID, { useValue: 'browser' }).createComponent(RdxMockComponent);
         component = fixture.componentInstance;
     });
 

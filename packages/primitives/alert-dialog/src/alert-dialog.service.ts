@@ -28,17 +28,10 @@ export class AlertDialogService {
         this.overlayRef = this.overlay.create({
             hasBackdrop: true,
             backdropClass: 'cdk-overlay-dark-backdrop',
-            positionStrategy: this.overlay
-                .position()
-                .global()
-                .centerHorizontally()
-                .centerVertically()
+            positionStrategy: this.overlay.position().global().centerHorizontally().centerVertically()
         });
 
-        const templatePortal = new TemplatePortal(
-            this.dialogContent.template,
-            this.dialogContent.viewContainerRef
-        );
+        const templatePortal = new TemplatePortal(this.dialogContent.template, this.dialogContent.viewContainerRef);
         this.overlayRef.attach(templatePortal);
 
         this.overlayRef.keydownEvents().subscribe((event) => {

@@ -1,5 +1,4 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-
 import { PresenceStoryComponent } from './presence-story.componen';
 
 export default {

@@ -1,7 +1,5 @@
 import { CommonModule } from '@angular/common';
-
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-
 import { RdxLabelRootDirective } from '../../label';
 import { RdxSeparatorRootDirective } from '../src/separator.directive';
 

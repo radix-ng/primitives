@@ -1,7 +1,5 @@
 import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
-
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-
 import { RdxCollapsibleContentDirective } from '../src/collapsible-content.directive';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.directive';
@@ -16,10 +14,8 @@ export default {
                 RdxCollapsibleRootDirective,
                 RdxCollapsibleTriggerDirective,
                 RdxCollapsibleContentDirective,
-
                 RdxCollapsibleExternalTriggeringComponent,
                 RdxCollapsibleAnimationComponent,
-
                 BrowserAnimationsModule
             ],
             providers: [provideAnimations()]

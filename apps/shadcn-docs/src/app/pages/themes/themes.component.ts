@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
 import {
     ShCardContentDirective,
@@ -11,7 +10,6 @@ import {
 import { cn } from '@radix-ng/shadcn/core';
 import { themes } from '@radix-ng/shadcn/theme';
 import { LucideAngularModule } from 'lucide-angular';
-
 import { ConfigService } from '../../services/config.service';
 import { ThemeService } from '../../services/theme.service';
 import { CardChatComponent } from './cards/card-chat.component';

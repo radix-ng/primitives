@@ -1,15 +1,12 @@
 /// <reference types="vitest" />
-import * as fs from 'fs';
-
 import analog from '@analogjs/platform';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+import * as fs from 'fs';
 import { defineConfig } from 'vite';
 
 const getPostRoutes = () => {
     const posts = fs.readdirSync(`./apps/showcase-taxonomy/src/content`);
-    return posts.map(
-        (post) => `/blog/${post.replace('.md', '').replace(/^\d{4}-\d{2}-\d{2}-/, '')}`
-    );
+    return posts.map((post) => `/blog/${post.replace('.md', '').replace(/^\d{4}-\d{2}-\d{2}-/, '')}`);
 };
 
 const postRoutes = {
@@ -44,6 +41,7 @@ export default defineConfig(({ mode }) => {
                 }
             }),
             nxViteTsPaths()
+
         ],
         test: {
             reporters: ['default'],

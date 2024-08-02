@@ -35,11 +35,7 @@ export class RdxLabelRootDirective {
         }
 
         // prevent text selection when double-clicking label
-        if (
-            this.elementRef.nativeElement.contains(target) &&
-            !event.defaultPrevented &&
-            event.detail > 1
-        ) {
+        if (this.elementRef.nativeElement.contains(target) && !event.defaultPrevented && event.detail > 1) {
             event.preventDefault();
         }
     }

@@ -1,14 +1,4 @@
-import {
-    Directive,
-    effect,
-    ElementRef,
-    inject,
-    OnChanges,
-    OnInit,
-    Renderer2,
-    signal
-} from '@angular/core';
-
+import { Directive, effect, ElementRef, inject, OnChanges, OnInit, Renderer2, signal } from '@angular/core';
 import { ThemeService } from './theme.service';
 
 @Directive({
@@ -75,16 +65,8 @@ export class RdxThemeDirective implements OnInit, OnChanges {
             'data-is-root-theme',
             this.isRoot() ? 'true' : 'false'
         );
-        this.renderer.setAttribute(
-            this.elementRef.nativeElement,
-            'data-accent-color',
-            context.accentColor
-        );
-        this.renderer.setAttribute(
-            this.elementRef.nativeElement,
-            'data-gray-color',
-            context.grayColor
-        );
+        this.renderer.setAttribute(this.elementRef.nativeElement, 'data-accent-color', context.accentColor);
+        this.renderer.setAttribute(this.elementRef.nativeElement, 'data-gray-color', context.grayColor);
 
         this.renderer.setAttribute(this.elementRef.nativeElement, 'data-radius', context.radius);
         this.renderer.setAttribute(this.elementRef.nativeElement, 'data-scaling', context.scaling);

@@ -1,5 +1,4 @@
 import { Directive } from '@angular/core';
-
 import { RdxMenuDirective } from '@radix-ng/primitives/menu';
 
 @Directive({

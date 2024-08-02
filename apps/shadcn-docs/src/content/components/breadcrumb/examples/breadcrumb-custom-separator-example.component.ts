@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-
 import { ShBreadcrumbModule } from '@radix-ng/shadcn/breadcrumb';
 import { LucideAngularModule } from 'lucide-angular';
 
@@ -10,19 +9,42 @@ import { LucideAngularModule } from 'lucide-angular';
         <nav shBreadcrumb>
             <ol shBreadcrumbList>
                 <li shBreadcrumbItem>
-                    <a shBreadcrumbLink href="/">Home</a>
+                    <a
+                        shBreadcrumbLink
+                        href="/"
+                    >
+                        Home
+                    </a>
                 </li>
                 <li shBreadcrumbSeparator>
-                    <lucide-angular name="Slash" size="16" class="flex h-3.5"></lucide-angular>
+                    <lucide-angular
+                        class="flex h-3.5"
+                        name="Slash"
+                        size="16"
+                    ></lucide-angular>
                 </li>
                 <li shBreadcrumbItem>
-                    <a shBreadcrumbLink href="/">Components</a>
+                    <a
+                        shBreadcrumbLink
+                        href="/"
+                    >
+                        Components
+                    </a>
                 </li>
                 <li shBreadcrumbSeparator>
-                    <lucide-angular name="Slash" size="16" class="flex h-3.5"></lucide-angular>
+                    <lucide-angular
+                        class="flex h-3.5"
+                        name="Slash"
+                        size="16"
+                    ></lucide-angular>
                 </li>
                 <li shBreadcrumbItem>
-                    <a shBreadcrumbLink href="/">Breadcrumb</a>
+                    <a
+                        shBreadcrumbLink
+                        href="/"
+                    >
+                        Breadcrumb
+                    </a>
                 </li>
             </ol>
         </nav>

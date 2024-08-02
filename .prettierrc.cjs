@@ -29,7 +29,7 @@ const config = {
     htmlWhitespaceSensitivity: 'ignore',
     plugins: [
         'prettier-plugin-organize-attributes',
-        '@ianvs/prettier-plugin-sort-imports',
+        'prettier-plugin-organize-imports',
         'prettier-plugin-tailwindcss',
         // should be last
         'prettier-plugin-multiline-arrays'
@@ -61,19 +61,6 @@ const config = {
                 singleAttributePerLine: false
             }
         }
-    ],
-    importOrderParserPlugins: ['typescript', 'decorators-legacy'],
-    importOrderTypeScriptVersion: '5.0.0',
-    importOrder: [
-        '<BUILTIN_MODULES>',
-        '',
-        '^@angular/(.*)$',
-        '^rxjs(.*)$',
-        '',
-        '<THIRD_PARTY_MODULES>',
-        '',
-        '^[./]',
-        ''
     ]
 };
 

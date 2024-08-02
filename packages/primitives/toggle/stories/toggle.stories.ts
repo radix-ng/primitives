@@ -1,6 +1,5 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { Italic, LucideAngularModule } from 'lucide-angular';
-
 import { RdxToggleRootDirective } from '../src/toggle-root.directive';
 
 export default {

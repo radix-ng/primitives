@@ -1,6 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component } from '@angular/core';
-
 import { RdxCollapsibleContentDirective } from '../src/collapsible-content.directive';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.directive';
@@ -13,6 +12,7 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
         RdxCollapsibleTriggerDirective,
         RdxCollapsibleContentDirective
     ],
+    // prettier-ignore
     animations: [
         trigger('contentExpansion', [
             state('expanded', style({ height: '*', opacity: 1, visibility: 'visible' })),
@@ -70,13 +70,21 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
     template: `
         <div
             class="CollapsibleRoot"
-            rdxCollapsibleRoot
             #collapsibleRoot="collapsibleRoot"
             [open]="true"
+            rdxCollapsibleRoot
         >
             <div style="display: flex; align-items: center; justify-content: space-between;">
-                <span class="Text" style="color: white">&#64;peduarte starred 3 repositories</span>
-                <button class="IconButton" rdxCollapsibleTrigger></button>
+                <span
+                    class="Text"
+                    style="color: white"
+                >
+                    &#64;peduarte starred 3 repositories
+                </span>
+                <button
+                    class="IconButton"
+                    rdxCollapsibleTrigger
+                ></button>
             </div>
 
             <div class="Repository">
@@ -84,8 +92,8 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
             </div>
 
             <div
-                rdxCollapsibleContent
                 [@contentExpansion]="collapsibleRoot.isOpen() ? 'expanded' : 'collapsed'"
+                rdxCollapsibleContent
             >
                 <div class="Repository">
                     <span class="Text">&#64;radix-ui/colors</span>

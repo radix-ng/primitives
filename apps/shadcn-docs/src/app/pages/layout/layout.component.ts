@@ -1,19 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-
 import {
     NgDocNavbarComponent,
     NgDocRootComponent,
     NgDocSidebarComponent,
     NgDocThemeToggleComponent
 } from '@ng-doc/app';
-import {
-    NgDocButtonIconComponent,
-    NgDocIconComponent,
-    NgDocTooltipDirective
-} from '@ng-doc/ui-kit';
+import { NgDocButtonIconComponent, NgDocIconComponent, NgDocTooltipDirective } from '@ng-doc/ui-kit';
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
-
 import { ThemeSwitcherComponent } from '../../ui/theme-switcher/theme-switcher.component';
 
 @Component({
@@ -23,7 +17,6 @@ import { ThemeSwitcherComponent } from '../../ui/theme-switcher/theme-switcher.c
         RouterLink,
         RouterLinkActive,
         RouterOutlet,
-
         NgDocRootComponent,
         NgDocNavbarComponent,
         NgDocSidebarComponent,
@@ -31,7 +24,6 @@ import { ThemeSwitcherComponent } from '../../ui/theme-switcher/theme-switcher.c
         NgDocTooltipDirective,
         NgDocThemeToggleComponent,
         NgDocIconComponent,
-
         ThemeSwitcherComponent,
         ShButtonDirective
     ],
@@ -61,8 +53,7 @@ export class LayoutComponent {
 
     getRouteClasses(route: any): string {
         const baseClasses = this.isActive(route) ? 'text-foreground' : 'text-foreground/60';
-        const additionalClasses =
-            route.path === '/docs/getting-started/installation' ? ' hidden md:block' : '';
+        const additionalClasses = route.path === '/docs/getting-started/installation' ? ' hidden md:block' : '';
         return baseClasses + additionalClasses;
     }
 }

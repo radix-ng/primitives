@@ -1,5 +1,4 @@
 import { NgDocPage } from '@ng-doc/core';
-
 import ExamplesCategory from '../ng-doc.category';
 import { BadgeExampleDestructiveComponent } from './examples/badge-example-destructive.component';
 import { BadgeExampleSecondaryComponent } from './examples/badge-example-secondary.component';
