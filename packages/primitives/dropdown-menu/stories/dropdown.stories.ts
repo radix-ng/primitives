@@ -1,9 +1,13 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { LucideAngularModule, Menu } from 'lucide-angular';
+import { Check, LucideAngularModule, Menu } from 'lucide-angular';
+
 import { RdxDropdownMenuContentDirective } from '../src/dropdown-menu-content.directive';
+import { RdxDropdownMenuItemCheckboxDirective } from '../src/dropdown-menu-item-checkbox.directive';
+import { RdxDropdownMenuItemIndicatorDirective } from '../src/dropdown-menu-item-indicator.directive';
 import { RdxDropdownMenuItemDirective } from '../src/dropdown-menu-item.directive';
 import { RdxDropdownMenuSeparatorDirective } from '../src/dropdown-menu-separator.directive';
 import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.directive';
+import { DropdownMenuItemCheckboxExampleComponent } from './dropdown-menu-item-checkbox.component';
 
 export default {
     title: 'Primitives/Dropdown Menu [In progress]',
@@ -12,10 +16,13 @@ export default {
             imports: [
                 RdxDropdownMenuTriggerDirective,
                 RdxDropdownMenuItemDirective,
+                RdxDropdownMenuItemCheckboxDirective,
+                RdxDropdownMenuItemIndicatorDirective,
                 RdxDropdownMenuSeparatorDirective,
                 RdxDropdownMenuContentDirective,
                 LucideAngularModule,
-                LucideAngularModule.pick({ Menu })
+                LucideAngularModule.pick({ Menu, Check }),
+                DropdownMenuItemCheckboxExampleComponent
             ]
         }),
         componentWrapperDecorator(
@@ -168,6 +175,15 @@ button {
   color: var(--violet-11);
 }
 
+.DropdownMenuItemIndicator {
+  position: absolute;
+  left: 4px;
+  width: 25px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .IconButton:hover {
   background-color: var(--violet-3);
 }
@@ -188,5 +204,12 @@ button {
 
 </style>
 `
+    })
+};
+
+export const DropdownMenuItemCheckbox: Story = {
+    name: 'Checkbox',
+    render: () => ({
+        template: `<dropdown-menu-item-checkbox/>`
     })
 };
