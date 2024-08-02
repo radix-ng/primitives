@@ -8,10 +8,7 @@ import * as LabelDirectiveStories from './label.stories';
 
 #### Renders an accessible label associated with controls.
 
-<Canvas
-  sourceState="hidden"
-  of={LabelDirectiveStories.Default}
-/>
+<Canvas sourceState="hidden" of={LabelDirectiveStories.Default} />
 
 ## Features
 
@@ -28,25 +25,13 @@ import { RdxLabelRootDirective } from '@radix-ng/primitives/label';
 ## Examples
 
 ```html
-<label
-  LabelRoot
-  htmlFor="uniqId"
->
-  First name
-</label>
-<input
-  class="Input"
-  id="uniqId"
-  type="text"
-/>
+<label LabelRoot htmlFor="uniqId">First name</label>
+<input class="Input" id="uniqId" type="text" />
 ```
 
 ## API Reference
 
-<ArgTypes
-  exclude={['onMouseDown']}
-  of={RdxLabelRootDirective}
-/>
+<ArgTypes exclude={['onMouseDown']} of={RdxLabelRootDirective} />
 
 ## Accessibility
 

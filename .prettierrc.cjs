@@ -25,7 +25,6 @@ const config = {
     useTabs: false,
     singleQuote: true,
     trailingComma: 'none',
-    singleAttributePerLine: true,
     htmlWhitespaceSensitivity: 'ignore',
     plugins: [
         'prettier-plugin-organize-attributes',
@@ -57,8 +56,7 @@ const config = {
         {
             files: ['index.html'],
             options: {
-                parser: 'html',
-                singleAttributePerLine: false
+                parser: 'html'
             }
         }
     ]

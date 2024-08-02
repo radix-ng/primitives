@@ -9,10 +9,7 @@ import { RdxToggleGroupButtonDirective } from '../src/toggle-group-button.direct
 
 #### A set of two-\_state buttons that can be toggled on or off.
 
-<Canvas
-  sourceState="hidden"
-  of={ToggleGroupDirectiveStories.Default}
-/>
+<Canvas sourceState="hidden" of={ToggleGroupDirectiveStories.Default} />
 
 ## Features
 
@@ -36,44 +33,15 @@ import {
 ## Examples
 
 ```html
-<div
-  class="ToggleGroup"
-  rdxToggleGroup
-  value="center"
-  aria-label="Text alignment"
->
-  <button
-    class="ToggleGroupItem"
-    rdxToggleGroupButton
-    value="left"
-    aria-label="Left aligned"
-  >
-    <lucide-icon
-      name="align-left"
-      size="16"
-    ></lucide-icon>
+<div class="ToggleGroup" rdxToggleGroup value="center" aria-label="Text alignment">
+  <button class="ToggleGroupItem" rdxToggleGroupButton value="left" aria-label="Left aligned">
+    <lucide-icon name="align-left" size="16"></lucide-icon>
   </button>
-  <button
-    class="ToggleGroupItem"
-    rdxToggleGroupButton
-    value="center"
-    aria-label="Center aligned"
-  >
-    <lucide-icon
-      name="align-center"
-      size="16"
-    ></lucide-icon>
+  <button class="ToggleGroupItem" rdxToggleGroupButton value="center" aria-label="Center aligned">
+    <lucide-icon name="align-center" size="16"></lucide-icon>
   </button>
-  <button
-    class="ToggleGroupItem"
-    rdxToggleGroupButton
-    value="right"
-    aria-label="Right aligned"
-  >
-    <lucide-icon
-      name="align-right"
-      size="16"
-    ></lucide-icon>
+  <button class="ToggleGroupItem" rdxToggleGroupButton value="right" aria-label="Right aligned">
+    <lucide-icon name="align-right" size="16"></lucide-icon>
   </button>
 </div>
 ```

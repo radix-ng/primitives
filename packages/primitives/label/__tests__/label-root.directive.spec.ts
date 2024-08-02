@@ -17,10 +17,7 @@ import { RdxLabelRootDirective } from '../src/label-root.directive';
         <label LabelRoot>
             Test Label
             <div>Click Me</div>
-            <input
-                type="button"
-                value="Button"
-            />
+            <input type="button" value="Button" />
         </label>
     `
 })

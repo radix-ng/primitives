@@ -55,25 +55,10 @@ import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
         }
     `,
     template: `
-        <button
-            class="ExternalTrigger"
-            (click)="open = !open"
-        >
-            External Trigger
-        </button>
-        <div
-            class="CollapsibleRoot"
-            #collapsibleRoot="collapsibleRoot"
-            [open]="open"
-            rdxCollapsibleRoot
-        >
+        <button class="ExternalTrigger" (click)="open = !open">External Trigger</button>
+        <div class="CollapsibleRoot" #collapsibleRoot="collapsibleRoot" [open]="open" rdxCollapsibleRoot>
             <div style="display: flex; align-items: center; justify-content: space-between;">
-                <span
-                    class="Text"
-                    style="color: white"
-                >
-                    &#64;peduarte starred 3 repositories
-                </span>
+                <span class="Text" style="color: white">&#64;peduarte starred 3 repositories</span>
             </div>
 
             <div class="Repository">

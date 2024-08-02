@@ -49,12 +49,7 @@ const variants = cva('flex');
                 [name]="iconName()"
                 CheckboxIndicator
             ></lucide-angular>
-            <input
-                class="cdk-visually-hidden"
-                [id]="id()"
-                [value]="checked.asReadonly()"
-                CheckboxInput
-            />
+            <input class="cdk-visually-hidden" [id]="id()" [value]="checked.asReadonly()" CheckboxInput />
         </button>
     `,
     changeDetection: ChangeDetectionStrategy.OnPush,

@@ -9,10 +9,7 @@ import { RdxRadioItemDirective } from '../src/radio-item.directive';
 
 #### A set of checkable buttons—known as radio buttons—where no more than one of the buttons can be checked at a time.
 
-<Canvas
-  sourceState="hidden"
-  of={RadioDirectiveStories.Default}
-/>
+<Canvas sourceState="hidden" of={RadioDirectiveStories.Default} />
 
 ## Features
 
@@ -31,14 +28,8 @@ import { RdxRadioIndicatorDirective, RadioItemDirectiveб } from '@radix-ng/prim
 ## Anatomy
 
 ```html
-<div
-  RadioRoot
-  [(rdxRadioGroupValue)]="value"
->
-  <button
-    RadioItem
-    value="default"
-  >
+<div RadioRoot [(rdxRadioGroupValue)]="value">
+  <button RadioItem value="default">
     <div RadioIndicator></div>
   </button>
 </div>

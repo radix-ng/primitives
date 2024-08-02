@@ -9,10 +9,7 @@ import * as ProgressDirectiveStories from './progress.stories';
 
 #### Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.
 
-<Canvas
-  sourceState="hidden"
-  of={ProgressDirectiveStories.Default}
-/>
+<Canvas sourceState="hidden" of={ProgressDirectiveStories.Default} />
 
 ## Features
 
@@ -29,16 +26,8 @@ import { RdxProgressRootDirective, RdxProgressIndicatorDirective } from '@radix-
 ## Example
 
 ```html
-<div
-  class="ProgressRoot"
-  ProgressRoot
-  [rdxValue]="progress"
->
-  <div
-    class="ProgressIndicator"
-    ProgressIndicator
-    [style.transform]="'translateX(-' + (100 - progress) +'%)'"
-  ></div>
+<div class="ProgressRoot" ProgressRoot [rdxValue]="progress">
+  <div class="ProgressIndicator" ProgressIndicator [style.transform]="'translateX(-' + (100 - progress) +'%)'"></div>
 </div>
 ```
 

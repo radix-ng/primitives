@@ -7,17 +7,8 @@ import { ShLabelDirective } from '@radix-ng/shadcn/label';
     imports: [ShInputDirective, ShLabelDirective],
     template: `
         <div class="grid w-full max-w-sm items-center gap-1.5">
-            <label
-                shLabel
-                htmlFor="picture"
-            >
-                Picture
-            </label>
-            <input
-                id="picture"
-                shInput
-                type="file"
-            />
+            <label shLabel htmlFor="picture">Picture</label>
+            <input id="picture" shInput type="file" />
         </div>
     `
 })

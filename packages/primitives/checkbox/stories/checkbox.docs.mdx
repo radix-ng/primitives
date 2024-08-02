@@ -8,10 +8,7 @@ import * as CheckboxDirectiveStories from './checkbox.stories';
 
 #### A control that allows the user to toggle between checked and not checked.
 
-<Canvas
-  sourceState="hidden"
-  of={CheckboxDirectiveStories.Default}
-/>
+<Canvas sourceState="hidden" of={CheckboxDirectiveStories.Default} />
 
 ## Features
 
@@ -30,19 +27,9 @@ import { RdxCheckboxDirective, RdxCheckboxIndicatorDirective } from '@radix-ng/p
 ## Anatomy
 
 ```html
-<button
-  CheckboxRoot
-  [(checked)]="checked"
->
-  <lucide-angular
-    CheckboxIndicator
-    name="check"
-  ></lucide-angular>
-  <input
-    class="cdk-visually-hidden"
-    CheckboxInput
-    type="checkbox"
-  />
+<button CheckboxRoot [(checked)]="checked">
+  <lucide-angular CheckboxIndicator name="check"></lucide-angular>
+  <input class="cdk-visually-hidden" CheckboxInput type="checkbox" />
 </button>
 ```
 

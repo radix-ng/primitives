@@ -9,10 +9,7 @@ import * as SwitchDirectiveStories from './switch.stories';
 
 #### A control that allows the user to toggle between checked and not checked.
 
-<Canvas
-  sourceState="hidden"
-  of={SwitchDirectiveStories.Default}
-/>
+<Canvas sourceState="hidden" of={SwitchDirectiveStories.Default} />
 
 ## Features
 
@@ -30,33 +27,15 @@ import { RdxSwitchRootDirective, RdxSwitchThumbDirective, RdxSwitchInputDirectiv
 ## Examples
 
 ```html
-<label
-  LabelRoot
-  htmlFor="airplane-mode"
->
-  Airplane mode
-</label>
-<button
-  id="airplane-mode"
-  SwitchRoot
-  [(checked)]="checked"
->
+<label LabelRoot htmlFor="airplane-mode">Airplane mode</label>
+<button id="airplane-mode" SwitchRoot [(checked)]="checked">
   <span SwitchThumb></span>
 </button>
 ```
 
 ```html
-<label
-  LabelRoot
-  htmlFor="airplane-mode"
->
-  Airplane mode
-</label>
-<button
-  id="airplane-mode"
-  SwitchRoot
-  [(checked)]="checked"
->
+<label LabelRoot htmlFor="airplane-mode">Airplane mode</label>
+<button id="airplane-mode" SwitchRoot [(checked)]="checked">
   <input SwitchInput />
   <span SwitchThumb></span>
 </button>
@@ -66,10 +45,7 @@ import { RdxSwitchRootDirective, RdxSwitchThumbDirective, RdxSwitchInputDirectiv
 
 ### RdxSwitchRootDirective
 
-<ArgTypes
-  exclude={switchExclude}
-  of={RdxSwitchRootDirective}
-/>
+<ArgTypes exclude={switchExclude} of={RdxSwitchRootDirective} />
 
 <Markdown>
   {`

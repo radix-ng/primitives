@@ -68,33 +68,17 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
         }
     `,
     template: `
-        <div
-            class="CollapsibleRoot"
-            #collapsibleRoot="collapsibleRoot"
-            [open]="true"
-            rdxCollapsibleRoot
-        >
+        <div class="CollapsibleRoot" #collapsibleRoot="collapsibleRoot" [open]="true" rdxCollapsibleRoot>
             <div style="display: flex; align-items: center; justify-content: space-between;">
-                <span
-                    class="Text"
-                    style="color: white"
-                >
-                    &#64;peduarte starred 3 repositories
-                </span>
-                <button
-                    class="IconButton"
-                    rdxCollapsibleTrigger
-                ></button>
+                <span class="Text" style="color: white">&#64;peduarte starred 3 repositories</span>
+                <button class="IconButton" rdxCollapsibleTrigger></button>
             </div>
 
             <div class="Repository">
                 <span class="Text">&#64;radix-ui/primitives</span>
             </div>
 
-            <div
-                [@contentExpansion]="collapsibleRoot.isOpen() ? 'expanded' : 'collapsed'"
-                rdxCollapsibleContent
-            >
+            <div [@contentExpansion]="collapsibleRoot.isOpen() ? 'expanded' : 'collapsed'" rdxCollapsibleContent>
                 <div class="Repository">
                     <span class="Text">&#64;radix-ui/colors</span>
                 </div>

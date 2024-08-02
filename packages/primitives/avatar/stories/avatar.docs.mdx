@@ -7,10 +7,7 @@ import * as AvatarDirectiveStories from './avatar.stories';
 
 #### An image element with a fallback for representing the user.
 
-<Canvas
-  sourceState="hidden"
-  of={AvatarDirectiveStories.Default}
-/>
+<Canvas sourceState="hidden" of={AvatarDirectiveStories.Default} />
 
 ## Features
 
@@ -34,11 +31,7 @@ bootstrapApplication(AppComponent, {
 
 ```html
 <span rdxAvatarRoot>
-  <img
-    rdxAvatarImage
-    src="..."
-    alt="..."
-  />
+  <img rdxAvatarImage src="..." alt="..." />
   <span rdxAvatarFallback>Angular</span>
 </span>
 ```

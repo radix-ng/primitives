@@ -5,43 +5,15 @@
         <nav
             class="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6"
         >
-            <a
-                href="#"
-                class="flex items-center gap-2 text-lg font-semibold md:text-base"
-            >
+            <a href="#" class="flex items-center gap-2 text-lg font-semibold md:text-base">
                 <lucide-angular name="package2"></lucide-angular>
                 <span class="sr-only">Acme Inc</span>
             </a>
-            <a
-                href="#"
-                class="text-muted-foreground hover:text-foreground transition-colors"
-            >
-                Dashboard
-            </a>
-            <a
-                href="#"
-                class="text-muted-foreground hover:text-foreground transition-colors"
-            >
-                Orders
-            </a>
-            <a
-                href="#"
-                class="text-muted-foreground hover:text-foreground transition-colors"
-            >
-                Products
-            </a>
-            <a
-                href="#"
-                class="text-muted-foreground hover:text-foreground transition-colors"
-            >
-                Customers
-            </a>
-            <a
-                href="#"
-                class="text-foreground hover:text-foreground transition-colors"
-            >
-                Settings
-            </a>
+            <a href="#" class="text-muted-foreground hover:text-foreground transition-colors">Dashboard</a>
+            <a href="#" class="text-muted-foreground hover:text-foreground transition-colors">Orders</a>
+            <a href="#" class="text-muted-foreground hover:text-foreground transition-colors">Products</a>
+            <a href="#" class="text-muted-foreground hover:text-foreground transition-colors">Customers</a>
+            <a href="#" class="text-foreground hover:text-foreground transition-colors">Settings</a>
         </nav>
 
         <div class="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
@@ -65,12 +37,7 @@
 
         <div class="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
             <nav class="text-muted-foreground grid gap-4 text-sm">
-                <a
-                    href="#"
-                    class="text-primary font-semibold"
-                >
-                    General
-                </a>
+                <a href="#" class="text-primary font-semibold">General</a>
                 <a href="#">Security</a>
                 <a href="#">Integrations</a>
                 <a href="#">Support</a>
@@ -78,35 +45,22 @@
                 <a href="#">Advanced</a>
             </nav>
             <div class="grid gap-6">
-                <div
-                    shCard
-                    x-chunk="dashboard-04-chunk-1"
-                >
+                <div shCard x-chunk="dashboard-04-chunk-1">
                     <div shCardHeader>
                         <div shCardTitle>Store Name</div>
                         <div shCardDescription>Used to identify your store in the marketplace.</div>
                     </div>
                     <div shCardContent>
                         <form>
-                            <input
-                                placeholder="Store Name"
-                                shInput
-                                type="text"
-                            />
+                            <input placeholder="Store Name" shInput type="text" />
                         </form>
                     </div>
-                    <div
-                        shCardFooter
-                        class="border-t px-6 py-4"
-                    >
+                    <div shCardFooter class="border-t px-6 py-4">
                         <button shButton>Save</button>
                     </div>
                 </div>
 
-                <div
-                    shCard
-                    x-chunk="dashboard-04-chunk-2"
-                >
+                <div shCard x-chunk="dashboard-04-chunk-2">
                     <div shCardHeader>
                         <div shCardTitle>Plugins Directory</div>
                         <div shCardDescription>
@@ -115,16 +69,9 @@
                     </div>
                     <div shCardContent>
                         <form class="flex flex-col gap-4">
-                            <input
-                                placeholder="Project Name"
-                                shInput
-                                type="text"
-                            />
+                            <input placeholder="Project Name" shInput type="text" />
                             <div class="flex items-center space-x-2">
-                                <sh-checkbox
-                                    idLabel="include"
-                                    class="flex"
-                                ></sh-checkbox>
+                                <sh-checkbox idLabel="include" class="flex"></sh-checkbox>
                                 <label
                                     for="include"
                                     class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -134,10 +81,7 @@
                             </div>
                         </form>
                     </div>
-                    <div
-                        shCardFooter
-                        class="border-t px-6 py-4"
-                    >
+                    <div shCardFooter class="border-t px-6 py-4">
                         <button shButton>Save</button>
                     </div>
                 </div>

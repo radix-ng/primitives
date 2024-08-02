@@ -5,11 +5,7 @@ import { ShInputDirective } from '@radix-ng/shadcn/input';
     standalone: true,
     imports: [ShInputDirective],
     template: `
-        <input
-            shInput
-            type="email"
-            placeholder="Email"
-        />
+        <input shInput type="email" placeholder="Email" />
     `
 })
 export class InputExampleComponent {}

@@ -8,13 +8,7 @@ import { ThemeService } from '../../services/theme.service';
     standalone: true,
     imports: [NgDocIconComponent, ShButtonDirective],
     template: `
-        <button
-            (click)="themeService.toggleColorScheme()"
-            shButton
-            type="button"
-            variant="ghost"
-            size="icon"
-        >
+        <button (click)="themeService.toggleColorScheme()" shButton type="button" variant="ghost" size="icon">
             @if (themeService.colorScheme === 'light') {
                 <ng-doc-icon customIcon="moon"></ng-doc-icon>
             } @else {

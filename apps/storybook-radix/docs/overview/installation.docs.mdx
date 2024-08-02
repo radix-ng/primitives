@@ -26,24 +26,10 @@ import { RdxLabelRootDirective } from '@radix-ng/primitives/label';
   imports: [RdxLabelRootDirective],
   template: `
     <h1>Hello from {{ name }}!</h1>
-    <a
-      target="_blank"
-      href="https://angular.dev/overview"
-    >
-      Learn more about Angular
-    </a>
+    <a target="_blank" href="https://angular.dev/overview">Learn more about Angular</a>
     <div>
-      <label
-        LabelRoot
-        htmlFor="uniqId"
-      >
-        First Name
-      </label>
-      <input
-        class="Input"
-        id="uniqId"
-        type="text"
-      />
+      <label LabelRoot htmlFor="uniqId">First Name</label>
+      <input class="Input" id="uniqId" type="text" />
     </div>
   `
 })

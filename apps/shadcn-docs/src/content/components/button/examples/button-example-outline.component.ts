@@ -5,12 +5,7 @@ import { ShButtonDirective } from '@radix-ng/shadcn/button';
     standalone: true,
     imports: [ShButtonDirective],
     template: `
-        <button
-            shButton
-            variant="outline"
-        >
-            Outline
-        </button>
+        <button shButton variant="outline">Outline</button>
     `
 })
 export class ButtonExampleOutlineComponent {}

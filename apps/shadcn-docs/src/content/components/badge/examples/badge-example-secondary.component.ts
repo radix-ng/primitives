@@ -5,12 +5,7 @@ import { ShBadgeDirective } from '@radix-ng/shadcn/badge';
     standalone: true,
     imports: [ShBadgeDirective],
     template: `
-        <div
-            shBadge
-            variant="secondary"
-        >
-            Secondary
-        </div>
+        <div shBadge variant="secondary">Secondary</div>
     `
 })
 export class BadgeExampleSecondaryComponent {}
