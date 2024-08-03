@@ -1,7 +1,7 @@
 import { Component, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { RdxLabelRootDirective } from '../src/label-root.directive';
+import { RdxLabelDirective } from '../src/label.directive';
 
 /* Explanation:
 
@@ -14,7 +14,7 @@ import { RdxLabelRootDirective } from '../src/label-root.directive';
     Interaction with Children: Checks that double-clicks on non-form elements like divs also trigger prevention of default actions.*/
 @Component({
     template: `
-        <label LabelRoot>
+        <label rdxLabel>
             Test Label
             <div>Click Me</div>
             <input type="button" value="Button" />
@@ -23,7 +23,7 @@ import { RdxLabelRootDirective } from '../src/label-root.directive';
 })
 class TestComponent {}
 
-describe('RdxLabelRootDirective', () => {
+describe('RdxLabelDirective', () => {
     let fixture: ComponentFixture<TestComponent>;
     let labelElement: DebugElement;
     let inputElement: DebugElement;
@@ -31,13 +31,13 @@ describe('RdxLabelRootDirective', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RdxLabelRootDirective],
+            imports: [RdxLabelDirective],
             declarations: [TestComponent]
         }).compileComponents();
 
         fixture = TestBed.createComponent(TestComponent);
         fixture.detectChanges();
-        labelElement = fixture.debugElement.query(By.directive(RdxLabelRootDirective));
+        labelElement = fixture.debugElement.query(By.directive(RdxLabelDirective));
         inputElement = fixture.debugElement.query(By.css('input'));
         divElement = fixture.debugElement.query(By.css('div'));
     });

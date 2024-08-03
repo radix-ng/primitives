@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { labelExclude } from '../../../../apps/storybook-radix/docs/utils/storybook';
-import { RdxLabelRootDirective } from '../src/label-root.directive';
+import { RdxLabelDirective } from '../src/label.directive';
 
 export default {
-    component: RdxLabelRootDirective,
+    component: RdxLabelDirective,
     title: 'Primitives/Label',
     parameters: {
         controls: {
@@ -13,7 +14,7 @@ export default {
     },
     decorators: [
         moduleMetadata({
-            imports: [RdxLabelRootDirective, CommonModule]
+            imports: [RdxLabelDirective, CommonModule]
         }),
         componentWrapperDecorator(
             (story) =>
@@ -22,9 +23,9 @@ export default {
                       data-scaling="100%">${story}</div>`
         )
     ]
-} as Meta<RdxLabelRootDirective>;
+} as Meta<RdxLabelDirective>;
 
-type Story = StoryObj<RdxLabelRootDirective>;
+type Story = StoryObj<RdxLabelDirective>;
 
 export const Default: Story = {
     render: (args) => ({
@@ -32,7 +33,7 @@ export const Default: Story = {
             ...args
         },
         template: `
-<label LabelRoot htmlFor="uniqId">First Name </label>
+<label rdxLabel htmlFor="uniqId">First Name </label>
 <input type="text" class="Input" id="uniqId" />
 
 <style>

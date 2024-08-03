@@ -1,5 +1,5 @@
 import { Directive } from '@angular/core';
-import { RdxLabelRootDirective } from '@radix-ng/primitives/label';
+import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { cva } from 'class-variance-authority';
 
 const labelVariants = cva('text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70');
@@ -9,7 +9,7 @@ const labelVariants = cva('text-sm font-medium leading-none peer-disabled:cursor
     standalone: true,
     hostDirectives: [
         {
-            directive: RdxLabelRootDirective,
+            directive: RdxLabelDirective,
             inputs: ['htmlFor']
         }
     ],

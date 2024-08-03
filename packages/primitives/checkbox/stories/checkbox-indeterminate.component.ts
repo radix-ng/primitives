@@ -1,15 +1,16 @@
 import { Component, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RdxLabelRootDirective } from '@radix-ng/primitives/label';
+import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { LucideAngularModule } from 'lucide-angular';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input.directive';
 import { RdxCheckboxDirective } from '../src/checkbox.directive';
 
 @Component({
+    // eslint-disable-next-line @angular-eslint/component-selector
     selector: 'checkbox-indeterminate-example',
     template: `
-        <label class="Label" LabelRoot htmlFor="r1">
+        <label class="Label" rdxLabel htmlFor="r1">
             <button class="CheckboxRoot" [(indeterminate)]="indeterminate" [(ngModel)]="checked" CheckboxRoot>
                 <lucide-angular
                     class="CheckboxIndicator"
@@ -36,7 +37,7 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
     standalone: true,
     imports: [
         FormsModule,
-        RdxLabelRootDirective,
+        RdxLabelDirective,
         RdxCheckboxDirective,
         RdxCheckboxIndicatorDirective,
         LucideAngularModule,

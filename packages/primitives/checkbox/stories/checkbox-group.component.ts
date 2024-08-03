@@ -1,18 +1,19 @@
 import { JsonPipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RdxLabelRootDirective } from '@radix-ng/primitives/label';
+import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { LucideAngularModule } from 'lucide-angular';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input.directive';
 import { RdxCheckboxDirective } from '../src/checkbox.directive';
 
 @Component({
+    // eslint-disable-next-line @angular-eslint/component-selector
     selector: 'checkbox-groups-forms-example',
     template: `
         <section [formGroup]="personality">
             <p>
-                <label class="Label" LabelRoot htmlFor="r1">
+                <label class="Label" rdxLabel htmlFor="r1">
                     <button class="CheckboxRoot" CheckboxRoot formControlName="fun">
                         <lucide-angular
                             class="CheckboxIndicator"
@@ -26,7 +27,7 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
                 </label>
             </p>
             <p>
-                <label class="Label" LabelRoot htmlFor="r2">
+                <label class="Label" rdxLabel htmlFor="r2">
                     <button
                         class="CheckboxRoot rt-BaseCheckboxRoot rt-CheckboxRoot"
                         CheckboxRoot
@@ -44,7 +45,7 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
                 </label>
             </p>
             <p>
-                <label class="Label" LabelRoot htmlFor="r3">
+                <label class="Label" rdxLabel htmlFor="r3">
                     <button class="CheckboxRoot" CheckboxRoot formControlName="smart">
                         <lucide-angular
                             class="CheckboxIndicator"
@@ -77,7 +78,7 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
         FormsModule,
         ReactiveFormsModule,
         JsonPipe,
-        RdxLabelRootDirective,
+        RdxLabelDirective,
         RdxCheckboxDirective,
         RdxCheckboxIndicatorDirective,
         LucideAngularModule,

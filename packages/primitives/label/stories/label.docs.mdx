@@ -1,5 +1,5 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/blocks';
-import { RdxLabelRootDirective } from '../src/label-root.directive';
+import { RdxLabelDirective } from '../src/label.directive';
 import * as LabelDirectiveStories from './label.stories';
 
 <Meta title="Primitives/Label" />
@@ -19,19 +19,19 @@ import * as LabelDirectiveStories from './label.stories';
 Get started with importing the directive:
 
 ```typescript
-import { RdxLabelRootDirective } from '@radix-ng/primitives/label';
+import { RdxLabelDirective } from '@radix-ng/primitives/label';
 ```
 
 ## Examples
 
 ```html
-<label LabelRoot htmlFor="uniqId">First name</label>
+<label rdxLabel htmlFor="uniqId">First name</label>
 <input class="Input" id="uniqId" type="text" />
 ```
 
 ## API Reference
 
-<ArgTypes exclude={['onMouseDown']} of={RdxLabelRootDirective} />
+<ArgTypes of={RdxLabelDirective} />
 
 ## Accessibility
 

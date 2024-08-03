@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { RdxLabelRootDirective } from '../../label';
+import { componentWrapperDecorator, moduleMetadata } from '@storybook/angular';
 import { RdxSeparatorRootDirective } from '../src/separator.directive';
 
 export default {
@@ -17,11 +16,9 @@ export default {
                       data-scaling="100%">${story}</div>`
         )
     ]
-} as Meta<RdxLabelRootDirective>;
+};
 
-type Story = StoryObj<RdxLabelRootDirective>;
-
-export const Default: Story = {
+export const Default = {
     render: () => ({
         template: `
 <style>

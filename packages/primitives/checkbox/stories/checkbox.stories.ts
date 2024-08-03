@@ -1,6 +1,6 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { Check, LucideAngularModule, Minus } from 'lucide-angular';
-import { RdxLabelRootDirective } from '../../label';
+import { RdxLabelDirective } from '../../label';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input.directive';
 import { RdxCheckboxDirective } from '../src/checkbox.directive';
@@ -12,7 +12,7 @@ export default {
     decorators: [
         moduleMetadata({
             imports: [
-                RdxLabelRootDirective,
+                RdxLabelDirective,
                 RdxCheckboxDirective,
                 RdxCheckboxIndicatorDirective,
                 RdxCheckboxInputDirective,
@@ -44,7 +44,7 @@ export const Default: Story = {
             <lucide-angular CheckboxIndicator class="CheckboxIndicator" size="16" name="check"></lucide-angular>
             <input CheckboxInput type="checkbox" class="cdk-visually-hidden"/>
         </button>
-        <label LabelRoot htmlFor="r1" class="Label">Check Item</label>
+        <label rdxLabel htmlFor="r1" class="Label">Check Item</label>
     </div>
 </form>
 

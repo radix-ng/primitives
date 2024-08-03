@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RdxLabelRootDirective } from '@radix-ng/primitives/label';
+import { RdxLabelDirective } from '@radix-ng/primitives/label';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { RdxRadioGroupDirective, RdxRadioIndicatorDirective, RdxRadioItemDirective } from '@radix-ng/primitives/radio';
 
 @Component({
+    // eslint-disable-next-line @angular-eslint/component-selector
     selector: 'radio-groups-forms-example',
     standalone: true,
     template: `
@@ -15,7 +16,7 @@ import { RdxRadioGroupDirective, RdxRadioIndicatorDirective, RdxRadioItemDirecti
                         <div class="RadioGroupIndicator" RadioIndicator></div>
                         <input class="Input" RadioIndicator type="radio" aria-hidden="true" tabindex="-1" />
                     </button>
-                    <label class="Label" [htmlFor]="room" LabelRoot>
+                    <label class="Label" [htmlFor]="room" rdxLabel>
                         {{ room }}
                     </label>
                 </div>
@@ -28,7 +29,7 @@ import { RdxRadioGroupDirective, RdxRadioIndicatorDirective, RdxRadioItemDirecti
     styleUrl: 'radio-group.styles.scss',
     imports: [
         FormsModule,
-        RdxLabelRootDirective,
+        RdxLabelDirective,
         RdxRadioItemDirective,
         RdxRadioIndicatorDirective,
         RdxRadioGroupDirective

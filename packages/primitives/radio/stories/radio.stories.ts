@@ -1,5 +1,5 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { RdxLabelRootDirective } from '../../label';
+import { RdxLabelDirective } from '../../label';
 import { RdxRadioIndicatorDirective } from '../src/radio-indicator.directive';
 import { RdxRadioItemDirective } from '../src/radio-item.directive';
 import { RdxRadioGroupDirective } from '../src/radio-root.directive';
@@ -10,7 +10,7 @@ export default {
     decorators: [
         moduleMetadata({
             imports: [
-                RdxLabelRootDirective,
+                RdxLabelDirective,
                 RdxRadioItemDirective,
                 RdxRadioIndicatorDirective,
                 RdxRadioGroupDirective,
@@ -38,7 +38,7 @@ export const Default: Story = {
                 <div RadioIndicator class="RadioGroupIndicator"></div>
                 <input RadioIndicator type="radio" aria-hidden="true" tabindex="-1" value="default" class="Input">
             </button>
-            <label LabelRoot htmlFor="r1" class="Label">
+            <label rdxLabel htmlFor="r1" class="Label">
               Default
             </label>
         </div>
@@ -47,7 +47,7 @@ export const Default: Story = {
                  <div RadioIndicator class="RadioGroupIndicator"></div>
                  <input RadioIndicator type="radio" aria-hidden="true" tabindex="-1" value="comfortable" class="Input">
             </button>
-            <label LabelRoot htmlFor="r2" class="Label">
+            <label rdxLabel htmlFor="r2" class="Label">
               Comfortable
             </label>
         </div>
@@ -56,7 +56,7 @@ export const Default: Story = {
                  <div RadioIndicator class="RadioGroupIndicator"></div>
                  <input RadioIndicator type="radio" aria-hidden="true" tabindex="-1" value="compact" class="Input">
             </button>
-            <label LabelRoot htmlFor="r3" class="Label">
+            <label rdxLabel htmlFor="r3" class="Label">
               Compact
             </label>
         </div>

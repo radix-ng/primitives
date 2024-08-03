@@ -1,1 +1,1 @@
-export * from './src/label-root.directive';
+export * from './src/label.directive';

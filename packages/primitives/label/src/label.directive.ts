@@ -3,8 +3,8 @@ import { computed, Directive, ElementRef, inject, input } from '@angular/core';
 let idIterator = 0;
 
 @Directive({
-    selector: 'label[LabelRoot]',
-    exportAs: 'LabelRoot',
+    selector: 'label[rdxLabel]',
+    exportAs: 'rdxLabel',
     standalone: true,
     host: {
         '[attr.id]': 'this.elementId()',
@@ -12,8 +12,11 @@ let idIterator = 0;
         '(mousedown)': 'onMouseDown($event)'
     }
 })
-export class RdxLabelRootDirective {
+export class RdxLabelDirective {
     readonly id = input<string>(`rdx-label-${idIterator++}`);
+    /**
+     * @ignore
+     */
     protected readonly elementId = computed(() => (this.id() ? this.id() : null));
     /**
      * The id of the element the label is associated with.
@@ -21,11 +24,17 @@ export class RdxLabelRootDirective {
      */
     readonly htmlFor = input<string>('');
 
+    /**
+     * @ignore
+     */
     private readonly elementRef = inject(ElementRef<HTMLElement>);
 
     // prevent text selection when double-clicking label
     // The main problem with double-clicks in a web app is that
     // you will have to create special code to handle this on touch enabled devices.
+    /**
+     * @ignore
+     */
     onMouseDown(event: MouseEvent): void {
         const target = event.target as HTMLElement;
 
