@@ -1,13 +1,13 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { Italic, LucideAngularModule } from 'lucide-angular';
-import { RdxToggleRootDirective } from '../src/toggle-root.directive';
+import { RdxToggleDirective } from '../src/toggle.directive';
 
 export default {
     title: 'Primitives/Toggle',
     decorators: [
         moduleMetadata({
             imports: [
-                RdxToggleRootDirective,
+                RdxToggleDirective,
                 LucideAngularModule,
                 LucideAngularModule.pick({ Italic })
             ]
@@ -62,7 +62,7 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: `
-<button ToggleRoot aria-label="Toggle italic" class="Toggle">
+<button rdxToggle aria-label="Toggle italic" class="Toggle">
     <lucide-angular name="italic" size="16"></lucide-angular>
 </button>
 `
@@ -70,9 +70,13 @@ export const Default: Story = {
 };
 
 export const State: Story = {
-    render: () => ({
+    render: (args) => ({
+        props: {
+            ...args,
+            pressed: true
+        },
         template: `
-<button ToggleRoot [pressed]="pressed" aria-label="Toggle italic" class="Toggle">
+<button rdxToggle [pressed]="pressed" aria-label="Toggle italic" class="Toggle">
     <lucide-angular name="italic" size="16"></lucide-angular>
 </button>
 `

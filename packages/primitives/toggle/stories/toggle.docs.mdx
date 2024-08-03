@@ -1,6 +1,6 @@
 import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
 import * as ToggleDirectiveStories from './toggle.stories';
-import { RdxToggleRootDirective } from '../src/toggle-root.directive';
+import { RdxToggleDirective } from '../src/toggle.directive';
 
 <Meta title="Primitives/Toggle" />
 
@@ -20,22 +20,22 @@ import { RdxToggleRootDirective } from '../src/toggle-root.directive';
 Get started with importing the directives:
 
 ```typescript
-import { RdxToggleRootDirective } from '@radix-ng/primitives/toggle';
+import { RdxToggleDirective } from '@radix-ng/primitives/toggle';
 ```
 
 ## Examples
 
 ```html
-<button ToggleRoot aria-label="Toggle italic">
+<button rdxToggle aria-label="Toggle italic">
   <icon />
 </button>
 ```
 
 ## API Reference
 
-### RdxToggleRootDirective
+### RdxToggleDirective
 
-<ArgTypes of={RdxToggleRootDirective} />
+<ArgTypes of={RdxToggleDirective} />
 
 <Markdown>
   {`
