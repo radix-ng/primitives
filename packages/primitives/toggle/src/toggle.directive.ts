@@ -1,4 +1,4 @@
-import { Directive, effect, EventEmitter, input, Output, signal } from '@angular/core';
+import { Directive, EventEmitter, input, model, Output } from '@angular/core';
 
 export interface ToggleProps {
     /**
@@ -23,16 +23,16 @@ export interface ToggleProps {
     standalone: true,
     host: {
         type: 'button',
-        '[attr.aria-pressed]': 'internalPressed()',
-        '[attr.data-state]': 'internalPressed() ? "on" : "off"',
+        '[attr.aria-pressed]': 'pressed()',
+        '[attr.data-state]': 'pressed() ? "on" : "off"',
         '[attr.data-disabled]': 'disabled()',
 
         '(click)': 'toggle()'
     }
 })
 export class RdxToggleDirective {
-    readonly pressed = input<boolean | undefined>();
     readonly defaultPressed = input<boolean>(false);
+    readonly pressed = model<boolean>(this.defaultPressed());
     readonly disabled = input<boolean>(false);
 
     /**
@@ -40,19 +40,10 @@ export class RdxToggleDirective {
      */
     @Output() readonly onPressedChange = new EventEmitter<boolean>();
 
-    protected internalPressed = signal(this.defaultPressed());
-
-    constructor() {
-        effect(() => {
-            const pressedValue = this.pressed();
-            this.internalPressed.set(pressedValue !== undefined ? pressedValue : this.defaultPressed());
-        });
-    }
-
     protected toggle(): void {
         if (!this.disabled()) {
-            this.internalPressed.set(!this.internalPressed());
-            this.onPressedChange.emit(this.internalPressed());
+            this.pressed.set(!this.pressed());
+            this.onPressedChange.emit(this.pressed());
         }
     }
 }

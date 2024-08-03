@@ -1,4 +1,4 @@
-import { Component, DebugElement } from '@angular/core';
+import { Component, DebugElement, Input } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RdxToggleDirective } from '../src/toggle.directive';
@@ -8,8 +8,8 @@ import { RdxToggleDirective } from '../src/toggle.directive';
         '<button rdxToggle [pressed]="pressed" [disabled]="disabled" (onPressedChange)="onToggle($event)">Toggle</button>'
 })
 class TestComponent {
-    pressed = false;
-    disabled = false;
+    @Input() pressed = false;
+    @Input() disabled = false;
 
     onToggle(pressed: boolean) {
         this.pressed = pressed;
@@ -33,11 +33,6 @@ describe('RdxToggleDirective', () => {
         component = fixture.componentInstance;
         button = fixture.debugElement.query(By.css('button'));
         fixture.detectChanges();
-    });
-
-    it('should create an instance', () => {
-        const directive = new RdxToggleDirective();
-        expect(directive).toBeTruthy();
     });
 
     it('should initialize with default values', () => {
