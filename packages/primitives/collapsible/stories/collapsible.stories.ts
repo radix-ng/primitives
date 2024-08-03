@@ -31,6 +31,9 @@ export default {
                 </div>
 
                 <style>
+                    button {
+                        all: unset;
+                    }
                     .CollapsibleRoot {
                         width: 300px;
                     }

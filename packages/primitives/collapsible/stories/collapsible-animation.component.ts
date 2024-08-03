@@ -21,6 +21,10 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
         ])
     ],
     styles: `
+        button {
+            all: unset;
+        }
+
         .CollapsibleRoot {
             width: 300px;
         }
