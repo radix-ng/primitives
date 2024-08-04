@@ -8,6 +8,10 @@ const PROGRESS_NAME = 'Radix Progress';
 
 const RdxProgressToken = new InjectionToken<RdxProgressRootDirective>('RdxProgressDirective');
 
+/**
+ * Injects the current instance of RdxProgressRootDirective.
+ * @returns The instance of RdxProgressRootDirective.
+ */
 export function injectProgress(): RdxProgressRootDirective {
     return inject(RdxProgressToken);
 }
@@ -20,6 +24,12 @@ export interface ProgressProps {
     getValueLabel?: string;
 }
 
+/**
+ * Directive to manage progress bar state and attributes.
+ *
+ * This directive provides a way to create a progress bar with customizable value and max attributes.
+ * It handles aria attributes for accessibility and provides different states like 'indeterminate', 'complete', and 'loading'.
+ */
 @Directive({
     selector: 'div[rdxProgressRoot]',
     exportAs: 'ProgressRoot',
@@ -41,20 +51,33 @@ export interface ProgressProps {
     }
 })
 export class RdxProgressRootDirective implements ProgressProps, OnChanges {
+    /**
+     * The unique ID for the progress bar.
+     * @default 'rdx-progress-bar-{idIterator}'
+     */
     @Input() id = `rdx-progress-bar-${idIterator++}`;
 
+    /**
+     * The current value of the progress bar.
+     * @default 0
+     */
     @Input({ alias: 'rdxValue', transform: numberAttribute }) value = MIN_PERCENT;
 
     /**
+     * The maximum value of the progress bar.
      * @default 100
      */
     @Input({ alias: 'rdxMax', transform: numberAttribute }) max = DEFAULT_MAX;
 
+    /**
+     * Function to generate the value label.
+     */
     @Input('rdxValueLabel') valueLabel: (value: number, max: number) => string = (value, max) =>
         this.defaultGetValueLabel(value, max);
 
     /**
-     *
+     * Lifecycle hook that is called when any data-bound property of a directive changes.
+     * @param changes - The changed properties.
      * @ignore
      */
     ngOnChanges(changes: SimpleChanges) {

@@ -1,6 +1,12 @@
 import { Directive } from '@angular/core';
 import { injectProgress } from './progress-root.directive';
 
+/**
+ * Directive to manage progress indicator state and attributes.
+ *
+ * This directive is used to display the progress indicator inside the progress bar.
+ * It inherits the state and value from the `RdxProgressRootDirective`.
+ */
 @Directive({
     selector: 'div[rdxProgressIndicator]',
     exportAs: 'ProgressIndicator',
@@ -12,5 +18,9 @@ import { injectProgress } from './progress-root.directive';
     }
 })
 export class RdxProgressIndicatorDirective {
+    /**
+     *
+     * This allows the directive to access the progress bar state and values.
+     */
     protected readonly progress = injectProgress();
 }
