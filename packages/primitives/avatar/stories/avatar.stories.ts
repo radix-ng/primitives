@@ -1,5 +1,3 @@
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { RdxThemeDirective } from '@radix-ng/components/theme';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { RdxAvatarFallbackDirective } from '../src/avatar-fallback.directive';
 import { RdxAvatarImageDirective } from '../src/avatar-image.directive';
@@ -9,9 +7,15 @@ export default {
     title: 'Primitives/Avatar',
     decorators: [
         moduleMetadata({
-            imports: [RdxAvatarRootDirective, RdxAvatarImageDirective, RdxAvatarFallbackDirective, RdxThemeDirective]
+            imports: [RdxAvatarRootDirective, RdxAvatarImageDirective, RdxAvatarFallbackDirective]
         }),
-        componentWrapperDecorator((story) => `<div rdxAppTheme>${story}</div>`)
+        componentWrapperDecorator(
+            (story) =>
+                `<div class="radix-themes light light-theme radix-themes-default-fonts"
+                      data-accent-color="indigo"
+                      data-radius="medium"
+                      data-scaling="100%">${story}</div>`
+        )
     ]
 } as Meta;
 
