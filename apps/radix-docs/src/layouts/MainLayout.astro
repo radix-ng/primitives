@@ -1,12 +1,11 @@
 ---
-import "../styles/base.css";
-import Sidebar from '../components/Sidebar.astro';
+import '../styles/globals.css';
 
-export interface Props {
-    title?: string;
+interface Props {
+    title: string
 }
 
-const { title = "Fitzsimons dot dev" } = Astro.props as Props;
+const { title } = Astro.props
 ---
 
 <!DOCTYPE html>
@@ -56,7 +55,6 @@ const { title = "Fitzsimons dot dev" } = Astro.props as Props;
     </style>
   </head>
   <body>
-    <Sidebar />
     <slot />
   </body>
 </html>

@@ -1,0 +1,42 @@
+---
+import { getCollection } from 'astro:content'
+
+import DocumentationLayout from '../../layouts/DocumentationLayout.astro';
+import { getCollections, isValidCollectionType } from '../../types/collections';
+import { AnyCollectionEntry } from '../../types';
+import siteConfig from '../../config/site-config';
+
+export async function getStaticPaths() {
+    return getCollections().map((type) => ({
+        params: { type },
+    }))
+}
+
+const { type } = Astro.params as { type: string }
+let pages: AnyCollectionEntry[] = []
+
+if (isValidCollectionType(type)) {
+    pages = await getCollection(type)
+} else {
+    throw new Error(`Invalid collection type: ${type}`)
+}
+
+const groupInfo = siteConfig.navigation.find((nav) => nav.type === type)
+if (!groupInfo) {
+    throw new Error(`No group info found for type: ${type}`)
+}
+---
+
+<DocumentationLayout title={groupInfo.group}>
+    <h1>{groupInfo.group}</h1>
+    <ul>
+        {
+            pages.map((page) => (
+                <li>
+                    <a>{page.data.title}</a>
+                    {page.data.description && <p>{page.data.description}</p>}
+                </li>
+            ))
+        }
+    </ul>
+</DocumentationLayout>

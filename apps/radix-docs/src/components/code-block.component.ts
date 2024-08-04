@@ -4,8 +4,12 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
     standalone: true,
     template: `
         <div>
-            Hello Code Block in MDX
-            <button>Click me</button>
+            Hello From Angular Component
+            <button
+                class="bg-primary dark:bg-primary/10 focus-visible:ring-ring border-primary text-primary-foreground dark:text-primary mr-2 hidden h-8 items-center justify-center gap-2 whitespace-nowrap rounded-full border px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 lg:inline-flex"
+            >
+                Click me
+            </button>
         </div>
     `,
     changeDetection: ChangeDetectionStrategy.OnPush
