@@ -54,8 +54,8 @@ export const Default: Story = {
 }
 </style>
 
-<div ProgressRoot [rdxValue]="progress" class="ProgressRoot">
-    <div ProgressIndicator
+<div rdxProgressRoot [rdxValue]="progress" class="ProgressRoot">
+    <div rdxProgressIndicator
         [style.transform]="'translateX(-' + (100 - progress) +'%)'"
         class="ProgressIndicator"
     ></div>

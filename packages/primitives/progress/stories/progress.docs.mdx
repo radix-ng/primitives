@@ -1,5 +1,4 @@
 import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
-import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
 import { RdxProgressRootDirective } from '../src/progress-root.directive';
 import * as ProgressDirectiveStories from './progress.stories';
 
@@ -26,8 +25,8 @@ import { RdxProgressRootDirective, RdxProgressIndicatorDirective } from '@radix-
 ## Example
 
 ```html
-<div class="ProgressRoot" ProgressRoot [rdxValue]="progress">
-  <div class="ProgressIndicator" ProgressIndicator [style.transform]="'translateX(-' + (100 - progress) +'%)'"></div>
+<div class="ProgressRoot" rdxProgressRoot [rdxValue]="progress">
+  <div class="ProgressIndicator" rdxProgressIndicator [style.transform]="'translateX(-' + (100 - progress) +'%)'"></div>
 </div>
 ```
 

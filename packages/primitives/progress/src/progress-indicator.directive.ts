@@ -2,15 +2,15 @@ import { Directive } from '@angular/core';
 import { injectProgress } from './progress-root.directive';
 
 @Directive({
-    selector: 'div[ProgressIndicator]',
+    selector: 'div[rdxProgressIndicator]',
     exportAs: 'ProgressIndicator',
     standalone: true,
     host: {
-        '[attr.data-state]': '_progress.state',
-        '[attr.data-value]': '_progress.value',
-        '[attr.data-max]': '_progress.max'
+        '[attr.data-state]': 'progress.state',
+        '[attr.data-value]': 'progress.value',
+        '[attr.data-max]': 'progress.max'
     }
 })
 export class RdxProgressIndicatorDirective {
-    readonly _progress = injectProgress();
+    protected readonly progress = injectProgress();
 }
