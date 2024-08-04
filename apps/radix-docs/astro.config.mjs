@@ -1,9 +1,9 @@
 import analogjsangular from '@analogjs/astro-angular';
-import starlight from '@astrojs/starlight';
 import tailwind from '@astrojs/tailwind';
+import mdx from '@astrojs/mdx';
+
 import { defineConfig } from 'astro/config';
 import { readFileSync } from 'fs';
-import mdx from '@astrojs/mdx';
 
 function includeContentPlugin() {
     const map = new Map();
@@ -56,7 +56,6 @@ export default defineConfig({
         plugins: [includeContentPlugin()],
     },
     integrations: [
-
         analogjsangular({
             vite: {
                 experimental: {
@@ -64,34 +63,7 @@ export default defineConfig({
                 },
             },
         }),
-        starlight({
-            title: 'RadixUI Angular',
-            tableOfContents: {
-                minHeadingLevel: 2,
-                maxHeadingLevel: 4,
-            },
-
-            social: {
-                github: 'https://github.com/radix-ng/primitives',
-            },
-            sidebar: [
-                {
-                    label: 'Overview',
-                    collapsed: true,
-                    items: [
-                        {
-                            label: 'Introduction',
-                            slug: 'overview/introduction'
-                        },
-                        {
-                            label: 'Installation',
-                            slug: 'overview/installation'
-                        },
-                    ],
-                }
-            ],
-        }),
-     //   mdx(),
-        tailwind({ applyBaseStyles: false }),
+        mdx(),
+        tailwind(),
     ],
 });

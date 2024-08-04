@@ -1,16 +1,13 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import NgBlockComponent from '../components/ng-block.component';
+import { getEntry } from 'astro:content'
+import DocumentationLayout from '../layouts/DocumentationLayout.astro';
 
 
-const post = await import(`../content/docs/test-component.mdx`);
-const { default: Content } = post;
+const entry = await getEntry('overview', 'introduction');
+const { Content, headings } = await entry.render()
 
 ---
 
-<Layout>
-    <NgBlockComponent />
-    <section>
-        <Content />
-    </section>
-</Layout>
+<DocumentationLayout title={entry.data.title}>
+    <Content />
+</DocumentationLayout>
