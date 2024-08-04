@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content'
 
 import DocumentationLayout from '../../layouts/DocumentationLayout.astro';
 import { getCollections, isValidCollectionType } from '../../types/collections';
-import { AnyCollectionEntry } from '../../types';
+import type { AnyCollectionEntry } from '../../types';
 import siteConfig from '../../config/site-config';
 
 export async function getStaticPaths() {
