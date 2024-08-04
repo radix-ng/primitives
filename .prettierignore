@@ -4,16 +4,15 @@
 .husky
 .nx
 .vercel
+.astro
 
 /node_modules
 /dist
 /coverage
-/.nx/cache
-
-/.nx/workspace-data
 
 CHANGELOG.md
 
 apps/shadcn-docs/src/styles/themes/*.css
 
 *.d.ts
+*.mdx
