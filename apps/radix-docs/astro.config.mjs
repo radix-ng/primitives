@@ -1,6 +1,6 @@
 import analogjsangular from '@analogjs/astro-angular';
-import tailwind from '@astrojs/tailwind';
 import mdx from '@astrojs/mdx';
+import tailwind from '@astrojs/tailwind';
 
 import { defineConfig } from 'astro/config';
 import { readFileSync } from 'fs';
@@ -19,7 +19,7 @@ function includeContentPlugin() {
 
                 if (map.has(filePath)) return;
                 map.set(filePath, fileContent.replace(/\t/g, '  '));
-            },
+            }
         },
         {
             name: 'post-include-content',
@@ -33,10 +33,10 @@ function includeContentPlugin() {
                     code: `
             ${code}
             export const content = ${JSON.stringify(fileContent)};
-          `,
+          `
                 };
-            },
-        },
+            }
+        }
     ];
 }
 
@@ -48,22 +48,23 @@ export default defineConfig({
                 '@angular/common',
                 '@angular/core',
                 '@angular/core/rxjs-interop'
-            ],
+            ]
         },
         esbuild: {
-            jsxDev: true,
+            jsxDev: true
         },
-        plugins: [includeContentPlugin()],
+        plugins: [includeContentPlugin()]
     },
     integrations: [
         analogjsangular({
             vite: {
                 experimental: {
-                    supportAnalogFormat: true,
-                },
-            },
+                    supportAnalogFormat: true
+                }
+            }
         }),
         mdx(),
-        tailwind(),
-    ],
+        tailwind()
+
+    ]
 });
