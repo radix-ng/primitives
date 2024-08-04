@@ -2,7 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { effect, inject, Injectable, RendererFactory2, signal } from '@angular/core';
 import { injectThemeConfig } from './theme.provider';
 
-type ThemeType = 'dark' | 'light';
+export type ThemeType = 'dark' | 'light';
 
 @Injectable()
 export class ThemeService {

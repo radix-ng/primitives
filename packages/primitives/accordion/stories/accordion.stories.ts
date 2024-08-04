@@ -1,4 +1,6 @@
 import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { RdxThemeDirective } from '@radix-ng/components/theme';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { RdxAccordionContentDirective } from '../src/accordion-content.directive';
 import { RdxAccordionHeaderDirective } from '../src/accordion-header.directive';
@@ -16,17 +18,14 @@ export default {
                 RdxAccordionHeaderDirective,
                 RdxAccordionTriggerDirective,
                 RdxAccordionContentDirective,
-                BrowserAnimationsModule
+                BrowserAnimationsModule,
+                RdxThemeDirective
             ],
             providers: [provideAnimations()]
         }),
         componentWrapperDecorator(
             (story) => `
-                <div class="radix-themes light light-theme radix-themes-default-fonts"
-                    data-accent-color="indigo"
-                    data-radius="medium"
-                    data-scaling="100%"
-                >
+                <div rdxAppTheme>
                     ${story}
                 </div>
 

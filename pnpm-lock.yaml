@@ -381,6 +381,9 @@ importers:
       '@angular/core':
         specifier: ^18.0.0
         version: 18.1.2(rxjs@7.8.1)(zone.js@0.14.4)
+      classnames:
+        specifier: 2.5.1
+        version: 2.5.1
       tslib:
         specifier: ^2.3.0
         version: 2.6.3
@@ -12872,7 +12875,6 @@ packages:
 
   /classnames@2.5.1:
     resolution: {integrity: sha512-saHYOzhIQs6wy2sVxTM6bUDsQO4F50V9RQ22qBpEdCW+I+/Wmke2HOl6lS6dTpdxVhb88/I6+Hs+438c3lfUow==}
-    dev: true
 
   /clean-css@5.3.3:
     resolution: {integrity: sha512-D5J+kHaVb/wKSFcyyV75uCn8fiY4sV38XJoe4CUyGQ+mOU/fMVYUdH1hJC+CJQ5uY3EnW27SbJYS4X8BiLrAFg==}

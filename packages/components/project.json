@@ -1,7 +1,7 @@
 {
     "name": "components",
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
-    "sourceRoot": "packages/components/src",
+    "sourceRoot": "packages/components",
     "prefix": "rdx",
     "projectType": "library",
     "tags": [],

@@ -10,6 +10,7 @@
         "@radix-ng/primitives": "workspace:*"
     },
     "dependencies": {
+        "classnames": "2.5.1",
         "tslib": "^2.3.0"
     },
     "sideEffects": false

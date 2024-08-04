@@ -9,9 +9,7 @@ interface ThemeContextValue {
     scaling: string;
 }
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable()
 export class ThemeService {
     private context = signal<ThemeContextValue>({
         appearance: 'default',

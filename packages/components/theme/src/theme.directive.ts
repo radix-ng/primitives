@@ -1,30 +1,46 @@
-import { Directive, effect, ElementRef, inject, OnChanges, OnInit, Renderer2, signal } from '@angular/core';
+import { computed, Directive, inject, input, model, OnInit, signal } from '@angular/core';
+import classNames from 'classnames';
 import { ThemeService } from './theme.service';
 
 @Directive({
     selector: '[rdxAppTheme]',
-    standalone: true
+    standalone: true,
+    providers: [ThemeService],
+    host: {
+        '[attr.data-radius]': 'radius()',
+        '[attr.data-scaling]': 'scaling()',
+        '[attr.data-gray-color]': 'grayColor()',
+        '[attr.data-accent-color]': 'accentColor()',
+        '[attr.data-is-root-theme]': 'isRoot()',
+
+        '[class]': 'computedClass()'
+    }
 })
-export class RdxThemeDirective implements OnInit, OnChanges {
+export class RdxThemeDirective implements OnInit {
     private readonly themeService = inject(ThemeService);
-    private readonly elementRef = inject(ElementRef);
-    private readonly renderer = inject(Renderer2);
 
-    appearance = signal<string>('default');
-    accentColor = signal<string>('default');
-    grayColor = signal<string>('default');
-    panelBackground = signal<string>('default');
-    radius = signal<string>('default');
-    scaling = signal<string>('default');
+    readonly class = input<string>();
+    protected computedClass = computed(() =>
+        classNames(
+            'radix-themes',
+            {
+                light: this.appearance() === 'light',
+                dark: this.appearance() === 'dark'
+            },
+            this.class()
+        )
+    );
 
-    isRoot = signal<boolean>(false);
+    appearance = signal<string>('inherit');
+    accentColor = signal<string>('indigo');
+    grayColor = signal<string>('auto');
+    panelBackground = signal<string>('translucent');
+    radius = signal<string>('medium');
+    scaling = signal<string>('100%');
+
+    isRoot = model<boolean>(false);
 
     ngOnInit() {
-        this.applyTheme();
-        effect(() => this.updateClasses());
-    }
-
-    ngOnChanges() {
         this.applyTheme();
     }
 
@@ -35,40 +51,5 @@ export class RdxThemeDirective implements OnInit, OnChanges {
         this.themeService.setPanelBackground(this.panelBackground());
         this.themeService.setRadius(this.radius());
         this.themeService.setScaling(this.scaling());
-    }
-
-    private updateClasses() {
-        const context = this.themeService.contextSignal();
-
-        const themeClasses = {
-            'theme-light': context.appearance === 'light',
-            'theme-dark': context.appearance === 'dark',
-            'theme-accent-blue': context.accentColor === 'blue',
-            'theme-gray-auto': context.grayColor === 'auto'
-            // Add more classes as necessary
-        };
-
-        for (const [key, value] of Object.entries(themeClasses)) {
-            if (value) {
-                this.renderer.addClass(this.elementRef.nativeElement, key);
-            } else {
-                this.renderer.removeClass(this.elementRef.nativeElement, key);
-            }
-        }
-    }
-
-    private updateAttributes() {
-        const context = this.themeService.contextSignal();
-
-        this.renderer.setAttribute(
-            this.elementRef.nativeElement,
-            'data-is-root-theme',
-            this.isRoot() ? 'true' : 'false'
-        );
-        this.renderer.setAttribute(this.elementRef.nativeElement, 'data-accent-color', context.accentColor);
-        this.renderer.setAttribute(this.elementRef.nativeElement, 'data-gray-color', context.grayColor);
-
-        this.renderer.setAttribute(this.elementRef.nativeElement, 'data-radius', context.radius);
-        this.renderer.setAttribute(this.elementRef.nativeElement, 'data-scaling', context.scaling);
     }
 }
