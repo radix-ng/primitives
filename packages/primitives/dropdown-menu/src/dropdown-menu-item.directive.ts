@@ -2,7 +2,9 @@ import { CdkMenuItem } from '@angular/cdk/menu';
 import {
     Directive,
     ElementRef,
-    inject
+    EventEmitter,
+    inject,
+    Output
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -35,6 +37,8 @@ export class RdxDropdownMenuItemDirective extends CdkMenuItem {
         return this.elementRef.nativeElement;
     }
 
+    @Output() readonly onSelect = new EventEmitter<void>();
+
     constructor(private elementRef: ElementRef) {
         super();
 
@@ -45,9 +49,11 @@ export class RdxDropdownMenuItemDirective extends CdkMenuItem {
                     this.highlighted = false;
                 }
             });
+
+        this.cdkMenuItem.triggered.subscribe(() => this.onSelect.next());
     }
 
-    onPointerMove() {
+    protected onPointerMove() {
         this.nativeElement.focus({ preventScroll: true })
     }
 }

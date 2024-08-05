@@ -25,8 +25,9 @@ import {
             <div class="DropdownMenuContent" rdxDropdownMenuContent>
                 <button class="DropdownMenuItem"
                         rdxDropdownMenuItemCheckbox
-                        [rdxChecked]="itemState"
-                        (rdxCheckedChange)="onCheckedChange($event)"
+                        [checked]="itemState"
+                        (onCheckedChange)="onCheckedChange($event)"
+                        (onSelect)="onSelect()"
                         (click)="itemState = !itemState">
                     <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
                         <lucide-icon size="16" name="check"></lucide-icon>
@@ -39,8 +40,9 @@ import {
                 <button
                     class="DropdownMenuItem"
                     rdxDropdownMenuItemCheckbox
-                    [rdxChecked]="itemState2"
-                    (rdxCheckedChange)="onCheckedChange($event)"
+                    [checked]="itemState2"
+                    (onCheckedChange)="onCheckedChange($event)"
+                    (onSelect)="onSelect()"
                     (click)="itemState2 = !itemState2"
                 >
                     <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
@@ -55,11 +57,14 @@ import {
                 <button
                     class="DropdownMenuItem DropdownMenuSubTrigger"
                     rdxDropdownMenuItem
+                    (onSelect)="onSelect()"
                 >
                     Share
                 </button>
                 <div rdxDropdownMenuSeparator class="DropdownMenuSeparator"></div>
-                <button class="DropdownMenuItem" rdxDropdownMenuItem>
+                <button class="DropdownMenuItem"
+                        rdxDropdownMenuItem
+                        (onSelect)="onSelect()">
                     Print… <div class="RightSlot">⌘ P</div>
                 </button>
             </div>
@@ -83,6 +88,10 @@ export class DropdownMenuItemCheckboxExampleComponent {
     itemState2 = false;
 
     onCheckedChange(value: boolean) {
-        console.log('rdxCheckedChange', value);
+        console.log('onCheckedChange', value);
+    }
+
+    onSelect() {
+        console.log('onSelect', );
     }
 }
