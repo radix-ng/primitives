@@ -1,5 +1,5 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { Check, LucideAngularModule, Menu } from 'lucide-angular';
+import { Check, Dot, LucideAngularModule, Menu } from 'lucide-angular';
 
 import { RdxDropdownMenuContentDirective } from '../src/dropdown-menu-content.directive';
 import { RdxDropdownMenuItemCheckboxDirective } from '../src/dropdown-menu-item-checkbox.directive';
@@ -10,6 +10,7 @@ import { RdxDropdownMenuItemDirective } from '../src/dropdown-menu-item.directiv
 import { RdxDropdownMenuSeparatorDirective } from '../src/dropdown-menu-separator.directive';
 import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.directive';
 import { DropdownMenuItemCheckboxExampleComponent } from './dropdown-menu-item-checkbox.component';
+import { DropdownMenuItemRadioExampleComponent } from './dropdown-menu-item-radio.component';
 
 export default {
     title: 'Primitives/Dropdown Menu [In progress]',
@@ -23,9 +24,10 @@ export default {
                 RdxDropdownMenuSeparatorDirective,
                 RdxDropdownMenuContentDirective,
                 LucideAngularModule,
-                LucideAngularModule.pick({ Menu, Check }),
+                LucideAngularModule.pick({ Menu, Check, Dot }),
 
-                DropdownMenuItemCheckboxExampleComponent
+                DropdownMenuItemCheckboxExampleComponent,
+                DropdownMenuItemRadioExampleComponent
             ]
         }),
         componentWrapperDecorator(
@@ -214,5 +216,12 @@ export const DropdownMenuItemCheckbox: Story = {
     name: 'Checkbox',
     render: () => ({
         template: `<dropdown-menu-item-checkbox/>`
+    })
+};
+
+export const DropdownMenuItemRadio: Story = {
+    name: 'Radio',
+    render: () => ({
+        template: `<dropdown-menu-item-radio/>`
     })
 };

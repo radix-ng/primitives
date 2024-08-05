@@ -30,6 +30,7 @@ import { RdxDropdownMenuContentDirective } from './dropdown-menu-content.directi
 export class RdxDropdownMenuItemDirective extends CdkMenuItem {
     protected readonly menu = inject(RdxDropdownMenuContentDirective);
     protected readonly cdkMenuItem = inject(CdkMenuItem);
+    protected readonly elementRef = inject(ElementRef);
 
     highlighted = false;
 
@@ -39,7 +40,7 @@ export class RdxDropdownMenuItemDirective extends CdkMenuItem {
 
     @Output() readonly onSelect = new EventEmitter<void>();
 
-    constructor(private elementRef: ElementRef) {
+    constructor() {
         super();
 
         this.menu.highlighted
