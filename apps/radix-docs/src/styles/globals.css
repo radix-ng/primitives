@@ -1,3 +1,5 @@
+@import '@radix-ui/themes/styles.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -26,6 +28,8 @@
 
         --radius: 0.5rem;
     }
+
+
 }
 
 * {
@@ -61,13 +65,45 @@ pre {
 }
 
 h1 {
-    @apply scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl;
+    --leading-trim-start: var(--heading-leading-trim-start);
+    --leading-trim-end: var(--heading-leading-trim-end);
+    font-style: var(--heading-font-style);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height);
+
+    font-size: calc(var(--font-size-8) * var(--heading-font-size-adjust));
+    --line-height: var(--heading-line-height-8);
+    letter-spacing: calc(var(--letter-spacing-8) + var(--heading-letter-spacing));
+
+    margin: 0 0 var(--space-2);
 }
 
 h2 {
-    @apply scroll-mt-28 text-3xl font-extrabold tracking-tight lg:text-4xl my-2;
+    --leading-trim-start: var(--heading-leading-trim-start);
+    --leading-trim-end: var(--heading-leading-trim-end);
+    font-style: var(--heading-font-style);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height);
+
+    font-size: calc(var(--font-size-6) * var(--heading-font-size-adjust));
+    --line-height: var(--heading-line-height-6);
+    letter-spacing: calc(var(--letter-spacing-6) + var(--heading-letter-spacing));
+
+    margin-top: var(--space-8);
+    margin-bottom: var(--space-3);
 }
 
 h3 {
-    @apply scroll-mt-28 text-xl font-extrabold tracking-tight lg:text-2xl;
+    --leading-trim-start: var(--heading-leading-trim-start);
+    --leading-trim-end: var(--heading-leading-trim-end);
+    font-style: var(--heading-font-style);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height);
+
+    font-size: calc(var(--font-size-4) * var(--heading-font-size-adjust));
+    --line-height: var(--heading-line-height-4);
+    letter-spacing: calc(var(--letter-spacing-4) + var(--heading-letter-spacing));
+
+    margin-top: var(--space-7);
+    margin-bottom: var(--space-2);
 }
