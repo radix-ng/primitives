@@ -141,6 +141,6 @@ p {
     box-sizing: initial;
     padding-left: calc(var(--space-9) + 1vw);
     padding-right: calc(var(--space-9) + 1vw);
-    width: 560px;
+    width: 760px;
     margin-top: 50px;
 }
