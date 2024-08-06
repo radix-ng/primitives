@@ -1,13 +1,4 @@
 ---
-import { getEntry } from 'astro:content'
-import DocumentationLayout from '../layouts/DocumentationLayout.astro';
-
-
-const entry = await getEntry('overview', 'introduction');
-const { Content } = await entry.render()
 
 ---
-
-<DocumentationLayout title={entry.data.title}>
-    <Content />
-</DocumentationLayout>
+<div>Hello</div>

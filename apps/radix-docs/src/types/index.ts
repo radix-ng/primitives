@@ -3,18 +3,17 @@ export interface Page {
     url: string;
 }
 
-export interface NavigationItem {
-    group: string;
-    type: string;
+export interface Section {
+    section: string;
     pages: Page[];
+}
+
+export interface NavigationItem {
+    name: string;
+    section: string;
+    sections: Section[];
 }
 
 export interface SiteConfig {
     navigation: NavigationItem[];
 }
-
-import type { CollectionEntry, ContentEntryMap } from 'astro:content';
-
-export type AnyCollectionEntry = CollectionEntry<keyof ContentEntryMap>;
-
-export type CollectionType = keyof ContentEntryMap;

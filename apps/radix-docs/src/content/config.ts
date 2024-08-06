@@ -1,15 +1,12 @@
 import { defineCollection, z } from 'astro:content';
-import { COLLECTION_TYPES } from '../config/site-config.ts';
 
 const docsSchema = z.object({
-    title: z.string()
+    title: z.string(),
+    section: z.string()
 });
 
-export type DocsSchema = z.infer<typeof docsSchema>;
+const themes = defineCollection({
+    schema: docsSchema
+});
 
-export const collections = Object.fromEntries(
-    COLLECTION_TYPES.map((type) => [
-        type,
-        defineCollection({ schema: docsSchema })
-    ])
-);
+export const collections = { themes };
