@@ -1,4 +1,4 @@
-import { CdkMenu, CdkMenuItem, CdkTargetMenuAim } from '@angular/cdk/menu';
+import { CdkMenu, CdkTargetMenuAim } from '@angular/cdk/menu';
 import { Directive } from '@angular/core';
 import { pairwise, startWith, Subject } from 'rxjs';
 import { RdxDropdownMenuItemDirective } from './dropdown-menu-item.directive';

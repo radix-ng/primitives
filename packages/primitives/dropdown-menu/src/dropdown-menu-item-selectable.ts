@@ -1,5 +1,5 @@
 import { Directive, Input, booleanAttribute, Output, EventEmitter } from '@angular/core';
-import { RdxDropdownMenuItemDirective } from '@radix-ng/primitives/dropdown-menu';
+import { RdxDropdownMenuItemDirective } from './dropdown-menu-item.directive';
 
 
 /** Base class providing checked state for selectable DropdownMenuItems. */
@@ -13,7 +13,7 @@ import { RdxDropdownMenuItemDirective } from '@radix-ng/primitives/dropdown-menu
 })
 export abstract class RdxDropdownMenuSelectable extends RdxDropdownMenuItemDirective {
     /** Whether the element is checked */
-    @Input({ alias: 'checked', transform: booleanAttribute })
+    @Input({ transform: booleanAttribute })
     set checked(value: boolean) {
         if (this._checked == value) return;
 
@@ -29,7 +29,4 @@ export abstract class RdxDropdownMenuSelectable extends RdxDropdownMenuItemDirec
     private _checked = false
 
     @Output() readonly onCheckedChange = new EventEmitter<boolean>();
-
-    /** Whether the item should close the menu if triggered by the spacebar. */
-    protected override closeOnSpacebarTrigger = false;
 }

@@ -1,7 +1,6 @@
 import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
-import { Directive, inject, Input } from '@angular/core';
-import { RdxDropdownMenuItemDirective } from '@radix-ng/primitives/dropdown-menu';
-import { an } from 'vitest/dist/reporters-xEmem8D4';
+import { AfterContentInit, Directive, inject, Input, OnDestroy } from '@angular/core';
+import { RdxDropdownMenuItemDirective } from './dropdown-menu-item.directive';
 import { RdxDropdownMenuItemRadioGroupDirective } from './dropdown-menu-item-radio-group.directive';
 import { RdxDropdownMenuSelectable } from './dropdown-menu-item-selectable';
 
@@ -20,7 +19,14 @@ let nextId = 0;
         { provide: RdxDropdownMenuItemDirective, useExisting: RdxDropdownMenuSelectable }
     ]
 })
-export class RdxDropdownMenuItemRadioDirective extends RdxDropdownMenuSelectable {
+export class RdxDropdownMenuItemRadioDirective extends RdxDropdownMenuSelectable
+    implements AfterContentInit, OnDestroy {
+
+    /** The unique selection dispatcher for this radio's `RdxDropdownMenuItemRadioGroupDirective`. */
+    private readonly selectionDispatcher = inject(UniqueSelectionDispatcher);
+
+    private readonly group = inject(RdxDropdownMenuItemRadioGroupDirective);
+
     @Input()
     get value() {
         return this._value || this.id;
@@ -32,44 +38,32 @@ export class RdxDropdownMenuItemRadioDirective extends RdxDropdownMenuSelectable
 
     private _value: string | undefined;
 
-    /** The unique selection dispatcher for this radio's `CdkMenuGroup`. */
-    private readonly selectionDispatcher = inject(UniqueSelectionDispatcher);
-
-    private readonly group = inject(RdxDropdownMenuItemRadioGroupDirective);
 
     /** An ID to identify this radio item to the `UniqueSelectionDispatcher`. */
     private id = `${nextId++}`;
 
-    /** Function to unregister the selection dispatcher */
-    private removeDispatcherListener: () => void;
+    private removeDispatcherListener!: () => void;
 
     constructor() {
         super();
 
+        this.cdkMenuItem.triggered.subscribe(() => {
+            if (!this.cdkMenuItem.disabled) {
+                this.selectionDispatcher.notify(this.value, '');
+
+                this.group.valueChange.emit(this.value);
+            }
+        })
+    }
+
+    ngAfterContentInit() {
         this.removeDispatcherListener = this.selectionDispatcher.listen((id: string) => {
             this.checked = this.value === id;
         });
     }
 
-    override ngOnDestroy() {
-        super.ngOnDestroy();
-
+    ngOnDestroy() {
         this.removeDispatcherListener();
-    }
-
-    /**
-     * Toggles the checked state of the radio-button.
-     * @param options Options the configure how the item is triggered
-     *   - keepOpen: specifies that the menu should be kept open after triggering the item.
-     */
-    override trigger(options?: { keepOpen: boolean }) {
-        super.trigger(options);
-
-        if (!this.disabled) {
-            this.selectionDispatcher.notify(this.value, '');
-
-            this.group.onValueChange.emit(this.value);
-        }
     }
 }
 
