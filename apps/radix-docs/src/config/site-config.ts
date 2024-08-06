@@ -9,8 +9,8 @@ const siteConfig = {
                 {
                     section: 'Overview',
                     pages: [
-                        { name: 'Introduction', url: '/themes/overview/introduction' },
-                        { name: 'Installation', url: '/themes/overview/installation' },
+                        { name: 'Getting started', url: '/themes/overview/getting-started' },
+                        { name: 'Styling', url: '/themes/overview/styling' },
                         { name: 'Component', url: '/themes/overview/custom-component' }
                     ]
                 },
