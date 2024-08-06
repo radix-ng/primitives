@@ -6,7 +6,7 @@
         "dev": "astro dev",
         "start": "astro dev",
         "check": "astro check",
-        "build": "astro check && astro build",
+        "build": "astro check && astro build --outDir ../../dist/radix-docs",
         "preview": "astro preview",
         "astro": "astro"
     },

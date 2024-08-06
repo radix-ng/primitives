@@ -23,6 +23,8 @@
         --border: 214.3 31.8% 91.4%;
         --input: 214.3 31.8% 91.4%;
         --ring: 221.2 83.2% 53.3%;
+
+        --radius: 0.5rem;
     }
 }
 
@@ -56,4 +58,16 @@ svg {
 
 pre {
     margin: 0;
+}
+
+h1 {
+    @apply scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl;
+}
+
+h2 {
+    @apply scroll-mt-28 text-3xl font-extrabold tracking-tight lg:text-4xl my-2;
+}
+
+h3 {
+    @apply scroll-mt-28 text-xl font-extrabold tracking-tight lg:text-2xl;
 }

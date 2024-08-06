@@ -1,29 +1,41 @@
 import type { SiteConfig } from '../types';
 
-const siteConfig: SiteConfig = {
+const siteConfig = {
     navigation: [
         {
-            group: 'Overview',
-            type: 'overview',
-            pages: [
-                { name: 'Introduction', url: '/' },
-                { name: 'Installation', url: '/overview/installation' },
-                { name: 'Component', url: '/overview/custom-component' }
+            name: 'Theme',
+            section: 'themes',
+            sections: [
+                {
+                    section: 'Overview',
+                    pages: [
+                        { name: 'Introduction', url: '/themes/overview/introduction' },
+                        { name: 'Installation', url: '/themes/overview/installation' },
+                        { name: 'Component', url: '/themes/overview/custom-component' }
+                    ]
+                },
+                {
+                    section: 'Theme',
+                    pages: [
+                        { name: 'Overview', url: '/themes/theme/overview' }]
+                }
             ]
         },
         {
-            group: 'Theme',
-            type: 'theme',
-            pages: []
-        },
-        {
-            group: 'Components',
-            type: 'components',
-            pages: []
+            name: 'Primitives',
+            section: 'primitives',
+            sections: [
+                {
+                    section: 'Overview',
+                    pages: [
+                        { name: 'Introduction', url: '/' },
+                        { name: 'Installation', url: '/overview/installation' },
+                        { name: 'Component', url: '/overview/custom-component' }
+                    ]
+                }
+            ]
         }
     ]
-};
-
-export const COLLECTION_TYPES = siteConfig.navigation.map((nav) => nav.type);
+} satisfies SiteConfig;
 
 export default siteConfig;
