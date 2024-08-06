@@ -1,5 +1,12 @@
 import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
-import { Directive, EventEmitter, Input, Output } from '@angular/core';
+import {
+    AfterContentInit,
+    Directive,
+    EventEmitter,
+    inject,
+    Input,
+    Output
+} from '@angular/core';
 
 
 @Directive({
@@ -10,9 +17,24 @@ import { Directive, EventEmitter, Input, Output } from '@angular/core';
     },
     providers: [{ provide: UniqueSelectionDispatcher, useClass: UniqueSelectionDispatcher }]
 })
-export class RdxDropdownMenuItemRadioGroupDirective {
-    @Input() value = null;
+export class RdxDropdownMenuItemRadioGroupDirective<T> implements AfterContentInit {
+    private readonly selectionDispatcher = inject(UniqueSelectionDispatcher);
 
-    @Output() readonly onValueChange = new EventEmitter();
+    @Input()
+    set value(id: T | null) {
+        this._value = id;
+    }
+
+    get value(): T | null {
+        return this._value;
+    }
+
+    private _value: T | null = null;
+
+    @Output() readonly valueChange = new EventEmitter();
+
+    ngAfterContentInit(): void {
+        this.selectionDispatcher.notify(this.value as string, '');
+    }
 }
 

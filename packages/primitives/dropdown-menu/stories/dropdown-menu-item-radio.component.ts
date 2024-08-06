@@ -23,29 +23,29 @@ import {
                 class="IconButton" aria-label="Customise options">
             <lucide-angular size="16" name="menu" style="height: 1.2rem;"></lucide-angular>
         </button>
-
         <ng-template #menu>
             <div class="DropdownMenuContent" rdxDropdownMenuContent>
                 <div rdxDropdownMenuItemRadioGroup
-                     [value]="selectedValue"
-                     (onValueChange)="onValueChange($event)">
-                    <button class="DropdownMenuItem"
-                            rdxDropdownMenuItemRadio
-                            [value]="'1'">
+                     [(value)]="selectedValue"
+                     (valueChange)="onValueChange($event)">
+                    <div class="DropdownMenuItem"
+                         rdxDropdownMenuItemRadio
+                         [value]="'1'">
                         <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
                             <lucide-icon size="16" name="dot" strokeWidth="8"></lucide-icon>
                         </div>
                         New Tab <div class="RightSlot">⌘ T</div>
-                    </button>
-                    <button class="DropdownMenuItem"
-                            [value]="'2'"
-                            rdxDropdownMenuItemRadio>
+                    </div>
+                    <div class="DropdownMenuItem"
+                         [value]="'2'"
+                         disabled
+                         rdxDropdownMenuItemRadio>
                         <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
                             <lucide-icon size="16" name="dot" strokeWidth="8"></lucide-icon>
                         </div>
                         New Window <div class="RightSlot">⌘ N</div>
-                    </button>
-                    <button
+                    </div>
+                    <div
                         class="DropdownMenuItem"
                         rdxDropdownMenuItemRadio
                         [value]="'3'"
@@ -54,7 +54,7 @@ import {
                             <lucide-icon size="16" name="dot" strokeWidth="8"></lucide-icon>
                         </div>
                         New Incognito Window
-                    </button>
+                    </div>
                 </div>
                 <div rdxDropdownMenuSeparator class="DropdownMenuSeparator"></div>
                 <div class="DropdownMenuLabel" rdxDropdownMenuLabel>
@@ -89,11 +89,11 @@ import {
     ]
 })
 export class DropdownMenuItemRadioExampleComponent {
-    selectedValue = '1';
+    selectedValue = '2';
 
     onValueChange(value: string) {
         this.selectedValue = value;
 
-        console.log('onValueChange', value);
+        console.log('this.selectedValue', this.selectedValue);
     }
 }

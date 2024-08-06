@@ -17,7 +17,6 @@ import { RdxDropdownMenuContentDirective } from './dropdown-menu-content.directi
     hostDirectives: [{ directive: CdkMenuItem, inputs: ['cdkMenuItemDisabled: disabled'] }],
     host: {
         type: 'button',
-        role: 'menuitem',
         // todo horizontal ?
         '[attr.data-orientation]': '"vertical"',
         '[attr.data-highlighted]': 'highlighted ? "" : null',
@@ -27,7 +26,7 @@ import { RdxDropdownMenuContentDirective } from './dropdown-menu-content.directi
         '(focus)': 'menu.highlighted.next(this)'
     }
 })
-export class RdxDropdownMenuItemDirective extends CdkMenuItem {
+export class RdxDropdownMenuItemDirective {
     protected readonly menu = inject(RdxDropdownMenuContentDirective);
     protected readonly cdkMenuItem = inject(CdkMenuItem);
     protected readonly elementRef = inject(ElementRef);
@@ -41,8 +40,6 @@ export class RdxDropdownMenuItemDirective extends CdkMenuItem {
     @Output() readonly onSelect = new EventEmitter<void>();
 
     constructor() {
-        super();
-
         this.menu.highlighted
             .pipe(takeUntilDestroyed())
             .subscribe((value) => {
@@ -51,7 +48,7 @@ export class RdxDropdownMenuItemDirective extends CdkMenuItem {
                 }
             });
 
-        this.cdkMenuItem.triggered.subscribe(() => this.onSelect.next());
+        this.cdkMenuItem.triggered.subscribe(this.onSelect);
     }
 
     protected onPointerMove() {

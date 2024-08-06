@@ -5,7 +5,8 @@ import { RdxDropdownMenuSelectable } from './dropdown-menu-item-selectable';
     selector: '[rdxDropdownMenuItemIndicator]',
     standalone: true,
     host: {
-        '[style.display]': "item.checked ? 'block' : 'none'"
+        '[style.display]': "item.checked ? 'block' : 'none'",
+        '[attr.data-state]': "item.checked ? 'checked' : 'unchecked'"
     }
 })
 export class RdxDropdownMenuItemIndicatorDirective {
