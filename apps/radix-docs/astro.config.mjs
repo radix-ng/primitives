@@ -65,5 +65,6 @@ export default defineConfig({
         }),
         mdx(),
         tailwind()
+
     ]
 });
