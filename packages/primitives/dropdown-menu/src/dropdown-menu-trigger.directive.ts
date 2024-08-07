@@ -8,20 +8,20 @@ import { booleanAttribute, Directive, inject, Input, input } from '@angular/core
 import { outputFromObservable } from '@angular/core/rxjs-interop';
 
 
-enum DropdownSide {
+export enum DropdownSide {
     Top = 'top',
     Right = 'right',
     Bottom = 'bottom',
     Left = 'left'
 }
 
-enum DropdownAlign {
+export enum DropdownAlign {
     Start = 'start',
     Center = 'center',
     End = 'end'
 }
 
-const mapRdxAlignToCdkPosition = {
+export const mapRdxAlignToCdkPosition = {
     start: 'top',
     center: 'center',
     end: 'bottom'
@@ -100,6 +100,10 @@ export class RdxDropdownMenuTriggerDirective {
         this.cdkMenuTrigger.menuPosition[0] = dropdownPositions[value];
     }
 
+    get side() {
+        return this._side;
+    }
+
     private _side: DropdownSide = DropdownSide.Bottom;
 
     @Input()
@@ -108,6 +112,8 @@ export class RdxDropdownMenuTriggerDirective {
             throw new Error(`Unknown align: ${value}`);
         }
 
+        this._align = value;
+
         if (this.isVertical) {
             this.defaultPosition.overlayX = this.defaultPosition.originX = value;
         } else {
@@ -115,6 +121,12 @@ export class RdxDropdownMenuTriggerDirective {
                 mapRdxAlignToCdkPosition[value] as VerticalConnectionPos;
         }
     }
+
+    get align() {
+        return this._align;
+    }
+
+    private _align: DropdownAlign = DropdownAlign.Start;
 
     @Input()
     set sideOffset(value: number) {
@@ -135,11 +147,6 @@ export class RdxDropdownMenuTriggerDirective {
             this.defaultPosition.offsetY = value;
         }
     }
-
-    /*
-     * Event handler called when the open state of the dropdown menu changes.
-     * // TODO: mv to RootMenuDropdown
-     */
 
     get isVertical(): boolean {
         return this._side === DropdownSide.Top || this._side === DropdownSide.Bottom;

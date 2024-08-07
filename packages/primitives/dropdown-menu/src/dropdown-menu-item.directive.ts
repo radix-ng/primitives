@@ -29,13 +29,9 @@ import { RdxDropdownMenuContentDirective } from './dropdown-menu-content.directi
 export class RdxDropdownMenuItemDirective {
     protected readonly menu = inject(RdxDropdownMenuContentDirective);
     protected readonly cdkMenuItem = inject(CdkMenuItem);
-    protected readonly elementRef = inject(ElementRef);
+    protected readonly nativeElement = inject(ElementRef).nativeElement;
 
     highlighted = false;
-
-    get nativeElement(): HTMLElement {
-        return this.elementRef.nativeElement;
-    }
 
     @Output() readonly onSelect = new EventEmitter<void>();
 
