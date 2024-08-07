@@ -23,7 +23,8 @@ import { RdxDropdownMenuContentDirective } from './dropdown-menu-content.directi
         '[attr.data-disabled]': 'cdkMenuItem.disabled ? "" : null',
         '[attr.disabled]': 'cdkMenuItem.disabled ? "" : null',
         '(pointermove)': 'onPointerMove()',
-        '(focus)': 'menu.highlighted.next(this)'
+        '(focus)': 'menu.highlighted.next(this)',
+        '(keydown)': 'onKeydown($event)'
     }
 })
 export class RdxDropdownMenuItemDirective {
@@ -49,5 +50,11 @@ export class RdxDropdownMenuItemDirective {
 
     protected onPointerMove() {
         this.nativeElement.focus({ preventScroll: true })
+    }
+
+    protected onKeydown(event: KeyboardEvent) {
+        if (this.nativeElement.tagName !== 'BUTTON' && ['Enter', ' '].includes(event.key)) {
+            event.preventDefault();
+        }
     }
 }
