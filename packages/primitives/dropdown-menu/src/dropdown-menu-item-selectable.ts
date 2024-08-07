@@ -1,4 +1,10 @@
-import { Directive, Input, booleanAttribute, Output, EventEmitter } from '@angular/core';
+import {
+    Directive,
+    Input,
+    booleanAttribute,
+    Output,
+    EventEmitter,
+} from '@angular/core';
 import { RdxDropdownMenuItemDirective } from './dropdown-menu-item.directive';
 
 
