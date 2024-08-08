@@ -109,6 +109,11 @@ Whether it's a feature request, bug report, or a project to showcase, please get
 - [Join our Telegram](https://t.me/radixng)
 - [GitHub Discussions](https://github.com/radix-ng/primitives/discussions)
 
+
+## Contributor analytics
+
+![Alt](https://repobeats.axiom.co/api/embed/7c1e0b2754a8973c9cfd458060d168e9dd7b5b8e.svg "Repobeats analytics image")
+
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
