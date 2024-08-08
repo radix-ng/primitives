@@ -74,12 +74,12 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 - [ ] Tooltip
 
 | Primitive    | Description | Status         | Due date |
-| ------------ | ----------- | -------------- | -------- |
-| Accordion    |             | ✅             |          |
+|--------------|-------------|----------------|----------|
+| Accordion    |             | ✅              |          |
 | Alert Dialog |             | beta           |          |
-| Avatar       |             | ✅             |          |
+| Avatar       |             | ✅              |          |
 | Checkbox     |             | beta           |          |
-| Collapsible  |             | ✅             |          |
+| Collapsible  |             | ✅              |          |
 | Context Menu |             |                |          |
 | Dialog       |             |                |          |
 | Dropdown     |             | 🚀 In Progress |          |
