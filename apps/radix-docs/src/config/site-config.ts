@@ -18,6 +18,11 @@ const siteConfig = {
                     section: 'Theme',
                     pages: [
                         { name: 'Overview', url: '/themes/theme/overview' }]
+                },
+                {
+                    section: 'Components',
+                    pages: [
+                        { name: 'Avatar', url: '/themes/components/avatar' }]
                 }
             ]
         },
