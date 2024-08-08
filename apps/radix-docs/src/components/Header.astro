@@ -1,4 +1,8 @@
 ---
+
+function isActive(pageUrl: string) {
+    return true;
+}
 ---
 <header class='fixed shrink-0 w-full bg-background-blur backdrop-blur-lg z-50'>
     <nav class='px-4 h-12 lg:px-0'>
@@ -18,11 +22,14 @@
             <div class='hidden lg:flex lg:flex-1 lg:justify-center mx-4'>
                 <a
                     href="/themes/overview/getting-started"
-                    class='h-8 px-3 text-[14px] lg:inline-flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none'>
+                    class={
+                        isActive('')
+                            ? 'bg-black rounded-full text-primary-foreground h-6 px-3 text-[14px] lg:inline-flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none'
+                            : ''}>
                     Themes
                 </a>
                 <a
-                    class='h-8 px-3 text-[14px] lg:inline-flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none'>
+                    class='h-6 px-3 text-[14px] lg:inline-flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none'>
                     Primitives
                 </a>
             </div>

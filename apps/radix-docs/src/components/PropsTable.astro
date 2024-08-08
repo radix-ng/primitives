@@ -1,0 +1,30 @@
+---
+
+const { data } = Astro.props
+---
+<div class="rt-TableRoot rt-r-size-2 rt-variant-surface rt-Box rt-r-my-5">
+    <table class="rt-TableRootTable">
+        <thead class="rt-TableHeader">
+        <tr class="rt-TableRow">
+            <th class="rt-TableCell rt-TableColumnHeaderCell" style="width: auto;">
+                Prop
+            </th>
+            <th class="rt-TableCell rt-TableColumnHeaderCell">Type</th>
+            <th class="rt-TableCell rt-TableColumnHeaderCell">Default</th>
+        </tr>
+        </thead>
+        <tbody class="rt-TableBody">
+        {data.map(
+            ({ name, type, typeSimple, required, default: defaultValue, description }, i) => {
+                return (
+                    <tr class="rt-TableRow" style="white-space: nowrap;">
+                        <th class="rt-TableCell rt-TableRowHeaderCell">
+                            { name }
+                        </th>
+                    </tr>
+                );
+            }
+        )}
+        </tbody>
+    </table>
+</div>

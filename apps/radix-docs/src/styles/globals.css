@@ -30,6 +30,10 @@
     }
 }
 
+.radix-themes ::selection {
+    background-color: powderblue;
+}
+
 .radix-themes-custom-fonts .radix-themes:not(.radix-themes-default-fonts),
 .radix-themes.radix-themes-custom-fonts {
     --default-font-family: 'Untitled Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif,
