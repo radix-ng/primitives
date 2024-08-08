@@ -1,0 +1,28 @@
+---
+import MainLayout from './MainLayout.astro';
+import Sidebar from '../components/Sidebar.astro';
+import siteConfig from '../config/site-config'
+import Header from '../components/Header.astro';
+
+// Common imports
+import DemoPreviewComponent from '../components/demo-preview.component';
+
+interface Props {
+    title: string
+}
+
+const { title } = Astro.props
+
+---
+
+<MainLayout title={title}>
+    <Header />
+    <div class='flex justify-start'>
+        <Sidebar navigation={siteConfig.navigation} />
+        <main class='flex justify-center grow px-4 lg:px-10 mt-32'>
+            <div class='min-h-screen w-[858px] px-16'>
+                <slot />
+            </div>
+        </main>
+    </div>
+</MainLayout>
