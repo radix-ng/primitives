@@ -3,12 +3,12 @@ import { RdxDropdownMenuItemDirective } from './dropdown-menu-item.directive';
 
 /** Base class providing checked state for selectable DropdownMenuItems. */
 @Directive({
+    standalone: true,
     host: {
         '[attr.aria-checked]': '!!checked',
         '[attr.aria-disabled]': 'disabled || null',
         '[attr.data-state]': 'checked ? "checked" : "unchecked"'
-    },
-    standalone: true
+    }
 })
 export abstract class RdxDropdownMenuSelectable extends RdxDropdownMenuItemDirective {
     /** Whether the element is checked */
