@@ -1,7 +1,7 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { CdkMenuTrigger } from '@angular/cdk/menu';
 import { ConnectedPosition, VerticalConnectionPos } from '@angular/cdk/overlay';
-import { booleanAttribute, Directive, inject, Input, input } from '@angular/core';
+import { booleanAttribute, Directive, inject, Input, input, numberAttribute } from '@angular/core';
 import { outputFromObservable } from '@angular/core/rxjs-interop';
 
 export enum DropdownSide {
@@ -125,7 +125,7 @@ export class RdxDropdownMenuTriggerDirective {
 
     private _align: DropdownAlign = DropdownAlign.Start;
 
-    @Input()
+    @Input({ transform: numberAttribute })
     set sideOffset(value: number) {
         // todo need invert value for top and left
         if (this.isVertical) {
@@ -135,7 +135,7 @@ export class RdxDropdownMenuTriggerDirective {
         }
     }
 
-    @Input()
+    @Input({ transform: numberAttribute })
     set alignOffset(value: number) {
         // todo need invert value for top and left
         if (this.isVertical) {

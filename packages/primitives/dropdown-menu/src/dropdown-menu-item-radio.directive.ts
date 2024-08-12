@@ -1,9 +1,8 @@
 import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
 import { AfterContentInit, Directive, inject, Input, OnDestroy } from '@angular/core';
-import { RdxDropdownMenuItemDirective } from './dropdown-menu-item.directive';
 import { RdxDropdownMenuItemRadioGroupDirective } from './dropdown-menu-item-radio-group.directive';
 import { RdxDropdownMenuSelectable } from './dropdown-menu-item-selectable';
-
+import { RdxDropdownMenuItemDirective } from './dropdown-menu-item.directive';
 
 /** Counter used to set a unique id and name for a selectable item */
 let nextId = 0;
@@ -12,16 +11,17 @@ let nextId = 0;
     selector: '[rdxDropdownMenuItemRadio]',
     standalone: true,
     host: {
-        'role': 'menuitemradio'
+        role: 'menuitemradio'
     },
     providers: [
         { provide: RdxDropdownMenuSelectable, useExisting: RdxDropdownMenuItemRadioDirective },
         { provide: RdxDropdownMenuItemDirective, useExisting: RdxDropdownMenuSelectable }
     ]
 })
-export class RdxDropdownMenuItemRadioDirective extends RdxDropdownMenuSelectable
-    implements AfterContentInit, OnDestroy {
-
+export class RdxDropdownMenuItemRadioDirective
+    extends RdxDropdownMenuSelectable
+    implements AfterContentInit, OnDestroy
+{
     /** The unique selection dispatcher for this radio's `RdxDropdownMenuItemRadioGroupDirective`. */
     private readonly selectionDispatcher = inject(UniqueSelectionDispatcher);
 
@@ -38,7 +38,6 @@ export class RdxDropdownMenuItemRadioDirective extends RdxDropdownMenuSelectable
 
     private _value: string | undefined;
 
-
     /** An ID to identify this radio item to the `UniqueSelectionDispatcher`. */
     private id = `${nextId++}`;
 
@@ -53,7 +52,7 @@ export class RdxDropdownMenuItemRadioDirective extends RdxDropdownMenuSelectable
 
                 this.group.valueChange.emit(this.value);
             }
-        })
+        });
     }
 
     ngAfterContentInit() {
@@ -66,4 +65,3 @@ export class RdxDropdownMenuItemRadioDirective extends RdxDropdownMenuSelectable
         this.removeDispatcherListener();
     }
 }
-

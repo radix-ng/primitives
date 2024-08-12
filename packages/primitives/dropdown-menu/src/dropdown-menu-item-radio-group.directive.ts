@@ -1,19 +1,11 @@
 import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
-import {
-    AfterContentInit,
-    Directive,
-    EventEmitter,
-    inject,
-    Input,
-    Output
-} from '@angular/core';
-
+import { AfterContentInit, Directive, EventEmitter, inject, Input, Output } from '@angular/core';
 
 @Directive({
     selector: '[rdxDropdownMenuItemRadioGroup]',
     standalone: true,
     host: {
-        'role': 'group'
+        role: 'group'
     },
     providers: [{ provide: UniqueSelectionDispatcher, useClass: UniqueSelectionDispatcher }]
 })
@@ -37,4 +29,3 @@ export class RdxDropdownMenuItemRadioGroupDirective<T> implements AfterContentIn
         this.selectionDispatcher.notify(this.value as string, '');
     }
 }
-

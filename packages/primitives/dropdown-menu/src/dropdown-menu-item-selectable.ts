@@ -1,12 +1,5 @@
-import {
-    Directive,
-    Input,
-    booleanAttribute,
-    Output,
-    EventEmitter,
-} from '@angular/core';
+import { booleanAttribute, Directive, EventEmitter, Input, Output } from '@angular/core';
 import { RdxDropdownMenuItemDirective } from './dropdown-menu-item.directive';
-
 
 /** Base class providing checked state for selectable DropdownMenuItems. */
 @Directive({
@@ -32,7 +25,7 @@ export abstract class RdxDropdownMenuSelectable extends RdxDropdownMenuItemDirec
         return this._checked;
     }
 
-    private _checked = false
+    private _checked = false;
 
     @Output() readonly onCheckedChange = new EventEmitter<boolean>();
 }

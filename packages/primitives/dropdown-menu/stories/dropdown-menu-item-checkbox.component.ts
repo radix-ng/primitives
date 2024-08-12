@@ -1,71 +1,69 @@
 import { Component } from '@angular/core';
-import {
-    RdxDropdownMenuContentDirective,
-    RdxDropdownMenuItemDirective, RdxDropdownMenuLabelDirective, RdxDropdownMenuSeparatorDirective,
-    RdxDropdownMenuTriggerDirective
-} from '@radix-ng/primitives/dropdown-menu';
 import { LucideAngularModule } from 'lucide-angular';
+import { RdxDropdownMenuContentDirective } from '../src/dropdown-menu-content.directive';
 import { RdxDropdownMenuItemCheckboxDirective } from '../src/dropdown-menu-item-checkbox.directive';
-import {
-    RdxDropdownMenuItemIndicatorDirective
-} from '../src/dropdown-menu-item-indicator.directive';
+import { RdxDropdownMenuItemIndicatorDirective } from '../src/dropdown-menu-item-indicator.directive';
+import { RdxDropdownMenuItemDirective } from '../src/dropdown-menu-item.directive';
+import { RdxDropdownMenuLabelDirective } from '../src/dropdown-menu-label.directive';
+import { RdxDropdownMenuSeparatorDirective } from '../src/dropdown-menu-separator.directive';
+import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.directive';
 
 @Component({
     selector: 'dropdown-menu-item-checkbox',
     styleUrl: 'dropdown-menu-item-checkbox.styles.scss',
     template: `
-        <button [rdxDropdownMenuTrigger]="menu"
-                sideOffset="4"
-                alignOffset="-5"
-                class="IconButton" aria-label="Customise options">
+        <button
+            class="IconButton"
+            [rdxDropdownMenuTrigger]="menu"
+            sideOffset="4"
+            alignOffset="-5"
+            aria-label="Customise options"
+        >
             <lucide-angular size="16" name="menu" style="height: 1.2rem;"></lucide-angular>
         </button>
 
         <ng-template #menu>
             <div class="DropdownMenuContent" rdxDropdownMenuContent>
-                <button class="DropdownMenuItem"
-                        rdxDropdownMenuItemCheckbox
-                        [checked]="itemState"
-                        (onCheckedChange)="onCheckedChange($event)"
-                        (onSelect)="onSelect()"
-                        (click)="itemState = !itemState">
+                <button
+                    class="DropdownMenuItem"
+                    [checked]="itemState"
+                    (onCheckedChange)="onCheckedChange($event)"
+                    (onSelect)="onSelect()"
+                    (click)="itemState = !itemState"
+                    rdxDropdownMenuItemCheckbox
+                >
                     <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
                         <lucide-icon size="16" name="check"></lucide-icon>
                     </div>
-                    New Tab <div class="RightSlot">⌘ T</div>
+                    New Tab
+                    <div class="RightSlot">⌘ T</div>
                 </button>
                 <button class="DropdownMenuItem" rdxDropdownMenuItem disabled>
-                    New Window <div class="RightSlot">⌘ N</div>
+                    New Window
+                    <div class="RightSlot">⌘ N</div>
                 </button>
                 <button
                     class="DropdownMenuItem"
-                    rdxDropdownMenuItemCheckbox
                     [checked]="itemState2"
                     (onCheckedChange)="onCheckedChange($event)"
                     (onSelect)="onSelect()"
                     (click)="itemState2 = !itemState2"
+                    rdxDropdownMenuItemCheckbox
                 >
                     <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
                         <lucide-icon size="16" name="check"></lucide-icon>
                     </div>
                     New Incognito Window
                 </button>
-                <div rdxDropdownMenuSeparator class="DropdownMenuSeparator"></div>
-                <div class="DropdownMenuLabel" rdxDropdownMenuLabel>
-                    Label
-                </div>
-                <button
-                    class="DropdownMenuItem DropdownMenuSubTrigger"
-                    rdxDropdownMenuItem
-                    (onSelect)="onSelect()"
-                >
+                <div class="DropdownMenuSeparator" rdxDropdownMenuSeparator></div>
+                <div class="DropdownMenuLabel" rdxDropdownMenuLabel>Label</div>
+                <button class="DropdownMenuItem DropdownMenuSubTrigger" (onSelect)="onSelect()" rdxDropdownMenuItem>
                     Share
                 </button>
-                <div rdxDropdownMenuSeparator class="DropdownMenuSeparator"></div>
-                <button class="DropdownMenuItem"
-                        rdxDropdownMenuItem
-                        (onSelect)="onSelect()">
-                    Print… <div class="RightSlot">⌘ P</div>
+                <div class="DropdownMenuSeparator" rdxDropdownMenuSeparator></div>
+                <button class="DropdownMenuItem" (onSelect)="onSelect()" rdxDropdownMenuItem>
+                    Print…
+                    <div class="RightSlot">⌘ P</div>
                 </button>
             </div>
         </ng-template>
@@ -79,7 +77,6 @@ import {
         RdxDropdownMenuSeparatorDirective,
         RdxDropdownMenuContentDirective,
         RdxDropdownMenuLabelDirective,
-
         LucideAngularModule
     ]
 })
@@ -92,6 +89,6 @@ export class DropdownMenuItemCheckboxExampleComponent {
     }
 
     onSelect() {
-        console.log('onSelect', );
+        console.log('onSelect');
     }
 }

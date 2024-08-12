@@ -1,13 +1,12 @@
 import { Directive } from '@angular/core';
-import { RdxDropdownMenuItemDirective } from './dropdown-menu-item.directive';
 import { RdxDropdownMenuSelectable } from './dropdown-menu-item-selectable';
-
+import { RdxDropdownMenuItemDirective } from './dropdown-menu-item.directive';
 
 @Directive({
     selector: '[rdxDropdownMenuItemCheckbox]',
     standalone: true,
     host: {
-        'role': 'menuitemcheckbox'
+        role: 'menuitemcheckbox'
     },
     providers: [
         { provide: RdxDropdownMenuSelectable, useExisting: RdxDropdownMenuItemCheckboxDirective },
@@ -15,4 +14,3 @@ import { RdxDropdownMenuSelectable } from './dropdown-menu-item-selectable';
     ]
 })
 export class RdxDropdownMenuItemCheckboxDirective extends RdxDropdownMenuSelectable {}
-
