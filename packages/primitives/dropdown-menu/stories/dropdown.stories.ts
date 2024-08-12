@@ -1,25 +1,30 @@
-import { RdxDropdownMenuDirective } from '@radix-ng/primitives/dropdown-menu';
-import { MenuModule } from '@radix-ng/primitives/menu';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { LucideAngularModule, Menu } from 'lucide-angular';
+import { Check, Dot, LucideAngularModule, Menu } from 'lucide-angular';
+
 import { RdxDropdownMenuContentDirective } from '../src/dropdown-menu-content.directive';
+import { RdxDropdownMenuItemCheckboxDirective } from '../src/dropdown-menu-item-checkbox.directive';
+import { RdxDropdownMenuItemIndicatorDirective } from '../src/dropdown-menu-item-indicator.directive';
 import { RdxDropdownMenuItemDirective } from '../src/dropdown-menu-item.directive';
 import { RdxDropdownMenuSeparatorDirective } from '../src/dropdown-menu-separator.directive';
 import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.directive';
+import { DropdownMenuItemCheckboxExampleComponent } from './dropdown-menu-item-checkbox.component';
+import { DropdownMenuItemRadioExampleComponent } from './dropdown-menu-item-radio.component';
 
 export default {
     title: 'Primitives/Dropdown Menu [In progress]',
     decorators: [
         moduleMetadata({
             imports: [
-                MenuModule,
                 RdxDropdownMenuTriggerDirective,
                 RdxDropdownMenuItemDirective,
+                RdxDropdownMenuItemCheckboxDirective,
+                RdxDropdownMenuItemIndicatorDirective,
                 RdxDropdownMenuSeparatorDirective,
                 RdxDropdownMenuContentDirective,
-                RdxDropdownMenuDirective,
                 LucideAngularModule,
-                LucideAngularModule.pick({ Menu })
+                LucideAngularModule.pick({ Menu, Check, Dot }),
+                DropdownMenuItemCheckboxExampleComponent,
+                DropdownMenuItemRadioExampleComponent
             ]
         }),
         componentWrapperDecorator(
@@ -40,7 +45,7 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: `
-<button [DropdownMenuTrigger]="menu"
+<button [rdxDropdownMenuTrigger]="menu"
         sideOffset="4"
         alignOffset="-5"
         class="IconButton" aria-label="Customise options">
@@ -48,40 +53,43 @@ export const Default: Story = {
 </button>
 
 <ng-template #menu>
-  <div class="DropdownMenuContent" DropdownMenuContent>
-    <button class="DropdownMenuItem" DropdownMenuItem>
+  <div class="DropdownMenuContent" rdxDropdownMenuContent>
+    <button class="DropdownMenuItem" rdxDropdownMenuItem>
         New Tab <div class="RightSlot">⌘ T</div>
     </button>
-    <button class="DropdownMenuItem" DropdownMenuItem>
+    <button class="DropdownMenuItem" rdxDropdownMenuItem disabled>
         New Window <div class="RightSlot">⌘ N</div>
     </button>
-    <button class="DropdownMenuItem" DropdownMenuItem disabled>
+    <button class="DropdownMenuItem" rdxDropdownMenuItem>
         New Incognito Window
     </button>
-    <div MenubarSeparator class="DropdownMenuSeparator"></div>
+    <div rdxDropdownMenuSeparator class="DropdownMenuSeparator"></div>
+    <div class="DropdownMenuLabel" rdxDropdownMenuLabel>
+        Label
+    </div>
     <button
-        class="DropdownMenuSubTrigger"
-        DropdownMenuItem
-        [DropdownMenuTrigger]="share"
+        class="DropdownMenuItem DropdownMenuSubTrigger"
+        rdxDropdownMenuItem
+        [rdxDropdownMenuTrigger]="share"
         [side]="'right'"
     >
         Share <div class="RightSlot">></div>
     </button>
-    <div MenubarSeparator class="DropdownMenuSeparator"></div>
-    <button class="DropdownMenuItem" DropdownMenuItem>
+    <div rdxDropdownMenuSeparator class="DropdownMenuSeparator"></div>
+    <button class="DropdownMenuItem" rdxDropdownMenuItem>
         Print… <div class="RightSlot">⌘ P</div>
     </button>
   </div>
 </ng-template>
 
 <ng-template #share>
-  <div class="DropdownMenuSubContent" DropdownMenuContent>
-    <button class="DropdownMenuItem" DropdownMenuItem>Undo</button>
-    <button class="DropdownMenuItem" DropdownMenuItem>Redo</button>
-    <div MenubarSeparator class="DropdownMenuSeparator"></div>
-    <button class="DropdownMenuItem" DropdownMenuItem>Cut</button>
-    <button class="DropdownMenuItem" DropdownMenuItem>Copy</button>
-    <button class="DropdownMenuItem" DropdownMenuItem>Paste</button>
+  <div class="DropdownMenuSubContent" rdxDropdownMenuContent>
+    <button class="DropdownMenuItem" rdxDropdownMenuItem>Undo</button>
+    <button class="DropdownMenuItem" rdxDropdownMenuItem>Redo</button>
+    <div rdxDropdownMenuSeparator class="DropdownMenuSeparator"></div>
+    <button class="DropdownMenuItem" rdxDropdownMenuItem>Cut</button>
+    <button class="DropdownMenuItem" rdxDropdownMenuItem>Copy</button>
+    <button class="DropdownMenuItem" rdxDropdownMenuItem>Paste</button>
   </div>
 </ng-template>
 
@@ -120,15 +128,30 @@ button {
   outline: none;
 }
 
-.DropdownMenuItem:hover {
-  background-color: var(--violet-11);
-  color: white;
+.DropdownMenuItem[data-disabled],
+.DropdownMenuCheckboxItem[data-disabled],
+.DropdownMenuRadioItem[data-disabled] {
+  color: var(--mauve-8);
+  pointer-events: none;
+}
+.DropdownMenuItem[data-highlighted],
+.DropdownMenuCheckboxItem[data-highlighted],
+.DropdownMenuRadioItem[data-highlighted] {
+  background-color: var(--violet-9);
+  color: var(--violet-1);
 }
 
 .DropdownMenuSeparator {
   height: 1px;
   background-color: var(--violet-6);
   margin: 5px;
+}
+
+.DropdownMenuLabel {
+  padding-left: 25px;
+  font-size: 12px;
+  line-height: 25px;
+  color: var(--mauve-11);
 }
 
 .IconButton {
@@ -147,6 +170,15 @@ button {
 .DropdownMenuSubTrigger[data-state='open'] {
   background-color: var(--violet-4);
   color: var(--violet-11);
+}
+
+.DropdownMenuItemIndicator {
+  position: absolute;
+  left: 4px;
+  width: 25px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .IconButton:hover {
@@ -169,5 +201,19 @@ button {
 
 </style>
 `
+    })
+};
+
+export const DropdownMenuItemCheckbox: Story = {
+    name: 'Checkbox',
+    render: () => ({
+        template: `<dropdown-menu-item-checkbox/>`
+    })
+};
+
+export const DropdownMenuItemRadio: Story = {
+    name: 'Radio',
+    render: () => ({
+        template: `<dropdown-menu-item-radio/>`
     })
 };

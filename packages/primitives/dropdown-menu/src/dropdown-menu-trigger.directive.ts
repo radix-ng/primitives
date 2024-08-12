@@ -1,23 +1,23 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { CdkMenuTrigger } from '@angular/cdk/menu';
 import { ConnectedPosition, VerticalConnectionPos } from '@angular/cdk/overlay';
-import { booleanAttribute, Directive, inject, Input, input } from '@angular/core';
+import { booleanAttribute, Directive, inject, Input, input, numberAttribute } from '@angular/core';
 import { outputFromObservable } from '@angular/core/rxjs-interop';
 
-enum DropdownSide {
+export enum DropdownSide {
     Top = 'top',
     Right = 'right',
     Bottom = 'bottom',
     Left = 'left'
 }
 
-enum DropdownAlign {
+export enum DropdownAlign {
     Start = 'start',
     Center = 'center',
     End = 'end'
 }
 
-const mapRdxAlignToCdkPosition = {
+export const mapRdxAlignToCdkPosition = {
     start: 'top',
     center: 'center',
     end: 'bottom'
@@ -59,12 +59,12 @@ const dropdownPositions: Record<DropdownSide, ConnectedPosition> = {
 };
 
 @Directive({
-    selector: '[DropdownMenuTrigger]',
+    selector: '[rdxDropdownMenuTrigger]',
     standalone: true,
     hostDirectives: [
         {
             directive: CdkMenuTrigger,
-            inputs: ['cdkMenuTriggerFor: DropdownMenuTrigger']
+            inputs: ['cdkMenuTriggerFor: rdxDropdownMenuTrigger']
         }
     ],
     host: {
@@ -96,6 +96,10 @@ export class RdxDropdownMenuTriggerDirective {
         this.cdkMenuTrigger.menuPosition[0] = dropdownPositions[value];
     }
 
+    get side() {
+        return this._side;
+    }
+
     private _side: DropdownSide = DropdownSide.Bottom;
 
     @Input()
@@ -103,6 +107,8 @@ export class RdxDropdownMenuTriggerDirective {
         if (!Object.values(DropdownAlign).includes(value)) {
             throw new Error(`Unknown align: ${value}`);
         }
+
+        this._align = value;
 
         if (this.isVertical) {
             this.defaultPosition.overlayX = this.defaultPosition.originX = value;
@@ -113,7 +119,13 @@ export class RdxDropdownMenuTriggerDirective {
         }
     }
 
-    @Input()
+    get align() {
+        return this._align;
+    }
+
+    private _align: DropdownAlign = DropdownAlign.Start;
+
+    @Input({ transform: numberAttribute })
     set sideOffset(value: number) {
         // todo need invert value for top and left
         if (this.isVertical) {
@@ -123,7 +135,7 @@ export class RdxDropdownMenuTriggerDirective {
         }
     }
 
-    @Input()
+    @Input({ transform: numberAttribute })
     set alignOffset(value: number) {
         // todo need invert value for top and left
         if (this.isVertical) {
@@ -132,11 +144,6 @@ export class RdxDropdownMenuTriggerDirective {
             this.defaultPosition.offsetY = value;
         }
     }
-
-    /*
-     * Event handler called when the open state of the dropdown menu changes.
-     * // TODO: mv to RootMenuDropdown
-     */
 
     get isVertical(): boolean {
         return this._side === DropdownSide.Top || this._side === DropdownSide.Bottom;
