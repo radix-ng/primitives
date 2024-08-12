@@ -128,11 +128,6 @@ button {
   outline: none;
 }
 
-.DropdownMenuItem:hover {
-  background-color: var(--violet-11);
-  color: white;
-}
-
 .DropdownMenuItem[data-disabled],
 .DropdownMenuCheckboxItem[data-disabled],
 .DropdownMenuRadioItem[data-disabled] {

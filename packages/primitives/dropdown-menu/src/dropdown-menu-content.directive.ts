@@ -1,5 +1,5 @@
-import { CdkMenu, CdkMenuTrigger, CdkTargetMenuAim } from '@angular/cdk/menu';
-import { Directive, inject } from '@angular/core';
+import { CdkMenu, CdkMenuItem, CdkMenuTrigger, CdkTargetMenuAim } from '@angular/cdk/menu';
+import { AfterViewInit, Directive, inject } from '@angular/core';
 import { pairwise, startWith, Subject } from 'rxjs';
 import { RdxDropdownMenuItemDirective } from './dropdown-menu-item.directive';
 import { RdxDropdownMenuTriggerDirective } from './dropdown-menu-trigger.directive';
@@ -17,7 +17,7 @@ import { RdxDropdownMenuTriggerDirective } from './dropdown-menu-trigger.directi
 })
 export class RdxDropdownMenuContentDirective {
     readonly highlighted = new Subject<RdxDropdownMenuItemDirective>();
-    protected readonly cdkMenu = inject(CdkMenu);
+    readonly cdkMenu = inject(CdkMenu);
     protected readonly cdkMenuTrigger = inject(CdkMenuTrigger, { host: true });
     protected readonly menuTrigger = inject(RdxDropdownMenuTriggerDirective, { optional: true });
 
@@ -34,5 +34,10 @@ export class RdxDropdownMenuContentDirective {
                     item.highlighted = true;
                 }
             });
+
+    }
+
+    updateActiveItem(item: CdkMenuItem) {
+        this.cdkMenu['keyManager'].updateActiveItem(item);
     }
 }

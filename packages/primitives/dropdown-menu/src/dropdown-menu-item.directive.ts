@@ -50,10 +50,4 @@ export class RdxDropdownMenuItemDirective {
             event.preventDefault();
         }
     }
-
-    protected onKeydown(event: KeyboardEvent) {
-        if (this.nativeElement.tagName !== 'BUTTON' && ['Enter', ' '].includes(event.key)) {
-            event.preventDefault();
-        }
-    }
 }
