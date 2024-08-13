@@ -1,17 +1,20 @@
 import { CdkMenu } from '@angular/cdk/menu';
 import { Component } from '@angular/core';
-import { RdxDropdownMenuTriggerDirective } from '@radix-ng/primitives/dropdown-menu';
-import { RdxMenuGroupDirective } from '@radix-ng/primitives/menu';
+import {
+    RdxDropdownMenuItemIndicatorDirective,
+    RdxDropdownMenuTriggerDirective
+} from '@radix-ng/primitives/dropdown-menu';
 import { RdxMenuBarDirective } from '@radix-ng/primitives/menubar';
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
 import {
-    DropdownMenuCheckboxItemComponent,
+    ShDropdownMenuCheckboxItemDirective,
     ShDropdownMenuContent,
     ShDropdownMenuItem,
     ShDropdownMenuLabel,
     ShDropdownMenuSeparator,
     ShDropdownMenuShortcut
 } from '@radix-ng/shadcn/dropdown-menu';
+import { LucideAngularModule } from 'lucide-angular';
 
 @Component({
     standalone: true,
@@ -24,9 +27,10 @@ import {
         ShDropdownMenuLabel,
         ShDropdownMenuItem,
         ShDropdownMenuShortcut,
-        RdxMenuGroupDirective,
-        DropdownMenuCheckboxItemComponent,
-        CdkMenu
+        ShDropdownMenuCheckboxItemDirective,
+        CdkMenu,
+        LucideAngularModule,
+        RdxDropdownMenuItemIndicatorDirective
     ],
     template: `
         <button [rdxDropdownMenuTrigger]="menu" shButton variant="outline" sideOffset="4" alignOffset="-5">Open</button>
@@ -35,27 +39,31 @@ import {
             <div class="w-56" shDropdownMenuContent>
                 <div shDropdownMenuLabel>Appearance</div>
                 <div shDropdownMenuSeparator></div>
-                <sh-dropdown-menu-checkbox-item
-                    [shChecked]="showStatusBar"
-                    (checkedChange)="onCheckedChangeShowStatusBar($event)"
+                <button
+                    [checked]="showStatusBar"
+                    (onCheckedChange)="showStatusBarChange($event)"
+                    (click)="showStatusBar = !showStatusBar"
+                    shDropdownMenuCheckboxItem
                 >
+                    <span class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+                        <div rdxDropdownMenuItemIndicator>
+                            <lucide-icon size="16" name="check"></lucide-icon>
+                        </div>
+                    </span>
                     Status Bar
-                </sh-dropdown-menu-checkbox-item>
-                <sh-dropdown-menu-checkbox-item [shChecked]="showActivityBar">
-                    Activity Bar
-                </sh-dropdown-menu-checkbox-item>
-                <sh-dropdown-menu-checkbox-item [shChecked]="showPanel">Panel</sh-dropdown-menu-checkbox-item>
+                </button>
+                <button [checked]="showActivityBar" shDropdownMenuCheckboxItem>Activity Bar</button>
+                <button [checked]="showPanel" shDropdownMenuCheckboxItem>Panel</button>
             </div>
         </ng-template>
     `
 })
 export class DropdownExampleCheckboxComponent {
-    showStatusBar = false;
+    showStatusBar = true;
     showActivityBar = false;
     showPanel = true;
 
-    onCheckedChangeShowStatusBar($event: boolean) {
-        this.showStatusBar = $event;
-        console.log(this.showStatusBar);
+    showStatusBarChange(value: boolean) {
+        console.info('showStatusBarChange value: ', value);
     }
 }

@@ -10,6 +10,7 @@
             ],
             "rules": {
                 "@angular-eslint/no-host-metadata-property": "off",
+                "@angular-eslint/no-output-on-prefix": "off",
                 "@angular-eslint/directive-selector": [
                     "error",
                     {
