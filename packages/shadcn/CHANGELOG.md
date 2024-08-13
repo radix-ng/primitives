@@ -1,3 +1,21 @@
+## 0.6.0 (2024-08-13)
+
+
+### 🚀 Features
+
+- added prettier support for css,scss,md,yml,json,js,cjs,mjs files ([#77](https://github.com/radix-ng/primitives/pull/77))
+
+- added prettier support for ts files ([#80](https://github.com/radix-ng/primitives/pull/80))
+
+- added prettier support for mdx files ([#81](https://github.com/radix-ng/primitives/pull/81))
+
+- **primitives:** updated prefix and documentation ([a2e5d34](https://github.com/radix-ng/primitives/commit/a2e5d34))
+
+
+### 🧱 Updated Dependencies
+
+- Updated primitives to 0.9.0
+
 ## 0.5.4 (2024-07-20)
 
 

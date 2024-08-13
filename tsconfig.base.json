@@ -10,40 +10,100 @@
         "importHelpers": true,
         "target": "es2015",
         "module": "esnext",
-        "lib": ["es2020", "dom"],
+        "lib": [
+            "es2020",
+            "dom"
+        ],
         "skipLibCheck": true,
         "skipDefaultLibCheck": true,
         "baseUrl": ".",
         "allowSyntheticDefaultImports": true,
         "paths": {
-            "@ng-doc/generated": ["ng-doc/shadcn-docs/index.ts"],
-            "@ng-doc/generated/*": ["ng-doc/shadcn-docs/*"],
-            "@radix-ng/components/theme": ["packages/components/theme/index.ts"],
-            "@radix-ng/primitives/accordion": ["packages/primitives/accordion/index.ts"],
-            "@radix-ng/primitives/checkbox": ["packages/primitives/checkbox/index.ts"],
-            "@radix-ng/primitives/dropdown-menu": ["packages/primitives/dropdown-menu/index.ts"],
-            "@radix-ng/primitives/label": ["packages/primitives/label/index.ts"],
-            "@radix-ng/primitives/menu": ["packages/primitives/menu/index.ts"],
-            "@radix-ng/primitives/menubar": ["packages/primitives/menubar/index.ts"],
-            "@radix-ng/primitives/radio": ["packages/primitives/radio/index.ts"],
-            "@radix-ng/primitives/roving-focus": ["packages/primitives/roving-focus/index.ts"],
-            "@radix-ng/primitives/separator": ["packages/primitives/separator/index.ts"],
-            "@radix-ng/primitives/tabs": ["packages/primitives/tabs/index.ts"],
-            "@radix-ng/shadcn/accordion": ["packages/shadcn/accordion/index.ts"],
-            "@radix-ng/shadcn/badge": ["packages/shadcn/badge/index.ts"],
-            "@radix-ng/shadcn/breadcrumb": ["packages/shadcn/breadcrumb/index.ts"],
-            "@radix-ng/shadcn/button": ["packages/shadcn/button/index.ts"],
-            "@radix-ng/shadcn/card": ["packages/shadcn/card/index.ts"],
-            "@radix-ng/shadcn/checkbox": ["packages/shadcn/checkbox/index.ts"],
-            "@radix-ng/shadcn/core": ["packages/shadcn/core/index.ts"],
-            "@radix-ng/shadcn/dropdown-menu": ["packages/shadcn/dropdown-menu/index.ts"],
-            "@radix-ng/shadcn/input": ["packages/shadcn/input/index.ts"],
-            "@radix-ng/shadcn/label": ["packages/shadcn/label/index.ts"],
-            "@radix-ng/shadcn/table": ["packages/shadcn/table/index.ts"],
-            "@radix-ng/shadcn/tabs": ["packages/shadcn/tabs/index.ts"],
-            "@radix-ng/shadcn/theme": ["packages/shadcn/theme/index.ts"],
-            "@taxonomy/*": ["apps/showcase-taxonomy/src/app/*"]
+            "@ng-doc/generated": [
+                "ng-doc/shadcn-docs/index.ts"
+            ],
+            "@ng-doc/generated/*": [
+                "ng-doc/shadcn-docs/*"
+            ],
+            "@radix-ng/components/theme": [
+                "packages/components/theme/index.ts"
+            ],
+            "@radix-ng/primitives/accordion": [
+                "packages/primitives/accordion/index.ts"
+            ],
+            "@radix-ng/primitives/checkbox": [
+                "packages/primitives/checkbox/index.ts"
+            ],
+            "@radix-ng/primitives/dropdown-menu": [
+                "packages/primitives/dropdown-menu/index.ts"
+            ],
+            "@radix-ng/primitives/label": [
+                "packages/primitives/label/index.ts"
+            ],
+            "@radix-ng/primitives/menu": [
+                "packages/primitives/menu/index.ts"
+            ],
+            "@radix-ng/primitives/menubar": [
+                "packages/primitives/menubar/index.ts"
+            ],
+            "@radix-ng/primitives/radio": [
+                "packages/primitives/radio/index.ts"
+            ],
+            "@radix-ng/primitives/roving-focus": [
+                "packages/primitives/roving-focus/index.ts"
+            ],
+            "@radix-ng/primitives/separator": [
+                "packages/primitives/separator/index.ts"
+            ],
+            "@radix-ng/primitives/tabs": [
+                "packages/primitives/tabs/index.ts"
+            ],
+            "@radix-ng/shadcn/accordion": [
+                "packages/shadcn/accordion/index.ts"
+            ],
+            "@radix-ng/shadcn/badge": [
+                "packages/shadcn/badge/index.ts"
+            ],
+            "@radix-ng/shadcn/breadcrumb": [
+                "packages/shadcn/breadcrumb/index.ts"
+            ],
+            "@radix-ng/shadcn/button": [
+                "packages/shadcn/button/index.ts"
+            ],
+            "@radix-ng/shadcn/card": [
+                "packages/shadcn/card/index.ts"
+            ],
+            "@radix-ng/shadcn/checkbox": [
+                "packages/shadcn/checkbox/index.ts"
+            ],
+            "@radix-ng/shadcn/core": [
+                "packages/shadcn/core/index.ts"
+            ],
+            "@radix-ng/shadcn/dropdown-menu": [
+                "packages/shadcn/dropdown-menu/index.ts"
+            ],
+            "@radix-ng/shadcn/input": [
+                "packages/shadcn/input/index.ts"
+            ],
+            "@radix-ng/shadcn/label": [
+                "packages/shadcn/label/index.ts"
+            ],
+            "@radix-ng/shadcn/table": [
+                "packages/shadcn/table/index.ts"
+            ],
+            "@radix-ng/shadcn/tabs": [
+                "packages/shadcn/tabs/index.ts"
+            ],
+            "@radix-ng/shadcn/theme": [
+                "packages/shadcn/theme/index.ts"
+            ],
+            "@taxonomy/*": [
+                "apps/showcase-taxonomy/src/app/*"
+            ]
         }
     },
-    "exclude": ["node_modules", "tmp"]
+    "exclude": [
+        "node_modules",
+        "tmp"
+    ]
 }

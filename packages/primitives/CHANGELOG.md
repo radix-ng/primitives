@@ -1,3 +1,22 @@
+## 0.9.0 (2024-08-13)
+
+
+### 🚀 Features
+
+- added stylelint support ([#64](https://github.com/radix-ng/primitives/pull/64))
+
+- added prettier support for ts files ([#80](https://github.com/radix-ng/primitives/pull/80))
+
+- added prettier support for mdx files ([#81](https://github.com/radix-ng/primitives/pull/81))
+
+- **primitives:** dropdown menu, added parameters – side, align and offsets ([#65](https://github.com/radix-ng/primitives/pull/65))
+
+- **primitives:** avatar - added prefix ([908bce1](https://github.com/radix-ng/primitives/commit/908bce1))
+
+- **primitives:** updated prefix and documentation ([a2e5d34](https://github.com/radix-ng/primitives/commit/a2e5d34))
+
+- **primitives:** dropdown menu ([#79](https://github.com/radix-ng/primitives/pull/79))
+
 ## 0.8.2 (2024-07-20)
 
 
