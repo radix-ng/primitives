@@ -2,8 +2,8 @@ import { Directive } from '@angular/core';
 import { injectSwitch } from './switch-root.directive';
 
 @Directive({
-    selector: 'span[SwitchThumb]',
-    exportAs: 'SwitchThumb',
+    selector: 'span[rdxSwitchThumb]',
+    exportAs: 'rdxSwitchThumb',
     standalone: true,
     host: {
         '[attr.data-disabled]': 'switchRoot.disabledState() ? "true" : null',

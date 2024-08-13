@@ -78,8 +78,8 @@ button {
 
 <label rdxLabel htmlFor="airplane-mode" class="Label">
     Airplane mode
-    <button SwitchRoot [(checked)]="checked" id="airplane-mode" class="SwitchRoot">
-        <span SwitchThumb class="SwitchThumb"></span>
+    <button rdxSwitchRoot [(checked)]="checked" id="airplane-mode" class="SwitchRoot">
+        <span rdxSwitchThumb class="SwitchThumb"></span>
     </button>
 </label>
 `
@@ -139,9 +139,9 @@ button {
 
 <label rdxLabel htmlFor="airplane-mode" class="Label">
     Airplane mode
-    <button SwitchRoot [(checked)]="checked" id="airplane-mode" class="SwitchRoot">
-        <input SwitchInput />
-        <span SwitchThumb class="SwitchThumb"></span>
+    <button rdxSwitchRoot [(checked)]="checked" id="airplane-mode" class="SwitchRoot">
+        <input rdxSwitchInput />
+        <span rdxSwitchThumb class="SwitchThumb"></span>
     </button>
 </label>
 `

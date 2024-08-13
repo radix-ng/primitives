@@ -8,7 +8,7 @@ interface TabsTriggerProps {
 }
 
 @Directive({
-    selector: '[TabsTrigger]',
+    selector: '[rdxTabsTrigger]',
     standalone: true,
     host: {
         type: 'button',

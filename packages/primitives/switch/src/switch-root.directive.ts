@@ -30,8 +30,8 @@ export interface SwitchProps {
 let idIterator = 0;
 
 @Directive({
-    selector: 'button[SwitchRoot]',
-    exportAs: 'SwitchRoot',
+    selector: 'button[rdxSwitchRoot]',
+    exportAs: 'rdxSwitchRoot',
     standalone: true,
     providers: [
         { provide: RdxSwitchToken, useExisting: RdxSwitchRootDirective },

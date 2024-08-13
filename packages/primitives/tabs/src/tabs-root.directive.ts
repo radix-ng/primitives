@@ -1,6 +1,7 @@
 import { Directive, effect, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { RdxTabsContextService, TABS_CONTEXT_TOKEN } from './tabs-context.service';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface TabsProps {
     /** The value for the selected tab, if controlled */
     value?: string;
@@ -26,7 +27,7 @@ export interface TabsProps {
 }
 
 @Directive({
-    selector: '[TabsRoot]',
+    selector: '[rdxTabsRoot]',
     standalone: true,
     providers: [{ provide: TABS_CONTEXT_TOKEN, useExisting: RdxTabsContextService }],
     host: {

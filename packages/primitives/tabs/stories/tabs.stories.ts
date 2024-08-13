@@ -31,12 +31,12 @@ export const Default: Story = {
     render: (args) => ({
         props: args,
         template: `
-<div TabsRoot defaultValue="tab1" class="TabsRoot">
-    <div TabsList class="TabsList">
-        <button TabsTrigger value="tab1" class="TabsTrigger">Account</button>
-        <button TabsTrigger value="tab2" class="TabsTrigger">Password</button>
+<div rdxTabsRoot defaultValue="tab1" class="TabsRoot">
+    <div rdxTabsList class="TabsList">
+        <button rdxTabsTrigger value="tab1" class="TabsTrigger">Account</button>
+        <button rdxTabsTrigger value="tab2" class="TabsTrigger">Password</button>
     </div>
-    <div TabsContent class="TabsContent" value="tab1">
+    <div rdxTabsContent class="TabsContent" value="tab1">
     <p class="Text">Make changes to your account here. Click save when you're done.</p>
       <fieldset class="Fieldset">
         <label class="Label" for="name">
@@ -54,7 +54,7 @@ export const Default: Story = {
         <button class="Button green">Save changes</button>
       </div>
 </div>
-    <div TabsContent class="TabsContent" value="tab2">
+    <div rdxTabsContent class="TabsContent" value="tab2">
         <p class="Text">Change your password here. After saving, you'll be logged out.</p>
         <fieldset class="Fieldset">
             <label class="Label" for="currentPassword">

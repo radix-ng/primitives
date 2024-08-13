@@ -1,13 +1,14 @@
 import { Directive, inject } from '@angular/core';
 import { TABS_CONTEXT_TOKEN } from './tabs-context.service';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface TabsListProps {
     // When true, keyboard navigation will loop from last tab to first, and vice versa.
     loop?: boolean;
 }
 
 @Directive({
-    selector: '[TabsList]',
+    selector: '[rdxTabsList]',
     standalone: true,
     host: {
         role: 'tablist',
