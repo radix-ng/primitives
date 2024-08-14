@@ -26,10 +26,8 @@ import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.di
             <div class="DropdownMenuContent" rdxDropdownMenuContent>
                 <button
                     class="DropdownMenuItem"
-                    [checked]="itemState"
-                    (onCheckedChange)="onCheckedChange($event)"
+                    [(checked)]="itemState"
                     (onSelect)="onSelect()"
-                    (click)="itemState = !itemState"
                     rdxDropdownMenuItemCheckbox
                 >
                     <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
@@ -38,16 +36,14 @@ import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.di
                     New Tab
                     <div class="RightSlot">⌘ T</div>
                 </button>
-                <button class="DropdownMenuItem" rdxDropdownMenuItem disabled>
+                <button class="DropdownMenuItem" rdxDropdownMenuItemCheckbox disabled>
                     New Window
                     <div class="RightSlot">⌘ N</div>
                 </button>
                 <button
                     class="DropdownMenuItem"
-                    [checked]="itemState2"
-                    (onCheckedChange)="onCheckedChange($event)"
+                    [(checked)]="itemState2"
                     (onSelect)="onSelect()"
-                    (click)="itemState2 = !itemState2"
                     rdxDropdownMenuItemCheckbox
                 >
                     <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
@@ -57,7 +53,8 @@ import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.di
                 </button>
                 <div class="DropdownMenuSeparator" rdxDropdownMenuSeparator></div>
                 <div class="DropdownMenuLabel" rdxDropdownMenuLabel>Label</div>
-                <button class="DropdownMenuItem DropdownMenuSubTrigger" (onSelect)="onSelect()" rdxDropdownMenuItem>
+                <button class="DropdownMenuItem DropdownMenuSubTrigger" (onSelect)="onSelect()"
+                        rdxDropdownMenuItem>
                     Share
                 </button>
                 <div class="DropdownMenuSeparator" rdxDropdownMenuSeparator></div>

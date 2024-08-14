@@ -18,8 +18,7 @@ let nextId = 0;
         { provide: RdxDropdownMenuItemDirective, useExisting: RdxDropdownMenuSelectable }
     ]
 })
-export class RdxDropdownMenuItemRadioDirective
-    extends RdxDropdownMenuSelectable
+export class RdxDropdownMenuItemRadioDirective extends RdxDropdownMenuSelectable
     implements AfterContentInit, OnDestroy
 {
     /** The unique selection dispatcher for this radio's `RdxDropdownMenuItemRadioGroupDirective`. */
@@ -46,8 +45,8 @@ export class RdxDropdownMenuItemRadioDirective
     constructor() {
         super();
 
-        this.cdkMenuItem.triggered.subscribe(() => {
-            if (!this.cdkMenuItem.disabled) {
+        this.triggered.subscribe(() => {
+            if (!this.disabled) {
                 this.selectionDispatcher.notify(this.value, '');
 
                 this.group.valueChange.emit(this.value);
@@ -61,7 +60,8 @@ export class RdxDropdownMenuItemRadioDirective
         });
     }
 
-    ngOnDestroy() {
+    override ngOnDestroy() {
+        super.ngOnDestroy();
         this.removeDispatcherListener();
     }
 }
