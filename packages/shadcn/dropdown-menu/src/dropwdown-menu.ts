@@ -15,15 +15,16 @@ const dropdownMenuContentVariants = cva(
     'z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2'
 );
 
-@Directive({
-    selector: '[shDropdownMenuContent]',
+@Component({
+    selector: 'shDropdownMenuContent',
     standalone: true,
+    template: '<ng-content></ng-content>',
     hostDirectives: [RdxDropdownMenuContentDirective],
     host: {
         '[class]': 'computedClass()'
     }
 })
-export class ShDropdownMenuContent {
+export class ShDropdownMenuContentComponent {
     readonly class = input<string>();
 
     protected computedClass = computed(() => cn(dropdownMenuContentVariants({ class: this.class() })));
@@ -47,7 +48,7 @@ export class ShDropdownMenuSubContent {
     protected computedClass = computed(() => cn(dropdownMenuSubContentVariants({ class: this.class() })));
 }
 
-const dropdownMenuLabelVariants = cva('px-2 py-1.5 text-sm font-semibold', {
+const dropdownMenuLabelVariants = cva('flex px-2 py-1.5 text-sm font-semibold', {
     variants: {
         inset: { true: 'pl-8', false: '' }
     },
@@ -56,15 +57,16 @@ const dropdownMenuLabelVariants = cva('px-2 py-1.5 text-sm font-semibold', {
     }
 });
 
-@Directive({
-    selector: '[shDropdownMenuLabel]',
+@Component({
+    selector: 'shDropdownMenuLabel',
     standalone: true,
+    template: '<ng-content></ng-content>',
     hostDirectives: [RdxDropdownMenuLabelDirective],
     host: {
         '[class]': 'computedClass()'
     }
 })
-export class ShDropdownMenuLabel {
+export class ShDropdownMenuLabelComponent {
     readonly class = input<string>();
     readonly inset = input<boolean>(false);
 
@@ -102,16 +104,17 @@ export class ShDropdownMenuItem {
     );
 }
 
-const dropdownMenuSeparatorVariants = cva('-mx-1 my-1 h-px bg-muted');
-@Directive({
-    selector: '[shDropdownMenuSeparator]',
+const dropdownMenuSeparatorVariants = cva('flex -mx-1 my-1 h-px bg-muted');
+@Component({
+    selector: 'shDropdownMenuSeparator',
     standalone: true,
+    template: ``,
     hostDirectives: [RdxMenuSeparatorDirective],
     host: {
         '[class]': 'computedClass()'
     }
 })
-export class ShDropdownMenuSeparator {
+export class ShDropdownMenuSeparatorComponent {
     readonly class = input<string>();
 
     protected computedClass = computed(() => cn(dropdownMenuSeparatorVariants({ class: this.class() })));
@@ -155,7 +158,7 @@ export class ShDropdownMenuCheckboxItemDirective {
 }
 
 @Component({
-    selector: 'sh-dropdown-menu-checkbox-item',
+    selector: 'shDropdownMenuCheckboxItem',
     standalone: true,
     imports: [
         RdxDropdownMenuItemIndicatorDirective,

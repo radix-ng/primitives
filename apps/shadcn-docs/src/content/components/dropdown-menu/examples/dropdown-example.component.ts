@@ -5,10 +5,10 @@ import { RdxMenuGroupDirective } from '@radix-ng/primitives/menu';
 import { RdxMenuBarDirective } from '@radix-ng/primitives/menubar';
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
 import {
-    ShDropdownMenuContent,
+    ShDropdownMenuContentComponent,
     ShDropdownMenuItem,
-    ShDropdownMenuLabel,
-    ShDropdownMenuSeparator,
+    ShDropdownMenuLabelComponent,
+    ShDropdownMenuSeparatorComponent,
     ShDropdownMenuShortcut
 } from '@radix-ng/shadcn/dropdown-menu';
 
@@ -18,9 +18,9 @@ import {
         RdxMenuBarDirective,
         RdxDropdownMenuTriggerDirective,
         ShButtonDirective,
-        ShDropdownMenuContent,
-        ShDropdownMenuSeparator,
-        ShDropdownMenuLabel,
+        ShDropdownMenuContentComponent,
+        ShDropdownMenuSeparatorComponent,
+        ShDropdownMenuLabelComponent,
         ShDropdownMenuItem,
         ShDropdownMenuShortcut,
         RdxMenuGroupDirective,
@@ -30,9 +30,9 @@ import {
         <button [rdxDropdownMenuTrigger]="menu" shButton variant="outline">Open</button>
 
         <ng-template #menu>
-            <div class="w-56" shDropdownMenuContent>
-                <div shDropdownMenuLabel>My Account</div>
-                <div shDropdownMenuSeparator></div>
+            <shDropdownMenuContent class="w-56">
+                <shDropdownMenuLabel>My Account</shDropdownMenuLabel>
+                <shDropdownMenuSeparator />
                 <div MenuGroup>
                     <div shDropdownMenuItem>
                         <span>Profile</span>
@@ -47,7 +47,7 @@ import {
                         <span shDropdownMenuShortcut>⌘K</span>
                     </div>
                 </div>
-            </div>
+            </shDropdownMenuContent>
         </ng-template>
     `
 })
