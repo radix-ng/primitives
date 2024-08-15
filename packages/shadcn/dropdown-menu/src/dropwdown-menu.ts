@@ -1,13 +1,15 @@
-import { computed, Directive, input } from '@angular/core';
+import { Component, computed, Directive, input } from '@angular/core';
 import {
     RdxDropdownMenuContentDirective,
     RdxDropdownMenuItemCheckboxDirective,
     RdxDropdownMenuItemDirective,
+    RdxDropdownMenuItemIndicatorDirective,
     RdxDropdownMenuLabelDirective
 } from '@radix-ng/primitives/dropdown-menu';
 import { RdxMenuSeparatorDirective } from '@radix-ng/primitives/menu';
 import { cn } from '@radix-ng/shadcn/core';
 import { cva } from 'class-variance-authority';
+import { LucideAngularModule } from 'lucide-angular';
 
 const dropdownMenuContentVariants = cva(
     'z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2'
@@ -138,8 +140,8 @@ const dropdownMenuCheckboxItemVariants = cva(
     hostDirectives: [
         {
             directive: RdxDropdownMenuItemCheckboxDirective,
-            inputs: ['checked: checked'],
-            outputs: ['onCheckedChange: onCheckedChange']
+            inputs: ['checked'],
+            outputs: ['checkedChange']
         }
     ],
     host: {
@@ -147,6 +149,38 @@ const dropdownMenuCheckboxItemVariants = cva(
     }
 })
 export class ShDropdownMenuCheckboxItemDirective {
+    readonly class = input<string>();
+
+    protected computedClass = computed(() => cn(dropdownMenuCheckboxItemVariants({ class: this.class() })));
+}
+
+@Component({
+    selector: 'sh-dropdown-menu-checkbox-item',
+    standalone: true,
+    imports: [
+        RdxDropdownMenuItemIndicatorDirective,
+        LucideAngularModule
+    ],
+    template: `
+        <span class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+            <div rdxDropdownMenuItemIndicator>
+                <lucide-icon size="16" name="check"></lucide-icon>
+            </div>
+        </span>
+        <ng-content />
+    `,
+    hostDirectives: [
+        {
+            directive: RdxDropdownMenuItemCheckboxDirective,
+            inputs: ['checked'],
+            outputs: ['checkedChange']
+        }
+    ],
+    host: {
+        '[class]': 'computedClass()'
+    }
+})
+export class ShDropdownMenuCheckboxItemComponent {
     readonly class = input<string>();
 
     protected computedClass = computed(() => cn(dropdownMenuCheckboxItemVariants({ class: this.class() })));

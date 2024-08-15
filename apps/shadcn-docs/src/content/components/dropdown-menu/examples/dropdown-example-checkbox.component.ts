@@ -7,6 +7,7 @@ import {
 import { RdxMenuBarDirective } from '@radix-ng/primitives/menubar';
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
 import {
+    ShDropdownMenuCheckboxItemComponent,
     ShDropdownMenuCheckboxItemDirective,
     ShDropdownMenuContent,
     ShDropdownMenuItem,
@@ -30,7 +31,8 @@ import { LucideAngularModule } from 'lucide-angular';
         ShDropdownMenuCheckboxItemDirective,
         CdkMenu,
         LucideAngularModule,
-        RdxDropdownMenuItemIndicatorDirective
+        RdxDropdownMenuItemIndicatorDirective,
+        ShDropdownMenuCheckboxItemComponent
     ],
     template: `
         <button [rdxDropdownMenuTrigger]="menu" shButton variant="outline" sideOffset="4" alignOffset="-5">Open</button>
@@ -40,11 +42,9 @@ import { LucideAngularModule } from 'lucide-angular';
                 <div shDropdownMenuLabel>Appearance</div>
                 <div shDropdownMenuSeparator></div>
                 <button
-                    [checked]="showStatusBar"
-                    (onCheckedChange)="showStatusBarChange($event)"
-                    (click)="showStatusBar = !showStatusBar"
-                    shDropdownMenuCheckboxItem
-                >
+                    [(checked)]="showStatusBar"
+                    (checkedChange)="showStatusBarChange($event)"
+                    shDropdownMenuCheckboxItem>
                     <span class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
                         <div rdxDropdownMenuItemIndicator>
                             <lucide-icon size="16" name="check"></lucide-icon>
@@ -52,8 +52,12 @@ import { LucideAngularModule } from 'lucide-angular';
                     </span>
                     Status Bar
                 </button>
-                <button [checked]="showActivityBar" shDropdownMenuCheckboxItem>Activity Bar</button>
-                <button [checked]="showPanel" shDropdownMenuCheckboxItem>Panel</button>
+                <sh-dropdown-menu-checkbox-item [(checked)]="showActivityBar">
+                    Activity Bar
+                </sh-dropdown-menu-checkbox-item>
+                <sh-dropdown-menu-checkbox-item [(checked)]="showPanel">
+                    Panel
+                </sh-dropdown-menu-checkbox-item>
             </div>
         </ng-template>
     `
