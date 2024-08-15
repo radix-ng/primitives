@@ -169,7 +169,7 @@ export class ShDropdownMenuCheckboxItemDirective {
     template: `
         <span class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
             <div rdxDropdownMenuItemIndicator>
-                <lucide-icon size="16" name="check"></lucide-icon>
+                <lucide-icon class="flex" size="16" name="check"></lucide-icon>
             </div>
         </span>
         <ng-content />

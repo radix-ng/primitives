@@ -23,7 +23,7 @@ import {
         ShDropdownMenuGroupComponent
     ],
     template: `
-        <button [rdxDropdownMenuTrigger]="menu" shButton variant="outline">Open</button>
+        <button [rdxDropdownMenuTrigger]="menu" shButton variant="outline" sideOffset="4" alignOffset="-5">Open</button>
 
         <ng-template #menu>
             <shDropdownMenuContent class="w-56">
