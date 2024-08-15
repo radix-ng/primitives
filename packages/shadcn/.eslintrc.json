@@ -24,7 +24,7 @@
                     {
                         "type": "element",
                         "prefix": "sh",
-                        "style": "kebab-case"
+                        "style": "camelCase"
                     }
                 ]
             }

@@ -6,7 +6,7 @@ import {
     RdxDropdownMenuItemIndicatorDirective,
     RdxDropdownMenuLabelDirective
 } from '@radix-ng/primitives/dropdown-menu';
-import { RdxMenuSeparatorDirective } from '@radix-ng/primitives/menu';
+import { RdxMenuGroupDirective, RdxMenuSeparatorDirective } from '@radix-ng/primitives/menu';
 import { cn } from '@radix-ng/shadcn/core';
 import { cva } from 'class-variance-authority';
 import { LucideAngularModule } from 'lucide-angular';
@@ -87,15 +87,16 @@ const dropdownMenuItemVariants = cva(
     }
 );
 
-@Directive({
-    selector: '[shDropdownMenuItem]',
+@Component({
+    selector: 'shDropdownMenuItem',
     standalone: true,
+    template: '<ng-content></ng-content>',
     hostDirectives: [RdxDropdownMenuItemDirective],
     host: {
         '[class]': 'computedClass()'
     }
 })
-export class ShDropdownMenuItem {
+export class ShDropdownMenuItemComponent {
     readonly class = input<string>();
     readonly inset = input<boolean>(false);
 
@@ -120,15 +121,16 @@ export class ShDropdownMenuSeparatorComponent {
     protected computedClass = computed(() => cn(dropdownMenuSeparatorVariants({ class: this.class() })));
 }
 
-const dropdownMenuShortcutVariants = cva('ml-auto text-xs tracking-widest opacity-60');
-@Directive({
-    selector: '[shDropdownMenuShortcut]',
+const dropdownMenuShortcutVariants = cva('flex ml-auto text-xs tracking-widest opacity-60');
+@Component({
+    selector: 'shDropdownMenuShortcut',
     standalone: true,
+    template: '<ng-content></ng-content>',
     host: {
         '[class]': 'computedClass()'
     }
 })
-export class ShDropdownMenuShortcut {
+export class ShDropdownMenuShortcutComponent {
     readonly class = input<string>();
 
     protected computedClass = computed(() => cn(dropdownMenuShortcutVariants({ class: this.class() })));
@@ -187,4 +189,19 @@ export class ShDropdownMenuCheckboxItemComponent {
     readonly class = input<string>();
 
     protected computedClass = computed(() => cn(dropdownMenuCheckboxItemVariants({ class: this.class() })));
+}
+
+@Component({
+    selector: 'shDropdownMenuGroup',
+    standalone: true,
+    template: '<ng-content></ng-content>',
+    hostDirectives: [RdxMenuGroupDirective],
+    host: {
+        '[class]': 'computedClass()'
+    }
+})
+export class ShDropdownMenuGroupComponent {
+    readonly class = input<string>();
+
+    protected computedClass = computed(() => cn({ class: this.class() }));
 }
