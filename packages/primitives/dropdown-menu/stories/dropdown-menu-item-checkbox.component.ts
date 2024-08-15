@@ -53,8 +53,7 @@ import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.di
                 </button>
                 <div class="DropdownMenuSeparator" rdxDropdownMenuSeparator></div>
                 <div class="DropdownMenuLabel" rdxDropdownMenuLabel>Label</div>
-                <button class="DropdownMenuItem DropdownMenuSubTrigger" (onSelect)="onSelect()"
-                        rdxDropdownMenuItem>
+                <button class="DropdownMenuItem DropdownMenuSubTrigger" (onSelect)="onSelect()" rdxDropdownMenuItem>
                     Share
                 </button>
                 <div class="DropdownMenuSeparator" rdxDropdownMenuSeparator></div>

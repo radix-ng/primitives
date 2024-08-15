@@ -1,13 +1,5 @@
 import { CdkMenuItem } from '@angular/cdk/menu';
-import {
-    booleanAttribute,
-    Directive,
-    ElementRef,
-    EventEmitter,
-    inject,
-    Input,
-    Output
-} from '@angular/core';
+import { booleanAttribute, Directive, ElementRef, EventEmitter, inject, Input, Output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { RdxDropdownMenuContentDirective } from './dropdown-menu-content.directive';
@@ -26,9 +18,12 @@ import { RdxDropdownMenuContentDirective } from './dropdown-menu-content.directi
         '(focus)': 'menu.highlighted.next(this)',
         '(keydown)': 'onKeydown($event)'
     },
-    providers: [{
-        provide: CdkMenuItem, useExisting: RdxDropdownMenuItemDirective
-    }]
+    providers: [
+        {
+            provide: CdkMenuItem,
+            useExisting: RdxDropdownMenuItemDirective
+        }
+    ]
 })
 export class RdxDropdownMenuItemDirective extends CdkMenuItem {
     protected readonly menu = inject(RdxDropdownMenuContentDirective);
@@ -43,13 +38,11 @@ export class RdxDropdownMenuItemDirective extends CdkMenuItem {
     constructor() {
         super();
 
-        this.menu.highlighted
-            .pipe(takeUntilDestroyed())
-            .subscribe((value) => {
-                if (value !== this) {
-                    this.highlighted = false;
-                }
-            });
+        this.menu.highlighted.pipe(takeUntilDestroyed()).subscribe((value) => {
+            if (value !== this) {
+                this.highlighted = false;
+            }
+        });
 
         this.triggered.subscribe(this.onSelect);
     }

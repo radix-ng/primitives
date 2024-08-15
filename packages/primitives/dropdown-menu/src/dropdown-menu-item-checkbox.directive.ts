@@ -3,7 +3,6 @@ import { Directive } from '@angular/core';
 import { RdxDropdownMenuSelectable } from './dropdown-menu-item-selectable';
 import { RdxDropdownMenuItemDirective } from './dropdown-menu-item.directive';
 
-
 @Directive({
     selector: '[rdxDropdownMenuItemCheckbox]',
     standalone: true,

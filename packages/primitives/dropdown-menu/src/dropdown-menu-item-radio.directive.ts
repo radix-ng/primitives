@@ -20,7 +20,8 @@ let nextId = 0;
         { provide: CdkMenuItem, useExisting: RdxDropdownMenuItemDirective }
     ]
 })
-export class RdxDropdownMenuItemRadioDirective extends RdxDropdownMenuSelectable
+export class RdxDropdownMenuItemRadioDirective
+    extends RdxDropdownMenuSelectable
     implements AfterContentInit, OnDestroy
 {
     /** The unique selection dispatcher for this radio's `RdxDropdownMenuItemRadioGroupDirective`. */

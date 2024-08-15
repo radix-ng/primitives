@@ -44,7 +44,8 @@ import { LucideAngularModule } from 'lucide-angular';
                 <button
                     [(checked)]="showStatusBar"
                     (checkedChange)="showStatusBarChange($event)"
-                    shDropdownMenuCheckboxItem>
+                    shDropdownMenuCheckboxItem
+                >
                     <span class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
                         <div rdxDropdownMenuItemIndicator>
                             <lucide-icon size="16" name="check"></lucide-icon>
@@ -55,9 +56,7 @@ import { LucideAngularModule } from 'lucide-angular';
                 <sh-dropdown-menu-checkbox-item [(checked)]="showActivityBar">
                     Activity Bar
                 </sh-dropdown-menu-checkbox-item>
-                <sh-dropdown-menu-checkbox-item [(checked)]="showPanel">
-                    Panel
-                </sh-dropdown-menu-checkbox-item>
+                <sh-dropdown-menu-checkbox-item [(checked)]="showPanel">Panel</sh-dropdown-menu-checkbox-item>
             </div>
         </ng-template>
     `
