@@ -1,6 +1,6 @@
 {
     "name": "@radix-ng/shadcn",
-    "version": "0.6.0",
+    "version": "0.6.1",
     "license": "MIT",
     "publishConfig": {
         "access": "public"
@@ -29,7 +29,7 @@
     "devDependencies": {
         "@angular/core": "^18.0.0",
         "@angular/cdk": "^18.0.0",
-        "@radix-ng/primitives": "workspace:*",
+        "@radix-ng/primitives": "0.9.1",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.1",
         "lucide-angular": "^0.400.0",

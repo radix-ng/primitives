@@ -1,3 +1,15 @@
+## 0.6.1 (2024-08-15)
+
+
+### 🩹 Fixes
+
+- use extend for CdkMenuItem ([#85](https://github.com/radix-ng/primitives/pull/85))
+
+
+### 🧱 Updated Dependencies
+
+- Updated primitives to 0.9.1
+
 ## 0.6.0 (2024-08-13)
 
 
