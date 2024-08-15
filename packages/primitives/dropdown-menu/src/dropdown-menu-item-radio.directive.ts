@@ -1,4 +1,5 @@
 import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
+import { CdkMenuItem } from '@angular/cdk/menu';
 import { AfterContentInit, Directive, inject, Input, OnDestroy } from '@angular/core';
 import { RdxDropdownMenuItemRadioGroupDirective } from './dropdown-menu-item-radio-group.directive';
 import { RdxDropdownMenuSelectable } from './dropdown-menu-item-selectable';
@@ -15,7 +16,8 @@ let nextId = 0;
     },
     providers: [
         { provide: RdxDropdownMenuSelectable, useExisting: RdxDropdownMenuItemRadioDirective },
-        { provide: RdxDropdownMenuItemDirective, useExisting: RdxDropdownMenuSelectable }
+        { provide: RdxDropdownMenuItemDirective, useExisting: RdxDropdownMenuSelectable },
+        { provide: CdkMenuItem, useExisting: RdxDropdownMenuItemDirective }
     ]
 })
 export class RdxDropdownMenuItemRadioDirective extends RdxDropdownMenuSelectable

@@ -1,3 +1,4 @@
+import { CdkMenuItem } from '@angular/cdk/menu';
 import { Directive } from '@angular/core';
 import { RdxDropdownMenuSelectable } from './dropdown-menu-item-selectable';
 import { RdxDropdownMenuItemDirective } from './dropdown-menu-item.directive';
@@ -11,7 +12,8 @@ import { RdxDropdownMenuItemDirective } from './dropdown-menu-item.directive';
     },
     providers: [
         { provide: RdxDropdownMenuSelectable, useExisting: RdxDropdownMenuItemCheckboxDirective },
-        { provide: RdxDropdownMenuItemDirective, useExisting: RdxDropdownMenuSelectable }
+        { provide: RdxDropdownMenuItemDirective, useExisting: RdxDropdownMenuSelectable },
+        { provide: CdkMenuItem, useExisting: RdxDropdownMenuItemDirective }
     ]
 })
 export class RdxDropdownMenuItemCheckboxDirective extends RdxDropdownMenuSelectable {

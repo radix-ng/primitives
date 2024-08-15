@@ -25,7 +25,10 @@ import { RdxDropdownMenuContentDirective } from './dropdown-menu-content.directi
         '(pointermove)': 'onPointerMove()',
         '(focus)': 'menu.highlighted.next(this)',
         '(keydown)': 'onKeydown($event)'
-    }
+    },
+    providers: [{
+        provide: CdkMenuItem, useExisting: RdxDropdownMenuItemDirective
+    }]
 })
 export class RdxDropdownMenuItemDirective extends CdkMenuItem {
     protected readonly menu = inject(RdxDropdownMenuContentDirective);
