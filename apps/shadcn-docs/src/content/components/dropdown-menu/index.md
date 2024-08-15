@@ -4,17 +4,16 @@
 
 ## Usage
 
-
 ```ts
 import { RdxDropdownMenuTriggerDirective } from '@radix-ng/primitives/dropdown-menu';
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
 import {
-    ShDropdownMenuContentComponent,
-    ShDropdownMenuGroupComponent,
-    ShDropdownMenuItemComponent,
-    ShDropdownMenuLabelComponent,
-    ShDropdownMenuSeparatorComponent,
-    ShDropdownMenuShortcutComponent
+  ShDropdownMenuContentComponent,
+  ShDropdownMenuGroupComponent,
+  ShDropdownMenuItemComponent,
+  ShDropdownMenuLabelComponent,
+  ShDropdownMenuSeparatorComponent,
+  ShDropdownMenuShortcutComponent
 } from '@radix-ng/shadcn/dropdown-menu';
 ```
 
@@ -22,13 +21,13 @@ import {
 <button [rdxDropdownMenuTrigger]="menu" shButton variant="outline">Open</button>
 
 <ng-template #menu>
-    <shDropdownMenuContent>
-        <shDropdownMenuLabel>My Account</shDropdownMenuLabel>
-        <shDropdownMenuSeparator />
-        <shDropdownMenuItem>Profile</shDropdownMenuItem>
-        <shDropdownMenuItem>Billing</shDropdownMenuItem>
-        <shDropdownMenuItem>Keyboard shortcuts</shDropdownMenuItem>
-    </shDropdownMenuContent>
+  <shDropdownMenuContent>
+    <shDropdownMenuLabel>My Account</shDropdownMenuLabel>
+    <shDropdownMenuSeparator />
+    <shDropdownMenuItem>Profile</shDropdownMenuItem>
+    <shDropdownMenuItem>Billing</shDropdownMenuItem>
+    <shDropdownMenuItem>Keyboard shortcuts</shDropdownMenuItem>
+  </shDropdownMenuContent>
 </ng-template>
 ```
 
