@@ -1,5 +1,6 @@
 import { NgDocPage } from '@ng-doc/core';
 import ExamplesCategory from '../ng-doc.category';
+import { DropdownExampleCheckboxComponent } from './examples/dropdown-example-checkbox.component';
 import { DropdownExampleComponent } from './examples/dropdown-example.component';
 
 const DropdownMenuPage: NgDocPage = {
@@ -7,7 +8,8 @@ const DropdownMenuPage: NgDocPage = {
     mdFile: './index.md',
     category: ExamplesCategory,
     demos: {
-        DropdownExampleComponent
+        DropdownExampleComponent,
+        DropdownExampleCheckboxComponent
     },
     keyword: 'DropdownMenuPage'
 };

@@ -10,22 +10,9 @@ import { RdxDropdownMenuItemDirective } from './dropdown-menu-item.directive';
         '[attr.data-state]': 'checked ? "checked" : "unchecked"'
     }
 })
-export abstract class RdxDropdownMenuSelectable extends RdxDropdownMenuItemDirective {
+export class RdxDropdownMenuSelectable extends RdxDropdownMenuItemDirective {
     /** Whether the element is checked */
-    @Input({ transform: booleanAttribute })
-    set checked(value: boolean) {
-        if (this._checked == value) return;
+    @Input({ transform: booleanAttribute }) checked: boolean = false;
 
-        this._checked = value;
-
-        this.onCheckedChange.emit(value);
-    }
-
-    get checked() {
-        return this._checked;
-    }
-
-    private _checked = false;
-
-    @Output() readonly onCheckedChange = new EventEmitter<boolean>();
+    @Output() readonly checkedChange = new EventEmitter<boolean>();
 }

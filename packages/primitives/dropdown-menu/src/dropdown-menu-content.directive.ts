@@ -22,7 +22,6 @@ export class RdxDropdownMenuContentDirective {
     protected readonly menuTrigger = inject(RdxDropdownMenuTriggerDirective, { optional: true });
 
     constructor() {
-        // todo need sync with keyManager
         this.highlighted.pipe(startWith(null), pairwise()).subscribe(([prev, item]) => {
             if (prev) {
                 prev.highlighted = false;

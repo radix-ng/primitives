@@ -1,5 +1,5 @@
 import { CdkMenuItem } from '@angular/cdk/menu';
-import { Directive, ElementRef, EventEmitter, inject, Output } from '@angular/core';
+import { booleanAttribute, Directive, ElementRef, EventEmitter, inject, Input, Output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { RdxDropdownMenuContentDirective } from './dropdown-menu-content.directive';
@@ -7,42 +7,49 @@ import { RdxDropdownMenuContentDirective } from './dropdown-menu-content.directi
 @Directive({
     selector: '[rdxDropdownMenuItem]',
     standalone: true,
-    // todo hostDirectives + extends
-    hostDirectives: [{ directive: CdkMenuItem, inputs: ['cdkMenuItemDisabled: disabled'] }],
     host: {
         type: 'button',
         // todo horizontal ?
         '[attr.data-orientation]': '"vertical"',
         '[attr.data-highlighted]': 'highlighted ? "" : null',
-        '[attr.data-disabled]': 'cdkMenuItem.disabled ? "" : null',
-        '[attr.disabled]': 'cdkMenuItem.disabled ? "" : null',
+        '[attr.data-disabled]': 'disabled ? "" : null',
+        '[attr.disabled]': 'disabled ? "" : null',
         '(pointermove)': 'onPointerMove()',
         '(focus)': 'menu.highlighted.next(this)',
         '(keydown)': 'onKeydown($event)'
-    }
+    },
+    providers: [
+        {
+            provide: CdkMenuItem,
+            useExisting: RdxDropdownMenuItemDirective
+        }
+    ]
 })
-export class RdxDropdownMenuItemDirective {
+export class RdxDropdownMenuItemDirective extends CdkMenuItem {
     protected readonly menu = inject(RdxDropdownMenuContentDirective);
-    protected readonly cdkMenuItem = inject(CdkMenuItem);
     protected readonly nativeElement = inject(ElementRef).nativeElement;
 
     highlighted = false;
 
+    @Input({ transform: booleanAttribute }) override disabled: boolean = false;
+
     @Output() readonly onSelect = new EventEmitter<void>();
 
     constructor() {
+        super();
+
         this.menu.highlighted.pipe(takeUntilDestroyed()).subscribe((value) => {
             if (value !== this) {
                 this.highlighted = false;
             }
         });
 
-        this.cdkMenuItem.triggered.subscribe(this.onSelect);
+        this.triggered.subscribe(this.onSelect);
     }
 
     protected onPointerMove() {
         this.nativeElement.focus({ preventScroll: true });
-        this.menu.updateActiveItem(this.cdkMenuItem);
+        this.menu.updateActiveItem(this);
     }
 
     protected onKeydown(event: KeyboardEvent) {
