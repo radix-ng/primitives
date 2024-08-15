@@ -3,15 +3,18 @@ import MainLayout from './MainLayout.astro';
 import Sidebar from '../components/Sidebar.astro';
 import siteConfig from '../config/site-config'
 import Header from '../components/Header.astro';
+import Toc from '../components/Toc.astro';
+import type { TocItem } from '../types';
 
 // Common imports
 import DemoPreviewComponent from '../components/demo-preview.component';
 
 interface Props {
     title: string
+    toc: TocItem[]
 }
 
-const { title } = Astro.props
+const { toc, title } = Astro.props
 
 ---
 
@@ -24,5 +27,6 @@ const { title } = Astro.props
                 <slot />
             </div>
         </main>
+        <Toc toc={toc} />
     </div>
 </MainLayout>
