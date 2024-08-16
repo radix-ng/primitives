@@ -14,6 +14,18 @@ import { ShBadgeDirective } from '@radix-ng/shadcn/badge';
 <div shBadge variant="outline">Badge</div>
 ```
 
+### Link
+
+You can use the `badgeVariants` helper to create a link that looks like a badge.
+
+```ts
+import { badgeVariants } from '@radix-ng/shadcn/badge';
+```
+
+```html
+<a [class]="badgeVariants({ variant: 'outline' })">Secondary</a>
+```
+
 ## Examples
 
 ### Secondary
@@ -23,3 +35,7 @@ import { ShBadgeDirective } from '@radix-ng/shadcn/badge';
 ### Destructive
 
 {{ NgDocActions.demo("BadgeExampleDestructiveComponent", { expanded: false}) }}
+
+### Link
+
+{{ NgDocActions.demo("BadgeExampleLinkComponent", { expanded: false}) }}
