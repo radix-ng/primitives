@@ -29,7 +29,7 @@
     "devDependencies": {
         "@angular/core": "^18.0.0",
         "@angular/cdk": "^18.0.0",
-        "@radix-ng/primitives": "0.9.1",
+        "@radix-ng/primitives": "workspace:*",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.1",
         "lucide-angular": "^0.400.0",
