@@ -29,3 +29,23 @@ module.exports = {
   }
 };
 ```
+
+## Usage
+
+```ts
+import {
+  ShAccordionComponent,
+  ShAccordionContentComponent,
+  ShAccordionItemComponent,
+  ShAccordionTriggerComponent
+} from '@radix-ng/shadcn/accordion';
+```
+
+```html
+<shAccordion>
+  <shAccordionItem value="item-1">
+    <shAccordionTrigger>Is it accessible?</shAccordionTrigger>
+    <div shAccordionContent>Yes. It adheres to the WAI-ARIA design pattern.</div>
+  </shAccordionItem>
+</shAccordion>
+```

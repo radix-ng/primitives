@@ -1,38 +1,38 @@
 import { Component } from '@angular/core';
-import { RdxAccordionRootDirective } from '@radix-ng/primitives/accordion';
 import {
+    ShAccordionComponent,
     ShAccordionContentComponent,
-    ShAccordionItemDirective,
+    ShAccordionItemComponent,
     ShAccordionTriggerComponent
 } from '@radix-ng/shadcn/accordion';
 
 @Component({
     standalone: true,
     imports: [
-        RdxAccordionRootDirective,
-        ShAccordionItemDirective,
+        ShAccordionItemComponent,
         ShAccordionTriggerComponent,
-        ShAccordionContentComponent
+        ShAccordionContentComponent,
+        ShAccordionComponent
     ],
     template: `
-        <div class="w-full" rdxAccordionRoot>
-            <div shAccordionItem shValue="item-1">
-                <sh-accordion-trigger>Is it accessible?</sh-accordion-trigger>
-                <div sh-accordion-content>Yes. It adheres to the WAI-ARIA design pattern.</div>
-            </div>
+        <shAccordion class="w-full">
+            <shAccordionItem value="item-1">
+                <shAccordionTrigger>Is it accessible?</shAccordionTrigger>
+                <div shAccordionContent>Yes. It adheres to the WAI-ARIA design pattern.</div>
+            </shAccordionItem>
 
-            <div shAccordionItem shValue="item-2">
-                <sh-accordion-trigger>Is it styled?</sh-accordion-trigger>
-                <div sh-accordion-content>
+            <shAccordionItem value="item-2">
+                <shAccordionTrigger>Is it styled?</shAccordionTrigger>
+                <div shAccordionContent>
                     Yes. It comes with default styles that matches the other components' aesthetic.
                 </div>
-            </div>
+            </shAccordionItem>
 
-            <div shAccordionItem shValue="item-3">
-                <sh-accordion-trigger>Can it be animated?</sh-accordion-trigger>
-                <div sh-accordion-content>Yes! You can animate the Accordion with CSS or JavaScript.</div>
-            </div>
-        </div>
+            <shAccordionItem value="item-3">
+                <shAccordionTrigger>Can it be animated?</shAccordionTrigger>
+                <div shAccordionContent>Yes! You can animate the Accordion with CSS or JavaScript.</div>
+            </shAccordionItem>
+        </shAccordion>
     `
 })
 export class AccordionExampleComponent {}

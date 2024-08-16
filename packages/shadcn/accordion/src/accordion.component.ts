@@ -1,25 +1,27 @@
-import { Component, computed, Directive, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import {
     RdxAccordionContentDirective,
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
+    RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
 import { cn } from '@radix-ng/shadcn/core';
 import { cva } from 'class-variance-authority';
 import { LucideAngularModule } from 'lucide-angular';
 
-const accordionItemVariant = cva('border-b');
-@Directive({
-    selector: '[shAccordionItem]',
+const accordionItemVariant = cva('border-b block');
+@Component({
+    selector: 'shAccordionItem',
     standalone: true,
-    hostDirectives: [{ directive: RdxAccordionItemDirective, inputs: ['value: shValue'] }],
+    template: '<ng-content></ng-content>',
+    hostDirectives: [{ directive: RdxAccordionItemDirective, inputs: ['value: value'] }],
     host: {
         '[class]': 'computedClass()'
     }
 })
-export class ShAccordionItemDirective {
-    readonly shValue = input<string>;
+export class ShAccordionItemComponent {
+    readonly value = input<string>;
     readonly class = input<string>();
     protected computedClass = computed(() => cn(accordionItemVariant({ class: this.class() })));
 }
@@ -28,7 +30,7 @@ const accordionTriggerVariants = cva(
     'flex flex-1 items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>lucide-angular]:rotate-180'
 );
 @Component({
-    selector: 'sh-accordion-trigger',
+    selector: 'shAccordionTrigger',
     standalone: true,
     template: `
         <h3 class="flex" rdxAccordionHeader>
@@ -41,6 +43,9 @@ const accordionTriggerVariants = cva(
             </button>
         </h3>
     `,
+    host: {
+        class: 'w-full'
+    },
     imports: [RdxAccordionHeaderDirective, RdxAccordionTriggerDirective, LucideAngularModule]
 })
 export class ShAccordionTriggerComponent {
@@ -49,7 +54,7 @@ export class ShAccordionTriggerComponent {
 }
 
 @Component({
-    selector: '[sh-accordion-content]',
+    selector: '[shAccordionContent]',
     standalone: true,
     hostDirectives: [RdxAccordionContentDirective],
     host: {
@@ -61,3 +66,19 @@ export class ShAccordionTriggerComponent {
     `
 })
 export class ShAccordionContentComponent {}
+
+@Component({
+    selector: 'shAccordion',
+    standalone: true,
+    hostDirectives: [RdxAccordionRootDirective],
+    host: {
+        '[class]': 'computedClass()'
+    },
+    template: `
+        <ng-content></ng-content>
+    `
+})
+export class ShAccordionComponent {
+    readonly class = input<string>();
+    protected computedClass = computed(() => cn(accordionItemVariant({ class: this.class() })));
+}
