@@ -36,3 +36,14 @@ jobs:
         run: npx nx release publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Workaround for https://github.com/nrwl/nx/issues/20978
+      - run: |
+          sudo apt update
+          sudo apt install -y patchutils
+          git diff HEAD~1 -- "**/package.json" | grepdiff workspace: --output-matching=hunk --only-match=removals | git apply --reverse  --unidiff-zero --allow-empty
+          if [ $(git ls-files -m "**/package.json") ]; then
+           git add "**/package.json"
+           git commit -m "publish: restore workspace dependencies [skip ci]"
+           git push
+          fi
