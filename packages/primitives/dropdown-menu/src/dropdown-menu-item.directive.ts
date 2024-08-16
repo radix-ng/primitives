@@ -56,5 +56,9 @@ export class RdxDropdownMenuItemDirective extends CdkMenuItem {
         if (this.nativeElement.tagName !== 'BUTTON' && ['Enter', ' '].includes(event.key)) {
             event.preventDefault();
         }
+
+        if (event.key === 'Escape') {
+            this.menu.onEscapeKeyDown(event);
+        }
     }
 }

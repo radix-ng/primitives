@@ -1,7 +1,14 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { CdkMenuTrigger } from '@angular/cdk/menu';
+import { CdkMenuTrigger, MENU_TRIGGER, PARENT_OR_NEW_MENU_STACK_PROVIDER } from '@angular/cdk/menu';
 import { ConnectedPosition, VerticalConnectionPos } from '@angular/cdk/overlay';
-import { booleanAttribute, Directive, inject, Input, input, numberAttribute } from '@angular/core';
+import {
+    booleanAttribute,
+    Directive,
+    Input,
+    input,
+    numberAttribute,
+    TemplateRef
+} from '@angular/core';
 import { outputFromObservable } from '@angular/core/rxjs-interop';
 
 export enum DropdownSide {
@@ -61,29 +68,31 @@ const dropdownPositions: Record<DropdownSide, ConnectedPosition> = {
 @Directive({
     selector: '[rdxDropdownMenuTrigger]',
     standalone: true,
-    hostDirectives: [
-        {
-            directive: CdkMenuTrigger,
-            inputs: ['cdkMenuTriggerFor: rdxDropdownMenuTrigger']
-        }
-    ],
     host: {
         type: 'button',
         '[attr.aria-haspopup]': "'menu'",
-        '[attr.aria-expanded]': 'cdkMenuTrigger.isOpen()',
-        '[attr.data-state]': "cdkMenuTrigger.isOpen() ? 'open': 'closed'",
+        '[attr.aria-expanded]': 'isOpen()',
+        '[attr.data-state]': "isOpen() ? 'open': 'closed'",
         '[attr.data-disabled]': "disabled() ? '' : undefined",
         '[disabled]': 'disabled()',
 
         '(pointerdown)': 'onPointerDown($event)'
-    }
+    },
+    providers: [
+        { provide: CdkMenuTrigger, useExisting: RdxDropdownMenuTriggerDirective },
+        { provide: MENU_TRIGGER, useExisting: CdkMenuTrigger },
+        PARENT_OR_NEW_MENU_STACK_PROVIDER
+    ]
 })
-export class RdxDropdownMenuTriggerDirective {
-    protected readonly cdkMenuTrigger = inject(CdkMenuTrigger, { host: true });
-
+export class RdxDropdownMenuTriggerDirective extends CdkMenuTrigger {
     readonly disabled = input<boolean, BooleanInput>(false, {
         transform: booleanAttribute
     });
+
+    @Input()
+    set rdxDropdownMenuTrigger(value: TemplateRef<unknown> | null) {
+        this.menuTemplateRef = value;
+    }
 
     @Input()
     set side(value: DropdownSide) {
@@ -93,7 +102,7 @@ export class RdxDropdownMenuTriggerDirective {
 
         this._side = value;
 
-        this.cdkMenuTrigger.menuPosition[0] = dropdownPositions[value];
+        this.menuPosition[0] = dropdownPositions[value];
     }
 
     get side() {
@@ -145,20 +154,20 @@ export class RdxDropdownMenuTriggerDirective {
         }
     }
 
+    onOpenChange = outputFromObservable(this.opened);
+
     get isVertical(): boolean {
         return this._side === DropdownSide.Top || this._side === DropdownSide.Bottom;
     }
 
     get defaultPosition(): ConnectedPosition {
-        return this.cdkMenuTrigger.menuPosition[0];
+        return this.menuPosition[0];
     }
 
-    onOpenChange = outputFromObservable(this.cdkMenuTrigger?.opened);
-
     constructor() {
+        super();
         // todo priority
-        this.cdkMenuTrigger.menuPosition = [
-            { ...dropdownPositions[DropdownSide.Bottom] }];
+        this.menuPosition = [{ ...dropdownPositions[DropdownSide.Bottom] }];
     }
 
     onPointerDown($event: MouseEvent) {
@@ -166,7 +175,7 @@ export class RdxDropdownMenuTriggerDirective {
         // but not when the control key is pressed (avoiding MacOS right click)
         if (!this.disabled() && $event.button === 0 && !$event.ctrlKey) {
             /* empty */
-            if (!this.cdkMenuTrigger.isOpen()) {
+            if (!this.isOpen()) {
                 // prevent trigger focusing when opening
                 // this allows the content to be given focus without competition
                 $event.preventDefault();
