@@ -1,3 +1,10 @@
+## 0.6.2 (2024-08-16)
+
+
+### 🩹 Fixes
+
+- deps workspace ([b6a632b](https://github.com/radix-ng/primitives/commit/b6a632b))
+
 ## 0.6.1 (2024-08-15)
 
 
