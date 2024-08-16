@@ -23,6 +23,7 @@ import {
     Check,
     ChevronDown,
     ChevronRight,
+    Dot,
     LucideAngularModule,
     Minus,
     MoreHorizontal,
@@ -54,7 +55,8 @@ export const appConfig: ApplicationConfig = {
                 Check,
                 MoreHorizontal,
                 ChevronRight,
-                ChevronDown
+                ChevronDown,
+                Dot
             })
         ),
 

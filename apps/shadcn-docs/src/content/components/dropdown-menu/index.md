@@ -36,3 +36,7 @@ import {
 ### Checkbox
 
 {{ NgDocActions.demo("DropdownExampleCheckboxComponent", { expanded: false}) }}
+
+### Radio
+
+{{ NgDocActions.demo("DropdownExampleRadioComponent", { expanded: false}) }}

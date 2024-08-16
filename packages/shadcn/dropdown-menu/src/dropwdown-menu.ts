@@ -4,16 +4,23 @@ import {
     RdxDropdownMenuItemCheckboxDirective,
     RdxDropdownMenuItemDirective,
     RdxDropdownMenuItemIndicatorDirective,
+    RdxDropdownMenuItemRadioDirective,
+    RdxDropdownMenuItemRadioGroupDirective,
     RdxDropdownMenuLabelDirective
 } from '@radix-ng/primitives/dropdown-menu';
 import { RdxMenuGroupDirective, RdxMenuSeparatorDirective } from '@radix-ng/primitives/menu';
 import { cn } from '@radix-ng/shadcn/core';
-import { cva } from 'class-variance-authority';
 import { LucideAngularModule } from 'lucide-angular';
-
-const dropdownMenuContentVariants = cva(
-    'z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2'
-);
+import {
+    dropdownMenuCheckboxItemVariants,
+    dropdownMenuContentVariants,
+    dropdownMenuItemVariants,
+    dropdownMenuLabelVariants,
+    dropdownMenuRadioItemVariants,
+    dropdownMenuSeparatorVariants,
+    dropdownMenuShortcutVariants,
+    dropdownMenuSubContentVariants
+} from './styles';
 
 @Component({
     selector: 'shDropdownMenuContent',
@@ -30,10 +37,6 @@ export class ShDropdownMenuContentComponent {
     protected computedClass = computed(() => cn(dropdownMenuContentVariants({ class: this.class() })));
 }
 
-const dropdownMenuSubContentVariants = cva(
-    'z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2'
-);
-
 @Directive({
     selector: '[shDropdownMenuSubContent]',
     standalone: true,
@@ -47,15 +50,6 @@ export class ShDropdownMenuSubContent {
 
     protected computedClass = computed(() => cn(dropdownMenuSubContentVariants({ class: this.class() })));
 }
-
-const dropdownMenuLabelVariants = cva('flex px-2 py-1.5 text-sm font-semibold', {
-    variants: {
-        inset: { true: 'pl-8', false: '' }
-    },
-    defaultVariants: {
-        inset: false
-    }
-});
 
 @Component({
     selector: 'shDropdownMenuLabel',
@@ -75,18 +69,6 @@ export class ShDropdownMenuLabelComponent {
     );
 }
 
-const dropdownMenuItemVariants = cva(
-    'relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
-    {
-        variants: {
-            inset: { true: 'pl-8', false: '' }
-        },
-        defaultVariants: {
-            inset: false
-        }
-    }
-);
-
 @Component({
     selector: 'shDropdownMenuItem',
     standalone: true,
@@ -105,7 +87,6 @@ export class ShDropdownMenuItemComponent {
     );
 }
 
-const dropdownMenuSeparatorVariants = cva('flex -mx-1 my-1 h-px bg-muted');
 @Component({
     selector: 'shDropdownMenuSeparator',
     standalone: true,
@@ -121,7 +102,6 @@ export class ShDropdownMenuSeparatorComponent {
     protected computedClass = computed(() => cn(dropdownMenuSeparatorVariants({ class: this.class() })));
 }
 
-const dropdownMenuShortcutVariants = cva('flex ml-auto text-xs tracking-widest opacity-60');
 @Component({
     selector: 'shDropdownMenuShortcut',
     standalone: true,
@@ -134,29 +114,6 @@ export class ShDropdownMenuShortcutComponent {
     readonly class = input<string>();
 
     protected computedClass = computed(() => cn(dropdownMenuShortcutVariants({ class: this.class() })));
-}
-
-const dropdownMenuCheckboxItemVariants = cva(
-    'relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
-);
-@Directive({
-    selector: '[shDropdownMenuCheckboxItem]',
-    standalone: true,
-    hostDirectives: [
-        {
-            directive: RdxDropdownMenuItemCheckboxDirective,
-            inputs: ['checked'],
-            outputs: ['checkedChange']
-        }
-    ],
-    host: {
-        '[class]': 'computedClass()'
-    }
-})
-export class ShDropdownMenuCheckboxItemDirective {
-    readonly class = input<string>();
-
-    protected computedClass = computed(() => cn(dropdownMenuCheckboxItemVariants({ class: this.class() })));
 }
 
 @Component({
@@ -189,6 +146,60 @@ export class ShDropdownMenuCheckboxItemComponent {
     readonly class = input<string>();
 
     protected computedClass = computed(() => cn(dropdownMenuCheckboxItemVariants({ class: this.class() })));
+}
+
+@Component({
+    selector: 'shDropdownMenuRadioItem',
+    standalone: true,
+    imports: [
+        LucideAngularModule,
+        RdxDropdownMenuItemIndicatorDirective
+    ],
+    template: `
+        <div class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+            <div rdxDropdownMenuItemIndicator>
+                <lucide-icon class="flex fill-current" size="16" strokeWidth="8" name="dot" />
+            </div>
+        </div>
+        <ng-content />
+    `,
+    hostDirectives: [
+        {
+            directive: RdxDropdownMenuItemRadioDirective,
+            inputs: ['value'],
+            outputs: ['checkedChange']
+        }
+    ],
+    host: {
+        '[class]': 'computedClass()'
+    }
+})
+export class ShDropdownMenuRadioItemComponent {
+    readonly class = input<string>();
+
+    protected computedClass = computed(() => cn(dropdownMenuRadioItemVariants({ class: this.class() })));
+}
+
+@Component({
+    selector: 'shDropdownMenuRadioGroup',
+    standalone: true,
+    template: '<ng-content></ng-content>',
+    hostDirectives: [
+        {
+            directive: RdxDropdownMenuItemRadioGroupDirective,
+            inputs: ['value:value'],
+            outputs: ['valueChange']
+        }
+    ],
+    host: {
+        '[class]': 'computedClass()'
+    }
+})
+export class ShDropdownMenuRadioGroupComponent {
+    readonly class = input<string>();
+    readonly value = input<string>();
+
+    protected computedClass = computed(() => cn({ class: this.class() }));
 }
 
 @Component({
