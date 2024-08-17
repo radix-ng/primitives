@@ -22,6 +22,7 @@ async function loadComponent(name: string, demoName: string) {
     const { default: Component } = await import(`./demos/${name}/${demoName}.ts`);
 
     const code = readFileSync(filename, "utf-8")
+        .toString()
         .replace(/export\s+default\s+.*;\s*/, "");
 
     return {
@@ -35,8 +36,12 @@ const { Component, code } = await loadComponent(name, demoName);
 
 <div class="not-content group relative my-4 flex flex-col space-y-2">
     <div>
-        <div id="Preview">
-            <Component />
+        <div class="mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 relative rounded-md border">
+            <div class="w-full" style="--radius: 0.5rem;">
+                <div class="preview flex min-h-[350px] w-full justify-center p-10 items-center not-content">
+                    <Component />
+                </div>
+            </div>
         </div>
         <div id="Code">
             <pre  lang="angular-ts">{code}</pre>

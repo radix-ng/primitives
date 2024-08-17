@@ -4,4 +4,6 @@ import { Component } from '@angular/core';
     standalone: true,
     template: 'Test'
 })
-export default class AvatarDemoComponent {}
+export class AvatarDemoComponent {}
+
+export default AvatarDemoComponent;
