@@ -49,7 +49,7 @@ export const Default = {
     <div class="Text" style="font-weight: 500;">
       An open-source UI component library.
     </div>
-    <div SeparatorRoot
+    <div rdxSeparatorRoot
         class="SeparatorRoot"
         style="margin: 15px 0;"
     ></div>
@@ -57,19 +57,19 @@ export const Default = {
       <div class="Text">
         Blog
       </div>
-      <div SeparatorRoot
+      <div rdxSeparatorRoot
         class="SeparatorRoot"
-        rdxDecorative="decorative"
-        rdxOrientation="vertical"
+        decorative="decorative"
+        orientation="vertical"
         style="margin: 0 15px;"
       ></div>
       <div class="Text">
         Docs
       </div>
-      <div SeparatorRoot
+      <div rdxSeparatorRoot
         class="SeparatorRoot"
-        rdxDecorative="decorative"
-        rdxOrientation="vertical"
+        decorative="decorative"
+        orientation="vertical"
         style="margin: 0 15px;"
       ></div>
       <div class="Text">

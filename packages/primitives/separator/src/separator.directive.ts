@@ -18,7 +18,7 @@ export interface SeparatorProps {
 }
 
 @Directive({
-    selector: 'div[SeparatorRoot]',
+    selector: 'div[rdxSeparatorRoot]',
     standalone: true,
     host: {
         '[attr.role]': 'decorative ? "none" : "separator"',
@@ -28,7 +28,7 @@ export interface SeparatorProps {
     }
 })
 export class RdxSeparatorRootDirective implements SeparatorProps {
-    @Input('rdxOrientation') orientation: Orientation = DEFAULT_ORIENTATION;
+    @Input() orientation: Orientation = DEFAULT_ORIENTATION;
 
-    @Input({ alias: 'rdxDecorative', transform: booleanAttribute }) decorative = false;
+    @Input({ transform: booleanAttribute }) decorative = false;
 }
