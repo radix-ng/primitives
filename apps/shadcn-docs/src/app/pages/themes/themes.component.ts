@@ -2,10 +2,10 @@ import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
 import {
-    ShCardContentDirective,
-    ShCardDirective,
-    ShCardHeaderDirective,
-    ShCardTitleDirective
+    ShCardComponent,
+    ShCardContentComponent,
+    ShCardHeaderComponent,
+    ShCardTitleComponent
 } from '@radix-ng/shadcn/card';
 import { cn } from '@radix-ng/shadcn/core';
 import { themes } from '@radix-ng/shadcn/theme';
@@ -20,10 +20,10 @@ import { CardCreateAccountComponent } from './cards/card-create-account.componen
     standalone: true,
     imports: [
         RouterLink,
-        ShCardDirective,
-        ShCardHeaderDirective,
-        ShCardTitleDirective,
-        ShCardContentDirective,
+        ShCardComponent,
+        ShCardHeaderComponent,
+        ShCardTitleComponent,
+        ShCardContentComponent,
         ShButtonDirective,
         LucideAngularModule,
         CardChatComponent,

@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
 import {
-    ShCardContentDirective,
-    ShCardDescriptionDirective,
-    ShCardDirective,
-    ShCardFooterDirective,
-    ShCardHeaderDirective,
-    ShCardTitleDirective
+    ShCardComponent,
+    ShCardContentComponent,
+    ShCardDescriptionComponent,
+    ShCardFooterComponent,
+    ShCardHeaderComponent,
+    ShCardTitleComponent
 } from '@radix-ng/shadcn/card';
 import { ShInputDirective } from '@radix-ng/shadcn/input';
 import { ShLabelDirective } from '@radix-ng/shadcn/label';
@@ -16,16 +16,16 @@ import { LucideAngularModule } from 'lucide-angular';
     selector: 'app-card-create-account',
     standalone: true,
     imports: [
-        ShCardDirective,
-        ShCardHeaderDirective,
-        ShCardTitleDirective,
-        ShCardDescriptionDirective,
-        ShCardContentDirective,
+        ShCardComponent,
+        ShCardHeaderComponent,
+        ShCardTitleComponent,
+        ShCardDescriptionComponent,
+        ShCardContentComponent,
         ShButtonDirective,
         LucideAngularModule,
         ShLabelDirective,
         ShInputDirective,
-        ShCardFooterDirective
+        ShCardFooterComponent
     ],
     template: `
         <div shCard>

@@ -1,22 +1,22 @@
 import { NgModule } from '@angular/core';
 import {
-    ShCardContentDirective,
-    ShCardDescriptionDirective,
-    ShCardDirective,
-    ShCardFooterDirective,
-    ShCardHeaderDirective,
-    ShCardTitleDirective
+    ShCardComponent,
+    ShCardContentComponent,
+    ShCardDescriptionComponent,
+    ShCardFooterComponent,
+    ShCardHeaderComponent,
+    ShCardTitleComponent
 } from './src/card.component';
 
 export * from './src/card.component';
 
 const cardImports = [
-    ShCardTitleDirective,
-    ShCardDirective,
-    ShCardContentDirective,
-    ShCardFooterDirective,
-    ShCardDescriptionDirective,
-    ShCardHeaderDirective
+    ShCardTitleComponent,
+    ShCardComponent,
+    ShCardContentComponent,
+    ShCardFooterComponent,
+    ShCardDescriptionComponent,
+    ShCardHeaderComponent
 ];
 
 @NgModule({

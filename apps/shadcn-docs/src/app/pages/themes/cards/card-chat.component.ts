@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
 import {
-    ShCardContentDirective,
-    ShCardDirective,
-    ShCardFooterDirective,
-    ShCardHeaderDirective
+    ShCardComponent,
+    ShCardContentComponent,
+    ShCardFooterComponent,
+    ShCardHeaderComponent
 } from '@radix-ng/shadcn/card';
 import { cn } from '@radix-ng/shadcn/core';
 import { LucideAngularModule } from 'lucide-angular';
@@ -13,12 +13,12 @@ import { LucideAngularModule } from 'lucide-angular';
     selector: 'app-card-chat',
     standalone: true,
     imports: [
-        ShCardContentDirective,
-        ShCardDirective,
-        ShCardHeaderDirective,
+        ShCardContentComponent,
+        ShCardComponent,
+        ShCardHeaderComponent,
         ShButtonDirective,
         LucideAngularModule,
-        ShCardFooterDirective
+        ShCardFooterComponent
     ],
     template: `
         <div shCard>

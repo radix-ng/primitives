@@ -45,29 +45,29 @@
                 <a href="#">Advanced</a>
             </nav>
             <div class="grid gap-6">
-                <div shCard x-chunk="dashboard-04-chunk-1">
-                    <div shCardHeader>
-                        <div shCardTitle>Store Name</div>
-                        <div shCardDescription>Used to identify your store in the marketplace.</div>
-                    </div>
-                    <div shCardContent>
+                <shCard x-chunk="dashboard-04-chunk-1">
+                    <shCardHeader>
+                        <shCardTitle>Store Name</shCardTitle>
+                        <shCardDescription>Used to identify your store in the marketplace.</shCardDescription>
+                    </shCardHeader>
+                    <shCardContent>
                         <form>
                             <input placeholder="Store Name" shInput type="text" />
                         </form>
-                    </div>
-                    <div shCardFooter class="border-t px-6 py-4">
+                    </shCardContent>
+                    <shCardFooter class="border-t px-6 py-4">
                         <button shButton>Save</button>
-                    </div>
-                </div>
+                    </shCardFooter>
+                </shCard>
 
-                <div shCard x-chunk="dashboard-04-chunk-2">
-                    <div shCardHeader>
-                        <div shCardTitle>Plugins Directory</div>
-                        <div shCardDescription>
+                <shCard x-chunk="dashboard-04-chunk-2">
+                    <shCardHeader>
+                        <shCardTitle>Plugins Directory</shCardTitle>
+                        <shCardDescription>
                             The directory within your project, in which your plugins are located.
-                        </div>
-                    </div>
-                    <div shCardContent>
+                        </shCardDescription>
+                    </shCardHeader>
+                    <shCardContent>
                         <form class="flex flex-col gap-4">
                             <input placeholder="Project Name" shInput type="text" />
                             <div class="flex items-center space-x-2">
@@ -80,11 +80,11 @@
                                 </label>
                             </div>
                         </form>
-                    </div>
-                    <div shCardFooter class="border-t px-6 py-4">
+                    </shCardContent>
+                    <shCardFooter class="border-t px-6 py-4">
                         <button shButton>Save</button>
-                    </div>
-                </div>
+                    </shCardFooter>
+                </shCard>
             </div>
         </div>
     </main>

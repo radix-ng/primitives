@@ -7,15 +7,14 @@
                 class="bg-background sticky top-0 z-30 flex h-14 items-center gap-4 border-b px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6"
             ></header>
             <main class="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-                <div
-                    shCard
+                <shCard
                     x-chunk="A list of products in a table with actions. Each row has an image, name, status, price, total sales, created at and actions."
                 >
-                    <div shCardHeader>
-                        <div shCardTitle>Products</div>
-                        <div shCardDescription>Manage your products and view their sales performance.</div>
-                    </div>
-                    <div shCardContent>
+                    <shCardHeader>
+                        <shCardTitle>Products</shCardTitle>
+                        <shCardDescription>Manage your products and view their sales performance.</shCardDescription>
+                    </shCardHeader>
+                    <shCardContent>
                         <div class="relative w-full overflow-auto">
                             <table Table>
                                 <thead TableHeader>
@@ -70,8 +69,8 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-                </div>
+                    </shCardContent>
+                </shCard>
             </main>
         </div>
     </div>

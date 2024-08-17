@@ -1,66 +1,72 @@
-import { computed, Directive, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { cn } from '@radix-ng/shadcn/core';
 import { cva } from 'class-variance-authority';
 
-@Directive({
-    selector: '[shCard]',
+@Component({
+    selector: 'shCard',
     standalone: true,
+    template: '<ng-content></ng-content>',
     host: {
         '[class]': "'bg-card text-card-foreground rounded-xl border shadow'"
     }
 })
-export class ShCardDirective {}
+export class ShCardComponent {}
 
 const cardHeaderVariants = cva('flex flex-col space-y-1.5 p-6');
-@Directive({
-    selector: '[shCardHeader]',
+@Component({
+    selector: 'shCardHeader',
     standalone: true,
+    template: '<ng-content></ng-content>',
     host: {
         '[class]': 'computedClass()'
     }
 })
-export class ShCardHeaderDirective {
+export class ShCardHeaderComponent {
     readonly class = input<string>();
 
     protected computedClass = computed(() => cn(cardHeaderVariants({ class: this.class() })));
 }
 
-@Directive({
-    selector: '[shCardTitle]',
+@Component({
+    selector: 'shCardTitle, [shCardTitle]',
     standalone: true,
+    template: '<ng-content></ng-content>',
     host: {
         '[class]': "'font-semibold leading-none tracking-tight'"
     }
 })
-export class ShCardTitleDirective {}
+export class ShCardTitleComponent {}
 
-@Directive({
-    selector: '[shCardDescription]',
+@Component({
+    selector: 'shCardDescription',
     standalone: true,
+    template: '<ng-content></ng-content>',
     host: {
         '[class]': "'text-sm text-muted-foreground'"
     }
 })
-export class ShCardDescriptionDirective {}
+export class ShCardDescriptionComponent {}
 
-@Directive({
-    selector: '[shCardContent]',
+@Component({
+    selector: 'shCardContent',
     standalone: true,
+    template: '<ng-content></ng-content>',
     host: {
-        '[class]': "'p-6 pt-0'"
+        '[class]': "'p-6 pt-0 block'"
     }
 })
-export class ShCardContentDirective {}
+export class ShCardContentComponent {}
 
 const cardFooterVariants = cva('flex items-center p-6 pt-0');
-@Directive({
-    selector: '[shCardFooter]',
+@Component({
+    selector: 'shCardFooter',
     standalone: true,
+    template: '<ng-content></ng-content>',
     host: {
         '[class]': 'computedClass()'
     }
 })
-export class ShCardFooterDirective {
+export class ShCardFooterComponent {
     readonly class = input<string>();
 
     protected computedClass = computed(() => cn(cardFooterVariants({ class: this.class() })));

@@ -1,13 +1,14 @@
 import { NgOptimizedImage } from '@angular/common';
 import { Component } from '@angular/core';
+import { ShBadgeDirective } from '@radix-ng/shadcn/badge';
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
 import {
-    ShCardContentDirective,
-    ShCardDescriptionDirective,
-    ShCardDirective,
-    ShCardFooterDirective,
-    ShCardHeaderDirective,
-    ShCardTitleDirective
+    ShCardComponent,
+    ShCardContentComponent,
+    ShCardDescriptionComponent,
+    ShCardFooterComponent,
+    ShCardHeaderComponent,
+    ShCardTitleComponent
 } from '@radix-ng/shadcn/card';
 import { ShInputDirective } from '@radix-ng/shadcn/input';
 import { ShLabelDirective } from '@radix-ng/shadcn/label';
@@ -21,7 +22,6 @@ import {
     TableHeaderDirective,
     TableRowDirective
 } from '@radix-ng/shadcn/table';
-import { ShBadgeDirective } from '../../../../../packages/shadcn/badge/src/badge.direcitve';
 import { BlockToolbarComponent } from '../components/block-toolbar.component';
 
 @Component({
@@ -30,12 +30,12 @@ import { BlockToolbarComponent } from '../components/block-toolbar.component';
     templateUrl: './dashboard-06.component.html',
     imports: [
         BlockToolbarComponent,
-        ShCardDirective,
-        ShCardHeaderDirective,
-        ShCardTitleDirective,
-        ShCardDescriptionDirective,
-        ShCardContentDirective,
-        ShCardFooterDirective,
+        ShCardComponent,
+        ShCardHeaderComponent,
+        ShCardTitleComponent,
+        ShCardDescriptionComponent,
+        ShCardContentComponent,
+        ShCardFooterComponent,
         ShInputDirective,
         ShButtonDirective,
         ShLabelDirective,
