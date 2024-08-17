@@ -33,10 +33,15 @@ const siteConfig = {
                 {
                     section: 'Overview',
                     pages: [
-                        { name: 'Introduction', url: '/' },
-                        { name: 'Installation', url: '/overview/installation' },
-                        { name: 'Component', url: '/overview/custom-component' }
+                        { name: 'Introduction', url: '/primitives/overview/introduction' },
+                        { name: 'Installation', url: '/primitives/overview/installation' },
+                        { name: 'Overview', url: '/primitives/overview/overview' }
                     ]
+                },
+                {
+                    section: 'Components',
+                    pages: [
+                        { name: 'Avatar', url: '/primitives/components/avatar' }]
                 }
             ]
         }

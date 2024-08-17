@@ -1,7 +1,8 @@
 ---
+const firstSegment = Astro.url.pathname.split('/')[1];
 
-function isActive(pageUrl: string) {
-    return true;
+function isActive(segment: string) {
+    return firstSegment === segment;
 }
 ---
 <header class='fixed shrink-0 w-full bg-background-blur backdrop-blur-lg z-50'>
@@ -23,13 +24,17 @@ function isActive(pageUrl: string) {
                 <a
                     href="/themes/overview/getting-started"
                     class={
-                        isActive('')
+                        isActive('themes')
                             ? 'bg-black rounded-full text-primary-foreground h-6 px-3 text-[14px] lg:inline-flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none'
-                            : ''}>
+                            : 'px-3 '}>
                     Themes
                 </a>
                 <a
-                    class='h-6 px-3 text-[14px] lg:inline-flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none'>
+                    href="/primitives/overview/introduction"
+                    class={
+                        isActive('primitives')
+                            ? 'bg-black rounded-full text-primary-foreground h-6 px-3 text-[14px] lg:inline-flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none'
+                            : 'px-3 '}>
                     Primitives
                 </a>
             </div>

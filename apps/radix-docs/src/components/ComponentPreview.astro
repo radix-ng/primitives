@@ -1,0 +1,45 @@
+---
+import path from 'path';
+import { readFileSync } from 'fs';
+
+export interface Props {
+    name: string;
+    demoName: string;
+}
+const { name , demoName} = Astro.props;
+
+
+async function loadComponent(name: string, demoName: string) {
+    const filename = path.join(
+        process.cwd(),
+        "src",
+        "components",
+        "demos",
+        `${name}`,
+        `${demoName}.ts`
+    );
+
+    const { default: Component } = await import(`./demos/${name}/${demoName}.ts`);
+
+    const code = readFileSync(filename, "utf-8")
+        .replace(/export\s+default\s+.*;\s*/, "");
+
+    return {
+        Component,
+        code
+    };
+}
+
+const { Component, code } = await loadComponent(name, demoName);
+---
+
+<div class="not-content group relative my-4 flex flex-col space-y-2">
+    <div>
+        <div id="Preview">
+            <Component />
+        </div>
+        <div id="Code">
+            <pre  lang="angular-ts">{code}</pre>
+        </div>
+    </div>
+</div>

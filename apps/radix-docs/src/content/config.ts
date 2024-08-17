@@ -9,4 +9,8 @@ const themes = defineCollection({
     schema: docsSchema
 });
 
-export const collections = { themes };
+const primitives = defineCollection({
+    schema: docsSchema
+});
+
+export const collections = { themes, primitives };
