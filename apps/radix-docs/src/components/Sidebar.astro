@@ -29,12 +29,12 @@ function isActive(pageUrl: string) {
 
 <aside class='fixed top-32 hidden shrink-0 lg:block w-56 pl-4'>
     <nav class='flex flex-1 flex-col'>
-        <ul role='list' class='flex flex-1 flex-col gap-y-7'>
+        <ul role='list' class='flex flex-1 flex-col gap-y-7 pl-3'>
             {
                 pages.map(({ section, pages }) => (
                     <li>
                         <div class='flex flex-col gap-y-2'>
-                            <div class='text-sm font-medium'>{section}</div>
+                            <h4 class='text-sm font-medium'>{section}</h4>
                             <ul class='space-y-1'>
                                 {pages.map((page) => {
                                     const active = isActive(page.url)
@@ -44,8 +44,8 @@ function isActive(pageUrl: string) {
                                                 href={page.url}
                                                 class={
                                                     active
-                                                        ? 'text-primary bg-primary/10 block -ml-2 pl-2 py-1 pr-2 rounded-lg text-sm font-light'
-                                                        : 'block -ml-2 pl-2 hover:bg-primary/10 py-1 pr-2 rounded-lg text-sm font-light hover:text-primary text-muted-foreground'
+                                                        ? 'bg-primary/10 block -ml-2 pl-2 py-1 pr-2 rounded-lg text-sm font-light'
+                                                        : 'block -ml-2 pl-2 hover:bg-primary/10 py-1 pr-2 rounded-lg text-sm font-light text-muted-foreground'
                                                 }>
                                                 {page.name}
                                             </a>
