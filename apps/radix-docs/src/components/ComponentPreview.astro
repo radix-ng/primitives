@@ -1,30 +1,30 @@
 ---
 import path from 'path';
 import { readFileSync } from 'fs';
-import { Code } from 'astro-expressive-code/components'
+import { Code } from 'astro-expressive-code/components';
 
 export interface Props {
     name: string;
-    demoName: string;
+    file: string;
 }
-const { name , demoName} = Astro.props;
+const { name, file } = Astro.props;
 
 
-async function loadComponent(name: string, demoName: string) {
+async function loadComponent(name: string, file: string) {
     const filename = path.join(
         process.cwd(),
-        "src",
-        "components",
-        "demos",
+        'src',
+        'components',
+        'demos',
         `${name}`,
-        `${demoName}.ts`
+        `${file}.ts`
     );
 
-    const { default: Component } = await import(`./demos/${name}/${demoName}.ts`);
+    const { default: Component } = await import(`./demos/${name}/${file}.ts`);
 
-    const code = readFileSync(filename, "utf-8")
+    const code = readFileSync(filename, 'utf-8')
         .toString()
-        .replace(/export\s+default\s+.*;\s*/, "");
+        .replace(/export\s+default\s+.*;\s*/, '');
 
     return {
         Component,
@@ -32,20 +32,17 @@ async function loadComponent(name: string, demoName: string) {
     };
 }
 
-const { Component, code } = await loadComponent(name, demoName);
+const { Component, code } = await loadComponent(name, file);
 ---
 
-<div class="not-content group relative my-4 flex flex-col space-y-2">
-    <div>
-        <div class="mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 relative rounded-md border">
-            <div class="w-full">
-                <div class="preview flex min-h-[350px] w-full justify-center p-10 items-center not-content">
-                    <Component />
-                </div>
-            </div>
+<div class="relative text-[15px] text-black">
+    <div
+        class="vp-raw bg-gradient-to-br p-4 rounded-t-lg from-purple9 to-indigo9 w-full relative items-center justify-center flex">
+        <div class="w-full max-w-[700px] flex items-center py-12 sm:py-[100px] justify-center ">
+            <Component />
         </div>
-        <div id="Code">
-            <Code code={code} lang="angular-ts" />
-        </div>
+    </div>
+    <div id="Code">
+        <Code code={code} lang="angular-ts" />
     </div>
 </div>

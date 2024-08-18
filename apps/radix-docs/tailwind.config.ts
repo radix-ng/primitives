@@ -1,11 +1,24 @@
+import { blackA, cyan, grass, green, indigo, mauve, purple, red, slate, teal, violet } from '@radix-ui/colors';
 import { type Config } from 'tailwindcss';
 import { fontFamily } from 'tailwindcss/defaultTheme';
 
 const config = {
-    content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
+    content: ['./src/**/*.{astro,html,mdx,ts}'],
     theme: {
         extend: {
             colors: {
+                ...blackA,
+                ...mauve,
+                ...violet,
+                ...green,
+                ...red,
+                ...grass,
+                ...teal,
+                ...cyan,
+                ...indigo,
+                ...purple,
+                ...slate,
+
                 border: 'hsl(var(--border))',
                 input: 'hsl(var(--input))',
                 ring: 'hsl(var(--ring))',
@@ -29,6 +42,9 @@ const config = {
                 sans: ['Inter', ...fontFamily.sans]
             }
         }
+    },
+    corePlugins: {
+        preflight: true
     },
     plugins: [require('@tailwindcss/typography')]
 } satisfies Config;
