@@ -4841,7 +4841,7 @@ packages:
     engines: {node: '>=v18'}
     dependencies:
       '@commitlint/types': 19.0.3
-      semver: 7.6.2
+      semver: 7.6.3
     dev: true
 
   /@commitlint/lint@19.2.2:
@@ -6863,11 +6863,11 @@ packages:
       detect-libc: 2.0.3
       https-proxy-agent: 5.0.1
       make-dir: 3.1.0
-      node-fetch: 2.6.7
+      node-fetch: 2.7.0
       nopt: 5.0.0
       npmlog: 5.0.1
       rimraf: 3.0.2
-      semver: 7.6.2
+      semver: 7.6.3
       tar: 6.2.0
     transitivePeerDependencies:
       - encoding
@@ -7394,7 +7394,7 @@ packages:
       proc-log: 3.0.0
       promise-inflight: 1.0.1
       promise-retry: 2.0.1
-      semver: 7.6.2
+      semver: 7.6.3
       which: 4.0.0
     transitivePeerDependencies:
       - bluebird
@@ -7424,7 +7424,7 @@ packages:
       json-parse-even-better-errors: 3.0.1
       normalize-package-data: 6.0.0
       proc-log: 4.2.0
-      semver: 7.6.2
+      semver: 7.6.3
     transitivePeerDependencies:
       - bluebird
     dev: true
@@ -14600,7 +14600,7 @@ packages:
     engines: {node: '>=12'}
     dependencies:
       bin-version: 6.0.0
-      semver: 7.6.2
+      semver: 7.6.3
       semver-truncate: 3.0.0
     dev: true
 
@@ -14834,7 +14834,7 @@ packages:
   /builtins@5.0.1:
     resolution: {integrity: sha512-qwVpFEHNfhYJIzNRBvd2C1kyo6jz3ZSMPyyuR47OPdiKWlbYnZNyDWuyR175qDnAJLiCo5fBBqPb3RiXgWlkOQ==}
     dependencies:
-      semver: 7.6.2
+      semver: 7.6.3
     dev: true
 
   /bundle-name@4.1.0:
@@ -15861,7 +15861,7 @@ packages:
       postcss-modules-scope: 3.2.0(postcss@8.4.41)
       postcss-modules-values: 4.0.0(postcss@8.4.41)
       postcss-value-parser: 4.2.0
-      semver: 7.6.2
+      semver: 7.6.3
       webpack: 5.90.3(@swc/core@1.5.7)(esbuild@0.19.5)
     dev: true
 
@@ -15884,7 +15884,7 @@ packages:
       postcss-modules-scope: 3.2.0(postcss@8.4.41)
       postcss-modules-values: 4.0.0(postcss@8.4.41)
       postcss-value-parser: 4.2.0
-      semver: 7.6.2
+      semver: 7.6.3
       webpack: 5.91.0(@swc/core@1.5.7)(esbuild@0.19.5)
     dev: true
 
@@ -17918,7 +17918,7 @@ packages:
       minimatch: 3.1.2
       node-abort-controller: 3.1.1
       schema-utils: 3.3.0
-      semver: 7.6.2
+      semver: 7.6.3
       tapable: 2.2.1
       typescript: 5.5.4
       webpack: 5.91.0(@swc/core@1.5.7)(esbuild@0.19.5)
@@ -17941,7 +17941,7 @@ packages:
       minimatch: 3.1.2
       node-abort-controller: 3.1.1
       schema-utils: 3.3.0
-      semver: 7.6.2
+      semver: 7.6.3
       tapable: 2.2.1
       typescript: 5.5.4
       webpack: 5.90.3(@swc/core@1.5.7)(esbuild@0.19.5)
@@ -20386,7 +20386,7 @@ packages:
       jest-util: 29.7.0
       natural-compare: 1.4.0
       pretty-format: 29.7.0
-      semver: 7.6.2
+      semver: 7.6.3
     transitivePeerDependencies:
       - supports-color
 
@@ -20661,7 +20661,7 @@ packages:
       lodash.isstring: 4.0.1
       lodash.once: 4.1.1
       ms: 2.1.3
-      semver: 7.6.2
+      semver: 7.6.3
     dev: true
 
   /jsprim@2.0.2:
@@ -21348,7 +21348,7 @@ packages:
     resolution: {integrity: sha512-hXdUTZYIVOt1Ex//jAQi+wTZZpUpwBj/0QsOzqegb3rGMMeJiSEu5xLHnYfBrRV4RH2+OCSOO95Is/7x1WJ4bw==}
     engines: {node: '>=10'}
     dependencies:
-      semver: 7.6.2
+      semver: 7.6.3
 
   /make-error@1.3.6:
     resolution: {integrity: sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==}
@@ -22881,6 +22881,18 @@ packages:
       whatwg-url: 5.0.0
     dev: true
 
+  /node-fetch@2.7.0:
+    resolution: {integrity: sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==}
+    engines: {node: 4.x || >=6.0.0}
+    peerDependencies:
+      encoding: ^0.1.0
+    peerDependenciesMeta:
+      encoding:
+        optional: true
+    dependencies:
+      whatwg-url: 5.0.0
+    dev: true
+
   /node-forge@1.3.1:
     resolution: {integrity: sha512-dPEtOeMvF9VMcYV/1Wb8CPoVAXtp6MKMlcbAt4ddqmGqUJ6fQZFXkNZNkNlfevtNkGtaSoXf/vNNNSvgrdXwtA==}
     engines: {node: '>= 6.13.0'}
@@ -22909,7 +22921,7 @@ packages:
       make-fetch-happen: 13.0.0
       nopt: 7.2.0
       proc-log: 3.0.0
-      semver: 7.6.2
+      semver: 7.6.3
       tar: 6.2.0
       which: 4.0.0
     transitivePeerDependencies:
@@ -22965,7 +22977,7 @@ packages:
     dependencies:
       hosted-git-info: 7.0.1
       is-core-module: 2.13.1
-      semver: 7.6.2
+      semver: 7.6.3
       validate-npm-package-license: 3.0.4
     dev: true
 
@@ -22997,7 +23009,7 @@ packages:
     resolution: {integrity: sha512-W29RiK/xtpCGqn6f3ixfRYGk+zRyr+Ew9F2E20BfXxT5/euLdA/Nm7fO7OeTGuAmTs30cpgInyJ0cYe708YTZw==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
     dependencies:
-      semver: 7.6.2
+      semver: 7.6.3
     dev: true
 
   /npm-normalize-package-bin@3.0.1:
@@ -24253,7 +24265,7 @@ packages:
       cosmiconfig: 7.1.0
       klona: 2.0.6
       postcss: 8.4.41
-      semver: 7.6.2
+      semver: 7.6.3
       webpack: 5.91.0(@swc/core@1.5.7)(esbuild@0.19.5)
     dev: true
 
@@ -26390,7 +26402,7 @@ packages:
     resolution: {integrity: sha512-LJWA9kSvMolR51oDE6PN3kALBNaUdkxzAGcexw8gjMA8xr5zUqK0JiR3CgARSqanYF3Z1YHvsErb1KDgh+v7Rg==}
     engines: {node: '>=12'}
     dependencies:
-      semver: 7.6.2
+      semver: 7.6.3
     dev: true
 
   /semver@5.7.2:
@@ -27929,7 +27941,7 @@ packages:
       chalk: 4.1.2
       enhanced-resolve: 5.17.0
       micromatch: 4.0.7
-      semver: 7.6.2
+      semver: 7.6.3
       source-map: 0.7.4
       typescript: 5.5.4
       webpack: 5.91.0(@swc/core@1.5.7)(esbuild@0.19.5)

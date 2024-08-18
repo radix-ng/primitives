@@ -1,4 +1,4 @@
-import analogjsangular from '@analogjs/astro-angular';
+import angular from '@analogjs/astro-angular';
 import mdx from '@astrojs/mdx';
 import tailwind from '@astrojs/tailwind';
 import AutoImport from 'astro-auto-import';
@@ -18,7 +18,7 @@ export default defineConfig({
         },
         ssr: {
             noExternal: [
-                '@radix-ng/primitives',
+                '@radix-ng/**',
                 '@angular/common',
                 '@angular/core',
                 '@angular/core/rxjs-interop'
@@ -29,7 +29,6 @@ export default defineConfig({
         }
     },
     integrations: [
-        analogjsangular(),
         tailwind(),
         AutoImport({
             imports: [
@@ -38,7 +37,8 @@ export default defineConfig({
             ]
         }),
         astroExpressiveCode(),
-        mdx()
+        mdx(),
+        angular()
 
     ]
 });

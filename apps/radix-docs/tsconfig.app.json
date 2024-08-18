@@ -20,7 +20,10 @@
         "target": "es2020",
         "module": "es2020",
         "lib": ["es2020", "dom"],
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "paths": {
+            "@radix-ng/primitives/*": ["./dist/primitives/*"]
+        }
     },
     "angularCompilerOptions": {
         "enableI18nLegacyMessageIdFormat": false,

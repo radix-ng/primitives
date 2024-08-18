@@ -41,7 +41,9 @@ const siteConfig = {
                 {
                     section: 'Components',
                     pages: [
-                        { name: 'Label', url: '/primitives/components/label' }]
+                        { name: 'Avatar', url: '/primitives/components/avatar' },
+                        { name: 'Label', url: '/primitives/components/label' }
+                    ]
                 }
             ]
         }
