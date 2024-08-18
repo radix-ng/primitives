@@ -10,6 +10,7 @@ export default defineConfig({
     vite: {
         optimizeDeps: {
             include: [
+                '@radix-ng/primitives',
                 '@angular/common',
                 '@angular/core',
                 '@angular/cdk'
@@ -17,6 +18,7 @@ export default defineConfig({
         },
         ssr: {
             noExternal: [
+                '@radix-ng/primitives',
                 '@angular/common',
                 '@angular/core',
                 '@angular/core/rxjs-interop'
