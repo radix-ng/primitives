@@ -6,8 +6,8 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
     standalone: true,
     imports: [RdxLabelDirective],
     template: `
-        <label rdxLabel htmlFor="uniqId">First Name</label>
-        <input class="Input" id="uniqId" type="text" />
+        <label class="LabelRoot" rdxLabel htmlFor="firstName">First Name</label>
+        <input class="Input" id="firstName" type="text" value="Pedro Duarte" />
     `,
     styles: `
         input {
@@ -38,11 +38,11 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
             color: white;
         }
 
-        label {
-            color: white;
+        .LabelRoot {
             font-size: 15px;
-            line-height: 35px;
             font-weight: 500;
+            line-height: 35px;
+            color: white;
         }
     `
 })
