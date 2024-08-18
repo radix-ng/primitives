@@ -20,7 +20,53 @@ import {
                 />
                 <span class="AvatarFallback" rdxAvatarFallback rdxDelayMs="600">CT</span>
             </span>
+            <span class="AvatarRoot" rdxAvatarRoot>
+                <img
+                    class="AvatarImage"
+                    rdxAvatarImage
+                    src="https://images.unsplash.com/photo-1511485977113-f34c92461ad9?ixlib=rb-1.2.1&w=128&h=128&dpr=2&q=80"
+                    alt="Pedro Duarte"
+                />
+                <span class="AvatarFallback" rdxAvatarFallback rdxDelayMs="600">JD</span>
+            </span>
+            <span class="AvatarRoot" rdxAvatarRoot>
+                <span class="AvatarFallback" rdxAvatarFallback>PD</span>
+            </span>
         </div>
+    `,
+    styles: `
+        .AvatarRoot {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            overflow: hidden;
+            user-select: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 100%;
+            background-color: var(--black-a3);
+        }
+
+        .AvatarImage {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: inherit;
+        }
+
+        .AvatarFallback {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            color: var(--violet-11);
+            font-size: 15px;
+            line-height: 1;
+            font-weight: 500;
+        }
     `
 })
 export class AvatarDemoComponent {}
