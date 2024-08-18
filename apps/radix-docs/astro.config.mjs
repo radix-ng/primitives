@@ -1,8 +1,8 @@
 import analogjsangular from '@analogjs/astro-angular';
 import mdx from '@astrojs/mdx';
 import tailwind from '@astrojs/tailwind';
-
 import AutoImport from 'astro-auto-import';
+import astroExpressiveCode from 'astro-expressive-code';
 import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
@@ -34,6 +34,7 @@ export default defineConfig({
                 './src/components/ComponentPreview.astro'
             ]
         }),
+        astroExpressiveCode(),
         mdx()
 
     ]

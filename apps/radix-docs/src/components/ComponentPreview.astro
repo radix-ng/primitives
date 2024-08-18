@@ -1,6 +1,7 @@
 ---
 import path from 'path';
 import { readFileSync } from 'fs';
+import { Code } from 'astro-expressive-code/components'
 
 export interface Props {
     name: string;
@@ -37,14 +38,14 @@ const { Component, code } = await loadComponent(name, demoName);
 <div class="not-content group relative my-4 flex flex-col space-y-2">
     <div>
         <div class="mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 relative rounded-md border">
-            <div class="w-full" style="--radius: 0.5rem;">
+            <div class="w-full">
                 <div class="preview flex min-h-[350px] w-full justify-center p-10 items-center not-content">
                     <Component />
                 </div>
             </div>
         </div>
         <div id="Code">
-            <pre  lang="angular-ts">{code}</pre>
+            <Code code={code} lang="angular-ts" />
         </div>
     </div>
 </div>

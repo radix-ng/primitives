@@ -399,6 +399,9 @@ importers:
       astro-auto-import:
         specifier: ^0.4.2
         version: 0.4.2(astro@4.13.4)
+      astro-expressive-code:
+        specifier: ^0.35.6
+        version: 0.35.6(astro@4.13.4)
       sharp:
         specifier: ^0.33.4
         version: 0.33.4
