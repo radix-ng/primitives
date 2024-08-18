@@ -1,4 +1,18 @@
-import { blackA, cyan, grass, grayA, green, indigo, mauve, purple, red, slate, teal, violet } from '@radix-ui/colors';
+import {
+    blackA,
+    cyan,
+    grass,
+    gray,
+    grayA,
+    green,
+    indigo,
+    mauve,
+    purple,
+    red,
+    slate,
+    teal,
+    violet
+} from '@radix-ui/colors';
 import { type Config } from 'tailwindcss';
 import { fontFamily } from 'tailwindcss/defaultTheme';
 
@@ -8,6 +22,7 @@ const config = {
         extend: {
             colors: {
                 ...blackA,
+                ...gray,
                 ...grayA,
                 ...mauve,
                 ...violet,

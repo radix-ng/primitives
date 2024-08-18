@@ -31,7 +31,8 @@ export default defineConfig({
         tailwind(),
         AutoImport({
             imports: [
-                './src/components/ComponentPreview.astro'
+                './src/components/ComponentPreview.astro',
+                './src/components/mdx/Description.astro'
             ]
         }),
         astroExpressiveCode(),
