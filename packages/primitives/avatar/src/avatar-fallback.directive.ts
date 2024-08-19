@@ -1,4 +1,4 @@
-import { AfterViewInit, Directive, inject, Input, NgZone, numberAttribute, OnDestroy } from '@angular/core';
+import { Directive, inject, Input, NgZone, numberAttribute, OnDestroy, OnInit } from '@angular/core';
 import { injectAvatar } from './avatar-root.directive';
 import { injectAvatarConfig } from './avatar.config';
 
@@ -14,7 +14,7 @@ export interface RdxAvatarFallbackProps {
         '[style.display]': 'visible ? null : "none"'
     }
 })
-export class RdxAvatarFallbackDirective implements RdxAvatarFallbackProps, OnDestroy, AfterViewInit {
+export class RdxAvatarFallbackDirective implements RdxAvatarFallbackProps, OnInit, OnDestroy {
     private readonly avatar = injectAvatar();
 
     private readonly config = injectAvatarConfig();
@@ -39,7 +39,7 @@ export class RdxAvatarFallbackDirective implements RdxAvatarFallbackProps, OnDes
 
     private timeoutId: number | null = null;
 
-    ngAfterViewInit(): void {
+    ngOnInit(): void {
         this.ngZone.runOutsideAngular(() => {
             this.timeoutId = window.setTimeout(() => (this.delayElapsed = true), this.delayMs);
         });
