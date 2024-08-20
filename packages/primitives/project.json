@@ -14,6 +14,9 @@
             }
         },
         "build": {
+            "dependsOn": ["build-source", "build-compodoc"]
+        },
+        "build-source": {
             "executor": "@nx/angular:package",
             "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
             "options": {
@@ -28,6 +31,12 @@
                 }
             },
             "defaultConfiguration": "production"
+        },
+        "build-compodoc": {
+            "executor": "nx:run-script",
+            "options": {
+                "script": "compodoc"
+            }
         },
         "test": {
             "executor": "@nx/jest:jest",

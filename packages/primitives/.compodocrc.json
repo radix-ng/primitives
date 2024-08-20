@@ -1,0 +1,11 @@
+{
+    "tsconfig": "tsconfig.doc.json",
+    "output": "../../dist/primitives/compodoc",
+    "exportFormat": "json",
+    "hideGenerator": true,
+    "disableCoverage": true,
+    "disablePrivate": true,
+    "disableInternal": true,
+    "disableLifeCycleHooks": true,
+    "disableDependencies": true
+}
