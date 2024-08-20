@@ -1,14 +1,7 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { CdkMenuTrigger, MENU_TRIGGER, PARENT_OR_NEW_MENU_STACK_PROVIDER } from '@angular/cdk/menu';
 import { ConnectedPosition, OverlayRef, VerticalConnectionPos } from '@angular/cdk/overlay';
-import {
-    booleanAttribute,
-    Directive,
-    Input,
-    input,
-    numberAttribute,
-    TemplateRef
-} from '@angular/core';
+import { booleanAttribute, Directive, Input, input, numberAttribute, TemplateRef } from '@angular/core';
 import { outputFromObservable } from '@angular/core/rxjs-interop';
 
 export enum DropdownSide {

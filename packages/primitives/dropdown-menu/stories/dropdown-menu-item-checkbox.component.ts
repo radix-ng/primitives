@@ -23,11 +23,7 @@ import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.di
         </button>
 
         <ng-template #menu>
-            <div
-                class="DropdownMenuContent"
-                rdxDropdownMenuContent
-                [onEscapeKeyDown]="onEscapeKeyDown"
-            >
+            <div class="DropdownMenuContent" [onEscapeKeyDown]="onEscapeKeyDown" rdxDropdownMenuContent>
                 <button
                     class="DropdownMenuItem"
                     [(checked)]="itemState"

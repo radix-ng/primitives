@@ -23,11 +23,7 @@ import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.di
             <lucide-angular size="16" name="menu" style="height: 1.2rem;"></lucide-angular>
         </button>
         <ng-template #menu>
-            <div
-                class="DropdownMenuContent"
-                rdxDropdownMenuContent
-                [closeOnEscape]="false"
-            >
+            <div class="DropdownMenuContent" [closeOnEscape]="false" rdxDropdownMenuContent>
                 <div [(value)]="selectedValue" (valueChange)="onValueChange($event)" rdxDropdownMenuItemRadioGroup>
                     <div class="DropdownMenuItem" [value]="'1'" rdxDropdownMenuItemRadio>
                         <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>

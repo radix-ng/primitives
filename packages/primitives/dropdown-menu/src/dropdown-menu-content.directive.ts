@@ -12,17 +12,18 @@ import { RdxDropdownMenuTriggerDirective } from './dropdown-menu-trigger.directi
         '[attr.data-align]': 'menuTrigger!.align',
         '[attr.data-side]': 'menuTrigger!.side',
         '[attr.data-orientation]': 'orientation'
-
     },
-    providers: [{
-        provide: CdkMenu, useExisting: RdxDropdownMenuContentDirective
-    }]
+    providers: [
+        {
+            provide: CdkMenu,
+            useExisting: RdxDropdownMenuContentDirective
+        }
+    ]
 })
 export class RdxDropdownMenuContentDirective extends CdkMenu {
     readonly highlighted = new Subject<RdxDropdownMenuItemDirective>();
     readonly menuTrigger = inject(RdxDropdownMenuTriggerDirective, { optional: true });
 
-    // todo пока оставил два варианта
     @Input() onEscapeKeyDown: (event?: Event) => void = () => undefined;
     @Input() closeOnEscape: boolean = true;
 
