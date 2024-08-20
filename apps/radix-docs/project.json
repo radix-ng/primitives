@@ -12,6 +12,13 @@
             },
             "dependsOn": ["primitives:build", "copy-dist"]
         },
+        "build": {
+            "executor": "nx:run-script",
+            "options": {
+                "script": "build"
+            },
+            "dependsOn": ["primitives:build", "copy-dist"]
+        },
         "copy-dist": {
             "executor": "nx:run-commands",
             "options": {
