@@ -1,6 +1,6 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { CdkMenuTrigger, MENU_TRIGGER, PARENT_OR_NEW_MENU_STACK_PROVIDER } from '@angular/cdk/menu';
-import { ConnectedPosition, VerticalConnectionPos } from '@angular/cdk/overlay';
+import { ConnectedPosition, OverlayRef, VerticalConnectionPos } from '@angular/cdk/overlay';
 import {
     booleanAttribute,
     Directive,
@@ -181,5 +181,9 @@ export class RdxDropdownMenuTriggerDirective extends CdkMenuTrigger {
                 $event.preventDefault();
             }
         }
+    }
+
+    getOverlayRef(): OverlayRef | null {
+        return this.overlayRef;
     }
 }
