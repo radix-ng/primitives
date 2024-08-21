@@ -161,3 +161,11 @@ p {
     width: 760px;
     margin-top: 50px;
 }
+
+.expressive-code .frame {
+    box-shadow: none !important;
+}
+
+.expressive-code pre {
+    border-width: 1px !important;
+}

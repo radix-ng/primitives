@@ -9,7 +9,6 @@ documentation.directives.forEach((directive: any) => {
 });
 
 const getDirectiveByName = (name: string): CompodocDirective | undefined => {
-    console.log(directivesMap[name]);
     return directivesMap[name];
 };
 

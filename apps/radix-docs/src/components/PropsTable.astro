@@ -3,7 +3,10 @@ const { data } = Astro.props;
 
 import { getDirectiveByName } from '../utils/compodoc';
 
-const { inputsClass, propertiesClass } = getDirectiveByName('RdxLabelDirective');
+console.log(data)
+
+const { inputsClass, propertiesClass } = getDirectiveByName(data);
+
 ---
 <div class="rt-TableRoot rt-r-size-2 rt-variant-surface rt-Box rt-r-my-5">
     <table class="rt-TableRootTable">
@@ -18,7 +21,7 @@ const { inputsClass, propertiesClass } = getDirectiveByName('RdxLabelDirective')
         </thead>
         <tbody class="rt-TableBody">
         {propertiesClass.map(
-            ({ name, type, typeSimple, required, default: defaultValue, description }) => {
+            ({ name, type, defaultValue }) => {
                 return (
                     <tr class="rt-TableRow" style="white-space: nowrap;">
                         <th class="rt-TableCell rt-TableRowHeaderCell">
@@ -29,7 +32,7 @@ const { inputsClass, propertiesClass } = getDirectiveByName('RdxLabelDirective')
                             <div class="rt-Flex rt-r-display-inline-flex rt-r-ai-center rt-r-gap-2">
                                 <div class="rt-Box">
                                     <code data-accent-color="gray"
-                                          class="rt-reset rt-Code rt-r-size-2 rt-variant-soft">boolean</code>
+                                          class="rt-reset rt-Code rt-r-size-2 rt-variant-soft">{type}</code>
                                 </div>
                             </div>
                         </td>
@@ -37,7 +40,7 @@ const { inputsClass, propertiesClass } = getDirectiveByName('RdxLabelDirective')
                             <div class="rt-Flex rt-r-display-inline-flex rt-r-ai-center rt-r-gap-2">
                                 <div class="rt-Box">
                                     <code data-accent-color="gray"
-                                          class="rt-reset rt-Code rt-r-size-2 rt-variant-soft">boolean</code>
+                                          class="rt-reset rt-Code rt-r-size-2 rt-variant-soft">{defaultValue}</code>
                                 </div>
                             </div>
                         </td>
