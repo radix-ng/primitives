@@ -1,3 +1,17 @@
+## 0.7.0 (2024-08-21)
+
+
+### 🚀 Features
+
+- **shadcn:** updated accordion components ([510fb13](https://github.com/radix-ng/primitives/commit/510fb13))
+
+- **shadcn:** update card - from directive to component ([c3a65fa](https://github.com/radix-ng/primitives/commit/c3a65fa))
+
+
+### 🧱 Updated Dependencies
+
+- Updated primitives to 0.10.0
+
 ## 0.6.2 (2024-08-16)
 
 

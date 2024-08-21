@@ -1,3 +1,15 @@
+## 0.10.0 (2024-08-21)
+
+
+### 🚀 Features
+
+- **primitives:** added rdx suffix for separator directive ([be5f9a5](https://github.com/radix-ng/primitives/commit/be5f9a5))
+
+
+### 🩹 Fixes
+
+- extend in trigger and menu + onEscapeKeyDown ([#86](https://github.com/radix-ng/primitives/pull/86))
+
 ## 0.9.1 (2024-08-15)
 
 
