@@ -1,4 +1,4 @@
-import { CdkMenuItem } from '@angular/cdk/menu';
+import { CDK_MENU, CdkMenuItem } from '@angular/cdk/menu';
 import { booleanAttribute, Directive, ElementRef, EventEmitter, inject, Input, Output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -19,10 +19,8 @@ import { RdxDropdownMenuContentDirective } from './dropdown-menu-content.directi
         '(keydown)': 'onKeydown($event)'
     },
     providers: [
-        {
-            provide: CdkMenuItem,
-            useExisting: RdxDropdownMenuItemDirective
-        }
+        { provide: CdkMenuItem, useExisting: RdxDropdownMenuItemDirective },
+        { provide: CDK_MENU, useExisting: RdxDropdownMenuContentDirective }
     ]
 })
 export class RdxDropdownMenuItemDirective extends CdkMenuItem {
@@ -55,6 +53,14 @@ export class RdxDropdownMenuItemDirective extends CdkMenuItem {
     protected onKeydown(event: KeyboardEvent) {
         if (this.nativeElement.tagName !== 'BUTTON' && ['Enter', ' '].includes(event.key)) {
             event.preventDefault();
+        }
+
+        if (event.key === 'Escape') {
+            if (!this.menu.closeOnEscape) {
+                event.stopPropagation();
+            } else {
+                this.menu.onEscapeKeyDown(event);
+            }
         }
     }
 }

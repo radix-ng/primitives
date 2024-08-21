@@ -23,7 +23,7 @@ import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.di
         </button>
 
         <ng-template #menu>
-            <div class="DropdownMenuContent" rdxDropdownMenuContent>
+            <div class="DropdownMenuContent" [onEscapeKeyDown]="onEscapeKeyDown" rdxDropdownMenuContent>
                 <button
                     class="DropdownMenuItem"
                     [(checked)]="itemState"
@@ -80,11 +80,13 @@ export class DropdownMenuItemCheckboxExampleComponent {
     itemState = true;
     itemState2 = false;
 
-    onCheckedChange(value: boolean) {
-        console.log('onCheckedChange', value);
-    }
-
     onSelect() {
         console.log('onSelect');
+    }
+
+    onEscapeKeyDown(event: Event) {
+        event.stopPropagation();
+
+        console.log('onEscapeKeyDown: ', event);
     }
 }
