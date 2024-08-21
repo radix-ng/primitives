@@ -32,6 +32,7 @@ export default defineConfig({
         tailwind(),
         AutoImport({
             imports: [
+                './src/components/PropsTable.astro',
                 './src/components/ComponentPreview.astro',
                 './src/components/mdx/Description.astro'
             ]
