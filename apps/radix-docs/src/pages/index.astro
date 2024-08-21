@@ -2,9 +2,9 @@
 import MainLayout from '../layouts/MainLayout.astro';
 import Header from '../components/Header.astro';
 
-import Compodoc from '../utils/compodoc';
+import {getDirectiveByName} from '../utils/compodoc';
 
-Compodoc
+getDirectiveByName('RdxLabelDirective');
 
 ---
 <MainLayout title="Radix Angular">

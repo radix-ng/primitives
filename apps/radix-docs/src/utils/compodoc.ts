@@ -2,14 +2,15 @@ import type { CompodocDirective } from '../types/compodocDocumentation.ts';
 
 import documentation from '../../../../dist/primitives/compodoc/documentation.json';
 
-const createComponentMarkdown = (entity: CompodocDirective) => {
-    const { name = '', rawdescription = '', inputsClass = [], outputsClass = [], exampleUrls = [] } = entity;
-};
+const directivesMap: Record<string, CompodocDirective> = {};
 
-console.log(documentation);
-documentation.directives.forEach((directive) => {
-    // @ts-ignore
-    return createComponentMarkdown(directive);
+documentation.directives.forEach((directive: any) => {
+    directivesMap[directive.name] = directive as CompodocDirective;
 });
 
-export default {};
+const getDirectiveByName = (name: string): CompodocDirective | undefined => {
+    console.log(directivesMap[name]);
+    return directivesMap[name];
+};
+
+export { directivesMap, getDirectiveByName };
