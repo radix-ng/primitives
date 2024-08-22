@@ -23,8 +23,7 @@
             "executor": "nx:run-commands",
             "options": {
                 "commands": [
-                    "mkdir -p apps/radix-docs/node_modules/@radix-ng/primitives",
-                    "cp -r dist/primitives apps/radix-docs/node_modules/@radix-ng"
+                    "node ./tools/scripts/docs-copy.mjs"
                 ]
             }
         }
