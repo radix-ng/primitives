@@ -6,18 +6,18 @@
     "tags": [],
     "targets": {
         "dev": {
+            "dependsOn": ["copy-dist"],
             "executor": "nx:run-script",
             "options": {
                 "script": "start"
-            },
-            "dependsOn": ["primitives:build", "copy-dist"]
+            }
         },
         "build": {
             "executor": "nx:run-script",
             "options": {
                 "script": "build"
             },
-            "dependsOn": ["primitives:build", "copy-dist"]
+            "dependsOn": ["copy-dist"]
         },
         "copy-dist": {
             "executor": "nx:run-commands",
