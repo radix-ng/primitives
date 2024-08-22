@@ -1,0 +1,30 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { getCollection } from 'astro:content'
+import DocumentationLayout from '../../../layouts/DocumentationLayout.astro';
+import { generateToc } from '../../../utils';
+
+export async function getStaticPaths() {
+    const docEntries = await getCollection('themes');
+    return docEntries.map((page) => {
+        return {
+            params: { section: page.data.section, slug: page.slug },
+            props: { page }
+        };
+    });
+}
+
+export interface Props {
+    page: CollectionEntry<'themes'>
+    section: string
+}
+
+const { page } = Astro.props
+const { data, render } = page;
+const { Content, headings } = await render()
+const tocItems = generateToc(headings)
+---
+
+<DocumentationLayout title={data.title} toc={tocItems} >
+    <Content />
+</DocumentationLayout>

@@ -1,0 +1,29 @@
+---
+import MainLayout from './MainLayout.astro';
+import Sidebar from '../components/Sidebar.astro';
+import siteConfig from '../config/site-config'
+import Header from '../components/Header.astro';
+import Toc from '../components/Toc.astro';
+import type { TocItem } from '../types';
+
+interface Props {
+    title: string
+    toc: TocItem[]
+}
+
+const { toc, title } = Astro.props
+
+---
+
+<MainLayout title={title}>
+    <Header />
+    <div class='flex justify-start'>
+        <Sidebar navigation={siteConfig.navigation} />
+        <main class='flex justify-center grow px-4 lg:px-10 mt-32'>
+            <div class='min-h-screen w-[858px] px-16'>
+                <slot />
+            </div>
+        </main>
+        <Toc toc={toc} />
+    </div>
+</MainLayout>

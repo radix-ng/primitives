@@ -1,0 +1,62 @@
+---
+import type { NavigationItem } from '../types';
+
+interface Props {
+    navigation: NavigationItem[]
+}
+
+const rawPath = Astro.url.pathname
+
+const path = rawPath === '/' ? '/' : rawPath.replace(/\/$/, '')
+const section = path.split('/')[1];
+
+const { navigation } = Astro.props
+
+const navigationItems = navigation.find(item => {
+    return item.section === section;
+})
+
+const pages = navigationItems.sections || [];
+
+function isActive(pageUrl: string) {
+    const normalizedPageUrl = pageUrl === '/' ? '/' : pageUrl.replace(/\/$/, '');
+    const isExactMatch = path === normalizedPageUrl;
+    const isParentMatch = path.startsWith(normalizedPageUrl + '/');
+
+    return isExactMatch || isParentMatch;
+}
+---
+
+<aside class='fixed top-32 hidden shrink-0 lg:block w-56 pl-4'>
+    <nav class='flex flex-1 flex-col'>
+        <ul role='list' class='flex flex-1 flex-col gap-y-7 pl-3'>
+            {
+                pages.map(({ section, pages }) => (
+                    <li>
+                        <div class='flex flex-col gap-y-2'>
+                            <h4 class='text-sm font-medium'>{section}</h4>
+                            <ul class='space-y-1'>
+                                {pages.map((page) => {
+                                    const active = isActive(page.url)
+                                    return (
+                                        <li class='relative'>
+                                            <a
+                                                href={page.url}
+                                                class={
+                                                    active
+                                                        ? 'bg-primary/10 block -ml-2 pl-2 py-1 pr-2 rounded-lg text-sm font-light'
+                                                        : 'block -ml-2 pl-2 hover:bg-primary/10 py-1 pr-2 rounded-lg text-sm font-light text-muted-foreground'
+                                                }>
+                                                {page.name}
+                                            </a>
+                                        </li>
+                                    )
+                                })}
+                            </ul>
+                        </div>
+                    </li>
+                ))
+            }
+        </ul>
+    </nav>
+</aside>
