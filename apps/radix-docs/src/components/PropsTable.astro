@@ -1,11 +1,17 @@
 ---
-const { data } = Astro.props;
-
 import { getDirectiveByName } from '../utils/compodoc';
 
-console.log(data)
+const { name } = Astro.props;
 
-const { inputsClass, propertiesClass } = getDirectiveByName(data);
+const { inputsClass, propertiesClass } = getDirectiveByName(name);
+
+const data = inputsClass.length > 0 && propertiesClass.length > 0
+    ? [...inputsClass, ...propertiesClass]
+    : inputsClass.length > 0
+        ? inputsClass
+        : propertiesClass.length > 0
+            ? propertiesClass
+            : [];
 
 ---
 <div class="rt-TableRoot rt-r-size-2 rt-variant-surface rt-Box rt-r-my-5">
@@ -20,7 +26,7 @@ const { inputsClass, propertiesClass } = getDirectiveByName(data);
         </tr>
         </thead>
         <tbody class="rt-TableBody">
-        {propertiesClass.map(
+        {data.map(
             ({ name, type, defaultValue }) => {
                 return (
                     <tr class="rt-TableRow" style="white-space: nowrap;">

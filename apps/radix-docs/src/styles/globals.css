@@ -132,36 +132,6 @@ p {
     margin-bottom: var(--space-4);
 }
 
-.ThemesHeroLayoutRoot {
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    min-height: 100vh;
-    overflow: hidden;
-}
-
-.ThemesHeroLayoutBackground {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-
-    svg {
-        width: max(2560px, 100vw);
-        height: auto;
-    }
-}
-
-.ThemesHeroLayoutMain {
-    position: relative;
-    box-sizing: initial;
-    padding-left: calc(var(--space-9) + 1vw);
-    padding-right: calc(var(--space-9) + 1vw);
-    width: 760px;
-    margin-top: 50px;
-}
-
 .expressive-code .frame {
     box-shadow: none !important;
 }
