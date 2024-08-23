@@ -5,55 +5,61 @@ const { name } = Astro.props;
 
 const { inputsClass, propertiesClass } = getDirectiveByName(name);
 
-const data = inputsClass.length > 0 && propertiesClass.length > 0
-    ? [...inputsClass, ...propertiesClass]
-    : inputsClass.length > 0
-        ? inputsClass
-        : propertiesClass.length > 0
+const data =
+    inputsClass.length > 0 && propertiesClass.length > 0
+        ? [...inputsClass, ...propertiesClass]
+        : inputsClass.length > 0
+          ? inputsClass
+          : propertiesClass.length > 0
             ? propertiesClass
             : [];
-
 ---
+
 <div class="rt-TableRoot rt-r-size-2 rt-variant-surface rt-Box rt-r-my-5">
     <table class="rt-TableRootTable">
         <thead class="rt-TableHeader">
-        <tr class="rt-TableRow">
-            <th class="rt-TableCell rt-TableColumnHeaderCell" style="width: auto;">
-                Prop
-            </th>
-            <th class="rt-TableCell rt-TableColumnHeaderCell">Type</th>
-            <th class="rt-TableCell rt-TableColumnHeaderCell">Default</th>
-        </tr>
+            <tr class="rt-TableRow">
+                <th class="rt-TableCell rt-TableColumnHeaderCell" style="width: auto;">Prop</th>
+                <th class="rt-TableCell rt-TableColumnHeaderCell">Type</th>
+                <th class="rt-TableCell rt-TableColumnHeaderCell">Default</th>
+            </tr>
         </thead>
         <tbody class="rt-TableBody">
-        {data.map(
-            ({ name, type, defaultValue }) => {
-                return (
-                    <tr class="rt-TableRow" style="white-space: nowrap;">
-                        <th class="rt-TableCell rt-TableRowHeaderCell">
-                            <code
-                                class="rt-reset rt-Code rt-r-size-2 rt-variant-soft bg-blue-100">{name}</code>
-                        </th>
-                        <td class="rt-TableCell">
-                            <div class="rt-Flex rt-r-display-inline-flex rt-r-ai-center rt-r-gap-2">
-                                <div class="rt-Box">
-                                    <code data-accent-color="gray"
-                                          class="rt-reset rt-Code rt-r-size-2 rt-variant-soft">{type}</code>
+            {
+                data.map(({ name, type, defaultValue }) => {
+                    return (
+                        <tr class="rt-TableRow" style="white-space: nowrap;">
+                            <th class="rt-TableCell rt-TableRowHeaderCell">
+                                <code class="rt-reset rt-Code rt-r-size-2 rt-variant-soft bg-blue-100">{name}</code>
+                            </th>
+                            <td class="rt-TableCell">
+                                <div class="rt-Flex rt-r-display-inline-flex rt-r-ai-center rt-r-gap-2">
+                                    <div class="rt-Box">
+                                        <code
+                                            data-accent-color="gray"
+                                            class="rt-reset rt-Code rt-r-size-2 rt-variant-soft"
+                                        >
+                                            {type}
+                                        </code>
+                                    </div>
                                 </div>
-                            </div>
-                        </td>
-                        <td class="rt-TableCell">
-                            <div class="rt-Flex rt-r-display-inline-flex rt-r-ai-center rt-r-gap-2">
-                                <div class="rt-Box">
-                                    <code data-accent-color="gray"
-                                          class="rt-reset rt-Code rt-r-size-2 rt-variant-soft">{defaultValue}</code>
+                            </td>
+                            <td class="rt-TableCell">
+                                <div class="rt-Flex rt-r-display-inline-flex rt-r-ai-center rt-r-gap-2">
+                                    <div class="rt-Box">
+                                        <code
+                                            data-accent-color="gray"
+                                            class="rt-reset rt-Code rt-r-size-2 rt-variant-soft"
+                                        >
+                                            {defaultValue}
+                                        </code>
+                                    </div>
                                 </div>
-                            </div>
-                        </td>
-                    </tr>
-                );
+                            </td>
+                        </tr>
+                    );
+                })
             }
-        )}
         </tbody>
     </table>
 </div>

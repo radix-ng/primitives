@@ -12,14 +12,7 @@ export interface Props {
 const { name, file } = Astro.props;
 
 async function loadCode(name: string, file: string) {
-    const filename = path.join(
-        process.cwd(),
-        'src',
-        'components',
-        'demos',
-        `${name}`,
-        `${file}.ts`
-    );
+    const filename = path.join(process.cwd(), 'src', 'components', 'demos', `${name}`, `${file}.ts`);
 
     const code = readFileSync(filename, 'utf-8')
         .toString()
@@ -33,10 +26,11 @@ async function loadCode(name: string, file: string) {
 const { code } = await loadCode(name, file);
 ---
 
-<div class="relative text-[15px] text-black -mx-11">
+<div class="relative -mx-11 text-[15px] text-black">
     <div
-        class="vp-raw bg-gradient-to-br p-4 rounded-t-lg from-purple9 to-indigo9 w-full relative items-center justify-center flex">
-        <div class="w-full max-w-[700px] flex items-center py-12 sm:py-[100px] justify-center ">
+        class="vp-raw from-purple9 to-indigo9 relative flex w-full items-center justify-center rounded-t-lg bg-gradient-to-br p-4"
+    >
+        <div class="flex w-full max-w-[700px] items-center justify-center py-12 sm:py-[100px]">
             <DemoLoaderComponent name={name} file={file} client:only="angular" />
         </div>
     </div>

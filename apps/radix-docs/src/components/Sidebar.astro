@@ -3,8 +3,8 @@ import type { NavigationItem } from '../types';
 import { cn } from '../utils/utils';
 
 interface Props {
-    navigation: NavigationItem[],
-    isMobile?: boolean
+    navigation: NavigationItem[];
+    isMobile?: boolean;
 }
 
 const rawPath = Astro.url.pathname;
@@ -14,7 +14,7 @@ const section = path.split('/')[1];
 
 const { navigation } = Astro.props;
 
-const navigationItems = navigation.find(item => {
+const navigationItems = navigation.find((item) => {
     return item.section === section;
 });
 
@@ -44,15 +44,15 @@ function isActive(pageUrl: string) {
                                         <a
                                             href={page.url}
                                             class={cn(
-                                                'text-sm group my-1 flex h-fit w-full items-center gap-2 rounded-md border border-transparent hover:underline',
+                                                'group my-1 flex h-fit w-full items-center gap-2 rounded-md border border-transparent text-sm hover:underline',
                                                 active
                                                     ? 'text-foreground rounded-none font-medium'
                                                     : 'text-muted-foreground'
-                                            )}>
+                                            )}
+                                        >
                                             {page.name}
                                             {page.label && (
-                                                <span
-                                                    class="rounded-md bg-muted px-1.5 py-0.5 text-xs leading-none text-[#000000] no-underline group-hover:no-underline">
+                                                <span class="bg-muted rounded-md px-1.5 py-0.5 text-xs leading-none text-[#000000] no-underline group-hover:no-underline">
                                                     {page.label}
                                                 </span>
                                             )}
@@ -67,4 +67,3 @@ function isActive(pageUrl: string) {
         }
     </ul>
 </nav>
-
