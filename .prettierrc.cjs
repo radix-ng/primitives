@@ -26,6 +26,7 @@ const config = {
     singleQuote: true,
     trailingComma: 'none',
     htmlWhitespaceSensitivity: 'ignore',
+    endOfLine: 'lf',
     plugins: [
         'prettier-plugin-organize-attributes',
         'prettier-plugin-organize-imports',
