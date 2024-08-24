@@ -3,7 +3,6 @@ import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@stor
 import { RdxTooltipArrowDirective } from '../src/tooltip-arrow.directive';
 import { RdxTooltipContentDirective } from '../src/tooltip-content.directive';
 import { RdxTooltipPortalDirective } from '../src/tooltip-portal.directive';
-import { RdxTooltipProviderDirective } from '../src/tooltip-provider.directive';
 import { RdxTooltipRootDirective } from '../src/tooltip-root.directive';
 import { RdxTooltipTriggerDirective } from '../src/tooltip-trigger.directive';
 
@@ -15,7 +14,6 @@ export default {
                 RdxTooltipArrowDirective,
                 RdxTooltipContentDirective,
                 RdxTooltipPortalDirective,
-                RdxTooltipProviderDirective,
                 RdxTooltipRootDirective,
                 RdxTooltipTriggerDirective
             ],
@@ -139,17 +137,15 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: `
-            <ng-contatiner rdxTooltipProvider>
-                <ng-container rdxTooltipRoot>
-                    <button class="IconButton" rdxTooltipTrigger>+</button>
-                    <ng-container rdxTooltipPortal>
-                        <div class="TooltipContent" rdxTooltipContent [sideOffset]="5">
-                            Add to library
-                            <div class="TooltipArrow" rdxTooltipArrow></div>
-                        </div>
-                    </ng-container>
+            <ng-container rdxTooltipRoot>
+                <button class="IconButton" rdxTooltipTrigger>+</button>
+                <ng-container rdxTooltipPortal>
+                    <div class="TooltipContent" rdxTooltipContent [sideOffset]="5">
+                        Add to library
+                        <div class="TooltipArrow" rdxTooltipArrow></div>
+                    </div>
                 </ng-container>
-            </ng-contatiner>
+            </ng-container>
         `
     })
 };
