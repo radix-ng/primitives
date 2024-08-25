@@ -3,6 +3,7 @@ import type { MarkdownHeading } from 'astro';
 export interface Page {
     name: string;
     url: string;
+    label?: string;
 }
 
 export interface Section {

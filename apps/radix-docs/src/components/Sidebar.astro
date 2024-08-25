@@ -1,5 +1,6 @@
 ---
 import type { NavigationItem } from '../types';
+import { cn } from '../utils/utils';
 
 interface Props {
     navigation: NavigationItem[],
@@ -42,12 +43,19 @@ function isActive(pageUrl: string) {
                                     <li class="relative">
                                         <a
                                             href={page.url}
-                                            class={
+                                            class={cn(
+                                                'text-sm group my-1 flex h-fit w-full items-center gap-2 rounded-md border border-transparent hover:underline',
                                                 active
-                                                    ? 'bg-primary/10 block -ml-2 pl-2 py-1 pr-2 rounded-lg text-sm font-light'
-                                                    : 'block -ml-2 pl-2 hover:bg-primary/10 py-1 pr-2 rounded-lg text-sm font-light text-muted-foreground'
-                                            }>
+                                                    ? 'text-foreground rounded-none font-medium'
+                                                    : 'text-muted-foreground'
+                                            )}>
                                             {page.name}
+                                            {page.label && (
+                                                <span
+                                                    class="rounded-md bg-muted px-1.5 py-0.5 text-xs leading-none text-[#000000] no-underline group-hover:no-underline">
+                                                    {page.label}
+                                                </span>
+                                            )}
                                         </a>
                                     </li>
                                 );
