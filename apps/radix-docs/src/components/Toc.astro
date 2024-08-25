@@ -10,11 +10,13 @@ const { toc } = Astro.props
 
 ---
 
-<aside class='fixed top-32 right-0 pl-28 w-96 hidden xl:block'>
-    <h4 class='text-base font-semibold flex items-center'>
-        On this page
-    </h4>
-    <ul class='mt-2 text-sm space-y-1'>
-        {toc.map((heading) => <TocHeading heading={heading} />)}
-    </ul>
+<aside class='hidden text-sm xl:block pl-7'>
+    <div class="sticky top-16 -mt-10 pt-4">
+        <h4 class='text-base font-semibold flex items-center'>
+            On this page
+        </h4>
+        <ul class='mt-2 text-sm space-y-1'>
+            {toc.map((heading) => <TocHeading heading={heading} />)}
+        </ul>
+    </div>
 </aside>

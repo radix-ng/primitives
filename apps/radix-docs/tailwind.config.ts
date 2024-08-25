@@ -19,6 +19,14 @@ import { fontFamily } from 'tailwindcss/defaultTheme';
 const config = {
     content: ['./src/**/*.{astro,html,mdx,ts}'],
     theme: {
+        container: {
+            center: true,
+            padding: '2rem',
+
+            screens: {
+                '2xl': '1400px'
+            }
+        },
         extend: {
             colors: {
                 ...blackA,
@@ -56,11 +64,11 @@ const config = {
             },
             fontFamily: {
                 sans: ['Inter', ...fontFamily.sans]
+            },
+            screens: {
+                phone: '400px'
             }
         }
-    },
-    corePlugins: {
-        preflight: true
     },
     plugins: [require('@tailwindcss/typography')]
 } satisfies Config;

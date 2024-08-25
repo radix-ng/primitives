@@ -1,49 +1,71 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
 import Header from '../components/Header.astro';
+
+import Announcement from '../components/Announcement.astro';
 ---
 <MainLayout title="Radix Angular">
-    <Header />
-    <main class="mx-auto max-w-[90rem] py-8 md:py-16 px-4 md:px-8">
-        <section class="text-center px-36 py-16">
-            <div
-                class="inline-block bg-gray-100 text-[#FA2C04] px-4 py-1 rounded-full mb-4 text-sm md:text-base">
-                🎉 DropdownMenu component!
-            </div>
-            <h1 class="text-3xl md:text-4xl font-bold text-[#FA2C04]">Radix Angular</h1>
-            <p class="text-lg md:text-2xl font-bold mt-2">Angular Port of Radix UI</p>
-            <p class="text-sm md:text-lg text-gray-600 mt-4">Unstyled, accessible components for
-                building high-quality design systems and web apps in Angular.</p>
+    <div class="relative z-10 flex min-h-screen flex-col">
+        <Header />
+        <main class="flex-1">
+            <div class="container relative">
+                <section class="mx-auto flex max-w-[980px] flex-col items-center gap-2 py-8 md:py-12 md:pb-8 lg:py-24 lg:pb-20">
+                    <Announcement title="DropdownMenu component!" />
 
-            <div class="mt-6 md:mt-8 flex justify-center space-x-4">
-                <a href="/primitives/overview/introduction"
-                   class="px-6 py-2 md:py-3 bg-[#FA2C04] text-white rounded-lg font-bold text-sm md:text-base">Get
-                    Started</a>
-                <a target="_blank" href="https://github.com/radix-ng/primitives"
-                   class="px-6 py-2 md:py-3 bg-gray-200 text-gray-700 rounded-lg font-bold text-sm md:text-base">View
-                    on GitHub</a>
-            </div>
-        </section>
+                    <div class="pt-4">
+                        <h1 class="text-center text-3xl font-bold leading-tight tracking-tighter md:text-6xl lg:leading-[1.1] text-[#FA2C04]">Radix Angular</h1>
+                        <p class="text-center text-lg md:text-2xl font-bold mt-2">Angular Port of Radix UI</p>
+                        <p class="text-muted-foreground max-w-[750px] text-center text-lg sm:text-xl">Unstyled, accessible
+                            components
+                            for
+                            building high-quality design systems and web apps in Angular.</p>
 
-        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 px-4 md:px-8 py-8 md:py-16">
-            <div class="text-center p-6 bg-gray-100 rounded-lg">
-                <div class="text-2xl">🚀</div>
-                <h2 class="font-bold mt-4">Save time. Ship faster.</h2>
-                <p class="text-gray-600 mt-2">Building on top Radix components will save you time
-                    and money, so you can ship a better product faster.</p>
+                        <div class="mt-6 md:mt-8 flex justify-center space-x-4">
+                            <a href="/primitives/overview/introduction"
+                               class="px-6 py-2 md:py-3 bg-[#FA2C04] text-white rounded-lg font-bold text-sm md:text-base">Get
+                                Started</a>
+                            <a target="_blank" href="https://github.com/radix-ng/primitives"
+                               class="px-6 py-2 md:py-3 bg-gray-200 text-gray-700 rounded-lg font-bold text-sm md:text-base">View
+                                on GitHub</a>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="flex flex-col gap-4">
+                    <div class="grid grid-cols-2 gap-4 lg:grid-cols-2 2xl:grid-cols-4">
+                        <div class="text-center p-6 bg-gray-100 rounded-lg">
+                            <div class="text-2xl">🚀</div>
+                            <h2 class="font-bold mt-4">Save time. Ship faster.</h2>
+                            <p class="text-gray-600 mt-2">Building on top Radix components will save
+                                you
+                                time
+                                and money, so you can ship a better product faster.</p>
+                        </div>
+                        <div class="text-center p-6 bg-gray-100 rounded-lg">
+                            <div class="text-2xl">⌨️</div>
+                            <h2 class="font-bold mt-4">Accessibility out of the box.</h2>
+                            <p class="text-gray-600 mt-2">WAI-ARIA compliant. Support Keyboard
+                                navigation &
+                                Focus management.</p>
+                        </div>
+                        <div class="text-center p-6 bg-gray-100 rounded-lg">
+                            <div class="text-2xl">👩‍💻</div>
+                            <h2 class="font-bold mt-4">Developer Experience First.</h2>
+                            <p class="text-gray-600 mt-2">Unstyled, easily customizable and great
+                                for
+                                building
+                                design systems and web apps.</p>
+                        </div>
+                        <div class="text-center p-6 bg-gray-100 rounded-lg">
+                            <div class="text-2xl">👩‍💻</div>
+                            <h2 class="font-bold mt-4">and more!</h2>
+                            <p class="text-gray-600 mt-2">Many more features...</p>
+                        </div>
+                    </div>
+                </section>
             </div>
-            <div class="text-center p-6 bg-gray-100 rounded-lg">
-                <div class="text-2xl">⌨️</div>
-                <h2 class="font-bold mt-4">Accessibility out of the box.</h2>
-                <p class="text-gray-600 mt-2">WAI-ARIA compliant. Support Keyboard navigation &
-                    Focus management.</p>
-            </div>
-            <div class="text-center p-6 bg-gray-100 rounded-lg">
-                <div class="text-2xl">👩‍💻</div>
-                <h2 class="font-bold mt-4">Developer Experience First.</h2>
-                <p class="text-gray-600 mt-2">Unstyled, easily customizable and great for building
-                    design systems and web apps.</p>
-            </div>
-        </section>
-    </main>
+        </main>
+    </div>
+    <div
+        class="fixed left-0 top-0 size-full bg-gradient-to-b from-[#a277ff] via-transparent to-transparent opacity-10" />
 </MainLayout>

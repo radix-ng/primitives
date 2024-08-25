@@ -1,0 +1,19 @@
+---
+
+export interface Props {
+    title: string,
+    href?: string
+}
+
+const { title, href } = Astro.props;
+---
+
+<a
+    href={href ? href : '/docs/changelog'}
+    class="border bg-card-primary border-input group inline-flex items-center rounded-lg px-3 py-1 text-sm font-medium"
+>
+    🎉{' '}
+    <div class="mx-2 h-4 dark:bg-border" />{' '}
+    <span class="sm:hidden">{title}</span>
+    <span class="hidden sm:inline">{title}</span>
+</a>

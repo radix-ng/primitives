@@ -1,12 +1,14 @@
+
 ---
-import type { CollectionEntry } from 'astro:content'
-import { getCollection } from 'astro:content'
+import type { CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 import DocumentationLayout from '../../../layouts/DocumentationLayout.astro';
 import { generateToc } from '../../../utils';
+import Toc from '../../../components/Toc.astro';
 
 export async function getStaticPaths() {
     const docEntries = await getCollection('primitives');
-    return docEntries.map((page) => {
+    return docEntries.map((page: any) => {
         return {
             params: { section: page.data.section, slug: page.slug },
             props: { page }
@@ -15,16 +17,21 @@ export async function getStaticPaths() {
 }
 
 export interface Props {
-    page: CollectionEntry<'primitives'>
-    section: string
+    page: CollectionEntry<'primitives'>;
+    section: string;
 }
 
-const { page } = Astro.props
+const { page } = Astro.props;
 const { data, render } = page;
-const { Content, headings } = await render()
-const tocItems = generateToc(headings)
+const { Content, headings } = await render();
+const tocItems = generateToc(headings);
 ---
 
-<DocumentationLayout title={data.title} toc={tocItems} >
-    <Content />
+<DocumentationLayout title={data.title}>
+    <main class="relative py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_300px]">
+        <div class="mx-auto w-full min-w-0">
+            <Content />
+        </div>
+        <Toc toc={tocItems} />
+    </main>
 </DocumentationLayout>

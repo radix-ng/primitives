@@ -3,27 +3,27 @@ import MainLayout from './MainLayout.astro';
 import Sidebar from '../components/Sidebar.astro';
 import siteConfig from '../config/site-config'
 import Header from '../components/Header.astro';
-import Toc from '../components/Toc.astro';
-import type { TocItem } from '../types';
 
 interface Props {
     title: string
-    toc: TocItem[]
 }
 
-const { toc, title } = Astro.props
+const { title } = Astro.props
 
 ---
 
 <MainLayout title={title}>
     <Header />
     <div class='flex justify-start'>
-        <Sidebar navigation={siteConfig.navigation} />
-        <main class='flex justify-center grow px-4 lg:px-10 mt-32'>
-            <div class='min-h-screen w-[858px] px-16'>
+        <main class='flex-1'>
+            <div class="container flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10">
+                <aside class="h-max-[calc(100vh-3.5rem)] fixed top-14 z-30 -ml-2 hidden w-full shrink-0 md:sticky md:block">
+                    <div class="h-max-[calc(100vh-3.5rem)] h-full min-h-fit py-6 pr-6 lg:py-8">
+                        <Sidebar navigation={siteConfig.navigation} />
+                    </div>
+                </aside>
                 <slot />
             </div>
         </main>
-        <Toc toc={toc} />
     </div>
 </MainLayout>

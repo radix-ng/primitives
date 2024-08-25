@@ -1,55 +1,25 @@
 ---
-const firstSegment = Astro.url.pathname.split('/')[1];
-
-function isActive(segment: string) {
-    return firstSegment === segment;
-}
+import MainNavigation from './MainNavigation.astro';
 ---
-<header class='fixed shrink-0 w-full bg-background-blur backdrop-blur-lg z-50'>
-    <nav class='px-4 h-12 lg:px-0'>
-        <div class='flex justify-between items-center h-full border-b lg:px-4'>
-            <div>
-                <a
-                    href='/'
-                    class='flex gap-2 items-center'
-                    aria-label='Astro documentation'>
-                    <h4 class='text-xl'>
-                        <span class='font-extrabold'>Radix</span>
-                        <span class='font-normal'>Angular</span>
-                    </h4>
-                </a>
-            </div>
+<header class="sticky top-0 z-50 w-full bg-background-blur backdrop-blur-lg">
+    <div class="container flex h-14 max-w-screen-2xl items-centerpx-4">
 
-            <div class='hidden lg:flex lg:flex-1 lg:justify-center mx-4'>
-                <a
-                    href="/themes/overview/getting-started"
-                    class={
-                        isActive('themes')
-                            ? 'bg-black rounded-full font-bold text-primary-foreground h-6 px-3 text-[14px] lg:inline-flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none'
-                            : 'text-grayA11 px-3 text-[14px] h-6 lg:inline-flex items-center justify-center'}>
-                    Themes
-                </a>
-                <a
-                    href="/primitives/overview/introduction"
-                    class={
-                        isActive('primitives')
-                            ? 'bg-black rounded-full font-bold text-primary-foreground h-6 px-3 text-[14px] lg:inline-flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none'
-                            : 'text-grayA11 px-3 text-[14px] h-6 lg:inline-flex items-center justify-center'}>
-                    Primitives
-                </a>
-            </div>
+        <MainNavigation />
 
-            <div class='flex'>
-                <a
-                    href="https://github.com/radix-ng/primitives"
-                    class='flex items-center justify-center rounded-md hover:bg-secondary'>
-                    <svg viewBox="0 0 15 15" width="1.2em" height="1.2em" class="w-4 h-4">
-                        <path fill="currentColor" fill-rule="evenodd"
-                              d="M7.5.25a7.25 7.25 0 0 0-2.292 14.13c.363.066.495-.158.495-.35c0-.172-.006-.628-.01-1.233c-2.016.438-2.442-.972-2.442-.972c-.33-.838-.805-1.06-.805-1.06c-.658-.45.05-.441.05-.441c.728.051 1.11.747 1.11.747c.647 1.108 1.697.788 2.11.602c.066-.468.254-.788.46-.969c-1.61-.183-3.302-.805-3.302-3.583a2.8 2.8 0 0 1 .747-1.945c-.075-.184-.324-.92.07-1.92c0 0 .61-.194 1.994.744A6.963 6.963 0 0 1 7.5 3.756A6.97 6.97 0 0 1 9.315 4c1.384-.938 1.992-.743 1.992-.743c.396.998.147 1.735.072 1.919c.465.507.745 1.153.745 1.945c0 2.785-1.695 3.398-3.31 3.577c.26.224.492.667.492 1.343c0 .97-.009 1.751-.009 1.989c0 .194.131.42.499.349A7.25 7.25 0 0 0 7.499.25"
-                              clip-rule="evenodd"></path>
-                    </svg>
-                </a>
-            </div>
+        <div class="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+            <nav class="flex items-center">
+                <div class="phone:flex hidden items-center">
+                    <a
+                        href="https://github.com/radix-ng/primitives"
+                        class="flex items-center justify-center rounded-md hover:bg-secondary">
+                        <svg viewBox="0 0 15 15" width="1.2em" height="1.2em" class="w-4 h-4">
+                            <path fill="currentColor" fill-rule="evenodd"
+                                  d="M7.5.25a7.25 7.25 0 0 0-2.292 14.13c.363.066.495-.158.495-.35c0-.172-.006-.628-.01-1.233c-2.016.438-2.442-.972-2.442-.972c-.33-.838-.805-1.06-.805-1.06c-.658-.45.05-.441.05-.441c.728.051 1.11.747 1.11.747c.647 1.108 1.697.788 2.11.602c.066-.468.254-.788.46-.969c-1.61-.183-3.302-.805-3.302-3.583a2.8 2.8 0 0 1 .747-1.945c-.075-.184-.324-.92.07-1.92c0 0 .61-.194 1.994.744A6.963 6.963 0 0 1 7.5 3.756A6.97 6.97 0 0 1 9.315 4c1.384-.938 1.992-.743 1.992-.743c.396.998.147 1.735.072 1.919c.465.507.745 1.153.745 1.945c0 2.785-1.695 3.398-3.31 3.577c.26.224.492.667.492 1.343c0 .97-.009 1.751-.009 1.989c0 .194.131.42.499.349A7.25 7.25 0 0 0 7.499.25"
+                                  clip-rule="evenodd"></path>
+                        </svg>
+                    </a>
+                </div>
+            </nav>
         </div>
-    </nav>
+    </div>
 </header>
