@@ -6,7 +6,8 @@ const config: StorybookConfig = {
     addons: [
         '@storybook/addon-essentials',
         '@storybook/addon-docs',
-        '@storybook/addon-backgrounds'
+        '@storybook/addon-backgrounds',
+        '@chromatic-com/storybook'
     ],
 
     framework: {
@@ -15,9 +16,10 @@ const config: StorybookConfig = {
     },
 
     core: {
-        builder: '@storybook/builder-webpack5',
         disableTelemetry: true
-    }
+    },
+
+    docs: {}
 };
 
 export default config;

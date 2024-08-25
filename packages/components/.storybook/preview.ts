@@ -16,6 +16,7 @@ const preview: Preview = {
         }
 
     ],
+
     parameters: {
         docs: {
             toc: {
@@ -49,7 +50,9 @@ const preview: Preview = {
             }
         },
         badgesConfig
-    }
+    },
+
+    tags: ['autodocs']
 };
 
 export default preview;
