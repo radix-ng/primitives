@@ -19,6 +19,7 @@ const preview: Preview = {
         }
 
     ],
+
     parameters: {
         docs: {
             toc: {
@@ -51,7 +52,9 @@ const preview: Preview = {
                 order: ['Overview', ['Introduction', 'Installation'], 'Primitives']
             }
         }
-    }
+    },
+
+    tags: ['autodocs']
 };
 
 export default preview;
