@@ -3,19 +3,16 @@ import type { TocItem } from '../types';
 import TocHeading from './TocHeading.astro';
 
 interface Props {
-    toc: TocItem[]
+    toc: TocItem[];
 }
 
-const { toc } = Astro.props
-
+const { toc } = Astro.props;
 ---
 
-<aside class='hidden text-sm xl:block pl-7'>
+<aside class="hidden pl-7 text-sm xl:block">
     <div class="sticky top-16 -mt-10 pt-4">
-        <h4 class='text-base font-semibold flex items-center'>
-            On this page
-        </h4>
-        <ul class='mt-2 text-sm space-y-1'>
+        <h4 class="flex items-center text-base font-semibold">On this page</h4>
+        <ul class="mt-2 space-y-1 text-sm">
             {toc.map((heading) => <TocHeading heading={heading} />)}
         </ul>
     </div>

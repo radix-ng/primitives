@@ -6,15 +6,13 @@ function isActive(segment: string) {
     return firstSegment === segment;
 }
 ---
+
 <div class="mr-4 hidden md:flex">
-    <a
-        href='/'
-        class='mr-6 flex gap-2 items-center'
-        aria-label='Astro documentation'>
-        <h4 class='text-xl'>
+    <a href="/" class="mr-6 flex items-center gap-2" aria-label="Astro documentation">
+        <h4 class="text-xl">
             <span class="hidden sm:inline-block">
-                <span class='font-extrabold'>Radix</span>
-                <span class='font-normal'>Angular</span>
+                <span class="font-extrabold">Radix</span>
+                <span class="font-normal">Angular</span>
             </span>
         </h4>
     </a>
@@ -23,20 +21,18 @@ function isActive(segment: string) {
             href="/themes/overview/getting-started"
             class={cn(
                 'hover:text-foreground/80 transition-colors',
-                isActive('themes')
-                    ? 'dark:text-primary-active'
-                    : 'text-foreground/60'
-            )}>
+                isActive('themes') ? 'dark:text-primary-active' : 'text-foreground/60'
+            )}
+        >
             Themes
         </a>
         <a
             href="/primitives/overview/introduction"
             class={cn(
                 'hover:text-foreground/80 transition-colors',
-                isActive('primitives')
-                    ? 'dark:text-primary-active'
-                    : 'text-foreground/60'
-            )}>
+                isActive('primitives') ? 'dark:text-primary-active' : 'text-foreground/60'
+            )}
+        >
             Primitives
         </a>
     </nav>

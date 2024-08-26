@@ -2,59 +2,64 @@
 import '../styles/globals.css';
 
 interface Props {
-    title: string
+    title: string;
 }
 
-const { title } = Astro.props
+const { title } = Astro.props;
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" initial-scale="1.0" />
-    <meta name="generator" content={Astro.generator} />
-    <title>{title}</title>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" initial-scale="1.0" />
+        <meta name="generator" content={Astro.generator} />
+        <title>{title}</title>
 
-    <link
-        rel="preload"
-        href="https://cdn.workos.com/fonts/untitled-sans-regular-v2.woff2"
-        as="font"
-        type="font/woff2"
-        crossorigin="anonymous"
-    />
-    <link
-        rel="preload"
-        href="https://cdn.workos.com/fonts/untitled-sans-medium-v2.woff2"
-        as="font"
-        type="font/woff2"
-        crossorigin="anonymous"
-    />
+        <link
+            rel="preload"
+            href="https://cdn.workos.com/fonts/untitled-sans-regular-v2.woff2"
+            as="font"
+            type="font/woff2"
+            crossorigin="anonymous"
+        />
+        <link
+            rel="preload"
+            href="https://cdn.workos.com/fonts/untitled-sans-medium-v2.woff2"
+            as="font"
+            type="font/woff2"
+            crossorigin="anonymous"
+        />
 
-    <style>
-        @font-face {
-            font-family: 'Untitled Sans';
-            font-weight: 400;
-            font-display: swap;
-            src: url('https://cdn.workos.com/fonts/untitled-sans-regular-v2.woff2') format('woff2');
-        }
+        <style>
+            @font-face {
+                font-family: 'Untitled Sans';
+                font-weight: 400;
+                font-display: swap;
+                src: url('https://cdn.workos.com/fonts/untitled-sans-regular-v2.woff2') format('woff2');
+            }
 
-        @font-face {
-            font-family: 'Untitled Sans';
-            font-weight: 500;
-            font-display: swap;
-            src: url('https://cdn.workos.com/fonts/untitled-sans-medium-v2.woff2') format('woff2');
-        }
+            @font-face {
+                font-family: 'Untitled Sans';
+                font-weight: 500;
+                font-display: swap;
+                src: url('https://cdn.workos.com/fonts/untitled-sans-medium-v2.woff2') format('woff2');
+            }
 
-        @font-face {
-            font-family: 'Untitled Sans';
-            font-weight: 700;
-            font-display: swap;
-            src: url('https://cdn.workos.com/fonts/untitled-sans-medium-v2.woff2') format('woff2');
-        }
-    </style>
-  </head>
-  <body class="radix-themes radix-themes-custom-fonts min-h-screen font-sans antialiased" data-radius="medium" data-scaling="100%" data-gray-color="slate">
-    <slot />
-  </body>
+            @font-face {
+                font-family: 'Untitled Sans';
+                font-weight: 700;
+                font-display: swap;
+                src: url('https://cdn.workos.com/fonts/untitled-sans-medium-v2.woff2') format('woff2');
+            }
+        </style>
+    </head>
+    <body
+        class="radix-themes radix-themes-custom-fonts min-h-screen font-sans antialiased"
+        data-radius="medium"
+        data-scaling="100%"
+        data-gray-color="slate"
+    >
+        <slot />
+    </body>
 </html>
