@@ -1,48 +1,28 @@
 ---
 import { Code } from 'astro-expressive-code/components';
-interface Tab {
+
+type Tab = {
     label: string;
     content: string;
-}
+};
 
-interface Props {
+type Props = {
     tabs: Tab[];
     activeTab: number;
-}
+};
 
 const { tabs, activeTab } = Astro.props as Props;
-
-function handleTabClick(index: number) {
-    document.querySelectorAll('.tab-content').forEach((content, contentIndex) => {
-        content.setAttribute('style', contentIndex === index ? 'display: block;' : 'display: none;');
-    });
-}
 ---
 
-<style>
-    .tabs {
-        display: flex;
-        border-right: 1px solid hsl(var(--border));
-        border-left: 1px solid hsl(var(--border));
-    }
-
-    .tab {
-        padding: 10px 20px;
-        cursor: default;
-        border-bottom: 3px solid transparent;
-        transition: border-color 0.3s;
-    }
-
-    .tab.active {
-        border-bottom: 3px solid #007acc;
-        font-weight: bold;
-    }
-</style>
-
-<div class="tabs">
+<div class="flex border-l border-r border-gray-300">
     {
         tabs.map((tab, index) => (
-            <div class={`tab ${activeTab === index ? 'active' : ''}`} data-index={index}>
+            <div
+                class={`tab cursor-default border-b-2 px-4 py-2 transition-colors ${
+                    activeTab === index ? 'border-blue-500 font-bold' : 'border-transparent text-gray-600'
+                }`}
+                data-index={index}
+            >
                 {tab.label}
             </div>
         ))
@@ -51,10 +31,8 @@ function handleTabClick(index: number) {
 
 {
     tabs.map((tab, index) => (
-        <div class="tab-content" style={`display: ${activeTab === index ? 'block' : 'none'};`}>
-            <div id="Code">
-                <Code code={tab.content} lang="angular-ts" />
-            </div>
+        <div id="Code" class={`tab-content ${activeTab === index ? 'block' : 'hidden'}`}>
+            <Code code={tab.content} lang="angular-ts" />
         </div>
     ))
 }
@@ -64,18 +42,22 @@ function handleTabClick(index: number) {
         tabElement.addEventListener('click', () => {
             const index = parseInt(tabElement.getAttribute('data-index') as string);
 
+            // Toggle visibility of tab content
             document.querySelectorAll('.tab-content').forEach((content, contentIndex) => {
                 if (content instanceof HTMLElement) {
                     content.style.display = contentIndex === index ? 'block' : 'none';
                 }
             });
 
+            // Toggle active tab classes
             document.querySelectorAll('.tab').forEach((tab, tabIndex) => {
                 if (tab instanceof HTMLElement) {
                     if (tabIndex === index) {
-                        tab.classList.add('active');
+                        tab.classList.remove('border-transparent', 'text-gray-600');
+                        tab.classList.add('border-blue-500', 'font-bold');
                     } else {
-                        tab.classList.remove('active');
+                        tab.classList.remove('border-blue-500', 'font-bold');
+                        tab.classList.add('border-transparent', 'text-gray-600');
                     }
                 }
             });
