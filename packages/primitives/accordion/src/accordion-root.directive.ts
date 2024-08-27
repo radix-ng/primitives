@@ -1,14 +1,21 @@
-import { contentChildren, Directive, inject, InjectionToken, Input, OnInit } from '@angular/core';
+import {
+    booleanAttribute,
+    contentChildren,
+    Directive,
+    InjectionToken,
+    Input,
+    OnChanges,
+    OnDestroy,
+    OnInit,
+    SimpleChanges
+} from '@angular/core';
+import { Subject } from 'rxjs';
 import { RdxAccordionItemToken } from './accordion-item.directive';
 
 export type RdxAccordionType = 'single' | 'multiple';
 export type RdxAccordionOrientation = 'horizontal' | 'vertical';
 
 export const RdxAccordionRootToken = new InjectionToken<RdxAccordionRootDirective>('RdxAccordionRootDirective');
-
-export function injectAccordionRoot(): RdxAccordionRootDirective {
-    return inject(RdxAccordionRootDirective);
-}
 
 @Directive({
     selector: '[rdxAccordionRoot]',
@@ -18,7 +25,20 @@ export function injectAccordionRoot(): RdxAccordionRootDirective {
         '[attr.data-orientation]': 'getOrientation()'
     }
 })
-export class RdxAccordionRootDirective implements OnInit {
+export class RdxAccordionRootDirective implements OnInit, OnDestroy, OnChanges {
+    readonly stateChanges = new Subject<SimpleChanges>();
+    readonly openCloseAllActions = new Subject<boolean>();
+
+    @Input({ transform: booleanAttribute }) multi: boolean = false;
+
+    /**
+     * The orientation of the accordion.
+     */
+    @Input()
+    set orientation(orientation: RdxAccordionOrientation | undefined) {
+        this._orientation = orientation ?? 'vertical';
+        this.accordionItems().forEach((accordionItem) => accordionItem.setOrientation(this._orientation));
+    }
     /**
      * @private
      * @ignore
@@ -49,7 +69,8 @@ export class RdxAccordionRootDirective implements OnInit {
     /**
      * The controlled value of the item to expand
      */
-    @Input() set value(value: string | string[] | undefined) {
+    @Input()
+    set value(value: string | string[] | undefined) {
         if (value !== undefined) {
             this._value = Array.isArray(value) ? value : [value];
         } else {
@@ -57,13 +78,6 @@ export class RdxAccordionRootDirective implements OnInit {
         }
 
         this.onValueChange(this._value);
-    }
-    /**
-     * The orientation of the accordion.
-     */
-    @Input() set orientation(orientation: RdxAccordionOrientation | undefined) {
-        this._orientation = orientation ?? 'vertical';
-        this.accordionItems().forEach((accordionItem) => accordionItem.setOrientation(this._orientation));
     }
 
     /**
@@ -75,6 +89,15 @@ export class RdxAccordionRootDirective implements OnInit {
         }
     }
 
+    ngOnChanges(changes: SimpleChanges) {
+        this.stateChanges.next(changes);
+    }
+
+    ngOnDestroy() {
+        this.stateChanges.complete();
+        this.openCloseAllActions.complete();
+    }
+
     /**
      * @ignore
      */
@@ -84,16 +107,16 @@ export class RdxAccordionRootDirective implements OnInit {
 
             this.accordionItems().forEach((accordionItem) => {
                 if (accordionItem.value === currentValue) {
-                    accordionItem.setOpen();
+                    // accordionItem.setOpen();
                 } else {
-                    accordionItem.setOpen('closed');
+                    // accordionItem.setOpen('closed');
                 }
             });
         } else {
             value.forEach((valueItem) => {
                 this.accordionItems().forEach((accordionItem) => {
                     if (accordionItem.value === valueItem) {
-                        accordionItem.setOpen();
+                        // accordionItem.setOpen();
                     }
                 });
             });
@@ -105,5 +128,17 @@ export class RdxAccordionRootDirective implements OnInit {
      */
     getOrientation(): RdxAccordionOrientation {
         return this._orientation;
+    }
+
+    /** Opens all enabled accordion items in an accordion where multi is enabled. */
+    openAll(): void {
+        if (this.multi) {
+            this.openCloseAllActions.next(true);
+        }
+    }
+
+    /** Closes all enabled accordion items. */
+    closeAll(): void {
+        this.openCloseAllActions.next(false);
     }
 }

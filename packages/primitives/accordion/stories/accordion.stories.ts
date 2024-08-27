@@ -143,7 +143,7 @@ export const Default: Story = {
     render: () => ({
         template: `
             <div class="AccordionRoot" rdxAccordionRoot [defaultValue]="['item-2']" [type]="'single'" [orientation]="'horizontal'">
-                <div value="item-1" class="AccordionItem" rdxAccordionItem>
+                <div value="item-1" class="AccordionItem" rdxAccordionItem disabled="true">
                     <div class="AccordionHeader" rdxAccordionHeader>
                         <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
                     </div>

@@ -1,58 +1,33 @@
-import { Directive } from '@angular/core';
-import { injectAccordionItem, RdxAccordionItemState } from './accordion-item.directive';
-import { injectAccordionRoot, RdxAccordionOrientation } from './accordion-root.directive';
+import { Directive, inject } from '@angular/core';
+import { RdxAccordionItemDirective } from './accordion-item.directive';
+import { RdxAccordionRootDirective } from './accordion-root.directive';
 
 @Directive({
     selector: '[rdxAccordionTrigger]',
     standalone: true,
     host: {
-        '(click)': 'onClick()',
-        '[attr.data-state]': 'getState()',
-        '[attr.data-disabled]': 'getDisabled()',
-        '[attr.data-orientation]': 'getOrientation()'
+        '[attr.role]': '"button"',
+        '[attr.aria-expanded]': 'item.expanded',
+        '[attr.data-state]': 'item.getState()',
+        '[attr.data-disabled]': 'item.disabled ?? ""',
+        '[attr.data-orientation]': 'item.orientation',
+        '(click)': 'onClick()'
     }
 })
 export class RdxAccordionTriggerDirective {
-    /**
-     * @ignore
-     */
-    private readonly accordionRoot = injectAccordionRoot();
-    /**
-     * @ignore
-     */
-    private readonly accordionItem = injectAccordionItem();
+    private readonly accordionRoot = inject(RdxAccordionRootDirective);
+    protected readonly item = inject(RdxAccordionItemDirective);
 
     /**
      * Fires when trigger clicked
      */
     onClick(): void {
-        if (!this.accordionRoot.collapsible) {
-            return;
+        if (!this.accordionRoot.collapsible) return;
+
+        if (this.item.value) {
+            this.accordionRoot.value = [this.item.value];
         }
 
-        if (this.accordionItem.value) {
-            this.accordionRoot.value = [this.accordionItem.value];
-        }
-    }
-
-    /**
-     * @ignore
-     */
-    getState(): RdxAccordionItemState {
-        return this.accordionItem.state();
-    }
-
-    /**
-     * @ignore
-     */
-    getDisabled(): boolean | undefined {
-        return this.accordionItem.disabled() || undefined;
-    }
-
-    /**
-     * @ignore
-     */
-    getOrientation(): RdxAccordionOrientation {
-        return this.accordionRoot.getOrientation();
+        this.item.toggle();
     }
 }

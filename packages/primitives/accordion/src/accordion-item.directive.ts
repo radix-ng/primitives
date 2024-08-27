@@ -1,6 +1,6 @@
-import { CdkAccordion } from '@angular/cdk/accordion';
-import { contentChild, Directive, inject, InjectionToken, Input, input, signal } from '@angular/core';
-import { RdxAccordionContentToken } from './accordion-content.directive';
+import { CDK_ACCORDION, CdkAccordion, CdkAccordionItem } from '@angular/cdk/accordion';
+import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
+import { ChangeDetectorRef, Directive, Inject, inject, InjectionToken, Input, Optional, SkipSelf } from '@angular/core';
 import { RdxAccordionOrientation } from './accordion-root.directive';
 
 export type RdxAccordionItemState = 'open' | 'closed';
@@ -15,55 +15,30 @@ export function injectAccordionItem(): RdxAccordionItemDirective {
     selector: '[rdxAccordionItem]',
     standalone: true,
     exportAs: 'rdxAccordionItem',
+    host: {
+        '[attr.data-state]': 'getState()',
+        '[attr.data-disabled]': 'disabled ?? ""',
+        '[attr.data-orientation]': 'orientation'
+    },
     providers: [
         {
-            provide: RdxAccordionItemToken,
+            provide: CdkAccordionItem,
             useExisting: RdxAccordionItemDirective,
             multi: true
         }
-    ],
-    host: {
-        '[attr.data-state]': 'state()',
-        '[attr.data-disabled]': 'disabled() ? "" : undefined',
-        '[attr.data-orientation]': 'orientation'
-    },
-    hostDirectives: [CdkAccordion]
+    ]
 })
-export class RdxAccordionItemDirective {
-    /**
-     * @ignore
-     */
-    private accordionContent = contentChild.required(RdxAccordionContentToken);
-    /**
-     * Current item state
-     */
-    state = signal<RdxAccordionItemState>('closed');
-    /**
-     * When true, prevents the user from interacting with the item.
-     */
-    disabled = input(false);
-    /**
-     * @ignore
-     */
-    orientation: RdxAccordionOrientation = 'vertical';
+export class RdxAccordionItemDirective extends CdkAccordionItem {
+    public orientation: RdxAccordionOrientation = 'vertical';
 
     @Input() value?: string;
 
-    /**
-     * Changes current item state
-     */
-    setOpen(state?: RdxAccordionItemState) {
-        if (this.disabled()) {
-            return;
-        }
-
-        if (state === undefined) {
-            this.state.update(() => (this.state() === 'open' ? 'closed' : 'open'));
-        } else {
-            this.state.update(() => state);
-        }
-
-        this.accordionContent().setOpen(this.state());
+    constructor(
+        @Optional() @Inject(CDK_ACCORDION) @SkipSelf() override accordion: CdkAccordion,
+        changeDetectorRef: ChangeDetectorRef,
+        expansionDispatcher: UniqueSelectionDispatcher
+    ) {
+        super(accordion, changeDetectorRef, expansionDispatcher);
     }
 
     /**
@@ -71,7 +46,9 @@ export class RdxAccordionItemDirective {
      */
     setOrientation(orientation: RdxAccordionOrientation) {
         this.orientation = orientation;
+    }
 
-        this.accordionContent().orientation = orientation;
+    getState(): RdxAccordionItemState {
+        return this.expanded ? 'open' : 'closed';
     }
 }
