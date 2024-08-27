@@ -1,8 +1,8 @@
 ---
 import path from 'path';
 import { readFileSync } from 'fs';
-import { Code } from 'astro-expressive-code/components';
 import { DemoLoaderComponent } from './demo-loader.component';
+import TabsComponentPreview from './TabsComponentPreview.astro';
 
 export interface Props {
     name: string;
@@ -23,7 +23,31 @@ async function loadCode(name: string, file: string) {
     };
 }
 
+async function loadCSS(name: string, file: string) {
+    const filename = path.join(process.cwd(), 'src', 'components', 'demos', `${name}`, `${file}.css`);
+
+    const css = readFileSync(filename, 'utf-8').toString();
+
+    return {
+        css
+    };
+}
+
 const { code } = await loadCode(name, file);
+const { css } = await loadCSS(name, file);
+
+const tabs = [
+    {
+        label: 'main.ts',
+        content: code
+    },
+    {
+        label: 'styles.css',
+        content: css
+    }
+];
+
+const activeTab = 0;
 ---
 
 <div class="relative -mx-11 text-[15px] text-black">
@@ -34,7 +58,6 @@ const { code } = await loadCode(name, file);
             <DemoLoaderComponent name={name} file={file} client:only="angular" />
         </div>
     </div>
-    <div id="Code">
-        <Code code={code} lang="angular-ts" />
-    </div>
+
+    <TabsComponentPreview tabs={tabs} activeTab={activeTab} />
 </div>

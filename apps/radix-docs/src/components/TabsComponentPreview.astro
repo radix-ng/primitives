@@ -1,0 +1,84 @@
+---
+import { Code } from 'astro-expressive-code/components';
+interface Tab {
+    label: string;
+    content: string;
+}
+
+interface Props {
+    tabs: Tab[];
+    activeTab: number;
+}
+
+const { tabs, activeTab } = Astro.props as Props;
+
+function handleTabClick(index: number) {
+    document.querySelectorAll('.tab-content').forEach((content, contentIndex) => {
+        content.setAttribute('style', contentIndex === index ? 'display: block;' : 'display: none;');
+    });
+}
+---
+
+<style>
+    .tabs {
+        display: flex;
+        border-right: 1px solid hsl(var(--border));
+        border-left: 1px solid hsl(var(--border));
+    }
+
+    .tab {
+        padding: 10px 20px;
+        cursor: default;
+        border-bottom: 3px solid transparent;
+        transition: border-color 0.3s;
+    }
+
+    .tab.active {
+        border-bottom: 3px solid #007acc;
+        font-weight: bold;
+    }
+</style>
+
+<div class="tabs">
+    {
+        tabs.map((tab, index) => (
+            <div class={`tab ${activeTab === index ? 'active' : ''}`} data-index={index}>
+                {tab.label}
+            </div>
+        ))
+    }
+</div>
+
+{
+    tabs.map((tab, index) => (
+        <div class="tab-content" style={`display: ${activeTab === index ? 'block' : 'none'};`}>
+            <div id="Code">
+                <Code code={tab.content} lang="angular-ts" />
+            </div>
+        </div>
+    ))
+}
+
+<script>
+    document.querySelectorAll('.tab').forEach((tabElement) => {
+        tabElement.addEventListener('click', () => {
+            const index = parseInt(tabElement.getAttribute('data-index') as string);
+
+            document.querySelectorAll('.tab-content').forEach((content, contentIndex) => {
+                if (content instanceof HTMLElement) {
+                    content.style.display = contentIndex === index ? 'block' : 'none';
+                }
+            });
+
+            document.querySelectorAll('.tab').forEach((tab, tabIndex) => {
+                if (tab instanceof HTMLElement) {
+                    if (tabIndex === index) {
+                        tab.classList.add('active');
+                    } else {
+                        tab.classList.remove('active');
+                    }
+                }
+            });
+        });
+    });
+</script>

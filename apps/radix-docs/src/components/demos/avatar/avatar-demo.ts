@@ -34,7 +34,7 @@ import {
             </span>
         </div>
     `,
-    styleUrl: './avatar-demo.css'
+    styleUrl: 'avatar-demo.css'
 })
 export class AvatarDemoComponent {}
 
