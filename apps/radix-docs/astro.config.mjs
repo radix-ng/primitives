@@ -5,6 +5,17 @@ import AutoImport from 'astro-auto-import';
 import astroExpressiveCode from 'astro-expressive-code';
 import { defineConfig } from 'astro/config';
 
+/** @type {import('astro-expressive-code').AstroExpressiveCodeOptions} */
+const codeOptions = {
+    styleOverrides: {
+        borderWidth: '1px',
+        frames: {
+            terminalTitlebarDotsOpacity: '1',
+            frameBoxShadowCssValue: 'none'
+        }
+    }
+};
+
 // https://astro.build/config
 export default defineConfig({
     vite: {
@@ -37,7 +48,7 @@ export default defineConfig({
                 './src/components/mdx/Description.astro'
             ]
         }),
-        astroExpressiveCode(),
+        astroExpressiveCode(codeOptions),
         mdx(),
         angular()
 

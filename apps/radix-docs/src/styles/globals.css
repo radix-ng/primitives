@@ -132,10 +132,9 @@ p {
     margin-bottom: var(--space-4);
 }
 
-.expressive-code .frame {
-    box-shadow: none !important;
-}
-
-.expressive-code pre {
-    border-width: 1px !important;
+#Code {
+    .expressive-code pre {
+        border-top-left-radius: 1px;
+        border-top-right-radius: 1px;
+    }
 }
