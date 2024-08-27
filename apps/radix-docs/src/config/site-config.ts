@@ -34,8 +34,7 @@ const siteConfig = {
                     section: 'Overview',
                     pages: [
                         { name: 'Introduction', url: '/primitives/overview/introduction' },
-                        { name: 'Installation', url: '/primitives/overview/installation' },
-                        { name: 'Overview', url: '/primitives/overview/overview' }
+                        { name: 'Getting started', url: '/primitives/overview/getting-started' }
                     ]
                 },
                 {

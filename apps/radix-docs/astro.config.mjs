@@ -43,9 +43,9 @@ export default defineConfig({
         tailwind(),
         AutoImport({
             imports: [
-                './src/components/PropsTable.astro',
-                './src/components/ComponentPreview.astro',
-                './src/components/mdx/Description.astro'
+                './src/components/mdx/PropsTable.astro',
+                './src/components/mdx/Description.astro',
+                './src/components/demo-preview/ComponentPreview.astro'
             ]
         }),
         astroExpressiveCode(codeOptions),
