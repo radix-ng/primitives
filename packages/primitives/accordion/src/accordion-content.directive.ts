@@ -10,8 +10,8 @@ export const RdxAccordionContentToken = new InjectionToken<RdxAccordionContentDi
     host: {
         '[attr.role]': '"region"',
         '[style.display]': 'item.expanded ? "" : "none"',
-        '[attr.data-state]': 'item.getState()',
-        '[attr.data-disabled]': 'item.disabled ?? ""',
+        '[attr.data-state]': 'item.dataState',
+        '[attr.data-disabled]': 'item.disabled',
         '[attr.data-orientation]': 'item.orientation'
     }
 })

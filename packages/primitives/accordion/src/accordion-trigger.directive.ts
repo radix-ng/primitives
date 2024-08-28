@@ -8,8 +8,8 @@ import { RdxAccordionRootDirective } from './accordion-root.directive';
     host: {
         '[attr.role]': '"button"',
         '[attr.aria-expanded]': 'item.expanded',
-        '[attr.data-state]': 'item.getState()',
-        '[attr.data-disabled]': 'item.disabled ?? ""',
+        '[attr.data-state]': 'item.dataState',
+        '[attr.data-disabled]': 'item.disabled',
         '[attr.data-orientation]': 'item.orientation',
         '(click)': 'onClick()'
     }

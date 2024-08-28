@@ -5,8 +5,8 @@ import { RdxAccordionItemDirective } from './accordion-item.directive';
     selector: '[rdxAccordionHeader]',
     standalone: true,
     host: {
-        '[attr.data-state]': 'item.getState()',
-        '[attr.data-disabled]': 'item.disabled ?? ""',
+        '[attr.data-state]': 'item.dataState',
+        '[attr.data-disabled]': 'item.disabled',
         '[attr.data-orientation]': 'item.orientation'
     }
 })

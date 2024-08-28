@@ -152,7 +152,6 @@ export const Default: Story = {
                             Yes. It adheres to the WAI-ARIA design pattern.
                         </div>
                     </div>
-
                 </div>
 
                 <div value="item-2" class="AccordionItem" rdxAccordionItem>
@@ -194,7 +193,6 @@ export const Multiple: Story = {
                             Yes. It adheres to the WAI-ARIA design pattern.
                         </div>
                     </div>
-
                 </div>
 
                 <div value="item-2" class="AccordionItem" rdxAccordionItem>

@@ -1,54 +1,40 @@
-import {
-    booleanAttribute,
-    contentChildren,
-    Directive,
-    InjectionToken,
-    Input,
-    OnChanges,
-    OnDestroy,
-    OnInit,
-    SimpleChanges
-} from '@angular/core';
+import { Directive, InjectionToken, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { Subject } from 'rxjs';
-import { RdxAccordionItemToken } from './accordion-item.directive';
 
 export type RdxAccordionType = 'single' | 'multiple';
 export type RdxAccordionOrientation = 'horizontal' | 'vertical';
 
 export const RdxAccordionRootToken = new InjectionToken<RdxAccordionRootDirective>('RdxAccordionRootDirective');
 
+let nextId = 0;
+
 @Directive({
     selector: '[rdxAccordionRoot]',
     standalone: true,
     providers: [{ provide: RdxAccordionRootToken, useExisting: RdxAccordionRootDirective }],
     host: {
-        '[attr.data-orientation]': 'getOrientation()'
+        '[attr.data-orientation]': 'orientation'
     }
 })
 export class RdxAccordionRootDirective implements OnInit, OnDestroy, OnChanges {
+    readonly id: string = `rdx-accordion-${nextId++}`;
+
     readonly stateChanges = new Subject<SimpleChanges>();
     readonly openCloseAllActions = new Subject<boolean>();
 
-    @Input({ transform: booleanAttribute }) multi: boolean = false;
+    get multi(): boolean {
+        return this.type === 'multiple';
+    }
 
     /**
      * The orientation of the accordion.
      */
-    @Input()
-    set orientation(orientation: RdxAccordionOrientation | undefined) {
-        this._orientation = orientation ?? 'vertical';
-        this.accordionItems().forEach((accordionItem) => accordionItem.setOrientation(this._orientation));
-    }
+    @Input() orientation: RdxAccordionOrientation = 'vertical';
     /**
      * @private
      * @ignore
      */
-    private readonly accordionItems = contentChildren(RdxAccordionItemToken);
-    /**
-     * @private
-     * @ignore
-     */
-    private _orientation: RdxAccordionOrientation = 'vertical';
+    // private readonly accordionItems = contentChildren(RdxAccordionItemToken);
     /**
      * @private
      * @ignore
@@ -102,32 +88,25 @@ export class RdxAccordionRootDirective implements OnInit, OnDestroy, OnChanges {
      * @ignore
      */
     onValueChange(value: string[]): void {
-        if (this.type === 'single') {
-            const currentValue = value.length > 0 ? value[0] : undefined;
-
-            this.accordionItems().forEach((accordionItem) => {
-                if (accordionItem.value === currentValue) {
-                    // accordionItem.setOpen();
-                } else {
-                    // accordionItem.setOpen('closed');
-                }
-            });
-        } else {
-            value.forEach((valueItem) => {
-                this.accordionItems().forEach((accordionItem) => {
-                    if (accordionItem.value === valueItem) {
-                        // accordionItem.setOpen();
-                    }
-                });
-            });
-        }
-    }
-
-    /**
-     * @ignore
-     */
-    getOrientation(): RdxAccordionOrientation {
-        return this._orientation;
+        // if (this.type === 'single') {
+        //     const currentValue = value.length > 0 ? value[0] : undefined;
+        //
+        //     // this.accordionItems().forEach((accordionItem) => {
+        //     //     if (accordionItem.value === currentValue) {
+        //             accordionItem.setOpen();
+        //         // } else {
+        //             accordionItem.setOpen('closed');
+        //         // }
+        //     // });
+        // } else {
+        //     value.forEach((valueItem) => {
+        //         this.accordionItems().forEach((accordionItem) => {
+        //             if (accordionItem.value === valueItem) {
+        //                 // accordionItem.setOpen();
+        //             }
+        //         });
+        //     });
+        // }
     }
 
     /** Opens all enabled accordion items in an accordion where multi is enabled. */
