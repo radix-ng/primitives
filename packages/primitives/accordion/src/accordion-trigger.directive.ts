@@ -24,10 +24,6 @@ export class RdxAccordionTriggerDirective {
     onClick(): void {
         if (!this.accordionRoot.collapsible) return;
 
-        if (this.item.value) {
-            this.accordionRoot.value = [this.item.value];
-        }
-
         this.item.toggle();
     }
 }

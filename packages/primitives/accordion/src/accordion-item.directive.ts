@@ -41,6 +41,8 @@ export class RdxAccordionItemDirective implements OnDestroy {
     /** The unique AccordionItem id. */
     readonly id: string = `rdx-accordion-item-${nextId++}`;
 
+    public orientation: RdxAccordionOrientation = 'vertical';
+
     /** Whether the AccordionItem is expanded. */
     @Input({ transform: booleanAttribute })
     set expanded(expanded: boolean) {
@@ -55,8 +57,8 @@ export class RdxAccordionItemDirective implements OnDestroy {
                  * In the unique selection dispatcher, the id parameter is the id of the CdkAccordionItem,
                  * the name value is the id of the accordion.
                  */
-                const accordionId = this.accordion ? this.accordion.id : this.id;
-                this.expansionDispatcher.notify(this.id, accordionId);
+                const accordionId = this.accordion ? this.accordion.id : this.value;
+                this.expansionDispatcher.notify(this.value, accordionId);
             } else {
                 this.closed.emit();
             }
@@ -72,6 +74,17 @@ export class RdxAccordionItemDirective implements OnDestroy {
     }
 
     private _expanded = false;
+
+    @Input()
+    get value(): string {
+        return this._value || this.id;
+    }
+
+    set value(value: string) {
+        this._value = value;
+    }
+
+    private _value?: string;
 
     /** Whether the AccordionItem is disabled. */
     @Input({ transform: booleanAttribute }) disabled: boolean = false;
@@ -102,7 +115,8 @@ export class RdxAccordionItemDirective implements OnDestroy {
         protected expansionDispatcher: UniqueSelectionDispatcher
     ) {
         this.removeUniqueSelectionListener = expansionDispatcher.listen((id: string, accordionId: string) => {
-            if (this.accordion && !this.accordion.multi && this.accordion.id === accordionId && this.id !== id) {
+            if (this.accordion && !this.accordion.multi && this.accordion.id === accordionId && this.value !== id) {
+                console.log('this.expanded = false: ');
                 this.expanded = false;
             }
         });
@@ -152,8 +166,4 @@ export class RdxAccordionItemDirective implements OnDestroy {
             }
         });
     }
-
-    public orientation: RdxAccordionOrientation = 'vertical';
-
-    @Input() value?: string;
 }

@@ -1,3 +1,4 @@
+import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
 import { Directive, InjectionToken, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { Subject } from 'rxjs';
 
@@ -11,7 +12,10 @@ let nextId = 0;
 @Directive({
     selector: '[rdxAccordionRoot]',
     standalone: true,
-    providers: [{ provide: RdxAccordionRootToken, useExisting: RdxAccordionRootDirective }],
+    providers: [
+        { provide: RdxAccordionRootToken, useExisting: RdxAccordionRootDirective },
+        { provide: UniqueSelectionDispatcher, useClass: UniqueSelectionDispatcher }
+    ],
     host: {
         '[attr.data-orientation]': 'orientation'
     }
@@ -43,7 +47,7 @@ export class RdxAccordionRootDirective implements OnInit, OnDestroy, OnChanges {
     /**
      * The value of the item to expand when initially rendered and type is "single". Use when you do not need to control the state of the items.
      */
-    @Input() defaultValue?: string[] = [];
+    @Input() defaultValue: string[] = [];
     /**
      * Determines whether one or multiple items can be opened at the same time.
      */
@@ -60,7 +64,7 @@ export class RdxAccordionRootDirective implements OnInit, OnDestroy, OnChanges {
         if (value !== undefined) {
             this._value = Array.isArray(value) ? value : [value];
         } else {
-            this._value = [];
+            this._value = this.defaultValue;
         }
 
         this.onValueChange(this._value);
