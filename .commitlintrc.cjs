@@ -24,6 +24,7 @@ module.exports = {
             'always',
             [
                 'primitives',
+                'collapsible',
                 'radix-docs',
                 'shadcn',
                 'docs',
