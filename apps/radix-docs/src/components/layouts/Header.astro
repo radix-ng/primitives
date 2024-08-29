@@ -1,5 +1,6 @@
 ---
 import MainNavigation from './MainNavigation.astro';
+import ThemeToggle from './ThemeToggle.astro';
 ---
 
 <header class="bg-background-blur sticky top-0 z-50 w-full backdrop-blur-lg">
@@ -7,7 +8,9 @@ import MainNavigation from './MainNavigation.astro';
         <MainNavigation />
 
         <div class="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-            <nav class="flex items-center">
+            <div class="w-full flex-1 md:w-auto md:flex-none"></div>
+            <nav class="flex items-center gap-2">
+                <ThemeToggle />
                 <div class="phone:flex hidden items-center">
                     <a
                         href="https://github.com/radix-ng/primitives"
