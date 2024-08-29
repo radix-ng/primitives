@@ -1,7 +1,6 @@
 import { Component, computed, input, Input } from '@angular/core';
 import classNames from 'classnames';
-
-type ResponsiveSize = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
+import { ResponsiveSize } from '../../types';
 
 @Component({
     selector: 'rdx-code',
