@@ -34,6 +34,9 @@
             "@radix-ng/components/theme": [
                 "packages/components/theme/index.ts"
             ],
+            "@radix-ng/components/types": [
+                "packages/components/types/index.ts"
+            ],
             "@radix-ng/primitives/accordion": [
                 "packages/primitives/accordion/index.ts"
             ],

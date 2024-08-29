@@ -1,6 +1,6 @@
 import { Component, computed, input, Input } from '@angular/core';
+import { ResponsiveSize } from '@radix-ng/components/types';
 import classNames from 'classnames';
-import { ResponsiveSize } from '../../types';
 
 @Component({
     selector: 'rdx-kbq',
