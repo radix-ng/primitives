@@ -12,6 +12,13 @@ export default function remarkStyled() {
                 'rt-Text rt-reset rt-Link rt-underline-auto rt-Flex rt-r-display-inline-flex rt-r-ai-center rt-r-gap-1';
             node.data.hProperties.dataAccentColor = '';
         });
+
+        visit(tree, 'paragraph', (node) => {
+            node.data = node.data || {};
+            node.data.hProperties = node.data.hProperties || {};
+
+            node.data.hProperties.className = 'rt-Text rt-r-size-3 rt-r-mb-4';
+        });
     };
 }
 

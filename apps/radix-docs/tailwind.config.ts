@@ -14,7 +14,6 @@ import {
     violet
 } from '@radix-ui/colors';
 import { type Config } from 'tailwindcss';
-import { fontFamily } from 'tailwindcss/defaultTheme';
 
 const config = {
     content: ['./src/**/*.{astro,html,mdx,ts}'],
@@ -61,9 +60,6 @@ const config = {
                 lg: 'var(--radius)',
                 md: 'calc(var(--radius) - 2px)',
                 sm: 'calc(var(--radius) - 4px)'
-            },
-            fontFamily: {
-                sans: ['Inter', ...fontFamily.sans]
             },
             screens: {
                 phone: '400px'
