@@ -217,8 +217,8 @@ importers:
         specifier: 0.5.11
         version: 0.5.11
       '@tailwindcss/typography':
-        specifier: ^0.5.13
-        version: 0.5.14(tailwindcss@3.4.10)
+        specifier: ^0.5.15
+        version: 0.5.15(tailwindcss@3.4.10)
       '@testing-library/angular':
         specifier: ^15.2.0
         version: 15.2.0(@angular/common@18.2.1)(@angular/core@18.2.1)(@angular/platform-browser@18.2.1)(@angular/router@18.2.1)
@@ -349,7 +349,7 @@ importers:
         specifier: ^5.0.2
         version: 5.0.2(prettier@3.3.3)(stylelint@16.8.2)
       tailwindcss:
-        specifier: ^3.4.3
+        specifier: ^3.4.10
         version: 3.4.10(ts-node@10.9.1)
       ts-jest:
         specifier: ^29.1.0
@@ -9269,6 +9269,18 @@ packages:
     resolution: {integrity: sha512-ZvOCjUbsJBjL9CxQBn+VEnFpouzuKhxh2dH8xMIWHILL+HfOYtlAkWcyoon8LlzE53d2Yo6YO6pahKKNW3q1YQ==}
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders'
+    dependencies:
+      lodash.castarray: 4.4.0
+      lodash.isplainobject: 4.0.6
+      lodash.merge: 4.6.2
+      postcss-selector-parser: 6.0.10
+      tailwindcss: 3.4.10(ts-node@10.9.1)
+    dev: true
+
+  /@tailwindcss/typography@0.5.15(tailwindcss@3.4.10):
+    resolution: {integrity: sha512-AqhlCXl+8grUz8uqExv5OTtgpjuVIwFTSXTrh8y9/pw6q2ek7fJ+Y8ZEVw7EB2DCcuCOtEjf9w3+J3rzts01uA==}
+    peerDependencies:
+      tailwindcss: '>=3.0.0 || insiders || >=4.0.0-alpha.20'
     dependencies:
       lodash.castarray: 4.4.0
       lodash.isplainobject: 4.0.6
