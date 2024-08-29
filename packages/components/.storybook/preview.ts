@@ -1,22 +1,6 @@
 import { Preview } from '@storybook/angular';
-import { badgesConfig } from './helpers/bages-config';
 
 const preview: Preview = {
-    decorators: [
-        (Story, context) => {
-            const storyAnchor = `anchor--${context.id}`;
-            const existAnchor = context.canvasElement.closest(`#${storyAnchor}`);
-            const storyContainer = context.canvasElement.closest('.sbdocs');
-
-            if (!existAnchor && storyContainer) {
-                storyContainer.id = storyAnchor;
-            }
-
-            return Story(context);
-        }
-
-    ],
-
     parameters: {
         docs: {
             toc: {
@@ -35,7 +19,7 @@ const preview: Preview = {
             values: [
                 {
                     name: 'blue',
-                    value: 'linear-gradient(330deg,color(display-p3 0.523 0.318 0.751) 0,color(display-p3 0.276 0.384 0.837) 100%)'
+                    value: '#ffffff'
                 },
                 {
                     name: 'white',
@@ -48,8 +32,7 @@ const preview: Preview = {
                 method: 'alphabetical',
                 order: ['Components']
             }
-        },
-        badgesConfig
+        }
     },
 
     tags: ['autodocs']
