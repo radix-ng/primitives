@@ -3,6 +3,7 @@ import { RdxKbdComponent } from '@radix-ng/components/kbd';
 import { RdxThemeDirective } from '@radix-ng/components/theme';
 
 @Component({
+    selector: 'kbd-demo',
     standalone: true,
     imports: [RdxThemeDirective, RdxKbdComponent],
     template: `

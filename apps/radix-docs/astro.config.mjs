@@ -4,6 +4,7 @@ import tailwind from '@astrojs/tailwind';
 import AutoImport from 'astro-auto-import';
 import astroExpressiveCode from 'astro-expressive-code';
 import { defineConfig } from 'astro/config';
+import remarkStyled, { remarkDirectives } from './plugins/remarkStyled';
 
 /** @type {import('astro-expressive-code').AstroExpressiveCodeOptions} */
 const codeOptions = {
@@ -55,5 +56,12 @@ export default defineConfig({
         mdx(),
         angular()
 
-    ]
+    ],
+    markdown: {
+        remarkPlugins: [
+            remarkDirectives,
+            remarkStyled
+        ]
+    },
+    redirects: {}
 });
