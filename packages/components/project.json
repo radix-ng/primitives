@@ -6,6 +6,13 @@
     "projectType": "library",
     "tags": [],
     "targets": {
+        "nx-release-publish": {
+            "executor": "@nx/js:release-publish",
+            "options": {
+                "packageRoot": "./dist/components",
+                "registry": "https://registry.npmjs.org/"
+            }
+        },
         "build": {
             "executor": "nx:run-commands",
             "options": { "commands": [] },

@@ -18,15 +18,62 @@ Getting up and running is quick and easy.
 ### 1. Install Radix Themes
 
 Install the package from your command line.
+```shell
+npm install @radix-ui/themes
+```
 
 ### 2. Import the CSS file
 
 Import the global CSS file at the root of your application.
 
+```css
+@import '@radix-ui/themes/styles.css';
+```
+
+For `NX` added to `build.options`
+```json
+{
+    "styles": [
+        "@radix-ui/themes/styles.css"
+    ],
+    "stylePreprocessorOptions": {
+        "includePaths": [
+            "node_modules/"
+        ]
+    }
+}
+```
+
+
 ### 3. Add the Theme component
 
-Add `Theme` to your application, wrapping the root component inside of `body`.
+Add `Theme` (RdxThemeDirective) to your application, wrapping the root component inside of `body`.
 
+```typescript {4, 9, 11-13, 16}
+import { Component } from '@angular/core';
+import { bootstrapApplication } from '@angular/platform-browser';
+import 'zone.js';
+import { RdxThemeDirective } from '@radix-ng/components/theme';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [RdxThemeDirective],
+  template: `
+    <div rdxTheme data-accent-color="indigo"
+                  data-radius="medium"
+                  data-scaling="100%">
+        <h1>Hello from {{ name }}!</h1>
+        <a target="_blank" href="https://angular.dev/overview">Learn more about Angular</a>
+    </div>
+  `
+})
+export class App {
+  name = 'Angular';
+}
+
+bootstrapApplication(App);
+```
 
 ## Customizing your theme
 

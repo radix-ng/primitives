@@ -15,7 +15,7 @@ export default {
         }),
         componentWrapperDecorator(
             (story) => `
-                <div rdxAppTheme
+                <div rdxTheme
                     data-accent-color="indigo"
                     data-radius="medium"
                     data-scaling="100%"
