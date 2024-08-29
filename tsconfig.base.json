@@ -28,8 +28,8 @@
             "@radix-ng/components/code": [
                 "packages/components/code/index.ts"
             ],
-            "@radix-ng/components/kbq": [
-                "packages/components/kbq/index.ts"
+            "@radix-ng/components/kbd": [
+                "packages/components/kbd/index.ts"
             ],
             "@radix-ng/components/theme": [
                 "packages/components/theme/index.ts"

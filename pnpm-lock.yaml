@@ -402,6 +402,9 @@ importers:
       astro-expressive-code:
         specifier: ^0.35.6
         version: 0.35.6(astro@4.14.5)
+      classnames:
+        specifier: ^2.5.1
+        version: 2.5.1
       postcss:
         specifier: ^8.4.41
         version: 8.4.41
@@ -11870,7 +11873,6 @@ packages:
 
   /classnames@2.5.1:
     resolution: {integrity: sha512-saHYOzhIQs6wy2sVxTM6bUDsQO4F50V9RQ22qBpEdCW+I+/Wmke2HOl6lS6dTpdxVhb88/I6+Hs+438c3lfUow==}
-    dev: true
 
   /clean-css@5.3.3:
     resolution: {integrity: sha512-D5J+kHaVb/wKSFcyyV75uCn8fiY4sV38XJoe4CUyGQ+mOU/fMVYUdH1hJC+CJQ5uY3EnW27SbJYS4X8BiLrAFg==}

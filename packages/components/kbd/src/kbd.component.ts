@@ -3,7 +3,7 @@ import { ResponsiveSize } from '@radix-ng/components/types';
 import classNames from 'classnames';
 
 @Component({
-    selector: 'rdx-kbq',
+    selector: 'rdx-kbd',
     standalone: true,
     template: `
         <ng-content></ng-content>
@@ -12,7 +12,7 @@ import classNames from 'classnames';
         '[class]': 'computedClass()'
     }
 })
-export class RdxKbqComponent {
+export class RdxKbdComponent {
     @Input() size?: ResponsiveSize;
 
     readonly class = input<string>();

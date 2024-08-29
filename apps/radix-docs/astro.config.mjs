@@ -22,9 +22,11 @@ export default defineConfig({
         optimizeDeps: {
             include: [
                 '@radix-ng/primitives',
+                '@radix-ng/components',
                 '@angular/common',
                 '@angular/core',
-                '@angular/cdk'
+                '@angular/cdk',
+                'classnames'
             ]
         },
         ssr: {
@@ -45,7 +47,8 @@ export default defineConfig({
             imports: [
                 './src/components/mdx/PropsTable.astro',
                 './src/components/mdx/Description.astro',
-                './src/components/demo-preview/ComponentPreview.astro'
+                './src/components/demo-preview/ComponentPreview.astro',
+                './src/components/demo-component-preview/ComponentThemesPreview.astro'
             ]
         }),
         astroExpressiveCode(codeOptions),

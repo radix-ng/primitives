@@ -1,0 +1,16 @@
+---
+import { DemoThemesLoaderComponent } from './demo-themes-loader.component';
+
+export interface Props {
+    name: string;
+    file: string;
+}
+
+const { name, file } = Astro.props;
+---
+
+<div class="relative flex w-full items-center rounded-t-lg border border-gray-300 p-4">
+    <div class="flex w-full">
+        <DemoThemesLoaderComponent name={name} file={file} client:only="angular" />
+    </div>
+</div>

@@ -10,14 +10,18 @@ const siteConfig = {
                     section: 'Overview',
                     pages: [
                         { name: 'Getting started', url: '/themes/overview/getting-started' },
-                        { name: 'Styling', url: '/themes/overview/styling' },
-                        { name: 'Component', url: '/themes/overview/custom-component' }
+                        { name: 'Styling', url: '/themes/overview/styling' }
                     ]
                 },
                 {
                     section: 'Theme',
                     pages: [
                         { name: 'Overview', url: '/themes/theme/overview' }]
+                },
+                {
+                    section: 'Typography',
+                    pages: [
+                        { name: 'Kbd', url: '/themes/typography/kbd' }]
                 },
                 {
                     section: 'Components',
