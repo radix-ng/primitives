@@ -19,6 +19,26 @@ export default function remarkStyled() {
 
             node.data.hProperties.className = 'rt-Text rt-r-size-3 rt-r-mb-4';
         });
+
+        visit(tree, 'inlineCode', (node) => {
+            node.type = 'html';
+            node.value = `<code data-accent-color class="rt-reset rt-Code rt-variant-soft">${node.value}</code>`;
+        });
+
+        visit(tree, 'code', (node) => {
+            if (node.data) {
+                // Add custom classes or data attributes
+                node.data.hProperties = node.data.hProperties || {};
+                node.data.hProperties.className = (node.data.hProperties.className || []).concat([
+                    'rt-r-my-5'
+                ]);
+
+                // Add a data attribute for the language
+                if (node.lang) {
+                    node.data.hProperties['data-language'] = node.lang;
+                }
+            }
+        });
     };
 }
 
