@@ -39,6 +39,16 @@ export default function remarkStyled() {
                 }
             }
         });
+
+        visit(tree, ['list', 'listItem'], (node) => {
+            node.data = node.data || {};
+            node.data.hProperties = node.data.hProperties || {};
+            if (node.type === 'list') {
+                node.data.hProperties.className = (node.data.hProperties.className || []).concat([
+                    `MDX_List`
+                ]);
+            }
+        });
     };
 }
 
