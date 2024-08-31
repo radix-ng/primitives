@@ -4,6 +4,7 @@ export interface Page {
     name: string;
     url: string;
     label?: string;
+    external?: boolean;
 }
 
 export interface Section {

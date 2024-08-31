@@ -47,6 +47,11 @@ const siteConfig = {
                     ]
                 },
                 {
+                    section: 'Storybook',
+                    pages: [
+                        { name: 'Primitives', url: 'https://sb-primitives.radix-ng.com', external: true }]
+                },
+                {
                     section: 'Components',
                     pages: [
                         { name: 'Avatar', url: '/primitives/components/avatar', label: 'New' },
