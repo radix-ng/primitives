@@ -1,4 +1,4 @@
-import { Component, computed, input, Input } from '@angular/core';
+import { Component, computed, input, Input, InputSignal } from '@angular/core';
 import { ResponsiveSize } from '@radix-ng/components/types';
 import classNames from 'classnames';
 
@@ -15,8 +15,12 @@ import classNames from 'classnames';
 export class RdxKbdComponent {
     @Input() size?: ResponsiveSize;
 
-    readonly class = input<string>();
+    readonly class: InputSignal<string | undefined> = input<string | undefined>();
 
+    /**
+     *
+     * @ignore
+     */
     protected computedClass = computed(() =>
         classNames('rt-reset', 'rt-Kbd', this.size && `rt-r-size-${this.size}`, this.class())
     );

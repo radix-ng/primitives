@@ -27,7 +27,7 @@
         "radix-docs:dev": "nx run radix-docs:dev",
         "radix-docs:build": "nx run radix-docs:build",
         "----Radix Components---": "-----------------------------------------------------------------",
-        "components:build": "nx run primitives:build && nx run-many --targets=build,compodoc --projects=components",
+        "components:build": "nx run-many --targets=build,compodoc --projects=components",
         "----shadcn-------": "-----------------------------------------------------------------------",
         "shadcn:docs:serve": "nx run shadcn-docs:serve",
         "shadcn:docs:build": "nx run shadcn-docs:build",

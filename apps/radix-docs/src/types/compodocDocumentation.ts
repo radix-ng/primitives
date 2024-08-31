@@ -53,6 +53,8 @@ export interface CompodocDirective extends CompodocEntity {
     viewProviders?: any[];
 }
 
+export type CompodocComponent = CompodocDirective;
+
 export interface CompodocDocumentation {
     classes?: any[];
     directives: CompodocDirective[];

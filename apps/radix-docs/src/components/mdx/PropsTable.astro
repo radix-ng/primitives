@@ -1,18 +1,13 @@
 ---
-import { getDirectiveByName } from '../../utils/compodoc';
+import { getComponentByName, getDirectiveByName } from '../../utils/compodoc';
 
 const { name } = Astro.props;
 
-const { inputsClass, propertiesClass } = getDirectiveByName(name);
+const directive = getDirectiveByName(name);
 
-const data =
-    inputsClass.length > 0 && propertiesClass.length > 0
-        ? [...inputsClass, ...propertiesClass]
-        : inputsClass.length > 0
-          ? inputsClass
-          : propertiesClass.length > 0
-            ? propertiesClass
-            : [];
+const { inputsClass = [], propertiesClass = [] } = (directive ?? getComponentByName(name)) || {};
+
+const data = [...inputsClass, ...propertiesClass];
 ---
 
 <div class="rt-TableRoot rt-r-size-2 rt-variant-surface rt-Box rt-r-my-5">
@@ -35,24 +30,32 @@ const data =
                             <td class="rt-TableCell">
                                 <div class="rt-Flex rt-r-display-inline-flex rt-r-ai-center rt-r-gap-2">
                                     <div class="rt-Box">
-                                        <code
-                                            data-accent-color="gray"
-                                            class="rt-reset rt-Code rt-r-size-2 rt-variant-soft"
-                                        >
-                                            {type}
-                                        </code>
+                                        {type ? (
+                                            <code
+                                                data-accent-color="gray"
+                                                class="rt-reset rt-Code rt-r-size-2 rt-variant-soft"
+                                            >
+                                                {type}
+                                            </code>
+                                        ) : (
+                                            '-'
+                                        )}
                                     </div>
                                 </div>
                             </td>
                             <td class="rt-TableCell">
                                 <div class="rt-Flex rt-r-display-inline-flex rt-r-ai-center rt-r-gap-2">
                                     <div class="rt-Box">
-                                        <code
-                                            data-accent-color="gray"
-                                            class="rt-reset rt-Code rt-r-size-2 rt-variant-soft"
-                                        >
-                                            {defaultValue}
-                                        </code>
+                                        {defaultValue ? (
+                                            <code
+                                                data-accent-color="gray"
+                                                class="rt-reset rt-Code rt-r-size-2 rt-variant-soft"
+                                            >
+                                                {defaultValue}
+                                            </code>
+                                        ) : (
+                                            '-'
+                                        )}
                                     </div>
                                 </div>
                             </td>
