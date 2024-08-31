@@ -50,3 +50,45 @@ export class App {
 
 bootstrapApplication(App);
 ```
+
+### 3. Add your styles
+Add styles where desired.
+
+```typescript {13-20, 9}
+@Component({
+    selector: 'app-root',
+    standalone: true,
+    imports: [RdxLabelRootDirective],
+    template: `
+        <h1>Hello from {{ name }}!</h1>
+        <a target="_blank" href="https://angular.dev/overview">Learn more about Angular</a>
+        <div>
+            <label LabelRoot class="Label" htmlFor="uniqId">First Name</label>
+            <input type="text" class="Input" id="uniqId" />
+        </div>
+    `,
+    styles: `
+        .Label {
+            color: white;
+            font-size: 15px;
+            line-height: 35px;
+            font-weight: 500;
+        }
+    `
+})
+```
+
+## Summary
+
+The steps above outline briefly what's involved in using a Radix Primitive in your application.
+
+These components are low-level enough to give you control over how you want to wrap them. You're free to introduce your own high-level API to better suit the needs of your team and product.
+
+In a few simple steps, we've implemented a fully accessible Popover component, without having to worry about many of its complexities.
+
+- Adheres to [WAI-ARIA](https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/) practices names-and-descriptions.
+- Can be controlled or uncontrolled.
+- Customize side, alignment, offsets, collision handling.
+- Optionally render a pointing arrow.
+- Focus is fully managed and customizable.
+- Dismissing and layering behavior is highly customizable.
