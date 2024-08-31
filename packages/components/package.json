@@ -11,5 +11,8 @@
         "@radix-ng/primitives": "workspace:*",
         "classnames": "^2.5.1"
     },
+    "scripts": {
+        "compodoc": "compodoc --config .compodocrc.json"
+    },
     "sideEffects": false
 }

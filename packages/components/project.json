@@ -11,7 +11,8 @@
             "options": {
                 "packageRoot": "./dist/components",
                 "registry": "https://registry.npmjs.org/"
-            }
+            },
+            "dependsOn": ["^nx-release-publish", "build"]
         },
         "build": {
             "executor": "nx:run-commands",
@@ -33,6 +34,12 @@
                 }
             },
             "defaultConfiguration": "production"
+        },
+        "compodoc": {
+            "executor": "nx:run-script",
+            "options": {
+                "script": "compodoc"
+            }
         },
         "test": {
             "executor": "@nx/jest:jest",
