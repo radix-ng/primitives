@@ -18,7 +18,7 @@ const { tabs, activeTab } = Astro.props as Props;
     {
         tabs.map((tab, index) => (
             <div
-                class={`tab cursor-default border-b-2 px-4 py-2 transition-colors ${
+                class={`tab cursor-default border-b-2 px-4 py-2 text-sm transition-colors ${
                     activeTab === index ? 'border-blue-500 font-bold' : 'border-transparent text-gray-600'
                 }`}
                 data-index={index}
