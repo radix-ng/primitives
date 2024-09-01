@@ -17,10 +17,14 @@ import { RdxCollapsibleRootDirective } from './collapsible-root.directive';
     }
 })
 export class RdxCollapsibleContentDirective {
+    /**
+     * @ignore
+     */
     protected readonly collapsible = inject(RdxCollapsibleRootDirective);
 
     /**
      * Reference to CollapsibleContent host element
+     * @ignore
      */
     elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 

@@ -55,6 +55,7 @@ const siteConfig = {
                     section: 'Components',
                     pages: [
                         { name: 'Avatar', url: '/primitives/components/avatar', label: 'New' },
+                        { name: 'Collapsible', url: '/primitives/components/collapsible' },
                         { name: 'Label', url: '/primitives/components/label' }
                     ]
                 }
