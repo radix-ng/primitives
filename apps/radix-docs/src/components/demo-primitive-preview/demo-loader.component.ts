@@ -18,7 +18,7 @@ export class DemoLoaderComponent implements OnInit {
     }
 
     private async loadComponent() {
-        const { default: Component } = await import(`../demos/${this.name()}/${this.file()}.ts`);
+        const { default: Component } = await import(`../../demos/primitives/${this.name()}/${this.file()}.ts`);
 
         this.viewContainerRef.clear();
         this.viewContainerRef.createComponent(Component);

@@ -48,7 +48,7 @@ export default defineConfig({
             imports: [
                 './src/components/mdx/PropsTable.astro',
                 './src/components/mdx/Description.astro',
-                './src/components/demo-preview/ComponentPreview.astro',
+                './src/components/demo-primitive-preview/ComponentPreview.astro',
                 './src/components/demo-component-preview/ComponentThemesPreview.astro'
             ]
         }),

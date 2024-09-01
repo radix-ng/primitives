@@ -12,7 +12,7 @@ export interface Props {
 const { name, file } = Astro.props;
 
 async function loadCode(name: string, file: string) {
-    const filename = path.join(process.cwd(), 'src', 'components', 'demos', `${name}`, `${file}.ts`);
+    const filename = path.join(process.cwd(), 'src', 'demos', 'primitives', `${name}`, `${file}.ts`);
 
     const code = readFileSync(filename, 'utf-8')
         .toString()
@@ -24,7 +24,7 @@ async function loadCode(name: string, file: string) {
 }
 
 async function loadCSS(name: string, file: string) {
-    const filename = path.join(process.cwd(), 'src', 'components', 'demos', `${name}`, `${file}.css`);
+    const filename = path.join(process.cwd(), 'src', 'demos', 'primitives', `${name}`, `${file}.css`);
 
     const css = readFileSync(filename, 'utf-8').toString();
 
