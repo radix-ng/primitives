@@ -16,7 +16,8 @@ export type RdxCollapsibleState = 'open' | 'closed';
     exportAs: 'collapsibleRoot',
     providers: [{ provide: RdxCollapsibleRootToken, useExisting: RdxCollapsibleRootDirective }],
     host: {
-        '[attr.data-state]': 'getState()'
+        '[attr.data-state]': 'getState()',
+        '[attr.data-disabled]': 'disabled ? "" : undefined'
     }
 })
 export class RdxCollapsibleRootDirective {
