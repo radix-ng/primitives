@@ -139,6 +139,14 @@ p {
     }
 }
 
+#CodeTheme {
+    .expressive-code pre {
+        border-top: none;
+        border-top-left-radius: 1px;
+        border-top-right-radius: 1px;
+    }
+}
+
 .MDX_List {
     display: flex;
     flex-direction: column;

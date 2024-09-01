@@ -1,5 +1,8 @@
 ---
+import path from 'path';
+import { readFileSync } from 'fs';
 import { DemoThemesLoaderComponent } from './demo-themes-loader.component';
+import { Code } from 'astro-expressive-code/components';
 
 export interface Props {
     name: string;
@@ -7,10 +10,29 @@ export interface Props {
 }
 
 const { name, file } = Astro.props;
+
+async function loadCode(name: string, file: string) {
+    const filename = path.join(process.cwd(), 'src', 'components', 'demos-themes', `${name}`, `${file}.ts`);
+
+    const code = readFileSync(filename, 'utf-8')
+        .toString()
+        .replace(/export\s+default\s+.*;\s*/, '');
+
+    return {
+        code
+    };
+}
+
+const { code } = await loadCode(name, file);
 ---
 
-<div class="relative flex w-full items-center rounded-t-lg border border-gray-300 p-4">
-    <div class="flex w-full">
-        <DemoThemesLoaderComponent name={name} file={file} client:only="angular" />
+<div class="rt-Box rt-r-my-5">
+    <div class="relative flex w-full items-center rounded-t-lg border border-gray-300 p-4">
+        <div class="flex w-full">
+            <DemoThemesLoaderComponent name={name} file={file} client:only="angular" />
+        </div>
+    </div>
+    <div id="CodeTheme" class="relative block h-full">
+        <Code code={code} lang="angular-ts" />
     </div>
 </div>
