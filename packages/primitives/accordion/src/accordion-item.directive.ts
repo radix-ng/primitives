@@ -5,7 +5,6 @@ import {
     Directive,
     EventEmitter,
     Inject,
-    InjectionToken,
     Input,
     OnDestroy,
     Optional,
@@ -16,8 +15,6 @@ import { Subscription } from 'rxjs';
 import { RdxAccordionOrientation, RdxAccordionRootDirective, RdxAccordionRootToken } from './accordion-root.directive';
 
 export type RdxAccordionItemState = 'open' | 'closed';
-
-export const RdxAccordionItemToken = new InjectionToken<RdxAccordionItemDirective>('RdxAccordionItemToken');
 
 let nextId = 0;
 
@@ -76,12 +73,12 @@ export class RdxAccordionItemDirective implements OnDestroy {
     private _expanded = false;
 
     @Input()
-    get value(): string {
-        return this._value || this.id;
-    }
-
     set value(value: string) {
         this._value = value;
+    }
+
+    get value(): string {
+        return this._value || this.id;
     }
 
     private _value?: string;
@@ -114,10 +111,13 @@ export class RdxAccordionItemDirective implements OnDestroy {
         private changeDetectorRef: ChangeDetectorRef,
         protected expansionDispatcher: UniqueSelectionDispatcher
     ) {
-        this.removeUniqueSelectionListener = expansionDispatcher.listen((id: string, accordionId: string) => {
-            if (this.accordion && !this.accordion.multi && this.accordion.id === accordionId && this.value !== id) {
-                console.log('this.expanded = false: ');
-                this.expanded = false;
+        this.removeUniqueSelectionListener = this.expansionDispatcher.listen((id: string, accordionId: string) => {
+            if (this.accordion.isMultiple) {
+                if (this.accordion.id === accordionId && id.includes(this.value)) {
+                    this.expanded = true;
+                }
+            } else {
+                this.expanded = this.accordion.id === accordionId && id.includes(this.value);
             }
         });
 

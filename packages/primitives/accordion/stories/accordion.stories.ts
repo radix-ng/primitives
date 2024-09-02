@@ -142,8 +142,8 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: `
-            <div class="AccordionRoot" rdxAccordionRoot [defaultValue]="['item-2']" [type]="'single'" [orientation]="'horizontal'">
-                <div value="item-1" class="AccordionItem" rdxAccordionItem disabled="true">
+            <div class="AccordionRoot" rdxAccordionRoot [defaultValue]="'item-1'">
+                <div [value]="'item-1'" class="AccordionItem" rdxAccordionItem [disabled]="true">
                     <div class="AccordionHeader" rdxAccordionHeader>
                         <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
                     </div>
@@ -154,7 +154,7 @@ export const Default: Story = {
                     </div>
                 </div>
 
-                <div value="item-2" class="AccordionItem" rdxAccordionItem>
+                <div [value]="'item-2'" class="AccordionItem" rdxAccordionItem>
                     <div class="AccordionHeader" rdxAccordionHeader>
                         <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
                     </div>
@@ -165,7 +165,7 @@ export const Default: Story = {
                     </div>
                 </div>
 
-                <div value="item-3" class="AccordionItem" rdxAccordionItem>
+                <div [value]="'item-3'" class="AccordionItem" rdxAccordionItem>
                     <div class="AccordionHeader" rdxAccordionHeader>
                         <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Can it be animated?</button>
                     </div>
@@ -183,8 +183,8 @@ export const Default: Story = {
 export const Multiple: Story = {
     render: () => ({
         template: `
-            <div class="AccordionRoot" rdxAccordionRoot [defaultValue]="['item-2', 'item-3']" [type]="'multiple'" [orientation]="'horizontal'">
-                <div value="item-1" class="AccordionItem" rdxAccordionItem>
+            <div class="AccordionRoot" rdxAccordionRoot [value]="['item-2', 'item-3']" [type]="'multiple'" [orientation]="'horizontal'">
+                <div [value]="'item-1'" class="AccordionItem" rdxAccordionItem>
                     <div class="AccordionHeader" rdxAccordionHeader>
                         <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
                     </div>
@@ -195,7 +195,7 @@ export const Multiple: Story = {
                     </div>
                 </div>
 
-                <div value="item-2" class="AccordionItem" rdxAccordionItem>
+                <div [value]="'item-2'" class="AccordionItem" rdxAccordionItem>
                     <div class="AccordionHeader" rdxAccordionHeader>
                         <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
                     </div>
@@ -206,7 +206,7 @@ export const Multiple: Story = {
                     </div>
                 </div>
 
-                <div value="item-3" class="AccordionItem" rdxAccordionItem>
+                <div [value]="'item-3'" class="AccordionItem" rdxAccordionItem>
                     <div class="AccordionHeader" rdxAccordionHeader>
                         <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Can it be animated?</button>
                     </div>

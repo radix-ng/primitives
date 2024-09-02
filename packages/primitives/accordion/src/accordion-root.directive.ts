@@ -1,5 +1,14 @@
 import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
-import { Directive, InjectionToken, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import {
+    AfterContentInit,
+    Directive,
+    inject,
+    InjectionToken,
+    Input,
+    OnChanges,
+    OnDestroy,
+    SimpleChanges
+} from '@angular/core';
 import { Subject } from 'rxjs';
 
 export type RdxAccordionType = 'single' | 'multiple';
@@ -20,13 +29,15 @@ let nextId = 0;
         '[attr.data-orientation]': 'orientation'
     }
 })
-export class RdxAccordionRootDirective implements OnInit, OnDestroy, OnChanges {
+export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy, OnChanges {
+    protected readonly selectionDispatcher = inject(UniqueSelectionDispatcher);
+
     readonly id: string = `rdx-accordion-${nextId++}`;
 
     readonly stateChanges = new Subject<SimpleChanges>();
     readonly openCloseAllActions = new Subject<boolean>();
 
-    get multi(): boolean {
+    get isMultiple(): boolean {
         return this.type === 'multiple';
     }
 
@@ -39,11 +50,6 @@ export class RdxAccordionRootDirective implements OnInit, OnDestroy, OnChanges {
      * @ignore
      */
     // private readonly accordionItems = contentChildren(RdxAccordionItemToken);
-    /**
-     * @private
-     * @ignore
-     */
-    private _value: string[] = [];
     /**
      * The value of the item to expand when initially rendered and type is "single". Use when you do not need to control the state of the items.
      */
@@ -60,23 +66,27 @@ export class RdxAccordionRootDirective implements OnInit, OnDestroy, OnChanges {
      * The controlled value of the item to expand
      */
     @Input()
-    set value(value: string | string[] | undefined) {
-        if (value !== undefined) {
+    set value(value: string[]) {
+        if (value !== this._value) {
             this._value = Array.isArray(value) ? value : [value];
-        } else {
-            this._value = this.defaultValue;
         }
-
-        this.onValueChange(this._value);
     }
+
+    get value(): string[] {
+        return this._value || this.defaultValue;
+    }
+
+    /**
+     * @private
+     * @ignore
+     */
+    private _value?: string[];
 
     /**
      * @ignore
      */
-    ngOnInit(): void {
-        if (this.defaultValue) {
-            this.value = this.defaultValue;
-        }
+    ngAfterContentInit(): void {
+        this.selectionDispatcher.notify(this.value as unknown as string, this.id);
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -88,34 +98,9 @@ export class RdxAccordionRootDirective implements OnInit, OnDestroy, OnChanges {
         this.openCloseAllActions.complete();
     }
 
-    /**
-     * @ignore
-     */
-    onValueChange(value: string[]): void {
-        // if (this.type === 'single') {
-        //     const currentValue = value.length > 0 ? value[0] : undefined;
-        //
-        //     // this.accordionItems().forEach((accordionItem) => {
-        //     //     if (accordionItem.value === currentValue) {
-        //             accordionItem.setOpen();
-        //         // } else {
-        //             accordionItem.setOpen('closed');
-        //         // }
-        //     // });
-        // } else {
-        //     value.forEach((valueItem) => {
-        //         this.accordionItems().forEach((accordionItem) => {
-        //             if (accordionItem.value === valueItem) {
-        //                 // accordionItem.setOpen();
-        //             }
-        //         });
-        //     });
-        // }
-    }
-
     /** Opens all enabled accordion items in an accordion where multi is enabled. */
     openAll(): void {
-        if (this.multi) {
+        if (this.isMultiple) {
             this.openCloseAllActions.next(true);
         }
     }
