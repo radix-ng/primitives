@@ -1,7 +1,9 @@
+import { FocusableOption } from '@angular/cdk/a11y';
 import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
 import {
     booleanAttribute,
     ChangeDetectorRef,
+    ContentChild,
     Directive,
     EventEmitter,
     Inject,
@@ -13,6 +15,7 @@ import {
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { RdxAccordionOrientation, RdxAccordionRootDirective, RdxAccordionRootToken } from './accordion-root.directive';
+import { RdxAccordionTriggerDirective } from './accordion-trigger.directive';
 
 export type RdxAccordionItemState = 'open' | 'closed';
 
@@ -30,7 +33,9 @@ let nextId = 0;
     providers: [
         { provide: RdxAccordionRootToken, useValue: undefined }]
 })
-export class RdxAccordionItemDirective implements OnDestroy {
+export class RdxAccordionItemDirective implements FocusableOption, OnDestroy {
+    @ContentChild(RdxAccordionTriggerDirective, { descendants: true }) trigger: RdxAccordionTriggerDirective;
+
     get dataState(): RdxAccordionItemState {
         return this.expanded ? 'open' : 'closed';
     }
@@ -100,8 +105,8 @@ export class RdxAccordionItemDirective implements OnDestroy {
      */
     @Output() readonly expandedChange: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-    /** Unregister function for _expansionDispatcher. */
-    private removeUniqueSelectionListener: () => void = () => {};
+    /** Unregister function for expansionDispatcher. */
+    private removeUniqueSelectionListener: () => void;
 
     /** Subscription to openAll/closeAll events. */
     private openCloseAllSubscription = Subscription.EMPTY;
@@ -135,6 +140,10 @@ export class RdxAccordionItemDirective implements OnDestroy {
         this.destroyed.complete();
         this.removeUniqueSelectionListener();
         this.openCloseAllSubscription.unsubscribe();
+    }
+
+    focus(): void {
+        this.trigger.focus();
     }
 
     /** Toggles the expanded state of the accordion item. */

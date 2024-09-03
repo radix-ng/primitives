@@ -1,4 +1,4 @@
-import { Directive, inject } from '@angular/core';
+import { Directive, ElementRef, inject } from '@angular/core';
 import { RdxAccordionItemDirective } from './accordion-item.directive';
 import { RdxAccordionRootDirective } from './accordion-root.directive';
 
@@ -15,6 +15,8 @@ import { RdxAccordionRootDirective } from './accordion-root.directive';
     }
 })
 export class RdxAccordionTriggerDirective {
+    protected readonly nativeElement = inject(ElementRef).nativeElement;
+
     private readonly accordionRoot = inject(RdxAccordionRootDirective);
     protected readonly item = inject(RdxAccordionItemDirective);
 
@@ -25,5 +27,9 @@ export class RdxAccordionTriggerDirective {
         if (!this.accordionRoot.collapsible) return;
 
         this.item.toggle();
+    }
+
+    focus() {
+        this.nativeElement.focus();
     }
 }

@@ -1,15 +1,22 @@
+import { FocusKeyManager } from '@angular/cdk/a11y';
+import { Directionality } from '@angular/cdk/bidi';
 import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
+import { ENTER, SPACE } from '@angular/cdk/keycodes';
 import {
     AfterContentInit,
+    ContentChildren,
     Directive,
+    forwardRef,
     inject,
     InjectionToken,
     Input,
     OnChanges,
     OnDestroy,
+    QueryList,
     SimpleChanges
 } from '@angular/core';
 import { Subject } from 'rxjs';
+import { RdxAccordionItemDirective } from './accordion-item.directive';
 
 export type RdxAccordionType = 'single' | 'multiple';
 export type RdxAccordionOrientation = 'horizontal' | 'vertical';
@@ -26,11 +33,16 @@ let nextId = 0;
         { provide: UniqueSelectionDispatcher, useClass: UniqueSelectionDispatcher }
     ],
     host: {
-        '[attr.data-orientation]': 'orientation'
+        '[attr.data-orientation]': 'orientation',
+        '(keydown)': 'handleKeydown($event)'
     }
 })
 export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy, OnChanges {
     protected readonly selectionDispatcher = inject(UniqueSelectionDispatcher);
+
+    protected readonly dir = inject(Directionality, { optional: true });
+
+    protected keyManager: FocusKeyManager<RdxAccordionItemDirective>;
 
     readonly id: string = `rdx-accordion-${nextId++}`;
 
@@ -49,7 +61,8 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy, O
      * @private
      * @ignore
      */
-    // private readonly accordionItems = contentChildren(RdxAccordionItemToken);
+    @ContentChildren(forwardRef(() => RdxAccordionItemDirective), { descendants: true })
+    items: QueryList<RdxAccordionItemDirective>;
     /**
      * The value of the item to expand when initially rendered and type is "single". Use when you do not need to control the state of the items.
      */
@@ -69,6 +82,8 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy, O
     set value(value: string[]) {
         if (value !== this._value) {
             this._value = Array.isArray(value) ? value : [value];
+
+            this.selectionDispatcher.notify(this.value as unknown as string, this.id);
         }
     }
 
@@ -87,6 +102,14 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy, O
      */
     ngAfterContentInit(): void {
         this.selectionDispatcher.notify(this.value as unknown as string, this.id);
+
+        this.keyManager = new FocusKeyManager(this.items);
+
+        if (this.orientation === 'horizontal') {
+            this.keyManager.withHorizontalOrientation(this.dir?.value || 'ltr');
+        } else {
+            this.keyManager.withVerticalOrientation();
+        }
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -96,6 +119,22 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy, O
     ngOnDestroy() {
         this.stateChanges.complete();
         this.openCloseAllActions.complete();
+    }
+
+    handleKeydown(event: KeyboardEvent) {
+        const activeItem = this.keyManager.activeItem;
+
+        if (
+            (event.keyCode === ENTER || event.keyCode === SPACE) &&
+            !this.keyManager.isTyping() &&
+            activeItem &&
+            !activeItem.disabled
+        ) {
+            event.preventDefault();
+            activeItem.toggle();
+        } else {
+            this.keyManager.onKeydown(event);
+        }
     }
 
     /** Opens all enabled accordion items in an accordion where multi is enabled. */
