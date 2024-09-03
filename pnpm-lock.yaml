@@ -476,6 +476,9 @@ importers:
       '@angular/core':
         specifier: ^18.0.0
         version: 18.2.1(rxjs@7.8.1)(zone.js@0.14.10)
+      '@angular/forms':
+        specifier: ^18.0.0
+        version: 18.2.1(@angular/common@18.2.1)(@angular/core@18.2.1)(@angular/platform-browser@18.2.1)(rxjs@7.8.1)
 
   packages/shadcn:
     devDependencies:
