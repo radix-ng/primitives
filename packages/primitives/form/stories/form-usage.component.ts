@@ -25,11 +25,27 @@ import { RdxFormControlDirective, RdxFormFieldDirective, RdxFormLabelDirective }
             (onReset)="onReset()"
         >
             <div class="FormField" rdxFormField name="email">
-                <label class="FormLabel" rdxFormLabel htmlFor="email">Email</label>
+                <div style="display: flex; align-items: baseline; justify-content:space-between">
+                    <label class="FormLabel" rdxFormLabel htmlFor="email">Email</label>
+                    <span
+                        class="FormMessage"
+                        *ngIf="form.get('email')?.hasError('required') && form.get('email')?.touched"
+                    >
+                        {{ customMessages['email'] }}
+                    </span>
+                </div>
                 <input class="Input" id="email" rdxFormControl formControlName="email" type="email" />
             </div>
             <div class="FormField" rdxFormField name="password">
-                <label class="FormLabel" rdxFormLabel htmlFor="password">Password</label>
+                <div style="display: flex; align-items: baseline; justify-content:space-between">
+                    <label class="FormLabel" rdxFormLabel htmlFor="password">Password</label>
+                    <span
+                        class="FormMessage"
+                        *ngIf="form.get('password')?.hasError('required') && form.get('password')?.touched"
+                    >
+                        {{ customMessages['required'] }}
+                    </span>
+                </div>
                 <input
                     class="Input"
                     id="password"

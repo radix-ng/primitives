@@ -1,6 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, EventEmitter, inject, InjectionToken, Input, Output, signal } from '@angular/core';
-import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+    Component,
+    computed,
+    EventEmitter,
+    forwardRef,
+    InjectionToken,
+    Input,
+    Output,
+    Signal,
+    signal
+} from '@angular/core';
+import { ControlContainer, FormGroup, FormGroupDirective, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 export interface ValidityState {
     valid: boolean;
@@ -21,10 +31,11 @@ export interface ValidityMatcher {
 export interface FormContextValue {
     formGroup: FormGroup;
     disabled: boolean;
-    validationErrors: string[];
+    validationErrors: Signal<string[]>;
     validityMatchers: ValidityMatcher[];
     builtInMessages: Record<string, string>;
-    isSubmitted: boolean;
+    isSubmitted: Signal<boolean>;
+    generateId: (name: string) => string;
     getValidityState: (name: string) => ValidityState;
 }
 
@@ -51,19 +62,17 @@ export const DEFAULT_INVALID_MESSAGE = 'This form is invalid';
     `,
     providers: [
         {
+            provide: ControlContainer,
+            useExisting: FormGroupDirective
+        },
+        {
             provide: FORM_CONTEXT,
-            useFactory: () => ({
-                formGroup: inject(RdxFormComponent).formGroup,
-                disabled: inject(RdxFormComponent).isDisabled(),
-                isSubmitted: inject(RdxFormComponent).isSubmitted(),
-                validationErrors: inject(RdxFormComponent).validationErrors(),
-                validityMatchers: inject(RdxFormComponent).getValidityMatchers(),
-                getValidityState: inject(RdxFormComponent).getValidityState.bind(inject(RdxFormComponent))
-            })
+            useExisting: forwardRef(() => RdxFormComponent)
         }
     ]
 })
-export class RdxFormComponent {
+export class RdxFormComponent implements FormContextValue {
+    @Input() id?: string;
     @Input() formGroup!: FormGroup;
 
     private _disabled = signal(false);
@@ -114,6 +123,10 @@ export class RdxFormComponent {
         this._validationErrors.set([]);
         this._isSubmitted.set(false);
         this.onReset.emit();
+    }
+
+    generateId(name: string): string {
+        return `${this.id || 'form'}-${name}`;
     }
 
     getValidityState(name: string): ValidityState {

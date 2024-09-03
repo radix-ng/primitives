@@ -1,4 +1,5 @@
-import { Directive, ElementRef, inject, Input } from '@angular/core';
+import { Directive, ElementRef, inject, Input, OnInit } from '@angular/core';
+import { ControlContainer, NgControl } from '@angular/forms';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { FORM_CONTEXT } from './form.component';
 
@@ -11,18 +12,21 @@ import { FORM_CONTEXT } from './form.component';
     }
 })
 export class RdxFormFieldDirective {
-    @Input() name!: string;
+    private readonly controlContainer = inject(ControlContainer);
 
-    private context = inject(FORM_CONTEXT);
+    @Input() name!: string;
+    @Input() serverInvalid = false;
 
     isValid() {
-        const validityState = this.context.getValidityState(this.name);
-        return validityState.valid && (validityState.touched || validityState.dirty);
+        return !this.serverInvalid && this.control?.valid && (this.control?.touched || this.control?.dirty);
     }
 
     isInvalid() {
-        const validityState = this.context.getValidityState(this.name);
-        return validityState.invalid && (validityState.touched || validityState.dirty);
+        return this.serverInvalid || (this.control?.invalid && (this.control?.touched || this.control?.dirty));
+    }
+
+    private get control() {
+        return this.controlContainer?.control?.get(this.name);
     }
 }
 
@@ -32,16 +36,29 @@ export class RdxFormFieldDirective {
     host: {
         '[disabled]': 'isDisabled()',
         '[attr.data-invalid]': 'isInvalid()',
-        '[attr.aria-invalid]': 'undefined',
+        '[attr.aria-invalid]': 'isInvalid()',
+        '[attr.aria-describedby]': 'getDescribedBy()',
         // disable default browser behaviour of showing built-in error message on hover
         '[title]': '""'
     }
 })
-export class RdxFormControlDirective {
+export class RdxFormControlDirective implements OnInit {
     private readonly context = inject(FORM_CONTEXT);
     private readonly elementRef = inject(ElementRef);
+    private readonly ngControl = inject(NgControl, { optional: true });
 
-    @Input() name!: string;
+    @Input() id?: string;
+
+    ngOnInit() {
+        if (!this.ngControl) {
+            throw new Error('FormControlDirective must be used with a form control');
+        }
+
+        if (!this.elementRef.nativeElement.id) {
+            const controlName = this.ngControl.name !== null ? this.ngControl.name.toString() : '';
+            this.elementRef.nativeElement.id = this.context.generateId(controlName);
+        }
+    }
 
     isDisabled() {
         return this.context.disabled;
@@ -50,6 +67,10 @@ export class RdxFormControlDirective {
     isInvalid() {
         const validityState = this.context.getValidityState(this.elementRef.nativeElement.id);
         return validityState.invalid && (validityState.touched || validityState.dirty);
+    }
+
+    getDescribedBy() {
+        return `${this.elementRef.nativeElement.id}-description`;
     }
 }
 
