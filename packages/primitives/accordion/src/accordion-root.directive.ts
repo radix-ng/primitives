@@ -6,16 +6,16 @@ import {
     AfterContentInit,
     ContentChildren,
     Directive,
+    EventEmitter,
     forwardRef,
     inject,
     InjectionToken,
     Input,
-    OnChanges,
     OnDestroy,
-    QueryList,
-    SimpleChanges
+    Output,
+    QueryList
 } from '@angular/core';
-import { Subject } from 'rxjs';
+import { merge, Subject, Subscription } from 'rxjs';
 import { RdxAccordionItemDirective } from './accordion-item.directive';
 
 export type RdxAccordionType = 'single' | 'multiple';
@@ -37,7 +37,7 @@ let nextId = 0;
         '(keydown)': 'handleKeydown($event)'
     }
 })
-export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy, OnChanges {
+export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
     protected readonly selectionDispatcher = inject(UniqueSelectionDispatcher);
 
     protected readonly dir = inject(Directionality, { optional: true });
@@ -46,7 +46,6 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy, O
 
     readonly id: string = `rdx-accordion-${nextId++}`;
 
-    readonly stateChanges = new Subject<SimpleChanges>();
     readonly openCloseAllActions = new Subject<boolean>();
 
     get isMultiple(): boolean {
@@ -91,11 +90,15 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy, O
         return this._value || this.defaultValue;
     }
 
+    @Output() readonly onValueChange: EventEmitter<void> = new EventEmitter<void>();
+
     /**
      * @private
      * @ignore
      */
     private _value?: string[];
+
+    private onValueChangeSubscription: Subscription;
 
     /**
      * @ignore
@@ -110,15 +113,15 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy, O
         } else {
             this.keyManager.withVerticalOrientation();
         }
-    }
 
-    ngOnChanges(changes: SimpleChanges) {
-        this.stateChanges.next(changes);
+        this.onValueChangeSubscription = merge(...this.items.map((item) => item.expandedChange)).subscribe(() =>
+            this.onValueChange.emit()
+        );
     }
 
     ngOnDestroy() {
-        this.stateChanges.complete();
         this.openCloseAllActions.complete();
+        this.onValueChangeSubscription.unsubscribe();
     }
 
     handleKeydown(event: KeyboardEvent) {
