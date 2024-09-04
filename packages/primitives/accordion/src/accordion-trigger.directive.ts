@@ -10,14 +10,14 @@ import { RdxAccordionRootDirective } from './accordion-root.directive';
         '[attr.aria-expanded]': 'item.expanded',
         '[attr.data-state]': 'item.dataState',
         '[attr.data-disabled]': 'item.disabled',
+        '[attr.disabled]': 'item.disabled ? "" : null',
         '[attr.data-orientation]': 'item.orientation',
         '(click)': 'onClick()'
     }
 })
 export class RdxAccordionTriggerDirective {
     protected readonly nativeElement = inject(ElementRef).nativeElement;
-
-    private readonly accordionRoot = inject(RdxAccordionRootDirective);
+    protected readonly accordionRoot = inject(RdxAccordionRootDirective);
     protected readonly item = inject(RdxAccordionItemDirective);
 
     /**
@@ -27,6 +27,8 @@ export class RdxAccordionTriggerDirective {
         if (!this.accordionRoot.collapsible) return;
 
         this.item.toggle();
+
+        this.accordionRoot.setActiveItem(this.item);
     }
 
     focus() {

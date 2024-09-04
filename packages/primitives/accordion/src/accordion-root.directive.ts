@@ -122,6 +122,10 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy, O
     }
 
     handleKeydown(event: KeyboardEvent) {
+        if (!this.keyManager.activeItem) {
+            this.keyManager.setFirstItemActive();
+        }
+
         const activeItem = this.keyManager.activeItem;
 
         if (
@@ -147,5 +151,9 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy, O
     /** Closes all enabled accordion items. */
     closeAll(): void {
         this.openCloseAllActions.next(false);
+    }
+
+    setActiveItem(item: RdxAccordionItemDirective) {
+        this.keyManager.setActiveItem(item);
     }
 }
