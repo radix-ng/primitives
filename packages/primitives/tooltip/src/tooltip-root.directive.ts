@@ -1,14 +1,4 @@
-import {
-    Directive,
-    effect,
-    EventEmitter,
-    inject,
-    InjectionToken,
-    input,
-    Output,
-    signal,
-    untracked
-} from '@angular/core';
+import { Directive, EventEmitter, inject, InjectionToken, input, Output, signal } from '@angular/core';
 import { injectTooltipConfig } from './tooltip.config';
 
 export const RdxTooltipRootToken = new InjectionToken<RdxTooltipRootDirective>('RdxTooltipRootToken');
@@ -34,32 +24,50 @@ export class RdxTooltipRootDirective {
     delayDuration = input<number>(this.tooltipConfig.delayDuration);
     disableHoverableContent = input<boolean>(this.tooltipConfig.disableHoverableContent ?? false);
 
+    isOpenDelayed = signal<boolean>(false);
     isOpen = signal<boolean>(this.open());
+    isPointerInTransit = signal<boolean>(false);
+    openTimer = signal<number>(0);
+    wasOpenDelayed = signal<boolean>(false);
     @Output() onOpenChange = new EventEmitter<boolean>();
 
-    toggle(isOpen?: boolean): void {
-        if (isOpen === undefined) {
-            this.isOpen.update((prevState) => !prevState);
+    onTriggerEnter(): void {
+        if (this.isOpenDelayed()) {
+            this.handleDelayOpen();
         } else {
-            this.isOpen.set(isOpen);
+            this.handleOpen();
         }
     }
 
-    private onToggleEffect = effect(() => {
-        // TODO: remove initial emit behaviour
-        this.onOpenChange.emit(this.isOpen());
-    });
+    onTriggerLeave(): void {
+        if (this.disableHoverableContent()) {
+            // handleClose()
+            this.isOpen.set(false);
+        } else {
+            window.clearTimeout(this.openTimer());
+        }
+    }
 
-    private onOpenInputChangedEffect = effect(() => {
-        const open = this.open();
+    private handleDelayOpen(): void {
+        console.log('handleDelayOpen');
 
-        untracked(() => {
-            const isOpen = this.isOpen();
+        window.clearTimeout(this.openTimer());
 
-            if (isOpen != open) {
-                console.log('change');
-                this.isOpen.set(open);
-            }
-        });
-    });
+        this.openTimer.set(
+            window.setTimeout(() => {
+                this.wasOpenDelayed.set(true);
+                // setOpen(true)
+                this.isOpen.set(true);
+            })
+        );
+    }
+
+    private handleOpen(): void {
+        console.log('handleOpen');
+
+        window.clearTimeout(this.openTimer());
+        this.wasOpenDelayed.set(false);
+        // setOpen(true)
+        this.isOpen.set(true);
+    }
 }
