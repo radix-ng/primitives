@@ -1,8 +1,8 @@
 import { contentChild, Directive, EventEmitter, inject, InjectionToken, Input, Output } from '@angular/core';
 import { asyncScheduler } from 'rxjs';
-import { RdxCollapsibleContentToken } from './collapsible-content.directive';
+import { RdxCollapsibleContentToken } from './collapsible-content.token';
 
-const RdxCollapsibleToken = new InjectionToken<RdxCollapsibleRootDirective>('RdxCollapsibleToken');
+const RdxCollapsibleRootToken = new InjectionToken<RdxCollapsibleRootDirective>('RdxCollapsibleRootToken');
 
 export function injectCollapsible(): RdxCollapsibleRootDirective {
     return inject(RdxCollapsibleRootDirective);
@@ -14,9 +14,10 @@ export type RdxCollapsibleState = 'open' | 'closed';
     selector: '[rdxCollapsibleRoot]',
     standalone: true,
     exportAs: 'collapsibleRoot',
-    providers: [{ provide: RdxCollapsibleToken, useExisting: RdxCollapsibleRootDirective }],
+    providers: [{ provide: RdxCollapsibleRootToken, useExisting: RdxCollapsibleRootDirective }],
     host: {
-        '[attr.data-state]': 'getState()'
+        '[attr.data-state]': 'getState()',
+        '[attr.data-disabled]': 'disabled ? "" : undefined'
     }
 })
 export class RdxCollapsibleRootDirective {
@@ -35,17 +36,19 @@ export class RdxCollapsibleRootDirective {
     private _open = false;
 
     /**
-     * Determines whether a directive is available for interaction
+     * Determines whether a directive is available for interaction.
+     * When true, prevents the user from interacting with the collapsible.
      */
     @Input() disabled = false;
 
     /**
+     * The controlled open state of the collapsible.
      * Sets the state of the directive. `true` - expanded, `false` - collapsed
      * @param {boolean} value
      */
     @Input() set open(value: boolean) {
         if (value !== this._open) {
-            this.openChange.emit(value);
+            this.onOpenChange.emit(value);
         }
 
         this._open = value;
@@ -53,9 +56,10 @@ export class RdxCollapsibleRootDirective {
     }
 
     /**
-     * Emitted with new value when directive state changed
+     * Emitted with new value when directive state changed.
+     * Event handler called when the open state of the collapsible changes.
      */
-    @Output() openChange = new EventEmitter<boolean>();
+    @Output() onOpenChange = new EventEmitter<boolean>();
 
     /**
      * Allows to change directive state

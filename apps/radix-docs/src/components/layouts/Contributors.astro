@@ -1,0 +1,31 @@
+---
+import { contributors } from '../../contributors';
+---
+
+<div class="max-w-200 text-center text-lg leading-7">
+    <div class="flex flex-wrap justify-center gap-2">
+        {
+            contributors.map(({ name, avatar }) => (
+                <a
+                    href={`https://github.com/${name}`}
+                    class="m-0"
+                    rel="noopener noreferrer"
+                    aria-label={`${name} on GitHub`}
+                >
+                    <img
+                        loading="lazy"
+                        src={avatar}
+                        width="50"
+                        height="50"
+                        class="h-12 w-12 rounded-full"
+                        alt={`${name}'s avatar`}
+                    />
+                </a>
+            ))
+        }
+    </div>
+    <br />
+    <a href="https://discord.gg/NaJb2XRWX9" class="font-medium underline underline-offset-2" rel="noopener noreferrer">
+        Join the community
+    </a> and get involved!
+</div>

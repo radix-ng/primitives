@@ -1,0 +1,31 @@
+{
+    "name": "radix-docs",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "projectType": "application",
+    "sourceRoot": "apps/radix-docs/src",
+    "tags": [],
+    "targets": {
+        "dev": {
+            "executor": "nx:run-script",
+            "options": {
+                "script": "start"
+            },
+            "dependsOn": ["copy-dist"]
+        },
+        "build": {
+            "executor": "nx:run-script",
+            "options": {
+                "script": "build"
+            },
+            "dependsOn": ["copy-dist"]
+        },
+        "copy-dist": {
+            "executor": "nx:run-commands",
+            "options": {
+                "commands": [
+                    "node ./tools/scripts/docs-copy.mjs"
+                ]
+            }
+        }
+    }
+}

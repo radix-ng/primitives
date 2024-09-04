@@ -1,0 +1,86 @@
+---
+import type { NavigationItem } from '../../types';
+import { cn } from '../../utils/utils';
+
+interface Props {
+    navigation: NavigationItem[];
+    isMobile?: boolean;
+}
+
+const rawPath = Astro.url.pathname;
+
+const path = rawPath === '/' ? '/' : rawPath.replace(/\/$/, '');
+const section = path.split('/')[1];
+
+const { navigation } = Astro.props;
+
+const navigationItems = navigation.find((item) => {
+    return item.section === section;
+});
+
+const pages = navigationItems.sections || [];
+
+function isActive(pageUrl: string) {
+    const normalizedPageUrl = pageUrl === '/' ? '/' : pageUrl.replace(/\/$/, '');
+    const isExactMatch = path === normalizedPageUrl;
+    const isParentMatch = path.startsWith(normalizedPageUrl + '/');
+
+    return isExactMatch || isParentMatch;
+}
+---
+
+<nav class="flex flex-1 flex-col">
+    <ul role="list" class="flex flex-1 flex-col gap-y-7 pl-3">
+        {
+            pages.map(({ section, pages }) => (
+                <li>
+                    <div class="flex flex-col gap-y-2">
+                        <h4 class="text-sm font-medium">{section}</h4>
+                        <ul class="space-y-1">
+                            {pages.map((page) => {
+                                const active = isActive(page.url);
+                                return (
+                                    <li class="relative">
+                                        <a
+                                            href={page.url}
+                                            class={cn(
+                                                'group my-1 flex h-fit w-full items-center gap-2 rounded-md border border-transparent text-sm hover:underline',
+                                                active
+                                                    ? 'text-foreground rounded-none font-medium'
+                                                    : 'text-muted-foreground'
+                                            )}
+                                        >
+                                            {page.name}
+                                            {page.label && (
+                                                <span class="bg-muted rounded-md px-1.5 py-0.5 text-xs leading-none text-[#000000] no-underline group-hover:no-underline">
+                                                    {page.label}
+                                                </span>
+                                            )}
+                                            {page.external && (
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    width="12"
+                                                    height="12"
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    stroke-width="2"
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                >
+                                                    <path d="M15 3h6v6" />
+                                                    <path d="M10 14 21 3" />
+                                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                                </svg>
+                                            )}
+                                        </a>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </div>
+                </li>
+            ))
+        }
+    </ul>
+</nav>

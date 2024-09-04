@@ -1,0 +1,54 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import Header from '../components/layouts/Header.astro';
+import Announcement from '../components/layouts/Announcement.astro';
+import Contributors from '../components/layouts/Contributors.astro';
+---
+
+<MainLayout title="Radix Angular">
+    <div class="relative z-10 flex min-h-screen flex-col">
+        <Header />
+        <main class="flex-1">
+            <div class="container relative">
+                <section
+                    class="mx-auto flex max-w-[980px] flex-col items-center gap-2 py-8 md:py-12 md:pb-8 lg:py-24 lg:pb-20"
+                >
+                    <Announcement title="DropdownMenu component!" />
+
+                    <div class="pt-4">
+                        <h1
+                            class="text-center text-3xl font-bold leading-tight tracking-tighter text-[#FA2C04] md:text-6xl lg:leading-[1.1]"
+                        >
+                            Radix Angular
+                        </h1>
+                        <p class="mt-2 text-center text-lg font-bold md:text-2xl">Angular Port of Radix UI</p>
+                        <p class="text-muted-foreground max-w-[750px] text-center text-lg sm:text-xl">
+                            Unstyled, accessible components for building high-quality design systems and web apps in
+                            Angular.
+                        </p>
+
+                        <div class="mt-6 flex justify-center space-x-4 md:mt-8">
+                            <a
+                                href="/primitives/overview/introduction"
+                                class="rounded-lg bg-[#FA2C04] px-6 py-2 text-sm font-bold text-white md:py-3 md:text-base"
+                            >
+                                Get Started
+                            </a>
+                            <a
+                                target="_blank"
+                                href="https://github.com/radix-ng/primitives"
+                                class="rounded-lg bg-gray-200 px-6 py-2 text-sm font-bold text-gray-700 md:py-3 md:text-base"
+                            >
+                                View on GitHub
+                            </a>
+                        </div>
+                    </div>
+                </section>
+                <h2 class="flex flex-wrap justify-center pb-8 pt-5">Contributors</h2>
+                <Contributors />
+            </div>
+        </main>
+    </div>
+    <div class="fixed left-0 top-0 size-full bg-gradient-to-b from-[#a277ff] via-transparent to-transparent opacity-10">
+    </div>
+</MainLayout>

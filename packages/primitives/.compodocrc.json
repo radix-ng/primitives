@@ -1,0 +1,12 @@
+{
+    "$schema": "../../node_modules/@compodoc/compodoc/src/config/schema.json",
+    "tsconfig": "tsconfig.doc.json",
+    "output": "../../dist/primitives/compodoc",
+    "exportFormat": "json",
+    "hideGenerator": true,
+    "disableCoverage": true,
+    "disablePrivate": true,
+    "disableInternal": true,
+    "disableLifeCycleHooks": true,
+    "disableDependencies": true
+}

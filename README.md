@@ -55,7 +55,7 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 - [x] Collapsible
 - [ ] Context Menu (next) (based on angular/cdk)
 - [ ] Dialog (based on angular/cdk)
-- [ ] Dropdown (In progress) (based on angular/cdk)
+- [x] DropdownMenu (based on angular/cdk)
 - [ ] Hover Card
 - [x] Label
 - [ ] Menubar (In progress) (based on angular/cdk)

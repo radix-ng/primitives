@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { ThemeService } from './theme.service';
 
 @Directive({
-    selector: '[rdxAppTheme]',
+    selector: '[rdxTheme]',
     standalone: true,
     providers: [ThemeService],
     host: {

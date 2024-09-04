@@ -6,7 +6,20 @@
     "projectType": "library",
     "tags": [],
     "targets": {
+        "nx-release-publish": {
+            "executor": "@nx/js:release-publish",
+            "options": {
+                "packageRoot": "./dist/components",
+                "registry": "https://registry.npmjs.org/"
+            },
+            "dependsOn": ["^nx-release-publish", "build"]
+        },
         "build": {
+            "executor": "nx:run-commands",
+            "options": { "commands": [] },
+            "dependsOn": ["primitives:build", "build-lib"]
+        },
+        "build-lib": {
             "executor": "@nx/angular:package",
             "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
             "options": {
@@ -21,6 +34,12 @@
                 }
             },
             "defaultConfiguration": "production"
+        },
+        "compodoc": {
+            "executor": "nx:run-script",
+            "options": {
+                "script": "compodoc"
+            }
         },
         "test": {
             "executor": "@nx/jest:jest",
@@ -37,8 +56,30 @@
             "options": {
                 "port": 4400,
                 "configDir": "packages/components/.storybook",
-                "browserTarget": "primitives:build-storybook",
+                "browserTarget": "components:build-storybook",
                 "compodoc": false
+            },
+            "configurations": {
+                "ci": {
+                    "quiet": true
+                }
+            }
+        },
+        "build-storybook": {
+            "executor": "@storybook/angular:build-storybook",
+            "outputs": ["{options.outputDir}"],
+            "options": {
+                "outputDir": "dist/storybook-radix-components",
+                "configDir": "packages/components/.storybook",
+                "browserTarget": "components:build-storybook",
+                "compodoc": false,
+                "styles": [
+                    "@radix-ui/themes/styles.css",
+                    "@angular/cdk/overlay-prebuilt.css"
+                ],
+                "stylePreprocessorOptions": {
+                    "includePaths": ["node_modules/"]
+                }
             },
             "configurations": {
                 "ci": {

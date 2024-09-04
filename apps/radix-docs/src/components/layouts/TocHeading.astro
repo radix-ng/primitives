@@ -1,0 +1,43 @@
+---
+import type { TocItem } from '../types';
+
+interface Props {
+    heading: TocItem;
+}
+
+const { heading } = Astro.props;
+---
+
+<li class="my-1">
+    <a
+        class:list={[
+            'toc-link',
+            {
+                'pl-2': heading.depth === 3,
+                'pl-4': heading.depth === 4
+            }
+        ]}
+        href={`#${heading.slug}`}
+        data-id={heading.slug}
+    >
+        {heading.text}
+    </a>
+    {
+        heading.children.length > 0 && (
+            <ul>
+                {heading.children.map((subheading) => (
+                    <Astro.self heading={subheading} />
+                ))}
+            </ul>
+        )
+    }
+</li>
+
+<style>
+    .toc-link {
+        @apply hover:text-muted-foreground block border-l-2 border-transparent py-1;
+    }
+    .toc-link.active {
+        @apply text-primary font-medium;
+    }
+</style>

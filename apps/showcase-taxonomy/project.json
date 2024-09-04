@@ -7,17 +7,18 @@
     "tags": [],
     "targets": {
         "build": {
-            "executor": "@analogjs/platform:vite",
+            "executor": "@nx/vite:build",
             "outputs": [
                 "{options.outputPath}",
-                "{workspaceRoot}/dist/showcase-taxonomy/.nitro",
-                "{workspaceRoot}/dist/showcase-taxonomy/ssr",
-                "{workspaceRoot}/dist/showcase-taxonomy/analog"
+                "{workspaceRoot}/dist/apps/showcase-taxonomy/.nitro",
+                "{workspaceRoot}/dist/apps/showcase-taxonomy/ssr",
+                "{workspaceRoot}/dist/apps/showcase-taxonomy/analog"
             ],
             "options": {
-                "main": "./apps/showcase-taxonomy/src/main.ts",
-                "configFile": "./apps/showcase-taxonomy/vite.config.ts",
-                "outputPath": "dist/showcase-taxonomy/client",
+                "main": "apps/showcase-taxonomy/src/main.ts",
+                "configFile": "apps/showcase-taxonomy/vite.config.ts",
+                "outputPath": "dist/apps/showcase-taxonomy/client",
+                "tsConfig": "apps/showcase-taxonomy/tsconfig.app.json",
                 "assets": [
                     {
                         "glob": "**/*",
@@ -44,7 +45,7 @@
             }
         },
         "serve": {
-            "executor": "@analogjs/platform:vite-dev-server",
+            "executor": "@nx/vite:dev-server",
             "defaultConfiguration": "development",
             "options": {
                 "buildTarget": "showcase-taxonomy:build",

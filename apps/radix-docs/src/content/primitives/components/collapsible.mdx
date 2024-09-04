@@ -1,0 +1,37 @@
+---
+title: Collapsible
+slug: collapsible
+section: components
+description: .
+---
+import { attrDataContent, attrDataRoot, attrDataTrigger } from '../../../demos/primitives/collapsible/attrs';
+
+# Collapsible
+
+<Description>An interactive component which expands/collapses a panel.</Description>
+
+
+<ComponentPreview name="collapsible" file="collapsible-demo" />
+
+## API Reference
+
+### Root
+Contains all the parts of a collapsible.
+
+<PropsTable name="RdxCollapsibleRootDirective" />
+
+
+<DataAttributesTable attributes={attrDataRoot} />
+
+### Trigger
+The button that toggles the collapsible.
+
+<DataAttributesTable attributes={attrDataTrigger} />
+
+### Content
+The component that contains the collapsible content.
+
+<DataAttributesTable attributes={attrDataContent} />
+
+## Accessibility
+Adheres to the [Disclosure WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure).

@@ -28,6 +28,9 @@ jobs:
       - name: Build Primitives
         run: pnpm primitives:build
 
+      - name: Build Components
+        run: pnpm components:build
+
       - name: Build shadcn
         run: pnpm shadcn:build
 

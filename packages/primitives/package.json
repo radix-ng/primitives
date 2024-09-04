@@ -1,6 +1,6 @@
 {
     "name": "@radix-ng/primitives",
-    "version": "0.9.1",
+    "version": "0.10.0",
     "license": "MIT",
     "publishConfig": {
         "access": "public"
@@ -20,6 +20,9 @@
     "peerDependencies": {
         "@angular/core": "^18.0.0",
         "@angular/cdk": "^18.0.0"
+    },
+    "scripts": {
+        "compodoc": "compodoc --config .compodocrc.json"
     },
     "dependencies": {},
     "sideEffects": false

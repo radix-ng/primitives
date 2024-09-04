@@ -26,9 +26,11 @@ const config = {
     singleQuote: true,
     trailingComma: 'none',
     htmlWhitespaceSensitivity: 'ignore',
+    endOfLine: 'lf',
     plugins: [
         'prettier-plugin-organize-attributes',
         'prettier-plugin-organize-imports',
+        'prettier-plugin-astro',
         'prettier-plugin-tailwindcss',
         // should be last
         'prettier-plugin-multiline-arrays'
@@ -57,6 +59,12 @@ const config = {
             files: ['index.html'],
             options: {
                 parser: 'html'
+            }
+        },
+        {
+            files: '*.astro',
+            options: {
+                parser: 'astro'
             }
         }
     ]

@@ -25,8 +25,17 @@
             "@ng-doc/generated/*": [
                 "ng-doc/shadcn-docs/*"
             ],
+            "@radix-ng/components/code": [
+                "packages/components/code/index.ts"
+            ],
+            "@radix-ng/components/kbd": [
+                "packages/components/kbd/index.ts"
+            ],
             "@radix-ng/components/theme": [
                 "packages/components/theme/index.ts"
+            ],
+            "@radix-ng/components/types": [
+                "packages/components/types/index.ts"
             ],
             "@radix-ng/primitives/accordion": [
                 "packages/primitives/accordion/index.ts"

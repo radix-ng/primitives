@@ -1,4 +1,4 @@
-import { computed, Directive, ElementRef, inject, input } from '@angular/core';
+import { computed, Directive, ElementRef, inject, input, InputSignal } from '@angular/core';
 
 let idIterator = 0;
 
@@ -13,16 +13,23 @@ let idIterator = 0;
     }
 })
 export class RdxLabelDirective {
-    readonly id = input<string>(`rdx-label-${idIterator++}`);
+    /**
+     * @type string
+     * @default 'rdx-label-{idIterator}'
+     */
+    readonly id: InputSignal<string> = input<string>(`rdx-label-${idIterator++}`);
+
     /**
      * @ignore
      */
     protected readonly elementId = computed(() => (this.id() ? this.id() : null));
+
     /**
      * The id of the element the label is associated with.
-     * @default '-'
+     * @type string
+     * @default false
      */
-    readonly htmlFor = input<string>('');
+    readonly htmlFor: InputSignal<string> = input<string>('');
 
     /**
      * @ignore

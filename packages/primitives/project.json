@@ -29,6 +29,12 @@
             },
             "defaultConfiguration": "production"
         },
+        "compodoc": {
+            "executor": "nx:run-script",
+            "options": {
+                "script": "compodoc"
+            }
+        },
         "test": {
             "executor": "@nx/jest:jest",
             "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],

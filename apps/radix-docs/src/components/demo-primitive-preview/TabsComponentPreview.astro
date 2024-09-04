@@ -1,0 +1,66 @@
+---
+import { Code } from 'astro-expressive-code/components';
+
+type Tab = {
+    label: string;
+    content: string;
+};
+
+type Props = {
+    tabs: Tab[];
+    activeTab: number;
+};
+
+const { tabs, activeTab } = Astro.props as Props;
+---
+
+<div class="flex border-l border-r border-gray-300">
+    {
+        tabs.map((tab, index) => (
+            <div
+                class={`tab cursor-default border-b-2 px-4 py-2 text-sm transition-colors ${
+                    activeTab === index ? 'border-blue-500 font-bold' : 'border-transparent text-gray-600'
+                }`}
+                data-index={index}
+            >
+                {tab.label}
+            </div>
+        ))
+    }
+</div>
+
+{
+    tabs.map((tab, index) => (
+        <div id="Code" class={`tab-content ${activeTab === index ? 'block' : 'hidden'}`}>
+            <Code code={tab.content} lang="angular-ts" />
+        </div>
+    ))
+}
+
+<script>
+    document.querySelectorAll('.tab').forEach((tabElement) => {
+        tabElement.addEventListener('click', () => {
+            const index = parseInt(tabElement.getAttribute('data-index') as string);
+
+            // Toggle visibility of tab content
+            document.querySelectorAll('.tab-content').forEach((content, contentIndex) => {
+                if (content instanceof HTMLElement) {
+                    content.style.display = contentIndex === index ? 'block' : 'none';
+                }
+            });
+
+            // Toggle active tab classes
+            document.querySelectorAll('.tab').forEach((tab, tabIndex) => {
+                if (tab instanceof HTMLElement) {
+                    if (tabIndex === index) {
+                        tab.classList.remove('border-transparent', 'text-gray-600');
+                        tab.classList.add('border-blue-500', 'font-bold');
+                    } else {
+                        tab.classList.remove('border-blue-500', 'font-bold');
+                        tab.classList.add('border-transparent', 'text-gray-600');
+                    }
+                }
+            });
+        });
+    });
+</script>

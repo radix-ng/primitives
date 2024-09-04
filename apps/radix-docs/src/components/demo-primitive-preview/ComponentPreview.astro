@@ -1,0 +1,63 @@
+---
+import path from 'path';
+import { readFileSync } from 'fs';
+import { DemoLoaderComponent } from './demo-loader.component';
+import TabsComponentPreview from './TabsComponentPreview.astro';
+
+export interface Props {
+    name: string;
+    file: string;
+}
+
+const { name, file } = Astro.props;
+
+async function loadCode(name: string, file: string) {
+    const filename = path.join(process.cwd(), 'src', 'demos', 'primitives', `${name}`, `${file}.ts`);
+
+    const code = readFileSync(filename, 'utf-8')
+        .toString()
+        .replace(/export\s+default\s+.*;\s*/, '');
+
+    return {
+        code
+    };
+}
+
+async function loadCSS(name: string, file: string) {
+    const filename = path.join(process.cwd(), 'src', 'demos', 'primitives', `${name}`, `${file}.css`);
+
+    const css = readFileSync(filename, 'utf-8').toString();
+
+    return {
+        css
+    };
+}
+
+const { code } = await loadCode(name, file);
+const { css } = await loadCSS(name, file);
+
+const tabs = [
+    {
+        label: 'main.ts',
+        content: code
+    },
+    {
+        label: 'styles.css',
+        content: css
+    }
+];
+
+const activeTab = 0;
+---
+
+<div class="relative">
+    <div
+        class="vp-raw from-purple9 to-indigo9 relative flex w-full items-center justify-center rounded-t-lg bg-gradient-to-br p-4"
+    >
+        <div class="flex w-full max-w-[700px] items-center justify-center py-12 sm:py-[100px]">
+            <DemoLoaderComponent name={name} file={file} client:only="angular" />
+        </div>
+    </div>
+
+    <TabsComponentPreview tabs={tabs} activeTab={activeTab} />
+</div>

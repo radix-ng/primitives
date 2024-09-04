@@ -1,0 +1,11 @@
+{
+    "type": "module",
+    "dependencies": {
+        "@analogjs/content": "1.7.2",
+        "@analogjs/router": "1.7.2",
+        "@analogjs/platform": "1.7.2",
+        "@analogjs/vite-plugin-angular": "1.7.2",
+        "marked": "^12.0.2"
+    },
+    "devDependencies": {}
+}

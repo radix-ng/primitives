@@ -24,6 +24,10 @@ module.exports = {
             'always',
             [
                 'primitives',
+                'collapsible',
+                'code',
+                'kbd',
+                'radix-docs',
                 'shadcn',
                 'docs',
                 'release',

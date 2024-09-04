@@ -4,14 +4,15 @@
     "peerDependencies": {
         "@angular/common": "^18.0.0",
         "@angular/core": "^18.0.0",
-        "@radix-ng/primitives": "workspace:*"
+        "@radix-ng/primitives": "workspace:*",
+        "classnames": "^2.5.1"
     },
     "devDependencies": {
-        "@radix-ng/primitives": "workspace:*"
+        "@radix-ng/primitives": "workspace:*",
+        "classnames": "^2.5.1"
     },
-    "dependencies": {
-        "classnames": "2.5.1",
-        "tslib": "^2.3.0"
+    "scripts": {
+        "compodoc": "compodoc --config .compodocrc.json"
     },
     "sideEffects": false
 }
