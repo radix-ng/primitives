@@ -42,6 +42,8 @@ export default {
                         width: 300px;
                         background-color: var(--mauve-6);
                         box-shadow: 0 2px 10px var(--black-a4);
+
+                        --rdx-accordion-content-height: 150px;
                     }
 
                     .AccordionItem {
@@ -120,13 +122,13 @@ export default {
                             height: 0;
                         }
                         to {
-                            height: var(--radix-accordion-content-height, 50px);
+                            height: var(--rdx-accordion-content-height);
                         }
                     }
 
                     @keyframes slideUp {
                         from {
-                            height: var(--radix-accordion-content-height, 50px);
+                            height: var(--rdx-accordion-content-height);
                         }
                         to {
                             height: 0;

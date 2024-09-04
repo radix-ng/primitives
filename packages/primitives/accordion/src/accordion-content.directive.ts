@@ -9,7 +9,10 @@ export const RdxAccordionContentToken = new InjectionToken<RdxAccordionContentDi
     exportAs: 'rdxAccordionContent',
     host: {
         '[attr.role]': '"region"',
-        '[style.display]': 'item.expanded ? "" : "none"',
+        // todo need hide content after animation
+        // '[style.display]': 'item.expanded ? "" : "none"',
+        // '[attr.hidden]': 'hidden ? "" : null',
+        '[style.height]': 'item.expanded ? "var(--rdx-accordion-content-height)" : "0px"',
         '[attr.data-state]': 'item.dataState',
         '[attr.data-disabled]': 'item.disabled',
         '[attr.data-orientation]': 'item.orientation'
