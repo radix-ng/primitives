@@ -88,6 +88,10 @@ export default {
                         cursor: default;
                     }
 
+                    .AccordionTrigger[data-disabled="true"] {
+                        color: var(--gray-7);
+                    },
+
                     .AccordionTrigger:hover {
                         background-color: var(--mauve-2);
                     }
