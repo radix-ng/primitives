@@ -1,5 +1,6 @@
 import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { LucideAngularModule, UnfoldVertical, X } from 'lucide-angular';
 import { RdxCollapsibleContentDirective } from '../src/collapsible-content.directive';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.directive';
@@ -16,7 +17,9 @@ export default {
                 RdxCollapsibleContentDirective,
                 RdxCollapsibleExternalTriggeringComponent,
                 RdxCollapsibleAnimationComponent,
-                BrowserAnimationsModule
+                BrowserAnimationsModule,
+                LucideAngularModule,
+                LucideAngularModule.pick({ X, UnfoldVertical })
             ],
             providers: [provideAnimations()]
         }),
@@ -92,8 +95,8 @@ export const Default: Story = {
             <div class="CollapsibleRoot" rdxCollapsibleRoot [open]="true">
 
                 <div style="display: flex; align-items: center; justify-content: space-between;">
-                <span class="Text" style="color: white">&#64;peduarte starred 3 repositories</span>
-                <button class="IconButton" rdxCollapsibleTrigger></button>
+                    <span class="Text" style="color: white">&#64;peduarte starred 3 repositories</span>
+                    <button class="IconButton" rdxCollapsibleTrigger></button>
                 </div>
 
                 <div class="Repository">

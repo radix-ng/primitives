@@ -1,5 +1,6 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component } from '@angular/core';
+import { LucideAngularModule } from 'lucide-angular';
 import { RdxCollapsibleContentDirective } from '../src/collapsible-content.directive';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.directive';
@@ -10,7 +11,8 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
     imports: [
         RdxCollapsibleRootDirective,
         RdxCollapsibleTriggerDirective,
-        RdxCollapsibleContentDirective
+        RdxCollapsibleContentDirective,
+        LucideAngularModule
     ],
     // prettier-ignore
     animations: [
@@ -72,10 +74,22 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
         }
     `,
     template: `
-        <div class="CollapsibleRoot" #collapsibleRoot="collapsibleRoot" [open]="true" rdxCollapsibleRoot>
+        <div
+            class="CollapsibleRoot"
+            #collapsibleRoot="collapsibleRoot"
+            [open]="open"
+            (onOpenChange)="onOpenChange($event)"
+            rdxCollapsibleRoot
+        >
             <div style="display: flex; align-items: center; justify-content: space-between;">
                 <span class="Text" style="color: white">&#64;peduarte starred 3 repositories</span>
-                <button class="IconButton" rdxCollapsibleTrigger></button>
+                <button class="IconButton" rdxCollapsibleTrigger>
+                    @if (open) {
+                        <lucide-angular size="16" name="x" style="display: flex;"></lucide-angular>
+                    } @else {
+                        <lucide-angular size="16" name="unfold-vertical" style="display: flex;"></lucide-angular>
+                    }
+                </button>
             </div>
 
             <div class="Repository">
@@ -93,4 +107,10 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
         </div>
     `
 })
-export class RdxCollapsibleAnimationComponent {}
+export class RdxCollapsibleAnimationComponent {
+    open = true;
+
+    onOpenChange($event: boolean) {
+        this.open = $event;
+    }
+}
