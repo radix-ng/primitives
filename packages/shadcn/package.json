@@ -24,6 +24,7 @@
         "@radix-ng/primitives": "^0.8.1",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.1",
+        "lucide-angular": "^0.438.0",
         "tailwind-merge": "^2.3.0"
     },
     "devDependencies": {
@@ -32,7 +33,6 @@
         "@radix-ng/primitives": "workspace:*",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.1",
-        "lucide-angular": "^0.400.0",
         "tailwind-merge": "^2.3.0"
     },
     "sideEffects": false
