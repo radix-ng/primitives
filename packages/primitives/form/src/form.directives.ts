@@ -1,32 +1,38 @@
-import { Directive, ElementRef, inject, Input, OnInit } from '@angular/core';
-import { ControlContainer, NgControl } from '@angular/forms';
+import { Directive, Inject, inject, InjectionToken, Input, Optional } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { FORM_CONTEXT } from './form.component';
+import { RdxFormDirective } from './form.component';
+
+export const FORM_FIELD_CONTEXT = new InjectionToken<RdxFormFieldDirective>('FORM_FIELD_CONTEXT');
 
 @Directive({
     selector: '[rdxFormField]',
     standalone: true,
+    providers: [
+        {
+            provide: FORM_FIELD_CONTEXT,
+            useExisting: RdxFormFieldDirective
+        }
+    ],
     host: {
-        '[attr.data-valid]': 'isValid()',
-        '[attr.data-invalid]': 'isInvalid()'
+        '[attr.data-state]': 'getState()'
     }
 })
 export class RdxFormFieldDirective {
-    private readonly controlContainer = inject(ControlContainer);
-
     @Input() name!: string;
-    @Input() serverInvalid = false;
 
-    isValid() {
-        return !this.serverInvalid && this.control?.valid && (this.control?.touched || this.control?.dirty);
+    private form = inject(RdxFormDirective);
+
+    get formGroup(): FormGroup {
+        return this.form.form;
     }
 
-    isInvalid() {
-        return this.serverInvalid || (this.control?.invalid && (this.control?.touched || this.control?.dirty));
-    }
-
-    private get control() {
-        return this.controlContainer?.control?.get(this.name);
+    getState(): string {
+        const control = this.formGroup.get(this.name);
+        if (control?.invalid && (control.dirty || control.touched)) {
+            return 'invalid';
+        }
+        return 'valid';
     }
 }
 
@@ -34,43 +40,17 @@ export class RdxFormFieldDirective {
     selector: '[rdxFormControl]',
     standalone: true,
     host: {
-        '[disabled]': 'isDisabled()',
-        '[attr.data-invalid]': 'isInvalid()',
-        '[attr.aria-invalid]': 'isInvalid()',
-        '[attr.aria-describedby]': 'getDescribedBy()',
-        // disable default browser behaviour of showing built-in error message on hover
-        '[title]': '""'
+        '[attr.aria-invalid]': 'getState() === "invalid"',
+        '[attr.aria-describedby]': 'formField?.name + "-message"',
+        '[attr.data-state]': 'getState()'
     }
 })
-export class RdxFormControlDirective implements OnInit {
-    private readonly context = inject(FORM_CONTEXT);
-    private readonly elementRef = inject(ElementRef);
-    private readonly ngControl = inject(NgControl, { optional: true });
+export class RdxFormControlDirective {
+    constructor(@Optional() @Inject(FORM_FIELD_CONTEXT) protected formField: RdxFormFieldDirective) {}
 
-    @Input() id?: string;
-
-    ngOnInit() {
-        if (!this.ngControl) {
-            throw new Error('FormControlDirective must be used with a form control');
-        }
-
-        if (!this.elementRef.nativeElement.id) {
-            const controlName = this.ngControl.name !== null ? this.ngControl.name.toString() : '';
-            this.elementRef.nativeElement.id = this.context.generateId(controlName);
-        }
-    }
-
-    isDisabled() {
-        return this.context.disabled;
-    }
-
-    isInvalid() {
-        const validityState = this.context.getValidityState(this.elementRef.nativeElement.id);
-        return validityState.invalid && (validityState.touched || validityState.dirty);
-    }
-
-    getDescribedBy() {
-        return `${this.elementRef.nativeElement.id}-description`;
+    getState(): string {
+        if (!this.formField) return 'valid';
+        return this.formField.getState();
     }
 }
 

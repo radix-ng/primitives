@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RdxFormComponent, ValidityMatcher } from '../src/form.component';
+import { RdxFormDirective, ValidityMatcher } from '../src/form.component';
 import { RdxFormControlDirective, RdxFormFieldDirective, RdxFormLabelDirective } from '../src/form.directives';
 
 @Component({
@@ -9,21 +9,15 @@ import { RdxFormControlDirective, RdxFormFieldDirective, RdxFormLabelDirective }
     standalone: true,
     imports: [
         CommonModule,
-        RdxFormComponent,
         RdxFormFieldDirective,
         RdxFormControlDirective,
         RdxFormLabelDirective,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        RdxFormDirective
     ],
     styleUrls: ['form-usage.styles.css'],
     template: `
-        <rdx-form
-            [formGroup]="form"
-            [validityMatchers]="validityMatchers"
-            (onSubmit)="onSubmit()"
-            (onInvalid)="onInvalid($event)"
-            (onReset)="onReset()"
-        >
+        <form [formGroup]="form" (submit)="onSubmit()" (reset)="onReset()" rdxForm>
             <div class="FormField" rdxFormField name="email">
                 <div style="display: flex; align-items: baseline; justify-content:space-between">
                     <label class="FormLabel" rdxFormLabel htmlFor="email">Email</label>
@@ -67,10 +61,10 @@ import { RdxFormControlDirective, RdxFormFieldDirective, RdxFormLabelDirective }
                 />
             </div>
             <div class="ButtonGroup">
-                <button class="Button" [disabled]="form.invalid" type="submit">Submit</button>
+                <button class="Button" type="submit">Submit</button>
                 <button class="Button" type="reset">Reset</button>
             </div>
-        </rdx-form>
+        </form>
     `
 })
 export class FormUsageComponent {
