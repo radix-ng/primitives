@@ -6,15 +6,13 @@ import {
     ContentChild,
     Directive,
     EventEmitter,
-    Inject,
+    inject,
     Input,
     OnDestroy,
-    Optional,
-    Output,
-    SkipSelf
+    Output
 } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { RdxAccordionOrientation, RdxAccordionRootDirective, RdxAccordionRootToken } from './accordion-root.directive';
+import { RdxAccordionOrientation, RdxAccordionRootToken } from './accordion-root.directive';
 import { RdxAccordionTriggerDirective } from './accordion-trigger.directive';
 
 export type RdxAccordionItemState = 'open' | 'closed';
@@ -28,12 +26,16 @@ let nextId = 0;
     host: {
         '[attr.data-state]': 'dataState',
         '[attr.data-disabled]': 'disabled',
-        '[attr.data-orientation]': 'accordion.orientation'
+        '[attr.data-orientation]': 'orientation'
     },
     providers: [
         { provide: RdxAccordionRootToken, useValue: undefined }]
 })
 export class RdxAccordionItemDirective implements FocusableOption, OnDestroy {
+    protected readonly accordion = inject(RdxAccordionRootToken, { skipSelf: true });
+    protected readonly changeDetectorRef = inject(ChangeDetectorRef);
+    protected readonly expansionDispatcher = inject(UniqueSelectionDispatcher);
+
     @ContentChild(RdxAccordionTriggerDirective, { descendants: true }) trigger: RdxAccordionTriggerDirective;
 
     get dataState(): RdxAccordionItemState {
@@ -43,7 +45,9 @@ export class RdxAccordionItemDirective implements FocusableOption, OnDestroy {
     /** The unique AccordionItem id. */
     readonly id: string = `rdx-accordion-item-${nextId++}`;
 
-    public orientation: RdxAccordionOrientation = 'vertical';
+    get orientation(): RdxAccordionOrientation {
+        return this.accordion.orientation;
+    }
 
     /** Whether the AccordionItem is expanded. */
     @Input({ transform: booleanAttribute })
@@ -89,14 +93,24 @@ export class RdxAccordionItemDirective implements FocusableOption, OnDestroy {
     private _value?: string;
 
     /** Whether the AccordionItem is disabled. */
-    @Input({ transform: booleanAttribute }) disabled: boolean = false;
+    @Input({ transform: booleanAttribute })
+    set disabled(value: boolean) {
+        this._disabled = value;
+    }
+
+    get disabled(): boolean {
+        return this.accordion.disabled ?? this._disabled;
+    }
+
+    private _disabled = false;
 
     /** Event emitted every time the AccordionItem is closed. */
     @Output() readonly closed: EventEmitter<void> = new EventEmitter<void>();
     /** Event emitted every time the AccordionItem is opened. */
     @Output() readonly opened: EventEmitter<void> = new EventEmitter<void>();
+
     /** Event emitted when the AccordionItem is destroyed. */
-    @Output() readonly destroyed: EventEmitter<void> = new EventEmitter<void>();
+    readonly destroyed: EventEmitter<void> = new EventEmitter<void>();
 
     /**
      * Emits whenever the expanded state of the accordion changes.
@@ -111,11 +125,7 @@ export class RdxAccordionItemDirective implements FocusableOption, OnDestroy {
     /** Subscription to openAll/closeAll events. */
     private openCloseAllSubscription = Subscription.EMPTY;
 
-    constructor(
-        @Optional() @Inject(RdxAccordionRootToken) @SkipSelf() public accordion: RdxAccordionRootDirective,
-        private changeDetectorRef: ChangeDetectorRef,
-        protected expansionDispatcher: UniqueSelectionDispatcher
-    ) {
+    constructor() {
         this.removeUniqueSelectionListener = this.expansionDispatcher.listen((id: string, accordionId: string) => {
             if (this.accordion.isMultiple) {
                 if (this.accordion.id === accordionId && id.includes(this.value)) {

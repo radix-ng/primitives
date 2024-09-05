@@ -4,6 +4,7 @@ import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
 import { ENTER, SPACE } from '@angular/cdk/keycodes';
 import {
     AfterContentInit,
+    booleanAttribute,
     ContentChildren,
     Directive,
     EventEmitter,
@@ -39,7 +40,6 @@ let nextId = 0;
 })
 export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
     protected readonly selectionDispatcher = inject(UniqueSelectionDispatcher);
-
     protected readonly dir = inject(Directionality, { optional: true });
 
     protected keyManager: FocusKeyManager<RdxAccordionItemDirective>;
@@ -51,6 +51,9 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
     get isMultiple(): boolean {
         return this.type === 'multiple';
     }
+
+    /** Whether the Accordion is disabled. */
+    @Input({ transform: booleanAttribute }) disabled: boolean;
 
     /**
      * The orientation of the accordion.
@@ -87,7 +90,7 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
     }
 
     get value(): string[] {
-        return this._value || this.defaultValue;
+        return this._value ?? this.defaultValue;
     }
 
     @Output() readonly onValueChange: EventEmitter<void> = new EventEmitter<void>();
@@ -106,7 +109,7 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
     ngAfterContentInit(): void {
         this.selectionDispatcher.notify(this.value as unknown as string, this.id);
 
-        this.keyManager = new FocusKeyManager(this.items);
+        this.keyManager = new FocusKeyManager(this.items).withHomeAndEnd();
 
         if (this.orientation === 'horizontal') {
             this.keyManager.withHorizontalOrientation(this.dir?.value || 'ltr');

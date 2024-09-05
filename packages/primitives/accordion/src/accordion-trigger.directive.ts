@@ -24,7 +24,7 @@ export class RdxAccordionTriggerDirective {
      * Fires when trigger clicked
      */
     onClick(): void {
-        if (!this.accordionRoot.collapsible) return;
+        if (!this.accordionRoot.collapsible && this.item.expanded) return;
 
         this.item.toggle();
 

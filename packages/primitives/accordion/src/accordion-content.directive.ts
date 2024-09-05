@@ -12,7 +12,7 @@ export const RdxAccordionContentToken = new InjectionToken<RdxAccordionContentDi
         // todo need hide content after animation
         // '[style.display]': 'item.expanded ? "" : "none"',
         // '[attr.hidden]': 'hidden ? "" : null',
-        '[style.height]': 'item.expanded ? "var(--rdx-accordion-content-height)" : "0px"',
+        '[style]': 'style',
         '[attr.data-state]': 'item.dataState',
         '[attr.data-disabled]': 'item.disabled',
         '[attr.data-orientation]': 'item.orientation'
@@ -20,4 +20,12 @@ export const RdxAccordionContentToken = new InjectionToken<RdxAccordionContentDi
 })
 export class RdxAccordionContentDirective {
     protected readonly item = inject(RdxAccordionItemDirective);
+
+    get style() {
+        if (this.item.orientation === 'horizontal') {
+            return { width: this.item.expanded ? 'var(--rdx-accordion-content-width)' : 0 };
+        }
+
+        return { height: this.item.expanded ? 'var(--rdx-accordion-content-height)' : 0 };
+    }
 }

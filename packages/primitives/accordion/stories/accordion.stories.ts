@@ -39,11 +39,22 @@ export default {
 
                     .AccordionRoot {
                         border-radius: 6px;
-                        width: 300px;
                         background-color: var(--mauve-6);
                         box-shadow: 0 2px 10px var(--black-a4);
 
-                        --rdx-accordion-content-height: 150px;
+                        --rdx-accordion-content-height: 75px;
+                        --rdx-accordion-content-width: 300px;
+                    }
+
+                    .AccordionRoot[data-orientation="vertical"] {
+                        width: 300px;
+                    }
+
+                    .AccordionRoot[data-orientation="horizontal"] {
+                        height: 300px;
+
+                        display: flex;
+                        flex-direction: row;
                     }
 
                     .AccordionItem {
@@ -51,14 +62,29 @@ export default {
                         margin-top: 1px;
                     }
 
-                    .AccordionItem:first-child {
+                    .AccordionItem[data-orientation="horizontal"] {
+                        display: flex;
+                    }
+
+                    .AccordionItem[data-orientation="vertical"]:first-child {
                         margin-top: 0;
                         border-top-left-radius: 4px;
                         border-top-right-radius: 4px;
                     }
 
-                    .AccordionItem:last-child {
+                    .AccordionItem[data-orientation="vertical"]:last-child {
                         border-bottom-left-radius: 4px;
+                        border-bottom-right-radius: 4px;
+                    }
+
+                    .AccordionItem[data-orientation="horizontal"]:first-child {
+                        margin-top: 0;
+                        border-top-left-radius: 4px;
+                        border-bottom-left-radius: 4px;
+                    }
+
+                    .AccordionItem[data-orientation="horizontal"]:last-child {
+                        border-top-right-radius: 4px;
                         border-bottom-right-radius: 4px;
                     }
 
@@ -88,6 +114,12 @@ export default {
                         cursor: default;
                     }
 
+                    .AccordionTrigger[data-orientation="horizontal"] {
+                        height: 100%;
+                        padding: 20px;
+                        writing-mode: vertical-rl;
+                    }
+
                     .AccordionTrigger[data-disabled="true"] {
                         color: var(--gray-7);
                     },
@@ -97,16 +129,24 @@ export default {
                     }
 
                     .AccordionContent {
+                        display: flex;
                         overflow: hidden;
                         font-size: 15px;
                         color: var(--mauve-11);
                         background-color: var(--mauve-2);
                     }
-                    .AccordionContent[data-state='open'] {
+                    .AccordionContent[data-orientation='vertical'][data-state='open'] {
                         animation: slideDown 300ms cubic-bezier(0.87, 0, 0.13, 1);
                     }
-                    .AccordionContent[data-state='closed'] {
+                    .AccordionContent[data-orientation='vertical'][data-state='closed'] {
                         animation: slideUp 300ms cubic-bezier(0.87, 0, 0.13, 1);
+                    }
+
+                    .AccordionContent[data-orientation='horizontal'][data-state='open'] {
+                        animation: slideRight 300ms cubic-bezier(0.87, 0, 0.13, 1);
+                    }
+                    .AccordionContent[data-orientation='horizontal'][data-state='closed'] {
+                        animation: slideLeft 300ms cubic-bezier(0.87, 0, 0.13, 1);
                     }
 
                     .AccordionContentText {
@@ -119,6 +159,10 @@ export default {
                     }
                     .AccordionTrigger[data-state='open'] > .AccordionChevron {
                         transform: rotate(180deg);
+                    }
+
+                    .horizontal-flex-container {
+                        display: flex;
                     }
 
                     @keyframes slideDown {
@@ -136,6 +180,24 @@ export default {
                         }
                         to {
                             height: 0;
+                        }
+                    }
+
+                    @keyframes slideRight {
+                        from {
+                            width: 0;
+                        }
+                        to {
+                            width: var(--rdx-accordion-content-width);
+                        }
+                    }
+
+                    @keyframes slideLeft {
+                        from {
+                            width: var(--rdx-accordion-content-width);
+                        }
+                        to {
+                            width: 0;
                         }
                     }
                 </style>`
@@ -189,7 +251,7 @@ export const Default: Story = {
 export const Multiple: Story = {
     render: () => ({
         template: `
-            <div class="AccordionRoot" rdxAccordionRoot [value]="['item-2', 'item-3']" [type]="'multiple'" [orientation]="'horizontal'">
+            <div class="AccordionRoot" rdxAccordionRoot [value]="['item-2', 'item-3']" [type]="'multiple'">
                 <div [value]="'item-1'" class="AccordionItem" rdxAccordionItem>
                     <div class="AccordionHeader" rdxAccordionHeader>
                         <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
@@ -219,6 +281,49 @@ export const Multiple: Story = {
                     <div class="AccordionContent" rdxAccordionContent>
                         <div class="AccordionContentText">
                             Yes! You can animate the Accordion with CSS or JavaScript.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `
+    })
+};
+
+export const Horizontal: Story = {
+    render: () => ({
+        template: `
+            <div class="horizontal-flex-container">
+                <div class="AccordionRoot" rdxAccordionRoot [defaultValue]="'item-1'" [orientation]="'horizontal'">
+                    <div [value]="'item-1'" class="AccordionItem" rdxAccordionItem>
+                        <div class="AccordionHeader" rdxAccordionHeader>
+                            <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
+                        </div>
+                        <div class="AccordionContent" rdxAccordionContent>
+                            <div class="AccordionContentText">
+                                Yes. It adheres to the WAI-ARIA design pattern.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div [value]="'item-2'" class="AccordionItem" rdxAccordionItem [disabled]="true">
+                        <div class="AccordionHeader" rdxAccordionHeader>
+                            <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
+                        </div>
+                        <div class="AccordionContent" rdxAccordionContent>
+                            <div class="AccordionContentText">
+                                Yes. It's unstyled by default, giving you freedom over the look and feel.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div [value]="'item-3'" class="AccordionItem" rdxAccordionItem>
+                        <div class="AccordionHeader" rdxAccordionHeader>
+                            <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Can it be animated?</button>
+                        </div>
+                        <div class="AccordionContent" rdxAccordionContent>
+                            <div class="AccordionContentText">
+                                Yes! You can animate the Accordion with CSS or JavaScript.
+                            </div>
                         </div>
                     </div>
                 </div>
