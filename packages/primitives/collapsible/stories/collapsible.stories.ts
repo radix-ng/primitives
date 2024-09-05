@@ -92,11 +92,17 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: `
-            <div class="CollapsibleRoot" rdxCollapsibleRoot [open]="true">
+            <div class="CollapsibleRoot" rdxCollapsibleRoot [open]="true" #collapsibleRoot="collapsibleRoot">
 
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <span class="Text" style="color: white">&#64;peduarte starred 3 repositories</span>
-                    <button class="IconButton" rdxCollapsibleTrigger></button>
+                    <button class="IconButton" rdxCollapsibleTrigger>
+                        @if (collapsibleRoot.isOpen()) {
+                            <lucide-angular size="16" name="x" style="display: flex;"></lucide-angular>
+                        } @else {
+                            <lucide-angular size="16" name="unfold-vertical" style="display: flex;"></lucide-angular>
+                        }
+                    </button>
                 </div>
 
                 <div class="Repository">
