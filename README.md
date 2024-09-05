@@ -39,9 +39,9 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 │   ├── shadcn-docs        (docs for shadcn/ui, based on ng-doc)
 │   └── showcase-taxonomy  (AnalogJS showcase Taxonomy app)
 └── packages
-    ├── components         (components based on primitives with custom styling)
-    ├── shadcn             (shadcn/ui port)
-    └── primitives         (headless primitives UI without any styling)
+├── components         (components based on primitives with custom styling)
+├── shadcn             (shadcn/ui port)
+└── primitives         (headless primitives UI without any styling)
 ```
 
 ## Roadmap
@@ -56,13 +56,14 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 - [ ] Context Menu (next) (based on angular/cdk)
 - [ ] Dialog (based on angular/cdk)
 - [x] DropdownMenu (based on angular/cdk)
+- [ ] Form
 - [ ] Hover Card
 - [x] Label
-- [ ] Menubar (In progress) (based on angular/cdk)
+- [ ] Menubar (based on angular/cdk)
 - [ ] Navigation Menu
 - [ ] Popover
 - [x] Progress
-- [x] Radio (adaptation for FormGroup)
+- [x] Radio (check adaptation for FormGroup)
 - [ ] Select (In progress)
 - [x] Separator
 - [x] Switch
@@ -71,7 +72,7 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 - [x] Toggle
 - [x] Toggle Group
 - [ ] Toolbar
-- [ ] Tooltip
+- [ ] Tooltip (In progress)
 
 | Primitive    | Description | Status         | Due date |
 | ------------ | ----------- | -------------- | -------- |
@@ -82,8 +83,19 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 | Collapsible  |             | ✅             |          |
 | Context Menu |             |                |          |
 | Dialog       |             |                |          |
-| Dropdown     |             | 🚀 In Progress |          |
+| Dropdown     |             | ✅             |          |
+| Form         |             | 🚀 In Progress |          |
 | Hover Card   |             |                |          |
+| Label        |             | ✅             |          |
+| Menubar      |             | beta           |          |
+| Progress     |             | ✅             |          |
+| Radio        |             | ✅             |          |
+| Separator    |             | ✅             |          |
+| Switch       |             | ✅             |          |
+| Tabs         |             | ✅             |          |
+| Toggle       |             | ✅             |          |
+| Toggle Group |             | ✅             |          |
+| Tooltip      |             | 🚀 In Progress |          |
 
 ...
 
