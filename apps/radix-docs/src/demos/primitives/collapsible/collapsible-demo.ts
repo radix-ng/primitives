@@ -1,9 +1,11 @@
+import { CommonModule, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import {
     RdxCollapsibleContentDirective,
     RdxCollapsibleRootDirective,
     RdxCollapsibleTriggerDirective
 } from '@radix-ng/primitives/collapsible';
+import { LucideAngularModule, UnfoldVertical, X } from 'lucide-angular';
 
 @Component({
     selector: 'collapsible-demo',
@@ -11,13 +13,22 @@ import {
     imports: [
         RdxCollapsibleRootDirective,
         RdxCollapsibleTriggerDirective,
-        RdxCollapsibleContentDirective
+        RdxCollapsibleContentDirective,
+        LucideAngularModule,
+        NgIf,
+        CommonModule
     ],
     template: `
-        <div class="CollapsibleRoot" [open]="true" rdxCollapsibleRoot>
+        <div class="CollapsibleRoot" #collapsibleRoot="collapsibleRoot" [open]="true" rdxCollapsibleRoot>
             <div style="display: flex; align-items: center; justify-content: space-between;">
                 <span class="Text" style="color: white">&#64;peduarte starred 3 repositories</span>
-                <button class="IconButton" rdxCollapsibleTrigger></button>
+                <button class="IconButton" rdxCollapsibleTrigger>
+                    @if (collapsibleRoot.isOpen()) {
+                        <lucide-angular [img]="XIcon" size="16" style="display: flex;"></lucide-angular>
+                    } @else {
+                        <lucide-angular [img]="UnfoldVerticalIcon" size="16" style="display: flex;"></lucide-angular>
+                    }
+                </button>
             </div>
 
             <div class="Repository">
@@ -36,6 +47,9 @@ import {
     `,
     styleUrl: 'collapsible-demo.css'
 })
-export class CollapsibleDemoComponent {}
+export class CollapsibleDemoComponent {
+    readonly XIcon = X;
+    readonly UnfoldVerticalIcon = UnfoldVertical;
+}
 
 export default CollapsibleDemoComponent;

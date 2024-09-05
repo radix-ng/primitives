@@ -286,8 +286,8 @@ importers:
         specifier: ^15.2.7
         version: 15.2.9
       lucide-angular:
-        specifier: ^0.400.0
-        version: 0.400.0(@angular/common@18.2.1)(@angular/core@18.2.1)
+        specifier: ^0.438.0
+        version: 0.438.0(@angular/common@18.2.1)(@angular/core@18.2.1)
       marked-highlight:
         specifier: ^2.1.3
         version: 2.1.4(marked@12.0.2)
@@ -17719,6 +17719,17 @@ packages:
 
   /lucide-angular@0.400.0(@angular/common@18.2.1)(@angular/core@18.2.1):
     resolution: {integrity: sha512-TL6FJr4iHX2weB96i8a3/FJ9KIJEQNPBmPKxEIFSy9ECtKKzHyQcQIQt+UwlfTykrVysNcvOBecQnvPDY7khYg==}
+    peerDependencies:
+      '@angular/common': 13.x - 18.x
+      '@angular/core': 13.x - 18.x
+    dependencies:
+      '@angular/common': 18.2.1(@angular/core@18.2.1)(rxjs@7.8.1)
+      '@angular/core': 18.2.1(rxjs@7.8.1)(zone.js@0.14.10)
+      tslib: 2.7.0
+    dev: true
+
+  /lucide-angular@0.438.0(@angular/common@18.2.1)(@angular/core@18.2.1):
+    resolution: {integrity: sha512-REDxI3Dc+eWoj0qPaXIKNp4CRdZovrrxTFn18cGkfDldszNSD4nX3KKgE0wW23z/BtLX3N8awOZMIs8bPZZrwg==}
     peerDependencies:
       '@angular/common': 13.x - 18.x
       '@angular/core': 13.x - 18.x
