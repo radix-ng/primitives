@@ -1,3 +1,19 @@
+## 0.11.0 (2024-09-06)
+
+
+### 🚀 Features
+
+- radix documentation - Astro and MDX ([#69](https://github.com/radix-ng/primitives/pull/69))
+
+- accordion (#DS-2773) ([#92](https://github.com/radix-ng/primitives/pull/92))
+
+- **collapsible:** rename onOpenChange and added content attributes ([24baf80](https://github.com/radix-ng/primitives/commit/24baf80))
+
+
+### 🩹 Fixes
+
+- **radio-group:** added focusKeyManager ([#95](https://github.com/radix-ng/primitives/pull/95))
+
 ## 0.10.0 (2024-08-21)
 
 
