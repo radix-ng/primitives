@@ -1,43 +1,74 @@
-import { contentChildren, Directive, inject, InjectionToken, Input, OnInit } from '@angular/core';
-import { RdxAccordionItemToken } from './accordion-item.directive';
+import { FocusKeyManager } from '@angular/cdk/a11y';
+import { Directionality } from '@angular/cdk/bidi';
+import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
+import { ENTER, SPACE } from '@angular/cdk/keycodes';
+import {
+    AfterContentInit,
+    booleanAttribute,
+    ContentChildren,
+    Directive,
+    EventEmitter,
+    forwardRef,
+    inject,
+    InjectionToken,
+    Input,
+    OnDestroy,
+    Output,
+    QueryList
+} from '@angular/core';
+import { merge, Subject, Subscription } from 'rxjs';
+import { RdxAccordionItemDirective } from './accordion-item.directive';
 
 export type RdxAccordionType = 'single' | 'multiple';
 export type RdxAccordionOrientation = 'horizontal' | 'vertical';
 
 export const RdxAccordionRootToken = new InjectionToken<RdxAccordionRootDirective>('RdxAccordionRootDirective');
 
-export function injectAccordionRoot(): RdxAccordionRootDirective {
-    return inject(RdxAccordionRootDirective);
-}
+let nextId = 0;
 
 @Directive({
     selector: '[rdxAccordionRoot]',
     standalone: true,
-    providers: [{ provide: RdxAccordionRootToken, useExisting: RdxAccordionRootDirective }],
+    providers: [
+        { provide: RdxAccordionRootToken, useExisting: RdxAccordionRootDirective },
+        { provide: UniqueSelectionDispatcher, useClass: UniqueSelectionDispatcher }
+    ],
     host: {
-        '[attr.data-orientation]': 'getOrientation()'
+        '[attr.data-orientation]': 'orientation',
+        '(keydown)': 'handleKeydown($event)'
     }
 })
-export class RdxAccordionRootDirective implements OnInit {
+export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
+    protected readonly selectionDispatcher = inject(UniqueSelectionDispatcher);
+    protected readonly dir = inject(Directionality, { optional: true });
+
+    protected keyManager: FocusKeyManager<RdxAccordionItemDirective>;
+
+    readonly id: string = `rdx-accordion-${nextId++}`;
+
+    readonly openCloseAllActions = new Subject<boolean>();
+
+    get isMultiple(): boolean {
+        return this.type === 'multiple';
+    }
+
+    /** Whether the Accordion is disabled. */
+    @Input({ transform: booleanAttribute }) disabled: boolean;
+
+    /**
+     * The orientation of the accordion.
+     */
+    @Input() orientation: RdxAccordionOrientation = 'vertical';
     /**
      * @private
      * @ignore
      */
-    private readonly accordionItems = contentChildren(RdxAccordionItemToken);
-    /**
-     * @private
-     * @ignore
-     */
-    private _orientation: RdxAccordionOrientation = 'vertical';
-    /**
-     * @private
-     * @ignore
-     */
-    private _value: string[] = [];
+    @ContentChildren(forwardRef(() => RdxAccordionItemDirective), { descendants: true })
+    items: QueryList<RdxAccordionItemDirective>;
     /**
      * The value of the item to expand when initially rendered and type is "single". Use when you do not need to control the state of the items.
      */
-    @Input() defaultValue?: string[] = [];
+    @Input() defaultValue: string[] = [];
     /**
      * Determines whether one or multiple items can be opened at the same time.
      */
@@ -49,61 +80,86 @@ export class RdxAccordionRootDirective implements OnInit {
     /**
      * The controlled value of the item to expand
      */
-    @Input() set value(value: string | string[] | undefined) {
-        if (value !== undefined) {
+    @Input()
+    set value(value: string[]) {
+        if (value !== this._value) {
             this._value = Array.isArray(value) ? value : [value];
+
+            this.selectionDispatcher.notify(this.value as unknown as string, this.id);
+        }
+    }
+
+    get value(): string[] {
+        return this._value ?? this.defaultValue;
+    }
+
+    @Output() readonly onValueChange: EventEmitter<void> = new EventEmitter<void>();
+
+    /**
+     * @private
+     * @ignore
+     */
+    private _value?: string[];
+
+    private onValueChangeSubscription: Subscription;
+
+    /**
+     * @ignore
+     */
+    ngAfterContentInit(): void {
+        this.selectionDispatcher.notify(this.value as unknown as string, this.id);
+
+        this.keyManager = new FocusKeyManager(this.items).withHomeAndEnd();
+
+        if (this.orientation === 'horizontal') {
+            this.keyManager.withHorizontalOrientation(this.dir?.value || 'ltr');
         } else {
-            this._value = [];
+            this.keyManager.withVerticalOrientation();
         }
 
-        this.onValueChange(this._value);
-    }
-    /**
-     * The orientation of the accordion.
-     */
-    @Input() set orientation(orientation: RdxAccordionOrientation | undefined) {
-        this._orientation = orientation ?? 'vertical';
-        this.accordionItems().forEach((accordionItem) => accordionItem.setOrientation(this._orientation));
+        this.onValueChangeSubscription = merge(...this.items.map((item) => item.expandedChange)).subscribe(() =>
+            this.onValueChange.emit()
+        );
     }
 
-    /**
-     * @ignore
-     */
-    ngOnInit(): void {
-        if (this.defaultValue) {
-            this.value = this.defaultValue;
+    ngOnDestroy() {
+        this.openCloseAllActions.complete();
+        this.onValueChangeSubscription.unsubscribe();
+    }
+
+    handleKeydown(event: KeyboardEvent) {
+        if (!this.keyManager.activeItem) {
+            this.keyManager.setFirstItemActive();
         }
-    }
 
-    /**
-     * @ignore
-     */
-    onValueChange(value: string[]): void {
-        if (this.type === 'single') {
-            const currentValue = value.length > 0 ? value[0] : undefined;
+        const activeItem = this.keyManager.activeItem;
 
-            this.accordionItems().forEach((accordionItem) => {
-                if (accordionItem.value === currentValue) {
-                    accordionItem.setOpen();
-                } else {
-                    accordionItem.setOpen('closed');
-                }
-            });
+        if (
+            (event.keyCode === ENTER || event.keyCode === SPACE) &&
+            !this.keyManager.isTyping() &&
+            activeItem &&
+            !activeItem.disabled
+        ) {
+            event.preventDefault();
+            activeItem.toggle();
         } else {
-            value.forEach((valueItem) => {
-                this.accordionItems().forEach((accordionItem) => {
-                    if (accordionItem.value === valueItem) {
-                        accordionItem.setOpen();
-                    }
-                });
-            });
+            this.keyManager.onKeydown(event);
         }
     }
 
-    /**
-     * @ignore
-     */
-    getOrientation(): RdxAccordionOrientation {
-        return this._orientation;
+    /** Opens all enabled accordion items in an accordion where multi is enabled. */
+    openAll(): void {
+        if (this.isMultiple) {
+            this.openCloseAllActions.next(true);
+        }
+    }
+
+    /** Closes all enabled accordion items. */
+    closeAll(): void {
+        this.openCloseAllActions.next(false);
+    }
+
+    setActiveItem(item: RdxAccordionItemDirective) {
+        this.keyManager.setActiveItem(item);
     }
 }
