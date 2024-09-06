@@ -19,7 +19,7 @@ import {
         RdxAccordionRootDirective
     ],
     template: `
-        <div class="AccordionRoot" [defaultValue]="defaultValue" rdxAccordionRoot>
+        <div class="AccordionRoot" [value]="['item-2', 'item-3']" [type]="'multiple'" rdxAccordionRoot>
             <div class="AccordionItem" [value]="'item-1'" rdxAccordionItem>
                 <div class="AccordionHeader" rdxAccordionHeader>
                     <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
@@ -29,7 +29,7 @@ import {
                 </div>
             </div>
 
-            <div class="AccordionItem" [value]="'item-2'" [disabled]="true" rdxAccordionItem>
+            <div class="AccordionItem" [value]="'item-2'" rdxAccordionItem>
                 <div class="AccordionHeader" rdxAccordionHeader>
                     <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
                 </div>
@@ -50,10 +50,8 @@ import {
             </div>
         </div>
     `,
-    styleUrl: 'accordion-demo.css'
+    styleUrl: 'accordion-multiple-demo.css'
 })
-export class AccordionDemoComponent {
-    defaultValue = 'item-1';
-}
+export class AccordionMultipleDemoComponent {}
 
-export default AccordionDemoComponent;
+export default AccordionMultipleDemoComponent;

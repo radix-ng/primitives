@@ -65,10 +65,23 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
      */
     @ContentChildren(forwardRef(() => RdxAccordionItemDirective), { descendants: true })
     items: QueryList<RdxAccordionItemDirective>;
+
     /**
      * The value of the item to expand when initially rendered and type is "single". Use when you do not need to control the state of the items.
      */
-    @Input() defaultValue: string[] = [];
+    @Input()
+    set defaultValue(value: string[] | string) {
+        if (value !== this._defaultValue) {
+            this._defaultValue = Array.isArray(value) ? value : [value];
+
+            this.selectionDispatcher.notify(this.defaultValue as unknown as string, this.id);
+        }
+    }
+
+    get defaultValue(): string[] | string {
+        return this._defaultValue ?? this.defaultValue;
+    }
+
     /**
      * Determines whether one or multiple items can be opened at the same time.
      */
@@ -81,7 +94,7 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
      * The controlled value of the item to expand
      */
     @Input()
-    set value(value: string[]) {
+    set value(value: string[] | string) {
         if (value !== this._value) {
             this._value = Array.isArray(value) ? value : [value];
 
@@ -89,17 +102,14 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
         }
     }
 
-    get value(): string[] {
+    get value(): string[] | string {
         return this._value ?? this.defaultValue;
     }
 
     @Output() readonly onValueChange: EventEmitter<void> = new EventEmitter<void>();
 
-    /**
-     * @private
-     * @ignore
-     */
     private _value?: string[];
+    private _defaultValue: string[] | string;
 
     private onValueChangeSubscription: Subscription;
 

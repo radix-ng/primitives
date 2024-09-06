@@ -24,6 +24,7 @@ module.exports = {
             'always',
             [
                 'primitives',
+                'accordion',
                 'collapsible',
                 'code',
                 'kbd',
