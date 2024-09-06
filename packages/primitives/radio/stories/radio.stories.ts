@@ -32,7 +32,7 @@ export const Default: Story = {
     render: () => ({
         template: `
 <form>
-    <div RadioRoot [(ngModel)]="value" class="RadioGroupRoot" aria-label="View density">
+    <div RadioRoot class="RadioGroupRoot" aria-label="View density">
         <div style="display: flex; align-items: center;">
             <button RadioItem class="RadioGroupItem" value="default" id="r1">
                 <div RadioIndicator class="RadioGroupIndicator"></div>

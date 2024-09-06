@@ -26,6 +26,8 @@ module.exports = {
                 'primitives',
                 'accordion',
                 'collapsible',
+                'radio',
+                'radio-group',
                 'code',
                 'kbd',
                 'radix-docs',

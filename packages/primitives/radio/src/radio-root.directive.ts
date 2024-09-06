@@ -1,28 +1,29 @@
-import { booleanAttribute, Directive, EventEmitter, inject, InjectionToken, Input, Output } from '@angular/core';
+import { FocusKeyManager } from '@angular/cdk/a11y';
+import { DOWN_ARROW, ENTER, LEFT_ARROW, RIGHT_ARROW, SPACE, TAB, UP_ARROW } from '@angular/cdk/keycodes';
+import {
+    AfterContentInit,
+    booleanAttribute,
+    ContentChildren,
+    Directive,
+    ElementRef,
+    EventEmitter,
+    Input,
+    OnDestroy,
+    OnInit,
+    Output,
+    QueryList
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-
-export const RdxRadioGroupToken = new InjectionToken<RdxRadioGroupDirective>('RdxRadioGroupToken');
-
-export function injectRadioGroup(): RdxRadioGroupDirective {
-    return inject(RdxRadioGroupToken);
-}
-
-interface RadioGroupProps {
-    name?: string;
-    disabled?: boolean;
-    // TODO: dir?: string;
-    // TODO: loop?: string;
-    defaultValue?: string;
-    value?: string;
-    onValueChange?: EventEmitter<string>;
-}
+import { Subject, takeUntil } from 'rxjs';
+import { RdxRadioItemDirective } from './radio-item.directive';
+import { RadioGroupDirective, RadioGroupProps, RDX_RADIO_GROUP } from './radio-tokens';
 
 @Directive({
     selector: 'div[RadioRoot]',
     exportAs: 'RadioRoot',
     standalone: true,
     providers: [
-        { provide: RdxRadioGroupToken, useExisting: RdxRadioGroupDirective },
+        { provide: RDX_RADIO_GROUP, useExisting: RdxRadioGroupDirective },
         { provide: NG_VALUE_ACCESSOR, useExisting: RdxRadioGroupDirective, multi: true }
     ],
     host: {
@@ -30,16 +31,25 @@ interface RadioGroupProps {
         '[attr.aria-orientation]': '_orientation',
         '[attr.data-disabled]': 'disabled ? "" : null',
         '[attr.dir]': 'dir',
-
-        '(focusout)': '_onFocusout()'
+        '(keydown)': '_onKeydown($event)',
+        '(focusin)': '_onFocusin($event)'
     }
 })
-export class RdxRadioGroupDirective implements RadioGroupProps, ControlValueAccessor {
+export class RdxRadioGroupDirective
+    implements RadioGroupProps, RadioGroupDirective, ControlValueAccessor, AfterContentInit, OnDestroy, OnInit
+{
+    @ContentChildren(RdxRadioItemDirective, { descendants: true }) radioItems!: QueryList<RdxRadioItemDirective>;
+    private focusKeyManager!: FocusKeyManager<RdxRadioItemDirective>;
+    private destroy$ = new Subject<void>();
+
+    name?: string | undefined;
     @Input() value?: string;
 
     @Input({ transform: booleanAttribute }) disabled = false;
 
     @Input() dir?: string;
+
+    @Input() defaultValue?: string;
 
     /**
      * The orientation of the radio group only vertical.
@@ -57,15 +67,39 @@ export class RdxRadioGroupDirective implements RadioGroupProps, ControlValueAcce
 
     /**
      * The callback function to call when the value of the radio group changes.
-     * @internal
      */
-    private onChange?: (value: string) => void;
+    private onChange: (value: string) => void = () => {
+        /* Empty */
+    };
 
     /**
      * The callback function to call when the radio group is touched.
-     * @internal
      */
-    private onTouched?: () => void;
+    onTouched: () => void = () => {
+        /* Empty */
+    };
+
+    constructor(private readonly elementRef: ElementRef) {}
+
+    ngOnInit() {
+        this.elementRef.nativeElement.tabIndex = -1;
+    }
+
+    ngAfterContentInit() {
+        this.focusKeyManager = new FocusKeyManager(this.radioItems).withWrap().withVerticalOrientation();
+
+        this.radioItems.changes.pipe(takeUntil(this.destroy$)).subscribe(() => {
+            this.updateActiveItem();
+        });
+
+        this.updateActiveItem(false);
+        this.setupTabNavigation();
+    }
+
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
 
     /**
      * Select a radio item.
@@ -75,6 +109,8 @@ export class RdxRadioGroupDirective implements RadioGroupProps, ControlValueAcce
         this.value = value;
         this.onValueChange.emit(value);
         this.onChange?.(value);
+        this.updateActiveItem();
+        this.onTouched();
     }
 
     /**
@@ -84,6 +120,9 @@ export class RdxRadioGroupDirective implements RadioGroupProps, ControlValueAcce
      */
     writeValue(value: string): void {
         this.value = value;
+        if (this.radioItems) {
+            this.updateActiveItem(false);
+        }
     }
 
     /**
@@ -111,7 +150,67 @@ export class RdxRadioGroupDirective implements RadioGroupProps, ControlValueAcce
     /**
      * When focus leaves the radio group.
      */
-    _onFocusout(): void {
-        this.onTouched?.();
+    _onFocusin(event: FocusEvent): void {
+        const target = event.target as HTMLElement;
+        const radioItem = this.radioItems.find((item) => item.element.nativeElement === target);
+        if (radioItem) {
+            this.focusKeyManager.setActiveItem(radioItem);
+        }
+    }
+
+    _onKeydown(event: KeyboardEvent): void {
+        if (this.disabled) return;
+
+        switch (event.keyCode) {
+            case ENTER:
+            case SPACE:
+                event.preventDefault();
+                this.selectFocusedItem();
+                break;
+            case DOWN_ARROW:
+            case RIGHT_ARROW:
+                event.preventDefault();
+                this.focusKeyManager.setNextItemActive();
+                this.selectFocusedItem();
+                break;
+            case UP_ARROW:
+            case LEFT_ARROW:
+                event.preventDefault();
+                this.focusKeyManager.setPreviousItemActive();
+                this.selectFocusedItem();
+                break;
+            default:
+                this.focusKeyManager.onKeydown(event);
+        }
+    }
+
+    private selectFocusedItem(): void {
+        const focusedItem = this.focusKeyManager.activeItem;
+        if (focusedItem) {
+            this.select(focusedItem.value);
+        }
+    }
+
+    private updateActiveItem(setFocus = true): void {
+        const activeItem = this.radioItems.find((item) => item.value === this.value);
+        if (activeItem) {
+            this.focusKeyManager.setActiveItem(activeItem);
+        } else if (this.radioItems.length > 0 && setFocus) {
+            this.focusKeyManager.setFirstItemActive();
+        }
+    }
+
+    private setupTabNavigation(): void {
+        this.elementRef.nativeElement.addEventListener('keydown', (event: KeyboardEvent) => {
+            if (event.keyCode === TAB) {
+                event.preventDefault();
+                const checkedItem = this.radioItems.find((item) => item.checked);
+                if (checkedItem) {
+                    checkedItem.focus();
+                } else if (this.radioItems.first) {
+                    this.radioItems.first.focus();
+                }
+            }
+        });
     }
 }
