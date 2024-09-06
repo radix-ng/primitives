@@ -93,7 +93,6 @@ export class RdxRadioGroupDirective
         });
 
         this.updateActiveItem(false);
-        this.setupTabNavigation();
     }
 
     ngOnDestroy() {
@@ -179,6 +178,9 @@ export class RdxRadioGroupDirective
                 this.focusKeyManager.setPreviousItemActive();
                 this.selectFocusedItem();
                 break;
+            case TAB:
+                this.tabNavigation(event);
+                break;
             default:
                 this.focusKeyManager.onKeydown(event);
         }
@@ -200,17 +202,13 @@ export class RdxRadioGroupDirective
         }
     }
 
-    private setupTabNavigation(): void {
-        this.elementRef.nativeElement.addEventListener('keydown', (event: KeyboardEvent) => {
-            if (event.keyCode === TAB) {
-                event.preventDefault();
-                const checkedItem = this.radioItems.find((item) => item.checked);
-                if (checkedItem) {
-                    checkedItem.focus();
-                } else if (this.radioItems.first) {
-                    this.radioItems.first.focus();
-                }
-            }
-        });
+    private tabNavigation(event: KeyboardEvent): void {
+        event.preventDefault();
+        const checkedItem = this.radioItems.find((item) => item.checked);
+        if (checkedItem) {
+            checkedItem.focus();
+        } else if (this.radioItems.first) {
+            this.radioItems.first.focus();
+        }
     }
 }
