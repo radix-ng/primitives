@@ -42,7 +42,10 @@ export class RdxAccordionItemDirective implements FocusableOption, OnDestroy {
         return this.expanded ? 'open' : 'closed';
     }
 
-    /** The unique AccordionItem id. */
+    /**
+     * The unique AccordionItem id.
+     * @ignore
+     */
     readonly id: string = `rdx-accordion-item-${nextId++}`;
 
     get orientation(): RdxAccordionOrientation {

@@ -122,11 +122,17 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
         );
     }
 
+    /**
+     * @ignore
+     */
     ngOnDestroy() {
         this.openCloseAllActions.complete();
         this.onValueChangeSubscription.unsubscribe();
     }
 
+    /**
+     * @ignore
+     */
     handleKeydown(event: KeyboardEvent) {
         if (!this.keyManager.activeItem) {
             this.keyManager.setFirstItemActive();
@@ -147,18 +153,25 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
         }
     }
 
-    /** Opens all enabled accordion items in an accordion where multi is enabled. */
+    /** Opens all enabled accordion items in an accordion where multi is enabled.
+     * @ignore
+     */
     openAll(): void {
         if (this.isMultiple) {
             this.openCloseAllActions.next(true);
         }
     }
 
-    /** Closes all enabled accordion items. */
+    /** Closes all enabled accordion items.
+     * @ignore
+     */
     closeAll(): void {
         this.openCloseAllActions.next(false);
     }
 
+    /**
+     * @ignore
+     */
     setActiveItem(item: RdxAccordionItemDirective) {
         this.keyManager.setActiveItem(item);
     }
