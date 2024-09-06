@@ -5,11 +5,9 @@ import {
     booleanAttribute,
     ContentChildren,
     Directive,
-    ElementRef,
     EventEmitter,
     Input,
     OnDestroy,
-    OnInit,
     Output,
     QueryList
 } from '@angular/core';
@@ -30,13 +28,14 @@ import { RadioGroupDirective, RadioGroupProps, RDX_RADIO_GROUP } from './radio-t
         role: 'radiogroup',
         '[attr.aria-orientation]': '_orientation',
         '[attr.data-disabled]': 'disabled ? "" : null',
+        '[attr.tabindex]': '-1',
         '[attr.dir]': 'dir',
         '(keydown)': '_onKeydown($event)',
         '(focusin)': '_onFocusin($event)'
     }
 })
 export class RdxRadioGroupDirective
-    implements RadioGroupProps, RadioGroupDirective, ControlValueAccessor, AfterContentInit, OnDestroy, OnInit
+    implements RadioGroupProps, RadioGroupDirective, ControlValueAccessor, AfterContentInit, OnDestroy
 {
     @ContentChildren(RdxRadioItemDirective, { descendants: true }) radioItems!: QueryList<RdxRadioItemDirective>;
     private focusKeyManager!: FocusKeyManager<RdxRadioItemDirective>;
@@ -78,12 +77,6 @@ export class RdxRadioGroupDirective
     onTouched: () => void = () => {
         /* Empty */
     };
-
-    constructor(private readonly elementRef: ElementRef) {}
-
-    ngOnInit() {
-        this.elementRef.nativeElement.tabIndex = -1;
-    }
 
     ngAfterContentInit() {
         this.focusKeyManager = new FocusKeyManager(this.radioItems).withWrap().withVerticalOrientation();
