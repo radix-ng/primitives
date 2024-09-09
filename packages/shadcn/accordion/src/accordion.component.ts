@@ -15,7 +15,7 @@ const accordionItemVariant = cva('border-b block');
     selector: 'shAccordionItem',
     standalone: true,
     template: '<ng-content></ng-content>',
-    hostDirectives: [{ directive: RdxAccordionItemDirective, inputs: ['value: value'] }],
+    hostDirectives: [{ directive: RdxAccordionItemDirective, inputs: ['value'] }],
     host: {
         '[class]': 'computedClass()'
     }
@@ -32,9 +32,10 @@ const accordionTriggerVariants = cva(
 @Component({
     selector: 'shAccordionTrigger',
     standalone: true,
+    hostDirectives: [RdxAccordionTriggerDirective],
     template: `
         <h3 class="flex" rdxAccordionHeader>
-            <button [class]="computedClass()" rdxAccordionTrigger type="button">
+            <button [class]="computedClass()" type="button">
                 <ng-content></ng-content>
                 <lucide-angular
                     class="group h-4 shrink-0 transition-transform duration-200"

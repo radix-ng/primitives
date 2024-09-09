@@ -73,13 +73,11 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
     set defaultValue(value: string[] | string) {
         if (value !== this._defaultValue) {
             this._defaultValue = Array.isArray(value) ? value : [value];
-
-            this.selectionDispatcher.notify(this.defaultValue as unknown as string, this.id);
         }
     }
 
     get defaultValue(): string[] | string {
-        return this._defaultValue ?? this.defaultValue;
+        return this.isMultiple ? this._defaultValue : this._defaultValue[0];
     }
 
     /**
@@ -103,13 +101,17 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
     }
 
     get value(): string[] | string {
-        return this._value ?? this.defaultValue;
+        if (this._value === undefined) {
+            return this.defaultValue;
+        }
+
+        return this.isMultiple ? this._value : this._value[0];
     }
 
     @Output() readonly onValueChange: EventEmitter<void> = new EventEmitter<void>();
 
     private _value?: string[];
-    private _defaultValue: string[] | string;
+    private _defaultValue: string[] | string = [];
 
     private onValueChangeSubscription: Subscription;
 
@@ -117,7 +119,7 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
      * @ignore
      */
     ngAfterContentInit(): void {
-        this.selectionDispatcher.notify(this.value as unknown as string, this.id);
+        this.selectionDispatcher.notify((this._value ?? this._defaultValue) as unknown as string, this.id);
 
         this.keyManager = new FocusKeyManager(this.items).withHomeAndEnd();
 
