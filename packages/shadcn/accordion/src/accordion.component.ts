@@ -68,6 +68,7 @@ export class ShAccordionTriggerComponent {
 })
 export class ShAccordionContentComponent {}
 
+const accordionVariant = cva('block');
 @Component({
     selector: 'shAccordion',
     standalone: true,
@@ -81,5 +82,5 @@ export class ShAccordionContentComponent {}
 })
 export class ShAccordionComponent {
     readonly class = input<string>();
-    protected computedClass = computed(() => cn(accordionItemVariant({ class: this.class() })));
+    protected computedClass = computed(() => cn(accordionVariant({ class: this.class() })));
 }
