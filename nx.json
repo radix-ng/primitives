@@ -106,7 +106,7 @@
             }
         },
         "git": {
-            "commitMessage": "chore(release): publish"
+            "commitMessage": "chore(release): publish {projectName} {version} [skip actions]"
         }
     }
 }
