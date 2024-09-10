@@ -91,7 +91,10 @@
         "projectsRelationship": "independent",
         "projects": ["shadcn", "primitives"],
         "version": {
-            "conventionalCommits": true
+            "conventionalCommits": true,
+            "generatorOptions": {
+                "updateDependents": "auto"
+            }
         },
         "changelog": {
             "projectChangelogs": {
