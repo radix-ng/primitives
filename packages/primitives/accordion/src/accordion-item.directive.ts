@@ -6,12 +6,14 @@ import {
     ContentChild,
     Directive,
     EventEmitter,
+    forwardRef,
     inject,
     Input,
     OnDestroy,
     Output
 } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { RdxAccordionContentDirective } from './accordion-content.directive';
 import { RdxAccordionOrientation, RdxAccordionRootToken } from './accordion-root.directive';
 import { RdxAccordionTriggerDirective } from './accordion-trigger.directive';
 
@@ -37,6 +39,8 @@ export class RdxAccordionItemDirective implements FocusableOption, OnDestroy {
     protected readonly expansionDispatcher = inject(UniqueSelectionDispatcher);
 
     @ContentChild(RdxAccordionTriggerDirective, { descendants: true }) trigger: RdxAccordionTriggerDirective;
+    @ContentChild(forwardRef(() => RdxAccordionContentDirective), { descendants: true })
+    content: RdxAccordionContentDirective;
 
     get dataState(): RdxAccordionItemState {
         return this.expanded ? 'open' : 'closed';
@@ -162,6 +166,8 @@ export class RdxAccordionItemDirective implements FocusableOption, OnDestroy {
     /** Toggles the expanded state of the accordion item. */
     toggle(): void {
         if (!this.disabled) {
+            this.content.onToggle();
+
             this.expanded = !this.expanded;
         }
     }

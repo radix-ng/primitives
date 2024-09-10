@@ -41,9 +41,6 @@ export default {
                         border-radius: 6px;
                         background-color: var(--mauve-6);
                         box-shadow: 0 2px 10px var(--black-a4);
-
-                        --rdx-accordion-content-height: 75px;
-                        --rdx-accordion-content-width: 300px;
                     }
 
                     .AccordionRoot[data-orientation="vertical"] {
@@ -170,13 +167,13 @@ export default {
                             height: 0;
                         }
                         to {
-                            height: var(--rdx-accordion-content-height);
+                            height: var(--radix-accordion-content-height);
                         }
                     }
 
                     @keyframes slideUp {
                         from {
-                            height: var(--rdx-accordion-content-height);
+                            height: var(--radix-accordion-content-height);
                         }
                         to {
                             height: 0;
@@ -188,13 +185,13 @@ export default {
                             width: 0;
                         }
                         to {
-                            width: var(--rdx-accordion-content-width);
+                            width: var(--radix-accordion-content-width);
                         }
                     }
 
                     @keyframes slideLeft {
                         from {
-                            width: var(--rdx-accordion-content-width);
+                            width: var(--radix-accordion-content-width);
                         }
                         to {
                             width: 0;
