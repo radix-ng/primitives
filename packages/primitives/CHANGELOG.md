@@ -1,3 +1,12 @@
+## 0.11.1 (2024-09-10)
+
+
+### 🩹 Fixes
+
+- shadcn/ui accordion example ([ee300bb](https://github.com/radix-ng/primitives/commit/ee300bb))
+
+- animation in accordion-content.directive ([#94](https://github.com/radix-ng/primitives/pull/94))
+
 ## 0.11.0 (2024-09-06)
 
 
