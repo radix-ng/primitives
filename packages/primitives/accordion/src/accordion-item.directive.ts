@@ -34,11 +34,27 @@ let nextId = 0;
         { provide: RdxAccordionRootToken, useValue: undefined }]
 })
 export class RdxAccordionItemDirective implements FocusableOption, OnDestroy {
+    /**
+     * @ignore
+     */
     protected readonly accordion = inject(RdxAccordionRootToken, { skipSelf: true });
+    /**
+     * @ignore
+     */
     protected readonly changeDetectorRef = inject(ChangeDetectorRef);
+    /**
+     * @ignore
+     */
     protected readonly expansionDispatcher = inject(UniqueSelectionDispatcher);
 
+    /**
+     * @ignore
+     */
     @ContentChild(RdxAccordionTriggerDirective, { descendants: true }) trigger: RdxAccordionTriggerDirective;
+
+    /**
+     * @ignore
+     */
     @ContentChild(forwardRef(() => RdxAccordionContentDirective), { descendants: true })
     content: RdxAccordionContentDirective;
 
@@ -116,7 +132,10 @@ export class RdxAccordionItemDirective implements FocusableOption, OnDestroy {
     /** Event emitted every time the AccordionItem is opened. */
     @Output() readonly opened: EventEmitter<void> = new EventEmitter<void>();
 
-    /** Event emitted when the AccordionItem is destroyed. */
+    /**
+     * Event emitted when the AccordionItem is destroyed.
+     * @ignore
+     */
     readonly destroyed: EventEmitter<void> = new EventEmitter<void>();
 
     /**

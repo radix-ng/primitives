@@ -1,4 +1,4 @@
-import { CommonModule, NgIf } from '@angular/common';
+import { NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import {
     RdxCollapsibleContentDirective,
@@ -15,8 +15,7 @@ import { LucideAngularModule, UnfoldVertical, X } from 'lucide-angular';
         RdxCollapsibleTriggerDirective,
         RdxCollapsibleContentDirective,
         LucideAngularModule,
-        NgIf,
-        CommonModule
+        NgIf
     ],
     template: `
         <div class="CollapsibleRoot" #collapsibleRoot="collapsibleRoot" [open]="true" rdxCollapsibleRoot>

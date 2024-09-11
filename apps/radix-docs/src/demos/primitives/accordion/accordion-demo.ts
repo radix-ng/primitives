@@ -28,7 +28,7 @@ import {
                 </div>
             </div>
 
-            <div class="AccordionItem" [value]="'item-2'" [disabled]="true" rdxAccordionItem>
+            <div class="AccordionItem" [value]="'item-2'" rdxAccordionItem>
                 <div class="AccordionHeader" rdxAccordionHeader>
                     <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
                 </div>

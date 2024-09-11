@@ -39,13 +39,28 @@ let nextId = 0;
     }
 })
 export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
+    /**
+     * @ignore
+     */
     protected readonly selectionDispatcher = inject(UniqueSelectionDispatcher);
+    /**
+     * @ignore
+     */
     protected readonly dir = inject(Directionality, { optional: true });
 
+    /**
+     * @ignore
+     */
     protected keyManager: FocusKeyManager<RdxAccordionItemDirective>;
 
+    /**
+     * @ignore
+     */
     readonly id: string = `rdx-accordion-${nextId++}`;
 
+    /**
+     * @ignore
+     */
     readonly openCloseAllActions = new Subject<boolean>();
 
     get isMultiple(): boolean {

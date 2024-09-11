@@ -1,5 +1,7 @@
-button {
-    all: unset;
+:host {
+    button {
+        all: unset;
+    }
 }
 
 .CollapsibleRoot {

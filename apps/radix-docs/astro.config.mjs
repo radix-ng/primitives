@@ -8,8 +8,10 @@ import remarkStyled, { remarkDirectives } from './plugins/remarkStyled';
 
 /** @type {import('astro-expressive-code').AstroExpressiveCodeOptions} */
 const codeOptions = {
+    themes: ['snazzy-light'],
     styleOverrides: {
         borderWidth: '1px',
+        codeFontSize: '13px',
         frames: {
             terminalTitlebarDotsOpacity: '1',
             frameBoxShadowCssValue: 'none'
