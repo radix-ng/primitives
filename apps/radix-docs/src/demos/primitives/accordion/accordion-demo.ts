@@ -15,11 +15,10 @@ import {
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionContentDirective,
-        RdxAccordionRootDirective
+        RdxAccordionContentDirective
     ],
     template: `
-        <div class="AccordionRoot" [defaultValue]="defaultValue" rdxAccordionRoot>
+        <div class="AccordionRoot" [defaultValue]="'item-1'" rdxAccordionRoot>
             <div class="AccordionItem" [value]="'item-1'" rdxAccordionItem>
                 <div class="AccordionHeader" rdxAccordionHeader>
                     <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
@@ -52,8 +51,6 @@ import {
     `,
     styleUrl: 'accordion-demo.css'
 })
-export class AccordionDemoComponent {
-    defaultValue = 'item-1';
-}
+export class AccordionDemoComponent {}
 
 export default AccordionDemoComponent;

@@ -8,9 +8,6 @@ h3 {
     border-radius: 6px;
     background-color: var(--mauve-6);
     box-shadow: 0 2px 10px var(--black-a4);
-
-    --radix-accordion-content-height: 75px;
-    --radix-accordion-content-width: 300px;
 }
 
 .AccordionRoot[data-orientation='vertical'] {

@@ -1,26 +1,32 @@
-import { Component, inject, input, type OnInit, ViewContainerRef } from '@angular/core';
+// Thanks for adrian-ub
+
+import { AsyncPipe, NgComponentOutlet } from '@angular/common';
+import { Component, computed, input } from '@angular/core';
+
+import { demos } from '../../demos/components';
 
 @Component({
-    selector: 'empty-themes-component',
+    selector: 'empty-component',
     standalone: true,
+    imports: [NgComponentOutlet, AsyncPipe],
     template: `
-        <ng-container></ng-container>
+        @let componentRender = this.component() | async;
+
+        @if (!componentRender || !componentRender.default) {
+            <div class="text-sm text-white">Loading...</div>
+        } @else {
+            <ng-container *ngComponentOutlet="componentRender.default" />
+        }
     `
 })
-export class DemoThemesLoaderComponent implements OnInit {
-    readonly name = input<string>('');
-    readonly file = input<string>('');
+export class DemoThemesLoaderComponent {
+    readonly name = input<string>();
+    readonly file = input<string>();
+    demos = demos;
 
-    private viewContainerRef = inject(ViewContainerRef);
+    component = computed(async () => {
+        if (!this.file() || !this.name()) return null;
 
-    async ngOnInit() {
-        await this.loadComponent();
-    }
-
-    private async loadComponent() {
-        const { default: Component } = await import(`../../demos/components/${this.name()}/${this.file()}.ts`);
-
-        this.viewContainerRef.clear();
-        this.viewContainerRef.createComponent(Component);
-    }
+        return await demos[this.name()!][this.file()!].component();
+    });
 }
