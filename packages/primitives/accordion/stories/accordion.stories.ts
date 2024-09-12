@@ -1,5 +1,6 @@
 import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { ChevronDown, LucideAngularModule } from 'lucide-angular';
 import { RdxAccordionContentDirective } from '../src/accordion-content.directive';
 import { RdxAccordionHeaderDirective } from '../src/accordion-header.directive';
 import { RdxAccordionItemDirective } from '../src/accordion-item.directive';
@@ -16,7 +17,9 @@ export default {
                 RdxAccordionHeaderDirective,
                 RdxAccordionTriggerDirective,
                 RdxAccordionContentDirective,
-                BrowserAnimationsModule
+                BrowserAnimationsModule,
+                LucideAngularModule,
+                LucideAngularModule.pick({ ChevronDown })
             ],
             providers: [provideAnimations()]
         }),
@@ -151,6 +154,7 @@ export default {
                     }
 
                     .AccordionChevron {
+                        display: flex;
                         color: var(--violet-10);
                         transition: transform 300ms cubic-bezier(0.87, 0, 0.13, 1);
                     }
@@ -210,7 +214,9 @@ export const Default: Story = {
             <div class="AccordionRoot" rdxAccordionRoot [defaultValue]="'item-1'">
                 <div [value]="'item-1'" class="AccordionItem" rdxAccordionItem>
                     <div class="AccordionHeader" rdxAccordionHeader>
-                        <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
+                        <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Is it accessible?
+                            <lucide-icon class="AccordionChevron" aria-hidden size="16" name="chevron-down"/>
+                        </button>
                     </div>
                     <div class="AccordionContent" rdxAccordionContent>
                         <div class="AccordionContentText">
@@ -221,7 +227,9 @@ export const Default: Story = {
 
                 <div [value]="'item-2'" class="AccordionItem" rdxAccordionItem [disabled]="true">
                     <div class="AccordionHeader" rdxAccordionHeader>
-                        <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
+                        <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Is it unstyled?
+                            <lucide-icon class="AccordionChevron" aria-hidden size="16" name="chevron-down"/>
+                        </button>
                     </div>
                     <div class="AccordionContent" rdxAccordionContent>
                         <div class="AccordionContentText">
@@ -232,7 +240,9 @@ export const Default: Story = {
 
                 <div [value]="'item-3'" class="AccordionItem" rdxAccordionItem>
                     <div class="AccordionHeader" rdxAccordionHeader>
-                        <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Can it be animated?</button>
+                        <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Can it be animated?
+                            <lucide-icon class="AccordionChevron" aria-hidden size="16" name="chevron-down"/>
+                        </button>
                     </div>
                     <div class="AccordionContent" rdxAccordionContent>
                         <div class="AccordionContentText">

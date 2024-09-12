@@ -123,6 +123,7 @@
 }
 
 .AccordionChevron {
+    display: flex;
     color: var(--violet-10);
     transition: transform 300ms cubic-bezier(0.87, 0, 0.13, 1);
 }

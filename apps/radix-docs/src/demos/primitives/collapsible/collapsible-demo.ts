@@ -23,9 +23,9 @@ import { LucideAngularModule, UnfoldVertical, X } from 'lucide-angular';
                 <span class="Text" style="color: white">&#64;peduarte starred 3 repositories</span>
                 <button class="IconButton" rdxCollapsibleTrigger>
                     @if (collapsibleRoot.isOpen()) {
-                        <lucide-angular [img]="XIcon" size="16" style="display: flex;"></lucide-angular>
+                        <lucide-angular [img]="XIcon" size="16" style="display: flex;" />
                     } @else {
-                        <lucide-angular [img]="UnfoldVerticalIcon" size="16" style="display: flex;"></lucide-angular>
+                        <lucide-angular [img]="UnfoldVerticalIcon" size="16" style="display: flex;" />
                     }
                 </button>
             </div>
