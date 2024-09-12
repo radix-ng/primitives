@@ -21,15 +21,23 @@ import type { RdxDialogConfig, RdxDialogResult } from './dialog.config';
  * - Not set `aria-modal` attribute
  * - Not automatically manage focus
  */
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable()
 export class RdxDialogService {
     #cdkDialog = inject(Dialog);
     #injector = inject(Injector);
 
     open<C>(config: RdxDialogConfig<C>): RdxDialogRef<C> {
         let dialogRef: RdxDialogRef<C>;
+        let modeClasses: string[] = [];
+
+        switch (config.mode) {
+            case 'drawer':
+                modeClasses = ['mod-drawer'];
+                break;
+            case 'drawer-bottom':
+                modeClasses = ['mod-drawer', 'mod-bottom'];
+                break;
+        }
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
@@ -42,7 +50,10 @@ export class RdxDialogService {
             disableClose: true,
             closeOnDestroy: true,
             injector: this.#injector,
+            backdropClass: 'dialog_backdrop',
+            panelClass: ['dialog', ...modeClasses, ...(config.panelClasses || [])],
             autoFocus: config.autoFocus === 'first-input' ? 'dialog' : (config.autoFocus ?? 'first-tabbable'),
+            ariaLabel: config.ariaLabel,
             templateContext: () => ({ dialogRef: dialogRef }),
             providers: (ref: DialogRef<RdxDialogResult<C>, C>) => {
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment

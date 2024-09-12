@@ -1,20 +1,26 @@
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { applicationConfig, componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { RdxDialogCloseDirective } from '../src/dialog-close.directive';
 import { RdxDialogContentDirective } from '../src/dialog-content.directive';
+import { RdxDialogDescriptionDirective } from '../src/dialog-description.directive';
 import { RdxDialogTitleDirective } from '../src/dialog-title.directive';
 import { RdxDialogTriggerDirective } from '../src/dialog-trigger.directive';
+import { configureRdxDialog } from '../src/dialog.providers';
 
 const html = String.raw;
 
 export default {
     title: 'Primitives/Dialog',
     decorators: [
+        applicationConfig({
+            providers: [configureRdxDialog()]
+        }),
         moduleMetadata({
             imports: [
                 RdxDialogTriggerDirective,
                 RdxDialogContentDirective,
                 RdxDialogTitleDirective,
-                RdxDialogCloseDirective
+                RdxDialogCloseDirective,
+                RdxDialogDescriptionDirective
             ]
         }),
         componentWrapperDecorator(
@@ -33,9 +39,20 @@ export default {
 type Story = StoryObj;
 
 export const Default: Story = {
-    render: () => ({
+    argTypes: {
+        mode: {
+            options: ['default', 'drawer', 'drawer-from-bottom'],
+            control: {
+                type: 'select'
+            }
+        }
+    },
+    render: (args) => ({
+        props: {
+            config: args
+        },
         template: html`
-            <button class="Button violet" [rdxDialogTrigger]="dialog">Open Dialog</button>
+            <button class="Button violet" [rdxDialogConfig]="config" [rdxDialogTrigger]="dialog">Open Dialog</button>
 
             <ng-template #dialog>
                 <div class="DialogContent" rdxDialogContent>

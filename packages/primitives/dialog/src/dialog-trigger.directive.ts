@@ -1,9 +1,8 @@
 import { computed, Directive, inject, Input, input, signal, TemplateRef } from '@angular/core';
 import { RdxDialogRef } from './dialog-ref';
-import { RdxDialogConfig } from './dialog.config';
+import { RdxDialogConfig, RdxDialogState } from './dialog.config';
 import { provideRdxDialog } from './dialog.providers';
 import { RdxDialogService } from './dialog.service';
-import { RdxDialogState } from './dialog.types';
 
 let nextId = 0;
 
@@ -30,7 +29,7 @@ export class RdxDialogTriggerDirective {
 
     @Input({ required: true, alias: 'rdxDialogTrigger' }) dialog: TemplateRef<void>;
 
-    @Input() dialogConfig: RdxDialogConfig<unknown>;
+    @Input({ alias: 'rdxDialogConfig' }) dialogConfig: RdxDialogConfig<unknown>;
 
     isOpen = computed(() => this.isOpenSignal());
     state = computed<RdxDialogState>(() => (this.isOpen() ? 'open' : 'closed'));

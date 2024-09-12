@@ -1,8 +1,7 @@
 import { computed, DestroyRef, Directive, inject } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { RdxDialogRef } from './dialog-ref';
-import { RdxDialogResult } from './dialog.config';
-import { getState } from './dialog.types';
+import { getState, RdxDialogResult } from './dialog.config';
 
 @Directive({
     selector: '[rdxDialogContent]',

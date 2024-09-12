@@ -17,7 +17,9 @@ type DialogRefProps<C> = { [K in keyof C]: C[K] extends ɵDialogResultFlag<unkno
 export type RdxDialogResult<C> =
     DialogRefProps<C> extends never ? void : C[DialogRefProps<C>] extends ɵDialogResultFlag<infer T> ? T : void;
 
-interface RdxBaseDialogConfig<C> {
+type RdxDialogMode = 'default' | 'drawer' | 'drawer-bottom';
+
+type RdxBaseDialogConfig<C> = {
     content: ComponentType<C> | TemplateRef<C>;
 
     data: RdxDialogData<C>;
@@ -32,10 +34,20 @@ interface RdxBaseDialogConfig<C> {
 
     canCloseWithBackdrop?: boolean;
 
-    cdkConfigOverride?: DialogConfig<C>;
+    cdkConfigOverride?: Partial<DialogConfig<C>>;
 
-    mode?: 'default' | 'drawer' | 'drawer-from-bottom';
-}
+    mode?: RdxDialogMode;
+
+    panelClasses?: string[];
+};
 
 export type RdxDialogConfig<T> =
-    RdxDialogData<T> extends never ? Omit<RdxBaseDialogConfig<T>, 'data'> : RdxBaseDialogConfig<T>;
+    RdxDialogData<T> extends never
+        ? Omit<RdxBaseDialogConfig<T>, 'data'>
+        : RdxBaseDialogConfig<T> & { data: Required<RdxDialogData<T>> };
+
+export type RdxDialogState = 'open' | 'closed';
+
+export function getState(open: boolean): RdxDialogState {
+    return open ? 'open' : 'closed';
+}
