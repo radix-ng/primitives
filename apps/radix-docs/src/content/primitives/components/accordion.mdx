@@ -4,6 +4,13 @@ slug: accordion
 section: components
 description: .
 ---
+import {
+    attrDataContent, attrDataCSSContent,
+    attrDataHeader,
+    attrDataItem,
+    attrDataRoot,
+    attrDataTrigger
+} from '../../../demos/primitives/accordion/attrs';
 
 # Accordion
 
@@ -24,8 +31,27 @@ description: .
 
 ### Root
 <PropsTable name="RdxAccordionRootDirective" />
+<DataAttributesTable attributes={attrDataRoot} />
 
 ### Item
 Contains all the parts of a collapsible section.
 
 <PropsTable name="RdxAccordionItemDirective" />
+<DataAttributesTable attributes={attrDataItem} />
+
+### Header
+
+Wraps an `rdxAccordionTrigger`.
+<DataAttributesTable attributes={attrDataHeader} />
+
+### Trigger
+
+Toggles the collapsed state of its associated item. It should be nested inside an `rdxAccordionHeader`.
+<DataAttributesTable attributes={attrDataTrigger} />
+
+### Content
+
+Contains the collapsible content for an item.
+<DataAttributesTable attributes={attrDataContent} />
+
+<CSSVariablesTable attributes={attrDataCSSContent} />
