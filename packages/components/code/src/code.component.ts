@@ -1,5 +1,5 @@
 import { Component, computed, input, Input } from '@angular/core';
-import { ResponsiveSize } from '@radix-ng/components/types';
+import { RadixColor, ResponsiveSize } from '@radix-ng/components/types';
 import classNames from 'classnames';
 
 @Component({
@@ -17,35 +17,13 @@ export class RdxCodeComponent {
     @Input() size?: ResponsiveSize;
     @Input() variant?: 'solid' | 'soft' | 'outline' | 'ghost' | 'surface' = 'soft';
     @Input() weight?: 'light' | 'regular' | 'medium' | 'bold';
-    @Input() color?:
-        | 'gray'
-        | 'gold'
-        | 'bronze'
-        | 'brown'
-        | 'yellow'
-        | 'amber'
-        | 'orange'
-        | 'tomato'
-        | 'red'
-        | 'ruby'
-        | 'crimson'
-        | 'pink'
-        | 'plum'
-        | 'purple'
-        | 'violet'
-        | 'iris'
-        | 'indigo'
-        | 'blue'
-        | 'cyan'
-        | 'teal'
-        | 'jade'
-        | 'green'
-        | 'grass'
-        | 'lime'
-        | 'mint';
+    @Input() color?: RadixColor;
 
     readonly class = input<string>();
 
+    /**
+     * @ignore
+     */
     protected computedClass = computed(() =>
         classNames(
             'rt-reset',

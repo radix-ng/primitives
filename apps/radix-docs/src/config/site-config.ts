@@ -21,7 +21,9 @@ const siteConfig = {
                 {
                     section: 'Typography',
                     pages: [
-                        { name: 'Kbd', url: '/themes/typography/kbd' }]
+                        { name: 'Code', url: '/themes/typography/code' },
+                        { name: 'Kbd', url: '/themes/typography/kbd' }
+                    ]
                 },
                 {
                     section: 'Components',
