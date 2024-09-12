@@ -106,6 +106,7 @@ export const Default: Story = {
                     padding: 25px;
                     animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
                 }
+
                 .DialogContent:focus {
                     outline: none;
                 }
@@ -135,24 +136,30 @@ export const Default: Story = {
                     font-weight: 500;
                     height: 35px;
                 }
+
                 .Button.violet {
                     background-color: white;
                     color: var(--violet-11);
                     box-shadow: 0 2px 10px var(--black-a7);
                 }
+
                 .Button.violet:hover {
                     background-color: var(--mauve-3);
                 }
+
                 .Button.violet:focus {
                     box-shadow: 0 0 0 2px black;
                 }
+
                 .Button.green {
                     background-color: var(--green-4);
                     color: var(--green-11);
                 }
+
                 .Button.green:hover {
                     background-color: var(--green-5);
                 }
+
                 .Button.green:focus {
                     box-shadow: 0 0 0 2px var(--green-7);
                 }
@@ -170,9 +177,11 @@ export const Default: Story = {
                     top: 10px;
                     right: 10px;
                 }
+
                 .IconButton:hover {
                     background-color: var(--violet-4);
                 }
+
                 .IconButton:focus {
                     box-shadow: 0 0 0 2px var(--violet-7);
                 }
@@ -205,10 +214,20 @@ export const Default: Story = {
                     box-shadow: 0 0 0 1px var(--violet-7);
                     height: 35px;
                 }
+
                 .Input:focus {
                     box-shadow: 0 0 0 2px var(--violet-8);
                 }
             </style>
         `
+    })
+};
+
+export const DrawerStory: Story = {
+    render: (args) => ({
+        props: {
+            config: args
+        },
+        template: html``
     })
 };
