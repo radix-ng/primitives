@@ -50,7 +50,7 @@ export class RdxDialogRef<C = unknown> {
         }
         const canClose = this.config.canClose?.(this.instance) ?? true;
         const canClose$ = isObservable(canClose) ? canClose : of(canClose);
-        canClose$.pipe(take(1)).subscribe((close: any) => {
+        canClose$.pipe(take(1)).subscribe((close) => {
             if (close) {
                 this.cdkRef.close(DISMISSED_VALUE);
             }
