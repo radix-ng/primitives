@@ -1,4 +1,4 @@
-import { Dialog, DialogRef } from '@angular/cdk/dialog';
+import { Dialog } from '@angular/cdk/dialog';
 import { inject, Injectable, Injector, Renderer2 } from '@angular/core';
 import { filter, isObservable, merge, of, switchMap, take, takeUntil } from 'rxjs';
 import { DISMISSED_VALUE, RdxDialogRef } from './dialog-ref';
@@ -39,9 +39,7 @@ export class RdxDialogService {
                 break;
         }
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const cdkRef = this.#cdkDialog.open(config.content, {
+        const cdkRef = this.#cdkDialog.open<RdxDialogResult<C> | typeof DISMISSED_VALUE, unknown, C>(config.content, {
             ariaModal: config.modal ?? true,
             hasBackdrop: config.modal ?? true,
             data: 'data' in config ? config.data : null,
@@ -55,9 +53,7 @@ export class RdxDialogService {
             autoFocus: config.autoFocus === 'first-input' ? 'dialog' : (config.autoFocus ?? 'first-tabbable'),
             ariaLabel: config.ariaLabel,
             templateContext: () => ({ dialogRef: dialogRef }),
-            providers: (ref: DialogRef<RdxDialogResult<C>, C>) => {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
+            providers: (ref) => {
                 dialogRef = new RdxDialogRef(ref, config);
                 return [
                     {
@@ -66,7 +62,8 @@ export class RdxDialogService {
                     }
                 ];
             },
-            ...(config.cdkConfigOverride || {})
+            // @FIXME
+            ...(config.cdkConfigOverride || ({} as any))
         });
 
         if (cdkRef.componentRef) {
@@ -75,24 +72,16 @@ export class RdxDialogService {
                 .setStyle(cdkRef.componentRef.location.nativeElement, 'display', 'contents');
         }
 
-        merge(
-            cdkRef.backdropClick,
-            cdkRef.keydownEvents.pipe(
-                filter((e: { key: string; defaultPrevented: any }) => e.key === 'Escape' && !e.defaultPrevented)
-            )
-        )
+        merge(cdkRef.backdropClick, cdkRef.keydownEvents.pipe(filter((e) => e.key === 'Escape' && !e.defaultPrevented)))
             .pipe(
                 filter(() => config.canCloseWithBackdrop ?? true),
                 switchMap(() => {
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore
-                    const canClose = config.canClose?.(cdkRef.componentInstance) ?? true;
+                    const canClose = (cdkRef.componentInstance && config.canClose?.(cdkRef.componentInstance)) ?? true;
                     const canClose$ = isObservable(canClose) ? canClose : of(canClose);
                     return canClose$.pipe(take(1));
                 }),
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                takeUntil(dialogRef.closed$)
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                takeUntil(dialogRef!.closed$)
             )
             .subscribe((canClose) => {
                 if (canClose) {
@@ -100,8 +89,7 @@ export class RdxDialogService {
                 }
             });
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        return dialogRef;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return dialogRef!;
     }
 }
