@@ -8,6 +8,11 @@ function isDismissed(v: unknown): v is typeof DISMISSED_VALUE {
     return v === DISMISSED_VALUE;
 }
 
+/**
+ * Represents a reference to an open dialog.
+ * Provides methods and observables to interact with and monitor the dialog's state.
+ * @template C - The type of the dialog's content component
+ */
 export class RdxDialogRef<C = unknown> {
     closed$: Observable<RdxDialogResult<C> | undefined> = this.cdkRef.closed.pipe(
         map((res): RdxDialogResult<C> | undefined => (isDismissed(res) ? undefined : res))
@@ -22,6 +27,10 @@ export class RdxDialogRef<C = unknown> {
         filter((res): res is RdxDialogResult<C> => !isDismissed(res))
     );
 
+    /**
+     * @param cdkRef - Reference to the underlying CDK dialog
+     * @param config - Configuration options for the dialog
+     */
     constructor(
         public readonly cdkRef: DialogRef<RdxDialogResult<C> | typeof DISMISSED_VALUE, C>,
         public readonly config: RdxDialogConfig<C>
@@ -31,6 +40,10 @@ export class RdxDialogRef<C = unknown> {
         return this.cdkRef.componentInstance;
     }
 
+    /**
+     * Attempts to dismiss the dialog
+     * Checks the canClose condition before dismissing
+     */
     dismiss(): void {
         if (!this.instance) {
             return;
@@ -44,9 +57,14 @@ export class RdxDialogRef<C = unknown> {
         });
     }
 
-    close(res: RdxDialogResult<C>): void {
-        this.cdkRef.close(res);
+    close(result: RdxDialogResult<C>): void {
+        this.cdkRef.close(result);
     }
 }
 
+/**
+ * Represents a simplified interface for dialog interaction
+ * Typically used by dialog content components
+ * @template R - The type of the result when closing the dialog
+ */
 export type RdxDialogSelfRef<R> = { dismiss(): void; close(res: R): void };

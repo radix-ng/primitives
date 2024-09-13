@@ -10,9 +10,9 @@ import { RdxDialogRef } from './dialog-ref';
     }
 })
 export class RdxDialogDismissDirective {
-    #ref = inject<RdxDialogRef>(RdxDialogRef);
+    private readonly ref = inject<RdxDialogRef>(RdxDialogRef);
 
     protected onClick(): void {
-        this.#ref.dismiss();
+        this.ref.dismiss();
     }
 }

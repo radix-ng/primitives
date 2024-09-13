@@ -22,7 +22,7 @@ let nextId = 0;
     }
 })
 export class RdxDialogTriggerDirective {
-    #dialogService = inject(RdxDialogService);
+    private readonly dialogService = inject(RdxDialogService);
 
     readonly id = input(`rdx-dialog-trigger-${nextId++}`);
     readonly dialogId = computed(() => `rdx-dialog-${this.id()}`);
@@ -31,22 +31,21 @@ export class RdxDialogTriggerDirective {
 
     @Input({ alias: 'rdxDialogConfig' }) dialogConfig: RdxDialogConfig<unknown>;
 
-    isOpen = computed(() => this.isOpenSignal());
-    state = computed<RdxDialogState>(() => getState(this.isOpen()));
+    readonly isOpen = signal(false);
+    readonly state = computed<RdxDialogState>(() => getState(this.isOpen()));
 
-    private isOpenSignal = signal(false);
     private currentDialogRef: RdxDialogRef | null = null;
 
     protected onClick() {
-        this.currentDialogRef = this.#dialogService.open({
+        this.currentDialogRef = this.dialogService.open({
             ...this.dialogConfig,
             content: this.dialog
         });
 
-        this.isOpenSignal.set(true);
+        this.isOpen.set(true);
 
         this.currentDialogRef.closed$.subscribe(() => {
-            this.isOpenSignal.set(false);
+            this.isOpen.set(false);
             this.currentDialogRef = null;
         });
     }
