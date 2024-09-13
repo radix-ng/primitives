@@ -12,3 +12,21 @@ import * as DialogStories from './dialog.stories';
 - ✅ Focus is automatically trapped when modal.
 - ✅ Can be controlled or uncontrolled.
 - ✅ Esc closes the component automatically.
+
+### Anatomy
+Import all parts and piece them together.
+
+```html
+
+<button [rdxDialogTrigger]="dialog">Open Dialog</button>
+
+<ng-template #dialog>
+    <div rdxDialogContent>
+        <h2 rdxDialogTitle></h2>
+        <p rdxDialogDescription></p>
+        <button rdxDialogClose></button>
+        <button rdxDialogDismiss>X</button>
+    </div>
+</ng-template>
+
+```
