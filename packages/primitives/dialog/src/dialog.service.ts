@@ -50,7 +50,7 @@ export class RdxDialogService {
             disableClose: true,
             closeOnDestroy: true,
             injector: this.#injector,
-            backdropClass: 'dialog_backdrop',
+            backdropClass: config.backdropClass ? config.backdropClass : 'cdk-overlay-dark-backdrop',
             panelClass: ['dialog', ...modeClasses, ...(config.panelClasses || [])],
             autoFocus: config.autoFocus === 'first-input' ? 'dialog' : (config.autoFocus ?? 'first-tabbable'),
             ariaLabel: config.ariaLabel,

@@ -38,6 +38,8 @@ type RdxBaseDialogConfig<C> = {
 
     mode?: RdxDialogMode;
 
+    backdropClass?: string;
+
     panelClasses?: string[];
 };
 

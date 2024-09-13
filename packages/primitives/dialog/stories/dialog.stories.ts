@@ -41,7 +41,7 @@ type Story = StoryObj;
 export const Default: Story = {
     argTypes: {
         mode: {
-            options: ['default', 'drawer', 'drawer-from-bottom'],
+            options: ['default', 'drawer', 'drawer-bottom'],
             control: {
                 type: 'select'
             }
