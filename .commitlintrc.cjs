@@ -1,4 +1,7 @@
-module.exports = {
+// @ts-check
+
+/** @type {import('@commitlint/types').UserConfig} */
+const config = {
     extends: ['@commitlint/config-conventional'],
     rules: {
         'type-enum': [
@@ -45,3 +48,5 @@ module.exports = {
         ]
     }
 };
+
+module.exports = config;

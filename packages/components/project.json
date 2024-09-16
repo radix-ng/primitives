@@ -48,9 +48,6 @@
                 "jestConfig": "packages/components/jest.config.ts"
             }
         },
-        "lint": {
-            "executor": "@nx/eslint:lint"
-        },
         "storybook": {
             "executor": "@storybook/angular:start-storybook",
             "options": {

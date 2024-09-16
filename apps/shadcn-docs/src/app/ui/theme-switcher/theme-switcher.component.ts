@@ -10,9 +10,9 @@ import { ThemeService } from '../../services/theme.service';
     template: `
         <button (click)="themeService.toggleColorScheme()" shButton type="button" variant="ghost" size="icon">
             @if (themeService.colorScheme === 'light') {
-                <ng-doc-icon customIcon="moon"></ng-doc-icon>
+                <ng-doc-icon customIcon="moon" />
             } @else {
-                <ng-doc-icon customIcon="sun"></ng-doc-icon>
+                <ng-doc-icon customIcon="sun" />
             }
         </button>
     `,

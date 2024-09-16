@@ -12,13 +12,13 @@ import { LucideAngularModule } from 'lucide-angular';
                     <a shBreadcrumbLink href="/">Home</a>
                 </li>
                 <li shBreadcrumbSeparator>
-                    <lucide-angular class="flex h-3.5" name="Slash" size="16"></lucide-angular>
+                    <lucide-angular class="flex h-3.5" name="Slash" size="16" />
                 </li>
                 <li shBreadcrumbItem>
                     <a shBreadcrumbLink href="/">Components</a>
                 </li>
                 <li shBreadcrumbSeparator>
-                    <lucide-angular class="flex h-3.5" name="Slash" size="16"></lucide-angular>
+                    <lucide-angular class="flex h-3.5" name="Slash" size="16" />
                 </li>
                 <li shBreadcrumbItem>
                     <a shBreadcrumbLink href="/">Breadcrumb</a>

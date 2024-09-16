@@ -1,1 +1,6 @@
+dist
+tmp
 node_modules
+
+# eslint ignores root level "dot" files by default
+!/.*.cjs

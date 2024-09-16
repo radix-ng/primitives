@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import { RdxRadioGroupDirective, RdxRadioIndicatorDirective, RdxRadioItemDirective } from '@radix-ng/primitives/radio';
 
 @Component({
-    // eslint-disable-next-line @angular-eslint/component-selector
     selector: 'radio-groups-forms-example',
     standalone: true,
     template: `

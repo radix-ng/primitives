@@ -20,15 +20,6 @@
                 }
             }
         },
-        "@nx/eslint:lint": {
-            "cache": true,
-            "inputs": [
-                "default",
-                "{workspaceRoot}/.eslintrc.json",
-                "{workspaceRoot}/.eslintignore",
-                "{workspaceRoot}/eslint.config.js"
-            ]
-        },
         "@nx/js:tsc": {
             "cache": true,
             "dependsOn": ["^build"],
@@ -63,8 +54,6 @@
             "!{projectRoot}/jest.config.[jt]s",
             "!{projectRoot}/src/test-setup.[jt]s",
             "!{projectRoot}/test-setup.[jt]s",
-            "!{projectRoot}/.eslintrc.json",
-            "!{projectRoot}/eslint.config.js",
             "!{projectRoot}/**/*.stories.@(js|jsx|ts|tsx|mdx)",
             "!{projectRoot}/.storybook/**/*",
             "!{projectRoot}/tsconfig.storybook.json"
@@ -74,12 +63,10 @@
     "generators": {
         "@nx/angular:application": {
             "e2eTestRunner": "none",
-            "linter": "eslint",
             "style": "scss",
             "unitTestRunner": "jest"
         },
         "@nx/angular:library": {
-            "linter": "eslint",
             "unitTestRunner": "jest"
         },
         "@nx/angular:component": {

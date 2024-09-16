@@ -32,7 +32,6 @@ class TestHostComponent implements OnInit {
 }
 
 describe('RdxDialogTriggerDirective', () => {
-    let component: TestHostComponent;
     let fixture: ComponentFixture<TestHostComponent>;
     let directive: RdxDialogTriggerDirective;
     let dialogServiceMock: jest.Mocked<RdxDialogService>;
@@ -55,7 +54,6 @@ describe('RdxDialogTriggerDirective', () => {
         }).compileComponents();
 
         fixture = TestBed.createComponent(TestHostComponent);
-        component = fixture.componentInstance;
         fixture.detectChanges();
 
         const directiveEl = fixture.debugElement.query(By.directive(RdxDialogTriggerDirective));

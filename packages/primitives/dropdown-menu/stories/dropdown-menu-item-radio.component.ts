@@ -20,28 +20,28 @@ import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.di
             alignOffset="-5"
             aria-label="Customise options"
         >
-            <lucide-angular size="16" name="menu" style="height: 1.2rem;"></lucide-angular>
+            <lucide-angular size="16" name="menu" style="height: 1.2rem;" />
         </button>
         <ng-template #menu>
             <div class="DropdownMenuContent" [closeOnEscape]="false" rdxDropdownMenuContent>
                 <div [(value)]="selectedValue" (valueChange)="onValueChange($event)" rdxDropdownMenuItemRadioGroup>
                     <div class="DropdownMenuItem" [value]="'1'" rdxDropdownMenuItemRadio>
                         <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
-                            <lucide-icon size="16" name="dot" strokeWidth="8"></lucide-icon>
+                            <lucide-icon size="16" name="dot" strokeWidth="8" />
                         </div>
                         New Tab
                         <div class="RightSlot">⌘ T</div>
                     </div>
                     <div class="DropdownMenuItem" [value]="'2'" disabled rdxDropdownMenuItemRadio>
                         <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
-                            <lucide-icon size="16" name="dot" strokeWidth="8"></lucide-icon>
+                            <lucide-icon size="16" name="dot" strokeWidth="8" />
                         </div>
                         New Window
                         <div class="RightSlot">⌘ N</div>
                     </div>
                     <div class="DropdownMenuItem" [value]="'3'" rdxDropdownMenuItemRadio>
                         <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
-                            <lucide-icon size="16" name="dot" strokeWidth="8"></lucide-icon>
+                            <lucide-icon size="16" name="dot" strokeWidth="8" />
                         </div>
                         New Incognito Window
                     </div>

@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import { labelExclude } from '../../../../apps/storybook-radix/docs/utils/storybook';
 import { RdxLabelDirective } from '../src/label.directive';
 

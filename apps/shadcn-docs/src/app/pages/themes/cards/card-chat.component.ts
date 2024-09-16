@@ -30,7 +30,7 @@ import { LucideAngularModule } from 'lucide-angular';
                     </div>
                 </div>
                 <button class="ml-auto rounded-full" shButton size="icon" variant="outline">
-                    <lucide-angular class="h-4" name="plus"></lucide-angular>
+                    <lucide-angular class="h-4" name="plus" />
                     <span class="sr-only">New message</span>
                 </button>
             </div>

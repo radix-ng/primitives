@@ -4,6 +4,7 @@ import { Thumb } from './slider.types';
 @Directive({
     standalone: true
 })
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class RdxSliderThumbDirective implements AfterViewInit, OnDestroy {
     @Input() thumbPosition: Thumb | undefined;
 
@@ -40,13 +41,7 @@ class RdxSliderThumbDirective implements AfterViewInit, OnDestroy {
         }
     }
 
-    private onPointerMove = (event: PointerEvent): void => {
-        // if (isFocused) {
-        //     return;
-        // }
-
-        const rect = this.elementRef.nativeElement.getBoundingClientRect();
-    };
+    private onPointerMove = (_event: PointerEvent): void => {};
 
     private onDragStart = (event: PointerEvent): void => {
         if (event.button !== 0) {
@@ -55,11 +50,11 @@ class RdxSliderThumbDirective implements AfterViewInit, OnDestroy {
         this.isActive = true;
     };
 
-    private onDragEnd = (event: PointerEvent): void => {
+    private onDragEnd = (_event: PointerEvent): void => {
         this.isActive = false;
     };
 
-    private onMouseLeave = (event: PointerEvent): void => {
+    private onMouseLeave = (_event: PointerEvent): void => {
         this.isHovered = false;
     };
 }
