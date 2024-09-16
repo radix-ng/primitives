@@ -1,7 +1,7 @@
 import { Directive } from '@angular/core';
 
 @Directive({
-    selector: 'h2[rdxDialogTitle]',
+    selector: '[rdxDialogTitle]',
     standalone: true
 })
 export class RdxDialogTitleDirective {}
