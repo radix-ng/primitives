@@ -21,6 +21,8 @@ Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/cate
 
 Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 
+Next version [https://next.radix-ng.com](https://next.radix-ng.com) documentation.
+
 ## Showcase
 
 1. [Taxonomy](https://github.com/shadcn-ui/taxonomy) build with AnalogJS – [https://primitives-taxonomy.vercel.app/](https://primitives-taxonomy.vercel.app/)
