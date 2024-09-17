@@ -14,15 +14,20 @@ description: .
 
 ## Features
 
-
-## Installation
-
-Get started with importing the directive:
-
+- Automatic and manual control over when the image renders.
+- Fallback part accepts any children.
+- Optionally delay fallback rendering to avoid content flashing.
 
 ## Anatomy
 
-Import the component.
+Import all parts and piece them together.
+
+```html
+<span rdxAvatarRoot>
+    <img rdxAvatarImage />
+    <span rdxAvatarFallback></span>
+</span>
+```
 
 ## API Reference
 
