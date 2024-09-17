@@ -27,7 +27,18 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 Import the component.
 
+```html
+<label rdxLabel htmlFor="firstName">First Name</label>
+```
+
 ## API Reference
 
+### Label
+`RdxLabelDirective`
 <PropsTable name="RdxLabelDirective" />
 
+
+## Accessibility
+This component is based on the native `label` element, it will automatically apply the correct labelling when wrapping controls
+or using the `htmlFor` attribute. For your own custom controls to work correctly,
+ensure they use native elements such as `button` or `input` as a base.
