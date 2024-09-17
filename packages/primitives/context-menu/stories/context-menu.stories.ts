@@ -80,14 +80,14 @@ export const Default: Story = {
 
     <div rdxContextMenuSeparator class="ContextMenuSeparator"></div>
 
-    <button class="ContextMenuItem" rdxContextMenuItemCheckbox>
-        <div class="DropdownMenuItemIndicator" rdxContextMenuItemIndicator>
+    <button class="ContextMenuItem" rdxContextMenuItemCheckbox [checked]="true">
+        <div class="ContextMenuItemIndicator" rdxContextMenuItemIndicator>
             <lucide-icon size="16" name="check"></lucide-icon>
         </div>
         Show Bookmarks <div class="RightSlot">⌘ + B</div>
     </button>
     <button class="ContextMenuItem" rdxContextMenuItemCheckbox>
-        <div class="DropdownMenuItemIndicator" rdxContextMenuItemIndicator>
+        <div class="ContextMenuItemIndicator" rdxContextMenuItemIndicator>
             <lucide-icon size="16" name="check"></lucide-icon>
         </div>
         Show Full URLs
@@ -96,7 +96,7 @@ export const Default: Story = {
     <div rdxContextMenuSeparator class="ContextMenuSeparator"></div>
 
     <div class="ContextMenuLabel" rdxContextMenuLabel>People</div>
-    <div rdxContextMenuItemRadioGroup>
+    <div class="ContextMenuItemRadioGroup" rdxContextMenuItemRadioGroup [value]="'1'">
         <button class="ContextMenuItem" rdxContextMenuItemRadio [value]="'1'">
             <div class="ContextMenuItemIndicator" rdxContextMenuItemIndicator>
                 <lucide-icon size="16" name="dot" strokeWidth="8"></lucide-icon>
@@ -222,6 +222,11 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+.ContextMenuItemRadioGroup {
+  display: flex;
+  flex-direction: column;
 }
 
 .IconButton:hover {

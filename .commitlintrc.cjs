@@ -26,6 +26,7 @@ module.exports = {
                 'primitives',
                 'accordion',
                 'collapsible',
+                'context-menu',
                 'dialog',
                 'radio',
                 'radio-group',
