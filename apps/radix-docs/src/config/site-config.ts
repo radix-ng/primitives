@@ -21,7 +21,9 @@ const siteConfig = {
                 {
                     section: 'Typography',
                     pages: [
-                        { name: 'Kbd', url: '/themes/typography/kbd' }]
+                        { name: 'Code', url: '/themes/typography/code' },
+                        { name: 'Kbd', url: '/themes/typography/kbd' }
+                    ]
                 },
                 {
                     section: 'Components',
@@ -54,7 +56,8 @@ const siteConfig = {
                 {
                     section: 'Components',
                     pages: [
-                        { name: 'Avatar', url: '/primitives/components/avatar', label: 'New' },
+                        { name: 'Accordion', url: '/primitives/components/accordion', label: 'New' },
+                        { name: 'Avatar', url: '/primitives/components/avatar' },
                         { name: 'Collapsible', url: '/primitives/components/collapsible' },
                         { name: 'Label', url: '/primitives/components/label' }
                     ]

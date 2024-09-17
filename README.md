@@ -21,6 +21,8 @@ Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/cate
 
 Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 
+Next version [https://next.radix-ng.com](https://next.radix-ng.com) documentation.
+
 ## Showcase
 
 1. [Taxonomy](https://github.com/shadcn-ui/taxonomy) build with AnalogJS – [https://primitives-taxonomy.vercel.app/](https://primitives-taxonomy.vercel.app/)
@@ -39,51 +41,43 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 │   ├── shadcn-docs        (docs for shadcn/ui, based on ng-doc)
 │   └── showcase-taxonomy  (AnalogJS showcase Taxonomy app)
 └── packages
-    ├── components         (components based on primitives with custom styling)
-    ├── shadcn             (shadcn/ui port)
-    └── primitives         (headless primitives UI without any styling)
+├── components         (components based on primitives with custom styling)
+├── shadcn             (shadcn/ui port)
+└── primitives         (headless primitives UI without any styling)
 ```
 
 ## Roadmap
 
 ### Primitives
 
-- [x] Accordion (based on angular/cdk)
-- [x] Alert Dialog
-- [x] Avatar
-- [x] Checkbox (adaptation for FormGroup)
-- [x] Collapsible
-- [ ] Context Menu (next) (based on angular/cdk)
-- [ ] Dialog (based on angular/cdk)
-- [x] DropdownMenu (based on angular/cdk)
-- [ ] Hover Card
-- [x] Label
-- [ ] Menubar (In progress) (based on angular/cdk)
-- [ ] Navigation Menu
-- [ ] Popover
-- [x] Progress
-- [x] Radio (adaptation for FormGroup)
-- [ ] Select (In progress)
-- [x] Separator
-- [x] Switch
-- [x] Tabs
-- [ ] Toast
-- [x] Toggle
-- [x] Toggle Group
-- [ ] Toolbar
-- [ ] Tooltip
-
-| Primitive    | Description | Status         | Due date |
-| ------------ | ----------- | -------------- | -------- |
-| Accordion    |             | ✅             |          |
-| Alert Dialog |             | beta           |          |
-| Avatar       |             | ✅             |          |
-| Checkbox     |             | beta           |          |
-| Collapsible  |             | ✅             |          |
-| Context Menu |             |                |          |
-| Dialog       |             |                |          |
-| Dropdown     |             | 🚀 In Progress |          |
-| Hover Card   |             |                |          |
+| Primitive       | Description | Status         | A11y |
+| --------------- | ----------- | -------------- | ---- |
+| Accordion       |             | ✅             |      |
+| Alert Dialog    |             | beta           |      |
+| Avatar          |             | ✅             |      |
+| Checkbox        |             | beta           |      |
+| Collapsible     |             | ✅             |      |
+| Context Menu    |             | 🚀 In Progress |      |
+| Dialog          |             | ✅             |      |
+| DropdownMenu    |             | ✅             |      |
+| Form            |             | 🚀 In Progress |      |
+| Hover Card      |             |                |      |
+| Label           |             | ✅             |      |
+| Menubar         |             | beta           |      |
+| Navigation Menu |             |                |      |
+| Popover         |             |                |      |
+| Progress        |             | ✅             |      |
+| Radio           |             | ✅             |      |
+| Select          |             |                |      |
+| Separator       |             | ✅             |      |
+| Slider          |             |                |      |
+| Switch          |             | ✅             |      |
+| Tabs            |             | ✅             |      |
+| Toast           |             |                |      |
+| Toggle          |             | ✅             |      |
+| Toggle Group    |             | ✅             |      |
+| Toolbar         |             |                |      |
+| Tooltip         |             | 🚀 In Progress |      |
 
 ...
 

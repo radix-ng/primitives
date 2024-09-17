@@ -24,7 +24,11 @@ module.exports = {
             'always',
             [
                 'primitives',
+                'accordion',
                 'collapsible',
+                'dialog',
+                'radio',
+                'radio-group',
                 'code',
                 'kbd',
                 'radix-docs',

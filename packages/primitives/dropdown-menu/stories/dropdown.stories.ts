@@ -11,7 +11,7 @@ import { DropdownMenuItemCheckboxExampleComponent } from './dropdown-menu-item-c
 import { DropdownMenuItemRadioExampleComponent } from './dropdown-menu-item-radio.component';
 
 export default {
-    title: 'Primitives/Dropdown Menu [In progress]',
+    title: 'Primitives/Dropdown Menu',
     decorators: [
         moduleMetadata({
             imports: [

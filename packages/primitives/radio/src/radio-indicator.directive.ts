@@ -1,18 +1,17 @@
-import { Directive } from '@angular/core';
-import { injectRadioItem } from './radio-item.directive';
-import { injectRadioGroup } from './radio-root.directive';
+import { Directive, inject } from '@angular/core';
+import { RdxRadioItemDirective } from './radio-item.directive';
+import { RDX_RADIO_GROUP, RadioGroupDirective } from './radio-tokens';
 
 @Directive({
-    selector: '[RadioIndicator]',
-    exportAs: 'RadioIndicator',
+    selector: '[rdxRadioIndicator]',
+    exportAs: 'rdxRadioIndicator',
     standalone: true,
     host: {
-        '[attr.data-state]': 'radioGroup.value === this.radioItem.value ? "checked" : "unchecked"',
+        '[attr.data-state]': 'radioItem.checked ? "checked" : "unchecked"',
         '[attr.data-disabled]': 'radioItem.disabled ? "" : null'
     }
 })
 export class RdxRadioIndicatorDirective {
-    protected readonly radioGroup = injectRadioGroup();
-
-    protected readonly radioItem = injectRadioItem();
+    protected readonly radioGroup: RadioGroupDirective = inject(RDX_RADIO_GROUP);
+    protected readonly radioItem: RdxRadioItemDirective = inject(RdxRadioItemDirective);
 }

@@ -91,7 +91,10 @@
         "projectsRelationship": "independent",
         "projects": ["shadcn", "primitives"],
         "version": {
-            "conventionalCommits": true
+            "conventionalCommits": true,
+            "generatorOptions": {
+                "updateDependents": "auto"
+            }
         },
         "changelog": {
             "projectChangelogs": {
@@ -103,7 +106,7 @@
             }
         },
         "git": {
-            "commitMessage": "chore(release): publish"
+            "commitMessage": "chore(release): publish {projectName} {version} [skip actions]"
         }
     }
 }

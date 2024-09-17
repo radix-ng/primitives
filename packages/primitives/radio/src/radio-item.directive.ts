@@ -1,5 +1,6 @@
-import { booleanAttribute, Directive, inject, InjectionToken, Input } from '@angular/core';
-import { injectRadioGroup } from './radio-root.directive';
+import { FocusableOption } from '@angular/cdk/a11y';
+import { booleanAttribute, Directive, ElementRef, inject, InjectionToken, Input, OnInit } from '@angular/core';
+import { RDX_RADIO_GROUP } from './radio-tokens';
 
 export const RdxRadioItemToken = new InjectionToken<RdxRadioItemDirective>('RadioItemToken');
 
@@ -11,25 +12,25 @@ export function injectRadioItem(): RdxRadioItemDirective {
 let nextUniqueId = 0;
 
 @Directive({
-    selector: '[RadioItem]',
-    exportAs: 'RadioItem',
+    selector: '[rdxRadioItem]',
+    exportAs: 'rdxRadioItem',
     standalone: true,
     providers: [{ provide: RdxRadioItemToken, useExisting: RdxRadioItemDirective }],
     host: {
         type: 'button',
         role: 'radio',
         '[attr.id]': 'id',
-        '[attr.aria-checked]': 'radioGroup.value === value ? "true" : "false"',
+        '[attr.aria-checked]': 'checked',
         '[attr.data-disabled]': 'disabled ? "" : null',
-        '[attr.data-state]': 'radioGroup.value === value ? "checked" : "unchecked"',
-
-        '(focus)': '_onFocus()',
+        '[attr.data-state]': 'checked ? "checked" : "unchecked"',
+        '[attr.tabindex]': 'tabIndex',
         '(click)': '_onClick()',
-        '(keydown)': '_onKeydown($event)'
+        '(blur)': '_onBlur()'
     }
 })
-export class RdxRadioItemDirective {
-    protected readonly radioGroup = injectRadioGroup();
+export class RdxRadioItemDirective implements FocusableOption, OnInit {
+    private readonly radioGroup = inject(RDX_RADIO_GROUP);
+    readonly element = inject(ElementRef);
 
     @Input() id = `rdx-radio-${++nextUniqueId}`;
 
@@ -37,18 +38,31 @@ export class RdxRadioItemDirective {
 
     @Input({ transform: booleanAttribute }) disabled = false;
 
-    _onKeydown(event: KeyboardEvent): void {
-        // According to WAI ARIA, radio groups don't activate items on enter keypress
-        if (event.key === 'Enter') {
-            event.preventDefault();
+    get tabIndex(): number {
+        return this.disabled ? -1 : this.radioGroup.value === this.value ? 0 : -1;
+    }
+
+    get checked(): boolean {
+        return this.radioGroup.value === this.value;
+    }
+
+    ngOnInit() {
+        if (this.radioGroup.defaultValue === this.value) {
+            this.radioGroup.select(this.value);
         }
     }
 
-    _onFocus(): void {
-        this.radioGroup.select(this.value);
+    focus(): void {
+        this.element.nativeElement.focus();
     }
 
     _onClick(): void {
-        this.radioGroup.select(this.value);
+        if (!this.disabled) {
+            this.radioGroup.select(this.value);
+        }
+    }
+
+    _onBlur(): void {
+        this.radioGroup.onTouched?.();
     }
 }

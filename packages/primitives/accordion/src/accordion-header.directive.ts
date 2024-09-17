@@ -1,40 +1,15 @@
-import { Directive } from '@angular/core';
-import { injectAccordionItem, RdxAccordionItemState } from './accordion-item.directive';
-import { RdxAccordionOrientation } from './accordion-root.directive';
+import { Directive, inject } from '@angular/core';
+import { RdxAccordionItemDirective } from './accordion-item.directive';
 
 @Directive({
     selector: '[rdxAccordionHeader]',
     standalone: true,
     host: {
-        '[attr.data-state]': 'getState()',
-        '[attr.data-disabled]': 'getDisabled()',
-        '[attr.data-orientation]': 'getOrientation()'
+        '[attr.data-state]': 'item.dataState',
+        '[attr.data-disabled]': 'item.disabled',
+        '[attr.data-orientation]': 'item.orientation'
     }
 })
 export class RdxAccordionHeaderDirective {
-    /**
-     * @ignore
-     */
-    private readonly accordionItem = injectAccordionItem();
-
-    /**
-     * @ignore
-     */
-    getState(): RdxAccordionItemState {
-        return this.accordionItem.state();
-    }
-
-    /**
-     * @ignore
-     */
-    getDisabled(): string | undefined {
-        return this.accordionItem.disabled() ? '' : undefined;
-    }
-
-    /**
-     * @ignore
-     */
-    getOrientation(): RdxAccordionOrientation {
-        return this.accordionItem.orientation;
-    }
+    protected readonly item = inject(RdxAccordionItemDirective);
 }

@@ -41,6 +41,10 @@
     --code-font-family: 'Söhne Mono', 'Menlo', monospace, 'Apple Color Emoji', 'Segoe UI Emoji';
 }
 
+:where(.rt-Text) {
+    margin: 0;
+}
+
 * {
     border-color: hsl(var(--border));
 }
@@ -121,16 +125,16 @@ h3 {
     margin-bottom: var(--space-2);
 }
 
-p {
-    line-height: var(--line-height, var(--default-line-height));
-    letter-spacing: var(--letter-spacing, inherit);
+/*p {*/
+/*    line-height: var(--line-height, var(--default-line-height));*/
+/*    letter-spacing: var(--letter-spacing, inherit);*/
 
-    font-size: var(--font-size-3);
-    --line-height: var(--line-height-3);
-    --letter-spacing: var(--letter-spacing-3);
+/*    font-size: var(--font-size-3);*/
+/*    --line-height: var(--line-height-3);*/
+/*    --letter-spacing: var(--letter-spacing-3);*/
 
-    margin-bottom: var(--space-4);
-}
+/*    margin-bottom: var(--space-4);*/
+/*}*/
 
 #Code {
     .expressive-code pre {

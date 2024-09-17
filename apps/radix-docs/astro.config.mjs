@@ -8,8 +8,10 @@ import remarkStyled, { remarkDirectives } from './plugins/remarkStyled';
 
 /** @type {import('astro-expressive-code').AstroExpressiveCodeOptions} */
 const codeOptions = {
+    themes: ['snazzy-light'],
     styleOverrides: {
         borderWidth: '1px',
+        codeFontSize: '13px',
         frames: {
             terminalTitlebarDotsOpacity: '1',
             frameBoxShadowCssValue: 'none'
@@ -49,6 +51,7 @@ export default defineConfig({
                 './src/components/mdx/PropsTable.astro',
                 './src/components/mdx/Description.astro',
                 './src/components/mdx/DataAttributesTable.astro',
+                './src/components/mdx/CSSVariablesTable.astro',
                 './src/components/demo-primitive-preview/ComponentPreview.astro',
                 './src/components/demo-component-preview/ComponentThemesPreview.astro'
             ]

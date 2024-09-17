@@ -1,5 +1,7 @@
-input {
-    all: unset;
+:host {
+    input {
+        all: unset;
+    }
 }
 
 .Input {

@@ -1,3 +1,15 @@
+## 0.7.1 (2024-09-10)
+
+
+### 🩹 Fixes
+
+- shadcn/ui accordion example ([ee300bb](https://github.com/radix-ng/primitives/commit/ee300bb))
+
+
+### 🧱 Updated Dependencies
+
+- Updated primitives to 0.11.1
+
 ## 0.7.0 (2024-08-21)
 
 
