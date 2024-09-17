@@ -9,7 +9,6 @@ export class AlertDialogRootDirective {
     private readonly viewContainerRef = inject(ViewContainerRef);
     private readonly alertDialogService = inject(AlertDialogService);
 
-    // eslint-disable-next-line
     @Input() set content(template: TemplateRef<any>) {
         this.alertDialogService.setDialogContent(this.viewContainerRef, template);
     }

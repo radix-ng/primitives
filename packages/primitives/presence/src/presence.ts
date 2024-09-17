@@ -92,8 +92,8 @@ const usePresence = <T>(
 
     zone.runOutsideAngular(() => {
         const transitionEnd$ = fromEvent<TransitionEvent>(element, 'transitionend').pipe(
-            takeUntil(stop$),
-            filter(({ target }) => target === element)
+            filter(({ target }) => target === element),
+            takeUntil(stop$)
         );
         const timer$ = timer(transitionDurationMs + transitionTimerDelayMs).pipe(takeUntil(stop$));
 

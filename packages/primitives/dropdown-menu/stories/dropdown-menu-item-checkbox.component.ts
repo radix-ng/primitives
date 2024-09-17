@@ -19,7 +19,7 @@ import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.di
             alignOffset="-5"
             aria-label="Customise options"
         >
-            <lucide-angular size="16" name="menu" style="height: 1.2rem;"></lucide-angular>
+            <lucide-angular size="16" name="menu" style="height: 1.2rem;" />
         </button>
 
         <ng-template #menu>
@@ -31,7 +31,7 @@ import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.di
                     rdxDropdownMenuItemCheckbox
                 >
                     <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
-                        <lucide-icon size="16" name="check"></lucide-icon>
+                        <lucide-icon size="16" name="check" />
                     </div>
                     New Tab
                     <div class="RightSlot">⌘ T</div>
@@ -47,7 +47,7 @@ import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.di
                     rdxDropdownMenuItemCheckbox
                 >
                     <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
-                        <lucide-icon size="16" name="check"></lucide-icon>
+                        <lucide-icon size="16" name="check" />
                     </div>
                     New Incognito Window
                 </button>

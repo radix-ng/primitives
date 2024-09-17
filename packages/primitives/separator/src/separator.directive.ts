@@ -1,6 +1,7 @@
 import { booleanAttribute, Directive, Input } from '@angular/core';
 
 const DEFAULT_ORIENTATION = 'horizontal';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ORIENTATIONS = ['horizontal', 'vertical'] as const;
 
 export type Orientation = (typeof ORIENTATIONS)[number];

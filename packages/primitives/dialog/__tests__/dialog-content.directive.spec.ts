@@ -11,7 +11,6 @@ import { RdxDialogRef } from '../src/dialog-ref';
 class TestComponent {}
 
 describe('RdxDialogContentDirective', () => {
-    let component: TestComponent;
     let fixture: ComponentFixture<TestComponent>;
     let directiveElement: DebugElement;
     let directive: RdxDialogContentDirective;
@@ -34,7 +33,6 @@ describe('RdxDialogContentDirective', () => {
         }).compileComponents();
 
         fixture = TestBed.createComponent(TestComponent);
-        component = fixture.componentInstance;
         directiveElement = fixture.debugElement.query(By.directive(RdxDialogContentDirective));
         directive = directiveElement.injector.get(RdxDialogContentDirective);
         fixture.detectChanges();

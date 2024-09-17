@@ -67,13 +67,6 @@
                 "buildTarget": "showcase-taxonomy:build"
             }
         },
-        "lint": {
-            "executor": "@nx/linter:eslint",
-            "outputs": ["{options.outputFile}"],
-            "options": {
-                "lintFilePatterns": ["./apps/showcase-taxonomy/**/*.ts", "./apps/showcase-taxonomy/**/*.html"]
-            }
-        },
         "test": {
             "executor": "@analogjs/platform:vitest",
             "outputs": ["{projectRoot}/showcase-taxonomy/coverage"]

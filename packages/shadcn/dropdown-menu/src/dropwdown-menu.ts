@@ -25,7 +25,7 @@ import {
 @Component({
     selector: 'shDropdownMenuContent',
     standalone: true,
-    template: '<ng-content></ng-content>',
+    template: '<ng-content />',
     hostDirectives: [RdxDropdownMenuContentDirective],
     host: {
         '[class]': 'computedClass()'
@@ -54,7 +54,7 @@ export class ShDropdownMenuSubContent {
 @Component({
     selector: 'shDropdownMenuLabel',
     standalone: true,
-    template: '<ng-content></ng-content>',
+    template: '<ng-content />',
     hostDirectives: [RdxDropdownMenuLabelDirective],
     host: {
         '[class]': 'computedClass()'
@@ -72,7 +72,7 @@ export class ShDropdownMenuLabelComponent {
 @Component({
     selector: 'shDropdownMenuItem',
     standalone: true,
-    template: '<ng-content></ng-content>',
+    template: '<ng-content />',
     hostDirectives: [RdxDropdownMenuItemDirective],
     host: {
         '[class]': 'computedClass()'
@@ -105,7 +105,7 @@ export class ShDropdownMenuSeparatorComponent {
 @Component({
     selector: 'shDropdownMenuShortcut',
     standalone: true,
-    template: '<ng-content></ng-content>',
+    template: '<ng-content />',
     host: {
         '[class]': 'computedClass()'
     }
@@ -126,7 +126,7 @@ export class ShDropdownMenuShortcutComponent {
     template: `
         <span class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
             <div rdxDropdownMenuItemIndicator>
-                <lucide-icon class="flex" size="16" name="check"></lucide-icon>
+                <lucide-icon class="flex" size="16" name="check" />
             </div>
         </span>
         <ng-content />
@@ -183,7 +183,7 @@ export class ShDropdownMenuRadioItemComponent {
 @Component({
     selector: 'shDropdownMenuRadioGroup',
     standalone: true,
-    template: '<ng-content></ng-content>',
+    template: '<ng-content />',
     hostDirectives: [
         {
             directive: RdxDropdownMenuItemRadioGroupDirective,
@@ -205,7 +205,7 @@ export class ShDropdownMenuRadioGroupComponent {
 @Component({
     selector: 'shDropdownMenuGroup',
     standalone: true,
-    template: '<ng-content></ng-content>',
+    template: '<ng-content />',
     hostDirectives: [RdxMenuGroupDirective],
     host: {
         '[class]': 'computedClass()'

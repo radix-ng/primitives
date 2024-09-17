@@ -33,9 +33,6 @@
             "options": {
                 "jestConfig": "packages/shadcn/jest.config.ts"
             }
-        },
-        "lint": {
-            "executor": "@nx/eslint:lint"
         }
     }
 }

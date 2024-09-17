@@ -80,7 +80,7 @@ export class RdxDialogService {
                     const canClose$ = isObservable(canClose) ? canClose : of(canClose);
                     return canClose$.pipe(take(1));
                 }),
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
                 takeUntil(dialogRef!.closed$)
             )
             .subscribe((canClose) => {
@@ -89,7 +89,6 @@ export class RdxDialogService {
                 }
             });
 
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return dialogRef!;
     }
 }

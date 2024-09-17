@@ -10,14 +10,12 @@ export class AlertDialogService {
     private dialogContent:
         | {
               viewContainerRef: ViewContainerRef;
-              // eslint-disable-next-line
               template: TemplateRef<any>;
           }
         | undefined;
 
     constructor(private overlay: Overlay) {}
 
-    // eslint-disable-next-line
     setDialogContent(viewContainerRef: ViewContainerRef, template: TemplateRef<any>) {
         this.dialogContent = { viewContainerRef, template };
     }
