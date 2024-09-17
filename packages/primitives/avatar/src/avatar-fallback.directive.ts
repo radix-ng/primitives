@@ -40,7 +40,7 @@ export class RdxAvatarFallbackDirective implements RdxAvatarFallbackProps, OnIni
      */
     private delayElapsed = false;
 
-    private timeoutId: number | null = null;
+    private timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     ngOnInit(): void {
         if (isPlatformBrowser(this.platformId)) {
