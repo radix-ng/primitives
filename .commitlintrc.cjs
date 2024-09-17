@@ -28,6 +28,7 @@ const config = {
             [
                 'primitives',
                 'accordion',
+                'avatar',
                 'collapsible',
                 'dialog',
                 'radio',
