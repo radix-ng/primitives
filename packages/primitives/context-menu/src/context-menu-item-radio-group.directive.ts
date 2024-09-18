@@ -13,7 +13,7 @@ export class RdxContextMenuItemRadioGroupDirective<T> implements AfterContentIni
     private readonly selectionDispatcher = inject(UniqueSelectionDispatcher);
 
     @Input()
-    set value(id: T | null) {
+    set value(value: T | null) {
         this._value = id;
     }
 
