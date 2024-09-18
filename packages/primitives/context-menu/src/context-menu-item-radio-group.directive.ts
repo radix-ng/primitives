@@ -14,7 +14,7 @@ export class RdxContextMenuItemRadioGroupDirective<T> implements AfterContentIni
 
     @Input()
     set value(value: T | null) {
-        this._value = id;
+        this._value = value;
     }
 
     get value(): T | null {

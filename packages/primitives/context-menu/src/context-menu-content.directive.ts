@@ -1,5 +1,6 @@
 import { CdkMenu, CdkMenuItem } from '@angular/cdk/menu';
 import { Directive, inject, Input } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { pairwise, startWith, Subject } from 'rxjs';
 import { RdxContextMenuItemDirective } from './context-menu-item.directive';
 import { RdxContextMenuTriggerDirective } from './context-menu-trigger.directive';
@@ -29,7 +30,7 @@ export class RdxContextMenuContentDirective extends CdkMenu {
     constructor() {
         super();
 
-        this.highlighted.pipe(startWith(null), pairwise()).subscribe(([prev, item]) => {
+        this.highlighted.pipe(startWith(null), pairwise(), takeUntilDestroyed()).subscribe(([prev, item]) => {
             if (prev) {
                 prev.highlighted = false;
             }
