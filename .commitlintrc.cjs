@@ -30,6 +30,7 @@ const config = {
                 'accordion',
                 'avatar',
                 'collapsible',
+                'context-menu',
                 'dropdown-menu',
                 'dialog',
                 'radio',
