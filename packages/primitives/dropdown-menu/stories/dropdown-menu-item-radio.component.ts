@@ -48,12 +48,26 @@ import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.di
                 </div>
                 <div class="DropdownMenuSeparator" rdxDropdownMenuSeparator></div>
                 <div class="DropdownMenuLabel" rdxDropdownMenuLabel>Label</div>
-                <button class="DropdownMenuItem DropdownMenuSubTrigger" rdxDropdownMenuItem>Share</button>
+                <button class="DropdownMenuItem" [rdxDropdownMenuTrigger]="share" [side]="'right'" rdxDropdownMenuItem>
+                    Share
+                    <div class="RightSlot">></div>
+                </button>
                 <div class="DropdownMenuSeparator" rdxDropdownMenuSeparator></div>
                 <button class="DropdownMenuItem" rdxDropdownMenuItem>
                     Print…
                     <div class="RightSlot">⌘ P</div>
                 </button>
+            </div>
+        </ng-template>
+
+        <ng-template #share>
+            <div class="DropdownMenuSubContent" rdxDropdownMenuContent>
+                <button class="DropdownMenuItem" rdxDropdownMenuItem>Undo</button>
+                <button class="DropdownMenuItem" rdxDropdownMenuItem>Redo</button>
+                <div class="DropdownMenuSeparator" rdxDropdownMenuSeparator></div>
+                <button class="DropdownMenuItem" rdxDropdownMenuItem>Cut</button>
+                <button class="DropdownMenuItem" rdxDropdownMenuItem>Copy</button>
+                <button class="DropdownMenuItem" rdxDropdownMenuItem>Paste</button>
             </div>
         </ng-template>
     `,
