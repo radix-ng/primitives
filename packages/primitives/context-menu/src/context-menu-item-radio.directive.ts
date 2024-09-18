@@ -1,6 +1,7 @@
 import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
-import { CdkMenuItem } from '@angular/cdk/menu';
+import { CDK_MENU, CdkMenuItem } from '@angular/cdk/menu';
 import { AfterContentInit, Directive, inject, Input, OnDestroy } from '@angular/core';
+import { RdxContextMenuContentDirective } from './context-menu-content.directive';
 import { RdxContextMenuItemRadioGroupDirective } from './context-menu-item-radio-group.directive';
 import { RdxContextMenuSelectable } from './context-menu-item-selectable';
 import { RdxContextMenuItemDirective } from './context-menu-item.directive';
@@ -17,7 +18,8 @@ let nextId = 0;
     providers: [
         { provide: RdxContextMenuSelectable, useExisting: RdxContextMenuItemRadioDirective },
         { provide: RdxContextMenuItemDirective, useExisting: RdxContextMenuSelectable },
-        { provide: CdkMenuItem, useExisting: RdxContextMenuItemDirective }
+        { provide: CdkMenuItem, useExisting: RdxContextMenuItemDirective },
+        { provide: CDK_MENU, useExisting: RdxContextMenuContentDirective }
     ]
 })
 export class RdxContextMenuItemRadioDirective extends RdxContextMenuSelectable implements AfterContentInit, OnDestroy {

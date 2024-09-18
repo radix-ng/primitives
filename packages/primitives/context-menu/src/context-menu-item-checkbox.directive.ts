@@ -1,5 +1,6 @@
-import { CdkMenuItem } from '@angular/cdk/menu';
+import { CDK_MENU, CdkMenuItem } from '@angular/cdk/menu';
 import { Directive } from '@angular/core';
+import { RdxContextMenuContentDirective } from './context-menu-content.directive';
 import { RdxContextMenuSelectable } from './context-menu-item-selectable';
 import { RdxContextMenuItemDirective } from './context-menu-item.directive';
 
@@ -12,7 +13,8 @@ import { RdxContextMenuItemDirective } from './context-menu-item.directive';
     providers: [
         { provide: RdxContextMenuSelectable, useExisting: RdxContextMenuItemCheckboxDirective },
         { provide: RdxContextMenuItemDirective, useExisting: RdxContextMenuSelectable },
-        { provide: CdkMenuItem, useExisting: RdxContextMenuItemDirective }
+        { provide: CdkMenuItem, useExisting: RdxContextMenuItemDirective },
+        { provide: CDK_MENU, useExisting: RdxContextMenuContentDirective }
     ]
 })
 export class RdxContextMenuItemCheckboxDirective extends RdxContextMenuSelectable {
