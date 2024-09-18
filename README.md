@@ -21,6 +21,8 @@ Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/cate
 
 Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 
+Next version [https://next.radix-ng.com](https://next.radix-ng.com) documentation.
+
 ## Showcase
 
 1. [Taxonomy](https://github.com/shadcn-ui/taxonomy) build with AnalogJS – [https://primitives-taxonomy.vercel.app/](https://primitives-taxonomy.vercel.app/)
@@ -48,54 +50,34 @@ Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
 
 ### Primitives
 
-- [x] Accordion (based on angular/cdk)
-- [x] Alert Dialog
-- [x] Avatar
-- [x] Checkbox (adaptation for FormGroup)
-- [x] Collapsible
-- [ ] Context Menu (next) (based on angular/cdk)
-- [ ] Dialog (based on angular/cdk)
-- [x] DropdownMenu (based on angular/cdk)
-- [ ] Form
-- [ ] Hover Card
-- [x] Label
-- [ ] Menubar (based on angular/cdk)
-- [ ] Navigation Menu
-- [ ] Popover
-- [x] Progress
-- [x] Radio (check adaptation for FormGroup)
-- [ ] Select (In progress)
-- [x] Separator
-- [x] Switch
-- [x] Tabs
-- [ ] Toast
-- [x] Toggle
-- [x] Toggle Group
-- [ ] Toolbar
-- [ ] Tooltip (In progress)
-
-| Primitive    | Description | Status         | Due date |
-| ------------ | ----------- | -------------- | -------- |
-| Accordion    |             | ✅             |          |
-| Alert Dialog |             | beta           |          |
-| Avatar       |             | ✅             |          |
-| Checkbox     |             | beta           |          |
-| Collapsible  |             | ✅             |          |
-| Context Menu |             |                |          |
-| Dialog       |             |                |          |
-| Dropdown     |             | ✅             |          |
-| Form         |             | 🚀 In Progress |          |
-| Hover Card   |             |                |          |
-| Label        |             | ✅             |          |
-| Menubar      |             | beta           |          |
-| Progress     |             | ✅             |          |
-| Radio        |             | ✅             |          |
-| Separator    |             | ✅             |          |
-| Switch       |             | ✅             |          |
-| Tabs         |             | ✅             |          |
-| Toggle       |             | ✅             |          |
-| Toggle Group |             | ✅             |          |
-| Tooltip      |             | 🚀 In Progress |          |
+| Primitive       | Description | Status         | A11y |
+| --------------- | ----------- | -------------- | ---- |
+| Accordion       |             | ✅             |      |
+| Alert Dialog    |             | beta           |      |
+| Avatar          |             | ✅             |      |
+| Checkbox        |             | beta           |      |
+| Collapsible     |             | ✅             |      |
+| Context Menu    |             | 🚀 In Progress |      |
+| Dialog          |             | ✅             |      |
+| DropdownMenu    |             | ✅             |      |
+| Form            |             | 🚀 In Progress |      |
+| Hover Card      |             |                |      |
+| Label           |             | ✅             |      |
+| Menubar         |             | beta           |      |
+| Navigation Menu |             |                |      |
+| Popover         |             |                |      |
+| Progress        |             | ✅             |      |
+| Radio           |             | ✅             |      |
+| Select          |             |                |      |
+| Separator       |             | ✅             |      |
+| Slider          |             |                |      |
+| Switch          |             | ✅             |      |
+| Tabs            |             | ✅             |      |
+| Toast           |             |                |      |
+| Toggle          |             | ✅             |      |
+| Toggle Group    |             | ✅             |      |
+| Toolbar         |             |                |      |
+| Tooltip         |             | 🚀 In Progress |      |
 
 ...
 

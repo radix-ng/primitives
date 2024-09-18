@@ -14,7 +14,7 @@ const accordionItemVariant = cva('border-b block');
 @Component({
     selector: 'shAccordionItem',
     standalone: true,
-    template: '<ng-content></ng-content>',
+    template: '<ng-content />',
     hostDirectives: [{ directive: RdxAccordionItemDirective, inputs: ['value'] }],
     host: {
         '[class]': 'computedClass()'
@@ -36,11 +36,8 @@ const accordionTriggerVariants = cva(
     template: `
         <h3 class="flex" rdxAccordionHeader>
             <button [class]="computedClass()" type="button">
-                <ng-content></ng-content>
-                <lucide-angular
-                    class="group h-4 shrink-0 transition-transform duration-200"
-                    name="chevron-down"
-                ></lucide-angular>
+                <ng-content />
+                <lucide-angular class="group h-4 shrink-0 transition-transform duration-200" name="chevron-down" />
             </button>
         </h3>
     `,
@@ -63,7 +60,7 @@ export class ShAccordionTriggerComponent {
             '"overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"'
     },
     template: `
-        <div class="pb-4 pt-0"><ng-content></ng-content></div>
+        <div class="pb-4 pt-0"><ng-content /></div>
     `
 })
 export class ShAccordionContentComponent {}
@@ -77,7 +74,7 @@ const accordionVariant = cva('block');
         '[class]': 'computedClass()'
     },
     template: `
-        <ng-content></ng-content>
+        <ng-content />
     `
 })
 export class ShAccordionComponent {

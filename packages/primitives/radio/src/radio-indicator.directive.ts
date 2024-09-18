@@ -3,8 +3,8 @@ import { RdxRadioItemDirective } from './radio-item.directive';
 import { RDX_RADIO_GROUP, RadioGroupDirective } from './radio-tokens';
 
 @Directive({
-    selector: '[RadioIndicator]',
-    exportAs: 'RadioIndicator',
+    selector: '[rdxRadioIndicator]',
+    exportAs: 'rdxRadioIndicator',
     standalone: true,
     host: {
         '[attr.data-state]': 'radioItem.checked ? "checked" : "unchecked"',

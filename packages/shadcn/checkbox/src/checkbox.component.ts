@@ -48,7 +48,7 @@ const variants = cva('flex');
                 class="flex h-4 items-center justify-center text-current data-[state=unchecked]:hidden"
                 [name]="iconName()"
                 CheckboxIndicator
-            ></lucide-angular>
+            />
             <input class="cdk-visually-hidden" [id]="id()" [value]="checked.asReadonly()" CheckboxInput />
         </button>
     `,

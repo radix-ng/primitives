@@ -1,4 +1,5 @@
-import { Directive, inject, Input, NgZone, numberAttribute, OnDestroy, OnInit } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Directive, inject, Input, NgZone, numberAttribute, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { injectAvatar } from './avatar-root.directive';
 import { injectAvatarConfig } from './avatar.config';
 
@@ -21,6 +22,8 @@ export class RdxAvatarFallbackDirective implements RdxAvatarFallbackProps, OnIni
 
     private readonly ngZone = inject(NgZone);
 
+    private readonly platformId = inject(PLATFORM_ID);
+
     /**
      * Define a delay before the fallback is shown.
      * This is useful to only show the fallback for those with slower connections.
@@ -37,19 +40,23 @@ export class RdxAvatarFallbackDirective implements RdxAvatarFallbackProps, OnIni
      */
     private delayElapsed = false;
 
-    private timeoutId: number | null = null;
+    private timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     ngOnInit(): void {
-        this.ngZone.runOutsideAngular(() => {
-            this.timeoutId = window.setTimeout(() => (this.delayElapsed = true), this.delayMs);
-        });
+        if (isPlatformBrowser(this.platformId)) {
+            this.ngZone.runOutsideAngular(() => {
+                this.timeoutId = globalThis.setTimeout(() => {
+                    this.ngZone.run(() => {
+                        this.delayElapsed = true;
+                    });
+                }, this.delayMs);
+            });
+        }
     }
 
     ngOnDestroy(): void {
-        this.ngZone.run(() => {
-            if (this.timeoutId) {
-                window.clearTimeout(this.timeoutId);
-            }
-        });
+        if (isPlatformBrowser(this.platformId) && this.timeoutId !== null) {
+            globalThis.clearTimeout(this.timeoutId);
+        }
     }
 }

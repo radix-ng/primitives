@@ -12,8 +12,8 @@ export function injectRadioItem(): RdxRadioItemDirective {
 let nextUniqueId = 0;
 
 @Directive({
-    selector: '[RadioItem]',
-    exportAs: 'RadioItem',
+    selector: '[rdxRadioItem]',
+    exportAs: 'rdxRadioItem',
     standalone: true,
     providers: [{ provide: RdxRadioItemToken, useExisting: RdxRadioItemDirective }],
     host: {

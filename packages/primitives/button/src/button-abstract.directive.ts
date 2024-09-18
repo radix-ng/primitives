@@ -1,15 +1,17 @@
-import { booleanAttribute, Directive, ElementRef, EventEmitter, inject, Input, Output } from '@angular/core';
+import { BooleanInput } from '@angular/cdk/coercion';
+import { booleanAttribute, Directive, ElementRef, EventEmitter, inject, input, Output } from '@angular/core';
 
-type ButtonType = 'button' | 'submit' | 'reset';
+export type ButtonType = 'button' | 'submit' | 'reset';
 
-let idIterator = 0;
+let nextId = 0;
 
 @Directive({
+    selector: '[rdxButton]',
     standalone: true,
     host: {
-        '[attr.id]': 'this.id',
-        '[attr.role]': 'this.type',
-        '[attr.disabled]': 'disabled ? disabled : null',
+        '[attr.id]': 'id()',
+        '[attr.role]': 'type()',
+        '[attr.disabled]': 'disabled() ? disabled() : null',
         '(click)': 'onClick($event)',
         '(blur)': 'onBlur()'
     }
@@ -17,13 +19,15 @@ let idIterator = 0;
 export abstract class RdxButtonAbstractDirective {
     #elementRef = inject(ElementRef);
 
-    @Input({ transform: booleanAttribute }) disabled = false;
+    readonly id = input<string>(`rdx-button-${nextId++}`);
 
-    @Input() type: ButtonType = 'button';
+    readonly type = input<ButtonType>('button');
+
+    readonly isLoading = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     @Output() onClickHandler = new EventEmitter<MouseEvent>();
-
-    @Input() id = `rdx-button-${idIterator++}`;
 
     protected focused = false;
 

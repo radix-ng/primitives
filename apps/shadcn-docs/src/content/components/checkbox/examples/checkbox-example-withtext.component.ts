@@ -7,7 +7,7 @@ import { ShLabelDirective } from '@radix-ng/shadcn/label';
     imports: [ShCheckboxComponent, ShLabelDirective],
     template: `
         <div class="items-top flex space-x-2">
-            <sh-checkbox id="terms1"></sh-checkbox>
+            <sh-checkbox id="terms1" />
             <div class="grid gap-1.5 leading-none">
                 <label
                     class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"

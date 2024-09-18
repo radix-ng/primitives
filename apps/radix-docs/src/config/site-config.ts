@@ -59,6 +59,7 @@ const siteConfig = {
                         { name: 'Accordion', url: '/primitives/components/accordion', label: 'New' },
                         { name: 'Avatar', url: '/primitives/components/avatar' },
                         { name: 'Collapsible', url: '/primitives/components/collapsible' },
+                        { name: 'Dropdown Menu', url: '/primitives/components/dropdown-menu' },
                         { name: 'Label', url: '/primitives/components/label' }
                     ]
                 }

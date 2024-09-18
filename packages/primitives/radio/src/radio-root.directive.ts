@@ -17,8 +17,8 @@ import { RdxRadioItemDirective } from './radio-item.directive';
 import { RadioGroupDirective, RadioGroupProps, RDX_RADIO_GROUP } from './radio-tokens';
 
 @Directive({
-    selector: 'div[RadioRoot]',
-    exportAs: 'RadioRoot',
+    selector: '[rdxRadioRoot]',
+    exportAs: 'rdxRadioRoot',
     standalone: true,
     providers: [
         { provide: RDX_RADIO_GROUP, useExisting: RdxRadioGroupDirective },

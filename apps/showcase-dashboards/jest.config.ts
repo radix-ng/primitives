@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
     displayName: 'showcase-dashboards',
     preset: '../../jest.preset.cjs',

@@ -1,4 +1,7 @@
-module.exports = {
+// @ts-check
+
+/** @type {import('@commitlint/types').UserConfig} */
+const config = {
     extends: ['@commitlint/config-conventional'],
     rules: {
         'type-enum': [
@@ -25,8 +28,10 @@ module.exports = {
             [
                 'primitives',
                 'accordion',
+                'avatar',
                 'collapsible',
                 'context-menu',
+                'dropdown-menu',
                 'dialog',
                 'radio',
                 'radio-group',
@@ -46,3 +51,5 @@ module.exports = {
         ]
     }
 };
+
+module.exports = config;

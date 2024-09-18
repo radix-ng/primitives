@@ -68,7 +68,7 @@ export const Default: Story = {
         Label
     </div>
     <button
-        class="DropdownMenuItem DropdownMenuSubTrigger"
+        class="DropdownMenuItem"
         rdxDropdownMenuItem
         [rdxDropdownMenuTrigger]="share"
         [side]="'right'"
@@ -83,7 +83,7 @@ export const Default: Story = {
 </ng-template>
 
 <ng-template #share>
-  <div class="DropdownMenuSubContent" rdxDropdownMenuContent>
+  <div class="DropdownMenuContent" rdxDropdownMenuContent>
     <button class="DropdownMenuItem" rdxDropdownMenuItem>Undo</button>
     <button class="DropdownMenuItem" rdxDropdownMenuItem>Redo</button>
     <div rdxDropdownMenuSeparator class="DropdownMenuSeparator"></div>
@@ -99,8 +99,7 @@ button {
   all: unset;
 }
 
-.DropdownMenuContent,
-.DropdownMenuSubContent {
+.DropdownMenuContent {
   flex-direction: column;
   display: inline-flex;
   min-width: 220px;
@@ -113,8 +112,7 @@ button {
 
 .DropdownMenuItem,
 .DropdownMenuCheckboxItem,
-.DropdownMenuRadioItem,
-.DropdownMenuSubTrigger {
+.DropdownMenuRadioItem {
   font-size: 13px;
   line-height: 1;
   color: var(--violet-11);
@@ -165,11 +163,6 @@ button {
   color: var(--violet-11);
   background-color: white;
   box-shadow: 0 2px 10px var(--black-a7);
-}
-
-.DropdownMenuSubTrigger[data-state='open'] {
-  background-color: var(--violet-4);
-  color: var(--violet-11);
 }
 
 .DropdownMenuItemIndicator {

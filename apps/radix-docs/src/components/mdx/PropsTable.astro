@@ -5,9 +5,9 @@ const { name } = Astro.props;
 
 const directive = getDirectiveByName(name);
 
-const { inputsClass = [], propertiesClass = [] } = (directive ?? getComponentByName(name)) || {};
+const { inputsClass = [], propertiesClass = [], outputsClass = [] } = (directive ?? getComponentByName(name)) || {};
 
-const data = [...inputsClass, ...propertiesClass];
+const data = [...inputsClass, ...propertiesClass, ...outputsClass];
 ---
 
 <div class="rt-TableRoot rt-r-size-2 rt-variant-surface rt-Box rt-r-my-5">

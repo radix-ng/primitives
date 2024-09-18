@@ -46,4 +46,5 @@ jobs:
       - name: Linters
         run: |
           pnpm run prettier
-          pnpm run stylelint
+          pnpm run stylelint --max-warnings=0
+          pnpm run eslint --max-warnings=0

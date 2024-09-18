@@ -78,6 +78,9 @@ const dropdownPositions: Record<DropdownSide, ConnectedPosition> = {
     ]
 })
 export class RdxDropdownMenuTriggerDirective extends CdkMenuTrigger {
+    /**
+     * @ignore
+     */
     readonly disabled = input<boolean, BooleanInput>(false, {
         transform: booleanAttribute
     });
