@@ -12,7 +12,7 @@ import { RdxContextMenuItemDirective } from './context-menu-item.directive';
 })
 export class RdxContextMenuSelectable extends RdxContextMenuItemDirective {
     /** Whether the element is checked */
-    @Input({ transform: booleanAttribute }) checked: boolean = false;
+    @Input({ transform: booleanAttribute }) checked = false;
 
     @Output() readonly checkedChange = new EventEmitter<boolean>();
 }

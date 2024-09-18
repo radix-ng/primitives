@@ -8,6 +8,7 @@ import { RdxContextMenuTriggerDirective } from './context-menu-trigger.directive
     selector: '[rdxContextMenuContent]',
     standalone: true,
     host: {
+        '[attr.role]': "'menu'",
         '[attr.data-state]': "menuTrigger.isOpen() ? 'open': 'closed'",
         '[attr.data-orientation]': 'orientation'
     },
@@ -23,7 +24,7 @@ export class RdxContextMenuContentDirective extends CdkMenu {
     readonly menuTrigger = inject(RdxContextMenuTriggerDirective, { optional: true });
 
     @Input() onEscapeKeyDown: (event?: Event) => void = () => undefined;
-    @Input() closeOnEscape: boolean = true;
+    @Input() closeOnEscape = true;
 
     constructor() {
         super();

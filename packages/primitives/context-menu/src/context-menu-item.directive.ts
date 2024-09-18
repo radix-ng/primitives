@@ -28,7 +28,7 @@ export class RdxContextMenuItemDirective extends CdkMenuItem {
 
     highlighted = false;
 
-    @Input({ transform: booleanAttribute }) override disabled: boolean = false;
+    @Input({ transform: booleanAttribute }) override disabled = false;
 
     @Output() readonly onSelect = new EventEmitter<void>();
 
