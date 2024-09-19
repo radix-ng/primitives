@@ -81,7 +81,7 @@
     "useInferencePlugins": false,
     "release": {
         "projectsRelationship": "independent",
-        "projects": ["packages/shadcn/*", "packages/primitives/*"],
+        "projects": ["packages/shadcn", "packages/primitives"],
         "version": {
             "conventionalCommits": true,
             "preVersionCommand": "npx nx run-many -t build -p primitives shadcn",
