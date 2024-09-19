@@ -30,7 +30,7 @@
     "devDependencies": {
         "@angular/core": "^18.0.0",
         "@angular/cdk": "^18.0.0",
-        "@radix-ng/primitives": "worksapce:*",
+        "@radix-ng/primitives": "workspace:*",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.1",
         "tailwind-merge": "^2.3.0"
