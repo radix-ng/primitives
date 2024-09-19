@@ -29,6 +29,7 @@ const config = {
                 'primitives',
                 'accordion',
                 'avatar',
+                'card',
                 'collapsible',
                 'context-menu',
                 'dropdown-menu',

@@ -3,7 +3,7 @@ import { cn } from '@radix-ng/shadcn/core';
 import { cva } from 'class-variance-authority';
 
 @Component({
-    selector: 'shCard',
+    selector: 'shCard, [shCard]',
     standalone: true,
     template: '<ng-content />',
     host: {
@@ -14,7 +14,7 @@ export class ShCardComponent {}
 
 const cardHeaderVariants = cva('flex flex-col space-y-1.5 p-6');
 @Component({
-    selector: 'shCardHeader',
+    selector: 'shCardHeader, [shCardHeader]',
     standalone: true,
     template: '<ng-content />',
     host: {
@@ -38,7 +38,7 @@ export class ShCardHeaderComponent {
 export class ShCardTitleComponent {}
 
 @Component({
-    selector: 'shCardDescription',
+    selector: 'shCardDescription, [shCardDescription]',
     standalone: true,
     template: '<ng-content />',
     host: {
@@ -48,7 +48,7 @@ export class ShCardTitleComponent {}
 export class ShCardDescriptionComponent {}
 
 @Component({
-    selector: 'shCardContent',
+    selector: 'shCardContent, [shCardContent]',
     standalone: true,
     template: '<ng-content />',
     host: {
@@ -59,7 +59,7 @@ export class ShCardContentComponent {}
 
 const cardFooterVariants = cva('flex items-center p-6 pt-0');
 @Component({
-    selector: 'shCardFooter',
+    selector: 'shCardFooter, [shCardFooter]',
     standalone: true,
     template: '<ng-content />',
     host: {

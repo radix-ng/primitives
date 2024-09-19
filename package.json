@@ -49,7 +49,8 @@
         "migrate": "nx migrate latest",
         "run-migrate": "nx migrate --run-migrations --if-exists",
         "help": "nx help",
-        "release:dry-run": "nx release --dry-run -- --skip-nx-cache"
+        "release:dry-run": "nx release --dry-run -- --skip-nx-cache",
+        "release:skip-publish": "nx release --skip-publish"
     },
     "dependencies": {
         "@angular/animations": "18.2.1",

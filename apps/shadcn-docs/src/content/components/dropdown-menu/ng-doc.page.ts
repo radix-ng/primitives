@@ -5,7 +5,7 @@ import { DropdownExampleRadioComponent } from './examples/dropdown-example-radio
 import { DropdownExampleComponent } from './examples/dropdown-example.component';
 
 const DropdownMenuPage: NgDocPage = {
-    title: `DropdownMenu [In progress]`,
+    title: `Dropdown Menu`,
     mdFile: './index.md',
     category: ExamplesCategory,
     demos: {
