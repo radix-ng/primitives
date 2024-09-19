@@ -21,7 +21,7 @@
     "peerDependencies": {
         "@angular/core": "^18.0.0",
         "@angular/cdk": "^18.0.0",
-        "@radix-ng/primitives": "^workspace:*",
+        "@radix-ng/primitives": "^0.12.2",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.1",
         "lucide-angular": "^0.438.0",
@@ -30,7 +30,7 @@
     "devDependencies": {
         "@angular/core": "^18.0.0",
         "@angular/cdk": "^18.0.0",
-        "@radix-ng/primitives": "0.12.2",
+        "@radix-ng/primitives": "worksapce:*",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.1",
         "tailwind-merge": "^2.3.0"
