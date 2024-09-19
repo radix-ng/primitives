@@ -76,11 +76,15 @@
     "useInferencePlugins": false,
     "release": {
         "projectsRelationship": "independent",
-        "projects": ["shadcn", "primitives"],
+        "projects": ["packages/shadcn", "packages/primitives"],
         "version": {
             "conventionalCommits": true,
+            "preVersionCommand": "npx nx run-many -t build -p primitives shadcn",
             "generatorOptions": {
-                "updateDependents": "auto"
+                "updateDependents": "auto",
+                "generatorOptions": {
+                    "packageRoot": "dist/{projectRoot}"
+                }
             }
         },
         "changelog": {
