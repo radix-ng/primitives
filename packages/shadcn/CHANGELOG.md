@@ -1,3 +1,10 @@
+## 0.8.3 (2024-09-19)
+
+
+### 🩹 Fixes
+
+- **card:** component selector ([8454a50](https://github.com/radix-ng/primitives/commit/8454a50))
+
 ## 0.8.2 (2024-09-19)
 
 
