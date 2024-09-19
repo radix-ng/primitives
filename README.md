@@ -57,7 +57,7 @@ Next version [https://next.radix-ng.com](https://next.radix-ng.com) documentatio
 | Avatar          |             | ✅             |      |
 | Checkbox        |             | beta           |      |
 | Collapsible     |             | ✅             |      |
-| Context Menu    |             | 🚀 In Progress |      |
+| Context Menu    |             | ✅             |      |
 | Dialog          |             | ✅             |      |
 | DropdownMenu    |             | ✅             |      |
 | Form            |             | 🚀 In Progress |      |

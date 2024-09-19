@@ -18,7 +18,7 @@ export * from './src/dialog.injectors';
 export * from './src/dialog.providers';
 export * from './src/dialog.service';
 
-const dialogImports = [
+const _imports = [
     RdxDialogTriggerDirective,
     RdxDialogContentDirective,
     RdxDialogTitleDirective,
@@ -27,5 +27,8 @@ const dialogImports = [
     RdxDialogDismissDirective
 ];
 
-@NgModule({ imports: [...dialogImports], exports: [...dialogImports] })
+@NgModule({
+    imports: [..._imports],
+    exports: [..._imports]
+})
 export class RdxDialogModule {}
