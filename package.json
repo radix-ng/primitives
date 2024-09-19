@@ -8,6 +8,10 @@
         "node": "^18.19.1",
         "pnpm": "^8.6.5"
     },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/radix-ng/primitives.git"
+    },
     "packageManager": "pnpm@8.15.9",
     "scripts": {
         "----Storybook----": "-----------------------------------------------------------------------",
@@ -39,7 +43,13 @@
         "stylelint": "stylelint '**/*.{css,scss}'",
         "stylelint:fix": "pnpm run stylelint --fix",
         "eslint": "eslint . --ext='.js,.cjs,.mjs,.ts,.html'",
-        "eslint:fix": "pnpm run eslint --fix"
+        "eslint:fix": "pnpm run eslint --fix",
+        "----NX-------": "-----------------------------------------------------------------------",
+        "format": "nx format --base head~1",
+        "migrate": "nx migrate latest",
+        "run-migrate": "nx migrate --run-migrations --if-exists",
+        "help": "nx help",
+        "release:dry-run": "nx release --dry-run -- --skip-nx-cache"
     },
     "dependencies": {
         "@angular/animations": "18.2.1",
