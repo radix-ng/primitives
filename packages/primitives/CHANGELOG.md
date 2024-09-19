@@ -1,3 +1,10 @@
+## 0.12.2 (2024-09-19)
+
+
+### 🩹 Fixes
+
+- publish script ([38e43ab](https://github.com/radix-ng/primitives/commit/38e43ab))
+
 ## 0.12.1 (2024-09-19)
 
 
