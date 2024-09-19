@@ -1,3 +1,10 @@
+## 0.12.1 (2024-09-19)
+
+
+### 🩹 Fixes
+
+- publish script ([1ecaf0c](https://github.com/radix-ng/primitives/commit/1ecaf0c))
+
 ## 0.12.0 (2024-09-19)
 
 

@@ -1,6 +1,6 @@
 {
     "name": "@radix-ng/components",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "peerDependencies": {
         "@angular/common": "^18.0.0",
         "@angular/core": "^18.0.0",
@@ -8,7 +8,7 @@
         "classnames": "^2.5.1"
     },
     "devDependencies": {
-        "@radix-ng/primitives": "workspace:*",
+        "@radix-ng/primitives": "0.12.1",
         "classnames": "^2.5.1"
     },
     "scripts": {
