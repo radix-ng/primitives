@@ -1,3 +1,23 @@
+## 0.12.0 (2024-09-19)
+
+
+### 🚀 Features
+
+- **dialog:** added Dialog primitive ([#101](https://github.com/radix-ng/primitives/pull/101))
+
+- **radio:** added prefix rdx ([e5ebbc6](https://github.com/radix-ng/primitives/commit/e5ebbc6))
+
+- **ci:** added eslint support ([#103](https://github.com/radix-ng/primitives/pull/103))
+
+- **context-menu:** added context menu ([#2865](https://github.com/radix-ng/primitives/pull/2865), [#104](https://github.com/radix-ng/primitives/pull/104))
+
+
+### 🩹 Fixes
+
+- **avatar:** supported SSR ([c50ce18](https://github.com/radix-ng/primitives/commit/c50ce18))
+
+- **dropdown-menu:** navigation ([#106](https://github.com/radix-ng/primitives/pull/106))
+
 ## 0.11.1 (2024-09-10)
 
 

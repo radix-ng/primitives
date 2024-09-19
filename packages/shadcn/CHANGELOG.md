@@ -1,3 +1,15 @@
+## 0.8.0 (2024-09-19)
+
+
+### 🚀 Features
+
+- **ci:** added eslint support ([#103](https://github.com/radix-ng/primitives/pull/103))
+
+
+### 🧱 Updated Dependencies
+
+- Updated primitives to 0.12.0
+
 ## 0.7.1 (2024-09-10)
 
 
