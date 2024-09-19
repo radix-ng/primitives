@@ -31,8 +31,8 @@ export interface ProgressProps {
  * It handles aria attributes for accessibility and provides different states like 'indeterminate', 'complete', and 'loading'.
  */
 @Directive({
-    selector: 'div[rdxProgressRoot]',
-    exportAs: 'ProgressRoot',
+    selector: '[rdxProgressRoot]',
+    exportAs: 'rdxProgressRoot',
     standalone: true,
     providers: [{ provide: RdxProgressToken, useExisting: RdxProgressRootDirective }],
     host: {

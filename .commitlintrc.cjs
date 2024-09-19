@@ -39,6 +39,7 @@ const config = {
                 'code',
                 'kbd',
                 'radix-docs',
+                'progress',
                 'shadcn',
                 'docs',
                 'release',
