@@ -43,6 +43,11 @@
                 "{projectRoot}/.storybook/**/*",
                 "{projectRoot}/tsconfig.storybook.json"
             ]
+        },
+        "nx-release-publish": {
+            "options": {
+                "packageRoot": "dist/{projectName}"
+            }
         }
     },
     "namedInputs": {
@@ -76,14 +81,14 @@
     "useInferencePlugins": false,
     "release": {
         "projectsRelationship": "independent",
-        "projects": ["packages/shadcn", "packages/primitives"],
+        "projects": ["packages/shadcn/*", "packages/primitives/*"],
         "version": {
             "conventionalCommits": true,
             "preVersionCommand": "npx nx run-many -t build -p primitives shadcn",
             "generatorOptions": {
                 "updateDependents": "auto",
                 "generatorOptions": {
-                    "packageRoot": "dist/{projectRoot}"
+                    "packageRoot": "dist/{projectName}"
                 }
             }
         },

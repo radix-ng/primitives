@@ -8,7 +8,7 @@
         "classnames": "^2.5.1"
     },
     "devDependencies": {
-        "@radix-ng/primitives": "0.12.1",
+        "@radix-ng/primitives": "workspace:*",
         "classnames": "^2.5.1"
     },
     "scripts": {
