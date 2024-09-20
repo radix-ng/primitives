@@ -5,14 +5,14 @@
     "private": true,
     "type": "module",
     "engines": {
-        "node": "^18.19.1",
-        "pnpm": "^8.6.5"
+        "node": "^20.9",
+        "pnpm": "^9.10"
     },
     "repository": {
         "type": "git",
         "url": "https://github.com/radix-ng/primitives.git"
     },
-    "packageManager": "pnpm@8.15.9",
+    "packageManager": "pnpm@9.10",
     "scripts": {
         "----Storybook----": "-----------------------------------------------------------------------",
         "storybook:primitives": "nx run storybook-radix:storybook",
