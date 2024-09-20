@@ -12,7 +12,7 @@
         "type": "git",
         "url": "https://github.com/radix-ng/primitives.git"
     },
-    "packageManager": "pnpm@9.10",
+    "packageManager": "pnpm@9.10.0",
     "scripts": {
         "----Storybook----": "-----------------------------------------------------------------------",
         "storybook:primitives": "nx run storybook-radix:storybook",
