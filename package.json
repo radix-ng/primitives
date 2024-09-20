@@ -6,7 +6,7 @@
     "type": "module",
     "engines": {
         "node": "^20.9",
-        "pnpm": "^9.10"
+        "pnpm": "^9"
     },
     "repository": {
         "type": "git",
