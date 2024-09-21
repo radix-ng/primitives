@@ -41,6 +41,9 @@
             "@radix-ng/primitives/accordion": [
                 "packages/primitives/accordion/index.ts"
             ],
+            "@radix-ng/primitives/avatar": [
+                "packages/primitives/avatar/index.ts"
+            ],
             "@radix-ng/primitives/checkbox": [
                 "packages/primitives/checkbox/index.ts"
             ],
