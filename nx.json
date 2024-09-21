@@ -87,9 +87,8 @@
             "preVersionCommand": "npx nx run-many -t build -p primitives shadcn",
             "generatorOptions": {
                 "updateDependents": "auto",
-                "generatorOptions": {
-                    "packageRoot": "dist/{projectName}"
-                }
+                "preserveLocalDependencyProtocols": true,
+                "packageRoot": "dist/{projectName}"
             }
         },
         "changelog": {
