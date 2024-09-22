@@ -6,7 +6,7 @@ import { Component, computed, input } from '@angular/core';
 import { demos } from '../../demos/components';
 
 @Component({
-    selector: 'empty-component',
+    selector: 'empty-themes-component',
     standalone: true,
     imports: [NgComponentOutlet, AsyncPipe],
     template: `
