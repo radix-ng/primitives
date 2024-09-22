@@ -65,67 +65,6 @@ svg {
     overflow: visible;
 }
 
-blockquote,
-dl,
-dd,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-hr,
-figure,
-p,
-pre {
-    margin: 0;
-}
-
-h1 {
-    --leading-trim-start: var(--heading-leading-trim-start);
-    --leading-trim-end: var(--heading-leading-trim-end);
-    font-style: var(--heading-font-style);
-    font-weight: var(--font-weight-bold);
-    line-height: var(--line-height);
-    font-family: var(--heading-font-family), serif;
-
-    font-size: calc(var(--font-size-8) * var(--heading-font-size-adjust));
-    --line-height: var(--heading-line-height-8);
-    letter-spacing: calc(var(--letter-spacing-8) + var(--heading-letter-spacing));
-
-    margin: 0 0 var(--space-2);
-}
-
-h2 {
-    --leading-trim-start: var(--heading-leading-trim-start);
-    --leading-trim-end: var(--heading-leading-trim-end);
-    font-style: var(--heading-font-style);
-    font-weight: var(--font-weight-bold);
-    line-height: var(--line-height);
-
-    font-size: calc(var(--font-size-6) * var(--heading-font-size-adjust));
-    --line-height: var(--heading-line-height-6);
-    letter-spacing: calc(var(--letter-spacing-6) + var(--heading-letter-spacing));
-
-    margin-top: var(--space-8);
-    margin-bottom: var(--space-3);
-}
-
-h3 {
-    --leading-trim-start: var(--heading-leading-trim-start);
-    --leading-trim-end: var(--heading-leading-trim-end);
-    font-style: var(--heading-font-style);
-    font-weight: var(--font-weight-bold);
-    line-height: var(--line-height);
-
-    font-size: calc(var(--font-size-4) * var(--heading-font-size-adjust));
-    --line-height: var(--heading-line-height-4);
-    letter-spacing: calc(var(--letter-spacing-4) + var(--heading-letter-spacing));
-
-    margin-top: var(--space-7);
-    margin-bottom: var(--space-2);
-}
-
 #Code {
     .expressive-code pre {
         border-top-left-radius: 1px;
