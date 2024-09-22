@@ -1,16 +1,20 @@
 import {
     blackA,
+    crimson,
     cyan,
+    gold,
     grass,
     gray,
     grayA,
     green,
     indigo,
     mauve,
+    pink,
     purple,
     red,
     slate,
     teal,
+    tomato,
     violet
 } from '@radix-ui/colors';
 import { type Config } from 'tailwindcss';
@@ -29,6 +33,9 @@ const config = {
         extend: {
             colors: {
                 ...blackA,
+                ...crimson,
+                ...tomato,
+                ...gold,
                 ...gray,
                 ...grayA,
                 ...mauve,
@@ -38,6 +45,7 @@ const config = {
                 ...grass,
                 ...teal,
                 ...cyan,
+                ...pink,
                 ...indigo,
                 ...purple,
                 ...slate,

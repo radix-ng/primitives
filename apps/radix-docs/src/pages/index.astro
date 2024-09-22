@@ -3,6 +3,7 @@ import MainLayout from '../layouts/MainLayout.astro';
 import Header from '../components/layouts/Header.astro';
 import Announcement from '../components/layouts/Announcement.astro';
 import Contributors from '../components/layouts/Contributors.astro';
+import DemosHomePage from '../components/layouts/DemosHomePage.astro';
 ---
 
 <MainLayout title="Radix Angular">
@@ -44,8 +45,16 @@ import Contributors from '../components/layouts/Contributors.astro';
                         </div>
                     </div>
                 </section>
+                <div class="content px-6 sm:px-[48px] lg:px-[64px]">
+                    <div class="container mx-auto w-full max-w-[1152px]">
+                        <div class="grid w-auto gap-6 md:gap-12 lg:grid-cols-2 lg:gap-6">
+                            <DemosHomePage />
+                        </div>
+                    </div>
+                </div>
                 <h2 class="flex flex-wrap justify-center pb-8 pt-5">Contributors</h2>
                 <Contributors />
+                <div class="pt-10"></div>
             </div>
         </main>
     </div>

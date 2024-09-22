@@ -1,0 +1,33 @@
+---
+import { DemoLoaderComponent } from '../demo-primitive-preview/demo-loader.component';
+export interface Props {
+    title: string;
+    componentName?: 'accordion' | 'avatar' | 'alert-dialog' | 'checkbox' | 'collapsible' | 'dropdown-menu' | 'default';
+    componentFile?: string;
+    overflow?: boolean;
+}
+
+const { title, componentName, componentFile } = Astro.props;
+
+const gradientClassesMap: Record<Props['componentName'], string> = {
+    accordion: 'from-tomato5 to-indigo7',
+    avatar: 'from-gold5 to-tomato5',
+    'alert-dialog': '',
+    collapsible: 'from-indigo5 to-crimson5',
+    checkbox: 'from-indigo7 to-cyan3',
+    'dropdown-menu': 'from-indigo7 to-cyan3',
+    default: 'from-gray-500 to-gray-700'
+};
+
+const gradientClasses = gradientClassesMap[componentName];
+---
+
+<div class="w-full">
+    <a class="group mb-2 ml-2 inline-flex items-center font-semibold capitalize md:text-lg">{title}</a>
+    <div
+        data-component={componentName}
+        class={`custom-justify-center bg-gradient-to-br ${gradientClasses} p-4 md:p-10 lg:h-[400px] rounded-lg relative flex min-h-[256px] w-full items-center `}
+    >
+        <DemoLoaderComponent name={componentName} file={componentFile} client:visible />
+    </div>
+</div>

@@ -295,8 +295,8 @@ importers:
         specifier: ^15.2.7
         version: 15.2.9
       lucide-angular:
-        specifier: ^0.438.0
-        version: 0.438.0(@angular/common@18.2.1(@angular/core@18.2.1(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@18.2.1(rxjs@7.8.1)(zone.js@0.14.10))
+        specifier: ^0.445.0
+        version: 0.445.0(@angular/common@18.2.1(@angular/core@18.2.1(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@18.2.1(rxjs@7.8.1)(zone.js@0.14.10))
       marked-highlight:
         specifier: ^2.1.3
         version: 2.1.4(marked@12.0.2)
@@ -9332,6 +9332,12 @@ packages:
       '@angular/common': 13.x - 18.x
       '@angular/core': 13.x - 18.x
 
+  lucide-angular@0.445.0:
+    resolution: {integrity: sha512-gKlhM1aeVY7pM2ojkX90my/zCYGHvQa55bh3u5SVGwxR8reeydlQLFYr5iYX1lS5vsR5PSe7Czlj74E6Hty+RQ==}
+    peerDependencies:
+      '@angular/common': 13.x - 18.x
+      '@angular/core': 13.x - 18.x
+
   lunr@2.3.9:
     resolution: {integrity: sha512-zTU3DaZaF3Rt9rhN3uBMGQD3dD2/vFQqnvZCDv4dl5iOzq2IZQqTxu90r4E5J+nP70J3ilqVCrbho2eWaeW8Ow==}
 
@@ -17507,21 +17513,6 @@ snapshots:
       - typescript
       - verdaccio
 
-  '@nrwl/js@19.8.0(@babel/traverse@7.25.4)(@swc-node/register@1.9.2(@swc/core@1.5.7(@swc/helpers@0.5.11))(@swc/types@0.1.12)(typescript@5.5.4))(@swc/core@1.5.7(@swc/helpers@0.5.11))(@types/node@18.19.45)(nx@19.8.0(@swc-node/register@1.9.2(@swc/core@1.5.7(@swc/helpers@0.5.11))(@swc/types@0.1.12)(typescript@5.5.4))(@swc/core@1.5.7(@swc/helpers@0.5.11)))(typescript@5.4.5)(verdaccio@5.32.1(encoding@0.1.13)(typanion@3.14.0))':
-    dependencies:
-      '@nx/js': 19.8.0(@babel/traverse@7.25.4)(@swc-node/register@1.9.2(@swc/core@1.5.7(@swc/helpers@0.5.11))(@swc/types@0.1.12)(typescript@5.5.4))(@swc/core@1.5.7(@swc/helpers@0.5.11))(@types/node@18.19.45)(nx@19.8.0(@swc-node/register@1.9.2(@swc/core@1.5.7(@swc/helpers@0.5.11))(@swc/types@0.1.12)(typescript@5.5.4))(@swc/core@1.5.7(@swc/helpers@0.5.11)))(typescript@5.4.5)(verdaccio@5.32.1(encoding@0.1.13)(typanion@3.14.0))
-    transitivePeerDependencies:
-      - '@babel/traverse'
-      - '@swc-node/register'
-      - '@swc/core'
-      - '@swc/wasm'
-      - '@types/node'
-      - debug
-      - nx
-      - supports-color
-      - typescript
-      - verdaccio
-
   '@nrwl/js@19.8.0(@babel/traverse@7.25.4)(@swc-node/register@1.9.2(@swc/core@1.5.7(@swc/helpers@0.5.11))(@swc/types@0.1.12)(typescript@5.5.4))(@swc/core@1.5.7(@swc/helpers@0.5.11))(@types/node@18.19.45)(nx@19.8.0(@swc-node/register@1.9.2(@swc/core@1.5.7(@swc/helpers@0.5.11))(@swc/types@0.1.12)(typescript@5.5.4))(@swc/core@1.5.7(@swc/helpers@0.5.11)))(typescript@5.5.4)(verdaccio@5.32.1(encoding@0.1.13)(typanion@3.14.0))':
     dependencies:
       '@nx/js': 19.8.0(@babel/traverse@7.25.4)(@swc-node/register@1.9.2(@swc/core@1.5.7(@swc/helpers@0.5.11))(@swc/types@0.1.12)(typescript@5.5.4))(@swc/core@1.5.7(@swc/helpers@0.5.11))(@types/node@18.19.45)(nx@19.8.0(@swc-node/register@1.9.2(@swc/core@1.5.7(@swc/helpers@0.5.11))(@swc/types@0.1.12)(typescript@5.5.4))(@swc/core@1.5.7(@swc/helpers@0.5.11)))(typescript@5.5.4)(verdaccio@5.32.1(encoding@0.1.13)(typanion@3.14.0))
@@ -18010,7 +18001,7 @@ snapshots:
       '@babel/preset-env': 7.25.4(@babel/core@7.25.2)
       '@babel/preset-typescript': 7.24.7(@babel/core@7.25.2)
       '@babel/runtime': 7.25.4
-      '@nrwl/js': 19.8.0(@babel/traverse@7.25.4)(@swc-node/register@1.9.2(@swc/core@1.5.7(@swc/helpers@0.5.11))(@swc/types@0.1.12)(typescript@5.5.4))(@swc/core@1.5.7(@swc/helpers@0.5.11))(@types/node@18.19.45)(nx@19.8.0(@swc-node/register@1.9.2(@swc/core@1.5.7(@swc/helpers@0.5.11))(@swc/types@0.1.12)(typescript@5.5.4))(@swc/core@1.5.7(@swc/helpers@0.5.11)))(typescript@5.4.5)(verdaccio@5.32.1(encoding@0.1.13)(typanion@3.14.0))
+      '@nrwl/js': 19.8.0(@babel/traverse@7.25.4)(@swc-node/register@1.9.2(@swc/core@1.5.7(@swc/helpers@0.5.11))(@swc/types@0.1.12)(typescript@5.5.4))(@swc/core@1.5.7(@swc/helpers@0.5.11))(@types/node@18.19.45)(nx@19.8.0(@swc-node/register@1.9.2(@swc/core@1.5.7(@swc/helpers@0.5.11))(@swc/types@0.1.12)(typescript@5.5.4))(@swc/core@1.5.7(@swc/helpers@0.5.11)))(typescript@5.5.4)(verdaccio@5.32.1(encoding@0.1.13)(typanion@3.14.0))
       '@nx/devkit': 19.8.0(nx@19.8.0(@swc-node/register@1.9.2(@swc/core@1.5.7(@swc/helpers@0.5.11))(@swc/types@0.1.12)(typescript@5.5.4))(@swc/core@1.5.7(@swc/helpers@0.5.11)))
       '@nx/workspace': 19.8.0(@swc-node/register@1.9.2(@swc/core@1.5.7(@swc/helpers@0.5.11))(@swc/types@0.1.12)(typescript@5.5.4))(@swc/core@1.5.7(@swc/helpers@0.5.11))
       babel-plugin-const-enum: 1.2.0(@babel/core@7.25.2)
@@ -25940,6 +25931,12 @@ snapshots:
   lru-cache@7.18.3: {}
 
   lucide-angular@0.438.0(@angular/common@18.2.1(@angular/core@18.2.1(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@18.2.1(rxjs@7.8.1)(zone.js@0.14.10)):
+    dependencies:
+      '@angular/common': 18.2.1(@angular/core@18.2.1(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1)
+      '@angular/core': 18.2.1(rxjs@7.8.1)(zone.js@0.14.10)
+      tslib: 2.7.0
+
+  lucide-angular@0.445.0(@angular/common@18.2.1(@angular/core@18.2.1(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@18.2.1(rxjs@7.8.1)(zone.js@0.14.10)):
     dependencies:
       '@angular/common': 18.2.1(@angular/core@18.2.1(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1)
       '@angular/core': 18.2.1(rxjs@7.8.1)(zone.js@0.14.10)
