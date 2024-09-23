@@ -1,5 +1,7 @@
-import { Directive, EventEmitter, inject, InjectionToken, input, Output, signal } from '@angular/core';
+import { computed, Directive, EventEmitter, inject, InjectionToken, input, Output, signal } from '@angular/core';
 import { injectTooltipConfig } from './tooltip.config';
+
+export type RdxTooltipState = 'delayed-open' | 'instant-open' | 'closed';
 
 export const RdxTooltipRootToken = new InjectionToken<RdxTooltipRootDirective>('RdxTooltipRootToken');
 
@@ -15,59 +17,101 @@ export function injectTooltipRoot(): RdxTooltipRootDirective {
             provide: RdxTooltipRootToken,
             useExisting: RdxTooltipRootDirective
         }
-    ]
+    ],
+    exportAs: 'rdxTooltipRoot'
 })
 export class RdxTooltipRootDirective {
     readonly tooltipConfig = injectTooltipConfig();
     defaultOpen = input<boolean>(false);
     open = input<boolean>(this.defaultOpen());
+
     delayDuration = input<number>(this.tooltipConfig.delayDuration);
     disableHoverableContent = input<boolean>(this.tooltipConfig.disableHoverableContent ?? false);
 
-    isOpenDelayed = signal<boolean>(false);
+    openTimer = 0;
+    skipDelayTimer = 0;
+
     isOpen = signal<boolean>(this.open());
-    isPointerInTransit = signal<boolean>(false);
-    openTimer = signal<number>(0);
+    isOpenDelayed = signal<boolean>(true);
     wasOpenDelayed = signal<boolean>(false);
+    state = computed<RdxTooltipState>(() => {
+        const currentIsOpen = this.isOpen();
+        const currentWasOpenDelayed = this.wasOpenDelayed();
+
+        if (currentIsOpen) {
+            return currentWasOpenDelayed ? 'delayed-open' : 'instant-open';
+        }
+
+        return 'closed';
+    });
+
     @Output() onOpenChange = new EventEmitter<boolean>();
 
     onTriggerEnter(): void {
+        console.log('onTriggerEnter');
+
         if (this.isOpenDelayed()) {
-            this.handleDelayOpen();
+            this.handleDelayedOpen();
         } else {
             this.handleOpen();
         }
     }
 
     onTriggerLeave(): void {
-        if (this.disableHoverableContent()) {
-            // handleClose()
-            this.isOpen.set(false);
+        console.log('onTriggerLeave');
+
+        /*if (this.disableHoverableContent()) {
+            this.handleClose();
         } else {
-            window.clearTimeout(this.openTimer());
-        }
+            window.clearTimeout(this.openTimer);
+        }*/
+
+        window.clearTimeout(this.openTimer);
+        this.handleClose();
     }
 
-    private handleDelayOpen(): void {
-        console.log('handleDelayOpen');
+    onOpen(): void {
+        window.clearTimeout(this.skipDelayTimer);
+        this.isOpenDelayed.set(false);
+    }
 
-        window.clearTimeout(this.openTimer());
+    onClose(): void {
+        window.clearTimeout(this.skipDelayTimer);
 
-        this.openTimer.set(
-            window.setTimeout(() => {
-                this.wasOpenDelayed.set(true);
-                // setOpen(true)
-                this.isOpen.set(true);
-            })
-        );
+        this.skipDelayTimer = window.setTimeout(() => {
+            this.isOpenDelayed.set(true);
+        }, this.tooltipConfig.skipDelayDuration);
+    }
+
+    private handleDelayedOpen(): void {
+        window.clearTimeout(this.openTimer);
+
+        this.openTimer = window.setTimeout(() => {
+            this.wasOpenDelayed.set(true);
+            this.setOpen(true);
+        }, this.delayDuration());
     }
 
     private handleOpen(): void {
-        console.log('handleOpen');
-
-        window.clearTimeout(this.openTimer());
         this.wasOpenDelayed.set(false);
-        // setOpen(true)
-        this.isOpen.set(true);
+        this.setOpen(true);
+    }
+
+    private handleClose(): void {
+        window.clearTimeout(this.openTimer);
+        this.setOpen(false);
+    }
+
+    private setOpen(open = false): void {
+        if (open) {
+            this.onOpen();
+
+            document.dispatchEvent(new CustomEvent('tooltip.open'));
+        } else {
+            this.onClose();
+        }
+
+        this.isOpen.set(open);
+        this.onOpenChange.emit(open);
     }
 }

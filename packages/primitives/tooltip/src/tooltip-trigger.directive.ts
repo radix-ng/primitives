@@ -1,38 +1,64 @@
-import { Directive, signal } from '@angular/core';
+import { Directive, ElementRef, inject } from '@angular/core';
 import { injectTooltipRoot } from './tooltip-root.directive';
 
 @Directive({
     selector: '[rdxTooltipTrigger]',
     standalone: true,
     host: {
-        '[attr.data-state]': 'getState()',
+        '[attr.data-state]': 'tooltipRoot.state()',
         '(pointermove)': 'onPointerMove($event)',
-        '(pointerleave)': 'onPointerLeave()'
+        '(pointerleave)': 'onPointerLeave()',
+        '(pointerdown)': 'onPointerDown()',
+        '(onfocus)': 'onFocus()',
+        '(onblur)': 'onBlur()',
+        '(click)': 'onClick()'
     }
 })
 export class RdxTooltipTriggerDirective {
-    private tooltipRoot = injectTooltipRoot();
-    private hasPointerMoveOpened = signal<boolean>(false);
+    readonly tooltipRoot = injectTooltipRoot();
+    private elementRef = inject<ElementRef<HTMLElement>>(ElementRef<HTMLElement>);
 
-    getState(): string {
-        // TODO: set correct states
-        // correct states is: "closed" | "delayed-open" | "instant-open"
-        return this.tooltipRoot.isOpen() ? 'open' : 'closed';
-    }
+    private isPointerDown = false;
+    private isPointerInside = false;
 
     onPointerMove(event: PointerEvent): void {
         if (event.pointerType === 'touch') {
             return;
         }
 
-        if (!this.hasPointerMoveOpened() && !this.tooltipRoot.isPointerInTransit()) {
+        if (!this.isPointerInside) {
             this.tooltipRoot.onTriggerEnter();
-            this.hasPointerMoveOpened.set(true);
+            this.isPointerInside = true;
         }
     }
 
     onPointerLeave(): void {
+        this.isPointerInside = false;
         this.tooltipRoot.onTriggerLeave();
-        this.hasPointerMoveOpened.set(false);
+    }
+
+    onPointerDown(): void {
+        this.isPointerDown = true;
+        this.elementRef.nativeElement.addEventListener(
+            'pointerup',
+            () => {
+                this.isPointerDown = false;
+            },
+            { once: true }
+        );
+    }
+
+    onFocus(): void {
+        if (!this.isPointerDown) {
+            this.tooltipRoot.onOpen();
+        }
+    }
+
+    onBlur(): void {
+        this.tooltipRoot.onClose();
+    }
+
+    onClick(): void {
+        this.tooltipRoot.onClose();
     }
 }
