@@ -1,4 +1,14 @@
-import { computed, Directive, EventEmitter, inject, InjectionToken, input, Output, signal } from '@angular/core';
+import {
+    computed,
+    Directive,
+    EventEmitter,
+    inject,
+    InjectionToken,
+    input,
+    OnInit,
+    Output,
+    signal
+} from '@angular/core';
 import { injectTooltipConfig } from './tooltip.config';
 
 export type RdxTooltipState = 'delayed-open' | 'instant-open' | 'closed';
@@ -20,7 +30,7 @@ export function injectTooltipRoot(): RdxTooltipRootDirective {
     ],
     exportAs: 'rdxTooltipRoot'
 })
-export class RdxTooltipRootDirective {
+export class RdxTooltipRootDirective implements OnInit {
     readonly tooltipConfig = injectTooltipConfig();
     defaultOpen = input<boolean>(false);
     open = input<boolean>(this.defaultOpen());
@@ -47,9 +57,13 @@ export class RdxTooltipRootDirective {
 
     @Output() onOpenChange = new EventEmitter<boolean>();
 
-    onTriggerEnter(): void {
-        console.log('onTriggerEnter');
+    ngOnInit(): void {
+        if (this.defaultOpen()) {
+            this.handleOpen();
+        }
+    }
 
+    onTriggerEnter(): void {
         if (this.isOpenDelayed()) {
             this.handleDelayedOpen();
         } else {
@@ -58,14 +72,6 @@ export class RdxTooltipRootDirective {
     }
 
     onTriggerLeave(): void {
-        console.log('onTriggerLeave');
-
-        /*if (this.disableHoverableContent()) {
-            this.handleClose();
-        } else {
-            window.clearTimeout(this.openTimer);
-        }*/
-
         window.clearTimeout(this.openTimer);
         this.handleClose();
     }
@@ -83,6 +89,16 @@ export class RdxTooltipRootDirective {
         }, this.tooltipConfig.skipDelayDuration);
     }
 
+    handleOpen(): void {
+        this.wasOpenDelayed.set(false);
+        this.setOpen(true);
+    }
+
+    handleClose(): void {
+        window.clearTimeout(this.openTimer);
+        this.setOpen(false);
+    }
+
     private handleDelayedOpen(): void {
         window.clearTimeout(this.openTimer);
 
@@ -90,16 +106,6 @@ export class RdxTooltipRootDirective {
             this.wasOpenDelayed.set(true);
             this.setOpen(true);
         }, this.delayDuration());
-    }
-
-    private handleOpen(): void {
-        this.wasOpenDelayed.set(false);
-        this.setOpen(true);
-    }
-
-    private handleClose(): void {
-        window.clearTimeout(this.openTimer);
-        this.setOpen(false);
     }
 
     private setOpen(open = false): void {

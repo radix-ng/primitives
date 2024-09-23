@@ -9,8 +9,8 @@ import { injectTooltipRoot } from './tooltip-root.directive';
         '(pointermove)': 'onPointerMove($event)',
         '(pointerleave)': 'onPointerLeave()',
         '(pointerdown)': 'onPointerDown()',
-        '(onfocus)': 'onFocus()',
-        '(onblur)': 'onBlur()',
+        '(focus)': 'onFocus()',
+        '(blur)': 'onBlur()',
         '(click)': 'onClick()'
     }
 })
@@ -39,6 +39,7 @@ export class RdxTooltipTriggerDirective {
 
     onPointerDown(): void {
         this.isPointerDown = true;
+
         this.elementRef.nativeElement.addEventListener(
             'pointerup',
             () => {
@@ -50,15 +51,15 @@ export class RdxTooltipTriggerDirective {
 
     onFocus(): void {
         if (!this.isPointerDown) {
-            this.tooltipRoot.onOpen();
+            this.tooltipRoot.handleOpen();
         }
     }
 
     onBlur(): void {
-        this.tooltipRoot.onClose();
+        this.tooltipRoot.handleClose();
     }
 
     onClick(): void {
-        this.tooltipRoot.onClose();
+        this.tooltipRoot.handleClose();
     }
 }
