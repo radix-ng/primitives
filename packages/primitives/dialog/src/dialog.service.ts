@@ -31,11 +31,20 @@ export class RdxDialogService {
         let modeClasses: string[] = [];
 
         switch (config.mode) {
-            case 'drawer':
-                modeClasses = ['mod-drawer'];
+            case 'sheet':
+                modeClasses = ['mod-sheet', 'mod-right'];
                 break;
-            case 'drawer-bottom':
-                modeClasses = ['mod-drawer', 'mod-bottom'];
+            case 'sheet-right':
+                modeClasses = ['mod-sheet', 'mod-right'];
+                break;
+            case 'sheet-bottom':
+                modeClasses = ['mod-sheet', 'mod-bottom'];
+                break;
+            case 'sheet-left':
+                modeClasses = ['mod-sheet', 'mod-left'];
+                break;
+            case 'sheet-top':
+                modeClasses = ['mod-sheet', 'mod-top'];
                 break;
         }
 

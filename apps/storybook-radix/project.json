@@ -53,7 +53,8 @@
                 "styles": [
                     "apps/storybook-radix/.storybook/main.scss",
                     "@radix-ui/themes/styles.css",
-                    "@angular/cdk/overlay-prebuilt.css"
+                    "@angular/cdk/overlay-prebuilt.css",
+                    "packages/primitives/dialog/stories/sheet/sheet.styles.scss"
                 ],
                 "stylePreprocessorOptions": {
                     "includePaths": ["node_modules/"]

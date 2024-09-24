@@ -4,7 +4,7 @@ import { RdxDialogContentDirective } from '../src/dialog-content.directive';
 import { RdxDialogDescriptionDirective } from '../src/dialog-description.directive';
 import { RdxDialogTitleDirective } from '../src/dialog-title.directive';
 import { RdxDialogTriggerDirective } from '../src/dialog-trigger.directive';
-import { configureRdxDialog } from '../src/dialog.providers';
+import { provideRdxDialogConfig } from '../src/dialog.providers';
 
 const html = String.raw;
 
@@ -12,7 +12,7 @@ export default {
     title: 'Primitives/Dialog',
     decorators: [
         applicationConfig({
-            providers: [configureRdxDialog()]
+            providers: [provideRdxDialogConfig()]
         }),
         moduleMetadata({
             imports: [
@@ -41,7 +41,7 @@ type Story = StoryObj;
 export const Default: Story = {
     argTypes: {
         mode: {
-            options: ['default', 'drawer', 'drawer-bottom'],
+            options: ['default', 'sheet-right', 'sheet-bottom'],
             control: {
                 type: 'select'
             }
@@ -220,14 +220,5 @@ export const Default: Story = {
                 }
             </style>
         `
-    })
-};
-
-export const DrawerStory: Story = {
-    render: (args) => ({
-        props: {
-            config: args
-        },
-        template: html``
     })
 };

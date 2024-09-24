@@ -17,7 +17,7 @@ type DialogRefProps<C> = { [K in keyof C]: C[K] extends ɵDialogResultFlag<unkno
 export type RdxDialogResult<C> =
     DialogRefProps<C> extends never ? void : C[DialogRefProps<C>] extends ɵDialogResultFlag<infer T> ? T : void;
 
-type RdxDialogMode = 'default' | 'drawer' | 'drawer-bottom';
+type RdxDialogMode = 'default' | 'sheet' | 'sheet-bottom' | 'sheet-top' | 'sheet-left' | 'sheet-right';
 
 type RdxBaseDialogConfig<C> = {
     content: ComponentType<C> | TemplateRef<C>;
