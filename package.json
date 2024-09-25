@@ -50,6 +50,7 @@
         "run-migrate": "nx migrate --run-migrations --if-exists",
         "help": "nx help",
         "release:dry-run": "nx release --dry-run -- --skip-nx-cache",
+        "----RELEASE Scripts-------": "---------------------------------------------------------",
         "release:skip-publish": "nx release --skip-publish",
         "release:primitives": "nx release --projects=primitives",
         "release:shadcn": "nx release --projects=shadcn"

@@ -81,14 +81,13 @@
     "useInferencePlugins": false,
     "release": {
         "projectsRelationship": "independent",
-        "projects": ["packages/shadcn", "packages/primitives"],
+        "projects": ["shadcn", "primitives"],
         "version": {
             "conventionalCommits": true,
             "preVersionCommand": "npx nx run-many -t build -p primitives shadcn",
             "generatorOptions": {
                 "updateDependents": "auto",
-                "preserveLocalDependencyProtocols": true,
-                "packageRoot": "dist/{projectName}"
+                "preserveLocalDependencyProtocols": true
             }
         },
         "changelog": {

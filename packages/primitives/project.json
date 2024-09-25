@@ -34,6 +34,12 @@
             "options": {
                 "jestConfig": "packages/primitives/jest.config.ts"
             }
+        },
+        "nx-release-publish": {
+            "dependsOn": ["build"],
+            "options": {
+                "packageRoot": "{workspaceRoot}/dist/{projectRoot}"
+            }
         }
     }
 }

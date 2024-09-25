@@ -33,6 +33,12 @@
             "options": {
                 "jestConfig": "packages/shadcn/jest.config.ts"
             }
+        },
+        "nx-release-publish": {
+            "dependsOn": ["build"],
+            "options": {
+                "packageRoot": "{workspaceRoot}/dist/{projectRoot}"
+            }
         }
     }
 }
