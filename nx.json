@@ -96,7 +96,8 @@
                 "createRelease": "github",
                 "renderOptions": {
                     "commitReferences": true,
-                    "authors": false
+                    "authors": true,
+                    "mapAuthorsToGitHubUsernames": false
                 }
             }
         },
