@@ -1,3 +1,19 @@
+## 0.13.0 (2024-09-25)
+
+
+### 🚀 Features
+
+- added module exports ([9eee903](https://github.com/radix-ng/primitives/commit/9eee903))
+
+- **progress:** added NgModule export ([d2c5875](https://github.com/radix-ng/primitives/commit/d2c5875))
+
+- **radix-docs:** added example of Sheet component ([1feae56](https://github.com/radix-ng/primitives/commit/1feae56))
+
+
+### ❤️  Thank You
+
+- Oleg Pimenov
+
 ## 0.12.2 (2024-09-19)
 
 
