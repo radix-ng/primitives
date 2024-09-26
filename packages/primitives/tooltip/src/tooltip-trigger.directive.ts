@@ -16,7 +16,7 @@ import { injectTooltipRoot } from './tooltip-root.directive';
 })
 export class RdxTooltipTriggerDirective {
     readonly tooltipRoot = injectTooltipRoot();
-    private elementRef = inject<ElementRef<HTMLElement>>(ElementRef<HTMLElement>);
+    readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef<HTMLElement>);
 
     private isPointerDown = false;
     private isPointerInside = false;

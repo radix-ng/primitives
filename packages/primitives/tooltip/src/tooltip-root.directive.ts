@@ -1,14 +1,19 @@
+import { Overlay, OverlayRef } from '@angular/cdk/overlay';
+import { DomPortal } from '@angular/cdk/portal';
 import {
     computed,
+    contentChild,
     Directive,
-    EventEmitter,
+    effect,
     inject,
     InjectionToken,
     input,
     OnInit,
-    Output,
+    output,
     signal
 } from '@angular/core';
+import { RdxTooltipContentDirective } from './tooltip-content.directive';
+import { RdxTooltipTriggerDirective } from './tooltip-trigger.directive';
 import { injectTooltipConfig } from './tooltip.config';
 
 export type RdxTooltipState = 'delayed-open' | 'instant-open' | 'closed';
@@ -54,8 +59,15 @@ export class RdxTooltipRootDirective implements OnInit {
 
         return 'closed';
     });
+    tooltipContentDirective = contentChild.required(RdxTooltipContentDirective);
+    tooltipTriggerDirective = contentChild.required(RdxTooltipTriggerDirective);
+    tooltipContent = computed(() => this.tooltipContentDirective()?.elementRef);
+    onOpenChange = output<boolean>();
+    overlayRef: OverlayRef | null = null;
+    overlay = inject(Overlay);
+    instance?: unknown;
 
-    @Output() onOpenChange = new EventEmitter<boolean>();
+    private portal: DomPortal<unknown>;
 
     ngOnInit(): void {
         if (this.defaultOpen()) {
@@ -120,4 +132,82 @@ export class RdxTooltipRootDirective implements OnInit {
         this.isOpen.set(open);
         this.onOpenChange.emit(open);
     }
+
+    private createOverlayRef(): OverlayRef | null {
+        if (this.overlayRef) {
+            return this.overlayRef;
+        }
+
+        const tooltipTriggerDirective = this.tooltipTriggerDirective();
+
+        if (!tooltipTriggerDirective) {
+            return null;
+        }
+
+        const strategy = this.overlay
+            .position()
+            .flexibleConnectedTo(tooltipTriggerDirective.elementRef)
+            // .withTransformOriginOn(this.originSelector)
+            .withFlexibleDimensions(false)
+            .withPositions([
+                {
+                    originX: 'center',
+                    originY: 'top',
+                    overlayX: 'center',
+                    overlayY: 'bottom'
+                }
+            ])
+            .withLockedPosition();
+        //.withScrollableC
+        // ontainers(this.scrollDispatcher.getAncestorScrollContainers(this.elementRef));
+
+        // strategy.positionChanges.pipe(takeUntil(this.destroyed)).subscribe(this.onPositionChange);
+
+        this.overlayRef = this.overlay.create({
+            //...this.overlayConfig,
+            direction: undefined, // this.direction || undefined,
+            positionStrategy: strategy
+            // scrollStrategy: this.scrollStrategy()
+        });
+
+        // this.overlayRef.detachments().pipe(takeUntil(this.destroyed)).subscribe(this.detach);
+
+        return this.overlayRef;
+    }
+
+    private show(): void {
+        this.overlayRef = this.createOverlayRef();
+        const contentElementRef = this.tooltipContentDirective()?.elementRef;
+
+        if (this.overlayRef === null || contentElementRef === undefined) {
+            console.log('some troubles', this.overlayRef, contentElementRef);
+            return;
+        }
+
+        this.detach();
+
+        this.portal = this.portal || new DomPortal(contentElementRef);
+
+        console.log(123123);
+        this.instance = this.overlayRef.attach(this.portal);
+        console.log('instance', this.instance);
+    }
+
+    private detach(): void {
+        if (this.overlayRef?.hasAttached()) {
+            this.overlayRef.detach();
+        }
+    }
+
+    private readonly onIsOpenChangeEffect = effect(() => {
+        const isOpen = this.isOpen();
+        const tooltipContent = this.tooltipContent();
+
+        if (isOpen) {
+            console.log('show', tooltipContent);
+            this.show();
+        } else {
+            console.log('hide', tooltipContent);
+        }
+    });
 }
