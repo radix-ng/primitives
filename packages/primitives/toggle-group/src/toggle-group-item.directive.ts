@@ -1,4 +1,5 @@
-import { booleanAttribute, Directive, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { FocusableOption } from '@angular/cdk/a11y';
+import { booleanAttribute, Directive, ElementRef, inject, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { RdxToggleGroupItemToken } from './toggle-group-item.token';
 import { injectToggleGroup } from './toggle-group.token';
 
@@ -20,13 +21,14 @@ import { injectToggleGroup } from './toggle-group.token';
         '(click)': 'toggle()'
     }
 })
-export class RdxToggleGroupItemDirective implements OnChanges {
+export class RdxToggleGroupItemDirective implements OnChanges, FocusableOption {
     /**
      * Access the toggle group.
      * @ignore
      */
     protected readonly toggleGroup = injectToggleGroup();
 
+    private readonly elementRef = inject(ElementRef);
     /**
      * The value of this toggle button.
      */
@@ -52,6 +54,13 @@ export class RdxToggleGroupItemDirective implements OnChanges {
         if ('disabled' in changes) {
             // TODO
         }
+    }
+
+    /**
+     * @ignore
+     */
+    focus(): void {
+        this.elementRef.nativeElement.focus();
     }
 
     /**
