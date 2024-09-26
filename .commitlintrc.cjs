@@ -36,6 +36,7 @@ const config = {
                 'dialog',
                 'radio',
                 'radio-group',
+                'toggle',
                 'code',
                 'kbd',
                 'radix-docs',
