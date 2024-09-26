@@ -1,15 +1,17 @@
 import { booleanAttribute, Directive, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { RdxToggleGroupButtonToken } from './toggle-group-button.token';
+import { RdxToggleGroupItemToken } from './toggle-group-item.token';
 import { injectToggleGroup } from './toggle-group.token';
 
 @Directive({
-    selector: 'button[rdxToggleGroupButton]',
+    selector: 'button[rdxToggleGroupItem]',
     standalone: true,
-    providers: [{ provide: RdxToggleGroupButtonToken, useExisting: RdxToggleGroupButtonDirective }],
+    providers: [{ provide: RdxToggleGroupItemToken, useExisting: RdxToggleGroupItemDirective }],
     host: {
         role: 'radio',
         '[attr.aria-checked]': 'checked',
         '[attr.aria-disabled]': 'disabled || toggleGroup.disabled',
+        '[attr.aria-pressed]': 'undefined',
+
         '[attr.data-disabled]': 'disabled || toggleGroup.disabled',
         '[attr.data-state]': 'checked ? "on" : "off"',
         '[attr.data-orientation]': 'toggleGroup.orientation',
@@ -17,7 +19,7 @@ import { injectToggleGroup } from './toggle-group.token';
         '(click)': 'toggle()'
     }
 })
-export class RdxToggleGroupButtonDirective implements OnChanges {
+export class RdxToggleGroupItemDirective implements OnChanges {
     /**
      * Access the toggle group.
      * @ignore

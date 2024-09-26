@@ -63,7 +63,7 @@ export const Default: Story = {
     render: () => ({
         template: html`
             <button class="Toggle" rdxToggle aria-label="Toggle italic">
-                <lucide-angular name="italic" size="16"></lucide-angular>
+                <lucide-angular name="italic" size="12"></lucide-angular>
             </button>
         `
     })

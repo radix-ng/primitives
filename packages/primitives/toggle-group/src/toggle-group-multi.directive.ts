@@ -10,8 +10,8 @@ import {
     SimpleChanges
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import type { RdxToggleGroupButtonDirective } from './toggle-group-button.directive';
-import { RdxToggleGroupButtonToken } from './toggle-group-button.token';
+import type { RdxToggleGroupItemDirective } from './toggle-group-item.directive';
+import { RdxToggleGroupItemToken } from './toggle-group-item.token';
 import { RdxToggleGroupToken } from './toggle-group.token';
 
 @Directive({
@@ -60,8 +60,8 @@ export class RdxToggleGroupMultiDirective implements OnChanges, AfterContentInit
      * Access the buttons in the toggle group.
      * @ignore
      */
-    @ContentChildren(RdxToggleGroupButtonToken)
-    protected buttons?: QueryList<RdxToggleGroupButtonDirective>;
+    @ContentChildren(RdxToggleGroupItemToken)
+    protected buttons?: QueryList<RdxToggleGroupItemDirective>;
 
     /**
      * The value change callback.
