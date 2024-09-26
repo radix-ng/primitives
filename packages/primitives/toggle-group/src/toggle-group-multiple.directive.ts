@@ -15,8 +15,8 @@ import { RdxToggleGroupItemToken } from './toggle-group-item.token';
 import { RdxToggleGroupToken } from './toggle-group.token';
 
 @Directive({
-    selector: '[rdxToggleGroupMulti]',
-    exportAs: 'rdxToggleGroupMulti',
+    selector: '[rdxToggleGroupMultiple]',
+    exportAs: 'rdxToggleGroupMultiple',
     standalone: true,
     providers: [
         { provide: RdxToggleGroupToken, useExisting: RdxToggleGroupMultipleDirective },
