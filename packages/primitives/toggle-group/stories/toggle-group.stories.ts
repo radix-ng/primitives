@@ -95,8 +95,11 @@ export const Default: Story = {
 
 export const Multiple: Story = {
     render: () => ({
+        props: {
+            selectedValues: ['left', 'center']
+        },
         template: html`
-            <div class="ToggleGroup" rdxToggleGroupMultiple value="['left','center']" aria-label="Text alignment">
+            <div class="ToggleGroup" rdxToggleGroupMultiple [value]="selectedValues" aria-label="Text alignment">
                 <button class="ToggleGroupItem" rdxToggleGroupItem value="left" aria-label="Left aligned">
                     <lucide-icon name="align-left" size="12"></lucide-icon>
                 </button>
