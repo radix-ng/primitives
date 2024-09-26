@@ -43,6 +43,7 @@ const config = {
                 'radix-docs',
                 'progress',
                 'shadcn',
+                'switch',
                 'docs',
                 'release',
                 'deps',

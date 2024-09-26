@@ -30,8 +30,8 @@ import { RadioGroupDirective, RadioGroupProps, RDX_RADIO_GROUP } from './radio-t
         '[attr.data-disabled]': 'disabled ? "" : null',
         '[attr.tabindex]': '-1',
         '[attr.dir]': 'dir',
-        '(keydown)': '_onKeydown($event)',
-        '(focusin)': '_onFocusin($event)'
+        '(keydown)': 'onKeydown($event)',
+        '(focusin)': 'onFocusin($event)'
     }
 })
 export class RdxRadioGroupDirective
@@ -142,7 +142,7 @@ export class RdxRadioGroupDirective
     /**
      * When focus leaves the radio group.
      */
-    _onFocusin(event: FocusEvent): void {
+    protected onFocusin(event: FocusEvent): void {
         const target = event.target as HTMLElement;
         const radioItem = this.radioItems.find((item) => item.element.nativeElement === target);
         if (radioItem) {
@@ -150,7 +150,7 @@ export class RdxRadioGroupDirective
         }
     }
 
-    _onKeydown(event: KeyboardEvent): void {
+    protected onKeydown(event: KeyboardEvent): void {
         if (this.disabled) return;
 
         switch (event.keyCode) {
