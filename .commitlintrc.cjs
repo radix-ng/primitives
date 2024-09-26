@@ -37,6 +37,7 @@ const config = {
                 'radio',
                 'radio-group',
                 'toggle',
+                'toggle-group',
                 'code',
                 'kbd',
                 'radix-docs',

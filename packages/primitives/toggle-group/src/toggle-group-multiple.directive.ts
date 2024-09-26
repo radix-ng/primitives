@@ -16,10 +16,11 @@ import { RdxToggleGroupToken } from './toggle-group.token';
 
 @Directive({
     selector: '[rdxToggleGroupMulti]',
+    exportAs: 'rdxToggleGroupMulti',
     standalone: true,
     providers: [
-        { provide: RdxToggleGroupToken, useExisting: RdxToggleGroupMultiDirective },
-        { provide: NG_VALUE_ACCESSOR, useExisting: RdxToggleGroupMultiDirective, multi: true }
+        { provide: RdxToggleGroupToken, useExisting: RdxToggleGroupMultipleDirective },
+        { provide: NG_VALUE_ACCESSOR, useExisting: RdxToggleGroupMultipleDirective, multi: true }
     ],
     host: {
         role: 'group',
@@ -27,34 +28,34 @@ import { RdxToggleGroupToken } from './toggle-group.token';
         '(focusout)': 'onTouched?.()'
     }
 })
-export class RdxToggleGroupMultiDirective implements OnChanges, AfterContentInit, ControlValueAccessor {
+export class RdxToggleGroupMultipleDirective implements OnChanges, AfterContentInit, ControlValueAccessor {
     /**
      * The selected toggle button.
      */
-    @Input('rdxToggleGroupMultiValue') value: ReadonlyArray<string> = [];
+    @Input() value: ReadonlyArray<string> = [];
 
     /**
      * The orientation of the toggle group.
      * @default 'horizontal'
      */
-    @Input('rdxToggleGroupMultiOrientation') orientation: 'horizontal' | 'vertical' = 'horizontal';
+    @Input() orientation: 'horizontal' | 'vertical' = 'horizontal';
 
     /**
      * Whether the toggle group is disabled.
      * @default false
      */
-    @Input({ alias: 'rdxToggleGroupMultiDisabled', transform: booleanAttribute }) disabled = false;
+    @Input({ transform: booleanAttribute }) disabled = false;
 
     /**
      * Whether the toggle group roving focus should wrap.
      * @default true
      */
-    @Input({ alias: 'rdxToggleGroupMultiWrap', transform: booleanAttribute }) wrap = true;
+    @Input({ transform: booleanAttribute }) wrap = true;
 
     /**
      * Event emitted when the selected toggle button changes.
      */
-    @Input('rdxToggleGroupMultiValueChange') readonly valueChange = new EventEmitter<ReadonlyArray<string>>();
+    @Input() readonly valueChange = new EventEmitter<ReadonlyArray<string>>();
 
     /**
      * Access the buttons in the toggle group.

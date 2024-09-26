@@ -16,6 +16,7 @@ import { RdxToggleGroupToken } from './toggle-group.token';
 
 @Directive({
     selector: '[rdxToggleGroup]',
+    exportAs: 'rdxToggleGroup',
     standalone: true,
     providers: [
         { provide: RdxToggleGroupToken, useExisting: RdxToggleGroupDirective },

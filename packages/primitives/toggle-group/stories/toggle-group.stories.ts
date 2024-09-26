@@ -1,7 +1,7 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { AlignCenter, AlignLeft, AlignRight, LucideAngularModule } from 'lucide-angular';
 import { RdxToggleGroupItemDirective } from '../src/toggle-group-item.directive';
-import { RdxToggleGroupMultiDirective } from '../src/toggle-group-multi.directive';
+import { RdxToggleGroupMultipleDirective } from '../src/toggle-group-multiple.directive';
 import { RdxToggleGroupDirective } from '../src/toggle-group.directive';
 
 const html = String.raw;
@@ -13,7 +13,7 @@ export default {
             imports: [
                 RdxToggleGroupDirective,
                 RdxToggleGroupItemDirective,
-                RdxToggleGroupMultiDirective,
+                RdxToggleGroupMultipleDirective,
                 LucideAngularModule,
                 LucideAngularModule.pick({ AlignRight, AlignLeft, AlignCenter })
             ]

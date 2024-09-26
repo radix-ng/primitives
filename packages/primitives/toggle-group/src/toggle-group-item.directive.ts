@@ -3,7 +3,8 @@ import { RdxToggleGroupItemToken } from './toggle-group-item.token';
 import { injectToggleGroup } from './toggle-group.token';
 
 @Directive({
-    selector: 'button[rdxToggleGroupItem]',
+    selector: '[rdxToggleGroupItem]',
+    exportAs: 'rdxToggleGroupItem',
     standalone: true,
     providers: [{ provide: RdxToggleGroupItemToken, useExisting: RdxToggleGroupItemDirective }],
     host: {
