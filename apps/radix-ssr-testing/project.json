@@ -1,0 +1,102 @@
+{
+    "name": "radix-ssr-testing",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "projectType": "application",
+    "prefix": "app",
+    "sourceRoot": "apps/radix-ssr-testing/src",
+    "tags": [],
+    "targets": {
+        "build": {
+            "executor": "@angular-devkit/build-angular:application",
+            "outputs": [
+                "{options.outputPath}"
+            ],
+            "options": {
+                "outputPath": "dist/apps/radix-ssr-testing",
+                "index": "apps/radix-ssr-testing/src/index.html",
+                "browser": "apps/radix-ssr-testing/src/main.ts",
+                "polyfills": [
+                    "zone.js"
+                ],
+                "tsConfig": "apps/radix-ssr-testing/tsconfig.app.json",
+                "inlineStyleLanguage": "scss",
+                "assets": [
+                    {
+                        "glob": "**/*",
+                        "input": "apps/radix-ssr-testing/public"
+                    }
+                ],
+                "styles": [
+                    "apps/radix-ssr-testing/src/styles.scss"
+                ],
+                "scripts": [],
+                "server": "apps/radix-ssr-testing/src/main.server.ts",
+                "prerender": true,
+                "ssr": {
+                    "entry": "apps/radix-ssr-testing/server.ts"
+                }
+            },
+            "configurations": {
+                "production": {
+                    "budgets": [
+                        {
+                            "type": "initial",
+                            "maximumWarning": "500kb",
+                            "maximumError": "1mb"
+                        },
+                        {
+                            "type": "anyComponentStyle",
+                            "maximumWarning": "2kb",
+                            "maximumError": "4kb"
+                        }
+                    ],
+                    "outputHashing": "all"
+                },
+                "development": {
+                    "optimization": false,
+                    "extractLicenses": false,
+                    "sourceMap": true
+                }
+            },
+            "defaultConfiguration": "production"
+        },
+        "serve": {
+            "executor": "@angular-devkit/build-angular:dev-server",
+            "configurations": {
+                "production": {
+                    "buildTarget": "radix-ssr-testing:build:production"
+                },
+                "development": {
+                    "buildTarget": "radix-ssr-testing:build:development"
+                }
+            },
+            "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+            "executor": "@angular-devkit/build-angular:extract-i18n",
+            "options": {
+                "buildTarget": "radix-ssr-testing:build"
+            }
+        },
+        "lint": {
+            "executor": "@nx/eslint:lint"
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": [
+                "{workspaceRoot}/coverage/{projectRoot}"
+            ],
+            "options": {
+                "jestConfig": "apps/radix-ssr-testing/jest.config.ts"
+            }
+        },
+        "serve-static": {
+            "executor": "@nx/web:file-server",
+            "options": {
+                "buildTarget": "radix-ssr-testing:build",
+                "staticFilePath": "dist/apps/radix-ssr-testing/browser",
+                "spa": true
+            }
+        }
+    }
+}

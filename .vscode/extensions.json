@@ -5,6 +5,7 @@
         "astro-build.astro-vscode",
         "angular.ng-template",
         "editorconfig.editorconfig",
-        "dbaeumer.vscode-eslint"
+        "dbaeumer.vscode-eslint",
+        "firsttris.vscode-jest-runner"
     ]
 }
