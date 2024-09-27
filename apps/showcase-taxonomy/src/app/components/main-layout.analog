@@ -1,10 +1,10 @@
 <script lang="ts">
     import { RouteMeta } from '@analogjs/router';
     import { TxMainNavComponent } from '../components/main-nav.component';
+    import { TxSiteFooterComponent } from '../components/site-footer.component';
     import { RouterOutlet } from '@angular/router';
     import { inject } from '@angular/core';
     import { DOCUMENT } from '@angular/common';
-    import { TxSiteFooterComponent } from '@taxonomy/components/site-footer.component';
 
     export const routeMeta: RouteMeta = {
         title: 'Index Page'
