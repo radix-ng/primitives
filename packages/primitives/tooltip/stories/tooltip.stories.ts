@@ -30,6 +30,13 @@ export default {
                 </div>
 
                 <style>
+                    .container {
+                        height: 150px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+
                     /* reset */
                     button {
                         all: unset;
@@ -137,15 +144,18 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: `
-            <ng-container rdxTooltipRoot>
-                <button class="IconButton" rdxTooltipTrigger>+</button>
-                <ng-container rdxTooltipPortal>
-                    <div class="TooltipContent" rdxTooltipContent [sideOffset]="5">
-                        Add to library
-                        <div class="TooltipArrow" rdxTooltipArrow></div>
-                    </div>
+            <div class="container">
+                <ng-container rdxTooltipRoot #tooltipRoot="rdxTooltipRoot">
+                    <button class="IconButton" rdxTooltipTrigger>+</button>
+
+                    <ng-template rdxTooltipContent [sideOffset]="5">
+                        <div class="TooltipContent">
+                            Add to library
+                            <div class="TooltipArrow" rdxTooltipArrow></div>
+                        </div>
+                    </ng-template>
                 </ng-container>
-            </ng-container>
+            </div>
         `
     })
 };

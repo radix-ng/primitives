@@ -1,16 +1,19 @@
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
-import { DomPortal } from '@angular/cdk/portal';
+import { TemplatePortal } from '@angular/cdk/portal';
 import {
     computed,
     contentChild,
     Directive,
     effect,
+    forwardRef,
     inject,
     InjectionToken,
     input,
     OnInit,
     output,
-    signal
+    signal,
+    ViewContainerRef,
+    ViewRef
 } from '@angular/core';
 import { RdxTooltipContentDirective } from './tooltip-content.directive';
 import { RdxTooltipTriggerDirective } from './tooltip-trigger.directive';
@@ -30,12 +33,13 @@ export function injectTooltipRoot(): RdxTooltipRootDirective {
     providers: [
         {
             provide: RdxTooltipRootToken,
-            useExisting: RdxTooltipRootDirective
+            useExisting: forwardRef(() => RdxTooltipRootDirective)
         }
     ],
     exportAs: 'rdxTooltipRoot'
 })
 export class RdxTooltipRootDirective implements OnInit {
+    private readonly viewContainerRef = inject(ViewContainerRef);
     readonly tooltipConfig = injectTooltipConfig();
     defaultOpen = input<boolean>(false);
     open = input<boolean>(this.defaultOpen());
@@ -59,15 +63,16 @@ export class RdxTooltipRootDirective implements OnInit {
 
         return 'closed';
     });
-    tooltipContentDirective = contentChild.required(RdxTooltipContentDirective);
+    tooltipContentDirective = contentChild.required(RdxTooltipContentDirective, { descendants: false });
     tooltipTriggerDirective = contentChild.required(RdxTooltipTriggerDirective);
-    tooltipContent = computed(() => this.tooltipContentDirective()?.elementRef);
-    onOpenChange = output<boolean>();
-    overlayRef: OverlayRef | null = null;
-    overlay = inject(Overlay);
-    instance?: unknown;
+    tooltipContentTemplateRef = computed(() => this.tooltipContentDirective()?.templateRef);
 
-    private portal: DomPortal<unknown>;
+    onOpenChange = output<boolean>();
+    overlayRef?: OverlayRef;
+    overlay = inject(Overlay);
+    instance?: ViewRef;
+
+    private portal: TemplatePortal<unknown>;
 
     ngOnInit(): void {
         if (this.defaultOpen()) {
@@ -133,33 +138,21 @@ export class RdxTooltipRootDirective implements OnInit {
         this.onOpenChange.emit(open);
     }
 
-    private createOverlayRef(): OverlayRef | null {
+    private createOverlayRef(): OverlayRef {
         if (this.overlayRef) {
             return this.overlayRef;
         }
 
-        const tooltipTriggerDirective = this.tooltipTriggerDirective();
-
-        if (!tooltipTriggerDirective) {
-            return null;
-        }
-
         const strategy = this.overlay
             .position()
-            .flexibleConnectedTo(tooltipTriggerDirective.elementRef)
+            .flexibleConnectedTo(this.tooltipTriggerDirective().elementRef)
             // .withTransformOriginOn(this.originSelector)
             .withFlexibleDimensions(false)
             .withPositions([
-                {
-                    originX: 'center',
-                    originY: 'top',
-                    overlayX: 'center',
-                    overlayY: 'bottom'
-                }
+                this.tooltipContentDirective().position()
             ])
             .withLockedPosition();
-        //.withScrollableC
-        // ontainers(this.scrollDispatcher.getAncestorScrollContainers(this.elementRef));
+        //.withScrollableContainers(this.scrollDispatcher.getAncestorScrollContainers(this.elementRef));
 
         // strategy.positionChanges.pipe(takeUntil(this.destroyed)).subscribe(this.onPositionChange);
 
@@ -177,20 +170,13 @@ export class RdxTooltipRootDirective implements OnInit {
 
     private show(): void {
         this.overlayRef = this.createOverlayRef();
-        const contentElementRef = this.tooltipContentDirective()?.elementRef;
-
-        if (this.overlayRef === null || contentElementRef === undefined) {
-            console.log('some troubles', this.overlayRef, contentElementRef);
-            return;
-        }
+        const tooltipContentTemplateRef = this.tooltipContentTemplateRef;
 
         this.detach();
 
-        this.portal = this.portal || new DomPortal(contentElementRef);
+        this.portal = this.portal || new TemplatePortal(tooltipContentTemplateRef(), this.viewContainerRef);
 
-        console.log(123123);
         this.instance = this.overlayRef.attach(this.portal);
-        console.log('instance', this.instance);
     }
 
     private detach(): void {
@@ -199,15 +185,17 @@ export class RdxTooltipRootDirective implements OnInit {
         }
     }
 
+    private hide(): void {
+        this.instance?.destroy();
+    }
+
     private readonly onIsOpenChangeEffect = effect(() => {
         const isOpen = this.isOpen();
-        const tooltipContent = this.tooltipContent();
 
         if (isOpen) {
-            console.log('show', tooltipContent);
             this.show();
         } else {
-            console.log('hide', tooltipContent);
+            this.hide();
         }
     });
 }
