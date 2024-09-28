@@ -32,12 +32,45 @@ const { tabs, activeTab } = Astro.props as Props;
 {
     tabs.map((tab, index) => (
         <div id="Code" class={`tab-content ${activeTab === index ? 'block' : 'hidden'}`}>
-            <Code code={tab.content} lang="angular-ts" />
+            <div class="code-block relative max-h-24 overflow-hidden" data-index={index}>
+                <Code code={tab.content} lang="angular-ts" />
+                <div class="gradient-overlay pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white" />
+                <button
+                    data-accent-color="gray"
+                    class="rt-reset rt-BaseButton rt-r-size-1 rt-variant-soft rt-high-contrast rt-Button toggle-code-btn absolute bottom-0 left-1/2 -translate-x-1/2 transform"
+                    data-index={index}
+                    aria-expanded="false"
+                >
+                    Expand Code
+                </button>
+            </div>
         </div>
     ))
 }
 
 <script>
+    document.querySelectorAll('.toggle-code-btn').forEach((button) => {
+        button.addEventListener('click', () => {
+            const index = parseInt(button.getAttribute('data-index'));
+
+            const codeBlock = document.querySelector(`.code-block[data-index="${index}"]`);
+
+            if (button.getAttribute('aria-expanded') === 'false') {
+                codeBlock.classList.remove('max-h-24');
+                codeBlock.classList.add('max-h-full');
+                button.textContent = 'Collapse Code';
+                button.classList.add('bottom-4');
+                button.setAttribute('aria-expanded', 'true');
+            } else {
+                codeBlock.classList.remove('max-h-full');
+                codeBlock.classList.add('max-h-24');
+                button.textContent = 'Expand Code';
+                button.setAttribute('aria-expanded', 'false');
+                button.classList.add('bottom-0');
+            }
+        });
+    });
+
     document.querySelectorAll('.tab').forEach((tabElement) => {
         tabElement.addEventListener('click', () => {
             const index = parseInt(tabElement.getAttribute('data-index') as string);
@@ -64,3 +97,17 @@ const { tabs, activeTab } = Astro.props as Props;
         });
     });
 </script>
+
+<style>
+    .max-h-24 {
+        max-height: 10rem;
+    }
+
+    .max-h-full {
+        max-height: none;
+    }
+
+    .gradient-overlay {
+        background: linear-gradient(0deg, white, transparent);
+    }
+</style>
