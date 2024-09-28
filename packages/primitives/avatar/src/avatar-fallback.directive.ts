@@ -1,5 +1,15 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Directive, inject, Input, NgZone, numberAttribute, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
+import {
+    Directive,
+    inject,
+    Input,
+    NgZone,
+    numberAttribute,
+    OnDestroy,
+    OnInit,
+    PLATFORM_ID,
+    signal
+} from '@angular/core';
 import { injectAvatar } from './avatar-root.directive';
 import { injectAvatarConfig } from './avatar.config';
 
@@ -12,7 +22,7 @@ export interface RdxAvatarFallbackProps {
     exportAs: 'rdxAvatarFallback',
     standalone: true,
     host: {
-        '[style.display]': 'visible ? null : "none"'
+        '[style.display]': 'visible() ? null : "none"'
     }
 })
 export class RdxAvatarFallbackDirective implements RdxAvatarFallbackProps, OnInit, OnDestroy {
@@ -31,9 +41,7 @@ export class RdxAvatarFallbackDirective implements RdxAvatarFallbackProps, OnIni
      */
     @Input({ alias: 'rdxDelayMs', transform: numberAttribute }) delayMs: number = this.config.delayMs;
 
-    protected get visible(): boolean {
-        return this.delayElapsed && this.avatar._state() !== 'loaded';
-    }
+    readonly visible = signal(false);
 
     /**
      * Determine the delay has elapsed, and we can show the fallback.
@@ -48,6 +56,7 @@ export class RdxAvatarFallbackDirective implements RdxAvatarFallbackProps, OnIni
                 this.timeoutId = globalThis.setTimeout(() => {
                     this.ngZone.run(() => {
                         this.delayElapsed = true;
+                        this.updateVisibility();
                     });
                 }, this.delayMs);
             });
@@ -58,5 +67,9 @@ export class RdxAvatarFallbackDirective implements RdxAvatarFallbackProps, OnIni
         if (isPlatformBrowser(this.platformId) && this.timeoutId !== null) {
             globalThis.clearTimeout(this.timeoutId);
         }
+    }
+
+    private updateVisibility(): void {
+        this.visible.set(this.delayElapsed && this.avatar._state() !== 'loaded');
     }
 }

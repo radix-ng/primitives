@@ -1,14 +1,18 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { NxWelcomeComponent } from './nx-welcome.component';
 
 @Component({
-    standalone: true,
-    imports: [NxWelcomeComponent, RouterModule],
     selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrl: './app.component.scss'
+    standalone: true,
+    imports: [RouterModule],
+    template: `
+        <h1>SSR / RSC testing</h1>
+        <div style="display: flex; gap: 10em;">
+            <div style="display: flex; flex-direction: column; gap: 0.5em;">
+                <a href="/avatar">Avatar</a>
+            </div>
+            <router-outlet />
+        </div>
+    `
 })
-export class AppComponent {
-    title = 'radix-ssr-testing';
-}
+export class AppComponent {}

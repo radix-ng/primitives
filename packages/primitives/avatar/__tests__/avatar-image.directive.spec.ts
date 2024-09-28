@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { RdxAvatarFallbackDirective } from '../src/avatar-fallback.directive';
 import { RdxAvatarImageDirective } from '../src/avatar-image.directive';
 import { RdxAvatarRootDirective } from '../src/avatar-root.directive';
@@ -32,5 +33,20 @@ describe('RdxAvatarImageDirective', () => {
 
     it('should compile', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should display the image initially', () => {
+        const imgElement = fixture.debugElement.query(By.css('img[rdxAvatarImage]'));
+        expect(imgElement).toBeTruthy();
+        expect(imgElement.nativeElement.src).toContain('data:image/svg+xml');
+    });
+
+    it('should keep fallback hidden after successful image load', () => {
+        const imgElement = fixture.debugElement.query(By.css('img[rdxAvatarImage]'));
+        imgElement.triggerEventHandler('load', null);
+        fixture.detectChanges();
+
+        const fallbackElement = fixture.debugElement.query(By.directive(RdxAvatarFallbackDirective));
+        expect(fallbackElement.nativeElement.style.display).toBe('none');
     });
 });
