@@ -4,5 +4,9 @@ export const appRoutes: Route[] = [
     {
         path: 'avatar',
         loadComponent: () => import('./components/avatar/avatar.component')
+    },
+    {
+        path: 'accordion',
+        loadComponent: () => import('./components/accordion/accordion.component')
     }
 ];

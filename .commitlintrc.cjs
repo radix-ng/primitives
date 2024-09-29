@@ -41,6 +41,7 @@ const config = {
                 'code',
                 'kbd',
                 'radix-docs',
+                'radix-ssr-testing',
                 'progress',
                 'shadcn',
                 'switch',

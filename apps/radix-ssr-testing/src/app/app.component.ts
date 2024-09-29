@@ -9,6 +9,7 @@ import { RouterModule } from '@angular/router';
         <h1>SSR / RSC testing</h1>
         <div style="display: flex; gap: 10em;">
             <div style="display: flex; flex-direction: column; gap: 0.5em;">
+                <a href="/accordion">Accordion</a>
                 <a href="/avatar">Avatar</a>
             </div>
             <router-outlet />
