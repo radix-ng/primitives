@@ -5,6 +5,10 @@ section: components
 description: .
 ---
 
+import {
+    attrDataTrigger
+} from '../../../demos/primitives/dropdown-menu/attrs';
+
 # Dropdown Menu
 
 <Description>Displays a menu to the user—such as a set of actions or functions—triggered by a button.</Description>
@@ -18,4 +22,16 @@ Import all parts and piece them together.
 ## API Reference
 
 ### Trigger
+
+The button that toggles the dropdown menu.
+By default, the DropdownMenu.Content will position itself against the trigger.
+
 <PropsTable name="RdxDropdownMenuTriggerDirective" />
+
+<DataAttributesTable attributes={attrDataTrigger} />
+
+### Content
+
+The component that pops out when the dropdown menu is open.
+
+<PropsTable name="RdxDropdownMenuContentDirective" />
