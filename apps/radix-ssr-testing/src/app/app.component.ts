@@ -11,6 +11,7 @@ import { RouterModule } from '@angular/router';
             <div style="display: flex; flex-direction: column; gap: 0.5em;">
                 <a href="/accordion">Accordion</a>
                 <a href="/avatar">Avatar</a>
+                <a href="/collapsible">Collapsible</a>
             </div>
             <router-outlet />
         </div>

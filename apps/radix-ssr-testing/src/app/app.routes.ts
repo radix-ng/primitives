@@ -8,5 +8,9 @@ export const appRoutes: Route[] = [
     {
         path: 'accordion',
         loadComponent: () => import('./components/accordion/accordion.component')
+    },
+    {
+        path: 'collapsible',
+        loadComponent: () => import('./components/collapsible/collapsible.component')
     }
 ];
