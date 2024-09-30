@@ -42,6 +42,7 @@ const config = {
                 'kbd',
                 'radix-docs',
                 'radix-ssr-testing',
+                'showcase-taxonomy',
                 'progress',
                 'shadcn',
                 'switch',
