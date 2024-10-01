@@ -1,5 +1,7 @@
 import { ConnectedPosition } from '@angular/cdk/overlay';
 import { computed, Directive, inject, input, TemplateRef } from '@angular/core';
+import { RdxTooltipContentToken } from './tooltip-content.token';
+import { RdxTooltipRootDirective } from './tooltip-root.directive';
 import { RdxTooltipAlign, RdxTooltipSide } from './tooltip.config';
 import { POSITION_MAP } from './tooltip.constants';
 
@@ -10,9 +12,11 @@ import { POSITION_MAP } from './tooltip.constants';
         //'attr.data-state': 'delayed-open',
         //'[attr.data-side]': 'side()',
         //'[attr.data-align]': 'align()'
-    }
+    },
+    providers: [{ provide: RdxTooltipContentToken, useExisting: RdxTooltipContentDirective }]
 })
 export class RdxTooltipContentDirective {
+    private readonly tooltipRoot = inject(RdxTooltipRootDirective);
     readonly templateRef = inject(TemplateRef);
     side = input<RdxTooltipSide>(RdxTooltipSide.Top);
     sideOffset = input<number>(0);

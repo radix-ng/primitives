@@ -15,7 +15,7 @@ import {
     ViewContainerRef,
     ViewRef
 } from '@angular/core';
-import { RdxTooltipContentDirective } from './tooltip-content.directive';
+import { RdxTooltipContentToken } from './tooltip-content.token';
 import { RdxTooltipTriggerDirective } from './tooltip-trigger.directive';
 import { injectTooltipConfig } from './tooltip.config';
 
@@ -63,7 +63,7 @@ export class RdxTooltipRootDirective implements OnInit {
 
         return 'closed';
     });
-    tooltipContentDirective = contentChild.required(RdxTooltipContentDirective, { descendants: false });
+    tooltipContentDirective = contentChild.required(RdxTooltipContentToken);
     tooltipTriggerDirective = contentChild.required(RdxTooltipTriggerDirective);
     tooltipContentTemplateRef = computed(() => this.tooltipContentDirective()?.templateRef);
 
