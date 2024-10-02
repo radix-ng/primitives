@@ -65,6 +65,10 @@ svg {
     overflow: visible;
 }
 
+.expressive-code {
+    max-width: calc(100vw - 3.5rem);
+}
+
 #Code {
     .expressive-code pre {
         border-top-left-radius: 1px;
@@ -93,4 +97,50 @@ svg {
 .custom-justify-center:after {
     content: '';
     flex: 1;
+}
+
+@media screen and (max-width: 930px) {
+    .rt-TableCell,
+    .rt-TableRow,
+    .rt-TableCell span {
+        white-space: wrap;
+        overflow-wrap: anywhere;
+    }
+}
+
+@media screen and (max-width: 840px) {
+    .rt-TableRow,
+    .rt-TableBody {
+        display: block;
+    }
+
+    .rt-TableCell {
+        display: flex;
+        height: auto;
+        box-shadow: none;
+    }
+
+    .rt-TableHeader {
+        border: none;
+        clip: rect(0 0 0 0);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+    }
+
+    .rt-TableRootTable .rt-TableBody th.rt-TableCell {
+        background-color: var(--gray-a2);
+    }
+
+    .rt-TableCell:before {
+        display: block;
+        flex-shrink: 0;
+        width: 30%;
+        margin-right: 4px;
+        content: attr(data-label);
+        font-weight: bold;
+    }
 }

@@ -14,7 +14,8 @@ h3 {
 }
 
 .AccordionRoot[data-orientation='vertical'] {
-    width: 300px;
+    width: 100%;
+    max-width: 300px;
 }
 
 .AccordionRoot[data-orientation='horizontal'] {

@@ -14,7 +14,6 @@ const data = attributes || [];
             <tr class="rt-TableRow">
                 <th class="rt-TableCell rt-TableColumnHeaderCell" style="width: auto;">Data attribute</th>
                 <th class="rt-TableCell rt-TableColumnHeaderCell">Values</th>
-                <th class="rt-TableCell rt-TableColumnHeaderCell"></th>
             </tr>
         </thead>
         <tbody class="rt-TableBody">
@@ -22,10 +21,10 @@ const data = attributes || [];
                 data.map(({ name, value }) => {
                     return (
                         <tr class="rt-TableRow" style="white-space: nowrap;">
-                            <th class="rt-TableCell rt-TableRowHeaderCell">
+                            <th class="rt-TableCell rt-TableRowHeaderCell" data-label="Data attribute">
                                 <code class="rt-reset rt-Code rt-r-size-2 rt-variant-soft rt-variant-soft">{name}</code>
                             </th>
-                            <td class="rt-TableCell">
+                            <td class="rt-TableCell" data-label="Values">
                                 <div class="rt-Flex rt-r-display-inline-flex rt-r-ai-center rt-r-gap-2">
                                     <div class="rt-Box">
                                         {value ? (
@@ -41,7 +40,6 @@ const data = attributes || [];
                                     </div>
                                 </div>
                             </td>
-                            <td class="rt-TableCell" />
                         </tr>
                     );
                 })
