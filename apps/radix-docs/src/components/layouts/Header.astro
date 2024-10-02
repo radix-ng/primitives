@@ -4,17 +4,29 @@ import ThemeToggle from './ThemeToggle.astro';
 ---
 
 <header class="bg-background-blur sticky top-0 z-50 w-full backdrop-blur-lg">
-    <div class="items-centerpx-4 container flex h-14 max-w-screen-2xl">
-        <MainNavigation />
+    <div class="container flex h-14 max-w-screen-2xl items-center px-4">
+        <div class="flex items-center">
+            <a href="/" class="mr-6 flex items-center" aria-label="Astro documentation">
+                <h4 class="text-xl">
+                    <span class="inline-block">
+                        <span class="font-extrabold">Radix</span>
+                        <span class="font-normal">Angular</span>
+                    </span>
+                </h4>
+            </a>
+        </div>
+        <div class="order-last align-baseline md:relative md:order-none md:mr-4">
+            <MainNavigation />
+        </div>
 
-        <div class="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+        <div class="mr-1 flex flex-1 items-center justify-between space-x-2 md:justify-end">
             <div class="w-full flex-1 md:w-auto md:flex-none"></div>
-            <nav class="flex items-center gap-2">
+            <nav class="flex items-center gap-1">
                 <ThemeToggle />
-                <div class="phone:flex hidden items-center">
+                <div class="flex items-center">
                     <a
                         href="https://github.com/radix-ng/primitives"
-                        class="hover:bg-secondary flex items-center justify-center rounded-md"
+                        class="hover:bg-secondary flex h-8 w-8 items-center justify-center rounded-md"
                     >
                         <svg viewBox="0 0 15 15" width="1.2em" height="1.2em" class="h-4 w-4">
                             <path

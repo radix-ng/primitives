@@ -18,7 +18,7 @@ const navigationItems = navigation.find((item) => {
     return item.section === section;
 });
 
-const pages = navigationItems.sections || [];
+const pages = navigationItems?.sections || [];
 
 function isActive(pageUrl: string) {
     const normalizedPageUrl = pageUrl === '/' ? '/' : pageUrl.replace(/\/$/, '');
