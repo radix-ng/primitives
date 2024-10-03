@@ -1,5 +1,6 @@
 ---
 import '../styles/globals.css';
+import ThemeHeadScript from '../components/theme/theme-head-script.astro';
 
 interface Props {
     title: string;
@@ -9,7 +10,7 @@ const { title } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class="bg:background radix-themes radix-themes-custom-fonts">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width" initial-scale="1.0" />
@@ -53,6 +54,7 @@ const { title } = Astro.props;
                 src: url('https://cdn.workos.com/fonts/untitled-sans-medium-v2.woff2') format('woff2');
             }
         </style>
+        <ThemeHeadScript />
     </head>
     <body
         class="radix-themes radix-themes-custom-fonts min-h-screen antialiased"

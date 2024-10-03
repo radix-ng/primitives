@@ -21,6 +21,7 @@ import { type Config } from 'tailwindcss';
 
 const config = {
     content: ['./src/**/*.{astro,html,mdx,ts}'],
+    darkMode: 'selector',
     theme: {
         container: {
             center: true,

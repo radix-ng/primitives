@@ -1,0 +1,12 @@
+---
+
+---
+
+<script is:inline>
+    const theme = localStorage.getItem('theme');
+
+    if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.firstElementChild.setAttribute('data-theme', theme === 'dark' ? 'github-dark' : 'snazzy-light');
+        document.firstElementChild.classList.add('dark');
+    }
+</script>

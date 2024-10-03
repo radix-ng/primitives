@@ -2,7 +2,7 @@
     <span id="theme-icon"></span>
 </button>
 
-<script type="module">
+<script is:inline>
     const themeBtn = document.getElementById('theme-btn');
     const themeIcon = document.getElementById('theme-icon');
 
@@ -24,7 +24,8 @@
         const currentTheme = getCurrentTheme();
         const newTheme = currentTheme === 'light' ? 'dark' : 'light';
         localStorage.setItem('theme', newTheme);
-        document.firstElementChild.setAttribute('data-theme', newTheme);
+        document.firstElementChild.setAttribute('data-theme', newTheme === 'dark' ? 'github-dark' : 'snazzy-light');
+        document.firstElementChild.classList.toggle('dark');
         setThemeIcon(newTheme);
     }
 

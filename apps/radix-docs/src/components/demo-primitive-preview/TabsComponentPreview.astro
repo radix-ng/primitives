@@ -14,12 +14,14 @@ type Props = {
 const { tabs, activeTab } = Astro.props as Props;
 ---
 
-<div class="flex border-l border-r border-gray-300">
+<div class="flex border-l border-r border-gray-300 dark:border-slate-700">
     {
         tabs.map((tab, index) => (
             <div
                 class={`tab cursor-default border-b-2 px-4 py-2 text-sm transition-colors ${
-                    activeTab === index ? 'border-blue-500 font-bold' : 'border-transparent text-gray-600'
+                    activeTab === index
+                        ? 'border-blue-500 font-bold'
+                        : 'border-transparent text-gray-600 dark:text-slate-300'
                 }`}
                 data-index={index}
             >
@@ -34,10 +36,10 @@ const { tabs, activeTab } = Astro.props as Props;
         <div id="Code" class={`tab-content ${activeTab === index ? 'block' : 'hidden'}`}>
             <div class="code-block relative max-h-24 overflow-hidden" data-index={index}>
                 <Code code={tab.content} lang="angular-ts" />
-                <div class="gradient-overlay pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white" />
+                <div class="pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white dark:from-black" />
                 <button
                     data-accent-color="gray"
-                    class="rt-reset rt-BaseButton rt-r-size-1 rt-variant-soft rt-high-contrast rt-Button toggle-code-btn absolute bottom-0 left-1/2 -translate-x-1/2 transform"
+                    class="rt-reset rt-BaseButton rt-r-size-1 rt-variant-soft rt-high-contrast rt-Button toggle-code-btn absolute bottom-0 left-1/2 -translate-x-1/2 transform dark:bg-slate-700"
                     data-index={index}
                     aria-expanded="false"
                 >
