@@ -8,7 +8,7 @@ import remarkStyled, { remarkDirectives } from './plugins/remarkStyled';
 
 /** @type {import('astro-expressive-code').AstroExpressiveCodeOptions} */
 const codeOptions = {
-    themes: ['snazzy-light'],
+    themes: ['snazzy-light', 'github-dark'],
     styleOverrides: {
         borderWidth: '1px',
         codeFontSize: '13px',

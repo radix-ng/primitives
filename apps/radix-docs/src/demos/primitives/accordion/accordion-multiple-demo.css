@@ -1,7 +1,11 @@
 /* reset */
-button,
-h3 {
-    all: unset;
+:host {
+    button,
+    h3 {
+        all: unset;
+    }
+
+    display: contents;
 }
 
 .AccordionRoot {
