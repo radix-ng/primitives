@@ -53,7 +53,8 @@ export default defineConfig({
                 './src/components/mdx/DataAttributesTable.astro',
                 './src/components/mdx/CSSVariablesTable.astro',
                 './src/components/demo-primitive-preview/ComponentPreview.astro',
-                './src/components/demo-component-preview/ComponentThemesPreview.astro'
+                './src/components/demo-component-preview/ComponentThemesPreview.astro',
+                './src/components/marked-list/MarkedList.astro'
             ]
         }),
         astroExpressiveCode(codeOptions),

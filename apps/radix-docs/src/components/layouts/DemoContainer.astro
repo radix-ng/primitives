@@ -10,12 +10,12 @@ export interface Props {
 const { title, componentName, componentFile } = Astro.props;
 
 const gradientClassesMap: Record<Props['componentName'], string> = {
-    accordion: 'from-tomato5 to-indigo7',
-    avatar: 'from-gold5 to-tomato5',
+    accordion: 'from-tomato5 to-indigo7 dark:from-indigo12 dark:to-crimson9',
+    avatar: 'from-gold5 to-tomato5 dark:from-crimson9 dark:to-purple12',
     'alert-dialog': '',
-    collapsible: 'from-indigo5 to-crimson5',
+    collapsible: 'from-indigo5 to-crimson5 dark:from-purple10 dark:to-cyan12',
     checkbox: 'from-indigo7 to-cyan3',
-    'dropdown-menu': 'from-indigo7 to-cyan3',
+    'dropdown-menu': 'from-indigo7 to-cyan3 dark:from-cyan10 dark:to-slate12',
     default: 'from-gray-500 to-gray-700'
 };
 
