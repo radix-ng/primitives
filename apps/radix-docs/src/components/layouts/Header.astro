@@ -1,4 +1,5 @@
 ---
+import Search from '../search/Search.astro';
 import MainNavigation from './MainNavigation.astro';
 import ThemeToggle from './ThemeToggle.astro';
 ---
@@ -6,9 +7,9 @@ import ThemeToggle from './ThemeToggle.astro';
 <header class="bg-background-blur sticky top-0 z-50 w-full backdrop-blur-lg">
     <div class="container flex h-14 max-w-screen-2xl items-center px-4">
         <div class="flex items-center">
-            <a href="/" class="mr-6 flex items-center" aria-label="Astro documentation">
+            <a href="/" class="mr-1 flex items-center md:mr-6" aria-label="Astro documentation">
                 <h4 class="text-xl">
-                    <span class="inline-block">
+                    <span class="inline-block whitespace-nowrap">
                         <span class="font-extrabold">Radix</span>
                         <span class="font-normal">Angular</span>
                     </span>
@@ -21,6 +22,7 @@ import ThemeToggle from './ThemeToggle.astro';
 
         <div class="mr-1 flex flex-1 items-center justify-between space-x-2 md:justify-end">
             <div class="w-full flex-1 md:w-auto md:flex-none"></div>
+            <Search />
             <nav class="flex items-center gap-1">
                 <ThemeToggle />
                 <div class="flex items-center">
