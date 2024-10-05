@@ -24,8 +24,7 @@ function isActive(segment: string) {
                 class:list={[
                     'transition-colors',
                     {
-                        'text-foreground/60 dark:text-muted-foreground hover:text-foreground/80 dark:hover:text-muted':
-                            !isActive('themes'),
+                        'text-foreground/60 hover:text-foreground/80 dark:hover:text-muted': !isActive('themes'),
                         'text-foreground/100 hover:text-foreground dark:text-muted dark:hover:text-muted font-medium':
                             isActive('themes')
                     }
@@ -38,8 +37,7 @@ function isActive(segment: string) {
                 class:list={[
                     'transition-colors',
                     {
-                        'text-foreground/60 dark:text-muted-foreground hover:text-foreground/80 dark:hover:text-muted':
-                            !isActive('primitives'),
+                        'text-foreground/60 hover:text-foreground/80 dark:hover:text-muted': !isActive('primitives'),
                         'text-foreground/100 hover:text-foreground dark:text-muted dark:hover:text-muted font-medium':
                             isActive('primitives')
                     }
