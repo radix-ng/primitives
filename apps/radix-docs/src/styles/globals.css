@@ -28,12 +28,12 @@
         --ring: 221.2 83.2% 53.3%;
 
         --radius: 0.5rem;
-
-        --background-dark: 141 17% 5%;
     }
 
     .dark {
+        --background: 141 17% 5%;
         --foreground: 0 0% 98%;
+
         --muted-foreground: 240 5% 64.9%;
     }
 }
