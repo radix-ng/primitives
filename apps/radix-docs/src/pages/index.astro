@@ -46,7 +46,7 @@ import DemoNoopContainer from '@/components/layouts/DemoNoopContainer.astro';
                         </div>
                     </div>
                 </section>
-                <section class="text-foreground relative mt-12 h-[40rem] w-full overflow-hidden">
+                <section class="text-foreground relative mt-12 hidden h-[40rem] w-full overflow-hidden md:block">
                     <div
                         class="border-muted bg-card/20 absolute left-1/2 h-[32rem] w-[80rem] -translate-x-1/2 overflow-hidden rounded-3xl border"
                     >
@@ -69,7 +69,13 @@ import DemoNoopContainer from '@/components/layouts/DemoNoopContainer.astro';
                         </div>
                     </div>
                 </section>
-
+                <div class="content sm:px-[48px] md:hidden">
+                    <div class="mx-auto w-full max-w-[1152px] sm:container">
+                        <div class="grid w-auto gap-6 md:gap-12 lg:grid-cols-2 lg:gap-6">
+                            <DemosHomePage />
+                        </div>
+                    </div>
+                </div>
                 <h2 class="flex flex-wrap justify-center pb-8 pt-5">Contributors</h2>
                 <Contributors />
                 <div class="pt-10"></div>
