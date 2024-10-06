@@ -13,7 +13,7 @@ import { demos } from '../../demos/primitives';
         @let componentRender = this.component() | async;
 
         @if (!componentRender || !componentRender.default) {
-            <div class="text-sm text-white">Loading...</div>
+            <div class="text-foreground text-sm">Loading...</div>
         } @else {
             <ng-container *ngComponentOutlet="componentRender.default" />
         }

@@ -21,6 +21,7 @@ const codeOptions = {
 
 // https://astro.build/config
 export default defineConfig({
+    trailingSlash: 'never',
     vite: {
         optimizeDeps: {
             include: [
@@ -29,7 +30,8 @@ export default defineConfig({
                 '@angular/common',
                 '@angular/core',
                 '@angular/cdk',
-                'classnames'
+                'classnames',
+                'lucide-angular'
             ]
         },
         ssr: {
@@ -37,15 +39,15 @@ export default defineConfig({
                 '@radix-ng/**',
                 '@angular/common',
                 '@angular/core',
-                '@angular/core/rxjs-interop'
+                '@angular/core/rxjs-interop',
+                'lucide-angular'
             ]
-        },
-        esbuild: {
-            jsxDev: true
         }
     },
     integrations: [
-        tailwind(),
+        tailwind({
+            applyBaseStyles: false
+        }),
         AutoImport({
             imports: [
                 './src/components/mdx/PropsTable.astro',
