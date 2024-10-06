@@ -20,7 +20,7 @@ import { LucideAngularModule, UnfoldVertical, X } from 'lucide-angular';
     template: `
         <div class="CollapsibleRoot" #collapsibleRoot="collapsibleRoot" [open]="true" rdxCollapsibleRoot>
             <div style="display: flex; align-items: center; justify-content: space-between;">
-                <span class="Text" style="color: white">&#64;peduarte starred 3 repositories</span>
+                <span class="Text">&#64;peduarte starred 3 repositories</span>
                 <button class="IconButton" rdxCollapsibleTrigger>
                     @if (collapsibleRoot.isOpen()) {
                         <lucide-angular [img]="XIcon" size="16" style="display: flex;" />

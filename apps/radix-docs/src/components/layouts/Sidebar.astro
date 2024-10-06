@@ -43,16 +43,16 @@ function isActive(pageUrl: string) {
                                         <a
                                             href={page.url}
                                             class:list={[
-                                                'dark:hover:text-muted group my-1 flex h-fit w-full items-center gap-2 rounded-md border border-transparent text-sm transition-colors hover:underline',
+                                                'group my-1 flex h-fit w-full items-center gap-2 rounded-md border border-transparent text-sm transition-colors hover:underline',
                                                 {
                                                     'text-muted-foreground': !active,
-                                                    'text-foreground dark:text-muted rounded-none font-medium': active
+                                                    'text-foreground ': active
                                                 }
                                             ]}
                                         >
                                             {page.name}
                                             {page.label && (
-                                                <span class="bg-muted rounded-md px-1.5 py-0.5 text-xs leading-none text-[#000000] no-underline group-hover:no-underline">
+                                                <span class="rounded-md bg-[#adfa1d] px-1.5 py-0.5 text-xs leading-none text-[#000000] no-underline group-hover:no-underline">
                                                     {page.label}
                                                 </span>
                                             )}

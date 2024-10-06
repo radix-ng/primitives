@@ -14,7 +14,7 @@ type Props = {
 const { tabs, activeTab } = Astro.props as Props;
 ---
 
-<div class="flex border-l border-r border-gray-300 dark:border-slate-700">
+<div class="border-muted flex border-l border-r">
     {
         tabs.map((tab, index) => (
             <div
