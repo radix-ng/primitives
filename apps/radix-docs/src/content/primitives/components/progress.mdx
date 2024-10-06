@@ -1,0 +1,42 @@
+---
+title: Progress
+slug: progress
+section: components
+description: .
+---
+import { attrDataRoot, attrDataIndicator } from '../../../demos/primitives/progress/attrs.js';
+
+# Progress
+
+<Description>Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.</Description>
+
+<ComponentPreview name="progress" file="progress-demo" />
+
+## Features
+
+<MarkedList items={['Provides context for assistive technology to read the progress of a task.']} />
+
+## Installation
+
+Get started with importing the directive:
+
+```typescript
+import { RdxProgressIndicatorDirective, RdxProgressRootDirective } from '@radix-ng/primitives/progress';
+```
+
+## API Reference
+
+### Root
+`RdxProgressRootDirective`
+<PropsTable name="RdxProgressRootDirective" />
+
+<DataAttributesTable attributes={attrDataRoot} />
+
+### Indicator
+`RdxProgressIndicatorDirective`
+Used to show the progress visually. It also makes progress accessible to assistive technologies.
+
+<DataAttributesTable attributes={attrDataIndicator} />
+
+
+## Accessibility

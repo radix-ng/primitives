@@ -60,7 +60,8 @@ const docsConfig = {
                         { name: 'Avatar', url: '/primitives/components/avatar' },
                         { name: 'Collapsible', url: '/primitives/components/collapsible' },
                         { name: 'Dropdown Menu', url: '/primitives/components/dropdown-menu' },
-                        { name: 'Label', url: '/primitives/components/label' }
+                        { name: 'Label', url: '/primitives/components/label' },
+                        { name: 'Progress', url: '/primitives/components/progress' }
                     ]
                 }
             ]
