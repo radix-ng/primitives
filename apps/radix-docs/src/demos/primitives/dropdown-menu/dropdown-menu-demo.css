@@ -105,3 +105,11 @@ button {
     flex: 1;
     justify-content: flex-end;
 }
+
+[data-highlighted] > .RightSlot {
+    color: white;
+}
+
+[data-disabled] .RightSlot {
+    color: var(--mauve-8);
+}
