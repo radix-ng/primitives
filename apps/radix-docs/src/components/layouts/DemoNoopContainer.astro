@@ -1,0 +1,16 @@
+---
+import { DemoLoaderComponent } from '../demo-primitive-preview/demo-loader.component';
+export interface Props {
+    componentName?: 'accordion' | 'avatar' | 'alert-dialog' | 'checkbox' | 'collapsible' | 'dropdown-menu' | 'default';
+    componentFile?: string;
+    overflow?: boolean;
+}
+
+const { componentName, componentFile } = Astro.props;
+---
+
+<div class="w-full">
+    <div data-component={componentName}>
+        <DemoLoaderComponent {...{ name: componentName, file: componentFile }} client:visible />
+    </div>
+</div>

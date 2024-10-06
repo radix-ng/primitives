@@ -4,6 +4,7 @@ import Header from '@/components/layouts/Header.astro';
 import Announcement from '@/components/layouts/Announcement.astro';
 import Contributors from '@/components/layouts/Contributors.astro';
 import DemosHomePage from '@/components/layouts/DemosHomePage.astro';
+import DemoNoopContainer from '@/components/layouts/DemoNoopContainer.astro';
 ---
 
 <MainLayout title="Radix Angular">
@@ -45,13 +46,30 @@ import DemosHomePage from '@/components/layouts/DemosHomePage.astro';
                         </div>
                     </div>
                 </section>
-                <div class="content sm:px-[48px] lg:px-[64px]">
-                    <div class="mx-auto w-full max-w-[1152px] sm:container">
-                        <div class="grid w-auto gap-6 md:gap-12 lg:grid-cols-2 lg:gap-6">
-                            <DemosHomePage />
+                <section class="text-foreground relative mt-12 h-[40rem] w-full overflow-hidden">
+                    <div
+                        class="border-muted bg-card/20 absolute left-1/2 h-[32rem] w-[80rem] -translate-x-1/2 overflow-hidden rounded-3xl border"
+                    >
+                        <div class="absolute left-1/2 z-[1] h-[32rem] w-[80rem] -translate-x-1/2 md:block">
+                            <div class="absolute left-[16rem] top-8 xl:left-8">
+                                <DemoNoopContainer componentName="avatar" componentFile="avatar-demo" />
+                            </div>
+
+                            <div class="absolute right-[32rem] top-[24rem] md:right-[30rem] md:top-[4rem]">
+                                <DemoNoopContainer componentName="accordion" componentFile="accordion-demo" />
+                            </div>
+
+                            <div class="absolute left-[5rem] top-[18rem]">
+                                <DemoNoopContainer componentName="collapsible" componentFile="collapsible-demo" />
+                            </div>
+
+                            <div class="absolute bottom-[5rem] right-[36rem] hidden md:block xl:right-[32rem]">
+                                <DemoNoopContainer componentName="dropdown-menu" componentFile="dropdown-menu-demo" />
+                            </div>
                         </div>
                     </div>
-                </div>
+                </section>
+
                 <h2 class="flex flex-wrap justify-center pb-8 pt-5">Contributors</h2>
                 <Contributors />
                 <div class="pt-10"></div>
