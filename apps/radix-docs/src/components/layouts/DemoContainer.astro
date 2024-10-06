@@ -28,6 +28,6 @@ const gradientClasses = gradientClassesMap[componentName];
         data-component={componentName}
         class={`custom-justify-center bg-gradient-to-br ${gradientClasses} p-4 md:p-10 lg:h-[400px] rounded-lg relative flex min-h-[256px] w-full items-center `}
     >
-        <DemoLoaderComponent name={componentName} file={componentFile} client:visible />
+        <DemoLoaderComponent {...{ name: componentName, file: componentFile }} client:visible />
     </div>
 </div>
