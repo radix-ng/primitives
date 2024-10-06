@@ -1,7 +1,7 @@
 ---
 import MainLayout from './MainLayout.astro';
 import Sidebar from '../components/layouts/Sidebar.astro';
-import siteConfig from '../config/site-config';
+import docsConfig from '../config/docs-config';
 import Header from '../components/layouts/Header.astro';
 
 interface Props {
@@ -22,7 +22,7 @@ const { title } = Astro.props;
                     class="h-max-[calc(100vh-3.5rem)] fixed top-14 z-30 -ml-2 hidden w-full shrink-0 md:sticky md:block"
                 >
                     <div class="h-max-[calc(100vh-3.5rem)] h-full min-h-fit py-6 pr-6 lg:py-8">
-                        <Sidebar navigation={siteConfig.navigation} />
+                        <Sidebar navigation={docsConfig.navigation} />
                     </div>
                 </aside>
                 <slot />

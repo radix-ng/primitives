@@ -1,9 +1,9 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { getCollection } from 'astro:content';
-import DocumentationLayout from '../../../layouts/DocumentationLayout.astro';
-import { generateToc } from '../../../utils';
-import Toc from '../../../components/layouts/Toc.astro';
+import DocumentationLayout from '@/layouts/DocumentationLayout.astro';
+import { generateToc } from '@/utils';
+import Toc from '@/components/layouts/Toc.astro';
 
 export async function getStaticPaths() {
     const docEntries = await getCollection('themes');

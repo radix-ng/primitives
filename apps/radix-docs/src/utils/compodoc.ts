@@ -1,4 +1,4 @@
-import type { CompodocComponent, CompodocDirective } from '../types/compodocDocumentation.ts';
+import type { CompodocComponent, CompodocDirective } from '@/types/compodocDocumentation.ts';
 
 import documentationComponents from '../../../../dist/components/compodoc/documentation.json';
 import documentationPrimitives from '../../../../dist/primitives/compodoc/documentation.json';

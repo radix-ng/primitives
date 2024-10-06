@@ -5,6 +5,7 @@ import AutoImport from 'astro-auto-import';
 import astroExpressiveCode from 'astro-expressive-code';
 import { defineConfig } from 'astro/config';
 import remarkStyled, { remarkDirectives } from './plugins/remarkStyled';
+import { siteConfig } from './src/config/site-config';
 
 /** @type {import('astro-expressive-code').AstroExpressiveCodeOptions} */
 const codeOptions = {
@@ -21,6 +22,7 @@ const codeOptions = {
 
 // https://astro.build/config
 export default defineConfig({
+    site: siteConfig.url,
     trailingSlash: 'never',
     vite: {
         optimizeDeps: {

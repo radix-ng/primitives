@@ -1,6 +1,6 @@
 ---
 import Sidebar from './Sidebar.astro';
-import siteConfig from '../../config/site-config';
+import docsConfig from '../../config/docs-config';
 import MobileNavigation from './MobileNavigation.astro';
 const firstSegment = Astro.url.pathname.split('/')[1];
 
@@ -45,7 +45,7 @@ function isActive(segment: string) {
             </a>
         </nav>
         <div class="md:hidden">
-            <Sidebar navigation={siteConfig.navigation} />
+            <Sidebar navigation={docsConfig.navigation} />
         </div>
     </div>
 </div>

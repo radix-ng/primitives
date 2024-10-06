@@ -1,5 +1,5 @@
+import type { TocItem } from '@/types';
 import type { MarkdownHeading } from 'astro';
-import type { TocItem } from '../types';
 
 export function generateToc(headings: MarkdownHeading[], maxDepth = 3): TocItem[] {
     const toc: TocItem[] = [];
