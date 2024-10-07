@@ -4,6 +4,7 @@ export type RdxTooltipConfig = {
     delayDuration: number;
     skipDelayDuration: number;
     disableHoverableContent?: boolean;
+    hideDelayDuration?: number;
 };
 
 export const defaultTooltipConfig: RdxTooltipConfig = {

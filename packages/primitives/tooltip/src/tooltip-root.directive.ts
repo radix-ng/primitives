@@ -3,6 +3,7 @@ import { TemplatePortal } from '@angular/cdk/portal';
 import {
     computed,
     contentChild,
+    DestroyRef,
     Directive,
     effect,
     forwardRef,
@@ -15,6 +16,8 @@ import {
     ViewContainerRef,
     ViewRef
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { asyncScheduler } from 'rxjs';
 import { RdxTooltipContentToken } from './tooltip-content.token';
 import { RdxTooltipTriggerDirective } from './tooltip-trigger.directive';
 import { injectTooltipConfig } from './tooltip.config';
@@ -40,6 +43,7 @@ export function injectTooltipRoot(): RdxTooltipRootDirective {
 })
 export class RdxTooltipRootDirective implements OnInit {
     private readonly viewContainerRef = inject(ViewContainerRef);
+    private readonly destroyRef = inject(DestroyRef);
     readonly tooltipConfig = injectTooltipConfig();
     defaultOpen = input<boolean>(false);
     open = input<boolean>(this.defaultOpen());
@@ -65,7 +69,6 @@ export class RdxTooltipRootDirective implements OnInit {
     });
     tooltipContentDirective = contentChild.required(RdxTooltipContentToken);
     tooltipTriggerDirective = contentChild.required(RdxTooltipTriggerDirective);
-    tooltipContentTemplateRef = computed(() => this.tooltipContentDirective()?.templateRef);
 
     onOpenChange = output<boolean>();
     overlayRef?: OverlayRef;
@@ -146,35 +149,34 @@ export class RdxTooltipRootDirective implements OnInit {
         const strategy = this.overlay
             .position()
             .flexibleConnectedTo(this.tooltipTriggerDirective().elementRef)
-            // .withTransformOriginOn(this.originSelector)
             .withFlexibleDimensions(false)
             .withPositions([
                 this.tooltipContentDirective().position()
             ])
             .withLockedPosition();
-        //.withScrollableContainers(this.scrollDispatcher.getAncestorScrollContainers(this.elementRef));
-
-        // strategy.positionChanges.pipe(takeUntil(this.destroyed)).subscribe(this.onPositionChange);
 
         this.overlayRef = this.overlay.create({
-            //...this.overlayConfig,
-            direction: undefined, // this.direction || undefined,
-            positionStrategy: strategy
-            // scrollStrategy: this.scrollStrategy()
+            direction: undefined,
+            positionStrategy: strategy,
+            scrollStrategy: this.overlay.scrollStrategies.close()
         });
 
-        // this.overlayRef.detachments().pipe(takeUntil(this.destroyed)).subscribe(this.detach);
+        this.overlayRef.detachments().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(this.detach);
 
         return this.overlayRef;
     }
 
     private show(): void {
         this.overlayRef = this.createOverlayRef();
-        const tooltipContentTemplateRef = this.tooltipContentTemplateRef;
 
         this.detach();
 
-        this.portal = this.portal || new TemplatePortal(tooltipContentTemplateRef(), this.viewContainerRef);
+        this.portal =
+            this.portal ||
+            new TemplatePortal(this.tooltipContentDirective().templateRef, this.viewContainerRef, {
+                state: this.state,
+                side: this.tooltipContentDirective().side
+            });
 
         this.instance = this.overlayRef.attach(this.portal);
     }
@@ -186,7 +188,9 @@ export class RdxTooltipRootDirective implements OnInit {
     }
 
     private hide(): void {
-        this.instance?.destroy();
+        asyncScheduler.schedule(() => {
+            this.instance?.destroy();
+        }, this.tooltipConfig.hideDelayDuration ?? 0);
     }
 
     private readonly onIsOpenChangeEffect = effect(() => {

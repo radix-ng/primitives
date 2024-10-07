@@ -8,16 +8,11 @@ import { POSITION_MAP } from './tooltip.constants';
 @Directive({
     selector: '[rdxTooltipContent]',
     standalone: true,
-    host: {
-        //'attr.data-state': 'delayed-open',
-        //'[attr.data-side]': 'side()',
-        //'[attr.data-align]': 'align()'
-    },
     providers: [{ provide: RdxTooltipContentToken, useExisting: RdxTooltipContentDirective }]
 })
 export class RdxTooltipContentDirective {
-    private readonly tooltipRoot = inject(RdxTooltipRootDirective);
     readonly templateRef = inject(TemplateRef);
+    readonly tooltipRoot = inject(RdxTooltipRootDirective);
     side = input<RdxTooltipSide>(RdxTooltipSide.Top);
     sideOffset = input<number>(0);
     align = input<RdxTooltipAlign>(RdxTooltipAlign.Center);
