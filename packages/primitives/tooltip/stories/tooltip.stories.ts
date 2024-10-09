@@ -148,7 +148,7 @@ export const Default: Story = {
                 <ng-container rdxTooltipRoot #tooltipRoot="rdxTooltipRoot">
                     <button class="IconButton" rdxTooltipTrigger>+</button>
 
-                    <ng-template rdxTooltipContent let-state="state" let-side="side" [sideOffset]="5" [align]="'end'" [alignOffset]="-20">
+                    <ng-template rdxTooltipContent let-state="state" let-side="side" [sideOffset]="8">
                         <div class="TooltipContent" [attr.data-state]="state()" [attr.data-side]="side()" >
                             Add to library
                             <div class="TooltipArrow" rdxTooltipArrow></div>
