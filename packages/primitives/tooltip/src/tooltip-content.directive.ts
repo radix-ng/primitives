@@ -22,7 +22,6 @@ export class RdxTooltipContentDirective {
         const side = this.side();
         const align = this.align();
         const sideOffset = this.sideOffset();
-        // todo: add align offset
         const alignOffset = this.alignOffset();
 
         const positionCode = `${side}${align[0].toUpperCase() + align.slice(1)}`;
@@ -50,6 +49,12 @@ export class RdxTooltipContentDirective {
 
             position.offsetX = xFactor * sideOffset;
             position.offsetY = yFactor * sideOffset;
+        }
+
+        if ([RdxTooltipAlign.Start, RdxTooltipAlign.End].includes(align) && alignOffset) {
+            const alignOffsetFactor = align === RdxTooltipAlign.End ? -1 : 1;
+
+            position.offsetX = alignOffsetFactor * alignOffset;
         }
 
         return position;
