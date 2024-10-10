@@ -3,7 +3,7 @@
 import { AsyncPipe, NgComponentOutlet } from '@angular/common';
 import { Component, computed, input } from '@angular/core';
 
-import { demos } from '../../demos/primitives';
+import { demos } from '@/demos/primitives';
 
 @Component({
     selector: 'empty-component',

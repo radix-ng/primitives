@@ -1,7 +1,8 @@
 ---
 import Sidebar from './Sidebar.astro';
-import docsConfig from '../../config/docs-config';
+import docsConfig from '@/config/docs-config';
 import MobileNavigation from './MobileNavigation.astro';
+
 const firstSegment = Astro.url.pathname.split('/')[1];
 
 function isActive(segment: string) {

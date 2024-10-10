@@ -52,8 +52,8 @@
         "release:dry-run": "nx release --dry-run -- --skip-nx-cache",
         "----RELEASE Scripts-------": "---------------------------------------------------------",
         "release:skip-publish": "nx release --skip-publish",
-        "release:primitives": "nx release --projects=primitives",
-        "release:shadcn": "nx release --projects=shadcn"
+        "release:primitives": "nx release --projects=primitives --skip-publish",
+        "release:shadcn": "nx release --projects=shadcn --skip-publish"
     },
     "dependencies": {
         "@angular/animations": "18.2.1",
