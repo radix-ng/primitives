@@ -1,33 +1,3 @@
-## 0.14.0 (2024-10-10)
-
-
-### 🚀 Features
-
-- **toggle:** migrate o signals, added disable example in storybbok ([3309e6d](https://github.com/radix-ng/primitives/commit/3309e6d))
-
-- **toggle-group:** rename to multiple ([1b955c1](https://github.com/radix-ng/primitives/commit/1b955c1))
-
-- **toggle-group:** added Multiple example ([c8a41e5](https://github.com/radix-ng/primitives/commit/c8a41e5))
-
-- **toggle-group:** added focus-manager ([b30ed2e](https://github.com/radix-ng/primitives/commit/b30ed2e))
-
-- **switch:** use model for checked ([a0e0f58](https://github.com/radix-ng/primitives/commit/a0e0f58))
-
-
-### 🩹 Fixes
-
-- **toggle:** rename button to rdxToggleGroupItem ([761580c](https://github.com/radix-ng/primitives/commit/761580c))
-
-- **dropdown-menu:** onPointerMove if not highlighted ([97dd5cd](https://github.com/radix-ng/primitives/commit/97dd5cd))
-
-- **accordion:** fixed navigation with TAB key ([#127](https://github.com/radix-ng/primitives/pull/127))
-
-
-### ❤️  Thank You
-
-- lskramarov
-- Oleg Pimenov
-
 ## 0.13.0 (2024-09-25)
 
 

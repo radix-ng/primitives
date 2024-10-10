@@ -44,11 +44,11 @@
             "@radix-ng/primitives/avatar": [
                 "packages/primitives/avatar/index.ts"
             ],
-            "@radix-ng/primitives/checkbox": [
-                "packages/primitives/checkbox/index.ts"
-            ],
             "@radix-ng/primitives/collapsible": [
                 "packages/primitives/collapsible/index.ts"
+            ],
+            "@radix-ng/primitives/checkbox": [
+                "packages/primitives/checkbox/index.ts"
             ],
             "@radix-ng/primitives/dropdown-menu": [
                 "packages/primitives/dropdown-menu/index.ts"
