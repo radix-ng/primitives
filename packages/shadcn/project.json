@@ -13,7 +13,7 @@
         },
         "build-lib": {
             "executor": "@nx/angular:package",
-            "outputs": ["{workspaceRoot}/dist/shadcn"],
+            "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
             "options": {
                 "project": "packages/shadcn/ng-package.json"
             },
@@ -37,7 +37,7 @@
         "nx-release-publish": {
             "dependsOn": ["build"],
             "options": {
-                "packageRoot": "{workspaceRoot}/dist/{projectRoot}"
+                "packageRoot": "{workspaceRoot}/dist/{projectName}"
             }
         }
     }

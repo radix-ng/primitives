@@ -67,11 +67,6 @@
                 "{projectRoot}/.storybook/**/*",
                 "{projectRoot}/tsconfig.storybook.json"
             ]
-        },
-        "nx-release-publish": {
-            "options": {
-                "packageRoot": "dist/{projectName}"
-            }
         }
     },
     "namedInputs": {
