@@ -1,76 +1,91 @@
 import { ConnectionPositionPair } from '@angular/cdk/overlay';
+import { RdxTooltipAlign, RdxTooltipSide } from './tooltip.types';
 
-export const POSITION_MAP: { [key: string]: ConnectionPositionPair } = {
-    topCenter: {
-        originX: 'center',
-        originY: 'top',
-        overlayX: 'center',
-        overlayY: 'bottom'
+type TooltipPositions = {
+    [key in RdxTooltipSide]: {
+        [key in RdxTooltipAlign]: ConnectionPositionPair;
+    };
+};
+
+export const TOOLTIP_POSITIONS: TooltipPositions = {
+    [RdxTooltipSide.Top]: {
+        [RdxTooltipAlign.Center]: {
+            originX: 'center',
+            originY: 'top',
+            overlayX: 'center',
+            overlayY: 'bottom'
+        },
+        [RdxTooltipAlign.Start]: {
+            originX: 'start',
+            originY: 'top',
+            overlayX: 'start',
+            overlayY: 'bottom'
+        },
+        [RdxTooltipAlign.End]: {
+            originX: 'end',
+            originY: 'top',
+            overlayX: 'end',
+            overlayY: 'bottom'
+        }
     },
-    topStart: {
-        originX: 'start',
-        originY: 'top',
-        overlayX: 'start',
-        overlayY: 'bottom'
+    [RdxTooltipSide.Right]: {
+        [RdxTooltipAlign.Center]: {
+            originX: 'end',
+            originY: 'center',
+            overlayX: 'start',
+            overlayY: 'center'
+        },
+        [RdxTooltipAlign.Start]: {
+            originX: 'end',
+            originY: 'top',
+            overlayX: 'start',
+            overlayY: 'top'
+        },
+        [RdxTooltipAlign.End]: {
+            originX: 'end',
+            originY: 'bottom',
+            overlayX: 'start',
+            overlayY: 'bottom'
+        }
     },
-    topEnd: {
-        originX: 'end',
-        originY: 'top',
-        overlayX: 'end',
-        overlayY: 'bottom'
+    [RdxTooltipSide.Bottom]: {
+        [RdxTooltipAlign.Center]: {
+            originX: 'center',
+            originY: 'bottom',
+            overlayX: 'center',
+            overlayY: 'top'
+        },
+        [RdxTooltipAlign.Start]: {
+            originX: 'start',
+            originY: 'bottom',
+            overlayX: 'start',
+            overlayY: 'top'
+        },
+        [RdxTooltipAlign.End]: {
+            originX: 'end',
+            originY: 'bottom',
+            overlayX: 'end',
+            overlayY: 'top'
+        }
     },
-    rightCenter: {
-        originX: 'end',
-        originY: 'center',
-        overlayX: 'start',
-        overlayY: 'center'
-    },
-    rightStart: {
-        originX: 'end',
-        originY: 'top',
-        overlayX: 'start',
-        overlayY: 'top'
-    },
-    rightEnd: {
-        originX: 'end',
-        originY: 'bottom',
-        overlayX: 'start',
-        overlayY: 'bottom'
-    },
-    bottomCenter: {
-        originX: 'center',
-        originY: 'bottom',
-        overlayX: 'center',
-        overlayY: 'top'
-    },
-    bottomStart: {
-        originX: 'start',
-        originY: 'bottom',
-        overlayX: 'start',
-        overlayY: 'top'
-    },
-    bottomEnd: {
-        originX: 'end',
-        originY: 'bottom',
-        overlayX: 'end',
-        overlayY: 'top'
-    },
-    leftCenter: {
-        originX: 'start',
-        originY: 'center',
-        overlayX: 'end',
-        overlayY: 'center'
-    },
-    leftStart: {
-        originX: 'start',
-        originY: 'top',
-        overlayX: 'end',
-        overlayY: 'top'
-    },
-    leftEnd: {
-        originX: 'start',
-        originY: 'bottom',
-        overlayX: 'end',
-        overlayY: 'bottom'
+    [RdxTooltipSide.Left]: {
+        [RdxTooltipAlign.Center]: {
+            originX: 'start',
+            originY: 'center',
+            overlayX: 'end',
+            overlayY: 'center'
+        },
+        [RdxTooltipAlign.Start]: {
+            originX: 'start',
+            originY: 'top',
+            overlayX: 'end',
+            overlayY: 'top'
+        },
+        [RdxTooltipAlign.End]: {
+            originX: 'start',
+            originY: 'bottom',
+            overlayX: 'end',
+            overlayY: 'bottom'
+        }
     }
 };

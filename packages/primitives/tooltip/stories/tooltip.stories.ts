@@ -2,7 +2,6 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { RdxTooltipArrowDirective } from '../src/tooltip-arrow.directive';
 import { RdxTooltipContentDirective } from '../src/tooltip-content.directive';
-import { RdxTooltipPortalDirective } from '../src/tooltip-portal.directive';
 import { RdxTooltipRootDirective } from '../src/tooltip-root.directive';
 import { RdxTooltipTriggerDirective } from '../src/tooltip-trigger.directive';
 
@@ -13,7 +12,6 @@ export default {
             imports: [
                 RdxTooltipArrowDirective,
                 RdxTooltipContentDirective,
-                RdxTooltipPortalDirective,
                 RdxTooltipRootDirective,
                 RdxTooltipTriggerDirective
             ],

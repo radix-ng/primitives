@@ -26,16 +26,3 @@ export function provideRdxTooltipConfig(config: Partial<RdxTooltipConfig>): Prov
 export function injectTooltipConfig(): RdxTooltipConfig {
     return inject(RdxTooltipConfigToken, { optional: true }) ?? defaultTooltipConfig;
 }
-
-export enum RdxTooltipSide {
-    Top = 'top',
-    Right = 'right',
-    Bottom = 'bottom',
-    Left = 'left'
-}
-
-export enum RdxTooltipAlign {
-    Start = 'start',
-    Center = 'center',
-    End = 'end'
-}

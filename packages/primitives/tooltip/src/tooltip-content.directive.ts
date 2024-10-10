@@ -2,8 +2,8 @@ import { ConnectedPosition } from '@angular/cdk/overlay';
 import { computed, Directive, inject, input, output, TemplateRef } from '@angular/core';
 import { RdxTooltipContentToken } from './tooltip-content.token';
 import { RdxTooltipRootDirective } from './tooltip-root.directive';
-import { RdxTooltipAlign, RdxTooltipSide } from './tooltip.config';
-import { POSITION_MAP } from './tooltip.constants';
+import { TOOLTIP_POSITIONS } from './tooltip.constants';
+import { RdxTooltipAlign, RdxTooltipSide } from './tooltip.types';
 
 @Directive({
     selector: '[rdxTooltipContent]',
@@ -25,9 +25,8 @@ export class RdxTooltipContentDirective {
         const sideOffset = this.sideOffset();
         const alignOffset = this.alignOffset();
 
-        const positionCode = `${side}${align[0].toUpperCase() + align.slice(1)}`;
-
-        const position = POSITION_MAP[positionCode] ?? POSITION_MAP['topCenter'];
+        const position =
+            TOOLTIP_POSITIONS[side][align] ?? TOOLTIP_POSITIONS[RdxTooltipSide.Top][RdxTooltipAlign.Center];
 
         if (sideOffset > 0) {
             let xFactor = 0;
