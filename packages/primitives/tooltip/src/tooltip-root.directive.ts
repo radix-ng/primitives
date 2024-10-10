@@ -17,7 +17,7 @@ import {
     ViewRef
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { asyncScheduler } from 'rxjs';
+import { asyncScheduler, filter } from 'rxjs';
 import { RdxTooltipContentToken } from './tooltip-content.token';
 import { RdxTooltipTriggerDirective } from './tooltip-trigger.directive';
 import { injectTooltipConfig } from './tooltip.config';
@@ -119,6 +119,27 @@ export class RdxTooltipRootDirective implements OnInit {
         this.setOpen(false);
     }
 
+    private handleOverlayKeydown(): void {
+        if (!this.overlayRef) {
+            return;
+        }
+
+        this.overlayRef
+            .keydownEvents()
+            .pipe(
+                filter((event) => event.key === 'Escape'),
+                takeUntilDestroyed(this.destroyRef)
+            )
+            .subscribe((event) => {
+                this.tooltipContentDirective().onEscapeKeyDown.emit(event);
+                console.log(event);
+
+                if (!event.defaultPrevented) {
+                    this.handleClose();
+                }
+            });
+    }
+
     private handleDelayedOpen(): void {
         window.clearTimeout(this.openTimer);
 
@@ -162,6 +183,8 @@ export class RdxTooltipRootDirective implements OnInit {
         });
 
         this.overlayRef.detachments().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(this.detach);
+
+        this.handleOverlayKeydown();
 
         return this.overlayRef;
     }

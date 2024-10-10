@@ -1,5 +1,5 @@
 import { ConnectedPosition } from '@angular/cdk/overlay';
-import { computed, Directive, inject, input, TemplateRef } from '@angular/core';
+import { computed, Directive, inject, input, output, TemplateRef } from '@angular/core';
 import { RdxTooltipContentToken } from './tooltip-content.token';
 import { RdxTooltipRootDirective } from './tooltip-root.directive';
 import { RdxTooltipAlign, RdxTooltipSide } from './tooltip.config';
@@ -17,6 +17,7 @@ export class RdxTooltipContentDirective {
     sideOffset = input<number>(0);
     align = input<RdxTooltipAlign>(RdxTooltipAlign.Center);
     alignOffset = input<number>(0);
+    onEscapeKeyDown = output<KeyboardEvent>();
 
     position = computed<ConnectedPosition>(() => {
         const side = this.side();
