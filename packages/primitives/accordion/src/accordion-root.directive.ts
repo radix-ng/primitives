@@ -1,7 +1,7 @@
 import { FocusKeyManager } from '@angular/cdk/a11y';
 import { Directionality } from '@angular/cdk/bidi';
 import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
-import { ENTER, SPACE } from '@angular/cdk/keycodes';
+import { ENTER, SPACE, TAB } from '@angular/cdk/keycodes';
 import {
     AfterContentInit,
     booleanAttribute,
@@ -175,6 +175,16 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
         ) {
             event.preventDefault();
             activeItem.toggle();
+        } else if (event.keyCode === TAB && event.shiftKey) {
+            if (this.keyManager.activeItemIndex === 0) return;
+
+            this.keyManager.setPreviousItemActive();
+            event.preventDefault();
+        } else if (event.keyCode === TAB) {
+            if (this.keyManager.activeItemIndex === this.items.length - 1) return;
+
+            this.keyManager.setNextItemActive();
+            event.preventDefault();
         } else {
             this.keyManager.onKeydown(event);
         }
