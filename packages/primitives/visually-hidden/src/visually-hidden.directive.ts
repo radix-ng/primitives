@@ -10,7 +10,7 @@ import { Directive, input } from '@angular/core';
  * <button (click)="directiveInstance.feature.set('fully-hidden')">Hide</button>
  */
 @Directive({
-    selector: 'span[rdxVisuallyHidden]',
+    selector: '[rdxVisuallyHidden]',
     standalone: true,
     host: {
         '[attr.aria-hidden]': 'feature() === "focusable" ? "true" : null',
