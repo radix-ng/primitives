@@ -24,6 +24,8 @@ const { page } = Astro.props;
 const { data, render } = page;
 const { Content, headings } = await render();
 const tocItems = generateToc(headings);
+
+const sourceFilePath = `${page.collection}/${page.id}`;
 ---
 
 <DocumentationLayout title={data.title}>
@@ -31,6 +33,6 @@ const tocItems = generateToc(headings);
         <div class="mx-auto w-full min-w-0">
             <Content />
         </div>
-        <Toc toc={tocItems} />
+        <Toc toc={tocItems} sourceFilePath={sourceFilePath} />
     </main>
 </DocumentationLayout>

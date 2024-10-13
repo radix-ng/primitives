@@ -1,12 +1,14 @@
 ---
 import type { TocItem } from '@/types';
 import TocHeading from './TocHeading.astro';
+import { siteConfig } from '@/config/site-config';
 
 interface Props {
     toc: TocItem[];
+    sourceFilePath?: string;
 }
 
-const { toc } = Astro.props;
+const { toc, sourceFilePath } = Astro.props;
 ---
 
 <aside class="hidden pl-7 text-sm xl:block">
@@ -15,5 +17,63 @@ const { toc } = Astro.props;
         <ul class="mt-2 space-y-1 text-sm">
             {toc.map((heading) => <TocHeading heading={heading} />)}
         </ul>
+
+        {
+            sourceFilePath && (
+                <>
+                    <div class="flex py-4">
+                        <span class="bg-border h-px w-full shrink-0" />
+                    </div>
+
+                    <div class="mt-2 flex flex-col gap-1">
+                        <a
+                            class="text-muted-foreground hover:text-foreground flex items-center gap-2 transition"
+                            href={`${siteConfig.links.github}/edit/main/apps/radix-docs/src/content/${sourceFilePath}`}
+                            target="_blank"
+                        >
+                            Edit this page on GitHub{' '}
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="12"
+                                height="12"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="M15 3h6v6" />
+                                <path d="M10 14 21 3" />
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                            </svg>
+                        </a>
+
+                        <a
+                            class="text-muted-foreground hover:text-foreground flex items-center gap-2 transition"
+                            href={`${siteConfig.links.github}/discussions/new/choose`}
+                            target="_blank"
+                        >
+                            Start a discussion on GitHub{' '}
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="12"
+                                height="12"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="M15 3h6v6" />
+                                <path d="M10 14 21 3" />
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                            </svg>
+                        </a>
+                    </div>
+                </>
+            )
+        }
     </div>
 </aside>
