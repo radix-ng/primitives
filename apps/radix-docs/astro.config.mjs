@@ -1,5 +1,6 @@
 import angular from '@analogjs/astro-angular';
 import mdx from '@astrojs/mdx';
+import sitemap from '@astrojs/sitemap';
 import tailwind from '@astrojs/tailwind';
 import AutoImport from 'astro-auto-import';
 import astroExpressiveCode from 'astro-expressive-code';
@@ -49,6 +50,20 @@ export default defineConfig({
     integrations: [
         tailwind({
             applyBaseStyles: false
+        }),
+        sitemap({
+            serialize(item) {
+                if (item.url === siteConfig.url) {
+                    item.changefreq = 'daily';
+                    item.lastmod = new Date();
+                    item.priority = 1;
+                } else {
+                    item.changefreq = 'daily';
+                    item.lastmod = new Date();
+                    item.priority = 0.9;
+                }
+                return item;
+            }
         }),
         AutoImport({
             imports: [

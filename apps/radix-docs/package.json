@@ -16,6 +16,7 @@
         "@astrojs/mdx": "^3.1.7",
         "@astrojs/tailwind": "^5.1.1",
         "@astrojs/ts-plugin": "^1.10.2",
+        "@astrojs/sitemap": "^3.2.0",
         "@radix-ui/colors": "^3.0.0",
         "@radix-ui/themes": "^3.1.4",
         "astro": "^4.15.11",
