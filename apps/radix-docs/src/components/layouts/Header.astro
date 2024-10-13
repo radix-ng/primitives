@@ -2,13 +2,15 @@
 import Search from '../search/Search.astro';
 import MainNavigation from './MainNavigation.astro';
 import ThemeToggle from './ThemeToggle.astro';
+import Logo from './Logo.astro';
 ---
 
 <header class="bg-background-blur sticky top-0 z-50 w-full backdrop-blur-lg">
     <div class="container flex h-14 max-w-screen-2xl items-center px-4">
         <div class="flex items-center">
-            <a href="/" class="mr-1 flex items-center md:mr-6" aria-label="Astro documentation">
-                <h4 class="text-xl">
+            <a href="/" class="mr-1 flex items-center md:mr-6" aria-label="Radix Angular documentation">
+                <Logo />
+                <h4 class="pl-2 text-xl">
                     <span class="inline-block whitespace-nowrap">
                         <span class="font-extrabold">Radix</span>
                         <span class="font-normal">Angular</span>
