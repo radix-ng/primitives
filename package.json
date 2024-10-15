@@ -67,6 +67,8 @@
         "@angular/platform-server": "18.2.1",
         "@angular/router": "18.2.1",
         "@angular/ssr": "18.2.1",
+        "@docsearch/css": "^3.6.2",
+        "@docsearch/js": "^3.6.2",
         "@ng-doc/app": "17.6.16",
         "@ng-doc/builder": "17.6.16",
         "@ng-doc/core": "17.6.16",
