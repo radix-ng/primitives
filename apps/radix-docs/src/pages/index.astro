@@ -45,32 +45,69 @@ import DemoNoopContainer from '@/components/layouts/DemoNoopContainer.astro';
                         </div>
                     </div>
                 </section>
-                <section class="text-foreground relative mt-12 hidden h-[36rem] w-full overflow-hidden md:block">
-                    <div
-                        class="border-muted bg-card/20 absolute left-1/2 h-[32rem] w-[80rem] -translate-x-1/2 overflow-hidden rounded-3xl border"
-                    >
-                        <div class="absolute left-1/2 z-[1] h-[32rem] w-[80rem] -translate-x-1/2 md:block">
-                            <div class="absolute left-[16rem] top-8 xl:left-8">
-                                <DemoNoopContainer componentName="avatar" componentFile="avatar-demo" />
-                            </div>
-
-                            <div class="absolute right-[32rem] top-[24rem] md:right-[30rem] md:top-[4rem]">
-                                <DemoNoopContainer componentName="accordion" componentFile="accordion-demo" />
-                            </div>
-
-                            <div class="absolute left-[5rem] top-[18rem]">
+                <section class="text-foreground relative mt-2 hidden h-[36rem] w-full overflow-hidden md:block">
+                    <div class="grid grid-cols-3 gap-4 p-4">
+                        <!-- Левая колонка: два блока друг под другом -->
+                        <div class="space-y-4 md:min-w-[340px]">
+                            <div
+                                class="bg-primitive-demo border-muted flex h-[240px] items-center justify-center rounded-lg p-4"
+                            >
                                 <DemoNoopContainer componentName="collapsible" componentFile="collapsible-demo" />
                             </div>
-
-                            <div class="absolute bottom-[5rem] right-[40rem] hidden md:block xl:right-[40rem]">
-                                <DemoNoopContainer componentName="dropdown-menu" componentFile="dropdown-menu-demo" />
+                            <div
+                                class="bg-primitive-demo border-muted flex h-[240px] items-center justify-center rounded-lg p-4"
+                            >
+                                <DemoNoopContainer componentName="avatar" componentFile="avatar-demo" />
                             </div>
+                        </div>
 
-                            <div class="absolute bottom-[8rem] right-[20rem] hidden md:block xl:right-[10rem]">
+                        <!-- Центральная колонка: один большой блок -->
+                        <div
+                            class="bg-primitive-demo border-muted flex items-center justify-center rounded-lg p-4 md:min-w-[340px]"
+                        >
+                            <DemoNoopContainer componentName="accordion" componentFile="accordion-demo" />
+                        </div>
+
+                        <!-- Правая колонка: два блока друг под другом -->
+                        <div class="space-y-4 md:min-w-[340px]">
+                            <div
+                                class="bg-primitive-demo border-muted flex h-[240px] items-center justify-center rounded-lg p-4"
+                            >
                                 <DemoNoopContainer componentName="progress" componentFile="progress-demo" />
+                            </div>
+                            <div
+                                class="bg-primitive-demo border-muted flex h-[240px] items-center justify-center rounded-lg p-4"
+                            >
+                                <DemoNoopContainer componentName="dropdown-menu" componentFile="dropdown-menu-demo" />
                             </div>
                         </div>
                     </div>
+
+                    <!--<div-->
+                    <!--    class="border-muted bg-card/20 absolute left-1/2 h-[32rem] w-[80rem] -translate-x-1/2 overflow-hidden rounded-3xl border"-->
+                    <!--&gt;-->
+                    <!--    <div class="absolute left-1/2 z-[1] h-[32rem] w-[80rem] -translate-x-1/2 md:block">-->
+                    <!--        <div class="absolute left-[16rem] top-8 xl:left-8">-->
+                    <!--            <DemoNoopContainer componentName="avatar" componentFile="avatar-demo" />-->
+                    <!--        </div>-->
+
+                    <!--        <div class="absolute right-[32rem] top-[24rem] md:right-[30rem] md:top-[4rem]">-->
+                    <!--            <DemoNoopContainer componentName="accordion" componentFile="accordion-demo" />-->
+                    <!--        </div>-->
+
+                    <!--        <div class="absolute left-[5rem] top-[18rem]">-->
+                    <!--            <DemoNoopContainer componentName="collapsible" componentFile="collapsible-demo" />-->
+                    <!--        </div>-->
+
+                    <!--        <div class="absolute bottom-[5rem] right-[40rem] hidden md:block xl:right-[40rem]">-->
+                    <!--            <DemoNoopContainer componentName="dropdown-menu" componentFile="dropdown-menu-demo" />-->
+                    <!--        </div>-->
+
+                    <!--        <div class="absolute bottom-[8rem] right-[20rem] hidden md:block xl:right-[10rem]">-->
+                    <!--            <DemoNoopContainer componentName="progress" componentFile="progress-demo" />-->
+                    <!--        </div>-->
+                    <!--    </div>-->
+                    <!--</div>-->
                 </section>
                 <div class="content sm:px-[48px] md:hidden">
                     <div class="mx-auto w-full max-w-[1152px] sm:container">

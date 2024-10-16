@@ -29,7 +29,8 @@
 
         --radius: 0.5rem;
 
-        --bg-primitive-demo: hsl(297.48deg 89.65% 24.12%);
+        /*--bg-primitive-demo: hsl(297.48deg 89.65% 24.12%);*/
+        --bg-primitive-demo: hsl(297.48deg 23.42% 15.97%);
     }
 
     .dark {
@@ -45,7 +46,7 @@
         --accent: 240 3.7% 15.9%;
         --accent-foreground: 0 0% 98%;
 
-        --bg-primitive-demo: hsl(297.48deg 89.65% 24.12%);
+        --bg-primitive-demo: hsl(297.48deg 23.42% 15.97%);
     }
 }
 

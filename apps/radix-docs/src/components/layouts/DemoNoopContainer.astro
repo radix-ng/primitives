@@ -17,8 +17,6 @@ export interface Props {
 const { componentName, componentFile } = Astro.props;
 ---
 
-<div class="w-full">
-    <div class="light-theme" data-component={componentName}>
-        <DemoLoaderComponent {...{ name: componentName, file: componentFile }} client:visible />
-    </div>
+<div class="light-theme" data-component={componentName}>
+    <DemoLoaderComponent {...{ name: componentName, file: componentFile }} client:visible />
 </div>
