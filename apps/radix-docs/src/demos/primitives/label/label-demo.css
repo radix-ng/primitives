@@ -15,7 +15,7 @@
     height: 35px;
     font-size: 15px;
     line-height: 1;
-    background-color: white;
+    background-color: var(--black-a2);
     box-shadow: 0 0 0 1px var(--black-a9);
 }
 
@@ -29,6 +29,7 @@
 }
 
 .LabelRoot {
+    color: white;
     font-size: 15px;
     font-weight: 500;
     line-height: 35px;

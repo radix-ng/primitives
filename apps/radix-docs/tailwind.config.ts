@@ -68,6 +68,7 @@ const config = {
                 ring: 'hsl(var(--ring))',
                 background: 'hsl(var(--background))',
                 foreground: 'hsl(var(--foreground))',
+                'primitive-demo': 'var(--bg-primitive-demo)',
                 primary: {
                     DEFAULT: 'hsl(var(--primary))',
                     foreground: 'hsl(var(--primary-foreground))'
