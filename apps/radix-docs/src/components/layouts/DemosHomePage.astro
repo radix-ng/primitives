@@ -1,8 +1,30 @@
 ---
-import DemoContainer from './DemoContainer.astro';
+import DemoNoopContainer from '@/components/layouts/DemoNoopContainer.astro';
 ---
 
-<DemoContainer title="accordion" componentName="accordion" componentFile="accordion-demo" />
-<DemoContainer title="avatar" componentName="avatar" componentFile="avatar-demo" />
-<DemoContainer title="collapsible" componentName="collapsible" componentFile="collapsible-demo" />
-<DemoContainer title="dropdown menu" componentName="dropdown-menu" componentFile="dropdown-menu-demo" />
+<div class="grid gap-4 sm:grid-cols-1 md:grid-cols-2 md:p-4 xl:grid-cols-3">
+    <!-- Левая колонка: два блока друг под другом -->
+    <div class="space-y-4">
+        <div class="bg-primitive-demo border-muted flex h-[240px] items-center justify-center rounded-lg p-4">
+            <DemoNoopContainer componentName="collapsible" componentFile="collapsible-demo" />
+        </div>
+        <div class="bg-primitive-demo border-muted flex h-[240px] items-center justify-center rounded-lg p-4">
+            <DemoNoopContainer componentName="avatar" componentFile="avatar-demo" />
+        </div>
+    </div>
+
+    <!-- Центральная колонка: один большой блок -->
+    <div class="bg-primitive-demo border-muted flex items-center justify-center rounded-lg p-4">
+        <DemoNoopContainer componentName="accordion" componentFile="accordion-demo" />
+    </div>
+
+    <!-- Правая колонка: два блока друг под другом -->
+    <div class="grid gap-4 sm:col-span-1 sm:grid-cols-1 md:col-span-2 md:grid-cols-2 xl:col-span-1 xl:grid-cols-1">
+        <div class="bg-primitive-demo border-muted flex h-[240px] items-center justify-center rounded-lg p-4">
+            <DemoNoopContainer componentName="progress" componentFile="progress-demo" />
+        </div>
+        <div class="bg-primitive-demo border-muted flex h-[240px] items-center justify-center rounded-lg p-4">
+            <DemoNoopContainer componentName="dropdown-menu" componentFile="dropdown-menu-demo" />
+        </div>
+    </div>
+</div>

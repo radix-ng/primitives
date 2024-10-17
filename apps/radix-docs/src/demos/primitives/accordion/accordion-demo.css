@@ -15,8 +15,8 @@
 }
 
 .AccordionRoot[data-orientation='vertical'] {
-    width: 300px;
-    max-width: 300px;
+    width: 100%;
+    max-width: 295px;
 }
 
 .AccordionRoot[data-orientation='horizontal'] {
