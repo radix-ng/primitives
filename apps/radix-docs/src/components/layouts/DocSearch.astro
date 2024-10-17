@@ -1,4 +1,18 @@
-<div id="docsearch"></div>
+<button
+    id="docsearch-toggle-button"
+    class="focus-visible:ring-ring border-input hover:bg-accent hover:text-accent-foreground bg-muted/50 text-muted-foreground relative inline-flex w-full cursor-pointer items-center justify-start whitespace-nowrap rounded-[0.5rem] border px-2 py-2 text-sm font-normal shadow-none transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 sm:px-4 sm:pr-12 md:w-40 lg:w-64 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+>
+    <span class="hidden lg:inline-flex">Search documentation...</span><span class="inline-flex lg:hidden">
+        Search...
+    </span>
+    <kbd
+        class="bg-muted dark:bg-muted/5 dark:text-muted-foreground pointer-events-none absolute right-[0.3rem] hidden select-none items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex dark:border-slate-800"
+    >
+        <span class="text-xs">⌘</span>K
+    </kbd>
+</button>
+
+<div id="docsearch" class="hidden"></div>
 
 <script>
     import docsearch from '@docsearch/js';
@@ -9,6 +23,10 @@
             appId: 'KO68VM9HAD',
             apiKey: '54e66e10b1c9411f7d5851f86c687085',
             indexName: 'radix-ng'
+        });
+
+        document.getElementById('docsearch-toggle-button').addEventListener('click', () => {
+            document.querySelector('.DocSearch-Button').click();
         });
     });
 </script>
