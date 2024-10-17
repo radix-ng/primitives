@@ -21,7 +21,7 @@ export interface Props {
 }
 
 const { page } = Astro.props;
-const { data, render } = page;
+const { data, collection, render } = page;
 const { Content, headings } = await render();
 const tocItems = generateToc(headings);
 
@@ -29,7 +29,12 @@ const sourceFilePath = `${page.collection}/${page.id}`;
 ---
 
 <DocumentationLayout title={data.title}>
-    <main class="relative py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_300px]">
+    <main
+        id="docsearch-container"
+        data-docsearch-section={collection}
+        data-docsearch-subsection={data.section}
+        class="relative py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_300px]"
+    >
         <div class="mx-auto w-full min-w-0">
             <Content />
         </div>
