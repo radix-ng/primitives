@@ -9,27 +9,27 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 4px;
+    border-radius: var(--radius-4);
     padding: 0 10px;
     margin-left: 10px;
     height: 35px;
     font-size: 15px;
     line-height: 1;
-    background-color: var(--black-a2);
-    box-shadow: 0 0 0 1px var(--black-a9);
+    background-color: var(--gray-a3);
+    box-shadow: 0 0 0 1px var(--gray-5);
 }
 
 .Input:focus {
-    box-shadow: 0 0 0 2px black;
+    box-shadow: 0 0 0 2px var(--gray-12);
 }
 
 .Input::selection {
     background-color: var(--black-a9);
-    color: white;
+    color: var(--gray-1);
 }
 
 .LabelRoot {
-    color: white;
+    color: var(--gray-12);
     font-size: 15px;
     font-weight: 500;
     line-height: 35px;

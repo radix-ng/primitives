@@ -18,7 +18,7 @@
         --primary-foreground: 210 40% 98%;
         --secondary: 210 40% 96.1%;
         --secondary-foreground: 222.2 47.4% 11.2%;
-        --muted: 240 4.8% 95.9%;
+        --muted: 226.67deg 13.85% 87.25%;
         --muted-foreground: 240 3.8% 46.1%;
         --accent: 240 4.8% 95.9%;
         --accent-foreground: 240 5.9% 10%;
@@ -27,11 +27,8 @@
         --border: 214.3 31.8% 91.4%;
         --input: 214.3 31.8% 91.4%;
         --ring: 221.2 83.2% 53.3%;
-
         --radius: 0.5rem;
-
-        /*--bg-primitive-demo: hsl(297.48deg 89.65% 24.12%);*/
-        --bg-primitive-demo: hsl(297.48deg 23.42% 15.97%);
+        --bg-primitive-demo: 0 0% 100%;
 
         /** --------------- Algolia DocSearch variables ---------------- */
         --docsearch-primary-color: #5468ff;
@@ -71,7 +68,7 @@
         --card: 24 9.8% 10%;
         --card-foreground: 0 0% 95%;
 
-        --muted: 0 0% 15%;
+        --muted: 205.71deg 7.07% 19.41%;
         --muted-foreground: 240 5% 64.9%;
 
         --primary: 0 0% 98%;
@@ -79,7 +76,7 @@
         --accent: 240 3.7% 15.9%;
         --accent-foreground: 0 0% 98%;
 
-        --bg-primitive-demo: hsl(297.48deg 23.42% 15.97%);
+        --bg-primitive-demo: 141 17% 5%;
 
         /** --------------- Algolia DocSearch variables ---------------- */
         --docsearch-text-color: #f5f6f7;
