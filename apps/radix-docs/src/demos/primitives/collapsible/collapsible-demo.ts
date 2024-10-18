@@ -19,9 +19,9 @@ import { LucideAngularModule, UnfoldVertical, X } from 'lucide-angular';
     ],
     template: `
         <div class="CollapsibleRoot" #collapsibleRoot="collapsibleRoot" [open]="true" rdxCollapsibleRoot>
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 1em;">
-                <span class="Text" style="color: white;">&#64;peduarte starred 3 repositories</span>
-                <button class="IconButton" style="flex-shrink: 0;" rdxCollapsibleTrigger>
+            <div class="Title">
+                <span class="Text">Starred 3 repositories</span>
+                <button class="IconButton" rdxCollapsibleTrigger>
                     @if (collapsibleRoot.isOpen()) {
                         <lucide-angular [img]="XIcon" size="16" style="display: flex;" />
                     } @else {
@@ -34,7 +34,7 @@ import { LucideAngularModule, UnfoldVertical, X } from 'lucide-angular';
                 <span class="Text">&#64;radix-ui/primitives</span>
             </div>
 
-            <div rdxCollapsibleContent>
+            <div class="RepositoryGroup" rdxCollapsibleContent>
                 <div class="Repository">
                     <span class="Text">&#64;radix-ui/colors</span>
                 </div>

@@ -1,27 +1,28 @@
 ---
 import DemoNoopContainer from '@/components/layouts/DemoNoopContainer.astro';
+import Canvas from '@/components/layouts/Canvas.astro';
 ---
 
 <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-2 md:p-4 xl:grid-cols-3">
     <div class="space-y-4">
-        <div class="bg-primitive-demo border-muted flex h-[240px] items-center justify-center rounded-lg p-4">
+        <Canvas class="h-[240px] rounded-xl">
             <DemoNoopContainer componentName="collapsible" componentFile="collapsible-demo" />
-        </div>
-        <div class="bg-primitive-demo border-muted flex h-[240px] items-center justify-center rounded-lg p-4">
+        </Canvas>
+        <Canvas class="h-[240px] rounded-xl">
             <DemoNoopContainer componentName="avatar" componentFile="avatar-demo" />
-        </div>
+        </Canvas>
     </div>
 
-    <div class="bg-primitive-demo border-muted flex items-center justify-center rounded-lg p-4">
+    <Canvas class="rounded-xl">
         <DemoNoopContainer componentName="accordion" componentFile="accordion-demo" />
-    </div>
+    </Canvas>
 
     <div class="grid gap-4 sm:col-span-1 sm:grid-cols-1 md:col-span-2 md:grid-cols-2 xl:col-span-1 xl:grid-cols-1">
-        <div class="bg-primitive-demo border-muted flex h-[240px] items-center justify-center rounded-lg p-4">
+        <Canvas class="h-[240px] rounded-xl">
             <DemoNoopContainer componentName="progress" componentFile="progress-demo" />
-        </div>
-        <div class="bg-primitive-demo border-muted flex h-[240px] items-center justify-center rounded-lg p-4">
+        </Canvas>
+        <Canvas class="h-[240px] rounded-xl">
             <DemoNoopContainer componentName="dropdown-menu" componentFile="dropdown-menu-demo" />
-        </div>
+        </Canvas>
     </div>
 </div>
