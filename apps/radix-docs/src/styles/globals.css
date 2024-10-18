@@ -269,3 +269,7 @@ body {
         font-weight: bold;
     }
 }
+
+.bg-primitive-demo {
+    background: linear-gradient(120deg, var(--indigo-6), var(--crimson-5));
+}
