@@ -5,7 +5,7 @@ import { Injectable, TemplateRef, ViewContainerRef } from '@angular/core';
 @Injectable({
     providedIn: 'root'
 })
-export class AlertDialogService {
+export class RdxAlertDialogService {
     private overlayRef: OverlayRef | null | undefined;
     private dialogContent:
         | {

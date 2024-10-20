@@ -1,5 +1,5 @@
 import { Directive, inject } from '@angular/core';
-import { AlertDialogService } from './alert-dialog.service';
+import { RdxAlertDialogService } from './alert-dialog.service';
 
 @Directive({
     selector: '[rdxAlertDialogTrigger]',
@@ -8,8 +8,8 @@ import { AlertDialogService } from './alert-dialog.service';
         '(click)': 'handleClick()'
     }
 })
-export class AlertDialogTriggerDirective {
-    private readonly alertDialogService = inject(AlertDialogService);
+export class RdxAlertDialogTriggerDirective {
+    private readonly alertDialogService = inject(RdxAlertDialogService);
 
     handleClick() {
         this.alertDialogService.open();

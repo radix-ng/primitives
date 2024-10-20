@@ -28,6 +28,7 @@ const config = {
             [
                 'primitives',
                 'accordion',
+                'alert-dialog',
                 'avatar',
                 'card',
                 'collapsible',
