@@ -56,3 +56,52 @@ export const Default: Story = {
         `
     })
 };
+
+export const Ratios: Story = {
+    render: () => ({
+        template: html`
+            <div style="display: flex; gap: 20px;">
+                <div style="width: 200px;">
+                    <span style="color: white">1/2</span>
+                    <div rdxAspectRatio [ratio]="1/2">
+                        <img
+                            class="Image"
+                            src="https://images.unsplash.com/photo-1535025183041-0991a977e25b?w=300&dpr=2&q=80"
+                            alt="Landscape photograph by Tobias Tullius"
+                        />
+                    </div>
+                </div>
+                <div style="width: 200px;">
+                    <span style="color: white">1</span>
+                    <div rdxAspectRatio>
+                        <img
+                            class="Image"
+                            src="https://images.unsplash.com/photo-1535025183041-0991a977e25b?w=300&dpr=2&q=80"
+                            alt="Landscape photograph by Tobias Tullius"
+                        />
+                    </div>
+                </div>
+                <div style="width: 200px;">
+                    <span style="color: white">16/9</span>
+                    <div rdxAspectRatio [ratio]="16/9">
+                        <img
+                            class="Image"
+                            src="https://images.unsplash.com/photo-1535025183041-0991a977e25b?w=300&dpr=2&q=80"
+                            alt="Landscape photograph by Tobias Tullius"
+                        />
+                    </div>
+                </div>
+                <div style="width: 200px;">
+                    <span style="color: white">2/1</span>
+                    <div rdxAspectRatio [ratio]="2/1">
+                        <img
+                            class="Image"
+                            src="https://images.unsplash.com/photo-1535025183041-0991a977e25b?w=300&dpr=2&q=80"
+                            alt="Landscape photograph by Tobias Tullius"
+                        />
+                    </div>
+                </div>
+            </div>
+        `
+    })
+};
