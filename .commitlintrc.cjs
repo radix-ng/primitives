@@ -29,6 +29,7 @@ const config = {
                 'primitives',
                 'accordion',
                 'alert-dialog',
+                'aspect-ratio',
                 'avatar',
                 'card',
                 'collapsible',
