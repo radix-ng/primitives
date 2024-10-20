@@ -19,9 +19,9 @@ Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/cate
 
 ## Documentation
 
-Visit [https://radix-ng.com](https://radix-ng.com) to view documentation.
+Visit [radix-ng.com](https://radix-ng.com) to view documentation.
 
-Next version [https://next.radix-ng.com](https://next.radix-ng.com) documentation.
+Storybook [sb-primitives.radix-ng.com](https://sb-primitives.radix-ng.com/)
 
 ## Showcase
 
