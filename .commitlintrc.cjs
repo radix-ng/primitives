@@ -41,6 +41,7 @@ const config = {
                 'toggle',
                 'toggle-group',
                 'code',
+                'separator',
                 'kbd',
                 'radix-docs',
                 'radix-ssr-testing',
