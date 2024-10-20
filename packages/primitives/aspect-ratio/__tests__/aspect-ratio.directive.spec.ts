@@ -58,4 +58,13 @@ describe('AspectRatioDirective', () => {
         // 1 / (1/1) * 100 = 100%
         expect(div.style.paddingBottom).toBe('100%'); //
     });
+
+    it('should set paddingBottom to 0% when ratio is 0 to avoid division by zero', () => {
+        const div: HTMLElement = fixture.nativeElement.querySelector('div');
+
+        component.ratio = 0;
+        fixture.detectChanges();
+
+        expect(div.style.paddingBottom).toBe('0%');
+    });
 });
