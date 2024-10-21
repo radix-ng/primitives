@@ -140,6 +140,17 @@ export class RdxTooltipRootDirective implements OnInit {
             });
     }
 
+    private handlePointerDownOutside(): void {
+        if (!this.overlayRef) {
+            return;
+        }
+
+        this.overlayRef
+            .outsidePointerEvents()
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe((event) => this.tooltipContentDirective().onPointerDownOutside.emit(event));
+    }
+
     private handleDelayedOpen(): void {
         window.clearTimeout(this.openTimer);
 
@@ -185,6 +196,7 @@ export class RdxTooltipRootDirective implements OnInit {
         this.overlayRef.detachments().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(this.detach);
 
         this.handleOverlayKeydown();
+        this.handlePointerDownOutside();
 
         return this.overlayRef;
     }

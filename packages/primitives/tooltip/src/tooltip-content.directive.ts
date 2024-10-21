@@ -18,6 +18,7 @@ export class RdxTooltipContentDirective {
     align = input<RdxTooltipAlign>(RdxTooltipAlign.Center);
     alignOffset = input<number>(0);
     onEscapeKeyDown = output<KeyboardEvent>();
+    onPointerDownOutside = output<MouseEvent>();
 
     position = computed<ConnectedPosition>(() => {
         const side = this.side();

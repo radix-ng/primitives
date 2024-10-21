@@ -18,7 +18,6 @@ export class RdxTooltipArrowDirective {
         this.renderer.setAttribute(svgElement, 'width', `${width}`);
         this.renderer.setAttribute(svgElement, 'height', `${height}`);
         this.renderer.setAttribute(svgElement, 'viewBox', '0 0 30 10');
-        this.renderer.setAttribute(svgElement, 'fill', 'red');
         const polygonElement = this.renderer.createElement('polygon', 'svg');
         this.renderer.setAttribute(polygonElement, 'points', '0,0 30,0 15,10');
         this.renderer.appendChild(svgElement, polygonElement);

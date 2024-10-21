@@ -4,6 +4,7 @@ import { RdxTooltipArrowDirective } from '../src/tooltip-arrow.directive';
 import { RdxTooltipContentDirective } from '../src/tooltip-content.directive';
 import { RdxTooltipRootDirective } from '../src/tooltip-root.directive';
 import { RdxTooltipTriggerDirective } from '../src/tooltip-trigger.directive';
+import { RdxTooltipEventsComponent } from './tooltip-events.components';
 
 export default {
     title: 'Primitives/Tooltip [In Progress]',
@@ -13,7 +14,8 @@ export default {
                 RdxTooltipArrowDirective,
                 RdxTooltipContentDirective,
                 RdxTooltipRootDirective,
-                RdxTooltipTriggerDirective
+                RdxTooltipTriggerDirective,
+                RdxTooltipEventsComponent
             ],
             providers: [provideAnimations()]
         }),
@@ -153,6 +155,20 @@ export const Default: Story = {
                         </div>
                     </ng-template>
                 </ng-container>
+            </div>
+        `
+    })
+};
+
+export const Events: Story = {
+    render: () => ({
+        template: `
+            <div class="radix-themes light light-theme radix-themes-default-fonts"
+                data-accent-color="indigo"
+                data-radius="medium"
+                data-scaling="100%"
+            >
+                <rdx-tooltip-events></rdx-tooltip-events>
             </div>
         `
     })
