@@ -51,6 +51,8 @@ export class RdxSeparatorRootDirective {
     /**
      * Computes the `role` attribute for the separator. If `decorative` is true,
      * the role is set to "none", otherwise it is "separator".
+     *
+     * @ignore
      */
     protected readonly computedRole = computed(() => (this.decorative() ? 'none' : 'separator'));
 
@@ -58,6 +60,8 @@ export class RdxSeparatorRootDirective {
      * Computes the `aria-orientation` attribute. It is set to "vertical" only if
      * the separator is not decorative and the orientation is set to "vertical".
      * For horizontal orientation, the attribute is omitted.
+     *
+     * @ignore
      */
     protected readonly computedAriaOrientation = computed(() =>
         !this.decorative() && this.orientation() === 'vertical' ? 'vertical' : null
