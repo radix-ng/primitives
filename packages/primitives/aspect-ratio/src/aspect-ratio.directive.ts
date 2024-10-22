@@ -41,6 +41,8 @@ export class RdxAspectRatioDirective implements AfterViewInit {
      * This value is calculated based on the inverse of the aspect ratio.
      *
      * If the ratio is zero, it defaults to `0%` to avoid division by zero.
+     *
+     * @ignore
      */
     protected readonly paddingBottom = computed(() => {
         const ratioValue = this.ratio();

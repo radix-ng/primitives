@@ -71,9 +71,9 @@ export default defineConfig({
                 './src/components/mdx/Description.astro',
                 './src/components/mdx/DataAttributesTable.astro',
                 './src/components/mdx/CSSVariablesTable.astro',
+                './src/components/mdx/FeatureList.astro',
                 './src/components/demo-primitive-preview/ComponentPreview.astro',
-                './src/components/demo-component-preview/ComponentThemesPreview.astro',
-                './src/components/marked-list/MarkedList.astro'
+                './src/components/demo-component-preview/ComponentThemesPreview.astro'
             ]
         }),
         astroExpressiveCode(codeOptions),
