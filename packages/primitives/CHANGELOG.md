@@ -1,3 +1,21 @@
+## 0.15.0 (2024-10-22)
+
+
+### 🚀 Features
+
+- **primitives:** added visual hidden for input ([a28557f](https://github.com/radix-ng/primitives/commit/a28557f))
+
+- **alert-dialog:** added module exports ([a8e2dd9](https://github.com/radix-ng/primitives/commit/a8e2dd9))
+
+- **aspect-ratio:** added AspectRatio primitive ([33d964a](https://github.com/radix-ng/primitives/commit/33d964a))
+
+- **separator:** updated to signals ([3fc6309](https://github.com/radix-ng/primitives/commit/3fc6309))
+
+
+### ❤️  Thank You
+
+- Oleg Pimenov
+
 ## 0.14.0 (2024-10-10)
 
 
