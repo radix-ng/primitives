@@ -31,7 +31,6 @@ export interface ToggleProps {
     exportAs: 'rdxToggle',
     standalone: true,
     host: {
-        type: 'button',
         '[attr.aria-pressed]': 'pressed()',
         '[attr.data-state]': 'pressed() ? "on" : "off"',
         '[attr.data-disabled]': 'disabled()',

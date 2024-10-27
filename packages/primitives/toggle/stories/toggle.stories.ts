@@ -1,5 +1,6 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { Italic, LucideAngularModule } from 'lucide-angular';
+import { RdxToggleInputDirective } from '../src/toggle-input.directive';
 import { RdxToggleDirective } from '../src/toggle.directive';
 
 const html = String.raw;
@@ -10,6 +11,7 @@ export default {
         moduleMetadata({
             imports: [
                 RdxToggleDirective,
+                RdxToggleInputDirective,
                 LucideAngularModule,
                 LucideAngularModule.pick({ Italic })
             ]
@@ -90,6 +92,56 @@ export const State: Story = {
                 [pressed]="config.pressed"
                 aria-label="Toggle italic"
             >
+                <lucide-angular name="italic" size="12"></lucide-angular>
+            </button>
+        `
+    })
+};
+
+export const Controlled: Story = {
+    render: (args) => ({
+        props: {
+            config: args
+        },
+        template: html`
+            <h1>Uncontrolled</h1>
+            <span class="">default off</span>
+            <button class="Toggle" rdxToggle [pressed]="false" aria-label="Toggle bold" #toggle="rdxToggle">
+                <input rdxToggleInput [name]="'toggleDef'" [value]="toggle.pressed()" [required]="false" />
+                <lucide-angular name="italic" size="12"></lucide-angular>
+            </button>
+
+            <h1>Controlled</h1>
+            <span class="">default on</span>
+            <button
+                class="Toggle"
+                rdxToggle
+                [defaultPressed]="true"
+                [pressed]="true"
+                aria-label="Toggle bold"
+                #toggle="rdxToggle"
+            >
+                <input rdxToggleInput [name]="'toggleDef'" [value]="toggle.pressed()" [required]="false" />
+                <lucide-angular name="italic" size="12"></lucide-angular>
+            </button>
+
+            <span class="">default off</span>
+            <button
+                class="Toggle"
+                rdxToggle
+                [defaultPressed]="false"
+                [pressed]="false"
+                aria-label="Toggle bold"
+                #toggle="rdxToggle"
+            >
+                <input rdxToggleInput [name]="'toggleDef'" [value]="toggle.pressed()" [required]="false" />
+                <lucide-angular name="italic" size="12"></lucide-angular>
+            </button>
+
+            <h1>Events</h1>
+            <span class="">default off</span>
+            <button class="Toggle" rdxToggle [pressed]="false" aria-label="Toggle bold" #toggle="rdxToggle">
+                <input rdxToggleInput [name]="'toggleDef'" [value]="toggle.pressed()" [required]="false" />
                 <lucide-angular name="italic" size="12"></lucide-angular>
             </button>
         `

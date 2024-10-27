@@ -24,7 +24,7 @@ export class RdxVisuallyHiddenInputDirective<T> implements OnInit {
     private readonly elementRef = inject(ElementRef);
 
     readonly name = input<string>('');
-    readonly value = input<T | null>(null);
+    readonly value = input<T | string>();
     readonly checked = input<boolean | undefined>(undefined);
     readonly required = input<boolean | undefined>(undefined);
     readonly disabled = input<boolean | undefined>(undefined);
