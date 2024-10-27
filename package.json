@@ -94,7 +94,7 @@
         "@commitlint/cli": "^19.3.0",
         "@commitlint/config-conventional": "^19.2.2",
         "@commitlint/types": "^19.5.0",
-        "@compodoc/compodoc": "^1.1.25",
+        "@compodoc/compodoc": "^1.1.26",
         "@nrwl/nx-plugin": "19.8.4",
         "@nx/angular": "19.8.4",
         "@nx/devkit": "19.8.4",
