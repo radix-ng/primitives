@@ -109,7 +109,7 @@
         "@radix-ui/colors": "^3.0.0",
         "@radix-ui/themes": "^3.0.2",
         "@rollup/plugin-replace": "^5.0.5",
-        "@schematics/angular": "18.2.1",
+        "@schematics/angular": "18.2.10",
         "@storybook/addon-a11y": "^8.1.6",
         "@storybook/addon-backgrounds": "^8.1.6",
         "@storybook/addon-docs": "^8.1.6",
