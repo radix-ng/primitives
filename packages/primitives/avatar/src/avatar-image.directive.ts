@@ -10,6 +10,7 @@ export interface RdxAvatarImageProps {
     exportAs: 'rdxAvatarImage',
     standalone: true,
     host: {
+        role: 'img',
         '(load)': 'onLoad()',
         '(error)': 'onError()'
     }
