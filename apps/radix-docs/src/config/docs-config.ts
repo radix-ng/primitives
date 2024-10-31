@@ -60,6 +60,7 @@ const docsConfig = {
                         { name: 'Aspect Ratio', url: '/primitives/components/aspect-ratio', label: 'New' },
                         { name: 'Avatar', url: '/primitives/components/avatar' },
                         { name: 'Collapsible', url: '/primitives/components/collapsible' },
+                        { name: 'Dialog', url: '/primitives/components/dialog' },
                         { name: 'Dropdown Menu', url: '/primitives/components/dropdown-menu' },
                         { name: 'Label', url: '/primitives/components/label' },
                         { name: 'Progress', url: '/primitives/components/progress' },
