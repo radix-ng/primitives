@@ -65,7 +65,8 @@ const docsConfig = {
                         { name: 'Dropdown Menu', url: '/primitives/components/dropdown-menu' },
                         { name: 'Label', url: '/primitives/components/label' },
                         { name: 'Progress', url: '/primitives/components/progress' },
-                        { name: 'Separator', url: '/primitives/components/separator' }
+                        { name: 'Separator', url: '/primitives/components/separator' },
+                        { name: 'Select', url: '/primitives/components/select' }
                     ]
                 }
             ]
