@@ -70,7 +70,7 @@ module.exports = {
         require('tailwindcss'),
         require('@tailwindcss/typography'),
         require('autoprefixer'),
-        plugin(function ({ addBase, theme }) {
+        plugin(function ({ addBase }) {
             addBase({
                 '@font-face': {
                     fontFamily: 'Inter',

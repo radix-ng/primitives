@@ -4,12 +4,21 @@
     "targetDefaults": {
         "build": {
             "cache": false,
-            "dependsOn": ["^build"],
-            "inputs": ["production", "^production"]
+            "dependsOn": [
+                "^build"
+            ],
+            "inputs": [
+                "production",
+                "^production"
+            ]
         },
         "@nx/jest:jest": {
             "cache": true,
-            "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"],
+            "inputs": [
+                "default",
+                "^production",
+                "{workspaceRoot}/jest.preset.js"
+            ],
             "options": {
                 "passWithNoTests": true
             },
@@ -20,29 +29,35 @@
                 }
             }
         },
-        "@nx/eslint:lint": {
-            "cache": true,
-            "inputs": [
-                "default",
-                "{workspaceRoot}/.eslintrc.json",
-                "{workspaceRoot}/.eslintignore",
-                "{workspaceRoot}/eslint.config.js"
-            ]
-        },
         "@nx/js:tsc": {
             "cache": true,
-            "dependsOn": ["^build"],
-            "inputs": ["production", "^production"]
+            "dependsOn": [
+                "^build"
+            ],
+            "inputs": [
+                "production",
+                "^production"
+            ]
         },
         "@nx/angular:package": {
             "cache": true,
-            "dependsOn": ["^build"],
-            "inputs": ["production", "^production"]
+            "dependsOn": [
+                "^build"
+            ],
+            "inputs": [
+                "production",
+                "^production"
+            ]
         },
         "@angular-devkit/build-angular:application": {
             "cache": true,
-            "dependsOn": ["^build"],
-            "inputs": ["production", "^production"]
+            "dependsOn": [
+                "^build"
+            ],
+            "inputs": [
+                "production",
+                "^production"
+            ]
         },
         "build-storybook": {
             "cache": true,
@@ -55,7 +70,10 @@
         }
     },
     "namedInputs": {
-        "default": ["{projectRoot}/**/*", "sharedGlobals"],
+        "default": [
+            "{projectRoot}/**/*",
+            "sharedGlobals"
+        ],
         "production": [
             "default",
             "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
@@ -63,8 +81,6 @@
             "!{projectRoot}/jest.config.[jt]s",
             "!{projectRoot}/src/test-setup.[jt]s",
             "!{projectRoot}/test-setup.[jt]s",
-            "!{projectRoot}/.eslintrc.json",
-            "!{projectRoot}/eslint.config.js",
             "!{projectRoot}/**/*.stories.@(js|jsx|ts|tsx|mdx)",
             "!{projectRoot}/.storybook/**/*",
             "!{projectRoot}/tsconfig.storybook.json"
@@ -79,7 +95,6 @@
             "unitTestRunner": "jest"
         },
         "@nx/angular:library": {
-            "linter": "eslint",
             "unitTestRunner": "jest"
         },
         "@nx/angular:component": {
@@ -89,11 +104,16 @@
     "useInferencePlugins": false,
     "release": {
         "projectsRelationship": "independent",
-        "projects": ["shadcn", "primitives"],
+        "projects": [
+            "shadcn",
+            "primitives"
+        ],
         "version": {
             "conventionalCommits": true,
+            "preVersionCommand": "npx nx run-many -t build -p primitives shadcn",
             "generatorOptions": {
-                "updateDependents": "auto"
+                "updateDependents": "auto",
+                "preserveLocalDependencyProtocols": true
             }
         },
         "changelog": {
@@ -101,12 +121,13 @@
                 "createRelease": "github",
                 "renderOptions": {
                     "commitReferences": true,
-                    "authors": false
+                    "authors": true,
+                    "mapAuthorsToGitHubUsernames": false
                 }
             }
         },
         "git": {
-            "commitMessage": "chore(release): publish {projectName} {version} [skip actions]"
+            "commitMessage": "chore(release): publish {projectName} {version}"
         }
     }
 }

@@ -11,9 +11,7 @@ description: .
 
 <ComponentPreview name="label" file="label-demo" />
 
-## Features
-
-- ✅ Text selection is prevented when double-clicking label.
+<FeatureList items={['Text selection is prevented when double-clicking label.']} />
 
 ## Installation
 
@@ -25,9 +23,20 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 ## Anatomy
 
-Import the component.
+Import all parts and piece them together.
+
+```html
+<label rdxLabel htmlFor="firstName">First Name</label>
+```
 
 ## API Reference
 
+### Label
+`RdxLabelDirective`
 <PropsTable name="RdxLabelDirective" />
 
+
+## Accessibility
+This component is based on the native `label` element, it will automatically apply the correct labelling when wrapping controls
+or using the `htmlFor` attribute. For your own custom controls to work correctly,
+ensure they use native elements such as `button` or `input` as a base.

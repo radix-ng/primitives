@@ -9,21 +9,37 @@ description: .
 
 <Description>Renders an accessible label associated with controls.</Description>
 
-
 <ComponentPreview name="avatar" file="avatar-demo" />
 
-## Features
-
-
-## Installation
-
-Get started with importing the directive:
-
+<FeatureList items={['Automatic and manual control over when the image renders.', 'Fallback part accepts any children.', 'Optionally delay fallback rendering to avoid content flashing.']} />
 
 ## Anatomy
 
-Import the component.
+Import all parts and piece them together.
+
+```html
+<span rdxAvatarRoot>
+    <img rdxAvatarImage />
+    <span rdxAvatarFallback></span>
+</span>
+```
 
 ## API Reference
 
+### Image
+`RdxAvatarImageDirective`
+
+The image to render.
+By default it will only render when it has loaded. You can use the `onLoadingStatusChange` handler if you need more control.
+
+<PropsTable name="RdxAvatarImageDirective" />
+
+### Fallback
+`RdxAvatarFallbackDirective`
+
+An element that renders when the image hasn't loaded. This means whilst it's loading, or if there was an error.
+If you notice a flash during loading, you can provide a `delayMs` prop to delay its rendering
+so it only renders for those with slower connections.
+
+For more control, use the `onLoadingStatusChange` handler on `rdxAvatarImage`.
 <PropsTable name="RdxAvatarFallbackDirective" />

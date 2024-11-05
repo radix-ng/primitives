@@ -1,5 +1,8 @@
 ---
-import { cn } from '../../utils/utils';
+import Sidebar from './Sidebar.astro';
+import docsConfig from '@/config/docs-config';
+import MobileNavigation from './MobileNavigation.astro';
+
 const firstSegment = Astro.url.pathname.split('/')[1];
 
 function isActive(segment: string) {
@@ -7,33 +10,43 @@ function isActive(segment: string) {
 }
 ---
 
-<div class="mr-4 hidden md:flex">
-    <a href="/" class="mr-6 flex items-center gap-2" aria-label="Astro documentation">
-        <h4 class="text-xl">
-            <span class="hidden sm:inline-block">
-                <span class="font-extrabold">Radix</span>
-                <span class="font-normal">Angular</span>
-            </span>
-        </h4>
-    </a>
-    <nav class="flex items-center gap-4 text-sm lg:gap-6">
-        <a
-            href="/themes/overview/getting-started"
-            class={cn(
-                'hover:text-foreground/80 transition-colors',
-                isActive('themes') ? 'dark:text-primary-active' : 'text-foreground/60'
-            )}
+<div>
+    <MobileNavigation />
+    <div
+        class="h-max-[calc(100vh-3.5rem)] bg-background md:data-[state=open]:translate-none fixed -left-full top-14 z-50 h-[calc(100vh-3.5rem)] w-full overflow-y-auto p-6 transition data-[state=open]:translate-x-full data-[state=closed]:duration-300 data-[state=open]:duration-500 md:relative md:left-auto md:top-auto md:h-auto md:w-auto md:transform-none md:overflow-y-visible md:bg-inherit md:p-0 md:dark:bg-inherit"
+        id="sidebarNav"
+        data-state="closed"
+    >
+        <nav
+            class="mb-8 flex flex-col gap-2 pl-3 text-lg md:relative md:top-0.5 md:mb-0 md:flex-row md:items-center md:gap-4 md:p-0 md:text-sm lg:gap-6"
         >
-            Themes
-        </a>
-        <a
-            href="/primitives/overview/introduction"
-            class={cn(
-                'hover:text-foreground/80 transition-colors',
-                isActive('primitives') ? 'dark:text-primary-active' : 'text-foreground/60'
-            )}
-        >
-            Primitives
-        </a>
-    </nav>
+            <a
+                href="/themes/overview/getting-started"
+                class:list={[
+                    'text-foreground transition-colors',
+                    {
+                        'text-foreground/60 hover:text-foreground/80': !isActive('themes'),
+                        'text-foreground/100 hover:text-foreground font-medium': isActive('themes')
+                    }
+                ]}
+            >
+                Themes
+            </a>
+            <a
+                href="/primitives/overview/introduction"
+                class:list={[
+                    'text-foreground transition-colors ',
+                    {
+                        'text-foreground/60 hover:text-foreground/80': !isActive('primitives'),
+                        'text-foreground/100 hover:text-foreground font-medium': isActive('primitives')
+                    }
+                ]}
+            >
+                Primitives
+            </a>
+        </nav>
+        <div class="md:hidden">
+            <Sidebar navigation={docsConfig.navigation} />
+        </div>
+    </div>
 </div>

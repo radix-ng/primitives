@@ -1,27 +1,27 @@
 import { OverlayModule } from '@angular/cdk/overlay';
 import { PortalModule } from '@angular/cdk/portal';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { AlertDialogCancelDirective } from '../src/alert-dialog-cancel.directive';
-import { AlertDialogContentDirective } from '../src/alert-dialog-content.directive';
-import { AlertDialogRootDirective } from '../src/alert-dialog-root.directive';
-import { AlertDialogTitleDirective } from '../src/alert-dialog-title.directive';
-import { AlertDialogTriggerDirective } from '../src/alert-dialog-trigger.directive';
-import { AlertDialogService } from '../src/alert-dialog.service';
+import { RdxAlertDialogCancelDirective } from '../src/alert-dialog-cancel.directive';
+import { RdxAlertDialogContentDirective } from '../src/alert-dialog-content.directive';
+import { RdxAlertDialogRootDirective } from '../src/alert-dialog-root.directive';
+import { RdxAlertDialogTitleDirective } from '../src/alert-dialog-title.directive';
+import { RdxAlertDialogTriggerDirective } from '../src/alert-dialog-trigger.directive';
+import { RdxAlertDialogService } from '../src/alert-dialog.service';
 
 export default {
     title: 'Primitives/Alert Dialog',
     decorators: [
         moduleMetadata({
             imports: [
-                AlertDialogContentDirective,
-                AlertDialogRootDirective,
-                AlertDialogTitleDirective,
-                AlertDialogTriggerDirective,
-                AlertDialogCancelDirective,
+                RdxAlertDialogContentDirective,
+                RdxAlertDialogRootDirective,
+                RdxAlertDialogTitleDirective,
+                RdxAlertDialogTriggerDirective,
+                RdxAlertDialogCancelDirective,
                 OverlayModule,
                 PortalModule
             ],
-            providers: [AlertDialogService]
+            providers: [RdxAlertDialogService]
         }),
         componentWrapperDecorator(
             (story) =>

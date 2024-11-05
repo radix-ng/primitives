@@ -1,7 +1,7 @@
 import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
 import * as ToggleGroupDirectiveStories from './toggle-group.stories';
 import { RdxToggleGroupDirective } from '../src/toggle-group.directive';
-import { RdxToggleGroupButtonDirective } from '../src/toggle-group-button.directive';
+import { RdxToggleGroupItemDirective } from '../src/toggle-group-item.directive';
 
 <Meta title="Primitives/Toggle Group" />
 
@@ -25,8 +25,8 @@ Get started with importing the directives:
 ```typescript
 import {
   RdxToggleGroupDirective,
-  RdxToggleGroupButtonDirective,
-  RdxToggleGroupMultiDirective
+  RdxToggleGroupItemDirective,
+  RdxToggleGroupMultipleDirective
 } from '@radix-ng/primitives/toggle-group';
 ```
 
@@ -34,13 +34,13 @@ import {
 
 ```html
 <div class="ToggleGroup" rdxToggleGroup value="center" aria-label="Text alignment">
-  <button class="ToggleGroupItem" rdxToggleGroupButton value="left" aria-label="Left aligned">
+  <button class="ToggleGroupItem" rdxToggleGroupItem value="left" aria-label="Left aligned">
     <lucide-icon name="align-left" size="16"></lucide-icon>
   </button>
-  <button class="ToggleGroupItem" rdxToggleGroupButton value="center" aria-label="Center aligned">
+  <button class="ToggleGroupItem" rdxToggleGroupItem value="center" aria-label="Center aligned">
     <lucide-icon name="align-center" size="16"></lucide-icon>
   </button>
-  <button class="ToggleGroupItem" rdxToggleGroupButton value="right" aria-label="Right aligned">
+  <button class="ToggleGroupItem" rdxToggleGroupItem value="right" aria-label="Right aligned">
     <lucide-icon name="align-right" size="16"></lucide-icon>
   </button>
 </div>
@@ -60,9 +60,9 @@ import {
   `}
 </Markdown>
 
-### RdxToggleGroupButtonDirective
+### RdxToggleGroupItemDirective
 
-<ArgTypes of={RdxToggleGroupButtonDirective} />
+<ArgTypes of={RdxToggleGroupItemDirective} />
 
 ## Accessibility
 

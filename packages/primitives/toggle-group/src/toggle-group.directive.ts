@@ -1,3 +1,4 @@
+import { FocusKeyManager } from '@angular/cdk/a11y';
 import {
     AfterContentInit,
     booleanAttribute,
@@ -10,12 +11,13 @@ import {
     SimpleChanges
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import type { RdxToggleGroupButtonDirective } from './toggle-group-button.directive';
-import { RdxToggleGroupButtonToken } from './toggle-group-button.token';
+import type { RdxToggleGroupItemDirective } from './toggle-group-item.directive';
+import { RdxToggleGroupItemToken } from './toggle-group-item.token';
 import { RdxToggleGroupToken } from './toggle-group.token';
 
 @Directive({
     selector: '[rdxToggleGroup]',
+    exportAs: 'rdxToggleGroup',
     standalone: true,
     providers: [
         { provide: RdxToggleGroupToken, useExisting: RdxToggleGroupDirective },
@@ -24,7 +26,10 @@ import { RdxToggleGroupToken } from './toggle-group.token';
     host: {
         role: 'group',
         '[attr.data-orientation]': 'orientation',
-        '(focusout)': 'onTouched?.()'
+
+        '(focusout)': 'onTouched?.()',
+        '(focusin)': 'onFocusIn()',
+        '(keydown)': 'handleKeydown($event)'
     }
 })
 export class RdxToggleGroupDirective implements OnChanges, AfterContentInit, ControlValueAccessor {
@@ -59,8 +64,13 @@ export class RdxToggleGroupDirective implements OnChanges, AfterContentInit, Con
     /**
      * Access the buttons in the toggle group.
      */
-    @ContentChildren(RdxToggleGroupButtonToken)
-    protected buttons?: QueryList<RdxToggleGroupButtonDirective>;
+    @ContentChildren(RdxToggleGroupItemToken)
+    protected buttons?: QueryList<RdxToggleGroupItemDirective>;
+
+    /**
+     * FocusKeyManager to manage keyboard interactions.
+     */
+    private keyManager!: FocusKeyManager<RdxToggleGroupItemDirective>;
 
     /**
      * The value change callback.
@@ -81,6 +91,50 @@ export class RdxToggleGroupDirective implements OnChanges, AfterContentInit, Con
     ngAfterContentInit(): void {
         if (this.disabled) {
             this.buttons?.forEach((button) => button.updateDisabled());
+        }
+
+        if (this.buttons) {
+            this.keyManager = new FocusKeyManager(this.buttons).withWrap();
+        }
+    }
+
+    protected onFocusIn(): void {
+        if (!this.keyManager.activeItem) {
+            this.keyManager.setFirstItemActive();
+        }
+    }
+
+    protected handleKeydown(event: KeyboardEvent): void {
+        switch (event.key) {
+            case 'ArrowRight':
+            case 'ArrowDown':
+                this.keyManager.setNextItemActive();
+                event.preventDefault();
+                break;
+            case 'ArrowLeft':
+            case 'ArrowUp':
+                this.keyManager.setPreviousItemActive();
+                event.preventDefault();
+                break;
+            case 'Home':
+                this.keyManager.setFirstItemActive();
+                event.preventDefault();
+                break;
+            case 'End':
+                this.keyManager.setLastItemActive();
+                event.preventDefault();
+                break;
+            case 'Enter':
+            case ' ':
+                // eslint-disable-next-line no-case-declarations
+                const activeItem = this.keyManager.activeItem;
+                if (activeItem) {
+                    activeItem.toggle();
+                }
+                event.preventDefault();
+                break;
+            default:
+                break;
         }
     }
 

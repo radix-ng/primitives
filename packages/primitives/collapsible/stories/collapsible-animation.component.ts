@@ -85,9 +85,9 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
                 <span class="Text" style="color: white">&#64;peduarte starred 3 repositories</span>
                 <button class="IconButton" rdxCollapsibleTrigger>
                     @if (open) {
-                        <lucide-angular size="16" name="x" style="display: flex;"></lucide-angular>
+                        <lucide-angular size="16" name="x" style="display: flex;" />
                     } @else {
-                        <lucide-angular size="16" name="unfold-vertical" style="display: flex;"></lucide-angular>
+                        <lucide-angular size="16" name="unfold-vertical" style="display: flex;" />
                     }
                 </button>
             </div>

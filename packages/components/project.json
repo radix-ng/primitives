@@ -7,12 +7,10 @@
     "tags": [],
     "targets": {
         "nx-release-publish": {
-            "executor": "@nx/js:release-publish",
+            "dependsOn": ["^nx-release-publish", "build"],
             "options": {
-                "packageRoot": "./dist/components",
-                "registry": "https://registry.npmjs.org/"
-            },
-            "dependsOn": ["^nx-release-publish", "build"]
+                "packageRoot": "{workspaceRoot}/dist/{projectRoot}"
+            }
         },
         "build": {
             "executor": "nx:run-commands",
@@ -47,9 +45,6 @@
             "options": {
                 "jestConfig": "packages/components/jest.config.ts"
             }
-        },
-        "lint": {
-            "executor": "@nx/eslint:lint"
         },
         "storybook": {
             "executor": "@storybook/angular:start-storybook",

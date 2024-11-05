@@ -1,4 +1,15 @@
-import { Directive, inject, Input, NgZone, numberAttribute, OnDestroy, OnInit } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import {
+    Directive,
+    inject,
+    Input,
+    NgZone,
+    numberAttribute,
+    OnDestroy,
+    OnInit,
+    PLATFORM_ID,
+    signal
+} from '@angular/core';
 import { injectAvatar } from './avatar-root.directive';
 import { injectAvatarConfig } from './avatar.config';
 
@@ -11,7 +22,7 @@ export interface RdxAvatarFallbackProps {
     exportAs: 'rdxAvatarFallback',
     standalone: true,
     host: {
-        '[style.display]': 'visible ? null : "none"'
+        '[style.display]': 'visible() ? null : "none"'
     }
 })
 export class RdxAvatarFallbackDirective implements RdxAvatarFallbackProps, OnInit, OnDestroy {
@@ -21,6 +32,8 @@ export class RdxAvatarFallbackDirective implements RdxAvatarFallbackProps, OnIni
 
     private readonly ngZone = inject(NgZone);
 
+    private readonly platformId = inject(PLATFORM_ID);
+
     /**
      * Define a delay before the fallback is shown.
      * This is useful to only show the fallback for those with slower connections.
@@ -28,28 +41,35 @@ export class RdxAvatarFallbackDirective implements RdxAvatarFallbackProps, OnIni
      */
     @Input({ alias: 'rdxDelayMs', transform: numberAttribute }) delayMs: number = this.config.delayMs;
 
-    protected get visible(): boolean {
-        return this.delayElapsed && this.avatar._state() !== 'loaded';
-    }
+    readonly visible = signal(false);
 
     /**
      * Determine the delay has elapsed, and we can show the fallback.
      */
     private delayElapsed = false;
 
-    private timeoutId: number | null = null;
+    private timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     ngOnInit(): void {
-        this.ngZone.runOutsideAngular(() => {
-            this.timeoutId = window.setTimeout(() => (this.delayElapsed = true), this.delayMs);
-        });
+        if (isPlatformBrowser(this.platformId)) {
+            this.ngZone.runOutsideAngular(() => {
+                this.timeoutId = globalThis.setTimeout(() => {
+                    this.ngZone.run(() => {
+                        this.delayElapsed = true;
+                        this.updateVisibility();
+                    });
+                }, this.delayMs);
+            });
+        }
     }
 
     ngOnDestroy(): void {
-        this.ngZone.run(() => {
-            if (this.timeoutId) {
-                window.clearTimeout(this.timeoutId);
-            }
-        });
+        if (isPlatformBrowser(this.platformId) && this.timeoutId !== null) {
+            globalThis.clearTimeout(this.timeoutId);
+        }
+    }
+
+    private updateVisibility(): void {
+        this.visible.set(this.delayElapsed && this.avatar._state() !== 'loaded');
     }
 }

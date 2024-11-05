@@ -1,0 +1,12 @@
+---
+export interface Props {
+    items: string[];
+}
+
+const { items } = Astro.props;
+---
+
+<h2 class="rt-Heading rt-r-size-4 rt-r-mb-4 rt-r-mt-4 sm:rt-r-mt-7">Features</h2>
+<ul class="marked-list">
+    {items.map((item) => <li class="marked-list__item">{item}</li>)}
+</ul>

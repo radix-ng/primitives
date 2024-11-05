@@ -1,58 +1,65 @@
-import { Component, DebugElement } from '@angular/core';
+import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
 import { Orientation, RdxSeparatorRootDirective } from '../src/separator.directive';
 
 @Component({
     template: '<div rdxSeparatorRoot [orientation]="orientation" [decorative]="decorative"></div>'
 })
-class TestComponent {
+class TestHostComponent {
     orientation: Orientation = 'horizontal';
     decorative = false;
 }
 
 describe('SeparatorDirective', () => {
-    let component: TestComponent;
-    let fixture: ComponentFixture<TestComponent>;
-    let div: DebugElement;
-
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            declarations: [TestComponent],
-            imports: [RdxSeparatorRootDirective]
-        }).compileComponents();
-    });
+    let fixture: ComponentFixture<TestHostComponent>;
+    let element: HTMLElement;
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(TestComponent);
-        component = fixture.componentInstance;
-        div = fixture.debugElement.query(By.css('div'));
-        fixture.detectChanges();
+        TestBed.configureTestingModule({
+            imports: [RdxSeparatorRootDirective],
+            declarations: [TestHostComponent]
+        });
+        fixture = TestBed.createComponent(TestHostComponent);
+        element = fixture.nativeElement.querySelector('div');
     });
 
-    it('should create an instance', () => {
-        const directive = new RdxSeparatorRootDirective();
-        expect(directive).toBeTruthy();
+    it('should set default role to "separator"', () => {
+        fixture.detectChanges();
+        expect(element.getAttribute('role')).toBe('separator');
     });
 
-    it('should apply the correct role attribute based on decorative input', () => {
-        expect(div.nativeElement.getAttribute('role')).toBe('separator');
-        component.decorative = true;
+    it('should set role to "none" if decorative is true', () => {
+        fixture.componentInstance.decorative = true;
         fixture.detectChanges();
-        expect(div.nativeElement.getAttribute('role')).toBe('none');
+        expect(element.getAttribute('role')).toBe('none');
     });
 
-    it('should apply the correct aria-orientation attribute based on orientation input', () => {
-        expect(div.nativeElement.getAttribute('aria-orientation')).toBe(null);
-        component.orientation = 'vertical';
+    it('should not set aria-orientation if orientation is horizontal', () => {
+        fixture.componentInstance.orientation = 'horizontal';
         fixture.detectChanges();
-        expect(div.nativeElement.getAttribute('aria-orientation')).toBe('vertical');
+        expect(element.getAttribute('aria-orientation')).toBeNull();
     });
 
-    it('should apply the correct data-orientation attribute based on orientation input', () => {
-        expect(div.nativeElement.getAttribute('data-orientation')).toBe('horizontal');
-        component.orientation = 'vertical';
+    it('should set aria-orientation to "vertical" if orientation is vertical and decorative is false', () => {
+        fixture.componentInstance.orientation = 'vertical';
         fixture.detectChanges();
-        expect(div.nativeElement.getAttribute('data-orientation')).toBe('vertical');
+        expect(element.getAttribute('aria-orientation')).toBe('vertical');
+    });
+
+    it('should not set aria-orientation if decorative is true', () => {
+        fixture.componentInstance.orientation = 'vertical';
+        fixture.componentInstance.decorative = true;
+        fixture.detectChanges();
+        expect(element.getAttribute('aria-orientation')).toBeNull();
+    });
+
+    it('should set data-orientation based on the orientation input', () => {
+        fixture.componentInstance.orientation = 'vertical';
+        fixture.detectChanges();
+        expect(element.getAttribute('data-orientation')).toBe('vertical');
+
+        fixture.componentInstance.orientation = 'horizontal';
+        fixture.detectChanges();
+        expect(element.getAttribute('data-orientation')).toBe('horizontal');
     });
 });

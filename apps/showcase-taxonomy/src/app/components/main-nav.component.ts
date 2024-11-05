@@ -26,7 +26,7 @@ import { LucideAngularModule } from 'lucide-angular';
                         >
                             <path
                                 d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"
-                            ></path>
+                            />
                         </svg>
                         <span class="hidden font-bold sm:inline-block">Taxonomy</span>
                     </a>
@@ -47,12 +47,12 @@ import { LucideAngularModule } from 'lucide-angular';
                     </nav>
                     <button class="flex items-center space-x-2 md:hidden" (click)="toggleMenu()" type="button">
                         @if (showMobileMenu) {
-                            <lucide-icon name="x"></lucide-icon>
+                            <lucide-icon name="x" />
                         }
                         <span class="font-bold">Menu</span>
                     </button>
                     @if (showMobileMenu) {
-                        <tx-mobile-nav></tx-mobile-nav>
+                        <tx-mobile-nav />
                     }
                 </div>
                 <nav>

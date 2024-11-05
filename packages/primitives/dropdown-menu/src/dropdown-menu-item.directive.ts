@@ -46,8 +46,10 @@ export class RdxDropdownMenuItemDirective extends CdkMenuItem {
     }
 
     protected onPointerMove() {
-        this.nativeElement.focus({ preventScroll: true });
-        this.menu.updateActiveItem(this);
+        if (!this.highlighted) {
+            this.nativeElement.focus({ preventScroll: true });
+            this.menu.updateActiveItem(this);
+        }
     }
 
     protected onKeydown(event: KeyboardEvent) {

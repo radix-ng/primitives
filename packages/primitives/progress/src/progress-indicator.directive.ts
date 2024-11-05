@@ -8,8 +8,8 @@ import { injectProgress } from './progress-root.directive';
  * It inherits the state and value from the `RdxProgressRootDirective`.
  */
 @Directive({
-    selector: 'div[rdxProgressIndicator]',
-    exportAs: 'ProgressIndicator',
+    selector: '[rdxProgressIndicator]',
+    exportAs: 'rdxProgressIndicator',
     standalone: true,
     host: {
         '[attr.data-state]': 'progress.state',

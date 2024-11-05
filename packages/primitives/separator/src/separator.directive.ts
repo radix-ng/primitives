@@ -1,6 +1,9 @@
-import { booleanAttribute, Directive, Input } from '@angular/core';
+import { BooleanInput } from '@angular/cdk/coercion';
+import { booleanAttribute, computed, Directive, input } from '@angular/core';
 
 const DEFAULT_ORIENTATION = 'horizontal';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ORIENTATIONS = ['horizontal', 'vertical'] as const;
 
 export type Orientation = (typeof ORIENTATIONS)[number];
@@ -17,18 +20,50 @@ export interface SeparatorProps {
     decorative?: boolean;
 }
 
+/**
+ * Directive that adds accessible and configurable separator element to the DOM.
+ * This can be either horizontal or vertical and optionally decorative (which removes
+ * it from the accessibility tree).
+ */
 @Directive({
     selector: 'div[rdxSeparatorRoot]',
     standalone: true,
     host: {
-        '[attr.role]': 'decorative ? "none" : "separator"',
-        // `aria-orientation` defaults to `horizontal` so we only need it if `orientation` is vertical
-        '[attr.aria-orientation]': '!decorative && orientation === "vertical" ? "vertical" : null',
-        '[attr.data-orientation]': 'orientation'
+        '[attr.role]': 'computedRole()',
+        '[attr.aria-orientation]': 'computedAriaOrientation()',
+
+        '[attr.data-orientation]': 'orientation()'
     }
 })
-export class RdxSeparatorRootDirective implements SeparatorProps {
-    @Input() orientation: Orientation = DEFAULT_ORIENTATION;
+export class RdxSeparatorRootDirective {
+    /**
+     * Orientation of the separator, can be either 'horizontal' or 'vertical'.
+     * Defaults to 'horizontal'.
+     */
+    readonly orientation = input<Orientation>(DEFAULT_ORIENTATION);
 
-    @Input({ transform: booleanAttribute }) decorative = false;
+    /**
+     * If true, the separator will be considered decorative and removed from
+     * the accessibility tree. Defaults to false.
+     */
+    readonly decorative = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /**
+     * Computes the `role` attribute for the separator. If `decorative` is true,
+     * the role is set to "none", otherwise it is "separator".
+     *
+     * @ignore
+     */
+    protected readonly computedRole = computed(() => (this.decorative() ? 'none' : 'separator'));
+
+    /**
+     * Computes the `aria-orientation` attribute. It is set to "vertical" only if
+     * the separator is not decorative and the orientation is set to "vertical".
+     * For horizontal orientation, the attribute is omitted.
+     *
+     * @ignore
+     */
+    protected readonly computedAriaOrientation = computed(() =>
+        !this.decorative() && this.orientation() === 'vertical' ? 'vertical' : null
+    );
 }

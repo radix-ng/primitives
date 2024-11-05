@@ -4,6 +4,8 @@
         "stylelint.vscode-stylelint",
         "astro-build.astro-vscode",
         "angular.ng-template",
-        "editorconfig.editorconfig"
+        "editorconfig.editorconfig",
+        "dbaeumer.vscode-eslint",
+        "firsttris.vscode-jest-runner"
     ]
 }

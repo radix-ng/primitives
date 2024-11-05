@@ -1,14 +1,16 @@
 import angular from '@analogjs/astro-angular';
 import mdx from '@astrojs/mdx';
+import sitemap from '@astrojs/sitemap';
 import tailwind from '@astrojs/tailwind';
 import AutoImport from 'astro-auto-import';
 import astroExpressiveCode from 'astro-expressive-code';
 import { defineConfig } from 'astro/config';
 import remarkStyled, { remarkDirectives } from './plugins/remarkStyled';
+import { siteConfig } from './src/config/site-config';
 
 /** @type {import('astro-expressive-code').AstroExpressiveCodeOptions} */
 const codeOptions = {
-    themes: ['snazzy-light'],
+    themes: ['snazzy-light', 'github-dark'],
     styleOverrides: {
         borderWidth: '1px',
         codeFontSize: '13px',
@@ -21,6 +23,8 @@ const codeOptions = {
 
 // https://astro.build/config
 export default defineConfig({
+    site: siteConfig.url,
+    trailingSlash: 'never',
     vite: {
         optimizeDeps: {
             include: [
@@ -29,7 +33,8 @@ export default defineConfig({
                 '@angular/common',
                 '@angular/core',
                 '@angular/cdk',
-                'classnames'
+                'classnames',
+                'lucide-angular'
             ]
         },
         ssr: {
@@ -37,21 +42,36 @@ export default defineConfig({
                 '@radix-ng/**',
                 '@angular/common',
                 '@angular/core',
-                '@angular/core/rxjs-interop'
+                '@angular/core/rxjs-interop',
+                'lucide-angular'
             ]
-        },
-        esbuild: {
-            jsxDev: true
         }
     },
     integrations: [
-        tailwind(),
+        tailwind({
+            applyBaseStyles: false
+        }),
+        sitemap({
+            serialize(item) {
+                if (item.url === siteConfig.url) {
+                    item.changefreq = 'daily';
+                    item.lastmod = new Date();
+                    item.priority = 1;
+                } else {
+                    item.changefreq = 'daily';
+                    item.lastmod = new Date();
+                    item.priority = 0.9;
+                }
+                return item;
+            }
+        }),
         AutoImport({
             imports: [
                 './src/components/mdx/PropsTable.astro',
                 './src/components/mdx/Description.astro',
                 './src/components/mdx/DataAttributesTable.astro',
                 './src/components/mdx/CSSVariablesTable.astro',
+                './src/components/mdx/FeatureList.astro',
                 './src/components/demo-primitive-preview/ComponentPreview.astro',
                 './src/components/demo-component-preview/ComponentThemesPreview.astro'
             ]

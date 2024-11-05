@@ -16,8 +16,8 @@
     font-size: 15px;
     line-height: 1;
     color: white;
-    background-color: var(--black-a5);
-    box-shadow: 0 0 0 1px var(--black-a9);
+    background-color: var(--black-a2);
+    box-shadow: 0 0 0 1px var(--black-a6);
 }
 
 .Input:focus {
@@ -25,13 +25,13 @@
 }
 
 .Input::selection {
-    background-color: var(--black-a9);
+    background-color: var(--black-a6);
     color: white;
 }
 
 .LabelRoot {
+    color: white;
     font-size: 15px;
     font-weight: 500;
     line-height: 35px;
-    color: white;
 }

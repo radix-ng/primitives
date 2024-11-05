@@ -16,7 +16,6 @@ import { RdxThemeDirective } from '@radix-ng/components/theme';
             <rdx-code size="6">console.log()</rdx-code>
             <rdx-code size="7">console.log()</rdx-code>
             <rdx-code size="8">console.log()</rdx-code>
-            <rdx-code size="9">console.log()</rdx-code>
         </div>
     `
 })

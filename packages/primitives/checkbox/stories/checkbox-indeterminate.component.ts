@@ -7,17 +7,11 @@ import { RdxCheckboxInputDirective } from '../src/checkbox-input.directive';
 import { RdxCheckboxDirective } from '../src/checkbox.directive';
 
 @Component({
-    // eslint-disable-next-line @angular-eslint/component-selector
     selector: 'checkbox-indeterminate-example',
     template: `
         <label class="Label" rdxLabel htmlFor="r1">
             <button class="CheckboxRoot" [(indeterminate)]="indeterminate" [(ngModel)]="checked" CheckboxRoot>
-                <lucide-angular
-                    class="CheckboxIndicator"
-                    [name]="iconName()"
-                    CheckboxIndicator
-                    size="16"
-                ></lucide-angular>
+                <lucide-angular class="CheckboxIndicator" [name]="iconName()" CheckboxIndicator size="16" />
                 <input class="Input" id="r1" CheckboxInput />
             </button>
             I'm a checkbox

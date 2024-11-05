@@ -4,4 +4,4 @@ import { Directive } from '@angular/core';
     selector: '[rdxAlertDialogTitle]',
     standalone: true
 })
-export class AlertDialogTitleDirective {}
+export class RdxAlertDialogTitleDirective {}

@@ -35,9 +35,11 @@
                 "jestConfig": "packages/primitives/jest.config.ts"
             }
         },
-        "lint": {
-            "executor": "@nx/eslint:lint",
-            "outputs": ["{options.outputFile}"]
+        "nx-release-publish": {
+            "dependsOn": ["build"],
+            "options": {
+                "packageRoot": "{workspaceRoot}/dist/{projectName}"
+            }
         }
     }
 }

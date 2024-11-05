@@ -13,6 +13,23 @@ export default function remarkStyled() {
             node.data.hProperties.dataAccentColor = '';
         });
 
+        visit(tree, 'heading', (node) => {
+            node.data = node.data || {};
+            node.data.hProperties = node.data.hProperties || {};
+
+            switch (node.depth) {
+                case 1:
+                    node.data.hProperties.className = 'rt-Heading rt-r-size-8 rt-r-mb-2';
+                    break;
+                case 2:
+                    node.data.hProperties.className = 'rt-Heading rt-r-size-6 rt-r-mt-8 rt-r-mb-3';
+                    break;
+                case 3:
+                    node.data.hProperties.className = 'rt-Heading rt-r-size-4 rt-r-mt-7 rt-r-mb-2';
+                    break;
+            }
+        });
+
         visit(tree, 'paragraph', (node) => {
             node.data = node.data || {};
             node.data.hProperties = node.data.hProperties || {};

@@ -103,9 +103,6 @@
             "options": {
                 "buildTarget": "shadcn-docs:build"
             }
-        },
-        "lint": {
-            "executor": "@nx/eslint:lint"
         }
     }
 }

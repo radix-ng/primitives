@@ -6,7 +6,7 @@ import classNames from 'classnames';
     selector: 'rdx-kbd',
     standalone: true,
     template: `
-        <ng-content></ng-content>
+        <ng-content />
     `,
     host: {
         '[class]': 'computedClass()'

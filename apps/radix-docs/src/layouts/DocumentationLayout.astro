@@ -1,8 +1,8 @@
 ---
 import MainLayout from './MainLayout.astro';
-import Sidebar from '../components/layouts/Sidebar.astro';
-import siteConfig from '../config/site-config';
-import Header from '../components/layouts/Header.astro';
+import Sidebar from '@/components/layouts/Sidebar.astro';
+import docsConfig from '@/config/docs-config';
+import Header from '@/components/layouts/Header.astro';
 
 interface Props {
     title: string;
@@ -14,7 +14,7 @@ const { title } = Astro.props;
 <MainLayout title={title}>
     <Header />
     <div class="flex justify-start">
-        <main class="flex-1">
+        <main class="w-full flex-1">
             <div
                 class="container flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10"
             >
@@ -22,7 +22,7 @@ const { title } = Astro.props;
                     class="h-max-[calc(100vh-3.5rem)] fixed top-14 z-30 -ml-2 hidden w-full shrink-0 md:sticky md:block"
                 >
                     <div class="h-max-[calc(100vh-3.5rem)] h-full min-h-fit py-6 pr-6 lg:py-8">
-                        <Sidebar navigation={siteConfig.navigation} />
+                        <Sidebar navigation={docsConfig.navigation} />
                     </div>
                 </aside>
                 <slot />

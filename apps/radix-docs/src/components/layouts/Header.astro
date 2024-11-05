@@ -1,30 +1,60 @@
 ---
+import DocSearch from './DocSearch.astro';
 import MainNavigation from './MainNavigation.astro';
 import ThemeToggle from './ThemeToggle.astro';
+import Logo from './Logo.astro';
 ---
 
 <header class="bg-background-blur sticky top-0 z-50 w-full backdrop-blur-lg">
-    <div class="items-centerpx-4 container flex h-14 max-w-screen-2xl">
-        <MainNavigation />
+    <div class="container flex h-14 max-w-screen-2xl items-center px-4">
+        <div class="flex items-center">
+            <a href="/" class="mr-1 flex items-center md:mr-6" aria-label="Radix Angular documentation">
+                <Logo />
+                <h4 class="hidden pl-2 text-xl sm:block">
+                    <span class="inline-block whitespace-nowrap">
+                        <span class="font-extrabold">Radix</span>
+                        <span class="font-normal">Angular</span>
+                    </span>
+                </h4>
+            </a>
+        </div>
+        <div class="order-last align-baseline md:relative md:order-none md:mr-4">
+            <MainNavigation />
+        </div>
 
-        <div class="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+        <div class="mr-1 flex flex-1 items-center justify-between space-x-2 md:justify-end">
             <div class="w-full flex-1 md:w-auto md:flex-none"></div>
-            <nav class="flex items-center gap-2">
-                <ThemeToggle />
-                <div class="phone:flex hidden items-center">
-                    <a
-                        href="https://github.com/radix-ng/primitives"
-                        class="hover:bg-secondary flex items-center justify-center rounded-md"
-                    >
-                        <svg viewBox="0 0 15 15" width="1.2em" height="1.2em" class="h-4 w-4">
-                            <path
-                                fill="currentColor"
-                                fill-rule="evenodd"
-                                d="M7.5.25a7.25 7.25 0 0 0-2.292 14.13c.363.066.495-.158.495-.35c0-.172-.006-.628-.01-1.233c-2.016.438-2.442-.972-2.442-.972c-.33-.838-.805-1.06-.805-1.06c-.658-.45.05-.441.05-.441c.728.051 1.11.747 1.11.747c.647 1.108 1.697.788 2.11.602c.066-.468.254-.788.46-.969c-1.61-.183-3.302-.805-3.302-3.583a2.8 2.8 0 0 1 .747-1.945c-.075-.184-.324-.92.07-1.92c0 0 .61-.194 1.994.744A6.963 6.963 0 0 1 7.5 3.756A6.97 6.97 0 0 1 9.315 4c1.384-.938 1.992-.743 1.992-.743c.396.998.147 1.735.072 1.919c.465.507.745 1.153.745 1.945c0 2.785-1.695 3.398-3.31 3.577c.26.224.492.667.492 1.343c0 .97-.009 1.751-.009 1.989c0 .194.131.42.499.349A7.25 7.25 0 0 0 7.499.25"
-                                clip-rule="evenodd"
-                            >
-                            </path>
-                        </svg>
+            <DocSearch />
+            <nav class="flex items-center gap-1">
+                <div class="flex items-center">
+                    <ThemeToggle />
+                    <a href="https://github.com/radix-ng/primitives" target="_blank">
+                        <div
+                            class="hover:bg-accent hover:text-accent-foreground flex h-8 w-8 items-center justify-center rounded-md"
+                        >
+                            <svg viewBox="0 0 15 15" width="1.2em" height="1.2em" class="h-4 w-4">
+                                <path
+                                    fill="currentColor"
+                                    fill-rule="evenodd"
+                                    d="M7.5.25a7.25 7.25 0 0 0-2.292 14.13c.363.066.495-.158.495-.35c0-.172-.006-.628-.01-1.233c-2.016.438-2.442-.972-2.442-.972c-.33-.838-.805-1.06-.805-1.06c-.658-.45.05-.441.05-.441c.728.051 1.11.747 1.11.747c.647 1.108 1.697.788 2.11.602c.066-.468.254-.788.46-.969c-1.61-.183-3.302-.805-3.302-3.583a2.8 2.8 0 0 1 .747-1.945c-.075-.184-.324-.92.07-1.92c0 0 .61-.194 1.994.744A6.963 6.963 0 0 1 7.5 3.756A6.97 6.97 0 0 1 9.315 4c1.384-.938 1.992-.743 1.992-.743c.396.998.147 1.735.072 1.919c.465.507.745 1.153.745 1.945c0 2.785-1.695 3.398-3.31 3.577c.26.224.492.667.492 1.343c0 .97-.009 1.751-.009 1.989c0 .194.131.42.499.349A7.25 7.25 0 0 0 7.499.25"
+                                    clip-rule="evenodd"
+                                >
+                                </path>
+                            </svg>
+                        </div>
+                    </a>
+                    <a href="https://discord.gg/NaJb2XRWX9" target="_blank">
+                        <div
+                            class="hover:bg-accent hover:text-accent-foreground flex h-8 w-8 items-center justify-center rounded-md"
+                        >
+                            <svg viewBox="0 0 22 22" class="h-4 w-6">
+                                <path
+                                    fill="currentColor"
+                                    d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"
+                                >
+                                </path>
+                            </svg>
+                        </div>
                     </a>
                 </div>
             </nav>

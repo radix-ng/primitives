@@ -1,6 +1,5 @@
 ---
-import type { NavigationItem } from '../../types';
-import { cn } from '../../utils/utils';
+import type { NavigationItem } from '@/types';
 
 interface Props {
     navigation: NavigationItem[];
@@ -18,7 +17,7 @@ const navigationItems = navigation.find((item) => {
     return item.section === section;
 });
 
-const pages = navigationItems.sections || [];
+const pages = navigationItems?.sections || [];
 
 function isActive(pageUrl: string) {
     const normalizedPageUrl = pageUrl === '/' ? '/' : pageUrl.replace(/\/$/, '');
@@ -43,16 +42,17 @@ function isActive(pageUrl: string) {
                                     <li class="relative">
                                         <a
                                             href={page.url}
-                                            class={cn(
-                                                'group my-1 flex h-fit w-full items-center gap-2 rounded-md border border-transparent text-sm hover:underline',
-                                                active
-                                                    ? 'text-foreground rounded-none font-medium'
-                                                    : 'text-muted-foreground'
-                                            )}
+                                            class:list={[
+                                                'group my-1 flex h-fit w-full items-center gap-2 rounded-md border border-transparent text-sm transition-colors hover:underline',
+                                                {
+                                                    'text-muted-foreground': !active,
+                                                    'text-foreground ': active
+                                                }
+                                            ]}
                                         >
                                             {page.name}
                                             {page.label && (
-                                                <span class="bg-muted rounded-md px-1.5 py-0.5 text-xs leading-none text-[#000000] no-underline group-hover:no-underline">
+                                                <span class="rounded-md bg-[#adfa1d] px-1.5 py-0.5 text-xs leading-none text-[#000000] no-underline group-hover:no-underline">
                                                     {page.label}
                                                 </span>
                                             )}

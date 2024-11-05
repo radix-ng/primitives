@@ -8,19 +8,13 @@ import { RdxCheckboxInputDirective } from '../src/checkbox-input.directive';
 import { RdxCheckboxDirective } from '../src/checkbox.directive';
 
 @Component({
-    // eslint-disable-next-line @angular-eslint/component-selector
     selector: 'checkbox-groups-forms-example',
     template: `
         <section [formGroup]="personality">
             <p>
                 <label class="Label" rdxLabel htmlFor="r1">
                     <button class="CheckboxRoot" CheckboxRoot formControlName="fun">
-                        <lucide-angular
-                            class="CheckboxIndicator"
-                            CheckboxIndicator
-                            size="16"
-                            name="check"
-                        ></lucide-angular>
+                        <lucide-angular class="CheckboxIndicator" CheckboxIndicator size="16" name="check" />
                         <input class="Input cdk-visually-hidden" id="r1" CheckboxInput />
                     </button>
                     Fun
@@ -33,12 +27,7 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
                         CheckboxRoot
                         formControlName="serious"
                     >
-                        <lucide-angular
-                            class="CheckboxIndicator"
-                            CheckboxIndicator
-                            size="16"
-                            name="check"
-                        ></lucide-angular>
+                        <lucide-angular class="CheckboxIndicator" CheckboxIndicator size="16" name="check" />
                         <input class="Input cdk-visually-hidden" id="r2" CheckboxInput />
                     </button>
                     Serious
@@ -47,12 +36,7 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
             <p>
                 <label class="Label" rdxLabel htmlFor="r3">
                     <button class="CheckboxRoot" CheckboxRoot formControlName="smart">
-                        <lucide-angular
-                            class="CheckboxIndicator"
-                            CheckboxIndicator
-                            size="16"
-                            name="check"
-                        ></lucide-angular>
+                        <lucide-angular class="CheckboxIndicator" CheckboxIndicator size="16" name="check" />
                         <input class="Input cdk-visually-hidden" id="r3" CheckboxInput />
                     </button>
                     Smart

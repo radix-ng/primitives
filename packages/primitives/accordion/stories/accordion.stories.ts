@@ -7,6 +7,8 @@ import { RdxAccordionItemDirective } from '../src/accordion-item.directive';
 import { RdxAccordionRootDirective } from '../src/accordion-root.directive';
 import { RdxAccordionTriggerDirective } from '../src/accordion-trigger.directive';
 
+const html = String.raw;
+
 export default {
     title: 'Primitives/Accordion',
     decorators: [
@@ -210,25 +212,25 @@ type Story = StoryObj;
 
 export const Default: Story = {
     render: () => ({
-        template: `
+        template: html`
             <div class="AccordionRoot" rdxAccordionRoot [defaultValue]="'item-1'">
-                <div [value]="'item-1'" class="AccordionItem" rdxAccordionItem>
+                <div class="AccordionItem" [value]="'item-1'" rdxAccordionItem>
                     <div class="AccordionHeader" rdxAccordionHeader>
-                        <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Is it accessible?
-                            <lucide-icon class="AccordionChevron" aria-hidden size="16" name="chevron-down"/>
+                        <button class="AccordionTrigger" type="button" rdxAccordionTrigger>
+                            Is it accessible?
+                            <lucide-icon class="AccordionChevron" aria-hidden size="16" name="chevron-down" />
                         </button>
                     </div>
                     <div class="AccordionContent" rdxAccordionContent>
-                        <div class="AccordionContentText">
-                            Yes. It adheres to the WAI-ARIA design pattern.
-                        </div>
+                        <div class="AccordionContentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
                     </div>
                 </div>
 
-                <div [value]="'item-2'" class="AccordionItem" rdxAccordionItem [disabled]="true">
+                <div class="AccordionItem" [value]="'item-2'" rdxAccordionItem [disabled]="true">
                     <div class="AccordionHeader" rdxAccordionHeader>
-                        <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Is it unstyled?
-                            <lucide-icon class="AccordionChevron" aria-hidden size="16" name="chevron-down"/>
+                        <button class="AccordionTrigger" type="button" rdxAccordionTrigger>
+                            Is it unstyled?
+                            <lucide-icon class="AccordionChevron" aria-hidden size="16" name="chevron-down" />
                         </button>
                     </div>
                     <div class="AccordionContent" rdxAccordionContent>
@@ -238,10 +240,11 @@ export const Default: Story = {
                     </div>
                 </div>
 
-                <div [value]="'item-3'" class="AccordionItem" rdxAccordionItem>
+                <div class="AccordionItem" [value]="'item-3'" rdxAccordionItem>
                     <div class="AccordionHeader" rdxAccordionHeader>
-                        <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Can it be animated?
-                            <lucide-icon class="AccordionChevron" aria-hidden size="16" name="chevron-down"/>
+                        <button class="AccordionTrigger" type="button" rdxAccordionTrigger>
+                            Can it be animated?
+                            <lucide-icon class="AccordionChevron" aria-hidden size="16" name="chevron-down" />
                         </button>
                     </div>
                     <div class="AccordionContent" rdxAccordionContent>
@@ -257,20 +260,18 @@ export const Default: Story = {
 
 export const Multiple: Story = {
     render: () => ({
-        template: `
+        template: html`
             <div class="AccordionRoot" rdxAccordionRoot [value]="['item-2', 'item-3']" [type]="'multiple'">
-                <div [value]="'item-1'" class="AccordionItem" rdxAccordionItem>
+                <div class="AccordionItem" [value]="'item-1'" rdxAccordionItem>
                     <div class="AccordionHeader" rdxAccordionHeader>
                         <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
                     </div>
-                    <div class="AccordionContent" rdxAccordionContent >
-                        <div class="AccordionContentText">
-                            Yes. It adheres to the WAI-ARIA design pattern.
-                        </div>
+                    <div class="AccordionContent" rdxAccordionContent>
+                        <div class="AccordionContentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
                     </div>
                 </div>
 
-                <div [value]="'item-2'" class="AccordionItem" rdxAccordionItem>
+                <div class="AccordionItem" [value]="'item-2'" rdxAccordionItem>
                     <div class="AccordionHeader" rdxAccordionHeader>
                         <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
                     </div>
@@ -281,7 +282,7 @@ export const Multiple: Story = {
                     </div>
                 </div>
 
-                <div [value]="'item-3'" class="AccordionItem" rdxAccordionItem>
+                <div class="AccordionItem" [value]="'item-3'" rdxAccordionItem>
                     <div class="AccordionHeader" rdxAccordionHeader>
                         <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Can it be animated?</button>
                     </div>
@@ -298,21 +299,21 @@ export const Multiple: Story = {
 
 export const Horizontal: Story = {
     render: () => ({
-        template: `
+        template: html`
             <div class="horizontal-flex-container">
                 <div class="AccordionRoot" rdxAccordionRoot [defaultValue]="'item-1'" [orientation]="'horizontal'">
-                    <div [value]="'item-1'" class="AccordionItem" rdxAccordionItem>
+                    <div class="AccordionItem" [value]="'item-1'" rdxAccordionItem>
                         <div class="AccordionHeader" rdxAccordionHeader>
-                            <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
+                            <button class="AccordionTrigger" type="button" rdxAccordionTrigger>
+                                Is it accessible?
+                            </button>
                         </div>
                         <div class="AccordionContent" rdxAccordionContent>
-                            <div class="AccordionContentText">
-                                Yes. It adheres to the WAI-ARIA design pattern.
-                            </div>
+                            <div class="AccordionContentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
                         </div>
                     </div>
 
-                    <div [value]="'item-2'" class="AccordionItem" rdxAccordionItem [disabled]="true">
+                    <div class="AccordionItem" [value]="'item-2'" rdxAccordionItem [disabled]="true">
                         <div class="AccordionHeader" rdxAccordionHeader>
                             <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
                         </div>
@@ -323,9 +324,11 @@ export const Horizontal: Story = {
                         </div>
                     </div>
 
-                    <div [value]="'item-3'" class="AccordionItem" rdxAccordionItem>
+                    <div class="AccordionItem" [value]="'item-3'" rdxAccordionItem>
                         <div class="AccordionHeader" rdxAccordionHeader>
-                            <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Can it be animated?</button>
+                            <button class="AccordionTrigger" type="button" rdxAccordionTrigger>
+                                Can it be animated?
+                            </button>
                         </div>
                         <div class="AccordionContent" rdxAccordionContent>
                             <div class="AccordionContentText">

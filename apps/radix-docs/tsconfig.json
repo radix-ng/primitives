@@ -1,3 +1,22 @@
 {
-    "extends": "astro/tsconfigs/base"
+    "extends": "astro/tsconfigs/base",
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "src/*"
+            ]
+        },
+        "plugins": [
+            {
+                "name": "@astrojs/ts-plugin"
+            },
+            {
+                "name": "@angular/language-service"
+            }
+        ]
+    },
+    "angularCompilerOptions": {
+        "strictTemplates": true
+    }
 }

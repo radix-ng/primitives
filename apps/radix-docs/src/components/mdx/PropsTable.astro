@@ -1,13 +1,13 @@
 ---
-import { getComponentByName, getDirectiveByName } from '../../utils/compodoc';
+import { getComponentByName, getDirectiveByName } from '@/utils/compodoc';
 
 const { name } = Astro.props;
 
 const directive = getDirectiveByName(name);
 
-const { inputsClass = [], propertiesClass = [] } = (directive ?? getComponentByName(name)) || {};
+const { inputsClass = [], propertiesClass = [], outputsClass = [] } = (directive ?? getComponentByName(name)) || {};
 
-const data = [...inputsClass, ...propertiesClass];
+const data = [...inputsClass, ...propertiesClass, ...outputsClass];
 ---
 
 <div class="rt-TableRoot rt-r-size-2 rt-variant-surface rt-Box rt-r-my-5">
@@ -24,10 +24,10 @@ const data = [...inputsClass, ...propertiesClass];
                 data.map(({ name, type, defaultValue }) => {
                     return (
                         <tr class="rt-TableRow" style="white-space: nowrap;">
-                            <th class="rt-TableCell rt-TableRowHeaderCell">
+                            <th class="rt-TableCell rt-TableRowHeaderCell" data-label="Prop">
                                 <code class="rt-reset rt-Code rt-r-size-2 rt-variant-soft rt-variant-soft">{name}</code>
                             </th>
-                            <td class="rt-TableCell">
+                            <td class="rt-TableCell" data-label="Type">
                                 <div class="rt-Flex rt-r-display-inline-flex rt-r-ai-center rt-r-gap-2">
                                     <div class="rt-Box">
                                         {type ? (
@@ -43,7 +43,7 @@ const data = [...inputsClass, ...propertiesClass];
                                     </div>
                                 </div>
                             </td>
-                            <td class="rt-TableCell">
+                            <td class="rt-TableCell" data-label="Default">
                                 <div class="rt-Flex rt-r-display-inline-flex rt-r-ai-center rt-r-gap-2">
                                     <div class="rt-Box">
                                         {defaultValue ? (

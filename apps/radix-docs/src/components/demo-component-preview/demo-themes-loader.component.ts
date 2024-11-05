@@ -3,17 +3,17 @@
 import { AsyncPipe, NgComponentOutlet } from '@angular/common';
 import { Component, computed, input } from '@angular/core';
 
-import { demos } from '../../demos/components';
+import { demos } from '@/demos/components';
 
 @Component({
-    selector: 'empty-component',
+    selector: 'empty-themes-component',
     standalone: true,
     imports: [NgComponentOutlet, AsyncPipe],
     template: `
         @let componentRender = this.component() | async;
 
         @if (!componentRender || !componentRender.default) {
-            <div class="text-sm text-white">Loading...</div>
+            <div class="text-foreground text-sm">Loading...</div>
         } @else {
             <ng-container *ngComponentOutlet="componentRender.default" />
         }

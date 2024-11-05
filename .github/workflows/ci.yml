@@ -18,11 +18,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
-      - name: Setup pnpm
+      - run: corepack enable
+
+      - name: Setup
         uses: ./.github/actions/setup
 
       - name: Build Primitives
@@ -46,4 +46,5 @@ jobs:
       - name: Linters
         run: |
           pnpm run prettier
-          pnpm run stylelint
+          pnpm run stylelint --max-warnings=0
+          pnpm run eslint --max-warnings=0

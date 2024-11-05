@@ -31,11 +31,20 @@ export class RdxDialogService {
         let modeClasses: string[] = [];
 
         switch (config.mode) {
-            case 'drawer':
-                modeClasses = ['mod-drawer'];
+            case 'sheet':
+                modeClasses = ['mod-sheet', 'mod-right'];
                 break;
-            case 'drawer-bottom':
-                modeClasses = ['mod-drawer', 'mod-bottom'];
+            case 'sheet-right':
+                modeClasses = ['mod-sheet', 'mod-right'];
+                break;
+            case 'sheet-bottom':
+                modeClasses = ['mod-sheet', 'mod-bottom'];
+                break;
+            case 'sheet-left':
+                modeClasses = ['mod-sheet', 'mod-left'];
+                break;
+            case 'sheet-top':
+                modeClasses = ['mod-sheet', 'mod-top'];
                 break;
         }
 
@@ -80,7 +89,7 @@ export class RdxDialogService {
                     const canClose$ = isObservable(canClose) ? canClose : of(canClose);
                     return canClose$.pipe(take(1));
                 }),
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
                 takeUntil(dialogRef!.closed$)
             )
             .subscribe((canClose) => {
@@ -89,7 +98,6 @@ export class RdxDialogService {
                 }
             });
 
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return dialogRef!;
     }
 }

@@ -1,3 +1,57 @@
+## 0.8.6 (2024-10-22)
+
+
+### 🧱 Updated Dependencies
+
+- Updated primitives to 0.15.0
+
+## 0.8.5 (2024-10-10)
+
+
+### 🧱 Updated Dependencies
+
+- Updated primitives to 0.14.0
+
+## 0.8.4 (2024-09-25)
+
+
+### 🧱 Updated Dependencies
+
+- Updated primitives to 0.13.0
+
+## 0.8.3 (2024-09-19)
+
+
+### 🩹 Fixes
+
+- **card:** component selector ([8454a50](https://github.com/radix-ng/primitives/commit/8454a50))
+
+## 0.8.2 (2024-09-19)
+
+
+### 🧱 Updated Dependencies
+
+- Updated primitives to 0.12.2
+
+## 0.8.1 (2024-09-19)
+
+
+### 🧱 Updated Dependencies
+
+- Updated primitives to 0.12.1
+
+## 0.8.0 (2024-09-19)
+
+
+### 🚀 Features
+
+- **ci:** added eslint support ([#103](https://github.com/radix-ng/primitives/pull/103))
+
+
+### 🧱 Updated Dependencies
+
+- Updated primitives to 0.12.0
+
 ## 0.7.1 (2024-09-10)
 
 

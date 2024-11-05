@@ -3,16 +3,15 @@ import {
     booleanAttribute,
     computed,
     Directive,
-    EventEmitter,
     inject,
     InjectionToken,
     input,
     InputSignalWithTransform,
     model,
     ModelSignal,
-    Output
+    output,
+    OutputEmitterRef
 } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 export const RdxSwitchToken = new InjectionToken<RdxSwitchRootDirective>('RdxSwitchToken');
 
@@ -24,7 +23,7 @@ export interface SwitchProps {
     checked?: ModelSignal<boolean>;
     defaultChecked?: boolean;
     required?: InputSignalWithTransform<boolean, BooleanInput>;
-    onCheckedChange?: EventEmitter<boolean>;
+    onCheckedChange?: OutputEmitterRef<boolean>;
 }
 
 let idIterator = 0;
@@ -34,9 +33,7 @@ let idIterator = 0;
     exportAs: 'rdxSwitchRoot',
     standalone: true,
     providers: [
-        { provide: RdxSwitchToken, useExisting: RdxSwitchRootDirective },
-        { provide: NG_VALUE_ACCESSOR, useExisting: RdxSwitchRootDirective, multi: true }
-    ],
+        { provide: RdxSwitchToken, useExisting: RdxSwitchRootDirective }],
     host: {
         role: 'switch',
         type: 'button',
@@ -47,24 +44,28 @@ let idIterator = 0;
         '[attr.data-disabled]': 'disabledState() ? "true" : null',
         '[attr.disabled]': 'disabledState() ? disabledState() : null',
 
-        '(focus)': '_onTouched?.()',
         '(click)': 'toggle()'
     }
 })
-export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor {
+export class RdxSwitchRootDirective implements SwitchProps {
     readonly id = input<string>(`rdx-switch-${idIterator++}`);
     protected readonly elementId = computed(() => (this.id() ? this.id() : null));
 
-    // When true, indicates that the user must check
-    // the switch before the owning form can be submitted.
+    /**
+     * When true, indicates that the user must check the switch before the owning form can be submitted.
+     */
     readonly required = input<boolean, BooleanInput>(false, {
         transform: booleanAttribute
     });
 
-    // The controlled state of the switch
+    /**
+     * The controlled state of the switch. Must be used in conjunction with onCheckedChange.
+     */
     readonly checked = model<boolean>(false);
 
-    // When true, prevents the user from interacting with the switch.
+    /**
+     * When true, prevents the user from interacting with the switch.
+     */
     readonly disabled = input<boolean, BooleanInput>(false, {
         transform: booleanAttribute
     });
@@ -74,41 +75,10 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
      */
     readonly disabledState = computed(() => this.disabled());
 
-    @Output() onCheckedChange = new EventEmitter<boolean>();
-
     /**
-     * The method to be called in order to update ngModel.
+     * Event handler called when the state of the switch changes.
      */
-    _onChange?: (checked: boolean) => void;
-
-    /**
-     * onTouch function registered via registerOnTouch (ControlValueAccessor).
-     */
-    _onTouched?: () => void;
-
-    /**
-     * Registers a function to call when the checked state changes.
-     * @param fn Function to call on change.
-     */
-    registerOnChange(fn: (checked: boolean) => void): void {
-        this._onChange = fn;
-    }
-
-    /**
-     * Registers a function to call when the component is touched.
-     * @param fn Function to call on touch.
-     */
-    registerOnTouched(fn: () => void): void {
-        this._onTouched = fn;
-    }
-
-    /**
-     * Writes a new value to the model.
-     * @param checked The new checked value.
-     */
-    writeValue(checked: boolean): void {
-        this.checked.set(checked);
-    }
+    readonly onCheckedChange = output<boolean>();
 
     /**
      * Toggles the checked state of the switch.
@@ -120,7 +90,6 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
         }
 
         this.checked.set(!this.checked());
-        this._onChange?.(this.checked());
 
         this.onCheckedChange.emit(this.checked());
     }

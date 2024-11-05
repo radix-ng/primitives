@@ -3,9 +3,9 @@ import { cn } from '@radix-ng/shadcn/core';
 import { cva } from 'class-variance-authority';
 
 @Component({
-    selector: 'shCard',
+    selector: 'shCard, [shCard]',
     standalone: true,
-    template: '<ng-content></ng-content>',
+    template: '<ng-content />',
     host: {
         '[class]': "'bg-card text-card-foreground rounded-xl border shadow'"
     }
@@ -14,9 +14,9 @@ export class ShCardComponent {}
 
 const cardHeaderVariants = cva('flex flex-col space-y-1.5 p-6');
 @Component({
-    selector: 'shCardHeader',
+    selector: 'shCardHeader, [shCardHeader]',
     standalone: true,
-    template: '<ng-content></ng-content>',
+    template: '<ng-content />',
     host: {
         '[class]': 'computedClass()'
     }
@@ -30,7 +30,7 @@ export class ShCardHeaderComponent {
 @Component({
     selector: 'shCardTitle, [shCardTitle]',
     standalone: true,
-    template: '<ng-content></ng-content>',
+    template: '<ng-content />',
     host: {
         '[class]': "'font-semibold leading-none tracking-tight'"
     }
@@ -38,9 +38,9 @@ export class ShCardHeaderComponent {
 export class ShCardTitleComponent {}
 
 @Component({
-    selector: 'shCardDescription',
+    selector: 'shCardDescription, [shCardDescription]',
     standalone: true,
-    template: '<ng-content></ng-content>',
+    template: '<ng-content />',
     host: {
         '[class]': "'text-sm text-muted-foreground'"
     }
@@ -48,9 +48,9 @@ export class ShCardTitleComponent {}
 export class ShCardDescriptionComponent {}
 
 @Component({
-    selector: 'shCardContent',
+    selector: 'shCardContent, [shCardContent]',
     standalone: true,
-    template: '<ng-content></ng-content>',
+    template: '<ng-content />',
     host: {
         '[class]': "'p-6 pt-0 block'"
     }
@@ -59,9 +59,9 @@ export class ShCardContentComponent {}
 
 const cardFooterVariants = cva('flex items-center p-6 pt-0');
 @Component({
-    selector: 'shCardFooter',
+    selector: 'shCardFooter, [shCardFooter]',
     standalone: true,
-    template: '<ng-content></ng-content>',
+    template: '<ng-content />',
     host: {
         '[class]': 'computedClass()'
     }

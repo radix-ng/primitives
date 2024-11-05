@@ -1,6 +1,6 @@
 {
     "name": "@radix-ng/primitives",
-    "version": "0.11.1",
+    "version": "0.15.0",
     "license": "MIT",
     "publishConfig": {
         "access": "public"

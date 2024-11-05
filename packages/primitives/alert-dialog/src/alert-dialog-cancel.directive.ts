@@ -1,5 +1,5 @@
 import { Directive, inject } from '@angular/core';
-import { AlertDialogService } from './alert-dialog.service';
+import { RdxAlertDialogService } from './alert-dialog.service';
 
 @Directive({
     selector: '[rdxAlertDialogCancel]',
@@ -8,8 +8,8 @@ import { AlertDialogService } from './alert-dialog.service';
         '(click)': 'onClick()'
     }
 })
-export class AlertDialogCancelDirective {
-    private readonly alertDialogService = inject(AlertDialogService);
+export class RdxAlertDialogCancelDirective {
+    private readonly alertDialogService = inject(RdxAlertDialogService);
 
     onClick() {
         this.alertDialogService.close();

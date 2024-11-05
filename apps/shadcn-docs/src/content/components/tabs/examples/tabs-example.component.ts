@@ -33,13 +33,15 @@ import { ShTabsModule } from '@radix-ng/shadcn/tabs';
                 <button shTabsTrigger shValue="password">Password</button>
             </div>
 
-            <div class="TabsContent" shTabsContent shValue="account">
-                <div shCard>
-                    <div shCardHeader>
-                        <div shCardTitle>Account</div>
-                        <div shCardDescription>Make changes to your account here. Click save when you're done.</div>
-                    </div>
-                    <div class="space-y-2" shCardContent>
+            <div shTabsContent shValue="account">
+                <shCard class="block">
+                    <shCardHeader>
+                        <shCardTitle>Account</shCardTitle>
+                        <shCardDescription>
+                            Make changes to your account here. Click save when you're done.
+                        </shCardDescription>
+                    </shCardHeader>
+                    <shCardContent class="space-y-2">
                         <div class="space-y-1">
                             <label shLabel htmlFor="name">Name</label>
                             <input id="name" shInput type="text" value="Pedro Duarte" />
@@ -48,19 +50,21 @@ import { ShTabsModule } from '@radix-ng/shadcn/tabs';
                             <label shLabel htmlFor="username">Username</label>
                             <input id="username" shInput type="text" value="@peduarte" />
                         </div>
-                    </div>
-                    <div shCardFooter>
+                    </shCardContent>
+                    <shCardFooter>
                         <button shButton>Save changes</button>
-                    </div>
-                </div>
+                    </shCardFooter>
+                </shCard>
             </div>
 
             <div shTabsContent shValue="password">
-                <div shCard>
-                    <div shCardHeader>
-                        <div shCardTitle>Password</div>
-                        <div shCardDescription>Change your password here. After saving, you'll be logged out.</div>
-                    </div>
+                <shCard class="block">
+                    <shCardHeader>
+                        <shCardTitle>Password</shCardTitle>
+                        <shCardDescription>
+                            Change your password here. After saving, you'll be logged out.
+                        </shCardDescription>
+                    </shCardHeader>
                     <div class="space-y-2" shCardContent>
                         <div class="space-y-1">
                             <label shLabel htmlFor="current">Current password</label>
@@ -71,10 +75,10 @@ import { ShTabsModule } from '@radix-ng/shadcn/tabs';
                             <input id="new" shInput type="password" />
                         </div>
                     </div>
-                    <div shCardFooter>
+                    <shCardFooter>
                         <button shButton>Save password</button>
-                    </div>
-                </div>
+                    </shCardFooter>
+                </shCard>
             </div>
         </div>
     `

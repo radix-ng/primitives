@@ -1,20 +1,43 @@
 ---
-import '../styles/globals.css';
+import '@/styles/globals.css';
+import ThemeHeadScript from '@/components/theme/theme-head-script.astro';
+import { siteConfig } from '@/config/site-config';
 
 interface Props {
-    title: string;
+    title?: string;
+    description?: string;
+    url?: string;
 }
 
-const { title } = Astro.props;
+const { title, description, url } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width" initial-scale="1.0" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="generator" content={Astro.generator} />
         <title>{title}</title>
+
+        <meta name="description" content={description || siteConfig.description} />
+
+        <meta property="og:title" content={title || siteConfig.title} />
+        <meta property="og:description" content={title || siteConfig.description} />
+        <meta property="og:url" content={url || siteConfig.url} />
+        <meta property="og:site_name" content={title || siteConfig.title} />
+        <meta property="og:locale" content="en_US" />
+        <meta property="og:type" content="article" />
+        <meta property="og:alt" content={title || siteConfig.title} />
+
+        <meta property="canonical" content={url || siteConfig.url} />
+
+        <meta name="generator" content={Astro.generator} />
+
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="sitemap" href="/sitemap-index.xml" />
+
+        <link crossorigin href="https://KO68VM9HAD-dsn.algolia.net" rel="preconnect" />
 
         <link
             rel="preload"
@@ -53,9 +76,10 @@ const { title } = Astro.props;
                 src: url('https://cdn.workos.com/fonts/untitled-sans-medium-v2.woff2') format('woff2');
             }
         </style>
+        <ThemeHeadScript />
     </head>
     <body
-        class="radix-themes radix-themes-custom-fonts min-h-screen antialiased"
+        class="radix-themes radix-themes-custom-fonts bg-background min-h-screen antialiased"
         data-radius="medium"
         data-scaling="100%"
         data-gray-color="slate"

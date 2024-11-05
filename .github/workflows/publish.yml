@@ -16,15 +16,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - run: corepack enable
 
       - name: Setup pnpm
         uses: ./.github/actions/setup
 
       - name: Print Environment Info
         run: npx nx report
+        shell: bash
 
       - name: Build
         run: pnpm primitives:build
@@ -34,15 +35,7 @@ jobs:
 
       - name: Publish package
         run: npx nx release publish
+        shell: bash
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-#      # Workaround for https://github.com/nrwl/nx/issues/20978
-#      - run: |
-#          sudo apt update
-#          sudo apt install -y patchutils
-#          git diff HEAD~1 -- "**/package.json" | grepdiff workspace: --output-matching=hunk --only-match=removals | git apply --reverse  --unidiff-zero --allow-empty
-#          if [ $(git ls-files -m "**/package.json") ]; then
-#           git add "**/package.json"
-#           git commit -m "publish: restore workspace dependencies [skip ci]"
-#           git push
-#          fi
+          NPM_CONFIG_PROVENANCE: true

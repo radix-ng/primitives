@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
     displayName: 'shadcn',
     preset: '../../jest.preset.cjs',

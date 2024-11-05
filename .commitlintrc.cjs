@@ -1,4 +1,7 @@
-module.exports = {
+// @ts-check
+
+/** @type {import('@commitlint/types').UserConfig} */
+const config = {
     extends: ['@commitlint/config-conventional'],
     rules: {
         'type-enum': [
@@ -25,14 +28,27 @@ module.exports = {
             [
                 'primitives',
                 'accordion',
+                'alert-dialog',
+                'aspect-ratio',
+                'avatar',
+                'card',
                 'collapsible',
+                'context-menu',
+                'dropdown-menu',
                 'dialog',
                 'radio',
                 'radio-group',
+                'toggle',
+                'toggle-group',
                 'code',
+                'separator',
                 'kbd',
                 'radix-docs',
+                'radix-ssr-testing',
+                'showcase-taxonomy',
+                'progress',
                 'shadcn',
+                'switch',
                 'docs',
                 'release',
                 'deps',
@@ -45,3 +61,5 @@ module.exports = {
         ]
     }
 };
+
+module.exports = config;

@@ -10,7 +10,7 @@ import { RdxDialogService } from './dialog.service';
  *
  * @returns {EnvironmentProviders} An EnvironmentProviders instance containing the DialogModule.
  */
-export function configureRdxDialog(): EnvironmentProviders {
+export function provideRdxDialogConfig(): EnvironmentProviders {
     return makeEnvironmentProviders([importProvidersFrom(DialogModule)]);
 }
 

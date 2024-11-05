@@ -23,7 +23,15 @@
         "skipLibCheck": true,
         "paths": {
             "@radix-ng/primitives/*": ["./dist/primitives/*"]
-        }
+        },
+        "plugins": [
+            {
+                "name": "@astrojs/ts-plugin"
+            },
+            {
+                "name": "@angular/language-service"
+            }
+        ]
     },
     "angularCompilerOptions": {
         "enableI18nLegacyMessageIdFormat": false,
