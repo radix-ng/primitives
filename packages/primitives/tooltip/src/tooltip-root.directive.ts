@@ -196,7 +196,10 @@ export class RdxTooltipRootDirective implements OnInit {
             scrollStrategy: this.overlay.scrollStrategies.close()
         });
 
-        this.overlayRef.detachments().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(this.detach);
+        this.overlayRef
+            .detachments()
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => this.detach());
 
         this.handleOverlayKeydown();
         this.handlePointerDownOutside();
