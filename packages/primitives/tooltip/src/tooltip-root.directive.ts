@@ -243,7 +243,7 @@ export class RdxTooltipRootDirective implements OnInit {
         });
     });
 
-    private readonly ttt = effect(() => {
+    private readonly onArrowDirectiveChangeEffect = effect(() => {
         const arrowDirective = this.tooltipArrowDirective();
         const side = this.tooltipContentDirective().side();
 

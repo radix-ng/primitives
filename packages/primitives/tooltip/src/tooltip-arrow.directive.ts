@@ -42,6 +42,7 @@ export class RdxTooltipArrowDirective {
         this.elementRef.nativeElement.style.transform = `rotate(${rotationTransform})`;
         this.elementRef.nativeElement.style.top = '100%';
         this.elementRef.nativeElement.style.left = 'calc(50% - 5px)';
+        this.elementRef.nativeElement.style.fill = 'red'; // !!!
     }
 
     private getRotationTransform(side: RdxTooltipSide): string {
