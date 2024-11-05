@@ -13,11 +13,13 @@ import {
     OnInit,
     output,
     signal,
+    untracked,
     ViewContainerRef,
     ViewRef
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { asyncScheduler, filter } from 'rxjs';
+import { RdxTooltipArrowToken } from './tooltip-arrow.token';
 import { RdxTooltipContentToken } from './tooltip-content.token';
 import { RdxTooltipTriggerDirective } from './tooltip-trigger.directive';
 import { injectTooltipConfig } from './tooltip.config';
@@ -69,6 +71,7 @@ export class RdxTooltipRootDirective implements OnInit {
     });
     tooltipContentDirective = contentChild.required(RdxTooltipContentToken);
     tooltipTriggerDirective = contentChild.required(RdxTooltipTriggerDirective);
+    tooltipArrowDirective = contentChild(RdxTooltipArrowToken);
 
     onOpenChange = output<boolean>();
     overlayRef?: OverlayRef;
@@ -231,10 +234,25 @@ export class RdxTooltipRootDirective implements OnInit {
     private readonly onIsOpenChangeEffect = effect(() => {
         const isOpen = this.isOpen();
 
-        if (isOpen) {
-            this.show();
-        } else {
-            this.hide();
+        untracked(() => {
+            if (isOpen) {
+                this.show();
+            } else {
+                this.hide();
+            }
+        });
+    });
+
+    private readonly ttt = effect(() => {
+        const arrowDirective = this.tooltipArrowDirective();
+        const side = this.tooltipContentDirective().side();
+
+        if (arrowDirective === undefined) {
+            return;
         }
+
+        untracked(() => {
+            arrowDirective.positioning({ side });
+        });
     });
 }

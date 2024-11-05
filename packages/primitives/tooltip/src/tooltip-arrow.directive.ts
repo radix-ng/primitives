@@ -1,16 +1,24 @@
-import { computed, Directive, effect, ElementRef, inject, input, Renderer2 } from '@angular/core';
+import { computed, Directive, effect, ElementRef, forwardRef, inject, input, Renderer2 } from '@angular/core';
+import { RdxTooltipArrowToken } from './tooltip-arrow.token';
+import { RdxTooltipSide } from './tooltip.types';
 
 @Directive({
     selector: '[rdxTooltipArrow]',
-    standalone: true
+    standalone: true,
+    providers: [
+        {
+            provide: RdxTooltipArrowToken,
+            useExisting: forwardRef(() => RdxTooltipArrowDirective)
+        }
+    ]
 })
 export class RdxTooltipArrowDirective {
-    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly renderer = inject(Renderer2);
+    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
-    width = input<number>(10);
-    height = input<number>(5);
-    arrowSvgElement = computed<HTMLElement>(() => {
+    readonly width = input<number>(10);
+    readonly height = input<number>(5);
+    readonly arrowSvgElement = computed<HTMLElement>(() => {
         const width = this.width();
         const height = this.height();
 
@@ -24,6 +32,30 @@ export class RdxTooltipArrowDirective {
 
         return svgElement;
     });
+
+    positioning(params: { side: RdxTooltipSide }): void {
+        this.elementRef.nativeElement.style.display = 'block';
+        this.elementRef.nativeElement.style.position = 'absolute';
+
+        const rotationTransform = this.getRotationTransform(params.side);
+
+        this.elementRef.nativeElement.style.transform = `rotate(${rotationTransform})`;
+        this.elementRef.nativeElement.style.top = '100%';
+        this.elementRef.nativeElement.style.left = 'calc(50% - 5px)';
+    }
+
+    private getRotationTransform(side: RdxTooltipSide): string {
+        switch (side) {
+            case 'bottom':
+                return '180deg';
+            case 'left':
+                return '-90deg';
+            case 'right':
+                return '90deg';
+            default:
+                return '0deg';
+        }
+    }
 
     private readonly onArrowSvgElementChangeEffect = effect(() => {
         const arrowElement = this.arrowSvgElement();

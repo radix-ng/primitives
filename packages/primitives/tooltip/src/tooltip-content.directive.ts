@@ -13,12 +13,12 @@ import { RdxTooltipAlign, RdxTooltipSide } from './tooltip.types';
 export class RdxTooltipContentDirective {
     readonly templateRef = inject(TemplateRef);
     readonly tooltipRoot = inject(RdxTooltipRootDirective);
-    side = input<RdxTooltipSide>(RdxTooltipSide.Top);
-    sideOffset = input<number>(0);
-    align = input<RdxTooltipAlign>(RdxTooltipAlign.Center);
-    alignOffset = input<number>(0);
-    onEscapeKeyDown = output<KeyboardEvent>();
-    onPointerDownOutside = output<MouseEvent>();
+    readonly side = input<RdxTooltipSide>(RdxTooltipSide.Top);
+    readonly sideOffset = input<number>(0);
+    readonly align = input<RdxTooltipAlign>(RdxTooltipAlign.Center);
+    readonly alignOffset = input<number>(0);
+    readonly onEscapeKeyDown = output<KeyboardEvent>();
+    readonly onPointerDownOutside = output<MouseEvent>();
 
     position = computed<ConnectedPosition>(() => {
         const side = this.side();
