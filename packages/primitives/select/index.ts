@@ -7,6 +7,7 @@ import { RdxSelectLabelDirective } from './src/select-label.directive';
 import { RdxSelectRootComponent } from './src/select-root.component';
 import { RdxSelectSeparatorDirective } from './src/select-separator.directive';
 import { RdxSelectTriggerDirective } from './src/select-trigger.directive';
+import { RdxSelectValue } from './src/select-value.directive';
 
 export * from './src/select-content.directive';
 export * from './src/select-group.directive';
@@ -16,6 +17,7 @@ export * from './src/select-label.directive';
 export * from './src/select-root.component';
 export * from './src/select-separator.directive';
 export * from './src/select-trigger.directive';
+export * from './src/select-value.directive';
 
 const _imports = [
     RdxSelectContentDirective,
@@ -25,7 +27,8 @@ const _imports = [
     RdxSelectLabelDirective,
     RdxSelectRootComponent,
     RdxSelectSeparatorDirective,
-    RdxSelectTriggerDirective
+    RdxSelectTriggerDirective,
+    RdxSelectValue
 ];
 
 @NgModule({

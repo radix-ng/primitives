@@ -1,18 +1,28 @@
-import { FocusKeyManager } from '@angular/cdk/a11y';
+import { ActiveDescendantKeyManager } from '@angular/cdk/a11y';
 import { Directionality } from '@angular/cdk/bidi';
-import { ConnectedPosition, Overlay, OverlayModule } from '@angular/cdk/overlay';
+import { SelectionModel } from '@angular/cdk/collections';
+import { CdkConnectedOverlay, ConnectedPosition, Overlay, OverlayModule } from '@angular/cdk/overlay';
 import {
+    AfterContentInit,
     booleanAttribute,
     Component,
+    ContentChild,
     ContentChildren,
+    DestroyRef,
+    ElementRef,
     EventEmitter,
     inject,
     Input,
+    NgZone,
+    OnInit,
     Output,
-    QueryList
+    QueryList,
+    ViewChild
 } from '@angular/core';
-import { Subject } from 'rxjs';
-import { RdxSelectItemDirective } from './select-item.directive';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { defer, delay, merge, Observable, Subject, Subscription, switchMap, take } from 'rxjs';
+import { RdxSelectContentDirective } from './select-content.directive';
+import { RdxSelectItemChange, RdxSelectItemDirective } from './select-item.directive';
 
 let nextId = 0;
 
@@ -20,30 +30,24 @@ let nextId = 0;
     standalone: true,
     selector: '[rdxSelectRoot]',
     template: `
-        <div
-            #origin="cdkOverlayOrigin"
-            cdk-overlay-origin>
-            <ng-content select="[rdxSelectTrigger]"></ng-content>
-        </div>
+        <ng-content select="[rdxSelectTrigger]" />
 
         <ng-template
-            [cdkConnectedOverlayMinWidth]="triggerRect?.width!"
             [cdkConnectedOverlayOpen]="open"
-            [cdkConnectedOverlayOrigin]="origin"
+            [cdkConnectedOverlayOrigin]="elementRef"
             [cdkConnectedOverlayPositions]="positions"
             [cdkConnectedOverlayScrollStrategy]="overlay.scrollStrategies.reposition()"
             (attach)="onAttached()"
             (backdropClick)="close()"
-            (detach)="close()"
+            (detach)="onDetach()"
             cdk-connected-overlay
             cdkConnectedOverlayLockPosition
         >
             <div
                 #panel
-                (click)="handleClick($event)"
                 (keydown)="handleKeydown($event)"
             >
-                <ng-content select="[rdxSelectContent]"></ng-content>
+                <ng-content select="[rdxSelectContent]" />
             </div>
         </ng-template>
     `,
@@ -55,8 +59,17 @@ let nextId = 0;
         OverlayModule
     ]
 })
-export class RdxSelectRootComponent {
+export class RdxSelectRootComponent implements OnInit, AfterContentInit {
     protected overlay = inject(Overlay);
+    protected elementRef = inject(ElementRef);
+    private readonly destroyRef = inject(DestroyRef);
+    private readonly ngZone = inject(NgZone);
+
+    @ContentChild(RdxSelectContentDirective) protected content: RdxSelectContentDirective;
+
+    /** Deals with the selection logic. */
+    selectionModel: SelectionModel<RdxSelectItemDirective>;
+
     /**
      * This position config ensures that the top "start" corner of the overlay
      * is aligned with with the top "start" of the origin by default (overlapping
@@ -78,6 +91,8 @@ export class RdxSelectRootComponent {
         }
     ];
 
+    private closeSubscription = Subscription.EMPTY;
+
     /**
      * @ignore
      */
@@ -86,7 +101,7 @@ export class RdxSelectRootComponent {
     /**
      * @ignore
      */
-    protected keyManager: FocusKeyManager<RdxSelectItemDirective>;
+    protected keyManager: ActiveDescendantKeyManager<RdxSelectItemDirective>;
 
     /**
      * @ignore
@@ -103,6 +118,8 @@ export class RdxSelectRootComponent {
      * @ignore
      */
     @ContentChildren(RdxSelectItemDirective, { descendants: true }) items: QueryList<RdxSelectItemDirective>;
+
+    @ViewChild(CdkConnectedOverlay, { static: false }) overlayDir: CdkConnectedOverlay;
 
     /**
      * The value of the item to expand when initially rendered and type is "single". Use when you do not need to control the state of the items.
@@ -139,13 +156,54 @@ export class RdxSelectRootComponent {
 
     @Output() readonly onOpenChange: EventEmitter<void> = new EventEmitter<void>();
 
+    readonly optionSelectionChanges: Observable<RdxSelectItemChange> = defer(() => {
+        if (this.content.options) {
+            return merge(...this.content.options.map((option) => option.onSelectionChange));
+        }
+
+        return this.ngZone.onStable.asObservable().pipe(
+            take(1),
+            switchMap(() => this.optionSelectionChanges)
+        );
+    }) as Observable<RdxSelectItemChange>;
+
+    get selected(): string | null {
+        return this.selectionModel.selected[0].viewValue || null;
+    }
+
+    ngOnInit() {
+        this.selectionModel = new SelectionModel();
+    }
+
+    ngAfterContentInit() {
+        this.keyManager = this.content.initKeyManager();
+
+        this.optionSelectionChanges.subscribe((event) => {
+            this.selectionModel.clear();
+
+            this.selectionModel.select(event.source);
+
+            this.close();
+        });
+    }
+
     /**
      * @ignore
      */
     handleKeydown(event: KeyboardEvent) {}
 
-    onAttached() {
+    /**
+     * Callback that is invoked when the overlay panel has been attached.
+     */
+    onAttached(): void {
+        this.closeSubscription = this.closingActions()
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .pipe(delay(0))
+            .subscribe(() => this.close());
+    }
 
+    onDetach() {
+        this.closeSubscription.unsubscribe();
     }
 
     /** Toggles the overlay panel open or closed. */
@@ -159,17 +217,16 @@ export class RdxSelectRootComponent {
 
     openPanel() {
         this.open = true;
-
-        console.log('open: ');
     }
 
     close() {
-        console.log('close: ');
-
         this.open = false;
     }
 
-    handleClick($event: MouseEvent) {
-
+    private closingActions() {
+        return merge(
+            this.overlayDir.overlayRef!.outsidePointerEvents(),
+            this.overlayDir.overlayRef!.detachments()
+        );
     }
 }
