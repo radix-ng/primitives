@@ -55,7 +55,8 @@ Storybook [sb-primitives.radix-ng.com](https://sb-primitives.radix-ng.com/)
 | Accordion       |             | ✅             |      |
 | Alert Dialog    |             | beta           |      |
 | Avatar          |             | ✅             |      |
-| Checkbox        |             | beta           |      |
+| Aspect Ratio    |             | ✅             |      |
+| Checkbox        |             | ✅             |      |
 | Collapsible     |             | ✅             |      |
 | Context Menu    |             | ✅             |      |
 | Dialog          |             | ✅             |      |
