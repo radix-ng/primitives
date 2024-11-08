@@ -1,3 +1,26 @@
+## 0.16.0 (2024-11-08)
+
+
+### 🚀 Features
+
+- **radix-docs:** added aspect ration docs ([d98ec13](https://github.com/radix-ng/primitives/commit/d98ec13))
+
+- **radix-docs:** added separator docs ([2a32a3a](https://github.com/radix-ng/primitives/commit/2a32a3a))
+
+- **toggle:** added toggle-input ([6e8a238](https://github.com/radix-ng/primitives/commit/6e8a238))
+
+- **avatar:** added role img ([f8a1228](https://github.com/radix-ng/primitives/commit/f8a1228))
+
+
+### 🩹 Fixes
+
+- **dialog:** added string[] type for backdropClass ([#153](https://github.com/radix-ng/primitives/pull/153))
+
+
+### ❤️  Thank You
+
+- Oleg Pimenov
+
 ## 0.15.0 (2024-10-22)
 
 
