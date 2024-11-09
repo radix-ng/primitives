@@ -124,6 +124,9 @@
             ],
             "@taxonomy/*": [
                 "apps/showcase-taxonomy/src/app/*"
+            ],
+            "themer": [
+                "packages/themer/src/index.ts"
             ]
         }
     },

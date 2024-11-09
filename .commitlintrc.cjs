@@ -56,7 +56,8 @@ const config = {
                 'changelog',
                 'ci',
                 'build',
-                'theme'
+                'theme',
+                'themer'
             ]
         ]
     }

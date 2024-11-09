@@ -1,0 +1,21 @@
+{
+    "name": "@radix-ng/themer",
+    "version": "0.0.1",
+    "dependencies": {
+        "tailwind-variants": "^0.2.1",
+        "tslib": "^2.3.0"
+    },
+    "devDependencies": {
+        "autoprefixer": "^10.4.16",
+        "postcss": "^8.4.31",
+        "tailwindcss": "^3.4.3",
+        "@changesets/cli": "^2.27.1",
+        "install": "^0.13.0",
+        "npm": "^10.5.1",
+        "prettier-plugin-tailwindcss": "^0.5.13"
+    },
+    "type": "commonjs",
+    "main": "./src/index.js",
+    "typings": "./src/index.d.ts",
+    "private": true
+}
