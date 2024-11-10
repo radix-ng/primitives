@@ -1,0 +1,19 @@
+---
+const styles = [
+    {
+        name: 'css',
+        label: 'CSS'
+    },
+    {
+        name: 'tailwind',
+        label: 'Tailwind CSS'
+    }
+] as const;
+---
+
+<select
+    x-model="$store.style"
+    class="border-input ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-7 w-[145px] items-center justify-between whitespace-nowrap rounded-md border bg-transparent px-3 text-xs shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50 [&>option]:line-clamp-1"
+>
+    {styles.map((style) => <option value={style.name}>{style.label}</option>)}
+</select>

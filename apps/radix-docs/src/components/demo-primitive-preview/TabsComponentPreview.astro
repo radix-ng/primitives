@@ -1,5 +1,6 @@
 ---
 import { Code } from 'astro-expressive-code/components';
+import StyleSwitcher from './StyleSwitcher.astro';
 
 type Tab = {
     label: string;
@@ -14,21 +15,27 @@ type Props = {
 const { tabs, activeTab } = Astro.props as Props;
 ---
 
-<div class="border-muted flex border-l border-r">
-    {
-        tabs.map((tab, index) => (
-            <div
-                class={`tab cursor-default border-b-2 px-4 py-2 text-sm transition-colors ${
-                    activeTab === index
-                        ? 'border-blue-500 font-bold'
-                        : 'border-transparent text-gray-600 dark:text-slate-300'
-                }`}
-                data-index={index}
-            >
-                {tab.label}
-            </div>
-        ))
-    }
+<div class="border-muted flex w-full items-center justify-between">
+    <div role="tablist" aria-orientation="horizontal" tabindex="0" class="flex">
+        {
+            tabs.map((tab, index) => (
+                <button
+                    role="tab"
+                    type="button"
+                    tabindex="-1"
+                    class={`tab cursor-default border-b-2 px-4 py-2 text-sm transition-colors ${
+                        activeTab === index
+                            ? 'border-blue-500 font-bold'
+                            : 'border-transparent text-gray-600 dark:text-slate-300'
+                    }`}
+                    data-index={index}
+                >
+                    {tab.label}
+                </button>
+            ))
+        }
+    </div>
+    <StyleSwitcher />
 </div>
 
 {

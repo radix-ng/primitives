@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 @Component({
+    selector: 'primitive-label-demo',
     standalone: true,
     imports: [RdxLabelDirective],
     template: `
