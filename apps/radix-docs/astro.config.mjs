@@ -10,7 +10,7 @@ import { siteConfig } from './src/config/site-config';
 
 /** @type {import('astro-expressive-code').AstroExpressiveCodeOptions} */
 const codeOptions = {
-    themes: ['snazzy-light', 'github-dark'],
+    themes: ['light-plus', 'vesper'],
     styleOverrides: {
         borderWidth: '1px',
         codeFontSize: '13px',
