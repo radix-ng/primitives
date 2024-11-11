@@ -97,7 +97,7 @@
         "@compodoc/compodoc": "^1.1.26",
         "@nx/angular": "19.8.10",
         "@nx/devkit": "19.8.10",
-        "@nx/esbuild": "19.8.10",
+        "@nx/esbuild": "20.0.12",
         "@nx/jest": "19.8.10",
         "@nx/js": "19.8.10",
         "@nx/plugin": "19.8.10",
