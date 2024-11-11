@@ -95,7 +95,7 @@
         "@commitlint/config-conventional": "^19.5.0",
         "@commitlint/types": "^19.5.0",
         "@compodoc/compodoc": "^1.1.26",
-        "@nx/angular": "19.8.10",
+        "@nx/angular": "20.0.12",
         "@nx/devkit": "19.8.10",
         "@nx/esbuild": "19.8.10",
         "@nx/jest": "19.8.10",
