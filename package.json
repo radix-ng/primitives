@@ -104,7 +104,7 @@
         "@nx/storybook": "19.8.10",
         "@nx/vite": "19.8.10",
         "@nx/web": "19.8.10",
-        "@nx/workspace": "19.8.10",
+        "@nx/workspace": "20.0.12",
         "@radix-ui/colors": "^3.0.0",
         "@radix-ui/themes": "^3.1.4",
         "@rollup/plugin-replace": "^5.0.7",
