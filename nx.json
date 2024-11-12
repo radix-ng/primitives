@@ -129,5 +129,6 @@
         "git": {
             "commitMessage": "chore(release): publish {projectName} {version}"
         }
-    }
+    },
+    "useLegacyCache": true
 }
