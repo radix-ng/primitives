@@ -12,5 +12,9 @@ export const appRoutes: Route[] = [
     {
         path: 'collapsible',
         loadComponent: () => import('./components/collapsible/collapsible.component')
+    },
+    {
+        path: 'tabs',
+        loadComponent: () => import('./components/tabs/tabs.component')
     }
 ];
