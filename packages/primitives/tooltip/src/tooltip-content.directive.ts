@@ -8,7 +8,10 @@ import { RdxTooltipAlign, RdxTooltipSide } from './tooltip.types';
 @Directive({
     selector: '[rdxTooltipContent]',
     standalone: true,
-    providers: [{ provide: RdxTooltipContentToken, useExisting: RdxTooltipContentDirective }]
+    providers: [{ provide: RdxTooltipContentToken, useExisting: RdxTooltipContentDirective }],
+    host: {
+        'style.position': 'relative'
+    }
 })
 export class RdxTooltipContentDirective {
     readonly templateRef = inject(TemplateRef);

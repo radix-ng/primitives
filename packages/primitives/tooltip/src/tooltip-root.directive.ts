@@ -135,7 +135,6 @@ export class RdxTooltipRootDirective implements OnInit {
             )
             .subscribe((event) => {
                 this.tooltipContentDirective().onEscapeKeyDown.emit(event);
-                console.log(event);
 
                 if (!event.defaultPrevented) {
                     this.handleClose();
@@ -249,13 +248,14 @@ export class RdxTooltipRootDirective implements OnInit {
     private readonly onArrowDirectiveChangeEffect = effect(() => {
         const arrowDirective = this.tooltipArrowDirective();
         const side = this.tooltipContentDirective().side();
+        const sideOffset = this.tooltipContentDirective().sideOffset();
 
         if (arrowDirective === undefined) {
             return;
         }
 
         untracked(() => {
-            arrowDirective.positioning({ side });
+            arrowDirective.positioning({ side, sideOffset });
         });
     });
 }
