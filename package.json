@@ -100,7 +100,7 @@
         "@nx/esbuild": "20.1.0",
         "@nx/jest": "20.1.0",
         "@nx/js": "20.1.0",
-        "@nx/plugin": "20.1.0",
+        "@nx/plugin": "20.1.2",
         "@nx/storybook": "20.1.0",
         "@nx/vite": "20.1.0",
         "@nx/web": "20.1.0",
