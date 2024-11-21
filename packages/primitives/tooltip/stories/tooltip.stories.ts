@@ -150,7 +150,7 @@ export const Default: Story = {
                 <ng-container rdxTooltipRoot #tooltipRoot="rdxTooltipRoot">
                     <button class="IconButton" rdxTooltipTrigger>+</button>
 
-                    <ng-template rdxTooltipContent [sideOffset]="16">
+                    <ng-template rdxTooltipContent [sideOffset]="8">
                         <div class="TooltipContent" rdxTooltipContentAttributes>
                             Add to library
                             <div class="TooltipArrow" rdxTooltipArrow></div>

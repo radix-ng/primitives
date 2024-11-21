@@ -25,12 +25,12 @@ export class RdxTooltipArrowDirective {
         const height = this.height();
 
         const svgElement = this.renderer.createElement('svg', 'svg');
-        this.renderer.setAttribute(svgElement, 'width', `${width}`);
-        this.renderer.setAttribute(svgElement, 'height', `${height}`);
         this.renderer.setAttribute(svgElement, 'viewBox', '0 0 30 10');
-        this.renderer.setAttribute(svgElement, 'preserveAspectRatio', 'none');
+        this.renderer.setAttribute(svgElement, 'width', String(width));
+        this.renderer.setAttribute(svgElement, 'height', String(height));
         const polygonElement = this.renderer.createElement('polygon', 'svg');
         this.renderer.setAttribute(polygonElement, 'points', '0,0 30,0 15,10');
+        this.renderer.setAttribute(svgElement, 'preserveAspectRatio', 'none');
         this.renderer.appendChild(svgElement, polygonElement);
 
         return svgElement;
@@ -39,12 +39,12 @@ export class RdxTooltipArrowDirective {
     private getTopOffset(side: RdxTooltipSide, sideOffset: number): string {
         switch (side) {
             case RdxTooltipSide.Top:
-                return `calc(100% - ${15 - this.height()}px)`;
+                return `100%`;
             case RdxTooltipSide.Bottom:
                 return `-${this.height()}px`;
             case RdxTooltipSide.Left:
             case RdxTooltipSide.Right:
-                return `calc(50% - ${this.width() / 2}px)`;
+                return `calc(50% - ${this.height() / 2}px)`;
             default:
                 return `calc(100% - ${sideOffset / 2}px)`;
         }
@@ -53,13 +53,13 @@ export class RdxTooltipArrowDirective {
     private getRotationTransform(side: RdxTooltipSide): string {
         switch (side) {
             case 'bottom':
-                return '180deg';
+                return 'rotate(180deg)';
             case 'left':
-                return '-90deg';
+                return 'rotate(-90deg) translate(0, -50%)';
             case 'right':
-                return '90deg';
+                return 'rotate(90deg) translate(0, -50%)';
             default:
-                return '0deg';
+                return 'rotate(0deg)';
         }
     }
 
@@ -75,12 +75,15 @@ export class RdxTooltipArrowDirective {
 
         this.elementRef.nativeElement.parentElement?.setAttribute(
             'style',
-            `position: relative; box-sizing: border-box`
+            `position: relative; box-sizing:content-box`
         );
         this.elementRef.nativeElement.style.position = 'absolute';
+        this.elementRef.nativeElement.style.boxSizing = '';
 
-        this.elementRef.nativeElement.style.height = `${this.height}px`;
-        this.elementRef.nativeElement.style.transform = `rotate(${this.getRotationTransform(side)})`;
+        this.elementRef.nativeElement.style.width = `${this.width()}px`;
+        this.elementRef.nativeElement.style.height = `${this.height()}px`;
+        this.elementRef.nativeElement.style.display = 'flex';
+        this.elementRef.nativeElement.style.transform = this.getRotationTransform(side);
         this.elementRef.nativeElement.style.top = this.getTopOffset(side, sideOffset);
 
         if ([RdxTooltipSide.Top, RdxTooltipSide.Bottom].includes(side)) {
@@ -88,11 +91,11 @@ export class RdxTooltipArrowDirective {
         }
 
         if (side === RdxTooltipSide.Left) {
-            this.elementRef.nativeElement.style.left = `calc(100% - ${this.height() + 2}px)`;
+            this.elementRef.nativeElement.style.left = `100%`;
         }
 
         if (side === RdxTooltipSide.Right) {
-            this.elementRef.nativeElement.style.right = `calc(100% - ${this.height() + 2}px)`;
+            this.elementRef.nativeElement.style.right = `100%`;
         }
     });
 }
