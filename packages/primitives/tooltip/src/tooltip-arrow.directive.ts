@@ -1,5 +1,6 @@
 import { computed, Directive, effect, ElementRef, forwardRef, inject, input, Renderer2 } from '@angular/core';
 import { RdxTooltipArrowToken } from './tooltip-arrow.token';
+import { RdxTooltipContentToken } from './tooltip-content.token';
 import { RdxTooltipSide } from './tooltip.types';
 
 @Directive({
@@ -14,6 +15,7 @@ import { RdxTooltipSide } from './tooltip.types';
 })
 export class RdxTooltipArrowDirective {
     private readonly renderer = inject(Renderer2);
+    private readonly contentDirective = inject(RdxTooltipContentToken);
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
     readonly width = input<number>(10);
@@ -34,30 +36,6 @@ export class RdxTooltipArrowDirective {
         return svgElement;
     });
 
-    positioning(params: { side: RdxTooltipSide; sideOffset: number }): void {
-        this.elementRef.nativeElement.parentElement?.setAttribute(
-            'style',
-            `position: relative; box-sizing: border-box`
-        );
-        this.elementRef.nativeElement.style.position = 'absolute';
-
-        this.elementRef.nativeElement.style.height = `${this.height}px`;
-        this.elementRef.nativeElement.style.transform = `rotate(${this.getRotationTransform(params.side)})`;
-        this.elementRef.nativeElement.style.top = this.getTopOffset(params.side, params.sideOffset);
-
-        if ([RdxTooltipSide.Top, RdxTooltipSide.Bottom].includes(params.side)) {
-            this.elementRef.nativeElement.style.left = `calc(50% - ${this.width() / 2}px)`;
-        }
-
-        if (params.side === RdxTooltipSide.Left) {
-            this.elementRef.nativeElement.style.left = `calc(100% - ${this.height() + 2}px)`;
-        }
-
-        if (params.side === RdxTooltipSide.Right) {
-            this.elementRef.nativeElement.style.right = `calc(100% - ${this.height() + 2}px)`;
-        }
-    }
-
     private getTopOffset(side: RdxTooltipSide, sideOffset: number): string {
         switch (side) {
             case RdxTooltipSide.Top:
@@ -72,7 +50,7 @@ export class RdxTooltipArrowDirective {
         }
     }
 
-    getRotationTransform(side: RdxTooltipSide): string {
+    private getRotationTransform(side: RdxTooltipSide): string {
         switch (side) {
             case 'bottom':
                 return '180deg';
@@ -89,5 +67,32 @@ export class RdxTooltipArrowDirective {
         const arrowElement = this.arrowSvgElement();
 
         this.renderer.appendChild(this.elementRef.nativeElement, arrowElement);
+    });
+
+    private readonly onSideChangeEffect = effect(() => {
+        const side = this.contentDirective.side();
+        const sideOffset = this.contentDirective.sideOffset();
+
+        this.elementRef.nativeElement.parentElement?.setAttribute(
+            'style',
+            `position: relative; box-sizing: border-box`
+        );
+        this.elementRef.nativeElement.style.position = 'absolute';
+
+        this.elementRef.nativeElement.style.height = `${this.height}px`;
+        this.elementRef.nativeElement.style.transform = `rotate(${this.getRotationTransform(side)})`;
+        this.elementRef.nativeElement.style.top = this.getTopOffset(side, sideOffset);
+
+        if ([RdxTooltipSide.Top, RdxTooltipSide.Bottom].includes(side)) {
+            this.elementRef.nativeElement.style.left = `calc(50% - ${this.width() / 2}px)`;
+        }
+
+        if (side === RdxTooltipSide.Left) {
+            this.elementRef.nativeElement.style.left = `calc(100% - ${this.height() + 2}px)`;
+        }
+
+        if (side === RdxTooltipSide.Right) {
+            this.elementRef.nativeElement.style.right = `calc(100% - ${this.height() + 2}px)`;
+        }
     });
 }

@@ -1,5 +1,5 @@
 import { ConnectedPosition } from '@angular/cdk/overlay';
-import { computed, Directive, inject, input, output, TemplateRef } from '@angular/core';
+import { computed, Directive, forwardRef, inject, input, output, TemplateRef } from '@angular/core';
 import { RdxTooltipContentToken } from './tooltip-content.token';
 import { RdxTooltipRootDirective } from './tooltip-root.directive';
 import { TOOLTIP_POSITIONS } from './tooltip.constants';
@@ -8,7 +8,7 @@ import { RdxTooltipAlign, RdxTooltipSide } from './tooltip.types';
 @Directive({
     selector: '[rdxTooltipContent]',
     standalone: true,
-    providers: [{ provide: RdxTooltipContentToken, useExisting: RdxTooltipContentDirective }]
+    providers: [{ provide: RdxTooltipContentToken, useExisting: forwardRef(() => RdxTooltipContentDirective) }]
 })
 export class RdxTooltipContentDirective {
     readonly templateRef = inject(TemplateRef);

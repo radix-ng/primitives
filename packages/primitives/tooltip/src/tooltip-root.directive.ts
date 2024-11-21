@@ -20,7 +20,6 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { asyncScheduler, filter } from 'rxjs';
-import { RdxTooltipArrowToken } from './tooltip-arrow.token';
 import { RdxTooltipContentToken } from './tooltip-content.token';
 import { RdxTooltipTriggerDirective } from './tooltip-trigger.directive';
 import { injectTooltipConfig } from './tooltip.config';
@@ -72,7 +71,6 @@ export class RdxTooltipRootDirective implements OnInit {
     });
     tooltipContentDirective = contentChild.required(RdxTooltipContentToken);
     tooltipTriggerElementRef = contentChild.required(RdxTooltipTriggerDirective, { read: ElementRef });
-    tooltipArrowDirective = contentChild(RdxTooltipArrowToken);
 
     onOpenChange = output<boolean>();
     overlayRef?: OverlayRef;
@@ -243,20 +241,6 @@ export class RdxTooltipRootDirective implements OnInit {
             } else {
                 this.hide();
             }
-        });
-    });
-
-    private readonly onArrowDirectiveChangeEffect = effect(() => {
-        const arrowDirective = this.tooltipArrowDirective();
-        const side = this.tooltipContentDirective().side();
-        const sideOffset = this.tooltipContentDirective().sideOffset();
-
-        if (arrowDirective === undefined) {
-            return;
-        }
-
-        untracked(() => {
-            arrowDirective.positioning({ side, sideOffset });
         });
     });
 }
