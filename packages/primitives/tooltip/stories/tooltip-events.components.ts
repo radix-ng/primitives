@@ -1,5 +1,6 @@
 import { Component, ElementRef, viewChild } from '@angular/core';
 import { RdxTooltipArrowDirective } from '../src/tooltip-arrow.directive';
+import { RdxTooltipContentAttributesDirective } from '../src/tooltip-content-attributes.directive';
 import { RdxTooltipContentDirective } from '../src/tooltip-content.directive';
 import { RdxTooltipRootDirective } from '../src/tooltip-root.directive';
 import { RdxTooltipTriggerDirective } from '../src/tooltip-trigger.directive';
@@ -11,7 +12,8 @@ import { RdxTooltipTriggerDirective } from '../src/tooltip-trigger.directive';
         RdxTooltipRootDirective,
         RdxTooltipTriggerDirective,
         RdxTooltipContentDirective,
-        RdxTooltipArrowDirective
+        RdxTooltipArrowDirective,
+        RdxTooltipContentAttributesDirective
     ],
     styles: `
         .container {
@@ -131,10 +133,8 @@ import { RdxTooltipTriggerDirective } from '../src/tooltip-trigger.directive';
                     (onEscapeKeyDown)="onEscapeKeyDown($event)"
                     (onPointerDownOutside)="onPointerDownOutside($event)"
                     rdxTooltipContent
-                    let-state="state"
-                    let-side="side"
                 >
-                    <div class="TooltipContent" [attr.data-state]="state()" [attr.data-side]="side()">
+                    <div class="TooltipContent" rdxTooltipContentAttributes>
                         Add to library
                         <div class="TooltipArrow" rdxTooltipArrow></div>
                     </div>

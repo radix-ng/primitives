@@ -6,6 +6,7 @@ import {
     DestroyRef,
     Directive,
     effect,
+    ElementRef,
     forwardRef,
     inject,
     InjectionToken,
@@ -70,7 +71,7 @@ export class RdxTooltipRootDirective implements OnInit {
         return 'closed';
     });
     tooltipContentDirective = contentChild.required(RdxTooltipContentToken);
-    tooltipTriggerDirective = contentChild.required(RdxTooltipTriggerDirective);
+    tooltipTriggerElementRef = contentChild.required(RdxTooltipTriggerDirective, { read: ElementRef });
     tooltipArrowDirective = contentChild(RdxTooltipArrowToken);
 
     onOpenChange = output<boolean>();
@@ -182,7 +183,7 @@ export class RdxTooltipRootDirective implements OnInit {
 
         const strategy = this.overlay
             .position()
-            .flexibleConnectedTo(this.tooltipTriggerDirective().elementRef)
+            .flexibleConnectedTo(this.tooltipTriggerElementRef())
             .withFlexibleDimensions(false)
             .withPositions([
                 this.tooltipContentDirective().position()

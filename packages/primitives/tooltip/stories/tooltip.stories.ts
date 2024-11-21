@@ -1,6 +1,7 @@
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { RdxTooltipArrowDirective } from '../src/tooltip-arrow.directive';
+import { RdxTooltipContentAttributesDirective } from '../src/tooltip-content-attributes.directive';
 import { RdxTooltipContentDirective } from '../src/tooltip-content.directive';
 import { RdxTooltipRootDirective } from '../src/tooltip-root.directive';
 import { RdxTooltipTriggerDirective } from '../src/tooltip-trigger.directive';
@@ -15,7 +16,8 @@ export default {
                 RdxTooltipContentDirective,
                 RdxTooltipRootDirective,
                 RdxTooltipTriggerDirective,
-                RdxTooltipEventsComponent
+                RdxTooltipEventsComponent,
+                RdxTooltipContentAttributesDirective
             ],
             providers: [provideAnimations()]
         }),
@@ -148,8 +150,8 @@ export const Default: Story = {
                 <ng-container rdxTooltipRoot #tooltipRoot="rdxTooltipRoot">
                     <button class="IconButton" rdxTooltipTrigger>+</button>
 
-                    <ng-template rdxTooltipContent let-state="state" let-side="side" [sideOffset]="8">
-                        <div class="TooltipContent" [attr.data-state]="state()" [attr.data-side]="side()" >
+                    <ng-template rdxTooltipContent [sideOffset]="16">
+                        <div class="TooltipContent" rdxTooltipContentAttributes>
                             Add to library
                             <div class="TooltipArrow" rdxTooltipArrow></div>
                         </div>
