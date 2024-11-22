@@ -1,4 +1,4 @@
-import { Overlay, OverlayRef } from '@angular/cdk/overlay';
+import { ConnectedPosition, Overlay, OverlayRef, PositionStrategy } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import {
     computed,
@@ -179,18 +179,9 @@ export class RdxTooltipRootDirective implements OnInit {
             return this.overlayRef;
         }
 
-        const strategy = this.overlay
-            .position()
-            .flexibleConnectedTo(this.tooltipTriggerElementRef())
-            .withFlexibleDimensions(false)
-            .withPositions([
-                this.tooltipContentDirective().position()
-            ])
-            .withLockedPosition();
-
         this.overlayRef = this.overlay.create({
             direction: undefined,
-            positionStrategy: strategy,
+            positionStrategy: this.getPositionStrategy(this.tooltipContentDirective().position()),
             scrollStrategy: this.overlay.scrollStrategies.close()
         });
 
@@ -232,6 +223,17 @@ export class RdxTooltipRootDirective implements OnInit {
         }, this.tooltipConfig.hideDelayDuration ?? 0);
     }
 
+    private getPositionStrategy(connectedPosition: ConnectedPosition): PositionStrategy {
+        return this.overlay
+            .position()
+            .flexibleConnectedTo(this.tooltipTriggerElementRef())
+            .withFlexibleDimensions(false)
+            .withPositions([
+                connectedPosition
+            ])
+            .withLockedPosition();
+    }
+
     private readonly onIsOpenChangeEffect = effect(() => {
         const isOpen = this.isOpen();
 
@@ -242,5 +244,15 @@ export class RdxTooltipRootDirective implements OnInit {
                 this.hide();
             }
         });
+    });
+
+    private readonly onPositionChangeEffect = effect(() => {
+        const position = this.tooltipContentDirective().position();
+
+        if (this.overlayRef) {
+            const positionStrategy = this.getPositionStrategy(position);
+
+            this.overlayRef.updatePositionStrategy(positionStrategy);
+        }
     });
 }

@@ -20,7 +20,7 @@ export class RdxTooltipContentDirective {
     readonly onEscapeKeyDown = output<KeyboardEvent>();
     readonly onPointerDownOutside = output<MouseEvent>();
 
-    position = computed<ConnectedPosition>(() => {
+    readonly position = computed<ConnectedPosition>(() => {
         const side = this.side();
         const align = this.align();
         const sideOffset = this.sideOffset();
