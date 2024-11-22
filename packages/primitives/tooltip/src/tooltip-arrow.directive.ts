@@ -16,7 +16,7 @@ import { RdxTooltipSide } from './tooltip.types';
 export class RdxTooltipArrowDirective {
     private readonly renderer = inject(Renderer2);
     private readonly contentDirective = inject(RdxTooltipContentToken);
-    readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
     readonly width = input<number>(10);
     readonly height = input<number>(5);
@@ -36,33 +36,6 @@ export class RdxTooltipArrowDirective {
         return svgElement;
     });
 
-    private getTopOffset(side: RdxTooltipSide, sideOffset: number): string {
-        switch (side) {
-            case RdxTooltipSide.Top:
-                return `100%`;
-            case RdxTooltipSide.Bottom:
-                return `-${this.height()}px`;
-            case RdxTooltipSide.Left:
-            case RdxTooltipSide.Right:
-                return `calc(50% - ${this.height() / 2}px)`;
-            default:
-                return `calc(100% - ${sideOffset / 2}px)`;
-        }
-    }
-
-    private getRotationTransform(side: RdxTooltipSide): string {
-        switch (side) {
-            case 'bottom':
-                return 'rotate(180deg)';
-            case 'left':
-                return 'rotate(-90deg) translate(0, -50%)';
-            case 'right':
-                return 'rotate(90deg) translate(0, -50%)';
-            default:
-                return 'rotate(0deg)';
-        }
-    }
-
     private readonly onArrowSvgElementChangeEffect = effect(() => {
         const arrowElement = this.arrowSvgElement();
 
@@ -71,31 +44,36 @@ export class RdxTooltipArrowDirective {
 
     private readonly onSideChangeEffect = effect(() => {
         const side = this.contentDirective.side();
-        const sideOffset = this.contentDirective.sideOffset();
 
-        this.elementRef.nativeElement.parentElement?.setAttribute(
-            'style',
-            `position: relative; box-sizing:content-box`
-        );
+        this.elementRef.nativeElement.parentElement?.setAttribute('style', `position: relative;`);
         this.elementRef.nativeElement.style.position = 'absolute';
         this.elementRef.nativeElement.style.boxSizing = '';
-
         this.elementRef.nativeElement.style.width = `${this.width()}px`;
         this.elementRef.nativeElement.style.height = `${this.height()}px`;
-        this.elementRef.nativeElement.style.display = 'flex';
-        this.elementRef.nativeElement.style.transform = this.getRotationTransform(side);
-        this.elementRef.nativeElement.style.top = this.getTopOffset(side, sideOffset);
+        this.elementRef.nativeElement.style.fontSize = '0px';
 
         if ([RdxTooltipSide.Top, RdxTooltipSide.Bottom].includes(side)) {
             this.elementRef.nativeElement.style.left = `calc(50% - ${this.width() / 2}px)`;
+            this.elementRef.nativeElement.style.top = '100%';
+
+            if (side === RdxTooltipSide.Bottom) {
+                this.elementRef.nativeElement.style.transform = 'rotate(180deg)';
+                this.elementRef.nativeElement.style.top = `-${this.height()}px`;
+            }
         }
 
-        if (side === RdxTooltipSide.Left) {
-            this.elementRef.nativeElement.style.left = `100%`;
-        }
+        if ([RdxTooltipSide.Left, RdxTooltipSide.Right].includes(side)) {
+            this.elementRef.nativeElement.style.top = `calc(50% - ${this.height() / 2}px)`;
 
-        if (side === RdxTooltipSide.Right) {
-            this.elementRef.nativeElement.style.right = `100%`;
+            if (side === RdxTooltipSide.Left) {
+                this.elementRef.nativeElement.style.left = `100%`;
+                this.elementRef.nativeElement.style.transform = 'rotate(-90deg) translate(0, -50%)';
+            }
+
+            if (side === RdxTooltipSide.Right) {
+                this.elementRef.nativeElement.style.right = `100%`;
+                this.elementRef.nativeElement.style.transform = 'rotate(90deg) translate(0, -50%)';
+            }
         }
     });
 }
