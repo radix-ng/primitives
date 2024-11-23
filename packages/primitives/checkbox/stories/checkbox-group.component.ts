@@ -15,7 +15,7 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
                 <label class="Label" rdxLabel htmlFor="r1">
                     <button class="CheckboxRoot" CheckboxRoot formControlName="fun">
                         <lucide-angular class="CheckboxIndicator" CheckboxIndicator size="16" name="check" />
-                        <input class="Input cdk-visually-hidden" id="r1" CheckboxInput />
+                        <input class="Input" id="r1" CheckboxInput />
                     </button>
                     Fun
                 </label>
@@ -28,7 +28,7 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
                         formControlName="serious"
                     >
                         <lucide-angular class="CheckboxIndicator" CheckboxIndicator size="16" name="check" />
-                        <input class="Input cdk-visually-hidden" id="r2" CheckboxInput />
+                        <input class="Input" id="r2" CheckboxInput />
                     </button>
                     Serious
                 </label>
@@ -37,7 +37,7 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
                 <label class="Label" rdxLabel htmlFor="r3">
                     <button class="CheckboxRoot" CheckboxRoot formControlName="smart">
                         <lucide-angular class="CheckboxIndicator" CheckboxIndicator size="16" name="check" />
-                        <input class="Input cdk-visually-hidden" id="r3" CheckboxInput />
+                        <input class="Input" id="r3" CheckboxInput />
                     </button>
                     Smart
                 </label>

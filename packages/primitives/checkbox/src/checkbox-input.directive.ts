@@ -1,9 +1,11 @@
 import { computed, Directive, input } from '@angular/core';
+import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 import { injectCheckbox } from './checkbox.token';
 
 @Directive({
     standalone: true,
     selector: 'input[CheckboxInput]',
+    hostDirectives: [{ directive: RdxVisuallyHiddenInputDirective, inputs: ['feature: "fully-hidden"'] }],
     host: {
         type: 'checkbox',
         tabindex: '-1',

@@ -32,6 +32,7 @@ const config = {
                 'aspect-ratio',
                 'avatar',
                 'card',
+                'checkbox',
                 'collapsible',
                 'context-menu',
                 'dropdown-menu',

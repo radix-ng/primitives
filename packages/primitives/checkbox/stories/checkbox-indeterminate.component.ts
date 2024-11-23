@@ -8,6 +8,15 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
 
 @Component({
     selector: 'checkbox-indeterminate-example',
+    standalone: true,
+    imports: [
+        FormsModule,
+        RdxLabelDirective,
+        RdxCheckboxDirective,
+        RdxCheckboxIndicatorDirective,
+        LucideAngularModule,
+        RdxCheckboxInputDirective
+    ],
     template: `
         <label class="Label" rdxLabel htmlFor="r1">
             <button class="CheckboxRoot" [(indeterminate)]="indeterminate" [(ngModel)]="checked" CheckboxRoot>
@@ -27,16 +36,7 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
             </button>
         </p>
     `,
-    styleUrl: 'checkbox-group.styles.scss',
-    standalone: true,
-    imports: [
-        FormsModule,
-        RdxLabelDirective,
-        RdxCheckboxDirective,
-        RdxCheckboxIndicatorDirective,
-        LucideAngularModule,
-        RdxCheckboxInputDirective
-    ]
+    styleUrl: 'checkbox-group.styles.scss'
 })
 export class CheckboxIndeterminateComponent {
     readonly indeterminate = model(false);
