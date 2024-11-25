@@ -45,20 +45,19 @@ export function injectTooltipRoot(): RdxTooltipRootDirective {
 export class RdxTooltipRootDirective implements OnInit {
     private readonly viewContainerRef = inject(ViewContainerRef);
     private readonly destroyRef = inject(DestroyRef);
+    private readonly overlay = inject(Overlay);
     readonly tooltipConfig = injectTooltipConfig();
-    defaultOpen = input<boolean>(false);
-    open = input<boolean>(this.defaultOpen());
 
-    delayDuration = input<number>(this.tooltipConfig.delayDuration);
-    disableHoverableContent = input<boolean>(this.tooltipConfig.disableHoverableContent ?? false);
+    readonly defaultOpen = input<boolean>(false);
+    readonly open = input<boolean>(this.defaultOpen());
+    readonly delayDuration = input<number>(this.tooltipConfig.delayDuration);
+    readonly disableHoverableContent = input<boolean>(this.tooltipConfig.disableHoverableContent ?? false);
+    readonly onOpenChange = output<boolean>();
 
-    openTimer = 0;
-    skipDelayTimer = 0;
-
-    isOpen = signal<boolean>(this.open());
-    isOpenDelayed = signal<boolean>(true);
-    wasOpenDelayed = signal<boolean>(false);
-    state = computed<RdxTooltipState>(() => {
+    readonly isOpen = signal<boolean>(this.open());
+    readonly isOpenDelayed = signal<boolean>(true);
+    readonly wasOpenDelayed = signal<boolean>(false);
+    readonly state = computed<RdxTooltipState>(() => {
         const currentIsOpen = this.isOpen();
         const currentWasOpenDelayed = this.wasOpenDelayed();
 
@@ -68,14 +67,13 @@ export class RdxTooltipRootDirective implements OnInit {
 
         return 'closed';
     });
-    tooltipContentDirective = contentChild.required(RdxTooltipContentToken);
-    tooltipTriggerElementRef = contentChild.required(RdxTooltipTriggerDirective, { read: ElementRef });
+    readonly tooltipContentDirective = contentChild.required(RdxTooltipContentToken);
+    readonly tooltipTriggerElementRef = contentChild.required(RdxTooltipTriggerDirective, { read: ElementRef });
 
-    onOpenChange = output<boolean>();
-    overlayRef?: OverlayRef;
-    overlay = inject(Overlay);
-    instance?: ViewRef;
-
+    private openTimer = 0;
+    private skipDelayTimer = 0;
+    private overlayRef?: OverlayRef;
+    private instance?: ViewRef;
     private portal: TemplatePortal<unknown>;
 
     ngOnInit(): void {
