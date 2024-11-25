@@ -23,8 +23,7 @@ import { asyncScheduler, filter } from 'rxjs';
 import { RdxTooltipContentToken } from './tooltip-content.token';
 import { RdxTooltipTriggerDirective } from './tooltip-trigger.directive';
 import { injectTooltipConfig } from './tooltip.config';
-
-export type RdxTooltipState = 'delayed-open' | 'instant-open' | 'closed';
+import { RdxTooltipState } from './tooltip.types';
 
 export const RdxTooltipRootToken = new InjectionToken<RdxTooltipRootDirective>('RdxTooltipRootToken');
 

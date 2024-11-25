@@ -1,11 +1,5 @@
 import { inject, InjectionToken, Provider } from '@angular/core';
-
-export type RdxTooltipConfig = {
-    delayDuration: number;
-    skipDelayDuration: number;
-    disableHoverableContent?: boolean;
-    hideDelayDuration?: number;
-};
+import { RdxTooltipConfig } from './tooltip.types';
 
 export const defaultTooltipConfig: RdxTooltipConfig = {
     delayDuration: 700,
