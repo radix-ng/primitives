@@ -176,8 +176,6 @@ export class RdxSelectRootComponent implements OnInit, AfterContentInit {
     }
 
     ngAfterContentInit() {
-        this.keyManager = this.content.initKeyManager();
-
         this.optionSelectionChanges.subscribe((event) => {
             this.selectionModel.clear();
 
@@ -190,7 +188,10 @@ export class RdxSelectRootComponent implements OnInit, AfterContentInit {
     /**
      * @ignore
      */
-    handleKeydown(event: KeyboardEvent) {}
+    handleKeydown(event: KeyboardEvent) {
+        console.log('this.keyManager.onKeydown(event);: ');
+        this.content.keyManager.onKeydown(event);
+    }
 
     /**
      * Callback that is invoked when the overlay panel has been attached.
@@ -221,6 +222,10 @@ export class RdxSelectRootComponent implements OnInit, AfterContentInit {
 
     close() {
         this.open = false;
+    }
+
+    updateActiveItem(item: RdxSelectItemDirective) {
+        this.content.keyManager.updateActiveItem(item);
     }
 
     private closingActions() {

@@ -155,10 +155,10 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: html`
-            <button class="SelectRoot" rdxSelectRoot>
-                <div class="SelectTrigger" rdxSelectTrigger>
-                    <div rdxSelectValue>Select value:</div>
-                </div>
+            <div class="SelectRoot" rdxSelectRoot>
+                <button class="SelectTrigger" rdxSelectTrigger>
+                    <span rdxSelectValue>Select value:</span>
+                </button>
                 <div class="SelectContent" rdxSelectContent>
                     <div class="SelectItem" rdxSelectItem>Item 1</div>
                     <div class="SelectItem" rdxSelectItem>Item 2</div>
@@ -166,7 +166,7 @@ export const Default: Story = {
                     <div class="SelectItem" rdxSelectItem>Item 4</div>
                     <div class="SelectItem" rdxSelectItem>Item 5</div>
                 </div>
-            </button>
+            </div>
         `
     })
 };

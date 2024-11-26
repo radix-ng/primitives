@@ -1,5 +1,8 @@
 import { Highlightable } from '@angular/cdk/a11y';
 import { booleanAttribute, Directive, ElementRef, EventEmitter, inject, Input } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { RdxSelectContentDirective } from './select-content.directive';
+import { RdxSelectRootComponent } from './select-root.component';
 
 let nextId = 0;
 
@@ -14,13 +17,20 @@ export class RdxSelectItemChange<T = RdxSelectItemDirective> {
     host: {
         '[attr.data-state]': 'dataState',
         '[attr.data-disabled]': 'disabled',
-        '[attr.data-highlighted]': 'highlighted',
-        '(click)': 'selectViaInteraction()'
+        '[attr.data-highlighted]': 'highlighted || null',
+        '[attr.tabindex]': '0',
+        '(focus)': 'content.highlighted.next(this)',
+        '(click)': 'selectViaInteraction()',
+        '(pointermove)': 'onPointerMove()'
     }
 })
 export class RdxSelectItemDirective implements Highlightable {
+    protected readonly root = inject(RdxSelectRootComponent);
+    protected readonly content = inject(RdxSelectContentDirective);
     readonly onSelectionChange = new EventEmitter<RdxSelectItemChange>();
-    protected elementRef = inject(ElementRef);
+    protected readonly nativeElement = inject(ElementRef).nativeElement;
+
+    highlighted: boolean = false;
 
     get dataState(): string {
         return 'checked' || 'unchecked';
@@ -31,10 +41,6 @@ export class RdxSelectItemDirective implements Highlightable {
      * @ignore
      */
     readonly id: string = `rdx-select-item-${nextId++}`;
-
-    get highlighted(): boolean | null {
-        return null;
-    }
 
     @Input()
     set value(value: string) {
@@ -64,7 +70,15 @@ export class RdxSelectItemDirective implements Highlightable {
     selected: boolean;
 
     get viewValue(): string {
-        return this.textValue ?? this.elementRef.nativeElement.textContent;
+        return this.textValue ?? this.nativeElement.textContent;
+    }
+
+    constructor() {
+        this.content.highlighted.pipe(takeUntilDestroyed()).subscribe((value) => {
+            if (value !== this) {
+                this.highlighted = false;
+            }
+        });
     }
 
     /** Gets the label to be used when determining whether the option should be focused. */
@@ -84,6 +98,18 @@ export class RdxSelectItemDirective implements Highlightable {
         }
     }
 
-    setActiveStyles() {}
-    setInactiveStyles() {}
+    setActiveStyles() {
+        this.highlighted = true;
+    }
+
+    setInactiveStyles() {
+        this.highlighted = false;
+    }
+
+    protected onPointerMove() {
+        if (!this.highlighted) {
+            this.nativeElement.focus({ preventScroll: true });
+            this.root.updateActiveItem(this);
+        }
+    }
 }
