@@ -1,8 +1,9 @@
 import { Highlightable } from '@angular/cdk/a11y';
+import { ENTER, SPACE } from '@angular/cdk/keycodes';
 import { booleanAttribute, Directive, ElementRef, EventEmitter, inject, Input } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RdxSelectContentDirective } from './select-content.directive';
-import { RdxSelectRootComponent } from './select-root.component';
+import { RdxSelectComponent } from './select.component';
 
 let nextId = 0;
 
@@ -18,14 +19,15 @@ export class RdxSelectItemChange<T = RdxSelectItemDirective> {
         '[attr.data-state]': 'dataState',
         '[attr.data-disabled]': 'disabled',
         '[attr.data-highlighted]': 'highlighted || null',
-        '[attr.tabindex]': '0',
+        '[attr.tabindex]': '-1',
         '(focus)': 'content.highlighted.next(this)',
         '(click)': 'selectViaInteraction()',
+        '(keydown)': 'handleKeydown($event)',
         '(pointermove)': 'onPointerMove()'
     }
 })
 export class RdxSelectItemDirective implements Highlightable {
-    protected readonly root = inject(RdxSelectRootComponent);
+    protected readonly root = inject(RdxSelectComponent);
     protected readonly content = inject(RdxSelectContentDirective);
     readonly onSelectionChange = new EventEmitter<RdxSelectItemChange>();
     protected readonly nativeElement = inject(ElementRef).nativeElement;
@@ -98,15 +100,26 @@ export class RdxSelectItemDirective implements Highlightable {
         }
     }
 
-    setActiveStyles() {
-        this.highlighted = true;
+    handleKeydown(event: KeyboardEvent): void {
+        if (event.keyCode === ENTER || event.keyCode === SPACE) {
+            this.selectViaInteraction();
+
+            // Prevent the page from scrolling down and form submits.
+            event.preventDefault();
+            event.stopPropagation();
+        }
     }
 
-    setInactiveStyles() {
+    setActiveStyles(): void {
+        this.highlighted = true;
+        this.nativeElement.focus({ preventScroll: true });
+    }
+
+    setInactiveStyles(): void {
         this.highlighted = false;
     }
 
-    protected onPointerMove() {
+    protected onPointerMove(): void {
         if (!this.highlighted) {
             this.nativeElement.focus({ preventScroll: true });
             this.root.updateActiveItem(this);

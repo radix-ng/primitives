@@ -11,7 +11,8 @@ import { RdxSelectItemDirective } from './select-item.directive';
     host: {
         '[attr.data-state]': 'true',
         '[attr.data-side]': 'true',
-        '[attr.data-align]': 'true'
+        '[attr.data-align]': 'true',
+        '(keydown)': 'keyManager.onKeydown($event)'
     }
 })
 export class RdxSelectContentDirective implements AfterContentInit {

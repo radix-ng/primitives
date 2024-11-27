@@ -1,4 +1,4 @@
-import { Directive } from '@angular/core';
+import { Directive, ElementRef, inject } from '@angular/core';
 
 @Directive({
     selector: '[rdxSelectTrigger]',
@@ -10,4 +10,10 @@ import { Directive } from '@angular/core';
         '[attr.data-placeholder]': 'true'
     }
 })
-export class RdxSelectTriggerDirective {}
+export class RdxSelectTriggerDirective {
+    protected nativeElement = inject(ElementRef).nativeElement;
+
+    focus() {
+        this.nativeElement.focus();
+    }
+}

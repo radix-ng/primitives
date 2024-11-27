@@ -1,11 +1,11 @@
 import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
 import {
+    RdxSelectComponent,
     RdxSelectContentDirective,
     RdxSelectGroupDirective,
     RdxSelectItemDirective,
     RdxSelectItemIndicatorDirective,
     RdxSelectLabelDirective,
-    RdxSelectRootComponent,
     RdxSelectSeparatorDirective,
     RdxSelectTriggerDirective,
     RdxSelectValue
@@ -20,7 +20,7 @@ export default {
     decorators: [
         moduleMetadata({
             imports: [
-                RdxSelectRootComponent,
+                RdxSelectComponent,
                 RdxSelectSeparatorDirective,
                 RdxSelectLabelDirective,
                 RdxSelectItemIndicatorDirective,
@@ -155,18 +155,45 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: html`
-            <div class="SelectRoot" rdxSelectRoot>
+            <span class="SelectRoot" rdxSelect>
                 <button class="SelectTrigger" rdxSelectTrigger>
-                    <span rdxSelectValue>Select value:</span>
+                    <span rdxSelectValue placeholder="Select a fruit…"></span>
+                    <span class="SelectIcon" rdxSelectIcon>
+                        <lucide-icon class="SelectIcon" aria-hidden size="16" name="chevron-down" />
+                    </span>
                 </button>
                 <div class="SelectContent" rdxSelectContent>
-                    <div class="SelectItem" rdxSelectItem>Item 1</div>
-                    <div class="SelectItem" rdxSelectItem>Item 2</div>
-                    <div class="SelectItem" rdxSelectItem>Item 3</div>
-                    <div class="SelectItem" rdxSelectItem>Item 4</div>
-                    <div class="SelectItem" rdxSelectItem>Item 5</div>
+                    <div class="SelectGroup" rdxSelectGroup>
+                        <div class="SelectLabel" rdxSelectLabel>Fruits</div>
+                        <div class="SelectItem" rdxSelectItem value="apple">Apple</div>
+                        <div class="SelectItem" rdxSelectItem value="banana">Banana</div>
+                        <div class="SelectItem" rdxSelectItem value="blueberry">Blueberry</div>
+                        <div class="SelectItem" rdxSelectItem value="grapes">Grapes</div>
+                        <div class="SelectItem" rdxSelectItem value="pineapple">Pineapple</div>
+                    </div>
+
+                    <div class="SelectSeparator" rdxSelectSeparator></div>
+
+                    <div class="SelectGroup" rdxSelectGroup>
+                        <div class="SelectLabel" rdxSelectLabel>Vegetables</div>
+                        <div class="SelectItem" rdxSelectItem value="aubergine">Aubergine</div>
+                        <div class="SelectItem" rdxSelectItem value="broccoli">Broccoli</div>
+                        <div class="SelectItem" rdxSelectItem value="carrot" disabled>Carrot</div>
+                        <div class="SelectItem" rdxSelectItem value="courgette">Courgette</div>
+                        <div class="SelectItem" rdxSelectItem value="leek">Leek</div>
+                    </div>
+
+                    <div class="SelectSeparator" rdxSelectSeparator></div>
+
+                    <div class="SelectGroup" rdxSelectGroup>
+                        <div class="SelectLabel" rdxSelectLabel>Meat</div>
+                        <div class="SelectItem" rdxSelectItem value="beef">Beef</div>
+                        <div class="SelectItem" rdxSelectItem value="chicken">Chicken</div>
+                        <div class="SelectItem" rdxSelectItem value="lamb">Lamb</div>
+                        <div class="SelectItem" rdxSelectItem value="pork">Pork</div>
+                    </div>
                 </div>
-            </div>
+            </span>
         `
     })
 };

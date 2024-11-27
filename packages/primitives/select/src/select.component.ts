@@ -20,15 +20,16 @@ import {
     ViewChild
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { defer, delay, merge, Observable, Subject, Subscription, switchMap, take } from 'rxjs';
+import { defer, delay, merge, Observable, Subscription, switchMap, take } from 'rxjs';
 import { RdxSelectContentDirective } from './select-content.directive';
 import { RdxSelectItemChange, RdxSelectItemDirective } from './select-item.directive';
+import { RdxSelectTriggerDirective } from './select-trigger.directive';
 
 let nextId = 0;
 
 @Component({
     standalone: true,
-    selector: '[rdxSelectRoot]',
+    selector: '[rdxSelect]',
     template: `
         <ng-content select="[rdxSelectTrigger]" />
 
@@ -40,32 +41,34 @@ let nextId = 0;
             (attach)="onAttached()"
             (backdropClick)="close()"
             (detach)="onDetach()"
-            cdk-connected-overlay
-            cdkConnectedOverlayLockPosition
+            cdkConnectedOverlay
         >
-            <div
-                #panel
-                (keydown)="handleKeydown($event)"
-            >
+            <div #panel>
                 <ng-content select="[rdxSelectContent]" />
             </div>
         </ng-template>
     `,
     host: {
         '(click)': 'toggle()',
-        '(keydown)': 'handleKeydown($event)'
+        '(keydown)': 'content.keyManager.onKeydown($event)'
     },
     imports: [
         OverlayModule
     ]
 })
-export class RdxSelectRootComponent implements OnInit, AfterContentInit {
+export class RdxSelectComponent implements OnInit, AfterContentInit {
     protected overlay = inject(Overlay);
     protected elementRef = inject(ElementRef);
     private readonly destroyRef = inject(DestroyRef);
     private readonly ngZone = inject(NgZone);
 
+    @ContentChild(RdxSelectTriggerDirective) protected trigger: RdxSelectTriggerDirective;
+
     @ContentChild(RdxSelectContentDirective) protected content: RdxSelectContentDirective;
+
+    @ContentChildren(RdxSelectItemDirective, { descendants: true }) items: QueryList<RdxSelectItemDirective>;
+
+    @ViewChild(CdkConnectedOverlay, { static: false }) overlayDir: CdkConnectedOverlay;
 
     /** Deals with the selection logic. */
     selectionModel: SelectionModel<RdxSelectItemDirective>;
@@ -107,19 +110,6 @@ export class RdxSelectRootComponent implements OnInit, AfterContentInit {
      * @ignore
      */
     readonly id: string = `rdx-select-${nextId++}`;
-
-    /**
-     * @ignore
-     */
-    readonly openCloseAllActions = new Subject<boolean>();
-
-    /**
-     * @private
-     * @ignore
-     */
-    @ContentChildren(RdxSelectItemDirective, { descendants: true }) items: QueryList<RdxSelectItemDirective>;
-
-    @ViewChild(CdkConnectedOverlay, { static: false }) overlayDir: CdkConnectedOverlay;
 
     /**
      * The value of the item to expand when initially rendered and type is "single". Use when you do not need to control the state of the items.
@@ -182,15 +172,12 @@ export class RdxSelectRootComponent implements OnInit, AfterContentInit {
             this.selectionModel.select(event.source);
 
             this.close();
+            this.trigger.focus();
         });
-    }
 
-    /**
-     * @ignore
-     */
-    handleKeydown(event: KeyboardEvent) {
-        console.log('this.keyManager.onKeydown(event);: ');
-        this.content.keyManager.onKeydown(event);
+        this.content.keyManager.tabOut.subscribe(() => {
+            if (this.open) this.close();
+        });
     }
 
     /**
@@ -204,6 +191,7 @@ export class RdxSelectRootComponent implements OnInit, AfterContentInit {
     }
 
     onDetach() {
+        this.close();
         this.closeSubscription.unsubscribe();
     }
 
@@ -229,9 +217,6 @@ export class RdxSelectRootComponent implements OnInit, AfterContentInit {
     }
 
     private closingActions() {
-        return merge(
-            this.overlayDir.overlayRef!.outsidePointerEvents(),
-            this.overlayDir.overlayRef!.detachments()
-        );
+        return merge(this.overlayDir.overlayRef!.outsidePointerEvents(), this.overlayDir.overlayRef!.detachments());
     }
 }
