@@ -1,7 +1,6 @@
 # Radix Angular
 
 [![downloads](https://img.shields.io/npm/dm/@radix-ng/primitives.svg?style=flat-round)](https://www.npmjs.com/package/@radix-ng/primitives)
-[![downloads](https://img.shields.io/npm/dm/@radix-ng/shadcn.svg?style=flat-round)](https://www.npmjs.com/package/@radix-ng/shadcn)
 [![Discord Chat](https://img.shields.io/discord/1231525968586346567.svg?color=5865F2&logo=discord&logoColor=FFFFFF)](https://discord.gg/NaJb2XRWX9)
 
 > This version is not yet stable.
@@ -38,12 +37,16 @@ Storybook [sb-primitives.radix-ng.com](https://sb-primitives.radix-ng.com/)
 ```angular2html
 .
 ├── apps
-│   ├── shadcn-docs        (docs for shadcn/ui, based on ng-doc)
-│   └── showcase-taxonomy  (AnalogJS showcase Taxonomy app)
+│   ├── radix-docs         (documentation based on Astro)
+│   ├── radix-ssr-testing  (SSR test for unstyle primitives)
+│   ├── shadcn-docs        (docs for shadcn/ui, based on ng-doc, just for usage example)
+│   ├── showcase-taxonomy  (AnalogJS showcase Taxonomy app)
+│   └── storybook-radix
+│
 └── packages
-├── components         (components based on primitives with custom styling)
-├── shadcn             (shadcn/ui port)
-└── primitives         (headless primitives UI without any styling)
+    ├── components         (components based on primitives with custom styling)
+    ├── shadcn             (shadcn/ui just for usage example)
+    └── primitives         (headless primitives UI without any styling)
 ```
 
 ## Roadmap
