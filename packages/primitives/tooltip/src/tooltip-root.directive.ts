@@ -49,12 +49,12 @@ export class RdxTooltipRootDirective implements OnInit {
     readonly tooltipConfig = injectTooltipConfig();
 
     readonly defaultOpen = input<boolean>(false);
-    readonly open = input<boolean>(this.defaultOpen());
+    readonly open = input<boolean | undefined>();
     readonly delayDuration = input<number>(this.tooltipConfig.delayDuration);
     readonly disableHoverableContent = input<boolean>(this.tooltipConfig.disableHoverableContent ?? false);
     readonly onOpenChange = output<boolean>();
 
-    readonly isOpen = signal<boolean>(this.open());
+    readonly isOpen = signal<boolean>(this.defaultOpen());
     readonly isOpenDelayed = signal<boolean>(true);
     readonly wasOpenDelayed = signal<boolean>(false);
     readonly state = computed<RdxTooltipState>(() => {
