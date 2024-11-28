@@ -7,6 +7,7 @@ import { RdxTooltipRootDirective } from '../src/tooltip-root.directive';
 import { RdxTooltipTriggerDirective } from '../src/tooltip-trigger.directive';
 import { RdxTooltipEventsComponent } from './tooltip-events.components';
 import { RdxTooltipPositioningComponent } from './tooltip-positioning.component';
+import { RdxTooltipTriggeringComponent } from './tooltip-triggering.component';
 
 export default {
     title: 'Primitives/Tooltip [In Progress]',
@@ -19,7 +20,8 @@ export default {
                 RdxTooltipTriggerDirective,
                 RdxTooltipContentAttributesDirective,
                 RdxTooltipEventsComponent,
-                RdxTooltipPositioningComponent
+                RdxTooltipPositioningComponent,
+                RdxTooltipTriggeringComponent
             ],
             providers: [provideAnimations()]
         }),
@@ -187,6 +189,20 @@ export const Positioning: Story = {
                 data-scaling="100%"
             >
                 <rdx-tooltip-positioning></rdx-tooltip-positioning>
+            </div>
+        `
+    })
+};
+
+export const ExternalTriggering: Story = {
+    render: () => ({
+        template: `
+            <div class="radix-themes light light-theme radix-themes-default-fonts"
+                data-accent-color="indigo"
+                data-radius="medium"
+                data-scaling="100%"
+            >
+                <rdx-tooltip-triggering></rdx-tooltip-triggering>
             </div>
         `
     })

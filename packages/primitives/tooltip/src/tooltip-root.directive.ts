@@ -75,14 +75,21 @@ export class RdxTooltipRootDirective implements OnInit {
     private overlayRef?: OverlayRef;
     private instance?: ViewRef;
     private portal: TemplatePortal<unknown>;
+    private isControlledExternally = false;
 
     ngOnInit(): void {
         if (this.defaultOpen()) {
             this.handleOpen();
         }
+
+        this.isControlledExternally = this.open() !== undefined;
     }
 
     onTriggerEnter(): void {
+        if (this.isControlledExternally) {
+            return;
+        }
+
         if (this.isOpenDelayed()) {
             this.handleDelayedOpen();
         } else {
@@ -109,11 +116,19 @@ export class RdxTooltipRootDirective implements OnInit {
     }
 
     handleOpen(): void {
+        if (this.isControlledExternally) {
+            return;
+        }
+
         this.wasOpenDelayed.set(false);
         this.setOpen(true);
     }
 
     handleClose(): void {
+        if (this.isControlledExternally) {
+            return;
+        }
+
         window.clearTimeout(this.openTimer);
         this.setOpen(false);
     }
@@ -215,6 +230,10 @@ export class RdxTooltipRootDirective implements OnInit {
     }
 
     private hide(): void {
+        if (this.isControlledExternally && this.open()) {
+            return;
+        }
+
         asyncScheduler.schedule(() => {
             this.instance?.destroy();
         }, this.tooltipConfig.hideDelayDuration ?? 0);
@@ -251,5 +270,16 @@ export class RdxTooltipRootDirective implements OnInit {
 
             this.overlayRef.updatePositionStrategy(positionStrategy);
         }
+    });
+
+    private readonly onOpenChangeEffect = effect(() => {
+        const currentOpen = this.open();
+        this.isControlledExternally = currentOpen !== undefined;
+
+        untracked(() => {
+            if (this.isControlledExternally) {
+                this.setOpen(currentOpen);
+            }
+        });
     });
 }
