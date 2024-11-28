@@ -6,14 +6,10 @@ import { RdxSelectComponent } from '@radix-ng/primitives/select';
     standalone: true,
     exportAs: 'rdxSelectValue',
     template: `
-        @if (select.selectionModel.isEmpty()) {
-            {{ placeholder }}
-        } @else {
-            {{ select.selected }}
-        }
+        {{ select.selectionModel.isEmpty() ? placeholder : select.selected }}
     `
 })
-export class RdxSelectValue {
+export class RdxSelectValueDirective {
     select = inject(RdxSelectComponent);
 
     @Input() placeholder: string;

@@ -1,11 +1,11 @@
 import { Directive } from '@angular/core';
 
 @Directive({
-    selector: '[rdxSelectItemIndicator]',
+    selector: '[rdxSelectIcon]',
     standalone: true,
-    exportAs: 'rdxSelectItemIndicator',
+    exportAs: 'rdxSelectIcon',
     host: {
         '[attr.aria-hidden]': 'true'
     }
 })
-export class RdxSelectItemIndicatorDirective {}
+export class RdxSelectIconDirective {}

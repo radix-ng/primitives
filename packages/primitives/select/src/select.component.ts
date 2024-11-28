@@ -5,6 +5,7 @@ import { CdkConnectedOverlay, ConnectedPosition, Overlay, OverlayModule } from '
 import {
     AfterContentInit,
     booleanAttribute,
+    ChangeDetectorRef,
     Component,
     ContentChild,
     ContentChildren,
@@ -43,9 +44,7 @@ let nextId = 0;
             (detach)="onDetach()"
             cdkConnectedOverlay
         >
-            <div #panel>
-                <ng-content select="[rdxSelectContent]" />
-            </div>
+            <ng-content select="[rdxSelectContent]" />
         </ng-template>
     `,
     host: {
@@ -59,6 +58,7 @@ let nextId = 0;
 export class RdxSelectComponent implements OnInit, AfterContentInit {
     protected overlay = inject(Overlay);
     protected elementRef = inject(ElementRef);
+    protected changeDetectorRef = inject(ChangeDetectorRef);
     private readonly destroyRef = inject(DestroyRef);
     private readonly ngZone = inject(NgZone);
 
@@ -99,7 +99,7 @@ export class RdxSelectComponent implements OnInit, AfterContentInit {
     /**
      * @ignore
      */
-    protected readonly dir = inject(Directionality, { optional: true });
+    readonly dir = inject(Directionality, { optional: true });
 
     /**
      * @ignore
@@ -130,19 +130,23 @@ export class RdxSelectComponent implements OnInit, AfterContentInit {
      * The controlled value of the item to expand
      */
     @Input()
-    set value(value: string) {}
+    set value(value: string) {
+        if (this._value !== value) {
+            this._value = value;
 
-    get value(): string[] | string {
-        if (this._value === undefined) {
-            return this.defaultValue;
+            this.selectValue(value);
+
+            this.changeDetectorRef.markForCheck();
         }
-
-        return this._value;
     }
 
-    private _value?: string[];
+    get value(): string | null {
+        return this._value ?? this.defaultValue;
+    }
 
-    @Output() readonly onValueChange: EventEmitter<void> = new EventEmitter<void>();
+    private _value?: string;
+
+    @Output() readonly onValueChange: EventEmitter<string> = new EventEmitter<string>();
 
     @Output() readonly onOpenChange: EventEmitter<void> = new EventEmitter<void>();
 
@@ -163,9 +167,17 @@ export class RdxSelectComponent implements OnInit, AfterContentInit {
 
     ngOnInit() {
         this.selectionModel = new SelectionModel();
+
+        this.selectionModel.changed.subscribe((changes) => {
+            if (changes.added.length) {
+                this.onValueChange.emit(this.selectionModel.selected[0].value);
+            }
+        });
     }
 
     ngAfterContentInit() {
+        this.selectDefaultValue();
+
         this.optionSelectionChanges.subscribe((event) => {
             this.selectionModel.clear();
 
@@ -214,6 +226,24 @@ export class RdxSelectComponent implements OnInit, AfterContentInit {
 
     updateActiveItem(item: RdxSelectItemDirective) {
         this.content.keyManager.updateActiveItem(item);
+    }
+
+    private selectDefaultValue(): void {
+        if (!this.defaultValue) return;
+
+        this.selectValue(this.defaultValue);
+    }
+
+    private selectValue(value: string): void {
+        const option = this.content?.options.find((option) => option.value === value);
+
+        if (option) {
+            option.selected = true;
+            option.highlighted = true;
+
+            this.selectionModel.select(option);
+            this.updateActiveItem(option);
+        }
     }
 
     private closingActions() {

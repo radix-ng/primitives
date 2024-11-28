@@ -3,12 +3,13 @@ import {
     RdxSelectComponent,
     RdxSelectContentDirective,
     RdxSelectGroupDirective,
+    RdxSelectIconDirective,
     RdxSelectItemDirective,
     RdxSelectItemIndicatorDirective,
     RdxSelectLabelDirective,
     RdxSelectSeparatorDirective,
     RdxSelectTriggerDirective,
-    RdxSelectValue
+    RdxSelectValueDirective
 } from '@radix-ng/primitives/select';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { ChevronDown, LucideAngularModule } from 'lucide-angular';
@@ -29,7 +30,8 @@ export default {
                 BrowserAnimationsModule,
                 RdxSelectContentDirective,
                 RdxSelectTriggerDirective,
-                RdxSelectValue,
+                RdxSelectValueDirective,
+                RdxSelectIconDirective,
                 LucideAngularModule,
                 LucideAngularModule.pick({ ChevronDown })
             ],
@@ -155,12 +157,10 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: html`
-            <span class="SelectRoot" rdxSelect>
+            <span rdxSelect>
                 <button class="SelectTrigger" rdxSelectTrigger>
                     <span rdxSelectValue placeholder="Select a fruit…"></span>
-                    <span class="SelectIcon" rdxSelectIcon>
-                        <lucide-icon class="SelectIcon" aria-hidden size="16" name="chevron-down" />
-                    </span>
+                    <lucide-icon class="SelectIcon" size="16" name="chevron-down" rdxSelectIcon />
                 </button>
                 <div class="SelectContent" rdxSelectContent>
                     <div class="SelectGroup" rdxSelectGroup>

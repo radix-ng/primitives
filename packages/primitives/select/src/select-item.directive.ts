@@ -16,8 +16,10 @@ export class RdxSelectItemChange<T = RdxSelectItemDirective> {
     standalone: true,
     exportAs: 'rdxSelectItem',
     host: {
+        '[attr.role]': '"option"',
         '[attr.data-state]': 'dataState',
-        '[attr.data-disabled]': 'disabled',
+        '[attr.aria-selected]': 'selected',
+        '[attr.data-disabled]': 'disabled || null',
         '[attr.data-highlighted]': 'highlighted || null',
         '[attr.tabindex]': '-1',
         '(focus)': 'content.highlighted.next(this)',
@@ -35,7 +37,7 @@ export class RdxSelectItemDirective implements Highlightable {
     highlighted: boolean = false;
 
     get dataState(): string {
-        return 'checked' || 'unchecked';
+        return this.selected ? 'checked' : 'unchecked';
     }
 
     /**

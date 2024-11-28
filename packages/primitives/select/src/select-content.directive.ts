@@ -3,13 +3,15 @@ import { Directionality } from '@angular/cdk/bidi';
 import { AfterContentInit, ContentChildren, DestroyRef, Directive, inject, QueryList } from '@angular/core';
 import { pairwise, startWith, Subject } from 'rxjs';
 import { RdxSelectItemDirective } from './select-item.directive';
+import { RdxSelectComponent } from './select.component';
 
 @Directive({
     selector: '[rdxSelectContent]',
     standalone: true,
     exportAs: 'rdxSelectContent',
     host: {
-        '[attr.data-state]': 'true',
+        '[attr.role]': '"listbox"',
+        '[attr.data-state]': "select.open ? 'open': 'closed'",
         '[attr.data-side]': 'true',
         '[attr.data-align]': 'true',
         '(keydown)': 'keyManager.onKeydown($event)'
@@ -18,6 +20,7 @@ import { RdxSelectItemDirective } from './select-item.directive';
 export class RdxSelectContentDirective implements AfterContentInit {
     protected readonly destroyRef = inject(DestroyRef);
     protected readonly dir = inject(Directionality, { optional: true });
+    protected select = inject(RdxSelectComponent);
 
     readonly highlighted = new Subject<RdxSelectItemDirective>();
 
