@@ -165,7 +165,7 @@ import { RdxTooltipTriggerDirective } from '../src/tooltip-trigger.directive';
     `
 })
 export class RdxTooltipTriggeringComponent {
-    isOpen = signal(true);
+    isOpen = signal(false);
     counter = signal(0);
 
     trigger(): void {
