@@ -1,5 +1,5 @@
 import { Component, inject, Input } from '@angular/core';
-import { RdxSelectComponent } from '@radix-ng/primitives/select';
+import { RdxSelectComponent } from './select.component';
 
 @Component({
     selector: '[rdxSelectValue]',
