@@ -1,0 +1,68 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/blocks';
+import * as SelectStories from './select.stories';
+import { RdxSelectComponent } from '../src/select.component';
+import { RdxSelectItemDirective } from '../src/select-item.directive';
+import { RdxSelectTriggerDirective } from '../src/select-trigger.directive';
+import { RdxSelectContentDirective } from '../src/select-content.directive';
+
+<Meta title="Primitives/Select" />
+
+# Select
+
+#### A vertically stacked set of interactive headings that each reveal an associated section of content.
+
+## Single
+
+<Canvas sourceState="hidden" of={SelectStories.Default} />
+
+## Features
+
+- ✅ Can be controlled or uncontrolled.
+- ✅ Offers 2 positioning modes.
+- ✅ Supports items, labels, groups of items.
+- ✅ Focus is fully managed.
+- ✅ Full keyboard navigation.
+- ✅ Supports custom placeholder.
+- ✅ Typeahead support.
+- ✅ Supports Right to Left direction.
+
+## Anatomy
+
+```html
+<div rdxSelectRoot>
+    <div rdxSelectContent>
+        <div rdxSelectItem></div>
+    </div>
+</div>
+```
+
+## Import
+
+Get started with importing the directives:
+
+```typescript
+import {
+  RdxAccordionRootDirective,
+  RdxAccordionItemDirective,
+  RdxAccordionTriggerDirective,
+  RdxAccordionContentDirective
+} from '@radix-ng/primitives/select';
+```
+
+## API Reference
+
+## RdxSelectComponent
+
+<ArgTypes of={RdxSelectComponent} />
+
+## RdxSelectItemDirective
+
+<ArgTypes of={RdxSelectItemDirective} />
+
+## RdxSelectTriggerDirective
+
+<ArgTypes of={RdxSelectTriggerDirective} />
+
+## RdxSelectContentDirective
+
+<ArgTypes of={RdxSelectContentDirective} />
