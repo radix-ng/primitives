@@ -29,12 +29,14 @@ export class RdxSelectItemChange<T = RdxSelectItemDirective> {
     }
 })
 export class RdxSelectItemDirective implements Highlightable {
-    protected readonly root = inject(RdxSelectComponent);
+    protected readonly select = inject(RdxSelectComponent);
     protected readonly content = inject(RdxSelectContentDirective);
     readonly onSelectionChange = new EventEmitter<RdxSelectItemChange>();
     protected readonly nativeElement = inject(ElementRef).nativeElement;
 
     highlighted: boolean = false;
+
+    selected: boolean;
 
     get dataState(): string {
         return this.selected ? 'checked' : 'unchecked';
@@ -71,8 +73,6 @@ export class RdxSelectItemDirective implements Highlightable {
 
     private _disabled: boolean;
 
-    selected: boolean;
-
     get viewValue(): string {
         return this.textValue ?? this.nativeElement.textContent;
     }
@@ -87,7 +87,7 @@ export class RdxSelectItemDirective implements Highlightable {
 
     /** Gets the label to be used when determining whether the option should be focused. */
     getLabel(): string {
-        return this.value;
+        return this.viewValue;
     }
 
     /**
@@ -124,7 +124,7 @@ export class RdxSelectItemDirective implements Highlightable {
     protected onPointerMove(): void {
         if (!this.highlighted) {
             this.nativeElement.focus({ preventScroll: true });
-            this.root.updateActiveItem(this);
+            this.select.updateActiveItem(this);
         }
     }
 }

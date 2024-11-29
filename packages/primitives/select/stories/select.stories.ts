@@ -12,7 +12,7 @@ import {
     RdxSelectValueDirective
 } from '@radix-ng/primitives/select';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { ChevronDown, LucideAngularModule } from 'lucide-angular';
+import { CheckIcon, ChevronDown, LucideAngularModule } from 'lucide-angular';
 
 const html = String.raw;
 
@@ -33,7 +33,7 @@ export default {
                 RdxSelectValueDirective,
                 RdxSelectIconDirective,
                 LucideAngularModule,
-                LucideAngularModule.pick({ ChevronDown })
+                LucideAngularModule.pick({ ChevronDown, CheckIcon })
             ],
             providers: [provideAnimations()]
         }),
@@ -155,7 +155,48 @@ button {
 type Story = StoryObj;
 
 export const Default: Story = {
-    render: () => ({
+    args: {
+        foodGroups: [
+            {
+                label: 'Fruits',
+                foods: [
+                    { value: 'apple', label: 'Apple' },
+                    { value: 'banana', label: 'Banana' },
+                    { value: 'blueberry', label: 'Blueberry' },
+                    { value: 'grapes', label: 'Grapes' },
+                    { value: 'pineapple', label: 'Pineapple' }
+                ]
+            },
+            {
+                label: 'Vegetables',
+                foods: [
+                    { value: 'aubergine', label: 'Aubergine' },
+                    { value: 'broccoli', label: 'Broccoli' },
+                    { value: 'carrot', label: 'Carrot', disabled: true },
+                    { value: 'courgette', label: 'Courgette' },
+                    { value: 'leek', label: 'Leek' }
+                ]
+            },
+            {
+                label: 'Meat',
+                foods: [
+                    { value: 'beef', label: 'Beef' },
+                    { value: 'beef-with-sauce', label: 'Beef with sauce' },
+                    { value: 'chicken', label: 'Chicken' },
+                    { value: 'lamb', label: 'Lamb' },
+                    { value: 'pork', label: 'Pork' }
+                ]
+            },
+            {
+                foods: [
+                    { value: 'candies', label: 'Candies' },
+                    { value: 'chocolates', label: 'Chocolates' }
+                ]
+            }
+        ]
+    },
+    render: (args) => ({
+        props: args,
         template: html`
             <span rdxSelect>
                 <button class="SelectTrigger" rdxSelectTrigger>
@@ -163,35 +204,24 @@ export const Default: Story = {
                     <lucide-icon class="SelectIcon" size="16" name="chevron-down" rdxSelectIcon />
                 </button>
                 <div class="SelectContent" rdxSelectContent>
+                    @for (group of foodGroups; track item; let last = $last) {
                     <div class="SelectGroup" rdxSelectGroup>
-                        <div class="SelectLabel" rdxSelectLabel>Fruits</div>
-                        <div class="SelectItem" rdxSelectItem value="apple">Apple</div>
-                        <div class="SelectItem" rdxSelectItem value="banana">Banana</div>
-                        <div class="SelectItem" rdxSelectItem value="blueberry">Blueberry</div>
-                        <div class="SelectItem" rdxSelectItem value="grapes">Grapes</div>
-                        <div class="SelectItem" rdxSelectItem value="pineapple">Pineapple</div>
+                        <div class="SelectLabel" rdxSelectLabel>{{ group.label }}</div>
+                        @for (food of group.foods; track food) {
+                        <div class="SelectItem" rdxSelectItem [value]="food.value" [disabled]="food.disabled">
+                            <lucide-icon
+                                class="SelectItemIndicator"
+                                rdxSelectItemIndicator
+                                size="16"
+                                name="check-icon"
+                            />
+                            {{ food.label }}
+                        </div>
+                        }
                     </div>
-
+                    @if (!last) {
                     <div class="SelectSeparator" rdxSelectSeparator></div>
-
-                    <div class="SelectGroup" rdxSelectGroup>
-                        <div class="SelectLabel" rdxSelectLabel>Vegetables</div>
-                        <div class="SelectItem" rdxSelectItem value="aubergine">Aubergine</div>
-                        <div class="SelectItem" rdxSelectItem value="broccoli">Broccoli</div>
-                        <div class="SelectItem" rdxSelectItem value="carrot" disabled>Carrot</div>
-                        <div class="SelectItem" rdxSelectItem value="courgette">Courgette</div>
-                        <div class="SelectItem" rdxSelectItem value="leek">Leek</div>
-                    </div>
-
-                    <div class="SelectSeparator" rdxSelectSeparator></div>
-
-                    <div class="SelectGroup" rdxSelectGroup>
-                        <div class="SelectLabel" rdxSelectLabel>Meat</div>
-                        <div class="SelectItem" rdxSelectItem value="beef">Beef</div>
-                        <div class="SelectItem" rdxSelectItem value="chicken">Chicken</div>
-                        <div class="SelectItem" rdxSelectItem value="lamb">Lamb</div>
-                        <div class="SelectItem" rdxSelectItem value="pork">Pork</div>
-                    </div>
+                    } }
                 </div>
             </span>
         `

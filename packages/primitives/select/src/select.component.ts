@@ -75,7 +75,7 @@ export class RdxSelectComponent implements OnInit, AfterContentInit {
 
     /**
      * This position config ensures that the top "start" corner of the overlay
-     * is aligned with with the top "start" of the origin by default (overlapping
+     * is aligned with the top "start" of the origin by default (overlapping
      * the trigger completely). If the panel cannot fit below the trigger, it
      * will fall back to a position above the trigger.
      */
@@ -111,9 +111,6 @@ export class RdxSelectComponent implements OnInit, AfterContentInit {
      */
     readonly id: string = `rdx-select-${nextId++}`;
 
-    /**
-     * The value of the item to expand when initially rendered and type is "single". Use when you do not need to control the state of the items.
-     */
     @Input() defaultValue: string;
     @Input() name: string;
 
@@ -148,7 +145,7 @@ export class RdxSelectComponent implements OnInit, AfterContentInit {
 
     @Output() readonly onValueChange: EventEmitter<string> = new EventEmitter<string>();
 
-    @Output() readonly onOpenChange: EventEmitter<void> = new EventEmitter<void>();
+    @Output() readonly onOpenChange: EventEmitter<boolean> = new EventEmitter<boolean>();
 
     readonly optionSelectionChanges: Observable<RdxSelectItemChange> = defer(() => {
         if (this.content.options) {
@@ -166,11 +163,15 @@ export class RdxSelectComponent implements OnInit, AfterContentInit {
     }
 
     ngOnInit() {
-        this.selectionModel = new SelectionModel();
+        this.selectionModel = new SelectionModel<RdxSelectItemDirective>();
 
         this.selectionModel.changed.subscribe((changes) => {
             if (changes.added.length) {
                 this.onValueChange.emit(this.selectionModel.selected[0].value);
+            }
+
+            if (changes.removed.length) {
+                changes.removed.forEach((item) => (item.selected = false));
             }
         });
     }
@@ -190,6 +191,10 @@ export class RdxSelectComponent implements OnInit, AfterContentInit {
         this.content.keyManager.tabOut.subscribe(() => {
             if (this.open) this.close();
         });
+
+        if (this.defaultOpen) {
+            this.openPanel();
+        }
     }
 
     /**
@@ -218,10 +223,14 @@ export class RdxSelectComponent implements OnInit, AfterContentInit {
 
     openPanel() {
         this.open = true;
+
+        this.onOpenChange.emit(this.open);
     }
 
     close() {
         this.open = false;
+
+        this.onOpenChange.emit(this.open);
     }
 
     updateActiveItem(item: RdxSelectItemDirective) {
