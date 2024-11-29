@@ -45,7 +45,8 @@ const docsConfig = {
                     section: 'Overview',
                     pages: [
                         { name: 'Introduction', url: '/primitives/overview/introduction' },
-                        { name: 'Getting started', url: '/primitives/overview/getting-started' }
+                        { name: 'Getting started', url: '/primitives/overview/getting-started' },
+                        { name: 'Contribute', url: '/primitives/overview/contribute' }
                     ]
                 },
                 {
