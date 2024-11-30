@@ -2,7 +2,7 @@
     "name": "@radix-ng/themer",
     "version": "0.0.1",
     "dependencies": {
-        "tailwind-variants": "^0.2.1",
+        "tailwind-variants": "^0.3.0",
         "tslib": "^2.3.0"
     },
     "devDependencies": {
