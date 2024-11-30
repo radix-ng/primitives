@@ -7,6 +7,12 @@ import { RdxSelectComponent } from './select.component';
     exportAs: 'rdxSelectValue',
     template: `
         {{ select.selectionModel.isEmpty() ? placeholder : select.selected }}
+    `,
+    styles: `
+        /* we don't want events from the children to bubble through the item they came from */
+        :host {
+            pointer-events: none;
+        }
     `
 })
 export class RdxSelectValueDirective {
