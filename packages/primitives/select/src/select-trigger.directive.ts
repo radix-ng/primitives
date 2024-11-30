@@ -9,7 +9,7 @@ import { RdxSelectComponent } from './select.component';
         '[attr.type]': '"button"',
         '[attr.role]': '"combobox"',
         '[attr.aria-autocomplete]': '"none"',
-        '[attr.dir]': 'select.dir',
+        '[attr.dir]': 'select.dir.value',
         '[attr.aria-expanded]': 'select.open',
         '[attr.aria-required]': 'select.required',
 
