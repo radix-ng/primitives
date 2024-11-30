@@ -58,7 +58,7 @@ const docsConfig = {
                     section: 'Components',
                     pages: [
                         { name: 'Accordion', url: '/primitives/components/accordion' },
-                        { name: 'Aspect Ratio', url: '/primitives/components/aspect-ratio', label: 'New' },
+                        { name: 'Aspect Ratio', url: '/primitives/components/aspect-ratio' },
                         { name: 'Avatar', url: '/primitives/components/avatar' },
                         { name: 'Collapsible', url: '/primitives/components/collapsible' },
                         { name: 'Dialog', url: '/primitives/components/dialog' },
@@ -66,7 +66,7 @@ const docsConfig = {
                         { name: 'Label', url: '/primitives/components/label' },
                         { name: 'Progress', url: '/primitives/components/progress' },
                         { name: 'Separator', url: '/primitives/components/separator' },
-                        { name: 'Select', url: '/primitives/components/select' }
+                        { name: 'Select', url: '/primitives/components/select', label: 'New' }
                     ]
                 }
             ]

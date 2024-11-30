@@ -1,4 +1,3 @@
-import { NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import {
     RdxCollapsibleContentDirective,
@@ -14,8 +13,7 @@ import { LucideAngularModule, UnfoldVertical, X } from 'lucide-angular';
         RdxCollapsibleRootDirective,
         RdxCollapsibleTriggerDirective,
         RdxCollapsibleContentDirective,
-        LucideAngularModule,
-        NgIf
+        LucideAngularModule
     ],
     template: `
         <div class="CollapsibleRoot" #collapsibleRoot="collapsibleRoot" [open]="true" rdxCollapsibleRoot>
