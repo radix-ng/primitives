@@ -14,6 +14,10 @@ export const appRoutes: Route[] = [
         loadComponent: () => import('./components/collapsible/collapsible.component')
     },
     {
+        path: 'select',
+        loadComponent: () => import('./components/select/select.component')
+    },
+    {
         path: 'tabs',
         loadComponent: () => import('./components/tabs/tabs.component')
     }

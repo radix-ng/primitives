@@ -116,7 +116,7 @@ export class RdxSelectComponent implements OnInit, AfterContentInit {
 
     @Input({ transform: booleanAttribute }) defaultOpen: boolean;
 
-    @Input({ transform: booleanAttribute }) open: boolean;
+    @Input({ transform: booleanAttribute }) open: boolean = false;
 
     /** Whether the Select is disabled. */
     @Input({ transform: booleanAttribute }) disabled: boolean;
