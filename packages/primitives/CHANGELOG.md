@@ -1,3 +1,15 @@
+## 0.17.0 (2024-11-30)
+
+### 🚀 Features
+
+- **primitives:** added Select ([#146](https://github.com/radix-ng/primitives/pull/146))
+- **checkbox:** replace cdk visual hidden to hostDirective ([77e4c34](https://github.com/radix-ng/primitives/commit/77e4c34))
+
+### ❤️ Thank You
+
+- lskramarov
+- Oleg Pimenov
+
 ## 0.16.0 (2024-11-08)
 
 

@@ -1,6 +1,6 @@
 {
     "name": "@radix-ng/shadcn",
-    "version": "0.8.7",
+    "version": "0.8.8",
     "license": "MIT",
     "publishConfig": {
         "access": "public"
