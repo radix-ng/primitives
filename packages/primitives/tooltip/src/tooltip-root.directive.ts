@@ -21,7 +21,7 @@ import {
     ViewRef
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { asyncScheduler, filter } from 'rxjs';
+import { asyncScheduler, filter, take } from 'rxjs';
 import { RdxTooltipContentToken } from './tooltip-content.token';
 import { RdxTooltipTriggerDirective } from './tooltip-trigger.directive';
 import { injectTooltipConfig } from './tooltip.config';
@@ -207,7 +207,7 @@ export class RdxTooltipRootDirective implements OnInit {
 
         this.overlayRef
             .detachments()
-            .pipe(takeUntilDestroyed(this.destroyRef))
+            .pipe(take(1), takeUntilDestroyed(this.destroyRef))
             .subscribe(() => this.detach());
 
         this.handleOverlayKeydown();
