@@ -1,21 +1,13 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RdxTooltipArrowDirective } from '../src/tooltip-arrow.directive';
-import { RdxTooltipContentAttributesDirective } from '../src/tooltip-content-attributes.directive';
-import { RdxTooltipContentDirective } from '../src/tooltip-content.directive';
-import { RdxTooltipRootDirective } from '../src/tooltip-root.directive';
-import { RdxTooltipTriggerDirective } from '../src/tooltip-trigger.directive';
+import { RdxTooltipModule } from '../index';
 
 @Component({
     selector: 'rdx-tooltip-triggering',
     standalone: true,
     imports: [
         FormsModule,
-        RdxTooltipRootDirective,
-        RdxTooltipTriggerDirective,
-        RdxTooltipContentDirective,
-        RdxTooltipArrowDirective,
-        RdxTooltipContentAttributesDirective
+        RdxTooltipModule
     ],
     styles: `
         .container {

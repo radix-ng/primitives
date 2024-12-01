@@ -1,10 +1,6 @@
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { RdxTooltipArrowDirective } from '../src/tooltip-arrow.directive';
-import { RdxTooltipContentAttributesDirective } from '../src/tooltip-content-attributes.directive';
-import { RdxTooltipContentDirective } from '../src/tooltip-content.directive';
-import { RdxTooltipRootDirective } from '../src/tooltip-root.directive';
-import { RdxTooltipTriggerDirective } from '../src/tooltip-trigger.directive';
+import { RdxTooltipModule } from '../index';
 import { RdxTooltipEventsComponent } from './tooltip-events.components';
 import { RdxTooltipPositioningComponent } from './tooltip-positioning.component';
 import { RdxTooltipTriggeringComponent } from './tooltip-triggering.component';
@@ -14,11 +10,7 @@ export default {
     decorators: [
         moduleMetadata({
             imports: [
-                RdxTooltipArrowDirective,
-                RdxTooltipContentDirective,
-                RdxTooltipRootDirective,
-                RdxTooltipTriggerDirective,
-                RdxTooltipContentAttributesDirective,
+                RdxTooltipModule,
                 RdxTooltipEventsComponent,
                 RdxTooltipPositioningComponent,
                 RdxTooltipTriggeringComponent
