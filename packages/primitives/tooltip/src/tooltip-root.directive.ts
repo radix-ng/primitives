@@ -1,5 +1,6 @@
 import { ConnectedPosition, Overlay, OverlayRef, PositionStrategy } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import {
     computed,
     contentChild,
@@ -13,6 +14,7 @@ import {
     input,
     OnInit,
     output,
+    PLATFORM_ID,
     signal,
     untracked,
     ViewContainerRef,
@@ -46,6 +48,8 @@ export class RdxTooltipRootDirective implements OnInit {
     private readonly viewContainerRef = inject(ViewContainerRef);
     private readonly destroyRef = inject(DestroyRef);
     private readonly overlay = inject(Overlay);
+    private readonly platformId = inject(PLATFORM_ID);
+    private readonly document = inject(DOCUMENT);
     readonly tooltipConfig = injectTooltipConfig();
 
     readonly defaultOpen = input<boolean>(false);
@@ -98,21 +102,23 @@ export class RdxTooltipRootDirective implements OnInit {
     }
 
     onTriggerLeave(): void {
-        window.clearTimeout(this.openTimer);
+        this.clearTimeout(this.openTimer);
         this.handleClose();
     }
 
     onOpen(): void {
-        window.clearTimeout(this.skipDelayTimer);
+        this.clearTimeout(this.skipDelayTimer);
         this.isOpenDelayed.set(false);
     }
 
     onClose(): void {
-        window.clearTimeout(this.skipDelayTimer);
+        this.clearTimeout(this.skipDelayTimer);
 
-        this.skipDelayTimer = window.setTimeout(() => {
-            this.isOpenDelayed.set(true);
-        }, this.tooltipConfig.skipDelayDuration);
+        if (isPlatformBrowser(this.platformId)) {
+            this.skipDelayTimer = window.setTimeout(() => {
+                this.isOpenDelayed.set(true);
+            }, this.tooltipConfig.skipDelayDuration);
+        }
     }
 
     handleOpen(): void {
@@ -129,7 +135,7 @@ export class RdxTooltipRootDirective implements OnInit {
             return;
         }
 
-        window.clearTimeout(this.openTimer);
+        this.clearTimeout(this.openTimer);
         this.setOpen(false);
     }
 
@@ -165,19 +171,21 @@ export class RdxTooltipRootDirective implements OnInit {
     }
 
     private handleDelayedOpen(): void {
-        window.clearTimeout(this.openTimer);
+        this.clearTimeout(this.openTimer);
 
-        this.openTimer = window.setTimeout(() => {
-            this.wasOpenDelayed.set(true);
-            this.setOpen(true);
-        }, this.delayDuration());
+        if (isPlatformBrowser(this.platformId)) {
+            this.openTimer = window.setTimeout(() => {
+                this.wasOpenDelayed.set(true);
+                this.setOpen(true);
+            }, this.delayDuration());
+        }
     }
 
     private setOpen(open = false): void {
         if (open) {
             this.onOpen();
 
-            document.dispatchEvent(new CustomEvent('tooltip.open'));
+            this.document.dispatchEvent(new CustomEvent('tooltip.open'));
         } else {
             this.onClose();
         }
@@ -248,6 +256,12 @@ export class RdxTooltipRootDirective implements OnInit {
                 connectedPosition
             ])
             .withLockedPosition();
+    }
+
+    private clearTimeout(timeoutId: number): void {
+        if (isPlatformBrowser(this.platformId)) {
+            window.clearTimeout(timeoutId);
+        }
     }
 
     private readonly onIsOpenChangeEffect = effect(() => {
