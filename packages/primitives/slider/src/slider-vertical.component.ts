@@ -1,4 +1,4 @@
-import { Component, computed, EventEmitter, Input, Output, signal, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, EventEmitter, Input, Output, signal, viewChild } from '@angular/core';
 import { RdxSliderImplDirective } from './slider-impl.directive';
 import { BACK_KEYS, linearScale } from './utils';
 
@@ -8,8 +8,10 @@ import { BACK_KEYS, linearScale } from './utils';
     imports: [RdxSliderImplDirective],
     template: `
         <span
+            #sliderElement
+            [class]="className"
             [attr.data-orientation]="'vertical'"
-            [style]="{ '--rdx-slider-thumb-transform': 'translateX(-50%)' }"
+            [style]="{ '--rdx-slider-thumb-transform': 'translateY(-50%)' }"
             (slideStart)="onSlideStart($event)"
             (slideMove)="onSlideMove($event)"
             (slideEnd)="onSlideEnd()"
@@ -28,6 +30,8 @@ export class RdxSliderVerticalComponent {
     @Input() min = 0;
     @Input() max = 100;
 
+    @Input() className = '';
+
     @Output() slideStart = new EventEmitter<number>();
     @Output() slideMove = new EventEmitter<number>();
     @Output() slideEnd = new EventEmitter<void>();
@@ -35,19 +39,19 @@ export class RdxSliderVerticalComponent {
     @Output() endKeyDown = new EventEmitter<KeyboardEvent>();
     @Output() homeKeyDown = new EventEmitter<KeyboardEvent>();
 
-    private rect = signal<DOMRect | undefined>(undefined);
+    private readonly sliderElement = viewChild<ElementRef>('sliderElement');
 
-    private isSlidingFromBottom = computed(() => !this.inverted);
+    private readonly rect = signal<DOMRect | undefined>(undefined);
 
-    @ViewChild(RdxSliderImplDirective, { static: true }) sliderImpl!: RdxSliderImplDirective;
+    private readonly isSlidingFromBottom = computed(() => this.inverted);
 
     onSlideStart(event: PointerEvent) {
-        const value = this.getValueFromPointer(event.clientX);
+        const value = this.getValueFromPointer(event.clientY);
         this.slideStart.emit(value);
     }
 
     onSlideMove(event: PointerEvent) {
-        const value = this.getValueFromPointer(event.clientX);
+        const value = this.getValueFromPointer(event.clientY);
         this.slideMove.emit(value);
     }
 
@@ -64,12 +68,16 @@ export class RdxSliderVerticalComponent {
     }
 
     private getValueFromPointer(pointerPosition: number): number {
-        const rect = this.rect() || document.body.getBoundingClientRect();
-        const input: [number, number] = [0, rect.width];
-        const output: [number, number] = this.isSlidingFromBottom() ? [this.min, this.max] : [this.max, this.min];
+        this.rect.set(this.sliderElement()?.nativeElement.getBoundingClientRect());
+        const rect = this.rect();
+        if (!rect) return 0;
 
-        const scale = linearScale(input, output);
+        const input: [number, number] = [0, rect.height];
+        const output: [number, number] = this.isSlidingFromBottom() ? [this.max, this.min] : [this.min, this.max];
+
+        const value = linearScale(input, output);
         this.rect.set(rect);
-        return scale(pointerPosition - rect.left);
+
+        return value(pointerPosition - rect.top);
     }
 }

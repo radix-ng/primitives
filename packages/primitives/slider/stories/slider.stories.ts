@@ -35,14 +35,7 @@ export const Default: Story = {
     render: (args) => ({
         props: args,
         template: html`
-            <rdx-slider
-                className="SliderRoot"
-                style="display: flex; width: 200px;"
-                [modelValue]="[45]"
-                [min]="0"
-                [max]="100"
-                [step]="5"
-            >
+            <rdx-slider className="SliderRoot" style="display: flex; width: 200px;" [modelValue]="[45]" [step]="5">
                 <rdx-slider-track class="SliderTrack">
                     <rdx-slider-range class="SliderRange" />
                 </rdx-slider-track>
@@ -56,19 +49,32 @@ export const Thumbs: Story = {
     render: (args) => ({
         props: args,
         template: html`
-            <rdx-slider
-                className="SliderRoot"
-                style="display: flex; width: 200px;"
-                [modelValue]="[45, 80]"
-                [min]="0"
-                [max]="100"
-                [step]="5"
-            >
+            <rdx-slider className="SliderRoot" style="display: flex; width: 200px;" [modelValue]="[45, 80]" [step]="5">
                 <rdx-slider-track class="SliderTrack">
                     <rdx-slider-range class="SliderRange" />
                 </rdx-slider-track>
                 <rdx-slider-thumb class="SliderThumb" />
                 <rdx-slider-thumb class="SliderThumb" />
+            </rdx-slider>
+        `
+    })
+};
+
+export const Vertical: Story = {
+    render: (args) => ({
+        props: args,
+        template: html`
+            <rdx-slider
+                className="SliderRootV"
+                style="display: flex; height: 200px;"
+                [orientation]="'vertical'"
+                [modelValue]="[45]"
+                [step]="5"
+            >
+                <rdx-slider-track class="SliderTrackV">
+                    <rdx-slider-range class="SliderRangeV" />
+                </rdx-slider-track>
+                <rdx-slider-thumb class="SliderThumbV" />
             </rdx-slider>
         `
     })

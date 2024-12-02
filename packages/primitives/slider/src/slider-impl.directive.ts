@@ -3,7 +3,7 @@ import { RdxSliderRootComponent } from './slider-root.component';
 import { ARROW_KEYS, PAGE_KEYS } from './utils';
 
 @Directive({
-    selector: 'span[rdxSliderImpl]',
+    selector: '[rdxSliderImpl]',
     standalone: true,
     host: {
         role: 'slider',

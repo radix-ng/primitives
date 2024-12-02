@@ -1,6 +1,8 @@
 import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
+import { NgIf, NgTemplateOutlet } from '@angular/common';
 import { booleanAttribute, Component, EventEmitter, input, Input, model, numberAttribute, Output } from '@angular/core';
 import { RdxSliderHorizontalComponent } from './slider-horizontal.component';
+import { RdxSliderVerticalComponent } from './slider-vertical.component';
 import {
     clamp,
     getClosestValueIndex,
@@ -14,9 +16,11 @@ import {
 @Component({
     selector: 'rdx-slider',
     standalone: true,
-    imports: [RdxSliderHorizontalComponent],
+    imports: [RdxSliderHorizontalComponent, RdxSliderVerticalComponent, NgIf, NgTemplateOutlet],
     template: `
-        @if (orientation() === 'horizontal') {
+        <ng-template #transclude><ng-content /></ng-template>
+
+        <ng-container *ngIf="orientation() === 'horizontal'">
             <rdx-slider-horizontal
                 [className]="className"
                 [min]="min()"
@@ -33,11 +37,30 @@ import {
                 (endKeyDown)="updateValues(max(), modelValue().length - 1, true)"
                 (stepKeyDown)="handleStepKeyDown($event)"
             >
-                <ng-content />
+                <ng-container *ngTemplateOutlet="transclude" />
             </rdx-slider-horizontal>
-        } @else {
-            <ng-template #vertical />
-        }
+        </ng-container>
+
+        <ng-container *ngIf="orientation() === 'vertical'">
+            <rdx-slider-vertical
+                [className]="className"
+                [min]="min()"
+                [max]="max()"
+                [dir]="dir()"
+                [inverted]="inverted()"
+                [attr.aria-disabled]="disabled()"
+                [attr.data-disabled]="disabled() ? '' : undefined"
+                (pointerdown)="onPointerDown()"
+                (slideStart)="handleSlideStart($event)"
+                (slideMove)="handleSlideMove($event)"
+                (slideEnd)="handleSlideEnd()"
+                (homeKeyDown)="updateValues(min(), 0, true)"
+                (endKeyDown)="updateValues(max(), modelValue().length - 1, true)"
+                (stepKeyDown)="handleStepKeyDown($event)"
+            >
+                <ng-container *ngTemplateOutlet="transclude" />
+            </rdx-slider-vertical>
+        </ng-container>
     `
 })
 export class RdxSliderRootComponent {

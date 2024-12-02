@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, EventEmitter, Input, Output, signal, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, EventEmitter, Input, Output, signal, viewChild } from '@angular/core';
 import { RdxSliderImplDirective } from './slider-impl.directive';
 import { BACK_KEYS, linearScale } from './utils';
 
@@ -8,7 +8,7 @@ import { BACK_KEYS, linearScale } from './utils';
     imports: [RdxSliderImplDirective],
     template: `
         <span
-            #sliderElement
+            #sliderHElement
             [class]="className"
             [attr.data-orientation]="'horizontal'"
             [style]="{ '--rdx-slider-thumb-transform': 'translateX(-50%)' }"
@@ -39,11 +39,11 @@ export class RdxSliderHorizontalComponent {
     @Output() endKeyDown = new EventEmitter<KeyboardEvent>();
     @Output() homeKeyDown = new EventEmitter<KeyboardEvent>();
 
-    @ViewChild('sliderElement', { read: ElementRef }) private sliderElement!: ElementRef;
+    private readonly sliderElement = viewChild<ElementRef>('sliderHElement');
 
-    private rect = signal<DOMRect | undefined>(undefined);
+    private readonly rect = signal<DOMRect | undefined>(undefined);
 
-    private isSlidingFromLeft = computed(
+    private readonly isSlidingFromLeft = computed(
         () => (this.dir === 'ltr' && !this.inverted) || (this.dir !== 'ltr' && this.inverted)
     );
 
@@ -70,7 +70,7 @@ export class RdxSliderHorizontalComponent {
     }
 
     private getValueFromPointer(pointerPosition: number): number {
-        this.rect.set(this.sliderElement.nativeElement.getBoundingClientRect());
+        this.rect.set(this.sliderElement()?.nativeElement.getBoundingClientRect());
         const rect = this.rect();
         if (!rect) return 0;
 
@@ -79,6 +79,7 @@ export class RdxSliderHorizontalComponent {
 
         const value = linearScale(input, output);
         this.rect.set(rect);
+
         return value(pointerPosition - rect.left);
     }
 }
