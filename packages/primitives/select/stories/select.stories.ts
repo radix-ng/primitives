@@ -206,7 +206,7 @@ export const Default: Story = {
                     <lucide-icon class="SelectIcon" size="16" name="chevron-down" rdxSelectIcon />
                 </button>
                 <div class="SelectContent SelectViewport" rdxSelectContent>
-                    @for (group of foodGroups; track item; let last = $last) {
+                    @for (group of foodGroups; track group; let last = $last) {
                     <div class="SelectGroup" rdxSelectGroup>
                         <div class="SelectLabel" rdxSelectLabel>{{ group.label }}</div>
                         @for (food of group.foods; track food) {

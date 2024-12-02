@@ -37,7 +37,7 @@ import { CheckIcon, ChevronDown, LucideAngularModule } from 'lucide-angular';
                 <lucide-icon class="SelectIcon" [img]="LucideChevronDownIcon" size="16" rdxSelectIcon />
             </button>
             <div class="SelectContent SelectViewport" rdxSelectContent>
-                @for (group of foodGroups; track item; let last = $last) {
+                @for (group of foodGroups; track group; let last = $last) {
                     <div class="SelectGroup" rdxSelectGroup>
                         <div class="SelectLabel" rdxSelectLabel>{{ group.label }}</div>
                         @for (food of group.foods; track food) {

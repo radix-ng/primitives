@@ -12,6 +12,7 @@ import {
     DestroyRef,
     ElementRef,
     EventEmitter,
+    forwardRef,
     inject,
     Input,
     NgZone,
@@ -64,9 +65,11 @@ export class RdxSelectComponent implements OnInit, AfterContentInit {
 
     @ContentChild(RdxSelectTriggerDirective) protected trigger: RdxSelectTriggerDirective;
 
-    @ContentChild(RdxSelectContentDirective) protected content: RdxSelectContentDirective;
+    @ContentChild(forwardRef(() => RdxSelectContentDirective))
+    protected content: RdxSelectContentDirective;
 
-    @ContentChildren(RdxSelectItemDirective, { descendants: true }) items: QueryList<RdxSelectItemDirective>;
+    @ContentChildren(forwardRef(() => RdxSelectItemDirective), { descendants: true })
+    items: QueryList<RdxSelectItemDirective>;
 
     @ViewChild(CdkConnectedOverlay, { static: false }) overlayDir: CdkConnectedOverlay;
 
