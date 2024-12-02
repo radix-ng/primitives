@@ -1,11 +1,10 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RdxSliderRootComponent } from './slider-root.component';
 
 @Component({
     selector: 'rdx-slider-track',
     standalone: true,
     host: {
-        '[class]': 'className',
         '[attr.data-disabled]': "rootContext.disabled ? '' : undefined",
         '[attr.data-orientation]': 'rootContext.orientation'
     },
@@ -15,6 +14,4 @@ import { RdxSliderRootComponent } from './slider-root.component';
 })
 export class RdxSliderTrackComponent {
     protected rootContext = inject(RdxSliderRootComponent);
-
-    @Input() className = '';
 }

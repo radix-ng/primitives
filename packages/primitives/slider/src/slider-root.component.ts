@@ -1,4 +1,3 @@
-import { NgIf } from '@angular/common';
 import { Component, EventEmitter, Input, model, Output } from '@angular/core';
 import { RdxSliderHorizontalComponent } from './slider-horizontal.component';
 import {
@@ -7,22 +6,16 @@ import {
     getDecimalCount,
     getNextSortedValues,
     hasMinStepsBetweenValues,
+    OrientationContext,
     roundValue
 } from './utils';
-
-export interface OrientationContext {
-    direction: number;
-    size: 'width' | 'height';
-    startEdge: 'left' | 'top';
-    endEdge: 'right' | 'bottom';
-}
 
 @Component({
     selector: 'rdx-slider',
     standalone: true,
-    imports: [NgIf, RdxSliderHorizontalComponent],
+    imports: [RdxSliderHorizontalComponent],
     template: `
-        <ng-container *ngIf="orientation === 'horizontal'; else vertical">
+        @if (orientation === 'horizontal') {
             <rdx-slider-horizontal
                 [className]="className"
                 [min]="min"
@@ -41,8 +34,9 @@ export interface OrientationContext {
             >
                 <ng-content />
             </rdx-slider-horizontal>
-        </ng-container>
-        <ng-template #vertical />
+        } @else {
+            <ng-template #vertical />
+        }
     `
 })
 export class RdxSliderRootComponent {
@@ -81,12 +75,10 @@ export class RdxSliderRootComponent {
     }
 
     onPointerDown() {
-        console.log(this.modelValue());
         this.valuesBeforeSlideStart.set([...this.modelValue()]);
     }
 
     handleSlideStart(value: number): void {
-        console.log('handleSlideStart : ', value);
         const closestIndex = getClosestValueIndex(this.modelValue(), value);
         this.updateValues(value, closestIndex);
     }

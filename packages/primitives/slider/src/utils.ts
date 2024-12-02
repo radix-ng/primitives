@@ -1,3 +1,4 @@
+// https://github.com/tmcw-up-for-adoption/simple-linear-scale/blob/master/index.js
 export function linearScale(input: readonly [number, number], output: readonly [number, number]) {
     return (value: number) => {
         if (input[0] === input[1] || output[0] === output[1]) return output[0];
@@ -53,6 +54,10 @@ export function getStepsBetweenValues(values: number[]) {
     return values.slice(0, -1).map((value, index) => values[index + 1] - value);
 }
 
+/**
+ * Offsets the thumb centre point while sliding to ensure it remains
+ * within the bounds of the slider when reaching the edges
+ */
 export function getThumbInBoundsOffset(width: number, left: number, direction: number) {
     const halfWidth = width / 2;
     const halfPercent = 50;
@@ -92,6 +97,13 @@ export const BACK_KEYS: Record<SlideDirection, string[]> = {
     'from-bottom': ['Home', 'PageDown', 'ArrowDown', 'ArrowLeft'],
     'from-top': ['Home', 'PageDown', 'ArrowUp', 'ArrowLeft']
 };
+
+export interface OrientationContext {
+    direction: number;
+    size: 'width' | 'height';
+    startEdge: 'left' | 'top';
+    endEdge: 'right' | 'bottom';
+}
 
 export function clamp(
     value: number,
