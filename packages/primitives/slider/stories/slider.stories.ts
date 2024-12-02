@@ -52,3 +52,26 @@ export const Default: Story = {
         `
     })
 };
+
+export const Thumbs: Story = {
+    render: (args) => ({
+        props: args,
+        template: html`
+            Slider:
+            <rdx-slider
+                className="SliderRoot"
+                style="display: flex; width: 200px;"
+                [modelValue]="[45, 80]"
+                [min]="0"
+                [max]="100"
+                [step]="5"
+            >
+                <rdx-slider-track class="SliderTrack">
+                    <rdx-slider-range class="SliderRange"></rdx-slider-range>
+                </rdx-slider-track>
+                <rdx-slider-thumb class="SliderThumb"></rdx-slider-thumb>
+                <rdx-slider-thumb class="SliderThumb"></rdx-slider-thumb>
+            </rdx-slider>
+        `
+    })
+};

@@ -1,4 +1,4 @@
-import { computed, Directive, ElementRef, inject, OnDestroy, OnInit } from '@angular/core';
+import { computed, Directive, ElementRef, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { RdxSliderRootComponent } from './slider-root.component';
 import { convertValueToPercentage, getThumbInBoundsOffset } from './utils';
 
@@ -25,6 +25,8 @@ import { convertValueToPercentage, getThumbInBoundsOffset } from './utils';
 export class RdxSliderThumbImplDirective implements OnInit, OnDestroy {
     protected readonly rootContext = inject(RdxSliderRootComponent);
     private readonly elementRef = inject(ElementRef);
+
+    isMounted = signal(false);
 
     thumbIndex = computed(() => {
         const thumbElement = this.elementRef.nativeElement;
@@ -70,7 +72,7 @@ export class RdxSliderThumbImplDirective implements OnInit, OnDestroy {
         return {
             position: 'absolute',
             transform: 'var(--rdx-slider-thumb-transform)',
-            display: this.value() === undefined ? 'none' : undefined,
+            display: this.isMounted() && this.value() === undefined ? 'none' : undefined,
             [startEdge]: `calc(${percent}% + ${offset}px)`
         };
     });
@@ -84,11 +86,14 @@ export class RdxSliderThumbImplDirective implements OnInit, OnDestroy {
     ngOnInit() {
         const thumbElement = this.elementRef.nativeElement;
         this.rootContext.thumbElements.push(thumbElement);
+        this.isMounted.set(true);
     }
 
     ngOnDestroy() {
         const thumbElement = this.elementRef.nativeElement;
         const index = this.rootContext.thumbElements.indexOf(thumbElement);
         if (index >= 0) this.rootContext.thumbElements.splice(index, 1);
+
+        this.isMounted.set(false);
     }
 }
