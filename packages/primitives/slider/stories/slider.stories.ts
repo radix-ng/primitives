@@ -35,7 +35,6 @@ export const Default: Story = {
     render: (args) => ({
         props: args,
         template: html`
-            Slider:
             <rdx-slider
                 className="SliderRoot"
                 style="display: flex; width: 200px;"
@@ -57,7 +56,6 @@ export const Thumbs: Story = {
     render: (args) => ({
         props: args,
         template: html`
-            Slider:
             <rdx-slider
                 className="SliderRoot"
                 style="display: flex; width: 200px;"

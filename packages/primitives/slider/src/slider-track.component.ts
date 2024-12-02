@@ -13,5 +13,5 @@ import { RdxSliderRootComponent } from './slider-root.component';
     `
 })
 export class RdxSliderTrackComponent {
-    protected rootContext = inject(RdxSliderRootComponent);
+    protected readonly rootContext = inject(RdxSliderRootComponent);
 }
