@@ -44,9 +44,9 @@ export const Default: Story = {
                 [step]="5"
             >
                 <rdx-slider-track class="SliderTrack">
-                    <rdx-slider-range class="SliderRange"></rdx-slider-range>
+                    <rdx-slider-range class="SliderRange" />
                 </rdx-slider-track>
-                <rdx-slider-thumb class="SliderThumb"></rdx-slider-thumb>
+                <rdx-slider-thumb class="SliderThumb" />
             </rdx-slider>
         `
     })
@@ -65,10 +65,10 @@ export const Thumbs: Story = {
                 [step]="5"
             >
                 <rdx-slider-track class="SliderTrack">
-                    <rdx-slider-range class="SliderRange"></rdx-slider-range>
+                    <rdx-slider-range class="SliderRange" />
                 </rdx-slider-track>
-                <rdx-slider-thumb class="SliderThumb"></rdx-slider-thumb>
-                <rdx-slider-thumb class="SliderThumb"></rdx-slider-thumb>
+                <rdx-slider-thumb class="SliderThumb" />
+                <rdx-slider-thumb class="SliderThumb" />
             </rdx-slider>
         `
     })

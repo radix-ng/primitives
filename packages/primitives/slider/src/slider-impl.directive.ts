@@ -15,7 +15,7 @@ import { ARROW_KEYS, PAGE_KEYS } from './utils';
     }
 })
 export class RdxSliderImplDirective {
-    protected rootContext = inject(RdxSliderRootComponent);
+    protected readonly rootContext = inject(RdxSliderRootComponent);
 
     @Output() slideStart = new EventEmitter<PointerEvent>();
     @Output() slideMove = new EventEmitter<PointerEvent>();
