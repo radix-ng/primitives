@@ -6,7 +6,7 @@ import { RdxTooltipPositioningComponent } from './tooltip-positioning.component'
 import { RdxTooltipTriggeringComponent } from './tooltip-triggering.component';
 
 export default {
-    title: 'Primitives/Tooltip [In Progress]',
+    title: 'Primitives/Tooltip',
     decorators: [
         moduleMetadata({
             imports: [

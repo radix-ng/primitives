@@ -1,0 +1,99 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/blocks';
+import * as TooltipStories from "./tooltip.stories";
+import {RdxTooltipRootDirective} from "../src/tooltip-root.directive";
+import {RdxTooltipContentDirective} from "../src/tooltip-content.directive";
+import {RdxTooltipTriggerDirective} from "../src/tooltip-trigger.directive";
+import {RdxTooltipArrowDirective} from "../src/tooltip-arrow.directive";
+import {RdxTooltipContentAttributesDirective} from "../src/tooltip-content-attributes.directive";
+
+<Meta title="Primitives/Tooltip" />
+
+# Tooltip
+
+#### A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.
+
+## Default
+
+<Canvas sourceState="hidden" of={TooltipStories.Default} />
+
+## Positioning
+
+<Canvas sourceState="hidden" of={TooltipStories.Positioning} />
+
+## External Triggering
+
+<Canvas sourceState="hidden" of={TooltipStories.ExternalTriggering} />
+
+## Features
+
+- ✅ Global configuration (injection token) to control display delay globally.
+- ✅ Opens when the trigger is focused or hovered.
+- ✅ Closes when the trigger is activated or when pressing escape.
+- ✅ Supports custom timings.
+
+## Anatomy
+
+```html
+<ng-container rdxTooltipRoot #tooltipRoot="rdxTooltipRoot">
+    <button class="IconButton" rdxTooltipTrigger>+</button>
+
+    <ng-template rdxTooltipContent [sideOffset]="8">
+        <div class="TooltipContent" rdxTooltipContentAttributes>
+            Add to library
+            <div class="TooltipArrow" rdxTooltipArrow></div>
+        </div>
+    </ng-template>
+</ng-container>
+```
+
+## Import
+
+Get started with importing the directives:
+
+```typescript
+import {
+  RdxTooltipRootDirective,
+  RdxTooltipRootTrigger,
+  RdxTooltipContentDirective,
+  RdxTooltipContentAttributesDirective,
+  RdxTooltipArrowDirective
+} from '@radix-ng/primitives/tooltip';
+```
+
+or
+
+```typescript
+import { RdxTooltipModule } from '@radix-ng/primitives/tooltip';
+```
+
+## API Reference
+
+## RdxTooltipRootDirective
+
+Contains all the parts of a tooltip.
+
+<ArgTypes of={RdxTooltipRootDirective} />
+
+## RdxTooltipTriggerDirective
+
+The button that toggles the tooltip. By default, the TooltipContent will position itself against the trigger.
+
+<ArgTypes of={RdxTooltipTriggerDirective} />
+
+## RdxTooltipContentDirective
+
+The component that pops out when the tooltip is open.
+
+<ArgTypes of={RdxTooltipContentDirective} />
+
+## RdxTooltipContentAttributesDirective
+
+Directive state attributes
+
+<ArgTypes of={RdxTooltipContentAttributesDirective} />
+
+## RdxTooltipArrowDirective
+
+An optional arrow element to render alongside the tooltip. This can be used to help visually link the trigger with the TooltipContent. Must be rendered inside TooltipContent.
+
+<ArgTypes of={RdxTooltipArrowDirective} />

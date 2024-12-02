@@ -15,12 +15,17 @@ import { injectTooltipRoot } from './tooltip-root.directive';
     }
 })
 export class RdxTooltipTriggerDirective {
+    /** @ignore */
     readonly tooltipRoot = injectTooltipRoot();
+    /** @ignore */
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef<HTMLElement>);
 
+    /** @ignore */
     private isPointerDown = false;
+    /** @ignore */
     private isPointerInside = false;
 
+    /** @ignore */
     onPointerMove(event: PointerEvent): void {
         if (event.pointerType === 'touch') {
             return;
@@ -32,11 +37,13 @@ export class RdxTooltipTriggerDirective {
         }
     }
 
+    /** @ignore */
     onPointerLeave(): void {
         this.isPointerInside = false;
         this.tooltipRoot.onTriggerLeave();
     }
 
+    /** @ignore */
     onPointerDown(): void {
         this.isPointerDown = true;
 
@@ -49,16 +56,19 @@ export class RdxTooltipTriggerDirective {
         );
     }
 
+    /** @ignore */
     onFocus(): void {
         if (!this.isPointerDown) {
             this.tooltipRoot.handleOpen();
         }
     }
 
+    /** @ignore */
     onBlur(): void {
         this.tooltipRoot.handleClose();
     }
 
+    /** @ignore */
     onClick(): void {
         this.tooltipRoot.handleClose();
     }

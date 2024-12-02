@@ -45,22 +45,45 @@ export function injectTooltipRoot(): RdxTooltipRootDirective {
     exportAs: 'rdxTooltipRoot'
 })
 export class RdxTooltipRootDirective implements OnInit {
+    /** @ignore */
     private readonly viewContainerRef = inject(ViewContainerRef);
+    /** @ignore */
     private readonly destroyRef = inject(DestroyRef);
+    /** @ignore */
     private readonly overlay = inject(Overlay);
+    /** @ignore */
     private readonly platformId = inject(PLATFORM_ID);
+    /** @ignore */
     private readonly document = inject(DOCUMENT);
+    /** @ignore */
     readonly tooltipConfig = injectTooltipConfig();
 
+    /**
+     * The open state of the tooltip when it is initially rendered. Use when you do not need to control its open state.
+     */
     readonly defaultOpen = input<boolean>(false);
+    /**
+     * The controlled open state of the tooltip. Must be used in conjunction with onOpenChange.
+     */
     readonly open = input<boolean | undefined>();
+    /**
+     * Override the duration given to the configuration to customise the open delay for a specific tooltip.
+     */
     readonly delayDuration = input<number>(this.tooltipConfig.delayDuration);
+    /** @ignore */
     readonly disableHoverableContent = input<boolean>(this.tooltipConfig.disableHoverableContent ?? false);
+    /**
+     * Event handler called when the open state of the tooltip changes.
+     */
     readonly onOpenChange = output<boolean>();
 
+    /** @ignore */
     readonly isOpen = signal<boolean>(this.defaultOpen());
+    /** @ignore */
     readonly isOpenDelayed = signal<boolean>(true);
+    /** @ignore */
     readonly wasOpenDelayed = signal<boolean>(false);
+    /** @ignore */
     readonly state = computed<RdxTooltipState>(() => {
         const currentIsOpen = this.isOpen();
         const currentWasOpenDelayed = this.wasOpenDelayed();
@@ -71,16 +94,25 @@ export class RdxTooltipRootDirective implements OnInit {
 
         return 'closed';
     });
+    /** @ignore */
     readonly tooltipContentDirective = contentChild.required(RdxTooltipContentToken);
+    /** @ignore */
     readonly tooltipTriggerElementRef = contentChild.required(RdxTooltipTriggerDirective, { read: ElementRef });
 
+    /** @ignore */
     private openTimer = 0;
+    /** @ignore */
     private skipDelayTimer = 0;
+    /** @ignore */
     private overlayRef?: OverlayRef;
+    /** @ignore */
     private instance?: ViewRef;
+    /** @ignore */
     private portal: TemplatePortal<unknown>;
+    /** @ignore */
     private isControlledExternally = false;
 
+    /** @ignore */
     ngOnInit(): void {
         if (this.defaultOpen()) {
             this.handleOpen();
@@ -89,6 +121,7 @@ export class RdxTooltipRootDirective implements OnInit {
         this.isControlledExternally = this.open() !== undefined;
     }
 
+    /** @ignore */
     onTriggerEnter(): void {
         if (this.isControlledExternally) {
             return;
@@ -101,16 +134,19 @@ export class RdxTooltipRootDirective implements OnInit {
         }
     }
 
+    /** @ignore */
     onTriggerLeave(): void {
         this.clearTimeout(this.openTimer);
         this.handleClose();
     }
 
+    /** @ignore */
     onOpen(): void {
         this.clearTimeout(this.skipDelayTimer);
         this.isOpenDelayed.set(false);
     }
 
+    /** @ignore */
     onClose(): void {
         this.clearTimeout(this.skipDelayTimer);
 
@@ -121,6 +157,7 @@ export class RdxTooltipRootDirective implements OnInit {
         }
     }
 
+    /** @ignore */
     handleOpen(): void {
         if (this.isControlledExternally) {
             return;
@@ -130,6 +167,7 @@ export class RdxTooltipRootDirective implements OnInit {
         this.setOpen(true);
     }
 
+    /** @ignore */
     handleClose(): void {
         if (this.isControlledExternally) {
             return;
@@ -139,6 +177,7 @@ export class RdxTooltipRootDirective implements OnInit {
         this.setOpen(false);
     }
 
+    /** @ignore */
     private handleOverlayKeydown(): void {
         if (!this.overlayRef) {
             return;
@@ -159,6 +198,7 @@ export class RdxTooltipRootDirective implements OnInit {
             });
     }
 
+    /** @ignore */
     private handlePointerDownOutside(): void {
         if (!this.overlayRef) {
             return;
@@ -170,6 +210,7 @@ export class RdxTooltipRootDirective implements OnInit {
             .subscribe((event) => this.tooltipContentDirective().onPointerDownOutside.emit(event));
     }
 
+    /** @ignore */
     private handleDelayedOpen(): void {
         this.clearTimeout(this.openTimer);
 
@@ -181,6 +222,7 @@ export class RdxTooltipRootDirective implements OnInit {
         }
     }
 
+    /** @ignore */
     private setOpen(open = false): void {
         if (open) {
             this.onOpen();
@@ -194,6 +236,7 @@ export class RdxTooltipRootDirective implements OnInit {
         this.onOpenChange.emit(open);
     }
 
+    /** @ignore */
     private createOverlayRef(): OverlayRef {
         if (this.overlayRef) {
             return this.overlayRef;
@@ -216,6 +259,7 @@ export class RdxTooltipRootDirective implements OnInit {
         return this.overlayRef;
     }
 
+    /** @ignore */
     private show(): void {
         this.overlayRef = this.createOverlayRef();
 
@@ -231,12 +275,14 @@ export class RdxTooltipRootDirective implements OnInit {
         this.instance = this.overlayRef.attach(this.portal);
     }
 
+    /** @ignore */
     private detach(): void {
         if (this.overlayRef?.hasAttached()) {
             this.overlayRef.detach();
         }
     }
 
+    /** @ignore */
     private hide(): void {
         if (this.isControlledExternally && this.open()) {
             return;
@@ -247,6 +293,7 @@ export class RdxTooltipRootDirective implements OnInit {
         }, this.tooltipConfig.hideDelayDuration ?? 0);
     }
 
+    /** @ignore */
     private getPositionStrategy(connectedPosition: ConnectedPosition): PositionStrategy {
         return this.overlay
             .position()
@@ -258,12 +305,14 @@ export class RdxTooltipRootDirective implements OnInit {
             .withLockedPosition();
     }
 
+    /** @ignore */
     private clearTimeout(timeoutId: number): void {
         if (isPlatformBrowser(this.platformId)) {
             window.clearTimeout(timeoutId);
         }
     }
 
+    /** @ignore */
     private readonly onIsOpenChangeEffect = effect(() => {
         const isOpen = this.isOpen();
 
@@ -276,6 +325,7 @@ export class RdxTooltipRootDirective implements OnInit {
         });
     });
 
+    /** @ignore */
     private readonly onPositionChangeEffect = effect(() => {
         const position = this.tooltipContentDirective().position();
 
@@ -286,6 +336,7 @@ export class RdxTooltipRootDirective implements OnInit {
         }
     });
 
+    /** @ignore */
     private readonly onOpenChangeEffect = effect(() => {
         const currentOpen = this.open();
         this.isControlledExternally = currentOpen !== undefined;
