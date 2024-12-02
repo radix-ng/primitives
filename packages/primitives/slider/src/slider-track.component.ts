@@ -5,8 +5,8 @@ import { RdxSliderRootComponent } from './slider-root.component';
     selector: 'rdx-slider-track',
     standalone: true,
     host: {
-        '[attr.data-disabled]': "rootContext.disabled ? '' : undefined",
-        '[attr.data-orientation]': 'rootContext.orientation'
+        '[attr.data-disabled]': "rootContext.disabled() ? '' : undefined",
+        '[attr.data-orientation]': 'rootContext.orientation()'
     },
     template: `
         <ng-content />

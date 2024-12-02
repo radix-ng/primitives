@@ -7,15 +7,15 @@ import { convertValueToPercentage, getThumbInBoundsOffset } from './utils';
     standalone: true,
     host: {
         role: 'slider',
-        '[tabindex]': 'rootContext.disabled ? undefined : 0',
+        '[tabindex]': 'rootContext.disabled() ? undefined : 0',
 
-        '[attr.aria-valuenow]': 'rootContext.modelValue',
-        '[attr.aria-valuemin]': 'rootContext.min',
-        '[attr.aria-valuemax]': 'rootContext.max',
-        '[attr.aria-orientation]': 'rootContext.orientation',
+        '[attr.aria-valuenow]': 'rootContext.modelValue()',
+        '[attr.aria-valuemin]': 'rootContext.min()',
+        '[attr.aria-valuemax]': 'rootContext.max()',
+        '[attr.aria-orientation]': 'rootContext.orientation()',
 
-        '[attr.data-orientation]': 'rootContext.orientation',
-        '[attr.data-disabled]': 'rootContext.disabled ? "" : undefined',
+        '[attr.data-orientation]': 'rootContext.orientation()',
+        '[attr.data-disabled]': 'rootContext.disabled() ? "" : undefined',
 
         '[style]': 'combinedStyles()',
 
@@ -43,7 +43,7 @@ export class RdxSliderThumbImplDirective implements OnInit, OnDestroy {
     percent = computed(() => {
         const val = this.value();
         if (val === undefined) return 0;
-        return convertValueToPercentage(val, this.rootContext.min, this.rootContext.max);
+        return convertValueToPercentage(val, this.rootContext.min(), this.rootContext.max());
     });
 
     transform = computed(() => {

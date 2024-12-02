@@ -6,8 +6,8 @@ import { convertValueToPercentage } from './utils';
     selector: 'rdx-slider-range',
     standalone: true,
     host: {
-        '[attr.data-disabled]': 'rootContext.disabled ? "" : undefined',
-        '[attr.data-orientation]': 'rootContext.orientation',
+        '[attr.data-disabled]': 'rootContext.disabled() ? "" : undefined',
+        '[attr.data-orientation]': 'rootContext.orientation()',
         '[style]': 'rangeStyles()'
     },
     template: `
@@ -20,7 +20,7 @@ export class RdxSliderRangeComponent {
     percentages = computed(() =>
         this.rootContext
             .modelValue()
-            ?.map((value) => convertValueToPercentage(value, this.rootContext.min, this.rootContext.max))
+            ?.map((value) => convertValueToPercentage(value, this.rootContext.min(), this.rootContext.max()))
     );
 
     offsetStart = computed(() => (this.rootContext.modelValue()!.length > 1 ? Math.min(...this.percentages()!) : 0));

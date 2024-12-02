@@ -1,5 +1,4 @@
-import { Component, inject } from '@angular/core';
-import { RdxSliderRootComponent } from './slider-root.component';
+import { Component } from '@angular/core';
 import { RdxSliderThumbImplDirective } from './slider-thumb-impl.directive';
 
 @Component({
@@ -10,6 +9,4 @@ import { RdxSliderThumbImplDirective } from './slider-thumb-impl.directive';
         <ng-content />
     `
 })
-export class RdxSliderThumbComponent {
-    private readonly rootContext = inject(RdxSliderRootComponent);
-}
+export class RdxSliderThumbComponent {}
