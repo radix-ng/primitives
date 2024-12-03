@@ -44,6 +44,7 @@ const config = {
                 'code',
                 'separator',
                 'select',
+                'tooltip',
                 'kbd',
                 'radix-docs',
                 'radix-ssr-testing',

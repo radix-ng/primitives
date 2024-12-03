@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { LucideAngularModule, Plus } from 'lucide-angular';
 import { RdxTooltipModule } from '../index';
 
 @Component({
@@ -7,7 +8,8 @@ import { RdxTooltipModule } from '../index';
     standalone: true,
     imports: [
         FormsModule,
-        RdxTooltipModule
+        RdxTooltipModule,
+        LucideAngularModule
     ],
     styles: `
         .container {
@@ -142,7 +144,9 @@ import { RdxTooltipModule } from '../index';
         </div>
         <div class="container">
             <ng-container #tooltipRoot="rdxTooltipRoot" [open]="isOpen()" (onOpenChange)="count()" rdxTooltipRoot>
-                <button class="IconButton" #triggerElement rdxTooltipTrigger>+</button>
+                <button class="IconButton" #triggerElement rdxTooltipTrigger>
+                    <lucide-angular [img]="PlusIcon" size="16" style="display: flex" />
+                </button>
 
                 <ng-template [sideOffset]="8" rdxTooltipContent>
                     <div class="TooltipContent" rdxTooltipContentAttributes>
@@ -157,6 +161,8 @@ import { RdxTooltipModule } from '../index';
     `
 })
 export class RdxTooltipTriggeringComponent {
+    readonly PlusIcon = Plus;
+
     isOpen = signal(false);
     counter = signal(0);
 

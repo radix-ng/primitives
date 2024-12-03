@@ -1,9 +1,12 @@
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { LucideAngularModule, Plus } from 'lucide-angular';
 import { RdxTooltipModule } from '../index';
 import { RdxTooltipEventsComponent } from './tooltip-events.components';
 import { RdxTooltipPositioningComponent } from './tooltip-positioning.component';
 import { RdxTooltipTriggeringComponent } from './tooltip-triggering.component';
+
+const html = String.raw;
 
 export default {
     title: 'Primitives/Tooltip',
@@ -13,13 +16,16 @@ export default {
                 RdxTooltipModule,
                 RdxTooltipEventsComponent,
                 RdxTooltipPositioningComponent,
-                RdxTooltipTriggeringComponent
+                RdxTooltipTriggeringComponent,
+                LucideAngularModule,
+                LucideAngularModule.pick({ Plus })
             ],
             providers: [provideAnimations()]
         }),
         componentWrapperDecorator(
-            (story) => `
-                <div class="radix-themes light light-theme radix-themes-default-fonts"
+            (story) => html`
+                <div
+                    class="radix-themes light light-theme radix-themes-default-fonts"
                     data-accent-color="indigo"
                     data-radius="medium"
                     data-scaling="100%"
@@ -47,7 +53,9 @@ export default {
                         line-height: 1;
                         color: var(--violet-11);
                         background-color: white;
-                        box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;
+                        box-shadow:
+                            hsl(206 22% 7% / 35%) 0px 10px 38px -10px,
+                            hsl(206 22% 7% / 20%) 0px 10px 20px -15px;
                         user-select: none;
                         animation-duration: 400ms;
                         animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
@@ -132,7 +140,8 @@ export default {
                             transform: translateX(0);
                         }
                     }
-                </style>`
+                </style>
+            `
         )
     ]
 } as Meta;
@@ -141,10 +150,12 @@ type Story = StoryObj;
 
 export const Default: Story = {
     render: () => ({
-        template: `
+        template: html`
             <div class="container">
                 <ng-container rdxTooltipRoot #tooltipRoot="rdxTooltipRoot">
-                    <button class="IconButton" rdxTooltipTrigger>+</button>
+                    <button class="IconButton" rdxTooltipTrigger>
+                        <lucide-angular size="16" name="plus" style="display: flex;"></lucide-angular>
+                    </button>
 
                     <ng-template rdxTooltipContent [sideOffset]="8">
                         <div class="TooltipContent" rdxTooltipContentAttributes>
@@ -160,42 +171,24 @@ export const Default: Story = {
 
 export const Events: Story = {
     render: () => ({
-        template: `
-            <div class="radix-themes light light-theme radix-themes-default-fonts"
-                data-accent-color="indigo"
-                data-radius="medium"
-                data-scaling="100%"
-            >
-                <rdx-tooltip-events></rdx-tooltip-events>
-            </div>
+        template: html`
+            <rdx-tooltip-events></rdx-tooltip-events>
         `
     })
 };
 
 export const Positioning: Story = {
     render: () => ({
-        template: `
-            <div class="radix-themes light light-theme radix-themes-default-fonts"
-                data-accent-color="indigo"
-                data-radius="medium"
-                data-scaling="100%"
-            >
-                <rdx-tooltip-positioning></rdx-tooltip-positioning>
-            </div>
+        template: html`
+            <rdx-tooltip-positioning></rdx-tooltip-positioning>
         `
     })
 };
 
 export const ExternalTriggering: Story = {
     render: () => ({
-        template: `
-            <div class="radix-themes light light-theme radix-themes-default-fonts"
-                data-accent-color="indigo"
-                data-radius="medium"
-                data-scaling="100%"
-            >
-                <rdx-tooltip-triggering></rdx-tooltip-triggering>
-            </div>
+        template: html`
+            <rdx-tooltip-triggering></rdx-tooltip-triggering>
         `
     })
 };

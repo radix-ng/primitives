@@ -1,11 +1,13 @@
 import { Component, ElementRef, viewChild } from '@angular/core';
+import { LucideAngularModule, Plus } from 'lucide-angular';
 import { RdxTooltipModule } from '../index';
 
 @Component({
     selector: 'rdx-tooltip-events',
     standalone: true,
     imports: [
-        RdxTooltipModule
+        RdxTooltipModule,
+        LucideAngularModule
     ],
     styles: `
         .container {
@@ -118,7 +120,9 @@ import { RdxTooltipModule } from '../index';
     template: `
         <div class="container">
             <ng-container #tooltipRoot="rdxTooltipRoot" rdxTooltipRoot>
-                <button class="IconButton" #triggerElement rdxTooltipTrigger>+</button>
+                <button class="IconButton" #triggerElement rdxTooltipTrigger>
+                    <lucide-angular [img]="PlusIcon" size="16" style="display: flex" />
+                </button>
 
                 <ng-template
                     [sideOffset]="8"
@@ -137,6 +141,8 @@ import { RdxTooltipModule } from '../index';
 })
 export class RdxTooltipEventsComponent {
     private readonly triggerElement = viewChild<ElementRef<HTMLElement>>('triggerElement');
+
+    readonly PlusIcon = Plus;
 
     onEscapeKeyDown(event: KeyboardEvent) {
         event.preventDefault();

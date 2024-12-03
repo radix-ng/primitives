@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { LucideAngularModule, Plus } from 'lucide-angular';
 import { RdxTooltipModule } from '../index';
 import { RdxTooltipAlign, RdxTooltipSide } from '../src/tooltip.types';
 
@@ -8,7 +9,8 @@ import { RdxTooltipAlign, RdxTooltipSide } from '../src/tooltip.types';
     standalone: true,
     imports: [
         FormsModule,
-        RdxTooltipModule
+        RdxTooltipModule,
+        LucideAngularModule
     ],
     styles: `
         .container {
@@ -148,7 +150,9 @@ import { RdxTooltipAlign, RdxTooltipSide } from '../src/tooltip.types';
 
         <div class="container">
             <ng-container #tooltipRoot="rdxTooltipRoot" rdxTooltipRoot>
-                <button class="IconButton" #triggerElement rdxTooltipTrigger>+</button>
+                <button class="IconButton" #triggerElement rdxTooltipTrigger>
+                    <lucide-angular [img]="PlusIcon" size="16" style="display: flex" />
+                </button>
 
                 <ng-template [sideOffset]="sideOffset" [side]="selectedSide" [align]="selectedAlign" rdxTooltipContent>
                     <div class="TooltipContent" rdxTooltipContentAttributes>
@@ -163,9 +167,12 @@ import { RdxTooltipAlign, RdxTooltipSide } from '../src/tooltip.types';
     `
 })
 export class RdxTooltipPositioningComponent {
+    readonly PlusIcon = Plus;
+
     selectedSide = RdxTooltipSide.Top;
     selectedAlign = RdxTooltipAlign.Center;
     sideOffset = 8;
+
     readonly sides = RdxTooltipSide;
     readonly aligns = RdxTooltipAlign;
 }
