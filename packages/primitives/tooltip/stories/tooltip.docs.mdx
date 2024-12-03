@@ -1,10 +1,8 @@
-import { ArgTypes, Canvas, Meta } from '@storybook/blocks';
+import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
 import * as TooltipStories from "./tooltip.stories";
 import {RdxTooltipRootDirective} from "../src/tooltip-root.directive";
 import {RdxTooltipContentDirective} from "../src/tooltip-content.directive";
-import {RdxTooltipTriggerDirective} from "../src/tooltip-trigger.directive";
 import {RdxTooltipArrowDirective} from "../src/tooltip-arrow.directive";
-import {RdxTooltipContentAttributesDirective} from "../src/tooltip-content-attributes.directive";
 
 <Meta title="Primitives/Tooltip" />
 
@@ -68,6 +66,17 @@ import { RdxTooltipModule } from '@radix-ng/primitives/tooltip';
 
 ## API Reference
 
+## RdxTooltipConfig
+
+<Markdown>
+    {`
+  | Prop | Type | Default | Description
+  | ----- | ----- | ----- | -----
+  | delayDuration | number | 700 | The duration from when the mouse enters a tooltip trigger until the tooltip opens.
+  | skipDelayDuration | number | 300 | How much time a user has to enter another trigger without incurring a delay again.
+  `}
+</Markdown>
+
 ## RdxTooltipRootDirective
 
 Contains all the parts of a tooltip.
@@ -78,7 +87,13 @@ Contains all the parts of a tooltip.
 
 The button that toggles the tooltip. By default, the TooltipContent will position itself against the trigger.
 
-<ArgTypes of={RdxTooltipTriggerDirective} />
+<Markdown>
+    {`
+   | Data attribute | Value
+   | ----- | -----
+   | [data-state] | <code>"closed" | "delayed-open" | "instant-open" (type RdxTooltipState)</code>
+   `}
+</Markdown>
 
 ## RdxTooltipContentDirective
 
@@ -86,11 +101,28 @@ The component that pops out when the tooltip is open.
 
 <ArgTypes of={RdxTooltipContentDirective} />
 
+<Markdown>
+    {`
+   | Data attribute | Value
+   | ----- | -----
+   | [data-state] | <code>"closed" | "delayed-open" | "instant-open" (enum RdxTooltipState)</code>
+   | [data-side] | <code>"left" | "right" | "bottom" | "top" (enum RdxTooltipSide)</code>
+   | [data-align] | <code>"start" | "end" | "center" (enum RdxTooltipAlign)</code>
+   `}
+</Markdown>
+
 ## RdxTooltipContentAttributesDirective
 
 Directive state attributes
 
-<ArgTypes of={RdxTooltipContentAttributesDirective} />
+<Markdown>
+    {`
+   | Data attribute | Value
+   | ----- | -----
+   | [data-state] | <code>"closed" | "delayed-open" | "instant-open" (enum RdxTooltipState)</code>
+   | [data-side] | <code>"left" | "right" | "bottom" | "top" (enum RdxTooltipSide)</code>
+   `}
+</Markdown>
 
 ## RdxTooltipArrowDirective
 

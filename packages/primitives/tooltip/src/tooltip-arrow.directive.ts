@@ -14,12 +14,24 @@ import { RdxTooltipSide } from './tooltip.types';
     ]
 })
 export class RdxTooltipArrowDirective {
+    /** @ignore */
     private readonly renderer = inject(Renderer2);
+    /** @ignore */
     private readonly contentDirective = inject(RdxTooltipContentToken);
+    /** @ignore */
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
+    /**
+     * The width of the arrow in pixels.
+     */
     readonly width = input<number>(10);
+
+    /**
+     * The height of the arrow in pixels.
+     */
     readonly height = input<number>(5);
+
+    /** @ignore */
     readonly arrowSvgElement = computed<HTMLElement>(() => {
         const width = this.width();
         const height = this.height();
@@ -36,12 +48,14 @@ export class RdxTooltipArrowDirective {
         return svgElement;
     });
 
+    /** @ignore */
     private readonly onArrowSvgElementChangeEffect = effect(() => {
         const arrowElement = this.arrowSvgElement();
 
         this.renderer.appendChild(this.elementRef.nativeElement, arrowElement);
     });
 
+    /** @ignore */
     private readonly onSideChangeEffect = effect(() => {
         const side = this.contentDirective.side();
 
