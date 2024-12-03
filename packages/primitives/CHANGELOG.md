@@ -1,3 +1,13 @@
+## 0.18.1 (2024-12-03)
+
+### 🩹 Fixes
+
+- **slider:** fixed SSR and added ssr test ([6486d80](https://github.com/radix-ng/primitives/commit/6486d80))
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+
 ## 0.18.0 (2024-12-03)
 
 ### 🚀 Features
