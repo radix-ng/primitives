@@ -12,7 +12,7 @@ export * from './src/tooltip-root.directive';
 export * from './src/tooltip-trigger.directive';
 export * from './src/tooltip.types';
 
-const directives = [
+const _imports = [
     RdxTooltipArrowDirective,
     RdxTooltipContentDirective,
     RdxTooltipTriggerDirective,
@@ -21,7 +21,7 @@ const directives = [
 ];
 
 @NgModule({
-    imports: [...directives],
-    exports: [...directives]
+    imports: [..._imports],
+    exports: [..._imports]
 })
 export class RdxTooltipModule {}

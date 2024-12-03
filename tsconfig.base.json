@@ -86,6 +86,9 @@
             "@radix-ng/primitives/tabs": [
                 "packages/primitives/tabs/index.ts"
             ],
+            "@radix-ng/primitives/tooltip": [
+                "packages/primitives/tooltip/index.ts"
+            ],
             "@radix-ng/primitives/visually-hidden": [
                 "packages/primitives/visually-hidden/index.ts"
             ],
