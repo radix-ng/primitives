@@ -1,4 +1,16 @@
-import { Component, computed, ElementRef, EventEmitter, Input, Output, signal, viewChild } from '@angular/core';
+import { BooleanInput } from '@angular/cdk/coercion';
+import {
+    booleanAttribute,
+    Component,
+    computed,
+    ElementRef,
+    EventEmitter,
+    input,
+    Input,
+    Output,
+    signal,
+    viewChild
+} from '@angular/core';
 import { RdxSliderImplDirective } from './slider-impl.directive';
 import { BACK_KEYS, linearScale } from './utils';
 
@@ -26,7 +38,9 @@ import { BACK_KEYS, linearScale } from './utils';
 })
 export class RdxSliderVerticalComponent {
     @Input() dir: 'ltr' | 'rtl' = 'ltr';
-    @Input() inverted = false;
+
+    readonly inverted = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
     @Input() min = 0;
     @Input() max = 100;
 
@@ -43,7 +57,7 @@ export class RdxSliderVerticalComponent {
 
     private readonly rect = signal<DOMRect | undefined>(undefined);
 
-    private readonly isSlidingFromBottom = computed(() => this.inverted);
+    private readonly isSlidingFromBottom = computed(() => !this.inverted());
 
     onSlideStart(event: PointerEvent) {
         const value = this.getValueFromPointer(event.clientY);

@@ -53,19 +53,22 @@ export class RdxSliderThumbImplDirective implements OnInit, OnDestroy {
     });
 
     orientationSize = computed(() => {
+        const context = this.rootContext.orientationContext.context;
         const rect = this.elementRef.nativeElement.getBoundingClientRect();
-        return this.rootContext.orientationContext.size === 'width' ? rect.width : rect.height;
+        return context.size === 'width' ? rect.width : rect.height;
     });
 
     thumbInBoundsOffset = computed(() => {
         const size = this.orientationSize();
         const percent = this.percent();
-        const direction = this.rootContext.orientationContext.direction;
+
+        const context = this.rootContext.orientationContext.context;
+        const direction = context.direction;
         return size ? getThumbInBoundsOffset(size, percent, direction) : 0;
     });
 
     combinedStyles = computed(() => {
-        const startEdge = this.rootContext.orientationContext.startEdge;
+        const startEdge = this.rootContext.orientationContext.context.startEdge;
         const percent = this.percent();
         const offset = this.thumbInBoundsOffset();
 

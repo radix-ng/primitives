@@ -1,4 +1,16 @@
-import { Component, computed, ElementRef, EventEmitter, Input, Output, signal, viewChild } from '@angular/core';
+import { BooleanInput } from '@angular/cdk/coercion';
+import {
+    booleanAttribute,
+    Component,
+    computed,
+    ElementRef,
+    EventEmitter,
+    input,
+    Input,
+    Output,
+    signal,
+    viewChild
+} from '@angular/core';
 import { RdxSliderImplDirective } from './slider-impl.directive';
 import { BACK_KEYS, linearScale } from './utils';
 
@@ -8,7 +20,7 @@ import { BACK_KEYS, linearScale } from './utils';
     imports: [RdxSliderImplDirective],
     template: `
         <span
-            #sliderHElement
+            #sliderElement
             [class]="className"
             [attr.data-orientation]="'horizontal'"
             [style]="{ '--rdx-slider-thumb-transform': 'translateX(-50%)' }"
@@ -26,7 +38,9 @@ import { BACK_KEYS, linearScale } from './utils';
 })
 export class RdxSliderHorizontalComponent {
     @Input() dir: 'ltr' | 'rtl' = 'ltr';
-    @Input() inverted = false;
+
+    readonly inverted = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
     @Input() min = 0;
     @Input() max = 100;
 
@@ -39,12 +53,12 @@ export class RdxSliderHorizontalComponent {
     @Output() endKeyDown = new EventEmitter<KeyboardEvent>();
     @Output() homeKeyDown = new EventEmitter<KeyboardEvent>();
 
-    private readonly sliderElement = viewChild<ElementRef>('sliderHElement');
+    private readonly sliderElement = viewChild<ElementRef>('sliderElement');
 
     private readonly rect = signal<DOMRect | undefined>(undefined);
 
     private readonly isSlidingFromLeft = computed(
-        () => (this.dir === 'ltr' && !this.inverted) || (this.dir !== 'ltr' && this.inverted)
+        () => (this.dir === 'ltr' && !this.inverted()) || (this.dir !== 'ltr' && this.inverted())
     );
 
     onSlideStart(event: PointerEvent) {

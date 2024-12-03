@@ -1,7 +1,20 @@
 import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import { NgIf, NgTemplateOutlet } from '@angular/common';
-import { booleanAttribute, Component, EventEmitter, input, Input, model, numberAttribute, Output } from '@angular/core';
+import {
+    booleanAttribute,
+    Component,
+    computed,
+    EventEmitter,
+    inject,
+    input,
+    Input,
+    model,
+    numberAttribute,
+    OnInit,
+    Output
+} from '@angular/core';
 import { RdxSliderHorizontalComponent } from './slider-horizontal.component';
+import { RdxSliderOrientationContextService } from './slider-orientation-context.service';
 import { RdxSliderVerticalComponent } from './slider-vertical.component';
 import {
     clamp,
@@ -9,7 +22,6 @@ import {
     getDecimalCount,
     getNextSortedValues,
     hasMinStepsBetweenValues,
-    OrientationContext,
     roundValue
 } from './utils';
 
@@ -63,7 +75,9 @@ import {
         </ng-container>
     `
 })
-export class RdxSliderRootComponent {
+export class RdxSliderRootComponent implements OnInit {
+    readonly orientationContext = inject(RdxSliderOrientationContextService);
+
     readonly min = input<number, NumberInput>(0, { transform: numberAttribute });
 
     readonly max = input<number, NumberInput>(100, { transform: numberAttribute });
@@ -91,22 +105,32 @@ export class RdxSliderRootComponent {
 
     readonly valuesBeforeSlideStart = model<number[]>([]);
 
+    private readonly isSlidingFromLeft = computed(
+        () => (this.dir() === 'ltr' && !this.inverted()) || (this.dir() !== 'ltr' && this.inverted())
+    );
+
+    private readonly isSlidingFromBottom = computed(() => !this.inverted());
+
     thumbElements: HTMLElement[] = [];
 
-    get orientationContext(): OrientationContext {
-        return this.orientation() === 'horizontal'
-            ? {
-                  direction: this.dir() === 'ltr' ? 1 : -1,
-                  size: 'width',
-                  startEdge: 'left',
-                  endEdge: 'right'
-              }
-            : {
-                  direction: 1,
-                  size: 'height',
-                  startEdge: 'top',
-                  endEdge: 'bottom'
-              };
+    ngOnInit() {
+        const isHorizontal = this.orientation() === 'horizontal';
+
+        if (isHorizontal) {
+            this.orientationContext.updateContext({
+                direction: this.isSlidingFromLeft() ? 1 : -1,
+                size: 'width',
+                startEdge: this.isSlidingFromLeft() ? 'left' : 'right',
+                endEdge: this.isSlidingFromLeft() ? 'right' : 'left'
+            });
+        } else {
+            this.orientationContext.updateContext({
+                direction: this.isSlidingFromBottom() ? 1 : -1,
+                size: 'height',
+                startEdge: this.isSlidingFromBottom() ? 'bottom' : 'top',
+                endEdge: this.isSlidingFromBottom() ? 'top' : 'bottom'
+            });
+        }
     }
 
     onPointerDown() {

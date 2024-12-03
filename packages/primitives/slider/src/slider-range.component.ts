@@ -26,8 +26,12 @@ export class RdxSliderRangeComponent {
     offsetStart = computed(() => (this.rootContext.modelValue()!.length > 1 ? Math.min(...this.percentages()!) : 0));
     offsetEnd = computed(() => 100 - Math.max(...this.percentages()!));
 
-    rangeStyles = computed(() => ({
-        [this.rootContext.orientationContext.startEdge]: `${this.offsetStart()}%`,
-        [this.rootContext.orientationContext.endEdge]: `${this.offsetEnd()}%`
-    }));
+    rangeStyles = computed(() => {
+        const context = this.rootContext.orientationContext.context;
+
+        return {
+            [context.startEdge]: `${this.offsetStart()}%`,
+            [context.endEdge]: `${this.offsetEnd()}%`
+        };
+    });
 }

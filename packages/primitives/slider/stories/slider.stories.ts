@@ -45,6 +45,26 @@ export const Default: Story = {
     })
 };
 
+export const Inverted: Story = {
+    render: (args) => ({
+        props: args,
+        template: html`
+            <rdx-slider
+                className="SliderRoot"
+                style="display: flex; width: 200px;"
+                inverted
+                [modelValue]="[45]"
+                [step]="5"
+            >
+                <rdx-slider-track class="SliderTrack">
+                    <rdx-slider-range class="SliderRange" />
+                </rdx-slider-track>
+                <rdx-slider-thumb class="SliderThumb" />
+            </rdx-slider>
+        `
+    })
+};
+
 export const Thumbs: Story = {
     render: (args) => ({
         props: args,
@@ -67,6 +87,27 @@ export const Vertical: Story = {
             <rdx-slider
                 className="SliderRootV"
                 style="display: flex; height: 200px;"
+                [orientation]="'vertical'"
+                [modelValue]="[45]"
+                [step]="5"
+            >
+                <rdx-slider-track class="SliderTrackV">
+                    <rdx-slider-range class="SliderRangeV" />
+                </rdx-slider-track>
+                <rdx-slider-thumb class="SliderThumbV" />
+            </rdx-slider>
+        `
+    })
+};
+
+export const VerticalInverted: Story = {
+    render: (args) => ({
+        props: args,
+        template: html`
+            <rdx-slider
+                className="SliderRootV"
+                style="display: flex; height: 200px;"
+                inverted
                 [orientation]="'vertical'"
                 [modelValue]="[45]"
                 [step]="5"
