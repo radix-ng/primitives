@@ -2,9 +2,9 @@ import { BooleanInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     Component,
-    computed,
     ElementRef,
     EventEmitter,
+    inject,
     input,
     Input,
     Output,
@@ -12,6 +12,7 @@ import {
     viewChild
 } from '@angular/core';
 import { RdxSliderImplDirective } from './slider-impl.directive';
+import { RdxSliderRootComponent } from './slider-root.component';
 import { BACK_KEYS, linearScale } from './utils';
 
 @Component({
@@ -37,6 +38,8 @@ import { BACK_KEYS, linearScale } from './utils';
     `
 })
 export class RdxSliderVerticalComponent {
+    private readonly rootContext = inject(RdxSliderRootComponent);
+
     @Input() dir: 'ltr' | 'rtl' = 'ltr';
 
     readonly inverted = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
@@ -57,8 +60,6 @@ export class RdxSliderVerticalComponent {
 
     private readonly rect = signal<DOMRect | undefined>(undefined);
 
-    private readonly isSlidingFromBottom = computed(() => !this.inverted());
-
     onSlideStart(event: PointerEvent) {
         const value = this.getValueFromPointer(event.clientY);
         this.slideStart.emit(value);
@@ -75,7 +76,7 @@ export class RdxSliderVerticalComponent {
     }
 
     onStepKeyDown(event: KeyboardEvent) {
-        const slideDirection = this.isSlidingFromBottom() ? 'from-bottom' : 'from-top';
+        const slideDirection = this.rootContext.isSlidingFromBottom() ? 'from-bottom' : 'from-top';
         const isBackKey = BACK_KEYS[slideDirection].includes(event.key);
 
         this.stepKeyDown.emit({ event, direction: isBackKey ? -1 : 1 });
@@ -87,7 +88,9 @@ export class RdxSliderVerticalComponent {
         if (!rect) return 0;
 
         const input: [number, number] = [0, rect.height];
-        const output: [number, number] = this.isSlidingFromBottom() ? [this.max, this.min] : [this.min, this.max];
+        const output: [number, number] = this.rootContext.isSlidingFromBottom()
+            ? [this.max, this.min]
+            : [this.min, this.max];
 
         const value = linearScale(input, output);
         this.rect.set(rect);

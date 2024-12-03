@@ -2,9 +2,9 @@ import { BooleanInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     Component,
-    computed,
     ElementRef,
     EventEmitter,
+    inject,
     input,
     Input,
     Output,
@@ -12,6 +12,7 @@ import {
     viewChild
 } from '@angular/core';
 import { RdxSliderImplDirective } from './slider-impl.directive';
+import { RdxSliderRootComponent } from './slider-root.component';
 import { BACK_KEYS, linearScale } from './utils';
 
 @Component({
@@ -37,6 +38,8 @@ import { BACK_KEYS, linearScale } from './utils';
     `
 })
 export class RdxSliderHorizontalComponent {
+    private readonly rootContext = inject(RdxSliderRootComponent);
+
     @Input() dir: 'ltr' | 'rtl' = 'ltr';
 
     readonly inverted = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
@@ -57,10 +60,6 @@ export class RdxSliderHorizontalComponent {
 
     private readonly rect = signal<DOMRect | undefined>(undefined);
 
-    private readonly isSlidingFromLeft = computed(
-        () => (this.dir === 'ltr' && !this.inverted()) || (this.dir !== 'ltr' && this.inverted())
-    );
-
     onSlideStart(event: PointerEvent) {
         const value = this.getValueFromPointer(event.clientX);
         this.slideStart.emit(value);
@@ -77,7 +76,7 @@ export class RdxSliderHorizontalComponent {
     }
 
     onStepKeyDown(event: KeyboardEvent) {
-        const slideDirection = this.isSlidingFromLeft() ? 'from-left' : 'from-right';
+        const slideDirection = this.rootContext.isSlidingFromLeft() ? 'from-left' : 'from-right';
         const isBackKey = BACK_KEYS[slideDirection].includes(event.key);
 
         this.stepKeyDown.emit({ event, direction: isBackKey ? -1 : 1 });
@@ -89,7 +88,9 @@ export class RdxSliderHorizontalComponent {
         if (!rect) return 0;
 
         const input: [number, number] = [0, rect.width];
-        const output: [number, number] = this.isSlidingFromLeft() ? [this.min, this.max] : [this.max, this.min];
+        const output: [number, number] = this.rootContext.isSlidingFromLeft()
+            ? [this.min, this.max]
+            : [this.max, this.min];
 
         const value = linearScale(input, output);
         this.rect.set(rect);

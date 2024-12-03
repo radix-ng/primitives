@@ -76,6 +76,7 @@ import {
     `
 })
 export class RdxSliderRootComponent implements OnInit {
+    /** @ignore */
     readonly orientationContext = inject(RdxSliderOrientationContextService);
 
     readonly min = input<number, NumberInput>(0, { transform: numberAttribute });
@@ -101,18 +102,22 @@ export class RdxSliderRootComponent implements OnInit {
 
     readonly modelValue = model<number[]>([0]);
 
+    /** @ignore */
     readonly valueIndexToChange = model(0);
 
+    /** @ignore */
     readonly valuesBeforeSlideStart = model<number[]>([]);
 
-    private readonly isSlidingFromLeft = computed(
+    readonly isSlidingFromLeft = computed(
         () => (this.dir() === 'ltr' && !this.inverted()) || (this.dir() !== 'ltr' && this.inverted())
     );
 
-    private readonly isSlidingFromBottom = computed(() => !this.inverted());
+    readonly isSlidingFromBottom = computed(() => !this.inverted());
 
+    /** @ignore */
     thumbElements: HTMLElement[] = [];
 
+    /** @ignore */
     ngOnInit() {
         const isHorizontal = this.orientation() === 'horizontal';
 
@@ -133,19 +138,23 @@ export class RdxSliderRootComponent implements OnInit {
         }
     }
 
+    /** @ignore */
     onPointerDown() {
         this.valuesBeforeSlideStart.set([...this.modelValue()]);
     }
 
+    /** @ignore */
     handleSlideStart(value: number): void {
         const closestIndex = getClosestValueIndex(this.modelValue(), value);
         this.updateValues(value, closestIndex);
     }
 
+    /** @ignore */
     handleSlideMove(value: number): void {
         this.updateValues(value, this.valueIndexToChange());
     }
 
+    /** @ignore */
     handleSlideEnd(): void {
         const prevValue = this.valuesBeforeSlideStart()[this.valueIndexToChange()];
         const nextValue = this.modelValue()[this.valueIndexToChange()];
@@ -156,6 +165,7 @@ export class RdxSliderRootComponent implements OnInit {
         }
     }
 
+    /** @ignore */
     handleStepKeyDown(event: { event: KeyboardEvent; direction: number }): void {
         const stepInDirection = this.step() * event.direction;
         const atIndex = this.valueIndexToChange();
@@ -163,6 +173,7 @@ export class RdxSliderRootComponent implements OnInit {
         this.updateValues(currentValue + stepInDirection, atIndex, true);
     }
 
+    /** @ignore */
     updateValues(value: number, atIndex: number, commit = false): void {
         const decimalCount = getDecimalCount(this.step());
         const snapToStep = roundValue(
