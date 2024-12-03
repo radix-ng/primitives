@@ -1,0 +1,42 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/blocks';
+import * as SliderStories from './slider.stories';
+import { RdxSliderRootComponent } from '../src/slider-root.component';
+
+<Meta title="Primitives/Slider" />
+
+# Slider
+
+#### An input where the user selects a value from within a given range.
+
+<Canvas sourceState="hidden" of={SliderStories.Default} />
+
+## Features
+
+- ✅ Can be controlled or uncontrolled.
+- ✅ Supports multiple thumbs.
+- ✅ Supports a minimum value between thumbs.
+- ✅ Supports touch or click on track to update value.
+- ✅ Supports Right to Left direction.
+- ✅ Full keyboard navigation.
+
+## Anatomy
+
+Import all parts and piece them together.
+
+
+```html
+<rdx-slider>
+    <rdx-slider-track >
+        <rdx-slider-range />
+    </rdx-slider-track>
+    <rdx-slider-thumb />
+</rdx-slider>
+```
+
+## API Reference
+
+<ArgTypes of={RdxSliderRootComponent} />
+
+## Accessibility
+Adheres to the [Slider WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/slider-multithumb).
+

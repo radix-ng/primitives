@@ -87,7 +87,7 @@ const config = {
                 // plugin:@angular-eslint/template
                 '@angular-eslint/template/label-has-associated-control': 0,
                 '@angular-eslint/template/prefer-self-closing-tags': 1,
-                '@angular-eslint/template/prefer-control-flow': 1
+                '@angular-eslint/template/prefer-control-flow': 0
             }
         },
         {
