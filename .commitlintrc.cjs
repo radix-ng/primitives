@@ -44,6 +44,7 @@ const config = {
                 'code',
                 'separator',
                 'select',
+                'slider',
                 'tooltip',
                 'kbd',
                 'radix-docs',

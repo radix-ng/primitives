@@ -1,4 +1,5 @@
-import { computed, Directive, ElementRef, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { computed, Directive, ElementRef, inject, OnDestroy, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { RdxSliderRootComponent } from './slider-root.component';
 import { convertValueToPercentage, getThumbInBoundsOffset } from './utils';
 
@@ -25,6 +26,7 @@ import { convertValueToPercentage, getThumbInBoundsOffset } from './utils';
 export class RdxSliderThumbImplDirective implements OnInit, OnDestroy {
     protected readonly rootContext = inject(RdxSliderRootComponent);
     private readonly elementRef = inject(ElementRef);
+    private readonly platformId = inject(PLATFORM_ID);
     private resizeObserver!: ResizeObserver;
 
     isMounted = signal(false);
@@ -87,19 +89,21 @@ export class RdxSliderThumbImplDirective implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        const thumbElement = this.elementRef.nativeElement;
-        this.rootContext.thumbElements.push(thumbElement);
+        if (isPlatformBrowser(this.platformId)) {
+            const thumbElement = this.elementRef.nativeElement;
+            this.rootContext.thumbElements.push(thumbElement);
 
-        this.resizeObserver = new ResizeObserver(() => {
-            const rect = thumbElement.getBoundingClientRect();
-            const context = this.rootContext.orientationContext.context;
-            const size = context.size === 'width' ? rect.width : rect.height;
-            this.orientationSize.set(size);
-        });
+            this.resizeObserver = new ResizeObserver(() => {
+                const rect = thumbElement.getBoundingClientRect();
+                const context = this.rootContext.orientationContext.context;
+                const size = context.size === 'width' ? rect.width : rect.height;
+                this.orientationSize.set(size);
+            });
 
-        this.resizeObserver.observe(thumbElement);
+            this.resizeObserver.observe(thumbElement);
 
-        this.isMounted.set(true);
+            this.isMounted.set(true);
+        }
     }
 
     ngOnDestroy() {

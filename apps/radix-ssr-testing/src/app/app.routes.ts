@@ -18,6 +18,10 @@ export const appRoutes: Route[] = [
         loadComponent: () => import('./components/select/select.component')
     },
     {
+        path: 'slider',
+        loadComponent: () => import('./components/slider/slider.component')
+    },
+    {
         path: 'tabs',
         loadComponent: () => import('./components/tabs/tabs.component')
     }

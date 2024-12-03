@@ -13,6 +13,7 @@ import { RouterModule } from '@angular/router';
                 <a href="/avatar">Avatar</a>
                 <a href="/collapsible">Collapsible</a>
                 <a href="/select">Select</a>
+                <a href="/slider">Slider</a>
                 <a href="/tabs">Tabs</a>
             </div>
             <router-outlet />
