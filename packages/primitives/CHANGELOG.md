@@ -1,3 +1,20 @@
+## 0.18.0 (2024-12-03)
+
+### 🚀 Features
+
+- **primitives:** added Slider ([#174](https://github.com/radix-ng/primitives/pull/174))
+- **primitives:** added Tooltip ([#91](https://github.com/radix-ng/primitives/pull/91))
+
+### 🩹 Fixes
+
+- **select:** referenceError and track expression ([4e155bf](https://github.com/radix-ng/primitives/commit/4e155bf))
+
+### ❤️ Thank You
+
+- lskramarov
+- Oleg Pimenov
+- Vitaliy Agoshkov
+
 ## 0.17.0 (2024-11-30)
 
 ### 🚀 Features
