@@ -125,7 +125,7 @@ export class RdxSliderRootComponent implements OnInit {
             });
         } else {
             this.orientationContext.updateContext({
-                direction: this.isSlidingFromBottom() ? 1 : -1,
+                direction: this.isSlidingFromBottom() ? -1 : 1,
                 size: 'height',
                 startEdge: this.isSlidingFromBottom() ? 'bottom' : 'top',
                 endEdge: this.isSlidingFromBottom() ? 'top' : 'bottom'

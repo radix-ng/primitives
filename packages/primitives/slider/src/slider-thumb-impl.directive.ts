@@ -25,6 +25,7 @@ import { convertValueToPercentage, getThumbInBoundsOffset } from './utils';
 export class RdxSliderThumbImplDirective implements OnInit, OnDestroy {
     protected readonly rootContext = inject(RdxSliderRootComponent);
     private readonly elementRef = inject(ElementRef);
+    private resizeObserver!: ResizeObserver;
 
     isMounted = signal(false);
 
@@ -52,30 +53,29 @@ export class RdxSliderThumbImplDirective implements OnInit, OnDestroy {
         return `calc(${percent}% + ${offset}px)`;
     });
 
-    orientationSize = computed(() => {
-        const context = this.rootContext.orientationContext.context;
-        const rect = this.elementRef.nativeElement.getBoundingClientRect();
-        return context.size === 'width' ? rect.width : rect.height;
-    });
+    orientationSize = signal(0);
 
     thumbInBoundsOffset = computed(() => {
+        const context = this.rootContext.orientationContext.context;
+
         const size = this.orientationSize();
         const percent = this.percent();
-
-        const context = this.rootContext.orientationContext.context;
         const direction = context.direction;
+
         return size ? getThumbInBoundsOffset(size, percent, direction) : 0;
     });
 
     combinedStyles = computed(() => {
-        const startEdge = this.rootContext.orientationContext.context.startEdge;
+        const context = this.rootContext.orientationContext.context;
+
+        const startEdge = context.startEdge;
         const percent = this.percent();
         const offset = this.thumbInBoundsOffset();
 
         return {
             position: 'absolute',
             transform: 'var(--rdx-slider-thumb-transform)',
-            display: this.isMounted() && this.value() === undefined ? 'none' : undefined,
+            display: (this.isMounted() && this.value()) === false ? 'none' : undefined,
             [startEdge]: `calc(${percent}% + ${offset}px)`
         };
     });
@@ -89,6 +89,16 @@ export class RdxSliderThumbImplDirective implements OnInit, OnDestroy {
     ngOnInit() {
         const thumbElement = this.elementRef.nativeElement;
         this.rootContext.thumbElements.push(thumbElement);
+
+        this.resizeObserver = new ResizeObserver(() => {
+            const rect = thumbElement.getBoundingClientRect();
+            const context = this.rootContext.orientationContext.context;
+            const size = context.size === 'width' ? rect.width : rect.height;
+            this.orientationSize.set(size);
+        });
+
+        this.resizeObserver.observe(thumbElement);
+
         this.isMounted.set(true);
     }
 
@@ -96,6 +106,10 @@ export class RdxSliderThumbImplDirective implements OnInit, OnDestroy {
         const thumbElement = this.elementRef.nativeElement;
         const index = this.rootContext.thumbElements.indexOf(thumbElement);
         if (index >= 0) this.rootContext.thumbElements.splice(index, 1);
+
+        if (this.resizeObserver) {
+            this.resizeObserver.unobserve(thumbElement);
+        }
 
         this.isMounted.set(false);
     }
