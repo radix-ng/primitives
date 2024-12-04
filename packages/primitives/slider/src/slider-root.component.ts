@@ -109,10 +109,12 @@ export class RdxSliderRootComponent implements OnInit {
     /** @ignore */
     readonly valuesBeforeSlideStart = model<number[]>([]);
 
+    /** @ignore */
     readonly isSlidingFromLeft = computed(
         () => (this.dir() === 'ltr' && !this.inverted()) || (this.dir() !== 'ltr' && this.inverted())
     );
 
+    /** @ignore */
     readonly isSlidingFromBottom = computed(() => !this.inverted());
 
     /** @ignore */
