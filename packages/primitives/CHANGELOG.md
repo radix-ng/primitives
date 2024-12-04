@@ -1,3 +1,13 @@
+## 0.18.2 (2024-12-04)
+
+### 🩹 Fixes
+
+- **slider:** remove root from context service ([d4dac98](https://github.com/radix-ng/primitives/commit/d4dac98))
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+
 ## 0.18.1 (2024-12-03)
 
 ### 🩹 Fixes
