@@ -26,6 +26,7 @@ Storybook [sb-primitives.radix-ng.com](https://sb-primitives.radix-ng.com/)
 
 1. [Taxonomy](https://github.com/shadcn-ui/taxonomy) build with AnalogJS – [https://primitives-taxonomy.vercel.app/](https://primitives-taxonomy.vercel.app/)
 2. [shadcn/ui blocks](https://ui.shadcn.com/blocks) - [https://blocks.shadcn-ng.com/](https://blocks.shadcn-ng.com/)
+3. [OriginUI](https://origin-ui-six.vercel.app/)
 
 ## Components
 
