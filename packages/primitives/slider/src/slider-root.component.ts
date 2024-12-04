@@ -29,6 +29,7 @@ import {
     selector: 'rdx-slider',
     standalone: true,
     imports: [RdxSliderHorizontalComponent, RdxSliderVerticalComponent, NgIf, NgTemplateOutlet],
+    providers: [RdxSliderOrientationContextService],
     template: `
         <ng-template #transclude><ng-content /></ng-template>
 

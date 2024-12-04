@@ -7,7 +7,7 @@ export interface OrientationContext {
     size: string;
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class RdxSliderOrientationContextService {
     private contextSignal = signal<OrientationContext>({
         startEdge: 'left',

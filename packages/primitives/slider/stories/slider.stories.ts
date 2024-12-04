@@ -84,6 +84,8 @@ export const Vertical: Story = {
     render: (args) => ({
         props: args,
         template: html`
+            <br />
+
             <rdx-slider
                 className="SliderRootV"
                 style="display: flex; height: 200px;"
@@ -95,6 +97,19 @@ export const Vertical: Story = {
                     <rdx-slider-range class="SliderRangeV" />
                 </rdx-slider-track>
                 <rdx-slider-thumb class="SliderThumbV" />
+            </rdx-slider>
+
+            <rdx-slider
+                className="SliderRoot"
+                [orientation]="'horizontal'"
+                style="display: flex; width: 200px;"
+                [modelValue]="[45]"
+                [step]="5"
+            >
+                <rdx-slider-track class="SliderTrack">
+                    <rdx-slider-range class="SliderRange" />
+                </rdx-slider-track>
+                <rdx-slider-thumb class="SliderThumb" />
             </rdx-slider>
         `
     })
