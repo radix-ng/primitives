@@ -23,13 +23,16 @@ description: .
 ## Anatomy
 
 ```html
-<div rdxSelectRoot>
-    <div rdxSelectContent>
-        <div rdxSelectItem></div>
-    </div>
-</div>
+<rdx-slider>
+    <rdx-slider-track>
+        <rdx-slider-range />
+    </rdx-slider-track>
+    <rdx-slider-thumb />
+</rdx-slider>
 ```
 
 ## API Reference
 
-### Root
+## Accessibility
+Adheres to the [Slider WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/slider-multithumb).
+
