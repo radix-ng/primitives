@@ -66,7 +66,8 @@ const docsConfig = {
                         { name: 'Label', url: '/primitives/components/label' },
                         { name: 'Progress', url: '/primitives/components/progress' },
                         { name: 'Separator', url: '/primitives/components/separator' },
-                        { name: 'Select', url: '/primitives/components/select', label: 'New' }
+                        { name: 'Select', url: '/primitives/components/select' },
+                        { name: 'Slider', url: '/primitives/components/slider', label: 'New' }
                     ]
                 }
             ]
