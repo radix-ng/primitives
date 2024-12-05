@@ -273,3 +273,13 @@ body {
 .bg-primitive-demo {
     background: linear-gradient(120deg, var(--indigo-6), var(--crimson-5));
 }
+
+.SliderRoot {
+    position: relative;
+    display: flex;
+    align-items: center;
+    user-select: none;
+    touch-action: none;
+    width: 200px;
+    height: 20px;
+}
