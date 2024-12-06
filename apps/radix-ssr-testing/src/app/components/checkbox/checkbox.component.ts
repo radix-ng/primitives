@@ -6,7 +6,7 @@ import {
 } from '@radix-ng/primitives/checkbox';
 
 @Component({
-    selector: 'app-avatar',
+    selector: 'app-checkbox',
     standalone: true,
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [RdxCheckboxDirective, RdxCheckboxButtonDirective, RdxCheckboxIndicatorDirective],

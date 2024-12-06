@@ -22,6 +22,10 @@ export const appRoutes: Route[] = [
         loadComponent: () => import('./components/select/select.component')
     },
     {
+        path: 'separator',
+        loadComponent: () => import('./components/separator/separator.component')
+    },
+    {
         path: 'slider',
         loadComponent: () => import('./components/slider/slider.component')
     },
