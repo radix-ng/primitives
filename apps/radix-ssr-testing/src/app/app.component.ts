@@ -12,6 +12,7 @@ import { RouterModule } from '@angular/router';
                 <a href="/accordion">Accordion</a>
                 <a href="/avatar">Avatar</a>
                 <a href="/collapsible">Collapsible</a>
+                <a href="/checkbox">Checkbox</a>
                 <a href="/select">Select</a>
                 <a href="/slider">Slider</a>
                 <a href="/tabs">Tabs</a>

@@ -21,15 +21,15 @@ import * as CheckboxDirectiveStories from './checkbox.stories';
 Get started with importing the directives:
 
 ```typescript
-import { RdxCheckboxDirective, RdxCheckboxIndicatorDirective } from '@radix-ng/primitives/checkbox';
+import { RdxCheckboxDirective, RdxCheckboxInputDirective, RdxCheckboxIndicatorDirective } from '@radix-ng/primitives/checkbox';
 ```
 
 ## Anatomy
 
 ```html
-<button CheckboxRoot [(checked)]="checked">
-  <lucide-angular CheckboxIndicator name="check"></lucide-angular>
-  <input class="cdk-visually-hidden" CheckboxInput type="checkbox" />
+<button rdxCheckboxRoot [(checked)]="checked">
+  <lucide-angular rdxCheckboxIndicator name="check"></lucide-angular>
+  <input class="cdk-visually-hidden" rdxCheckboxInput type="checkbox" />
 </button>
 ```
 

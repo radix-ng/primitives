@@ -42,14 +42,14 @@ const variants = cva('flex');
             [checked]="checked()"
             [indeterminate]="indeterminate()"
             (checkedChange)="onChange($event)"
-            CheckboxRoot
+            rdxCheckboxRoot
         >
             <lucide-angular
                 class="flex h-4 items-center justify-center text-current data-[state=unchecked]:hidden"
                 [name]="iconName()"
-                CheckboxIndicator
+                rdxCheckboxIndicator
             />
-            <input class="cdk-visually-hidden" [id]="id()" [value]="checked.asReadonly()" CheckboxInput />
+            <input class="cdk-visually-hidden" [id]="id()" [value]="checked.asReadonly()" rdxCheckboxInput />
         </button>
     `,
     changeDetection: ChangeDetectionStrategy.OnPush,

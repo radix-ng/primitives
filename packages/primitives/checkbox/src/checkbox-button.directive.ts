@@ -3,7 +3,7 @@ import { injectCheckbox } from './checkbox.token';
 
 @Directive({
     standalone: true,
-    selector: 'button[CheckboxButton]',
+    selector: 'button[rdxCheckboxButton]',
     host: {
         type: 'button',
         role: 'checkbox',
@@ -22,5 +22,6 @@ export class RdxCheckboxButtonDirective {
     protected readonly checkbox = injectCheckbox();
 
     readonly id = input<string | null>(null);
+
     protected readonly elementId = computed(() => (this.id() ? this.id() : `rdx-checkbox-${this.id()}`));
 }

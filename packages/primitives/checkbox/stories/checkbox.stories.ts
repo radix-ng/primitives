@@ -47,14 +47,14 @@ export const Default: Story = {
         template: html`
             <form>
                 <div style="display: flex; align-items: center;">
-                    <button class="CheckboxRoot" CheckboxRoot [(checked)]="checked">
+                    <button class="CheckboxRoot" rdxCheckboxRoot [(checked)]="checked">
                         <lucide-angular
                             class="CheckboxIndicator"
-                            CheckboxIndicator
+                            rdxCheckboxIndicator
                             size="16"
                             name="check"
                         ></lucide-angular>
-                        <input id="r1" CheckboxInput type="checkbox" />
+                        <input id="r1" rdxCheckboxInput type="checkbox" />
                     </button>
                     <label class="Label" rdxLabel htmlFor="r1">Check Item</label>
                 </div>

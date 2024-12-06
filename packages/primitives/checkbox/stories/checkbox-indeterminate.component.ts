@@ -19,9 +19,9 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
     ],
     template: `
         <label class="Label" rdxLabel htmlFor="r1">
-            <button class="CheckboxRoot" [(indeterminate)]="indeterminate" [(ngModel)]="checked" CheckboxRoot>
-                <lucide-angular class="CheckboxIndicator" [name]="iconName()" CheckboxIndicator size="16" />
-                <input class="Input" id="r1" CheckboxInput />
+            <button class="CheckboxRoot" [(indeterminate)]="indeterminate" [(ngModel)]="checked" rdxCheckboxRoot>
+                <lucide-angular class="CheckboxIndicator" [name]="iconName()" rdxCheckboxIndicator size="16" />
+                <input class="Input" id="r1" rdxCheckboxInput />
             </button>
             I'm a checkbox
         </label>

@@ -2,7 +2,7 @@ import { Directive } from '@angular/core';
 import { injectCheckbox } from './checkbox.token';
 
 @Directive({
-    selector: '[CheckboxIndicator]',
+    selector: '[rdxCheckboxIndicator]',
     standalone: true,
     host: {
         '[style.pointer-events]': '"none"',

@@ -1,15 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import {
-    RdxAvatarFallbackDirective,
-    RdxAvatarImageDirective,
-    RdxAvatarRootDirective
-} from '@radix-ng/primitives/avatar';
+import { RdxAvatarFallbackDirective, RdxAvatarRootDirective } from '@radix-ng/primitives/avatar';
 
 @Component({
     selector: 'app-avatar',
     standalone: true,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [RdxAvatarRootDirective, RdxAvatarImageDirective, RdxAvatarFallbackDirective],
+    imports: [RdxAvatarRootDirective, RdxAvatarFallbackDirective],
     template: `
         <span rdxAvatarRoot>
             <span rdxAvatarFallback>A</span>

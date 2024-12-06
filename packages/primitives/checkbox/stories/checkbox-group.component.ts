@@ -13,9 +13,9 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
         <section [formGroup]="personality">
             <p>
                 <label class="Label" rdxLabel htmlFor="r1">
-                    <button class="CheckboxRoot" CheckboxRoot formControlName="fun">
-                        <lucide-angular class="CheckboxIndicator" CheckboxIndicator size="16" name="check" />
-                        <input class="Input" id="r1" CheckboxInput />
+                    <button class="CheckboxRoot" rdxCheckboxRoot formControlName="fun">
+                        <lucide-angular class="CheckboxIndicator" rdxCheckboxIndicator size="16" name="check" />
+                        <input class="Input" id="r1" rdxCheckboxInput />
                     </button>
                     Fun
                 </label>
@@ -24,20 +24,20 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
                 <label class="Label" rdxLabel htmlFor="r2">
                     <button
                         class="CheckboxRoot rt-BaseCheckboxRoot rt-CheckboxRoot"
-                        CheckboxRoot
+                        rdxCheckboxRoot
                         formControlName="serious"
                     >
-                        <lucide-angular class="CheckboxIndicator" CheckboxIndicator size="16" name="check" />
-                        <input class="Input" id="r2" CheckboxInput />
+                        <lucide-angular class="CheckboxIndicator" rdxCheckboxIndicator size="16" name="check" />
+                        <input class="Input" id="r2" rdxCheckboxInput />
                     </button>
                     Serious
                 </label>
             </p>
             <p>
                 <label class="Label" rdxLabel htmlFor="r3">
-                    <button class="CheckboxRoot" CheckboxRoot formControlName="smart">
-                        <lucide-angular class="CheckboxIndicator" CheckboxIndicator size="16" name="check" />
-                        <input class="Input" id="r3" CheckboxInput />
+                    <button class="CheckboxRoot" rdxCheckboxRoot formControlName="smart">
+                        <lucide-angular class="CheckboxIndicator" rdxCheckboxIndicator size="16" name="check" />
+                        <input class="Input" id="r3" rdxCheckboxInput />
                     </button>
                     Smart
                 </label>

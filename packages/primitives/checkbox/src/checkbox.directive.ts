@@ -5,7 +5,7 @@ import { RdxCheckboxToken } from './checkbox.token';
 export type CheckboxState = 'unchecked' | 'checked' | 'indeterminate';
 
 @Directive({
-    selector: '[CheckboxRoot]',
+    selector: '[rdxCheckboxRoot]',
     standalone: true,
     providers: [
         { provide: RdxCheckboxToken, useExisting: RdxCheckboxDirective },

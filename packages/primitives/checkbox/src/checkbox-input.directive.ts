@@ -4,7 +4,7 @@ import { injectCheckbox } from './checkbox.token';
 
 @Directive({
     standalone: true,
-    selector: 'input[CheckboxInput]',
+    selector: 'input[rdxCheckboxInput]',
     hostDirectives: [{ directive: RdxVisuallyHiddenInputDirective, inputs: ['feature: "fully-hidden"'] }],
     host: {
         type: 'checkbox',
@@ -25,6 +25,7 @@ export class RdxCheckboxInputDirective {
     protected readonly checkbox = injectCheckbox();
 
     readonly id = input<string>();
+
     protected readonly elementId = computed(() => (this.id() ? this.id() : `rdx-checkbox-${this.id()}`));
 
     protected readonly value = computed(() => {

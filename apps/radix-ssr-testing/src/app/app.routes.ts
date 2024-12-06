@@ -14,6 +14,10 @@ export const appRoutes: Route[] = [
         loadComponent: () => import('./components/collapsible/collapsible.component')
     },
     {
+        path: 'checkbox',
+        loadComponent: () => import('./components/checkbox/checkbox.component')
+    },
+    {
         path: 'select',
         loadComponent: () => import('./components/select/select.component')
     },
