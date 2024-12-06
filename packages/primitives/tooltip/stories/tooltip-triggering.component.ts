@@ -143,7 +143,7 @@ import { RdxTooltipModule } from '../index';
             <span>onOpenChange count: {{ counter() }}</span>
         </div>
         <div class="container">
-            <ng-container #tooltipRoot="rdxTooltipRoot" [open]="isOpen()" (onOpenChange)="count()" rdxTooltipRoot>
+            <ng-container [open]="isOpen()" (onOpenChange)="count()" rdxTooltipRoot>
                 <button class="IconButton" #triggerElement rdxTooltipTrigger>
                     <lucide-angular [img]="PlusIcon" size="16" style="display: flex" />
                 </button>

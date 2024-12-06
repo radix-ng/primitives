@@ -152,7 +152,7 @@ export const Default: Story = {
     render: () => ({
         template: html`
             <div class="container">
-                <ng-container rdxTooltipRoot #tooltipRoot="rdxTooltipRoot">
+                <ng-container rdxTooltipRoot>
                     <button class="IconButton" rdxTooltipTrigger>
                         <lucide-angular size="16" name="plus" style="display: flex;"></lucide-angular>
                     </button>

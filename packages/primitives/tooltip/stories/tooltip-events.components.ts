@@ -119,7 +119,7 @@ import { RdxTooltipModule } from '../index';
     `,
     template: `
         <div class="container">
-            <ng-container #tooltipRoot="rdxTooltipRoot" rdxTooltipRoot>
+            <ng-container rdxTooltipRoot>
                 <button class="IconButton" #triggerElement rdxTooltipTrigger>
                     <lucide-angular [img]="PlusIcon" size="16" style="display: flex" />
                 </button>
