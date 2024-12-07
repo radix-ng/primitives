@@ -25,9 +25,18 @@ import { RdxRovingFocusItemDirective } from '../src/roving-focus-item.directive'
 ## API Reference
 
 ### RdxRovingFocusGroupDirective
+The `RdxRovingFocusGroupDirective` allows managing focus within a group of elements, such as buttons, links, or any interactive items. It provides an accessible navigation pattern for keyboard users and ensures intuitive interaction.
+
+#### Usage
+
+This directive can be added to a container element, and all its focusable children will be managed as a group.
 
 <ArgTypes of={RdxRovingFocusGroupDirective} />
 
 ### RdxRovingFocusItemDirective
+The `RdxRovingFocusItemDirective` is a companion directive to `RdxRovingFocusGroupDirective`. It manages individual items within the group, ensuring smooth keyboard navigation and intuitive focus behavior.
+
+#### Usage
+This directive should be used on individual elements (e.g., buttons or links) within a container that has the `RdxRovingFocusGroupDirective`.
 
 <ArgTypes of={RdxRovingFocusItemDirective} />
