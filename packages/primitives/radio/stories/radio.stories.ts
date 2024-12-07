@@ -37,16 +37,9 @@ export const Default: Story = {
     render: () => ({
         template: html`
             <form>
-                <div
-                    class="RadioGroupRoot"
-                    rdxRovingFocusGroup
-                    [orientation]="'vertical'"
-                    loop
-                    rdxRadioRoot
-                    aria-label="View density"
-                >
+                <div class="RadioGroupRoot" rdxRadioRoot aria-label="View density">
                     <div style="display: flex; align-items: center;">
-                        <button class="RadioGroupItem" id="r1" rdxRovingFocusItem rdxRadioItem value="default">
+                        <button class="RadioGroupItem" id="r1" rdxRadioItem value="default">
                             <div class="RadioGroupIndicator" rdxRadioIndicator></div>
                             <input
                                 class="Input"
@@ -60,7 +53,7 @@ export const Default: Story = {
                         <label class="Label" rdxLabel htmlFor="r1">Default</label>
                     </div>
                     <div style="display: flex; align-items: center;">
-                        <button class="RadioGroupItem" id="r2" rdxRovingFocusItem rdxRadioItem value="comfortable">
+                        <button class="RadioGroupItem" id="r2" rdxRadioItem value="comfortable">
                             <div class="RadioGroupIndicator" rdxRadioIndicator></div>
                             <input
                                 class="Input"
@@ -74,7 +67,7 @@ export const Default: Story = {
                         <label class="Label" rdxLabel htmlFor="r2">Comfortable</label>
                     </div>
                     <div style="display: flex; align-items: center;">
-                        <button class="RadioGroupItem" id="r3" rdxRovingFocusItem rdxRadioItem value="compact">
+                        <button class="RadioGroupItem" id="r3" rdxRadioItem value="compact">
                             <div class="RadioGroupIndicator" rdxRadioIndicator></div>
                             <input
                                 class="Input"

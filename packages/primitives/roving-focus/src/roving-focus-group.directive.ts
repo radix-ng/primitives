@@ -17,7 +17,9 @@ import { Direction, ENTRY_FOCUS, EVENT_OPTIONS, focusFirst, Orientation } from '
     host: {
         '[attr.data-orientation]': 'dataOrientation',
         '[attr.tabindex]': 'tabIndex',
+        '[attr.dir]': 'dir',
         '(focus)': 'handleFocus($event)',
+        '(blur)': 'handleBlur()',
         '(mouseup)': 'handleMouseUp()',
         '(mousedown)': 'handleMouseDown()',
         style: 'outline: none;'
@@ -29,7 +31,7 @@ export class RdxRovingFocusGroupDirective {
 
     @Input() orientation: Orientation | undefined;
     @Input() dir: Direction = 'ltr';
-    @Input({ transform: booleanAttribute }) loop: boolean = false;
+    @Input({ transform: booleanAttribute }) loop: boolean = true;
     @Input({ transform: booleanAttribute }) preventScrollOnEntryFocus: boolean = false;
 
     @Output() entryFocus = new EventEmitter<Event>();
@@ -53,6 +55,11 @@ export class RdxRovingFocusGroupDirective {
     /** @ignore */
     get tabIndex() {
         return this.isTabbingBackOut() || this.getFocusableItemsCount() === 0 ? -1 : 0;
+    }
+
+    /** @ignore */
+    handleBlur() {
+        this.isTabbingBackOut.set(false);
     }
 
     /** @ignore */

@@ -1,4 +1,14 @@
-import { booleanAttribute, computed, Directive, ElementRef, inject, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+    booleanAttribute,
+    computed,
+    Directive,
+    ElementRef,
+    inject,
+    Input,
+    NgZone,
+    OnDestroy,
+    OnInit
+} from '@angular/core';
 import { RdxRovingFocusGroupDirective } from './roving-focus-group.directive';
 import { focusFirst, generateId, getFocusIntent, wrapArray } from './utils';
 
@@ -7,7 +17,9 @@ import { focusFirst, generateId, getFocusIntent, wrapArray } from './utils';
     standalone: true,
     host: {
         '[attr.tabindex]': 'tabIndex',
-
+        '[attr.data-orientation]': 'parent.orientation',
+        '[attr.data-active]': 'active',
+        '[attr.data-disabled]': '!focusable ? "" : undefined',
         '(mousedown)': 'handleMouseDown($event)',
         '(keydown)': 'handleKeydown($event)',
         '(focus)': 'onFocus()'
@@ -15,11 +27,12 @@ import { focusFirst, generateId, getFocusIntent, wrapArray } from './utils';
 })
 export class RdxRovingFocusItemDirective implements OnInit, OnDestroy {
     private readonly elementRef = inject(ElementRef);
-    private readonly parent = inject(RdxRovingFocusGroupDirective);
+    private readonly ngZone = inject(NgZone);
+    protected readonly parent = inject(RdxRovingFocusGroupDirective);
 
     @Input({ transform: booleanAttribute }) focusable: boolean = true;
     @Input({ transform: booleanAttribute }) active: boolean = true;
-    @Input() tabStopId: string | undefined;
+    @Input() tabStopId: string;
     @Input({ transform: booleanAttribute }) allowShiftKey: boolean = false;
 
     private readonly id = computed(() => this.tabStopId || generateId());
@@ -74,9 +87,7 @@ export class RdxRovingFocusItemDirective implements OnInit, OnDestroy {
 
     /** @ignore */
     onFocus() {
-        if (this.focusable) {
-            this.parent.onItemFocus(this.id());
-        }
+        this.parent.onItemFocus(this.id());
     }
 
     /**
@@ -116,7 +127,12 @@ export class RdxRovingFocusItemDirective implements OnInit, OnDestroy {
                     : candidateNodes.slice(currentIndex + 1);
             }
 
-            focusFirst(candidateNodes, false);
+            this.ngZone.runOutsideAngular(() => {
+                // eslint-disable-next-line promise/always-return,promise/catch-or-return
+                Promise.resolve().then(() => {
+                    focusFirst(candidateNodes, false, this.elementRef.nativeElement);
+                });
+            });
         }
     }
 }
