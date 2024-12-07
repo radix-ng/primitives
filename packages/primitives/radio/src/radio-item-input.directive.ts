@@ -1,6 +1,6 @@
-import { computed, Directive, inject, input } from '@angular/core';
-import { RdxRadioItemDirective } from '@radix-ng/primitives/radio';
+import { computed, Directive, input } from '@angular/core';
 import { RdxVisuallyHiddenDirective } from '@radix-ng/primitives/visually-hidden';
+import { injectRadioItem } from './radio-item.directive';
 
 @Directive({
     selector: '[rdxRadioItemInput]',
@@ -18,7 +18,7 @@ import { RdxVisuallyHiddenDirective } from '@radix-ng/primitives/visually-hidden
     }
 })
 export class RdxRadioItemInputDirective {
-    private readonly radioItem = inject(RdxRadioItemDirective);
+    private readonly radioItem = injectRadioItem();
 
     readonly name = input<string>();
     readonly value = computed(() => this.radioItem.value() || undefined);
