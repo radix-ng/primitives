@@ -10,7 +10,8 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
             directive: RdxVisuallyHiddenInputDirective,
             inputs: [
                 'name',
-                'required'
+                'required',
+                'value'
             ]
         }
     ],
