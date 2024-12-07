@@ -27,7 +27,11 @@ export class RdxRovingFocusItemDirective implements OnInit, OnDestroy {
     /** @ignore */
     readonly isCurrentTabStop = computed(() => this.parent.currentTabStopId() === this.id());
 
-    /** @ignore */
+    /**
+     * Lifecycle hook triggered on initialization.
+     * Registers the element with the parent roving focus group if it is focusable.
+     * @ignore
+     */
     ngOnInit() {
         if (this.focusable) {
             this.parent.registerItem(this.elementRef.nativeElement);
@@ -35,7 +39,11 @@ export class RdxRovingFocusItemDirective implements OnInit, OnDestroy {
         }
     }
 
-    /** @ignore */
+    /**
+     * Lifecycle hook triggered on destruction.
+     * Unregisters the element from the parent roving focus group if it is focusable.
+     * @ignore
+     */
     ngOnDestroy() {
         if (this.focusable) {
             this.parent.unregisterItem(this.elementRef.nativeElement);
@@ -43,7 +51,11 @@ export class RdxRovingFocusItemDirective implements OnInit, OnDestroy {
         }
     }
 
-    /** @ignore */
+    /**
+     * Determines the `tabIndex` of the element.
+     * Returns `0` if the element is the current tab stop; otherwise, returns `-1`.
+     * @ignore
+     */
     get tabIndex() {
         return this.isCurrentTabStop() ? 0 : -1;
     }
@@ -67,7 +79,13 @@ export class RdxRovingFocusItemDirective implements OnInit, OnDestroy {
         }
     }
 
-    /** @ignore */
+    /**
+     * Handles the `keydown` event for keyboard navigation within the roving focus group.
+     * Supports navigation based on orientation and direction, and focuses appropriate elements.
+     *
+     * @param event The `KeyboardEvent` object.
+     * @ignore
+     */
     handleKeydown(event: KeyboardEvent) {
         if (event.key === 'Tab' && event.shiftKey) {
             this.parent.onItemShiftTab();
@@ -77,6 +95,7 @@ export class RdxRovingFocusItemDirective implements OnInit, OnDestroy {
         if (event.target !== this.elementRef.nativeElement) return;
 
         const focusIntent = getFocusIntent(event, this.parent.orientation, this.parent.dir);
+
         if (focusIntent !== undefined) {
             if (event.metaKey || event.ctrlKey || event.altKey || (this.allowShiftKey ? false : event.shiftKey)) {
                 return;
