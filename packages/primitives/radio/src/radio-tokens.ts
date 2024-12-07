@@ -1,14 +1,14 @@
-import { InjectionToken } from '@angular/core';
+import { InjectionToken, ModelSignal } from '@angular/core';
 
 export interface RadioGroupProps {
     name?: string;
     disabled?: boolean;
     defaultValue?: string;
-    value?: string;
+    value?: ModelSignal<string | undefined>;
 }
 
 export interface RadioGroupDirective extends RadioGroupProps {
-    select(value: string): void;
+    select(value: string | undefined): void;
 
     onTouched(): void;
 }

@@ -1,4 +1,15 @@
-import { booleanAttribute, Directive, ElementRef, inject, InjectionToken, Input, OnInit, signal } from '@angular/core';
+import { BooleanInput } from '@angular/cdk/coercion';
+import {
+    booleanAttribute,
+    Directive,
+    ElementRef,
+    inject,
+    InjectionToken,
+    input,
+    Input,
+    OnInit,
+    signal
+} from '@angular/core';
 import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 import { RDX_RADIO_GROUP } from './radio-tokens';
 
@@ -15,11 +26,12 @@ export function injectRadioItem(): RdxRadioItemDirective {
     providers: [{ provide: RdxRadioItemToken, useExisting: RdxRadioItemDirective }],
     hostDirectives: [
         { directive: RdxRovingFocusItemDirective, inputs: ['tabStopId: id', 'focusable', 'active', 'allowShiftKey'] }],
+
     host: {
         type: 'button',
         role: 'radio',
         '[attr.aria-checked]': 'checked',
-        '[attr.data-disabled]': 'disabled ? "" : null',
+        '[attr.data-disabled]': 'disabled() ? "" : null',
         '[attr.data-state]': 'checked ? "checked" : "unchecked"',
         '(click)': 'onClick()',
         '(keydown)': 'onKeyDown($event)',
@@ -33,29 +45,34 @@ export class RdxRadioItemDirective implements OnInit {
 
     @Input() id: string;
 
-    @Input({ required: true }) value!: string;
+    readonly required = input<boolean>();
 
-    @Input({ transform: booleanAttribute }) disabled = false;
+    readonly value = input.required<string>();
+
+    readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     private readonly ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
     private isArrowKeyPressedSignal = signal(false);
 
     /** @ignore */
     ngOnInit() {
-        if (this.radioGroup.defaultValue === this.value) {
-            this.radioGroup.select(this.value);
+        if (this.radioGroup.defaultValue === this.value()) {
+            this.radioGroup.select(this.value());
         }
     }
 
     /** @ignore */
     get checked(): boolean {
-        return this.radioGroup.value === this.value;
+        if (this.radioGroup.value == undefined) return false;
+
+        return this.radioGroup.value() === this.value();
     }
 
     /** @ignore */
     onClick() {
-        if (!this.disabled) {
-            this.radioGroup.select(this.value);
+        if (!this.disabled()) {
+            this.radioGroup.select(this.value());
+            this.isArrowKeyPressedSignal.set(true);
         }
     }
 

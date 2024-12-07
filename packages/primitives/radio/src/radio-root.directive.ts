@@ -1,4 +1,4 @@
-import { booleanAttribute, Directive, EventEmitter, Input, Output } from '@angular/core';
+import { booleanAttribute, Directive, EventEmitter, Input, model, Output } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Orientation, RdxRovingFocusGroupDirective } from '@radix-ng/primitives/roving-focus';
 import { RadioGroupDirective, RadioGroupProps, RDX_RADIO_GROUP } from './radio-tokens';
@@ -20,13 +20,15 @@ import { RadioGroupDirective, RadioGroupProps, RDX_RADIO_GROUP } from './radio-t
     }
 })
 export class RdxRadioGroupDirective implements RadioGroupProps, RadioGroupDirective, ControlValueAccessor {
-    @Input() value?: string;
+    readonly value = model<string | undefined>();
 
     @Input({ transform: booleanAttribute }) disabled = false;
 
     @Input() defaultValue?: string;
 
-    @Input() orientation: Orientation = 'vertical';
+    @Input() required: boolean;
+
+    @Input() orientation: Orientation;
 
     /**
      * Event handler called when the value changes.
@@ -54,7 +56,7 @@ export class RdxRadioGroupDirective implements RadioGroupProps, RadioGroupDirect
      * @ignore
      */
     select(value: string): void {
-        this.value = value;
+        this.value.set(value);
         this.onValueChange.emit(value);
         this.onChange?.(value);
         this.onTouched();
@@ -66,7 +68,7 @@ export class RdxRadioGroupDirective implements RadioGroupProps, RadioGroupDirect
      * @ignore
      */
     writeValue(value: string): void {
-        this.value = value;
+        this.value.set(value);
     }
 
     /**
