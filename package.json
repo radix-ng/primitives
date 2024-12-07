@@ -148,6 +148,7 @@
         "eslint-plugin-promise": "^7.1.0",
         "eslint-plugin-rxjs": "^5.0.3",
         "husky": "^9.1.6",
+        "ohash": "^1.1.4",
         "jest": "29.7.0",
         "jest-environment-jsdom": "29.7.0",
         "jest-environment-node": "^29.7.0",

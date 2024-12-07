@@ -2,6 +2,7 @@ import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@stor
 import { AlignCenter, AlignLeft, AlignRight, LucideAngularModule } from 'lucide-angular';
 import { RdxToggleGroupItemDirective } from '../src/toggle-group-item.directive';
 import { RdxToggleGroupMultipleDirective } from '../src/toggle-group-multiple.directive';
+import { RdxToggleGroupRoot } from '../src/toggle-group-root.directive';
 import { RdxToggleGroupDirective } from '../src/toggle-group.directive';
 
 const html = String.raw;
@@ -14,6 +15,7 @@ export default {
                 RdxToggleGroupDirective,
                 RdxToggleGroupItemDirective,
                 RdxToggleGroupMultipleDirective,
+                RdxToggleGroupRoot,
                 LucideAngularModule,
                 LucideAngularModule.pick({ AlignRight, AlignLeft, AlignCenter })
             ]
@@ -110,6 +112,23 @@ export const Multiple: Story = {
                     <lucide-icon name="align-right" size="12"></lucide-icon>
                 </button>
             </div>
+        `
+    })
+};
+
+export const MultiProps: Story = {
+    render: () => ({
+        template: html`
+            <div
+                rdxToggleGroupRoot
+                type="multiple"
+                [defaultValue]="['Option 1', 'Option 2']"
+                [modelValueInput]="['Option 1']"
+            >
+                Multiple
+            </div>
+
+            <div rdxToggleGroupRoot type="single" [modelValueInput]="'Single Option'">Single</div>
         `
     })
 };
