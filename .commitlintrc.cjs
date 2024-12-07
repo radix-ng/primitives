@@ -49,6 +49,7 @@ const config = {
                 'kbd',
                 'radix-docs',
                 'radix-ssr-testing',
+                'roving-focus',
                 'showcase-taxonomy',
                 'progress',
                 'shadcn',

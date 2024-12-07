@@ -1,0 +1,33 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/blocks';
+import * as Stories from './roving-focus.stories';
+import { RdxRovingFocusGroupDirective } from '../src/roving-focus-group.directive';
+import { RdxRovingFocusItemDirective } from '../src/roving-focus-item.directive';
+
+
+<Meta title="Primitives/RovingFocus" />
+
+# Roving Focus
+
+
+<Canvas sourceState="hidden" of={Stories.Default} />
+
+
+## Anatomy
+
+```html
+<div rdxRovingFocusGroup>
+    <button rdxRovingFocusItem></button>
+    <button rdxRovingFocusItem></button>
+    <button rdxRovingFocusItem></button>
+</div>
+```
+
+## API Reference
+
+### RdxRovingFocusGroupDirective
+
+<ArgTypes of={RdxRovingFocusGroupDirective} />
+
+### RdxRovingFocusItemDirective
+
+<ArgTypes of={RdxRovingFocusItemDirective} />
