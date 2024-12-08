@@ -5,8 +5,7 @@
  * Copyright (c) ngxtension Authors. Licensed under the MIT License.
  */
 import { assertInInjectionContext, inject, Injector, runInInjectionContext } from '@angular/core';
-import { Nullable } from 'vitest';
-import { SafeFunction } from '../../types';
+import { Nullable, SafeFunction } from '../types';
 
 /**
  * `assertInjector` extends `assertInInjectionContext` with an optional `Injector`

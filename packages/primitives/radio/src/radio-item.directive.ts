@@ -1,15 +1,5 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import {
-    booleanAttribute,
-    Directive,
-    ElementRef,
-    inject,
-    InjectionToken,
-    input,
-    Input,
-    OnInit,
-    signal
-} from '@angular/core';
+import { booleanAttribute, Directive, ElementRef, inject, InjectionToken, input, OnInit, signal } from '@angular/core';
 import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 import { RDX_RADIO_GROUP } from './radio-tokens';
 
@@ -41,18 +31,18 @@ export function injectRadioItem(): RdxRadioItemDirective {
 })
 export class RdxRadioItemDirective implements OnInit {
     private readonly radioGroup = inject(RDX_RADIO_GROUP);
-    private readonly element = inject(ElementRef);
-
-    @Input() id: string;
-
-    readonly required = input<boolean>();
+    private readonly elementRef = inject(ElementRef);
 
     readonly value = input.required<string>();
+
+    readonly id = input<string>();
+
+    readonly required = input<boolean>();
 
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     private readonly ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
-    private isArrowKeyPressedSignal = signal(false);
+    private readonly isArrowKeyPressedSignal = signal(false);
 
     /** @ignore */
     ngOnInit() {
@@ -97,7 +87,7 @@ export class RdxRadioItemDirective implements OnInit {
              * To "check" the radio, we programmatically trigger a click event.
              */
             if (this.isArrowKeyPressedSignal()) {
-                this.element.nativeElement.click();
+                this.elementRef.nativeElement.click();
             }
         }, 0);
     }

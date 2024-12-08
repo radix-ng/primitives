@@ -6,7 +6,7 @@ import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, computed, DestroyRef, Directive, inject, Injector, model } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { ControlValueAccessor, NgControl, NgModel } from '@angular/forms';
-import { createInjectionToken } from '../../create-inject-context';
+import { createInjectionToken } from '../create-inject-context';
 
 const noop = () => undefined;
 
