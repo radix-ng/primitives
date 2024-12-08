@@ -62,7 +62,8 @@ const config = {
                 'ci',
                 'build',
                 'theme',
-                'themer'
+                'themer',
+                'popover'
             ]
         ]
     }
