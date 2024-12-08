@@ -68,6 +68,9 @@
             "@radix-ng/primitives/menubar": [
                 "packages/primitives/menubar/index.ts"
             ],
+            "@radix-ng/primitives/popover": [
+                "packages/primitives/popover/src/index.ts"
+            ],
             "@radix-ng/primitives/radio": [
                 "packages/primitives/radio/index.ts"
             ],
