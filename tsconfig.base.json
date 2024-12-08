@@ -56,6 +56,9 @@
             "@radix-ng/primitives/core": [
                 "packages/primitives/core/index.ts"
             ],
+            "@radix-ng/primitives/core/cva": [
+                "packages/primitives/core/control-value-accessor/index.ts"
+            ],
             "@radix-ng/primitives/dropdown-menu": [
                 "packages/primitives/dropdown-menu/index.ts"
             ],
