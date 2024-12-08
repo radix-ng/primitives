@@ -90,6 +90,7 @@ export class RdxRadioItemDirective implements OnInit {
 
     /** @ignore */
     onFocus() {
+        this.radioGroup.select(this.value());
         setTimeout(() => {
             /**
              * When navigating with arrow keys, focus triggers on the radio item.
