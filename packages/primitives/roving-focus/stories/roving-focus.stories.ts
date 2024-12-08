@@ -6,7 +6,7 @@ import { RovingFocusEventsComponent } from './roving-focus-events.component';
 const html = String.raw;
 
 export default {
-    title: 'Primitives/RovingFocus',
+    title: 'Utilities/Roving Focus',
     decorators: [
         moduleMetadata({
             imports: [

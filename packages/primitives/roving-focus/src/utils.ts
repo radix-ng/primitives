@@ -4,6 +4,8 @@ export type Direction = 'ltr' | 'rtl';
 export const ENTRY_FOCUS = 'rovingFocusGroup.onEntryFocus';
 export const EVENT_OPTIONS = { bubbles: false, cancelable: true };
 
+type FocusIntent = 'first' | 'last' | 'prev' | 'next';
+
 export const MAP_KEY_TO_FOCUS_INTENT: Record<string, FocusIntent> = {
     ArrowLeft: 'prev',
     ArrowUp: 'prev',
@@ -19,8 +21,6 @@ export function getDirectionAwareKey(key: string, dir?: Direction) {
     if (dir !== 'rtl') return key;
     return key === 'ArrowLeft' ? 'ArrowRight' : key === 'ArrowRight' ? 'ArrowLeft' : key;
 }
-
-type FocusIntent = 'first' | 'last' | 'prev' | 'next';
 
 export function getFocusIntent(event: KeyboardEvent, orientation?: Orientation, dir?: Direction) {
     const key = getDirectionAwareKey(event.key, dir);

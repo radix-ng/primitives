@@ -85,7 +85,9 @@ export class RdxSelectItemDirective implements Highlightable {
         });
     }
 
-    /** Gets the label to be used when determining whether the option should be focused. */
+    /** Gets the label to be used when determining whether the option should be focused.
+     * @ignore
+     */
     getLabel(): string {
         return this.viewValue;
     }
@@ -93,6 +95,7 @@ export class RdxSelectItemDirective implements Highlightable {
     /**
      * `Selects the option while indicating the selection came from the user. Used to
      * determine if the select's view -> model callback should be invoked.`
+     * @ignore
      */
     selectViaInteraction(): void {
         if (!this.disabled) {
@@ -102,6 +105,7 @@ export class RdxSelectItemDirective implements Highlightable {
         }
     }
 
+    /** @ignore */
     handleKeydown(event: KeyboardEvent): void {
         if (event.keyCode === ENTER || event.keyCode === SPACE) {
             this.selectViaInteraction();
@@ -112,11 +116,13 @@ export class RdxSelectItemDirective implements Highlightable {
         }
     }
 
+    /** @ignore */
     setActiveStyles(): void {
         this.highlighted = true;
         this.nativeElement.focus({ preventScroll: true });
     }
 
+    /** @ignore */
     setInactiveStyles(): void {
         this.highlighted = false;
     }
