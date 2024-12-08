@@ -1,3 +1,6 @@
+export type CompoDocInterfaceType = 'interface' | 'number' | 'string' | string;
+export type HTMLString = string;
+
 export interface CompodocEntity {
     id: string;
     name: string;
@@ -58,4 +61,24 @@ export type CompodocComponent = CompodocDirective;
 export interface CompodocDocumentation {
     classes?: any[];
     directives: CompodocDirective[];
+}
+
+export interface CompoDocInterfaceProperty {
+    name: string;
+    deprecated: boolean;
+    deprecationMessage: string;
+    type: CompoDocInterfaceType;
+    optional: boolean;
+    description: HTMLString;
+    jsdoctags: {
+        comment: HTMLString; // @default 123 -> "<p>123</p>"
+        kind: number;
+        deprecated: boolean;
+        tagName: {
+            escapedText: string; // @default 123 -> default
+            text: string;
+            kind: number;
+        };
+    }[];
+    line: number;
 }
