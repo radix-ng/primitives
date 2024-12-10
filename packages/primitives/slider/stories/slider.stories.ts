@@ -22,7 +22,9 @@ export default {
                 <div class="radix-themes light light-theme" data-radius="medium" data-scaling="100%">
                     ${story}
 
-                    <style></style>
+                    <style>
+                        /*Look at root main.scss*/
+                    </style>
                 </div>
             `
         )
@@ -35,7 +37,7 @@ export const Default: Story = {
     render: (args) => ({
         props: args,
         template: html`
-            <rdx-slider className="SliderRoot" style="display: flex; width: 200px;" [modelValue]="[45]" [step]="5">
+            <rdx-slider className="SliderRoot" [modelValue]="[45]" [step]="5">
                 <rdx-slider-track class="SliderTrack">
                     <rdx-slider-range class="SliderRange" />
                 </rdx-slider-track>
@@ -49,13 +51,7 @@ export const Inverted: Story = {
     render: (args) => ({
         props: args,
         template: html`
-            <rdx-slider
-                className="SliderRoot"
-                style="display: flex; width: 200px;"
-                inverted
-                [modelValue]="[45]"
-                [step]="5"
-            >
+            <rdx-slider className="SliderRoot" inverted [modelValue]="[45]" [step]="5">
                 <rdx-slider-track class="SliderTrack">
                     <rdx-slider-range class="SliderRange" />
                 </rdx-slider-track>
@@ -69,7 +65,7 @@ export const Thumbs: Story = {
     render: (args) => ({
         props: args,
         template: html`
-            <rdx-slider className="SliderRoot" style="display: flex; width: 200px;" [modelValue]="[45, 80]" [step]="5">
+            <rdx-slider className="SliderRoot" [modelValue]="[45, 80]" [step]="5">
                 <rdx-slider-track class="SliderTrack">
                     <rdx-slider-range class="SliderRange" />
                 </rdx-slider-track>
@@ -84,28 +80,14 @@ export const Vertical: Story = {
     render: (args) => ({
         props: args,
         template: html`
-            <br />
-
-            <rdx-slider
-                className="SliderRootV"
-                style="display: flex; height: 200px;"
-                [orientation]="'vertical'"
-                [modelValue]="[45]"
-                [step]="5"
-            >
+            <rdx-slider className="SliderRootV" [orientation]="'vertical'" [modelValue]="[45]" [step]="5">
                 <rdx-slider-track class="SliderTrackV">
                     <rdx-slider-range class="SliderRangeV" />
                 </rdx-slider-track>
                 <rdx-slider-thumb class="SliderThumbV" />
             </rdx-slider>
 
-            <rdx-slider
-                className="SliderRoot"
-                [orientation]="'horizontal'"
-                style="display: flex; width: 200px;"
-                [modelValue]="[45]"
-                [step]="5"
-            >
+            <rdx-slider className="SliderRoot" [orientation]="'horizontal'" [modelValue]="[45]" [step]="5">
                 <rdx-slider-track class="SliderTrack">
                     <rdx-slider-range class="SliderRange" />
                 </rdx-slider-track>
