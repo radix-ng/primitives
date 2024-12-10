@@ -1,5 +1,5 @@
-@import 'slider';
-
 @use '@angular/cdk';
+
+@import 'slider';
 
 @include cdk.a11y-visually-hidden();
