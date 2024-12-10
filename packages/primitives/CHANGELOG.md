@@ -1,3 +1,21 @@
+## 0.19.0 (2024-12-10)
+
+### 🚀 Features
+
+- **avatar:** move to zoneless, upd visibility logic ([c1c15c3](https://github.com/radix-ng/primitives/commit/c1c15c3))
+- **radio:** added roving focus ([afdde5d](https://github.com/radix-ng/primitives/commit/afdde5d))
+- **roving-focus:** added Roving Focus Direcrivces ([6f22c69](https://github.com/radix-ng/primitives/commit/6f22c69))
+- **checkbox:** added prefix rdx to checkbox directives ([1347e8c](https://github.com/radix-ng/primitives/commit/1347e8c))
+
+### 🩹 Fixes
+
+- **radio:** updated input element, added item-input directive ([fe4d69e](https://github.com/radix-ng/primitives/commit/fe4d69e))
+- **toggle:** added value for input element ([0be7115](https://github.com/radix-ng/primitives/commit/0be7115))
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+
 ## 0.18.2 (2024-12-04)
 
 ### 🩹 Fixes
