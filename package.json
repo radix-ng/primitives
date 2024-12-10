@@ -89,7 +89,7 @@
         "@angular-eslint/template-parser": "^18.4.0",
         "@angular/cli": "~18.2.11",
         "@angular/compiler-cli": "18.2.11",
-        "@angular/language-service": "18.2.11",
+        "@angular/language-service": "19.0.3",
         "@chromatic-com/storybook": "^3.2.2",
         "@commitlint/cli": "^19.5.0",
         "@commitlint/config-conventional": "^19.5.0",
