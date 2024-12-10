@@ -1,13 +1,6 @@
-import { ConnectionPositionPair } from '@angular/cdk/overlay';
-import { RdxPopoverAlign, RdxPopoverSide } from './popover.types';
+import { RdxPopoverAlign, RdxPopoverPositions, RdxPopoverSide } from './popover.types';
 
-type PopoverPositions = {
-    [key in RdxPopoverSide]: {
-        [key in RdxPopoverAlign]: ConnectionPositionPair;
-    };
-};
-
-export const POPOVER_POSITIONS: PopoverPositions = {
+export const POPOVER_POSITIONS: RdxPopoverPositions = {
     [RdxPopoverSide.Top]: {
         [RdxPopoverAlign.Center]: {
             originX: 'center',

@@ -1,6 +1,6 @@
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { LucideAngularModule, Plus, X } from 'lucide-angular';
+import { LucideAngularModule, MountainSnowIcon, X } from 'lucide-angular';
 import { RdxPopoverModule } from '../index';
 import { RdxPopoverEventsComponent } from './popover-events.components';
 import { RdxPopoverPositioningComponent } from './popover-positioning.component';
@@ -18,7 +18,7 @@ export default {
                 RdxPopoverPositioningComponent,
                 RdxPopoverTriggeringComponent,
                 LucideAngularModule,
-                LucideAngularModule.pick({ Plus, X })
+                LucideAngularModule.pick({ MountainSnowIcon, X })
             ],
             providers: [provideAnimations()]
         }),
@@ -227,11 +227,11 @@ export const Default: Story = {
             <div class="container">
                 <ng-container rdxPopoverRoot>
                     <button class="IconButton" rdxPopoverTrigger>
-                        <lucide-angular size="16" name="plus" style="display: flex;"></lucide-angular>
+                        <lucide-angular size="16" name="mountain-snow-icon" style="display: flex;"></lucide-angular>
                     </button>
 
                     <ng-template rdxPopoverContent [sideOffset]="8">
-                        <div class="PopoverContent" rdxPopoverContentAttributes>
+                        <div class="PopoverContent">
                             <button class="PopoverClose" rdxPopoverClose aria-label="Close">
                                 <lucide-angular name="x" size="16" style="display: flex" />
                             </button>

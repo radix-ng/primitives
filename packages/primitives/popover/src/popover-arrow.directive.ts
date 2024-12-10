@@ -1,16 +1,29 @@
-import { computed, Directive, effect, ElementRef, inject, input, Renderer2 } from '@angular/core';
-import { RdxPopoverContentToken } from './popover-content.token';
-import { RdxPopoverSide } from './popover.types';
+import { ConnectedOverlayPositionChange } from '@angular/cdk/overlay';
+import {
+    AfterViewInit,
+    computed,
+    Directive,
+    effect,
+    ElementRef,
+    inject,
+    input,
+    Renderer2,
+    signal,
+    untracked
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { injectPopoverRoot } from './popover-root.directive';
+import { getArrowPositionParams, getSideAndAlignFromAllPossibleConnectedPositions } from './popover.utils';
 
 @Directive({
     selector: '[rdxPopoverArrow]',
     standalone: true
 })
-export class RdxPopoverArrowDirective {
+export class RdxPopoverArrowDirective implements AfterViewInit {
     /** @ignore */
     private readonly renderer = inject(Renderer2);
     /** @ignore */
-    private readonly contentDirective = inject(RdxPopoverContentToken);
+    private readonly popoverRoot = injectPopoverRoot();
     /** @ignore */
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
@@ -42,45 +55,70 @@ export class RdxPopoverArrowDirective {
     });
 
     /** @ignore */
+    private readonly currentArrowSvgElement = signal<HTMLOrSVGElement | undefined>(void 0);
+    /** @ignore */
+    private readonly position = toSignal(this.popoverRoot.popoverContentDirective().positionChange());
+
+    /** @ignore */
+    private triggerRect: DOMRect;
+
+    /** @ignore */
+    ngAfterViewInit() {
+        if (this.elementRef.nativeElement.parentElement) {
+            this.renderer.setStyle(this.elementRef.nativeElement.parentElement, 'position', 'relative');
+        }
+        this.renderer.setStyle(this.elementRef.nativeElement, 'position', 'absolute');
+        this.renderer.setStyle(this.elementRef.nativeElement, 'boxSizing', '');
+        this.renderer.setStyle(this.elementRef.nativeElement, 'fontSize', '0px');
+        this.triggerRect = this.popoverRoot.popoverTriggerDirective().elementRef.nativeElement.getBoundingClientRect();
+    }
+
+    /** @ignore */
+    private setPosition(position: ConnectedOverlayPositionChange) {
+        console.log('position.connectionPair', position.connectionPair);
+        console.log(
+            'getSideAndAlignFromAllPossibleConnectedPositions(position.connectionPair)',
+            getSideAndAlignFromAllPossibleConnectedPositions(position.connectionPair)
+        );
+
+        const posParams = getArrowPositionParams(
+            getSideAndAlignFromAllPossibleConnectedPositions(position.connectionPair),
+            { width: this.width(), height: this.height() },
+            { width: this.triggerRect.width, height: this.triggerRect.height }
+        );
+
+        this.renderer.setStyle(this.elementRef.nativeElement, 'top', posParams.top);
+        this.renderer.setStyle(this.elementRef.nativeElement, 'bottom', posParams.bottom);
+        this.renderer.setStyle(this.elementRef.nativeElement, 'left', posParams.left);
+        this.renderer.setStyle(this.elementRef.nativeElement, 'right', posParams.right);
+        this.renderer.setStyle(this.elementRef.nativeElement, 'transform', posParams.transform);
+    }
+
+    /** @ignore */
     private readonly onArrowSvgElementChangeEffect = effect(() => {
         const arrowElement = this.arrowSvgElement();
 
-        this.renderer.appendChild(this.elementRef.nativeElement, arrowElement);
+        untracked(() => {
+            const currentArrowSvgElement = this.currentArrowSvgElement();
+            if (currentArrowSvgElement) {
+                this.renderer.removeChild(this.elementRef.nativeElement, currentArrowSvgElement);
+            }
+            this.currentArrowSvgElement.set(arrowElement);
+            this.renderer.setStyle(this.elementRef.nativeElement, 'width', `${this.width()}px`);
+            this.renderer.setStyle(this.elementRef.nativeElement, 'height', `${this.height()}px`);
+            this.renderer.appendChild(this.elementRef.nativeElement, this.currentArrowSvgElement());
+        });
     });
 
     /** @ignore */
-    private readonly onSideChangeEffect = effect(() => {
-        const side = this.contentDirective.side();
+    private readonly OnContentPositionChange = effect(() => {
+        const position = this.position();
 
-        this.elementRef.nativeElement.parentElement?.setAttribute('style', `position: relative;`);
-        this.elementRef.nativeElement.style.position = 'absolute';
-        this.elementRef.nativeElement.style.boxSizing = '';
-        this.elementRef.nativeElement.style.width = `${this.width()}px`;
-        this.elementRef.nativeElement.style.height = `${this.height()}px`;
-        this.elementRef.nativeElement.style.fontSize = '0px';
-
-        if ([RdxPopoverSide.Top, RdxPopoverSide.Bottom].includes(side)) {
-            this.elementRef.nativeElement.style.left = `calc(50% - ${this.width() / 2}px)`;
-            this.elementRef.nativeElement.style.top = '100%';
-
-            if (side === RdxPopoverSide.Bottom) {
-                this.elementRef.nativeElement.style.transform = 'rotate(180deg)';
-                this.elementRef.nativeElement.style.top = `-${this.height()}px`;
+        untracked(() => {
+            if (!position) {
+                return;
             }
-        }
-
-        if ([RdxPopoverSide.Left, RdxPopoverSide.Right].includes(side)) {
-            this.elementRef.nativeElement.style.top = `calc(50% - ${this.height() / 2}px)`;
-
-            if (side === RdxPopoverSide.Left) {
-                this.elementRef.nativeElement.style.left = `100%`;
-                this.elementRef.nativeElement.style.transform = 'rotate(-90deg) translate(0, -50%)';
-            }
-
-            if (side === RdxPopoverSide.Right) {
-                this.elementRef.nativeElement.style.right = `100%`;
-                this.elementRef.nativeElement.style.transform = 'rotate(90deg) translate(0, -50%)';
-            }
-        }
+            this.setPosition(position);
+        });
     });
 }

@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Plus, X } from 'lucide-angular';
+import { LucideAngularModule, MountainSnowIcon, X } from 'lucide-angular';
 import { RdxPopoverModule } from '../index';
 
 @Component({
@@ -217,12 +217,12 @@ import { RdxPopoverModule } from '../index';
         </div>
         <div class="container">
             <ng-container [open]="isOpen()" (onOpenChange)="count()" rdxPopoverRoot>
-                <button class="IconButton" #triggerElement rdxPopoverTrigger>
-                    <lucide-angular [img]="PlusIcon" size="16" style="display: flex" />
+                <button class="IconButton" rdxPopoverTrigger>
+                    <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                 </button>
 
                 <ng-template [sideOffset]="8" rdxPopoverContent>
-                    <div class="PopoverContent" rdxPopoverContentAttributes>
+                    <div class="PopoverContent">
                         <button class="PopoverClose" rdxPopoverClose aria-label="Close">
                             <lucide-angular [img]="XIcon" size="16" style="display: flex" />
                         </button>
@@ -253,7 +253,7 @@ import { RdxPopoverModule } from '../index';
     `
 })
 export class RdxPopoverTriggeringComponent {
-    readonly PlusIcon = Plus;
+    readonly MountainSnowIcon = MountainSnowIcon;
     readonly XIcon = X;
 
     isOpen = signal(false);

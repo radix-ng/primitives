@@ -1,5 +1,5 @@
 import { Component, ElementRef, viewChild } from '@angular/core';
-import { LucideAngularModule, Plus, X } from 'lucide-angular';
+import { LucideAngularModule, MountainSnowIcon, X } from 'lucide-angular';
 import { RdxPopoverModule } from '../index';
 
 @Component({
@@ -194,7 +194,7 @@ import { RdxPopoverModule } from '../index';
         <div class="container">
             <ng-container rdxPopoverRoot>
                 <button class="IconButton" #triggerElement rdxPopoverTrigger>
-                    <lucide-angular [img]="PlusIcon" size="16" style="display: flex" />
+                    <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                 </button>
 
                 <ng-template
@@ -203,7 +203,7 @@ import { RdxPopoverModule } from '../index';
                     (onPointerDownOutside)="onPointerDownOutside($event)"
                     rdxPopoverContent
                 >
-                    <div class="PopoverContent" rdxPopoverContentAttributes>
+                    <div class="PopoverContent">
                         <button class="PopoverClose" rdxPopoverClose aria-label="Close">
                             <lucide-angular [img]="XIcon" size="16" style="display: flex" />
                         </button>
@@ -236,7 +236,7 @@ import { RdxPopoverModule } from '../index';
 export class RdxPopoverEventsComponent {
     private readonly triggerElement = viewChild<ElementRef<HTMLElement>>('triggerElement');
 
-    readonly PlusIcon = Plus;
+    readonly MountainSnowIcon = MountainSnowIcon;
     readonly XIcon = X;
 
     onEscapeKeyDown(event: KeyboardEvent) {

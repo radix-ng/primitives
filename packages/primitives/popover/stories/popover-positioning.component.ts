@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Plus, X } from 'lucide-angular';
+import { LucideAngularModule, MountainSnowIcon, X } from 'lucide-angular';
 import { RdxPopoverModule } from '../index';
 import { RdxPopoverAlign, RdxPopoverSide } from '../src/popover.types';
 
@@ -23,7 +23,7 @@ import { RdxPopoverAlign, RdxPopoverSide } from '../src/popover.types';
         /* reset */
         button,
         fieldset,
-        input {
+        input:not(.no-reset) {
             all: unset;
         }
 
@@ -205,30 +205,43 @@ import { RdxPopoverAlign, RdxPopoverSide } from '../src/popover.types';
     template: `
         <div class="ParamsContainer">
             Side:
-            <select [(ngModel)]="selectedSide">
+            <select [ngModel]="selectedSide()" (ngModelChange)="selectedSide.set($event)">
                 <option [value]="sides.Top">{{ sides.Top }}</option>
                 <option [value]="sides.Bottom">{{ sides.Bottom }}</option>
                 <option [value]="sides.Left">{{ sides.Left }}</option>
                 <option [value]="sides.Right">{{ sides.Right }}</option>
             </select>
             Align:
-            <select [(ngModel)]="selectedAlign">
+            <select [ngModel]="selectedAlign()" (ngModelChange)="selectedAlign.set($event)">
                 <option [value]="aligns.Center">{{ aligns.Center }}</option>
                 <option [value]="aligns.Start">{{ aligns.Start }}</option>
                 <option [value]="aligns.End">{{ aligns.End }}</option>
             </select>
             SideOffset:
-            <input [(ngModel)]="sideOffset" type="number" />
+            <input class="no-reset" [ngModel]="sideOffset()" (ngModelChange)="sideOffset.set($event)" type="number" />
+            Alternate positions:
+            <input
+                class="no-reset"
+                [ngModel]="disableAlternatePositions()"
+                (ngModelChange)="disableAlternatePositions.set($event)"
+                type="checkbox"
+            />
         </div>
 
         <div class="container">
             <ng-container rdxPopoverRoot>
-                <button class="IconButton" #triggerElement rdxPopoverTrigger>
-                    <lucide-angular [img]="PlusIcon" size="16" style="display: flex" />
+                <button class="IconButton" rdxPopoverTrigger>
+                    <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                 </button>
 
-                <ng-template [sideOffset]="sideOffset" [side]="selectedSide" [align]="selectedAlign" rdxPopoverContent>
-                    <div class="PopoverContent" rdxPopoverContentAttributes>
+                <ng-template
+                    [sideOffset]="sideOffset()"
+                    [side]="selectedSide()"
+                    [align]="selectedAlign()"
+                    [disableAlternatePositions]="disableAlternatePositions()"
+                    rdxPopoverContent
+                >
+                    <div class="PopoverContent">
                         <button class="PopoverClose" rdxPopoverClose aria-label="Close">
                             <lucide-angular [img]="XIcon" size="16" style="display: flex" />
                         </button>
@@ -259,12 +272,13 @@ import { RdxPopoverAlign, RdxPopoverSide } from '../src/popover.types';
     `
 })
 export class RdxPopoverPositioningComponent {
-    readonly PlusIcon = Plus;
+    readonly MountainSnowIcon = MountainSnowIcon;
     readonly XIcon = X;
 
-    selectedSide = RdxPopoverSide.Top;
-    selectedAlign = RdxPopoverAlign.Center;
-    sideOffset = 8;
+    selectedSide = signal(RdxPopoverSide.Top);
+    selectedAlign = signal(RdxPopoverAlign.Center);
+    sideOffset = signal(8);
+    disableAlternatePositions = signal(false);
 
     readonly sides = RdxPopoverSide;
     readonly aligns = RdxPopoverAlign;

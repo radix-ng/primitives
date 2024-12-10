@@ -1,13 +1,9 @@
-import { ConnectedPosition, Overlay, OverlayRef, PositionStrategy } from '@angular/cdk/overlay';
-import { TemplatePortal } from '@angular/cdk/portal';
 import { DOCUMENT } from '@angular/common';
 import {
     computed,
     contentChild,
-    DestroyRef,
     Directive,
     effect,
-    ElementRef,
     forwardRef,
     inject,
     InjectionToken,
@@ -16,12 +12,9 @@ import {
     output,
     signal,
     untracked,
-    ViewContainerRef,
-    ViewRef
+    ViewContainerRef
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { filter, take } from 'rxjs';
-import { RdxPopoverContentToken } from './popover-content.token';
+import { RdxPopoverContentDirective } from './popover-content.directive';
 import { RdxPopoverTriggerDirective } from './popover-trigger.directive';
 import { RdxPopoverState } from './popover.types';
 
@@ -43,20 +36,10 @@ export function injectPopoverRoot(): RdxPopoverRootDirective {
     exportAs: 'rdxPopoverRoot'
 })
 export class RdxPopoverRootDirective implements OnInit {
-    /** @ignore */
-    private readonly viewContainerRef = inject(ViewContainerRef);
-    /** @ignore */
-    private readonly destroyRef = inject(DestroyRef);
-    /** @ignore */
-    private readonly overlay = inject(Overlay);
-    /** @ignore */
-    private readonly document = inject(DOCUMENT);
-
     /**
      * The open state of the popover when it is initially rendered. Use when you do not need to control its open state.
      */
     readonly defaultOpen = input<boolean>(false);
-
     /**
      * The controlled open state of the popover. Must be used in conjunction with onOpenChange.
      */
@@ -68,30 +51,28 @@ export class RdxPopoverRootDirective implements OnInit {
     readonly onOpenChange = output<boolean>();
 
     /** @ignore */
+    readonly popoverContentDirective = contentChild.required(RdxPopoverContentDirective);
+    /** @ignore */
+    readonly popoverTriggerDirective = contentChild.required(RdxPopoverTriggerDirective);
+
+    /** @ignore */
+    readonly viewContainerRef = inject(ViewContainerRef);
+    /** @ignore */
+    private readonly document = inject(DOCUMENT);
+
+    /** @ignore */
     readonly isOpen = signal<boolean>(this.defaultOpen());
     /** @ignore */
     readonly state = computed<RdxPopoverState>(() => {
         const currentIsOpen = this.isOpen();
-
         if (currentIsOpen) {
             return 'open';
         }
-
         return 'closed';
     });
-    /** @ignore */
-    readonly popoverContentDirective = contentChild.required(RdxPopoverContentToken);
-    /** @ignore */
-    readonly popoverTriggerElementRef = contentChild.required(RdxPopoverTriggerDirective, { read: ElementRef });
 
     /** @ignore */
-    private overlayRef?: OverlayRef;
-    /** @ignore */
-    private instance?: ViewRef;
-    /** @ignore */
-    private portal: TemplatePortal<unknown>;
-    /** @ignore */
-    private isControlledExternally = computed(() => signal(this.open() !== undefined));
+    private isControlledExternally = computed(() => signal(this.open() !== void 0));
 
     /** @ignore */
     ngOnInit(): void {
@@ -100,6 +81,7 @@ export class RdxPopoverRootDirective implements OnInit {
         }
     }
 
+    /** @ignore */
     controlledExternally() {
         return this.isControlledExternally().asReadonly();
     }
@@ -129,39 +111,6 @@ export class RdxPopoverRootDirective implements OnInit {
     }
 
     /** @ignore */
-    private handleOverlayKeydown(): void {
-        if (!this.overlayRef) {
-            return;
-        }
-
-        this.overlayRef
-            .keydownEvents()
-            .pipe(
-                filter((event) => event.key === 'Escape'),
-                takeUntilDestroyed(this.destroyRef)
-            )
-            .subscribe((event) => {
-                this.popoverContentDirective().onEscapeKeyDown.emit(event);
-
-                if (!event.defaultPrevented) {
-                    this.handleClose();
-                }
-            });
-    }
-
-    /** @ignore */
-    private handlePointerDownOutside(): void {
-        if (!this.overlayRef) {
-            return;
-        }
-
-        this.overlayRef
-            .outsidePointerEvents()
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe((event) => this.popoverContentDirective().onPointerDownOutside.emit(event));
-    }
-
-    /** @ignore */
     private setOpen(open = false): void {
         if (open) {
             this.document.dispatchEvent(new CustomEvent('popover.open'));
@@ -172,74 +121,13 @@ export class RdxPopoverRootDirective implements OnInit {
     }
 
     /** @ignore */
-    private createOverlayRef(): OverlayRef {
-        if (this.overlayRef) {
-            return this.overlayRef;
-        }
-
-        this.overlayRef = this.overlay.create({
-            direction: undefined,
-            positionStrategy: this.getPositionStrategy(this.popoverContentDirective().position()),
-            scrollStrategy: this.overlay.scrollStrategies.reposition({})
-        });
-
-        this.overlayRef
-            .detachments()
-            .pipe(take(1), takeUntilDestroyed(this.destroyRef))
-            .subscribe(() => this.detach());
-
-        this.handleOverlayKeydown();
-        this.handlePointerDownOutside();
-
-        return this.overlayRef;
-    }
-
-    /** @ignore */
     private show(): void {
-        this.overlayRef = this.createOverlayRef();
-
-        this.detach();
-
-        this.portal =
-            this.portal ||
-            new TemplatePortal(this.popoverContentDirective().templateRef, this.viewContainerRef, {
-                state: this.state,
-                side: this.popoverContentDirective().side
-            });
-        this.instance = this.overlayRef.attach(this.portal);
-    }
-
-    /** @ignore */
-    private detach(): void {
-        if (this.overlayRef?.hasAttached()) {
-            this.overlayRef.detach();
-        }
+        this.popoverContentDirective().show();
     }
 
     /** @ignore */
     private hide(): void {
-        if (this.isControlledExternally()() && this.open()) {
-            return;
-        }
-        this.instance?.destroy();
-    }
-
-    /** @ignore */
-    private getPositionStrategy(
-        connectedPosition: ConnectedPosition,
-        altConnectedPositions: ConnectedPosition[] = []
-    ): PositionStrategy {
-        const positions = [
-            connectedPosition,
-            ...altConnectedPositions
-        ];
-        console.log('positions', positions);
-        return this.overlay
-            .position()
-            .flexibleConnectedTo(this.popoverTriggerElementRef())
-            .withFlexibleDimensions(false)
-            .withPositions(positions)
-            .withLockedPosition(true);
+        this.popoverContentDirective().hide();
     }
 
     /** @ignore */
@@ -256,24 +144,11 @@ export class RdxPopoverRootDirective implements OnInit {
     });
 
     /** @ignore */
-    private readonly onPositionChangeEffect = effect(() => {
-        const position = this.popoverContentDirective().position();
-
-        untracked(() => {
-            if (this.overlayRef) {
-                const positionStrategy = this.getPositionStrategy(position);
-
-                this.overlayRef.updatePositionStrategy(positionStrategy);
-            }
-        });
-    });
-
-    /** @ignore */
     private readonly onOpenChangeEffect = effect(() => {
         const currentOpen = this.open();
 
         untracked(() => {
-            this.isControlledExternally().set(currentOpen !== undefined);
+            this.isControlledExternally().set(currentOpen !== void 0);
             if (this.isControlledExternally()()) {
                 this.setOpen(currentOpen);
             }

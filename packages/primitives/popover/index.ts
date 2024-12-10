@@ -1,14 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RdxPopoverArrowDirective } from './src/popover-arrow.directive';
 import { RdxPopoverCloseDirective } from './src/popover-close.directive';
-import { RdxPopoverContentAttributesDirective } from './src/popover-content-attributes.directive';
 import { RdxPopoverContentDirective } from './src/popover-content.directive';
 import { RdxPopoverRootDirective } from './src/popover-root.directive';
 import { RdxPopoverTriggerDirective } from './src/popover-trigger.directive';
 
 export * from './src/popover-arrow.directive';
 export * from './src/popover-close.directive';
-export * from './src/popover-content-attributes.directive';
 export * from './src/popover-content.directive';
 export * from './src/popover-root.directive';
 export * from './src/popover-trigger.directive';
@@ -19,7 +17,6 @@ const _imports = [
     RdxPopoverCloseDirective,
     RdxPopoverContentDirective,
     RdxPopoverTriggerDirective,
-    RdxPopoverContentAttributesDirective,
     RdxPopoverRootDirective
 ];
 
