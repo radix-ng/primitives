@@ -1,75 +1,63 @@
-import { isPlatformBrowser } from '@angular/common';
-import {
-    Directive,
-    inject,
-    Input,
-    NgZone,
-    numberAttribute,
-    OnDestroy,
-    OnInit,
-    PLATFORM_ID,
-    signal
-} from '@angular/core';
-import { injectAvatar } from './avatar-root.directive';
+import { Directive, effect, inject, input, OnDestroy, signal } from '@angular/core';
+import { RdxAvatarRootContext } from './avatar-root.directive';
 import { injectAvatarConfig } from './avatar.config';
-
-export interface RdxAvatarFallbackProps {
-    delayMs?: number;
-}
 
 @Directive({
     selector: 'span[rdxAvatarFallback]',
-    exportAs: 'rdxAvatarFallback',
     standalone: true,
+    exportAs: 'rdxAvatarFallback',
     host: {
-        '[style.display]': 'visible() ? null : "none"'
+        '[style.display]': 'shouldRender ? null : "none" '
     }
 })
-export class RdxAvatarFallbackDirective implements RdxAvatarFallbackProps, OnInit, OnDestroy {
-    private readonly avatar = injectAvatar();
+export class RdxAvatarFallbackDirective implements OnDestroy {
+    protected readonly avatarRoot = inject(RdxAvatarRootContext);
 
     private readonly config = injectAvatarConfig();
 
-    private readonly ngZone = inject(NgZone);
+    readonly delayMs = input<number>(this.config.delayMs);
 
-    private readonly platformId = inject(PLATFORM_ID);
-
-    /**
-     * Define a delay before the fallback is shown.
-     * This is useful to only show the fallback for those with slower connections.
-     * @default 0
-     */
-    @Input({ alias: 'rdxDelayMs', transform: numberAttribute }) delayMs: number = this.config.delayMs;
-
-    readonly visible = signal(false);
-
-    /**
-     * Determine the delay has elapsed, and we can show the fallback.
-     */
-    private delayElapsed = false;
-
+    protected readonly canRender = signal(false);
     private timeoutId: ReturnType<typeof setTimeout> | null = null;
 
-    ngOnInit(): void {
-        if (isPlatformBrowser(this.platformId)) {
-            this.ngZone.runOutsideAngular(() => {
-                this.timeoutId = globalThis.setTimeout(() => {
-                    this.ngZone.run(() => {
-                        this.delayElapsed = true;
-                        this.updateVisibility();
-                    });
-                }, this.delayMs);
-            });
+    constructor() {
+        effect(
+            () => {
+                const status = this.avatarRoot.imageLoadingStatus();
+                if (status === 'loading') {
+                    this.startDelayTimer();
+                } else {
+                    this.clearDelayTimer();
+                    this.canRender.set(false);
+                }
+            },
+            { allowSignalWrites: true }
+        );
+    }
+
+    get shouldRender() {
+        return this.canRender() && this.avatarRoot.imageLoadingStatus() !== 'loaded';
+    }
+
+    private startDelayTimer() {
+        this.clearDelayTimer();
+        if (this.delayMs() > 0) {
+            this.timeoutId = setTimeout(() => {
+                this.canRender.set(true);
+            }, this.delayMs());
+        } else {
+            this.canRender.set(true);
         }
     }
 
-    ngOnDestroy(): void {
-        if (isPlatformBrowser(this.platformId) && this.timeoutId !== null) {
-            globalThis.clearTimeout(this.timeoutId);
+    private clearDelayTimer() {
+        if (this.timeoutId !== null) {
+            clearTimeout(this.timeoutId);
+            this.timeoutId = null;
         }
     }
 
-    private updateVisibility(): void {
-        this.visible.set(this.delayElapsed && this.avatar._state() !== 'loaded');
+    ngOnDestroy() {
+        this.clearDelayTimer();
     }
 }
