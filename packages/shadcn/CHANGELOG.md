@@ -1,3 +1,17 @@
+## 0.9.0 (2024-12-10)
+
+### 🚀 Features
+
+- **checkbox:** added prefix rdx to checkbox directives ([1347e8c](https://github.com/radix-ng/primitives/commit/1347e8c))
+
+### 🧱 Updated Dependencies
+
+- Updated primitives to 0.19.0
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+
 ## 0.8.11 (2024-12-04)
 
 ### 🧱 Updated Dependencies
