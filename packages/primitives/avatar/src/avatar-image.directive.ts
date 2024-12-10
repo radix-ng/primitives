@@ -1,53 +1,47 @@
-import { Directive, ElementRef, EventEmitter, inject, OnInit, Output } from '@angular/core';
-import { injectAvatar, RdxImageLoadingStatus } from './avatar-root.directive';
-
-export interface RdxAvatarImageProps {
-    onLoadingStatusChange?: EventEmitter<RdxImageLoadingStatus>;
-}
+import { computed, Directive, ElementRef, inject, input, OnInit, output } from '@angular/core';
+import { RdxAvatarRootContext, RdxImageLoadingStatus } from './avatar-root.directive';
 
 @Directive({
     selector: 'img[rdxAvatarImage]',
-    exportAs: 'rdxAvatarImage',
     standalone: true,
+    exportAs: 'rdxAvatarImage',
     host: {
-        role: 'img',
         '(load)': 'onLoad()',
-        '(error)': 'onError()'
+        '(error)': 'onError()',
+        '[style.display]': '(imageLoadingStatus() === "loaded")? null : "none"'
     }
 })
-export class RdxAvatarImageDirective implements RdxAvatarImageProps, OnInit {
-    private readonly avatar = injectAvatar();
+export class RdxAvatarImageDirective implements OnInit {
+    private readonly avatarRoot = inject(RdxAvatarRootContext);
+    private readonly elementRef = inject(ElementRef<HTMLImageElement>);
 
-    private readonly elementRef = inject<ElementRef<HTMLImageElement>>(ElementRef);
+    readonly src = input.required<string>;
 
-    /**
-     * By default, it will only render when it has loaded.
-     * You can use the `onLoadingStatusChange` handler if you need more control.
-     */
-    @Output() onLoadingStatusChange = new EventEmitter<RdxImageLoadingStatus>();
+    readonly onLoadingStatusChange = output<RdxImageLoadingStatus>();
+
+    readonly imageLoadingStatus = computed(() => this.avatarRoot.imageLoadingStatus());
 
     ngOnInit(): void {
-        this.avatar._setState('loading');
-
         if (!this.nativeElement.src) {
-            this.avatar._setState('error');
+            this.setImageStatus('error');
+        } else if (this.nativeElement.complete) {
+            this.setImageStatus('loaded');
+        } else {
+            this.setImageStatus('loading');
         }
-
-        if (this.nativeElement.complete) {
-            this.avatar._setState('loaded');
-        }
-
-        this.onLoadingStatusChange.emit(this.avatar._state());
     }
 
-    protected onLoad(): void {
-        this.avatar._setState('loaded');
-        this.onLoadingStatusChange.emit('loaded');
+    onLoad() {
+        this.setImageStatus('loaded');
     }
 
-    protected onError(): void {
-        this.avatar._setState('error');
-        this.onLoadingStatusChange.emit('error');
+    onError() {
+        this.setImageStatus('error');
+    }
+
+    private setImageStatus(status: RdxImageLoadingStatus) {
+        this.avatarRoot.imageLoadingStatus.set(status);
+        this.onLoadingStatusChange.emit(status);
     }
 
     get nativeElement() {

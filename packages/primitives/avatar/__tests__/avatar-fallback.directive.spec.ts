@@ -10,7 +10,7 @@ import { RdxAvatarRootDirective } from '../src/avatar-root.directive';
     imports: [RdxAvatarFallbackDirective, RdxAvatarRootDirective],
     template: `
         <span rdxAvatarRoot>
-            <span [rdxDelayMs]="delay" rdxAvatarFallback>fallback</span>
+            <span [delayMs]="delay" rdxAvatarFallback>fallback</span>
             <span rdxAvatarFallback>fallback2</span>
         </span>
     `
