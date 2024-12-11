@@ -169,6 +169,53 @@ export const Default: Story = {
     })
 };
 
+export const Multiple: Story = {
+    render: () => ({
+        template: html`
+            <div class="container" style="gap: 40px;">
+                <ng-container rdxTooltipRoot>
+                    <button class="IconButton" rdxTooltipTrigger>
+                        <lucide-angular size="16" name="plus" style="display: flex;"></lucide-angular>
+                    </button>
+
+                    <ng-template rdxTooltipContent [sideOffset]="60">
+                        <div class="TooltipContent" rdxTooltipContentAttributes>
+                            Add to library
+                            <div class="TooltipArrow" rdxTooltipArrow></div>
+                        </div>
+                    </ng-template>
+                </ng-container>
+
+                <ng-container rdxTooltipRoot>
+                    <button class="IconButton" rdxTooltipTrigger>
+                        <lucide-angular size="16" name="plus" style="display: flex;"></lucide-angular>
+                    </button>
+
+                    <ng-template rdxTooltipContent [sideOffset]="8">
+                        <div class="TooltipContent" rdxTooltipContentAttributes>
+                            Add to library
+                            <div class="TooltipArrow" rdxTooltipArrow></div>
+                        </div>
+                    </ng-template>
+                </ng-container>
+
+                <ng-container rdxTooltipRoot>
+                    <button class="IconButton" rdxTooltipTrigger>
+                        <lucide-angular size="16" name="plus" style="display: flex;"></lucide-angular>
+                    </button>
+
+                    <ng-template rdxTooltipContent [sideOffset]="1">
+                        <div class="TooltipContent" rdxTooltipContentAttributes>
+                            Add to library
+                            <div class="TooltipArrow" rdxTooltipArrow></div>
+                        </div>
+                    </ng-template>
+                </ng-container>
+            </div>
+        `
+    })
+};
+
 export const Events: Story = {
     render: () => ({
         template: html`
