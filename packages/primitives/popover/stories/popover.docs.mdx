@@ -1,0 +1,136 @@
+import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
+import * as PopoverStories from "./popover.stories";
+import {RdxPopoverRootDirective} from "../src/popover-root.directive";
+import {RdxPopoverContentDirective} from "../src/popover-content.directive";
+import {RdxPopoverArrowDirective} from "../src/popover-arrow.directive";
+import {RdxPopoverCloseDirective} from "../src/popover-close.directive";
+
+<Meta title="Primitives/Popover" />
+
+# Popover
+
+#### A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.
+
+## Default
+
+<Canvas sourceState="hidden" of={PopoverStories.Default} />
+
+## Multiple
+
+<Canvas sourceState="hidden" of={PopoverStories.Multiple} />
+
+## Events
+
+<Canvas sourceState="hidden" of={PopoverStories.Events} />
+
+## Positioning
+
+<Canvas sourceState="hidden" of={PopoverStories.Positioning} />
+
+## External Triggering
+
+<Canvas sourceState="hidden" of={PopoverStories.ExternalTriggering} />
+
+## Features
+
+- ✅ Opens when the trigger is clicked.
+- ✅ Closes when the trigger is clicked again or when pressing escape.
+- ✅ Controllable from outside.
+
+## Anatomy
+
+```html
+<ng-container rdxPopoverRoot>
+    <button class="IconButton" rdxPopoverTrigger>+</button>
+
+    <ng-template rdxPopoverContent [sideOffset]="8">
+        <div class="PopoverContent">
+            <button class="PopoverClose" rdxPopoverClose aria-label="Close">X</button>
+            Add to library
+            <div class="PopoverArrow" rdxPopoverArrow></div>
+        </div>
+    </ng-template>
+</ng-container>
+```
+
+## Import
+
+Get started with importing the directives:
+
+```typescript
+import {
+  RdxPopoverRootDirective,
+  RdxPopoverRootTrigger,
+  RdxPopoverContentDirective,
+  RdxPopoverContentAttributesDirective,
+  RdxPopoverArrowDirective,
+  RdxPopoverCloseDirective
+} from '@radix-ng/primitives/popover';
+```
+
+or
+
+```typescript
+import { RdxPopoverModule } from '@radix-ng/primitives/popover';
+```
+
+## API Reference
+
+## RdxPopoverRootDirective
+
+Contains all the parts of a popover.
+
+<ArgTypes of={RdxPopoverRootDirective} />
+
+## RdxPopoverTriggerDirective
+
+The button that toggles the popover. By default, the PopoverContent will position itself against the trigger.
+
+<Markdown>
+    {`
+   | Data attribute | Value
+   | ----- | -----
+   | [data-state] | <code>"closed" | "open" (type RdxPopoverState)</code>
+   `}
+</Markdown>
+
+## RdxPopoverContentDirective
+
+The component that pops out when the popover is open.
+
+<ArgTypes of={RdxPopoverContentDirective} />
+
+<Markdown>
+    {`
+   | Data attribute | Value
+   | ----- | -----
+   | [data-state] | <code>"closed" | "open" (enum RdxPopoverState)</code>
+   | [data-side] | <code>"left" | "right" | "bottom" | "top" (enum RdxPopoverSide)</code>
+   | [data-align] | <code>"start" | "end" | "center" (enum RdxPopoverAlign)</code>
+   `}
+</Markdown>
+
+## RdxPopoverContentAttributesDirective
+
+Directive state attributes
+
+<Markdown>
+    {`
+   | Data attribute | Value
+   | ----- | -----
+   | [data-state] | <code>"closed" | "open" (enum RdxPopoverState)</code>
+   | [data-side] | <code>"left" | "right" | "bottom" | "top" (enum RdxPopoverSide)</code>
+   `}
+</Markdown>
+
+## RdxPopoverArrowDirective
+
+An optional arrow element to render alongside the popover. This can be used to help visually link the trigger with the PopoverContent. Must be rendered inside PopoverContent.
+
+<ArgTypes of={RdxPopoverArrowDirective} />
+
+## RdxPopoverCloseDirective
+
+An optional close button element to render alongside the popover. This can be used to close the PopoverContent. Must be rendered inside PopoverContent.
+
+<ArgTypes of={RdxPopoverCloseDirective} />
