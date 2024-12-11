@@ -1,14 +1,16 @@
-import { InjectionToken, ModelSignal } from '@angular/core';
+import { BooleanInput } from '@angular/cdk/coercion';
+import { InjectionToken, InputSignalWithTransform, ModelSignal, Signal } from '@angular/core';
 
 export interface RadioGroupProps {
     name?: string;
-    disabled?: boolean;
+    disabled?: InputSignalWithTransform<boolean, BooleanInput>;
     defaultValue?: string;
-    value?: ModelSignal<string | undefined>;
+    value: ModelSignal<string | null>;
+    disableState: Signal<boolean>;
 }
 
 export interface RadioGroupDirective extends RadioGroupProps {
-    select(value: string | undefined): void;
+    select(value: string | null): void;
 
     onTouched(): void;
 }
