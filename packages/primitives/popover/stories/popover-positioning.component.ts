@@ -219,6 +219,8 @@ import { RdxPopoverAlign, RdxPopoverSide } from '../src/popover.types';
             </select>
             SideOffset:
             <input class="no-reset" [ngModel]="sideOffset()" (ngModelChange)="sideOffset.set($event)" type="number" />
+            AlignOffset:
+            <input class="no-reset" [ngModel]="alignOffset()" (ngModelChange)="alignOffset.set($event)" type="number" />
             Alternate positions:
             <input
                 class="no-reset"
@@ -236,6 +238,7 @@ import { RdxPopoverAlign, RdxPopoverSide } from '../src/popover.types';
 
                 <ng-template
                     [sideOffset]="sideOffset()"
+                    [alignOffset]="alignOffset()"
                     [side]="selectedSide()"
                     [align]="selectedAlign()"
                     [disableAlternatePositions]="disableAlternatePositions()"
@@ -278,6 +281,7 @@ export class RdxPopoverPositioningComponent {
     selectedSide = signal(RdxPopoverSide.Top);
     selectedAlign = signal(RdxPopoverAlign.Center);
     sideOffset = signal(8);
+    alignOffset = signal(8);
     disableAlternatePositions = signal(false);
 
     readonly sides = RdxPopoverSide;

@@ -17,12 +17,22 @@ export class RdxPopoverCloseDirective {
     /** @ignore */
     private readonly renderer = inject(Renderer2);
 
-    /** @ignore */
-    private readonly onIsControlledExternallyEffect = effect(() => {
-        const isControlledExternally = this.popoverRoot.controlledExternally()();
+    constructor() {
+        this.onIsControlledExternallyEffect();
+    }
 
-        untracked(() => {
-            this.renderer.setStyle(this.elementRef.nativeElement, 'display', isControlledExternally ? 'none' : null);
+    /** @ignore */
+    private onIsControlledExternallyEffect() {
+        effect(() => {
+            const isControlledExternally = this.popoverRoot.controlledExternally()();
+
+            untracked(() => {
+                this.renderer.setStyle(
+                    this.elementRef.nativeElement,
+                    'display',
+                    isControlledExternally ? 'none' : null
+                );
+            });
         });
-    });
+    }
 }

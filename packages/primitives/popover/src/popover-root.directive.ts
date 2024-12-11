@@ -71,6 +71,11 @@ export class RdxPopoverRootDirective implements OnInit {
     /** @ignore */
     private isControlledExternally = computed(() => signal(this.open() !== void 0));
 
+    constructor() {
+        this.onOpenChangeEffect();
+        this.onIsOpenChangeEffect();
+    }
+
     /** @ignore */
     ngOnInit(): void {
         if (this.defaultOpen()) {
@@ -128,27 +133,31 @@ export class RdxPopoverRootDirective implements OnInit {
     }
 
     /** @ignore */
-    private readonly onIsOpenChangeEffect = effect(() => {
-        const isOpen = this.isOpen();
+    private onIsOpenChangeEffect() {
+        effect(() => {
+            const isOpen = this.isOpen();
 
-        untracked(() => {
-            if (isOpen) {
-                this.show();
-            } else {
-                this.hide();
-            }
+            untracked(() => {
+                if (isOpen) {
+                    this.show();
+                } else {
+                    this.hide();
+                }
+            });
         });
-    });
+    }
 
     /** @ignore */
-    private readonly onOpenChangeEffect = effect(() => {
-        const currentOpen = this.open();
+    private onOpenChangeEffect() {
+        effect(() => {
+            const currentOpen = this.open();
 
-        untracked(() => {
-            this.isControlledExternally().set(currentOpen !== void 0);
-            if (this.isControlledExternally()()) {
-                this.setOpen(currentOpen);
-            }
+            untracked(() => {
+                this.isControlledExternally().set(currentOpen !== void 0);
+                if (this.isControlledExternally()()) {
+                    this.setOpen(currentOpen);
+                }
+            });
         });
-    });
+    }
 }
