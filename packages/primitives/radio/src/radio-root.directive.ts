@@ -16,6 +16,7 @@ import { RadioGroupDirective, RadioGroupProps, RDX_RADIO_GROUP } from './radio-t
     host: {
         role: 'radiogroup',
         '[attr.aria-orientation]': 'orientation()',
+        '[attr.aria-required]': 'required()',
         '[attr.data-disabled]': 'disableState() ? "" : null',
         '(keydown)': 'onKeydown()'
     }
@@ -27,7 +28,7 @@ export class RdxRadioGroupDirective implements RadioGroupProps, RadioGroupDirect
 
     @Input() defaultValue?: string;
 
-    @Input() required: boolean;
+    readonly required = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     readonly orientation = input<Orientation>();
 
