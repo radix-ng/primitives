@@ -191,7 +191,7 @@ import { RdxPopoverModule } from '../index';
         }
     `,
     template: `
-        <div class="container">
+        <div class="container" #eventsContainer>
             <ng-container rdxPopoverRoot>
                 <button class="IconButton" #triggerElement rdxPopoverTrigger>
                     <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
@@ -201,6 +201,8 @@ import { RdxPopoverModule } from '../index';
                     [sideOffset]="8"
                     (onEscapeKeyDown)="onEscapeKeyDown($event)"
                     (onPointerDownOutside)="onPointerDownOutside($event)"
+                    (onShow)="onShow()"
+                    (onHide)="onHide()"
                     rdxPopoverContent
                 >
                     <div class="PopoverContent">
@@ -235,19 +237,32 @@ import { RdxPopoverModule } from '../index';
 })
 export class RdxPopoverEventsComponent {
     private readonly triggerElement = viewChild<ElementRef<HTMLElement>>('triggerElement');
+    private readonly eventsContainer = viewChild<ElementRef<HTMLElement>>('eventsContainer');
 
     readonly MountainSnowIcon = MountainSnowIcon;
     readonly XIcon = X;
 
     onEscapeKeyDown(event: KeyboardEvent) {
+        alert('Escape clicked!');
         event.preventDefault();
     }
 
     onPointerDownOutside(event: MouseEvent): void {
+        if (!event.target || !this.eventsContainer()?.nativeElement.contains(event.target as HTMLElement)) {
+            return;
+        }
+        alert('Mouse clicked outside the popover!');
         if (event.target === this.triggerElement()?.nativeElement) {
             event.stopPropagation();
         }
-
         event.preventDefault();
+    }
+
+    onShow() {
+        alert('Popover shown!');
+    }
+
+    onHide() {
+        alert('Popover hidden!');
     }
 }

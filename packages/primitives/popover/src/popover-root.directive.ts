@@ -6,7 +6,6 @@ import {
     effect,
     forwardRef,
     inject,
-    InjectionToken,
     input,
     OnInit,
     output,
@@ -14,15 +13,11 @@ import {
     untracked,
     ViewContainerRef
 } from '@angular/core';
+import { RdxPopoverArrowToken } from './popover-arrow.token';
 import { RdxPopoverContentDirective } from './popover-content.directive';
+import { RdxPopoverRootToken } from './popover-root.token';
 import { RdxPopoverTriggerDirective } from './popover-trigger.directive';
 import { RdxPopoverState } from './popover.types';
-
-export const RdxPopoverRootToken = new InjectionToken<RdxPopoverRootDirective>('RdxPopoverRootToken');
-
-export function injectPopoverRoot(): RdxPopoverRootDirective {
-    return inject(RdxPopoverRootToken);
-}
 
 @Directive({
     selector: '[rdxPopoverRoot]',
@@ -54,6 +49,8 @@ export class RdxPopoverRootDirective implements OnInit {
     readonly popoverContentDirective = contentChild.required(RdxPopoverContentDirective);
     /** @ignore */
     readonly popoverTriggerDirective = contentChild.required(RdxPopoverTriggerDirective);
+    /** @ignore */
+    readonly popoverArrowDirective = contentChild(RdxPopoverArrowToken);
 
     /** @ignore */
     readonly viewContainerRef = inject(ViewContainerRef);

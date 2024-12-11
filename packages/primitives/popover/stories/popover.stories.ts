@@ -230,7 +230,121 @@ export const Default: Story = {
                         <lucide-angular size="16" name="mountain-snow-icon" style="display: flex;"></lucide-angular>
                     </button>
 
-                    <ng-template rdxPopoverContent [sideOffset]="8">
+                    <ng-template rdxPopoverContent>
+                        <div class="PopoverContent">
+                            <button class="PopoverClose" rdxPopoverClose aria-label="Close">
+                                <lucide-angular name="x" size="16" style="display: flex" />
+                            </button>
+                            <div style="display: flex; flex-direction: column; gap: 10px">
+                                <p class="Text" style="margin-bottom: 10px">Dimensions</p>
+                                <fieldset class="Fieldset">
+                                    <label class="Label" for="width">Width</label>
+                                    <input class="Input" id="width" value="100%" />
+                                </fieldset>
+                                <fieldset class="Fieldset">
+                                    <label class="Label" for="maxWidth">Max. width</label>
+                                    <input class="Input" id="maxWidth" value="300px" />
+                                </fieldset>
+                                <fieldset class="Fieldset">
+                                    <label class="Label" for="height">Height</label>
+                                    <input class="Input" id="height" value="25px" />
+                                </fieldset>
+                                <fieldset class="Fieldset">
+                                    <label class="Label" for="maxHeight">Max. height</label>
+                                    <input class="Input" id="maxHeight" value="none" />
+                                </fieldset>
+                            </div>
+                            <div class="PopoverArrow" rdxPopoverArrow></div>
+                        </div>
+                    </ng-template>
+                </ng-container>
+            </div>
+        `
+    })
+};
+
+export const Multiple: Story = {
+    render: () => ({
+        template: html`
+            <div class="container">
+                <ng-container rdxPopoverRoot>
+                    <button class="IconButton" rdxPopoverTrigger>
+                        <lucide-angular size="16" name="mountain-snow-icon" style="display: flex;"></lucide-angular>
+                    </button>
+
+                    <ng-template rdxPopoverContent>
+                        <div class="PopoverContent">
+                            <button class="PopoverClose" rdxPopoverClose aria-label="Close">
+                                <lucide-angular name="x" size="16" style="display: flex" />
+                            </button>
+                            <div style="display: flex; flex-direction: column; gap: 10px">
+                                <p class="Text" style="margin-bottom: 10px">Dimensions</p>
+                                <fieldset class="Fieldset">
+                                    <label class="Label" for="width">Width</label>
+                                    <input class="Input" id="width" value="100%" />
+                                </fieldset>
+                                <fieldset class="Fieldset">
+                                    <label class="Label" for="maxWidth">Max. width</label>
+                                    <input class="Input" id="maxWidth" value="300px" />
+                                </fieldset>
+                                <fieldset class="Fieldset">
+                                    <label class="Label" for="height">Height</label>
+                                    <input class="Input" id="height" value="25px" />
+                                </fieldset>
+                                <fieldset class="Fieldset">
+                                    <label class="Label" for="maxHeight">Max. height</label>
+                                    <input class="Input" id="maxHeight" value="none" />
+                                </fieldset>
+                            </div>
+                            <div class="PopoverArrow" rdxPopoverArrow></div>
+                        </div>
+                    </ng-template>
+                </ng-container>
+            </div>
+
+            <div class="container">
+                <ng-container rdxPopoverRoot>
+                    <button class="IconButton" rdxPopoverTrigger>
+                        <lucide-angular size="16" name="mountain-snow-icon" style="display: flex;"></lucide-angular>
+                    </button>
+
+                    <ng-template rdxPopoverContent [sideOffset]="16" [alignOffset]="16">
+                        <div class="PopoverContent">
+                            <button class="PopoverClose" rdxPopoverClose aria-label="Close">
+                                <lucide-angular name="x" size="16" style="display: flex" />
+                            </button>
+                            <div style="display: flex; flex-direction: column; gap: 10px">
+                                <p class="Text" style="margin-bottom: 10px">Dimensions</p>
+                                <fieldset class="Fieldset">
+                                    <label class="Label" for="width">Width</label>
+                                    <input class="Input" id="width" value="100%" />
+                                </fieldset>
+                                <fieldset class="Fieldset">
+                                    <label class="Label" for="maxWidth">Max. width</label>
+                                    <input class="Input" id="maxWidth" value="300px" />
+                                </fieldset>
+                                <fieldset class="Fieldset">
+                                    <label class="Label" for="height">Height</label>
+                                    <input class="Input" id="height" value="25px" />
+                                </fieldset>
+                                <fieldset class="Fieldset">
+                                    <label class="Label" for="maxHeight">Max. height</label>
+                                    <input class="Input" id="maxHeight" value="none" />
+                                </fieldset>
+                            </div>
+                            <div class="PopoverArrow" rdxPopoverArrow></div>
+                        </div>
+                    </ng-template>
+                </ng-container>
+            </div>
+
+            <div class="container">
+                <ng-container rdxPopoverRoot>
+                    <button class="IconButton" rdxPopoverTrigger>
+                        <lucide-angular size="16" name="mountain-snow-icon" style="display: flex;"></lucide-angular>
+                    </button>
+
+                    <ng-template rdxPopoverContent [sideOffset]="60" [alignOffset]="60">
                         <div class="PopoverContent">
                             <button class="PopoverClose" rdxPopoverClose aria-label="Close">
                                 <lucide-angular name="x" size="16" style="display: flex" />

@@ -14,8 +14,9 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter, tap } from 'rxjs';
-import { injectPopoverRoot } from './popover-root.directive';
-import { RdxPopoverAlign, RdxPopoverSide } from './popover.types';
+import { injectPopoverRoot } from './popover-root.inject';
+import { DEFAULTS } from './popover.constants';
+import { RdxPopoverAlign, RdxPopoverSide, RdxSideAndAlignOffsets } from './popover.types';
 import { getAllPossibleConnectedPositions, getContentPosition } from './popover.utils';
 
 @Directive({
@@ -43,34 +44,40 @@ export class RdxPopoverContentDirective implements OnInit {
      * The preferred side of the trigger to render against when open. Will be reversed when collisions occur and avoidCollisions is enabled.
      */
     readonly side = input<RdxPopoverSide>(RdxPopoverSide.Top);
-
     /**
      * The distance in pixels from the trigger.
      */
-    readonly sideOffset = input<number>(0);
+    readonly sideOffset = input<number | undefined>(void 0);
 
     /**
      * The preferred alignment against the trigger. May change when collisions occur.
      */
     readonly align = input<RdxPopoverAlign>(RdxPopoverAlign.Center);
+    /**
+     * An offset in pixels from the "start" or "end" alignment options.
+     */
+    readonly alignOffset = input<number | undefined>(void 0);
 
     /**
      * Whether to add some alternate positions of the content.
      */
     readonly disableAlternatePositions = input(false);
 
-    /**
-     * An offset in pixels from the "start" or "end" alignment options.
-     */
-    readonly alignOffset = input<number>(0);
-
     /** @ingore */
     readonly positions = computed(() => {
+        const greatestDimensionFromTheArrow = Math.max(
+            this.popoverRoot.popoverArrowDirective()?.width() ?? 0,
+            this.popoverRoot.popoverArrowDirective()?.height() ?? 0
+        );
+        const offsets: RdxSideAndAlignOffsets = {
+            sideOffset: this.sideOffset() ?? (greatestDimensionFromTheArrow || DEFAULTS.offsets.side),
+            alignOffset: this.alignOffset() ?? (greatestDimensionFromTheArrow || DEFAULTS.offsets.align)
+        };
         const basePosition = getContentPosition({
             side: this.side(),
             align: this.align(),
-            sideOffset: this.sideOffset(),
-            alignOffset: this.alignOffset()
+            sideOffset: offsets.sideOffset,
+            alignOffset: offsets.alignOffset
         });
         const positions = [basePosition];
         if (!this.disableAlternatePositions()) {
@@ -88,8 +95,8 @@ export class RdxPopoverContentDirective implements OnInit {
                         getContentPosition({
                             side: sideAndAlignArray[0] as RdxPopoverSide,
                             align: sideAndAlignArray[1] as RdxPopoverAlign,
-                            sideOffset: this.sideOffset(),
-                            alignOffset: this.alignOffset()
+                            sideOffset: offsets.sideOffset,
+                            alignOffset: offsets.alignOffset
                         })
                     );
                 }
@@ -107,6 +114,15 @@ export class RdxPopoverContentDirective implements OnInit {
      * Event handler called when a pointer event occurs outside the bounds of the component. It can be prevented by calling event.preventDefault.
      */
     readonly onPointerDownOutside = output<MouseEvent>();
+
+    /**
+     * Event handler called when the overlay is atached
+     */
+    readonly onShow = output<void>();
+    /**
+     * Event handler called when the overlay is detached
+     */
+    readonly onHide = output<void>();
 
     /** @ignore */
     ngOnInit() {
@@ -177,7 +193,7 @@ export class RdxPopoverContentDirective implements OnInit {
             .asObservable()
             .pipe(
                 tap(() => {
-                    console.log('onAttach');
+                    this.onShow.emit();
                 }),
                 takeUntilDestroyed(this.destroyRef)
             )
@@ -190,7 +206,7 @@ export class RdxPopoverContentDirective implements OnInit {
             .asObservable()
             .pipe(
                 tap(() => {
-                    console.log('onDetach');
+                    this.onHide.emit();
                 }),
                 takeUntilDestroyed(this.destroyRef)
             )

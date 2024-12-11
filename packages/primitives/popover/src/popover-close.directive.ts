@@ -1,5 +1,5 @@
 import { Directive, effect, ElementRef, inject, Renderer2, untracked } from '@angular/core';
-import { injectPopoverRoot } from './popover-root.directive';
+import { injectPopoverRoot } from './popover-root.inject';
 
 @Directive({
     selector: '[rdxPopoverClose]',

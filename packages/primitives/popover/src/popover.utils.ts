@@ -57,7 +57,9 @@ export function getContentPosition(
 ): ConnectedPosition {
     const { side, align, sideOffset, alignOffset } = sideAndAlignWithOffsets;
 
-    const position = POPOVER_POSITIONS[side]?.[align] ?? POPOVER_POSITIONS[RdxPopoverSide.Top][RdxPopoverAlign.Center];
+    const position = {
+        ...(POPOVER_POSITIONS[side]?.[align] ?? POPOVER_POSITIONS[RdxPopoverSide.Top][RdxPopoverAlign.Center])
+    };
 
     if (sideOffset > 0) {
         let xFactor = 0;

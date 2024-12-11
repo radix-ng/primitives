@@ -81,4 +81,11 @@ export const POPOVER_POSITIONS: RdxPopoverPositions = {
             overlayY: 'bottom'
         }
     }
-};
+} as const;
+
+export const DEFAULTS = {
+    offsets: {
+        side: 10,
+        align: 10
+    }
+} as const;

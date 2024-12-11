@@ -5,6 +5,7 @@ import {
     Directive,
     effect,
     ElementRef,
+    forwardRef,
     inject,
     input,
     Renderer2,
@@ -12,12 +13,19 @@ import {
     untracked
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { injectPopoverRoot } from './popover-root.directive';
+import { RdxPopoverArrowToken } from './popover-arrow.token';
+import { injectPopoverRoot } from './popover-root.inject';
 import { getArrowPositionParams, getSideAndAlignFromAllPossibleConnectedPositions } from './popover.utils';
 
 @Directive({
     selector: '[rdxPopoverArrow]',
-    standalone: true
+    standalone: true,
+    providers: [
+        {
+            provide: RdxPopoverArrowToken,
+            useExisting: forwardRef(() => RdxPopoverArrowDirective)
+        }
+    ]
 })
 export class RdxPopoverArrowDirective implements AfterViewInit {
     /** @ignore */
@@ -75,12 +83,6 @@ export class RdxPopoverArrowDirective implements AfterViewInit {
 
     /** @ignore */
     private setPosition(position: ConnectedOverlayPositionChange) {
-        console.log('position.connectionPair', position.connectionPair);
-        console.log(
-            'getSideAndAlignFromAllPossibleConnectedPositions(position.connectionPair)',
-            getSideAndAlignFromAllPossibleConnectedPositions(position.connectionPair)
-        );
-
         const posParams = getArrowPositionParams(
             getSideAndAlignFromAllPossibleConnectedPositions(position.connectionPair),
             { width: this.width(), height: this.height() },

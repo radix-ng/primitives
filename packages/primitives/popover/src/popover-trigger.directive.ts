@@ -1,6 +1,6 @@
 import { CdkOverlayOrigin } from '@angular/cdk/overlay';
 import { computed, Directive, ElementRef, inject, input } from '@angular/core';
-import { injectPopoverRoot } from './popover-root.directive';
+import { injectPopoverRoot } from './popover-root.inject';
 
 let nextId = 0;
 
