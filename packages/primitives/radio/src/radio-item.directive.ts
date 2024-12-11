@@ -1,5 +1,15 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { booleanAttribute, Directive, ElementRef, inject, InjectionToken, input, OnInit, signal } from '@angular/core';
+import {
+    booleanAttribute,
+    computed,
+    Directive,
+    ElementRef,
+    inject,
+    InjectionToken,
+    input,
+    OnInit,
+    signal
+} from '@angular/core';
 import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 import { RDX_RADIO_GROUP } from './radio-tokens';
 
@@ -20,9 +30,10 @@ export function injectRadioItem(): RdxRadioItemDirective {
     host: {
         type: 'button',
         role: 'radio',
-        '[attr.aria-checked]': 'checked',
-        '[attr.data-disabled]': 'disabled() ? "" : null',
-        '[attr.data-state]': 'checked ? "checked" : "unchecked"',
+        '[attr.aria-checked]': 'checkedState()',
+        '[attr.data-disabled]': 'disabledState() ? "" : null',
+        '[attr.data-state]': 'checkedState() ? "checked" : "unchecked"',
+        '[disabled]': 'disabledState()',
         '(click)': 'onClick()',
         '(keydown)': 'onKeyDown($event)',
         '(keyup)': 'onKeyUp()',
@@ -41,6 +52,10 @@ export class RdxRadioItemDirective implements OnInit {
 
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    protected readonly disabledState = computed(() => this.radioGroup.disableState() || this.disabled());
+
+    readonly checkedState = computed(() => this.radioGroup.value() === this.value());
+
     private readonly ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
     private readonly isArrowKeyPressedSignal = signal(false);
 
@@ -52,15 +67,8 @@ export class RdxRadioItemDirective implements OnInit {
     }
 
     /** @ignore */
-    get checked(): boolean {
-        if (this.radioGroup.value == undefined) return false;
-
-        return this.radioGroup.value() === this.value();
-    }
-
-    /** @ignore */
     onClick() {
-        if (!this.disabled()) {
+        if (!this.disabledState()) {
             this.radioGroup.select(this.value());
             this.isArrowKeyPressedSignal.set(true);
         }

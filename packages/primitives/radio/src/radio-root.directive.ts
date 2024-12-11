@@ -1,4 +1,5 @@
-import { booleanAttribute, Directive, EventEmitter, Input, model, Output } from '@angular/core';
+import { BooleanInput } from '@angular/cdk/coercion';
+import { booleanAttribute, computed, Directive, input, Input, model, output, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Orientation, RdxRovingFocusGroupDirective } from '@radix-ng/primitives/roving-focus';
 import { RadioGroupDirective, RadioGroupProps, RDX_RADIO_GROUP } from './radio-tokens';
@@ -14,26 +15,30 @@ import { RadioGroupDirective, RadioGroupProps, RDX_RADIO_GROUP } from './radio-t
     hostDirectives: [{ directive: RdxRovingFocusGroupDirective, inputs: ['dir', 'orientation', 'loop'] }],
     host: {
         role: 'radiogroup',
-        '[attr.aria-orientation]': 'orientation',
-        '[attr.data-disabled]': 'disabled ? "" : null',
+        '[attr.aria-orientation]': 'orientation()',
+        '[attr.aria-required]': 'required()',
+        '[attr.data-disabled]': 'disableState() ? "" : null',
         '(keydown)': 'onKeydown()'
     }
 })
 export class RdxRadioGroupDirective implements RadioGroupProps, RadioGroupDirective, ControlValueAccessor {
-    readonly value = model<string | undefined>();
+    readonly value = model<string | null>(null);
 
-    @Input({ transform: booleanAttribute }) disabled = false;
+    readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     @Input() defaultValue?: string;
 
-    @Input() required: boolean;
+    readonly required = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    @Input() orientation: Orientation;
+    readonly orientation = input<Orientation>();
 
     /**
      * Event handler called when the value changes.
      */
-    @Output() readonly onValueChange = new EventEmitter<string>();
+    readonly onValueChange = output<string>();
+
+    private readonly disable = signal<boolean>(this.disabled());
+    readonly disableState = computed(() => this.disable() || this.disabled());
 
     /**
      * The callback function to call when the value of the radio group changes.
@@ -91,10 +96,10 @@ export class RdxRadioGroupDirective implements RadioGroupProps, RadioGroupDirect
      * @ignore
      */
     setDisabledState(isDisabled: boolean): void {
-        this.disabled = isDisabled;
+        this.disable.set(isDisabled);
     }
 
     protected onKeydown(): void {
-        if (this.disabled) return;
+        if (this.disableState()) return;
     }
 }

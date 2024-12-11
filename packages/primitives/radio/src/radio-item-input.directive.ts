@@ -22,7 +22,7 @@ export class RdxRadioItemInputDirective {
 
     readonly name = input<string>();
     readonly value = computed(() => this.radioItem.value() || undefined);
-    readonly checked = computed(() => this.radioItem.checked || undefined);
+    readonly checked = computed(() => this.radioItem.checkedState() || undefined);
     readonly required = input<boolean | undefined>(this.radioItem.required());
     readonly disabled = input<boolean | undefined>(this.radioItem.disabled());
 }
