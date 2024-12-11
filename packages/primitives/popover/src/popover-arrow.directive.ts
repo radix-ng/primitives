@@ -70,6 +70,11 @@ export class RdxPopoverArrowDirective implements AfterViewInit {
     /** @ignore */
     private triggerRect: DOMRect;
 
+    constructor() {
+        this.onArrowSvgElementChangeEffect();
+        this.onContentPositionChangeEffect();
+    }
+
     /** @ignore */
     ngAfterViewInit() {
         if (this.elementRef.nativeElement.parentElement) {
@@ -97,30 +102,32 @@ export class RdxPopoverArrowDirective implements AfterViewInit {
     }
 
     /** @ignore */
-    private readonly onArrowSvgElementChangeEffect = effect(() => {
-        const arrowElement = this.arrowSvgElement();
-
-        untracked(() => {
-            const currentArrowSvgElement = this.currentArrowSvgElement();
-            if (currentArrowSvgElement) {
-                this.renderer.removeChild(this.elementRef.nativeElement, currentArrowSvgElement);
-            }
-            this.currentArrowSvgElement.set(arrowElement);
-            this.renderer.setStyle(this.elementRef.nativeElement, 'width', `${this.width()}px`);
-            this.renderer.setStyle(this.elementRef.nativeElement, 'height', `${this.height()}px`);
-            this.renderer.appendChild(this.elementRef.nativeElement, this.currentArrowSvgElement());
+    private onArrowSvgElementChangeEffect() {
+        effect(() => {
+            const arrowElement = this.arrowSvgElement();
+            untracked(() => {
+                const currentArrowSvgElement = this.currentArrowSvgElement();
+                if (currentArrowSvgElement) {
+                    this.renderer.removeChild(this.elementRef.nativeElement, currentArrowSvgElement);
+                }
+                this.currentArrowSvgElement.set(arrowElement);
+                this.renderer.setStyle(this.elementRef.nativeElement, 'width', `${this.width()}px`);
+                this.renderer.setStyle(this.elementRef.nativeElement, 'height', `${this.height()}px`);
+                this.renderer.appendChild(this.elementRef.nativeElement, this.currentArrowSvgElement());
+            });
         });
-    });
+    }
 
     /** @ignore */
-    private readonly OnContentPositionChange = effect(() => {
-        const position = this.position();
-
-        untracked(() => {
-            if (!position) {
-                return;
-            }
-            this.setPosition(position);
+    private onContentPositionChangeEffect() {
+        effect(() => {
+            const position = this.position();
+            untracked(() => {
+                if (!position) {
+                    return;
+                }
+                this.setPosition(position);
+            });
         });
-    });
+    }
 }

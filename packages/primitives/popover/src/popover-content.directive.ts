@@ -124,6 +124,11 @@ export class RdxPopoverContentDirective implements OnInit {
      */
     readonly onHide = output<void>();
 
+    constructor() {
+        this.onPositionChangeEffect();
+        this.onControlledExternallyChangeEffect();
+    }
+
     /** @ignore */
     ngOnInit() {
         this.setOrigin();
@@ -241,24 +246,28 @@ export class RdxPopoverContentDirective implements OnInit {
     }
 
     /** @ignore */
-    private OnPositionChange = effect(() => {
-        const positions = this.positions();
-        this.disableAlternatePositions();
-        untracked(() => {
-            const prevPositions = this.connectedOverlay.positions;
-            this.connectedOverlay.positions = positions;
-            this.connectedOverlay.ngOnChanges({
-                positions: new SimpleChange(prevPositions, this.connectedOverlay.positions, false)
+    private onPositionChangeEffect() {
+        effect(() => {
+            const positions = this.positions();
+            this.disableAlternatePositions();
+            untracked(() => {
+                const prevPositions = this.connectedOverlay.positions;
+                this.connectedOverlay.positions = positions;
+                this.connectedOverlay.ngOnChanges({
+                    positions: new SimpleChange(prevPositions, this.connectedOverlay.positions, false)
+                });
+                this.connectedOverlay.overlayRef?.updatePosition();
             });
-            this.connectedOverlay.overlayRef?.updatePosition();
         });
-    });
+    }
 
     /** @ignore */
-    private OnControlledExternallyChange = effect(() => {
-        this.popoverRoot.controlledExternally()();
-        untracked(() => {
-            this.setDisableClose();
+    private onControlledExternallyChangeEffect() {
+        effect(() => {
+            this.popoverRoot.controlledExternally()();
+            untracked(() => {
+                this.setDisableClose();
+            });
         });
-    });
+    }
 }

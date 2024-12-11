@@ -1,8 +1,8 @@
-import { assertInInjectionContext, inject } from '@angular/core';
+import { assertInInjectionContext, inject, isDevMode } from '@angular/core';
 import { RdxPopoverRootDirective } from './popover-root.directive';
 import { RdxPopoverRootToken } from './popover-root.token';
 
 export function injectPopoverRoot(): RdxPopoverRootDirective {
-    assertInInjectionContext(injectPopoverRoot);
+    isDevMode() && assertInInjectionContext(injectPopoverRoot);
     return inject(RdxPopoverRootToken);
 }
