@@ -54,7 +54,7 @@ export class RdxRadioItemDirective implements OnInit {
 
     protected readonly disabledState = computed(() => this.radioGroup.disableState() || this.disabled());
 
-    protected readonly checkedState = computed(() => this.radioGroup.value() === this.value());
+    readonly checkedState = computed(() => this.radioGroup.value() === this.value());
 
     private readonly ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
     private readonly isArrowKeyPressedSignal = signal(false);
