@@ -11,23 +11,24 @@ import {RdxPopoverCloseDirective} from "../src/popover-close.directive";
 
 #### A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.
 
-## Default
+## Examples
+### Default
 
 <Canvas sourceState="hidden" of={PopoverStories.Default} />
 
-## Multiple
+### Multiple
 
 <Canvas sourceState="hidden" of={PopoverStories.Multiple} />
 
-## Events
+### Events
 
 <Canvas sourceState="hidden" of={PopoverStories.Events} />
 
-## Positioning
+### Positioning
 
 <Canvas sourceState="hidden" of={PopoverStories.Positioning} />
 
-## External Triggering
+### External Triggering
 
 <Canvas sourceState="hidden" of={PopoverStories.ExternalTriggering} />
 
@@ -76,14 +77,14 @@ import { RdxPopoverModule } from '@radix-ng/primitives/popover';
 
 ## API Reference
 
-## RdxPopoverRootDirective
-
+### Root
+`RdxPopoverRootDirective`
 Contains all the parts of a popover.
 
 <ArgTypes of={RdxPopoverRootDirective} />
 
-## RdxPopoverTriggerDirective
-
+### Trigger
+`RdxPopoverTriggerDirective`
 The button that toggles the popover. By default, the PopoverContent will position itself against the trigger.
 
 <Markdown>
@@ -94,8 +95,8 @@ The button that toggles the popover. By default, the PopoverContent will positio
    `}
 </Markdown>
 
-## RdxPopoverContentDirective
-
+### Content
+`RdxPopoverContentDirective`
 The component that pops out when the popover is open.
 
 <ArgTypes of={RdxPopoverContentDirective} />
@@ -110,8 +111,8 @@ The component that pops out when the popover is open.
    `}
 </Markdown>
 
-## RdxPopoverContentAttributesDirective
-
+### ContentAttributes
+`RdxPopoverContentAttributesDirective`
 Directive state attributes
 
 <Markdown>
@@ -123,14 +124,12 @@ Directive state attributes
    `}
 </Markdown>
 
-## RdxPopoverArrowDirective
-
+### Arrow
+`RdxPopoverArrowDirective`
 An optional arrow element to render alongside the popover. This can be used to help visually link the trigger with the PopoverContent. Must be rendered inside PopoverContent.
 
 <ArgTypes of={RdxPopoverArrowDirective} />
 
-## RdxPopoverCloseDirective
-
+### Close
+`RdxPopoverCloseDirective`
 An optional close button element to render alongside the popover. This can be used to close the PopoverContent. Must be rendered inside PopoverContent.
-
-<ArgTypes of={RdxPopoverCloseDirective} />
