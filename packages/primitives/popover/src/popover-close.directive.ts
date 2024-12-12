@@ -13,7 +13,7 @@ export class RdxPopoverCloseDirective {
     /** @ignore */
     readonly popoverRoot = injectPopoverRoot();
     /** @ignore */
-    readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef<HTMLElement>);
+    readonly elementRef = inject(ElementRef);
     /** @ignore */
     private readonly renderer = inject(Renderer2);
 

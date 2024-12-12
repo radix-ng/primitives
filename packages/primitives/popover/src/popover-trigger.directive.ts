@@ -1,8 +1,6 @@
 import { CdkOverlayOrigin } from '@angular/cdk/overlay';
-import { computed, Directive, ElementRef, inject, input } from '@angular/core';
+import { computed, Directive, ElementRef, inject } from '@angular/core';
 import { injectPopoverRoot } from './popover-root.inject';
-
-let nextId = 0;
 
 @Directive({
     selector: '[rdxPopoverTrigger]',
@@ -10,24 +8,26 @@ let nextId = 0;
     hostDirectives: [CdkOverlayOrigin],
     host: {
         type: 'button',
-        '[attr.id]': 'id()',
+        '[attr.id]': 'name()',
         '[attr.aria-haspopup]': '"dialog"',
         '[attr.aria-expanded]': 'popoverRoot.isOpen()',
-        '[attr.aria-controls]': 'popoverId()',
+        '[attr.aria-controls]': 'controlsId()',
         '[attr.data-state]': 'popoverRoot.state()',
         '(click)': 'onClick()'
     }
 })
 export class RdxPopoverTriggerDirective {
-    readonly id = input(`rdx-popover-root-${nextId++}`);
-    readonly popoverId = computed(() => `rdx-popover-${this.id()}`);
-
     /** @ignore */
     readonly popoverRoot = injectPopoverRoot();
     /** @ignore */
-    readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef<HTMLElement>);
+    readonly elementRef = inject(ElementRef);
     /** @ignore */
     readonly overlayOrigin = inject(CdkOverlayOrigin);
+
+    /** @ignore */
+    readonly name = computed(() => `rdx-popover-trigger-${this.popoverRoot.uniqueId()}`);
+    /** @ignore */
+    readonly controlsId = computed(() => `rdx-popover-trigger-controls-${this.popoverRoot.uniqueId()}`);
 
     /** @ignore */
     onClick(): void {
