@@ -35,7 +35,7 @@ export class RdxPopoverArrowDirective implements AfterViewInit {
     /** @ignore */
     private readonly popoverRoot = injectPopoverRoot();
     /** @ignore */
-    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    private readonly elementRef = inject(ElementRef);
 
     /**
      * The width of the arrow in pixels.

@@ -19,6 +19,8 @@ import { RdxPopoverRootToken } from './popover-root.token';
 import { RdxPopoverTriggerDirective } from './popover-trigger.directive';
 import { RdxPopoverState } from './popover.types';
 
+let nextId = 0;
+
 @Directive({
     selector: '[rdxPopoverRoot]',
     standalone: true,
@@ -31,6 +33,9 @@ import { RdxPopoverState } from './popover.types';
     exportAs: 'rdxPopoverRoot'
 })
 export class RdxPopoverRootDirective implements OnInit {
+    readonly uniqueId = signal(++nextId);
+    readonly name = computed(() => `rdx-popover-root-${this.uniqueId()}`);
+
     /**
      * The open state of the popover when it is initially rendered. Use when you do not need to control its open state.
      */
@@ -114,9 +119,13 @@ export class RdxPopoverRootDirective implements OnInit {
 
     /** @ignore */
     private setOpen(open = false): void {
-        if (open) {
-            this.document.dispatchEvent(new CustomEvent('popover.open'));
-        }
+        this.document.dispatchEvent(
+            new CustomEvent(`popover.${open ? 'open' : 'close'}`, {
+                detail: {
+                    id: this.name()
+                }
+            })
+        );
 
         this.isOpen.set(open);
         this.onOpenChange.emit(open);

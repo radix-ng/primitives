@@ -26,9 +26,7 @@ import { getAllPossibleConnectedPositions, getContentPosition } from './popover.
     selector: '[rdxPopoverContent]',
     standalone: true,
     hostDirectives: [
-        {
-            directive: CdkConnectedOverlay
-        }
+        CdkConnectedOverlay
     ]
 })
 export class RdxPopoverContentDirective implements OnInit {
@@ -88,7 +86,8 @@ export class RdxPopoverContentDirective implements OnInit {
              * Alternate positions for better user experience along the X/Y axis (e.g. vertical/horizontal scrolling)
              */
             const allPossibleConnectedPositions = getAllPossibleConnectedPositions();
-            allPossibleConnectedPositions.forEach((_value, key) => {
+
+            allPossibleConnectedPositions.forEach((_, key) => {
                 const sideAndAlignArray = key.split('|');
                 if (
                     (sideAndAlignArray[0] as RdxPopoverSide) !== this.side() ||
@@ -129,13 +128,13 @@ export class RdxPopoverContentDirective implements OnInit {
 
     constructor() {
         this.onPositionChangeEffect();
-        this.onControlledExternallyChangeEffect();
     }
 
     /** @ignore */
     ngOnInit() {
         this.setOrigin();
         this.setScrollStrategy();
+        this.setDisableClose();
         this.onAttach();
         this.onDetach();
         this.connectKeydownEscape();
@@ -189,6 +188,9 @@ export class RdxPopoverContentDirective implements OnInit {
             .pipe(
                 tap((event) => {
                     this.onPointerDownOutside.emit(event);
+                    if (!event.defaultPrevented) {
+                        this.popoverRoot.handleClose();
+                    }
                 }),
                 takeUntilDestroyed(this.destroyRef)
             )
@@ -233,7 +235,7 @@ export class RdxPopoverContentDirective implements OnInit {
     /** @ignore */
     private setDisableClose() {
         const prevDisableClose = this.connectedOverlay.disableClose;
-        this.connectedOverlay.disableClose = this.popoverRoot.controlledExternally()();
+        this.connectedOverlay.disableClose = true;
         this.connectedOverlay.ngOnChanges({
             disableClose: new SimpleChange(prevDisableClose, this.connectedOverlay.disableClose, false)
         });
@@ -260,16 +262,6 @@ export class RdxPopoverContentDirective implements OnInit {
                     positions: new SimpleChange(prevPositions, this.connectedOverlay.positions, false)
                 });
                 this.connectedOverlay.overlayRef?.updatePosition();
-            });
-        });
-    }
-
-    /** @ignore */
-    private onControlledExternallyChangeEffect() {
-        effect(() => {
-            this.popoverRoot.controlledExternally()();
-            untracked(() => {
-                this.setDisableClose();
             });
         });
     }
