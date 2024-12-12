@@ -1,3 +1,13 @@
+## 0.20.1 (2024-12-12)
+
+### 🩹 Fixes
+
+- **radio:** indicator data-state ([50ccf4d](https://github.com/radix-ng/primitives/commit/50ccf4d))
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+
 ## 0.20.0 (2024-12-12)
 
 ### 🚀 Features
