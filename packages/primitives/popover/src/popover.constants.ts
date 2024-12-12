@@ -86,6 +86,6 @@ export const POPOVER_POSITIONS: RdxPopoverPositions = {
 export const DEFAULTS = {
     offsets: {
         side: 10,
-        align: 10
+        align: 0
     }
 } as const;
