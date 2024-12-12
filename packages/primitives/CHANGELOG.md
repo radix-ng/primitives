@@ -1,3 +1,19 @@
+## 0.20.0 (2024-12-12)
+
+### 🚀 Features
+
+- **popover:** create popover directives ([#179](https://github.com/radix-ng/primitives/pull/179))
+
+### 🩹 Fixes
+
+- **popover:** remove unnecesary effect-refs asignments + more ([#187](https://github.com/radix-ng/primitives/pull/187))
+- **radio:** updated disabled state ([#186](https://github.com/radix-ng/primitives/pull/186))
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+- pawel-twardziak
+
 ## 0.19.0 (2024-12-10)
 
 ### 🚀 Features
