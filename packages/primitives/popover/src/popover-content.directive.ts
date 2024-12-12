@@ -1,11 +1,14 @@
+import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import { CdkConnectedOverlay, Overlay } from '@angular/cdk/overlay';
 import {
+    booleanAttribute,
     computed,
     DestroyRef,
     Directive,
     effect,
     inject,
     input,
+    numberAttribute,
     OnInit,
     output,
     SimpleChange,
@@ -47,7 +50,7 @@ export class RdxPopoverContentDirective implements OnInit {
     /**
      * The distance in pixels from the trigger.
      */
-    readonly sideOffset = input<number | undefined>(void 0);
+    readonly sideOffset = input<number, NumberInput>(0, { transform: numberAttribute });
 
     /**
      * The preferred alignment against the trigger. May change when collisions occur.
@@ -56,12 +59,12 @@ export class RdxPopoverContentDirective implements OnInit {
     /**
      * An offset in pixels from the "start" or "end" alignment options.
      */
-    readonly alignOffset = input<number | undefined>(void 0);
+    readonly alignOffset = input<number, NumberInput>(0, { transform: numberAttribute });
 
     /**
      * Whether to add some alternate positions of the content.
      */
-    readonly disableAlternatePositions = input(false);
+    readonly disableAlternatePositions = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /** @ingore */
     readonly positions = computed(() => {
@@ -85,7 +88,7 @@ export class RdxPopoverContentDirective implements OnInit {
              * Alternate positions for better user experience along the X/Y axis (e.g. vertical/horizontal scrolling)
              */
             const allPossibleConnectedPositions = getAllPossibleConnectedPositions();
-            allPossibleConnectedPositions.forEach((value, key) => {
+            allPossibleConnectedPositions.forEach((_value, key) => {
                 const sideAndAlignArray = key.split('|');
                 if (
                     (sideAndAlignArray[0] as RdxPopoverSide) !== this.side() ||
