@@ -1,4 +1,3 @@
-import { NumberInput } from '@angular/cdk/coercion';
 import { ConnectedOverlayPositionChange } from '@angular/cdk/overlay';
 import {
     AfterViewInit,
@@ -9,7 +8,6 @@ import {
     forwardRef,
     inject,
     input,
-    numberAttribute,
     Renderer2,
     signal,
     untracked
@@ -40,12 +38,12 @@ export class RdxPopoverArrowDirective implements AfterViewInit {
     /**
      * The width of the arrow in pixels.
      */
-    readonly width = input<number, NumberInput>(10, { transform: numberAttribute });
+    readonly width = input<number>(10);
 
     /**
      * The height of the arrow in pixels.
      */
-    readonly height = input<number, NumberInput>(5, { transform: numberAttribute });
+    readonly height = input<number>(5);
 
     /** @ignore */
     readonly arrowSvgElement = computed<HTMLElement>(() => {
