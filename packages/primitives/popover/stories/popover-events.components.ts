@@ -1,13 +1,15 @@
-import { Component, ElementRef, viewChild } from '@angular/core';
+import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, MountainSnowIcon, X } from 'lucide-angular';
-import { RdxPopoverModule } from '../index';
+import { RdxPopoverAlign, RdxPopoverModule, RdxPopoverSide } from '../index';
 
 @Component({
     selector: 'rdx-popover-events',
     standalone: true,
     imports: [
         RdxPopoverModule,
-        LucideAngularModule
+        LucideAngularModule,
+        FormsModule
     ],
     styles: `
         .container {
@@ -18,9 +20,7 @@ import { RdxPopoverModule } from '../index';
         }
 
         /* reset */
-        button,
-        fieldset,
-        input {
+        .reset {
             all: unset;
         }
 
@@ -146,6 +146,17 @@ import { RdxPopoverModule } from '../index';
             font-weight: 500;
         }
 
+        .MessagesContainer {
+            padding: 20px;
+        }
+
+        .Message {
+            color: var(--white-a12);
+            font-size: 15px;
+            line-height: 19px;
+            font-weight: bolder;
+        }
+
         @keyframes slideUpAndFade {
             from {
                 opacity: 0;
@@ -189,11 +200,35 @@ import { RdxPopoverModule } from '../index';
                 transform: translateX(0);
             }
         }
+
+        /* =============== Params layout =============== */
+
+        .ParamsContainer {
+            display: flex;
+            column-gap: 8px;
+            color: var(--white-a12);
+            margin-bottom: 32px;
+        }
     `,
     template: `
+        <div class="ParamsContainer">
+            (onEscapeKeyDown) prevent default:
+            <input
+                [ngModel]="onEscapeKeyDownPreventDefault()"
+                (ngModelChange)="onEscapeKeyDownPreventDefault.set($event)"
+                type="checkbox"
+            />
+            (onPointerDownOutside) prevent default:
+            <input
+                [ngModel]="onPointerDownOutsidePreventDefault()"
+                (ngModelChange)="onPointerDownOutsidePreventDefault.set($event)"
+                type="checkbox"
+            />
+        </div>
+
         <div class="container" #eventsContainer>
             <ng-container rdxPopoverRoot>
-                <button class="IconButton" #triggerElement rdxPopoverTrigger>
+                <button class="reset IconButton" #triggerElement rdxPopoverTrigger>
                     <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                 </button>
 
@@ -206,26 +241,26 @@ import { RdxPopoverModule } from '../index';
                     rdxPopoverContent
                 >
                     <div class="PopoverContent">
-                        <button class="PopoverClose" rdxPopoverClose aria-label="Close">
+                        <button class="reset PopoverClose" rdxPopoverClose aria-label="Close">
                             <lucide-angular [img]="XIcon" size="16" style="display: flex" />
                         </button>
                         <div style="display: flex; flex-direction: column; gap: 10px">
                             <p class="Text" style="margin-bottom: 10px">Dimensions</p>
-                            <fieldset class="Fieldset">
+                            <fieldset class="reset Fieldset">
                                 <label class="Label" for="width">Width</label>
-                                <input class="Input" id="width" value="100%" />
+                                <input class="reset Input" id="width" value="100%" />
                             </fieldset>
-                            <fieldset class="Fieldset">
+                            <fieldset class="reset Fieldset">
                                 <label class="Label" for="maxWidth">Max. width</label>
-                                <input class="Input" id="maxWidth" value="300px" />
+                                <input class="reset Input" id="maxWidth" value="300px" />
                             </fieldset>
-                            <fieldset class="Fieldset">
+                            <fieldset class="reset Fieldset">
                                 <label class="Label" for="height">Height</label>
-                                <input class="Input" id="height" value="25px" />
+                                <input class="reset Input" id="height" value="25px" />
                             </fieldset>
-                            <fieldset class="Fieldset">
+                            <fieldset class="reset Fieldset">
                                 <label class="Label" for="maxHeight">Max. height</label>
-                                <input class="Input" id="maxHeight" value="none" />
+                                <input class="reset Input" id="maxHeight" value="none" />
                             </fieldset>
                         </div>
                         <div class="PopoverArrow" rdxPopoverArrow></div>
@@ -233,36 +268,56 @@ import { RdxPopoverModule } from '../index';
                 </ng-template>
             </ng-container>
         </div>
+        @if (messages().length) {
+            <div class="MessagesContainer">
+                @for (message of messages(); track message; let i = $index) {
+                    <p class="Message">{{ messages().length - i }}. {{ message }}</p>
+                }
+            </div>
+        }
     `
 })
 export class RdxPopoverEventsComponent {
+    private elementRef = inject(ElementRef);
+
     private readonly triggerElement = viewChild<ElementRef<HTMLElement>>('triggerElement');
     private readonly eventsContainer = viewChild<ElementRef<HTMLElement>>('eventsContainer');
 
     readonly MountainSnowIcon = MountainSnowIcon;
     readonly XIcon = X;
 
+    readonly messages = signal<string[]>([]);
+
+    readonly onEscapeKeyDownPreventDefault = signal(false);
+    readonly onPointerDownOutsidePreventDefault = signal(false);
+
     onEscapeKeyDown(event: KeyboardEvent) {
-        alert('Escape clicked!');
-        event.preventDefault();
+        this.addMessage(`Escape clicked! (preventDefault: ${this.onEscapeKeyDownPreventDefault()})`);
+        this.onEscapeKeyDownPreventDefault() && event.preventDefault();
     }
 
     onPointerDownOutside(event: MouseEvent): void {
-        if (!event.target || !this.eventsContainer()?.nativeElement.contains(event.target as HTMLElement)) {
+        if (!event.target || !this.elementRef.nativeElement.contains(event.target as HTMLElement)) {
             return;
         }
-        alert('Mouse clicked outside the popover!');
-        if (event.target === this.triggerElement()?.nativeElement) {
-            event.stopPropagation();
-        }
-        event.preventDefault();
+        this.addMessage(
+            `Mouse clicked outside the popover! (preventDefault: ${this.onPointerDownOutsidePreventDefault()})`
+        );
+        this.onPointerDownOutsidePreventDefault() && event.preventDefault();
     }
 
     onShow() {
-        alert('Popover shown!');
+        this.addMessage('Popover shown!');
     }
 
     onHide() {
-        alert('Popover hidden!');
+        this.addMessage('Popover hidden!');
     }
+
+    private addMessage(message: string) {
+        this.messages.update((messages) => [message, ...messages]);
+    }
+
+    protected readonly sides = RdxPopoverSide;
+    protected readonly aligns = RdxPopoverAlign;
 }
