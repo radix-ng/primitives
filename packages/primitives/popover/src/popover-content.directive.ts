@@ -69,7 +69,7 @@ export class RdxPopoverContentDirective implements OnInit {
         );
         const offsets: RdxSideAndAlignOffsets = {
             sideOffset: this.sideOffset() ?? (greatestDimensionFromTheArrow || DEFAULTS.offsets.side),
-            alignOffset: this.alignOffset() ?? (greatestDimensionFromTheArrow || DEFAULTS.offsets.align)
+            alignOffset: this.alignOffset() ?? DEFAULTS.offsets.align
         };
         const basePosition = getContentPosition({
             side: this.side(),
