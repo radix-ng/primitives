@@ -2,6 +2,7 @@ import { Component, ElementRef, inject, signal, viewChild } from '@angular/core'
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, MountainSnowIcon, X } from 'lucide-angular';
 import { RdxPopoverAlign, RdxPopoverModule, RdxPopoverSide } from '../index';
+import { RdxPopoverContentAttributesComponent } from '../src/popover-content-attributes.component';
 
 @Component({
     selector: 'rdx-popover-events',
@@ -9,7 +10,8 @@ import { RdxPopoverAlign, RdxPopoverModule, RdxPopoverSide } from '../index';
     imports: [
         RdxPopoverModule,
         LucideAngularModule,
-        FormsModule
+        FormsModule,
+        RdxPopoverContentAttributesComponent
     ],
     styles: `
         .container {
@@ -32,9 +34,6 @@ import { RdxPopoverAlign, RdxPopoverModule, RdxPopoverSide } from '../index';
             box-shadow:
                 hsl(206 22% 7% / 35%) 0px 10px 38px -10px,
                 hsl(206 22% 7% / 20%) 0px 10px 20px -15px;
-            animation-duration: 400ms;
-            animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-            will-change: transform, opacity;
         }
 
         .PopoverContent:focus {
@@ -42,22 +41,6 @@ import { RdxPopoverAlign, RdxPopoverModule, RdxPopoverSide } from '../index';
                 hsl(206 22% 7% / 35%) 0px 10px 38px -10px,
                 hsl(206 22% 7% / 20%) 0px 10px 20px -15px,
                 0 0 0 2px var(--violet-7);
-        }
-
-        .PopoverContent[data-state='open'][data-side='top'] {
-            animation-name: slideDownAndFade;
-        }
-
-        .PopoverContent[data-state='open'][data-side='right'] {
-            animation-name: slideLeftAndFade;
-        }
-
-        .PopoverContent[data-state='open'][data-side='bottom'] {
-            animation-name: slideUpAndFade;
-        }
-
-        .PopoverContent[data-state='open'][data-side='left'] {
-            animation-name: slideRightAndFade;
         }
 
         .PopoverArrow {
@@ -157,50 +140,6 @@ import { RdxPopoverAlign, RdxPopoverModule, RdxPopoverSide } from '../index';
             font-weight: bolder;
         }
 
-        @keyframes slideUpAndFade {
-            from {
-                opacity: 0;
-                transform: translateY(2px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideRightAndFade {
-            from {
-                opacity: 0;
-                transform: translateX(-2px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes slideDownAndFade {
-            from {
-                opacity: 0;
-                transform: translateY(-2px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideLeftAndFade {
-            from {
-                opacity: 0;
-                transform: translateX(2px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
         /* =============== Params layout =============== */
 
         .ParamsContainer {
@@ -240,7 +179,7 @@ import { RdxPopoverAlign, RdxPopoverModule, RdxPopoverSide } from '../index';
                     (onHide)="onHide()"
                     rdxPopoverContent
                 >
-                    <div class="PopoverContent">
+                    <div class="PopoverContent" rdxPopoverContentAttributes>
                         <button class="reset PopoverClose" rdxPopoverClose aria-label="Close">
                             <lucide-angular [img]="XIcon" size="16" style="display: flex" />
                         </button>

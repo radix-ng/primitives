@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, MountainSnowIcon, X } from 'lucide-angular';
 import { RdxPopoverModule } from '../index';
+import { RdxPopoverContentAttributesComponent } from '../src/popover-content-attributes.component';
 import { RdxPopoverAlign, RdxPopoverSide } from '../src/popover.types';
 
 @Component({
@@ -10,7 +11,8 @@ import { RdxPopoverAlign, RdxPopoverSide } from '../src/popover.types';
     imports: [
         FormsModule,
         RdxPopoverModule,
-        LucideAngularModule
+        LucideAngularModule,
+        RdxPopoverContentAttributesComponent
     ],
     styles: `
         .container {
@@ -33,9 +35,6 @@ import { RdxPopoverAlign, RdxPopoverSide } from '../src/popover.types';
             box-shadow:
                 hsl(206 22% 7% / 35%) 0px 10px 38px -10px,
                 hsl(206 22% 7% / 20%) 0px 10px 20px -15px;
-            animation-duration: 400ms;
-            animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-            will-change: transform, opacity;
         }
 
         .PopoverContent:focus {
@@ -43,22 +42,6 @@ import { RdxPopoverAlign, RdxPopoverSide } from '../src/popover.types';
                 hsl(206 22% 7% / 35%) 0px 10px 38px -10px,
                 hsl(206 22% 7% / 20%) 0px 10px 20px -15px,
                 0 0 0 2px var(--violet-7);
-        }
-
-        .PopoverContent[data-state='open'][data-side='top'] {
-            animation-name: slideDownAndFade;
-        }
-
-        .PopoverContent[data-state='open'][data-side='right'] {
-            animation-name: slideLeftAndFade;
-        }
-
-        .PopoverContent[data-state='open'][data-side='bottom'] {
-            animation-name: slideUpAndFade;
-        }
-
-        .PopoverContent[data-state='open'][data-side='left'] {
-            animation-name: slideRightAndFade;
         }
 
         .PopoverArrow {
@@ -147,50 +130,6 @@ import { RdxPopoverAlign, RdxPopoverSide } from '../src/popover.types';
             font-weight: 500;
         }
 
-        @keyframes slideUpAndFade {
-            from {
-                opacity: 0;
-                transform: translateY(2px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideRightAndFade {
-            from {
-                opacity: 0;
-                transform: translateX(-2px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes slideDownAndFade {
-            from {
-                opacity: 0;
-                transform: translateY(-2px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideLeftAndFade {
-            from {
-                opacity: 0;
-                transform: translateX(2px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
         /* =============== Params layout =============== */
 
         .ParamsContainer {
@@ -241,7 +180,7 @@ import { RdxPopoverAlign, RdxPopoverSide } from '../src/popover.types';
                     [disableAlternatePositions]="disableAlternatePositions()"
                     rdxPopoverContent
                 >
-                    <div class="PopoverContent">
+                    <div class="PopoverContent" rdxPopoverContentAttributes>
                         <button class="PopoverClose reset" rdxPopoverClose aria-label="Close">
                             <lucide-angular [img]="XIcon" size="16" style="display: flex" />
                         </button>
@@ -278,7 +217,7 @@ export class RdxPopoverPositioningComponent {
     selectedSide = signal(RdxPopoverSide.Top);
     selectedAlign = signal(RdxPopoverAlign.Center);
     sideOffset = signal(8);
-    alignOffset = signal(8);
+    alignOffset = signal<number | undefined>(void 0);
     disableAlternatePositions = signal(false);
 
     readonly sides = RdxPopoverSide;

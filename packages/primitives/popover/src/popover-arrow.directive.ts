@@ -95,9 +95,9 @@ export class RdxPopoverArrowDirective implements AfterViewInit {
         );
 
         this.renderer.setStyle(this.elementRef.nativeElement, 'top', posParams.top);
-        this.renderer.setStyle(this.elementRef.nativeElement, 'bottom', posParams.bottom);
+        this.renderer.setStyle(this.elementRef.nativeElement, 'bottom', '');
         this.renderer.setStyle(this.elementRef.nativeElement, 'left', posParams.left);
-        this.renderer.setStyle(this.elementRef.nativeElement, 'right', posParams.right);
+        this.renderer.setStyle(this.elementRef.nativeElement, 'right', '');
         this.renderer.setStyle(this.elementRef.nativeElement, 'transform', posParams.transform);
     }
 

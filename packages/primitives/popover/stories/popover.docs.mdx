@@ -32,6 +32,151 @@ import {RdxPopoverCloseDirective} from "../src/popover-close.directive";
 
 <Canvas sourceState="hidden" of={PopoverStories.ExternalTriggering} />
 
+### Animations
+
+<Canvas sourceState="hidden" of={PopoverStories.Animations} />
+
+#### Custom Animation Styles
+
+```css
+/* Open animations */
+
+.rdx-custom-animated-content {
+    &:is(.rdx-custom-animated-content-open, .rdx-custom-animated-content-close) {
+        animation-duration: 400ms;
+        animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+        will-change: transform, opacity;
+    }
+
+    &.rdx-custom-animated-content-open {
+        &[data-state='open'][data-side='top'] {
+            animation-name: rdxCustomSlideDownAndFade;
+        }
+
+        &[data-state='open'][data-side='right'] {
+            animation-name: rdxCustomSlideLeftAndFade;
+        }
+
+        &[data-state='open'][data-side='bottom'] {
+            animation-name: rdxCustomSlideUpAndFade;
+        }
+
+        &[data-state='open'][data-side='left'] {
+            animation-name: rdxCustomSlideRightAndFade;
+        }
+    }
+
+    &.rdx-custom-animated-content-close {
+        &[data-state='closed'][data-side='top'] {
+            animation-name: rdxCustomSlideDownAndFadeReverse;
+        }
+
+        &[data-state='closed'][data-side='right'] {
+            animation-name: rdxCustomSlideLeftAndFadeReverse;
+        }
+
+        &[data-state='closed'][data-side='bottom'] {
+            animation-name: rdxCustomSlideUpAndFadeReverse;
+        }
+
+        &[data-state='closed'][data-side='left'] {
+            animation-name: rdxCustomSlideRightAndFadeReverse;
+        }
+    }
+}
+
+@keyframes rdxCustomSlideUpAndFade {
+    from {
+        opacity: 0;
+        transform: translateY(2px);
+        /*transition:left 1s linear;*/
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes rdxCustomSlideRightAndFade {
+    from {
+        opacity: 0;
+        transform: translateX(-2px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes rdxCustomSlideDownAndFade {
+    from {
+        opacity: 0;
+        transform: translateY(-2px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes rdxCustomSlideLeftAndFade {
+    from {
+        opacity: 0;
+        transform: translateX(2px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Close animations */
+
+@keyframes rdxCustomSlideUpAndFadeReverse {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(2px);
+    }
+}
+
+@keyframes rdxCustomSlideRightAndFadeReverse {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-2px);
+    }
+}
+
+@keyframes rdxCustomSlideDownAndFadeReverse {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-2px);
+    }
+}
+
+@keyframes rdxCustomSlideLeftAndFadeReverse {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(2px);
+    }
+}
+```
+
 ## Features
 
 - ✅ Opens when the trigger is clicked.
@@ -45,7 +190,7 @@ import {RdxPopoverCloseDirective} from "../src/popover-close.directive";
     <button class="IconButton" rdxPopoverTrigger>+</button>
 
     <ng-template rdxPopoverContent [sideOffset]="8">
-        <div class="PopoverContent">
+        <div class="PopoverContent" rdxPopoverContentAttributes>
             <button class="PopoverClose" rdxPopoverClose aria-label="Close">X</button>
             Add to library
             <div class="PopoverArrow" rdxPopoverArrow></div>

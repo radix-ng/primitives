@@ -18,7 +18,7 @@ import { injectPopoverRoot } from './popover-root.inject';
 })
 export class RdxPopoverTriggerDirective {
     /** @ignore */
-    readonly popoverRoot = injectPopoverRoot();
+    protected readonly popoverRoot = injectPopoverRoot();
     /** @ignore */
     readonly elementRef = inject(ElementRef);
     /** @ignore */

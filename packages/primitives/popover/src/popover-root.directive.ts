@@ -1,7 +1,10 @@
+import { BooleanInput } from '@angular/cdk/coercion';
 import { DOCUMENT } from '@angular/common';
 import {
+    booleanAttribute,
     computed,
     contentChild,
+    DestroyRef,
     Directive,
     effect,
     forwardRef,
@@ -14,10 +17,12 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import { RdxPopoverArrowToken } from './popover-arrow.token';
+import { RdxPopoverContentAttributesToken } from './popover-content-attributes.token';
 import { RdxPopoverContentDirective } from './popover-content.directive';
 import { RdxPopoverRootToken } from './popover-root.token';
 import { RdxPopoverTriggerDirective } from './popover-trigger.directive';
-import { RdxPopoverState } from './popover.types';
+import { RdxPopoverAnimationStatus, RdxPopoverState } from './popover.types';
+import { isRdxPopoverDevMode } from './popover.utils';
 
 let nextId = 0;
 
@@ -33,7 +38,9 @@ let nextId = 0;
     exportAs: 'rdxPopoverRoot'
 })
 export class RdxPopoverRootDirective implements OnInit {
+    /** @ignore */
     readonly uniqueId = signal(++nextId);
+    /** @ignore */
     readonly name = computed(() => `rdx-popover-root-${this.uniqueId()}`);
 
     /**
@@ -44,6 +51,15 @@ export class RdxPopoverRootDirective implements OnInit {
      * The controlled open state of the popover. Must be used in conjunction with onOpenChange.
      */
     readonly open = input<boolean | undefined>();
+    /** @ignore */
+    /**
+     * TODO: create a dedicated transformer
+     */
+    readonly cssAnimation = input<boolean | 'custom'>(true);
+    /** @ignore */
+    readonly cssOnShowAnimation = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
+    /** @ignore */
+    readonly cssOnCloseAnimation = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
 
     /**
      * Event handler called when the open state of the popover changes.
@@ -51,34 +67,34 @@ export class RdxPopoverRootDirective implements OnInit {
     readonly onOpenChange = output<boolean>();
 
     /** @ignore */
+    readonly cssAnimationStatus = signal<RdxPopoverAnimationStatus | null>(null);
+
+    /** @ignore */
     readonly popoverContentDirective = contentChild.required(RdxPopoverContentDirective);
     /** @ignore */
     readonly popoverTriggerDirective = contentChild.required(RdxPopoverTriggerDirective);
     /** @ignore */
     readonly popoverArrowDirective = contentChild(RdxPopoverArrowToken);
+    /** @ignore */
+    readonly popoverContentAttributesDirective = contentChild(RdxPopoverContentAttributesToken);
 
     /** @ignore */
     readonly viewContainerRef = inject(ViewContainerRef);
     /** @ignore */
     private readonly document = inject(DOCUMENT);
+    /** @ignore */
+    readonly destroyRef = inject(DestroyRef);
 
     /** @ignore */
-    readonly isOpen = signal<boolean>(this.defaultOpen());
-    /** @ignore */
-    readonly state = computed<RdxPopoverState>(() => {
-        const currentIsOpen = this.isOpen();
-        if (currentIsOpen) {
-            return 'open';
-        }
-        return 'closed';
-    });
+    readonly state = signal(RdxPopoverState.CLOSED);
 
     /** @ignore */
     private isControlledExternally = computed(() => signal(this.open() !== void 0));
 
     constructor() {
+        this.onStateChangeEffect();
+        this.onCssAnimationStatusChangeChangeEffect();
         this.onOpenChangeEffect();
-        this.onIsOpenChangeEffect();
     }
 
     /** @ignore */
@@ -98,7 +114,7 @@ export class RdxPopoverRootDirective implements OnInit {
         if (this.isControlledExternally()()) {
             return;
         }
-        this.setOpen(true);
+        this.setState(RdxPopoverState.OPEN);
     }
 
     /** @ignore */
@@ -106,7 +122,7 @@ export class RdxPopoverRootDirective implements OnInit {
         if (this.isControlledExternally()()) {
             return;
         }
-        this.setOpen(false);
+        this.setState(RdxPopoverState.CLOSED);
     }
 
     /** @ignore */
@@ -118,17 +134,17 @@ export class RdxPopoverRootDirective implements OnInit {
     }
 
     /** @ignore */
-    private setOpen(open = false): void {
-        this.document.dispatchEvent(
-            new CustomEvent(`popover.${open ? 'open' : 'close'}`, {
-                detail: {
-                    id: this.name()
-                }
-            })
-        );
+    isOpen(state?: RdxPopoverState) {
+        return (state ?? this.state()) === RdxPopoverState.OPEN;
+    }
 
-        this.isOpen.set(open);
-        this.onOpenChange.emit(open);
+    /** @ignore */
+    private setState(state = RdxPopoverState.CLOSED): void {
+        if (state === this.state()) {
+            return;
+        }
+        isRdxPopoverDevMode() && console.log(this.uniqueId(), 'setState', state);
+        this.state.set(state);
     }
 
     /** @ignore */
@@ -142,18 +158,102 @@ export class RdxPopoverRootDirective implements OnInit {
     }
 
     /** @ignore */
-    private onIsOpenChangeEffect() {
+    private getAnimationParamsSnapshot() {
+        return {
+            cssAnimation: this.cssAnimation(),
+            cssOnShowAnimation: this.cssOnShowAnimation(),
+            cssOnCloseAnimation: this.cssOnCloseAnimation(),
+            cssAnimationStatus: this.cssAnimationStatus(),
+            state: this.state()
+        };
+    }
+
+    /** @ignore */
+    private onStateChangeEffect() {
         effect(() => {
-            const isOpen = this.isOpen();
+            const state = this.state();
 
             untracked(() => {
-                if (isOpen) {
-                    this.show();
-                } else {
-                    this.hide();
+                isRdxPopoverDevMode() &&
+                    console.log(
+                        this.uniqueId(),
+                        '[onStateChangeEffect] pre filter',
+                        state,
+                        this.getAnimationParamsSnapshot()
+                    );
+                if (!this.ifRunOnStateChangeCallbackSync(state)) {
+                    return;
                 }
+                isRdxPopoverDevMode() && console.log(this.uniqueId(), '[onStateChangeEffect]', state);
+                this.onStateChangeCallback(state);
             });
         });
+    }
+
+    /** @ignore */
+    private onCssAnimationStatusChangeChangeEffect() {
+        effect(() => {
+            const cssAnimationStatus = this.cssAnimationStatus();
+
+            untracked(() => {
+                isRdxPopoverDevMode() &&
+                    console.log(
+                        this.uniqueId(),
+                        '[onCssAnimationStatusChangeChangeEffect pre filter]',
+                        cssAnimationStatus,
+                        this.getAnimationParamsSnapshot()
+                    );
+
+                if (!this.ifRunOnStateChangeCallbackAsync(cssAnimationStatus)) {
+                    return;
+                }
+
+                isRdxPopoverDevMode() &&
+                    console.log(
+                        this.uniqueId(),
+                        '[onCssAnimationStatusChangeChangeEffect]',
+                        cssAnimationStatus,
+                        this.state()
+                    );
+                this.onStateChangeCallback(this.state());
+            });
+        });
+    }
+
+    /** @ignore */
+    private ifRunOnStateChangeCallbackSync(state: RdxPopoverState) {
+        return (
+            !this.popoverContentAttributesDirective() ||
+            !this.cssAnimation() ||
+            !this.cssOnCloseAnimation() ||
+            state === RdxPopoverState.OPEN
+        );
+    }
+
+    /** @ignore */
+    private ifRunOnStateChangeCallbackAsync(cssAnimationStatus: RdxPopoverAnimationStatus | null) {
+        return (
+            this.popoverContentAttributesDirective() &&
+            this.cssAnimation() &&
+            this.cssOnCloseAnimation() &&
+            cssAnimationStatus &&
+            this.state() === RdxPopoverState.CLOSED &&
+            [RdxPopoverAnimationStatus.CLOSED_ENDED].includes(cssAnimationStatus)
+        );
+    }
+
+    /** @ignore */
+    private onStateChangeCallback(state: RdxPopoverState) {
+        const isOpen = this.isOpen(state);
+        isOpen ? this.show() : this.hide();
+        this.onOpenChange.emit(isOpen);
+        this.document.dispatchEvent(
+            new CustomEvent(`popover.${isOpen ? 'open' : 'close'}`, {
+                detail: {
+                    id: this.name()
+                }
+            })
+        );
     }
 
     /** @ignore */
@@ -164,7 +264,7 @@ export class RdxPopoverRootDirective implements OnInit {
             untracked(() => {
                 this.isControlledExternally().set(currentOpen !== void 0);
                 if (this.isControlledExternally()()) {
-                    this.setOpen(currentOpen);
+                    this.setState(currentOpen ? RdxPopoverState.OPEN : RdxPopoverState.CLOSED);
                 }
             });
         });

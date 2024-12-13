@@ -17,7 +17,7 @@ import { filter, tap } from 'rxjs';
 import { injectPopoverRoot } from './popover-root.inject';
 import { DEFAULTS } from './popover.constants';
 import { RdxPopoverAlign, RdxPopoverSide, RdxSideAndAlignOffsets } from './popover.types';
-import { getAllPossibleConnectedPositions, getContentPosition } from './popover.utils';
+import { getAllPossibleConnectedPositions, getContentPosition, isRdxPopoverDevMode } from './popover.utils';
 
 @Directive({
     selector: '[rdxPopoverContent]',
@@ -28,13 +28,13 @@ import { getAllPossibleConnectedPositions, getContentPosition } from './popover.
 })
 export class RdxPopoverContentDirective implements OnInit {
     /** @ignore */
-    readonly popoverRoot = injectPopoverRoot();
+    private readonly popoverRoot = injectPopoverRoot();
     /** @ignore */
-    readonly templateRef = inject(TemplateRef);
+    private readonly templateRef = inject(TemplateRef);
     /** @ignore */
-    readonly overlay = inject(Overlay);
+    private readonly overlay = inject(Overlay);
     /** @ignore */
-    readonly destroyRef = inject(DestroyRef);
+    private readonly destroyRef = inject(DestroyRef);
     /** @ignore */
     private readonly connectedOverlay = inject(CdkConnectedOverlay);
 
@@ -63,6 +63,13 @@ export class RdxPopoverContentDirective implements OnInit {
 
     /** @ingore */
     readonly positions = computed(() => {
+        isRdxPopoverDevMode() &&
+            console.log(this.popoverRoot.uniqueId(), '[inputs]', {
+                side: this.side(),
+                align: this.align(),
+                sideOffset: this.sideOffset(),
+                alignOffset: this.alignOffset()
+            });
         const greatestDimensionFromTheArrow = Math.max(
             this.popoverRoot.popoverArrowDirective()?.width() ?? 0,
             this.popoverRoot.popoverArrowDirective()?.height() ?? 0
@@ -71,12 +78,21 @@ export class RdxPopoverContentDirective implements OnInit {
             sideOffset: this.sideOffset() ?? (greatestDimensionFromTheArrow || DEFAULTS.offsets.side),
             alignOffset: this.alignOffset() ?? DEFAULTS.offsets.align
         };
+        isRdxPopoverDevMode() && console.log(this.popoverRoot.uniqueId(), '[offsets]', offsets);
+        isRdxPopoverDevMode() &&
+            console.log(this.popoverRoot.uniqueId(), '[computed inputs]', {
+                side: this.side(),
+                align: this.align(),
+                sideOffset: offsets.sideOffset,
+                alignOffset: offsets.alignOffset
+            });
         const basePosition = getContentPosition({
             side: this.side(),
             align: this.align(),
             sideOffset: offsets.sideOffset,
             alignOffset: offsets.alignOffset
         });
+        isRdxPopoverDevMode() && console.log(this.popoverRoot.uniqueId(), '[basePosition]', basePosition);
         const positions = [basePosition];
         if (!this.disableAlternatePositions()) {
             /**
@@ -100,6 +116,7 @@ export class RdxPopoverContentDirective implements OnInit {
                 }
             });
         }
+        isRdxPopoverDevMode() && console.log(this.popoverRoot.uniqueId(), '[positions]', positions);
         return positions;
     });
 
@@ -139,20 +156,22 @@ export class RdxPopoverContentDirective implements OnInit {
 
     /** @ignore */
     show() {
+        if (this.connectedOverlay.open) {
+            return;
+        }
         const prevOpen = this.connectedOverlay.open;
         this.connectedOverlay.open = true;
-        if (!prevOpen) {
-            this.connectedOverlay.ngOnChanges({ open: new SimpleChange(prevOpen, true, false) });
-        }
+        this.connectedOverlay.ngOnChanges({ open: new SimpleChange(prevOpen, true, false) });
     }
 
     /** @ignore */
     hide() {
+        if (!this.connectedOverlay.open) {
+            return;
+        }
         const prevOpen = this.connectedOverlay.open;
         this.connectedOverlay.open = false;
-        if (prevOpen) {
-            this.connectedOverlay.ngOnChanges({ open: new SimpleChange(prevOpen, false, false) });
-        }
+        this.connectedOverlay.ngOnChanges({ open: new SimpleChange(prevOpen, false, false) });
     }
 
     /** @ignore */
