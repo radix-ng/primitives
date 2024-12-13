@@ -1,3 +1,16 @@
+## 0.20.2 (2024-12-13)
+
+### 🩹 Fixes
+
+- **popover:** set align-offset default value to 0 ([#195](https://github.com/radix-ng/primitives/pull/195))
+- **popover:** set default Radix values ([#189](https://github.com/radix-ng/primitives/pull/189))
+- **popover:** close on outside click by default ([#192](https://github.com/radix-ng/primitives/pull/192))
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+- pawel-twardziak
+
 ## 0.20.1 (2024-12-12)
 
 ### 🩹 Fixes
