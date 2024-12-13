@@ -114,14 +114,6 @@
     --code-font-family: 'Söhne Mono', 'Menlo', monospace, 'Apple Color Emoji', 'Segoe UI Emoji';
 }
 
-:where(.rt-Text) {
-    margin: 0;
-}
-
-* {
-    border-color: hsl(var(--border));
-}
-
 body {
     margin: 0;
     min-width: 320px;
@@ -130,6 +122,9 @@ body {
     /* Provide a default family for portalled elements not using themes (e.g. Primitives examples) */
     font-family: var(--default-font-family), serif;
 
+    font-variation-settings: normal;
+
+    /* font-feature-settings: "rlig" 1, "calt" 1; */
     font-synthesis-weight: none;
     text-rendering: optimizeLegibility;
 }
