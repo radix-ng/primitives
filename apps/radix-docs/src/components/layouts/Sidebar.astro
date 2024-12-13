@@ -51,8 +51,13 @@ function isActive(pageUrl: string) {
                                             ]}
                                         >
                                             {page.name}
-                                            {page.label && (
+                                            {page.label && page.label == 'New' && (
                                                 <span class="rounded-md bg-[#adfa1d] px-1.5 py-0.5 text-xs leading-none text-[#000000] no-underline group-hover:no-underline">
+                                                    {page.label}
+                                                </span>
+                                            )}
+                                            {page.label && page.label == 'Soon' && (
+                                                <span class=" border-muted bg-primary/30 text-foreground rounded-full rounded-md border !bg-transparent px-1.5 py-0.5 text-xs leading-none no-underline group-hover:no-underline">
                                                     {page.label}
                                                 </span>
                                             )}

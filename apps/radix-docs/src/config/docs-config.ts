@@ -58,16 +58,26 @@ const docsConfig = {
                     section: 'Components',
                     pages: [
                         { name: 'Accordion', url: '/primitives/components/accordion' },
+                        { name: 'Alert Dialog', url: '#', label: 'Soon' },
                         { name: 'Aspect Ratio', url: '/primitives/components/aspect-ratio' },
                         { name: 'Avatar', url: '/primitives/components/avatar' },
+                        { name: 'Checkbox', url: '#', label: 'Soon' },
                         { name: 'Collapsible', url: '/primitives/components/collapsible' },
+                        { name: 'Context Menu', url: '#', label: 'Soon' },
                         { name: 'Dialog', url: '/primitives/components/dialog' },
                         { name: 'Dropdown Menu', url: '/primitives/components/dropdown-menu' },
                         { name: 'Label', url: '/primitives/components/label' },
+                        { name: 'Popover', url: '#', label: 'Soon' },
                         { name: 'Progress', url: '/primitives/components/progress' },
-                        { name: 'Separator', url: '/primitives/components/separator' },
+                        { name: 'Radio Group', url: '#', label: 'Soon' },
                         { name: 'Select', url: '/primitives/components/select' },
-                        { name: 'Slider', url: '/primitives/components/slider', label: 'New' }
+                        { name: 'Separator', url: '/primitives/components/separator' },
+                        { name: 'Slider', url: '/primitives/components/slider', label: 'New' },
+                        { name: 'Switch', url: '#', label: 'Soon' },
+                        { name: 'Tabs', url: '#', label: 'Soon' },
+                        { name: 'Toggle', url: '#', label: 'Soon' },
+                        { name: 'Toggle Group', url: '#', label: 'Soon' },
+                        { name: 'Tooltip', url: '#', label: 'Soon' }
                     ]
                 }
             ]
