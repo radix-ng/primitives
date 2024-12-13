@@ -19,6 +19,8 @@ import {
 } from '@radix-ui/colors';
 import { type Config } from 'tailwindcss';
 
+import defaultTheme from 'tailwindcss/defaultTheme';
+
 const config = {
     content: ['./src/**/*.{astro,html,mdx,ts}'],
     darkMode: 'selector',
@@ -33,16 +35,16 @@ const config = {
         },
         extend: {
             fontFamily: {
-                inter: [
-                    'Inter',
-                    'ui-sans-serif',
-                    'system-ui',
-                    'sans-serif',
-                    'Apple Color Emoji',
-                    'Segoe UI Emoji',
-                    'Segoe UI Symbol',
-                    'Noto Color Emoji'
-                ]
+                mono: ['JetBrains Mono', ...defaultTheme.fontFamily.mono],
+                sans: ['Inter Variable', ...defaultTheme.fontFamily.sans]
+            },
+            screens: {
+                phone: '400px'
+            },
+            borderRadius: {
+                lg: 'var(--radius)',
+                md: 'calc(var(--radius) - 2px)',
+                sm: 'calc(var(--radius) - 4px)'
             },
             colors: {
                 ...blackA,
@@ -85,14 +87,6 @@ const config = {
                     DEFAULT: 'hsl(var(--accent))',
                     foreground: 'hsl(var(--accent-foreground))'
                 }
-            },
-            borderRadius: {
-                lg: 'var(--radius)',
-                md: 'calc(var(--radius) - 2px)',
-                sm: 'calc(var(--radius) - 4px)'
-            },
-            screens: {
-                phone: '400px'
             }
         }
     },
