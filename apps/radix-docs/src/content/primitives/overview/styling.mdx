@@ -1,0 +1,123 @@
+---
+title: Styling
+slug: styling
+section: overview
+description: description
+---
+
+# Styling
+
+<p>RadixNG are unstyled and compatible with any styling solution giving you complete control over styling.</p>
+
+## Overview
+
+### Classes
+
+All components accept class attributes, just like regular Angular component. This class will be passed to the `HOST` element.
+
+For some `primitives` based on `@Components`, the `className` property is used and applied to the child element of the component.
+
+### Data attributes
+
+When components are stateful, their state will be exposed in a `data-state` attribute.
+
+For example, when an **Accordion Item** is opened, it includes a `data-state="open"` attribute.
+
+## Styling with CSS
+
+### Styling a part
+
+You can style a component part by targeting the `class` that you provide.
+
+```html
+<div [defaultValue]="'item-1'" rdxAccordionRoot>
+  <div class="AccordionItem" [value]="'item-1'" rdxAccordionItem>
+    <!-- ... -->
+  </div>
+</div>
+
+<style>
+.AccordionItem {
+  /* ... */
+}
+</style>
+```
+
+### Styling a state
+You can style a component state by targeting its `data-state` attribute.
+
+```css
+.AccordionItem {
+  border-bottom: 1px solid gainsboro;
+}
+
+.AccordionItem[data-state="open"] {
+  border-bottom-width: 2px;
+}
+```
+
+## Styling with Tailwind CSS
+
+The examples below are using [Tailwind CSS](https://tailwindcss.com/), but you can use any library of your choice.
+
+### Styling a part
+You can style a component part by targeting the `class`.
+
+```html
+<div [defaultValue]="'item-1'" rdxAccordionRoot>
+  <div class="border border-gray-400 rounded-2xl" [value]="'item-1'" rdxAccordionItem>
+    <!-- ... -->
+  </div>
+</div>
+```
+
+### Styling a state
+
+With Tailwind CSS's powerful variant selector, you can style a component state by targeting its `data-state` attribute.
+
+```html
+<div [defaultValue]="'item-1'" rdxAccordionRoot>
+  <div class="
+        border border-gray-400 rounded-2xl
+        data-[state=open]:border-b-2 data-[state=open]:border-gray-800
+      " [value]="'item-1'" rdxAccordionItem>
+    <!-- ... -->
+  </div>
+</div>
+```
+
+## Extending a primitive
+
+Extending a primitive is done the same way you extend any **Angular** component.
+
+### Host Directive
+One of the best ways is to use `hostDirectives`.
+
+```typescript
+import { Directive } from '@angular/core';
+import { RdxLabelDirective } from '@radix-ng/primitives/label';
+
+@Directive({
+    hostDirectives: [RdxLabelDirective],
+    selector: '[myLabel]',
+    standalone: true
+})
+export class MyLabelDirective {}
+```
+
+### Components
+
+```typescript
+import { Component } from '@angular/core';
+import { RdxLabelDirective } from '@radix-ng/primitives/label';
+
+@Component({
+    hostDirectives: [RdxLabelDirective],
+    selector: 'my-label',
+    standalone: true,
+    template: `
+        <ng-content />
+    `
+})
+export class MyLabelDirective {}
+```
