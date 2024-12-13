@@ -6,8 +6,6 @@
 > This version is not yet stable.
 >
 > It is very important for me to maintain API compatibility provided by the Radix primitives.
-> However, there are some features that I would prefer not to carry over.
-> For example, the horizontal arrangement of radio buttons — I have indicated the reason in the code as to why this should be avoided.
 
 > Radix-NG is an unofficial Angular port of [Radix UI](https://www.radix-ui.com/), thus we share the same principal and vision when building primitives.
 
