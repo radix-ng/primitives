@@ -1,9 +1,11 @@
-import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
+import {ArgTypes, Canvas, Markdown, Meta, Source} from '@storybook/blocks';
 import * as PopoverStories from "./popover.stories";
 import {RdxPopoverRootDirective} from "../src/popover-root.directive";
 import {RdxPopoverContentDirective} from "../src/popover-content.directive";
 import {RdxPopoverArrowDirective} from "../src/popover-arrow.directive";
 import {RdxPopoverCloseDirective} from "../src/popover-close.directive";
+import {animationStylesOnly} from "./popover-styles.constants";
+import {RdxPopoverContentAttributesComponent} from "../src/popover-content-attributes.component";
 
 <Meta title="Primitives/Popover" />
 
@@ -36,146 +38,10 @@ import {RdxPopoverCloseDirective} from "../src/popover-close.directive";
 
 <Canvas sourceState="hidden" of={PopoverStories.Animations} />
 
-#### Custom Animation Styles
+### Animation Styles
 
-```css
-/* Open animations */
+<Source type="code" language="css" code={`${animationStylesOnly}`} />
 
-.rdx-custom-animated-content {
-    &:is(.rdx-custom-animated-content-open, .rdx-custom-animated-content-close) {
-        animation-duration: 400ms;
-        animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-        will-change: transform, opacity;
-    }
-
-    &.rdx-custom-animated-content-open {
-        &[data-state='open'][data-side='top'] {
-            animation-name: rdxCustomSlideDownAndFade;
-        }
-
-        &[data-state='open'][data-side='right'] {
-            animation-name: rdxCustomSlideLeftAndFade;
-        }
-
-        &[data-state='open'][data-side='bottom'] {
-            animation-name: rdxCustomSlideUpAndFade;
-        }
-
-        &[data-state='open'][data-side='left'] {
-            animation-name: rdxCustomSlideRightAndFade;
-        }
-    }
-
-    &.rdx-custom-animated-content-close {
-        &[data-state='closed'][data-side='top'] {
-            animation-name: rdxCustomSlideDownAndFadeReverse;
-        }
-
-        &[data-state='closed'][data-side='right'] {
-            animation-name: rdxCustomSlideLeftAndFadeReverse;
-        }
-
-        &[data-state='closed'][data-side='bottom'] {
-            animation-name: rdxCustomSlideUpAndFadeReverse;
-        }
-
-        &[data-state='closed'][data-side='left'] {
-            animation-name: rdxCustomSlideRightAndFadeReverse;
-        }
-    }
-}
-
-@keyframes rdxCustomSlideUpAndFade {
-    from {
-        opacity: 0;
-        transform: translateY(2px);
-        /*transition:left 1s linear;*/
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes rdxCustomSlideRightAndFade {
-    from {
-        opacity: 0;
-        transform: translateX(-2px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes rdxCustomSlideDownAndFade {
-    from {
-        opacity: 0;
-        transform: translateY(-2px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes rdxCustomSlideLeftAndFade {
-    from {
-        opacity: 0;
-        transform: translateX(2px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-/* Close animations */
-
-@keyframes rdxCustomSlideUpAndFadeReverse {
-    from {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateY(2px);
-    }
-}
-
-@keyframes rdxCustomSlideRightAndFadeReverse {
-    from {
-        opacity: 1;
-        transform: translateX(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateX(-2px);
-    }
-}
-
-@keyframes rdxCustomSlideDownAndFadeReverse {
-    from {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateY(-2px);
-    }
-}
-
-@keyframes rdxCustomSlideLeftAndFadeReverse {
-    from {
-        opacity: 1;
-        transform: translateX(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateX(2px);
-    }
-}
-```
 
 ## Features
 
@@ -203,21 +69,17 @@ import {RdxPopoverCloseDirective} from "../src/popover-close.directive";
 
 Get started with importing the directives:
 
-```typescript
-import {
+<Source type="code" language="typescript" code={`import {
   RdxPopoverRootDirective,
   RdxPopoverRootTrigger,
   RdxPopoverContentDirective,
   RdxPopoverArrowDirective,
   RdxPopoverCloseDirective
-} from '@radix-ng/primitives/popover';
-```
+} from '@radix-ng/primitives/popover';`} />
 
 or
 
-```typescript
-import { RdxPopoverModule } from '@radix-ng/primitives/popover';
-```
+<Source type="code" language="typescript" code={`import { RdxPopoverModule } from '@radix-ng/primitives/popover';`} />
 
 ## API Reference
 
@@ -233,13 +95,11 @@ Contains all the parts of a popover.
 
 The button that toggles the popover. By default, the PopoverContent will position itself against the trigger.
 
-<Markdown>
-    {`
+<Source type="code" language="md" code={`
    | Data attribute | Value
    | ----- | -----
    | [data-state] | <code>"closed" | "open" (type RdxPopoverState)</code>
-   `}
-</Markdown>
+`} />
 
 ### Content
 `RdxPopoverContentDirective`
@@ -248,15 +108,20 @@ The component that pops out when the popover is open.
 
 <ArgTypes of={RdxPopoverContentDirective} />
 
-<Markdown>
-    {`
+<Source type="code" language="md" code={`
    | Data attribute | Value
    | ----- | -----
    | [data-state] | <code>"closed" | "open" (enum RdxPopoverState)</code>
    | [data-side] | <code>"left" | "right" | "bottom" | "top" (enum RdxPopoverSide)</code>
    | [data-align] | <code>"start" | "end" | "center" (enum RdxPopoverAlign)</code>
-   `}
-</Markdown>
+`} />
+
+### Content Attributes
+`RdxPopoverContentAttributesComponent`
+
+The component attributes that are necessary to run animations.
+
+<ArgTypes of={RdxPopoverContentAttributesComponent} />
 
 ### Arrow
 `RdxPopoverArrowDirective`

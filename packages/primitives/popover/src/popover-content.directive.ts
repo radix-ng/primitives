@@ -62,63 +62,7 @@ export class RdxPopoverContentDirective implements OnInit {
     readonly disableAlternatePositions = input(false);
 
     /** @ingore */
-    readonly positions = computed(() => {
-        isRdxPopoverDevMode() &&
-            console.log(this.popoverRoot.uniqueId(), '[inputs]', {
-                side: this.side(),
-                align: this.align(),
-                sideOffset: this.sideOffset(),
-                alignOffset: this.alignOffset()
-            });
-        const greatestDimensionFromTheArrow = Math.max(
-            this.popoverRoot.popoverArrowDirective()?.width() ?? 0,
-            this.popoverRoot.popoverArrowDirective()?.height() ?? 0
-        );
-        const offsets: RdxSideAndAlignOffsets = {
-            sideOffset: this.sideOffset() ?? (greatestDimensionFromTheArrow || DEFAULTS.offsets.side),
-            alignOffset: this.alignOffset() ?? DEFAULTS.offsets.align
-        };
-        isRdxPopoverDevMode() && console.log(this.popoverRoot.uniqueId(), '[offsets]', offsets);
-        isRdxPopoverDevMode() &&
-            console.log(this.popoverRoot.uniqueId(), '[computed inputs]', {
-                side: this.side(),
-                align: this.align(),
-                sideOffset: offsets.sideOffset,
-                alignOffset: offsets.alignOffset
-            });
-        const basePosition = getContentPosition({
-            side: this.side(),
-            align: this.align(),
-            sideOffset: offsets.sideOffset,
-            alignOffset: offsets.alignOffset
-        });
-        isRdxPopoverDevMode() && console.log(this.popoverRoot.uniqueId(), '[basePosition]', basePosition);
-        const positions = [basePosition];
-        if (!this.disableAlternatePositions()) {
-            /**
-             * Alternate positions for better user experience along the X/Y axis (e.g. vertical/horizontal scrolling)
-             */
-            const allPossibleConnectedPositions = getAllPossibleConnectedPositions();
-            allPossibleConnectedPositions.forEach((_, key) => {
-                const sideAndAlignArray = key.split('|');
-                if (
-                    (sideAndAlignArray[0] as RdxPopoverSide) !== this.side() ||
-                    (sideAndAlignArray[1] as RdxPopoverAlign) !== this.align()
-                ) {
-                    positions.push(
-                        getContentPosition({
-                            side: sideAndAlignArray[0] as RdxPopoverSide,
-                            align: sideAndAlignArray[1] as RdxPopoverAlign,
-                            sideOffset: offsets.sideOffset,
-                            alignOffset: offsets.alignOffset
-                        })
-                    );
-                }
-            });
-        }
-        isRdxPopoverDevMode() && console.log(this.popoverRoot.uniqueId(), '[positions]', positions);
-        return positions;
-    });
+    readonly positions = computed(() => this.computePositions());
 
     /**
      * Event handler called when the escape key is down. It can be prevented by calling event.preventDefault.
@@ -131,7 +75,7 @@ export class RdxPopoverContentDirective implements OnInit {
     readonly onPointerDownOutside = output<MouseEvent>();
 
     /**
-     * Event handler called when the overlay is atached
+     * Event handler called when the overlay is attached
      */
     readonly onShow = output<void>();
     /**
@@ -263,6 +207,65 @@ export class RdxPopoverContentDirective implements OnInit {
         this.connectedOverlay.ngOnChanges({
             origin: new SimpleChange(prevOrigin, this.connectedOverlay.origin, false)
         });
+    }
+
+    /** @ignore */
+    private computePositions() {
+        isRdxPopoverDevMode() &&
+            console.log(this.popoverRoot.uniqueId(), '[inputs]', {
+                side: this.side(),
+                align: this.align(),
+                sideOffset: this.sideOffset(),
+                alignOffset: this.alignOffset()
+            });
+        const greatestDimensionFromTheArrow = Math.max(
+            this.popoverRoot.popoverArrowDirective()?.width() ?? 0,
+            this.popoverRoot.popoverArrowDirective()?.height() ?? 0
+        );
+        const offsets: RdxSideAndAlignOffsets = {
+            sideOffset: this.sideOffset() ?? (greatestDimensionFromTheArrow || DEFAULTS.offsets.side),
+            alignOffset: this.alignOffset() ?? DEFAULTS.offsets.align
+        };
+        isRdxPopoverDevMode() && console.log(this.popoverRoot.uniqueId(), '[offsets]', offsets);
+        isRdxPopoverDevMode() &&
+            console.log(this.popoverRoot.uniqueId(), '[computed inputs]', {
+                side: this.side(),
+                align: this.align(),
+                sideOffset: offsets.sideOffset,
+                alignOffset: offsets.alignOffset
+            });
+        const basePosition = getContentPosition({
+            side: this.side(),
+            align: this.align(),
+            sideOffset: offsets.sideOffset,
+            alignOffset: offsets.alignOffset
+        });
+        isRdxPopoverDevMode() && console.log(this.popoverRoot.uniqueId(), '[basePosition]', basePosition);
+        const positions = [basePosition];
+        if (!this.disableAlternatePositions()) {
+            /**
+             * Alternate positions for better user experience along the X/Y axis (e.g. vertical/horizontal scrolling)
+             */
+            const allPossibleConnectedPositions = getAllPossibleConnectedPositions();
+            allPossibleConnectedPositions.forEach((_, key) => {
+                const sideAndAlignArray = key.split('|');
+                if (
+                    (sideAndAlignArray[0] as RdxPopoverSide) !== this.side() ||
+                    (sideAndAlignArray[1] as RdxPopoverAlign) !== this.align()
+                ) {
+                    positions.push(
+                        getContentPosition({
+                            side: sideAndAlignArray[0] as RdxPopoverSide,
+                            align: sideAndAlignArray[1] as RdxPopoverAlign,
+                            sideOffset: offsets.sideOffset,
+                            alignOffset: offsets.alignOffset
+                        })
+                    );
+                }
+            });
+        }
+        isRdxPopoverDevMode() && console.log(this.popoverRoot.uniqueId(), '[positions]', positions);
+        return positions;
     }
 
     /** @ignore */

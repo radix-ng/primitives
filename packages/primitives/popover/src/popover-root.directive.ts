@@ -55,11 +55,11 @@ export class RdxPopoverRootDirective implements OnInit {
     /**
      * TODO: create a dedicated transformer
      */
-    readonly cssAnimation = input<boolean | 'custom'>(true);
+    readonly cssAnimation = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
     /** @ignore */
-    readonly cssOnShowAnimation = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
+    readonly cssOnShowAnimation = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
     /** @ignore */
-    readonly cssOnCloseAnimation = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
+    readonly cssOnCloseAnimation = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
      * Event handler called when the open state of the popover changes.
@@ -247,13 +247,6 @@ export class RdxPopoverRootDirective implements OnInit {
         const isOpen = this.isOpen(state);
         isOpen ? this.show() : this.hide();
         this.onOpenChange.emit(isOpen);
-        this.document.dispatchEvent(
-            new CustomEvent(`popover.${isOpen ? 'open' : 'close'}`, {
-                detail: {
-                    id: this.name()
-                }
-            })
-        );
     }
 
     /** @ignore */
