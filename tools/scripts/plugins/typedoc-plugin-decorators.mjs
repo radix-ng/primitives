@@ -60,9 +60,23 @@ function addDecoratorInfo(context, decl) {
                 switch (decorator.name) {
                     case 'Component':
                     case 'Directive':
+                        // eslint-disable-next-line no-case-declarations
+                        const selector = args.symbol.members.get('selector')?.valueDeclaration.initializer.text ?? '';
+                        // eslint-disable-next-line no-case-declarations
+                        const hostMember = args.symbol.members.get('host');
+                        let host = null;
+
+                        if (hostMember?.valueDeclaration?.initializer) {
+                            const initializer = hostMember.valueDeclaration.initializer;
+
+                            if (ts.isObjectLiteralExpression(initializer)) {
+                                host = {};
+                            }
+                        }
+
                         decorator.arguments = {
-                            selector: args.symbol.members.get('selector')?.valueDeclaration.initializer.text ?? '',
-                            host: args.symbol.members.get('host')?.valueDeclaration.initializer.text ?? ''
+                            selector,
+                            host
                         };
 
                         break;

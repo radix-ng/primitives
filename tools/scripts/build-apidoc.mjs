@@ -1,18 +1,13 @@
 import { accessSync } from 'node:fs';
+import path from 'node:path';
 import * as util from 'node:util';
 import * as TypeDoc from 'typedoc';
-import { ReferenceType } from 'typedoc';
+import { fileURLToPath } from 'url';
 
-import { type DeclarationReflection } from 'typedoc';
-import { getDecorator } from './get-decorator';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-/**
- * TypeDoc's `DeclarationReflection` with the addition of decorators.
- * (See 'plugins/typedoc-plugin-decorators.mjs').
- */
-export interface DeclarationReflectionWithDecorators extends DeclarationReflection {
-    decorators?: { name: string; arguments?: Record<string, string> }[];
-}
+const TYPEDOC_PLUGIN_PATH = path.join(__dirname, './plugins/typedoc-plugin-decorators.mjs');
 
 async function main() {
     const components = await getComponents();
@@ -51,13 +46,6 @@ export async function getComponents() {
     return components;
 }
 
-export function isInput(reflection: DeclarationReflectionWithDecorators): boolean {
-    return (
-        getDecorator(reflection) === 'Input' ||
-        (reflection.type instanceof ReferenceType && reflection.type?.name === 'InputSignal')
-    );
-}
-
 export async function generateComponentsTypeDocs(components) {
     for (const component of components) {
         const app = await TypeDoc.Application.bootstrapWithPlugins({
@@ -68,6 +56,7 @@ export async function generateComponentsTypeDocs(components) {
             disableSources: true,
             searchInComments: true,
             excludeExternals: true,
+            plugin: [TYPEDOC_PLUGIN_PATH],
             logLevel: 'Error',
             sort: ['source-order'],
             readme: 'none',
@@ -100,14 +89,7 @@ export async function generateComponentsTypeDocs(components) {
                             };
                         }
 
-                        const module_components_group = module.groups.find((g) => g.title === 'Components');
-                        const module_events_group = module.groups.find((g) => g.title === 'Events');
                         const module_classes_group = module.groups.find((g) => g.title === 'Classes');
-                        const module_directives_group = module.groups.find((g) => g.title === 'Directives');
-                        const module_templates_group = module.groups.find((g) => g.title === 'Templates');
-                        const module_interface_group = module.groups.find((g) => g.title === 'Interface');
-                        const module_service_group = module.groups.find((g) => g.title === 'Service');
-                        const module_enums_group = module.groups.find((g) => g.title === 'Enumerations');
                         const module_types_group = module.groups.find((g) => g.title === 'Type Aliases');
 
                         if (module_types_group) {
@@ -152,12 +134,8 @@ export async function generateComponentsTypeDocs(components) {
                                             name: prop.name,
                                             optional: prop.flags.isOptional,
                                             readonly: prop.flags.isReadonly,
-                                            type:
-                                                prop.getSignature && prop.getSignature.type
-                                                    ? prop.getSignature.type.toString()
-                                                    : prop.type
-                                                      ? prop.type.toString()
-                                                      : null,
+                                            type: prop.type.declaration?.signatures[0].type.name,
+                                            typeArg: prop.type.declaration?.signatures[0].type.typeArguments[0].name,
                                             default:
                                                 prop.type && prop.type.name === 'boolean' && !prop.defaultValue
                                                     ? 'false'

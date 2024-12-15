@@ -27,7 +27,7 @@
         "primitives:ssr:serve": "nx serve radix-ssr-testing",
         "manifest:build": "nx run docs-manifest:build",
         "manifest:postbuild": "nx run docs-manifest:postbuild",
-        "build:apidoc": "npx ts-node -p tools/tsconfig.tools.json tools/scripts/build-apidoc.ts",
+        "build:apidoc": "node tools/scripts/build-apidoc.mjs",
         "----Radix Docs---": "-----------------------------------------------------------------------",
         "radix-docs:dev": "nx run radix-docs:dev",
         "radix-docs:build": "nx run radix-docs:build",
