@@ -1,4 +1,4 @@
-import { Component, computed, input, Input, InputSignal } from '@angular/core';
+import { Component, computed, input, Input, InputSignal, numberAttribute } from '@angular/core';
 import { ResponsiveSize } from '@radix-ng/components/types';
 import classNames from 'classnames';
 
@@ -13,7 +13,7 @@ import classNames from 'classnames';
     }
 })
 export class RdxKbdComponent {
-    @Input() size?: ResponsiveSize;
+    @Input({ transform: numberAttribute }) size?: ResponsiveSize;
 
     readonly class: InputSignal<string | undefined> = input<string | undefined>();
 

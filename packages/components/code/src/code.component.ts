@@ -1,4 +1,4 @@
-import { Component, computed, input, Input } from '@angular/core';
+import { Component, computed, input, Input, numberAttribute } from '@angular/core';
 import { RadixColor, ResponsiveSize } from '@radix-ng/components/types';
 import classNames from 'classnames';
 
@@ -14,7 +14,7 @@ import classNames from 'classnames';
     }
 })
 export class RdxCodeComponent {
-    @Input() size?: ResponsiveSize;
+    @Input({ transform: numberAttribute }) size?: ResponsiveSize;
     @Input() variant?: 'solid' | 'soft' | 'outline' | 'ghost' | 'surface' = 'soft';
     @Input() weight?: 'light' | 'regular' | 'medium' | 'bold';
     @Input() color?: RadixColor;
