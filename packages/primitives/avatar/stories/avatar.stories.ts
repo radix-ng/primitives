@@ -86,7 +86,13 @@ export const Default: Story = {
                     />
                     <span class="AvatarFallback" rdxAvatarFallback [delayMs]="600">JD</span>
                 </span>
+
                 <span class="AvatarRoot" rdxAvatarRoot>
+                    <span class="AvatarFallback" rdxAvatarFallback>PD</span>
+                </span>
+
+                <span class="AvatarRoot" rdxAvatarRoot>
+                    <img class="AvatarImage" rdxAvatarImage src="" alt="Pedro Duarte" />
                     <span class="AvatarFallback" rdxAvatarFallback>PD</span>
                 </span>
             </div>
