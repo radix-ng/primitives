@@ -15,7 +15,7 @@ export class RdxAvatarImageDirective implements OnInit {
     private readonly avatarRoot = inject(RdxAvatarRootContext);
     private readonly elementRef = inject(ElementRef<HTMLImageElement>);
 
-    readonly src = input.required<string>();
+    readonly src = input<string>();
 
     readonly onLoadingStatusChange = output<RdxImageLoadingStatus>();
 

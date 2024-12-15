@@ -1,4 +1,5 @@
 import { Component, computed, input, signal } from '@angular/core';
+import { radii, RadixColor, ResponsiveSize } from '@radix-ng/components/types';
 import {
     RdxAvatarFallbackDirective,
     RdxAvatarImageDirective,
@@ -6,7 +7,6 @@ import {
     RdxImageLoadingStatus
 } from '@radix-ng/primitives/avatar';
 import classNames from 'classnames';
-import { radii, RadixColor, ResponsiveSize } from '../../types';
 
 export type AvatarVariant = 'solid' | 'soft';
 
