@@ -21,7 +21,6 @@ import { RdxPopoverContentDirective } from './popover-content.directive';
 import { RdxPopoverRootToken } from './popover-root.token';
 import { RdxPopoverTriggerDirective } from './popover-trigger.directive';
 import { RdxPopoverAnimationStatus, RdxPopoverAttachDetachEvent, RdxPopoverState } from './popover.types';
-import { isRdxPopoverDevMode } from './popover.utils';
 
 let nextId = 0;
 
@@ -58,20 +57,20 @@ export class RdxPopoverRootDirective {
      */
     readonly externalControl = input<boolean | undefined>(void 0);
     /**
-     * @description Whether to take into account CSS open/close animations.
+     * @description Whether to take into account CSS opening/closing animations.
      * @default false
      */
     readonly cssAnimation = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
     /**
-     * @description Whether to take into account CSS open animations. `cssAnimation` input must be set to 'true'
+     * @description Whether to take into account CSS opening animations. `cssAnimation` input must be set to 'true'
      * @default false
      */
-    readonly cssOpenAnimation = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+    readonly cssOpeningAnimation = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
     /**
-     * @description Whether to take into account CSS close animations. `cssAnimation` input must be set to 'true'
+     * @description Whether to take into account CSS closing animations. `cssAnimation` input must be set to 'true'
      * @default false
      */
-    readonly cssCloseAnimation = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+    readonly cssClosingAnimation = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /** @ignore */
     readonly cssAnimationStatus = signal<RdxPopoverAnimationStatus | null>(null);
@@ -120,8 +119,8 @@ export class RdxPopoverRootDirective {
     getAnimationParamsSnapshot() {
         return {
             cssAnimation: this.cssAnimation(),
-            cssOpenAnimation: this.cssOpenAnimation(),
-            cssCloseAnimation: this.cssCloseAnimation(),
+            cssOpeningAnimation: this.cssOpeningAnimation(),
+            cssClosingAnimation: this.cssClosingAnimation(),
             cssAnimationStatus: this.cssAnimationStatus(),
             attachDetachEvent: this.attachDetachEvent(),
             state: this.state(),
@@ -176,14 +175,13 @@ export class RdxPopoverRootDirective {
         if (state === this.state()) {
             return;
         }
-        isRdxPopoverDevMode() && console.log(this.uniqueId(), '[setState]', state, this.getAnimationParamsSnapshot());
         this.state.set(state);
     }
 
     /** @ignore */
     private openContent(): void {
         this.popoverContentDirective().open();
-        if (!this.cssAnimation() || !this.cssOpenAnimation()) {
+        if (!this.cssAnimation() || !this.cssOpeningAnimation()) {
             this.cssAnimationStatus.set(null);
         }
     }
@@ -191,7 +189,7 @@ export class RdxPopoverRootDirective {
     /** @ignore */
     private closeContent(): void {
         this.popoverContentDirective().close();
-        if (!this.cssAnimation() || !this.cssCloseAnimation()) {
+        if (!this.cssAnimation() || !this.cssClosingAnimation()) {
             this.cssAnimationStatus.set(null);
         }
     }
@@ -211,13 +209,13 @@ export class RdxPopoverRootDirective {
         return (
             !this.popoverContentAttributesDirective() ||
             !this.cssAnimation() ||
-            (this.cssAnimation() && !this.cssCloseAnimation() && state === RdxPopoverState.CLOSED) ||
-            (this.cssAnimation() && !this.cssOpenAnimation() && state === RdxPopoverState.OPEN) ||
+            (this.cssAnimation() && !this.cssClosingAnimation() && state === RdxPopoverState.CLOSED) ||
+            (this.cssAnimation() && !this.cssOpeningAnimation() && state === RdxPopoverState.OPEN) ||
             // !this.cssAnimationStatus() ||
-            (this.cssOpenAnimation() &&
+            (this.cssOpeningAnimation() &&
                 state === RdxPopoverState.OPEN &&
                 [RdxPopoverAnimationStatus.OPEN_STARTED].includes(this.cssAnimationStatus()!)) ||
-            (this.cssCloseAnimation() &&
+            (this.cssClosingAnimation() &&
                 state === RdxPopoverState.CLOSED &&
                 [RdxPopoverAnimationStatus.CLOSED_STARTED].includes(this.cssAnimationStatus()!))
         );
@@ -229,10 +227,10 @@ export class RdxPopoverRootDirective {
             this.popoverContentAttributesDirective() &&
             this.cssAnimation() &&
             cssAnimationStatus &&
-            ((this.cssOpenAnimation() &&
+            ((this.cssOpeningAnimation() &&
                 this.state() === RdxPopoverState.OPEN &&
                 [RdxPopoverAnimationStatus.OPEN_ENDED].includes(cssAnimationStatus)) ||
-                (this.cssCloseAnimation() &&
+                (this.cssClosingAnimation() &&
                     this.state() === RdxPopoverState.CLOSED &&
                     [RdxPopoverAnimationStatus.CLOSED_ENDED].includes(cssAnimationStatus)))
         );
@@ -255,12 +253,12 @@ export class RdxPopoverRootDirective {
     private canEmitOnOpenOrOnClosed() {
         return (
             !this.cssAnimation() ||
-            (!this.cssOpenAnimation() && this.state() === RdxPopoverState.OPEN) ||
-            (this.cssOpenAnimation() &&
+            (!this.cssOpeningAnimation() && this.state() === RdxPopoverState.OPEN) ||
+            (this.cssOpeningAnimation() &&
                 this.state() === RdxPopoverState.OPEN &&
                 this.cssAnimationStatus() === RdxPopoverAnimationStatus.OPEN_ENDED) ||
-            (!this.cssCloseAnimation() && this.state() === RdxPopoverState.CLOSED) ||
-            (this.cssCloseAnimation() &&
+            (!this.cssClosingAnimation() && this.state() === RdxPopoverState.CLOSED) ||
+            (this.cssClosingAnimation() &&
                 this.state() === RdxPopoverState.CLOSED &&
                 this.cssAnimationStatus() === RdxPopoverAnimationStatus.CLOSED_ENDED)
         );
@@ -279,8 +277,6 @@ export class RdxPopoverRootDirective {
                 if (!this.ifOpenOrCloseWithoutAnimations(state)) {
                     return;
                 }
-                isRdxPopoverDevMode() &&
-                    console.log(this.uniqueId(), '[onStateChangeEffect]', state, this.getAnimationParamsSnapshot());
                 this.openOrClose(state);
             });
         }, {});
@@ -299,14 +295,6 @@ export class RdxPopoverRootDirective {
                 if (!this.ifOpenOrCloseWithAnimations(cssAnimationStatus)) {
                     return;
                 }
-                isRdxPopoverDevMode() &&
-                    console.log(
-                        this.uniqueId(),
-                        '[onCssAnimationStatusChangeChangeEffect]',
-                        cssAnimationStatus,
-                        this.state(),
-                        this.getAnimationParamsSnapshot()
-                    );
                 this.openOrClose(this.state());
             });
         });
@@ -316,27 +304,17 @@ export class RdxPopoverRootDirective {
     private emitOpenOrClosedEventEffect() {
         let isFirst = true;
         effect(() => {
-            const listenedConditions = {
-                attachDetachEvent: this.attachDetachEvent(),
-                cssAnimationStatus: this.cssAnimationStatus()
-            };
-            if (isFirst) {
-                isFirst = false;
-                return;
-            }
+            this.attachDetachEvent();
+            this.cssAnimationStatus();
             untracked(() => {
+                if (isFirst) {
+                    isFirst = false;
+                    return;
+                }
                 const canEmitOpenClose = untracked(() => this.canEmitOnOpenOrOnClosed());
                 if (!canEmitOpenClose) {
                     return;
                 }
-                isRdxPopoverDevMode() &&
-                    console.log(
-                        this.uniqueId(),
-                        '[emitOpenOrClosedEventEffect]',
-                        canEmitOpenClose,
-                        listenedConditions,
-                        this.getAnimationParamsSnapshot()
-                    );
                 this.emitOnOpenOrOnClosed(this.state());
             });
         });
@@ -361,13 +339,6 @@ export class RdxPopoverRootDirective {
                     effectRef.destroy();
                     return;
                 }
-                isRdxPopoverDevMode() &&
-                    console.log(
-                        this.uniqueId(),
-                        '[onIsFirstDefaultOpenChangeEffect]',
-                        defaultOpen,
-                        this.getAnimationParamsSnapshot()
-                    );
                 this.handleOpen();
             });
         });

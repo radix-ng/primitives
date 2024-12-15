@@ -17,7 +17,7 @@ import { filter, tap } from 'rxjs';
 import { injectPopoverRoot } from './popover-root.inject';
 import { DEFAULTS } from './popover.constants';
 import { RdxPopoverAlign, RdxPopoverAttachDetachEvent, RdxPopoverSide, RdxSideAndAlignOffsets } from './popover.types';
-import { getAllPossibleConnectedPositions, getContentPosition, isRdxPopoverDevMode } from './popover.utils';
+import { getAllPossibleConnectedPositions, getContentPosition } from './popover.utils';
 
 @Directive({
     selector: '[rdxPopoverContent]',
@@ -174,14 +174,8 @@ export class RdxPopoverContentDirective implements OnInit {
             .asObservable()
             .pipe(
                 tap(() => {
-                    isRdxPopoverDevMode() &&
-                        console.log(
-                            this.popoverRoot.uniqueId(),
-                            '[content attach]',
-                            this.popoverRoot.getAnimationParamsSnapshot()
-                        );
                     /**
-                     * `this.onOpen.emit();` is being delegated to the root directive due to the open animation
+                     * `this.onOpen.emit();` is being delegated to the root directive due to the opening animation
                      */
                     this.popoverRoot.attachDetachEvent.set(RdxPopoverAttachDetachEvent.ATTACH);
                 }),
@@ -196,14 +190,8 @@ export class RdxPopoverContentDirective implements OnInit {
             .asObservable()
             .pipe(
                 tap(() => {
-                    isRdxPopoverDevMode() &&
-                        console.log(
-                            this.popoverRoot.uniqueId(),
-                            '[content detach]',
-                            this.popoverRoot.getAnimationParamsSnapshot()
-                        );
                     /**
-                     * `this.onClosed.emit();` is being delegated to the root directive due to the open animation
+                     * `this.onClosed.emit();` is being delegated to the root directive due to the closing animation
                      */
                     this.popoverRoot.attachDetachEvent.set(RdxPopoverAttachDetachEvent.DETACH);
                 }),
@@ -235,18 +223,6 @@ export class RdxPopoverContentDirective implements OnInit {
 
     /** @ignore */
     private computePositions() {
-        isRdxPopoverDevMode() &&
-            console.log(
-                this.popoverRoot.uniqueId(),
-                '[inputs]',
-                {
-                    side: this.side(),
-                    align: this.align(),
-                    sideOffset: this.sideOffset(),
-                    alignOffset: this.alignOffset()
-                },
-                this.popoverRoot.getAnimationParamsSnapshot()
-            );
         const greatestDimensionFromTheArrow = Math.max(
             this.popoverRoot.popoverArrowDirective()?.width() ?? 0,
             this.popoverRoot.popoverArrowDirective()?.height() ?? 0
@@ -255,21 +231,12 @@ export class RdxPopoverContentDirective implements OnInit {
             sideOffset: this.sideOffset() ?? (greatestDimensionFromTheArrow || DEFAULTS.offsets.side),
             alignOffset: this.alignOffset() ?? DEFAULTS.offsets.align
         };
-        isRdxPopoverDevMode() && console.log(this.popoverRoot.uniqueId(), '[offsets]', offsets);
-        isRdxPopoverDevMode() &&
-            console.log(this.popoverRoot.uniqueId(), '[computed inputs]', {
-                side: this.side(),
-                align: this.align(),
-                sideOffset: offsets.sideOffset,
-                alignOffset: offsets.alignOffset
-            });
         const basePosition = getContentPosition({
             side: this.side(),
             align: this.align(),
             sideOffset: offsets.sideOffset,
             alignOffset: offsets.alignOffset
         });
-        isRdxPopoverDevMode() && console.log(this.popoverRoot.uniqueId(), '[basePosition]', basePosition);
         const positions = [basePosition];
         if (!this.disableAlternatePositions()) {
             /**
@@ -293,7 +260,6 @@ export class RdxPopoverContentDirective implements OnInit {
                 }
             });
         }
-        isRdxPopoverDevMode() && console.log(this.popoverRoot.uniqueId(), '[positions]', positions);
         return positions;
     }
 

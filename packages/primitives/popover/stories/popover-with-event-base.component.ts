@@ -121,7 +121,6 @@ export class PopoverWithEventBaseComponent implements AfterContentInit {
     };
 
     private onOutsideClick = (event: MouseEvent) => {
-        console.log('onOutsideClick', event);
         if (
             !event.target ||
             (!this.inContainers(event.target as HTMLElement) && !this.inParamsContainers(event.target as HTMLElement))

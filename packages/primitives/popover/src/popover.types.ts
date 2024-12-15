@@ -23,11 +23,6 @@ export enum RdxPopoverAttachDetachEvent {
     DETACH = 'detach'
 }
 
-export enum AnimationType {
-    START = 'animationstart',
-    END = 'animationend'
-}
-
 export enum RdxPopoverAnimationStatus {
     OPEN_STARTED = 'open_started',
     OPEN_ENDED = 'open_ended',

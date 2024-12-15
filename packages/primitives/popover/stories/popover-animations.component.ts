@@ -23,21 +23,25 @@ import { PopoverWithEventBaseComponent } from './popover-with-event-base.compone
             <div class="ParamsContainer">
                 <input [ngModel]="cssAnimation()" (ngModelChange)="cssAnimation.set($event)" type="checkbox" />
                 CSS Animation
-                <input [ngModel]="cssOpenAnimation()" (ngModelChange)="cssOpenAnimation.set($event)" type="checkbox" />
-                On Open Animation
                 <input
-                    [ngModel]="cssCloseAnimation()"
-                    (ngModelChange)="cssCloseAnimation.set($event)"
+                    [ngModel]="cssOpeningAnimation()"
+                    (ngModelChange)="cssOpeningAnimation.set($event)"
                     type="checkbox"
                 />
-                On Close Animation
+                On Opening Animation
+                <input
+                    [ngModel]="cssClosingAnimation()"
+                    (ngModelChange)="cssClosingAnimation.set($event)"
+                    type="checkbox"
+                />
+                On Closing Animation
             </div>
 
             <div class="container">
                 <ng-container
                     [cssAnimation]="cssAnimation()"
-                    [cssOpenAnimation]="cssOpenAnimation()"
-                    [cssCloseAnimation]="cssCloseAnimation()"
+                    [cssOpeningAnimation]="cssOpeningAnimation()"
+                    [cssClosingAnimation]="cssClosingAnimation()"
                     rdxPopoverRoot
                 >
                     <button class="IconButton reset" rdxPopoverTrigger>
@@ -84,6 +88,6 @@ export class RdxPopoverAnimationsComponent {
     readonly aligns = RdxPopoverAlign;
 
     cssAnimation = signal<boolean>(true);
-    cssOpenAnimation = signal(true);
-    cssCloseAnimation = signal(true);
+    cssOpeningAnimation = signal(true);
+    cssClosingAnimation = signal(true);
 }

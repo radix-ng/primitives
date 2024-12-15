@@ -2,7 +2,6 @@ import { Component, computed, forwardRef } from '@angular/core';
 import { RdxPopoverContentAttributesToken } from './popover-content-attributes.token';
 import { injectPopoverRoot } from './popover-root.inject';
 import { RdxPopoverAnimationStatus, RdxPopoverState } from './popover.types';
-import { isRdxPopoverDevMode } from './popover.utils';
 
 @Component({
     selector: '[rdxPopoverContentAttributes]',
@@ -38,13 +37,6 @@ export class RdxPopoverContentAttributesComponent {
 
     /** @ignore */
     protected onAnimationStart(_: AnimationEvent) {
-        isRdxPopoverDevMode() &&
-            console.log(
-                this.popoverRoot.uniqueId(),
-                '[onAnimationStart]',
-                this.popoverRoot.state(),
-                this.popoverRoot.getAnimationParamsSnapshot()
-            );
         this.popoverRoot.cssAnimationStatus.set(
             this.popoverRoot.state() === RdxPopoverState.OPEN
                 ? RdxPopoverAnimationStatus.OPEN_STARTED
@@ -54,13 +46,6 @@ export class RdxPopoverContentAttributesComponent {
 
     /** @ignore */
     protected onAnimationEnd(_: AnimationEvent) {
-        isRdxPopoverDevMode() &&
-            console.log(
-                this.popoverRoot.uniqueId(),
-                '[onAnimationEnd]',
-                this.popoverRoot.state(),
-                this.popoverRoot.getAnimationParamsSnapshot()
-            );
         this.popoverRoot.cssAnimationStatus.set(
             this.popoverRoot.state() === RdxPopoverState.OPEN
                 ? RdxPopoverAnimationStatus.OPEN_ENDED
@@ -72,8 +57,8 @@ export class RdxPopoverContentAttributesComponent {
     private canAnimate() {
         return (
             this.popoverRoot.cssAnimation() &&
-            ((this.popoverRoot.cssOpenAnimation() && this.popoverRoot.state() === RdxPopoverState.OPEN) ||
-                (this.popoverRoot.cssCloseAnimation() && this.popoverRoot.state() === RdxPopoverState.CLOSED))
+            ((this.popoverRoot.cssOpeningAnimation() && this.popoverRoot.state() === RdxPopoverState.OPEN) ||
+                (this.popoverRoot.cssClosingAnimation() && this.popoverRoot.state() === RdxPopoverState.CLOSED))
         );
     }
 }

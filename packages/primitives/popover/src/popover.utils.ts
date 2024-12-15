@@ -139,7 +139,3 @@ export function getArrowPositionParams(
 
     return posParams;
 }
-
-export function isRdxPopoverDevMode() {
-    return localStorage.getItem('RDX_POPOVER_DEV_MODE') === '1';
-}

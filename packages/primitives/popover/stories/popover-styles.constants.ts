@@ -41,7 +41,7 @@ const animationParams = `
 `;
 
 const animationDefs = `
-/* Open animations */
+/* Opening animations */
 
 @keyframes rdxSlideUpAndFade {
     from {
@@ -87,7 +87,7 @@ const animationDefs = `
     }
 }
 
-/* Close animations */
+/* Closing animations */
 
 @keyframes rdxSlideUpAndFadeReverse {
     from {
