@@ -21,7 +21,7 @@ import { PopoverWithEventBaseComponent } from './popover-with-event-base.compone
     `,
     template: `
         <popover-with-event-base>
-            <div class="container" #eventsContainer>
+            <div class="container">
                 <ng-container rdxPopoverRoot>
                     <button class="reset IconButton" #triggerElement rdxPopoverTrigger>
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
