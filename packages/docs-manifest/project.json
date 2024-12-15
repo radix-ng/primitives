@@ -1,0 +1,40 @@
+{
+    "name": "docs-manifest",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "packages/docs-manifest/src",
+    "projectType": "library",
+    "tags": ["npm"],
+    "targets": {
+        "build": {
+            "executor": "@nx/js:tsc",
+            "outputs": ["{options.outputPath}"],
+            "options": {
+                "outputPath": "dist/docs-manifest",
+                "tsConfig": "packages/docs-manifest/tsconfig.lib.json",
+                "packageJson": "packages/docs-manifest/package.json",
+                "main": "packages/docs-manifest/src/index.ts",
+                "assets": [
+                    "packages/docs-manifest/*.md"
+                ]
+            }
+        },
+        "postbuild": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "ts-node --project ./tools/scripts/tsconfig.json ./tools/scripts/build-manifest.ts"
+            }
+        },
+        "lint": {
+            "executor": "@nx/eslint:lint"
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": [
+                "{workspaceRoot}/coverage/{projectRoot}"
+            ],
+            "options": {
+                "jestConfig": "packages/docs-manifest/jest.config.ts"
+            }
+        }
+    }
+}
