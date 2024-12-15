@@ -124,3 +124,22 @@ const TemplateRadius: StoryFn = (args) => ({
     `
 });
 export const Radius = TemplateRadius.bind({});
+
+const TemplateHighContrast: StoryFn = (args) => ({
+    props: args,
+    template: html`
+        <div style="display: inline-grid; grid-template-rows: repeat(2, 1fr); gap: 8px; grid-auto-flow: column;">
+            <rdx-theme-avatar variant="solid" color="indigo" fallback="A" />
+            <rdx-theme-avatar variant="solid" color="indigo" fallback="A" highContrast />
+            <rdx-theme-avatar variant="solid" color="cyan" fallback="A" />
+            <rdx-theme-avatar variant="solid" color="cyan" fallback="A" highContrast />
+            <rdx-theme-avatar variant="solid" color="orange" fallback="A" />
+            <rdx-theme-avatar variant="solid" color="orange" fallback="A" highContrast />
+            <rdx-theme-avatar variant="solid" color="crimson" fallback="A" />
+            <rdx-theme-avatar variant="solid" color="crimson" fallback="A" highContrast />
+            <rdx-theme-avatar variant="solid" color="gray" fallback="A" />
+            <rdx-theme-avatar variant="solid" color="gray" fallback="A" highContrast />
+        </div>
+    `
+});
+export const HighContrast = TemplateHighContrast.bind({});

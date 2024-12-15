@@ -1,5 +1,5 @@
-import { NumberInput } from '@angular/cdk/coercion';
-import { Component, computed, input, numberAttribute, signal } from '@angular/core';
+import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
+import { booleanAttribute, Component, computed, input, numberAttribute, signal } from '@angular/core';
 import { radii, RadixColor } from '@radix-ng/components/types';
 import {
     RdxAvatarFallbackDirective,
@@ -43,6 +43,8 @@ export class RdxThemeAvatarComponent {
 
     readonly color = input<RadixColor>();
 
+    readonly highContrast = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
     readonly fallback = input<string>();
 
     readonly src = input<string>();
@@ -56,7 +58,8 @@ export class RdxThemeAvatarComponent {
             'rt-reset',
             'rt-AvatarRoot',
             this.size() && `rt-r-size-${this.size()}`,
-            this.variant() && `rt-variant-${this.variant()}`
+            this.variant() && `rt-variant-${this.variant()}`,
+            this.highContrast() && `rt-high-contrast`
         )
     );
 
