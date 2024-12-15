@@ -41,7 +41,6 @@ export class RdxAvatarFallbackDirective implements OnDestroy {
 
     private startDelayTimer() {
         this.clearDelayTimer();
-        console.log(this.delayMs());
         if (this.delayMs() > 0) {
             this.timeoutId = setTimeout(() => {
                 this.canRender.set(true);
