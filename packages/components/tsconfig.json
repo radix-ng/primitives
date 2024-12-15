@@ -7,7 +7,27 @@
         "noImplicitOverride": true,
         "noPropertyAccessFromIndexSignature": true,
         "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true
+        "noFallthroughCasesInSwitch": true,
+        "paths": {
+            "@radix-ng/primitives/*": [
+                "./dist/primitives/*"
+            ],
+            "@radix-ng/components/avatar": [
+                "packages/components/avatar/index.ts"
+            ],
+            "@radix-ng/components/code": [
+                "packages/components/code/index.ts"
+            ],
+            "@radix-ng/components/kbd": [
+                "packages/components/kbd/index.ts"
+            ],
+            "@radix-ng/components/theme": [
+                "packages/components/theme/index.ts"
+            ],
+            "@radix-ng/components/types": [
+                "packages/components/types/index.ts"
+            ]
+        }
     },
     "files": [],
     "include": [],

@@ -15,13 +15,15 @@ export class RdxAvatarImageDirective implements OnInit {
     private readonly avatarRoot = inject(RdxAvatarRootContext);
     private readonly elementRef = inject(ElementRef<HTMLImageElement>);
 
-    readonly src = input.required<string>;
+    readonly src = input<string>();
 
     readonly onLoadingStatusChange = output<RdxImageLoadingStatus>();
 
-    readonly imageLoadingStatus = computed(() => this.avatarRoot.imageLoadingStatus());
+    protected readonly imageLoadingStatus = computed(() => this.avatarRoot.imageLoadingStatus());
 
     ngOnInit(): void {
+        this.nativeElement.src = this.src();
+
         if (!this.nativeElement.src) {
             this.setImageStatus('error');
         } else if (this.nativeElement.complete) {

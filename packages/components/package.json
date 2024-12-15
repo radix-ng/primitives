@@ -4,7 +4,7 @@
     "peerDependencies": {
         "@angular/common": "^18.0.0",
         "@angular/core": "^18.0.0",
-        "@radix-ng/primitives": "^0.12.2",
+        "@radix-ng/primitives": "^0.20.2",
         "classnames": "^2.5.1"
     },
     "devDependencies": {
