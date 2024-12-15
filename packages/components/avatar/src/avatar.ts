@@ -1,5 +1,6 @@
-import { Component, computed, input, signal } from '@angular/core';
-import { radii, RadixColor, ResponsiveSize } from '@radix-ng/components/types';
+import { NumberInput } from '@angular/cdk/coercion';
+import { Component, computed, input, numberAttribute, signal } from '@angular/core';
+import { radii, RadixColor } from '@radix-ng/components/types';
 import {
     RdxAvatarFallbackDirective,
     RdxAvatarImageDirective,
@@ -36,7 +37,7 @@ export type AvatarVariant = 'solid' | 'soft';
 export class RdxThemeAvatarComponent {
     readonly radius = input<radii>();
 
-    readonly size = input<ResponsiveSize>(3);
+    readonly size = input<number, NumberInput>(3, { transform: numberAttribute });
 
     readonly variant = input<AvatarVariant>('soft');
 
