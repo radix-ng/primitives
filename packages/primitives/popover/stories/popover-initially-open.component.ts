@@ -1,13 +1,13 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, MountainSnowIcon, X } from 'lucide-angular';
-import { RdxPopoverAlign, RdxPopoverModule, RdxPopoverSide } from '../index';
+import { RdxPopoverModule } from '../index';
 import { RdxPopoverContentAttributesComponent } from '../src/popover-content-attributes.component';
 import styles from './popover-styles.constants';
 import { PopoverWithEventBaseComponent } from './popover-with-event-base.component';
 
 @Component({
-    selector: 'rdx-popover-positioning',
+    selector: 'rdx-popover-initially-open',
     standalone: true,
     imports: [
         FormsModule,
@@ -19,49 +19,13 @@ import { PopoverWithEventBaseComponent } from './popover-with-event-base.compone
     styles: styles(),
     template: `
         <popover-with-event-base>
-            <div class="ParamsContainer">
-                Side:
-                <select [ngModel]="selectedSide()" (ngModelChange)="selectedSide.set($event)">
-                    <option [value]="sides.Top">{{ sides.Top }}</option>
-                    <option [value]="sides.Bottom">{{ sides.Bottom }}</option>
-                    <option [value]="sides.Left">{{ sides.Left }}</option>
-                    <option [value]="sides.Right">{{ sides.Right }}</option>
-                </select>
-                Align:
-                <select [ngModel]="selectedAlign()" (ngModelChange)="selectedAlign.set($event)">
-                    <option [value]="aligns.Center">{{ aligns.Center }}</option>
-                    <option [value]="aligns.Start">{{ aligns.Start }}</option>
-                    <option [value]="aligns.End">{{ aligns.End }}</option>
-                </select>
-                SideOffset:
-                <input [ngModel]="sideOffset()" (ngModelChange)="sideOffset.set($event)" type="number" />
-                AlignOffset:
-                <input [ngModel]="alignOffset()" (ngModelChange)="alignOffset.set($event)" type="number" />
-            </div>
-
-            <div class="ParamsContainer">
-                <input
-                    [ngModel]="disableAlternatePositions()"
-                    (ngModelChange)="disableAlternatePositions.set($event)"
-                    type="checkbox"
-                />
-                Alternate positions
-            </div>
-
             <div class="container">
-                <ng-container rdxPopoverRoot>
+                <ng-container [defaultOpen]="true" rdxPopoverRoot>
                     <button class="reset IconButton" rdxPopoverTrigger>
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                     </button>
 
-                    <ng-template
-                        [sideOffset]="sideOffset()"
-                        [alignOffset]="alignOffset()"
-                        [side]="selectedSide()"
-                        [align]="selectedAlign()"
-                        [disableAlternatePositions]="disableAlternatePositions()"
-                        rdxPopoverContent
-                    >
+                    <ng-template [sideOffset]="8" rdxPopoverContent>
                         <div class="PopoverContent" rdxPopoverContentAttributes>
                             <button class="reset PopoverClose" rdxPopoverClose aria-label="Close">
                                 <lucide-angular [img]="XIcon" size="16" style="display: flex" />
@@ -93,16 +57,7 @@ import { PopoverWithEventBaseComponent } from './popover-with-event-base.compone
         </popover-with-event-base>
     `
 })
-export class RdxPopoverPositioningComponent {
-    readonly selectedSide = signal(RdxPopoverSide.Top);
-    readonly selectedAlign = signal(RdxPopoverAlign.Center);
-    readonly sideOffset = signal(8);
-    readonly alignOffset = signal<number | undefined>(void 0);
-    readonly disableAlternatePositions = signal(false);
-
-    readonly sides = RdxPopoverSide;
-    readonly aligns = RdxPopoverAlign;
-
+export class RdxPopoverInitiallyOpenComponent {
     readonly MountainSnowIcon = MountainSnowIcon;
     readonly XIcon = X;
 }

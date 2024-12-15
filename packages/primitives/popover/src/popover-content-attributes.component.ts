@@ -14,6 +14,7 @@ import { isRdxPopoverDevMode } from './popover.utils';
         '[attr.id]': 'name()',
         '[attr.data-state]': 'popoverRoot.state()',
         '[attr.data-side]': 'popoverRoot.popoverContentDirective().side()',
+        '[attr.data-align]': 'popoverRoot.popoverContentDirective().align()',
         '[style]': 'disableAnimation() ? {animation: "none !important"} : null',
         '(animationstart)': 'onAnimationStart($event)',
         '(animationend)': 'onAnimationEnd($event)'
@@ -32,12 +33,18 @@ export class RdxPopoverContentAttributesComponent {
     /** @ignore */
     readonly name = computed(() => `rdx-popover-content-attributes-${this.popoverRoot.uniqueId()}`);
 
+    /** @ignore */
     readonly disableAnimation = computed(() => !this.canAnimate());
 
     /** @ignore */
     protected onAnimationStart(_: AnimationEvent) {
         isRdxPopoverDevMode() &&
-            console.log(this.popoverRoot.uniqueId(), '[onAnimationStart]', this.popoverRoot.state());
+            console.log(
+                this.popoverRoot.uniqueId(),
+                '[onAnimationStart]',
+                this.popoverRoot.state(),
+                this.popoverRoot.getAnimationParamsSnapshot()
+            );
         this.popoverRoot.cssAnimationStatus.set(
             this.popoverRoot.state() === RdxPopoverState.OPEN
                 ? RdxPopoverAnimationStatus.OPEN_STARTED
@@ -47,7 +54,13 @@ export class RdxPopoverContentAttributesComponent {
 
     /** @ignore */
     protected onAnimationEnd(_: AnimationEvent) {
-        isRdxPopoverDevMode() && console.log(this.popoverRoot.uniqueId(), '[onAnimationEnd]', this.popoverRoot.state());
+        isRdxPopoverDevMode() &&
+            console.log(
+                this.popoverRoot.uniqueId(),
+                '[onAnimationEnd]',
+                this.popoverRoot.state(),
+                this.popoverRoot.getAnimationParamsSnapshot()
+            );
         this.popoverRoot.cssAnimationStatus.set(
             this.popoverRoot.state() === RdxPopoverState.OPEN
                 ? RdxPopoverAnimationStatus.OPEN_ENDED
@@ -55,11 +68,12 @@ export class RdxPopoverContentAttributesComponent {
         );
     }
 
+    /** @ignore */
     private canAnimate() {
         return (
             this.popoverRoot.cssAnimation() &&
-            ((this.popoverRoot.cssOnShowAnimation() && this.popoverRoot.state() === RdxPopoverState.OPEN) ||
-                (this.popoverRoot.cssOnCloseAnimation() && this.popoverRoot.state() === RdxPopoverState.CLOSED))
+            ((this.popoverRoot.cssOpenAnimation() && this.popoverRoot.state() === RdxPopoverState.OPEN) ||
+                (this.popoverRoot.cssCloseAnimation() && this.popoverRoot.state() === RdxPopoverState.CLOSED))
         );
     }
 }

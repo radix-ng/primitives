@@ -179,6 +179,14 @@ function styles(withAnimations = false, withEvents = false, withParams = true) {
     all: unset;
 }
 
+.ExampleSubtitle {
+    color: var(--white-a12);
+    font-size: 22px;
+    line-height: 26px;
+    font-weight: bolder;
+    margin: 0 0 34px 16px;
+}
+
 .PopoverContent {
     border-radius: 4px;
     padding: 20px;

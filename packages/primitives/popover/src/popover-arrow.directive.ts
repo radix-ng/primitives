@@ -36,12 +36,14 @@ export class RdxPopoverArrowDirective implements AfterViewInit {
     private readonly elementRef = inject(ElementRef);
 
     /**
-     * The width of the arrow in pixels.
+     * @description The width of the arrow in pixels.
+     * @default 10
      */
     readonly width = input<number>(10);
 
     /**
-     * The height of the arrow in pixels.
+     * @description The height of the arrow in pixels.
+     * @default 5
      */
     readonly height = input<number>(5);
 

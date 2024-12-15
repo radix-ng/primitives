@@ -1,9 +1,11 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { AfterContentInit, Component, computed, contentChild, ElementRef, inject, model, signal } from '@angular/core';
+import { AfterContentInit, Component, computed, contentChild, ElementRef, inject, input, signal } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RdxPopoverContentDirective } from '../src/popover-content.directive';
 import { RdxPopoverRootDirective } from '../src/popover-root.directive';
 import { paramsAndEventsOnly } from './popover-styles.constants';
+
+type Message = { value: string; timeFromPrev: number };
 
 @Component({
     selector: 'popover-with-event-base',
@@ -11,28 +13,29 @@ import { paramsAndEventsOnly } from './popover-styles.constants';
     template: `
         <ng-content select=".ParamsContainer" />
 
-        @if (paramsContainerCounter()) {
+        @if (paramsContainerCounter() > 1) {
             <hr />
         }
 
         <div class="ParamsContainer">
-            (onEscapeKeyDown) prevent default:
             <input
-                [ngModel]="onEscapeKeyDownPreventDefault()"
-                (ngModelChange)="onEscapeKeyDownPreventDefault.set($event)"
+                [ngModel]="onEscapeKeyDownPreventDefault()()"
+                (ngModelChange)="onEscapeKeyDownPreventDefault().set($event)"
                 type="checkbox"
             />
-            (onPointerDownOutside) prevent default:
+            (onEscapeKeyDown) prevent default
             <input
-                [ngModel]="onPointerDownOutsidePreventDefault()"
-                (ngModelChange)="onPointerDownOutsidePreventDefault.set($event)"
+                [ngModel]="onPointerDownOutsidePreventDefault()()"
+                (ngModelChange)="onPointerDownOutsidePreventDefault().set($event)"
                 type="checkbox"
             />
+            (onPointerDownOutside) prevent default
         </div>
 
         <ng-content />
 
         @if (messages().length) {
+            <button (click)="messages.set([])" type="button">Clear messages</button>
             <div class="MessagesContainer">
                 @for (message of messages(); track i; let i = $index) {
                     <ng-container
@@ -46,8 +49,8 @@ import { paramsAndEventsOnly } from './popover-styles.constants';
         <ng-template #messageTpl let-message="message" let-index="index">
             <p class="Message">
                 {{ index }}.
-                <span class="MessageId">[POPOVER ID {{ rootUniqueId() }}]</span>
-                {{ message }}
+                <span class="MessageId">[({{ message.timeFromPrev }}ms) POPOVER ID {{ rootUniqueId() }}]</span>
+                {{ message.value }}
             </p>
         </ng-template>
     `,
@@ -59,6 +62,9 @@ import { paramsAndEventsOnly } from './popover-styles.constants';
     standalone: true
 })
 export class PopoverWithEventBaseComponent implements AfterContentInit {
+    onEscapeKeyDownPrevent = input(false);
+    onPointerDownOutsidePrevent = input(false);
+
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
     readonly popoverContentDirective = contentChild.required(RdxPopoverContentDirective);
@@ -66,19 +72,30 @@ export class PopoverWithEventBaseComponent implements AfterContentInit {
 
     readonly paramsContainerCounter = signal(0);
 
-    readonly messages = model<string[]>([]);
-    readonly onEscapeKeyDownPreventDefault = signal(false);
-    readonly onPointerDownOutsidePreventDefault = signal(false);
+    readonly messages = signal<Message[]>([]);
+    readonly onEscapeKeyDownPreventDefault = computed(() => signal(this.onEscapeKeyDownPrevent()));
+    readonly onPointerDownOutsidePreventDefault = computed(() => signal(this.onPointerDownOutsidePrevent()));
 
     readonly rootUniqueId = computed(() => this.popoverRootDirective().uniqueId());
 
     containers: Element[] | undefined = void 0;
 
+    previousMessageTimestamp: number | undefined = void 0;
+
+    timeFromPrev = () => {
+        const now = Date.now();
+        const timeFromPrev =
+            typeof this.previousMessageTimestamp === 'undefined' ? 0 : Date.now() - this.previousMessageTimestamp;
+        this.previousMessageTimestamp = now;
+        return timeFromPrev;
+    };
+
     ngAfterContentInit() {
-        this.popoverContentDirective().onShow.subscribe(this.onShow);
-        this.popoverContentDirective().onHide.subscribe(this.onHide);
+        this.popoverContentDirective().onOpen.subscribe(this.onOpen);
+        this.popoverContentDirective().onClosed.subscribe(this.onClose);
         this.popoverContentDirective().onPointerDownOutside.subscribe(this.onPointerDownOutside);
         this.popoverContentDirective().onEscapeKeyDown.subscribe(this.onEscapeKeyDown);
+
         this.paramsContainerCounter.set(
             this.elementRef.nativeElement?.querySelectorAll('.ParamsContainer').length ?? 0
         );
@@ -90,29 +107,33 @@ export class PopoverWithEventBaseComponent implements AfterContentInit {
     }
 
     private onEscapeKeyDown = (event: KeyboardEvent) => {
-        this.addMessage(`Escape clicked! (preventDefault: ${this.onEscapeKeyDownPreventDefault()})`);
-        this.onEscapeKeyDownPreventDefault() && event.preventDefault();
+        this.addMessage({
+            value: `[PopoverRoot] Escape clicked! (preventDefault: ${this.onEscapeKeyDownPreventDefault()()})`,
+            timeFromPrev: this.timeFromPrev()
+        });
+        this.onEscapeKeyDownPreventDefault()() && event.preventDefault();
     };
 
     private onPointerDownOutside = (event: MouseEvent) => {
         if (!event.target || !this.inContainers(event.target as HTMLElement)) {
             return;
         }
-        this.addMessage(
-            `Mouse clicked outside the popover! (preventDefault: ${this.onPointerDownOutsidePreventDefault()})`
-        );
-        this.onPointerDownOutsidePreventDefault() && event.preventDefault();
+        this.addMessage({
+            value: `[PopoverRoot] Mouse clicked outside the popover! (preventDefault: ${this.onPointerDownOutsidePreventDefault()()})`,
+            timeFromPrev: this.timeFromPrev()
+        });
+        this.onPointerDownOutsidePreventDefault()() && event.preventDefault();
     };
 
-    private onShow = () => {
-        this.addMessage('Popover shown!');
+    private onOpen = () => {
+        this.addMessage({ value: '[PopoverContent] Open', timeFromPrev: this.timeFromPrev() });
     };
 
-    private onHide = () => {
-        this.addMessage('Popover hidden!');
+    private onClose = () => {
+        this.addMessage({ value: '[PopoverContent] Closed', timeFromPrev: this.timeFromPrev() });
     };
 
-    protected addMessage = (message: string) => {
+    protected addMessage = (message: Message) => {
         this.messages.update((messages) => {
             return [
                 message,

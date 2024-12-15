@@ -18,6 +18,11 @@ export enum RdxPopoverState {
     CLOSED = 'closed'
 }
 
+export enum RdxPopoverAttachDetachEvent {
+    ATTACH = 'attach',
+    DETACH = 'detach'
+}
+
 export enum AnimationType {
     START = 'animationstart',
     END = 'animationend'

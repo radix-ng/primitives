@@ -34,6 +34,10 @@ import {RdxPopoverContentAttributesComponent} from "../src/popover-content-attri
 
 <Canvas sourceState="hidden" of={PopoverStories.ExternalTriggering} />
 
+### Initially Open
+
+<Canvas sourceState="hidden" of={PopoverStories.InitiallyOpen} />
+
 ### Animations
 
 <Canvas sourceState="hidden" of={PopoverStories.Animations} />
@@ -95,11 +99,13 @@ Contains all the parts of a popover.
 
 The button that toggles the popover. By default, the PopoverContent will position itself against the trigger.
 
-<Source type="code" language="md" code={`
-   | Data attribute | Value
-   | ----- | -----
-   | [data-state] | <code>"closed" | "open" (type RdxPopoverState)</code>
-`} />
+<Markdown>
+{`
+| Data attribute | Value          |
+|----------------|----------------|
+| [data-state]   | <code>"closed" | "open" (type RdxPopoverState)</code>
+`}
+</Markdown>
 
 ### Content
 `RdxPopoverContentDirective`
@@ -108,20 +114,22 @@ The component that pops out when the popover is open.
 
 <ArgTypes of={RdxPopoverContentDirective} />
 
-<Source type="code" language="md" code={`
-   | Data attribute | Value
-   | ----- | -----
-   | [data-state] | <code>"closed" | "open" (enum RdxPopoverState)</code>
-   | [data-side] | <code>"left" | "right" | "bottom" | "top" (enum RdxPopoverSide)</code>
-   | [data-align] | <code>"start" | "end" | "center" (enum RdxPopoverAlign)</code>
-`} />
-
 ### Content Attributes
 `RdxPopoverContentAttributesComponent`
 
 The component attributes that are necessary to run animations.
 
 <ArgTypes of={RdxPopoverContentAttributesComponent} />
+
+<Markdown>
+{`
+| Data attribute | Value          |
+|----------------|----------------|
+| [data-state]   | <code>"closed" | "open" (enum RdxPopoverState)</code>
+| [data-side]    | <code>"left"   | "right" | "bottom" | "top" (enum RdxPopoverSide)</code>
+| [data-align]   | <code>"start"  | "end" | "center" (enum RdxPopoverAlign)</code>
+`}
+</Markdown>
 
 ### Arrow
 `RdxPopoverArrowDirective`

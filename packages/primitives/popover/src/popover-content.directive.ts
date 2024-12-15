@@ -16,7 +16,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter, tap } from 'rxjs';
 import { injectPopoverRoot } from './popover-root.inject';
 import { DEFAULTS } from './popover.constants';
-import { RdxPopoverAlign, RdxPopoverSide, RdxSideAndAlignOffsets } from './popover.types';
+import { RdxPopoverAlign, RdxPopoverAttachDetachEvent, RdxPopoverSide, RdxSideAndAlignOffsets } from './popover.types';
 import { getAllPossibleConnectedPositions, getContentPosition, isRdxPopoverDevMode } from './popover.utils';
 
 @Directive({
@@ -39,49 +39,53 @@ export class RdxPopoverContentDirective implements OnInit {
     private readonly connectedOverlay = inject(CdkConnectedOverlay);
 
     /**
-     * The preferred side of the trigger to render against when open. Will be reversed when collisions occur and avoidCollisions is enabled.
+     * @description The preferred side of the trigger to render against when open. Will be reversed when collisions occur and avoidCollisions is enabled.
+     * @default top
      */
     readonly side = input<RdxPopoverSide>(RdxPopoverSide.Top);
     /**
-     * The distance in pixels from the trigger.
+     * @description The distance in pixels from the trigger.
+     * @default undefined
      */
     readonly sideOffset = input<number | undefined>(void 0);
-
     /**
-     * The preferred alignment against the trigger. May change when collisions occur.
+     * @description The preferred alignment against the trigger. May change when collisions occur.
+     * @default center
      */
     readonly align = input<RdxPopoverAlign>(RdxPopoverAlign.Center);
     /**
-     * An offset in pixels from the "start" or "end" alignment options.
+     * @description An offset in pixels from the "start" or "end" alignment options.
+     * @default undefined
      */
     readonly alignOffset = input<number | undefined>(void 0);
 
     /**
-     * Whether to add some alternate positions of the content.
+     * @description Whether to add some alternate positions of the content.
+     * @default false
      */
     readonly disableAlternatePositions = input(false);
 
-    /** @ingore */
-    readonly positions = computed(() => this.computePositions());
-
     /**
-     * Event handler called when the escape key is down. It can be prevented by calling event.preventDefault.
+     * @description Event handler called when the escape key is down. It can be prevented by calling event.preventDefault.
      */
     readonly onEscapeKeyDown = output<KeyboardEvent>();
 
     /**
-     * Event handler called when a pointer event occurs outside the bounds of the component. It can be prevented by calling event.preventDefault.
+     * @description Event handler called when a pointer event occurs outside the bounds of the component. It can be prevented by calling event.preventDefault.
      */
     readonly onPointerDownOutside = output<MouseEvent>();
 
     /**
-     * Event handler called when the overlay is attached
+     * @description Event handler called after the overlay is open
      */
-    readonly onShow = output<void>();
+    readonly onOpen = output<void>();
     /**
-     * Event handler called when the overlay is detached
+     * @description Event handler called after the overlay is closed
      */
-    readonly onHide = output<void>();
+    readonly onClosed = output<void>();
+
+    /** @ingore */
+    readonly positions = computed(() => this.computePositions());
 
     constructor() {
         this.onPositionChangeEffect();
@@ -99,7 +103,7 @@ export class RdxPopoverContentDirective implements OnInit {
     }
 
     /** @ignore */
-    show() {
+    open() {
         if (this.connectedOverlay.open) {
             return;
         }
@@ -109,7 +113,7 @@ export class RdxPopoverContentDirective implements OnInit {
     }
 
     /** @ignore */
-    hide() {
+    close() {
         if (!this.connectedOverlay.open) {
             return;
         }
@@ -131,7 +135,7 @@ export class RdxPopoverContentDirective implements OnInit {
                 filter((event) => event.key === 'Escape'),
                 tap((event) => {
                     this.onEscapeKeyDown.emit(event);
-                    if (!event.defaultPrevented) {
+                    if (!event.defaultPrevented && !this.popoverRoot.firstDefaultOpen()) {
                         this.popoverRoot.handleClose();
                     }
                 }),
@@ -147,7 +151,7 @@ export class RdxPopoverContentDirective implements OnInit {
             .pipe(
                 tap((event) => {
                     this.onPointerDownOutside.emit(event);
-                    if (!event.defaultPrevented) {
+                    if (!event.defaultPrevented && !this.popoverRoot.firstDefaultOpen()) {
                         this.popoverRoot.handleClose();
                     }
                 }),
@@ -162,7 +166,16 @@ export class RdxPopoverContentDirective implements OnInit {
             .asObservable()
             .pipe(
                 tap(() => {
-                    this.onShow.emit();
+                    isRdxPopoverDevMode() &&
+                        console.log(
+                            this.popoverRoot.uniqueId(),
+                            '[content attach]',
+                            this.popoverRoot.getAnimationParamsSnapshot()
+                        );
+                    /**
+                     * `this.onOpen.emit();` is being delegated to the root directive due to the open animation
+                     */
+                    this.popoverRoot.attachDetachEvent.set(RdxPopoverAttachDetachEvent.ATTACH);
                 }),
                 takeUntilDestroyed(this.destroyRef)
             )
@@ -175,7 +188,16 @@ export class RdxPopoverContentDirective implements OnInit {
             .asObservable()
             .pipe(
                 tap(() => {
-                    this.onHide.emit();
+                    isRdxPopoverDevMode() &&
+                        console.log(
+                            this.popoverRoot.uniqueId(),
+                            '[content detach]',
+                            this.popoverRoot.getAnimationParamsSnapshot()
+                        );
+                    /**
+                     * `this.onClosed.emit();` is being delegated to the root directive due to the open animation
+                     */
+                    this.popoverRoot.attachDetachEvent.set(RdxPopoverAttachDetachEvent.DETACH);
                 }),
                 takeUntilDestroyed(this.destroyRef)
             )
@@ -212,12 +234,17 @@ export class RdxPopoverContentDirective implements OnInit {
     /** @ignore */
     private computePositions() {
         isRdxPopoverDevMode() &&
-            console.log(this.popoverRoot.uniqueId(), '[inputs]', {
-                side: this.side(),
-                align: this.align(),
-                sideOffset: this.sideOffset(),
-                alignOffset: this.alignOffset()
-            });
+            console.log(
+                this.popoverRoot.uniqueId(),
+                '[inputs]',
+                {
+                    side: this.side(),
+                    align: this.align(),
+                    sideOffset: this.sideOffset(),
+                    alignOffset: this.alignOffset()
+                },
+                this.popoverRoot.getAnimationParamsSnapshot()
+            );
         const greatestDimensionFromTheArrow = Math.max(
             this.popoverRoot.popoverArrowDirective()?.width() ?? 0,
             this.popoverRoot.popoverArrowDirective()?.height() ?? 0
