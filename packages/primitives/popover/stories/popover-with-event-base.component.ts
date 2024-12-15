@@ -25,11 +25,11 @@ type Message = { value: string; timeFromPrev: number };
             />
             (onEscapeKeyDown) prevent default
             <input
-                [ngModel]="onPointerDownOutsidePreventDefault()()"
-                (ngModelChange)="onPointerDownOutsidePreventDefault().set($event)"
+                [ngModel]="onOutsideClickPreventDefault()()"
+                (ngModelChange)="onOutsideClickPreventDefault().set($event)"
                 type="checkbox"
             />
-            (onPointerDownOutside) prevent default
+            (onOutsideClick) prevent default
         </div>
 
         <ng-content />
@@ -63,7 +63,7 @@ type Message = { value: string; timeFromPrev: number };
 })
 export class PopoverWithEventBaseComponent implements AfterContentInit {
     onEscapeKeyDownPrevent = input(false);
-    onPointerDownOutsidePrevent = input(false);
+    onOutsideClickPrevent = input(false);
 
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
@@ -74,11 +74,12 @@ export class PopoverWithEventBaseComponent implements AfterContentInit {
 
     readonly messages = signal<Message[]>([]);
     readonly onEscapeKeyDownPreventDefault = computed(() => signal(this.onEscapeKeyDownPrevent()));
-    readonly onPointerDownOutsidePreventDefault = computed(() => signal(this.onPointerDownOutsidePrevent()));
+    readonly onOutsideClickPreventDefault = computed(() => signal(this.onOutsideClickPrevent()));
 
     readonly rootUniqueId = computed(() => this.popoverRootDirective().uniqueId());
 
     containers: Element[] | undefined = void 0;
+    paramsContainers: Element[] | undefined = void 0;
 
     previousMessageTimestamp: number | undefined = void 0;
 
@@ -93,17 +94,22 @@ export class PopoverWithEventBaseComponent implements AfterContentInit {
     ngAfterContentInit() {
         this.popoverContentDirective().onOpen.subscribe(this.onOpen);
         this.popoverContentDirective().onClosed.subscribe(this.onClose);
-        this.popoverContentDirective().onPointerDownOutside.subscribe(this.onPointerDownOutside);
+        this.popoverContentDirective().onOutsideClick.subscribe(this.onOutsideClick);
         this.popoverContentDirective().onEscapeKeyDown.subscribe(this.onEscapeKeyDown);
 
         this.paramsContainerCounter.set(
             this.elementRef.nativeElement?.querySelectorAll('.ParamsContainer').length ?? 0
         );
         this.containers = Array.from(this.elementRef.nativeElement?.querySelectorAll('.container') ?? []);
+        this.paramsContainers = Array.from(this.elementRef.nativeElement?.querySelectorAll('.ParamsContainer') ?? []);
     }
 
     private inContainers(element: Element) {
         return !!this.containers?.find((container) => container.contains(element));
+    }
+
+    private inParamsContainers(element: Element) {
+        return !!this.paramsContainers?.find((container) => container.contains(element));
     }
 
     private onEscapeKeyDown = (event: KeyboardEvent) => {
@@ -111,18 +117,25 @@ export class PopoverWithEventBaseComponent implements AfterContentInit {
             value: `[PopoverRoot] Escape clicked! (preventDefault: ${this.onEscapeKeyDownPreventDefault()()})`,
             timeFromPrev: this.timeFromPrev()
         });
-        this.onEscapeKeyDownPreventDefault()() && event.preventDefault();
+        this.onEscapeKeyDownPreventDefault()() && !event.defaultPreventedCustom && event.preventDefault();
     };
 
-    private onPointerDownOutside = (event: MouseEvent) => {
-        if (!event.target || !this.inContainers(event.target as HTMLElement)) {
+    private onOutsideClick = (event: MouseEvent) => {
+        console.log('onOutsideClick', event);
+        if (
+            !event.target ||
+            (!this.inContainers(event.target as HTMLElement) && !this.inParamsContainers(event.target as HTMLElement))
+        ) {
             return;
         }
         this.addMessage({
-            value: `[PopoverRoot] Mouse clicked outside the popover! (preventDefault: ${this.onPointerDownOutsidePreventDefault()()})`,
+            value: `[PopoverRoot] Mouse clicked outside the popover! (preventDefault: ${this.onOutsideClickPreventDefault()()})`,
             timeFromPrev: this.timeFromPrev()
         });
-        this.onPointerDownOutsidePreventDefault()() && event.preventDefault();
+        if (this.inParamsContainers(event.target as HTMLElement)) {
+            event.defaultPreventedCustom = true;
+        }
+        this.onOutsideClickPreventDefault()() && !event.defaultPreventedCustom && event.preventDefault();
     };
 
     private onOpen = () => {

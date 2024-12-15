@@ -20,3 +20,4 @@ apps/shadcn-docs/src/styles/themes/*.css
 pnpm-lock.yaml
 pnpm-workspace.yaml
 
+!global.d.ts

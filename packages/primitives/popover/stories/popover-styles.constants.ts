@@ -161,7 +161,7 @@ const params = `
     display: flex;
     column-gap: 8px;
     color: var(--white-a12);
-    margin-bottom: 32px;
+    padding-bottom: 32px;
 }
 `;
 
@@ -184,7 +184,11 @@ function styles(withAnimations = false, withEvents = false, withParams = true) {
     font-size: 22px;
     line-height: 26px;
     font-weight: bolder;
-    margin: 0 0 34px 16px;
+    margin: 12px 0 34px 16px;
+    padding-top: 12px;
+    &:not(:first-child) {
+        border-top: 2px solid var(--gray-a8);
+    }
 }
 
 .PopoverContent {

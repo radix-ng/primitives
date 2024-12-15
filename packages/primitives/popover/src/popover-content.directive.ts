@@ -73,7 +73,7 @@ export class RdxPopoverContentDirective implements OnInit {
     /**
      * @description Event handler called when a pointer event occurs outside the bounds of the component. It can be prevented by calling event.preventDefault.
      */
-    readonly onPointerDownOutside = output<MouseEvent>();
+    readonly onOutsideClick = output<MouseEvent>();
 
     /**
      * @description Event handler called after the overlay is open
@@ -109,7 +109,7 @@ export class RdxPopoverContentDirective implements OnInit {
         }
         const prevOpen = this.connectedOverlay.open;
         this.connectedOverlay.open = true;
-        this.connectedOverlay.ngOnChanges({ open: new SimpleChange(prevOpen, true, false) });
+        this.fireOverlayNgOnChanges('open', this.connectedOverlay.open, prevOpen);
     }
 
     /** @ignore */
@@ -119,7 +119,7 @@ export class RdxPopoverContentDirective implements OnInit {
         }
         const prevOpen = this.connectedOverlay.open;
         this.connectedOverlay.open = false;
-        this.connectedOverlay.ngOnChanges({ open: new SimpleChange(prevOpen, false, false) });
+        this.fireOverlayNgOnChanges('open', this.connectedOverlay.open, prevOpen);
     }
 
     /** @ignore */
@@ -135,7 +135,11 @@ export class RdxPopoverContentDirective implements OnInit {
                 filter((event) => event.key === 'Escape'),
                 tap((event) => {
                     this.onEscapeKeyDown.emit(event);
-                    if (!event.defaultPrevented && !this.popoverRoot.firstDefaultOpen()) {
+                    if (
+                        !event.defaultPrevented &&
+                        !this.popoverRoot.firstDefaultOpen() &&
+                        !event.defaultPreventedCustom
+                    ) {
                         this.popoverRoot.handleClose();
                     }
                 }),
@@ -150,8 +154,12 @@ export class RdxPopoverContentDirective implements OnInit {
             .asObservable()
             .pipe(
                 tap((event) => {
-                    this.onPointerDownOutside.emit(event);
-                    if (!event.defaultPrevented && !this.popoverRoot.firstDefaultOpen()) {
+                    this.onOutsideClick.emit(event);
+                    if (
+                        !event.defaultPrevented &&
+                        !this.popoverRoot.firstDefaultOpen() &&
+                        !event.defaultPreventedCustom
+                    ) {
                         this.popoverRoot.handleClose();
                     }
                 }),
@@ -208,27 +216,21 @@ export class RdxPopoverContentDirective implements OnInit {
     private setScrollStrategy() {
         const prevScrollStrategy = this.connectedOverlay.scrollStrategy;
         this.connectedOverlay.scrollStrategy = this.overlay.scrollStrategies.reposition();
-        this.connectedOverlay.ngOnChanges({
-            scrollStrategy: new SimpleChange(prevScrollStrategy, this.connectedOverlay.scrollStrategy, false)
-        });
+        this.fireOverlayNgOnChanges('scrollStrategy', this.connectedOverlay.scrollStrategy, prevScrollStrategy);
     }
 
     /** @ignore */
     private setDisableClose() {
         const prevDisableClose = this.connectedOverlay.disableClose;
         this.connectedOverlay.disableClose = true;
-        this.connectedOverlay.ngOnChanges({
-            disableClose: new SimpleChange(prevDisableClose, this.connectedOverlay.disableClose, false)
-        });
+        this.fireOverlayNgOnChanges('disableClose', this.connectedOverlay.disableClose, prevDisableClose);
     }
 
     /** @ignore */
     private setOrigin() {
         const prevOrigin = this.connectedOverlay.origin;
         this.connectedOverlay.origin = this.popoverRoot.popoverTriggerDirective().overlayOrigin;
-        this.connectedOverlay.ngOnChanges({
-            origin: new SimpleChange(prevOrigin, this.connectedOverlay.origin, false)
-        });
+        this.fireOverlayNgOnChanges('origin', this.connectedOverlay.origin, prevOrigin);
     }
 
     /** @ignore */
@@ -303,11 +305,20 @@ export class RdxPopoverContentDirective implements OnInit {
             untracked(() => {
                 const prevPositions = this.connectedOverlay.positions;
                 this.connectedOverlay.positions = positions;
-                this.connectedOverlay.ngOnChanges({
-                    positions: new SimpleChange(prevPositions, this.connectedOverlay.positions, false)
-                });
+                this.fireOverlayNgOnChanges('positions', this.connectedOverlay.positions, prevPositions);
                 this.connectedOverlay.overlayRef?.updatePosition();
             });
+        });
+    }
+
+    private fireOverlayNgOnChanges<K extends keyof CdkConnectedOverlay, V extends CdkConnectedOverlay[K]>(
+        input: K,
+        currentValue: V,
+        previousValue: V,
+        firstChange = false
+    ) {
+        this.connectedOverlay.ngOnChanges({
+            [input]: new SimpleChange(previousValue, currentValue, firstChange)
         });
     }
 }

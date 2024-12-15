@@ -12,6 +12,7 @@
         "../../../packages/primitives/**/*.directive.ts",
         "../../../packages/primitives/**/*.component.ts",
         "*.ts",
-        "*.tsx"
+        "*.tsx",
+        "../global.d.ts"
     ]
 }
