@@ -178,7 +178,7 @@ createInjectionToken is creating a root InjectionToken but an external token is 
                     return factory(
                         ...opts.deps.map((dep) => {
                             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                            // @ts-expect-error
+                            // @ts-ignore
                             dep = (Array.isArray(dep) ? dep.at(-1) : dep) as CreateInjectionTokenDep<any>;
                             return inject(dep);
                         })
