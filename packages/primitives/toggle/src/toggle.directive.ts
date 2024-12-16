@@ -1,5 +1,15 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { booleanAttribute, Directive, input, model, output, OutputEmitterRef } from '@angular/core';
+import {
+    booleanAttribute,
+    computed,
+    Directive,
+    forwardRef,
+    input,
+    model,
+    output,
+    OutputEmitterRef
+} from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 export interface ToggleProps {
     /**
@@ -26,20 +36,29 @@ export interface ToggleProps {
     disabled?: boolean;
 }
 
+export type DataState = 'on' | 'off';
+
+export const TOGGLE_VALUE_ACCESSOR: any = {
+    provide: NG_VALUE_ACCESSOR,
+    useExisting: forwardRef(() => RdxToggleDirective),
+    multi: true
+};
+
 @Directive({
     selector: '[rdxToggle]',
     exportAs: 'rdxToggle',
     standalone: true,
+    providers: [TOGGLE_VALUE_ACCESSOR],
     host: {
         '[attr.aria-pressed]': 'pressed()',
-        '[attr.data-state]': 'pressed() ? "on" : "off"',
-        '[attr.data-disabled]': 'disabled()',
+        '[attr.data-state]': 'dataState()',
+        '[attr.data-disabled]': 'disabled() ? "" : undefined',
         '[disabled]': 'disabled()',
 
-        '(click)': 'toggle()'
+        '(click)': 'togglePressed()'
     }
 })
-export class RdxToggleDirective {
+export class RdxToggleDirective implements ControlValueAccessor {
     /**
      * The pressed state of the toggle when it is initially rendered.
      * Use when you do not need to control its pressed state.
@@ -57,15 +76,41 @@ export class RdxToggleDirective {
      */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    protected readonly dataState = computed<DataState>(() => {
+        return this.pressed() ? 'on' : 'off';
+    });
+
     /**
      * Event handler called when the pressed state of the toggle changes.
      */
     readonly onPressedChange = output<boolean>();
 
-    protected toggle(): void {
+    protected togglePressed(): void {
         if (!this.disabled()) {
             this.pressed.set(!this.pressed());
             this.onPressedChange.emit(this.pressed());
         }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+    private onChange: Function = () => {};
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+    private onTouched: Function = () => {};
+
+    /** @ignore */
+    writeValue(value: any): void {
+        this.pressed.set(value);
+    }
+
+    /** @ignore */
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+    registerOnChange(fn: Function): void {
+        this.onChange = fn;
+    }
+
+    /** @ignore */
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+    registerOnTouched(fn: Function): void {
+        this.onTouched = fn;
     }
 }

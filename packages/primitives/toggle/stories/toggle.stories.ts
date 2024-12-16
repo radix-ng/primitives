@@ -1,7 +1,8 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { Italic, LucideAngularModule } from 'lucide-angular';
-import { RdxToggleInputDirective } from '../src/toggle-input.directive';
+import { RdxToggleVisuallyHiddenInputDirective } from '../src/toggle-visually-hidden-input.directive';
 import { RdxToggleDirective } from '../src/toggle.directive';
+import { ToggleButtonReactiveForms } from './toggle-forms.component';
 
 const html = String.raw;
 
@@ -11,7 +12,8 @@ export default {
         moduleMetadata({
             imports: [
                 RdxToggleDirective,
-                RdxToggleInputDirective,
+                RdxToggleVisuallyHiddenInputDirective,
+                ToggleButtonReactiveForms,
                 LucideAngularModule,
                 LucideAngularModule.pick({ Italic })
             ]
@@ -107,7 +109,12 @@ export const Controlled: Story = {
             <h1>Uncontrolled</h1>
             <span class="">default off</span>
             <button class="Toggle" rdxToggle [pressed]="false" aria-label="Toggle bold" #toggle="rdxToggle">
-                <input rdxToggleInput [name]="'toggleDef'" [value]="toggle.pressed()" [required]="false" />
+                <input
+                    rdxToggleVisuallyHiddenInput
+                    [name]="'toggleDef'"
+                    [value]="toggle.pressed()"
+                    [required]="false"
+                />
                 <lucide-angular name="italic" size="12"></lucide-angular>
             </button>
 
@@ -121,7 +128,12 @@ export const Controlled: Story = {
                 aria-label="Toggle bold"
                 #toggle="rdxToggle"
             >
-                <input rdxToggleInput [name]="'toggleDef'" [value]="toggle.pressed()" [required]="false" />
+                <input
+                    rdxToggleVisuallyHiddenInput
+                    [name]="'toggleDef'"
+                    [value]="toggle.pressed()"
+                    [required]="false"
+                />
                 <lucide-angular name="italic" size="12"></lucide-angular>
             </button>
 
@@ -134,16 +146,51 @@ export const Controlled: Story = {
                 aria-label="Toggle bold"
                 #toggle="rdxToggle"
             >
-                <input rdxToggleInput [name]="'toggleDef'" [value]="toggle.pressed()" [required]="false" />
+                <input
+                    rdxToggleVisuallyHiddenInput
+                    [name]="'toggleDef'"
+                    [value]="toggle.pressed()"
+                    [required]="false"
+                />
                 <lucide-angular name="italic" size="12"></lucide-angular>
             </button>
 
             <h1>Events</h1>
             <span class="">default off</span>
             <button class="Toggle" rdxToggle [pressed]="false" aria-label="Toggle bold" #toggle="rdxToggle">
-                <input rdxToggleInput [name]="'toggleDef'" [value]="toggle.pressed()" [required]="false" />
+                <input
+                    rdxToggleVisuallyHiddenInput
+                    [name]="'toggleDef'"
+                    [value]="toggle.pressed()"
+                    [required]="false"
+                />
                 <lucide-angular name="italic" size="12"></lucide-angular>
             </button>
+        `
+    })
+};
+
+export const Disabled: Story = {
+    render: () => ({
+        template: html`
+            <button class="Toggle" disabled rdxToggle #toggle="rdxToggle" aria-label="Toggle disabled">
+                <input
+                    rdxToggleVisuallyHiddenInput
+                    [name]="'toggleDef'"
+                    [value]="toggle.pressed()"
+                    [required]="false"
+                    [disabled]="toggle.disabled()"
+                />
+                <lucide-angular name="italic" size="12"></lucide-angular>
+            </button>
+        `
+    })
+};
+
+export const ReactiveForm: Story = {
+    render: () => ({
+        template: html`
+            <toggle-reactive-forms></toggle-reactive-forms>
         `
     })
 };
