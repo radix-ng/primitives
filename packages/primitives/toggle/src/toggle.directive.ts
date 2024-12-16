@@ -7,7 +7,8 @@ import {
     input,
     model,
     output,
-    OutputEmitterRef
+    OutputEmitterRef,
+    signal
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
@@ -52,8 +53,8 @@ export const TOGGLE_VALUE_ACCESSOR: any = {
     host: {
         '[attr.aria-pressed]': 'pressed()',
         '[attr.data-state]': 'dataState()',
-        '[attr.data-disabled]': 'disabled() ? "" : undefined',
-        '[disabled]': 'disabled()',
+        '[attr.data-disabled]': 'disabledState() ? "" : undefined',
+        '[disabled]': 'disabledState()',
 
         '(click)': 'togglePressed()'
     }
@@ -76,6 +77,9 @@ export class RdxToggleDirective implements ControlValueAccessor {
      */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /** @ignore */
+    readonly disabledState = computed(() => this.disabled() || this.accessorDisabled());
+
     protected readonly dataState = computed<DataState>(() => {
         return this.pressed() ? 'on' : 'off';
     });
@@ -92,10 +96,10 @@ export class RdxToggleDirective implements ControlValueAccessor {
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-    private onChange: Function = () => {};
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-    private onTouched: Function = () => {};
+    private readonly accessorDisabled = signal(false);
+
+    private onChange: ((value: any) => void) | undefined;
+    private onTouched: (() => void) | undefined;
 
     /** @ignore */
     writeValue(value: any): void {
@@ -103,14 +107,17 @@ export class RdxToggleDirective implements ControlValueAccessor {
     }
 
     /** @ignore */
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-    registerOnChange(fn: Function): void {
+    registerOnChange(fn: (value: any) => void): void {
         this.onChange = fn;
     }
 
     /** @ignore */
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-    registerOnTouched(fn: Function): void {
+    registerOnTouched(fn: () => void): void {
         this.onTouched = fn;
+    }
+
+    /** @ignore */
+    setDisabledState(isDisabled: boolean): void {
+        this.accessorDisabled.set(isDisabled);
     }
 }
