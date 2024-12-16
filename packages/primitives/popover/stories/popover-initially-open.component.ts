@@ -1,29 +1,27 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, MountainSnowIcon, X } from 'lucide-angular';
-import { RdxPopoverAlign, RdxPopoverModule, RdxPopoverSide } from '../index';
+import { RdxPopoverModule } from '../index';
 import { RdxPopoverContentAttributesComponent } from '../src/popover-content-attributes.component';
 import styles from './popover-styles.constants';
 import { PopoverWithEventBaseComponent } from './popover-with-event-base.component';
 
 @Component({
-    selector: 'rdx-popover-events',
+    selector: 'rdx-popover-initially-open',
     standalone: true,
     imports: [
+        FormsModule,
         RdxPopoverModule,
         LucideAngularModule,
-        FormsModule,
         RdxPopoverContentAttributesComponent,
         PopoverWithEventBaseComponent
     ],
-    styles: `
-        ${styles()}
-    `,
+    styles: styles(),
     template: `
         <popover-with-event-base>
             <div class="container">
-                <ng-container rdxPopoverRoot>
-                    <button class="reset IconButton" #triggerElement rdxPopoverTrigger>
+                <ng-container [defaultOpen]="true" rdxPopoverRoot>
+                    <button class="reset IconButton" rdxPopoverTrigger>
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                     </button>
 
@@ -59,10 +57,7 @@ import { PopoverWithEventBaseComponent } from './popover-with-event-base.compone
         </popover-with-event-base>
     `
 })
-export class RdxPopoverEventsComponent {
+export class RdxPopoverInitiallyOpenComponent {
     readonly MountainSnowIcon = MountainSnowIcon;
     readonly XIcon = X;
-
-    protected readonly sides = RdxPopoverSide;
-    protected readonly aligns = RdxPopoverAlign;
 }

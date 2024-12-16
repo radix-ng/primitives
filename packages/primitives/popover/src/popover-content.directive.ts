@@ -16,7 +16,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter, tap } from 'rxjs';
 import { injectPopoverRoot } from './popover-root.inject';
 import { DEFAULTS } from './popover.constants';
-import { RdxPopoverAlign, RdxPopoverSide, RdxSideAndAlignOffsets } from './popover.types';
+import { RdxPopoverAlign, RdxPopoverAttachDetachEvent, RdxPopoverSide, RdxSideAndAlignOffsets } from './popover.types';
 import { getAllPossibleConnectedPositions, getContentPosition } from './popover.utils';
 
 @Directive({
@@ -28,41 +28,201 @@ import { getAllPossibleConnectedPositions, getContentPosition } from './popover.
 })
 export class RdxPopoverContentDirective implements OnInit {
     /** @ignore */
-    readonly popoverRoot = injectPopoverRoot();
+    private readonly popoverRoot = injectPopoverRoot();
     /** @ignore */
-    readonly templateRef = inject(TemplateRef);
+    private readonly templateRef = inject(TemplateRef);
     /** @ignore */
-    readonly overlay = inject(Overlay);
+    private readonly overlay = inject(Overlay);
     /** @ignore */
-    readonly destroyRef = inject(DestroyRef);
+    private readonly destroyRef = inject(DestroyRef);
     /** @ignore */
     private readonly connectedOverlay = inject(CdkConnectedOverlay);
 
     /**
-     * The preferred side of the trigger to render against when open. Will be reversed when collisions occur and avoidCollisions is enabled.
+     * @description The preferred side of the trigger to render against when open. Will be reversed when collisions occur and avoidCollisions is enabled.
+     * @default top
      */
     readonly side = input<RdxPopoverSide>(RdxPopoverSide.Top);
     /**
-     * The distance in pixels from the trigger.
+     * @description The distance in pixels from the trigger.
+     * @default undefined
      */
     readonly sideOffset = input<number | undefined>(void 0);
-
     /**
-     * The preferred alignment against the trigger. May change when collisions occur.
+     * @description The preferred alignment against the trigger. May change when collisions occur.
+     * @default center
      */
     readonly align = input<RdxPopoverAlign>(RdxPopoverAlign.Center);
     /**
-     * An offset in pixels from the "start" or "end" alignment options.
+     * @description An offset in pixels from the "start" or "end" alignment options.
+     * @default undefined
      */
     readonly alignOffset = input<number | undefined>(void 0);
 
     /**
-     * Whether to add some alternate positions of the content.
+     * @description Whether to add some alternate positions of the content.
+     * @default false
      */
     readonly disableAlternatePositions = input(false);
 
+    /**
+     * @description Event handler called when the escape key is down. It can be prevented by calling event.preventDefault.
+     */
+    readonly onEscapeKeyDown = output<KeyboardEvent>();
+
+    /**
+     * @description Event handler called when a pointer event occurs outside the bounds of the component. It can be prevented by calling event.preventDefault.
+     */
+    readonly onOutsideClick = output<MouseEvent>();
+
+    /**
+     * @description Event handler called after the overlay is open
+     */
+    readonly onOpen = output<void>();
+    /**
+     * @description Event handler called after the overlay is closed
+     */
+    readonly onClosed = output<void>();
+
     /** @ingore */
-    readonly positions = computed(() => {
+    readonly positions = computed(() => this.computePositions());
+
+    constructor() {
+        this.onPositionChangeEffect();
+    }
+
+    /** @ignore */
+    ngOnInit() {
+        this.setOrigin();
+        this.setScrollStrategy();
+        this.setDisableClose();
+        this.onAttach();
+        this.onDetach();
+        this.connectKeydownEscape();
+        this.connectOutsideClick();
+    }
+
+    /** @ignore */
+    open() {
+        if (this.connectedOverlay.open) {
+            return;
+        }
+        const prevOpen = this.connectedOverlay.open;
+        this.connectedOverlay.open = true;
+        this.fireOverlayNgOnChanges('open', this.connectedOverlay.open, prevOpen);
+    }
+
+    /** @ignore */
+    close() {
+        if (!this.connectedOverlay.open) {
+            return;
+        }
+        const prevOpen = this.connectedOverlay.open;
+        this.connectedOverlay.open = false;
+        this.fireOverlayNgOnChanges('open', this.connectedOverlay.open, prevOpen);
+    }
+
+    /** @ignore */
+    positionChange() {
+        return this.connectedOverlay.positionChange.asObservable();
+    }
+
+    /** @ignore */
+    private connectKeydownEscape() {
+        this.connectedOverlay.overlayKeydown
+            .asObservable()
+            .pipe(
+                filter((event) => event.key === 'Escape'),
+                tap((event) => {
+                    this.onEscapeKeyDown.emit(event);
+                    if (
+                        !event.defaultPrevented &&
+                        !this.popoverRoot.firstDefaultOpen() &&
+                        !event.defaultPreventedCustom
+                    ) {
+                        this.popoverRoot.handleClose();
+                    }
+                }),
+                takeUntilDestroyed(this.destroyRef)
+            )
+            .subscribe();
+    }
+
+    /** @ignore */
+    private connectOutsideClick() {
+        this.connectedOverlay.overlayOutsideClick
+            .asObservable()
+            .pipe(
+                tap((event) => {
+                    this.onOutsideClick.emit(event);
+                    if (
+                        !event.defaultPrevented &&
+                        !this.popoverRoot.firstDefaultOpen() &&
+                        !event.defaultPreventedCustom
+                    ) {
+                        this.popoverRoot.handleClose();
+                    }
+                }),
+                takeUntilDestroyed(this.destroyRef)
+            )
+            .subscribe();
+    }
+
+    /** @ignore */
+    private onAttach() {
+        this.connectedOverlay.attach
+            .asObservable()
+            .pipe(
+                tap(() => {
+                    /**
+                     * `this.onOpen.emit();` is being delegated to the root directive due to the opening animation
+                     */
+                    this.popoverRoot.attachDetachEvent.set(RdxPopoverAttachDetachEvent.ATTACH);
+                }),
+                takeUntilDestroyed(this.destroyRef)
+            )
+            .subscribe();
+    }
+
+    /** @ignore */
+    private onDetach() {
+        this.connectedOverlay.detach
+            .asObservable()
+            .pipe(
+                tap(() => {
+                    /**
+                     * `this.onClosed.emit();` is being delegated to the root directive due to the closing animation
+                     */
+                    this.popoverRoot.attachDetachEvent.set(RdxPopoverAttachDetachEvent.DETACH);
+                }),
+                takeUntilDestroyed(this.destroyRef)
+            )
+            .subscribe();
+    }
+
+    /** @ignore */
+    private setScrollStrategy() {
+        const prevScrollStrategy = this.connectedOverlay.scrollStrategy;
+        this.connectedOverlay.scrollStrategy = this.overlay.scrollStrategies.reposition();
+        this.fireOverlayNgOnChanges('scrollStrategy', this.connectedOverlay.scrollStrategy, prevScrollStrategy);
+    }
+
+    /** @ignore */
+    private setDisableClose() {
+        const prevDisableClose = this.connectedOverlay.disableClose;
+        this.connectedOverlay.disableClose = true;
+        this.fireOverlayNgOnChanges('disableClose', this.connectedOverlay.disableClose, prevDisableClose);
+    }
+
+    /** @ignore */
+    private setOrigin() {
+        const prevOrigin = this.connectedOverlay.origin;
+        this.connectedOverlay.origin = this.popoverRoot.popoverTriggerDirective().overlayOrigin;
+        this.fireOverlayNgOnChanges('origin', this.connectedOverlay.origin, prevOrigin);
+    }
+
+    /** @ignore */
+    private computePositions() {
         const greatestDimensionFromTheArrow = Math.max(
             this.popoverRoot.popoverArrowDirective()?.width() ?? 0,
             this.popoverRoot.popoverArrowDirective()?.height() ?? 0
@@ -101,149 +261,6 @@ export class RdxPopoverContentDirective implements OnInit {
             });
         }
         return positions;
-    });
-
-    /**
-     * Event handler called when the escape key is down. It can be prevented by calling event.preventDefault.
-     */
-    readonly onEscapeKeyDown = output<KeyboardEvent>();
-
-    /**
-     * Event handler called when a pointer event occurs outside the bounds of the component. It can be prevented by calling event.preventDefault.
-     */
-    readonly onPointerDownOutside = output<MouseEvent>();
-
-    /**
-     * Event handler called when the overlay is atached
-     */
-    readonly onShow = output<void>();
-    /**
-     * Event handler called when the overlay is detached
-     */
-    readonly onHide = output<void>();
-
-    constructor() {
-        this.onPositionChangeEffect();
-    }
-
-    /** @ignore */
-    ngOnInit() {
-        this.setOrigin();
-        this.setScrollStrategy();
-        this.setDisableClose();
-        this.onAttach();
-        this.onDetach();
-        this.connectKeydownEscape();
-        this.connectOutsideClick();
-    }
-
-    /** @ignore */
-    show() {
-        const prevOpen = this.connectedOverlay.open;
-        this.connectedOverlay.open = true;
-        if (!prevOpen) {
-            this.connectedOverlay.ngOnChanges({ open: new SimpleChange(prevOpen, true, false) });
-        }
-    }
-
-    /** @ignore */
-    hide() {
-        const prevOpen = this.connectedOverlay.open;
-        this.connectedOverlay.open = false;
-        if (prevOpen) {
-            this.connectedOverlay.ngOnChanges({ open: new SimpleChange(prevOpen, false, false) });
-        }
-    }
-
-    /** @ignore */
-    positionChange() {
-        return this.connectedOverlay.positionChange.asObservable();
-    }
-
-    /** @ignore */
-    private connectKeydownEscape() {
-        this.connectedOverlay.overlayKeydown
-            .asObservable()
-            .pipe(
-                filter((event) => event.key === 'Escape'),
-                tap((event) => {
-                    this.onEscapeKeyDown.emit(event);
-                    if (!event.defaultPrevented) {
-                        this.popoverRoot.handleClose();
-                    }
-                }),
-                takeUntilDestroyed(this.destroyRef)
-            )
-            .subscribe();
-    }
-
-    /** @ignore */
-    private connectOutsideClick() {
-        this.connectedOverlay.overlayOutsideClick
-            .asObservable()
-            .pipe(
-                tap((event) => {
-                    this.onPointerDownOutside.emit(event);
-                    if (!event.defaultPrevented) {
-                        this.popoverRoot.handleClose();
-                    }
-                }),
-                takeUntilDestroyed(this.destroyRef)
-            )
-            .subscribe();
-    }
-
-    /** @ignore */
-    private onAttach() {
-        this.connectedOverlay.attach
-            .asObservable()
-            .pipe(
-                tap(() => {
-                    this.onShow.emit();
-                }),
-                takeUntilDestroyed(this.destroyRef)
-            )
-            .subscribe();
-    }
-
-    /** @ignore */
-    private onDetach() {
-        this.connectedOverlay.detach
-            .asObservable()
-            .pipe(
-                tap(() => {
-                    this.onHide.emit();
-                }),
-                takeUntilDestroyed(this.destroyRef)
-            )
-            .subscribe();
-    }
-
-    /** @ignore */
-    private setScrollStrategy() {
-        const prevScrollStrategy = this.connectedOverlay.scrollStrategy;
-        this.connectedOverlay.scrollStrategy = this.overlay.scrollStrategies.reposition();
-        this.connectedOverlay.ngOnChanges({
-            scrollStrategy: new SimpleChange(prevScrollStrategy, this.connectedOverlay.scrollStrategy, false)
-        });
-    }
-
-    /** @ignore */
-    private setDisableClose() {
-        const prevDisableClose = this.connectedOverlay.disableClose;
-        this.connectedOverlay.disableClose = true;
-        this.connectedOverlay.ngOnChanges({
-            disableClose: new SimpleChange(prevDisableClose, this.connectedOverlay.disableClose, false)
-        });
-    }
-
-    /** @ignore */
-    private setOrigin() {
-        const prevOrigin = this.connectedOverlay.origin;
-        this.connectedOverlay.origin = this.popoverRoot.popoverTriggerDirective().overlayOrigin;
-        this.connectedOverlay.ngOnChanges({
-            origin: new SimpleChange(prevOrigin, this.connectedOverlay.origin, false)
-        });
     }
 
     /** @ignore */
@@ -254,11 +271,20 @@ export class RdxPopoverContentDirective implements OnInit {
             untracked(() => {
                 const prevPositions = this.connectedOverlay.positions;
                 this.connectedOverlay.positions = positions;
-                this.connectedOverlay.ngOnChanges({
-                    positions: new SimpleChange(prevPositions, this.connectedOverlay.positions, false)
-                });
+                this.fireOverlayNgOnChanges('positions', this.connectedOverlay.positions, prevPositions);
                 this.connectedOverlay.overlayRef?.updatePosition();
             });
+        });
+    }
+
+    private fireOverlayNgOnChanges<K extends keyof CdkConnectedOverlay, V extends CdkConnectedOverlay[K]>(
+        input: K,
+        currentValue: V,
+        previousValue: V,
+        firstChange = false
+    ) {
+        this.connectedOverlay.ngOnChanges({
+            [input]: new SimpleChange(previousValue, currentValue, firstChange)
         });
     }
 }

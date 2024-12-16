@@ -2,8 +2,10 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { LucideAngularModule, MountainSnowIcon, X } from 'lucide-angular';
 import { RdxPopoverModule } from '../index';
+import { RdxPopoverAnimationsComponent } from './popover-animations.component';
 import { RdxPopoverDefaultComponent } from './popover-default.component';
 import { RdxPopoverEventsComponent } from './popover-events.components';
+import { RdxPopoverInitiallyOpenComponent } from './popover-initially-open.component';
 import { RdxPopoverMultipleComponent } from './popover-multiple.component';
 import { RdxPopoverPositioningComponent } from './popover-positioning.component';
 import { RdxPopoverTriggeringComponent } from './popover-triggering.component';
@@ -21,6 +23,8 @@ export default {
                 RdxPopoverPositioningComponent,
                 RdxPopoverTriggeringComponent,
                 RdxPopoverMultipleComponent,
+                RdxPopoverAnimationsComponent,
+                RdxPopoverInitiallyOpenComponent,
                 LucideAngularModule,
                 LucideAngularModule.pick({ MountainSnowIcon, X })
             ],
@@ -79,6 +83,22 @@ export const ExternalTriggering: Story = {
     render: () => ({
         template: html`
             <rdx-popover-triggering></rdx-popover-triggering>
+        `
+    })
+};
+
+export const InitiallyOpen: Story = {
+    render: () => ({
+        template: html`
+            <rdx-popover-initially-open></rdx-popover-initially-open>
+        `
+    })
+};
+
+export const Animations: Story = {
+    render: () => ({
+        template: html`
+            <rdx-popover-animations></rdx-popover-animations>
         `
     })
 };

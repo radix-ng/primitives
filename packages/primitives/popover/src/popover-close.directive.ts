@@ -11,9 +11,9 @@ import { injectPopoverRoot } from './popover-root.inject';
 })
 export class RdxPopoverCloseDirective {
     /** @ignore */
-    readonly popoverRoot = injectPopoverRoot();
+    protected readonly popoverRoot = injectPopoverRoot();
     /** @ignore */
-    readonly elementRef = inject(ElementRef);
+    private readonly elementRef = inject(ElementRef);
     /** @ignore */
     private readonly renderer = inject(Renderer2);
 

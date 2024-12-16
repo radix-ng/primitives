@@ -1,9 +1,11 @@
-import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
+import {ArgTypes, Canvas, Markdown, Meta, Source} from '@storybook/blocks';
 import * as PopoverStories from "./popover.stories";
 import {RdxPopoverRootDirective} from "../src/popover-root.directive";
 import {RdxPopoverContentDirective} from "../src/popover-content.directive";
 import {RdxPopoverArrowDirective} from "../src/popover-arrow.directive";
 import {RdxPopoverCloseDirective} from "../src/popover-close.directive";
+import {animationStylesOnly} from "./popover-styles.constants";
+import {RdxPopoverContentAttributesComponent} from "../src/popover-content-attributes.component";
 
 <Meta title="Primitives/Popover" />
 
@@ -32,6 +34,19 @@ import {RdxPopoverCloseDirective} from "../src/popover-close.directive";
 
 <Canvas sourceState="hidden" of={PopoverStories.ExternalTriggering} />
 
+### Initially Open
+
+<Canvas sourceState="hidden" of={PopoverStories.InitiallyOpen} />
+
+### Animations
+
+<Canvas sourceState="hidden" of={PopoverStories.Animations} />
+
+### Animation Styles
+
+<Source type="code" language="css" code={`${animationStylesOnly}`} />
+
+
 ## Features
 
 - ✅ Opens when the trigger is clicked.
@@ -45,7 +60,7 @@ import {RdxPopoverCloseDirective} from "../src/popover-close.directive";
     <button class="IconButton" rdxPopoverTrigger>+</button>
 
     <ng-template rdxPopoverContent [sideOffset]="8">
-        <div class="PopoverContent">
+        <div class="PopoverContent" rdxPopoverContentAttributes>
             <button class="PopoverClose" rdxPopoverClose aria-label="Close">X</button>
             Add to library
             <div class="PopoverArrow" rdxPopoverArrow></div>
@@ -58,21 +73,17 @@ import {RdxPopoverCloseDirective} from "../src/popover-close.directive";
 
 Get started with importing the directives:
 
-```typescript
-import {
+<Source type="code" language="typescript" code={`import {
   RdxPopoverRootDirective,
   RdxPopoverRootTrigger,
   RdxPopoverContentDirective,
   RdxPopoverArrowDirective,
   RdxPopoverCloseDirective
-} from '@radix-ng/primitives/popover';
-```
+} from '@radix-ng/primitives/popover';`} />
 
 or
 
-```typescript
-import { RdxPopoverModule } from '@radix-ng/primitives/popover';
-```
+<Source type="code" language="typescript" code={`import { RdxPopoverModule } from '@radix-ng/primitives/popover';`} />
 
 ## API Reference
 
@@ -89,11 +100,11 @@ Contains all the parts of a popover.
 The button that toggles the popover. By default, the PopoverContent will position itself against the trigger.
 
 <Markdown>
-    {`
-   | Data attribute | Value
-   | ----- | -----
-   | [data-state] | <code>"closed" | "open" (type RdxPopoverState)</code>
-   `}
+{`
+| Data attribute | Value          |
+|----------------|----------------|
+| [data-state]   | <code>"closed" | "open" (type RdxPopoverState)</code>
+`}
 </Markdown>
 
 ### Content
@@ -103,14 +114,21 @@ The component that pops out when the popover is open.
 
 <ArgTypes of={RdxPopoverContentDirective} />
 
+### Content Attributes
+`RdxPopoverContentAttributesComponent`
+
+A component with the content attributes that are necessary to run animations.
+
+<ArgTypes of={RdxPopoverContentAttributesComponent} />
+
 <Markdown>
-    {`
-   | Data attribute | Value
-   | ----- | -----
-   | [data-state] | <code>"closed" | "open" (enum RdxPopoverState)</code>
-   | [data-side] | <code>"left" | "right" | "bottom" | "top" (enum RdxPopoverSide)</code>
-   | [data-align] | <code>"start" | "end" | "center" (enum RdxPopoverAlign)</code>
-   `}
+{`
+| Data attribute | Value          |
+|----------------|----------------|
+| [data-state]   | <code>"closed" | "open" (enum RdxPopoverState)</code>
+| [data-side]    | <code>"left"   | "right" | "bottom" | "top" (enum RdxPopoverSide)</code>
+| [data-align]   | <code>"start"  | "end" | "center" (enum RdxPopoverAlign)</code>
+`}
 </Markdown>
 
 ### Arrow

@@ -1,35 +1,56 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, MountainSnowIcon, X } from 'lucide-angular';
-import { RdxPopoverAlign, RdxPopoverModule, RdxPopoverSide } from '../index';
+import { RdxPopoverAlign, RdxPopoverModule } from '../index';
 import { RdxPopoverContentAttributesComponent } from '../src/popover-content-attributes.component';
+import { RdxPopoverSide } from '../src/popover.types';
 import styles from './popover-styles.constants';
 import { PopoverWithEventBaseComponent } from './popover-with-event-base.component';
 
 @Component({
-    selector: 'rdx-popover-events',
+    selector: 'rdx-popover-animations',
     standalone: true,
     imports: [
+        FormsModule,
         RdxPopoverModule,
         LucideAngularModule,
-        FormsModule,
         RdxPopoverContentAttributesComponent,
         PopoverWithEventBaseComponent
     ],
-    styles: `
-        ${styles()}
-    `,
+    styles: styles(true),
     template: `
         <popover-with-event-base>
+            <div class="ParamsContainer">
+                <input [ngModel]="cssAnimation()" (ngModelChange)="cssAnimation.set($event)" type="checkbox" />
+                CSS Animation
+                <input
+                    [ngModel]="cssOpeningAnimation()"
+                    (ngModelChange)="cssOpeningAnimation.set($event)"
+                    type="checkbox"
+                />
+                On Opening Animation
+                <input
+                    [ngModel]="cssClosingAnimation()"
+                    (ngModelChange)="cssClosingAnimation.set($event)"
+                    type="checkbox"
+                />
+                On Closing Animation
+            </div>
+
             <div class="container">
-                <ng-container rdxPopoverRoot>
-                    <button class="reset IconButton" #triggerElement rdxPopoverTrigger>
+                <ng-container
+                    [cssAnimation]="cssAnimation()"
+                    [cssOpeningAnimation]="cssOpeningAnimation()"
+                    [cssClosingAnimation]="cssClosingAnimation()"
+                    rdxPopoverRoot
+                >
+                    <button class="IconButton reset" rdxPopoverTrigger>
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                     </button>
 
-                    <ng-template [sideOffset]="8" rdxPopoverContent>
+                    <ng-template rdxPopoverContent>
                         <div class="PopoverContent" rdxPopoverContentAttributes>
-                            <button class="reset PopoverClose" rdxPopoverClose aria-label="Close">
+                            <button class="PopoverClose reset" rdxPopoverClose aria-label="Close">
                                 <lucide-angular [img]="XIcon" size="16" style="display: flex" />
                             </button>
                             <div style="display: flex; flex-direction: column; gap: 10px">
@@ -59,10 +80,14 @@ import { PopoverWithEventBaseComponent } from './popover-with-event-base.compone
         </popover-with-event-base>
     `
 })
-export class RdxPopoverEventsComponent {
+export class RdxPopoverAnimationsComponent {
     readonly MountainSnowIcon = MountainSnowIcon;
     readonly XIcon = X;
 
-    protected readonly sides = RdxPopoverSide;
-    protected readonly aligns = RdxPopoverAlign;
+    readonly sides = RdxPopoverSide;
+    readonly aligns = RdxPopoverAlign;
+
+    cssAnimation = signal<boolean>(true);
+    cssOpeningAnimation = signal(true);
+    cssClosingAnimation = signal(true);
 }

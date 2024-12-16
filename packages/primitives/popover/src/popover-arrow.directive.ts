@@ -36,12 +36,14 @@ export class RdxPopoverArrowDirective implements AfterViewInit {
     private readonly elementRef = inject(ElementRef);
 
     /**
-     * The width of the arrow in pixels.
+     * @description The width of the arrow in pixels.
+     * @default 10
      */
     readonly width = input<number>(10);
 
     /**
-     * The height of the arrow in pixels.
+     * @description The height of the arrow in pixels.
+     * @default 5
      */
     readonly height = input<number>(5);
 
@@ -95,9 +97,9 @@ export class RdxPopoverArrowDirective implements AfterViewInit {
         );
 
         this.renderer.setStyle(this.elementRef.nativeElement, 'top', posParams.top);
-        this.renderer.setStyle(this.elementRef.nativeElement, 'bottom', posParams.bottom);
+        this.renderer.setStyle(this.elementRef.nativeElement, 'bottom', '');
         this.renderer.setStyle(this.elementRef.nativeElement, 'left', posParams.left);
-        this.renderer.setStyle(this.elementRef.nativeElement, 'right', posParams.right);
+        this.renderer.setStyle(this.elementRef.nativeElement, 'right', '');
         this.renderer.setStyle(this.elementRef.nativeElement, 'transform', posParams.transform);
     }
 
