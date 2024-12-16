@@ -10,10 +10,10 @@ import { RdxToggleDirective } from '../src/toggle.directive';
     styleUrl: 'toggle.styles.css',
     template: `
         <form [formGroup]="formGroup">
-            <button class="Toggle" #toggle="rdxToggle" [pressed]="false" rdxToggle aria-label="Toggle bold">
+            <button class="Toggle" #toggle="rdxToggle" formControlName="pressed" rdxToggle aria-label="Toggle bold">
                 <input
                     [name]="'toggleDef'"
-                    [value]="toggle.pressed()"
+                    [value]="toggle.pressed() ? 'on' : 'off'"
                     [required]="false"
                     rdxToggleVisuallyHiddenInput
                 />
@@ -31,7 +31,7 @@ export class ToggleButtonReactiveForms implements OnInit {
 
     ngOnInit() {
         this.formGroup = new FormGroup({
-            pressed: new FormControl<boolean>(false)
+            pressed: new FormControl<boolean>(true)
         });
     }
 }
