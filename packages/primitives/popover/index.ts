@@ -7,6 +7,7 @@ import { RdxPopoverContentDirective } from './src/popover-content.directive';
 import { RdxPopoverRootDirective } from './src/popover-root.directive';
 import { RdxPopoverTriggerDirective } from './src/popover-trigger.directive';
 
+export * from './src/popover-anchor.directive';
 export * from './src/popover-arrow.directive';
 export * from './src/popover-close.directive';
 export * from './src/popover-content-attributes.component';
