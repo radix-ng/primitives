@@ -1,6 +1,7 @@
 import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
 import * as ToggleDirectiveStories from './toggle.stories';
 import { RdxToggleDirective } from '../src/toggle.directive';
+import { RdxToggleVisuallyHiddenInputDirective } from '../src/toggle-visually-hidden-input.directive';
 
 <Meta title="Primitives/Toggle" />
 
@@ -33,18 +34,30 @@ import { RdxToggleDirective } from '@radix-ng/primitives/toggle';
 
 ## API Reference
 
-### RdxToggleDirective
+### Toggle
+
+`RdxToggleDirective`
+
+The toggle.
 
 <ArgTypes of={RdxToggleDirective} />
 
 <Markdown>
-  {`
+    {`
   | Data Attribute | Value |
   | ----------- | --------- |
   | [data-state]       | "on" or "off"   |
   | [data-disabled]    | Present when disabled      |
   `}
 </Markdown>
+
+### ToggleInput
+
+`RdxToggleVisuallyHiddenInputDirective`
+
+Directive for a visually hidden `<input />`element, specifically designed for use with toggle components.
+This directive simplifies the integration of hidden form inputs in toggle components, ensuring compatibility with form handling while maintaining a clean and accessible design.
+
 
 ## Accessibility
 

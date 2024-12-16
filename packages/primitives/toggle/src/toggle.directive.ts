@@ -97,15 +97,18 @@ export class RdxToggleDirective implements ControlValueAccessor {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     private onTouched: Function = () => {};
 
+    /** @ignore */
     writeValue(value: any): void {
         this.pressed.set(value);
     }
 
+    /** @ignore */
     // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     registerOnChange(fn: Function): void {
         this.onChange = fn;
     }
 
+    /** @ignore */
     // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     registerOnTouched(fn: Function): void {
         this.onTouched = fn;
