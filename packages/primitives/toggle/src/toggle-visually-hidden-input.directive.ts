@@ -2,8 +2,8 @@ import { Directive } from '@angular/core';
 import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Directive({
-    selector: '[rdxToggleInput]',
-    exportAs: 'rdxToggleInput',
+    selector: 'input[rdxToggleVisuallyHiddenInput]',
+    exportAs: 'rdxToggleVisuallyHiddenInput',
     standalone: true,
     hostDirectives: [
         {
@@ -11,7 +11,8 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
             inputs: [
                 'name',
                 'required',
-                'value'
+                'value',
+                'disabled'
             ]
         }
     ],
@@ -19,4 +20,4 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
         type: 'checkbox'
     }
 })
-export class RdxToggleInputDirective {}
+export class RdxToggleVisuallyHiddenInputDirective {}

@@ -1,5 +1,5 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { booleanAttribute, Directive, input, model, output, OutputEmitterRef } from '@angular/core';
+import { booleanAttribute, computed, Directive, input, model, output, OutputEmitterRef } from '@angular/core';
 
 export interface ToggleProps {
     /**
@@ -26,17 +26,19 @@ export interface ToggleProps {
     disabled?: boolean;
 }
 
+export type DataState = 'on' | 'off';
+
 @Directive({
     selector: '[rdxToggle]',
     exportAs: 'rdxToggle',
     standalone: true,
     host: {
         '[attr.aria-pressed]': 'pressed()',
-        '[attr.data-state]': 'pressed() ? "on" : "off"',
-        '[attr.data-disabled]': 'disabled()',
+        '[attr.data-state]': 'dataState()',
+        '[attr.data-disabled]': 'disabled() ? "" : undefined',
         '[disabled]': 'disabled()',
 
-        '(click)': 'toggle()'
+        '(click)': 'togglePressed()'
     }
 })
 export class RdxToggleDirective {
@@ -57,12 +59,16 @@ export class RdxToggleDirective {
      */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    protected readonly dataState = computed<DataState>(() => {
+        return this.pressed() ? 'on' : 'off';
+    });
+
     /**
      * Event handler called when the pressed state of the toggle changes.
      */
     readonly onPressedChange = output<boolean>();
 
-    protected toggle(): void {
+    protected togglePressed(): void {
         if (!this.disabled()) {
             this.pressed.set(!this.pressed());
             this.onPressedChange.emit(this.pressed());

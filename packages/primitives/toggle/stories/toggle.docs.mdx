@@ -23,7 +23,7 @@ Get started with importing the directives:
 import { RdxToggleDirective } from '@radix-ng/primitives/toggle';
 ```
 
-## Examples
+## Anatomy
 
 ```html
 <button rdxToggle aria-label="Toggle italic">
@@ -58,3 +58,16 @@ import { RdxToggleDirective } from '@radix-ng/primitives/toggle';
   | Enter       | Activates/deactivates the toggle.  |
   `}
 </Markdown>
+
+
+## Examples
+
+### Reactive Forms
+
+Toggle can also be used with reactive forms. In this case, the formControlName property is used to bind the component to a form control.
+<Canvas sourceState="hidden" of={ToggleDirectiveStories.ReactiveForm} />
+
+### Disabled
+
+When disabled is present, the element cannot be edited and focused.
+<Canvas sourceState="hidden" of={ToggleDirectiveStories.Disabled} />
