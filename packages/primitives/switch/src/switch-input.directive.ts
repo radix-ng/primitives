@@ -7,6 +7,7 @@ import { injectSwitch } from './switch-root.directive';
     standalone: true,
     host: {
         type: 'checkbox',
+        role: 'switch',
         tabindex: '-1',
         '[attr.defaultChecked]': 'switchRoot.checked()',
         '[attr.aria-checked]': 'switchRoot.checked()',

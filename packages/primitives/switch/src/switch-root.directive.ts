@@ -3,6 +3,7 @@ import {
     booleanAttribute,
     computed,
     Directive,
+    forwardRef,
     inject,
     InjectionToken,
     input,
@@ -10,14 +11,22 @@ import {
     model,
     ModelSignal,
     output,
-    OutputEmitterRef
+    OutputEmitterRef,
+    signal
 } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 export const RdxSwitchToken = new InjectionToken<RdxSwitchRootDirective>('RdxSwitchToken');
 
 export function injectSwitch(): RdxSwitchRootDirective {
     return inject(RdxSwitchToken);
 }
+
+export const SWITCH_VALUE_ACCESSOR: any = {
+    provide: NG_VALUE_ACCESSOR,
+    useExisting: forwardRef(() => RdxSwitchRootDirective),
+    multi: true
+};
 
 export interface SwitchProps {
     checked?: ModelSignal<boolean>;
@@ -33,9 +42,10 @@ let idIterator = 0;
     exportAs: 'rdxSwitchRoot',
     standalone: true,
     providers: [
-        { provide: RdxSwitchToken, useExisting: RdxSwitchRootDirective }],
+        { provide: RdxSwitchToken, useExisting: RdxSwitchRootDirective },
+        SWITCH_VALUE_ACCESSOR
+    ],
     host: {
-        role: 'switch',
         type: 'button',
         '[id]': 'elementId()',
         '[attr.aria-checked]': 'checked()',
@@ -47,8 +57,9 @@ let idIterator = 0;
         '(click)': 'toggle()'
     }
 })
-export class RdxSwitchRootDirective implements SwitchProps {
+export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor {
     readonly id = input<string>(`rdx-switch-${idIterator++}`);
+
     protected readonly elementId = computed(() => (this.id() ? this.id() : null));
 
     /**
@@ -70,10 +81,8 @@ export class RdxSwitchRootDirective implements SwitchProps {
         transform: booleanAttribute
     });
 
-    /*
-     * @ignore
-     */
-    readonly disabledState = computed(() => this.disabled());
+    /** @ignore */
+    readonly disabledState = computed(() => this.disabled() || this.accessorDisabled());
 
     /**
      * Event handler called when the state of the switch changes.
@@ -83,8 +92,9 @@ export class RdxSwitchRootDirective implements SwitchProps {
     /**
      * Toggles the checked state of the switch.
      * If the switch is disabled, the function returns early.
+     * @ignore
      */
-    protected toggle(): void {
+    toggle(): void {
         if (this.disabledState()) {
             return;
         }
@@ -92,5 +102,30 @@ export class RdxSwitchRootDirective implements SwitchProps {
         this.checked.set(!this.checked());
 
         this.onCheckedChange.emit(this.checked());
+    }
+
+    private readonly accessorDisabled = signal(false);
+
+    private onChange: ((value: any) => void) | undefined;
+    private onTouched: (() => void) | undefined;
+
+    /** @ignore */
+    writeValue(value: any): void {
+        this.checked.set(value);
+    }
+
+    /** @ignore */
+    registerOnChange(fn: (value: any) => void): void {
+        this.onChange = fn;
+    }
+
+    /** @ignore */
+    registerOnTouched(fn: () => void): void {
+        this.onTouched = fn;
+    }
+
+    /** @ignore */
+    setDisabledState(isDisabled: boolean): void {
+        this.accessorDisabled.set(isDisabled);
     }
 }
