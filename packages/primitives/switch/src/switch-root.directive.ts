@@ -58,7 +58,7 @@ let idIterator = 0;
     }
 })
 export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor {
-    readonly id = input<string>(`rdx-switch-${idIterator++}`);
+    readonly id = input<string | null>(`rdx-switch-${idIterator++}`);
 
     protected readonly elementId = computed(() => (this.id() ? this.id() : null));
 
