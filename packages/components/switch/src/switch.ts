@@ -22,11 +22,13 @@ export type SwitchVariant = 'classic' | 'surface' | 'soft';
         '[class]': 'hostClass()'
     },
     template: `
-        <input rdxSwitchInput />
+        <input [id]="elementId()" rdxSwitchInput />
         <span [class]="thumbClass()" rdxSwitchThumb></span>
     `
 })
 export class RdxThemeSwitchComponent {
+    readonly elementId = input<string | null>(null);
+
     readonly radius = input<radii>();
 
     readonly color = input<RadixColor>();

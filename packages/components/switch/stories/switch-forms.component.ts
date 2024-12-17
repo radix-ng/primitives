@@ -12,8 +12,9 @@ import { RdxThemeSwitchComponent } from '../src/switch';
             <div *ngIf="first.invalid">Name is too short.</div>
             <input formControlName="first" placeholder="First name" />
             <input formControlName="last" placeholder="Last name" />
-            <label for="policy-form">Policy</label>
-            <rdx-theme-switch id="policy-form" formControlName="policy" />
+
+            <label for="switch-input">Policy</label>
+            <rdx-theme-switch [elementId]="'switch-input'" formControlName="policy" />
 
             <button type="submit">Submit</button>
         </form>
@@ -26,12 +27,15 @@ export class ThemeSwitchFormsComponent {
         last: new FormControl('Drew'),
         policy: new FormControl<boolean>(false)
     });
+
     get first(): any {
         return this.form.get('first');
     }
+
     onSubmit(): void {
-        console.log(this.form.value); // {first: 'Nancy', last: 'Drew'}
+        console.log(this.form.value);
     }
+
     setValue() {
         this.form.setValue({ first: 'Carson', last: 'Drew', policy: false });
     }
