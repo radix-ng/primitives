@@ -17,7 +17,8 @@ let idIterator = 0;
         <button
             [class]="computedClass()"
             [id]="elementId()"
-            [checked]="checkedState()"
+            [checked]="checked()"
+            [defaultChecked]="defaultChecked() ? defaultChecked() : null"
             [disabled]="disabled()"
             [attr.data-radius]="radius()"
             [attr.data-accent-color]="color()"
@@ -33,16 +34,14 @@ export class RdxThemeSwitchComponent {
 
     readonly checked = model<boolean>(false);
 
-    readonly defaultChecked = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
-
-    readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
     /**
      * The state of the switch.
      * If `defaultChecked` is provided, it takes precedence over the `checked` state.
+     * @ignore
      */
-    protected readonly checkedState = computed(() => {
-        return this.defaultChecked() || this.checked();
-    });
+    readonly defaultChecked = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     readonly radius = input<radii>();
 

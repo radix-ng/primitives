@@ -30,7 +30,7 @@ export const SWITCH_VALUE_ACCESSOR: any = {
 
 export interface SwitchProps {
     checked?: ModelSignal<boolean>;
-    defaultChecked?: boolean;
+    defaultChecked?: InputSignalWithTransform<boolean, BooleanInput>;
     required?: InputSignalWithTransform<boolean, BooleanInput>;
     onCheckedChange?: OutputEmitterRef<boolean>;
 }
@@ -48,9 +48,9 @@ let idIterator = 0;
     host: {
         type: 'button',
         '[id]': 'elementId()',
-        '[attr.aria-checked]': 'checked()',
+        '[attr.aria-checked]': 'checkedState()',
         '[attr.aria-required]': 'required',
-        '[attr.data-state]': 'checked() ? "checked" : "unchecked"',
+        '[attr.data-state]': 'checkedState() ? "checked" : "unchecked"',
         '[attr.data-disabled]': 'disabledState() ? "true" : null',
         '[attr.disabled]': 'disabledState() ? disabledState() : null',
 
@@ -73,6 +73,17 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
      * The controlled state of the switch. Must be used in conjunction with onCheckedChange.
      */
     readonly checked = model<boolean>(false);
+
+    readonly defaultChecked = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /**
+     * The state of the switch.
+     * If `defaultChecked` is provided, it takes precedence over the `checked` state.
+     * @ignore
+     */
+    readonly checkedState = computed(() => {
+        return this.defaultChecked() || this.checked();
+    });
 
     /**
      * When true, prevents the user from interacting with the switch.

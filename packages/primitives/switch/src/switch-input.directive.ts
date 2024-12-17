@@ -9,14 +9,14 @@ import { injectSwitch } from './switch-root.directive';
         type: 'checkbox',
         role: 'switch',
         tabindex: '-1',
-        '[attr.defaultChecked]': 'switchRoot.checked()',
-        '[attr.aria-checked]': 'switchRoot.checked()',
+        '[attr.defaultChecked]': 'switchRoot.checkedState()',
+        '[attr.aria-checked]': 'switchRoot.checkedState()',
         '[attr.aria-hidden]': 'true',
         '[attr.aria-required]': 'switchRoot.required()',
-        '[attr.data-state]': 'switchRoot.checked() ? "checked" : "unchecked"',
+        '[attr.data-state]': 'switchRoot.checkedState() ? "checked" : "unchecked"',
         '[attr.data-disabled]': 'switchRoot.disabledState() ? "true" : null',
         '[attr.disabled]': 'switchRoot.disabledState() ? switchRoot.disabledState() : null',
-        '[attr.value]': 'switchRoot.checked() ? "on" : "off"',
+        '[attr.value]': 'switchRoot.checkedState() ? "on" : "off"',
         style: 'transform: translateX(-100%); position: absolute; overflow: hidden; pointerEvents: none; opacity: 0; margin: 0;'
     }
 })

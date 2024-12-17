@@ -7,7 +7,7 @@ import { injectSwitch } from './switch-root.directive';
     standalone: true,
     host: {
         '[attr.data-disabled]': 'switchRoot.disabledState() ? "true" : null',
-        '[attr.data-state]': 'switchRoot.checked() ? "checked" : "unchecked"'
+        '[attr.data-state]': 'switchRoot.checkedState() ? "checked" : "unchecked"'
     }
 })
 export class RdxSwitchThumbDirective {
