@@ -31,7 +31,7 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: html`
-            <rdx-theme-switch defaultChecked />
+            <button rdxThemeSwitch defaultChecked></button>
         `
     })
 };
@@ -40,9 +40,9 @@ export const Size: Story = {
     render: () => ({
         template: html`
             <div style="display: flex; align-items: center; gap: 8px;">
-                <rdx-theme-switch size="1" defaultChecked />
-                <rdx-theme-switch size="2" defaultChecked />
-                <rdx-theme-switch size="3" defaultChecked />
+                <button rdxThemeSwitch size="1" defaultChecked></button>
+                <button rdxThemeSwitch size="2" defaultChecked></button>
+                <button rdxThemeSwitch size="3" defaultChecked></button>
             </div>
         `
     })

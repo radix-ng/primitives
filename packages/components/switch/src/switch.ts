@@ -1,4 +1,4 @@
-import { booleanAttribute, Component, computed, input, model, numberAttribute } from '@angular/core';
+import { booleanAttribute, Component, computed, input, numberAttribute } from '@angular/core';
 
 import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import { radii, RadixColor } from '@radix-ng/components/types';
@@ -7,42 +7,26 @@ import classNames from 'classnames';
 
 export type SwitchVariant = 'classic' | 'surface' | 'soft';
 
-let idIterator = 0;
-
 @Component({
-    selector: 'rdx-theme-switch',
+    selector: 'rdx-theme-switch, [rdxThemeSwitch]',
     standalone: true,
     imports: [RdxSwitchRootDirective, RdxSwitchInputDirective, RdxSwitchThumbDirective],
+    hostDirectives: [
+        {
+            directive: RdxSwitchRootDirective,
+            inputs: ['defaultChecked', 'checked', 'disabled', 'required']
+        }
+    ],
+    host: {
+        role: 'button',
+        '[class]': 'hostClass()'
+    },
     template: `
-        <button
-            [class]="computedClass()"
-            [id]="elementId()"
-            [checked]="checked()"
-            [defaultChecked]="defaultChecked() ? defaultChecked() : null"
-            [disabled]="disabled()"
-            [attr.data-radius]="radius()"
-            [attr.data-accent-color]="color()"
-            rdxSwitchRoot
-        >
-            <input rdxSwitchInput />
-            <span [class]="componentThumbClass()" rdxSwitchThumb></span>
-        </button>
+        <input rdxSwitchInput />
+        <span [class]="thumbClass()" rdxSwitchThumb></span>
     `
 })
 export class RdxThemeSwitchComponent {
-    readonly id = input<string>(`rdx-switch-${idIterator++}`);
-
-    readonly checked = model<boolean>(false);
-
-    /**
-     * The state of the switch.
-     * If `defaultChecked` is provided, it takes precedence over the `checked` state.
-     * @ignore
-     */
-    readonly defaultChecked = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
-
-    readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
-
     readonly radius = input<radii>();
 
     readonly color = input<RadixColor>();
@@ -53,9 +37,7 @@ export class RdxThemeSwitchComponent {
 
     readonly highContrast = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    protected readonly elementId = computed(() => (this.id() ? this.id() : null));
-
-    protected computedClass = computed(() =>
+    protected hostClass = computed(() =>
         classNames(
             'rt-reset',
             'rt-SwitchRoot',
@@ -65,7 +47,5 @@ export class RdxThemeSwitchComponent {
         )
     );
 
-    protected componentThumbClass = computed(() =>
-        classNames('rt-SwitchThumb', this.highContrast() && `rt-high-contrast`)
-    );
+    protected thumbClass = computed(() => classNames('rt-SwitchThumb', this.highContrast() && `rt-high-contrast`));
 }

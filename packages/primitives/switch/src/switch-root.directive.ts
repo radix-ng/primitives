@@ -49,7 +49,7 @@ let idIterator = 0;
         type: 'button',
         '[id]': 'elementId()',
         '[attr.aria-checked]': 'checkedState()',
-        '[attr.aria-required]': 'required',
+        '[attr.aria-required]': 'required()',
         '[attr.data-state]': 'checkedState() ? "checked" : "unchecked"',
         '[attr.data-disabled]': 'disabledState() ? "true" : null',
         '[attr.disabled]': 'disabledState() ? disabledState() : null',
