@@ -17,15 +17,17 @@ import { RdxSwitchThumbDirective } from '../src/switch-thumb.directive';
     ],
     styleUrl: './switch.styles.css',
     template: `
-        <form [formGroup]="formGroup">
+        <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
             <label class="Label" rdxLabel htmlFor="airplane-mode-form">
                 Airplane mode
-                <button class="SwitchRoot" id="airplane-mode-form" formControlName="checked" rdxSwitchRoot>
+                <button class="SwitchRoot" id="airplane-mode-form" formControlName="policy" rdxSwitchRoot>
                     <input rdxSwitchInput />
                     <span class="SwitchThumb" rdxSwitchThumb></span>
                 </button>
             </label>
+            <button type="submit">Submit</button>
         </form>
+        <button (click)="setValue()">Set preset value</button>
     `
 })
 export class SwitchReactiveForms implements OnInit {
@@ -33,7 +35,15 @@ export class SwitchReactiveForms implements OnInit {
 
     ngOnInit() {
         this.formGroup = new FormGroup({
-            checked: new FormControl<boolean>(true)
+            policy: new FormControl<boolean>(true)
         });
+    }
+
+    onSubmit(): void {
+        console.log(this.formGroup.value);
+    }
+
+    setValue() {
+        this.formGroup.setValue({ policy: false });
     }
 }

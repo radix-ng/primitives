@@ -112,12 +112,13 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
 
         this.checked.set(!this.checked());
 
+        this.onChange(this.checked());
         this.onCheckedChange.emit(this.checked());
     }
 
     private readonly accessorDisabled = signal(false);
 
-    private onChange: ((value: any) => void) | undefined;
+    private onChange: (value: any) => void = () => {};
     private onTouched: (() => void) | undefined;
 
     /** @ignore */

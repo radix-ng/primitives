@@ -14,7 +14,7 @@ export type SwitchVariant = 'classic' | 'surface' | 'soft';
     hostDirectives: [
         {
             directive: RdxSwitchRootDirective,
-            inputs: ['defaultChecked', 'checked', 'disabled', 'required']
+            inputs: ['id', 'defaultChecked', 'checked', 'disabled', 'required']
         }
     ],
     host: {

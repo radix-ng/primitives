@@ -1,6 +1,7 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { RdxThemeDirective } from '../../theme';
 import { RdxThemeSwitchComponent } from '../src/switch';
+import { ThemeSwitchFormsComponent } from './switch-forms.component';
 
 const html = String.raw;
 
@@ -10,7 +11,7 @@ export default {
     tags: ['autodocs'],
     decorators: [
         moduleMetadata({
-            imports: [RdxThemeDirective]
+            imports: [RdxThemeDirective, ThemeSwitchFormsComponent]
         }),
         componentWrapperDecorator(
             (story) => `
@@ -114,6 +115,14 @@ export const Disabled: Story = {
                     Off
                 </label>
             </div>
+        `
+    })
+};
+
+export const ReactiveForm: Story = {
+    render: () => ({
+        template: html`
+            <theme-switch-forms></theme-switch-forms>
         `
     })
 };
