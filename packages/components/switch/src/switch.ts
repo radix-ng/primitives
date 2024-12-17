@@ -18,6 +18,7 @@ let idIterator = 0;
             [class]="computedClass()"
             [id]="elementId()"
             [checked]="checkedState()"
+            [disabled]="disabled()"
             [attr.data-radius]="radius()"
             [attr.data-accent-color]="color()"
             rdxSwitchRoot
@@ -34,6 +35,7 @@ export class RdxThemeSwitchComponent {
 
     readonly defaultChecked = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
     /**
      * The state of the switch.
      * If `defaultChecked` is provided, it takes precedence over the `checked` state.
@@ -48,7 +50,7 @@ export class RdxThemeSwitchComponent {
 
     readonly variant = input<SwitchVariant>('surface');
 
-    readonly size = input<number, NumberInput>(3, { transform: numberAttribute });
+    readonly size = input<number, NumberInput>(2, { transform: numberAttribute });
 
     readonly highContrast = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 

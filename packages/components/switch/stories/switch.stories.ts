@@ -67,3 +67,53 @@ export const Variant: Story = {
         `
     })
 };
+
+export const Color: Story = {
+    render: () => ({
+        template: html`
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <rdx-theme-switch color="indigo" defaultChecked />
+                <rdx-theme-switch color="cyan" defaultChecked />
+                <rdx-theme-switch color="orange" defaultChecked />
+                <rdx-theme-switch color="crimson" defaultChecked />
+            </div>
+        `
+    })
+};
+
+export const Radius: Story = {
+    render: () => ({
+        template: html`
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <rdx-theme-switch radius="none" defaultChecked />
+                <rdx-theme-switch radius="small" defaultChecked />
+                <rdx-theme-switch radius="full" defaultChecked />
+            </div>
+        `
+    })
+};
+
+export const Disabled: Story = {
+    render: () => ({
+        template: html`
+            <div class="rt-Flex rt-r-fd-column rt-r-gap-2">
+                <label style="font-size: 1rem; align-items: center; display: flex; gap: 8px;">
+                    <rdx-theme-switch class="rt-Flex" size="1" />
+                    Off
+                </label>
+                <label style="font-size: 1rem; align-items: center; display: flex; gap: 8px;">
+                    <rdx-theme-switch size="1" defaultChecked />
+                    On
+                </label>
+                <label style="font-size: 1rem; align-items: center; display: flex; gap: 8px;">
+                    <rdx-theme-switch size="1" disabled />
+                    On
+                </label>
+                <label style="font-size: 1rem; align-items: center; display: flex; gap: 8px;">
+                    <rdx-theme-switch size="1" disabled defaultChecked />
+                    Off
+                </label>
+            </div>
+        `
+    })
+};
