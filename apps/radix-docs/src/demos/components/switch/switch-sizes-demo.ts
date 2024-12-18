@@ -9,9 +9,9 @@ import { RdxThemeDirective } from '@radix-ng/components/theme';
     hostDirectives: [RdxThemeDirective],
     template: `
         <div style="display: flex; align-items: center; gap: 8px;">
-            <button rdxThemeSwitch size="1" defaultChecked></button>
-            <button rdxThemeSwitch size="2" defaultChecked></button>
-            <button rdxThemeSwitch size="3" defaultChecked></button>
+            <rdx-theme-switch size="1" defaultChecked />
+            <rdx-theme-switch size="2" defaultChecked />
+            <rdx-theme-switch size="3" defaultChecked />
         </div>
     `
 })
