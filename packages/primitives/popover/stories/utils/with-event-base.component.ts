@@ -35,7 +35,7 @@ type Message = { value: string; timeFromPrev: number };
         <ng-content />
 
         @if (messages().length) {
-            <button (click)="messages.set([])" type="button">Clear messages</button>
+            <button class="SkipOutsideClick" (click)="messages.set([])" type="button">Clear messages</button>
             <div class="MessagesContainer">
                 @for (message of messages(); track i; let i = $index) {
                     <ng-container

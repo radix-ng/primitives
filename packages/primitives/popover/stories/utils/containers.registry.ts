@@ -12,11 +12,23 @@ let rightMenuWrapper: Element | undefined = void 0;
 
 let destroyListener: (() => void) | undefined;
 const callback: (event: MouseEvent) => void = (event: MouseEvent) => {
-    if (leftMenuWrapper?.contains(event.target as Element) || rightMenuWrapper?.contains(event.target as Element)) {
+    if (
+        event.button !== 0 ||
+        (event.target as Element).classList.contains('SkipOutsideClick') ||
+        leftMenuWrapper?.contains(event.target as Element) ||
+        rightMenuWrapper?.contains(event.target as Element)
+    ) {
         return;
     }
-    const anyContainerContainsTarget = Array.from(containerRegistry.keys()).some((container) => {
-        return container.contains(event.target as Element);
+    const containers = Array.from(containerRegistry.keys());
+    const anyContainerContainsTarget = containers.some((container) => {
+        return (
+            container.contains(event.target as Element) ||
+            containerRegistry
+                .get(container)
+                ?.popoverCloseDirective()
+                ?.elementRef.nativeElement.contains(event.target as Element)
+        );
     });
     if (!anyContainerContainsTarget) {
         event.stopImmediatePropagation();

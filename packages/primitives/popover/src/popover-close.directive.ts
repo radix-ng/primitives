@@ -1,4 +1,5 @@
-import { Directive, effect, ElementRef, inject, Renderer2, untracked } from '@angular/core';
+import { Directive, effect, ElementRef, forwardRef, inject, Renderer2, untracked } from '@angular/core';
+import { RdxPopoverCloseToken } from './popover-close.token';
 import { injectPopoverRoot } from './popover-root.inject';
 
 @Directive({
@@ -7,13 +8,19 @@ import { injectPopoverRoot } from './popover-root.inject';
     host: {
         type: 'button',
         '(click)': 'popoverRoot.handleClose()'
-    }
+    },
+    providers: [
+        {
+            provide: RdxPopoverCloseToken,
+            useExisting: forwardRef(() => RdxPopoverCloseDirective)
+        }
+    ]
 })
 export class RdxPopoverCloseDirective {
     /** @ignore */
     protected readonly popoverRoot = injectPopoverRoot();
     /** @ignore */
-    private readonly elementRef = inject(ElementRef);
+    readonly elementRef = inject(ElementRef);
     /** @ignore */
     private readonly renderer = inject(Renderer2);
 

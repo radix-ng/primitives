@@ -16,6 +16,7 @@ import {
 import { RdxPopoverAnchorDirective } from './popover-anchor.directive';
 import { RdxPopoverAnchorToken } from './popover-anchor.token';
 import { RdxPopoverArrowToken } from './popover-arrow.token';
+import { RdxPopoverCloseToken } from './popover-close.token';
 import { RdxPopoverContentAttributesToken } from './popover-content-attributes.token';
 import { RdxPopoverContentDirective } from './popover-content.directive';
 import { RdxPopoverTriggerDirective } from './popover-trigger.directive';
@@ -79,6 +80,8 @@ export class RdxPopoverRootDirective {
     readonly popoverTriggerDirective = contentChild.required(RdxPopoverTriggerDirective);
     /** @ignore */
     readonly popoverArrowDirective = contentChild(RdxPopoverArrowToken);
+    /** @ignore */
+    readonly popoverCloseDirective = contentChild(RdxPopoverCloseToken);
     /** @ignore */
     readonly popoverContentAttributesComponent = contentChild(RdxPopoverContentAttributesToken);
     /** @ignore */
