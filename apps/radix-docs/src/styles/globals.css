@@ -114,19 +114,27 @@
     --code-font-family: 'Söhne Mono', 'Menlo', monospace, 'Apple Color Emoji', 'Segoe UI Emoji';
 }
 
-body {
-    margin: 0;
-    min-width: 320px;
-    -webkit-text-size-adjust: 100%;
+@layer all {
+    html {
+        overflow-y: scroll;
+        word-break: break-word;
+    }
 
-    /* Provide a default family for portalled elements not using themes (e.g. Primitives examples) */
-    font-family: var(--default-font-family), serif;
+    body {
+        margin: 0;
+        min-width: 320px;
+        -webkit-text-size-adjust: 100%;
 
-    font-variation-settings: normal;
+        font-synthesis: none;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
 
-    /* font-feature-settings: "rlig" 1, "calt" 1; */
-    font-synthesis-weight: none;
-    text-rendering: optimizeLegibility;
+        /* Provide a default family for portalled elements not using themes (e.g. Primitives examples) */
+        font-family: var(--default-font-family), serif;
+
+        font-variation-settings: normal;
+        text-rendering: optimizeLegibility;
+    }
 }
 
 ::selection {
@@ -171,6 +179,14 @@ body {
         border-top-left-radius: 1px;
         border-top-right-radius: 1px;
     }
+}
+
+.expressive-code pre {
+    border-color: hsl(var(--muted)) !important;
+}
+
+.expressive-code .frame pre {
+    background: var(--accent-2) !important;
 }
 
 .MDX_List,
