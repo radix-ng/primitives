@@ -1,5 +1,4 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { DOCUMENT } from '@angular/common';
 import {
     afterNextRender,
     booleanAttribute,
@@ -8,7 +7,6 @@ import {
     DestroyRef,
     Directive,
     effect,
-    forwardRef,
     inject,
     input,
     signal,
@@ -20,7 +18,6 @@ import { RdxPopoverAnchorToken } from './popover-anchor.token';
 import { RdxPopoverArrowToken } from './popover-arrow.token';
 import { RdxPopoverContentAttributesToken } from './popover-content-attributes.token';
 import { RdxPopoverContentDirective } from './popover-content.directive';
-import { RdxPopoverRootToken } from './popover-root.token';
 import { RdxPopoverTriggerDirective } from './popover-trigger.directive';
 import { RdxPopoverAnimationStatus, RdxPopoverAttachDetachEvent, RdxPopoverState } from './popover.types';
 
@@ -29,12 +26,6 @@ let nextId = 0;
 @Directive({
     selector: '[rdxPopoverRoot]',
     standalone: true,
-    providers: [
-        {
-            provide: RdxPopoverRootToken,
-            useExisting: forwardRef(() => RdxPopoverRootDirective)
-        }
-    ],
     exportAs: 'rdxPopoverRoot'
 })
 export class RdxPopoverRootDirective {
@@ -96,8 +87,6 @@ export class RdxPopoverRootDirective {
     /** @ignore */
     readonly viewContainerRef = inject(ViewContainerRef);
     /** @ignore */
-    private readonly document = inject(DOCUMENT);
-    /** @ignore */
     readonly destroyRef = inject(DestroyRef);
 
     /** @ignore */
@@ -118,7 +107,6 @@ export class RdxPopoverRootDirective {
         this.onOpenChangeEffect();
         this.onIsFirstDefaultOpenChangeEffect();
         this.onAnchorChangeEffect();
-        this.onAnchorDirectiveChangeEffect();
         this.emitOpenOrClosedEventEffect();
         afterNextRender({
             write: () => {
@@ -359,7 +347,7 @@ export class RdxPopoverRootDirective {
     }
 
     /** @ignore */
-    private onAnchorChangeEffect() {
+    private onAnchorChangeEffect = () => {
         effect(() => {
             const anchor = this.anchor();
             untracked(() => {
@@ -368,15 +356,5 @@ export class RdxPopoverRootDirective {
                 }
             });
         });
-    }
-
-    private onAnchorDirectiveChangeEffect() {
-        effect(() => {
-            console.log(
-                untracked(() => this.uniqueId()),
-                '[popoverAnchorDirective]',
-                this.popoverAnchorDirective()
-            );
-        });
-    }
+    };
 }

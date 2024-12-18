@@ -8,5 +8,3 @@ ng-doc
 
 # eslint ignores root level "dot" files by default
 !/.*.cjs
-
-!global.d.ts

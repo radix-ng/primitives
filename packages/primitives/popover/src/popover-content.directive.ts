@@ -139,10 +139,7 @@ export class RdxPopoverContentDirective implements OnInit {
                 tap((event) => {
                     this.onEscapeKeyDown.emit(event);
                 }),
-                filter(
-                    (event) =>
-                        !event.defaultPrevented && !this.popoverRoot.firstDefaultOpen() && !event.defaultPreventedCustom
-                ),
+                filter((event) => !event.defaultPrevented && !this.popoverRoot.firstDefaultOpen()),
                 tap(() => {
                     this.popoverRoot.handleClose();
                 }),
@@ -156,6 +153,10 @@ export class RdxPopoverContentDirective implements OnInit {
         this.connectedOverlay.overlayOutsideClick
             .asObservable()
             .pipe(
+                /**
+                 * Handle the situation when an anchor is added and the anchor becomes the origin of the overlay
+                 * hence  the trigger will be considered the outside element
+                 */
                 filter((event) => {
                     return (
                         !this.popoverRoot.popoverAnchorDirective() ||
@@ -164,24 +165,10 @@ export class RdxPopoverContentDirective implements OnInit {
                             .elementRef.nativeElement.contains(event.target as Element)
                     );
                 }),
-                tap((event) =>
-                    console.log(
-                        '[overlayOutsideClick] 1',
-                        this.popoverRoot.popoverAnchorDirective(),
-                        this.popoverRoot.popoverTriggerDirective(),
-                        this.popoverRoot
-                            .popoverTriggerDirective()
-                            .elementRef.nativeElement.contains(event.target as Element)
-                    )
-                ),
                 tap((event) => {
                     this.onOutsideClick.emit(event);
                 }),
-                filter(
-                    (event) =>
-                        !event.defaultPrevented && !this.popoverRoot.firstDefaultOpen() && !event.defaultPreventedCustom
-                ),
-                tap(() => console.log('[overlayOutsideClick] 2')),
+                filter((event) => !event.defaultPrevented && !this.popoverRoot.firstDefaultOpen()),
                 tap(() => {
                     this.popoverRoot.handleClose();
                 }),

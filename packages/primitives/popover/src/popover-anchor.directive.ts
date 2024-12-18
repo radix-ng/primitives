@@ -1,5 +1,6 @@
 import { CdkOverlayOrigin } from '@angular/cdk/overlay';
-import { computed, Directive, ElementRef, forwardRef, inject, signal } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { computed, Directive, ElementRef, forwardRef, inject } from '@angular/core';
 import { RdxPopoverAnchorToken } from './popover-anchor.token';
 import { RdxPopoverRootDirective } from './popover-root.directive';
 import { injectPopoverRoot } from './popover-root.inject';
@@ -23,15 +24,21 @@ import { injectPopoverRoot } from './popover-root.inject';
     ]
 })
 export class RdxPopoverAnchorDirective {
-    /** @ignore */
-    protected readonly popoverRoot = signal(injectPopoverRoot(true));
+    /**
+     * @ignore
+     * If outside the root then null, otherwise the root directive - with optional `true` passed in as the first param.
+     * If outside the root and non-null value that means the html structure is wrong - popover inside popover.
+     * */
+    protected popoverRoot = injectPopoverRoot(true);
     /** @ignore */
     readonly elementRef = inject(ElementRef);
     /** @ignore */
     readonly overlayOrigin = inject(CdkOverlayOrigin);
+    /** @ignore */
+    readonly document = inject(DOCUMENT);
 
     /** @ignore */
-    readonly name = computed(() => `rdx-popover-external-anchor-${this.popoverRoot()?.uniqueId()}`);
+    readonly name = computed(() => `rdx-popover-external-anchor-${this.popoverRoot?.uniqueId()}`);
 
     /** @ignore */
     click(): void {
@@ -40,11 +47,15 @@ export class RdxPopoverAnchorDirective {
 
     /** @ignore */
     setPopoverRoot(popoverRoot: RdxPopoverRootDirective) {
-        this.popoverRoot.set(popoverRoot);
+        this.popoverRoot = popoverRoot;
     }
 
     private emitOutsideClick() {
-        const clickEvent = new MouseEvent('click', { view: window, bubbles: true, cancelable: true });
-        window.document.body.dispatchEvent(clickEvent);
+        const clickEvent = new MouseEvent('click', {
+            view: this.document.defaultView,
+            bubbles: true,
+            cancelable: true
+        });
+        this.document.body.dispatchEvent(clickEvent);
     }
 }

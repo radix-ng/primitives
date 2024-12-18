@@ -8,9 +8,7 @@
         "noImplicitOverride": true,
         "noPropertyAccessFromIndexSignature": true,
         "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true,
-        "types": ["node", "global"],
-        "typeRoots": ["../../node_modules/@types", "./"]
+        "noFallthroughCasesInSwitch": true
     },
     "files": [],
     "include": [],

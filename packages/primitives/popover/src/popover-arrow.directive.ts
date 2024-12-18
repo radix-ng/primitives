@@ -70,7 +70,7 @@ export class RdxPopoverArrowDirective implements AfterViewInit {
     private readonly position = toSignal(this.popoverRoot.popoverContentDirective().positionChange());
 
     /** @ignore */
-    private triggerRect: DOMRect;
+    private anchorOrTriggerRect: DOMRect;
 
     constructor() {
         this.onArrowSvgElementChangeEffect();
@@ -88,7 +88,7 @@ export class RdxPopoverArrowDirective implements AfterViewInit {
     }
 
     private setAnchorOrTriggerRect() {
-        this.triggerRect = (
+        this.anchorOrTriggerRect = (
             this.popoverRoot.popoverAnchorDirective() ?? this.popoverRoot.popoverTriggerDirective()
         ).elementRef.nativeElement.getBoundingClientRect();
     }
@@ -99,7 +99,7 @@ export class RdxPopoverArrowDirective implements AfterViewInit {
         const posParams = getArrowPositionParams(
             getSideAndAlignFromAllPossibleConnectedPositions(position.connectionPair),
             { width: this.width(), height: this.height() },
-            { width: this.triggerRect.width, height: this.triggerRect.height }
+            { width: this.anchorOrTriggerRect.width, height: this.anchorOrTriggerRect.height }
         );
 
         this.renderer.setStyle(this.elementRef.nativeElement, 'top', posParams.top);

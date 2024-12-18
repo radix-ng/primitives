@@ -1,11 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, LucideMapPinPlus, LucideMapPinPlusInside, MountainSnowIcon, X } from 'lucide-angular';
+import {
+    LucideAngularModule,
+    LucideMapPinPlus,
+    LucideMapPinPlusInside,
+    MountainSnowIcon,
+    TriangleAlert,
+    X
+} from 'lucide-angular';
 import { RdxPopoverModule } from '../index';
 import { RdxPopoverAnchorDirective } from '../src/popover-anchor.directive';
 import { RdxPopoverContentAttributesComponent } from '../src/popover-content-attributes.component';
-import styles from './popover-styles.constants';
-import { PopoverWithEventBaseComponent } from './popover-with-event-base.component';
+import { containerAlert } from './utils/constants';
+import { IgnoreClickOutsideContainerBase } from './utils/ignore-click-outside-container-base.class';
+import styles from './utils/styles.constants';
+import { WithEventBaseComponent } from './utils/with-event-base.component';
 
 @Component({
     selector: 'rdx-popover-anchor',
@@ -15,15 +24,19 @@ import { PopoverWithEventBaseComponent } from './popover-with-event-base.compone
         RdxPopoverModule,
         LucideAngularModule,
         RdxPopoverContentAttributesComponent,
-        PopoverWithEventBaseComponent,
+        WithEventBaseComponent,
         RdxPopoverAnchorDirective
     ],
     styles: styles(),
     template: `
         <p class="ExampleSubtitle">Internal Anchor (within PopoverRoot)</p>
         <popover-with-event-base>
+            <div class="ContainerAlerts">
+                <lucide-angular [img]="TriangleAlert" size="16" />
+                {{ containerAlert }}
+            </div>
             <div class="container">
-                <ng-container rdxPopoverRoot>
+                <ng-container #root1="rdxPopoverRoot" rdxPopoverRoot>
                     <button class="reset IconButton InternalAnchor" rdxPopoverAnchor>
                         <lucide-angular [img]="LucideMapPinPlusInside" size="16" style="display: flex" />
                     </button>
@@ -61,16 +74,21 @@ import { PopoverWithEventBaseComponent } from './popover-with-event-base.compone
                     </ng-template>
                 </ng-container>
             </div>
+            <div class="PopoverId">ID: {{ popoverRootDirective1()?.uniqueId() }}</div>
         </popover-with-event-base>
 
         <p class="ExampleSubtitle">External Anchor (outside PopoverRoot)</p>
         <popover-with-event-base>
+            <div class="ContainerAlerts">
+                <lucide-angular [img]="TriangleAlert" size="16" />
+                {{ containerAlert }}
+            </div>
             <div class="container">
-                <button class="reset IconButton ExternalAnchor" #anchor="rdxPopoverAnchor" rdxPopoverAnchor>
+                <button class="reset IconButton ExternalAnchor" #externalAnchor="rdxPopoverAnchor" rdxPopoverAnchor>
                     <lucide-angular [img]="LucideMapPinPlus" size="16" style="display: flex" />
                 </button>
 
-                <ng-container [anchor]="anchor" rdxPopoverRoot>
+                <ng-container #root2="rdxPopoverRoot" [anchor]="externalAnchor" rdxPopoverRoot>
                     <button class="reset IconButton" rdxPopoverTrigger>
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                     </button>
@@ -104,12 +122,18 @@ import { PopoverWithEventBaseComponent } from './popover-with-event-base.compone
                     </ng-template>
                 </ng-container>
             </div>
+            <div class="PopoverId">ID: {{ popoverRootDirective2()?.uniqueId() }}</div>
         </popover-with-event-base>
     `
 })
-export class RdxPopoverAnchorComponent {
+export class RdxPopoverAnchorComponent extends IgnoreClickOutsideContainerBase {
+    readonly popoverRootDirective1 = viewChild('root1');
+    readonly popoverRootDirective2 = viewChild('root2');
+
     readonly MountainSnowIcon = MountainSnowIcon;
     readonly XIcon = X;
     readonly LucideMapPinPlusInside = LucideMapPinPlusInside;
     readonly LucideMapPinPlus = LucideMapPinPlus;
+    readonly TriangleAlert = TriangleAlert;
+    readonly containerAlert = containerAlert;
 }
