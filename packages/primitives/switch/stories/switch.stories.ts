@@ -3,6 +3,7 @@ import { RdxLabelDirective } from '../../label';
 import { RdxSwitchInputDirective } from '../src/switch-input.directive';
 import { RdxSwitchRootDirective } from '../src/switch-root.directive';
 import { RdxSwitchThumbDirective } from '../src/switch-thumb.directive';
+import { SwitchReactiveForms } from './switch-forms.component';
 
 const html = String.raw;
 
@@ -14,7 +15,8 @@ export default {
                 RdxLabelDirective,
                 RdxSwitchRootDirective,
                 RdxSwitchInputDirective,
-                RdxSwitchThumbDirective
+                RdxSwitchThumbDirective,
+                SwitchReactiveForms
             ]
         }),
         componentWrapperDecorator(
@@ -42,6 +44,11 @@ export default {
                         }
                         .SwitchRoot[data-state='checked'] {
                             background-color: black;
+                        }
+                        .SwitchRoot[data-disabled='true'] {
+                            background-color: var(--black-a6);
+                            cursor: not-allowed;
+                            box-shadow: none;
                         }
 
                         .SwitchThumb {
@@ -80,7 +87,7 @@ export const Default: Story = {
         template: html`
             <label class="Label" rdxLabel htmlFor="airplane-mode">
                 Airplane mode
-                <button class="SwitchRoot" id="airplane-mode" rdxSwitchRoot [(checked)]="checked">
+                <button class="SwitchRoot" id="airplane-mode" rdxSwitchRoot defaultChecked>
                     <span class="SwitchThumb" rdxSwitchThumb></span>
                 </button>
             </label>
@@ -88,17 +95,52 @@ export const Default: Story = {
     })
 };
 
-export const DefaultInput: Story = {
-    name: 'With Input',
-    render: () => ({
+export const Preselection: Story = {
+    argTypes: {
+        checked: {
+            control: {
+                type: 'boolean'
+            }
+        }
+    },
+    args: {
+        checked: true
+    },
+    render: (args) => ({
+        props: {
+            config: args
+        },
         template: html`
-            <label class="Label" rdxLabel htmlFor="airplane-mode">
+            <label class="Label" rdxLabel htmlFor="airplane-mode-model">
                 Airplane mode
-                <button class="SwitchRoot" id="airplane-mode" rdxSwitchRoot [(checked)]="checked">
+                <button class="SwitchRoot" id="airplane-mode-model" rdxSwitchRoot [checked]="config.checked">
                     <input rdxSwitchInput />
                     <span class="SwitchThumb" rdxSwitchThumb></span>
                 </button>
             </label>
+        `
+    })
+};
+
+export const Disabled: Story = {
+    name: 'Disabled',
+    render: () => ({
+        template: html`
+            <label class="Label" rdxLabel htmlFor="airplane-mode-disabled">
+                Airplane mode
+                <button class="SwitchRoot" id="airplane-mode-disabled" rdxSwitchRoot disabled>
+                    <input rdxSwitchInput />
+                    <span class="SwitchThumb" rdxSwitchThumb></span>
+                </button>
+            </label>
+        `
+    })
+};
+
+export const ReactiveForm: Story = {
+    render: () => ({
+        template: html`
+            <switch-reactive-forms />
         `
     })
 };

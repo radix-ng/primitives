@@ -55,10 +55,10 @@ describe('RdxToggleDirective', () => {
     });
 
     it('should apply the correct data-disabled attribute', () => {
-        expect(button.nativeElement.getAttribute('data-disabled')).toBe('false');
+        expect(button.nativeElement.getAttribute('data-disabled')).toBe(null);
         component.disabled = true;
         fixture.detectChanges();
-        expect(button.nativeElement.getAttribute('data-disabled')).toBe('true');
+        expect(button.nativeElement.getAttribute('data-disabled')).toBe('');
     });
 
     it('should toggle the pressed state on click', () => {

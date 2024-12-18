@@ -21,6 +21,9 @@
             "@radix-ng/components/kbd": [
                 "packages/components/kbd/index.ts"
             ],
+            "@radix-ng/components/switch": [
+                "packages/components/switch/index.ts"
+            ],
             "@radix-ng/components/theme": [
                 "packages/components/theme/index.ts"
             ],

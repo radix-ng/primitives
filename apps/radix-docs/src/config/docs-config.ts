@@ -28,7 +28,9 @@ const docsConfig = {
                 {
                     section: 'Components',
                     pages: [
-                        { name: 'Avatar', url: '/themes/components/avatar' }]
+                        { name: 'Avatar', url: '/themes/components/avatar' },
+                        { name: 'Switch', url: '/themes/components/switch' }
+                    ]
                 },
                 {
                     section: 'Utilities',

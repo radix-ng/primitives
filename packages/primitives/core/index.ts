@@ -3,6 +3,7 @@ export * from './src/auto-focus.directive';
 export * from './src/control-value-accessor';
 export * from './src/create-inject-context';
 export * from './src/document';
+export * from './src/id-generator';
 export * from './src/inject-ng-control';
 export * from './src/is-client';
 export * from './src/is-inside-form';

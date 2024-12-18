@@ -55,6 +55,7 @@ const config = {
                 'shadcn',
                 'switch',
                 'docs',
+                'core',
                 'release',
                 'deps',
                 'deps-dev',
