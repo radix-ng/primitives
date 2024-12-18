@@ -87,7 +87,7 @@ export const Default: Story = {
         template: html`
             <label class="Label" rdxLabel htmlFor="airplane-mode">
                 Airplane mode
-                <button class="SwitchRoot" id="airplane-mode" rdxSwitchRoot [(checked)]="checked">
+                <button class="SwitchRoot" id="airplane-mode" rdxSwitchRoot defaultChecked>
                     <span class="SwitchThumb" rdxSwitchThumb></span>
                 </button>
             </label>

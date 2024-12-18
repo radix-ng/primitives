@@ -3,6 +3,7 @@ import {
     booleanAttribute,
     computed,
     Directive,
+    effect,
     forwardRef,
     inject,
     InjectionToken,
@@ -81,9 +82,7 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
      * If `defaultChecked` is provided, it takes precedence over the `checked` state.
      * @ignore
      */
-    readonly checkedState = computed(() => {
-        return this.defaultChecked() || this.checked();
-    });
+    readonly checkedState = computed(() => this.checked());
 
     /**
      * When true, prevents the user from interacting with the switch.
@@ -99,6 +98,19 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
      * Event handler called when the state of the switch changes.
      */
     readonly onCheckedChange = output<boolean>();
+
+    private readonly defaultCheckedUsed = computed(() => this.defaultChecked());
+
+    constructor() {
+        effect(
+            () => {
+                if (this.defaultCheckedUsed()) {
+                    this.checked.set(this.defaultChecked());
+                }
+            },
+            { allowSignalWrites: true }
+        );
+    }
 
     /**
      * Toggles the checked state of the switch.

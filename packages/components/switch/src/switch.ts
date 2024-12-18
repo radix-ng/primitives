@@ -19,7 +19,8 @@ export type SwitchVariant = 'classic' | 'surface' | 'soft';
     ],
     host: {
         role: 'button',
-        '[class]': 'hostClass()'
+        '[class]': 'hostClass()',
+        '[attr.data-radius]': 'radius()'
     },
     template: `
         <input [id]="elementId()" rdxSwitchInput />
