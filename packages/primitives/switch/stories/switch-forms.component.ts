@@ -25,9 +25,11 @@ import { RdxSwitchThumbDirective } from '../src/switch-thumb.directive';
                     <span class="SwitchThumb" rdxSwitchThumb></span>
                 </button>
             </label>
-            <button type="submit">Submit</button>
+            <button class="Button violet" style="margin-top: 8px;" type="submit">Submit</button>
         </form>
-        <button (click)="setValue()">Set preset value</button>
+        <p>
+            <button class="Button violet" (click)="setValue()">Set preset value</button>
+        </p>
     `
 })
 export class SwitchReactiveForms implements OnInit {

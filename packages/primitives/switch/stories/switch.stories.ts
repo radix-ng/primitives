@@ -95,13 +95,25 @@ export const Default: Story = {
     })
 };
 
-export const DefaultInput: Story = {
-    name: 'With Input',
-    render: () => ({
+export const Preselection: Story = {
+    argTypes: {
+        checked: {
+            control: {
+                type: 'boolean'
+            }
+        }
+    },
+    args: {
+        checked: true
+    },
+    render: (args) => ({
+        props: {
+            config: args
+        },
         template: html`
-            <label class="Label" rdxLabel htmlFor="airplane-mode">
+            <label class="Label" rdxLabel htmlFor="airplane-mode-model">
                 Airplane mode
-                <button class="SwitchRoot" id="airplane-mode" rdxSwitchRoot defaultChecked>
+                <button class="SwitchRoot" id="airplane-mode-model" rdxSwitchRoot [checked]="config.checked">
                     <input rdxSwitchInput />
                     <span class="SwitchThumb" rdxSwitchThumb></span>
                 </button>

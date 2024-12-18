@@ -43,25 +43,27 @@ import { RdxSwitchRootDirective, RdxSwitchThumbDirective, RdxSwitchInputDirectiv
 
 ## API Reference
 
-### RdxSwitchRootDirective
+### SwitchRoot
 
+`RdxSwitchRootDirective`
 <ArgTypes exclude={switchExclude} of={RdxSwitchRootDirective} />
 
 <Markdown>
   {`
-  | Data Attribute | Value |
-  | ----------- | --------- |
+  | Data Attribute     | Value |
+  | ------------------ | -------------------------- |
   | [data-state]       | "checked" or "unchecked"   |
   | [data-disabled]    | Present when disabled      |
   `}
 </Markdown>
 
-### ThumbDirective
+### Thumb
 
+`RdxThumbDirective`
 <Markdown>
   {`
-  | Data Attribute | Value |
-  | ----------- | --------- |
+  | Data Attribute     | Value |
+  | ------------------ | -------------------------- |
   | [data-state]       | "checked" or "unchecked"   |
   | [data-disabled]    | Present when disabled      |
   `}
@@ -95,3 +97,9 @@ Switch can also be used with reactive forms. In this case, the `formControlName`
 When `disabled` is present, the element cannot be edited and focused.
 
 <Canvas sourceState="hidden" of={SwitchDirectiveStories.Disabled} />
+
+### Preselection
+
+Enabling `checked` property displays the component as active initially.
+
+<Canvas sourceState="hidden" of={SwitchDirectiveStories.Preselection} />
