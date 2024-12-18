@@ -14,26 +14,21 @@ You can use these components either as the base layer of your design system, or 
 
 Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/categories).
 
+---
+
 ## Documentation
 
-- [radix-ng.com](https://radix-ng.com) to view documentation
+- [radix-ng.com](https://radix-ng.com)
 
-- **Storybook** [sb-primitives.radix-ng.com](https://sb-primitives.radix-ng.com/)
+- [sb-primitives.radix-ng.com](https://sb-primitives.radix-ng.com/) – Storybook
 
-## Showcase
+## Showcases
 
 1. [Taxonomy](https://github.com/shadcn-ui/taxonomy) build with AnalogJS – [https://primitives-taxonomy.vercel.app/](https://primitives-taxonomy.vercel.app/)
 2. [shadcn/ui blocks](https://ui.shadcn.com/blocks) - [https://blocks.shadcn-ng.com/](https://blocks.shadcn-ng.com/)
-
-## Implementations
-
-1. [OriginUI](https://origin-ng.com/)
-2. [shadcn/ui](https://ui.adrianub.dev/)
-
-## Components
-
-1. [shadcn/ui](https://ui.shadcn.com/) Angular version – [https://shadcn-ng.com/](https://shadcn-ng.com/)
-2. RadixUI Components ...'soon'
+3. [OriginUI](https://origin-ng.com/) Angular
+4. shadcn/ui – [ui.adrianub.dev](https://ui.adrianub.dev/)
+5. RadixUI Components ...'soon'
 
 ## Project structure
 
@@ -116,4 +111,4 @@ Whether it's a feature request, bug report, or a project to showcase, please get
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+This project is licensed under the terms of the [MIT license](/LICENSE).
