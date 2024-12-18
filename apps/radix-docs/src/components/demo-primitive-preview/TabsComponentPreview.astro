@@ -1,6 +1,7 @@
 ---
 import { Code } from 'astro-expressive-code/components';
 import StyleSwitcher from './StyleSwitcher.astro';
+import { CodeSandboxButtonComponent } from '../code-editor/code-button.component';
 
 type Tab = {
     label: string;
@@ -10,9 +11,10 @@ type Tab = {
 type Props = {
     tabs: Tab[];
     activeTab: number;
+    code: string;
 };
 
-const { tabs, activeTab } = Astro.props as Props;
+const { tabs, activeTab, code } = Astro.props as Props;
 ---
 
 <div class="border-muted flex w-full items-center justify-between">
@@ -35,7 +37,10 @@ const { tabs, activeTab } = Astro.props as Props;
             ))
         }
     </div>
-    <StyleSwitcher />
+    <div class="ml-auto flex items-center gap-4">
+        <CodeSandboxButtonComponent {...{ code: code }} client:visible />
+        <StyleSwitcher />
+    </div>
 </div>
 
 {
