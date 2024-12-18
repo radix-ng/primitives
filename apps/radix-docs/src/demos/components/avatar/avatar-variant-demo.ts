@@ -5,13 +5,12 @@ import { RdxThemeDirective } from '@radix-ng/components/theme';
 @Component({
     selector: 'avatar-variant-demo',
     standalone: true,
-    imports: [RdxThemeDirective, RdxThemeAvatarComponent],
+    imports: [RdxThemeAvatarComponent],
+    hostDirectives: [RdxThemeDirective],
     template: `
-        <div rdxTheme>
-            <div style="display: flex; gap: 1rem;">
-                <rdx-theme-avatar variant="solid" fallback="A" />
-                <rdx-theme-avatar variant="soft" fallback="A" />
-            </div>
+        <div style="display: flex; gap: 1rem;">
+            <rdx-theme-avatar variant="solid" fallback="A" />
+            <rdx-theme-avatar variant="soft" fallback="A" />
         </div>
     `
 })

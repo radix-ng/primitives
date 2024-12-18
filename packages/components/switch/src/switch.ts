@@ -18,7 +18,7 @@ export type SwitchVariant = 'classic' | 'surface' | 'soft';
         }
     ],
     host: {
-        role: 'button',
+        role: 'switch',
         '[class]': 'hostClass()',
         '[attr.data-radius]': 'radius()'
     },
