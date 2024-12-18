@@ -43,7 +43,7 @@ import { RdxSwitchRootDirective, RdxSwitchThumbDirective, RdxSwitchInputDirectiv
 
 ## API Reference
 
-### SwitchRoot
+### Root
 
 `RdxSwitchRootDirective`
 <ArgTypes exclude={switchExclude} of={RdxSwitchRootDirective} />
@@ -83,6 +83,22 @@ Adheres to the [`switch` role requirements](https://www.w3.org/WAI/ARIA/apg/patt
   | Enter       | Toggles the component's state.    |
   `}
 </Markdown>
+
+### Screen Reader
+
+Switch component uses a hidden native checkbox element with `switch` role internally that is only visible to screen readers.
+Value to describe the component can either be provided via `label` tag using `ariaLabelledBy`, `ariaLabel` props.
+
+```html
+<label for="switch1">Remember Me</label>
+<button rdxSwitchRoot id="switch1" ></button>
+
+<span id="switch2">Remember Me</span>
+<button rdxSwitchRoot ariaLabelledBy="switch2"></button>
+
+<button rdxSwitchRoot ariaLabel="Remember Me"></button>
+```
+
 
 ## Examples
 

@@ -63,11 +63,21 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
 
     protected readonly elementId = computed(() => (this.id() ? this.id() : null));
 
+    readonly inputId = input<string | null>(null);
+
     /**
      * When true, indicates that the user must check the switch before the owning form can be submitted.
      */
     readonly required = input<boolean, BooleanInput>(false, {
         transform: booleanAttribute
+    });
+
+    readonly ariaLabelledBy = input<string | null>(null, {
+        alias: 'aria-labelledby'
+    });
+
+    readonly ariaLabel = input<string | null>(null, {
+        alias: 'aria-label'
     });
 
     /**
@@ -131,7 +141,8 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
     private readonly accessorDisabled = signal(false);
 
     private onChange: (value: any) => void = () => {};
-    private onTouched: (() => void) | undefined;
+    /** @ignore */
+    onTouched: (() => void) | undefined;
 
     /** @ignore */
     writeValue(value: any): void {
