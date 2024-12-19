@@ -12,9 +12,11 @@ type Props = {
     tabs: Tab[];
     activeTab: number;
     code: string;
+    name: string;
+    css: string;
 };
 
-const { tabs, activeTab, code } = Astro.props as Props;
+const { tabs, activeTab, code, css, name } = Astro.props as Props;
 ---
 
 <div class="border-muted flex w-full items-center justify-between">
@@ -38,7 +40,7 @@ const { tabs, activeTab, code } = Astro.props as Props;
         }
     </div>
     <div class="ml-auto flex items-center gap-4">
-        <CodeSandboxButtonComponent {...{ code: code }} client:visible />
+        <CodeSandboxButtonComponent {...{ code, name, css }} client:visible />
         <StyleSwitcher />
     </div>
 </div>

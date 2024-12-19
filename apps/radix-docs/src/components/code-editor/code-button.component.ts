@@ -1,4 +1,4 @@
-import { useCodeSandbox } from '@/components/code-editor/code-sandbox.ts';
+import { useStackBlitz } from '@/components/code-editor/code-api.ts';
 import { Component, input } from '@angular/core';
 
 @Component({
@@ -22,11 +22,15 @@ import { Component, input } from '@angular/core';
 })
 export class CodeSandboxButtonComponent {
     readonly code = input<string>();
+    readonly name = input<string>();
+    readonly css = input<string>();
 
     protected handleClick() {
         if (this.code()) {
-            useCodeSandbox({
-                code: this.code()
+            useStackBlitz({
+                code: this.code(),
+                css: this.css(),
+                selector: this.name()
             });
         }
     }
