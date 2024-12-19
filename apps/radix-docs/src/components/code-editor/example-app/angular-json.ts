@@ -29,6 +29,9 @@ export const angular_json = `{
               "polyfills": ["zone.js"],
               "tsConfig": "tsconfig.app.json",
               "inlineStyleLanguage": "css",
+              "styles": [
+                "src/styles.css",
+              ],
               "stylePreprocessorOptions": {
                 "includePaths": ["node_modules/"]
               },

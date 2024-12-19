@@ -8,7 +8,7 @@ export const index_html = (componentName: string, componentSelector: string) => 
 
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
-    <body>
+    <body class="light-theme">
         <${componentSelector}></${componentSelector}>
     </body>
 </html>`;

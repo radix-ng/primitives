@@ -7,6 +7,7 @@ import {
     tsconfig_app_json,
     tsconfig_json
 } from '@/components/code-editor/example-app';
+import { stylesCss } from '@/components/code-editor/example-app/styles-css.ts';
 import type { Props } from '@/components/code-editor/types.ts';
 
 export const getAngularApp = (props: Props = {}) => {
@@ -16,18 +17,19 @@ export const getAngularApp = (props: Props = {}) => {
     const componentSelector = getComponentSelector(code);
 
     const defaultFiles = {
+        'src/index.html': { content: index_html(componentName, componentSelector) },
         'src/main.ts': { content: main_ts(componentName, selector) },
+        'src/styles.css': { content: stylesCss },
         'tsconfig.json': { content: tsconfig_json },
         'tsconfig.app.json': { content: tsconfig_app_json },
-        'angular.json': { content: angular_json },
-        'src/index.html': { content: index_html(componentName, componentSelector) }
+        'angular.json': { content: angular_json }
     };
 
     const files = {
         'package.json': {
             content: {
                 name: `radix-ng-${selector}`,
-                description: `RadixNG ${componentName}`,
+                description: `RadixNG ${selector}`,
                 license: 'MIT',
                 keywords: [],
                 scripts: {
