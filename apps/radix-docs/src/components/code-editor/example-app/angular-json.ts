@@ -31,6 +31,7 @@ export const angular_json = `{
               "inlineStyleLanguage": "css",
               "styles": [
                 "src/styles.css",
+                "src/fonts.css"
               ],
               "stylePreprocessorOptions": {
                 "includePaths": ["node_modules/"]

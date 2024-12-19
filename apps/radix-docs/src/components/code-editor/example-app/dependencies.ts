@@ -10,6 +10,8 @@ export const dependencies = {
     '@angular/platform-browser-dynamic': '^18.0.0',
     '@radix-ng/primitives': '^0.20.0',
     '@radix-ui/colors': '^3.0.0',
+    '@fontsource/inter': '^5.1.0',
+    '@fontsource/jetbrains-mono': '^5.1.1',
     rxjs: '~7.8.1',
     tslib: '^2.5.0',
     'zone.js': '~0.14.2'

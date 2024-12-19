@@ -2,6 +2,7 @@ import {
     angular_json,
     dependencies,
     devDependencies,
+    fontsCss,
     index_html,
     main_ts,
     tsconfig_app_json,
@@ -20,6 +21,7 @@ export const getAngularApp = (props: Props = {}) => {
         'src/index.html': { content: index_html(componentName, componentSelector) },
         'src/main.ts': { content: main_ts(componentName, selector) },
         'src/styles.css': { content: stylesCss },
+        'src/fonts.css': { content: fontsCss },
         'tsconfig.json': { content: tsconfig_json },
         'tsconfig.app.json': { content: tsconfig_app_json },
         'angular.json': { content: angular_json }
