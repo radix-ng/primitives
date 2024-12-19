@@ -5,8 +5,7 @@
         "declaration": true,
         "declarationMap": true,
         "inlineSources": true,
-        "types": ["node", "global"],
-        "typeRoots": ["../../node_modules/@types", "./"]
+        "types": []
     },
     "exclude": [
         "**/*.spec.ts",

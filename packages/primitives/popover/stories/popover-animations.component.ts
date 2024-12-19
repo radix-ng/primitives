@@ -1,11 +1,13 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, MountainSnowIcon, X } from 'lucide-angular';
-import { RdxPopoverAlign, RdxPopoverModule } from '../index';
+import { LucideAngularModule, MountainSnowIcon, TriangleAlert, X } from 'lucide-angular';
+import { RdxPopoverAlign, RdxPopoverModule, RdxPopoverRootDirective } from '../index';
 import { RdxPopoverContentAttributesComponent } from '../src/popover-content-attributes.component';
 import { RdxPopoverSide } from '../src/popover.types';
-import styles from './popover-styles.constants';
-import { PopoverWithEventBaseComponent } from './popover-with-event-base.component';
+import { containerAlert } from './utils/constants';
+import { IgnoreClickOutsideContainerBase } from './utils/ignore-click-outside-container-base.class';
+import styles from './utils/styles.constants';
+import { WithEventBaseComponent } from './utils/with-event-base.component';
 
 @Component({
     selector: 'rdx-popover-animations',
@@ -15,7 +17,7 @@ import { PopoverWithEventBaseComponent } from './popover-with-event-base.compone
         RdxPopoverModule,
         LucideAngularModule,
         RdxPopoverContentAttributesComponent,
-        PopoverWithEventBaseComponent
+        WithEventBaseComponent
     ],
     styles: styles(true),
     template: `
@@ -37,6 +39,10 @@ import { PopoverWithEventBaseComponent } from './popover-with-event-base.compone
                 On Closing Animation
             </div>
 
+            <div class="ContainerAlerts">
+                <lucide-angular [img]="TriangleAlert" size="16" />
+                {{ containerAlert }}
+            </div>
             <div class="container">
                 <ng-container
                     [cssAnimation]="cssAnimation()"
@@ -77,10 +83,13 @@ import { PopoverWithEventBaseComponent } from './popover-with-event-base.compone
                     </ng-template>
                 </ng-container>
             </div>
+            <div class="PopoverId">ID: {{ popoverRootDirective()?.uniqueId() }}</div>
         </popover-with-event-base>
     `
 })
-export class RdxPopoverAnimationsComponent {
+export class RdxPopoverAnimationsComponent extends IgnoreClickOutsideContainerBase {
+    readonly popoverRootDirective = viewChild(RdxPopoverRootDirective);
+
     readonly MountainSnowIcon = MountainSnowIcon;
     readonly XIcon = X;
 
@@ -90,4 +99,6 @@ export class RdxPopoverAnimationsComponent {
     cssAnimation = signal<boolean>(true);
     cssOpeningAnimation = signal(true);
     cssClosingAnimation = signal(true);
+    protected readonly TriangleAlert = TriangleAlert;
+    protected readonly containerAlert = containerAlert;
 }

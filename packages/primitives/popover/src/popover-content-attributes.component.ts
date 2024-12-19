@@ -1,4 +1,4 @@
-import { Component, computed, forwardRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, forwardRef } from '@angular/core';
 import { RdxPopoverContentAttributesToken } from './popover-content-attributes.token';
 import { injectPopoverRoot } from './popover-root.inject';
 import { RdxPopoverAnimationStatus, RdxPopoverState } from './popover.types';
@@ -10,6 +10,7 @@ import { RdxPopoverAnimationStatus, RdxPopoverState } from './popover.types';
         <ng-content />
     `,
     host: {
+        '[attr.role]': '"dialog"',
         '[attr.id]': 'name()',
         '[attr.data-state]': 'popoverRoot.state()',
         '[attr.data-side]': 'popoverRoot.popoverContentDirective().side()',
@@ -23,7 +24,8 @@ import { RdxPopoverAnimationStatus, RdxPopoverState } from './popover.types';
             provide: RdxPopoverContentAttributesToken,
             useExisting: forwardRef(() => RdxPopoverContentAttributesComponent)
         }
-    ]
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RdxPopoverContentAttributesComponent {
     /** @ignore */

@@ -3,8 +3,10 @@ import * as PopoverStories from "./popover.stories";
 import {RdxPopoverRootDirective} from "../src/popover-root.directive";
 import {RdxPopoverContentDirective} from "../src/popover-content.directive";
 import {RdxPopoverArrowDirective} from "../src/popover-arrow.directive";
+import {RdxPopoverAnchorDirective} from "../src/popover-anchor.directive";
+import {RdxPopoverTriggerDirective} from "../src/popover-trigger.directive";
 import {RdxPopoverCloseDirective} from "../src/popover-close.directive";
-import {animationStylesOnly} from "./popover-styles.constants";
+import {animationStylesOnly} from "./utils/styles.constants";
 import {RdxPopoverContentAttributesComponent} from "../src/popover-content-attributes.component";
 
 <Meta title="Primitives/Popover" />
@@ -33,6 +35,10 @@ import {RdxPopoverContentAttributesComponent} from "../src/popover-content-attri
 ### External Triggering
 
 <Canvas sourceState="hidden" of={PopoverStories.ExternalTriggering} />
+
+### Anchor
+
+<Canvas sourceState="hidden" of={PopoverStories.Anchor} />
 
 ### Initially Open
 
@@ -78,6 +84,7 @@ Get started with importing the directives:
   RdxPopoverRootTrigger,
   RdxPopoverContentDirective,
   RdxPopoverArrowDirective,
+  RdxPopoverAnchorDirective,
   RdxPopoverCloseDirective
 } from '@radix-ng/primitives/popover';`} />
 
@@ -106,6 +113,11 @@ The button that toggles the popover. By default, the PopoverContent will positio
 | [data-state]   | <code>"closed" | "open" (type RdxPopoverState)</code>
 `}
 </Markdown>
+
+### Anchor
+`RdxPopoverAnchorDirective`
+
+An optional element to position the PopoverContent against. If this part is not used, the content will position alongside the PopoverTrigger.
 
 ### Content
 `RdxPopoverContentDirective`

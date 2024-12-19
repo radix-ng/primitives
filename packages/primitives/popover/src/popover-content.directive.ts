@@ -38,6 +38,9 @@ export class RdxPopoverContentDirective implements OnInit {
     /** @ignore */
     private readonly connectedOverlay = inject(CdkConnectedOverlay);
 
+    /** @ignore */
+    readonly name = computed(() => `rdx-popover-trigger-${this.popoverRoot.uniqueId()}`);
+
     /**
      * @description The preferred side of the trigger to render against when open. Will be reversed when collisions occur and avoidCollisions is enabled.
      * @default top
@@ -88,12 +91,12 @@ export class RdxPopoverContentDirective implements OnInit {
     readonly positions = computed(() => this.computePositions());
 
     constructor() {
+        this.onOriginChangeEffect();
         this.onPositionChangeEffect();
     }
 
     /** @ignore */
     ngOnInit() {
-        this.setOrigin();
         this.setScrollStrategy();
         this.setDisableClose();
         this.onAttach();
@@ -135,13 +138,10 @@ export class RdxPopoverContentDirective implements OnInit {
                 filter((event) => event.key === 'Escape'),
                 tap((event) => {
                     this.onEscapeKeyDown.emit(event);
-                    if (
-                        !event.defaultPrevented &&
-                        !this.popoverRoot.firstDefaultOpen() &&
-                        !event.defaultPreventedCustom
-                    ) {
-                        this.popoverRoot.handleClose();
-                    }
+                }),
+                filter((event) => !event.defaultPrevented && !this.popoverRoot.firstDefaultOpen()),
+                tap(() => {
+                    this.popoverRoot.handleClose();
                 }),
                 takeUntilDestroyed(this.destroyRef)
             )
@@ -153,15 +153,24 @@ export class RdxPopoverContentDirective implements OnInit {
         this.connectedOverlay.overlayOutsideClick
             .asObservable()
             .pipe(
+                /**
+                 * Handle the situation when an anchor is added and the anchor becomes the origin of the overlay
+                 * hence  the trigger will be considered the outside element
+                 */
+                filter((event) => {
+                    return (
+                        !this.popoverRoot.popoverAnchorDirective() ||
+                        !this.popoverRoot
+                            .popoverTriggerDirective()
+                            .elementRef.nativeElement.contains(event.target as Element)
+                    );
+                }),
                 tap((event) => {
                     this.onOutsideClick.emit(event);
-                    if (
-                        !event.defaultPrevented &&
-                        !this.popoverRoot.firstDefaultOpen() &&
-                        !event.defaultPreventedCustom
-                    ) {
-                        this.popoverRoot.handleClose();
-                    }
+                }),
+                filter((event) => !event.defaultPrevented && !this.popoverRoot.firstDefaultOpen()),
+                tap(() => {
+                    this.popoverRoot.handleClose();
                 }),
                 takeUntilDestroyed(this.destroyRef)
             )
@@ -215,10 +224,18 @@ export class RdxPopoverContentDirective implements OnInit {
     }
 
     /** @ignore */
-    private setOrigin() {
+    private setOrigin(origin: CdkConnectedOverlay['origin']) {
         const prevOrigin = this.connectedOverlay.origin;
-        this.connectedOverlay.origin = this.popoverRoot.popoverTriggerDirective().overlayOrigin;
+        this.connectedOverlay.origin = origin;
         this.fireOverlayNgOnChanges('origin', this.connectedOverlay.origin, prevOrigin);
+    }
+
+    /** @ignore */
+    private setPositions(positions: CdkConnectedOverlay['positions']) {
+        const prevPositions = this.connectedOverlay.positions;
+        this.connectedOverlay.positions = positions;
+        this.fireOverlayNgOnChanges('positions', this.connectedOverlay.positions, prevPositions);
+        this.connectedOverlay.overlayRef?.updatePosition();
     }
 
     /** @ignore */
@@ -263,20 +280,28 @@ export class RdxPopoverContentDirective implements OnInit {
         return positions;
     }
 
+    private onOriginChangeEffect() {
+        effect(() => {
+            const origin = (this.popoverRoot.popoverAnchorDirective() ?? this.popoverRoot.popoverTriggerDirective())
+                .overlayOrigin;
+            untracked(() => {
+                this.setOrigin(origin);
+            });
+        });
+    }
+
     /** @ignore */
     private onPositionChangeEffect() {
         effect(() => {
             const positions = this.positions();
             this.disableAlternatePositions();
             untracked(() => {
-                const prevPositions = this.connectedOverlay.positions;
-                this.connectedOverlay.positions = positions;
-                this.fireOverlayNgOnChanges('positions', this.connectedOverlay.positions, prevPositions);
-                this.connectedOverlay.overlayRef?.updatePosition();
+                this.setPositions(positions);
             });
         });
     }
 
+    /** @ignore */
     private fireOverlayNgOnChanges<K extends keyof CdkConnectedOverlay, V extends CdkConnectedOverlay[K]>(
         input: K,
         currentValue: V,

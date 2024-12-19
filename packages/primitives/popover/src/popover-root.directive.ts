@@ -1,5 +1,4 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { DOCUMENT } from '@angular/common';
 import {
     afterNextRender,
     booleanAttribute,
@@ -8,17 +7,18 @@ import {
     DestroyRef,
     Directive,
     effect,
-    forwardRef,
     inject,
     input,
     signal,
     untracked,
     ViewContainerRef
 } from '@angular/core';
+import { RdxPopoverAnchorDirective } from './popover-anchor.directive';
+import { RdxPopoverAnchorToken } from './popover-anchor.token';
 import { RdxPopoverArrowToken } from './popover-arrow.token';
+import { RdxPopoverCloseToken } from './popover-close.token';
 import { RdxPopoverContentAttributesToken } from './popover-content-attributes.token';
 import { RdxPopoverContentDirective } from './popover-content.directive';
-import { RdxPopoverRootToken } from './popover-root.token';
 import { RdxPopoverTriggerDirective } from './popover-trigger.directive';
 import { RdxPopoverAnimationStatus, RdxPopoverAttachDetachEvent, RdxPopoverState } from './popover.types';
 
@@ -27,12 +27,6 @@ let nextId = 0;
 @Directive({
     selector: '[rdxPopoverRoot]',
     standalone: true,
-    providers: [
-        {
-            provide: RdxPopoverRootToken,
-            useExisting: forwardRef(() => RdxPopoverRootDirective)
-        }
-    ],
     exportAs: 'rdxPopoverRoot'
 })
 export class RdxPopoverRootDirective {
@@ -41,6 +35,11 @@ export class RdxPopoverRootDirective {
     /** @ignore */
     readonly name = computed(() => `rdx-popover-root-${this.uniqueId()}`);
 
+    /**
+     * @description The anchor directive that comes form outside the popover root
+     * @default undefined
+     */
+    readonly anchor = input<RdxPopoverAnchorDirective | undefined>(void 0);
     /**
      * @description The open state of the popover when it is initially rendered. Use when you do not need to control its open state.
      * @default false
@@ -82,12 +81,14 @@ export class RdxPopoverRootDirective {
     /** @ignore */
     readonly popoverArrowDirective = contentChild(RdxPopoverArrowToken);
     /** @ignore */
-    readonly popoverContentAttributesDirective = contentChild(RdxPopoverContentAttributesToken);
+    readonly popoverCloseDirective = contentChild(RdxPopoverCloseToken);
+    /** @ignore */
+    readonly popoverContentAttributesComponent = contentChild(RdxPopoverContentAttributesToken);
+    /** @ignore */
+    private readonly internalPopoverAnchorDirective = contentChild(RdxPopoverAnchorToken);
 
     /** @ignore */
     readonly viewContainerRef = inject(ViewContainerRef);
-    /** @ignore */
-    private readonly document = inject(DOCUMENT);
     /** @ignore */
     readonly destroyRef = inject(DestroyRef);
 
@@ -100,11 +101,15 @@ export class RdxPopoverRootDirective {
     /** @ignore */
     private isFirstDefaultOpen = signal(false);
 
+    /** @ignore */
+    readonly popoverAnchorDirective = computed(() => this.internalPopoverAnchorDirective() ?? this.anchor());
+
     constructor() {
         this.onStateChangeEffect();
         this.onCssAnimationStatusChangeChangeEffect();
         this.onOpenChangeEffect();
         this.onIsFirstDefaultOpenChangeEffect();
+        this.onAnchorChangeEffect();
         this.emitOpenOrClosedEventEffect();
         afterNextRender({
             write: () => {
@@ -207,7 +212,7 @@ export class RdxPopoverRootDirective {
     /** @ignore */
     private ifOpenOrCloseWithoutAnimations(state: RdxPopoverState) {
         return (
-            !this.popoverContentAttributesDirective() ||
+            !this.popoverContentAttributesComponent() ||
             !this.cssAnimation() ||
             (this.cssAnimation() && !this.cssClosingAnimation() && state === RdxPopoverState.CLOSED) ||
             (this.cssAnimation() && !this.cssOpeningAnimation() && state === RdxPopoverState.OPEN) ||
@@ -224,7 +229,7 @@ export class RdxPopoverRootDirective {
     /** @ignore */
     private ifOpenOrCloseWithAnimations(cssAnimationStatus: RdxPopoverAnimationStatus | null) {
         return (
-            this.popoverContentAttributesDirective() &&
+            this.popoverContentAttributesComponent() &&
             this.cssAnimation() &&
             cssAnimationStatus &&
             ((this.cssOpeningAnimation() &&
@@ -343,4 +348,16 @@ export class RdxPopoverRootDirective {
             });
         });
     }
+
+    /** @ignore */
+    private onAnchorChangeEffect = () => {
+        effect(() => {
+            const anchor = this.anchor();
+            untracked(() => {
+                if (anchor) {
+                    anchor.setPopoverRoot(this);
+                }
+            });
+        });
+    };
 }

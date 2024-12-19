@@ -1,10 +1,12 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, MountainSnowIcon, X } from 'lucide-angular';
-import { RdxPopoverAlign, RdxPopoverModule, RdxPopoverSide } from '../index';
+import { LucideAngularModule, MountainSnowIcon, TriangleAlert, X } from 'lucide-angular';
+import { RdxPopoverAlign, RdxPopoverModule, RdxPopoverRootDirective, RdxPopoverSide } from '../index';
 import { RdxPopoverContentAttributesComponent } from '../src/popover-content-attributes.component';
-import styles from './popover-styles.constants';
-import { PopoverWithEventBaseComponent } from './popover-with-event-base.component';
+import { containerAlert } from './utils/constants';
+import { IgnoreClickOutsideContainerBase } from './utils/ignore-click-outside-container-base.class';
+import styles from './utils/styles.constants';
+import { WithEventBaseComponent } from './utils/with-event-base.component';
 
 @Component({
     selector: 'rdx-popover-positioning',
@@ -14,7 +16,7 @@ import { PopoverWithEventBaseComponent } from './popover-with-event-base.compone
         RdxPopoverModule,
         LucideAngularModule,
         RdxPopoverContentAttributesComponent,
-        PopoverWithEventBaseComponent
+        WithEventBaseComponent
     ],
     styles: styles(),
     template: `
@@ -45,9 +47,13 @@ import { PopoverWithEventBaseComponent } from './popover-with-event-base.compone
                     (ngModelChange)="disableAlternatePositions.set($event)"
                     type="checkbox"
                 />
-                Alternate positions
+                Alternate positions (to see the result, scroll the page to make the popover cross the viewport boundary)
             </div>
 
+            <div class="ContainerAlerts">
+                <lucide-angular [img]="TriangleAlert" size="16" />
+                {{ containerAlert }}
+            </div>
             <div class="container">
                 <ng-container rdxPopoverRoot>
                     <button class="reset IconButton" rdxPopoverTrigger>
@@ -90,10 +96,13 @@ import { PopoverWithEventBaseComponent } from './popover-with-event-base.compone
                     </ng-template>
                 </ng-container>
             </div>
+            <div class="PopoverId">ID: {{ popoverRootDirective()?.uniqueId() }}</div>
         </popover-with-event-base>
     `
 })
-export class RdxPopoverPositioningComponent {
+export class RdxPopoverPositioningComponent extends IgnoreClickOutsideContainerBase {
+    readonly popoverRootDirective = viewChild(RdxPopoverRootDirective);
+
     readonly selectedSide = signal(RdxPopoverSide.Top);
     readonly selectedAlign = signal(RdxPopoverAlign.Center);
     readonly sideOffset = signal(8);
@@ -105,4 +114,6 @@ export class RdxPopoverPositioningComponent {
 
     readonly MountainSnowIcon = MountainSnowIcon;
     readonly XIcon = X;
+    protected readonly containerAlert = containerAlert;
+    protected readonly TriangleAlert = TriangleAlert;
 }

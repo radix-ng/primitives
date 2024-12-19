@@ -168,10 +168,22 @@ const params = `
 function styles(withAnimations = false, withEvents = false, withParams = true) {
     return `
 .container {
-    height: 450px;
+    height: 500px;
     display: flex;
     justify-content: center;
+    gap: 80px;
     align-items: center;
+    border: 3px dashed var(--white-a8);
+    border-radius: 12px;
+}
+
+.ContainerAlerts {
+    display: flex;
+    gap: 6px;
+    color: var(--white-a8);
+    font-size: 16px;
+    line-height: 16px;
+    margin: 0 0 8px 0;
 }
 
 /* reset */
@@ -184,11 +196,22 @@ function styles(withAnimations = false, withEvents = false, withParams = true) {
     font-size: 22px;
     line-height: 26px;
     font-weight: bolder;
-    margin: 12px 0 34px 16px;
-    padding-top: 12px;
+    margin: 46px 0 34px 16px;
+    padding-top: 22px;
     &:not(:first-child) {
         border-top: 2px solid var(--gray-a8);
     }
+    &:first-child {
+        margin-top: 0;
+    }
+}
+
+.PopoverId {
+    color: var(--white-a12);
+    font-size: 12px;
+    line-height: 14px;
+    font-weight: 800;
+    margin: 1px 0 24px 22px;
 }
 
 .PopoverContent {

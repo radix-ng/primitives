@@ -1,7 +1,15 @@
-import { Component, signal, viewChild } from '@angular/core';
+import { Component, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, MountainSnowIcon, TriangleAlert, X } from 'lucide-angular';
+import {
+    LucideAngularModule,
+    LucideMapPinPlus,
+    LucideMapPinPlusInside,
+    MountainSnowIcon,
+    TriangleAlert,
+    X
+} from 'lucide-angular';
 import { RdxPopoverModule } from '../index';
+import { RdxPopoverAnchorDirective } from '../src/popover-anchor.directive';
 import { RdxPopoverContentAttributesComponent } from '../src/popover-content-attributes.component';
 import { containerAlert } from './utils/constants';
 import { IgnoreClickOutsideContainerBase } from './utils/ignore-click-outside-container-base.class';
@@ -9,54 +17,35 @@ import styles from './utils/styles.constants';
 import { WithEventBaseComponent } from './utils/with-event-base.component';
 
 @Component({
-    selector: 'rdx-popover-triggering',
+    selector: 'rdx-popover-anchor',
     standalone: true,
     imports: [
         FormsModule,
         RdxPopoverModule,
         LucideAngularModule,
         RdxPopoverContentAttributesComponent,
-        WithEventBaseComponent
+        WithEventBaseComponent,
+        RdxPopoverAnchorDirective
     ],
     styles: styles(),
     template: `
-        <p class="ExampleSubtitle">Initially closed</p>
+        <p class="ExampleSubtitle">Internal Anchor (within PopoverRoot)</p>
         <popover-with-event-base>
-            <div class="ParamsContainer">
-                <button (mouseup)="triggerOpenFalse()" type="button">Open: {{ isOpenFalse() }}</button>
-                onOpenChange count: {{ counterOpenFalse() }}
-            </div>
-
-            <div class="ParamsContainer">
-                <input
-                    [ngModel]="externalControlFalse()"
-                    (ngModelChange)="externalControlFalse.set($event)"
-                    type="checkbox"
-                />
-                External control
-            </div>
-
             <div class="ContainerAlerts">
                 <lucide-angular [img]="TriangleAlert" size="16" />
                 {{ containerAlert }}
             </div>
             <div class="container">
-                <ng-container
-                    #root1="rdxPopoverRoot"
-                    [open]="isOpenFalse()"
-                    [externalControl]="externalControlFalse()"
-                    rdxPopoverRoot
-                >
+                <ng-container #root1="rdxPopoverRoot" rdxPopoverRoot>
+                    <button class="reset IconButton InternalAnchor" rdxPopoverAnchor>
+                        <lucide-angular [img]="LucideMapPinPlusInside" size="16" style="display: flex" />
+                    </button>
+
                     <button class="reset IconButton" rdxPopoverTrigger>
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                     </button>
 
-                    <ng-template
-                        [sideOffset]="8"
-                        (onOpen)="countOpenFalse(true)"
-                        (onClosed)="countOpenFalse(false)"
-                        rdxPopoverContent
-                    >
+                    <ng-template rdxPopoverContent>
                         <div class="PopoverContent" rdxPopoverContentAttributes>
                             <button class="reset PopoverClose" rdxPopoverClose aria-label="Close">
                                 <lucide-angular [img]="XIcon" size="16" style="display: flex" />
@@ -88,43 +77,23 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
             <div class="PopoverId">ID: {{ popoverRootDirective1()?.uniqueId() }}</div>
         </popover-with-event-base>
 
-        <p class="ExampleSubtitle">Initially open</p>
+        <p class="ExampleSubtitle">External Anchor (outside PopoverRoot)</p>
         <popover-with-event-base>
-            <div class="ParamsContainer">
-                <button (mouseup)="triggerOpenTrue()" type="button">Open: {{ isOpenTrue() }}</button>
-                <span>onOpenChange count: {{ counterOpenTrue() }}</span>
-            </div>
-
-            <div class="ParamsContainer">
-                <input
-                    [ngModel]="externalControlTrue()"
-                    (ngModelChange)="externalControlTrue.set($event)"
-                    type="checkbox"
-                />
-                External control
-            </div>
-
             <div class="ContainerAlerts">
                 <lucide-angular [img]="TriangleAlert" size="16" />
                 {{ containerAlert }}
             </div>
             <div class="container">
-                <ng-container
-                    #root2="rdxPopoverRoot"
-                    [open]="isOpenTrue()"
-                    [externalControl]="externalControlTrue()"
-                    rdxPopoverRoot
-                >
+                <button class="reset IconButton ExternalAnchor" #externalAnchor="rdxPopoverAnchor" rdxPopoverAnchor>
+                    <lucide-angular [img]="LucideMapPinPlus" size="16" style="display: flex" />
+                </button>
+
+                <ng-container #root2="rdxPopoverRoot" [anchor]="externalAnchor" rdxPopoverRoot>
                     <button class="reset IconButton" rdxPopoverTrigger>
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                     </button>
 
-                    <ng-template
-                        [sideOffset]="8"
-                        (onOpen)="countOpenTrue(true)"
-                        (onClosed)="countOpenTrue(false)"
-                        rdxPopoverContent
-                    >
+                    <ng-template rdxPopoverContent>
                         <div class="PopoverContent" rdxPopoverContentAttributes>
                             <button class="reset PopoverClose" rdxPopoverClose aria-label="Close">
                                 <lucide-angular [img]="XIcon" size="16" style="display: flex" />
@@ -157,39 +126,14 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
         </popover-with-event-base>
     `
 })
-export class RdxPopoverTriggeringComponent extends IgnoreClickOutsideContainerBase {
+export class RdxPopoverAnchorComponent extends IgnoreClickOutsideContainerBase {
     readonly popoverRootDirective1 = viewChild('root1');
     readonly popoverRootDirective2 = viewChild('root2');
 
     readonly MountainSnowIcon = MountainSnowIcon;
     readonly XIcon = X;
-
-    isOpenFalse = signal(false);
-    counterOpenFalse = signal(0);
-    externalControlFalse = signal(true);
-
-    isOpenTrue = signal(true);
-    counterOpenTrue = signal(0);
-    externalControlTrue = signal(true);
-
-    triggerOpenFalse(): void {
-        this.isOpenFalse.update((value) => !value);
-    }
-
-    countOpenFalse(open: boolean): void {
-        this.isOpenFalse.set(open);
-        this.counterOpenFalse.update((value) => value + 1);
-    }
-
-    triggerOpenTrue(): void {
-        this.isOpenTrue.update((value) => !value);
-    }
-
-    countOpenTrue(open: boolean): void {
-        this.isOpenTrue.set(open);
-        this.counterOpenTrue.update((value) => value + 1);
-    }
-
-    protected readonly containerAlert = containerAlert;
-    protected readonly TriangleAlert = TriangleAlert;
+    readonly LucideMapPinPlusInside = LucideMapPinPlusInside;
+    readonly LucideMapPinPlus = LucideMapPinPlus;
+    readonly TriangleAlert = TriangleAlert;
+    readonly containerAlert = containerAlert;
 }

@@ -33,7 +33,7 @@ export class RdxPopoverArrowDirective implements AfterViewInit {
     /** @ignore */
     private readonly popoverRoot = injectPopoverRoot();
     /** @ignore */
-    private readonly elementRef = inject(ElementRef);
+    readonly elementRef = inject(ElementRef);
 
     /**
      * @description The width of the arrow in pixels.
@@ -70,7 +70,7 @@ export class RdxPopoverArrowDirective implements AfterViewInit {
     private readonly position = toSignal(this.popoverRoot.popoverContentDirective().positionChange());
 
     /** @ignore */
-    private triggerRect: DOMRect;
+    private anchorOrTriggerRect: DOMRect;
 
     constructor() {
         this.onArrowSvgElementChangeEffect();
@@ -85,15 +85,21 @@ export class RdxPopoverArrowDirective implements AfterViewInit {
         this.renderer.setStyle(this.elementRef.nativeElement, 'position', 'absolute');
         this.renderer.setStyle(this.elementRef.nativeElement, 'boxSizing', '');
         this.renderer.setStyle(this.elementRef.nativeElement, 'fontSize', '0px');
-        this.triggerRect = this.popoverRoot.popoverTriggerDirective().elementRef.nativeElement.getBoundingClientRect();
+    }
+
+    private setAnchorOrTriggerRect() {
+        this.anchorOrTriggerRect = (
+            this.popoverRoot.popoverAnchorDirective() ?? this.popoverRoot.popoverTriggerDirective()
+        ).elementRef.nativeElement.getBoundingClientRect();
     }
 
     /** @ignore */
     private setPosition(position: ConnectedOverlayPositionChange) {
+        this.setAnchorOrTriggerRect();
         const posParams = getArrowPositionParams(
             getSideAndAlignFromAllPossibleConnectedPositions(position.connectionPair),
             { width: this.width(), height: this.height() },
-            { width: this.triggerRect.width, height: this.triggerRect.height }
+            { width: this.anchorOrTriggerRect.width, height: this.anchorOrTriggerRect.height }
         );
 
         this.renderer.setStyle(this.elementRef.nativeElement, 'top', posParams.top);

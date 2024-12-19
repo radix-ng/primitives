@@ -1,9 +1,9 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { AfterContentInit, Component, computed, contentChild, ElementRef, inject, input, signal } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RdxPopoverContentDirective } from '../src/popover-content.directive';
-import { RdxPopoverRootDirective } from '../src/popover-root.directive';
-import { paramsAndEventsOnly } from './popover-styles.constants';
+import { RdxPopoverContentDirective } from '../../src/popover-content.directive';
+import { RdxPopoverRootDirective } from '../../src/popover-root.directive';
+import { paramsAndEventsOnly } from './styles.constants';
 
 type Message = { value: string; timeFromPrev: number };
 
@@ -35,7 +35,7 @@ type Message = { value: string; timeFromPrev: number };
         <ng-content />
 
         @if (messages().length) {
-            <button (click)="messages.set([])" type="button">Clear messages</button>
+            <button class="SkipOutsideClick" (click)="messages.set([])" type="button">Clear messages</button>
             <div class="MessagesContainer">
                 @for (message of messages(); track i; let i = $index) {
                     <ng-container
@@ -61,7 +61,7 @@ type Message = { value: string; timeFromPrev: number };
     ],
     standalone: true
 })
-export class PopoverWithEventBaseComponent implements AfterContentInit {
+export class WithEventBaseComponent implements AfterContentInit {
     onEscapeKeyDownPrevent = input(false);
     onOutsideClickPrevent = input(false);
 
@@ -100,16 +100,6 @@ export class PopoverWithEventBaseComponent implements AfterContentInit {
         this.paramsContainerCounter.set(
             this.elementRef.nativeElement?.querySelectorAll('.ParamsContainer').length ?? 0
         );
-        this.containers = Array.from(this.elementRef.nativeElement?.querySelectorAll('.container') ?? []);
-        this.paramsContainers = Array.from(this.elementRef.nativeElement?.querySelectorAll('.ParamsContainer') ?? []);
-    }
-
-    private inContainers(element: Element) {
-        return !!this.containers?.find((container) => container.contains(element));
-    }
-
-    private inParamsContainers(element: Element) {
-        return !!this.paramsContainers?.find((container) => container.contains(element));
     }
 
     private onEscapeKeyDown = (event: KeyboardEvent) => {
@@ -117,24 +107,15 @@ export class PopoverWithEventBaseComponent implements AfterContentInit {
             value: `[PopoverRoot] Escape clicked! (preventDefault: ${this.onEscapeKeyDownPreventDefault()()})`,
             timeFromPrev: this.timeFromPrev()
         });
-        this.onEscapeKeyDownPreventDefault()() && !event.defaultPreventedCustom && event.preventDefault();
+        this.onEscapeKeyDownPreventDefault()() && event.preventDefault();
     };
 
     private onOutsideClick = (event: MouseEvent) => {
-        if (
-            !event.target ||
-            (!this.inContainers(event.target as HTMLElement) && !this.inParamsContainers(event.target as HTMLElement))
-        ) {
-            return;
-        }
         this.addMessage({
             value: `[PopoverRoot] Mouse clicked outside the popover! (preventDefault: ${this.onOutsideClickPreventDefault()()})`,
             timeFromPrev: this.timeFromPrev()
         });
-        if (this.inParamsContainers(event.target as HTMLElement)) {
-            event.defaultPreventedCustom = true;
-        }
-        this.onOutsideClickPreventDefault()() && !event.defaultPreventedCustom && event.preventDefault();
+        this.onOutsideClickPreventDefault()() && event.preventDefault();
     };
 
     private onOpen = () => {
