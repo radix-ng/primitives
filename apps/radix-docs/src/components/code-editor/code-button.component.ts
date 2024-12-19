@@ -2,7 +2,7 @@ import { useStackBlitz } from '@/components/code-editor/code-api.ts';
 import { Component, input } from '@angular/core';
 
 @Component({
-    selector: 'code-sandbox-button',
+    selector: 'code-button',
     standalone: true,
     imports: [],
     template: `
@@ -10,7 +10,7 @@ import { Component, input } from '@angular/core';
             class="flex cursor-default items-center gap-2 px-4 py-2 text-sm hover:underline"
             (click)="handleClick()"
         >
-            CodeSandbox
+            StackBlitz
             <svg width="12" height="16" viewBox="0 0 12 16" fill="currentcolor" xmlns="http://www.w3.org/2000/svg">
                 <path
                     transform="translate(0, -0.5)"
@@ -20,7 +20,7 @@ import { Component, input } from '@angular/core';
         </button>
     `
 })
-export class CodeSandboxButtonComponent {
+export class CodeButtonComponent {
     readonly code = input<string>();
     readonly name = input<string>();
     readonly css = input<string>();
