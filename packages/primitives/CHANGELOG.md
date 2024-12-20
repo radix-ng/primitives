@@ -1,3 +1,24 @@
+## 0.21.0 (2024-12-20)
+
+### 🚀 Features
+
+- **popover:** add anchor directive ([#209](https://github.com/radix-ng/primitives/pull/209))
+- **switch:** added inputId and aria labels for screenreader ([#211](https://github.com/radix-ng/primitives/pull/211))
+- **switch:** added defaultChecked boolean attr ([ba493d1](https://github.com/radix-ng/primitives/commit/ba493d1))
+- **switch:** added Switch components for Radix Theme ([9e8cef4](https://github.com/radix-ng/primitives/commit/9e8cef4))
+- **switch:** added cva, updated storybook ([#210](https://github.com/radix-ng/primitives/pull/210))
+- **toggle:** rename visually hidden directive for input, upd storybook ([#208](https://github.com/radix-ng/primitives/pull/208))
+- **popover:** add animation on open and close ([#200](https://github.com/radix-ng/primitives/pull/200))
+
+### 🩹 Fixes
+
+- **avatar:** fallback display ([7685774](https://github.com/radix-ng/primitives/commit/7685774))
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+- pawel-twardziak
+
 ## 0.20.2 (2024-12-13)
 
 ### 🩹 Fixes
