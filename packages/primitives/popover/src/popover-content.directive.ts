@@ -98,6 +98,7 @@ export class RdxPopoverContentDirective implements OnInit {
     /** @ignore */
     ngOnInit() {
         this.setScrollStrategy();
+        this.setHasBackdrop();
         this.setDisableClose();
         this.onAttach();
         this.onDetach();
@@ -214,6 +215,13 @@ export class RdxPopoverContentDirective implements OnInit {
         const prevScrollStrategy = this.connectedOverlay.scrollStrategy;
         this.connectedOverlay.scrollStrategy = this.overlay.scrollStrategies.reposition();
         this.fireOverlayNgOnChanges('scrollStrategy', this.connectedOverlay.scrollStrategy, prevScrollStrategy);
+    }
+
+    /** @ignore */
+    private setHasBackdrop() {
+        const prevHasBackdrop = this.connectedOverlay.hasBackdrop;
+        this.connectedOverlay.hasBackdrop = false;
+        this.fireOverlayNgOnChanges('hasBackdrop', this.connectedOverlay.hasBackdrop, prevHasBackdrop);
     }
 
     /** @ignore */

@@ -1,41 +1,36 @@
 import { RdxPopoverRootDirective } from '../../src/popover-root.directive';
 
-const containerRegistry: Map<Element, RdxPopoverRootDirective> = new Map();
+const containerRegistry: Map<HTMLElement, RdxPopoverRootDirective> = new Map();
 
 let document: Document | undefined;
 
 const leftMenuSelector = '.container.sidebar-container';
-let leftMenuWrapper: Element | undefined = void 0;
+let leftMenuWrapper: HTMLElement | undefined = void 0;
 
 const rightMenuSelector = '.sbdocs-wrapper .toc-wrapper';
-let rightMenuWrapper: Element | undefined = void 0;
+let rightMenuWrapper: HTMLElement | undefined = void 0;
 
 let destroyListener: (() => void) | undefined;
 const callback: (event: MouseEvent) => void = (event: MouseEvent) => {
+    const target = event.target as HTMLElement;
     if (
         event.button !== 0 ||
-        (event.target as Element).classList.contains('SkipOutsideClick') ||
-        leftMenuWrapper?.contains(event.target as Element) ||
-        rightMenuWrapper?.contains(event.target as Element)
+        target.classList.contains('SkipOutsideClick') ||
+        leftMenuWrapper?.contains(target) ||
+        rightMenuWrapper?.contains(target)
     ) {
         return;
     }
-    const containers = Array.from(containerRegistry.keys());
-    const anyContainerContainsTarget = containers.some((container) => {
-        return (
-            container.contains(event.target as Element) ||
-            containerRegistry
-                .get(container)
-                ?.popoverCloseDirective()
-                ?.elementRef.nativeElement.contains(event.target as Element)
-        );
-    });
-    if (!anyContainerContainsTarget) {
-        event.stopImmediatePropagation();
-    }
+    // const containers = Array.from(containerRegistry.keys());
+    // const containerContainingTarget = containers.find((container) => {
+    //     return (
+    //         container.contains(target) ||
+    //         containerRegistry.get(container)?.popoverCloseDirective()?.elementRef.nativeElement.contains(target)
+    //     );
+    // });
 };
 
-export function registerContainer(container: Element, popoverRoot: RdxPopoverRootDirective) {
+export function registerContainer(container: HTMLElement, popoverRoot: RdxPopoverRootDirective) {
     if (containerRegistry.has(container)) {
         return;
     }
@@ -45,7 +40,7 @@ export function registerContainer(container: Element, popoverRoot: RdxPopoverRoo
     }
 }
 
-export function deregisterContainer(container: Element) {
+export function deregisterContainer(container: HTMLElement) {
     if (!containerRegistry.has(container)) {
         return;
     }
@@ -60,15 +55,15 @@ export function setDocument(value: Document) {
         return;
     }
     document = value;
-    leftMenuWrapper = document.querySelector(leftMenuSelector) ?? void 0;
-    rightMenuWrapper = document.querySelector(rightMenuSelector) ?? void 0;
+    leftMenuWrapper = document.querySelector<HTMLElement>(leftMenuSelector) ?? void 0;
+    rightMenuWrapper = document.querySelector<HTMLElement>(rightMenuSelector) ?? void 0;
 }
 
 function addListener() {
     if (!document || destroyListener) {
         return;
     }
-    const target = document.body;
+    const target = document;
     const eventName = 'click';
     const options: boolean | AddEventListenerOptions | undefined = { capture: true };
     target.addEventListener(eventName, callback, options);

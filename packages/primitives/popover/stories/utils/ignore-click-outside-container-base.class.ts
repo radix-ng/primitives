@@ -13,7 +13,7 @@ export abstract class IgnoreClickOutsideContainerBase implements IIgnoreClickOut
 
     protected constructor() {
         afterNextRender(() => {
-            this.elementRef.nativeElement.querySelectorAll('.container').forEach((container) => {
+            this.elementRef.nativeElement.querySelectorAll<HTMLElement>('.container').forEach((container) => {
                 const popoverRootInsideContainer = this.rootDirectives().find((popoverRoot) =>
                     container.contains(popoverRoot.popoverTriggerDirective().elementRef.nativeElement)
                 );

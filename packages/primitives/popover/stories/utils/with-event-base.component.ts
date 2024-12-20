@@ -35,7 +35,7 @@ type Message = { value: string; timeFromPrev: number };
         <ng-content />
 
         @if (messages().length) {
-            <button class="SkipOutsideClick" (click)="messages.set([])" type="button">Clear messages</button>
+            <button class="SkipOutsideClickPrevention" (click)="messages.set([])" type="button">Clear messages</button>
             <div class="MessagesContainer">
                 @for (message of messages(); track i; let i = $index) {
                     <ng-container
@@ -78,6 +78,9 @@ export class WithEventBaseComponent implements AfterContentInit {
 
     readonly rootUniqueId = computed(() => this.popoverRootDirective().uniqueId());
 
+    /**
+     * There should be only one container. If there is more, en error is thrown.
+     */
     containers: Element[] | undefined = void 0;
     paramsContainers: Element[] | undefined = void 0;
 
@@ -97,9 +100,26 @@ export class WithEventBaseComponent implements AfterContentInit {
         this.popoverContentDirective().onOutsideClick.subscribe(this.onOutsideClick);
         this.popoverContentDirective().onEscapeKeyDown.subscribe(this.onEscapeKeyDown);
 
-        this.paramsContainerCounter.set(
-            this.elementRef.nativeElement?.querySelectorAll('.ParamsContainer').length ?? 0
-        );
+        /**
+         * There should be only one container. If there is more, en error is thrown.
+         */
+        this.containers = Array.from(this.elementRef.nativeElement?.querySelectorAll('.container') ?? []);
+        if (this.containers.length > 1) {
+            console.error('<story>.elementRef.nativeElement', this.elementRef.nativeElement);
+            console.error('<story>.containers', this.containers);
+            throw Error('each story should have only one container!');
+        }
+        this.paramsContainers = Array.from(this.elementRef.nativeElement?.querySelectorAll('.ParamsContainer') ?? []);
+
+        this.paramsContainerCounter.set(this.paramsContainers.length ?? 0);
+    }
+
+    private inContainers(element: Element) {
+        return !!this.containers?.find((container) => container.contains(element));
+    }
+
+    private inParamsContainers(element: Element) {
+        return !!this.paramsContainers?.find((container) => container.contains(element));
     }
 
     private onEscapeKeyDown = (event: KeyboardEvent) => {
@@ -111,6 +131,9 @@ export class WithEventBaseComponent implements AfterContentInit {
     };
 
     private onOutsideClick = (event: MouseEvent) => {
+        // if (!this.inContainers(event.target as HTMLElement)) {
+        //     return;
+        // }
         this.addMessage({
             value: `[PopoverRoot] Mouse clicked outside the popover! (preventDefault: ${this.onOutsideClickPreventDefault()()})`,
             timeFromPrev: this.timeFromPrev()
