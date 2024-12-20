@@ -1,5 +1,4 @@
-import { Directive, effect, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
-import { RdxTabsContextService, TABS_CONTEXT_TOKEN } from './tabs-context.service';
+import { Directive, InjectionToken, input, model, OnInit, output } from '@angular/core';
 
 export interface TabsProps {
     /** The value for the selected tab, if controlled */
@@ -25,46 +24,43 @@ export interface TabsProps {
     activationMode?: 'automatic' | 'manual';
 }
 
+export type DataOrientation = 'vertical' | 'horizontal';
+
+export const RDX_TABS_ROOT_TOKEN = new InjectionToken<RdxTabsRootDirective>('RdxTabsRootDirective');
+
 @Directive({
     selector: '[rdxTabsRoot]',
     standalone: true,
-    providers: [{ provide: TABS_CONTEXT_TOKEN, useExisting: RdxTabsContextService }],
+    providers: [
+        { provide: RDX_TABS_ROOT_TOKEN, useExisting: RdxTabsRootDirective }],
     host: {
-        '[attr.data-orientation]': 'orientation',
-        '[attr.dir]': 'dir'
+        '[attr.data-orientation]': 'orientation()',
+        '[attr.dir]': 'dir()'
     }
 })
 export class RdxTabsRootDirective implements OnInit {
-    private readonly tabsContext = inject(TABS_CONTEXT_TOKEN);
+    readonly value = model<string>();
 
-    @Input() value?: string;
-    @Input() defaultValue?: string;
-    @Input() orientation = 'horizontal';
-    @Input() dir?: string;
+    readonly defaultValue = input<string>();
 
-    // Event handler called when the value changes.
-    @Output() onValueChange = new EventEmitter<string>();
+    readonly orientation = input<DataOrientation>('horizontal');
 
-    constructor() {
-        effect(() => {
-            const value = this.tabsContext.value$();
-            if (value !== undefined) {
-                this.onValueChange.emit(value);
-            }
-        });
-    }
+    readonly dir = input<string>('ltr');
+
+    readonly onValueChange = output<string>();
 
     ngOnInit() {
-        this.tabsContext.setOrientation(this.orientation);
-
-        if (this.dir) {
-            this.tabsContext.setDir(this.dir);
+        if (this.defaultValue()) {
+            this.value.set(this.defaultValue());
         }
+    }
 
-        if (this.value) {
-            this.tabsContext.setValue(this.value);
-        } else if (this.defaultValue) {
-            this.tabsContext.setValue(this.defaultValue);
-        }
+    select(value: string) {
+        this.value.set(value);
+        this.onValueChange.emit(value);
+    }
+
+    getBaseId() {
+        return `tabs-${Math.random().toString(36).substr(2, 9)}`;
     }
 }
