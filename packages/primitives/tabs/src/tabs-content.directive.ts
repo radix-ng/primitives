@@ -1,5 +1,5 @@
 import { computed, Directive, inject, input } from '@angular/core';
-import { TABS_CONTEXT_TOKEN } from './tabs-context.service';
+import { RDX_TABS_ROOT_TOKEN } from './tabs-root.directive';
 
 @Directive({
     selector: '[rdxTabsContent]',
@@ -10,14 +10,14 @@ import { TABS_CONTEXT_TOKEN } from './tabs-context.service';
         '[id]': 'tabsContext.getBaseId()',
         '[attr.aria-labelledby]': 'tabsContext.getBaseId()',
         '[attr.data-state]': 'selected() ? "active" : "inactive"',
-        '[attr.data-orientation]': 'tabsContext.orientation$()',
+        '[attr.data-orientation]': 'tabsContext.orientation()',
         '[hidden]': '!selected()'
     }
 })
 export class RdxTabsContentDirective {
-    protected readonly tabsContext = inject(TABS_CONTEXT_TOKEN);
+    protected readonly tabsContext = inject(RDX_TABS_ROOT_TOKEN);
 
     readonly value = input.required<string>();
 
-    protected readonly selected = computed(() => this.tabsContext.value$() === this.value());
+    protected readonly selected = computed(() => this.tabsContext.value() === this.value());
 }

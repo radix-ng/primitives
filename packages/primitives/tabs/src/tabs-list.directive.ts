@@ -1,8 +1,8 @@
 import { Directive, inject } from '@angular/core';
-import { TABS_CONTEXT_TOKEN } from './tabs-context.service';
+import { RdxRovingFocusGroupDirective } from '@radix-ng/primitives/roving-focus';
+import { RDX_TABS_ROOT_TOKEN } from './tabs-root.directive';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-interface TabsListProps {
+export interface TabsListProps {
     // When true, keyboard navigation will loop from last tab to first, and vice versa.
     loop?: boolean;
 }
@@ -10,12 +10,13 @@ interface TabsListProps {
 @Directive({
     selector: '[rdxTabsList]',
     standalone: true,
+    hostDirectives: [{ directive: RdxRovingFocusGroupDirective, inputs: ['dir', 'orientation', 'loop'] }],
     host: {
         role: 'tablist',
-        '[attr.aria-orientation]': 'tabsContext.orientation$()',
-        '[attr.data-orientation]': 'tabsContext.orientation$()'
+        '[attr.aria-orientation]': 'tabsContext.orientation()',
+        '[attr.data-orientation]': 'tabsContext.orientation()'
     }
 })
 export class RdxTabsListDirective {
-    protected readonly tabsContext = inject(TABS_CONTEXT_TOKEN);
+    protected readonly tabsContext = inject(RDX_TABS_ROOT_TOKEN);
 }
