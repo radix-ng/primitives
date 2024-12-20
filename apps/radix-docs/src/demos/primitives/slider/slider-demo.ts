@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { RdxSliderModule } from '@radix-ng/primitives/slider';
 
 @Component({
+    selector: 'radix-slider-demo',
     standalone: true,
     imports: [RdxSliderModule],
     styleUrl: 'slider-demo.css',

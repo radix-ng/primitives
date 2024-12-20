@@ -9,7 +9,7 @@ import {
 import { ChevronDown, LucideAngularModule, X } from 'lucide-angular';
 
 @Component({
-    selector: 'accordion-demo',
+    selector: 'radix-accordion-demo',
     standalone: true,
     imports: [
         RdxAccordionRootDirective,

@@ -1,5 +1,5 @@
 export const fontsCss = `
-// Inter
+
 @import '@fontsource/inter/100.css';
 @import '@fontsource/inter/200.css';
 @import '@fontsource/inter/300.css';
@@ -19,7 +19,7 @@ export const fontsCss = `
 @import '@fontsource/inter/800-italic.css';
 @import '@fontsource/inter/900-italic.css';
 
-// JetBrains Mono
+
 @import '@fontsource/jetbrains-mono/100.css';
 @import '@fontsource/jetbrains-mono/200.css';
 @import '@fontsource/jetbrains-mono/300.css';

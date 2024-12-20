@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { RdxSeparatorRootDirective } from '@radix-ng/primitives/separator';
 
 @Component({
+    selector: 'radix-separator-demo',
     standalone: true,
     imports: [RdxSeparatorRootDirective],
     template: `

@@ -15,7 +15,7 @@ import {
 import { CheckIcon, ChevronDown, LucideAngularModule } from 'lucide-angular';
 
 @Component({
-    selector: 'primitive-select-demo',
+    selector: 'radix-select-demo',
     standalone: true,
     imports: [
         RdxSelectComponent,
