@@ -36,6 +36,7 @@
         "@angular/language-service": "^18.2.13",
         "@types/unist": "^3.0.3",
         "@tailwindcss/typography": "^0.5.15",
+        "@stackblitz/sdk": "^1.11.0",
         "typescript": "~5.5.4"
     }
 }
