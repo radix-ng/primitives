@@ -67,7 +67,10 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
         return this.type === 'multiple';
     }
 
-    /** Whether the Accordion is disabled. */
+    /** Whether the Accordion is disabled.
+     * @defaultValue false
+     * @group Props
+     */
     @Input({ transform: booleanAttribute }) disabled: boolean;
 
     /**

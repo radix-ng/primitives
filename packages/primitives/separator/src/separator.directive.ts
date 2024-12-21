@@ -24,6 +24,8 @@ export interface SeparatorProps {
  * Directive that adds accessible and configurable separator element to the DOM.
  * This can be either horizontal or vertical and optionally decorative (which removes
  * it from the accessibility tree).
+ *
+ * @group Components
  */
 @Directive({
     selector: 'div[rdxSeparatorRoot]',
@@ -38,13 +40,18 @@ export interface SeparatorProps {
 export class RdxSeparatorRootDirective {
     /**
      * Orientation of the separator, can be either 'horizontal' or 'vertical'.
-     * Defaults to 'horizontal'.
+     *
+     * @defaultValue 'horizontal'
+     * @group Props
      */
     readonly orientation = input<Orientation>(DEFAULT_ORIENTATION);
 
     /**
      * If true, the separator will be considered decorative and removed from
      * the accessibility tree. Defaults to false.
+     *
+     * @defaultValue false
+     * @group Props
      */
     readonly decorative = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 

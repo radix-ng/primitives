@@ -38,6 +38,9 @@ export interface SwitchProps {
 
 let idIterator = 0;
 
+/**
+ * @group Components
+ */
 @Directive({
     selector: 'button[rdxSwitchRoot]',
     exportAs: 'rdxSwitchRoot',
@@ -82,6 +85,8 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
 
     /**
      * The controlled state of the switch. Must be used in conjunction with onCheckedChange.
+     * @defaultValue false
+     * @group Props
      */
     readonly checked = model<boolean>(false);
 
@@ -106,6 +111,9 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
 
     /**
      * Event handler called when the state of the switch changes.
+     *
+     * @param {boolean} value - Boolean value indicates that the option is changed.
+     * @group Emits
      */
     readonly onCheckedChange = output<boolean>();
 
