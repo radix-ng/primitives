@@ -1,3 +1,17 @@
+## 0.22.0 (2024-12-21)
+
+### 🚀 Features
+
+- **tabs:** added activation-mode ([2415dab](https://github.com/radix-ng/primitives/commit/2415dab))
+
+### 🩹 Fixes
+
+- **tabs:** roving-focus item active state ([983b984](https://github.com/radix-ng/primitives/commit/983b984))
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+
 ## 0.21.0 (2024-12-20)
 
 ### 🚀 Features
