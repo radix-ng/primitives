@@ -18,6 +18,9 @@ import { makeContentId, makeTriggerId } from './utils';
 export class RdxTabsContentDirective {
     protected readonly tabsContext = inject(RDX_TABS_ROOT_TOKEN);
 
+    /**
+     * A unique value that associates the content with a trigger.
+     */
     readonly value = input.required<string>();
 
     protected readonly contentId = computed(() => makeContentId(this.tabsContext.getBaseId(), this.value()));

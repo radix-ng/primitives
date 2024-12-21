@@ -1,0 +1,79 @@
+import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
+import * as TabsStories from './tabs.stories';
+import { RdxTabsRootDirective } from '../src/tabs-root.directive';
+import { RdxTabsListDirective } from '../src/tabs-list.directive';
+import { RdxTabsTriggerDirective } from '../src/tabs-trigger.directive';
+import { RdxTabsContentDirective } from '../src/tabs-content.directive';
+
+<Meta title="Primitives/Tabs" />
+
+# Tabs
+
+#### A set of layered sections of content—known as tab panels—that are displayed one at a time.
+
+<Canvas sourceState="hidden" of={TabsStories.Default} />
+
+## Features
+
+- ✅ Can be controlled or uncontrolled.
+- ✅ Supports horizontal/vertical orientation.
+- ✅ Full keyboard navigation.
+
+## Import
+
+Get started with importing the directives:
+
+```typescript
+import {
+    RdxTabsRootDirective,
+    RdxTabsListDirective,
+    RdxTabsTriggerDirective,
+    RdxTabsContentDirective } from '@radix-ng/primitives/tabs';
+```
+
+## Anatomy
+
+```html
+<div rdxTabsRoot>
+    <div rdxTabsList>
+        <button rdxTabsTrigger></button>
+        <button rdxTabsTrigger></button>
+        <button rdxTabsTrigger></button>
+    </div>
+    <div rdxTabsContent></div>
+    <div rdxTabsContent></div>
+    <div rdxTabsContent></div>
+</div>
+```
+
+## API Reference
+
+### TabsRoot
+
+`RdxTabsRootDirective`
+
+<ArgTypes of={RdxTabsRootDirective} />
+
+### TabsList
+
+`RdxTabsListDirective`
+
+<Markdown>
+    {`
+| Data attribute | Value          |
+|----------------|----------------|
+| [data-orientation]   | <code>"vertical" | "horizontal"</code>
+`}
+</Markdown>
+
+### TabsTrigger
+
+`RdxTabsTriggerDirective`
+
+<ArgTypes of={RdxTabsTriggerDirective} />
+
+### TabsContent
+
+`RdxTabsContentDirective`
+
+<ArgTypes of={RdxTabsContentDirective} />

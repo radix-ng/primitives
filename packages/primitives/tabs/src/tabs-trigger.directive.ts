@@ -39,10 +39,14 @@ export class RdxTabsTriggerDirective implements TabsTriggerProps {
 
     protected readonly tabsContext = inject(RDX_TABS_ROOT_TOKEN);
 
-    // A unique value that associates the trigger with a content.
+    /**
+     * A unique value that associates the trigger with a content.
+     */
     readonly value = input.required<string>();
 
-    // When true, prevents the user from interacting with the tab.
+    /**
+     * When true, prevents the user from interacting with the tab.
+     */
     readonly disabled = input<boolean, BooleanInput>(false, {
         transform: booleanAttribute
     });

@@ -39,14 +39,23 @@ export const RDX_TABS_ROOT_TOKEN = new InjectionToken<RdxTabsRootDirective>('Rdx
     }
 })
 export class RdxTabsRootDirective implements OnInit {
+    /**
+     * The controlled value of the tab to activate. Should be used in conjunction with `onValueChange`.
+     */
     readonly value = model<string>();
 
     readonly defaultValue = input<string>();
 
+    /**
+     * The orientation of the component.
+     */
     readonly orientation = input<DataOrientation>('horizontal');
 
     readonly dir = input<string>('ltr');
 
+    /**
+     * Event handler called when the value changes.
+     */
     readonly onValueChange = output<string>();
 
     ngOnInit() {
@@ -60,6 +69,7 @@ export class RdxTabsRootDirective implements OnInit {
         this.onValueChange.emit(value);
     }
 
+    /** @ignore */
     getBaseId() {
         return `tabs-${Math.random().toString(36).substr(2, 9)}`;
     }
