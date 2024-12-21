@@ -76,3 +76,32 @@ import {
 `RdxTabsContentDirective`
 
 <ArgTypes of={RdxTabsContentDirective} />
+
+## Accessibility
+
+Adheres to the [Tabs WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabs).
+
+### Keyboard Interactions
+
+**Screen Reader**
+
+Tabs container is defined with the **tablist** role, as any attribute is passed to the container element **aria-labelledby** can be
+optionally used to specify an element to describe the Tabs. Each tab header has a **tab** role along with **aria-selected**
+state attribute and **aria-controls** to refer to the corresponding tab content element.
+
+The content element of each tab has **tabpanel** role, an id to match the **aria-controls** of the header and **aria-labelledby**
+reference to the header as the accessible name.
+
+<Markdown>
+    {`
+  | Key | Description |
+  | ----------- | --------- |
+  | Tab       | When focus moves onto the tabs, focuses the active trigger. When a trigger is focused, moves focus to the active content.        |
+  | ArrowDown       | Moves focus to the next trigger depending on **orientation** and activates its associated content.    |
+  | ArrowRight | Moves focus to the next trigger depending on **orientation** and activates its associated content. |
+  | ArrowUp | Moves focus to the previous trigger depending on **orientation** and activates its associated content. |
+  | ArrowLeft | Moves focus to the previous trigger depending on **orientation** and activates its associated content. |
+  | Home | Moves focus to the first trigger and activates its associated content. |
+  | End | Moves focus to the last trigger and activates its associated content. |
+  `}
+</Markdown>

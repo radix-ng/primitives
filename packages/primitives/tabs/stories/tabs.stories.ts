@@ -147,6 +147,15 @@ export default {
                         .Button.green:focus {
                             box-shadow: 0 0 0 2px var(--green-7);
                         }
+
+                        h2,
+                        p {
+                            color: #ffffff;
+                        }
+
+                        section {
+                            width: 500px;
+                        }
                     </style>
                 </div>
             `
@@ -244,6 +253,56 @@ export const ActivationMode: Story = {
                     </div>
                 </div>
             </div>
+        `
+    })
+};
+
+export const Disabled: Story = {
+    render: (args) => ({
+        props: args,
+        template: html`
+            <section>
+                <h2>Disabled</h2>
+                <p>Enabling disabled property of a Tab prevents user interaction.</p>
+                <div class="TabsRoot" rdxTabsRoot activationMode="manual" defaultValue="tab1">
+                    <div class="TabsList" rdxTabsList>
+                        <button class="TabsTrigger" rdxTabsTrigger value="tab1">Account</button>
+                        <button class="TabsTrigger" rdxTabsTrigger disabled value="tab2">Password</button>
+                    </div>
+                    <div class="TabsContent" rdxTabsContent value="tab1">
+                        <p class="Text">Make changes to your account here. Click save when you're done.</p>
+                        <fieldset class="Fieldset">
+                            <label class="Label" for="name">Name</label>
+                            <input class="Input" id="name" value="Pedro Duarte" />
+                        </fieldset>
+                        <fieldset class="Fieldset">
+                            <label class="Label" for="username">Username</label>
+                            <input class="Input" id="username" value="@peduarte" />
+                        </fieldset>
+                        <div style="display: flex; margin-top: 20px; justify-content: flex-end; ">
+                            <button class="Button green">Save changes</button>
+                        </div>
+                    </div>
+                    <div class="TabsContent" rdxTabsContent value="tab2">
+                        <p class="Text">Change your password here. After saving, you'll be logged out.</p>
+                        <fieldset class="Fieldset">
+                            <label class="Label" for="currentPassword">Current password</label>
+                            <input class="Input" id="currentPassword" type="password" />
+                        </fieldset>
+                        <fieldset class="Fieldset">
+                            <label class="Label" for="newPassword">New password</label>
+                            <input class="Input" id="newPassword" type="password" />
+                        </fieldset>
+                        <fieldset class="Fieldset">
+                            <label class="Label" for="confirmPassword">Confirm password</label>
+                            <input class="Input" id="confirmPassword" type="password" />
+                        </fieldset>
+                        <div style="display: flex; margin-top: 20px; justify-content: flex-end;">
+                            <button class="Button green">Change password</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
         `
     })
 };
