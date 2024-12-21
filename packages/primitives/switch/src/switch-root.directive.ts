@@ -70,16 +70,27 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
 
     /**
      * When true, indicates that the user must check the switch before the owning form can be submitted.
+     *
+     * @default false
+     * @group Props
      */
     readonly required = input<boolean, BooleanInput>(false, {
         transform: booleanAttribute
     });
 
-    readonly ariaLabelledBy = input<string | null>(null, {
+    /**
+     * @default null
+     * @group Props
+     */
+    readonly ariaLabelledBy = input<string | undefined>(undefined, {
         alias: 'aria-labelledby'
     });
 
-    readonly ariaLabel = input<string | null>(null, {
+    /**
+     * @default null
+     * @group Props
+     */
+    readonly ariaLabel = input<string | undefined>(undefined, {
         alias: 'aria-label'
     });
 
@@ -90,6 +101,10 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
      */
     readonly checked = model<boolean>(false);
 
+    /**
+     * @default false
+     * @group Props
+     */
     readonly defaultChecked = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
@@ -101,6 +116,8 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
 
     /**
      * When true, prevents the user from interacting with the switch.
+     * @default false
+     * @group Props
      */
     readonly disabled = input<boolean, BooleanInput>(false, {
         transform: booleanAttribute

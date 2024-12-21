@@ -25,7 +25,7 @@
         "primitives:build": "nx run-many --targets=build,compodoc --projects=primitives",
         "primitives:test": "nx run primitives:test",
         "primitives:ssr:serve": "nx serve radix-ssr-testing",
-        "build:apidoc": "node tools/scripts/api-doc/build.mjs",
+        "primitives:build:typedoc": "node tools/scripts/api-doc/build.mjs",
         "----Radix Docs---": "-----------------------------------------------------------------------",
         "radix-docs:dev": "nx run radix-docs:dev",
         "radix-docs:build": "nx run radix-docs:build",

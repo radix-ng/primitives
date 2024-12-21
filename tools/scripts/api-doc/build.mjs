@@ -18,7 +18,7 @@ export async function generateComponentsTypeDocs() {
     const app = await TypeDoc.Application.bootstrapWithPlugins({
         name: 'RadixNG',
         entryPointStrategy: 'expand',
-        entryPoints: ['./packages/primitives/separator', './packages/primitives/switch'],
+        entryPoints: ['./packages/primitives'],
         hideGenerator: true,
         includeVersion: true,
         disableSources: false,
@@ -354,8 +354,10 @@ export async function generateComponentsTypeDocs() {
 
         const typedocJSON = JSON.stringify(doc, null, 2);
 
-        !fs.existsSync('./tmp/api-doc') && fs.mkdirSync('./tmp/api-doc');
-        fs.writeFileSync(path.resolve('./tmp/api-doc', 'primitives.json'), typedocJSON);
+        const outputDir = './apps/radix-docs/src/api-doc';
+
+        !fs.existsSync(outputDir) && fs.mkdirSync(outputDir);
+        fs.writeFileSync(path.resolve(outputDir, 'primitives.json'), typedocJSON);
     }
 }
 

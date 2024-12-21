@@ -1,0 +1,804 @@
+{
+    "accordion": {
+        "components": {}
+    },
+    "accordion-content.directive": {
+        "components": {}
+    },
+    "accordion-header.directive": {
+        "components": {}
+    },
+    "accordion-item.directive": {
+        "components": {}
+    },
+    "accordion-root.directive": {
+        "components": {
+            "RdxAccordionRootDirective": {
+                "description": "",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "disabled",
+                            "optional": false,
+                            "readonly": false,
+                            "type": "boolean",
+                            "default": "false",
+                            "description": "Whether the Accordion is disabled."
+                        },
+                        {
+                            "name": "defaultValue",
+                            "optional": false,
+                            "readonly": false,
+                            "type": "string | string[]",
+                            "description": "The value of the item to expand when initially rendered and type is \"single\".\nUse when you do not need to control the state of the items."
+                        },
+                        {
+                            "name": "value",
+                            "optional": false,
+                            "readonly": false,
+                            "type": "string | string[]",
+                            "description": "The controlled value of the item to expand."
+                        }
+                    ]
+                },
+                "emits": {
+                    "description": "Defines emit that determine the behavior of the component based on a given condition or report the actions that the component takes.",
+                    "values": [
+                        {
+                            "name": "onValueChange",
+                            "parameters": [
+                                {
+                                    "name": "value",
+                                    "type": "void"
+                                }
+                            ],
+                            "description": "Event handler called when the expanded state of an item changes and type is \"multiple\"."
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "accordion-trigger.directive": {
+        "components": {}
+    },
+    "alert-dialog": {
+        "components": {}
+    },
+    "alert-dialog-cancel.directive": {
+        "components": {}
+    },
+    "alert-dialog-content.directive": {
+        "components": {}
+    },
+    "alert-dialog-root.directive": {
+        "components": {}
+    },
+    "alert-dialog-title.directive": {
+        "components": {}
+    },
+    "alert-dialog-trigger.directive": {
+        "components": {}
+    },
+    "alert-dialog.service": {
+        "components": {}
+    },
+    "aspect-ratio": {
+        "components": {}
+    },
+    "aspect-ratio.directive": {
+        "components": {}
+    },
+    "avatar": {
+        "components": {}
+    },
+    "avatar-fallback.directive": {
+        "components": {}
+    },
+    "avatar-image.directive": {
+        "components": {}
+    },
+    "avatar-root.directive": {
+        "components": {}
+    },
+    "avatar.config": {
+        "components": {}
+    },
+    "button-abstract.directive": {
+        "components": {}
+    },
+    "checkbox": {
+        "components": {}
+    },
+    "checkbox-button.directive": {
+        "components": {}
+    },
+    "checkbox-indicator.directive": {
+        "components": {}
+    },
+    "checkbox-input.directive": {
+        "components": {}
+    },
+    "checkbox.directive": {
+        "components": {}
+    },
+    "checkbox.token": {
+        "components": {}
+    },
+    "checkbox-group.component": {
+        "components": {}
+    },
+    "checkbox-indeterminate.component": {
+        "components": {}
+    },
+    "collapsible": {
+        "components": {}
+    },
+    "collapsible-content.directive": {
+        "components": {}
+    },
+    "collapsible-content.token": {
+        "components": {}
+    },
+    "collapsible-root.directive": {
+        "components": {}
+    },
+    "collapsible-trigger.directive": {
+        "components": {}
+    },
+    "collapsible-animation.component": {
+        "components": {}
+    },
+    "collapsible-external-triggering.component": {
+        "components": {}
+    },
+    "context-menu": {
+        "components": {}
+    },
+    "context-menu-content.directive": {
+        "components": {}
+    },
+    "context-menu-item-checkbox.directive": {
+        "components": {}
+    },
+    "context-menu-item-indicator.directive": {
+        "components": {}
+    },
+    "context-menu-item-radio-group.directive": {
+        "components": {}
+    },
+    "context-menu-item-radio.directive": {
+        "components": {}
+    },
+    "context-menu-item-selectable": {
+        "components": {}
+    },
+    "context-menu-item.directive": {
+        "components": {}
+    },
+    "context-menu-label.directive": {
+        "components": {}
+    },
+    "context-menu-separator.directive": {
+        "components": {}
+    },
+    "context-menu-trigger.directive": {
+        "components": {}
+    },
+    "core": {
+        "components": {}
+    },
+    "provide-value-accessor": {
+        "components": {}
+    },
+    "auto-focus.directive": {
+        "components": {}
+    },
+    "control-value-accessor": {
+        "components": {}
+    },
+    "assert-injector": {
+        "components": {}
+    },
+    "create-inject-context": {
+        "components": {}
+    },
+    "document": {
+        "components": {}
+    },
+    "id-generator": {
+        "components": {}
+    },
+    "inject-ng-control": {
+        "components": {}
+    },
+    "is-client": {
+        "components": {}
+    },
+    "is-inside-form": {
+        "components": {}
+    },
+    "mount": {
+        "components": {}
+    },
+    "types": {
+        "components": {}
+    },
+    "window": {
+        "components": {}
+    },
+    "dialog": {
+        "components": {}
+    },
+    "dialog-close.directive": {
+        "components": {}
+    },
+    "dialog-content.directive": {
+        "components": {}
+    },
+    "dialog-description.directive": {
+        "components": {}
+    },
+    "dialog-dismiss.directive": {
+        "components": {}
+    },
+    "dialog-ref": {
+        "components": {}
+    },
+    "dialog-title.directive": {
+        "components": {}
+    },
+    "dialog-trigger.directive": {
+        "components": {}
+    },
+    "dialog.config": {
+        "components": {}
+    },
+    "dialog.injectors": {
+        "components": {}
+    },
+    "dialog.providers": {
+        "components": {}
+    },
+    "dialog.service": {
+        "components": {}
+    },
+    "dropdown-menu": {
+        "components": {}
+    },
+    "dropdown-menu-content.directive": {
+        "components": {}
+    },
+    "dropdown-menu-item-checkbox.directive": {
+        "components": {}
+    },
+    "dropdown-menu-item-indicator.directive": {
+        "components": {}
+    },
+    "dropdown-menu-item-radio-group.directive": {
+        "components": {}
+    },
+    "dropdown-menu-item-radio.directive": {
+        "components": {}
+    },
+    "dropdown-menu-item-selectable": {
+        "components": {}
+    },
+    "dropdown-menu-item.directive": {
+        "components": {}
+    },
+    "dropdown-menu-label.directive": {
+        "components": {}
+    },
+    "dropdown-menu-separator.directive": {
+        "components": {}
+    },
+    "dropdown-menu-trigger.directive": {
+        "components": {}
+    },
+    "dropdown-menu-item-checkbox.component": {
+        "components": {}
+    },
+    "dropdown-menu-item-radio.component": {
+        "components": {}
+    },
+    "jest.config": {
+        "components": {}
+    },
+    "label": {
+        "components": {}
+    },
+    "label.directive": {
+        "components": {}
+    },
+    "menu": {
+        "components": {}
+    },
+    "menu-content.directive": {
+        "components": {}
+    },
+    "menu-directive": {
+        "components": {}
+    },
+    "menu-group.directive": {
+        "components": {}
+    },
+    "menu-item.directive": {
+        "components": {}
+    },
+    "menu-label.directive": {
+        "components": {}
+    },
+    "menu-separator.directive": {
+        "components": {}
+    },
+    "menubar": {
+        "components": {}
+    },
+    "menubar-content.directive": {
+        "components": {}
+    },
+    "menubar-item-checkbox.directive": {
+        "components": {}
+    },
+    "menubar-item-indicator.directive": {
+        "components": {}
+    },
+    "menubar-item-radio.directive": {
+        "components": {}
+    },
+    "menubar-item.directive": {
+        "components": {}
+    },
+    "menubar-radio-group.directive": {
+        "components": {}
+    },
+    "menubar-root.directive": {
+        "components": {}
+    },
+    "menubar-separator.directive": {
+        "components": {}
+    },
+    "menubar-trigger.directive": {
+        "components": {}
+    },
+    "popover": {
+        "components": {}
+    },
+    "popover-anchor.directive": {
+        "components": {}
+    },
+    "popover-anchor.token": {
+        "components": {}
+    },
+    "popover-arrow.directive": {
+        "components": {}
+    },
+    "popover-arrow.token": {
+        "components": {}
+    },
+    "popover-close.directive": {
+        "components": {}
+    },
+    "popover-close.token": {
+        "components": {}
+    },
+    "popover-content-attributes.component": {
+        "components": {}
+    },
+    "popover-content-attributes.token": {
+        "components": {}
+    },
+    "popover-content.directive": {
+        "components": {}
+    },
+    "popover-root.directive": {
+        "components": {}
+    },
+    "popover-root.inject": {
+        "components": {}
+    },
+    "popover-trigger.directive": {
+        "components": {}
+    },
+    "popover.constants": {
+        "components": {}
+    },
+    "popover.types": {
+        "components": {}
+    },
+    "popover.utils": {
+        "components": {}
+    },
+    "popover-anchor.component": {
+        "components": {}
+    },
+    "popover-animations.component": {
+        "components": {}
+    },
+    "popover-default.component": {
+        "components": {}
+    },
+    "popover-events.components": {
+        "components": {}
+    },
+    "popover-initially-open.component": {
+        "components": {}
+    },
+    "popover-multiple.component": {
+        "components": {}
+    },
+    "popover-positioning.component": {
+        "components": {}
+    },
+    "popover-triggering.component": {
+        "components": {}
+    },
+    "constants": {
+        "components": {}
+    },
+    "containers.registry": {
+        "components": {}
+    },
+    "ignore-click-outside-container-base.class": {
+        "components": {}
+    },
+    "styles.constants": {
+        "components": {}
+    },
+    "with-event-base.component": {
+        "components": {}
+    },
+    "presence-test.component": {
+        "components": {}
+    },
+    "presence": {
+        "components": {}
+    },
+    "transition.collapse": {
+        "components": {}
+    },
+    "transition.toast": {
+        "components": {}
+    },
+    "utils": {
+        "components": {}
+    },
+    "presence-story.componen": {
+        "components": {}
+    },
+    "progress": {
+        "components": {}
+    },
+    "progress-indicator.directive": {
+        "components": {}
+    },
+    "progress-root.directive": {
+        "components": {}
+    },
+    "radio": {
+        "components": {}
+    },
+    "radio-indicator.directive": {
+        "components": {}
+    },
+    "radio-item-input.directive": {
+        "components": {}
+    },
+    "radio-item.directive": {
+        "components": {}
+    },
+    "radio-root.directive": {
+        "components": {}
+    },
+    "radio-tokens": {
+        "components": {}
+    },
+    "radio-group.component": {
+        "components": {}
+    },
+    "roving-focus": {
+        "components": {}
+    },
+    "roving-focus-group.directive": {
+        "components": {}
+    },
+    "roving-focus-item.directive": {
+        "components": {}
+    },
+    "roving-focus-events.component": {
+        "components": {}
+    },
+    "select": {
+        "components": {}
+    },
+    "select-content.directive": {
+        "components": {}
+    },
+    "select-group.directive": {
+        "components": {}
+    },
+    "select-icon.directive": {
+        "components": {}
+    },
+    "select-item-indicator.directive": {
+        "components": {}
+    },
+    "select-item.directive": {
+        "components": {}
+    },
+    "select-label.directive": {
+        "components": {}
+    },
+    "select-separator.directive": {
+        "components": {}
+    },
+    "select-trigger.directive": {
+        "components": {}
+    },
+    "select-value.directive": {
+        "components": {}
+    },
+    "select.component": {
+        "components": {}
+    },
+    "separator": {
+        "components": {}
+    },
+    "separator.directive": {
+        "components": {
+            "RdxSeparatorRootDirective": {
+                "description": "Directive that adds accessible and configurable separator element to the DOM.\nThis can be either horizontal or vertical and optionally decorative (which removes\nit from the accessibility tree).",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "orientation",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<\"horizontal\" | \"vertical\">",
+                            "default": "'horizontal'",
+                            "description": "Orientation of the separator, can be either 'horizontal' or 'vertical'."
+                        },
+                        {
+                            "name": "decorative",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "false",
+                            "description": "If true, the separator will be considered decorative and removed from\nthe accessibility tree. Defaults to false."
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "slider": {
+        "components": {}
+    },
+    "slider-horizontal.component": {
+        "components": {}
+    },
+    "slider-impl.directive": {
+        "components": {}
+    },
+    "slider-orientation-context.service": {
+        "components": {}
+    },
+    "slider-range.component": {
+        "components": {}
+    },
+    "slider-root.component": {
+        "components": {}
+    },
+    "slider-thumb-impl.directive": {
+        "components": {}
+    },
+    "slider-thumb.component": {
+        "components": {}
+    },
+    "slider-track.component": {
+        "components": {}
+    },
+    "slider-vertical.component": {
+        "components": {}
+    },
+    "switch": {
+        "components": {}
+    },
+    "switch-input.directive": {
+        "components": {
+            "RdxSwitchInputDirective": {
+                "description": ""
+            }
+        }
+    },
+    "switch-root.directive": {
+        "components": {
+            "RdxSwitchRootDirective": {
+                "description": "",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "required",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "...",
+                            "description": "When true, indicates that the user must check the switch before the owning form can be submitted."
+                        },
+                        {
+                            "name": "ariaLabelledBy",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<undefined | string>",
+                            "default": "...",
+                            "description": ""
+                        },
+                        {
+                            "name": "ariaLabel",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<undefined | string>",
+                            "default": "...",
+                            "description": ""
+                        },
+                        {
+                            "name": "checked",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "ModelSignal<boolean>",
+                            "default": "false",
+                            "description": "The controlled state of the switch. Must be used in conjunction with onCheckedChange."
+                        },
+                        {
+                            "name": "defaultChecked",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "...",
+                            "description": ""
+                        },
+                        {
+                            "name": "disabled",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "...",
+                            "description": "When true, prevents the user from interacting with the switch."
+                        }
+                    ]
+                },
+                "emits": {
+                    "description": "Defines emit that determine the behavior of the component based on a given condition or report the actions that the component takes.",
+                    "values": [
+                        {
+                            "name": "onCheckedChange",
+                            "parameters": [
+                                {
+                                    "name": "value",
+                                    "type": "boolean"
+                                }
+                            ],
+                            "description": "Event handler called when the state of the switch changes."
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "switch-thumb.directive": {
+        "components": {
+            "RdxSwitchThumbDirective": {
+                "description": ""
+            }
+        }
+    },
+    "switch-forms.component": {
+        "components": {}
+    },
+    "tabs": {
+        "components": {}
+    },
+    "tabs-content.directive": {
+        "components": {}
+    },
+    "tabs-list.directive": {
+        "components": {}
+    },
+    "tabs-root.directive": {
+        "components": {}
+    },
+    "tabs-trigger.directive": {
+        "components": {}
+    },
+    "toggle-group": {
+        "components": {}
+    },
+    "toggle-group-item.directive": {
+        "components": {}
+    },
+    "toggle-group-item.token": {
+        "components": {}
+    },
+    "toggle-group-multiple.directive": {
+        "components": {}
+    },
+    "toggle-group.directive": {
+        "components": {}
+    },
+    "toggle-group.token": {
+        "components": {}
+    },
+    "toggle": {
+        "components": {}
+    },
+    "toggle-visually-hidden-input.directive": {
+        "components": {}
+    },
+    "toggle.directive": {
+        "components": {}
+    },
+    "toggle-forms.component": {
+        "components": {}
+    },
+    "tooltip": {
+        "components": {}
+    },
+    "get-content-position": {
+        "components": {}
+    },
+    "tooltip-arrow.directive": {
+        "components": {}
+    },
+    "tooltip-arrow.token": {
+        "components": {}
+    },
+    "tooltip-content-attributes.directive": {
+        "components": {}
+    },
+    "tooltip-content.directive": {
+        "components": {}
+    },
+    "tooltip-content.token": {
+        "components": {}
+    },
+    "tooltip-root.directive": {
+        "components": {}
+    },
+    "tooltip-trigger.directive": {
+        "components": {}
+    },
+    "tooltip.config": {
+        "components": {}
+    },
+    "tooltip.constants": {
+        "components": {}
+    },
+    "tooltip.types": {
+        "components": {}
+    },
+    "tooltip-events.components": {
+        "components": {}
+    },
+    "tooltip-positioning.component": {
+        "components": {}
+    },
+    "tooltip-triggering.component": {
+        "components": {}
+    },
+    "visually-hidden": {
+        "components": {}
+    },
+    "visually-hidden-input-bubble.directive": {
+        "components": {}
+    },
+    "visually-hidden-input.directive": {
+        "components": {}
+    },
+    "visually-hidden.directive": {
+        "components": {}
+    }
+}

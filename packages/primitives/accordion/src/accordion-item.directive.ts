@@ -127,8 +127,12 @@ export class RdxAccordionItemDirective implements FocusableOption, OnDestroy {
 
     private _disabled = false;
 
-    /** Event emitted every time the AccordionItem is closed. */
+    /**
+     * Event emitted every time the AccordionItem is closed.
+     *
+     */
     @Output() readonly closed: EventEmitter<void> = new EventEmitter<void>();
+
     /** Event emitted every time the AccordionItem is opened. */
     @Output() readonly opened: EventEmitter<void> = new EventEmitter<void>();
 

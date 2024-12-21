@@ -4,13 +4,6 @@ slug: accordion
 section: components
 description: .
 ---
-import {
-    attrDataContent, attrDataCSSContent,
-    attrDataHeader,
-    attrDataItem,
-    attrDataRoot,
-    attrDataTrigger
-} from '../../../demos/primitives/accordion/attrs';
 
 # Accordion
 <Description>A vertically stacked set of interactive headings that each reveal an associated section of content.</Description>
@@ -25,27 +18,53 @@ import {
 
 ### Root
 <PropsTable name="RdxAccordionRootDirective" />
-<DataAttributesTable attributes={attrDataRoot} />
+
+<EmitsTable name="RdxAccordionRootDirective" />
+
+<DataAttributesTable attributes={[
+    { name: '[data-orientation]', value: '"vertical" | "horizontal"' }]
+} />
+
 
 ### Item
 Contains all the parts of a collapsible section.
 
 <PropsTable name="RdxAccordionItemDirective" />
-<DataAttributesTable attributes={attrDataItem} />
+
+<DataAttributesTable attributes={[
+    { name: '[data-state]', value: '"open" | "closed"' },
+    { name: '[data-disabled]', value: 'Present when disabled' },
+    { name: '[data-orientation]', value: '"vertical" | "horizontal"' }
+]} />
 
 ### Header
 
 Wraps an `rdxAccordionTrigger`.
-<DataAttributesTable attributes={attrDataHeader} />
+<DataAttributesTable attributes={[
+    { name: '[data-state]', value: '"open" | "closed"' },
+    { name: '[data-disabled]', value: 'Present when disabled' },
+    { name: '[data-orientation]', value: '"vertical" | "horizontal"' }
+]} />
 
 ### Trigger
 
 Toggles the collapsed state of its associated item. It should be nested inside an `rdxAccordionHeader`.
-<DataAttributesTable attributes={attrDataTrigger} />
+<DataAttributesTable attributes={[
+    { name: '[data-state]', value: '"open" | "closed"' },
+    { name: '[data-disabled]', value: 'Present when disabled' },
+    { name: '[data-orientation]', value: '"vertical" | "horizontal"' }
+]} />
 
 ### Content
 
 Contains the collapsible content for an item.
-<DataAttributesTable attributes={attrDataContent} />
+<DataAttributesTable attributes={[
+    { name: '[data-state]', value: '"open" | "closed"' },
+    { name: '[data-disabled]', value: 'Present when disabled' },
+    { name: '[data-orientation]', value: '"vertical" | "horizontal"' }
+]} />
 
-<CSSVariablesTable attributes={attrDataCSSContent} />
+<CSSVariablesTable attributes={[
+    { name: '--radix-accordion-content-width', value: 'The width of the content when it opens/closes' },
+    { name: '--radix-accordion-content-height', value: 'The height of the content when it opens/closes' }
+]} />
