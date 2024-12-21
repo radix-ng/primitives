@@ -125,9 +125,6 @@
             "@taxonomy/*": [
                 "apps/showcase-taxonomy/src/app/*"
             ],
-            "docs-manifest": [
-                "packages/docs-manifest/src/index.ts"
-            ],
             "themer": [
                 "packages/themer/src/index.ts"
             ]
