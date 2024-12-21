@@ -132,14 +132,14 @@ export class WithEventBaseComponent implements AfterContentInit {
 
     private onOverlayEscapeKeyDown = () => {
         this.addMessage({
-            value: `[PopoverRoot] Escape clicked! (preventDefault: ${this.onOverlayEscapeKeyDownDisabled()})`,
+            value: `[PopoverRoot] Escape clicked! (disabled: ${this.onOverlayEscapeKeyDownDisabled()})`,
             timeFromPrev: this.timeFromPrev()
         });
     };
 
     private onOverlayOutsideClick = () => {
         this.addMessage({
-            value: `[PopoverRoot] Mouse clicked outside the popover! (preventDefault: ${this.onOverlayOutsideClickDisabled()})`,
+            value: `[PopoverRoot] Mouse clicked outside the popover! (disabled: ${this.onOverlayOutsideClickDisabled()})`,
             timeFromPrev: this.timeFromPrev()
         });
     };

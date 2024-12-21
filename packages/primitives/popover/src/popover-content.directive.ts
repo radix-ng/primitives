@@ -74,11 +74,13 @@ export class RdxPopoverContentDirective implements OnInit {
     readonly onOverlayOutsideClickDisabled = input(false);
 
     /**
-     * @description Event handler called when the escape key is down. It can be prevented by calling event.preventDefault.
+     * @description Event handler called when the escape key is down.
+     * It can be prevented by setting `onOverlayEscapeKeyDownDisabled` input to `true`.
      */
     readonly onOverlayEscapeKeyDown = output<KeyboardEvent>();
     /**
-     * @description Event handler called when a pointer event occurs outside the bounds of the component. It can be prevented by calling event.preventDefault.
+     * @description Event handler called when a pointer event occurs outside the bounds of the component.
+     * It can be prevented by setting `onOverlayOutsideClickDisabled` input to `true`.
      */
     readonly onOverlayOutsideClick = output<MouseEvent>();
 
