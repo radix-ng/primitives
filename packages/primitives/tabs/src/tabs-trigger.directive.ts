@@ -1,5 +1,5 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { booleanAttribute, computed, Directive, inject, input, InputSignalWithTransform } from '@angular/core';
+import { booleanAttribute, computed, Directive, effect, inject, input, InputSignalWithTransform } from '@angular/core';
 import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 import { RDX_TABS_ROOT_TOKEN } from './tabs-root.directive';
 import { makeContentId, makeTriggerId } from './utils';
@@ -35,6 +35,8 @@ interface TabsTriggerProps {
     }
 })
 export class RdxTabsTriggerDirective implements TabsTriggerProps {
+    private readonly rdxRovingFocusItemDirective = inject(RdxRovingFocusItemDirective);
+
     protected readonly tabsContext = inject(RDX_TABS_ROOT_TOKEN);
 
     // A unique value that associates the trigger with a content.
@@ -49,6 +51,10 @@ export class RdxTabsTriggerDirective implements TabsTriggerProps {
     protected readonly triggerId = computed(() => makeTriggerId(this.tabsContext.getBaseId(), this.value()));
 
     protected readonly isSelected = computed(() => this.tabsContext.value() === this.value());
+
+    constructor() {
+        effect(() => (this.rdxRovingFocusItemDirective.active = this.isSelected()));
+    }
 
     protected onMouseDown(event: MouseEvent) {
         // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
