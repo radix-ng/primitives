@@ -47,6 +47,7 @@ const config = {
                 'slider',
                 'tooltip',
                 'kbd',
+                'tabs',
                 'radix-docs',
                 'radix-ssr-testing',
                 'roving-focus',

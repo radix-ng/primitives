@@ -18,7 +18,8 @@ import { injectToggleGroup } from './toggle-group.token';
         '[attr.data-state]': 'checked ? "on" : "off"',
         '[attr.data-orientation]': 'toggleGroup.orientation',
 
-        '(click)': 'toggle()'
+        '(click)': 'toggle()',
+        '(focus)': 'focus()'
     }
 })
 export class RdxToggleGroupItemDirective implements OnChanges, FocusableOption {

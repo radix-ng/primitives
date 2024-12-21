@@ -14,8 +14,8 @@ import {
 import { Check, Dot, LucideAngularModule, Menu } from 'lucide-angular';
 
 @Component({
-    standalone: true,
     selector: 'dropdown-menu-demo',
+    standalone: true,
     styleUrl: 'dropdown-menu-demo.css',
     imports: [
         RdxDropdownMenuTriggerDirective,

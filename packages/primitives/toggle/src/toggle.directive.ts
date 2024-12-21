@@ -92,14 +92,16 @@ export class RdxToggleDirective implements ControlValueAccessor {
     protected togglePressed(): void {
         if (!this.disabled()) {
             this.pressed.set(!this.pressed());
+            this.onChange(this.pressed());
             this.onPressedChange.emit(this.pressed());
         }
     }
 
     private readonly accessorDisabled = signal(false);
 
-    private onChange: ((value: any) => void) | undefined;
-    private onTouched: (() => void) | undefined;
+    private onChange: (value: any) => void = () => {};
+    /** @ignore */
+    onTouched: (() => void) | undefined;
 
     /** @ignore */
     writeValue(value: any): void {

@@ -2,7 +2,7 @@ import { Component, computed, effect, signal } from '@angular/core';
 import { RdxProgressIndicatorDirective, RdxProgressRootDirective } from '@radix-ng/primitives/progress';
 
 @Component({
-    selector: 'progress-demo',
+    selector: 'raidx-progress-demo',
     standalone: true,
     imports: [
         RdxProgressIndicatorDirective,

@@ -7,6 +7,7 @@ import {
 } from '@radix-ng/primitives/avatar';
 
 @Component({
+    selector: 'radix-avatar-demo',
     standalone: true,
     imports: [RdxAvatarRootDirective, RdxAvatarImageDirective, RdxAvatarFallbackDirective],
     template: `

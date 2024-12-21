@@ -1,0 +1,107 @@
+import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
+import * as TabsStories from './tabs.stories';
+import { RdxTabsRootDirective } from '../src/tabs-root.directive';
+import { RdxTabsTriggerDirective } from '../src/tabs-trigger.directive';
+import { RdxTabsContentDirective } from '../src/tabs-content.directive';
+
+<Meta title="Primitives/Tabs" />
+
+# Tabs
+
+#### A set of layered sections of content—known as tab panels—that are displayed one at a time.
+
+<Canvas sourceState="hidden" of={TabsStories.Default} />
+
+## Features
+
+- ✅ Can be controlled or uncontrolled.
+- ✅ Supports horizontal/vertical orientation.
+- ✅ Full keyboard navigation.
+
+## Import
+
+Get started with importing the directives:
+
+```typescript
+import {
+    RdxTabsRootDirective,
+    RdxTabsListDirective,
+    RdxTabsTriggerDirective,
+    RdxTabsContentDirective } from '@radix-ng/primitives/tabs';
+```
+
+## Anatomy
+
+```html
+<div rdxTabsRoot>
+    <div rdxTabsList>
+        <button rdxTabsTrigger></button>
+        <button rdxTabsTrigger></button>
+        <button rdxTabsTrigger></button>
+    </div>
+    <div rdxTabsContent></div>
+    <div rdxTabsContent></div>
+    <div rdxTabsContent></div>
+</div>
+```
+
+## API Reference
+
+### TabsRoot
+
+`RdxTabsRootDirective`
+
+<ArgTypes of={RdxTabsRootDirective} />
+
+### TabsList
+
+`RdxTabsListDirective`
+
+<Markdown>
+    {`
+| Data attribute | Value          |
+|----------------|----------------|
+| [data-orientation]   | <code>"vertical" | "horizontal"</code>
+`}
+</Markdown>
+
+### TabsTrigger
+
+`RdxTabsTriggerDirective`
+
+<ArgTypes of={RdxTabsTriggerDirective} />
+
+### TabsContent
+
+`RdxTabsContentDirective`
+
+<ArgTypes of={RdxTabsContentDirective} />
+
+## Accessibility
+
+Adheres to the [Tabs WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabs).
+
+### Keyboard Interactions
+
+**Screen Reader**
+
+Tabs container is defined with the **tablist** role, as any attribute is passed to the container element **aria-labelledby** can be
+optionally used to specify an element to describe the Tabs. Each tab header has a **tab** role along with **aria-selected**
+state attribute and **aria-controls** to refer to the corresponding tab content element.
+
+The content element of each tab has **tabpanel** role, an id to match the **aria-controls** of the header and **aria-labelledby**
+reference to the header as the accessible name.
+
+<Markdown>
+    {`
+  | Key | Description |
+  | ----------- | --------- |
+  | Tab       | When focus moves onto the tabs, focuses the active trigger. When a trigger is focused, moves focus to the active content.        |
+  | ArrowDown       | Moves focus to the next trigger depending on **orientation** and activates its associated content.    |
+  | ArrowRight | Moves focus to the next trigger depending on **orientation** and activates its associated content. |
+  | ArrowUp | Moves focus to the previous trigger depending on **orientation** and activates its associated content. |
+  | ArrowLeft | Moves focus to the previous trigger depending on **orientation** and activates its associated content. |
+  | Home | Moves focus to the first trigger and activates its associated content. |
+  | End | Moves focus to the last trigger and activates its associated content. |
+  `}
+</Markdown>

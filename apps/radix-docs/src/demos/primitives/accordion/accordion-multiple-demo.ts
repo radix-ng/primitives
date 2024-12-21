@@ -8,7 +8,7 @@ import {
 } from '@radix-ng/primitives/accordion';
 
 @Component({
-    selector: 'accordion-demo',
+    selector: 'radix-accordion-demo',
     standalone: true,
     imports: [
         RdxAccordionRootDirective,

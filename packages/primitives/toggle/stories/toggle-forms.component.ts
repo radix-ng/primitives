@@ -9,7 +9,7 @@ import { RdxToggleDirective } from '../src/toggle.directive';
     imports: [ReactiveFormsModule, RdxToggleDirective, RdxToggleVisuallyHiddenInputDirective],
     styleUrl: 'toggle.styles.css',
     template: `
-        <form [formGroup]="formGroup">
+        <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
             <button class="Toggle" #toggle="rdxToggle" formControlName="pressed" rdxToggle aria-label="Toggle bold">
                 <input
                     [name]="'toggleDef'"
@@ -23,6 +23,8 @@ import { RdxToggleDirective } from '../src/toggle.directive';
                     Off
                 }
             </button>
+
+            <button class="Button violet" style="margin-top: 8px;" type="submit">Submit</button>
         </form>
     `
 })
@@ -33,5 +35,9 @@ export class ToggleButtonReactiveForms implements OnInit {
         this.formGroup = new FormGroup({
             pressed: new FormControl<boolean>(true)
         });
+    }
+
+    onSubmit(): void {
+        console.log(this.formGroup.value);
     }
 }
