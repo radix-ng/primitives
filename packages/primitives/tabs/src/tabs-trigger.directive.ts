@@ -78,7 +78,8 @@ export class RdxTabsTriggerDirective implements TabsTriggerProps {
     }
 
     protected onFocus() {
-        if (!this.isSelected() && !this.disabled()) {
+        const isAutomaticActivation = this.tabsContext.activationMode() !== 'manual';
+        if (!this.isSelected() && !this.disabled() && isAutomaticActivation) {
             this.tabsContext?.select(this.value());
         }
     }

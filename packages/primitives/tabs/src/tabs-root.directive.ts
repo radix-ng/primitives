@@ -47,6 +47,11 @@ export class RdxTabsRootDirective implements OnInit {
     readonly defaultValue = input<string>();
 
     /**
+     * When automatic, tabs are activated when receiving focus. When manual, tabs are activated when clicked.
+     */
+    readonly activationMode = input<'automatic' | 'manual'>('automatic');
+
+    /**
      * The orientation of the component.
      */
     readonly orientation = input<DataOrientation>('horizontal');
