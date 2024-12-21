@@ -56,40 +56,26 @@ export function getContentPosition(
     sideAndAlignWithOffsets: RdxSideAndAlign & RdxSideAndAlignOffsets
 ): ConnectedPosition {
     const { side, align, sideOffset, alignOffset } = sideAndAlignWithOffsets;
-
     const position = {
         ...(POPOVER_POSITIONS[side]?.[align] ?? POPOVER_POSITIONS[RdxPopoverSide.Top][RdxPopoverAlign.Center])
     };
-
-    if (sideOffset > 0) {
-        let xFactor = 0;
-        let yFactor = 0;
-
-        switch (side) {
-            case RdxPopoverSide.Top:
-                yFactor = -1;
-                break;
-            case RdxPopoverSide.Bottom:
-                yFactor = 1;
-                break;
-            case RdxPopoverSide.Left:
-                xFactor = -1;
-                break;
-            case RdxPopoverSide.Right:
-                xFactor = 1;
-                break;
+    if (sideOffset || alignOffset) {
+        if ([RdxPopoverSide.Top, RdxPopoverSide.Bottom].includes(side)) {
+            if (sideOffset) {
+                position.offsetY = side === RdxPopoverSide.Top ? -sideOffset : sideOffset;
+            }
+            if (alignOffset) {
+                position.offsetX = alignOffset;
+            }
+        } else {
+            if (sideOffset) {
+                position.offsetX = side === RdxPopoverSide.Left ? -sideOffset : sideOffset;
+            }
+            if (alignOffset) {
+                position.offsetY = alignOffset;
+            }
         }
-
-        position.offsetX = xFactor * sideOffset;
-        position.offsetY = yFactor * sideOffset;
     }
-
-    if ([RdxPopoverAlign.Start, RdxPopoverAlign.End].includes(align) && alignOffset) {
-        const alignOffsetFactor = align === RdxPopoverAlign.End ? -1 : 1;
-
-        position.offsetX = alignOffsetFactor * alignOffset;
-    }
-
     return position;
 }
 
