@@ -175,6 +175,12 @@ function styles(withAnimations = false, withEvents = false, withParams = true) {
     align-items: center;
     border: 3px dashed var(--white-a8);
     border-radius: 12px;
+    &.focused {
+        border-color: var(--white-a12);
+        -webkit-box-shadow: 0px 0px 24px 0px var(--white-a12);
+        -moz-box-shadow: 0px 0px 24px 0px var(--white-a12);
+        box-shadow: 0px 0px 24px 0px var(--white-a12);
+    }
 }
 
 .ContainerAlerts {
@@ -183,7 +189,7 @@ function styles(withAnimations = false, withEvents = false, withParams = true) {
     color: var(--white-a8);
     font-size: 16px;
     line-height: 16px;
-    margin: 0 0 8px 0;
+    margin: 0 0 24px 0;
 }
 
 /* reset */

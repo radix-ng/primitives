@@ -11,6 +11,7 @@ import {
 import { RdxPopoverModule } from '../index';
 import { RdxPopoverAnchorDirective } from '../src/popover-anchor.directive';
 import { RdxPopoverContentAttributesComponent } from '../src/popover-content-attributes.component';
+import { provideRdxCdkEventService } from '../src/utils/cdk-event.service';
 import { containerAlert } from './utils/constants';
 import { IgnoreClickOutsideContainerBase } from './utils/ignore-click-outside-container-base.class';
 import styles from './utils/styles.constants';
@@ -19,6 +20,7 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
 @Component({
     selector: 'rdx-popover-anchor',
     standalone: true,
+    providers: [provideRdxCdkEventService()],
     imports: [
         FormsModule,
         RdxPopoverModule,
@@ -30,7 +32,10 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
     styles: styles(),
     template: `
         <p class="ExampleSubtitle">Internal Anchor (within PopoverRoot)</p>
-        <popover-with-event-base>
+        <popover-with-event-base
+            (onOverlayEscapeKeyDownDisabledChange)="onOverlayEscapeKeyDownDisabled.set($event)"
+            (onOverlayOutsideClickDisabledChange)="onOverlayOutsideClickDisabled.set($event)"
+        >
             <div class="ContainerAlerts">
                 <lucide-angular [img]="TriangleAlert" size="16" />
                 {{ containerAlert }}
@@ -45,7 +50,11 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                     </button>
 
-                    <ng-template rdxPopoverContent>
+                    <ng-template
+                        [onOverlayEscapeKeyDownDisabled]="onOverlayEscapeKeyDownDisabled()"
+                        [onOverlayOutsideClickDisabled]="onOverlayOutsideClickDisabled()"
+                        rdxPopoverContent
+                    >
                         <div class="PopoverContent" rdxPopoverContentAttributes>
                             <button class="reset PopoverClose" rdxPopoverClose aria-label="Close">
                                 <lucide-angular [img]="XIcon" size="16" style="display: flex" />
@@ -78,7 +87,10 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
         </popover-with-event-base>
 
         <p class="ExampleSubtitle">External Anchor (outside PopoverRoot)</p>
-        <popover-with-event-base>
+        <popover-with-event-base
+            (onOverlayEscapeKeyDownDisabledChange)="onOverlayEscapeKeyDownDisabled.set($event)"
+            (onOverlayOutsideClickDisabledChange)="onOverlayOutsideClickDisabled.set($event)"
+        >
             <div class="ContainerAlerts">
                 <lucide-angular [img]="TriangleAlert" size="16" />
                 {{ containerAlert }}
@@ -93,7 +105,11 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                     </button>
 
-                    <ng-template rdxPopoverContent>
+                    <ng-template
+                        [onOverlayEscapeKeyDownDisabled]="onOverlayEscapeKeyDownDisabled()"
+                        [onOverlayOutsideClickDisabled]="onOverlayOutsideClickDisabled()"
+                        rdxPopoverContent
+                    >
                         <div class="PopoverContent" rdxPopoverContentAttributes>
                             <button class="reset PopoverClose" rdxPopoverClose aria-label="Close">
                                 <lucide-angular [img]="XIcon" size="16" style="display: flex" />

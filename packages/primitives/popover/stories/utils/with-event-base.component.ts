@@ -1,11 +1,20 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { AfterContentInit, Component, computed, contentChild, ElementRef, inject, input, signal } from '@angular/core';
+import {
+    AfterContentInit,
+    Component,
+    computed,
+    contentChild,
+    ElementRef,
+    inject,
+    isDevMode,
+    model,
+    signal
+} from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RdxPopoverContentDirective } from '../../src/popover-content.directive';
 import { RdxPopoverRootDirective } from '../../src/popover-root.directive';
 import { paramsAndEventsOnly } from './styles.constants';
-
-type Message = { value: string; timeFromPrev: number };
+import { Message } from './types';
 
 @Component({
     selector: 'popover-with-event-base',
@@ -19,17 +28,17 @@ type Message = { value: string; timeFromPrev: number };
 
         <div class="ParamsContainer">
             <input
-                [ngModel]="onEscapeKeyDownPreventDefault()()"
-                (ngModelChange)="onEscapeKeyDownPreventDefault().set($event)"
+                [ngModel]="onOverlayEscapeKeyDownDisabled()"
+                (ngModelChange)="onOverlayEscapeKeyDownDisabled.set($event)"
                 type="checkbox"
             />
-            (onEscapeKeyDown) prevent default
+            (onOverlayEscapeKeyDown) disabled
             <input
-                [ngModel]="onOutsideClickPreventDefault()()"
-                (ngModelChange)="onOutsideClickPreventDefault().set($event)"
+                [ngModel]="onOverlayOutsideClickDisabled()"
+                (ngModelChange)="onOverlayOutsideClickDisabled.set($event)"
                 type="checkbox"
             />
-            (onOutsideClick) prevent default
+            (onOverlayOutsideClick) disabled
         </div>
 
         <ng-content />
@@ -62,8 +71,8 @@ type Message = { value: string; timeFromPrev: number };
     standalone: true
 })
 export class WithEventBaseComponent implements AfterContentInit {
-    onEscapeKeyDownPrevent = input(false);
-    onOutsideClickPrevent = input(false);
+    onOverlayEscapeKeyDownDisabled = model(false);
+    onOverlayOutsideClickDisabled = model(false);
 
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
@@ -73,9 +82,6 @@ export class WithEventBaseComponent implements AfterContentInit {
     readonly paramsContainerCounter = signal(0);
 
     readonly messages = signal<Message[]>([]);
-    readonly onEscapeKeyDownPreventDefault = computed(() => signal(this.onEscapeKeyDownPrevent()));
-    readonly onOutsideClickPreventDefault = computed(() => signal(this.onOutsideClickPrevent()));
-
     readonly rootUniqueId = computed(() => this.popoverRootDirective().uniqueId());
 
     /**
@@ -97,17 +103,19 @@ export class WithEventBaseComponent implements AfterContentInit {
     ngAfterContentInit() {
         this.popoverContentDirective().onOpen.subscribe(this.onOpen);
         this.popoverContentDirective().onClosed.subscribe(this.onClose);
-        this.popoverContentDirective().onOutsideClick.subscribe(this.onOutsideClick);
-        this.popoverContentDirective().onEscapeKeyDown.subscribe(this.onEscapeKeyDown);
+        this.popoverContentDirective().onOverlayOutsideClick.subscribe(this.onOverlayOutsideClick);
+        this.popoverContentDirective().onOverlayEscapeKeyDown.subscribe(this.onOverlayEscapeKeyDown);
 
         /**
          * There should be only one container. If there is more, en error is thrown.
          */
         this.containers = Array.from(this.elementRef.nativeElement?.querySelectorAll('.container') ?? []);
         if (this.containers.length > 1) {
-            console.error('<story>.elementRef.nativeElement', this.elementRef.nativeElement);
-            console.error('<story>.containers', this.containers);
-            throw Error('each story should have only one container!');
+            if (isDevMode()) {
+                console.error('<story>.elementRef.nativeElement', this.elementRef.nativeElement);
+                console.error('<story>.containers', this.containers);
+                throw Error('each story should have only one container!');
+            }
         }
         this.paramsContainers = Array.from(this.elementRef.nativeElement?.querySelectorAll('.ParamsContainer') ?? []);
 
@@ -122,23 +130,18 @@ export class WithEventBaseComponent implements AfterContentInit {
         return !!this.paramsContainers?.find((container) => container.contains(element));
     }
 
-    private onEscapeKeyDown = (event: KeyboardEvent) => {
+    private onOverlayEscapeKeyDown = () => {
         this.addMessage({
-            value: `[PopoverRoot] Escape clicked! (preventDefault: ${this.onEscapeKeyDownPreventDefault()()})`,
+            value: `[PopoverRoot] Escape clicked! (preventDefault: ${this.onOverlayEscapeKeyDownDisabled()})`,
             timeFromPrev: this.timeFromPrev()
         });
-        this.onEscapeKeyDownPreventDefault()() && event.preventDefault();
     };
 
-    private onOutsideClick = (event: MouseEvent) => {
-        // if (!this.inContainers(event.target as HTMLElement)) {
-        //     return;
-        // }
+    private onOverlayOutsideClick = () => {
         this.addMessage({
-            value: `[PopoverRoot] Mouse clicked outside the popover! (preventDefault: ${this.onOutsideClickPreventDefault()()})`,
+            value: `[PopoverRoot] Mouse clicked outside the popover! (preventDefault: ${this.onOverlayOutsideClickDisabled()})`,
             timeFromPrev: this.timeFromPrev()
         });
-        this.onOutsideClickPreventDefault()() && event.preventDefault();
     };
 
     private onOpen = () => {

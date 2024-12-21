@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, MountainSnowIcon, TriangleAlert, X } from 'lucide-angular';
 import { RdxPopoverAlign, RdxPopoverModule, RdxPopoverRootDirective, RdxPopoverSide } from '../index';
 import { RdxPopoverContentAttributesComponent } from '../src/popover-content-attributes.component';
+import { provideRdxCdkEventService } from '../src/utils/cdk-event.service';
 import { containerAlert } from './utils/constants';
 import { IgnoreClickOutsideContainerBase } from './utils/ignore-click-outside-container-base.class';
 import styles from './utils/styles.constants';
@@ -11,6 +12,7 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
 @Component({
     selector: 'rdx-popover-events',
     standalone: true,
+    providers: [provideRdxCdkEventService()],
     imports: [
         RdxPopoverModule,
         LucideAngularModule,
@@ -22,7 +24,10 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
         ${styles()}
     `,
     template: `
-        <popover-with-event-base>
+        <popover-with-event-base
+            (onOverlayEscapeKeyDownDisabledChange)="onOverlayEscapeKeyDownDisabled.set($event)"
+            (onOverlayOutsideClickDisabledChange)="onOverlayOutsideClickDisabled.set($event)"
+        >
             <div class="ContainerAlerts">
                 <lucide-angular [img]="TriangleAlert" size="16" />
                 {{ containerAlert }}
@@ -33,7 +38,12 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                     </button>
 
-                    <ng-template [sideOffset]="8" rdxPopoverContent>
+                    <ng-template
+                        [onOverlayEscapeKeyDownDisabled]="onOverlayEscapeKeyDownDisabled()"
+                        [onOverlayOutsideClickDisabled]="onOverlayOutsideClickDisabled()"
+                        [sideOffset]="8"
+                        rdxPopoverContent
+                    >
                         <div class="PopoverContent" rdxPopoverContentAttributes>
                             <button class="reset PopoverClose" rdxPopoverClose aria-label="Close">
                                 <lucide-angular [img]="XIcon" size="16" style="display: flex" />
