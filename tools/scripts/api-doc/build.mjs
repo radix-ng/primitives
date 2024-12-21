@@ -214,37 +214,6 @@ export async function generateComponentsTypeDocs() {
                                     doc[name]['components'][componentName]['events'] = events;
                                 }
 
-                                const component_templates_group = component.groups.find((g) => g.title === 'Templates');
-                                if (isProcessable(component_templates_group)) {
-                                    const templates = {
-                                        description: staticMessages['templates'],
-                                        values: []
-                                    };
-
-                                    component_templates_group.children.forEach((template) => {
-                                        const templateType = template.type && template.type.toString();
-                                        let contextType = 'unknown';
-
-                                        const match = templateType && templateType.match(/TemplateRef<(.+)>/);
-                                        if (match && match[1]) {
-                                            contextType = match[1];
-                                        }
-                                        templates.values.push({
-                                            name: template.name.replace(/Template$/, '').toLowerCase(),
-                                            description:
-                                                template.comment &&
-                                                template.comment.summary.map((s) => s.text || '').join(' '),
-                                            type: templateType,
-                                            parameters: parameters(template).map((param) =>
-                                                param.name === 'context' ? { ...param, type: contextType } : param
-                                            ),
-                                            deprecated: getDeprecatedText(template)
-                                        });
-                                    });
-
-                                    doc[name]['components'][componentName]['templates'] = templates;
-                                }
-
                                 const component_types_group = component.groups.find((g) => g.title === 'Types');
                                 if (isProcessable(component_types_group)) {
                                     const types = {
