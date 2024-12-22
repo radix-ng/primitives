@@ -24,6 +24,7 @@
                             "readonly": false,
                             "type": "boolean",
                             "default": "false",
+                            "defaultValue": "false",
                             "description": "Whether the Accordion is disabled."
                         },
                         {
@@ -559,6 +560,7 @@
                             "readonly": true,
                             "type": "InputSignal<\"horizontal\" | \"vertical\">",
                             "default": "'horizontal'",
+                            "defaultValue": "'horizontal'",
                             "description": "Orientation of the separator, can be either 'horizontal' or 'vertical'."
                         },
                         {
@@ -567,6 +569,7 @@
                             "readonly": true,
                             "type": "InputSignalWithTransform<boolean, BooleanInput>",
                             "default": "false",
+                            "defaultValue": "false",
                             "description": "If true, the separator will be considered decorative and removed from\nthe accessibility tree. Defaults to false."
                         }
                     ]
@@ -627,6 +630,7 @@
                             "readonly": true,
                             "type": "InputSignalWithTransform<boolean, BooleanInput>",
                             "default": "...",
+                            "defaultValue": "...",
                             "description": "When true, indicates that the user must check the switch before the owning form can be submitted."
                         },
                         {
@@ -635,6 +639,7 @@
                             "readonly": true,
                             "type": "InputSignal<undefined | string>",
                             "default": "...",
+                            "defaultValue": "...",
                             "description": ""
                         },
                         {
@@ -643,6 +648,7 @@
                             "readonly": true,
                             "type": "InputSignal<undefined | string>",
                             "default": "...",
+                            "defaultValue": "...",
                             "description": ""
                         },
                         {
@@ -651,6 +657,7 @@
                             "readonly": true,
                             "type": "ModelSignal<boolean>",
                             "default": "false",
+                            "defaultValue": "false",
                             "description": "The controlled state of the switch. Must be used in conjunction with onCheckedChange."
                         },
                         {
@@ -659,6 +666,7 @@
                             "readonly": true,
                             "type": "InputSignalWithTransform<boolean, BooleanInput>",
                             "default": "...",
+                            "defaultValue": "...",
                             "description": ""
                         },
                         {
@@ -667,6 +675,7 @@
                             "readonly": true,
                             "type": "InputSignalWithTransform<boolean, BooleanInput>",
                             "default": "...",
+                            "defaultValue": "...",
                             "description": "When true, prevents the user from interacting with the switch."
                         }
                     ]

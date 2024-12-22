@@ -28,6 +28,7 @@ export const processComponentProps = (propsChildren) => {
             readonly: prop.flags?.isReadonly,
             type: prop.getSignature?.type?.toString() || prop.type?.toString() || null,
             default: isBooleanType && !prop.defaultValue ? 'false' : defaultValue,
+            defaultValue: isBooleanType && !prop.defaultValue ? 'false' : defaultValue,
             description: getCommentSummary(prop.getSignature?.comment || prop.setSignature?.comment || prop.comment),
             deprecated:
                 getDeprecatedText(prop.getSignature) || getDeprecatedText(prop.setSignature) || getDeprecatedText(prop)
