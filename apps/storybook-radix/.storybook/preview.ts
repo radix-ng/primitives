@@ -11,6 +11,11 @@ const preview: Preview = {
             const existAnchor = context.canvasElement.closest(`#${storyAnchor}`);
             const storyContainer = context.canvasElement.closest('.sbdocs');
 
+            /**
+             * Fix for https://github.com/radix-ng/primitives/issues/220
+             */
+            context.canvasElement.closest('[scale]')?.setAttribute('style', 'height: auto !important;');
+
             if (!existAnchor && storyContainer) {
                 storyContainer.id = storyAnchor;
             }
