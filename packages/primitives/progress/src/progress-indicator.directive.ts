@@ -19,7 +19,6 @@ import { injectProgress } from './progress-root.directive';
 })
 export class RdxProgressIndicatorDirective {
     /**
-     *
      * This allows the directive to access the progress bar state and values.
      */
     protected readonly progress = injectProgress();

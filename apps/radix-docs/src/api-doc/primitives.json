@@ -29,7 +29,7 @@
                             "optional": false,
                             "readonly": false,
                             "type": "string",
-                            "description": "Whether the Accordion is value."
+                            "description": "Accordion value."
                         },
                         {
                             "name": "disabled",
@@ -279,7 +279,49 @@
         "components": {}
     },
     "collapsible-root.directive": {
-        "components": {}
+        "components": {
+            "RdxCollapsibleRootDirective": {
+                "description": "",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "disabled",
+                            "optional": false,
+                            "readonly": false,
+                            "type": "boolean",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "Determines whether a directive is available for interaction.\nWhen true, prevents the user from interacting with the collapsible."
+                        },
+                        {
+                            "name": "open",
+                            "optional": false,
+                            "readonly": false,
+                            "type": "boolean",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "The controlled open state of the collapsible.\nSets the state of the directive.  `true`  - expanded,  `false`  - collapsed"
+                        }
+                    ]
+                },
+                "emits": {
+                    "description": "Defines emit that determine the behavior of the component based on a given condition or report the actions that the component takes.",
+                    "values": [
+                        {
+                            "name": "onOpenChange",
+                            "parameters": [
+                                {
+                                    "name": "value",
+                                    "type": "boolean"
+                                }
+                            ],
+                            "description": "Emitted with new value when directive state changed.\nEvent handler called when the open state of the collapsible changes."
+                        }
+                    ]
+                }
+            }
+        }
     },
     "collapsible-trigger.directive": {
         "components": {}
@@ -447,7 +489,25 @@
         "components": {}
     },
     "label.directive": {
-        "components": {}
+        "components": {
+            "RdxLabelDirective": {
+                "description": "",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "htmlFor",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<string>",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "The id of the element the label is associated with."
+                        }
+                    ]
+                }
+            }
+        }
     },
     "menu": {
         "components": {}
@@ -612,7 +672,43 @@
         "components": {}
     },
     "progress-root.directive": {
-        "components": {}
+        "components": {
+            "RdxProgressRootDirective": {
+                "description": "Directive to manage progress bar state and attributes.\n\nThis directive provides a way to create a progress bar with customizable value and max attributes.\nIt handles aria attributes for accessibility and provides different states like 'indeterminate', 'complete', and 'loading'.",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "value",
+                            "optional": false,
+                            "readonly": false,
+                            "type": "number",
+                            "default": "0",
+                            "defaultValue": "0",
+                            "description": "The current value of the progress bar."
+                        },
+                        {
+                            "name": "max",
+                            "optional": false,
+                            "readonly": false,
+                            "type": "number",
+                            "default": "100",
+                            "defaultValue": "100",
+                            "description": "The maximum value of the progress bar."
+                        },
+                        {
+                            "name": "valueLabel",
+                            "optional": false,
+                            "readonly": false,
+                            "type": "(value: number, max: number) => string",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": "Function to generate the value label."
+                        }
+                    ]
+                }
+            }
+        }
     },
     "radio": {
         "components": {}
