@@ -32,13 +32,13 @@ import { Message } from './types';
                 (ngModelChange)="onOverlayEscapeKeyDownDisabled.set($event)"
                 type="checkbox"
             />
-            (onOverlayEscapeKeyDown) disabled
+            Disable (onOverlayEscapeKeyDown) event
             <input
                 [ngModel]="onOverlayOutsideClickDisabled()"
                 (ngModelChange)="onOverlayOutsideClickDisabled.set($event)"
                 type="checkbox"
             />
-            (onOverlayOutsideClick) disabled
+            Disable (onOverlayOutsideClick) event
         </div>
 
         <ng-content />

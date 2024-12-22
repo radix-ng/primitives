@@ -52,7 +52,8 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
                     (ngModelChange)="disableAlternatePositions.set($event)"
                     type="checkbox"
                 />
-                Alternate positions (to see the result, scroll the page to make the popover cross the viewport boundary)
+                Disable alternate positions (to see the result, scroll the page to make the popover cross the viewport
+                boundary)
             </div>
 
             <div class="ContainerAlerts">
