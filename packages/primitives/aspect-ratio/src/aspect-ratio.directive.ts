@@ -15,6 +15,7 @@ import {
  * The element will have its `padding-bottom` dynamically calculated
  * based on the provided aspect ratio to maintain the desired ratio.
  * The content inside the element will be positioned absolutely.
+ * @group Components
  */
 @Directive({
     selector: '[rdxAspectRatio]',
@@ -27,12 +28,14 @@ import {
     }
 })
 export class RdxAspectRatioDirective implements AfterViewInit {
-    private element = inject(ElementRef);
-    private renderer = inject(Renderer2);
+    private readonly element = inject(ElementRef);
+    private readonly renderer = inject(Renderer2);
 
     /**
      * The desired aspect ratio (e.g., 16/9).
      * By default, it is set to 1 (which results in a square, 1:1).
+     * @group Props
+     * @defaultValue 1
      */
     readonly ratio = input<number, NumberInput>(1, { transform: numberAttribute });
 
@@ -42,7 +45,6 @@ export class RdxAspectRatioDirective implements AfterViewInit {
      *
      * If the ratio is zero, it defaults to `0%` to avoid division by zero.
      *
-     * @ignore
      */
     protected readonly paddingBottom = computed(() => {
         const ratioValue = this.ratio();

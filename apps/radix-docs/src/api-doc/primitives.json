@@ -156,16 +156,85 @@
         "components": {}
     },
     "aspect-ratio.directive": {
-        "components": {}
+        "components": {
+            "RdxAspectRatioDirective": {
+                "description": "Directive to maintain an aspect ratio for an element.\nThe element will have its  `padding-bottom`  dynamically calculated\nbased on the provided aspect ratio to maintain the desired ratio.\nThe content inside the element will be positioned absolutely.",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "ratio",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<number, NumberInput>",
+                            "default": "1",
+                            "defaultValue": "1",
+                            "description": "The desired aspect ratio (e.g., 16/9).\nBy default, it is set to 1 (which results in a square, 1:1)."
+                        }
+                    ]
+                }
+            }
+        }
     },
     "avatar": {
         "components": {}
     },
     "avatar-fallback.directive": {
-        "components": {}
+        "components": {
+            "RdxAvatarFallbackDirective": {
+                "description": "",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "delayMs",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<number>",
+                            "default": "0",
+                            "defaultValue": "0",
+                            "description": "Useful for delaying rendering so it only appears for those with slower connections."
+                        }
+                    ]
+                }
+            }
+        }
     },
     "avatar-image.directive": {
-        "components": {}
+        "components": {
+            "RdxAvatarImageDirective": {
+                "description": "",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "src",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<undefined | string>",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": ""
+                        }
+                    ]
+                },
+                "emits": {
+                    "description": "Defines emit that determine the behavior of the component based on a given condition or report the actions that the component takes.",
+                    "values": [
+                        {
+                            "name": "onLoadingStatusChange",
+                            "parameters": [
+                                {
+                                    "name": "value",
+                                    "type": "RdxImageLoadingStatus"
+                                }
+                            ],
+                            "description": "A callback providing information about the loading status of the image.\nThis is useful in case you want to control more precisely what to render as the image is loading."
+                        }
+                    ]
+                }
+            }
+        }
     },
     "avatar-root.directive": {
         "components": {}

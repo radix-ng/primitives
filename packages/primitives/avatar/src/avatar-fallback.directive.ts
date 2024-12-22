@@ -2,6 +2,9 @@ import { computed, Directive, effect, inject, input, OnDestroy, signal } from '@
 import { RdxAvatarRootContext } from './avatar-root.directive';
 import { injectAvatarConfig } from './avatar.config';
 
+/**
+ * @group Components
+ */
 @Directive({
     selector: 'span[rdxAvatarFallback]',
     standalone: true,
@@ -15,6 +18,12 @@ export class RdxAvatarFallbackDirective implements OnDestroy {
 
     private readonly config = injectAvatarConfig();
 
+    /**
+     * Useful for delaying rendering so it only appears for those with slower connections.
+     *
+     * @group Props
+     * @defaultValue 0
+     */
     readonly delayMs = input<number>(this.config.delayMs);
 
     protected readonly shouldRender = computed(

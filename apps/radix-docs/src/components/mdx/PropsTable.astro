@@ -30,7 +30,7 @@ const data = getComponentData(name)?.props?.values || [];
                                             data-accent-color="gray"
                                             class="rt-reset rt-Code rt-r-size-2 rt-variant-soft"
                                         >
-                                            {defaultValue ? defaultValue : '—'}
+                                            {defaultValue && defaultValue !== '...' ? defaultValue : '—'}
                                         </code>
                                     </div>
                                 </div>
