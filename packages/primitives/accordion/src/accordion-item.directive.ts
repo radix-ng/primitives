@@ -104,7 +104,7 @@ export class RdxAccordionItemDirective implements FocusableOption, OnDestroy {
     private _expanded = false;
 
     /**
-     * Whether the Accordion is value.
+     * Accordion value.
      *
      * @group Props
      */
