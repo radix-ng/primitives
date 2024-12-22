@@ -105,6 +105,10 @@
         --docsearch-logo-color: #fff;
         --docsearch-muted-color: #7f8497;
     }
+
+    * {
+        @apply border-border;
+    }
 }
 
 .radix-themes-custom-fonts .radix-themes:not(.radix-themes-default-fonts),

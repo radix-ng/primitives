@@ -429,6 +429,9 @@ importers:
       classnames:
         specifier: ^2.5.1
         version: 2.5.1
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       mdast-util-directive:
         specifier: ^3.0.0
         version: 3.0.0
@@ -444,6 +447,9 @@ importers:
       tailwindcss:
         specifier: ^3.4.15
         version: 3.4.15(ts-node@10.9.1(@swc/core@1.5.7(@swc/helpers@0.5.11))(@types/node@22.10.1)(typescript@5.5.4))
+      tailwindcss-animate:
+        specifier: ^1.0.7
+        version: 1.0.7(tailwindcss@3.4.15(ts-node@10.9.1(@swc/core@1.5.7(@swc/helpers@0.5.11))(@types/node@22.10.1)(typescript@5.5.4)))
       unist-util-visit:
         specifier: ^5.0.0
         version: 5.0.0
@@ -497,16 +503,6 @@ importers:
       classnames:
         specifier: ^2.5.1
         version: 2.5.1
-
-  packages/docs-manifest:
-    dependencies:
-      tslib:
-        specifier: ^2.6.3
-        version: 2.8.1
-    optionalDependencies:
-      typedoc:
-        specifier: ~0.26.11
-        version: 0.26.11(typescript@5.5.4)
 
   packages/primitives:
     dependencies:
@@ -13125,6 +13121,11 @@ packages:
     peerDependencies:
       tailwindcss: '*'
 
+  tailwindcss-animate@1.0.7:
+    resolution: {integrity: sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA==}
+    peerDependencies:
+      tailwindcss: '>=3.0.0 || insiders'
+
   tailwindcss@3.4.15:
     resolution: {integrity: sha512-r4MeXnfBmSOuKUWmXe6h2CcyfzJCEk4F0pptO5jlnYSIViUkVmsawj80N5h2lO3gwcmSb4n3PuN+e+GC1Guylw==}
     engines: {node: '>=14.0.0'}
@@ -13482,13 +13483,6 @@ packages:
 
   typed-assert@1.0.9:
     resolution: {integrity: sha512-KNNZtayBCtmnNmbo5mG47p1XsCyrx6iVqomjcZnec/1Y5GGARaxPs6r49RnSPeUP3YjNYiU9sQHAtY4BBvnZwg==}
-
-  typedoc@0.26.11:
-    resolution: {integrity: sha512-sFEgRRtrcDl2FxVP58Ze++ZK2UQAEvtvvH8rRlig1Ja3o7dDaMHmaBfvJmdGnNEFaLTpQsN8dpvZaTqJSu/Ugw==}
-    engines: {node: '>= 18'}
-    hasBin: true
-    peerDependencies:
-      typescript: 4.6.x || 4.7.x || 4.8.x || 4.9.x || 5.0.x || 5.1.x || 5.2.x || 5.3.x || 5.4.x || 5.5.x || 5.6.x
 
   typedoc@0.27.5:
     resolution: {integrity: sha512-x+fhKJtTg4ozXwKayh/ek4wxZQI/+2hmZUdO2i2NGDBRUflDble70z+ewHod3d4gRpXSO6fnlnjbDTnJk7HlkQ==}
@@ -31890,6 +31884,10 @@ snapshots:
       tailwind-merge: 2.5.5
       tailwindcss: 3.4.15(ts-node@10.9.1(@swc/core@1.5.7(@swc/helpers@0.5.11))(@types/node@22.10.1)(typescript@5.5.4))
 
+  tailwindcss-animate@1.0.7(tailwindcss@3.4.15(ts-node@10.9.1(@swc/core@1.5.7(@swc/helpers@0.5.11))(@types/node@22.10.1)(typescript@5.5.4))):
+    dependencies:
+      tailwindcss: 3.4.15(ts-node@10.9.1(@swc/core@1.5.7(@swc/helpers@0.5.11))(@types/node@22.10.1)(typescript@5.5.4))
+
   tailwindcss@3.4.15(ts-node@10.9.1(@swc/core@1.5.7(@swc/helpers@0.5.11))(@types/node@20.17.10)(typescript@5.5.4)):
     dependencies:
       '@alloc/quick-lru': 5.2.0
@@ -32347,16 +32345,6 @@ snapshots:
       mime-types: 2.1.35
 
   typed-assert@1.0.9: {}
-
-  typedoc@0.26.11(typescript@5.5.4):
-    dependencies:
-      lunr: 2.3.9
-      markdown-it: 14.1.0
-      minimatch: 9.0.5
-      shiki: 1.24.0
-      typescript: 5.5.4
-      yaml: 2.6.1
-    optional: true
 
   typedoc@0.27.5(typescript@5.5.4):
     dependencies:
