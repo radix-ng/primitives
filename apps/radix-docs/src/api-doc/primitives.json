@@ -474,7 +474,44 @@
         "components": {}
     },
     "dropdown-menu-trigger.directive": {
-        "components": {}
+        "components": {
+            "RdxDropdownMenuTriggerDirective": {
+                "description": "",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "side",
+                            "optional": false,
+                            "readonly": false,
+                            "type": "DropdownSide",
+                            "description": "The preferred side of the trigger to render against when open.\nWill be reversed when collisions occur and  `avoidCollisions`  is enabled."
+                        },
+                        {
+                            "name": "align",
+                            "optional": false,
+                            "readonly": false,
+                            "type": "DropdownAlign",
+                            "description": "The preferred alignment against the trigger. May change when collisions occur."
+                        },
+                        {
+                            "name": "sideOffset",
+                            "optional": false,
+                            "readonly": false,
+                            "type": "number",
+                            "description": "The distance in pixels from the trigger."
+                        },
+                        {
+                            "name": "alignOffset",
+                            "optional": false,
+                            "readonly": false,
+                            "type": "number",
+                            "description": "An offset in pixels from the \"start\" or \"end\" alignment options."
+                        }
+                    ]
+                }
+            }
+        }
     },
     "dropdown-menu-item-checkbox.component": {
         "components": {}
