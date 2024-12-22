@@ -32,10 +32,6 @@ const isProcessable = (value) => {
     return value && value.children && value.children.length;
 };
 
-const allowed = (name) => {
-    return !name.includes('ts-helpers') && !name.includes('icons');
-};
-
 const getTypesValue = (typeobj) => {
     let { type } = typeobj;
 
@@ -102,4 +98,14 @@ const parameters = (template) => {
     return _parameters;
 };
 
-export { allowed, extractParameter, getDeprecatedText, getTypesValue, isProcessable, parameters, parseText };
+/**
+ * Хелпер для извлечения строкового описания из .comment.summary
+ * @param {Object} comment
+ * @returns {string}
+ */
+const getCommentSummary = (comment) => {
+    if (!comment?.summary) return '';
+    return comment.summary.map((s) => s.text || '').join(' ');
+};
+
+export { extractParameter, getCommentSummary, getDeprecatedText, getTypesValue, isProcessable, parameters, parseText };
