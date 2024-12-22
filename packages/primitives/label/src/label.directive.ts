@@ -2,6 +2,9 @@ import { computed, Directive, ElementRef, inject, input, InputSignal } from '@an
 
 let idIterator = 0;
 
+/**
+ * @group Components
+ */
 @Directive({
     selector: 'label[rdxLabel]',
     exportAs: 'rdxLabel',
@@ -19,21 +22,16 @@ export class RdxLabelDirective {
      */
     readonly id: InputSignal<string> = input<string>(`rdx-label-${idIterator++}`);
 
-    /**
-     * @ignore
-     */
     protected readonly elementId = computed(() => (this.id() ? this.id() : null));
 
     /**
      * The id of the element the label is associated with.
+     * @group Props
      * @type string
-     * @default false
+     * @defaultValue false
      */
     readonly htmlFor: InputSignal<string> = input<string>('');
 
-    /**
-     * @ignore
-     */
     private readonly elementRef = inject(ElementRef<HTMLElement>);
 
     // prevent text selection when double-clicking label

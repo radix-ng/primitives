@@ -1,6 +1,9 @@
 import { Directive } from '@angular/core';
 import { injectSwitch } from './switch-root.directive';
 
+/**
+ * @group Components
+ */
 @Directive({
     selector: 'span[rdxSwitchThumb]',
     exportAs: 'rdxSwitchThumb',

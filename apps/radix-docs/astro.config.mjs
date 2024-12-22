@@ -69,6 +69,7 @@ export default defineConfig({
             imports: [
                 './src/components/mdx/PropsTable.astro',
                 './src/components/mdx/Description.astro',
+                './src/components/mdx/EmitsTable.astro',
                 './src/components/mdx/DataAttributesTable.astro',
                 './src/components/mdx/CSSVariablesTable.astro',
                 './src/components/mdx/FeatureList.astro',
