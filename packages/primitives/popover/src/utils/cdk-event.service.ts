@@ -7,7 +7,10 @@ import {
     InjectionToken,
     isDevMode,
     makeEnvironmentProviders,
-    Provider
+    NgZone,
+    Provider,
+    Renderer2,
+    VERSION
 } from '@angular/core';
 import { RdxCdkEventServiceWindowKey } from './constants';
 import { EventType, EventTypeAsPrimitiveConfigKey, PrimitiveConfig, PrimitiveConfigs } from './types';
@@ -20,6 +23,8 @@ function eventTypeAsPrimitiveConfigKey(eventType: EventType): EventTypeAsPrimiti
 class RdxCdkEventService {
     document = inject(DOCUMENT);
     destroyRef = inject(DestroyRef);
+    ngZone = inject(NgZone);
+    renderer2 = inject(Renderer2);
 
     primitiveConfigs?: PrimitiveConfigs;
 
@@ -126,12 +131,35 @@ class RdxCdkEventService {
         const callback = (event: MouseEvent) => {
             this.#clickDomRootEventCallbacks.forEach((clickDomRootEventCallback) => clickDomRootEventCallback(event));
         };
-        target.addEventListener(eventName, callback, options);
-        const destroyClickDomRootEventListener = () => {
-            target.removeEventListener(eventName, callback, options);
-            this.#clickDomRootEventCallbacks.clear();
-        };
-        this.onDestroyCallbacks.add(destroyClickDomRootEventListener);
+
+        const major = parseInt(VERSION.major);
+        const minor = parseInt(VERSION.minor);
+
+        /**
+         * @see src/cdk/platform/features/backwards-compatibility.ts in @angular/cdk
+         */
+        if (major > 19 || (major === 19 && minor > 0) || (major === 0 && minor === 0)) {
+            const destroyClickDomRootEventListenerInternal = this.renderer2.listen(
+                target,
+                eventName,
+                callback,
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-expect-error
+                options
+            );
+            const destroyClickDomRootEventListener = () => {
+                destroyClickDomRootEventListenerInternal();
+                this.#clickDomRootEventCallbacks.clear();
+            };
+            this.onDestroyCallbacks.add(destroyClickDomRootEventListener);
+        } else {
+            this.ngZone.runOutsideAngular(() => target.addEventListener(eventName, callback, options));
+            const destroyClickDomRootEventListener = () => {
+                this.ngZone.runOutsideAngular(() => target.removeEventListener(eventName, callback, options));
+                this.#clickDomRootEventCallbacks.clear();
+            };
+            this.onDestroyCallbacks.add(destroyClickDomRootEventListener);
+        }
     }
 }
 
