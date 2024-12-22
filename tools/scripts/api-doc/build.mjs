@@ -9,7 +9,14 @@ import {
     processComponentProps,
     processComponentTypes
 } from './utility/index.mjs';
-import { extractParameter, getCommentSummary, getDeprecatedText, getTypesValue, isProcessable } from './utils.mjs';
+import {
+    extractParameter,
+    getCommentSummary,
+    getDeprecatedText,
+    getGroupByTitle,
+    getTypesValue,
+    isProcessable
+} from './utils.mjs';
 
 export async function generateComponentsTypeDocs() {
     const app = await TypeDoc.Application.bootstrapWithPlugins({
@@ -60,11 +67,15 @@ export async function generateComponentsTypeDocs() {
             };
         }
 
-        const module_service_group = module.groups.find((g) => g.title === 'Service');
-        const module_components_group = module.groups.find((g) => g.title === 'Components');
-        const module_events_group = module.groups.find((g) => g.title === 'Events');
-        const module_interface_group = module.groups.find((g) => g.title === 'Interface');
-        const module_types_group = module.groups.find((g) => g.title === 'Types');
+        const groupTitles = ['Service', 'Components', 'Events', 'Interface', 'Types'];
+
+        const [
+            module_service_group,
+            module_components_group,
+            module_events_group,
+            module_interface_group,
+            module_types_group
+        ] = groupTitles.map((title) => getGroupByTitle(module, title));
 
         if (isProcessable(module_components_group)) {
             module_components_group.children.forEach((component) => {
@@ -75,11 +86,15 @@ export async function generateComponentsTypeDocs() {
                     description: comment
                 };
 
-                const component_props_group = component.groups.find((g) => g.title === 'Props');
-                const component_emits_group = component.groups.find((g) => g.title === 'Emits');
-                const component_methods_group = component.groups.find((g) => g.title === 'Method');
-                const component_events_group = component.groups.find((g) => g.title === 'Events');
-                const component_types_group = component.groups.find((g) => g.title === 'Types');
+                const groupComponentTitles = ['Props', 'Emits', 'Method', 'Events', 'Types'];
+
+                const [
+                    component_props_group,
+                    component_emits_group,
+                    component_methods_group,
+                    component_events_group,
+                    component_types_group
+                ] = groupComponentTitles.map((title) => getGroupByTitle(component, title));
 
                 if (isProcessable(component_props_group)) {
                     doc[name].components[componentName].props = processComponentProps(component_props_group.children);
@@ -213,7 +228,7 @@ export async function generateComponentsTypeDocs() {
         }
     });
 
-    const typedocJSON = JSON.stringify(doc, null, 2);
+    const typedocJSON = JSON.stringify(doc, null, 4);
     const outputDir = './apps/radix-docs/src/api-doc';
 
     if (!fs.existsSync(outputDir)) {

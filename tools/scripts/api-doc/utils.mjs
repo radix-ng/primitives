@@ -1,4 +1,4 @@
-function extractParameter(emitter) {
+const extractParameter = (emitter) => {
     let { type } = emitter;
 
     if (type && type.typeArguments) {
@@ -26,7 +26,7 @@ function extractParameter(emitter) {
             }
         }
     }
-}
+};
 
 const isProcessable = (value) => {
     return value && value.children && value.children.length;
@@ -99,7 +99,7 @@ const parameters = (template) => {
 };
 
 /**
- * Хелпер для извлечения строкового описания из .comment.summary
+ *
  * @param {Object} comment
  * @returns {string}
  */
@@ -108,4 +108,17 @@ const getCommentSummary = (comment) => {
     return comment.summary.map((s) => s.text || '').join(' ');
 };
 
-export { extractParameter, getCommentSummary, getDeprecatedText, getTypesValue, isProcessable, parameters, parseText };
+const getGroupByTitle = (reflection, title) => {
+    return reflection.groups?.find((g) => g.title === title);
+};
+
+export {
+    extractParameter,
+    getCommentSummary,
+    getDeprecatedText,
+    getGroupByTitle,
+    getTypesValue,
+    isProcessable,
+    parameters,
+    parseText
+};
