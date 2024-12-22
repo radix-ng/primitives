@@ -9,7 +9,56 @@
         "components": {}
     },
     "accordion-item.directive": {
-        "components": {}
+        "components": {
+            "RdxAccordionItemDirective": {
+                "description": "",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "expanded",
+                            "optional": false,
+                            "readonly": false,
+                            "type": "boolean",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": ""
+                        },
+                        {
+                            "name": "value",
+                            "optional": false,
+                            "readonly": false,
+                            "type": "string",
+                            "description": "Whether the Accordion is value."
+                        },
+                        {
+                            "name": "disabled",
+                            "optional": false,
+                            "readonly": false,
+                            "type": "boolean",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "Whether the option is disabled."
+                        }
+                    ]
+                },
+                "emits": {
+                    "description": "Defines emit that determine the behavior of the component based on a given condition or report the actions that the component takes.",
+                    "values": [
+                        {
+                            "name": "expandedChange",
+                            "parameters": [
+                                {
+                                    "name": "value",
+                                    "type": "boolean"
+                                }
+                            ],
+                            "description": "Emits whenever the expanded state of the accordion changes.\nPrimarily used to facilitate two-way binding."
+                        }
+                    ]
+                }
+            }
+        }
     },
     "accordion-root.directive": {
         "components": {
@@ -28,11 +77,29 @@
                             "description": "Whether the Accordion is disabled."
                         },
                         {
+                            "name": "orientation",
+                            "optional": false,
+                            "readonly": false,
+                            "type": "RdxAccordionOrientation",
+                            "default": "'vertical'",
+                            "defaultValue": "'vertical'",
+                            "description": "The orientation of the accordion."
+                        },
+                        {
                             "name": "defaultValue",
                             "optional": false,
                             "readonly": false,
                             "type": "string | string[]",
                             "description": "The value of the item to expand when initially rendered and type is \"single\".\nUse when you do not need to control the state of the items."
+                        },
+                        {
+                            "name": "type",
+                            "optional": false,
+                            "readonly": false,
+                            "type": "RdxAccordionType",
+                            "default": "'single'",
+                            "defaultValue": "'single'",
+                            "description": "Determines whether one or multiple items can be opened at the same time."
                         },
                         {
                             "name": "value",

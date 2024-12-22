@@ -20,7 +20,9 @@ export const processComponentProps = (propsChildren) => {
             defaultValue = defaultValueTag.content?.map((c) => c.text.replace(/```ts\n|```/g, '').trim()).join(' ');
         }
 
-        const isBooleanType = prop.type?.name === 'boolean';
+        const isBooleanType =
+            prop.type?.name === 'boolean' ||
+            (prop.getSignature?.type?.toString() || prop.type?.toString() || null) === 'boolean';
 
         props.values.push({
             name: prop.name,

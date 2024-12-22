@@ -78,6 +78,9 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
 
     /**
      * The orientation of the accordion.
+     *
+     * @defaultValue 'vertical'
+     * @group Props
      */
     @Input() orientation: RdxAccordionOrientation = 'vertical';
     /**
@@ -105,6 +108,8 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
 
     /**
      * Determines whether one or multiple items can be opened at the same time.
+     * @group Props
+     * @defaultValue 'single'
      */
     @Input() type: RdxAccordionType = 'single';
 
