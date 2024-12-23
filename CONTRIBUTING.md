@@ -69,3 +69,34 @@ https://www.conventionalcommits.org/ or check out the
 ## Requests for new components
 
 If you have a request for a new component, please open a discussion on GitHub. We'll be happy to help you out.
+
+## Naming Convention for Methods Declared in `host`
+
+When declaring methods for event bindings in the host property of an Angular component or directive,
+follow these naming conventions to maintain clarity, consistency, and alignment with Angular's style.
+
+### Prefix with `on-`
+
+All methods handling events should be prefixed with on followed by the event name, capitalized in camel case.
+
+```typescript
+@Directive({
+  selector: 'app-example',
+  host: {
+    role: 'role',
+    '(mouseenter)': 'onMouseEnter()',
+    '(mouseleave)': 'onMouseLeave()'
+  }
+})
+export class ExampleDirective {
+  role = 'button';
+
+  onMouseEnter(): void {
+    console.log('Mouse entered!');
+  }
+
+  onMouseLeave(): void {
+    console.log('Mouse left!');
+  }
+}
+```
