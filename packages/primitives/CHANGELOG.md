@@ -1,3 +1,18 @@
+## 0.23.0 (2024-12-23)
+
+### 🚀 Features
+
+- added typedoc generator ([#218](https://github.com/radix-ng/primitives/pull/218))
+
+### 🩹 Fixes
+
+- **popover:** repair offsets calculation ([#219](https://github.com/radix-ng/primitives/pull/219))
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+- pawel-twardziak
+
 ## 0.22.0 (2024-12-21)
 
 ### 🚀 Features
