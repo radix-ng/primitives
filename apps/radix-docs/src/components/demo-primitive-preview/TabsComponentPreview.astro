@@ -1,6 +1,5 @@
 ---
 import { Code } from 'astro-expressive-code/components';
-import StyleSwitcher from './StyleSwitcher.astro';
 import { CodeButtonComponent } from '../code-editor/code-button.component';
 
 type Tab = {
@@ -41,7 +40,7 @@ const { tabs, activeTab, code, css, name } = Astro.props as Props;
     </div>
     <div class="ml-auto flex items-center gap-4">
         <CodeButtonComponent {...{ code, name, css }} client:visible />
-        <StyleSwitcher />
+        <!--<StyleSwitcher />-->
     </div>
 </div>
 
