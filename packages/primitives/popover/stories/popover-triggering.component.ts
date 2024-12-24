@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, MountainSnowIcon, TriangleAlert, X } from 'lucide-angular';
 import { RdxPopoverModule } from '../index';
 import { RdxPopoverContentAttributesComponent } from '../src/popover-content-attributes.component';
+import { provideRdxCdkEventService } from '../src/utils/cdk-event.service';
 import { containerAlert } from './utils/constants';
 import { IgnoreClickOutsideContainerBase } from './utils/ignore-click-outside-container-base.class';
 import styles from './utils/styles.constants';
@@ -11,6 +12,7 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
 @Component({
     selector: 'rdx-popover-triggering',
     standalone: true,
+    providers: [provideRdxCdkEventService()],
     imports: [
         FormsModule,
         RdxPopoverModule,
@@ -21,7 +23,10 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
     styles: styles(),
     template: `
         <p class="ExampleSubtitle">Initially closed</p>
-        <popover-with-event-base>
+        <popover-with-event-base
+            (onOverlayEscapeKeyDownDisabledChange)="onOverlayEscapeKeyDownDisabled.set($event)"
+            (onOverlayOutsideClickDisabledChange)="onOverlayOutsideClickDisabled.set($event)"
+        >
             <div class="ParamsContainer">
                 <button (mouseup)="triggerOpenFalse()" type="button">Open: {{ isOpenFalse() }}</button>
                 onOpenChange count: {{ counterOpenFalse() }}
@@ -53,6 +58,8 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
 
                     <ng-template
                         [sideOffset]="8"
+                        [onOverlayEscapeKeyDownDisabled]="onOverlayEscapeKeyDownDisabled()"
+                        [onOverlayOutsideClickDisabled]="onOverlayOutsideClickDisabled()"
                         (onOpen)="countOpenFalse(true)"
                         (onClosed)="countOpenFalse(false)"
                         rdxPopoverContent
@@ -89,7 +96,10 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
         </popover-with-event-base>
 
         <p class="ExampleSubtitle">Initially open</p>
-        <popover-with-event-base>
+        <popover-with-event-base
+            (onOverlayEscapeKeyDownDisabledChange)="onOverlayEscapeKeyDownDisabled.set($event)"
+            (onOverlayOutsideClickDisabledChange)="onOverlayOutsideClickDisabled.set($event)"
+        >
             <div class="ParamsContainer">
                 <button (mouseup)="triggerOpenTrue()" type="button">Open: {{ isOpenTrue() }}</button>
                 <span>onOpenChange count: {{ counterOpenTrue() }}</span>
@@ -121,6 +131,8 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
 
                     <ng-template
                         [sideOffset]="8"
+                        [onOverlayEscapeKeyDownDisabled]="onOverlayEscapeKeyDownDisabled()"
+                        [onOverlayOutsideClickDisabled]="onOverlayOutsideClickDisabled()"
                         (onOpen)="countOpenTrue(true)"
                         (onClosed)="countOpenTrue(false)"
                         rdxPopoverContent

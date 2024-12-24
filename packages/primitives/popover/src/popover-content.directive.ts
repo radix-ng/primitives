@@ -66,17 +66,23 @@ export class RdxPopoverContentDirective implements OnInit {
      * @description Whether to add some alternate positions of the content.
      * @default false
      */
-    readonly disableAlternatePositions = input(false);
+    readonly alternatePositionsDisabled = input(false);
+
+    /** @description Whether to prevent `onOverlayEscapeKeyDown` handler from calling. */
+    readonly onOverlayEscapeKeyDownDisabled = input(false);
+    /** @description Whether to prevent `onOverlayOutsideClick` handler from calling. */
+    readonly onOverlayOutsideClickDisabled = input(false);
 
     /**
-     * @description Event handler called when the escape key is down. It can be prevented by calling event.preventDefault.
+     * @description Event handler called when the escape key is down.
+     * It can be prevented by setting `onOverlayEscapeKeyDownDisabled` input to `true`.
      */
-    readonly onEscapeKeyDown = output<KeyboardEvent>();
-
+    readonly onOverlayEscapeKeyDown = output<KeyboardEvent>();
     /**
-     * @description Event handler called when a pointer event occurs outside the bounds of the component. It can be prevented by calling event.preventDefault.
+     * @description Event handler called when a pointer event occurs outside the bounds of the component.
+     * It can be prevented by setting `onOverlayOutsideClickDisabled` input to `true`.
      */
-    readonly onOutsideClick = output<MouseEvent>();
+    readonly onOverlayOutsideClick = output<MouseEvent>();
 
     /**
      * @description Event handler called after the overlay is open
@@ -98,6 +104,7 @@ export class RdxPopoverContentDirective implements OnInit {
     /** @ignore */
     ngOnInit() {
         this.setScrollStrategy();
+        this.setHasBackdrop();
         this.setDisableClose();
         this.onAttach();
         this.onDetach();
@@ -135,11 +142,19 @@ export class RdxPopoverContentDirective implements OnInit {
         this.connectedOverlay.overlayKeydown
             .asObservable()
             .pipe(
+                filter(
+                    () =>
+                        !this.onOverlayEscapeKeyDownDisabled() &&
+                        !this.popoverRoot.rdxCdkEventService?.primitivePreventedFromCdkEvent(
+                            this.popoverRoot,
+                            'cdkOverlayEscapeKeyDown'
+                        )
+                ),
                 filter((event) => event.key === 'Escape'),
                 tap((event) => {
-                    this.onEscapeKeyDown.emit(event);
+                    this.onOverlayEscapeKeyDown.emit(event);
                 }),
-                filter((event) => !event.defaultPrevented && !this.popoverRoot.firstDefaultOpen()),
+                filter(() => !this.popoverRoot.firstDefaultOpen()),
                 tap(() => {
                     this.popoverRoot.handleClose();
                 }),
@@ -153,6 +168,14 @@ export class RdxPopoverContentDirective implements OnInit {
         this.connectedOverlay.overlayOutsideClick
             .asObservable()
             .pipe(
+                filter(
+                    () =>
+                        !this.onOverlayOutsideClickDisabled() &&
+                        !this.popoverRoot.rdxCdkEventService?.primitivePreventedFromCdkEvent(
+                            this.popoverRoot,
+                            'cdkOverlayOutsideClick'
+                        )
+                ),
                 /**
                  * Handle the situation when an anchor is added and the anchor becomes the origin of the overlay
                  * hence  the trigger will be considered the outside element
@@ -166,9 +189,9 @@ export class RdxPopoverContentDirective implements OnInit {
                     );
                 }),
                 tap((event) => {
-                    this.onOutsideClick.emit(event);
+                    this.onOverlayOutsideClick.emit(event);
                 }),
-                filter((event) => !event.defaultPrevented && !this.popoverRoot.firstDefaultOpen()),
+                filter(() => !this.popoverRoot.firstDefaultOpen()),
                 tap(() => {
                     this.popoverRoot.handleClose();
                 }),
@@ -217,6 +240,13 @@ export class RdxPopoverContentDirective implements OnInit {
     }
 
     /** @ignore */
+    private setHasBackdrop() {
+        const prevHasBackdrop = this.connectedOverlay.hasBackdrop;
+        this.connectedOverlay.hasBackdrop = false;
+        this.fireOverlayNgOnChanges('hasBackdrop', this.connectedOverlay.hasBackdrop, prevHasBackdrop);
+    }
+
+    /** @ignore */
     private setDisableClose() {
         const prevDisableClose = this.connectedOverlay.disableClose;
         this.connectedOverlay.disableClose = true;
@@ -255,7 +285,7 @@ export class RdxPopoverContentDirective implements OnInit {
             alignOffset: offsets.alignOffset
         });
         const positions = [basePosition];
-        if (!this.disableAlternatePositions()) {
+        if (!this.alternatePositionsDisabled()) {
             /**
              * Alternate positions for better user experience along the X/Y axis (e.g. vertical/horizontal scrolling)
              */
@@ -294,7 +324,7 @@ export class RdxPopoverContentDirective implements OnInit {
     private onPositionChangeEffect() {
         effect(() => {
             const positions = this.positions();
-            this.disableAlternatePositions();
+            this.alternatePositionsDisabled();
             untracked(() => {
                 this.setPositions(positions);
             });

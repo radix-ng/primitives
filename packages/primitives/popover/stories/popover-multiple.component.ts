@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, MountainSnowIcon, TriangleAlert, X } from 'lucide-angular';
 import { RdxPopoverAlign, RdxPopoverModule, RdxPopoverSide } from '../index';
 import { RdxPopoverContentAttributesComponent } from '../src/popover-content-attributes.component';
+import { provideRdxCdkEventService } from '../src/utils/cdk-event.service';
 import { containerAlert } from './utils/constants';
 import { IgnoreClickOutsideContainerBase } from './utils/ignore-click-outside-container-base.class';
 import styles from './utils/styles.constants';
@@ -11,6 +12,7 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
 @Component({
     selector: 'rdx-popover-multiple',
     standalone: true,
+    providers: [provideRdxCdkEventService()],
     imports: [
         FormsModule,
         RdxPopoverModule,
@@ -20,7 +22,10 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
     ],
     styles: styles(),
     template: `
-        <popover-with-event-base>
+        <popover-with-event-base
+            (onOverlayEscapeKeyDownDisabledChange)="onOverlayEscapeKeyDownDisabled.set($event)"
+            (onOverlayOutsideClickDisabledChange)="onOverlayOutsideClickDisabled.set($event)"
+        >
             <div class="ContainerAlerts">
                 <lucide-angular [img]="TriangleAlert" size="16" />
                 {{ containerAlert }}
@@ -31,7 +36,11 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                     </button>
 
-                    <ng-template rdxPopoverContent>
+                    <ng-template
+                        [onOverlayEscapeKeyDownDisabled]="onOverlayEscapeKeyDownDisabled()"
+                        [onOverlayOutsideClickDisabled]="onOverlayOutsideClickDisabled()"
+                        rdxPopoverContent
+                    >
                         <div class="PopoverContent" rdxPopoverContentAttributes>
                             <button class="reset PopoverClose" rdxPopoverClose aria-label="Close">
                                 <lucide-angular [img]="XIcon" size="16" style="display: flex" />
@@ -63,7 +72,10 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
             <div class="PopoverId">ID: {{ popoverRootDirective1()?.uniqueId() }}</div>
         </popover-with-event-base>
 
-        <popover-with-event-base>
+        <popover-with-event-base
+            (onOverlayEscapeKeyDownDisabledChange)="onOverlayEscapeKeyDownDisabled.set($event)"
+            (onOverlayOutsideClickDisabledChange)="onOverlayOutsideClickDisabled.set($event)"
+        >
             <div class="ContainerAlerts">
                 <lucide-angular [img]="TriangleAlert" size="16" />
                 {{ containerAlert }}
@@ -79,6 +91,8 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
                         [align]="RdxPopoverAlign.Start"
                         [sideOffset]="16"
                         [alignOffset]="16"
+                        [onOverlayEscapeKeyDownDisabled]="onOverlayEscapeKeyDownDisabled()"
+                        [onOverlayOutsideClickDisabled]="onOverlayOutsideClickDisabled()"
                         rdxPopoverContent
                     >
                         <div class="PopoverContent" rdxPopoverContentAttributes>
@@ -112,7 +126,10 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
             <div class="PopoverId">ID: {{ popoverRootDirective2()?.uniqueId() }}</div>
         </popover-with-event-base>
 
-        <popover-with-event-base>
+        <popover-with-event-base
+            (onOverlayEscapeKeyDownDisabledChange)="onOverlayEscapeKeyDownDisabled.set($event)"
+            (onOverlayOutsideClickDisabledChange)="onOverlayOutsideClickDisabled.set($event)"
+        >
             <div class="ContainerAlerts">
                 <lucide-angular [img]="TriangleAlert" size="16" />
                 {{ containerAlert }}
@@ -128,6 +145,8 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
                         [align]="RdxPopoverAlign.End"
                         [sideOffset]="60"
                         [alignOffset]="60"
+                        [onOverlayEscapeKeyDownDisabled]="onOverlayEscapeKeyDownDisabled()"
+                        [onOverlayOutsideClickDisabled]="onOverlayOutsideClickDisabled()"
                         rdxPopoverContent
                     >
                         <div class="PopoverContent" rdxPopoverContentAttributes>

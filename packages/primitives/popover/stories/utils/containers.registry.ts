@@ -1,86 +1,63 @@
+import { isDevMode } from '@angular/core';
 import { RdxPopoverRootDirective } from '../../src/popover-root.directive';
+import { injectRdxCdkEventService } from '../../src/utils/cdk-event.service';
 
-const containerRegistry: Map<Element, RdxPopoverRootDirective> = new Map();
+const containerRegistry: Map<HTMLElement, RdxPopoverRootDirective> = new Map();
+let rdxCdkEventService: ReturnType<typeof injectRdxCdkEventService> | undefined = void 0;
 
-let document: Document | undefined;
-
-const leftMenuSelector = '.container.sidebar-container';
-let leftMenuWrapper: Element | undefined = void 0;
-
-const rightMenuSelector = '.sbdocs-wrapper .toc-wrapper';
-let rightMenuWrapper: Element | undefined = void 0;
-
-let destroyListener: (() => void) | undefined;
-const callback: (event: MouseEvent) => void = (event: MouseEvent) => {
-    if (
-        event.button !== 0 ||
-        (event.target as Element).classList.contains('SkipOutsideClick') ||
-        leftMenuWrapper?.contains(event.target as Element) ||
-        rightMenuWrapper?.contains(event.target as Element)
-    ) {
-        return;
-    }
+const domRootClickEventCallback: (event: MouseEvent) => void = (event: MouseEvent) => {
+    const target = event.target as HTMLElement;
     const containers = Array.from(containerRegistry.keys());
-    const anyContainerContainsTarget = containers.some((container) => {
-        return (
-            container.contains(event.target as Element) ||
-            containerRegistry
-                .get(container)
-                ?.popoverCloseDirective()
-                ?.elementRef.nativeElement.contains(event.target as Element)
-        );
+    const containerContainingTarget = containers
+        .map((container) => {
+            container.classList.remove('focused');
+            return container;
+        })
+        .find((container) => {
+            return container.contains(target);
+        });
+    containerContainingTarget?.classList.add('focused');
+    Array.from(containerRegistry.entries()).forEach((item) => {
+        if (item[0] === containerContainingTarget) {
+            rdxCdkEventService?.allowPrimitiveForCdkMultiEvents(item[1], [
+                'cdkOverlayOutsideClick',
+                'cdkOverlayEscapeKeyDown'
+            ]);
+        } else {
+            rdxCdkEventService?.preventPrimitiveFromCdkMultiEvents(item[1], [
+                'cdkOverlayOutsideClick',
+                'cdkOverlayEscapeKeyDown'
+            ]);
+        }
     });
-    if (!anyContainerContainsTarget) {
-        event.stopImmediatePropagation();
-    }
 };
 
-export function registerContainer(container: Element, popoverRoot: RdxPopoverRootDirective) {
+export function registerContainer(container: HTMLElement, popoverRoot: RdxPopoverRootDirective) {
     if (containerRegistry.has(container)) {
         return;
     }
     containerRegistry.set(container, popoverRoot);
     if (containerRegistry.size === 1) {
-        addListener();
+        rdxCdkEventService?.addClickDomRootEventCallback(domRootClickEventCallback);
     }
 }
 
-export function deregisterContainer(container: Element) {
+export function deregisterContainer(container: HTMLElement) {
     if (!containerRegistry.has(container)) {
         return;
     }
     containerRegistry.delete(container);
     if (containerRegistry.size === 0) {
-        removeListener();
+        rdxCdkEventService?.removeClickDomRootEventCallback(domRootClickEventCallback);
+        unsetRdxCdkEventService();
     }
 }
 
-export function setDocument(value: Document) {
-    if (document) {
-        return;
-    }
-    document = value;
-    leftMenuWrapper = document.querySelector(leftMenuSelector) ?? void 0;
-    rightMenuWrapper = document.querySelector(rightMenuSelector) ?? void 0;
+export function setRdxCdkEventService(service: typeof rdxCdkEventService) {
+    isDevMode() && console.log('setRdxCdkEventService', service, rdxCdkEventService === service);
+    rdxCdkEventService ??= service;
 }
 
-function addListener() {
-    if (!document || destroyListener) {
-        return;
-    }
-    const target = document.body;
-    const eventName = 'click';
-    const options: boolean | AddEventListenerOptions | undefined = { capture: true };
-    target.addEventListener(eventName, callback, options);
-    destroyListener = () => {
-        target.removeEventListener(eventName, callback, options);
-    };
-}
-
-function removeListener() {
-    destroyListener?.();
-    destroyListener = void 0;
-    document = void 0;
-    leftMenuWrapper = void 0;
-    rightMenuWrapper = void 0;
+export function unsetRdxCdkEventService() {
+    rdxCdkEventService = void 0;
 }

@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, MountainSnowIcon, TriangleAlert, X } from 'lucide-angular';
 import { RdxPopoverAlign, RdxPopoverModule, RdxPopoverRootDirective, RdxPopoverSide } from '../index';
 import { RdxPopoverContentAttributesComponent } from '../src/popover-content-attributes.component';
+import { provideRdxCdkEventService } from '../src/utils/cdk-event.service';
 import { containerAlert } from './utils/constants';
 import { IgnoreClickOutsideContainerBase } from './utils/ignore-click-outside-container-base.class';
 import styles from './utils/styles.constants';
@@ -11,6 +12,7 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
 @Component({
     selector: 'rdx-popover-positioning',
     standalone: true,
+    providers: [provideRdxCdkEventService()],
     imports: [
         FormsModule,
         RdxPopoverModule,
@@ -20,7 +22,10 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
     ],
     styles: styles(),
     template: `
-        <popover-with-event-base>
+        <popover-with-event-base
+            (onOverlayEscapeKeyDownDisabledChange)="onOverlayEscapeKeyDownDisabled.set($event)"
+            (onOverlayOutsideClickDisabledChange)="onOverlayOutsideClickDisabled.set($event)"
+        >
             <div class="ParamsContainer">
                 Side:
                 <select [ngModel]="selectedSide()" (ngModelChange)="selectedSide.set($event)">
@@ -47,7 +52,8 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
                     (ngModelChange)="disableAlternatePositions.set($event)"
                     type="checkbox"
                 />
-                Alternate positions (to see the result, scroll the page to make the popover cross the viewport boundary)
+                Disable alternate positions (to see the result, scroll the page to make the popover cross the viewport
+                boundary)
             </div>
 
             <div class="ContainerAlerts">
@@ -65,7 +71,9 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
                         [alignOffset]="alignOffset()"
                         [side]="selectedSide()"
                         [align]="selectedAlign()"
-                        [disableAlternatePositions]="disableAlternatePositions()"
+                        [alternatePositionsDisabled]="disableAlternatePositions()"
+                        [onOverlayEscapeKeyDownDisabled]="onOverlayEscapeKeyDownDisabled()"
+                        [onOverlayOutsideClickDisabled]="onOverlayOutsideClickDisabled()"
                         rdxPopoverContent
                     >
                         <div class="PopoverContent" rdxPopoverContentAttributes>

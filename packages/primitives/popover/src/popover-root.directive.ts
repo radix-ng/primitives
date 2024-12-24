@@ -21,6 +21,7 @@ import { RdxPopoverContentAttributesToken } from './popover-content-attributes.t
 import { RdxPopoverContentDirective } from './popover-content.directive';
 import { RdxPopoverTriggerDirective } from './popover-trigger.directive';
 import { RdxPopoverAnimationStatus, RdxPopoverAttachDetachEvent, RdxPopoverState } from './popover.types';
+import { injectRdxCdkEventService } from './utils/cdk-event.service';
 
 let nextId = 0;
 
@@ -90,6 +91,8 @@ export class RdxPopoverRootDirective {
     /** @ignore */
     readonly viewContainerRef = inject(ViewContainerRef);
     /** @ignore */
+    readonly rdxCdkEventService = injectRdxCdkEventService();
+    /** @ignore */
     readonly destroyRef = inject(DestroyRef);
 
     /** @ignore */
@@ -99,12 +102,14 @@ export class RdxPopoverRootDirective {
     readonly attachDetachEvent = signal(RdxPopoverAttachDetachEvent.DETACH);
 
     /** @ignore */
-    private isFirstDefaultOpen = signal(false);
+    private readonly isFirstDefaultOpen = signal(false);
 
     /** @ignore */
     readonly popoverAnchorDirective = computed(() => this.internalPopoverAnchorDirective() ?? this.anchor());
 
     constructor() {
+        this.rdxCdkEventService?.registerPrimitive(this);
+        this.destroyRef.onDestroy(() => this.rdxCdkEventService?.deregisterPrimitive(this));
         this.onStateChangeEffect();
         this.onCssAnimationStatusChangeChangeEffect();
         this.onOpenChangeEffect();
