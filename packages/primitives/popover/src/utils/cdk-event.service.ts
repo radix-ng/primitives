@@ -135,31 +135,38 @@ class RdxCdkEventService {
         const major = parseInt(VERSION.major);
         const minor = parseInt(VERSION.minor);
 
+        let destroyClickDomRootEventListener!: () => void;
         /**
          * @see src/cdk/platform/features/backwards-compatibility.ts in @angular/cdk
          */
         if (major > 19 || (major === 19 && minor > 0) || (major === 0 && minor === 0)) {
-            const destroyClickDomRootEventListenerInternal = this.renderer2.listen(
-                target,
-                eventName,
-                callback,
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-expect-error
-                options
-            );
-            const destroyClickDomRootEventListener = () => {
-                destroyClickDomRootEventListenerInternal();
-                this.#clickDomRootEventCallbacks.clear();
-            };
-            this.onDestroyCallbacks.add(destroyClickDomRootEventListener);
+            destroyClickDomRootEventListener = this.ngZone.runOutsideAngular(() => {
+                const destroyClickDomRootEventListenerInternal = this.renderer2.listen(
+                    target,
+                    eventName,
+                    callback,
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-expect-error
+                    options
+                );
+                return () => {
+                    destroyClickDomRootEventListenerInternal();
+                    this.#clickDomRootEventCallbacks.clear();
+                };
+            });
         } else {
-            this.ngZone.runOutsideAngular(() => target.addEventListener(eventName, callback, options));
-            const destroyClickDomRootEventListener = () => {
-                this.ngZone.runOutsideAngular(() => target.removeEventListener(eventName, callback, options));
-                this.#clickDomRootEventCallbacks.clear();
-            };
-            this.onDestroyCallbacks.add(destroyClickDomRootEventListener);
+            /**
+             * This part can get removed when v19.1 or higher is on the board
+             */
+            destroyClickDomRootEventListener = this.ngZone.runOutsideAngular(() => {
+                target.addEventListener(eventName, callback, options);
+                return () => {
+                    this.ngZone.runOutsideAngular(() => target.removeEventListener(eventName, callback, options));
+                    this.#clickDomRootEventCallbacks.clear();
+                };
+            });
         }
+        this.onDestroyCallbacks.add(destroyClickDomRootEventListener);
     }
 }
 
