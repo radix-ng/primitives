@@ -51,11 +51,18 @@ export class RdxPopoverAnchorDirective {
     }
 
     private emitOutsideClick() {
+        if (
+            !this.popoverRoot?.isOpen() ||
+            this.popoverRoot?.popoverContentDirective().onOverlayOutsideClickDisabled()
+        ) {
+            return;
+        }
         const clickEvent = new MouseEvent('click', {
             view: this.document.defaultView,
             bubbles: true,
-            cancelable: true
+            cancelable: true,
+            relatedTarget: this.elementRef.nativeElement
         });
-        this.document.body.dispatchEvent(clickEvent);
+        this.popoverRoot?.popoverTriggerDirective().elementRef.nativeElement.dispatchEvent(clickEvent);
     }
 }
