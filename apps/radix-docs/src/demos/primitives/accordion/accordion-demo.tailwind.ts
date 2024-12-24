@@ -20,7 +20,7 @@ import { ChevronDown, LucideAngularModule, X } from 'lucide-angular';
         LucideAngularModule
     ],
     template: `
-        <div class="block w-[350px]" [defaultValue]="'item-1'" rdxAccordionRoot>
+        <div class="block w-[220px] sm:w-[280px] lg:w-[350px]" [defaultValue]="'item-1'" rdxAccordionRoot>
             <div class="block border-b" [value]="'item-1'" rdxAccordionItem>
                 <div class="flex" rdxAccordionHeader>
                     <button

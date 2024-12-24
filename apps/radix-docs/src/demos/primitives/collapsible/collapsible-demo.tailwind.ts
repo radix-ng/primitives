@@ -16,7 +16,12 @@ import { LucideAngularModule, UnfoldVertical, X } from 'lucide-angular';
         LucideAngularModule
     ],
     template: `
-        <div class="w-[320px] space-y-2 text-sm" #collapsibleRoot="collapsibleRoot" [open]="true" rdxCollapsibleRoot>
+        <div
+            class="sm:w w-[220px] space-y-2 text-sm sm:w-[280px] lg:w-[320px]"
+            #collapsibleRoot="collapsibleRoot"
+            [open]="true"
+            rdxCollapsibleRoot
+        >
             <div class="flex items-center justify-between space-x-4 px-4">
                 <span class="font-medium ">&#64;peduarte starred 3 repositories</span>
                 <button
