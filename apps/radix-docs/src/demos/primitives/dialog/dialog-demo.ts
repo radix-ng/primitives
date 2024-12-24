@@ -6,6 +6,7 @@ import {
     RdxDialogTitleDirective,
     RdxDialogTriggerDirective
 } from '@radix-ng/primitives/dialog';
+import { LucideAngularModule, X } from 'lucide-angular';
 
 @Component({
     selector: 'dialog-demo',
@@ -15,7 +16,8 @@ import {
         RdxDialogContentDirective,
         RdxDialogTitleDirective,
         RdxDialogCloseDirective,
-        RdxDialogDescriptionDirective
+        RdxDialogDescriptionDirective,
+        LucideAngularModule
     ],
     styleUrl: 'dialog-demo.css',
     template: `
@@ -38,11 +40,15 @@ import {
                 <div style="display:flex; margin-top: 25px; justify-content: flex-end;">
                     <button class="Button green" rdxDialogClose>Save changes</button>
                 </div>
-                <button class="IconButton" rdxDialogClose aria-label="Close">X</button>
+                <button class="IconButton" rdxDialogClose aria-label="Close">
+                    <lucide-angular [img]="XIcon" size="16" strokeWidth="2" />
+                </button>
             </div>
         </ng-template>
     `
 })
-export class DialogDemoComponent {}
+export class DialogDemoComponent {
+    readonly XIcon = X;
+}
 
 export default DialogDemoComponent;

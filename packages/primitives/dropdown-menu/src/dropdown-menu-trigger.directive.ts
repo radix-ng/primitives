@@ -58,6 +58,9 @@ const dropdownPositions: Record<DropdownSide, ConnectedPosition> = {
     }
 };
 
+/**
+ * @group Components
+ */
 @Directive({
     selector: '[rdxDropdownMenuTrigger]',
     standalone: true,
@@ -78,9 +81,6 @@ const dropdownPositions: Record<DropdownSide, ConnectedPosition> = {
     ]
 })
 export class RdxDropdownMenuTriggerDirective extends CdkMenuTrigger {
-    /**
-     * @ignore
-     */
     readonly disabled = input<boolean, BooleanInput>(false, {
         transform: booleanAttribute
     });
@@ -90,6 +90,13 @@ export class RdxDropdownMenuTriggerDirective extends CdkMenuTrigger {
         this.menuTemplateRef = value;
     }
 
+    /**
+     * The preferred side of the trigger to render against when open.
+     * Will be reversed when collisions occur and `avoidCollisions` is enabled.
+     *
+     * @group Props
+     * @defaultValue 'bottom'
+     */
     @Input()
     set side(value: DropdownSide) {
         if (!Object.values(DropdownSide).includes(value)) {
@@ -101,12 +108,18 @@ export class RdxDropdownMenuTriggerDirective extends CdkMenuTrigger {
         this.menuPosition[0] = dropdownPositions[value];
     }
 
-    get side() {
+    get side(): DropdownSide {
         return this._side;
     }
 
     private _side: DropdownSide = DropdownSide.Bottom;
 
+    /**
+     * The preferred alignment against the trigger. May change when collisions occur.
+     *
+     * @group Props
+     * @defaultValue 'center'
+     */
     @Input()
     set align(value: DropdownAlign) {
         if (!Object.values(DropdownAlign).includes(value)) {
@@ -130,6 +143,11 @@ export class RdxDropdownMenuTriggerDirective extends CdkMenuTrigger {
 
     private _align: DropdownAlign = DropdownAlign.Start;
 
+    /**
+     * The distance in pixels from the trigger.
+     * @group Props
+     * @defaultValue 0
+     */
     @Input({ transform: numberAttribute })
     set sideOffset(value: number) {
         // todo need invert value for top and left
@@ -140,6 +158,17 @@ export class RdxDropdownMenuTriggerDirective extends CdkMenuTrigger {
         }
     }
 
+    get sideOffset() {
+        return this._sideOffset;
+    }
+
+    private _sideOffset: number = 0;
+
+    /**
+     * An offset in pixels from the "start" or "end" alignment options.
+     * @group Props
+     * @defaultValue 0
+     */
     @Input({ transform: numberAttribute })
     set alignOffset(value: number) {
         // todo need invert value for top and left
@@ -149,6 +178,12 @@ export class RdxDropdownMenuTriggerDirective extends CdkMenuTrigger {
             this.defaultPosition.offsetY = value;
         }
     }
+
+    get alignOffset(): number {
+        return this._alignOffset;
+    }
+
+    private _alignOffset: number = 0;
 
     onOpenChange = outputFromObservable(this.opened);
 

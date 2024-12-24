@@ -17,9 +17,6 @@ import { RdxCollapsibleRootDirective } from './collapsible-root.directive';
     }
 })
 export class RdxCollapsibleContentDirective {
-    /**
-     * @ignore
-     */
     protected readonly collapsible = inject(RdxCollapsibleRootDirective);
 
     /**

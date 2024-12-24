@@ -38,6 +38,9 @@ export interface SwitchProps {
 
 let idIterator = 0;
 
+/**
+ * @group Components
+ */
 @Directive({
     selector: 'button[rdxSwitchRoot]',
     exportAs: 'rdxSwitchRoot',
@@ -67,24 +70,41 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
 
     /**
      * When true, indicates that the user must check the switch before the owning form can be submitted.
+     *
+     * @default false
+     * @group Props
      */
     readonly required = input<boolean, BooleanInput>(false, {
         transform: booleanAttribute
     });
 
-    readonly ariaLabelledBy = input<string | null>(null, {
+    /**
+     * @default null
+     * @group Props
+     */
+    readonly ariaLabelledBy = input<string | undefined>(undefined, {
         alias: 'aria-labelledby'
     });
 
-    readonly ariaLabel = input<string | null>(null, {
+    /**
+     * @default null
+     * @group Props
+     */
+    readonly ariaLabel = input<string | undefined>(undefined, {
         alias: 'aria-label'
     });
 
     /**
      * The controlled state of the switch. Must be used in conjunction with onCheckedChange.
+     * @defaultValue false
+     * @group Props
      */
     readonly checked = model<boolean>(false);
 
+    /**
+     * @default false
+     * @group Props
+     */
     readonly defaultChecked = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
@@ -96,6 +116,8 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
 
     /**
      * When true, prevents the user from interacting with the switch.
+     * @default false
+     * @group Props
      */
     readonly disabled = input<boolean, BooleanInput>(false, {
         transform: booleanAttribute
@@ -106,6 +128,9 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
 
     /**
      * Event handler called when the state of the switch changes.
+     *
+     * @param {boolean} value - Boolean value indicates that the option is changed.
+     * @group Emits
      */
     readonly onCheckedChange = output<boolean>();
 

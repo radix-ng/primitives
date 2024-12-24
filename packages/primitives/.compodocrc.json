@@ -5,6 +5,7 @@
     "exportFormat": "json",
     "hideGenerator": true,
     "disableCoverage": true,
+    "disableProtected": true,
     "disablePrivate": true,
     "disableInternal": true,
     "disableLifeCycleHooks": true,

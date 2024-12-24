@@ -10,6 +10,9 @@ export function injectCollapsible(): RdxCollapsibleRootDirective {
 
 export type RdxCollapsibleState = 'open' | 'closed';
 
+/**
+ * @group Components
+ */
 @Directive({
     selector: '[rdxCollapsibleRoot]',
     standalone: true,
@@ -24,27 +27,28 @@ export class RdxCollapsibleRootDirective {
     /**
      * Reference to RdxCollapsibleContent directive
      * @private
-     * @ignore
      */
     private readonly contentDirective = contentChild.required(RdxCollapsibleContentToken);
 
     /**
      * Stores collapsible state
-     * @private
-     * @ignore
      */
     private _open = false;
 
     /**
      * Determines whether a directive is available for interaction.
      * When true, prevents the user from interacting with the collapsible.
+     *
+     * @group Props
      */
     @Input() disabled = false;
 
     /**
      * The controlled open state of the collapsible.
      * Sets the state of the directive. `true` - expanded, `false` - collapsed
-     * @param {boolean} value
+     *
+     * @group Props
+     * @defaultValue false
      */
     @Input() set open(value: boolean) {
         if (value !== this._open) {
@@ -55,9 +59,15 @@ export class RdxCollapsibleRootDirective {
         this.setPresence();
     }
 
+    get open(): boolean {
+        return this._open;
+    }
+
     /**
      * Emitted with new value when directive state changed.
      * Event handler called when the open state of the collapsible changes.
+     *
+     * @group Emits
      */
     @Output() onOpenChange = new EventEmitter<boolean>();
 
@@ -71,7 +81,7 @@ export class RdxCollapsibleRootDirective {
         }
 
         if (value === undefined) {
-            this.open = !this._open;
+            this.open = !this.open;
         } else {
             this.open = value;
         }
@@ -83,14 +93,14 @@ export class RdxCollapsibleRootDirective {
      * Returns directive state (open | closed)
      */
     getState(): RdxCollapsibleState {
-        return this._open ? 'open' : 'closed';
+        return this.open ? 'open' : 'closed';
     }
 
     /**
      * Returns current directive state
      */
     isOpen(): boolean {
-        return this._open;
+        return this.open;
     }
 
     /**

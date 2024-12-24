@@ -26,6 +26,9 @@ export const RdxAccordionRootToken = new InjectionToken<RdxAccordionRootDirectiv
 
 let nextId = 0;
 
+/**
+ * @group Components
+ */
 @Directive({
     selector: '[rdxAccordionRoot]',
     standalone: true,
@@ -67,11 +70,17 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
         return this.type === 'multiple';
     }
 
-    /** Whether the Accordion is disabled. */
+    /** Whether the Accordion is disabled.
+     * @defaultValue false
+     * @group Props
+     */
     @Input({ transform: booleanAttribute }) disabled: boolean;
 
     /**
      * The orientation of the accordion.
+     *
+     * @defaultValue 'vertical'
+     * @group Props
      */
     @Input() orientation: RdxAccordionOrientation = 'vertical';
     /**
@@ -82,7 +91,9 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
     items: QueryList<RdxAccordionItemDirective>;
 
     /**
-     * The value of the item to expand when initially rendered and type is "single". Use when you do not need to control the state of the items.
+     * The value of the item to expand when initially rendered and type is "single".
+     * Use when you do not need to control the state of the items.
+     * @group Props
      */
     @Input()
     set defaultValue(value: string[] | string) {
@@ -97,14 +108,20 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
 
     /**
      * Determines whether one or multiple items can be opened at the same time.
+     * @group Props
+     * @defaultValue 'single'
      */
     @Input() type: RdxAccordionType = 'single';
+
     /**
      * @ignore
      */
     @Input() collapsible = true;
+
     /**
-     * The controlled value of the item to expand
+     * The controlled value of the item to expand.
+     *
+     * @group Props
      */
     @Input()
     set value(value: string[] | string) {
@@ -123,6 +140,10 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
         return this.isMultiple ? this._value : this._value[0];
     }
 
+    /**
+     * Event handler called when the expanded state of an item changes and type is "multiple".
+     * @group Emits
+     */
     @Output() readonly onValueChange: EventEmitter<void> = new EventEmitter<void>();
 
     private _value?: string[];

@@ -1,6 +1,9 @@
 import { computed, Directive, ElementRef, inject, input, OnInit, output } from '@angular/core';
 import { RdxAvatarRootContext, RdxImageLoadingStatus } from './avatar-root.directive';
 
+/**
+ * @group Components
+ */
 @Directive({
     selector: 'img[rdxAvatarImage]',
     standalone: true,
@@ -15,8 +18,17 @@ export class RdxAvatarImageDirective implements OnInit {
     private readonly avatarRoot = inject(RdxAvatarRootContext);
     private readonly elementRef = inject(ElementRef<HTMLImageElement>);
 
+    /**
+     * @group Props
+     */
     readonly src = input<string>();
 
+    /**
+     * A callback providing information about the loading status of the image.
+     * This is useful in case you want to control more precisely what to render as the image is loading.
+     *
+     * @group Emits
+     */
     readonly onLoadingStatusChange = output<RdxImageLoadingStatus>();
 
     protected readonly imageLoadingStatus = computed(() => this.avatarRoot.imageLoadingStatus());

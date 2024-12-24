@@ -21,6 +21,9 @@ export type RdxAccordionItemState = 'open' | 'closed';
 
 let nextId = 0;
 
+/**
+ * @group Components
+ */
 @Directive({
     selector: '[rdxAccordionItem]',
     standalone: true,
@@ -34,17 +37,10 @@ let nextId = 0;
         { provide: RdxAccordionRootToken, useValue: undefined }]
 })
 export class RdxAccordionItemDirective implements FocusableOption, OnDestroy {
-    /**
-     * @ignore
-     */
     protected readonly accordion = inject(RdxAccordionRootToken, { skipSelf: true });
-    /**
-     * @ignore
-     */
+
     protected readonly changeDetectorRef = inject(ChangeDetectorRef);
-    /**
-     * @ignore
-     */
+
     protected readonly expansionDispatcher = inject(UniqueSelectionDispatcher);
 
     /**
@@ -72,7 +68,10 @@ export class RdxAccordionItemDirective implements FocusableOption, OnDestroy {
         return this.accordion.orientation;
     }
 
-    /** Whether the AccordionItem is expanded. */
+    /**
+     * @defaultValue false
+     * @group Props
+     */
     @Input({ transform: booleanAttribute })
     set expanded(expanded: boolean) {
         // Only emit events and update the internal value if the value changes.
@@ -104,8 +103,12 @@ export class RdxAccordionItemDirective implements FocusableOption, OnDestroy {
 
     private _expanded = false;
 
-    @Input()
-    set value(value: string) {
+    /**
+     * Accordion value.
+     *
+     * @group Props
+     */
+    @Input() set value(value: string) {
         this._value = value;
     }
 
@@ -115,9 +118,13 @@ export class RdxAccordionItemDirective implements FocusableOption, OnDestroy {
 
     private _value?: string;
 
-    /** Whether the AccordionItem is disabled. */
-    @Input({ transform: booleanAttribute })
-    set disabled(value: boolean) {
+    /**
+     * Whether the AccordionItem is disabled.
+     *
+     * @defaultValue false
+     * @group Props
+     */
+    @Input({ transform: booleanAttribute }) set disabled(value: boolean) {
         this._disabled = value;
     }
 
@@ -127,8 +134,11 @@ export class RdxAccordionItemDirective implements FocusableOption, OnDestroy {
 
     private _disabled = false;
 
-    /** Event emitted every time the AccordionItem is closed. */
+    /**
+     * Event emitted every time the AccordionItem is closed.
+     */
     @Output() readonly closed: EventEmitter<void> = new EventEmitter<void>();
+
     /** Event emitted every time the AccordionItem is opened. */
     @Output() readonly opened: EventEmitter<void> = new EventEmitter<void>();
 
@@ -141,7 +151,7 @@ export class RdxAccordionItemDirective implements FocusableOption, OnDestroy {
     /**
      * Emits whenever the expanded state of the accordion changes.
      * Primarily used to facilitate two-way binding.
-     * @docs-private
+     * @group Emits
      */
     @Output() readonly expandedChange: EventEmitter<boolean> = new EventEmitter<boolean>();
 

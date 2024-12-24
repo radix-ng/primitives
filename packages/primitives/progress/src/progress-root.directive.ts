@@ -29,6 +29,8 @@ export interface ProgressProps {
  *
  * This directive provides a way to create a progress bar with customizable value and max attributes.
  * It handles aria attributes for accessibility and provides different states like 'indeterminate', 'complete', and 'loading'.
+ *
+ * @group Components
  */
 @Directive({
     selector: '[rdxProgressRoot]',
@@ -59,18 +61,21 @@ export class RdxProgressRootDirective implements ProgressProps, OnChanges {
 
     /**
      * The current value of the progress bar.
-     * @default 0
+     * @group Props
+     * @defaultValue 0
      */
     @Input({ alias: 'rdxValue', transform: numberAttribute }) value = MIN_PERCENT;
 
     /**
      * The maximum value of the progress bar.
-     * @default 100
+     * @defaultValue 100
+     * @group Props
      */
     @Input({ alias: 'rdxMax', transform: numberAttribute }) max = DEFAULT_MAX;
 
     /**
      * Function to generate the value label.
+     * @group Props
      */
     @Input('rdxValueLabel') valueLabel: (value: number, max: number) => string = (value, max) =>
         this.defaultGetValueLabel(value, max);

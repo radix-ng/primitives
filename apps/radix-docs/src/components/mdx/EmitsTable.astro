@@ -1,0 +1,41 @@
+---
+import { getComponentData } from '@/utils/typedoc';
+
+const { name } = Astro.props;
+
+const data = getComponentData(name).emits?.values;
+---
+
+<div class="rt-TableRoot rt-r-size-2 rt-variant-surface rt-Box rt-r-my-5">
+    <table class="rt-TableRootTable">
+        <thead class="rt-TableHeader">
+            <tr class="rt-TableRow">
+                <th class="rt-TableCell rt-TableColumnHeaderCell" style="width: auto;">Emit</th>
+                <th class="rt-TableCell rt-TableColumnHeaderCell">Payload</th>
+            </tr>
+        </thead>
+        <tbody class="rt-TableBody">
+            {
+                data.map(({ name, parameters, description }) => {
+                    return (
+                        <tr class="rt-TableRow" style="white-space: nowrap;">
+                            <td class="rt-TableCell rt-TableRowHeaderCell" data-label="Emit">
+                                <code class="rt-reset rt-Code rt-r-size-2 rt-variant-soft rt-variant-soft">{name}</code>
+                            </td>
+                            <td class="rt-TableCell" data-label="Payload" style="white-space: normal;">
+                                <div class="rt-Flex rt-r-display-inline-flex rt-r-ai-center rt-r-gap-2">
+                                    <div class="rt-Box">
+                                        <code class="rt-reset rt-Code rt-r-size-2 rt-variant-soft rt-variant-soft">
+                                            [value: {parameters[0].type}]
+                                        </code>
+                                        <p>{description}</p>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    );
+                })
+            }
+        </tbody>
+    </table>
+</div>
