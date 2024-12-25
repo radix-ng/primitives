@@ -1,6 +1,6 @@
 import { ConnectedOverlayPositionChange } from '@angular/cdk/overlay';
 import {
-    AfterViewInit,
+    afterNextRender,
     computed,
     Directive,
     effect,
@@ -27,7 +27,7 @@ import { injectPopoverRoot } from './popover-root.inject';
         }
     ]
 })
-export class RdxPopoverArrowDirective implements AfterViewInit {
+export class RdxPopoverArrowDirective {
     /** @ignore */
     private readonly renderer = inject(Renderer2);
     /** @ignore */
@@ -73,20 +73,21 @@ export class RdxPopoverArrowDirective implements AfterViewInit {
     private anchorOrTriggerRect: DOMRect;
 
     constructor() {
+        afterNextRender({
+            write: () => {
+                if (this.elementRef.nativeElement.parentElement) {
+                    this.renderer.setStyle(this.elementRef.nativeElement.parentElement, 'position', 'relative');
+                }
+                this.renderer.setStyle(this.elementRef.nativeElement, 'position', 'absolute');
+                this.renderer.setStyle(this.elementRef.nativeElement, 'boxSizing', '');
+                this.renderer.setStyle(this.elementRef.nativeElement, 'fontSize', '0px');
+            }
+        });
         this.onArrowSvgElementChangeEffect();
-        this.onContentPositionChangeEffect();
+        this.onContentPositionAndArrowDimensionsChangeEffect();
     }
 
     /** @ignore */
-    ngAfterViewInit() {
-        if (this.elementRef.nativeElement.parentElement) {
-            this.renderer.setStyle(this.elementRef.nativeElement.parentElement, 'position', 'relative');
-        }
-        this.renderer.setStyle(this.elementRef.nativeElement, 'position', 'absolute');
-        this.renderer.setStyle(this.elementRef.nativeElement, 'boxSizing', '');
-        this.renderer.setStyle(this.elementRef.nativeElement, 'fontSize', '0px');
-    }
-
     private setAnchorOrTriggerRect() {
         this.anchorOrTriggerRect = (
             this.popoverRoot.popoverAnchorDirective() ?? this.popoverRoot.popoverTriggerDirective()
@@ -94,11 +95,11 @@ export class RdxPopoverArrowDirective implements AfterViewInit {
     }
 
     /** @ignore */
-    private setPosition(position: ConnectedOverlayPositionChange) {
+    private setPosition(position: ConnectedOverlayPositionChange, arrowDimensions: { width: number; height: number }) {
         this.setAnchorOrTriggerRect();
         const posParams = getArrowPositionParams(
             getSideAndAlignFromAllPossibleConnectedPositions(position.connectionPair),
-            { width: this.width(), height: this.height() },
+            { width: arrowDimensions.width, height: arrowDimensions.height },
             { width: this.anchorOrTriggerRect.width, height: this.anchorOrTriggerRect.height }
         );
 
@@ -127,14 +128,15 @@ export class RdxPopoverArrowDirective implements AfterViewInit {
     }
 
     /** @ignore */
-    private onContentPositionChangeEffect() {
+    private onContentPositionAndArrowDimensionsChangeEffect() {
         effect(() => {
             const position = this.position();
+            const arrowDimensions = { width: this.width(), height: this.height() };
             untracked(() => {
                 if (!position) {
                     return;
                 }
-                this.setPosition(position);
+                this.setPosition(position, arrowDimensions);
             });
         });
     }
