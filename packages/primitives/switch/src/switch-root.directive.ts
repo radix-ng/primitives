@@ -79,6 +79,7 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
     });
 
     /**
+     * Establishes relationships between the component and label(s) where its value should be one or more element IDs.
      * @default null
      * @group Props
      */
@@ -87,6 +88,7 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
     });
 
     /**
+     * Used to define a string that autocomplete attribute the current element.
      * @default null
      * @group Props
      */
@@ -102,6 +104,7 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
     readonly checked = model<boolean>(false);
 
     /**
+     * The state of the switch when it is initially rendered. Use when you do not need to control its state.
      * @default false
      * @group Props
      */
@@ -115,7 +118,7 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
     readonly checkedState = computed(() => this.checked());
 
     /**
-     * When true, prevents the user from interacting with the switch.
+     * When `true`, prevents the user from interacting with the switch.
      * @default false
      * @group Props
      */

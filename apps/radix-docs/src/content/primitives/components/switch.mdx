@@ -1,0 +1,57 @@
+---
+title: Switch
+slug: switch
+section: components
+description: .
+---
+
+# Switch
+
+<Description>A control that allows the user to toggle between checked and not checked.</Description>
+
+<ComponentPreview name="switch" file="switch-demo" />
+
+<FeatureList items={[
+    'Can be controlled or uncontrolled.',
+    'Full keyboard navigation.'
+]} />
+
+## Anatomy
+
+```html
+<button rdxSwitchRoot>
+    <input rdxSwitchInput />
+    <span rdxSwitchThumb></span>
+</button>
+```
+
+## API Reference
+
+### Root
+`RdxSwitchRootDirective`
+
+Contains all the parts of a switch. An `input` will also render when used within a `form` to ensure events propagate correctly.
+<PropsTable name="RdxSwitchRootDirective" />
+
+<EmitsTable name="RdxSwitchRootDirective" />
+
+### Input
+`RdxSwitchInputDirective`
+<DataAttributesTable attributes={[
+    { name: '[data-state]', value: '"open" | "closed"' },
+    { name: '[data-disabled]', value: 'Present when disabled' }
+]} />
+
+### Thumb
+`RdxSwitchThumbDirective`
+
+The thumb that is used to visually indicate whether the switch is on or off.
+<DataAttributesTable attributes={[
+    { name: '[data-state]', value: '"open" | "closed"' },
+    { name: '[data-disabled]', value: 'Present when disabled' }
+]} />
+
+## Accessibility
+Adheres to the [`Switch` role requirements](https://www.w3.org/WAI/ARIA/apg/patterns/switch).
+
+### Keyboard Interactions

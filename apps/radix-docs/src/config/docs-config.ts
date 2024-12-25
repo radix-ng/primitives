@@ -76,7 +76,7 @@ const docsConfig = {
                         { name: 'Select', url: '/primitives/components/select' },
                         { name: 'Separator', url: '/primitives/components/separator' },
                         { name: 'Slider', url: '/primitives/components/slider', label: 'New' },
-                        { name: 'Switch', url: '#', label: 'Storybook' },
+                        { name: 'Switch', url: '/primitives/components/switch' },
                         { name: 'Tabs', url: '#', label: 'Storybook' },
                         { name: 'Toggle', url: '#', label: 'Storybook' },
                         { name: 'Toggle Group', url: '#', label: 'Storybook' },
