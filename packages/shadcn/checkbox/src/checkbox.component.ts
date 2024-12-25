@@ -23,7 +23,6 @@ const variants = cva('flex');
 
 @Component({
     selector: 'sh-checkbox',
-    standalone: true,
     imports: [
         RdxCheckboxDirective,
         RdxCheckboxIndicatorDirective,
@@ -32,7 +31,6 @@ const variants = cva('flex');
     ],
     host: {
         '[class]': 'computedClass()',
-
         // set to null on host element
         '[attr.id]': 'null'
     },

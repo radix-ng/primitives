@@ -5,7 +5,6 @@ import { ThemeService } from '../../services/theme.service';
 
 @Component({
     selector: 'app-doc-theme-toggle',
-    standalone: true,
     imports: [NgDocIconComponent, ShButtonDirective],
     template: `
         <button (click)="themeService.toggleColorScheme()" shButton type="button" variant="ghost" size="icon">

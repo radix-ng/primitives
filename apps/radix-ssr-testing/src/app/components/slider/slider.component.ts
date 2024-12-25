@@ -3,7 +3,6 @@ import { RdxSliderModule } from '@radix-ng/primitives/slider';
 
 @Component({
     selector: 'app-slider',
-    standalone: true,
     imports: [
         RdxSliderModule
     ],

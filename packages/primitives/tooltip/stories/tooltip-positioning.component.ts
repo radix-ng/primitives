@@ -6,7 +6,6 @@ import { RdxTooltipAlign, RdxTooltipSide } from '../src/tooltip.types';
 
 @Component({
     selector: 'rdx-tooltip-positioning',
-    standalone: true,
     imports: [
         FormsModule,
         RdxTooltipModule,

@@ -76,7 +76,6 @@ import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.di
             </div>
         </ng-template>
     `,
-    standalone: true,
     imports: [
         RdxDropdownMenuTriggerDirective,
         RdxDropdownMenuItemDirective,

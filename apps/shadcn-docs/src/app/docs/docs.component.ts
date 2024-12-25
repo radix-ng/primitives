@@ -14,7 +14,6 @@ import { CustomSidebarComponent } from '../ui/custom-sidebar.component';
 import { ThemeSwitcherComponent } from '../ui/theme-switcher/theme-switcher.component';
 
 @Component({
-    standalone: true,
     selector: 'app-root',
     imports: [
         RouterLink,

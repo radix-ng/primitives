@@ -6,7 +6,6 @@ import { RdxRadioItemInputDirective } from '../src/radio-item-input.directive';
 
 @Component({
     selector: 'radio-groups-forms-example',
-    standalone: true,
     template: `
         <div
             class="RadioGroupRoot"

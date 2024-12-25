@@ -3,9 +3,9 @@
  * Copyright (c) ngxtension Authors. Licensed under the MIT License.
  */
 import {
-    ENVIRONMENT_INITIALIZER,
     InjectionToken,
     inject,
+    provideEnvironmentInitializer,
     runInInjectionContext,
     type EnvironmentProviders,
     type FactoryProvider,
@@ -198,12 +198,7 @@ createInjectionToken is creating a root InjectionToken but an external token is 
                 opts as CreateProvideFnOptions<TFactory, TFactoryDeps>
             ) as CreateInjectionTokenReturn<TFactoryReturn>[1],
             token,
-            () => ({
-                provide: ENVIRONMENT_INITIALIZER,
-                useValue: () => injectFn(),
-                multi: true
-            })
-
+            () => provideEnvironmentInitializer(() => injectFn())
         ];
     }
 

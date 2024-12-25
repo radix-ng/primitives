@@ -3,7 +3,6 @@ import { RdxAvatarFallbackDirective, RdxAvatarRootDirective } from '@radix-ng/pr
 
 @Component({
     selector: 'app-avatar',
-    standalone: true,
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [RdxAvatarRootDirective, RdxAvatarFallbackDirective],
     template: `

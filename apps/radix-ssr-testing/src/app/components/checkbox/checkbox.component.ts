@@ -7,7 +7,6 @@ import {
 
 @Component({
     selector: 'app-checkbox',
-    standalone: true,
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [RdxCheckboxDirective, RdxCheckboxButtonDirective, RdxCheckboxIndicatorDirective],
     template: `

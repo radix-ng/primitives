@@ -4,7 +4,6 @@ import { ShButtonDirective } from '@radix-ng/shadcn/button';
 
 @Component({
     selector: 'app-theme-toggle',
-    standalone: true,
     imports: [ShButtonDirective],
     template: `
         <button (click)="toggleTheme()" shButton variant="secondary">

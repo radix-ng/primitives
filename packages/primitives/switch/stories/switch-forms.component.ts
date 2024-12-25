@@ -7,7 +7,6 @@ import { RdxSwitchThumbDirective } from '../src/switch-thumb.directive';
 
 @Component({
     selector: 'switch-reactive-forms',
-    standalone: true,
     imports: [
         ReactiveFormsModule,
         RdxLabelDirective,

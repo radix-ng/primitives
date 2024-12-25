@@ -80,3 +80,4 @@ esm
 # NgDoc files
 /ng-doc
 vite.config.*.timestamp*
+vitest.config.*.timestamp*

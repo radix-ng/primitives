@@ -19,7 +19,6 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
 
 @Component({
     selector: 'rdx-popover-anchor',
-    standalone: true,
     providers: [provideRdxCdkEventService()],
     imports: [
         FormsModule,

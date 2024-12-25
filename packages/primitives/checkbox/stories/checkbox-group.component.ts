@@ -57,7 +57,6 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
         </button>
     `,
     styleUrl: 'checkbox-group.styles.scss',
-    standalone: true,
     imports: [
         FormsModule,
         ReactiveFormsModule,

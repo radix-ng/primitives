@@ -9,7 +9,6 @@ import {
 
 @Component({
     selector: 'app-accordion',
-    standalone: true,
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         RdxAccordionRootDirective,

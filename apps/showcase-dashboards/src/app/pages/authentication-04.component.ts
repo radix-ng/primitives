@@ -15,7 +15,6 @@ import { BlockToolbarComponent } from '../components/block-toolbar.component';
 
 @Component({
     selector: 'app-authentication-4',
-    standalone: true,
     templateUrl: './authentication-04.component.html',
     imports: [
         BlockToolbarComponent,

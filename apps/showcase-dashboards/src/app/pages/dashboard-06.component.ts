@@ -26,7 +26,6 @@ import { BlockToolbarComponent } from '../components/block-toolbar.component';
 
 @Component({
     selector: 'app-dashboard-06',
-    standalone: true,
     templateUrl: './dashboard-06.component.html',
     imports: [
         BlockToolbarComponent,

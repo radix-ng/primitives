@@ -8,7 +8,6 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
 
 @Component({
     selector: 'checkbox-indeterminate-example',
-    standalone: true,
     imports: [
         FormsModule,
         RdxLabelDirective,
