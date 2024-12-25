@@ -12,7 +12,7 @@ import {
     RdxSelectValueDirective
 } from '@radix-ng/primitives/select';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { CheckIcon, ChevronDown, LucideAngularModule } from 'lucide-angular';
+import { Check, ChevronDown, LucideAngularModule } from 'lucide-angular';
 
 const html = String.raw;
 
@@ -33,7 +33,7 @@ export default {
                 RdxSelectValueDirective,
                 RdxSelectIconDirective,
                 LucideAngularModule,
-                LucideAngularModule.pick({ ChevronDown, CheckIcon })
+                LucideAngularModule.pick({ ChevronDown, Check })
             ],
             providers: [provideAnimations()]
         }),
@@ -211,12 +211,7 @@ export const Default: Story = {
                         <div class="SelectLabel" rdxSelectLabel>{{ group.label }}</div>
                         @for (food of group.foods; track food) {
                         <div class="SelectItem" rdxSelectItem [value]="food.value" [disabled]="food.disabled">
-                            <lucide-icon
-                                class="SelectItemIndicator"
-                                rdxSelectItemIndicator
-                                size="16"
-                                name="check-icon"
-                            />
+                            <lucide-icon class="SelectItemIndicator" rdxSelectItemIndicator size="16" name="check" />
                             {{ food.label }}
                         </div>
                         }
