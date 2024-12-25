@@ -1,9 +1,9 @@
 import { Component, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RdxAlign, RdxSide } from '@radix-ng/primitives/core';
 import { LucideAngularModule, MountainSnow, TriangleAlert, X } from 'lucide-angular';
-import { RdxPopoverAlign, RdxPopoverModule, RdxPopoverRootDirective } from '../index';
+import { RdxPopoverModule, RdxPopoverRootDirective } from '../index';
 import { RdxPopoverContentAttributesComponent } from '../src/popover-content-attributes.component';
-import { RdxPopoverSide } from '../src/popover.types';
 import { provideRdxCdkEventService } from '../src/utils/cdk-event.service';
 import { containerAlert } from './utils/constants';
 import { IgnoreClickOutsideContainerBase } from './utils/ignore-click-outside-container-base.class';
@@ -101,8 +101,8 @@ export class RdxPopoverAnimationsComponent extends IgnoreClickOutsideContainerBa
     readonly MountainSnowIcon = MountainSnow;
     readonly XIcon = X;
 
-    readonly sides = RdxPopoverSide;
-    readonly aligns = RdxPopoverAlign;
+    readonly sides = RdxSide;
+    readonly aligns = RdxAlign;
 
     cssAnimation = signal<boolean>(true);
     cssOpeningAnimation = signal(true);

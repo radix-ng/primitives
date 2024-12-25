@@ -13,11 +13,17 @@ import {
     untracked
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+    getAllPossibleConnectedPositions,
+    getContentPosition,
+    RdxAlign,
+    RdxSide,
+    RdxSideAndAlignOffsets
+} from '@radix-ng/primitives/core';
 import { filter, tap } from 'rxjs';
 import { injectPopoverRoot } from './popover-root.inject';
 import { DEFAULTS } from './popover.constants';
-import { RdxPopoverAlign, RdxPopoverAttachDetachEvent, RdxPopoverSide, RdxSideAndAlignOffsets } from './popover.types';
-import { getAllPossibleConnectedPositions, getContentPosition } from './popover.utils';
+import { RdxPopoverAttachDetachEvent } from './popover.types';
 
 @Directive({
     selector: '[rdxPopoverContent]',
@@ -45,7 +51,7 @@ export class RdxPopoverContentDirective implements OnInit {
      * @description The preferred side of the trigger to render against when open. Will be reversed when collisions occur and avoidCollisions is enabled.
      * @default top
      */
-    readonly side = input<RdxPopoverSide>(RdxPopoverSide.Top);
+    readonly side = input<RdxSide>(RdxSide.Top);
     /**
      * @description The distance in pixels from the trigger.
      * @default undefined
@@ -55,7 +61,7 @@ export class RdxPopoverContentDirective implements OnInit {
      * @description The preferred alignment against the trigger. May change when collisions occur.
      * @default center
      */
-    readonly align = input<RdxPopoverAlign>(RdxPopoverAlign.Center);
+    readonly align = input<RdxAlign>(RdxAlign.Center);
     /**
      * @description An offset in pixels from the "start" or "end" alignment options.
      * @default undefined
@@ -293,13 +299,13 @@ export class RdxPopoverContentDirective implements OnInit {
             allPossibleConnectedPositions.forEach((_, key) => {
                 const sideAndAlignArray = key.split('|');
                 if (
-                    (sideAndAlignArray[0] as RdxPopoverSide) !== this.side() ||
-                    (sideAndAlignArray[1] as RdxPopoverAlign) !== this.align()
+                    (sideAndAlignArray[0] as RdxSide) !== this.side() ||
+                    (sideAndAlignArray[1] as RdxAlign) !== this.align()
                 ) {
                     positions.push(
                         getContentPosition({
-                            side: sideAndAlignArray[0] as RdxPopoverSide,
-                            align: sideAndAlignArray[1] as RdxPopoverAlign,
+                            side: sideAndAlignArray[0] as RdxSide,
+                            align: sideAndAlignArray[1] as RdxAlign,
                             sideOffset: offsets.sideOffset,
                             alignOffset: offsets.alignOffset
                         })

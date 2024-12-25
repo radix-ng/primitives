@@ -6,3 +6,7 @@ export * from './src/inject-ng-control';
 export * from './src/is-client';
 export * from './src/is-inside-form';
 export * from './src/window';
+
+export * from './src/positioning/constants';
+export * from './src/positioning/types';
+export * from './src/positioning/utils';

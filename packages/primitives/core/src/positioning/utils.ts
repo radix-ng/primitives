@@ -1,13 +1,40 @@
 import { ConnectedPosition, ConnectionPositionPair } from '@angular/cdk/overlay';
-import { POPOVER_POSITIONS } from './popover.constants';
+import { RDX_POSITIONS } from './constants';
 import {
+    RdxAlign,
     RdxAllPossibleConnectedPositions,
     RdxArrowPositionParams,
-    RdxPopoverAlign,
-    RdxPopoverSide,
+    RdxSide,
     RdxSideAndAlign,
     RdxSideAndAlignOffsets
-} from './popover.types';
+} from './types';
+
+export function getContentPosition(
+    sideAndAlignWithOffsets: RdxSideAndAlign & RdxSideAndAlignOffsets
+): ConnectedPosition {
+    const { side, align, sideOffset, alignOffset } = sideAndAlignWithOffsets;
+    const position = {
+        ...(RDX_POSITIONS[side]?.[align] ?? RDX_POSITIONS[RdxSide.Top][RdxAlign.Center])
+    };
+    if (sideOffset || alignOffset) {
+        if ([RdxSide.Top, RdxSide.Bottom].includes(side)) {
+            if (sideOffset) {
+                position.offsetY = side === RdxSide.Top ? -sideOffset : sideOffset;
+            }
+            if (alignOffset) {
+                position.offsetX = alignOffset;
+            }
+        } else {
+            if (sideOffset) {
+                position.offsetX = side === RdxSide.Left ? -sideOffset : sideOffset;
+            }
+            if (alignOffset) {
+                position.offsetY = alignOffset;
+            }
+        }
+    }
+    return position;
+}
 
 let allPossibleConnectedPositions: RdxAllPossibleConnectedPositions;
 export function getAllPossibleConnectedPositions() {
@@ -15,11 +42,11 @@ export function getAllPossibleConnectedPositions() {
         allPossibleConnectedPositions = new Map();
     }
     if (allPossibleConnectedPositions.size < 1) {
-        Object.keys(POPOVER_POSITIONS).forEach((side) => {
-            Object.keys(POPOVER_POSITIONS[side as RdxPopoverSide] ?? {}).forEach((align) => {
+        Object.keys(RDX_POSITIONS).forEach((side) => {
+            Object.keys(RDX_POSITIONS[side as RdxSide] ?? {}).forEach((align) => {
                 (allPossibleConnectedPositions as Map<any, any>).set(
-                    `${side as RdxPopoverSide}|${align as RdxPopoverAlign}`,
-                    POPOVER_POSITIONS[side as RdxPopoverSide][align as RdxPopoverAlign]
+                    `${side as RdxSide}|${align as RdxAlign}`,
+                    RDX_POSITIONS[side as RdxSide][align as RdxAlign]
                 );
             });
         });
@@ -39,44 +66,17 @@ export function getSideAndAlignFromAllPossibleConnectedPositions(position: Conne
         ) {
             const sideAndAlignArray = key.split('|');
             sideAndAlign = {
-                side: sideAndAlignArray[0] as RdxPopoverSide,
-                align: sideAndAlignArray[1] as RdxPopoverAlign
+                side: sideAndAlignArray[0] as RdxSide,
+                align: sideAndAlignArray[1] as RdxAlign
             };
         }
     });
     if (!sideAndAlign) {
         throw Error(
-            `[RdxPopover] cannot infer both side and align from the given position (${JSON.stringify(position)})`
+            `[Rdx positioning] cannot infer both side and align from the given position (${JSON.stringify(position)})`
         );
     }
     return sideAndAlign;
-}
-
-export function getContentPosition(
-    sideAndAlignWithOffsets: RdxSideAndAlign & RdxSideAndAlignOffsets
-): ConnectedPosition {
-    const { side, align, sideOffset, alignOffset } = sideAndAlignWithOffsets;
-    const position = {
-        ...(POPOVER_POSITIONS[side]?.[align] ?? POPOVER_POSITIONS[RdxPopoverSide.Top][RdxPopoverAlign.Center])
-    };
-    if (sideOffset || alignOffset) {
-        if ([RdxPopoverSide.Top, RdxPopoverSide.Bottom].includes(side)) {
-            if (sideOffset) {
-                position.offsetY = side === RdxPopoverSide.Top ? -sideOffset : sideOffset;
-            }
-            if (alignOffset) {
-                position.offsetX = alignOffset;
-            }
-        } else {
-            if (sideOffset) {
-                position.offsetX = side === RdxPopoverSide.Left ? -sideOffset : sideOffset;
-            }
-            if (alignOffset) {
-                position.offsetY = alignOffset;
-            }
-        }
-    }
-    return position;
 }
 
 export function getArrowPositionParams(
@@ -90,23 +90,23 @@ export function getArrowPositionParams(
         transform: ''
     };
 
-    if ([RdxPopoverSide.Top, RdxPopoverSide.Bottom].includes(sideAndAlign.side)) {
-        if (sideAndAlign.side === RdxPopoverSide.Top) {
+    if ([RdxSide.Top, RdxSide.Bottom].includes(sideAndAlign.side)) {
+        if (sideAndAlign.side === RdxSide.Top) {
             posParams.top = '100%';
         } else {
             posParams.top = `-${arrowWidthAndHeight.height}px`;
             posParams.transform = `rotate(180deg)`;
         }
 
-        if (sideAndAlign.align === RdxPopoverAlign.Start) {
+        if (sideAndAlign.align === RdxAlign.Start) {
             posParams.left = `${(triggerWidthAndHeight.width - arrowWidthAndHeight.width) / 2}px`;
-        } else if (sideAndAlign.align === RdxPopoverAlign.Center) {
+        } else if (sideAndAlign.align === RdxAlign.Center) {
             posParams.left = `calc(50% - ${arrowWidthAndHeight.width / 2}px)`;
-        } else if (sideAndAlign.align === RdxPopoverAlign.End) {
+        } else if (sideAndAlign.align === RdxAlign.End) {
             posParams.left = `calc(100% - ${(triggerWidthAndHeight.width + arrowWidthAndHeight.width) / 2}px)`;
         }
-    } else if ([RdxPopoverSide.Left, RdxPopoverSide.Right].includes(sideAndAlign.side)) {
-        if (sideAndAlign.side === RdxPopoverSide.Left) {
+    } else if ([RdxSide.Left, RdxSide.Right].includes(sideAndAlign.side)) {
+        if (sideAndAlign.side === RdxSide.Left) {
             posParams.left = `100%`;
             posParams.transform = `rotate(-90deg) translate(0, -50%)`;
         } else {
@@ -114,11 +114,11 @@ export function getArrowPositionParams(
             posParams.transform = `rotate(90deg) translate(0, -50%)`;
         }
 
-        if (sideAndAlign.align === RdxPopoverAlign.Start) {
+        if (sideAndAlign.align === RdxAlign.Start) {
             posParams.top = `${(triggerWidthAndHeight.height - arrowWidthAndHeight.height) / 2}px`;
-        } else if (sideAndAlign.align === RdxPopoverAlign.Center) {
+        } else if (sideAndAlign.align === RdxAlign.Center) {
             posParams.top = `calc(50% - ${arrowWidthAndHeight.height / 2}px)`;
-        } else if (sideAndAlign.align === RdxPopoverAlign.End) {
+        } else if (sideAndAlign.align === RdxAlign.End) {
             posParams.top = `calc(100% - ${(triggerWidthAndHeight.height + arrowWidthAndHeight.height) / 2}px)`;
         }
     }

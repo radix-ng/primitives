@@ -13,9 +13,9 @@ import {
     untracked
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { getArrowPositionParams, getSideAndAlignFromAllPossibleConnectedPositions } from '@radix-ng/primitives/core';
 import { RdxPopoverArrowToken } from './popover-arrow.token';
 import { injectPopoverRoot } from './popover-root.inject';
-import { getArrowPositionParams, getSideAndAlignFromAllPossibleConnectedPositions } from './popover.utils';
 
 @Directive({
     selector: '[rdxPopoverArrow]',
