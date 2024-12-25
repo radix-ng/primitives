@@ -1,3 +1,17 @@
+## 0.24.0 (2024-12-25)
+
+### 🚀 Features
+
+- **popover:** add cdk events service ([#217](https://github.com/radix-ng/primitives/pull/217))
+
+### 🩹 Fixes
+
+- **popover:** close popover on anchor click ([#225](https://github.com/radix-ng/primitives/pull/225))
+
+### ❤️ Thank You
+
+- pawel-twardziak
+
 ## 0.23.0 (2024-12-23)
 
 ### 🚀 Features
