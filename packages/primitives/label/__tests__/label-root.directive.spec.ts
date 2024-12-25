@@ -19,7 +19,8 @@ import { RdxLabelDirective } from '../src/label.directive';
             <div>Click Me</div>
             <input type="button" value="Button" />
         </label>
-    `
+    `,
+    imports: [RdxLabelDirective]
 })
 class TestComponent {}
 
@@ -31,8 +32,7 @@ describe('RdxLabelDirective', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RdxLabelDirective],
-            declarations: [TestComponent]
+            imports: [TestComponent]
         }).compileComponents();
 
         fixture = TestBed.createComponent(TestComponent);

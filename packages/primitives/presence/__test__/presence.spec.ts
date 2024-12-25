@@ -10,7 +10,7 @@ describe('presence', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [PresenceComponent],
+            imports: [PresenceComponent],
             providers: [{ provide: NgZone, useValue: new NgZone({ enableLongStackTrace: false }) }]
         }).compileComponents();
 

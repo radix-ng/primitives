@@ -5,7 +5,8 @@ import { RdxToggleDirective } from '../src/toggle.directive';
 
 @Component({
     template:
-        '<button rdxToggle [pressed]="pressed" [disabled]="disabled" (onPressedChange)="onToggle($event)">Toggle</button>'
+        '<button rdxToggle [pressed]="pressed" [disabled]="disabled" (onPressedChange)="onToggle($event)">Toggle</button>',
+    imports: [RdxToggleDirective]
 })
 class TestComponent {
     @Input() pressed = false;
@@ -23,8 +24,7 @@ describe('RdxToggleDirective', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RdxToggleDirective],
-            declarations: [TestComponent]
+            imports: [TestComponent]
         }).compileComponents();
     });
 

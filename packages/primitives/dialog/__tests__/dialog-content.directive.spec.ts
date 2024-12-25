@@ -6,7 +6,8 @@ import { RdxDialogContentDirective } from '../src/dialog-content.directive';
 import { RdxDialogRef } from '../src/dialog-ref';
 
 @Component({
-    template: '<div rdxDialogContent>Dialog Content</div>'
+    template: '<div rdxDialogContent>Dialog Content</div>',
+    imports: [RdxDialogContentDirective]
 })
 class TestComponent {}
 
@@ -26,8 +27,7 @@ describe('RdxDialogContentDirective', () => {
         } as any;
 
         await TestBed.configureTestingModule({
-            declarations: [TestComponent],
-            imports: [RdxDialogContentDirective],
+            imports: [TestComponent],
             providers: [
                 { provide: RdxDialogRef, useValue: dialogRefMock }]
         }).compileComponents();

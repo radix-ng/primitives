@@ -1,13 +1,6 @@
 import { Component, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-    LucideAngularModule,
-    LucideMapPinPlus,
-    LucideMapPinPlusInside,
-    MountainSnowIcon,
-    TriangleAlert,
-    X
-} from 'lucide-angular';
+import { LucideAngularModule, MapPin, MapPinPlus, MountainSnow, TriangleAlert, X } from 'lucide-angular';
 import { RdxPopoverModule } from '../index';
 import { RdxPopoverAnchorDirective } from '../src/popover-anchor.directive';
 import { RdxPopoverContentAttributesComponent } from '../src/popover-content-attributes.component';
@@ -145,10 +138,10 @@ export class RdxPopoverAnchorComponent extends IgnoreClickOutsideContainerBase {
     readonly popoverRootDirective1 = viewChild('root1');
     readonly popoverRootDirective2 = viewChild('root2');
 
-    readonly MountainSnowIcon = MountainSnowIcon;
+    readonly MountainSnowIcon = MountainSnow;
     readonly XIcon = X;
-    readonly LucideMapPinPlusInside = LucideMapPinPlusInside;
-    readonly LucideMapPinPlus = LucideMapPinPlus;
+    readonly LucideMapPinPlusInside = MapPinPlus;
+    readonly LucideMapPinPlus = MapPin;
     readonly TriangleAlert = TriangleAlert;
     readonly containerAlert = containerAlert;
 }

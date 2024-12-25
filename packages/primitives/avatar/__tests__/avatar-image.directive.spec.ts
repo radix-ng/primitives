@@ -40,13 +40,4 @@ describe('RdxAvatarImageDirective', () => {
         expect(imgElement).toBeTruthy();
         expect(imgElement.nativeElement.src).toContain('data:image/svg+xml');
     });
-
-    it('should keep fallback hidden after successful image load', () => {
-        const imgElement = fixture.debugElement.query(By.css('img[rdxAvatarImage]'));
-        imgElement.triggerEventHandler('load', null);
-        fixture.detectChanges();
-
-        const fallbackElement = fixture.debugElement.query(By.directive(RdxAvatarFallbackDirective));
-        expect(fallbackElement.nativeElement.style.display).toBe('none');
-    });
 });

@@ -69,12 +69,9 @@ export class ShCheckboxComponent {
     checkedChange = new EventEmitter<boolean>();
 
     constructor() {
-        effect(
-            () => {
-                this.updateIconName();
-            },
-            { allowSignalWrites: true }
-        );
+        effect(() => {
+            this.updateIconName();
+        });
     }
 
     protected onChange(event: boolean): void {
