@@ -178,7 +178,7 @@ export const Multiple: Story = {
                         <lucide-angular size="16" name="plus" style="display: flex;"></lucide-angular>
                     </button>
 
-                    <ng-template rdxTooltipContent [sideOffset]="60">
+                    <ng-template rdxTooltipContent [sideOffset]="30">
                         <div class="TooltipContent" rdxTooltipContentAttributes>
                             Add to library
                             <div class="TooltipArrow" rdxTooltipArrow></div>

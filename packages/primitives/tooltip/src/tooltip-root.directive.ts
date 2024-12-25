@@ -7,7 +7,6 @@ import {
     DestroyRef,
     Directive,
     effect,
-    ElementRef,
     forwardRef,
     inject,
     InjectionToken,
@@ -101,7 +100,7 @@ export class RdxTooltipRootDirective implements OnInit {
     /** @ignore */
     readonly tooltipContentDirective = contentChild.required(RdxTooltipContentToken);
     /** @ignore */
-    readonly tooltipTriggerElementRef = contentChild.required(RdxTooltipTriggerDirective, { read: ElementRef });
+    readonly tooltipTriggerDirective = contentChild.required(RdxTooltipTriggerDirective);
 
     /** @ignore */
     private openTimer = 0;
@@ -301,7 +300,7 @@ export class RdxTooltipRootDirective implements OnInit {
     private getPositionStrategy(connectedPosition: ConnectedPosition): PositionStrategy {
         return this.overlay
             .position()
-            .flexibleConnectedTo(this.tooltipTriggerElementRef())
+            .flexibleConnectedTo(this.tooltipTriggerDirective().elementRef)
             .withFlexibleDimensions(false)
             .withPositions([
                 connectedPosition

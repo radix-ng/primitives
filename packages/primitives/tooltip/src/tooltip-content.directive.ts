@@ -1,8 +1,6 @@
-import { ConnectedPosition } from '@angular/cdk/overlay';
 import { computed, Directive, forwardRef, inject, input, output, TemplateRef } from '@angular/core';
-import { getContentPosition } from './get-content-position';
+import { getContentPosition, RdxAlign, RdxSide } from '@radix-ng/primitives/core';
 import { RdxTooltipContentToken } from './tooltip-content.token';
-import { RdxTooltipAlign, RdxTooltipSide } from './tooltip.types';
 
 @Directive({
     selector: '[rdxTooltipContent]',
@@ -16,7 +14,7 @@ export class RdxTooltipContentDirective {
     /**
      * The preferred side of the trigger to render against when open. Will be reversed when collisions occur and avoidCollisions is enabled.
      */
-    readonly side = input<RdxTooltipSide>(RdxTooltipSide.Top);
+    readonly side = input<RdxSide>(RdxSide.Top);
 
     /**
      * The distance in pixels from the trigger.
@@ -26,7 +24,7 @@ export class RdxTooltipContentDirective {
     /**
      * The preferred alignment against the trigger. May change when collisions occur.
      */
-    readonly align = input<RdxTooltipAlign>(RdxTooltipAlign.Center);
+    readonly align = input<RdxAlign>(RdxAlign.Center);
 
     /**
      * An offset in pixels from the "start" or "end" alignment options.
@@ -34,8 +32,13 @@ export class RdxTooltipContentDirective {
     readonly alignOffset = input<number>(0);
 
     /** @ingore */
-    readonly position = computed<ConnectedPosition>(() =>
-        getContentPosition(this.side(), this.align(), this.sideOffset(), this.alignOffset())
+    readonly position = computed(() =>
+        getContentPosition({
+            side: this.side(),
+            align: this.align(),
+            sideOffset: this.sideOffset(),
+            alignOffset: this.alignOffset()
+        })
     );
 
     /**

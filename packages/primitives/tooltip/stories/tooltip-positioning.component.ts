@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RdxAlign, RdxSide } from '@radix-ng/primitives/core';
 import { LucideAngularModule, Plus } from 'lucide-angular';
 import { RdxTooltipModule } from '../index';
-import { RdxTooltipAlign, RdxTooltipSide } from '../src/tooltip.types';
 
 @Component({
     selector: 'rdx-tooltip-positioning',
@@ -168,10 +168,10 @@ import { RdxTooltipAlign, RdxTooltipSide } from '../src/tooltip.types';
 export class RdxTooltipPositioningComponent {
     readonly PlusIcon = Plus;
 
-    selectedSide = RdxTooltipSide.Top;
-    selectedAlign = RdxTooltipAlign.Center;
+    selectedSide = RdxSide.Top;
+    selectedAlign = RdxAlign.Center;
     sideOffset = 8;
 
-    readonly sides = RdxTooltipSide;
-    readonly aligns = RdxTooltipAlign;
+    readonly sides = RdxSide;
+    readonly aligns = RdxAlign;
 }
