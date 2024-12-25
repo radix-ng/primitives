@@ -301,8 +301,8 @@ importers:
         specifier: ^15.2.10
         version: 15.2.10
       lucide-angular:
-        specifier: 0.438.0
-        version: 0.438.0(@angular/common@19.0.5(@angular/core@19.0.5(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@19.0.5(rxjs@7.8.1)(zone.js@0.15.0))
+        specifier: 0.469.0
+        version: 0.469.0(@angular/common@19.0.5(@angular/core@19.0.5(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@19.0.5(rxjs@7.8.1)(zone.js@0.15.0))
       marked-highlight:
         specifier: ^2.2.1
         version: 2.2.1(marked@12.0.2)
@@ -491,11 +491,11 @@ importers:
   packages/components:
     dependencies:
       '@angular/common':
-        specifier: ^18.0.0
-        version: 18.2.11(@angular/core@18.2.11(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1)
+        specifier: ^19.0.0
+        version: 19.0.5(@angular/core@19.0.5(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1)
       '@angular/core':
-        specifier: ^18.0.0
-        version: 18.2.11(rxjs@7.8.1)(zone.js@0.15.0)
+        specifier: ^19.0.0
+        version: 19.0.5(rxjs@7.8.1)(zone.js@0.15.0)
     devDependencies:
       '@radix-ng/primitives':
         specifier: workspace:*
@@ -507,24 +507,24 @@ importers:
   packages/primitives:
     dependencies:
       '@angular/cdk':
-        specifier: ^18.0.0
-        version: 18.2.12(@angular/common@19.0.5(@angular/core@18.2.11(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@18.2.11(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1)
+        specifier: ^19.0.0
+        version: 19.0.4(@angular/common@19.0.5(@angular/core@19.0.5(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@19.0.5(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1)
       '@angular/core':
-        specifier: ^18.0.0
-        version: 18.2.11(rxjs@7.8.1)(zone.js@0.15.0)
+        specifier: ^19.0.0
+        version: 19.0.5(rxjs@7.8.1)(zone.js@0.15.0)
 
   packages/shadcn:
     dependencies:
       lucide-angular:
-        specifier: ^0.438.0
-        version: 0.438.0(@angular/common@19.0.5(@angular/core@18.2.11(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@18.2.11(rxjs@7.8.1)(zone.js@0.15.0))
+        specifier: ^0.469.0
+        version: 0.469.0(@angular/common@19.0.5(@angular/core@19.0.5(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@19.0.5(rxjs@7.8.1)(zone.js@0.15.0))
     devDependencies:
       '@angular/cdk':
-        specifier: ^18.0.0
-        version: 18.2.12(@angular/common@19.0.5(@angular/core@18.2.11(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@18.2.11(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1)
+        specifier: ^19.0.0
+        version: 19.0.4(@angular/common@19.0.5(@angular/core@19.0.5(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@19.0.5(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1)
       '@angular/core':
-        specifier: ^18.0.0
-        version: 18.2.11(rxjs@7.8.1)(zone.js@0.15.0)
+        specifier: ^19.0.0
+        version: 19.0.5(rxjs@7.8.1)(zone.js@0.15.0)
       '@radix-ng/primitives':
         specifier: workspace:*
         version: link:../primitives
@@ -919,13 +919,6 @@ packages:
       tailwindcss:
         optional: true
 
-  '@angular/cdk@18.2.12':
-    resolution: {integrity: sha512-FOklA6KatPtb0yO0doRhBI/UVY23A8ZhOSws5VuZTQl/6r/jXEXGV9n5JQj4rm8t/6IrReO55hdyw9XfHfZFjQ==}
-    peerDependencies:
-      '@angular/common': ^18.0.0 || ^19.0.0
-      '@angular/core': ^18.0.0 || ^19.0.0
-      rxjs: ^6.5.3 || ^7.4.0
-
   '@angular/cdk@19.0.4':
     resolution: {integrity: sha512-P8V1n6AFFjBUJG3YRgw8DiiNDWPZVrwQ42wbwgZxd4s2TQAuNFg3YY8h/DSMVxt2sXpavrshZsoLtP9yLKZjHA==}
     peerDependencies:
@@ -937,13 +930,6 @@ packages:
     resolution: {integrity: sha512-ZEHhgRRVIdn10dbsAjB8TE9Co32hfuL9/im5Jcfa1yrn6KJefmigz6KN8Xu7FXMH5FkdqfQ11QpLBxJSPb9aww==}
     engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     hasBin: true
-
-  '@angular/common@18.2.11':
-    resolution: {integrity: sha512-bamJeISl2zUlvjPYebQWazUjhjXU9nrot42cQJng94SkvNENT9LTWfPYgc+Bd972Kg+31jG4H41rgFNs7zySmw==}
-    engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0}
-    peerDependencies:
-      '@angular/core': 18.2.11
-      rxjs: ^6.5.3 || ^7.4.0
 
   '@angular/common@19.0.5':
     resolution: {integrity: sha512-fFK+euCj1AjBHBCpj9VnduMSeqoMRhZZHbhPYiND7tucRRJ8vwGU0sYK2KI/Ko+fsrNIXL/0O4F36jVPl09Smg==}
@@ -968,13 +954,6 @@ packages:
     peerDependenciesMeta:
       '@angular/core':
         optional: true
-
-  '@angular/core@18.2.11':
-    resolution: {integrity: sha512-/AGAFyZN8KR+kW5FUFCCBCj3qHyDDum7G0lJe5otrT9AqF6+g7PjF8yLha/6wPkJG7ri5xGLhini1sEivVeq/g==}
-    engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0}
-    peerDependencies:
-      rxjs: ^6.5.3 || ^7.4.0
-      zone.js: ~0.14.10
 
   '@angular/core@19.0.5':
     resolution: {integrity: sha512-Ywc6sPO6G/Y1stfk3y/MallV/h0yzQ0vdOHRWueLrk5kD1DTdbolV4X03Cs3PuVvravgcSVE3nnuuHFuH32emQ==}
@@ -9671,11 +9650,11 @@ packages:
     resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
     engines: {node: '>=12'}
 
-  lucide-angular@0.438.0:
-    resolution: {integrity: sha512-REDxI3Dc+eWoj0qPaXIKNp4CRdZovrrxTFn18cGkfDldszNSD4nX3KKgE0wW23z/BtLX3N8awOZMIs8bPZZrwg==}
+  lucide-angular@0.469.0:
+    resolution: {integrity: sha512-jyAqrKLg8X46AhleiFqCqlxLixEiL+Ad5wPOuky2LJdsTyKWV+kZOquKYnqCHIlyDekT9Jc9YtS8sM1gQPX2nw==}
     peerDependencies:
-      '@angular/common': 13.x - 18.x
-      '@angular/core': 13.x - 18.x
+      '@angular/common': 13.x - 19.x
+      '@angular/core': 13.x - 19.x
 
   lunr@2.3.9:
     resolution: {integrity: sha512-zTU3DaZaF3Rt9rhN3uBMGQD3dD2/vFQqnvZCDv4dl5iOzq2IZQqTxu90r4E5J+nP70J3ilqVCrbho2eWaeW8Ow==}
@@ -15088,15 +15067,6 @@ snapshots:
       - supports-color
       - terser
 
-  '@angular/cdk@18.2.12(@angular/common@19.0.5(@angular/core@18.2.11(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@18.2.11(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1)':
-    dependencies:
-      '@angular/common': 19.0.5(@angular/core@18.2.11(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1)
-      '@angular/core': 18.2.11(rxjs@7.8.1)(zone.js@0.15.0)
-      rxjs: 7.8.1
-      tslib: 2.8.1
-    optionalDependencies:
-      parse5: 7.2.1
-
   '@angular/cdk@19.0.4(@angular/common@19.0.5(@angular/core@19.0.5(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@19.0.5(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1)':
     dependencies:
       '@angular/common': 19.0.5(@angular/core@19.0.5(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1)
@@ -15130,18 +15100,6 @@ snapshots:
       - bluebird
       - chokidar
       - supports-color
-
-  '@angular/common@18.2.11(@angular/core@18.2.11(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1)':
-    dependencies:
-      '@angular/core': 18.2.11(rxjs@7.8.1)(zone.js@0.15.0)
-      rxjs: 7.8.1
-      tslib: 2.8.1
-
-  '@angular/common@19.0.5(@angular/core@18.2.11(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1)':
-    dependencies:
-      '@angular/core': 18.2.11(rxjs@7.8.1)(zone.js@0.15.0)
-      rxjs: 7.8.1
-      tslib: 2.8.1
 
   '@angular/common@19.0.5(@angular/core@19.0.5(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1)':
     dependencies:
@@ -15184,12 +15142,6 @@ snapshots:
       tslib: 2.8.1
     optionalDependencies:
       '@angular/core': 19.0.5(rxjs@7.8.1)(zone.js@0.15.0)
-
-  '@angular/core@18.2.11(rxjs@7.8.1)(zone.js@0.15.0)':
-    dependencies:
-      rxjs: 7.8.1
-      tslib: 2.8.1
-      zone.js: 0.15.0
 
   '@angular/core@19.0.5(rxjs@7.8.1)(zone.js@0.15.0)':
     dependencies:
@@ -27028,13 +26980,7 @@ snapshots:
 
   lru-cache@7.18.3: {}
 
-  lucide-angular@0.438.0(@angular/common@19.0.5(@angular/core@18.2.11(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@18.2.11(rxjs@7.8.1)(zone.js@0.15.0)):
-    dependencies:
-      '@angular/common': 19.0.5(@angular/core@18.2.11(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1)
-      '@angular/core': 18.2.11(rxjs@7.8.1)(zone.js@0.15.0)
-      tslib: 2.8.1
-
-  lucide-angular@0.438.0(@angular/common@19.0.5(@angular/core@19.0.5(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@19.0.5(rxjs@7.8.1)(zone.js@0.15.0)):
+  lucide-angular@0.469.0(@angular/common@19.0.5(@angular/core@19.0.5(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1))(@angular/core@19.0.5(rxjs@7.8.1)(zone.js@0.15.0)):
     dependencies:
       '@angular/common': 19.0.5(@angular/core@19.0.5(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1)
       '@angular/core': 19.0.5(rxjs@7.8.1)(zone.js@0.15.0)
