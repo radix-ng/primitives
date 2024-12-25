@@ -67,8 +67,7 @@ import { Message } from './types';
         ReactiveFormsModule,
         FormsModule,
         NgTemplateOutlet
-    ],
-    standalone: true
+    ]
 })
 export class WithEventBaseComponent implements AfterContentInit {
     onOverlayEscapeKeyDownDisabled = model(false);

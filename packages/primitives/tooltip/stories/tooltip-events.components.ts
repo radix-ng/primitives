@@ -4,7 +4,6 @@ import { RdxTooltipModule } from '../index';
 
 @Component({
     selector: 'rdx-tooltip-events',
-    standalone: true,
     imports: [
         RdxTooltipModule,
         LucideAngularModule

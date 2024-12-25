@@ -3,7 +3,6 @@ import { RdxRovingFocusGroupDirective, RdxRovingFocusItemDirective } from '@radi
 
 @Component({
     selector: 'rvg-events',
-    standalone: true,
     imports: [RdxRovingFocusItemDirective, RdxRovingFocusGroupDirective],
     template: `
         <div

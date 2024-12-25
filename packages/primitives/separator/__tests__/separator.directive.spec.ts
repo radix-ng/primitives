@@ -3,7 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Orientation, RdxSeparatorRootDirective } from '../src/separator.directive';
 
 @Component({
-    template: '<div rdxSeparatorRoot [orientation]="orientation" [decorative]="decorative"></div>'
+    template: '<div rdxSeparatorRoot [orientation]="orientation" [decorative]="decorative"></div>',
+    imports: [RdxSeparatorRootDirective]
 })
 class TestHostComponent {
     orientation: Orientation = 'horizontal';
@@ -16,8 +17,7 @@ describe('SeparatorDirective', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [RdxSeparatorRootDirective],
-            declarations: [TestHostComponent]
+            imports: [TestHostComponent]
         });
         fixture = TestBed.createComponent(TestHostComponent);
         element = fixture.nativeElement.querySelector('div');

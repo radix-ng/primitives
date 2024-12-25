@@ -5,7 +5,8 @@ import { RdxAspectRatioDirective } from '../src/aspect-ratio.directive';
 @Component({
     template: `
         <div [ratio]="ratio" rdxAspectRatio></div>
-    `
+    `,
+    imports: [RdxAspectRatioDirective]
 })
 class TestComponent {
     ratio = 16 / 9;
@@ -17,8 +18,7 @@ describe('AspectRatioDirective', () => {
 
     beforeEach(() => {
         fixture = TestBed.configureTestingModule({
-            imports: [RdxAspectRatioDirective],
-            declarations: [TestComponent]
+            imports: [TestComponent]
         }).createComponent(TestComponent);
 
         component = fixture.componentInstance;

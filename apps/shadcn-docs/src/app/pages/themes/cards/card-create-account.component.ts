@@ -14,7 +14,6 @@ import { LucideAngularModule } from 'lucide-angular';
 
 @Component({
     selector: 'app-card-create-account',
-    standalone: true,
     imports: [
         ShCardComponent,
         ShCardHeaderComponent,

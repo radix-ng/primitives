@@ -8,7 +8,8 @@ import { RdxProgressRootDirective } from '../src/progress-root.directive';
         <div [rdxValue]="value" [rdxMax]="max" [id]="id" rdxProgressRoot>
             <div rdxProgressIndicator></div>
         </div>
-    `
+    `,
+    imports: [RdxProgressRootDirective, RdxProgressIndicatorDirective]
 })
 class TestHostComponent {
     value: number | null | undefined = 50;
@@ -22,8 +23,7 @@ describe('RdxProgress', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RdxProgressRootDirective, RdxProgressIndicatorDirective],
-            declarations: [TestHostComponent]
+            imports: [TestHostComponent]
         }).compileComponents();
 
         fixture = TestBed.createComponent(TestHostComponent);

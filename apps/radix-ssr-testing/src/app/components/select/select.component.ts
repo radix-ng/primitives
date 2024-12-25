@@ -11,7 +11,6 @@ import {
 
 @Component({
     selector: 'app-select',
-    standalone: true,
     imports: [
         RdxSelectComponent,
         RdxSelectItemIndicatorDirective,

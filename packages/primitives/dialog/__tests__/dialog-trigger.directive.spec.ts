@@ -11,7 +11,8 @@ import { RdxDialogService } from '../src/dialog.service';
     template: `
         <button [rdxDialogTrigger]="dialogTemplate" [rdxDialogConfig]="config">Open Dialog</button>
         <ng-template #dialogTemplate>Dialog Content</ng-template>
-    `
+    `,
+    imports: [RdxDialogTriggerDirective]
 })
 class TestHostComponent implements OnInit {
     @ViewChild('dialogTemplate') dialogTemplate: TemplateRef<any>;
@@ -47,8 +48,7 @@ describe('RdxDialogTriggerDirective', () => {
         } as any;
 
         await TestBed.configureTestingModule({
-            declarations: [TestHostComponent],
-            imports: [RdxDialogTriggerDirective],
+            imports: [TestHostComponent],
             providers: [
                 { provide: RdxDialogService, useValue: dialogServiceMock }]
         }).compileComponents();

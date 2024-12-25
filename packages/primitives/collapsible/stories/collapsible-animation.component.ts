@@ -7,7 +7,6 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
 
 @Component({
     selector: 'rdx-collapsible-animation',
-    standalone: true,
     imports: [
         RdxCollapsibleRootDirective,
         RdxCollapsibleTriggerDirective,

@@ -17,7 +17,6 @@ import { BACK_KEYS, linearScale } from './utils';
 
 @Component({
     selector: 'rdx-slider-horizontal',
-    standalone: true,
     imports: [RdxSliderImplDirective],
     template: `
         <span

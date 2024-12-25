@@ -5,7 +5,6 @@ import { RdxToggleDirective } from '../src/toggle.directive';
 
 @Component({
     selector: 'toggle-reactive-forms',
-    standalone: true,
     imports: [ReactiveFormsModule, RdxToggleDirective, RdxToggleVisuallyHiddenInputDirective],
     styleUrl: 'toggle.styles.css',
     template: `

@@ -12,7 +12,6 @@ import { ThemeSwitcherComponent } from '../../ui/theme-switcher/theme-switcher.c
 
 @Component({
     selector: 'app-layout',
-    standalone: true,
     imports: [
         RouterLink,
         RouterLinkActive,

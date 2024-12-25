@@ -26,26 +26,21 @@ export class RdxAvatarFallbackDirective implements OnDestroy {
      */
     readonly delayMs = input<number>(this.config.delayMs);
 
-    protected readonly shouldRender = computed(
-        () => this.canRender() && this.avatarRoot.imageLoadingStatus() !== 'loaded'
-    );
+    readonly shouldRender = computed(() => this.canRender() && this.avatarRoot.imageLoadingStatus() !== 'loaded');
 
     protected readonly canRender = signal(false);
     private timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     constructor() {
-        effect(
-            () => {
-                const status = this.avatarRoot.imageLoadingStatus();
-                if (status === 'loading') {
-                    this.startDelayTimer();
-                } else {
-                    this.clearDelayTimer();
-                    this.canRender.set(true);
-                }
-            },
-            { allowSignalWrites: true }
-        );
+        effect(() => {
+            const status = this.avatarRoot.imageLoadingStatus();
+            if (status === 'loading') {
+                this.startDelayTimer();
+            } else {
+                this.clearDelayTimer();
+                this.canRender.set(true);
+            }
+        });
     }
 
     private startDelayTimer() {

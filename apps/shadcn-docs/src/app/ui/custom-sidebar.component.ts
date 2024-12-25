@@ -4,7 +4,6 @@ import { NG_DOC_CONTEXT } from '@ng-doc/app';
 
 @Component({
     selector: 'app-custom-sidebar',
-    standalone: true,
     imports: [RouterLinkActive, RouterLink],
     template: `
         <aside class="fixed top-14 z-30 -ml-2 hidden h-[calc(100vh-3.5rem)] w-full shrink-0 lg:sticky lg:block">

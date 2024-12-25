@@ -5,7 +5,6 @@ import { RdxTooltipModule } from '../index';
 
 @Component({
     selector: 'rdx-tooltip-triggering',
-    standalone: true,
     imports: [
         FormsModule,
         RdxTooltipModule,

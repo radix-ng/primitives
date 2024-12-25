@@ -17,7 +17,6 @@ import { CardCreateAccountComponent } from './cards/card-create-account.componen
 
 @Component({
     selector: 'app-home',
-    standalone: true,
     imports: [
         RouterLink,
         ShCardComponent,

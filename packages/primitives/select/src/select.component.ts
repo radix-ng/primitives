@@ -30,7 +30,6 @@ import { RdxSelectTriggerDirective } from './select-trigger.directive';
 let nextId = 0;
 
 @Component({
-    standalone: true,
     selector: '[rdxSelect]',
     template: `
         <ng-content select="[rdxSelectTrigger]" />

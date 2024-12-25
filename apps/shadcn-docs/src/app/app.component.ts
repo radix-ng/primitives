@@ -7,7 +7,6 @@ import { ThemeService } from './services/theme.service';
 
 @Component({
     selector: 'app-root',
-    standalone: true,
     imports: [
         RouterOutlet,
         JsonPipe,

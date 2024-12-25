@@ -1,6 +1,6 @@
 import { Component, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, MountainSnowIcon, TriangleAlert, X } from 'lucide-angular';
+import { LucideAngularModule, MountainSnow, TriangleAlert, X } from 'lucide-angular';
 import { RdxPopoverModule } from '../index';
 import { RdxPopoverContentAttributesComponent } from '../src/popover-content-attributes.component';
 import { provideRdxCdkEventService } from '../src/utils/cdk-event.service';
@@ -11,7 +11,6 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
 
 @Component({
     selector: 'rdx-popover-triggering',
-    standalone: true,
     providers: [provideRdxCdkEventService()],
     imports: [
         FormsModule,
@@ -173,7 +172,7 @@ export class RdxPopoverTriggeringComponent extends IgnoreClickOutsideContainerBa
     readonly popoverRootDirective1 = viewChild('root1');
     readonly popoverRootDirective2 = viewChild('root2');
 
-    readonly MountainSnowIcon = MountainSnowIcon;
+    readonly MountainSnowIcon = MountainSnow;
     readonly XIcon = X;
 
     isOpenFalse = signal(false);

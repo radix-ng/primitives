@@ -1,6 +1,6 @@
 import { Component, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, MountainSnowIcon, TriangleAlert, X } from 'lucide-angular';
+import { LucideAngularModule, MountainSnow, TriangleAlert, X } from 'lucide-angular';
 import { RdxPopoverAlign, RdxPopoverModule, RdxPopoverRootDirective, RdxPopoverSide } from '../index';
 import { RdxPopoverContentAttributesComponent } from '../src/popover-content-attributes.component';
 import { provideRdxCdkEventService } from '../src/utils/cdk-event.service';
@@ -11,7 +11,6 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
 
 @Component({
     selector: 'rdx-popover-positioning',
-    standalone: true,
     providers: [provideRdxCdkEventService()],
     imports: [
         FormsModule,
@@ -120,7 +119,7 @@ export class RdxPopoverPositioningComponent extends IgnoreClickOutsideContainerB
     readonly sides = RdxPopoverSide;
     readonly aligns = RdxPopoverAlign;
 
-    readonly MountainSnowIcon = MountainSnowIcon;
+    readonly MountainSnowIcon = MountainSnow;
     readonly XIcon = X;
     protected readonly containerAlert = containerAlert;
     protected readonly TriangleAlert = TriangleAlert;

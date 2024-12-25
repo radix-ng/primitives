@@ -7,7 +7,6 @@ import {
 
 @Component({
     selector: 'app-collapsible',
-    standalone: true,
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         RdxCollapsibleRootDirective,

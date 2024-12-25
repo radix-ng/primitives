@@ -16,7 +16,6 @@ import { BlockToolbarComponent } from '../components/block-toolbar.component';
 
 @Component({
     selector: 'app-dashboard-04',
-    standalone: true,
     imports: [
         LucideAngularModule,
         BlockToolbarComponent,

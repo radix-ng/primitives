@@ -140,14 +140,11 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
     private readonly defaultCheckedUsed = computed(() => this.defaultChecked());
 
     constructor() {
-        effect(
-            () => {
-                if (this.defaultCheckedUsed()) {
-                    this.checked.set(this.defaultChecked());
-                }
-            },
-            { allowSignalWrites: true }
-        );
+        effect(() => {
+            if (this.defaultCheckedUsed()) {
+                this.checked.set(this.defaultChecked());
+            }
+        });
     }
 
     /**

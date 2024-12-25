@@ -11,7 +11,6 @@ import { LucideAngularModule } from 'lucide-angular';
 
 @Component({
     selector: 'app-card-chat',
-    standalone: true,
     imports: [
         ShCardContentComponent,
         ShCardComponent,

@@ -8,7 +8,6 @@ import {
 
 @Component({
     selector: 'app-tabs',
-    standalone: true,
     imports: [RdxTabsContentDirective, RdxTabsListDirective, RdxTabsRootDirective, RdxTabsTriggerDirective],
     template: `
         <div rdxTabsRoot defaultValue="one">

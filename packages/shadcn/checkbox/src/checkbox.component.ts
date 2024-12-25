@@ -23,7 +23,6 @@ const variants = cva('flex');
 
 @Component({
     selector: 'sh-checkbox',
-    standalone: true,
     imports: [
         RdxCheckboxDirective,
         RdxCheckboxIndicatorDirective,
@@ -32,7 +31,6 @@ const variants = cva('flex');
     ],
     host: {
         '[class]': 'computedClass()',
-
         // set to null on host element
         '[attr.id]': 'null'
     },
@@ -71,12 +69,9 @@ export class ShCheckboxComponent {
     checkedChange = new EventEmitter<boolean>();
 
     constructor() {
-        effect(
-            () => {
-                this.updateIconName();
-            },
-            { allowSignalWrites: true }
-        );
+        effect(() => {
+            this.updateIconName();
+        });
     }
 
     protected onChange(event: boolean): void {

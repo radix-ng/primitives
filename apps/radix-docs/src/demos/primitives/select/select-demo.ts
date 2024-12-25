@@ -12,7 +12,7 @@ import {
     RdxSelectTriggerDirective,
     RdxSelectValueDirective
 } from '@radix-ng/primitives/select';
-import { CheckIcon, ChevronDown, LucideAngularModule } from 'lucide-angular';
+import { Check, ChevronDown, LucideAngularModule } from 'lucide-angular';
 
 @Component({
     selector: 'radix-select-demo',
@@ -63,7 +63,7 @@ import { CheckIcon, ChevronDown, LucideAngularModule } from 'lucide-angular';
 })
 export class SelectDemoComponent {
     readonly LucideChevronDownIcon = ChevronDown;
-    readonly LucideCheckIcon = CheckIcon;
+    readonly LucideCheckIcon = Check;
 
     readonly foodGroups: FoodArray = [
         {

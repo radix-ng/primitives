@@ -6,7 +6,6 @@ import { DashboardComponent } from './pages/dashboard-04.component';
 import { Dashboard06Component } from './pages/dashboard-06.component';
 
 @Component({
-    standalone: true,
     imports: [
         DashboardComponent,
         Dashboard06Component,
