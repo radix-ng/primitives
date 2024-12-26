@@ -11,7 +11,7 @@ import {
     Renderer2,
     VERSION
 } from '@angular/core';
-import { injectDocument } from '@radix-ng/primitives/core';
+import { injectDocument, injectWindow } from '@radix-ng/primitives/core';
 import { RdxCdkEventServiceWindowKey } from './constants';
 import { EventType, EventTypeAsPrimitiveConfigKey, PrimitiveConfig, PrimitiveConfigs } from './types';
 
@@ -25,10 +25,11 @@ class RdxCdkEventService {
     destroyRef = inject(DestroyRef);
     ngZone = inject(NgZone);
     renderer2 = inject(Renderer2);
+    window = injectWindow();
 
     primitiveConfigs?: PrimitiveConfigs;
 
-    onDestroyCallbacks: Set<() => void> = new Set([deleteRdxCdkEventServiceWindowKey]);
+    onDestroyCallbacks: Set<() => void> = new Set([() => deleteRdxCdkEventServiceWindowKey(this.window)]);
 
     #clickDomRootEventCallbacks: Set<(event: MouseEvent) => void> = new Set();
 
@@ -174,7 +175,7 @@ const RdxCdkEventServiceToken = new InjectionToken<RdxCdkEventService>('RdxCdkEv
 
 const existsErrorMessage = 'RdxCdkEventService should be provided only once!';
 
-const deleteRdxCdkEventServiceWindowKey = () => {
+const deleteRdxCdkEventServiceWindowKey = (window: Window & typeof globalThis) => {
     delete (window as any)[RdxCdkEventServiceWindowKey];
 };
 
@@ -182,6 +183,7 @@ const getProvider: (throwWhenExists?: boolean) => Provider = (throwWhenExists = 
     provide: RdxCdkEventServiceToken,
     useFactory: () => {
         isDevMode() && console.log('providing RdxCdkEventService...');
+        const window = injectWindow();
         if ((window as any)[RdxCdkEventServiceWindowKey]) {
             if (throwWhenExists) {
                 throw Error(existsErrorMessage);
