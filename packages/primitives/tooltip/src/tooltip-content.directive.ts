@@ -1,10 +1,10 @@
-import { computed, Directive, forwardRef, inject, input, output, TemplateRef } from '@angular/core';
+import { NumberInput } from '@angular/cdk/coercion';
+import { computed, Directive, forwardRef, inject, input, numberAttribute, output, TemplateRef } from '@angular/core';
 import { getContentPosition, RdxPositionAlign, RdxPositionSide } from '@radix-ng/primitives/core';
 import { RdxTooltipContentToken } from './tooltip-content.token';
 
 @Directive({
     selector: '[rdxTooltipContent]',
-    standalone: true,
     providers: [{ provide: RdxTooltipContentToken, useExisting: forwardRef(() => RdxTooltipContentDirective) }]
 })
 export class RdxTooltipContentDirective {
@@ -19,7 +19,7 @@ export class RdxTooltipContentDirective {
     /**
      * The distance in pixels from the trigger.
      */
-    readonly sideOffset = input<number>(0);
+    readonly sideOffset = input<number, NumberInput>(0, { transform: numberAttribute });
 
     /**
      * The preferred alignment against the trigger. May change when collisions occur.
@@ -29,7 +29,7 @@ export class RdxTooltipContentDirective {
     /**
      * An offset in pixels from the "start" or "end" alignment options.
      */
-    readonly alignOffset = input<number>(0);
+    readonly alignOffset = input<number, NumberInput>(0, { transform: numberAttribute });
 
     /** @ingore */
     readonly position = computed(() =>

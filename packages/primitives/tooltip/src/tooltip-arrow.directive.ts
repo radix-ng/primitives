@@ -1,3 +1,4 @@
+import { NumberInput } from '@angular/cdk/coercion';
 import { ConnectionPositionPair } from '@angular/cdk/overlay';
 import {
     afterNextRender,
@@ -8,6 +9,7 @@ import {
     forwardRef,
     inject,
     input,
+    numberAttribute,
     Renderer2,
     signal,
     untracked
@@ -40,12 +42,12 @@ export class RdxTooltipArrowDirective {
     /**
      * The width of the arrow in pixels.
      */
-    readonly width = input<number>(10);
+    readonly width = input<number, NumberInput>(10, { transform: numberAttribute });
 
     /**
      * The height of the arrow in pixels.
      */
-    readonly height = input<number>(5);
+    readonly height = input<number, NumberInput>(5, { transform: numberAttribute });
 
     /**
      * @ignore

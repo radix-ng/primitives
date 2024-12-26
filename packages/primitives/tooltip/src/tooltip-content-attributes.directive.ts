@@ -4,7 +4,6 @@ import { RdxTooltipRootDirective } from './tooltip-root.directive';
 
 @Directive({
     selector: '[rdxTooltipContentAttributes]',
-    standalone: true,
     host: {
         '[attr.data-state]': 'tooltipRoot.state()',
         '[attr.data-side]': 'tooltipContent.side()'

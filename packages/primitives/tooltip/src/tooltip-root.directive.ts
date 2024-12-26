@@ -1,7 +1,9 @@
+import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import { ConnectedPosition, Overlay, OverlayRef, PositionStrategy } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { isPlatformBrowser } from '@angular/common';
 import {
+    booleanAttribute,
     computed,
     contentChild,
     DestroyRef,
@@ -11,6 +13,7 @@ import {
     inject,
     InjectionToken,
     input,
+    numberAttribute,
     OnInit,
     output,
     PLATFORM_ID,
@@ -35,7 +38,6 @@ export function injectTooltipRoot(): RdxTooltipRootDirective {
 
 @Directive({
     selector: '[rdxTooltipRoot]',
-    standalone: true,
     providers: [
         {
             provide: RdxTooltipRootToken,
@@ -63,20 +65,25 @@ export class RdxTooltipRootDirective implements OnInit {
     /**
      * The open state of the tooltip when it is initially rendered. Use when you do not need to control its open state.
      */
-    readonly defaultOpen = input<boolean>(false);
+    readonly defaultOpen = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
      * The controlled open state of the tooltip. Must be used in conjunction with onOpenChange.
      */
-    readonly open = input<boolean | undefined>();
+    readonly open = input<boolean | undefined, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
      * Override the duration given to the configuration to customise the open delay for a specific tooltip.
      */
-    readonly delayDuration = input<number>(this.tooltipConfig.delayDuration);
+    readonly delayDuration = input<number, NumberInput>(this.tooltipConfig.delayDuration, {
+        transform: numberAttribute
+    });
 
     /** @ignore */
-    readonly disableHoverableContent = input<boolean>(this.tooltipConfig.disableHoverableContent ?? false);
+    readonly disableHoverableContent = input<boolean, BooleanInput>(
+        this.tooltipConfig.disableHoverableContent ?? false,
+        { transform: booleanAttribute }
+    );
 
     /**
      * Event handler called when the open state of the tooltip changes.

@@ -3,7 +3,6 @@ import { injectTooltipRoot } from './tooltip-root.directive';
 
 @Directive({
     selector: '[rdxTooltipTrigger]',
-    standalone: true,
     host: {
         '[attr.data-state]': 'tooltipRoot.state()',
         '(pointermove)': 'onPointerMove($event)',
