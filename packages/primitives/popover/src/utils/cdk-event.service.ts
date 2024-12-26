@@ -1,4 +1,3 @@
-import { DOCUMENT } from '@angular/common';
 import {
     DestroyRef,
     EnvironmentProviders,
@@ -12,6 +11,7 @@ import {
     Renderer2,
     VERSION
 } from '@angular/core';
+import { injectDocument } from '@radix-ng/primitives/core';
 import { RdxCdkEventServiceWindowKey } from './constants';
 import { EventType, EventTypeAsPrimitiveConfigKey, PrimitiveConfig, PrimitiveConfigs } from './types';
 
@@ -21,7 +21,7 @@ function eventTypeAsPrimitiveConfigKey(eventType: EventType): EventTypeAsPrimiti
 
 @Injectable()
 class RdxCdkEventService {
-    document = inject(DOCUMENT);
+    document = injectDocument();
     destroyRef = inject(DestroyRef);
     ngZone = inject(NgZone);
     renderer2 = inject(Renderer2);
