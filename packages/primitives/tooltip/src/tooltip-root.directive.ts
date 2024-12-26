@@ -20,7 +20,7 @@ import {
     ViewRef
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { injectDocument } from '@radix-ng/primitives/core';
+import { injectDocument, injectWindow } from '@radix-ng/primitives/core';
 import { asyncScheduler, filter, take } from 'rxjs';
 import { RdxTooltipContentToken } from './tooltip-content.token';
 import { RdxTooltipTriggerDirective } from './tooltip-trigger.directive';
@@ -55,6 +55,8 @@ export class RdxTooltipRootDirective implements OnInit {
     private readonly platformId = inject(PLATFORM_ID);
     /** @ignore */
     private readonly document = injectDocument();
+    /** @ignore */
+    private readonly window = injectWindow();
     /** @ignore */
     readonly tooltipConfig = injectTooltipConfig();
 
@@ -155,7 +157,7 @@ export class RdxTooltipRootDirective implements OnInit {
         this.clearTimeout(this.skipDelayTimer);
 
         if (isPlatformBrowser(this.platformId)) {
-            this.skipDelayTimer = window.setTimeout(() => {
+            this.skipDelayTimer = this.window.setTimeout(() => {
                 this.isOpenDelayed.set(true);
             }, this.tooltipConfig.skipDelayDuration);
         }
@@ -219,7 +221,7 @@ export class RdxTooltipRootDirective implements OnInit {
         this.clearTimeout(this.openTimer);
 
         if (isPlatformBrowser(this.platformId)) {
-            this.openTimer = window.setTimeout(() => {
+            this.openTimer = this.window.setTimeout(() => {
                 this.wasOpenDelayed.set(true);
                 this.setOpen(true);
             }, this.delayDuration());
@@ -312,7 +314,7 @@ export class RdxTooltipRootDirective implements OnInit {
     /** @ignore */
     private clearTimeout(timeoutId: number): void {
         if (isPlatformBrowser(this.platformId)) {
-            window.clearTimeout(timeoutId);
+            this.window.clearTimeout(timeoutId);
         }
     }
 
