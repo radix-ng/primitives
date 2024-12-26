@@ -1,5 +1,5 @@
-import { DOCUMENT } from '@angular/common';
 import { afterNextRender, DestroyRef, Directive, ElementRef, inject, signal, viewChildren } from '@angular/core';
+import { injectDocument } from '@radix-ng/primitives/core';
 import { RdxPopoverRootDirective } from '../../src/popover-root.directive';
 import { injectRdxCdkEventService } from '../../src/utils/cdk-event.service';
 import { deregisterContainer, registerContainer, setRdxCdkEventService } from './containers.registry';
@@ -13,7 +13,7 @@ export abstract class IgnoreClickOutsideContainerBase implements IIgnoreClickOut
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     readonly destroyRef = inject(DestroyRef);
     readonly rootDirectives = viewChildren(RdxPopoverRootDirective);
-    readonly document = inject(DOCUMENT);
+    readonly document = injectDocument();
     readonly rdxCdkEventService = injectRdxCdkEventService();
 
     protected constructor() {

@@ -14,7 +14,6 @@ export * from './src/popover-content-attributes.component';
 export * from './src/popover-content.directive';
 export * from './src/popover-root.directive';
 export * from './src/popover-trigger.directive';
-export * from './src/popover.types';
 
 const _imports = [
     RdxPopoverArrowDirective,

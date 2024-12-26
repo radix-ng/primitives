@@ -1,6 +1,6 @@
 import { CdkOverlayOrigin } from '@angular/cdk/overlay';
-import { DOCUMENT } from '@angular/common';
 import { computed, Directive, ElementRef, forwardRef, inject } from '@angular/core';
+import { injectDocument } from '@radix-ng/primitives/core';
 import { RdxPopoverAnchorToken } from './popover-anchor.token';
 import { RdxPopoverRootDirective } from './popover-root.directive';
 import { injectPopoverRoot } from './popover-root.inject';
@@ -35,7 +35,7 @@ export class RdxPopoverAnchorDirective {
     /** @ignore */
     readonly overlayOrigin = inject(CdkOverlayOrigin);
     /** @ignore */
-    readonly document = inject(DOCUMENT);
+    readonly document = injectDocument();
 
     /** @ignore */
     readonly name = computed(() => `rdx-popover-external-anchor-${this.popoverRoot?.uniqueId()}`);

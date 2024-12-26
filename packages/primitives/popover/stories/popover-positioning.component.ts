@@ -1,7 +1,8 @@
 import { Component, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RdxPositionAlign, RdxPositionSide } from '@radix-ng/primitives/core';
 import { LucideAngularModule, MountainSnow, TriangleAlert, X } from 'lucide-angular';
-import { RdxPopoverAlign, RdxPopoverModule, RdxPopoverRootDirective, RdxPopoverSide } from '../index';
+import { RdxPopoverModule, RdxPopoverRootDirective } from '../index';
 import { RdxPopoverContentAttributesComponent } from '../src/popover-content-attributes.component';
 import { provideRdxCdkEventService } from '../src/utils/cdk-event.service';
 import { containerAlert } from './utils/constants';
@@ -110,14 +111,14 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
 export class RdxPopoverPositioningComponent extends IgnoreClickOutsideContainerBase {
     readonly popoverRootDirective = viewChild(RdxPopoverRootDirective);
 
-    readonly selectedSide = signal(RdxPopoverSide.Top);
-    readonly selectedAlign = signal(RdxPopoverAlign.Center);
+    readonly selectedSide = signal(RdxPositionSide.Top);
+    readonly selectedAlign = signal(RdxPositionAlign.Center);
     readonly sideOffset = signal(8);
     readonly alignOffset = signal<number | undefined>(void 0);
     readonly disableAlternatePositions = signal(false);
 
-    readonly sides = RdxPopoverSide;
-    readonly aligns = RdxPopoverAlign;
+    readonly sides = RdxPositionSide;
+    readonly aligns = RdxPositionAlign;
 
     readonly MountainSnowIcon = MountainSnow;
     readonly XIcon = X;

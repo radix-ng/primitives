@@ -1,91 +1,84 @@
-import { ConnectionPositionPair } from '@angular/cdk/overlay';
-import { RdxTooltipAlign, RdxTooltipSide } from './tooltip.types';
+import { RdxPositionAlign, RdxPositions, RdxPositionSide } from './types';
 
-type TooltipPositions = {
-    [key in RdxTooltipSide]: {
-        [key in RdxTooltipAlign]: ConnectionPositionPair;
-    };
-};
-
-export const TOOLTIP_POSITIONS: TooltipPositions = {
-    [RdxTooltipSide.Top]: {
-        [RdxTooltipAlign.Center]: {
+export const RDX_POSITIONS: RdxPositions = {
+    [RdxPositionSide.Top]: {
+        [RdxPositionAlign.Center]: {
             originX: 'center',
             originY: 'top',
             overlayX: 'center',
             overlayY: 'bottom'
         },
-        [RdxTooltipAlign.Start]: {
+        [RdxPositionAlign.Start]: {
             originX: 'start',
             originY: 'top',
             overlayX: 'start',
             overlayY: 'bottom'
         },
-        [RdxTooltipAlign.End]: {
+        [RdxPositionAlign.End]: {
             originX: 'end',
             originY: 'top',
             overlayX: 'end',
             overlayY: 'bottom'
         }
     },
-    [RdxTooltipSide.Right]: {
-        [RdxTooltipAlign.Center]: {
+    [RdxPositionSide.Right]: {
+        [RdxPositionAlign.Center]: {
             originX: 'end',
             originY: 'center',
             overlayX: 'start',
             overlayY: 'center'
         },
-        [RdxTooltipAlign.Start]: {
+        [RdxPositionAlign.Start]: {
             originX: 'end',
             originY: 'top',
             overlayX: 'start',
             overlayY: 'top'
         },
-        [RdxTooltipAlign.End]: {
+        [RdxPositionAlign.End]: {
             originX: 'end',
             originY: 'bottom',
             overlayX: 'start',
             overlayY: 'bottom'
         }
     },
-    [RdxTooltipSide.Bottom]: {
-        [RdxTooltipAlign.Center]: {
+    [RdxPositionSide.Bottom]: {
+        [RdxPositionAlign.Center]: {
             originX: 'center',
             originY: 'bottom',
             overlayX: 'center',
             overlayY: 'top'
         },
-        [RdxTooltipAlign.Start]: {
+        [RdxPositionAlign.Start]: {
             originX: 'start',
             originY: 'bottom',
             overlayX: 'start',
             overlayY: 'top'
         },
-        [RdxTooltipAlign.End]: {
+        [RdxPositionAlign.End]: {
             originX: 'end',
             originY: 'bottom',
             overlayX: 'end',
             overlayY: 'top'
         }
     },
-    [RdxTooltipSide.Left]: {
-        [RdxTooltipAlign.Center]: {
+    [RdxPositionSide.Left]: {
+        [RdxPositionAlign.Center]: {
             originX: 'start',
             originY: 'center',
             overlayX: 'end',
             overlayY: 'center'
         },
-        [RdxTooltipAlign.Start]: {
+        [RdxPositionAlign.Start]: {
             originX: 'start',
             originY: 'top',
             overlayX: 'end',
             overlayY: 'top'
         },
-        [RdxTooltipAlign.End]: {
+        [RdxPositionAlign.End]: {
             originX: 'start',
             originY: 'bottom',
             overlayX: 'end',
             overlayY: 'bottom'
         }
     }
-};
+} as const;
