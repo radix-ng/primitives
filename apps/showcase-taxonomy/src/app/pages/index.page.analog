@@ -62,7 +62,7 @@
                     <img src="/assets/angular_black.png" width="48px" alt="Angular logo"/>
 
                     <div class="space-y-2">
-                        <h3 class="font-bold">Angular 18</h3>
+                        <h3 class="font-bold">Angular 19</h3>
                         <p class="text-sm">
                             This version for client only. Server-side Rendering (SSR) will be soon.
                         </p>

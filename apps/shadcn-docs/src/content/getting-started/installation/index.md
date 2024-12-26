@@ -3,7 +3,7 @@
 **How to install dependencies and structure your app.**
 
 > **Warning**
-> This library works only with Angular 18+.
+> This library works with Angular 19+.
 
 ```bash
 npm install @radix-ng/shadcn @tailwindcss/typography tailwind-merge class-variance-authority clsx
