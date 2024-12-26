@@ -374,15 +374,6 @@
     "auto-focus.directive": {
         "components": {}
     },
-    "control-value-accessor": {
-        "components": {}
-    },
-    "assert-injector": {
-        "components": {}
-    },
-    "create-inject-context": {
-        "components": {}
-    },
     "document": {
         "components": {}
     },
@@ -429,7 +420,39 @@
         "components": {}
     },
     "dialog-trigger.directive": {
-        "components": {}
+        "components": {
+            "RdxDialogTriggerDirective": {
+                "description": "",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "id",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<string>",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": ""
+                        },
+                        {
+                            "name": "dialog",
+                            "optional": false,
+                            "readonly": false,
+                            "type": "TemplateRef<void>",
+                            "description": ""
+                        },
+                        {
+                            "name": "dialogConfig",
+                            "optional": false,
+                            "readonly": false,
+                            "type": "Omit<RdxBaseDialogConfig<unknown>, \"data\">",
+                            "description": ""
+                        }
+                    ]
+                }
+            }
+        }
     },
     "dialog.config": {
         "components": {}

@@ -6,7 +6,9 @@ import { RdxDialogService } from './dialog.service';
 
 let nextId = 0;
 
-// Primitive.button
+/**
+ * @group Components
+ */
 @Directive({
     selector: '[rdxDialogTrigger]',
     standalone: true,
@@ -24,11 +26,20 @@ let nextId = 0;
 export class RdxDialogTriggerDirective {
     private readonly dialogService = inject(RdxDialogService);
 
+    /**
+     * @group Props
+     */
     readonly id = input(`rdx-dialog-trigger-${nextId++}`);
     readonly dialogId = computed(() => `rdx-dialog-${this.id()}`);
 
+    /**
+     * @group Props
+     */
     @Input({ required: true, alias: 'rdxDialogTrigger' }) dialog: TemplateRef<void>;
 
+    /**
+     * @group Props
+     */
     @Input({ alias: 'rdxDialogConfig' }) dialogConfig: RdxDialogConfig<unknown>;
 
     readonly isOpen = signal(false);

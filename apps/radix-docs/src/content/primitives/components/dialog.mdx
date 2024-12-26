@@ -18,21 +18,102 @@ description: .
     'Esc closes the component automatically.'
 ]} />
 
+
+## Installation
+
+### Provider
+
+The initial configuration is defined by the `provideRdxDialogConfig` provider during application startup.
+
+```typescript
+import { ApplicationConfig } from '@angular/core';
+import { provideRdxDialogConfig } from '@radix-ng/primitives/dialog';
+
+export const appConfig: ApplicationConfig = {
+    providers: [
+        provideRdxDialogConfig({ /* options */ })
+    ]
+};
+```
+
+In the component that will open the dialog, call `provideRdxDialog` in the providers:
+```typescript
+
+import { provideRdxDialog } from '@radix-ng/primitives/dialog';
+
+@Component({
+  selector: 'app-dialog-component',
+  providers: [provideRdxDialog()]
+})
+export class AppDialogComponent {}
+
+```
+
 ## API Reference
 
 ### Trigger
 
+<PropsTable name="RdxDialogTriggerDirective" />
+
+<DataAttributesTable attributes={[
+    { name: '[data-state]', value: '"open" | "closed"' }
+]} />
 
 ### Content
 
-
-### Close
-
-
-### Title
-
-
-### Description
+<DataAttributesTable attributes={[
+    { name: '[data-state]', value: '"open" | "closed"' }
+]} />
 
 ## Accessibility
 Adheres to the [Dialog WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal).
+
+## Usage
+
+### Service
+
+To open a dialog via the service, simply call the `RdxDialogService.open()`
+
+```typescript
+@Component({...})
+export class AppComponent {
+    #dialog = inject(RdxDialogService);
+
+    openDialog() {
+        const dialogRef = this.#dialog.open({
+            content: MyDialogContentComponent,
+        });
+    }
+}
+```
+
+### Inject Data to the Dialog
+
+```typescript
+this.#dialog.open({
+  content: MyDialogContentComponent,
+  data: { name: 'Pedro Duarte' }
+});
+```
+
+This ensures all type definitions are centralized in the component.
+
+- Use `injectDialogData` to retrieve data and let the service infer the expected data type.
+- Use `injectDialogRef` to declare the return type for better typing in `DialogRef`.
+
+
+```typescript
+@Component({
+  selector: 'app-custom-dialog'
+})
+export class AppCustomDialogComponent {
+
+  readonly data = injectDialogData<{ name: string; username?: string }>();
+
+  readonly ref = injectDialogRef<boolean>();
+
+  close(): void {
+    this.ref.close(true);
+  }
+}
+```
