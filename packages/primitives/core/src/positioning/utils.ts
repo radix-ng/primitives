@@ -1,32 +1,32 @@
 import { ConnectedPosition, ConnectionPositionPair } from '@angular/cdk/overlay';
 import { RDX_POSITIONS } from './constants';
 import {
-    RdxAlign,
     RdxAllPossibleConnectedPositions,
     RdxArrowPositionParams,
-    RdxSide,
-    RdxSideAndAlign,
-    RdxSideAndAlignOffsets
+    RdxPositionAlign,
+    RdxPositionSide,
+    RdxPositionSideAndAlign,
+    RdxPositionSideAndAlignOffsets
 } from './types';
 
 export function getContentPosition(
-    sideAndAlignWithOffsets: RdxSideAndAlign & RdxSideAndAlignOffsets
+    sideAndAlignWithOffsets: RdxPositionSideAndAlign & RdxPositionSideAndAlignOffsets
 ): ConnectedPosition {
     const { side, align, sideOffset, alignOffset } = sideAndAlignWithOffsets;
     const position = {
-        ...(RDX_POSITIONS[side]?.[align] ?? RDX_POSITIONS[RdxSide.Top][RdxAlign.Center])
+        ...(RDX_POSITIONS[side]?.[align] ?? RDX_POSITIONS[RdxPositionSide.Top][RdxPositionAlign.Center])
     };
     if (sideOffset || alignOffset) {
-        if ([RdxSide.Top, RdxSide.Bottom].includes(side)) {
+        if ([RdxPositionSide.Top, RdxPositionSide.Bottom].includes(side)) {
             if (sideOffset) {
-                position.offsetY = side === RdxSide.Top ? -sideOffset : sideOffset;
+                position.offsetY = side === RdxPositionSide.Top ? -sideOffset : sideOffset;
             }
             if (alignOffset) {
                 position.offsetX = alignOffset;
             }
         } else {
             if (sideOffset) {
-                position.offsetX = side === RdxSide.Left ? -sideOffset : sideOffset;
+                position.offsetX = side === RdxPositionSide.Left ? -sideOffset : sideOffset;
             }
             if (alignOffset) {
                 position.offsetY = alignOffset;
@@ -42,21 +42,20 @@ export function getAllPossibleConnectedPositions() {
         allPossibleConnectedPositions = new Map();
     }
     if (allPossibleConnectedPositions.size < 1) {
-        Object.keys(RDX_POSITIONS).forEach((side) => {
-            Object.keys(RDX_POSITIONS[side as RdxSide] ?? {}).forEach((align) => {
-                (allPossibleConnectedPositions as Map<any, any>).set(
-                    `${side as RdxSide}|${align as RdxAlign}`,
-                    RDX_POSITIONS[side as RdxSide][align as RdxAlign]
-                );
-            });
-        });
+        for (const [side, aligns] of Object.entries(RDX_POSITIONS)) {
+            for (const [align, position] of Object.entries(aligns)) {
+                (allPossibleConnectedPositions as Map<any, any>).set(`${side}|${align}`, position);
+            }
+        }
     }
     return allPossibleConnectedPositions;
 }
 
-export function getSideAndAlignFromAllPossibleConnectedPositions(position: ConnectionPositionPair): RdxSideAndAlign {
+export function getSideAndAlignFromAllPossibleConnectedPositions(
+    position: ConnectionPositionPair
+): RdxPositionSideAndAlign {
     const allPossibleConnectedPositions = getAllPossibleConnectedPositions();
-    let sideAndAlign: RdxSideAndAlign | undefined;
+    let sideAndAlign: RdxPositionSideAndAlign | undefined;
     allPossibleConnectedPositions.forEach((value, key) => {
         if (
             position.originX === value.originX &&
@@ -66,8 +65,8 @@ export function getSideAndAlignFromAllPossibleConnectedPositions(position: Conne
         ) {
             const sideAndAlignArray = key.split('|');
             sideAndAlign = {
-                side: sideAndAlignArray[0] as RdxSide,
-                align: sideAndAlignArray[1] as RdxAlign
+                side: sideAndAlignArray[0] as RdxPositionSide,
+                align: sideAndAlignArray[1] as RdxPositionAlign
             };
         }
     });
@@ -80,7 +79,7 @@ export function getSideAndAlignFromAllPossibleConnectedPositions(position: Conne
 }
 
 export function getArrowPositionParams(
-    sideAndAlign: RdxSideAndAlign,
+    sideAndAlign: RdxPositionSideAndAlign,
     arrowWidthAndHeight: { width: number; height: number },
     triggerWidthAndHeight: { width: number; height: number }
 ): RdxArrowPositionParams {
@@ -90,23 +89,23 @@ export function getArrowPositionParams(
         transform: ''
     };
 
-    if ([RdxSide.Top, RdxSide.Bottom].includes(sideAndAlign.side)) {
-        if (sideAndAlign.side === RdxSide.Top) {
+    if ([RdxPositionSide.Top, RdxPositionSide.Bottom].includes(sideAndAlign.side)) {
+        if (sideAndAlign.side === RdxPositionSide.Top) {
             posParams.top = '100%';
         } else {
             posParams.top = `-${arrowWidthAndHeight.height}px`;
             posParams.transform = `rotate(180deg)`;
         }
 
-        if (sideAndAlign.align === RdxAlign.Start) {
+        if (sideAndAlign.align === RdxPositionAlign.Start) {
             posParams.left = `${(triggerWidthAndHeight.width - arrowWidthAndHeight.width) / 2}px`;
-        } else if (sideAndAlign.align === RdxAlign.Center) {
+        } else if (sideAndAlign.align === RdxPositionAlign.Center) {
             posParams.left = `calc(50% - ${arrowWidthAndHeight.width / 2}px)`;
-        } else if (sideAndAlign.align === RdxAlign.End) {
+        } else if (sideAndAlign.align === RdxPositionAlign.End) {
             posParams.left = `calc(100% - ${(triggerWidthAndHeight.width + arrowWidthAndHeight.width) / 2}px)`;
         }
-    } else if ([RdxSide.Left, RdxSide.Right].includes(sideAndAlign.side)) {
-        if (sideAndAlign.side === RdxSide.Left) {
+    } else if ([RdxPositionSide.Left, RdxPositionSide.Right].includes(sideAndAlign.side)) {
+        if (sideAndAlign.side === RdxPositionSide.Left) {
             posParams.left = `100%`;
             posParams.transform = `rotate(-90deg) translate(0, -50%)`;
         } else {
@@ -114,11 +113,11 @@ export function getArrowPositionParams(
             posParams.transform = `rotate(90deg) translate(0, -50%)`;
         }
 
-        if (sideAndAlign.align === RdxAlign.Start) {
+        if (sideAndAlign.align === RdxPositionAlign.Start) {
             posParams.top = `${(triggerWidthAndHeight.height - arrowWidthAndHeight.height) / 2}px`;
-        } else if (sideAndAlign.align === RdxAlign.Center) {
+        } else if (sideAndAlign.align === RdxPositionAlign.Center) {
             posParams.top = `calc(50% - ${arrowWidthAndHeight.height / 2}px)`;
-        } else if (sideAndAlign.align === RdxAlign.End) {
+        } else if (sideAndAlign.align === RdxPositionAlign.End) {
             posParams.top = `calc(100% - ${(triggerWidthAndHeight.height + arrowWidthAndHeight.height) / 2}px)`;
         }
     }

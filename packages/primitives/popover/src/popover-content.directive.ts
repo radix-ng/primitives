@@ -16,9 +16,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
     getAllPossibleConnectedPositions,
     getContentPosition,
-    RdxAlign,
-    RdxSide,
-    RdxSideAndAlignOffsets
+    RdxPositionAlign,
+    RdxPositionSide,
+    RdxPositionSideAndAlignOffsets
 } from '@radix-ng/primitives/core';
 import { filter, tap } from 'rxjs';
 import { injectPopoverRoot } from './popover-root.inject';
@@ -51,7 +51,7 @@ export class RdxPopoverContentDirective implements OnInit {
      * @description The preferred side of the trigger to render against when open. Will be reversed when collisions occur and avoidCollisions is enabled.
      * @default top
      */
-    readonly side = input<RdxSide>(RdxSide.Top);
+    readonly side = input<RdxPositionSide>(RdxPositionSide.Top);
     /**
      * @description The distance in pixels from the trigger.
      * @default undefined
@@ -61,7 +61,7 @@ export class RdxPopoverContentDirective implements OnInit {
      * @description The preferred alignment against the trigger. May change when collisions occur.
      * @default center
      */
-    readonly align = input<RdxAlign>(RdxAlign.Center);
+    readonly align = input<RdxPositionAlign>(RdxPositionAlign.Center);
     /**
      * @description An offset in pixels from the "start" or "end" alignment options.
      * @default undefined
@@ -280,7 +280,7 @@ export class RdxPopoverContentDirective implements OnInit {
             this.popoverRoot.popoverArrowDirective()?.width() ?? 0,
             this.popoverRoot.popoverArrowDirective()?.height() ?? 0
         );
-        const offsets: RdxSideAndAlignOffsets = {
+        const offsets: RdxPositionSideAndAlignOffsets = {
             sideOffset: this.sideOffset() ?? (greatestDimensionFromTheArrow || DEFAULTS.offsets.side),
             alignOffset: this.alignOffset() ?? DEFAULTS.offsets.align
         };
@@ -299,13 +299,13 @@ export class RdxPopoverContentDirective implements OnInit {
             allPossibleConnectedPositions.forEach((_, key) => {
                 const sideAndAlignArray = key.split('|');
                 if (
-                    (sideAndAlignArray[0] as RdxSide) !== this.side() ||
-                    (sideAndAlignArray[1] as RdxAlign) !== this.align()
+                    (sideAndAlignArray[0] as RdxPositionSide) !== this.side() ||
+                    (sideAndAlignArray[1] as RdxPositionAlign) !== this.align()
                 ) {
                     positions.push(
                         getContentPosition({
-                            side: sideAndAlignArray[0] as RdxSide,
-                            align: sideAndAlignArray[1] as RdxAlign,
+                            side: sideAndAlignArray[0] as RdxPositionSide,
+                            align: sideAndAlignArray[1] as RdxPositionAlign,
                             sideOffset: offsets.sideOffset,
                             alignOffset: offsets.alignOffset
                         })

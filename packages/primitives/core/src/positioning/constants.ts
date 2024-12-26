@@ -1,80 +1,80 @@
-import { RdxAlign, RdxPositions, RdxSide } from './types';
+import { RdxPositionAlign, RdxPositions, RdxPositionSide } from './types';
 
 export const RDX_POSITIONS: RdxPositions = {
-    [RdxSide.Top]: {
-        [RdxAlign.Center]: {
+    [RdxPositionSide.Top]: {
+        [RdxPositionAlign.Center]: {
             originX: 'center',
             originY: 'top',
             overlayX: 'center',
             overlayY: 'bottom'
         },
-        [RdxAlign.Start]: {
+        [RdxPositionAlign.Start]: {
             originX: 'start',
             originY: 'top',
             overlayX: 'start',
             overlayY: 'bottom'
         },
-        [RdxAlign.End]: {
+        [RdxPositionAlign.End]: {
             originX: 'end',
             originY: 'top',
             overlayX: 'end',
             overlayY: 'bottom'
         }
     },
-    [RdxSide.Right]: {
-        [RdxAlign.Center]: {
+    [RdxPositionSide.Right]: {
+        [RdxPositionAlign.Center]: {
             originX: 'end',
             originY: 'center',
             overlayX: 'start',
             overlayY: 'center'
         },
-        [RdxAlign.Start]: {
+        [RdxPositionAlign.Start]: {
             originX: 'end',
             originY: 'top',
             overlayX: 'start',
             overlayY: 'top'
         },
-        [RdxAlign.End]: {
+        [RdxPositionAlign.End]: {
             originX: 'end',
             originY: 'bottom',
             overlayX: 'start',
             overlayY: 'bottom'
         }
     },
-    [RdxSide.Bottom]: {
-        [RdxAlign.Center]: {
+    [RdxPositionSide.Bottom]: {
+        [RdxPositionAlign.Center]: {
             originX: 'center',
             originY: 'bottom',
             overlayX: 'center',
             overlayY: 'top'
         },
-        [RdxAlign.Start]: {
+        [RdxPositionAlign.Start]: {
             originX: 'start',
             originY: 'bottom',
             overlayX: 'start',
             overlayY: 'top'
         },
-        [RdxAlign.End]: {
+        [RdxPositionAlign.End]: {
             originX: 'end',
             originY: 'bottom',
             overlayX: 'end',
             overlayY: 'top'
         }
     },
-    [RdxSide.Left]: {
-        [RdxAlign.Center]: {
+    [RdxPositionSide.Left]: {
+        [RdxPositionAlign.Center]: {
             originX: 'start',
             originY: 'center',
             overlayX: 'end',
             overlayY: 'center'
         },
-        [RdxAlign.Start]: {
+        [RdxPositionAlign.Start]: {
             originX: 'start',
             originY: 'top',
             overlayX: 'end',
             overlayY: 'top'
         },
-        [RdxAlign.End]: {
+        [RdxPositionAlign.End]: {
             originX: 'start',
             originY: 'bottom',
             overlayX: 'end',

@@ -1,5 +1,5 @@
 import { computed, Directive, forwardRef, inject, input, output, TemplateRef } from '@angular/core';
-import { getContentPosition, RdxAlign, RdxSide } from '@radix-ng/primitives/core';
+import { getContentPosition, RdxPositionAlign, RdxPositionSide } from '@radix-ng/primitives/core';
 import { RdxTooltipContentToken } from './tooltip-content.token';
 
 @Directive({
@@ -14,7 +14,7 @@ export class RdxTooltipContentDirective {
     /**
      * The preferred side of the trigger to render against when open. Will be reversed when collisions occur and avoidCollisions is enabled.
      */
-    readonly side = input<RdxSide>(RdxSide.Top);
+    readonly side = input<RdxPositionSide>(RdxPositionSide.Top);
 
     /**
      * The distance in pixels from the trigger.
@@ -24,7 +24,7 @@ export class RdxTooltipContentDirective {
     /**
      * The preferred alignment against the trigger. May change when collisions occur.
      */
-    readonly align = input<RdxAlign>(RdxAlign.Center);
+    readonly align = input<RdxPositionAlign>(RdxPositionAlign.Center);
 
     /**
      * An offset in pixels from the "start" or "end" alignment options.
