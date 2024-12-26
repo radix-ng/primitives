@@ -1,3 +1,17 @@
+## 0.10.0 (2024-12-26)
+
+### 🚀 Features
+
+- updated to Angular 19 ([#226](https://github.com/radix-ng/primitives/pull/226))
+
+### 🧱 Updated Dependencies
+
+- Updated primitives to 0.25.0
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+
 ## 0.9.7 (2024-12-25)
 
 ### 🧱 Updated Dependencies

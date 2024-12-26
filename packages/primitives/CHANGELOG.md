@@ -1,3 +1,18 @@
+## 0.25.0 (2024-12-26)
+
+### 🚀 Features
+
+- updated to Angular 19 ([#226](https://github.com/radix-ng/primitives/pull/226))
+
+### 🩹 Fixes
+
+- **tooltip:** use core positioning utils ([#227](https://github.com/radix-ng/primitives/pull/227))
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+- pawel-twardziak
+
 ## 0.24.0 (2024-12-25)
 
 ### 🚀 Features
