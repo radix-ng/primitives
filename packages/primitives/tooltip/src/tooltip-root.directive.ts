@@ -1,6 +1,6 @@
 import { ConnectedPosition, Overlay, OverlayRef, PositionStrategy } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
-import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import {
     computed,
     contentChild,
@@ -20,6 +20,7 @@ import {
     ViewRef
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { injectDocument } from '@radix-ng/primitives/core';
 import { asyncScheduler, filter, take } from 'rxjs';
 import { RdxTooltipContentToken } from './tooltip-content.token';
 import { RdxTooltipTriggerDirective } from './tooltip-trigger.directive';
@@ -53,7 +54,7 @@ export class RdxTooltipRootDirective implements OnInit {
     /** @ignore */
     private readonly platformId = inject(PLATFORM_ID);
     /** @ignore */
-    private readonly document = inject(DOCUMENT);
+    private readonly document = injectDocument();
     /** @ignore */
     readonly tooltipConfig = injectTooltipConfig();
 
