@@ -27,7 +27,6 @@ let nextId = 0;
 
 @Directive({
     selector: '[rdxPopoverRoot]',
-    standalone: true,
     exportAs: 'rdxPopoverRoot'
 })
 export class RdxPopoverRootDirective {
@@ -45,17 +44,17 @@ export class RdxPopoverRootDirective {
      * @description The open state of the popover when it is initially rendered. Use when you do not need to control its open state.
      * @default false
      */
-    readonly defaultOpen = input<boolean>(false);
+    readonly defaultOpen = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
     /**
      * @description The controlled state of the popover. `open` input take precedence of `defaultOpen` input.
      * @default undefined
      */
-    readonly open = input<boolean | undefined>(void 0);
+    readonly open = input<boolean | undefined, BooleanInput>(void 0, { transform: booleanAttribute });
     /**
      * @description Whether to control the state of the popover from external. Use in conjunction with `open` input.
      * @default undefined
      */
-    readonly externalControl = input<boolean | undefined>(void 0);
+    readonly externalControl = input<boolean | undefined, BooleanInput>(void 0, { transform: booleanAttribute });
     /**
      * @description Whether to take into account CSS opening/closing animations.
      * @default false

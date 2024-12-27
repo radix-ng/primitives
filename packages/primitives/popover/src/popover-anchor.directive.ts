@@ -7,7 +7,6 @@ import { injectPopoverRoot } from './popover-root.inject';
 
 @Directive({
     selector: '[rdxPopoverAnchor]',
-    standalone: true,
     exportAs: 'rdxPopoverAnchor',
     hostDirectives: [CdkOverlayOrigin],
     host: {

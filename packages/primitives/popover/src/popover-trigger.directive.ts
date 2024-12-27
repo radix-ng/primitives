@@ -4,7 +4,6 @@ import { injectPopoverRoot } from './popover-root.inject';
 
 @Directive({
     selector: '[rdxPopoverTrigger]',
-    standalone: true,
     hostDirectives: [CdkOverlayOrigin],
     host: {
         type: 'button',

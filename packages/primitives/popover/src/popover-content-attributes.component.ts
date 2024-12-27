@@ -5,7 +5,6 @@ import { RdxPopoverAnimationStatus, RdxPopoverState } from './popover.types';
 
 @Component({
     selector: '[rdxPopoverContentAttributes]',
-    standalone: true,
     template: `
         <ng-content />
     `,
