@@ -4,7 +4,6 @@ import { injectPopoverRoot } from './popover-root.inject';
 
 @Directive({
     selector: '[rdxPopoverClose]',
-    standalone: true,
     host: {
         type: 'button',
         '(click)': 'popoverRoot.handleClose()'

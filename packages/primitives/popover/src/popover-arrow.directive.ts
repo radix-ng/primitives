@@ -1,3 +1,4 @@
+import { NumberInput } from '@angular/cdk/coercion';
 import { ConnectedOverlayPositionChange } from '@angular/cdk/overlay';
 import {
     afterNextRender,
@@ -8,6 +9,7 @@ import {
     forwardRef,
     inject,
     input,
+    numberAttribute,
     Renderer2,
     signal,
     untracked
@@ -19,7 +21,6 @@ import { injectPopoverRoot } from './popover-root.inject';
 
 @Directive({
     selector: '[rdxPopoverArrow]',
-    standalone: true,
     providers: [
         {
             provide: RdxPopoverArrowToken,
@@ -39,13 +40,13 @@ export class RdxPopoverArrowDirective {
      * @description The width of the arrow in pixels.
      * @default 10
      */
-    readonly width = input<number>(10);
+    readonly width = input<number, NumberInput>(10, { transform: numberAttribute });
 
     /**
      * @description The height of the arrow in pixels.
      * @default 5
      */
-    readonly height = input<number>(5);
+    readonly height = input<number, NumberInput>(5, { transform: numberAttribute });
 
     /** @ignore */
     readonly arrowSvgElement = computed<HTMLElement>(() => {

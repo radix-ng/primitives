@@ -1,11 +1,14 @@
+import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import { CdkConnectedOverlay, Overlay } from '@angular/cdk/overlay';
 import {
+    booleanAttribute,
     computed,
     DestroyRef,
     Directive,
     effect,
     inject,
     input,
+    numberAttribute,
     OnInit,
     output,
     SimpleChange,
@@ -27,7 +30,6 @@ import { RdxPopoverAttachDetachEvent } from './popover.types';
 
 @Directive({
     selector: '[rdxPopoverContent]',
-    standalone: true,
     hostDirectives: [
         CdkConnectedOverlay
     ]
@@ -56,7 +58,9 @@ export class RdxPopoverContentDirective implements OnInit {
      * @description The distance in pixels from the trigger.
      * @default undefined
      */
-    readonly sideOffset = input<number | undefined>(void 0);
+    readonly sideOffset = input<number, NumberInput>(NaN, {
+        transform: numberAttribute
+    });
     /**
      * @description The preferred alignment against the trigger. May change when collisions occur.
      * @default center
@@ -66,18 +70,20 @@ export class RdxPopoverContentDirective implements OnInit {
      * @description An offset in pixels from the "start" or "end" alignment options.
      * @default undefined
      */
-    readonly alignOffset = input<number | undefined>(void 0);
+    readonly alignOffset = input<number, NumberInput>(NaN, {
+        transform: numberAttribute
+    });
 
     /**
      * @description Whether to add some alternate positions of the content.
      * @default false
      */
-    readonly alternatePositionsDisabled = input(false);
+    readonly alternatePositionsDisabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /** @description Whether to prevent `onOverlayEscapeKeyDown` handler from calling. */
-    readonly onOverlayEscapeKeyDownDisabled = input(false);
+    readonly onOverlayEscapeKeyDownDisabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
     /** @description Whether to prevent `onOverlayOutsideClick` handler from calling. */
-    readonly onOverlayOutsideClickDisabled = input(false);
+    readonly onOverlayOutsideClickDisabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
      * @description Event handler called when the escape key is down.
@@ -281,8 +287,10 @@ export class RdxPopoverContentDirective implements OnInit {
             this.popoverRoot.popoverArrowDirective()?.height() ?? 0
         );
         const offsets: RdxPositionSideAndAlignOffsets = {
-            sideOffset: this.sideOffset() ?? (greatestDimensionFromTheArrow || DEFAULTS.offsets.side),
-            alignOffset: this.alignOffset() ?? DEFAULTS.offsets.align
+            sideOffset: isNaN(this.sideOffset())
+                ? greatestDimensionFromTheArrow || DEFAULTS.offsets.side
+                : this.sideOffset(),
+            alignOffset: isNaN(this.alignOffset()) ? DEFAULTS.offsets.align : this.alignOffset()
         };
         const basePosition = getContentPosition({
             side: this.side(),
