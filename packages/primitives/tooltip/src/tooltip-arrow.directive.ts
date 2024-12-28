@@ -106,6 +106,7 @@ export class RdxTooltipArrowDirective {
         this.renderer.setStyle(this.elementRef.nativeElement, 'left', posParams.left);
         this.renderer.setStyle(this.elementRef.nativeElement, 'right', '');
         this.renderer.setStyle(this.elementRef.nativeElement, 'transform', posParams.transform);
+        this.renderer.setStyle(this.elementRef.nativeElement, 'transformOrigin', posParams.transformOrigin);
     }
 
     /** @ignore */

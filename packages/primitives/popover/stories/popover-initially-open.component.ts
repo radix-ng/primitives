@@ -5,9 +5,9 @@ import { RdxPopoverModule, RdxPopoverRootDirective } from '../index';
 import { RdxPopoverContentAttributesComponent } from '../src/popover-content-attributes.component';
 import { provideRdxCdkEventService } from '../src/utils/cdk-event.service';
 import { containerAlert } from './utils/constants';
-import { IgnoreClickOutsideContainerBase } from './utils/ignore-click-outside-container-base.class';
+import { OptionPanelBase } from './utils/option-panel-base.class';
 import styles from './utils/styles.constants';
-import { WithEventBaseComponent } from './utils/with-event-base.component';
+import { WithOptionPanelComponent } from './utils/with-option-panel.component';
 
 @Component({
     selector: 'rdx-popover-initially-open',
@@ -17,13 +17,17 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
         RdxPopoverModule,
         LucideAngularModule,
         RdxPopoverContentAttributesComponent,
-        WithEventBaseComponent
+        WithOptionPanelComponent
     ],
     styles: styles(),
     template: `
-        <popover-with-event-base
+        <popover-with-option-panel
+            [arrowWidth]="arrowWidth()"
+            [arrowHeight]="arrowHeight()"
             (onOverlayEscapeKeyDownDisabledChange)="onOverlayEscapeKeyDownDisabled.set($event)"
             (onOverlayOutsideClickDisabledChange)="onOverlayOutsideClickDisabled.set($event)"
+            (arrowWidthChange)="arrowWidth.set($event)"
+            (arrowHeightChange)="arrowHeight.set($event)"
         >
             <div class="ContainerAlerts">
                 <lucide-angular [img]="TriangleAlert" size="16" />
@@ -64,16 +68,21 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
                                     <input class="reset Input" id="maxHeight" value="none" />
                                 </fieldset>
                             </div>
-                            <div class="PopoverArrow" rdxPopoverArrow></div>
+                            <div
+                                class="PopoverArrow"
+                                [width]="arrowWidth()"
+                                [height]="arrowHeight()"
+                                rdxPopoverArrow
+                            ></div>
                         </div>
                     </ng-template>
                 </ng-container>
             </div>
             <div class="PopoverId">ID: {{ popoverRootDirective()?.uniqueId() }}</div>
-        </popover-with-event-base>
+        </popover-with-option-panel>
     `
 })
-export class RdxPopoverInitiallyOpenComponent extends IgnoreClickOutsideContainerBase {
+export class RdxPopoverInitiallyOpenComponent extends OptionPanelBase {
     readonly popoverRootDirective = viewChild(RdxPopoverRootDirective);
 
     readonly MountainSnowIcon = MountainSnow;

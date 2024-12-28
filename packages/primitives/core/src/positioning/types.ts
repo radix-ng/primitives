@@ -16,11 +16,22 @@ export enum RdxPositionAlign {
 export type RdxPositionSideAndAlign = { side: RdxPositionSide; align: RdxPositionAlign };
 export type RdxPositionSideAndAlignOffsets = { sideOffset: number; alignOffset: number };
 
-export type RdxPositions = {
-    [key in RdxPositionSide]: {
-        [key in RdxPositionAlign]: ConnectionPositionPair;
-    };
-};
+export type RdxPositions = Readonly<{
+    [key in RdxPositionSide]: Readonly<{
+        [key in RdxPositionAlign]: Readonly<ConnectionPositionPair>;
+    }>;
+}>;
+
+export type RdxPositioningDefaults = Readonly<{
+    offsets: Readonly<{
+        side: number;
+        align: number;
+    }>;
+    arrow: Readonly<{
+        width: number;
+        height: number;
+    }>;
+}>;
 
 export type RdxAllPossibleConnectedPositions = ReadonlyMap<
     `${RdxPositionSide}|${RdxPositionAlign}`,
@@ -30,4 +41,5 @@ export type RdxArrowPositionParams = {
     top: string;
     left: string;
     transform: string;
+    transformOrigin: string;
 };

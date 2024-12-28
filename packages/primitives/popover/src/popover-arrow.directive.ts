@@ -15,7 +15,11 @@ import {
     untracked
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { getArrowPositionParams, getSideAndAlignFromAllPossibleConnectedPositions } from '@radix-ng/primitives/core';
+import {
+    getArrowPositionParams,
+    getSideAndAlignFromAllPossibleConnectedPositions,
+    RDX_POSITIONING_DEFAULTS
+} from '@radix-ng/primitives/core';
 import { RdxPopoverArrowToken } from './popover-arrow.token';
 import { injectPopoverRoot } from './popover-root.inject';
 
@@ -40,13 +44,13 @@ export class RdxPopoverArrowDirective {
      * @description The width of the arrow in pixels.
      * @default 10
      */
-    readonly width = input<number, NumberInput>(10, { transform: numberAttribute });
+    readonly width = input<number, NumberInput>(RDX_POSITIONING_DEFAULTS.arrow.width, { transform: numberAttribute });
 
     /**
      * @description The height of the arrow in pixels.
      * @default 5
      */
-    readonly height = input<number, NumberInput>(5, { transform: numberAttribute });
+    readonly height = input<number, NumberInput>(RDX_POSITIONING_DEFAULTS.arrow.height, { transform: numberAttribute });
 
     /** @ignore */
     readonly arrowSvgElement = computed<HTMLElement>(() => {
@@ -109,6 +113,7 @@ export class RdxPopoverArrowDirective {
         this.renderer.setStyle(this.elementRef.nativeElement, 'left', posParams.left);
         this.renderer.setStyle(this.elementRef.nativeElement, 'right', '');
         this.renderer.setStyle(this.elementRef.nativeElement, 'transform', posParams.transform);
+        this.renderer.setStyle(this.elementRef.nativeElement, 'transformOrigin', posParams.transformOrigin);
     }
 
     /** @ignore */
