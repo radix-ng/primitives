@@ -70,7 +70,7 @@ export class RdxTooltipRootDirective implements OnInit {
     /**
      * The controlled open state of the tooltip. Must be used in conjunction with onOpenChange.
      */
-    readonly open = input<boolean | undefined, BooleanInput>(false, { transform: booleanAttribute });
+    readonly open = input<boolean | undefined, BooleanInput>(void 0, { transform: booleanAttribute });
 
     /**
      * Override the duration given to the configuration to customise the open delay for a specific tooltip.
