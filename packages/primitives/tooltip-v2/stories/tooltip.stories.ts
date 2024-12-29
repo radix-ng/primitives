@@ -1,15 +1,15 @@
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { LucideAngularModule, MountainSnow, X } from 'lucide-angular';
-import { RdxPopoverModule } from '../index';
-import { RdxPopoverAnchorComponent } from './tooltip-anchor.component';
-import { RdxPopoverAnimationsComponent } from './tooltip-animations.component';
-import { RdxPopoverDefaultComponent } from './tooltip-default.component';
-import { RdxPopoverEventsComponent } from './tooltip-events.components';
-import { RdxPopoverInitiallyOpenComponent } from './tooltip-initially-open.component';
-import { RdxPopoverMultipleComponent } from './tooltip-multiple.component';
-import { RdxPopoverPositioningComponent } from './tooltip-positioning.component';
-import { RdxPopoverTriggeringComponent } from './tooltip-triggering.component';
+import { RdxTooltipModule } from '../index';
+import { RdxTooltipAnchorComponent } from './tooltip-anchor.component';
+import { RdxTooltipAnimationsComponent } from './tooltip-animations.component';
+import { RdxTooltipDefaultComponent } from './tooltip-default.component';
+import { RdxTooltipEventsComponent } from './tooltip-events.components';
+import { RdxTooltipInitiallyOpenComponent } from './tooltip-initially-open.component';
+import { RdxTooltipMultipleComponent } from './tooltip-multiple.component';
+import { RdxTooltipPositioningComponent } from './tooltip-positioning.component';
+import { RdxTooltipTriggeringComponent } from './tooltip-triggering.component';
 
 const html = String.raw;
 
@@ -18,15 +18,15 @@ export default {
     decorators: [
         moduleMetadata({
             imports: [
-                RdxPopoverModule,
-                RdxPopoverDefaultComponent,
-                RdxPopoverEventsComponent,
-                RdxPopoverPositioningComponent,
-                RdxPopoverTriggeringComponent,
-                RdxPopoverMultipleComponent,
-                RdxPopoverAnimationsComponent,
-                RdxPopoverInitiallyOpenComponent,
-                RdxPopoverAnchorComponent,
+                RdxTooltipModule,
+                RdxTooltipDefaultComponent,
+                RdxTooltipEventsComponent,
+                RdxTooltipPositioningComponent,
+                RdxTooltipTriggeringComponent,
+                RdxTooltipMultipleComponent,
+                RdxTooltipAnimationsComponent,
+                RdxTooltipInitiallyOpenComponent,
+                RdxTooltipAnchorComponent,
                 LucideAngularModule,
                 LucideAngularModule.pick({ MountainSnow, X })
             ],
@@ -52,7 +52,7 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: html`
-            <rdx-popover-default></rdx-popover-default>
+            <rdx-tooltip-default></rdx-tooltip-default>
         `
     })
 };
@@ -60,7 +60,7 @@ export const Default: Story = {
 export const Multiple: Story = {
     render: () => ({
         template: html`
-            <rdx-popover-multiple></rdx-popover-multiple>
+            <rdx-tooltip-multiple></rdx-tooltip-multiple>
         `
     })
 };
@@ -68,7 +68,7 @@ export const Multiple: Story = {
 export const Events: Story = {
     render: () => ({
         template: html`
-            <rdx-popover-events></rdx-popover-events>
+            <rdx-tooltip-events></rdx-tooltip-events>
         `
     })
 };
@@ -76,7 +76,7 @@ export const Events: Story = {
 export const Positioning: Story = {
     render: () => ({
         template: html`
-            <rdx-popover-positioning></rdx-popover-positioning>
+            <rdx-tooltip-positioning></rdx-tooltip-positioning>
         `
     })
 };
@@ -84,7 +84,7 @@ export const Positioning: Story = {
 export const ExternalTriggering: Story = {
     render: () => ({
         template: html`
-            <rdx-popover-triggering></rdx-popover-triggering>
+            <rdx-tooltip-triggering></rdx-tooltip-triggering>
         `
     })
 };
@@ -92,7 +92,7 @@ export const ExternalTriggering: Story = {
 export const Anchor: Story = {
     render: () => ({
         template: html`
-            <rdx-popover-anchor></rdx-popover-anchor>
+            <rdx-tooltip-anchor></rdx-tooltip-anchor>
         `
     })
 };
@@ -100,7 +100,7 @@ export const Anchor: Story = {
 export const InitiallyOpen: Story = {
     render: () => ({
         template: html`
-            <rdx-popover-initially-open></rdx-popover-initially-open>
+            <rdx-tooltip-initially-open></rdx-tooltip-initially-open>
         `
     })
 };
@@ -108,7 +108,7 @@ export const InitiallyOpen: Story = {
 export const Animations: Story = {
     render: () => ({
         template: html`
-            <rdx-popover-animations></rdx-popover-animations>
+            <rdx-tooltip-animations></rdx-tooltip-animations>
         `
     })
 };

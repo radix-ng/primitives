@@ -1,4 +1,4 @@
 import { InjectionToken } from '@angular/core';
-import { RdxPopoverAnchorDirective } from './tooltip-anchor.directive';
+import { RdxTooltipAnchorDirective } from './tooltip-anchor.directive';
 
-export const RdxPopoverAnchorToken = new InjectionToken<RdxPopoverAnchorDirective>('RdxPopoverAnchorToken');
+export const RdxTooltipAnchorToken = new InjectionToken<RdxTooltipAnchorDirective>('RdxTooltipAnchorToken');

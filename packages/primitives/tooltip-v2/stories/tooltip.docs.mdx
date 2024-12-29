@@ -1,52 +1,52 @@
 import {ArgTypes, Canvas, Markdown, Meta, Source} from '@storybook/blocks';
-import * as PopoverStories from "./tooltip.stories";
-import {RdxPopoverRootDirective} from "../src/tooltip-root.directive";
-import {RdxPopoverContentDirective} from "../src/tooltip-content.directive";
-import {RdxPopoverArrowDirective} from "../src/tooltip-arrow.directive";
-import {RdxPopoverAnchorDirective} from "../src/tooltip-anchor.directive";
-import {RdxPopoverTriggerDirective} from "../src/tooltip-trigger.directive";
-import {RdxPopoverCloseDirective} from "../src/tooltip-close.directive";
+import * as TooltipStories from "./tooltip.stories";
+import {RdxTooltipRootDirective} from "../src/tooltip-root.directive";
+import {RdxTooltipContentDirective} from "../src/tooltip-content.directive";
+import {RdxTooltipArrowDirective} from "../src/tooltip-arrow.directive";
+import {RdxTooltipAnchorDirective} from "../src/tooltip-anchor.directive";
+import {RdxTooltipTriggerDirective} from "../src/tooltip-trigger.directive";
+import {RdxTooltipCloseDirective} from "../src/tooltip-close.directive";
 import {animationStylesOnly} from "./utils/styles.constants";
-import {RdxPopoverContentAttributesComponent} from "../src/tooltip-content-attributes.component";
+import {RdxTooltipContentAttributesComponent} from "../src/tooltip-content-attributes.component";
 
-<Meta title="Primitives/Popover" />
+<Meta title="Primitives/Tooltip-v2" />
 
-# Popover
+# Tooltip-v2
 
 #### A popup that displays information ready to interact with related to an element when the element receives click on it.
 
 ## Examples
 ### Default
 
-<Canvas sourceState="hidden" of={PopoverStories.Default} />
+<Canvas sourceState="hidden" of={TooltipStories.Default} />
 
 ### Multiple
 
-<Canvas sourceState="hidden" of={PopoverStories.Multiple} />
+<Canvas sourceState="hidden" of={TooltipStories.Multiple} />
 
 ### Events
 
-<Canvas sourceState="hidden" of={PopoverStories.Events} />
+<Canvas sourceState="hidden" of={TooltipStories.Events} />
 
 ### Positioning
 
-<Canvas sourceState="hidden" of={PopoverStories.Positioning} />
+<Canvas sourceState="hidden" of={TooltipStories.Positioning} />
 
 ### External Triggering
 
-<Canvas sourceState="hidden" of={PopoverStories.ExternalTriggering} />
+<Canvas sourceState="hidden" of={TooltipStories.ExternalTriggering} />
 
 ### Anchor
 
-<Canvas sourceState="hidden" of={PopoverStories.Anchor} />
+<Canvas sourceState="hidden" of={TooltipStories.Anchor} />
 
 ### Initially Open
 
-<Canvas sourceState="hidden" of={PopoverStories.InitiallyOpen} />
+<Canvas sourceState="hidden" of={TooltipStories.InitiallyOpen} />
 
 ### Animations
 
-<Canvas sourceState="hidden" of={PopoverStories.Animations} />
+<Canvas sourceState="hidden" of={TooltipStories.Animations} />
 
 ### Animation Styles
 
@@ -62,14 +62,14 @@ import {RdxPopoverContentAttributesComponent} from "../src/tooltip-content-attri
 ## Anatomy
 
 ```html
-<ng-container rdxPopoverRoot>
-    <button class="IconButton" rdxPopoverTrigger>+</button>
+<ng-container rdxTooltipRoot>
+    <button class="IconButton" rdxTooltipTrigger>+</button>
 
-    <ng-template rdxPopoverContent>
-        <div class="PopoverContent" rdxPopoverContentAttributes>
-            <button class="PopoverClose" rdxPopoverClose aria-label="Close">X</button>
+    <ng-template rdxTooltipContent>
+        <div class="TooltipContent" rdxTooltipContentAttributes>
+            <button class="TooltipClose" rdxTooltipClose aria-label="Close">X</button>
             Add to library
-            <div class="PopoverArrow" rdxPopoverArrow></div>
+            <div class="TooltipArrow" rdxTooltipArrow></div>
         </div>
     </ng-template>
 </ng-container>
@@ -80,77 +80,77 @@ import {RdxPopoverContentAttributesComponent} from "../src/tooltip-content-attri
 Get started with importing the directives:
 
 <Source type="code" language="typescript" code={`import {
-  RdxPopoverRootDirective,
-  RdxPopoverRootTrigger,
-  RdxPopoverContentDirective,
-  RdxPopoverArrowDirective,
-  RdxPopoverAnchorDirective,
-  RdxPopoverCloseDirective
-} from '@radix-ng/primitives/popover';`} />
+  RdxTooltipRootDirective,
+  RdxTooltipRootTrigger,
+  RdxTooltipContentDirective,
+  RdxTooltipArrowDirective,
+  RdxTooltipAnchorDirective,
+  RdxTooltipCloseDirective
+} from '@radix-ng/primitives/tooltip-v2';`} />
 
 or
 
-<Source type="code" language="typescript" code={`import { RdxPopoverModule } from '@radix-ng/primitives/popover';`} />
+<Source type="code" language="typescript" code={`import { RdxTooltipModule } from '@radix-ng/primitives/tooltip-v2';`} />
 
 ## API Reference
 
 ### Root
-`RdxPopoverRootDirective`
+`RdxTooltipRootDirective`
 
-Contains all the parts of a popover.
+Contains all the parts of a tooltip.
 
-<ArgTypes of={RdxPopoverRootDirective} />
+<ArgTypes of={RdxTooltipRootDirective} />
 
 ### Trigger
-`RdxPopoverTriggerDirective`
+`RdxTooltipTriggerDirective`
 
-The button that toggles the popover. By default, the PopoverContent will position itself against the trigger.
+The button that toggles the tooltip. By default, the TooltipContent will position itself against the trigger.
 
 <Markdown>
 {`
 | Data attribute | Value          |
 |----------------|----------------|
-| [data-state]   | <code>"closed" | "open" (type RdxPopoverState)</code>
+| [data-state]   | <code>"closed" | "open" (type RdxTooltipState)</code>
 `}
 </Markdown>
 
 ### Anchor
-`RdxPopoverAnchorDirective`
+`RdxTooltipAnchorDirective`
 
-An optional element to position the PopoverContent against. If this part is not used, the content will position alongside the PopoverTrigger.
+An optional element to position the TooltipContent against. If this part is not used, the content will position alongside the TooltipTrigger.
 
 ### Content
-`RdxPopoverContentDirective`
+`RdxTooltipContentDirective`
 
-The component that pops out when the popover is open.
+The component that pops out when the tooltip is open.
 
-<ArgTypes of={RdxPopoverContentDirective} />
+<ArgTypes of={RdxTooltipContentDirective} />
 
 ### Content Attributes
-`RdxPopoverContentAttributesComponent`
+`RdxTooltipContentAttributesComponent`
 
 A component with the content attributes that are necessary to run animations.
 
-<ArgTypes of={RdxPopoverContentAttributesComponent} />
+<ArgTypes of={RdxTooltipContentAttributesComponent} />
 
 <Markdown>
 {`
 | Data attribute | Value          |
 |----------------|----------------|
-| [data-state]   | <code>"closed" | "open" (enum RdxPopoverState)</code>
+| [data-state]   | <code>"closed" | "open" (enum RdxTooltipState)</code>
 | [data-side]    | <code>"left"   | "right" | "bottom" | "top" (enum RdxPositionSide)</code>
 | [data-align]   | <code>"start"  | "end" | "center" (enum RdxPositionAlign)</code>
 `}
 </Markdown>
 
 ### Arrow
-`RdxPopoverArrowDirective`
+`RdxTooltipArrowDirective`
 
-An optional arrow element to render alongside the popover. This can be used to help visually link the trigger with the PopoverContent. Must be rendered inside PopoverContent.
+An optional arrow element to render alongside the tooltip. This can be used to help visually link the trigger with the TooltipContent. Must be rendered inside TooltipContent.
 
-<ArgTypes of={RdxPopoverArrowDirective} />
+<ArgTypes of={RdxTooltipArrowDirective} />
 
 ### Close
-`RdxPopoverCloseDirective`
+`RdxTooltipCloseDirective`
 
-An optional close button element to render alongside the popover. This can be used to close the PopoverContent. Must be rendered inside PopoverContent.
+An optional close button element to render alongside the tooltip. This can be used to close the TooltipContent. Must be rendered inside TooltipContent.

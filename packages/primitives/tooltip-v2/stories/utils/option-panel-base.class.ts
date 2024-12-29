@@ -1,6 +1,6 @@
 import { afterNextRender, DestroyRef, Directive, ElementRef, inject, signal, viewChildren } from '@angular/core';
 import { injectDocument, RDX_POSITIONING_DEFAULTS } from '@radix-ng/primitives/core';
-import { RdxPopoverRootDirective } from '../../src/tooltip-root.directive';
+import { RdxTooltipRootDirective } from '../../src/tooltip-root.directive';
 import { injectRdxCdkEventService } from '../../src/utils/cdk-event.service';
 import { deregisterContainer, registerContainer, setRdxCdkEventService } from './containers.registry';
 import { IArrowDimensions, IIgnoreClickOutsideContainer } from './types';
@@ -15,19 +15,19 @@ export abstract class OptionPanelBase implements IIgnoreClickOutsideContainer, I
 
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     readonly destroyRef = inject(DestroyRef);
-    readonly rootDirectives = viewChildren(RdxPopoverRootDirective);
+    readonly rootDirectives = viewChildren(RdxTooltipRootDirective);
     readonly document = injectDocument();
     readonly rdxCdkEventService = injectRdxCdkEventService();
 
     protected constructor() {
         afterNextRender(() => {
             this.elementRef.nativeElement.querySelectorAll<HTMLElement>('.container').forEach((container) => {
-                const popoverRootInsideContainer = this.rootDirectives().find((popoverRoot) =>
-                    container.contains(popoverRoot.popoverTriggerDirective().elementRef.nativeElement)
+                const rootInsideContainer = this.rootDirectives().find((rootDirective) =>
+                    container.contains(rootDirective.triggerDirective().elementRef.nativeElement)
                 );
-                if (popoverRootInsideContainer) {
+                if (rootInsideContainer) {
                     setRdxCdkEventService(this.rdxCdkEventService);
-                    registerContainer(container, popoverRootInsideContainer);
+                    registerContainer(container, rootInsideContainer);
                     this.destroyRef.onDestroy(() => deregisterContainer(container));
                 }
             });

@@ -1,39 +1,39 @@
 const appliedAnimations = `
-.PopoverContent[data-state='open'][data-side='top'] {
+.TooltipContent[data-state='open'][data-side='top'] {
     animation-name: rdxSlideDownAndFade;
 }
 
-.PopoverContent[data-state='open'][data-side='right'] {
+.TooltipContent[data-state='open'][data-side='right'] {
     animation-name: rdxSlideLeftAndFade;
 }
 
-.PopoverContent[data-state='open'][data-side='bottom'] {
+.TooltipContent[data-state='open'][data-side='bottom'] {
     animation-name: rdxSlideUpAndFade;
 }
 
-.PopoverContent[data-state='open'][data-side='left'] {
+.TooltipContent[data-state='open'][data-side='left'] {
     animation-name: rdxSlideRightAndFade;
 }
 
-.PopoverContent[data-state='closed'][data-side='top'] {
+.TooltipContent[data-state='closed'][data-side='top'] {
     animation-name: rdxSlideDownAndFadeReverse;
 }
 
-.PopoverContent[data-state='closed'][data-side='right'] {
+.TooltipContent[data-state='closed'][data-side='right'] {
     animation-name: rdxSlideLeftAndFadeReverse;
 }
 
-.PopoverContent[data-state='closed'][data-side='bottom'] {
+.TooltipContent[data-state='closed'][data-side='bottom'] {
     animation-name: rdxSlideUpAndFadeReverse;
 }
 
-.PopoverContent[data-state='closed'][data-side='left'] {
+.TooltipContent[data-state='closed'][data-side='left'] {
     animation-name: rdxSlideRightAndFadeReverse;
 }
 `;
 
 const animationParams = `
-.PopoverContent {
+.TooltipContent {
     animation-duration: 400ms;
     animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
     will-change: transform, opacity;
@@ -212,7 +212,7 @@ function styles(withAnimations = false, withEvents = false, withParams = true) {
     }
 }
 
-.PopoverId {
+.TooltipId {
     color: var(--white-a12);
     font-size: 12px;
     line-height: 14px;
@@ -220,7 +220,7 @@ function styles(withAnimations = false, withEvents = false, withParams = true) {
     margin: 1px 0 24px 22px;
 }
 
-.PopoverContent {
+.TooltipContent {
     border-radius: 4px;
     padding: 20px;
     width: 260px;
@@ -234,18 +234,18 @@ ${withAnimations ? animationParams : ''}
 
 ${withAnimations ? appliedAnimations : ''}
 
-.PopoverContent:focus {
+.TooltipContent:focus {
     box-shadow:
         hsl(206 22% 7% / 35%) 0px 10px 38px -10px,
         hsl(206 22% 7% / 20%) 0px 10px 20px -15px,
         0 0 0 2px var(--violet-7);
 }
 
-.PopoverArrow {
+.TooltipArrow {
     fill: white;
 }
 
-.PopoverClose {
+.TooltipClose {
     font-family: inherit;
     border-radius: 100%;
     height: 25px;
@@ -259,11 +259,11 @@ ${withAnimations ? appliedAnimations : ''}
     right: 5px;
 }
 
-.PopoverClose:hover {
+.TooltipClose:hover {
     background-color: var(--violet-4);
 }
 
-.PopoverClose:focus {
+.TooltipClose:focus {
     box-shadow: 0 0 0 2px var(--violet-7);
 }
 

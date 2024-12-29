@@ -1,14 +1,14 @@
-export enum RdxPopoverState {
+export enum RdxTooltipState {
     OPEN = 'open',
     CLOSED = 'closed'
 }
 
-export enum RdxPopoverAttachDetachEvent {
+export enum RdxTooltipAttachDetachEvent {
     ATTACH = 'attach',
     DETACH = 'detach'
 }
 
-export enum RdxPopoverAnimationStatus {
+export enum RdxTooltipAnimationStatus {
     OPEN_STARTED = 'open_started',
     OPEN_ENDED = 'open_ended',
     CLOSED_STARTED = 'closed_started',

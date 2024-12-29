@@ -1,23 +1,23 @@
 import { Directive, effect, ElementRef, forwardRef, inject, Renderer2, untracked } from '@angular/core';
-import { RdxPopoverCloseToken } from './tooltip-close.token';
-import { injectPopoverRoot } from './tooltip-root.inject';
+import { RdxTooltipCloseToken } from './tooltip-close.token';
+import { injectTooltipRoot } from './tooltip-root.inject';
 
 @Directive({
-    selector: '[rdxPopoverClose]',
+    selector: '[rdxTooltipClose]',
     host: {
         type: 'button',
-        '(click)': 'popoverRoot.handleClose()'
+        '(click)': 'rootDirective.handleClose()'
     },
     providers: [
         {
-            provide: RdxPopoverCloseToken,
-            useExisting: forwardRef(() => RdxPopoverCloseDirective)
+            provide: RdxTooltipCloseToken,
+            useExisting: forwardRef(() => RdxTooltipCloseDirective)
         }
     ]
 })
-export class RdxPopoverCloseDirective {
+export class RdxTooltipCloseDirective {
     /** @ignore */
-    protected readonly popoverRoot = injectPopoverRoot();
+    protected readonly rootDirective = injectTooltipRoot();
     /** @ignore */
     readonly elementRef = inject(ElementRef);
     /** @ignore */
@@ -30,7 +30,7 @@ export class RdxPopoverCloseDirective {
     /** @ignore */
     private onIsControlledExternallyEffect() {
         effect(() => {
-            const isControlledExternally = this.popoverRoot.controlledExternally()();
+            const isControlledExternally = this.rootDirective.controlledExternally()();
 
             untracked(() => {
                 this.renderer.setStyle(

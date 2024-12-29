@@ -1,8 +1,8 @@
 import { isDevMode } from '@angular/core';
-import { RdxPopoverRootDirective } from '../../src/tooltip-root.directive';
+import { RdxTooltipRootDirective } from '../../src/tooltip-root.directive';
 import { injectRdxCdkEventService } from '../../src/utils/cdk-event.service';
 
-const containerRegistry: Map<HTMLElement, RdxPopoverRootDirective> = new Map();
+const containerRegistry: Map<HTMLElement, RdxTooltipRootDirective> = new Map();
 let rdxCdkEventService: ReturnType<typeof injectRdxCdkEventService> | undefined = void 0;
 
 const domRootClickEventCallback: (event: MouseEvent) => void = (event: MouseEvent) => {
@@ -32,11 +32,11 @@ const domRootClickEventCallback: (event: MouseEvent) => void = (event: MouseEven
     });
 };
 
-export function registerContainer(container: HTMLElement, popoverRoot: RdxPopoverRootDirective) {
+export function registerContainer(container: HTMLElement, root: RdxTooltipRootDirective) {
     if (containerRegistry.has(container)) {
         return;
     }
-    containerRegistry.set(container, popoverRoot);
+    containerRegistry.set(container, root);
     if (containerRegistry.size === 1) {
         rdxCdkEventService?.addClickDomRootEventCallback(domRootClickEventCallback);
     }

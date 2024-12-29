@@ -1,4 +1,4 @@
 import { InjectionToken } from '@angular/core';
-import { RdxPopoverCloseDirective } from './tooltip-close.directive';
+import { RdxTooltipCloseDirective } from './tooltip-close.directive';
 
-export const RdxPopoverCloseToken = new InjectionToken<RdxPopoverCloseDirective>('RdxPopoverCloseToken');
+export const RdxTooltipCloseToken = new InjectionToken<RdxTooltipCloseDirective>('RdxTooltipCloseToken');

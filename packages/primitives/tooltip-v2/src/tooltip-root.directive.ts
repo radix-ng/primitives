@@ -13,45 +13,45 @@ import {
     untracked,
     ViewContainerRef
 } from '@angular/core';
-import { RdxPopoverAnchorDirective } from './tooltip-anchor.directive';
-import { RdxPopoverAnchorToken } from './tooltip-anchor.token';
-import { RdxPopoverArrowToken } from './tooltip-arrow.token';
-import { RdxPopoverCloseToken } from './tooltip-close.token';
-import { RdxPopoverContentAttributesToken } from './tooltip-content-attributes.token';
-import { RdxPopoverContentDirective } from './tooltip-content.directive';
-import { RdxPopoverTriggerDirective } from './tooltip-trigger.directive';
-import { RdxPopoverAnimationStatus, RdxPopoverAttachDetachEvent, RdxPopoverState } from './tooltip.types';
+import { RdxTooltipAnchorDirective } from './tooltip-anchor.directive';
+import { RdxTooltipAnchorToken } from './tooltip-anchor.token';
+import { RdxTooltipArrowToken } from './tooltip-arrow.token';
+import { RdxTooltipCloseToken } from './tooltip-close.token';
+import { RdxTooltipContentAttributesToken } from './tooltip-content-attributes.token';
+import { RdxTooltipContentDirective } from './tooltip-content.directive';
+import { RdxTooltipTriggerDirective } from './tooltip-trigger.directive';
+import { RdxTooltipAnimationStatus, RdxTooltipAttachDetachEvent, RdxTooltipState } from './tooltip.types';
 import { injectRdxCdkEventService } from './utils/cdk-event.service';
 
 let nextId = 0;
 
 @Directive({
-    selector: '[rdxPopoverRoot]',
-    exportAs: 'rdxPopoverRoot'
+    selector: '[rdxTooltipRoot]',
+    exportAs: 'rdxTooltipRoot'
 })
-export class RdxPopoverRootDirective {
+export class RdxTooltipRootDirective {
     /** @ignore */
     readonly uniqueId = signal(++nextId);
     /** @ignore */
-    readonly name = computed(() => `rdx-popover-root-${this.uniqueId()}`);
+    readonly name = computed(() => `rdx-tooltip-root-${this.uniqueId()}`);
 
     /**
-     * @description The anchor directive that comes form outside the popover root
+     * @description The anchor directive that comes form outside the tooltip rootDirective
      * @default undefined
      */
-    readonly anchor = input<RdxPopoverAnchorDirective | undefined>(void 0);
+    readonly anchor = input<RdxTooltipAnchorDirective | undefined>(void 0);
     /**
-     * @description The open state of the popover when it is initially rendered. Use when you do not need to control its open state.
+     * @description The open state of the tooltip when it is initially rendered. Use when you do not need to control its open state.
      * @default false
      */
     readonly defaultOpen = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
     /**
-     * @description The controlled state of the popover. `open` input take precedence of `defaultOpen` input.
+     * @description The controlled state of the tooltip. `open` input take precedence of `defaultOpen` input.
      * @default undefined
      */
     readonly open = input<boolean | undefined, BooleanInput>(void 0, { transform: booleanAttribute });
     /**
-     * @description Whether to control the state of the popover from external. Use in conjunction with `open` input.
+     * @description Whether to control the state of the tooltip from external. Use in conjunction with `open` input.
      * @default undefined
      */
     readonly externalControl = input<boolean | undefined, BooleanInput>(void 0, { transform: booleanAttribute });
@@ -72,20 +72,20 @@ export class RdxPopoverRootDirective {
     readonly cssClosingAnimation = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /** @ignore */
-    readonly cssAnimationStatus = signal<RdxPopoverAnimationStatus | null>(null);
+    readonly cssAnimationStatus = signal<RdxTooltipAnimationStatus | null>(null);
 
     /** @ignore */
-    readonly popoverContentDirective = contentChild.required(RdxPopoverContentDirective);
+    readonly contentDirective = contentChild.required(RdxTooltipContentDirective);
     /** @ignore */
-    readonly popoverTriggerDirective = contentChild.required(RdxPopoverTriggerDirective);
+    readonly triggerDirective = contentChild.required(RdxTooltipTriggerDirective);
     /** @ignore */
-    readonly popoverArrowDirective = contentChild(RdxPopoverArrowToken);
+    readonly arrowDirective = contentChild(RdxTooltipArrowToken);
     /** @ignore */
-    readonly popoverCloseDirective = contentChild(RdxPopoverCloseToken);
+    readonly closeDirective = contentChild(RdxTooltipCloseToken);
     /** @ignore */
-    readonly popoverContentAttributesComponent = contentChild(RdxPopoverContentAttributesToken);
+    readonly contentAttributesComponent = contentChild(RdxTooltipContentAttributesToken);
     /** @ignore */
-    private readonly internalPopoverAnchorDirective = contentChild(RdxPopoverAnchorToken);
+    private readonly internalAnchorDirective = contentChild(RdxTooltipAnchorToken);
 
     /** @ignore */
     readonly viewContainerRef = inject(ViewContainerRef);
@@ -95,16 +95,16 @@ export class RdxPopoverRootDirective {
     readonly destroyRef = inject(DestroyRef);
 
     /** @ignore */
-    readonly state = signal(RdxPopoverState.CLOSED);
+    readonly state = signal(RdxTooltipState.CLOSED);
 
     /** @ignore */
-    readonly attachDetachEvent = signal(RdxPopoverAttachDetachEvent.DETACH);
+    readonly attachDetachEvent = signal(RdxTooltipAttachDetachEvent.DETACH);
 
     /** @ignore */
     private readonly isFirstDefaultOpen = signal(false);
 
     /** @ignore */
-    readonly popoverAnchorDirective = computed(() => this.internalPopoverAnchorDirective() ?? this.anchor());
+    readonly anchorDirective = computed(() => this.internalAnchorDirective() ?? this.anchor());
 
     constructor() {
         this.rdxCdkEventService?.registerPrimitive(this);
@@ -152,7 +152,7 @@ export class RdxPopoverRootDirective {
         if (this.externalControl()) {
             return;
         }
-        this.setState(RdxPopoverState.OPEN);
+        this.setState(RdxTooltipState.OPEN);
     }
 
     /** @ignore */
@@ -163,7 +163,7 @@ export class RdxPopoverRootDirective {
         if (this.externalControl()) {
             return;
         }
-        this.setState(RdxPopoverState.CLOSED);
+        this.setState(RdxTooltipState.CLOSED);
     }
 
     /** @ignore */
@@ -175,12 +175,12 @@ export class RdxPopoverRootDirective {
     }
 
     /** @ignore */
-    isOpen(state?: RdxPopoverState) {
-        return (state ?? this.state()) === RdxPopoverState.OPEN;
+    isOpen(state?: RdxTooltipState) {
+        return (state ?? this.state()) === RdxTooltipState.OPEN;
     }
 
     /** @ignore */
-    private setState(state = RdxPopoverState.CLOSED): void {
+    private setState(state = RdxTooltipState.CLOSED): void {
         if (state === this.state()) {
             return;
         }
@@ -189,7 +189,7 @@ export class RdxPopoverRootDirective {
 
     /** @ignore */
     private openContent(): void {
-        this.popoverContentDirective().open();
+        this.contentDirective().open();
         if (!this.cssAnimation() || !this.cssOpeningAnimation()) {
             this.cssAnimationStatus.set(null);
         }
@@ -197,7 +197,7 @@ export class RdxPopoverRootDirective {
 
     /** @ignore */
     private closeContent(): void {
-        this.popoverContentDirective().close();
+        this.contentDirective().close();
         if (!this.cssAnimation() || !this.cssClosingAnimation()) {
             this.cssAnimationStatus.set(null);
         }
@@ -205,71 +205,71 @@ export class RdxPopoverRootDirective {
 
     /** @ignore */
     private emitOnOpen(): void {
-        this.popoverContentDirective().onOpen.emit();
+        this.contentDirective().onOpen.emit();
     }
 
     /** @ignore */
     private emitOnClosed(): void {
-        this.popoverContentDirective().onClosed.emit();
+        this.contentDirective().onClosed.emit();
     }
 
     /** @ignore */
-    private ifOpenOrCloseWithoutAnimations(state: RdxPopoverState) {
+    private ifOpenOrCloseWithoutAnimations(state: RdxTooltipState) {
         return (
-            !this.popoverContentAttributesComponent() ||
+            !this.contentAttributesComponent() ||
             !this.cssAnimation() ||
-            (this.cssAnimation() && !this.cssClosingAnimation() && state === RdxPopoverState.CLOSED) ||
-            (this.cssAnimation() && !this.cssOpeningAnimation() && state === RdxPopoverState.OPEN) ||
+            (this.cssAnimation() && !this.cssClosingAnimation() && state === RdxTooltipState.CLOSED) ||
+            (this.cssAnimation() && !this.cssOpeningAnimation() && state === RdxTooltipState.OPEN) ||
             // !this.cssAnimationStatus() ||
             (this.cssOpeningAnimation() &&
-                state === RdxPopoverState.OPEN &&
-                [RdxPopoverAnimationStatus.OPEN_STARTED].includes(this.cssAnimationStatus()!)) ||
+                state === RdxTooltipState.OPEN &&
+                [RdxTooltipAnimationStatus.OPEN_STARTED].includes(this.cssAnimationStatus()!)) ||
             (this.cssClosingAnimation() &&
-                state === RdxPopoverState.CLOSED &&
-                [RdxPopoverAnimationStatus.CLOSED_STARTED].includes(this.cssAnimationStatus()!))
+                state === RdxTooltipState.CLOSED &&
+                [RdxTooltipAnimationStatus.CLOSED_STARTED].includes(this.cssAnimationStatus()!))
         );
     }
 
     /** @ignore */
-    private ifOpenOrCloseWithAnimations(cssAnimationStatus: RdxPopoverAnimationStatus | null) {
+    private ifOpenOrCloseWithAnimations(cssAnimationStatus: RdxTooltipAnimationStatus | null) {
         return (
-            this.popoverContentAttributesComponent() &&
+            this.contentAttributesComponent() &&
             this.cssAnimation() &&
             cssAnimationStatus &&
             ((this.cssOpeningAnimation() &&
-                this.state() === RdxPopoverState.OPEN &&
-                [RdxPopoverAnimationStatus.OPEN_ENDED].includes(cssAnimationStatus)) ||
+                this.state() === RdxTooltipState.OPEN &&
+                [RdxTooltipAnimationStatus.OPEN_ENDED].includes(cssAnimationStatus)) ||
                 (this.cssClosingAnimation() &&
-                    this.state() === RdxPopoverState.CLOSED &&
-                    [RdxPopoverAnimationStatus.CLOSED_ENDED].includes(cssAnimationStatus)))
+                    this.state() === RdxTooltipState.CLOSED &&
+                    [RdxTooltipAnimationStatus.CLOSED_ENDED].includes(cssAnimationStatus)))
         );
     }
 
     /** @ignore */
-    private openOrClose(state: RdxPopoverState) {
+    private openOrClose(state: RdxTooltipState) {
         const isOpen = this.isOpen(state);
         isOpen ? this.openContent() : this.closeContent();
     }
 
     /** @ignore */
-    private emitOnOpenOrOnClosed(state: RdxPopoverState) {
+    private emitOnOpenOrOnClosed(state: RdxTooltipState) {
         this.isOpen(state)
-            ? this.attachDetachEvent() === RdxPopoverAttachDetachEvent.ATTACH && this.emitOnOpen()
-            : this.attachDetachEvent() === RdxPopoverAttachDetachEvent.DETACH && this.emitOnClosed();
+            ? this.attachDetachEvent() === RdxTooltipAttachDetachEvent.ATTACH && this.emitOnOpen()
+            : this.attachDetachEvent() === RdxTooltipAttachDetachEvent.DETACH && this.emitOnClosed();
     }
 
     /** @ignore */
     private canEmitOnOpenOrOnClosed() {
         return (
             !this.cssAnimation() ||
-            (!this.cssOpeningAnimation() && this.state() === RdxPopoverState.OPEN) ||
+            (!this.cssOpeningAnimation() && this.state() === RdxTooltipState.OPEN) ||
             (this.cssOpeningAnimation() &&
-                this.state() === RdxPopoverState.OPEN &&
-                this.cssAnimationStatus() === RdxPopoverAnimationStatus.OPEN_ENDED) ||
-            (!this.cssClosingAnimation() && this.state() === RdxPopoverState.CLOSED) ||
+                this.state() === RdxTooltipState.OPEN &&
+                this.cssAnimationStatus() === RdxTooltipAnimationStatus.OPEN_ENDED) ||
+            (!this.cssClosingAnimation() && this.state() === RdxTooltipState.CLOSED) ||
             (this.cssClosingAnimation() &&
-                this.state() === RdxPopoverState.CLOSED &&
-                this.cssAnimationStatus() === RdxPopoverAnimationStatus.CLOSED_ENDED)
+                this.state() === RdxTooltipState.CLOSED &&
+                this.cssAnimationStatus() === RdxTooltipAnimationStatus.CLOSED_ENDED)
         );
     }
 
@@ -334,7 +334,7 @@ export class RdxPopoverRootDirective {
         effect(() => {
             const open = this.open();
             untracked(() => {
-                this.setState(open ? RdxPopoverState.OPEN : RdxPopoverState.CLOSED);
+                this.setState(open ? RdxTooltipState.OPEN : RdxTooltipState.CLOSED);
             });
         });
     }
@@ -359,7 +359,7 @@ export class RdxPopoverRootDirective {
             const anchor = this.anchor();
             untracked(() => {
                 if (anchor) {
-                    anchor.setPopoverRoot(this);
+                    anchor.setRoot(this);
                 }
             });
         });

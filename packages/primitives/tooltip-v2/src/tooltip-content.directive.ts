@@ -25,18 +25,18 @@ import {
     RdxPositionSideAndAlignOffsets
 } from '@radix-ng/primitives/core';
 import { filter, tap } from 'rxjs';
-import { injectPopoverRoot } from './tooltip-root.inject';
-import { RdxPopoverAttachDetachEvent } from './tooltip.types';
+import { injectTooltipRoot } from './tooltip-root.inject';
+import { RdxTooltipAttachDetachEvent } from './tooltip.types';
 
 @Directive({
-    selector: '[rdxPopoverContent]',
+    selector: '[rdxTooltipContent]',
     hostDirectives: [
         CdkConnectedOverlay
     ]
 })
-export class RdxPopoverContentDirective implements OnInit {
+export class RdxTooltipContentDirective implements OnInit {
     /** @ignore */
-    private readonly popoverRoot = injectPopoverRoot();
+    private readonly rootDirective = injectTooltipRoot();
     /** @ignore */
     private readonly templateRef = inject(TemplateRef);
     /** @ignore */
@@ -47,7 +47,7 @@ export class RdxPopoverContentDirective implements OnInit {
     private readonly connectedOverlay = inject(CdkConnectedOverlay);
 
     /** @ignore */
-    readonly name = computed(() => `rdx-popover-trigger-${this.popoverRoot.uniqueId()}`);
+    readonly name = computed(() => `rdx-tooltip-trigger-${this.rootDirective.uniqueId()}`);
 
     /**
      * @description The preferred side of the trigger to render against when open. Will be reversed when collisions occur and avoidCollisions is enabled.
@@ -157,8 +157,8 @@ export class RdxPopoverContentDirective implements OnInit {
                 filter(
                     () =>
                         !this.onOverlayEscapeKeyDownDisabled() &&
-                        !this.popoverRoot.rdxCdkEventService?.primitivePreventedFromCdkEvent(
-                            this.popoverRoot,
+                        !this.rootDirective.rdxCdkEventService?.primitivePreventedFromCdkEvent(
+                            this.rootDirective,
                             'cdkOverlayEscapeKeyDown'
                         )
                 ),
@@ -166,9 +166,9 @@ export class RdxPopoverContentDirective implements OnInit {
                 tap((event) => {
                     this.onOverlayEscapeKeyDown.emit(event);
                 }),
-                filter(() => !this.popoverRoot.firstDefaultOpen()),
+                filter(() => !this.rootDirective.firstDefaultOpen()),
                 tap(() => {
-                    this.popoverRoot.handleClose();
+                    this.rootDirective.handleClose();
                 }),
                 takeUntilDestroyed(this.destroyRef)
             )
@@ -183,8 +183,8 @@ export class RdxPopoverContentDirective implements OnInit {
                 filter(
                     () =>
                         !this.onOverlayOutsideClickDisabled() &&
-                        !this.popoverRoot.rdxCdkEventService?.primitivePreventedFromCdkEvent(
-                            this.popoverRoot,
+                        !this.rootDirective.rdxCdkEventService?.primitivePreventedFromCdkEvent(
+                            this.rootDirective,
                             'cdkOverlayOutsideClick'
                         )
                 ),
@@ -194,18 +194,18 @@ export class RdxPopoverContentDirective implements OnInit {
                  */
                 filter((event) => {
                     return (
-                        !this.popoverRoot.popoverAnchorDirective() ||
-                        !this.popoverRoot
-                            .popoverTriggerDirective()
+                        !this.rootDirective.anchorDirective() ||
+                        !this.rootDirective
+                            .triggerDirective()
                             .elementRef.nativeElement.contains(event.target as Element)
                     );
                 }),
                 tap((event) => {
                     this.onOverlayOutsideClick.emit(event);
                 }),
-                filter(() => !this.popoverRoot.firstDefaultOpen()),
+                filter(() => !this.rootDirective.firstDefaultOpen()),
                 tap(() => {
-                    this.popoverRoot.handleClose();
+                    this.rootDirective.handleClose();
                 }),
                 takeUntilDestroyed(this.destroyRef)
             )
@@ -219,9 +219,9 @@ export class RdxPopoverContentDirective implements OnInit {
             .pipe(
                 tap(() => {
                     /**
-                     * `this.onOpen.emit();` is being delegated to the root directive due to the opening animation
+                     * `this.onOpen.emit();` is being delegated to the rootDirective directive due to the opening animation
                      */
-                    this.popoverRoot.attachDetachEvent.set(RdxPopoverAttachDetachEvent.ATTACH);
+                    this.rootDirective.attachDetachEvent.set(RdxTooltipAttachDetachEvent.ATTACH);
                 }),
                 takeUntilDestroyed(this.destroyRef)
             )
@@ -235,9 +235,9 @@ export class RdxPopoverContentDirective implements OnInit {
             .pipe(
                 tap(() => {
                     /**
-                     * `this.onClosed.emit();` is being delegated to the root directive due to the closing animation
+                     * `this.onClosed.emit();` is being delegated to the rootDirective directive due to the closing animation
                      */
-                    this.popoverRoot.attachDetachEvent.set(RdxPopoverAttachDetachEvent.DETACH);
+                    this.rootDirective.attachDetachEvent.set(RdxTooltipAttachDetachEvent.DETACH);
                 }),
                 takeUntilDestroyed(this.destroyRef)
             )
@@ -282,7 +282,7 @@ export class RdxPopoverContentDirective implements OnInit {
 
     /** @ignore */
     private computePositions() {
-        const arrowHeight = this.popoverRoot.popoverArrowDirective()?.height() ?? 0;
+        const arrowHeight = this.rootDirective.arrowDirective()?.height() ?? 0;
         const offsets: RdxPositionSideAndAlignOffsets = {
             sideOffset: isNaN(this.sideOffset())
                 ? arrowHeight || RDX_POSITIONING_DEFAULTS.offsets.side
@@ -323,7 +323,7 @@ export class RdxPopoverContentDirective implements OnInit {
 
     private onOriginChangeEffect() {
         effect(() => {
-            const origin = (this.popoverRoot.popoverAnchorDirective() ?? this.popoverRoot.popoverTriggerDirective())
+            const origin = (this.rootDirective.anchorDirective() ?? this.rootDirective.triggerDirective())
                 .overlayOrigin;
             untracked(() => {
                 this.setOrigin(origin);

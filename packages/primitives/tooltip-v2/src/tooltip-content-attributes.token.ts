@@ -1,6 +1,6 @@
 import { InjectionToken } from '@angular/core';
-import { RdxPopoverContentAttributesComponent } from './tooltip-content-attributes.component';
+import { RdxTooltipContentAttributesComponent } from './tooltip-content-attributes.component';
 
-export const RdxPopoverContentAttributesToken = new InjectionToken<RdxPopoverContentAttributesComponent>(
-    'RdxPopoverContentAttributesToken'
+export const RdxTooltipContentAttributesToken = new InjectionToken<RdxTooltipContentAttributesComponent>(
+    'RdxTooltipContentAttributesToken'
 );

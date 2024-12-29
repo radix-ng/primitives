@@ -1,9 +1,9 @@
 import { assertInInjectionContext, inject, isDevMode } from '@angular/core';
-import { RdxPopoverRootDirective } from './tooltip-root.directive';
+import { RdxTooltipRootDirective } from './tooltip-root.directive';
 
-export function injectPopoverRoot(optional?: false): RdxPopoverRootDirective;
-export function injectPopoverRoot(optional: true): RdxPopoverRootDirective | null;
-export function injectPopoverRoot(optional = false): RdxPopoverRootDirective | null {
-    isDevMode() && assertInInjectionContext(injectPopoverRoot);
-    return inject(RdxPopoverRootDirective, { optional });
+export function injectTooltipRoot(optional?: false): RdxTooltipRootDirective;
+export function injectTooltipRoot(optional: true): RdxTooltipRootDirective | null;
+export function injectTooltipRoot(optional = false): RdxTooltipRootDirective | null {
+    isDevMode() && assertInInjectionContext(injectTooltipRoot);
+    return inject(RdxTooltipRootDirective, { optional });
 }

@@ -20,23 +20,23 @@ import {
     getSideAndAlignFromAllPossibleConnectedPositions,
     RDX_POSITIONING_DEFAULTS
 } from '@radix-ng/primitives/core';
-import { RdxPopoverArrowToken } from './tooltip-arrow.token';
-import { injectPopoverRoot } from './tooltip-root.inject';
+import { RdxTooltipArrowToken } from './tooltip-arrow.token';
+import { injectTooltipRoot } from './tooltip-root.inject';
 
 @Directive({
-    selector: '[rdxPopoverArrow]',
+    selector: '[rdxTooltipArrow]',
     providers: [
         {
-            provide: RdxPopoverArrowToken,
-            useExisting: forwardRef(() => RdxPopoverArrowDirective)
+            provide: RdxTooltipArrowToken,
+            useExisting: forwardRef(() => RdxTooltipArrowDirective)
         }
     ]
 })
-export class RdxPopoverArrowDirective {
+export class RdxTooltipArrowDirective {
     /** @ignore */
     private readonly renderer = inject(Renderer2);
     /** @ignore */
-    private readonly popoverRoot = injectPopoverRoot();
+    private readonly rootDirective = injectTooltipRoot();
     /** @ignore */
     readonly elementRef = inject(ElementRef);
 
@@ -72,7 +72,7 @@ export class RdxPopoverArrowDirective {
     /** @ignore */
     private readonly currentArrowSvgElement = signal<HTMLOrSVGElement | undefined>(void 0);
     /** @ignore */
-    private readonly position = toSignal(this.popoverRoot.popoverContentDirective().positionChange());
+    private readonly position = toSignal(this.rootDirective.contentDirective().positionChange());
 
     /** @ignore */
     private anchorOrTriggerRect: DOMRect;
@@ -95,7 +95,7 @@ export class RdxPopoverArrowDirective {
     /** @ignore */
     private setAnchorOrTriggerRect() {
         this.anchorOrTriggerRect = (
-            this.popoverRoot.popoverAnchorDirective() ?? this.popoverRoot.popoverTriggerDirective()
+            this.rootDirective.anchorDirective() ?? this.rootDirective.triggerDirective()
         ).elementRef.nativeElement.getBoundingClientRect();
     }
 

@@ -1,8 +1,8 @@
 import { Component, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, MountainSnow, TriangleAlert, X } from 'lucide-angular';
-import { RdxPopoverModule } from '../index';
-import { RdxPopoverContentAttributesComponent } from '../src/tooltip-content-attributes.component';
+import { RdxTooltipModule } from '../index';
+import { RdxTooltipContentAttributesComponent } from '../src/tooltip-content-attributes.component';
 import { provideRdxCdkEventService } from '../src/utils/cdk-event.service';
 import { containerAlert } from './utils/constants';
 import { OptionPanelBase } from './utils/option-panel-base.class';
@@ -10,19 +10,19 @@ import styles from './utils/styles.constants';
 import { WithOptionPanelComponent } from './utils/with-option-panel.component';
 
 @Component({
-    selector: 'rdx-popover-triggering',
+    selector: 'rdx-tooltip-triggering',
     providers: [provideRdxCdkEventService()],
     imports: [
         FormsModule,
-        RdxPopoverModule,
+        RdxTooltipModule,
         LucideAngularModule,
-        RdxPopoverContentAttributesComponent,
+        RdxTooltipContentAttributesComponent,
         WithOptionPanelComponent
     ],
     styles: styles(),
     template: `
         <p class="ExampleSubtitle">Initially closed</p>
-        <popover-with-option-panel
+        <tooltip-with-option-panel
             [arrowWidth]="arrowWidth()"
             [arrowHeight]="arrowHeight()"
             (onOverlayEscapeKeyDownDisabledChange)="onOverlayEscapeKeyDownDisabled.set($event)"
@@ -50,12 +50,12 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
             </div>
             <div class="container">
                 <ng-container
-                    #root1="rdxPopoverRoot"
+                    #root1="rdxTooltipRoot"
                     [open]="isOpenFalse()"
                     [externalControl]="externalControlFalse()"
-                    rdxPopoverRoot
+                    rdxTooltipRoot
                 >
-                    <button class="reset IconButton" rdxPopoverTrigger>
+                    <button class="reset IconButton" rdxTooltipTrigger>
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                     </button>
 
@@ -65,10 +65,10 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
                         [onOverlayOutsideClickDisabled]="onOverlayOutsideClickDisabled()"
                         (onOpen)="countOpenFalse(true)"
                         (onClosed)="countOpenFalse(false)"
-                        rdxPopoverContent
+                        rdxTooltipContent
                     >
-                        <div class="PopoverContent" rdxPopoverContentAttributes>
-                            <button class="reset PopoverClose" rdxPopoverClose aria-label="Close">
+                        <div class="TooltipContent" rdxTooltipContentAttributes>
+                            <button class="reset TooltipClose" rdxTooltipClose aria-label="Close">
                                 <lucide-angular [img]="XIcon" size="16" style="display: flex" />
                             </button>
                             <div style="display: flex; flex-direction: column; gap: 10px">
@@ -91,20 +91,20 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
                                 </fieldset>
                             </div>
                             <div
-                                class="PopoverArrow"
+                                class="TooltipArrow"
                                 [width]="arrowWidth()"
                                 [height]="arrowHeight()"
-                                rdxPopoverArrow
+                                rdxTooltipArrow
                             ></div>
                         </div>
                     </ng-template>
                 </ng-container>
             </div>
-            <div class="PopoverId">ID: {{ popoverRootDirective1()?.uniqueId() }}</div>
-        </popover-with-option-panel>
+            <div class="TooltipId">ID: {{ rootDirective1()?.uniqueId() }}</div>
+        </tooltip-with-option-panel>
 
         <p class="ExampleSubtitle">Initially open</p>
-        <popover-with-option-panel
+        <tooltip-with-option-panel
             [arrowWidth]="arrowWidth()"
             [arrowHeight]="arrowHeight()"
             (onOverlayEscapeKeyDownDisabledChange)="onOverlayEscapeKeyDownDisabled.set($event)"
@@ -132,12 +132,12 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
             </div>
             <div class="container">
                 <ng-container
-                    #root2="rdxPopoverRoot"
+                    #root2="rdxTooltipRoot"
                     [open]="isOpenTrue()"
                     [externalControl]="externalControlTrue()"
-                    rdxPopoverRoot
+                    rdxTooltipRoot
                 >
-                    <button class="reset IconButton" rdxPopoverTrigger>
+                    <button class="reset IconButton" rdxTooltipTrigger>
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                     </button>
 
@@ -147,10 +147,10 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
                         [onOverlayOutsideClickDisabled]="onOverlayOutsideClickDisabled()"
                         (onOpen)="countOpenTrue(true)"
                         (onClosed)="countOpenTrue(false)"
-                        rdxPopoverContent
+                        rdxTooltipContent
                     >
-                        <div class="PopoverContent" rdxPopoverContentAttributes>
-                            <button class="reset PopoverClose" rdxPopoverClose aria-label="Close">
+                        <div class="TooltipContent" rdxTooltipContentAttributes>
+                            <button class="reset TooltipClose" rdxTooltipClose aria-label="Close">
                                 <lucide-angular [img]="XIcon" size="16" style="display: flex" />
                             </button>
                             <div style="display: flex; flex-direction: column; gap: 10px">
@@ -173,22 +173,22 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
                                 </fieldset>
                             </div>
                             <div
-                                class="PopoverArrow"
+                                class="TooltipArrow"
                                 [width]="arrowWidth()"
                                 [height]="arrowHeight()"
-                                rdxPopoverArrow
+                                rdxTooltipArrow
                             ></div>
                         </div>
                     </ng-template>
                 </ng-container>
             </div>
-            <div class="PopoverId">ID: {{ popoverRootDirective2()?.uniqueId() }}</div>
-        </popover-with-option-panel>
+            <div class="TooltipId">ID: {{ rootDirective2()?.uniqueId() }}</div>
+        </tooltip-with-option-panel>
     `
 })
-export class RdxPopoverTriggeringComponent extends OptionPanelBase {
-    readonly popoverRootDirective1 = viewChild('root1');
-    readonly popoverRootDirective2 = viewChild('root2');
+export class RdxTooltipTriggeringComponent extends OptionPanelBase {
+    readonly rootDirective1 = viewChild('root1');
+    readonly rootDirective2 = viewChild('root2');
 
     readonly MountainSnowIcon = MountainSnow;
     readonly XIcon = X;

@@ -1,13 +1,13 @@
 import { CdkOverlayOrigin } from '@angular/cdk/overlay';
 import { computed, Directive, ElementRef, forwardRef, inject } from '@angular/core';
 import { injectDocument } from '@radix-ng/primitives/core';
-import { RdxPopoverAnchorToken } from './tooltip-anchor.token';
-import { RdxPopoverRootDirective } from './tooltip-root.directive';
-import { injectPopoverRoot } from './tooltip-root.inject';
+import { RdxTooltipAnchorToken } from './tooltip-anchor.token';
+import { RdxTooltipRootDirective } from './tooltip-root.directive';
+import { injectTooltipRoot } from './tooltip-root.inject';
 
 @Directive({
-    selector: '[rdxPopoverAnchor]',
-    exportAs: 'rdxPopoverAnchor',
+    selector: '[rdxTooltipAnchor]',
+    exportAs: 'rdxTooltipAnchor',
     hostDirectives: [CdkOverlayOrigin],
     host: {
         type: 'button',
@@ -17,18 +17,18 @@ import { injectPopoverRoot } from './tooltip-root.inject';
     },
     providers: [
         {
-            provide: RdxPopoverAnchorToken,
-            useExisting: forwardRef(() => RdxPopoverAnchorDirective)
+            provide: RdxTooltipAnchorToken,
+            useExisting: forwardRef(() => RdxTooltipAnchorDirective)
         }
     ]
 })
-export class RdxPopoverAnchorDirective {
+export class RdxTooltipAnchorDirective {
     /**
      * @ignore
-     * If outside the root then null, otherwise the root directive - with optional `true` passed in as the first param.
-     * If outside the root and non-null value that means the html structure is wrong - popover inside popover.
+     * If outside the rootDirective then null, otherwise the rootDirective directive - with optional `true` passed in as the first param.
+     * If outside the rootDirective and non-null value that means the html structure is wrong - tooltip inside tooltip.
      * */
-    protected popoverRoot = injectPopoverRoot(true);
+    protected rootDirective = injectTooltipRoot(true);
     /** @ignore */
     readonly elementRef = inject(ElementRef);
     /** @ignore */
@@ -37,7 +37,7 @@ export class RdxPopoverAnchorDirective {
     readonly document = injectDocument();
 
     /** @ignore */
-    readonly name = computed(() => `rdx-popover-external-anchor-${this.popoverRoot?.uniqueId()}`);
+    readonly name = computed(() => `rdx-tooltip-external-anchor-${this.rootDirective?.uniqueId()}`);
 
     /** @ignore */
     click(): void {
@@ -45,15 +45,12 @@ export class RdxPopoverAnchorDirective {
     }
 
     /** @ignore */
-    setPopoverRoot(popoverRoot: RdxPopoverRootDirective) {
-        this.popoverRoot = popoverRoot;
+    setRoot(root: RdxTooltipRootDirective) {
+        this.rootDirective = root;
     }
 
     private emitOutsideClick() {
-        if (
-            !this.popoverRoot?.isOpen() ||
-            this.popoverRoot?.popoverContentDirective().onOverlayOutsideClickDisabled()
-        ) {
+        if (!this.rootDirective?.isOpen() || this.rootDirective?.contentDirective().onOverlayOutsideClickDisabled()) {
             return;
         }
         const clickEvent = new MouseEvent('click', {
@@ -62,6 +59,6 @@ export class RdxPopoverAnchorDirective {
             cancelable: true,
             relatedTarget: this.elementRef.nativeElement
         });
-        this.popoverRoot?.popoverTriggerDirective().elementRef.nativeElement.dispatchEvent(clickEvent);
+        this.rootDirective?.triggerDirective().elementRef.nativeElement.dispatchEvent(clickEvent);
     }
 }

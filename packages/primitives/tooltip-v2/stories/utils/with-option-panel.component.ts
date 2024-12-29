@@ -11,12 +11,12 @@ import {
     signal
 } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RdxPopoverRootDirective } from '../../src/tooltip-root.directive';
+import { RdxTooltipRootDirective } from '../../src/tooltip-root.directive';
 import { paramsAndEventsOnly } from './styles.constants';
 import { Message } from './types';
 
 @Component({
-    selector: 'popover-with-option-panel',
+    selector: 'tooltip-with-option-panel',
     styles: paramsAndEventsOnly,
     template: `
         <ng-content select=".ParamsContainer" />
@@ -64,7 +64,7 @@ import { Message } from './types';
         <ng-template #messageTpl let-message="message" let-index="index">
             <p class="Message">
                 {{ index }}.
-                <span class="MessageId">[({{ message.timeFromPrev }}ms) POPOVER ID {{ rootUniqueId() }}]</span>
+                <span class="MessageId">[({{ message.timeFromPrev }}ms) TOOLTIP ID {{ rootUniqueId() }}]</span>
                 {{ message.value }}
             </p>
         </ng-template>
@@ -84,12 +84,12 @@ export class WithOptionPanelComponent {
 
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
-    readonly popoverRootDirective = contentChild.required(RdxPopoverRootDirective);
+    readonly rootDirective = contentChild.required(RdxTooltipRootDirective);
 
     readonly paramsContainerCounter = signal(0);
 
     readonly messages = signal<Message[]>([]);
-    readonly rootUniqueId = computed(() => this.popoverRootDirective().uniqueId());
+    readonly rootUniqueId = computed(() => this.rootDirective().uniqueId());
 
     /**
      * There should be only one container. If there is more, en error is thrown.
@@ -110,14 +110,10 @@ export class WithOptionPanelComponent {
     constructor() {
         afterNextRender({
             read: () => {
-                this.popoverRootDirective().popoverContentDirective().onOpen.subscribe(this.onOpen);
-                this.popoverRootDirective().popoverContentDirective().onClosed.subscribe(this.onClose);
-                this.popoverRootDirective()
-                    .popoverContentDirective()
-                    .onOverlayOutsideClick.subscribe(this.onOverlayOutsideClick);
-                this.popoverRootDirective()
-                    .popoverContentDirective()
-                    .onOverlayEscapeKeyDown.subscribe(this.onOverlayEscapeKeyDown);
+                this.rootDirective().contentDirective().onOpen.subscribe(this.onOpen);
+                this.rootDirective().contentDirective().onClosed.subscribe(this.onClose);
+                this.rootDirective().contentDirective().onOverlayOutsideClick.subscribe(this.onOverlayOutsideClick);
+                this.rootDirective().contentDirective().onOverlayEscapeKeyDown.subscribe(this.onOverlayEscapeKeyDown);
 
                 /**
                  * There should be only one container. If there is more, en error is thrown.
@@ -149,24 +145,24 @@ export class WithOptionPanelComponent {
 
     private onOverlayEscapeKeyDown = () => {
         this.addMessage({
-            value: `[PopoverRoot] Escape clicked! (disabled: ${this.onOverlayEscapeKeyDownDisabled()})`,
+            value: `[TooltipRoot] Escape clicked! (disabled: ${this.onOverlayEscapeKeyDownDisabled()})`,
             timeFromPrev: this.timeFromPrev()
         });
     };
 
     private onOverlayOutsideClick = () => {
         this.addMessage({
-            value: `[PopoverRoot] Mouse clicked outside the popover! (disabled: ${this.onOverlayOutsideClickDisabled()})`,
+            value: `[TooltipRoot] Mouse clicked outside the tooltip! (disabled: ${this.onOverlayOutsideClickDisabled()})`,
             timeFromPrev: this.timeFromPrev()
         });
     };
 
     private onOpen = () => {
-        this.addMessage({ value: '[PopoverContent] Open', timeFromPrev: this.timeFromPrev() });
+        this.addMessage({ value: '[TooltipContent] Open', timeFromPrev: this.timeFromPrev() });
     };
 
     private onClose = () => {
-        this.addMessage({ value: '[PopoverContent] Closed', timeFromPrev: this.timeFromPrev() });
+        this.addMessage({ value: '[TooltipContent] Closed', timeFromPrev: this.timeFromPrev() });
     };
 
     protected addMessage = (message: Message) => {
