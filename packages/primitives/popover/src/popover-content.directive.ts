@@ -19,13 +19,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
     getAllPossibleConnectedPositions,
     getContentPosition,
+    RDX_POSITIONING_DEFAULTS,
     RdxPositionAlign,
     RdxPositionSide,
     RdxPositionSideAndAlignOffsets
 } from '@radix-ng/primitives/core';
 import { filter, tap } from 'rxjs';
 import { injectPopoverRoot } from './popover-root.inject';
-import { DEFAULTS } from './popover.constants';
 import { RdxPopoverAttachDetachEvent } from './popover.types';
 
 @Directive({
@@ -282,15 +282,12 @@ export class RdxPopoverContentDirective implements OnInit {
 
     /** @ignore */
     private computePositions() {
-        const greatestDimensionFromTheArrow = Math.max(
-            this.popoverRoot.popoverArrowDirective()?.width() ?? 0,
-            this.popoverRoot.popoverArrowDirective()?.height() ?? 0
-        );
+        const arrowHeight = this.popoverRoot.popoverArrowDirective()?.height() ?? 0;
         const offsets: RdxPositionSideAndAlignOffsets = {
             sideOffset: isNaN(this.sideOffset())
-                ? greatestDimensionFromTheArrow || DEFAULTS.offsets.side
+                ? arrowHeight || RDX_POSITIONING_DEFAULTS.offsets.side
                 : this.sideOffset(),
-            alignOffset: isNaN(this.alignOffset()) ? DEFAULTS.offsets.align : this.alignOffset()
+            alignOffset: isNaN(this.alignOffset()) ? RDX_POSITIONING_DEFAULTS.offsets.align : this.alignOffset()
         };
         const basePosition = getContentPosition({
             side: this.side(),

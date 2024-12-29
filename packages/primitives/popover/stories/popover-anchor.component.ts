@@ -6,9 +6,9 @@ import { RdxPopoverAnchorDirective } from '../src/popover-anchor.directive';
 import { RdxPopoverContentAttributesComponent } from '../src/popover-content-attributes.component';
 import { provideRdxCdkEventService } from '../src/utils/cdk-event.service';
 import { containerAlert } from './utils/constants';
-import { IgnoreClickOutsideContainerBase } from './utils/ignore-click-outside-container-base.class';
+import { OptionPanelBase } from './utils/option-panel-base.class';
 import styles from './utils/styles.constants';
-import { WithEventBaseComponent } from './utils/with-event-base.component';
+import { WithOptionPanelComponent } from './utils/with-option-panel.component';
 
 @Component({
     selector: 'rdx-popover-anchor',
@@ -18,15 +18,19 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
         RdxPopoverModule,
         LucideAngularModule,
         RdxPopoverContentAttributesComponent,
-        WithEventBaseComponent,
+        WithOptionPanelComponent,
         RdxPopoverAnchorDirective
     ],
     styles: styles(),
     template: `
         <p class="ExampleSubtitle">Internal Anchor (within PopoverRoot)</p>
-        <popover-with-event-base
+        <popover-with-option-panel
+            [arrowWidth]="arrowWidth()"
+            [arrowHeight]="arrowHeight()"
             (onOverlayEscapeKeyDownDisabledChange)="onOverlayEscapeKeyDownDisabled.set($event)"
             (onOverlayOutsideClickDisabledChange)="onOverlayOutsideClickDisabled.set($event)"
+            (arrowWidthChange)="arrowWidth.set($event)"
+            (arrowHeightChange)="arrowHeight.set($event)"
         >
             <div class="ContainerAlerts">
                 <lucide-angular [img]="TriangleAlert" size="16" />
@@ -70,18 +74,27 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
                                     <input class="reset Input" id="maxHeight" value="none" />
                                 </fieldset>
                             </div>
-                            <div class="PopoverArrow" rdxPopoverArrow></div>
+                            <div
+                                class="PopoverArrow"
+                                [width]="arrowWidth()"
+                                [height]="arrowHeight()"
+                                rdxPopoverArrow
+                            ></div>
                         </div>
                     </ng-template>
                 </ng-container>
             </div>
             <div class="PopoverId">ID: {{ popoverRootDirective1()?.uniqueId() }}</div>
-        </popover-with-event-base>
+        </popover-with-option-panel>
 
         <p class="ExampleSubtitle">External Anchor (outside PopoverRoot)</p>
-        <popover-with-event-base
+        <popover-with-option-panel
+            [arrowWidth]="arrowWidth()"
+            [arrowHeight]="arrowHeight()"
             (onOverlayEscapeKeyDownDisabledChange)="onOverlayEscapeKeyDownDisabled.set($event)"
             (onOverlayOutsideClickDisabledChange)="onOverlayOutsideClickDisabled.set($event)"
+            (arrowWidthChange)="arrowWidth.set($event)"
+            (arrowHeightChange)="arrowHeight.set($event)"
         >
             <div class="ContainerAlerts">
                 <lucide-angular [img]="TriangleAlert" size="16" />
@@ -125,16 +138,21 @@ import { WithEventBaseComponent } from './utils/with-event-base.component';
                                     <input class="reset Input" id="maxHeight" value="none" />
                                 </fieldset>
                             </div>
-                            <div class="PopoverArrow" rdxPopoverArrow></div>
+                            <div
+                                class="PopoverArrow"
+                                [width]="arrowWidth()"
+                                [height]="arrowHeight()"
+                                rdxPopoverArrow
+                            ></div>
                         </div>
                     </ng-template>
                 </ng-container>
             </div>
             <div class="PopoverId">ID: {{ popoverRootDirective2()?.uniqueId() }}</div>
-        </popover-with-event-base>
+        </popover-with-option-panel>
     `
 })
-export class RdxPopoverAnchorComponent extends IgnoreClickOutsideContainerBase {
+export class RdxPopoverAnchorComponent extends OptionPanelBase {
     readonly popoverRootDirective1 = viewChild('root1');
     readonly popoverRootDirective2 = viewChild('root2');
 

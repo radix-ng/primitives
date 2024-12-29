@@ -1,6 +1,6 @@
 import { NgTemplateOutlet } from '@angular/common';
 import {
-    AfterContentInit,
+    afterNextRender,
     Component,
     computed,
     contentChild,
@@ -11,18 +11,17 @@ import {
     signal
 } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RdxPopoverContentDirective } from '../../src/popover-content.directive';
 import { RdxPopoverRootDirective } from '../../src/popover-root.directive';
 import { paramsAndEventsOnly } from './styles.constants';
 import { Message } from './types';
 
 @Component({
-    selector: 'popover-with-event-base',
+    selector: 'popover-with-option-panel',
     styles: paramsAndEventsOnly,
     template: `
         <ng-content select=".ParamsContainer" />
 
-        @if (paramsContainerCounter() > 1) {
+        @if (paramsContainerCounter() > 2) {
             <hr />
         }
 
@@ -39,6 +38,13 @@ import { Message } from './types';
                 type="checkbox"
             />
             Disable (onOverlayOutsideClick) event
+        </div>
+
+        <div class="ParamsContainer">
+            Arrow width
+            <input [ngModel]="arrowWidth()" (ngModelChange)="arrowWidth.set($event)" type="number" />
+            Arrow height
+            <input [ngModel]="arrowHeight()" (ngModelChange)="arrowHeight.set($event)" type="number" />
         </div>
 
         <ng-content />
@@ -69,13 +75,15 @@ import { Message } from './types';
         NgTemplateOutlet
     ]
 })
-export class WithEventBaseComponent implements AfterContentInit {
+export class WithOptionPanelComponent {
     onOverlayEscapeKeyDownDisabled = model(false);
     onOverlayOutsideClickDisabled = model(false);
 
+    arrowWidth = model<number>(0);
+    arrowHeight = model<number>(0);
+
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
-    readonly popoverContentDirective = contentChild.required(RdxPopoverContentDirective);
     readonly popoverRootDirective = contentChild.required(RdxPopoverRootDirective);
 
     readonly paramsContainerCounter = signal(0);
@@ -99,26 +107,36 @@ export class WithEventBaseComponent implements AfterContentInit {
         return timeFromPrev;
     };
 
-    ngAfterContentInit() {
-        this.popoverContentDirective().onOpen.subscribe(this.onOpen);
-        this.popoverContentDirective().onClosed.subscribe(this.onClose);
-        this.popoverContentDirective().onOverlayOutsideClick.subscribe(this.onOverlayOutsideClick);
-        this.popoverContentDirective().onOverlayEscapeKeyDown.subscribe(this.onOverlayEscapeKeyDown);
+    constructor() {
+        afterNextRender({
+            read: () => {
+                this.popoverRootDirective().popoverContentDirective().onOpen.subscribe(this.onOpen);
+                this.popoverRootDirective().popoverContentDirective().onClosed.subscribe(this.onClose);
+                this.popoverRootDirective()
+                    .popoverContentDirective()
+                    .onOverlayOutsideClick.subscribe(this.onOverlayOutsideClick);
+                this.popoverRootDirective()
+                    .popoverContentDirective()
+                    .onOverlayEscapeKeyDown.subscribe(this.onOverlayEscapeKeyDown);
 
-        /**
-         * There should be only one container. If there is more, en error is thrown.
-         */
-        this.containers = Array.from(this.elementRef.nativeElement?.querySelectorAll('.container') ?? []);
-        if (this.containers.length > 1) {
-            if (isDevMode()) {
-                console.error('<story>.elementRef.nativeElement', this.elementRef.nativeElement);
-                console.error('<story>.containers', this.containers);
-                throw Error('each story should have only one container!');
+                /**
+                 * There should be only one container. If there is more, en error is thrown.
+                 */
+                this.containers = Array.from(this.elementRef.nativeElement?.querySelectorAll('.container') ?? []);
+                if (this.containers.length > 1) {
+                    if (isDevMode()) {
+                        console.error('<story>.elementRef.nativeElement', this.elementRef.nativeElement);
+                        console.error('<story>.containers', this.containers);
+                        throw Error('each story should have only one container!');
+                    }
+                }
+                this.paramsContainers = Array.from(
+                    this.elementRef.nativeElement?.querySelectorAll('.ParamsContainer') ?? []
+                );
+
+                this.paramsContainerCounter.set(this.paramsContainers.length ?? 0);
             }
-        }
-        this.paramsContainers = Array.from(this.elementRef.nativeElement?.querySelectorAll('.ParamsContainer') ?? []);
-
-        this.paramsContainerCounter.set(this.paramsContainers.length ?? 0);
+        });
     }
 
     private inContainers(element: Element) {

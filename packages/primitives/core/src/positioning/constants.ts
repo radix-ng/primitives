@@ -1,4 +1,4 @@
-import { RdxPositionAlign, RdxPositions, RdxPositionSide } from './types';
+import { RdxPositionAlign, RdxPositioningDefaults, RdxPositions, RdxPositionSide } from './types';
 
 export const RDX_POSITIONS: RdxPositions = {
     [RdxPositionSide.Top]: {
@@ -80,5 +80,16 @@ export const RDX_POSITIONS: RdxPositions = {
             overlayX: 'end',
             overlayY: 'bottom'
         }
+    }
+} as const;
+
+export const RDX_POSITIONING_DEFAULTS: RdxPositioningDefaults = {
+    offsets: {
+        side: 10,
+        align: 0
+    },
+    arrow: {
+        width: 8,
+        height: 6
     }
 } as const;

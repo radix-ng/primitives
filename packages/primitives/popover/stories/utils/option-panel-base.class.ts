@@ -1,14 +1,17 @@
 import { afterNextRender, DestroyRef, Directive, ElementRef, inject, signal, viewChildren } from '@angular/core';
-import { injectDocument } from '@radix-ng/primitives/core';
+import { injectDocument, RDX_POSITIONING_DEFAULTS } from '@radix-ng/primitives/core';
 import { RdxPopoverRootDirective } from '../../src/popover-root.directive';
 import { injectRdxCdkEventService } from '../../src/utils/cdk-event.service';
 import { deregisterContainer, registerContainer, setRdxCdkEventService } from './containers.registry';
-import { IIgnoreClickOutsideContainer } from './types';
+import { IArrowDimensions, IIgnoreClickOutsideContainer } from './types';
 
 @Directive()
-export abstract class IgnoreClickOutsideContainerBase implements IIgnoreClickOutsideContainer {
+export abstract class OptionPanelBase implements IIgnoreClickOutsideContainer, IArrowDimensions {
     onOverlayEscapeKeyDownDisabled = signal(false);
     onOverlayOutsideClickDisabled = signal(false);
+
+    arrowWidth = signal(RDX_POSITIONING_DEFAULTS.arrow.width);
+    arrowHeight = signal(RDX_POSITIONING_DEFAULTS.arrow.height);
 
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     readonly destroyRef = inject(DestroyRef);

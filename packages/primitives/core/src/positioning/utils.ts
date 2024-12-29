@@ -86,7 +86,8 @@ export function getArrowPositionParams(
     const posParams: RdxArrowPositionParams = {
         top: '',
         left: '',
-        transform: ''
+        transform: '',
+        transformOrigin: 'center center 0px'
     };
 
     if ([RdxPositionSide.Top, RdxPositionSide.Bottom].includes(sideAndAlign.side)) {
@@ -106,19 +107,21 @@ export function getArrowPositionParams(
         }
     } else if ([RdxPositionSide.Left, RdxPositionSide.Right].includes(sideAndAlign.side)) {
         if (sideAndAlign.side === RdxPositionSide.Left) {
-            posParams.left = `100%`;
-            posParams.transform = `rotate(-90deg) translate(0, -50%)`;
+            posParams.left = `calc(100% - ${arrowWidthAndHeight.width}px)`;
+            posParams.transform = `rotate(-90deg)`;
+            posParams.transformOrigin = 'top right 0px';
         } else {
-            posParams.left = `-${arrowWidthAndHeight.width}px`;
-            posParams.transform = `rotate(90deg) translate(0, -50%)`;
+            posParams.left = `0`;
+            posParams.transform = `rotate(90deg)`;
+            posParams.transformOrigin = 'top left 0px';
         }
 
         if (sideAndAlign.align === RdxPositionAlign.Start) {
-            posParams.top = `${(triggerWidthAndHeight.height - arrowWidthAndHeight.height) / 2}px`;
+            posParams.top = `${(triggerWidthAndHeight.height - arrowWidthAndHeight.width) / 2}px`;
         } else if (sideAndAlign.align === RdxPositionAlign.Center) {
-            posParams.top = `calc(50% - ${arrowWidthAndHeight.height / 2}px)`;
+            posParams.top = `calc(50% - ${arrowWidthAndHeight.width / 2}px)`;
         } else if (sideAndAlign.align === RdxPositionAlign.End) {
-            posParams.top = `calc(100% - ${(triggerWidthAndHeight.height + arrowWidthAndHeight.height) / 2}px)`;
+            posParams.top = `calc(100% - ${(triggerWidthAndHeight.height + arrowWidthAndHeight.width) / 2}px)`;
         }
     }
 
