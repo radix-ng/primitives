@@ -13,7 +13,7 @@ export function getContentPosition(
     sideAndAlignWithOffsets: RdxPositionSideAndAlign & RdxPositionSideAndAlignOffsets
 ): ConnectedPosition {
     const { side, align, sideOffset, alignOffset } = sideAndAlignWithOffsets;
-    const position = {
+    const position: ConnectedPosition = {
         ...(RDX_POSITIONS[side]?.[align] ?? RDX_POSITIONS[RdxPositionSide.Top][RdxPositionAlign.Center])
     };
     if (sideOffset || alignOffset) {
