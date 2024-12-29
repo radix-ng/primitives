@@ -12,6 +12,10 @@ import { injectTooltipRoot } from './tooltip-root.inject';
         '[attr.aria-expanded]': 'rootDirective.isOpen()',
         '[attr.aria-controls]': 'rootDirective.contentDirective().name()',
         '[attr.data-state]': 'rootDirective.state()',
+        '(pointerenter)': 'pointerenter()',
+        '(pointerleave)': 'pointerleave()',
+        '(focus)': 'focus()',
+        '(blur)': 'blur()',
         '(click)': 'click()'
     }
 })
@@ -27,7 +31,27 @@ export class RdxTooltipTriggerDirective {
     readonly name = computed(() => `rdx-tooltip-trigger-${this.rootDirective.uniqueId()}`);
 
     /** @ignore */
+    pointerenter(): void {
+        this.rootDirective.handleOpen();
+    }
+
+    /** @ignore */
+    pointerleave(): void {
+        this.rootDirective.handleClose();
+    }
+
+    /** @ignore */
+    focus(): void {
+        this.rootDirective.handleOpen();
+    }
+
+    /** @ignore */
+    blur(): void {
+        this.rootDirective.handleClose();
+    }
+
+    /** @ignore */
     click(): void {
-        this.rootDirective.handleToggle();
+        this.rootDirective.handleClose();
     }
 }
