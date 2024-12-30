@@ -1,8 +1,21 @@
-export type RdxTooltipConfig = {
-    delayDuration: number;
-    skipDelayDuration: number;
-    disableHoverableContent?: boolean;
-    hideDelayDuration?: number;
-};
+export enum RdxTooltipState {
+    OPEN = 'open',
+    CLOSED = 'closed'
+}
 
-export type RdxTooltipState = 'delayed-open' | 'instant-open' | 'closed';
+export enum RdxTooltipAction {
+    OPEN = 'open',
+    CLOSE = 'close'
+}
+
+export enum RdxTooltipAttachDetachEvent {
+    ATTACH = 'attach',
+    DETACH = 'detach'
+}
+
+export enum RdxTooltipAnimationStatus {
+    OPEN_STARTED = 'open_started',
+    OPEN_ENDED = 'open_ended',
+    CLOSED_STARTED = 'closed_started',
+    CLOSED_ENDED = 'closed_ended'
+}

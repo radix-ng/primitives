@@ -1,5 +1,5 @@
 import { NumberInput } from '@angular/cdk/coercion';
-import { ConnectionPositionPair } from '@angular/cdk/overlay';
+import { ConnectedOverlayPositionChange } from '@angular/cdk/overlay';
 import {
     afterNextRender,
     computed,
@@ -14,14 +14,17 @@ import {
     signal,
     untracked
 } from '@angular/core';
-import { getArrowPositionParams, getSideAndAlignFromAllPossibleConnectedPositions } from '@radix-ng/primitives/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import {
+    getArrowPositionParams,
+    getSideAndAlignFromAllPossibleConnectedPositions,
+    RDX_POSITIONING_DEFAULTS
+} from '@radix-ng/primitives/core';
 import { RdxTooltipArrowToken } from './tooltip-arrow.token';
-import { RdxTooltipContentToken } from './tooltip-content.token';
-import { injectTooltipRoot } from './tooltip-root.directive';
+import { injectTooltipRoot } from './tooltip-root.inject';
 
 @Directive({
     selector: '[rdxTooltipArrow]',
-    standalone: true,
     providers: [
         {
             provide: RdxTooltipArrowToken,
@@ -31,31 +34,23 @@ import { injectTooltipRoot } from './tooltip-root.directive';
 })
 export class RdxTooltipArrowDirective {
     /** @ignore */
-    readonly tooltipRoot = injectTooltipRoot();
-    /** @ignore */
     private readonly renderer = inject(Renderer2);
     /** @ignore */
-    private readonly contentDirective = inject(RdxTooltipContentToken);
+    private readonly rootDirective = injectTooltipRoot();
     /** @ignore */
-    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    readonly elementRef = inject(ElementRef);
 
     /**
-     * The width of the arrow in pixels.
+     * @description The width of the arrow in pixels.
+     * @default 10
      */
-    readonly width = input<number, NumberInput>(10, { transform: numberAttribute });
+    readonly width = input<number, NumberInput>(RDX_POSITIONING_DEFAULTS.arrow.width, { transform: numberAttribute });
 
     /**
-     * The height of the arrow in pixels.
+     * @description The height of the arrow in pixels.
+     * @default 5
      */
-    readonly height = input<number, NumberInput>(5, { transform: numberAttribute });
-
-    /**
-     * @ignore
-     * */
-    private triggerRect: DOMRect;
-
-    /** @ignore */
-    private readonly currentArrowSvgElement = signal<HTMLOrSVGElement | undefined>(void 0);
+    readonly height = input<number, NumberInput>(RDX_POSITIONING_DEFAULTS.arrow.height, { transform: numberAttribute });
 
     /** @ignore */
     readonly arrowSvgElement = computed<HTMLElement>(() => {
@@ -74,6 +69,14 @@ export class RdxTooltipArrowDirective {
         return svgElement;
     });
 
+    /** @ignore */
+    private readonly currentArrowSvgElement = signal<HTMLOrSVGElement | undefined>(void 0);
+    /** @ignore */
+    private readonly position = toSignal(this.rootDirective.contentDirective().positionChange());
+
+    /** @ignore */
+    private anchorOrTriggerRect: DOMRect;
+
     constructor() {
         afterNextRender({
             write: () => {
@@ -85,20 +88,24 @@ export class RdxTooltipArrowDirective {
                 this.renderer.setStyle(this.elementRef.nativeElement, 'fontSize', '0px');
             }
         });
+        this.onArrowSvgElementChangeEffect();
+        this.onContentPositionAndArrowDimensionsChangeEffect();
     }
 
     /** @ignore */
-    private setTriggerRect() {
-        this.triggerRect = this.tooltipRoot.tooltipTriggerDirective().elementRef.nativeElement.getBoundingClientRect();
+    private setAnchorOrTriggerRect() {
+        this.anchorOrTriggerRect = (
+            this.rootDirective.anchorDirective() ?? this.rootDirective.triggerDirective()
+        ).elementRef.nativeElement.getBoundingClientRect();
     }
 
     /** @ignore */
-    private setPosition(position: ConnectionPositionPair, arrowDimensions: { width: number; height: number }) {
-        this.setTriggerRect();
+    private setPosition(position: ConnectedOverlayPositionChange, arrowDimensions: { width: number; height: number }) {
+        this.setAnchorOrTriggerRect();
         const posParams = getArrowPositionParams(
-            getSideAndAlignFromAllPossibleConnectedPositions(position),
+            getSideAndAlignFromAllPossibleConnectedPositions(position.connectionPair),
             { width: arrowDimensions.width, height: arrowDimensions.height },
-            { width: this.triggerRect.width, height: this.triggerRect.height }
+            { width: this.anchorOrTriggerRect.width, height: this.anchorOrTriggerRect.height }
         );
 
         this.renderer.setStyle(this.elementRef.nativeElement, 'top', posParams.top);
@@ -110,29 +117,33 @@ export class RdxTooltipArrowDirective {
     }
 
     /** @ignore */
-    private readonly onArrowSvgElementChangeEffect = effect(() => {
-        const arrowElement = this.arrowSvgElement();
-        untracked(() => {
-            const currentArrowSvgElement = this.currentArrowSvgElement();
-            if (currentArrowSvgElement) {
-                this.renderer.removeChild(this.elementRef.nativeElement, currentArrowSvgElement);
-            }
-            this.currentArrowSvgElement.set(arrowElement);
-            this.renderer.setStyle(this.elementRef.nativeElement, 'width', `${this.width()}px`);
-            this.renderer.setStyle(this.elementRef.nativeElement, 'height', `${this.height()}px`);
-            this.renderer.appendChild(this.elementRef.nativeElement, this.currentArrowSvgElement());
+    private onArrowSvgElementChangeEffect() {
+        effect(() => {
+            const arrowElement = this.arrowSvgElement();
+            untracked(() => {
+                const currentArrowSvgElement = this.currentArrowSvgElement();
+                if (currentArrowSvgElement) {
+                    this.renderer.removeChild(this.elementRef.nativeElement, currentArrowSvgElement);
+                }
+                this.currentArrowSvgElement.set(arrowElement);
+                this.renderer.setStyle(this.elementRef.nativeElement, 'width', `${this.width()}px`);
+                this.renderer.setStyle(this.elementRef.nativeElement, 'height', `${this.height()}px`);
+                this.renderer.appendChild(this.elementRef.nativeElement, this.currentArrowSvgElement());
+            });
         });
-    });
+    }
 
     /** @ignore */
-    private readonly onContentPositionAndArrowDimensionsChangeEffect = effect(() => {
-        const position = this.contentDirective.position();
-        const arrowDimensions = { width: this.width(), height: this.height() };
-        untracked(() => {
-            if (!position) {
-                return;
-            }
-            this.setPosition(position, arrowDimensions);
+    private onContentPositionAndArrowDimensionsChangeEffect() {
+        effect(() => {
+            const position = this.position();
+            const arrowDimensions = { width: this.width(), height: this.height() };
+            untracked(() => {
+                if (!position) {
+                    return;
+                }
+                this.setPosition(position, arrowDimensions);
+            });
         });
-    });
+    }
 }

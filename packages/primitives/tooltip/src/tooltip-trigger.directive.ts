@@ -1,74 +1,57 @@
-import { Directive, ElementRef, inject } from '@angular/core';
-import { injectTooltipRoot } from './tooltip-root.directive';
+import { CdkOverlayOrigin } from '@angular/cdk/overlay';
+import { computed, Directive, ElementRef, inject } from '@angular/core';
+import { injectTooltipRoot } from './tooltip-root.inject';
 
 @Directive({
     selector: '[rdxTooltipTrigger]',
+    hostDirectives: [CdkOverlayOrigin],
     host: {
-        '[attr.data-state]': 'tooltipRoot.state()',
-        '(pointermove)': 'onPointerMove($event)',
-        '(pointerleave)': 'onPointerLeave()',
-        '(pointerdown)': 'onPointerDown()',
-        '(focus)': 'onFocus()',
-        '(blur)': 'onBlur()',
-        '(click)': 'onClick()'
+        type: 'button',
+        '[attr.id]': 'name()',
+        '[attr.aria-haspopup]': '"dialog"',
+        '[attr.aria-expanded]': 'rootDirective.isOpen()',
+        '[attr.aria-controls]': 'rootDirective.contentDirective().name()',
+        '[attr.data-state]': 'rootDirective.state()',
+        '(pointerenter)': 'pointerenter()',
+        '(pointerleave)': 'pointerleave()',
+        '(focus)': 'focus()',
+        '(blur)': 'blur()',
+        '(click)': 'click()'
     }
 })
 export class RdxTooltipTriggerDirective {
     /** @ignore */
-    readonly tooltipRoot = injectTooltipRoot();
+    protected readonly rootDirective = injectTooltipRoot();
     /** @ignore */
-    readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef<HTMLElement>);
+    readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    /** @ignore */
+    readonly overlayOrigin = inject(CdkOverlayOrigin);
 
     /** @ignore */
-    private isPointerDown = false;
-    /** @ignore */
-    private isPointerInside = false;
+    readonly name = computed(() => `rdx-tooltip-trigger-${this.rootDirective.uniqueId()}`);
 
     /** @ignore */
-    onPointerMove(event: PointerEvent): void {
-        if (event.pointerType === 'touch') {
-            return;
-        }
-
-        if (!this.isPointerInside) {
-            this.tooltipRoot.onTriggerEnter();
-            this.isPointerInside = true;
-        }
+    pointerenter(): void {
+        this.rootDirective.handleOpen();
     }
 
     /** @ignore */
-    onPointerLeave(): void {
-        this.isPointerInside = false;
-        this.tooltipRoot.onTriggerLeave();
+    pointerleave(): void {
+        this.rootDirective.handleClose();
     }
 
     /** @ignore */
-    onPointerDown(): void {
-        this.isPointerDown = true;
-
-        this.elementRef.nativeElement.addEventListener(
-            'pointerup',
-            () => {
-                this.isPointerDown = false;
-            },
-            { once: true }
-        );
+    focus(): void {
+        this.rootDirective.handleOpen();
     }
 
     /** @ignore */
-    onFocus(): void {
-        if (!this.isPointerDown) {
-            this.tooltipRoot.handleOpen();
-        }
+    blur(): void {
+        this.rootDirective.handleClose();
     }
 
     /** @ignore */
-    onBlur(): void {
-        this.tooltipRoot.handleClose();
-    }
-
-    /** @ignore */
-    onClick(): void {
-        this.tooltipRoot.handleClose();
+    click(): void {
+        this.rootDirective.handleClose();
     }
 }

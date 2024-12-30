@@ -1,175 +1,200 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Plus } from 'lucide-angular';
+import { LucideAngularModule, MountainSnow, TriangleAlert, X } from 'lucide-angular';
 import { RdxTooltipModule } from '../index';
+import { RdxTooltipContentAttributesComponent } from '../src/tooltip-content-attributes.component';
+import { provideRdxCdkEventService } from '../src/utils/cdk-event.service';
+import { containerAlert } from './utils/constants';
+import { OptionPanelBase } from './utils/option-panel-base.class';
+import styles from './utils/styles.constants';
+import { WithOptionPanelComponent } from './utils/with-option-panel.component';
 
 @Component({
     selector: 'rdx-tooltip-triggering',
+    providers: [provideRdxCdkEventService()],
     imports: [
         FormsModule,
         RdxTooltipModule,
-        LucideAngularModule
+        LucideAngularModule,
+        RdxTooltipContentAttributesComponent,
+        WithOptionPanelComponent
     ],
-    styles: `
-        .container {
-            height: 150px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* reset */
-        button {
-            all: unset;
-        }
-
-        .TooltipContent {
-            border-radius: 4px;
-            padding: 10px 15px;
-            font-size: 15px;
-            line-height: 1;
-            color: var(--violet-11);
-            background-color: white;
-            box-shadow:
-                hsl(206 22% 7% / 35%) 0px 10px 38px -10px,
-                hsl(206 22% 7% / 20%) 0px 10px 20px -15px;
-            user-select: none;
-            animation-duration: 400ms;
-            animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-            will-change: transform, opacity;
-        }
-        .TooltipContent[data-state='delayed-open'][data-side='top'] {
-            animation-name: slideDownAndFade;
-        }
-        .TooltipContent[data-state='delayed-open'][data-side='right'] {
-            animation-name: slideLeftAndFade;
-        }
-        .TooltipContent[data-state='delayed-open'][data-side='bottom'] {
-            animation-name: slideUpAndFade;
-        }
-        .TooltipContent[data-state='delayed-open'][data-side='left'] {
-            animation-name: slideRightAndFade;
-        }
-
-        .TooltipArrow {
-            fill: white;
-        }
-
-        .IconButton {
-            font-family: inherit;
-            border-radius: 100%;
-            height: 35px;
-            width: 35px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--violet-11);
-            background-color: white;
-            box-shadow: 0 2px 10px var(--black-a7);
-        }
-        .IconButton:hover {
-            background-color: var(--violet-3);
-        }
-        .IconButton:focus {
-            box-shadow: 0 0 0 2px black;
-        }
-
-        @keyframes slideUpAndFade {
-            from {
-                opacity: 0;
-                transform: translateY(2px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideRightAndFade {
-            from {
-                opacity: 0;
-                transform: translateX(-2px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes slideDownAndFade {
-            from {
-                opacity: 0;
-                transform: translateY(-2px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideLeftAndFade {
-            from {
-                opacity: 0;
-                transform: translateX(2px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        /* =============== Trigger layout =============== */
-
-        .TriggerContainer {
-            display: flex;
-            column-gap: 8px;
-            color: var(--white-a12);
-            margin-bottom: 32px;
-            align-items: baseline;
-
-            button {
-                color: var(--violet-11);
-                background-color: white;
-                box-shadow: 0 2px 10px var(--black-a7);
-                padding: 4px 8px;
-                border-radius: 4px;
-            }
-        }
-    `,
+    styles: styles(),
     template: `
-        <div class="TriggerContainer">
-            <button (click)="trigger()" type="button">Open: {{ isOpen() }}</button>
-            <span>onOpenChange count: {{ counter() }}</span>
-        </div>
-        <div class="container">
-            <ng-container [open]="isOpen()" (onOpenChange)="count()" rdxTooltipRoot>
-                <button class="IconButton" #triggerElement rdxTooltipTrigger>
-                    <lucide-angular [img]="PlusIcon" size="16" style="display: flex" />
-                </button>
+        <p class="ExampleSubtitle">Initially closed</p>
+        <tooltip-with-option-panel
+            [arrowWidth]="arrowWidth()"
+            [arrowHeight]="arrowHeight()"
+            [openDelay]="openDelay()"
+            [closeDelay]="closeDelay()"
+            (onOverlayEscapeKeyDownDisabledChange)="onOverlayEscapeKeyDownDisabled.set($event)"
+            (onOverlayOutsideClickDisabledChange)="onOverlayOutsideClickDisabled.set($event)"
+            (arrowWidthChange)="arrowWidth.set($event)"
+            (arrowHeightChange)="arrowHeight.set($event)"
+            (openDelayChange)="openDelay.set($event)"
+            (closeDelayChange)="closeDelay.set($event)"
+        >
+            <div class="ParamsContainer">
+                <button (mouseup)="triggerOpenFalse()" type="button">Open: {{ isOpenFalse() }}</button>
+                onOpenChange count: {{ counterOpenFalse() }}
+            </div>
 
-                <ng-template [sideOffset]="8" rdxTooltipContent>
-                    <div class="TooltipContent" rdxTooltipContentAttributes>
-                        Add to library
-                        <br />
-                        or do nothing
-                        <div class="TooltipArrow" rdxTooltipArrow></div>
-                    </div>
-                </ng-template>
-            </ng-container>
-        </div>
+            <div class="ParamsContainer">
+                <input
+                    [ngModel]="externalControlFalse()"
+                    (ngModelChange)="externalControlFalse.set($event)"
+                    type="checkbox"
+                />
+                External control
+            </div>
+
+            <div class="ContainerAlerts">
+                <lucide-angular [img]="TriangleAlert" size="16" />
+                {{ containerAlert }}
+            </div>
+            <div class="container">
+                <ng-container
+                    #root1="rdxTooltipRoot"
+                    [open]="isOpenFalse()"
+                    [openDelay]="openDelay()"
+                    [closeDelay]="closeDelay()"
+                    [externalControl]="externalControlFalse()"
+                    rdxTooltipRoot
+                >
+                    <button class="reset IconButton" rdxTooltipTrigger>
+                        <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
+                    </button>
+
+                    <ng-template
+                        [sideOffset]="8"
+                        [onOverlayEscapeKeyDownDisabled]="onOverlayEscapeKeyDownDisabled()"
+                        [onOverlayOutsideClickDisabled]="onOverlayOutsideClickDisabled()"
+                        (onOpen)="countOpenFalse(true)"
+                        (onClosed)="countOpenFalse(false)"
+                        rdxTooltipContent
+                    >
+                        <div class="TooltipContent" rdxTooltipContentAttributes>
+                            <button class="reset TooltipClose" rdxTooltipClose aria-label="Close">
+                                <lucide-angular [img]="XIcon" size="12" style="display: flex" />
+                            </button>
+                            Add to library
+                            <div
+                                class="TooltipArrow"
+                                [width]="arrowWidth()"
+                                [height]="arrowHeight()"
+                                rdxTooltipArrow
+                            ></div>
+                        </div>
+                    </ng-template>
+                </ng-container>
+            </div>
+            <div class="TooltipId">ID: {{ rootDirective1()?.uniqueId() }}</div>
+        </tooltip-with-option-panel>
+
+        <p class="ExampleSubtitle">Initially open</p>
+        <tooltip-with-option-panel
+            [arrowWidth]="arrowWidth()"
+            [arrowHeight]="arrowHeight()"
+            [openDelay]="openDelay()"
+            [closeDelay]="closeDelay()"
+            (onOverlayEscapeKeyDownDisabledChange)="onOverlayEscapeKeyDownDisabled.set($event)"
+            (onOverlayOutsideClickDisabledChange)="onOverlayOutsideClickDisabled.set($event)"
+            (arrowWidthChange)="arrowWidth.set($event)"
+            (arrowHeightChange)="arrowHeight.set($event)"
+            (openDelayChange)="openDelay.set($event)"
+            (closeDelayChange)="closeDelay.set($event)"
+        >
+            <div class="ParamsContainer">
+                <button (mouseup)="triggerOpenTrue()" type="button">Open: {{ isOpenTrue() }}</button>
+                <span>onOpenChange count: {{ counterOpenTrue() }}</span>
+            </div>
+
+            <div class="ParamsContainer">
+                <input
+                    [ngModel]="externalControlTrue()"
+                    (ngModelChange)="externalControlTrue.set($event)"
+                    type="checkbox"
+                />
+                External control
+            </div>
+
+            <div class="ContainerAlerts">
+                <lucide-angular [img]="TriangleAlert" size="16" />
+                {{ containerAlert }}
+            </div>
+            <div class="container">
+                <ng-container
+                    #root2="rdxTooltipRoot"
+                    [open]="isOpenTrue()"
+                    [openDelay]="openDelay()"
+                    [closeDelay]="closeDelay()"
+                    [externalControl]="externalControlTrue()"
+                    rdxTooltipRoot
+                >
+                    <button class="reset IconButton" rdxTooltipTrigger>
+                        <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
+                    </button>
+
+                    <ng-template
+                        [sideOffset]="8"
+                        [onOverlayEscapeKeyDownDisabled]="onOverlayEscapeKeyDownDisabled()"
+                        [onOverlayOutsideClickDisabled]="onOverlayOutsideClickDisabled()"
+                        (onOpen)="countOpenTrue(true)"
+                        (onClosed)="countOpenTrue(false)"
+                        rdxTooltipContent
+                    >
+                        <div class="TooltipContent" rdxTooltipContentAttributes>
+                            <button class="reset TooltipClose" rdxTooltipClose aria-label="Close">
+                                <lucide-angular [img]="XIcon" size="12" style="display: flex" />
+                            </button>
+                            Add to library
+                            <div
+                                class="TooltipArrow"
+                                [width]="arrowWidth()"
+                                [height]="arrowHeight()"
+                                rdxTooltipArrow
+                            ></div>
+                        </div>
+                    </ng-template>
+                </ng-container>
+            </div>
+            <div class="TooltipId">ID: {{ rootDirective2()?.uniqueId() }}</div>
+        </tooltip-with-option-panel>
     `
 })
-export class RdxTooltipTriggeringComponent {
-    readonly PlusIcon = Plus;
+export class RdxTooltipTriggeringComponent extends OptionPanelBase {
+    readonly rootDirective1 = viewChild('root1');
+    readonly rootDirective2 = viewChild('root2');
 
-    isOpen = signal(false);
-    counter = signal(0);
+    readonly MountainSnowIcon = MountainSnow;
+    readonly XIcon = X;
 
-    trigger(): void {
-        this.isOpen.update((value) => !value);
+    isOpenFalse = signal(false);
+    counterOpenFalse = signal(0);
+    externalControlFalse = signal(true);
+
+    isOpenTrue = signal(true);
+    counterOpenTrue = signal(0);
+    externalControlTrue = signal(true);
+
+    triggerOpenFalse(): void {
+        this.isOpenFalse.update((value) => !value);
     }
 
-    count(): void {
-        this.counter.update((value) => value + 1);
+    countOpenFalse(open: boolean): void {
+        this.isOpenFalse.set(open);
+        this.counterOpenFalse.update((value) => value + 1);
     }
+
+    triggerOpenTrue(): void {
+        this.isOpenTrue.update((value) => !value);
+    }
+
+    countOpenTrue(open: boolean): void {
+        this.isOpenTrue.set(open);
+        this.counterOpenTrue.update((value) => value + 1);
+    }
+
+    protected readonly containerAlert = containerAlert;
+    protected readonly TriangleAlert = TriangleAlert;
 }
