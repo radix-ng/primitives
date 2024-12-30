@@ -16,19 +16,19 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounce, map, Subject, tap, timer } from 'rxjs';
-import { RdxTooltipAnchorDirective } from './tooltip-anchor.directive';
-import { RdxTooltipAnchorToken } from './tooltip-anchor.token';
-import { RdxTooltipArrowToken } from './tooltip-arrow.token';
-import { RdxTooltipCloseToken } from './tooltip-close.token';
-import { RdxTooltipContentAttributesToken } from './tooltip-content-attributes.token';
-import { RdxTooltipContentDirective } from './tooltip-content.directive';
-import { RdxTooltipTriggerDirective } from './tooltip-trigger.directive';
+import { RdxTooltipAnchorDirective } from './hover-card-anchor.directive';
+import { RdxTooltipAnchorToken } from './hover-card-anchor.token';
+import { RdxTooltipArrowToken } from './hover-card-arrow.token';
+import { RdxTooltipCloseToken } from './hover-card-close.token';
+import { RdxTooltipContentAttributesToken } from './hover-card-content-attributes.token';
+import { RdxTooltipContentDirective } from './hover-card-content.directive';
+import { RdxTooltipTriggerDirective } from './hover-card-trigger.directive';
 import {
     RdxTooltipAction,
     RdxTooltipAnimationStatus,
     RdxTooltipAttachDetachEvent,
     RdxTooltipState
-} from './tooltip.types';
+} from './hover-card.types';
 import { injectRdxCdkEventService } from './utils/cdk-event.service';
 
 let nextId = 0;

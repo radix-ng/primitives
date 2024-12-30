@@ -1,6 +1,6 @@
 import { Directive, effect, ElementRef, forwardRef, inject, Renderer2, untracked } from '@angular/core';
-import { RdxTooltipCloseToken } from './tooltip-close.token';
-import { injectTooltipRoot } from './tooltip-root.inject';
+import { RdxTooltipCloseToken } from './hover-card-close.token';
+import { injectTooltipRoot } from './hover-card-root.inject';
 
 /**
  * TODO: to be removed? But it seems to be useful when controlled from outside

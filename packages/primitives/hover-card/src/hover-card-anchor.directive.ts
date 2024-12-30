@@ -1,9 +1,9 @@
 import { CdkOverlayOrigin } from '@angular/cdk/overlay';
 import { computed, Directive, ElementRef, forwardRef, inject } from '@angular/core';
 import { injectDocument } from '@radix-ng/primitives/core';
-import { RdxTooltipAnchorToken } from './tooltip-anchor.token';
-import { RdxTooltipRootDirective } from './tooltip-root.directive';
-import { injectTooltipRoot } from './tooltip-root.inject';
+import { RdxTooltipAnchorToken } from './hover-card-anchor.token';
+import { RdxTooltipRootDirective } from './hover-card-root.directive';
+import { injectTooltipRoot } from './hover-card-root.inject';
 
 @Directive({
     selector: '[rdxTooltipAnchor]',

@@ -11,7 +11,7 @@ import {
     signal
 } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RdxTooltipRootDirective } from '../../src/tooltip-root.directive';
+import { RdxTooltipRootDirective } from '../../src/hover-card-root.directive';
 import { paramsAndEventsOnly } from './styles.constants';
 import { Message } from './types';
 

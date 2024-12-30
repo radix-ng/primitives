@@ -20,8 +20,8 @@ import {
     getSideAndAlignFromAllPossibleConnectedPositions,
     RDX_POSITIONING_DEFAULTS
 } from '@radix-ng/primitives/core';
-import { RdxTooltipArrowToken } from './tooltip-arrow.token';
-import { injectTooltipRoot } from './tooltip-root.inject';
+import { RdxTooltipArrowToken } from './hover-card-arrow.token';
+import { injectTooltipRoot } from './hover-card-root.inject';
 
 @Directive({
     selector: '[rdxTooltipArrow]',

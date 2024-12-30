@@ -1,8 +1,8 @@
 import { Component, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, MountainSnow, TriangleAlert, X } from 'lucide-angular';
-import { RdxTooltipModule, RdxTooltipRootDirective } from '../index';
-import { RdxTooltipContentAttributesComponent } from '../src/tooltip-content-attributes.component';
+import { RdxHoverCardModule, RdxTooltipRootDirective } from '../index';
+import { RdxTooltipContentAttributesComponent } from '../src/hover-card-content-attributes.component';
 import { provideRdxCdkEventService } from '../src/utils/cdk-event.service';
 import { containerAlert } from './utils/constants';
 import { OptionPanelBase } from './utils/option-panel-base.class';
@@ -14,7 +14,7 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
     providers: [provideRdxCdkEventService()],
     imports: [
         FormsModule,
-        RdxTooltipModule,
+        RdxHoverCardModule,
         LucideAngularModule,
         RdxTooltipContentAttributesComponent,
         WithOptionPanelComponent

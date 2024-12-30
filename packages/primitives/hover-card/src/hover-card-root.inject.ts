@@ -1,5 +1,5 @@
 import { assertInInjectionContext, inject, isDevMode } from '@angular/core';
-import { RdxTooltipRootDirective } from './tooltip-root.directive';
+import { RdxTooltipRootDirective } from './hover-card-root.directive';
 
 export function injectTooltipRoot(optional?: false): RdxTooltipRootDirective;
 export function injectTooltipRoot(optional: true): RdxTooltipRootDirective | null;

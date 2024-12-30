@@ -2,8 +2,8 @@ import { Component, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RdxPositionAlign, RdxPositionSide } from '@radix-ng/primitives/core';
 import { LucideAngularModule, MountainSnow, TriangleAlert, X } from 'lucide-angular';
-import { RdxTooltipModule } from '../index';
-import { RdxTooltipContentAttributesComponent } from '../src/tooltip-content-attributes.component';
+import { RdxHoverCardModule } from '../index';
+import { RdxTooltipContentAttributesComponent } from '../src/hover-card-content-attributes.component';
 import { provideRdxCdkEventService } from '../src/utils/cdk-event.service';
 import { containerAlert } from './utils/constants';
 import { OptionPanelBase } from './utils/option-panel-base.class';
@@ -15,7 +15,7 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
     providers: [provideRdxCdkEventService()],
     imports: [
         FormsModule,
-        RdxTooltipModule,
+        RdxHoverCardModule,
         LucideAngularModule,
         RdxTooltipContentAttributesComponent,
         WithOptionPanelComponent

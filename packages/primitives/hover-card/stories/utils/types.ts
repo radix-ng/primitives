@@ -1,5 +1,5 @@
 import { DestroyRef, ElementRef, Signal } from '@angular/core';
-import { RdxTooltipRootDirective } from '../../src/tooltip-root.directive';
+import { RdxTooltipRootDirective } from '../../src/hover-card-root.directive';
 import { injectRdxCdkEventService } from '../../src/utils/cdk-event.service';
 
 export interface IIgnoreClickOutsideContainer {

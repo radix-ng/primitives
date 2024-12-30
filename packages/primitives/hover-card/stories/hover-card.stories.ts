@@ -1,15 +1,15 @@
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { LucideAngularModule, MountainSnow, X } from 'lucide-angular';
-import { RdxTooltipModule } from '../index';
-import { RdxTooltipAnchorComponent } from './tooltip-anchor.component';
-import { RdxTooltipAnimationsComponent } from './tooltip-animations.component';
-import { RdxTooltipDefaultComponent } from './tooltip-default.component';
-import { RdxTooltipEventsComponent } from './tooltip-events.components';
-import { RdxTooltipInitiallyOpenComponent } from './tooltip-initially-open.component';
-import { RdxTooltipMultipleComponent } from './tooltip-multiple.component';
-import { RdxTooltipPositioningComponent } from './tooltip-positioning.component';
-import { RdxTooltipTriggeringComponent } from './tooltip-triggering.component';
+import { RdxHoverCardModule } from '../index';
+import { RdxTooltipAnchorComponent } from './hover-card-anchor.component';
+import { RdxTooltipAnimationsComponent } from './hover-card-animations.component';
+import { RdxTooltipDefaultComponent } from './hover-card-default.component';
+import { RdxTooltipEventsComponent } from './hover-card-events.components';
+import { RdxTooltipInitiallyOpenComponent } from './hover-card-initially-open.component';
+import { RdxTooltipMultipleComponent } from './hover-card-multiple.component';
+import { RdxTooltipPositioningComponent } from './hover-card-positioning.component';
+import { RdxTooltipTriggeringComponent } from './hover-card-triggering.component';
 
 const html = String.raw;
 
@@ -18,7 +18,7 @@ export default {
     decorators: [
         moduleMetadata({
             imports: [
-                RdxTooltipModule,
+                RdxHoverCardModule,
                 RdxTooltipDefaultComponent,
                 RdxTooltipEventsComponent,
                 RdxTooltipPositioningComponent,

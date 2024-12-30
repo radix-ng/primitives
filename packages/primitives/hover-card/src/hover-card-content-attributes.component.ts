@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, forwardRef } from '@angular/core';
-import { RdxTooltipContentAttributesToken } from './tooltip-content-attributes.token';
-import { injectTooltipRoot } from './tooltip-root.inject';
-import { RdxTooltipAnimationStatus, RdxTooltipState } from './tooltip.types';
+import { RdxTooltipContentAttributesToken } from './hover-card-content-attributes.token';
+import { injectTooltipRoot } from './hover-card-root.inject';
+import { RdxTooltipAnimationStatus, RdxTooltipState } from './hover-card.types';
 
 @Component({
     selector: '[rdxTooltipContentAttributes]',

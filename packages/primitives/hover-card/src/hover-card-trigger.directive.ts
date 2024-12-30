@@ -1,6 +1,6 @@
 import { CdkOverlayOrigin } from '@angular/cdk/overlay';
 import { computed, Directive, ElementRef, inject } from '@angular/core';
-import { injectTooltipRoot } from './tooltip-root.inject';
+import { injectTooltipRoot } from './hover-card-root.inject';
 
 @Directive({
     selector: '[rdxTooltipTrigger]',

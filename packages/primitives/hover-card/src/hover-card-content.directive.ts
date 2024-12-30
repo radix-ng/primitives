@@ -25,8 +25,8 @@ import {
     RdxPositionSideAndAlignOffsets
 } from '@radix-ng/primitives/core';
 import { filter, tap } from 'rxjs';
-import { injectTooltipRoot } from './tooltip-root.inject';
-import { RdxTooltipAttachDetachEvent } from './tooltip.types';
+import { injectTooltipRoot } from './hover-card-root.inject';
+import { RdxTooltipAttachDetachEvent } from './hover-card.types';
 
 @Directive({
     selector: '[rdxTooltipContent]',
