@@ -1,4 +1,4 @@
-import { computed, Directive, inject, input, model, OnInit, signal } from '@angular/core';
+import { computed, Directive, effect, inject, input, model, signal } from '@angular/core';
 import classNames from 'classnames';
 import { ThemeService } from './theme.service';
 
@@ -16,7 +16,7 @@ import { ThemeService } from './theme.service';
         '[class]': 'computedClass()'
     }
 })
-export class RdxThemeDirective implements OnInit {
+export class RdxThemeDirective {
     private readonly themeService = inject(ThemeService);
 
     readonly class = input<string>();
@@ -40,16 +40,14 @@ export class RdxThemeDirective implements OnInit {
 
     isRoot = model<boolean>(false);
 
-    ngOnInit() {
-        this.applyTheme();
-    }
-
-    private applyTheme() {
-        this.themeService.setAppearance(this.appearance());
-        this.themeService.setAccentColor(this.accentColor());
-        this.themeService.setGrayColor(this.grayColor());
-        this.themeService.setPanelBackground(this.panelBackground());
-        this.themeService.setRadius(this.radius());
-        this.themeService.setScaling(this.scaling());
+    constructor() {
+        effect(() => {
+            this.themeService.setAppearance(this.appearance());
+            this.themeService.setAccentColor(this.accentColor());
+            this.themeService.setGrayColor(this.grayColor());
+            this.themeService.setPanelBackground(this.panelBackground());
+            this.themeService.setRadius(this.radius());
+            this.themeService.setScaling(this.scaling());
+        });
     }
 }
