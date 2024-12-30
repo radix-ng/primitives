@@ -1,39 +1,39 @@
 const appliedAnimations = `
-.TooltipContent[data-state='open'][data-side='top'] {
+.HoverCardContent[data-state='open'][data-side='top'] {
     animation-name: rdxSlideDownAndFade;
 }
 
-.TooltipContent[data-state='open'][data-side='right'] {
+.HoverCardContent[data-state='open'][data-side='right'] {
     animation-name: rdxSlideLeftAndFade;
 }
 
-.TooltipContent[data-state='open'][data-side='bottom'] {
+.HoverCardContent[data-state='open'][data-side='bottom'] {
     animation-name: rdxSlideUpAndFade;
 }
 
-.TooltipContent[data-state='open'][data-side='left'] {
+.HoverCardContent[data-state='open'][data-side='left'] {
     animation-name: rdxSlideRightAndFade;
 }
 
-.TooltipContent[data-state='closed'][data-side='top'] {
+.HoverCardContent[data-state='closed'][data-side='top'] {
     animation-name: rdxSlideDownAndFadeReverse;
 }
 
-.TooltipContent[data-state='closed'][data-side='right'] {
+.HoverCardContent[data-state='closed'][data-side='right'] {
     animation-name: rdxSlideLeftAndFadeReverse;
 }
 
-.TooltipContent[data-state='closed'][data-side='bottom'] {
+.HoverCardContent[data-state='closed'][data-side='bottom'] {
     animation-name: rdxSlideUpAndFadeReverse;
 }
 
-.TooltipContent[data-state='closed'][data-side='left'] {
+.HoverCardContent[data-state='closed'][data-side='left'] {
     animation-name: rdxSlideRightAndFadeReverse;
 }
 `;
 
 const animationParams = `
-.TooltipContent {
+.HoverCardContent {
     animation-duration: 400ms;
     animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
     will-change: transform, opacity;
@@ -168,7 +168,7 @@ const params = `
 function styles(withAnimations = false, withEvents = false, withParams = true) {
     return `
 .container {
-    height: 150px;
+    height: 600px;
     display: flex;
     justify-content: center;
     gap: 80px;
@@ -212,7 +212,7 @@ function styles(withAnimations = false, withEvents = false, withParams = true) {
     }
 }
 
-.TooltipId {
+.HoverCardId {
     color: var(--white-a12);
     font-size: 12px;
     line-height: 14px;
@@ -220,52 +220,88 @@ function styles(withAnimations = false, withEvents = false, withParams = true) {
     margin: 1px 0 24px 22px;
 }
 
-.TooltipContent {
+.HoverCardContent {
     border-radius: 4px;
-    padding: 10px 15px;
-    font-size: 15px;
-    line-height: 1;
+    padding: 20px;
+    width: 300px;
     background-color: white;
     box-shadow:
         hsl(206 22% 7% / 35%) 0px 10px 38px -10px,
         hsl(206 22% 7% / 20%) 0px 10px 20px -15px;
 }
 
+.ImageTrigger {
+    cursor: pointer;
+    border-radius: 100%;
+    display: inline-block;
+}
+.ImageTrigger:focus {
+    box-shadow: 0 0 0 2px white;
+}
+
+.Image {
+    display: block;
+    border-radius: 100%;
+}
+.Image.normal {
+    width: 45px;
+    height: 45px;
+}
+.Image.large {
+    width: 60px;
+    height: 60px;
+}
+
+.Text {
+    margin: 0;
+    color: var(--mauve-12);
+    font-size: 15px;
+    line-height: 1.5;
+
+    &.bold {
+        font-weight: 700;
+    }
+
+    &.faded {
+        color: var(--mauve-10);
+    }
+}
+
+
 ${withAnimations ? animationParams : ''}
 
 ${withAnimations ? appliedAnimations : ''}
 
-.TooltipContent:focus {
+.HoverCardContent:focus {
     box-shadow:
         hsl(206 22% 7% / 35%) 0px 10px 38px -10px,
         hsl(206 22% 7% / 20%) 0px 10px 20px -15px,
         0 0 0 2px var(--violet-7);
 }
 
-.TooltipArrow {
+.HoverCardArrow {
     fill: white;
 }
 
-.TooltipClose {
+.HoverCardClose {
     font-family: inherit;
     border-radius: 100%;
-    background-color: var(--white-a12);
-    height: 14px;
-    width: 14px;
+    height: 25px;
+    width: 25px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     color: var(--violet-11);
     position: absolute;
-    top: -12px;
-    right: -12px;
+    top: 5px;
+    right: 5px;
 }
 
-.TooltipClose:hover {
+.HoverCardClose:hover {
     background-color: var(--violet-4);
 }
 
-.TooltipClose:focus {
+.HoverCardClose:focus {
     box-shadow: 0 0 0 2px var(--violet-7);
 }
 

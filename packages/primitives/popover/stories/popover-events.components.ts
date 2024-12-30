@@ -38,7 +38,7 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
             </div>
             <div class="container">
                 <ng-container rdxPopoverRoot>
-                    <button class="reset IconButton" #triggerElement rdxPopoverTrigger>
+                    <button class="reset IconButton" rdxPopoverTrigger>
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                     </button>
 

@@ -65,7 +65,8 @@ const config = {
                 'build',
                 'theme',
                 'themer',
-                'popover'
+                'popover',
+                'hover-card'
             ]
         ]
     }

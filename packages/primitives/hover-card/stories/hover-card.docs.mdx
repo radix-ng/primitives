@@ -1,0 +1,159 @@
+import {ArgTypes, Canvas, Markdown, Meta, Source} from '@storybook/blocks';
+import * as HoverCardStories from "./hover-card.stories";
+import {RdxHoverCardRootDirective} from "../src/hover-card-root.directive";
+import {RdxHoverCardContentDirective} from "../src/hover-card-content.directive";
+import {RdxHoverCardArrowDirective} from "../src/hover-card-arrow.directive";
+import {RdxHoverCardAnchorDirective} from "../src/hover-card-anchor.directive";
+import {RdxHoverCardTriggerDirective} from "../src/hover-card-trigger.directive";
+import {RdxHoverCardCloseDirective} from "../src/hover-card-close.directive";
+import {animationStylesOnly} from "./utils/styles.constants";
+import {RdxHoverCardContentAttributesComponent} from "../src/hover-card-content-attributes.component";
+
+<Meta title="Primitives/Hover Card" />
+
+# Hover Card
+
+#### For sighted users to preview content available behind a link.
+
+<br />
+<br />
+
+## Examples
+### Default
+
+<Canvas sourceState="hidden" of={HoverCardStories.Default} />
+
+### Multiple
+
+<Canvas sourceState="hidden" of={HoverCardStories.Multiple} />
+
+### Events
+
+<Canvas sourceState="hidden" of={HoverCardStories.Events} />
+
+### Positioning
+
+<Canvas sourceState="hidden" of={HoverCardStories.Positioning} />
+
+### External Triggering
+
+<Canvas sourceState="hidden" of={HoverCardStories.ExternalTriggering} />
+
+### Anchor
+
+<Canvas sourceState="hidden" of={HoverCardStories.Anchor} />
+
+### Initially Open
+
+<Canvas sourceState="hidden" of={HoverCardStories.InitiallyOpen} />
+
+### Animations
+
+<Canvas sourceState="hidden" of={HoverCardStories.Animations} />
+
+### Animation Styles
+
+<Source type="code" language="css" code={`${animationStylesOnly}`} />
+
+
+## Features
+
+- ✅ Opens when the trigger is clicked.
+- ✅ Closes when the trigger is clicked again or when pressing escape.
+- ✅ Controllable from outside.
+
+## Anatomy
+
+```html
+<ng-container rdxHoverCardRoot>
+    <button class="IconButton" rdxHoverCardTrigger>+</button>
+
+    <ng-template rdxHoverCardContent>
+        <div class="HoverCardContent" rdxHoverCardContentAttributes>
+            <button class="HoverCardClose" rdxHoverCardClose aria-label="Close">X</button>
+            Hover Card Content
+            <div class="HoverCardArrow" rdxHoverCardArrow></div>
+        </div>
+    </ng-template>
+</ng-container>
+```
+
+## Import
+
+Get started with importing the directives:
+
+<Source type="code" language="typescript" code={`import {
+  RdxHoverCardRootDirective,
+  RdxHoverCardRootTrigger,
+  RdxHoverCardContentDirective,
+  RdxHoverCardArrowDirective,
+  RdxHoverCardAnchorDirective,
+  RdxHoverCardCloseDirective
+} from '@radix-ng/primitives/hover-card';`} />
+
+or
+
+<Source type="code" language="typescript" code={`import { RdxHoverCardModule } from '@radix-ng/primitives/hover-card';`} />
+
+## API Reference
+
+### Root
+`RdxHoverCardRootDirective`
+
+Contains all the parts of a hover-card.
+
+<ArgTypes of={RdxHoverCardRootDirective} />
+
+### Trigger
+`RdxHoverCardTriggerDirective`
+
+The button that toggles the hover-card. By default, the HoverCardContent will position itself against the trigger.
+
+<Markdown>
+{`
+| Data attribute | Value          |
+|----------------|----------------|
+| [data-state]   | <code>"closed" | "open" (type RdxHoverCardState)</code>
+`}
+</Markdown>
+
+### Anchor
+`RdxHoverCardAnchorDirective`
+
+An optional element to position the HoverCardContent against. If this part is not used, the content will position alongside the HoverCardTrigger.
+
+### Content
+`RdxHoverCardContentDirective`
+
+The component that pops out when the hover-card is open.
+
+<ArgTypes of={RdxHoverCardContentDirective} />
+
+### Content Attributes
+`RdxHoverCardContentAttributesComponent`
+
+A component with the content attributes that are necessary to run animations.
+
+<ArgTypes of={RdxHoverCardContentAttributesComponent} />
+
+<Markdown>
+{`
+| Data attribute | Value          |
+|----------------|----------------|
+| [data-state]   | <code>"closed" | "open" (enum RdxHoverCardState)</code>
+| [data-side]    | <code>"left"   | "right" | "bottom" | "top" (enum RdxPositionSide)</code>
+| [data-align]   | <code>"start"  | "end" | "center" (enum RdxPositionAlign)</code>
+`}
+</Markdown>
+
+### Arrow
+`RdxHoverCardArrowDirective`
+
+An optional arrow element to render alongside the hover-card. This can be used to help visually link the trigger with the HoverCardContent. Must be rendered inside HoverCardContent.
+
+<ArgTypes of={RdxHoverCardArrowDirective} />
+
+### Close
+`RdxHoverCardCloseDirective`
+
+An optional close button element to render alongside the hover-card. This can be used to close the HoverCardContent. Must be rendered inside HoverCardContent.

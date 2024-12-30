@@ -284,9 +284,8 @@ export class RdxTooltipContentDirective implements OnInit {
     private computePositions() {
         const arrowHeight = this.rootDirective.arrowDirective()?.height() ?? 0;
         const offsets: RdxPositionSideAndAlignOffsets = {
-            sideOffset: isNaN(this.sideOffset())
-                ? arrowHeight || RDX_POSITIONING_DEFAULTS.offsets.side
-                : this.sideOffset(),
+            sideOffset:
+                arrowHeight + (isNaN(this.sideOffset()) ? RDX_POSITIONING_DEFAULTS.offsets.side : this.sideOffset()),
             alignOffset: isNaN(this.alignOffset()) ? RDX_POSITIONING_DEFAULTS.offsets.align : this.alignOffset()
         };
         const basePosition = getContentPosition({
