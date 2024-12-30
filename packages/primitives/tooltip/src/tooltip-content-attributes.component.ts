@@ -16,7 +16,11 @@ import { RdxTooltipAnimationStatus, RdxTooltipState } from './tooltip.types';
         '[attr.data-align]': 'rootDirective.contentDirective().align()',
         '[style]': 'disableAnimation() ? {animation: "none !important"} : null',
         '(animationstart)': 'onAnimationStart($event)',
-        '(animationend)': 'onAnimationEnd($event)'
+        '(animationend)': 'onAnimationEnd($event)',
+        '(pointerenter)': 'pointerenter()',
+        '(pointerleave)': 'pointerleave()',
+        '(focus)': 'focus()',
+        '(blur)': 'blur()'
     },
     providers: [
         {
@@ -52,6 +56,26 @@ export class RdxTooltipContentAttributesComponent {
                 ? RdxTooltipAnimationStatus.OPEN_ENDED
                 : RdxTooltipAnimationStatus.CLOSED_ENDED
         );
+    }
+
+    /** @ignore */
+    protected pointerenter(): void {
+        this.rootDirective.handleOpen();
+    }
+
+    /** @ignore */
+    protected pointerleave(): void {
+        this.rootDirective.handleClose();
+    }
+
+    /** @ignore */
+    protected focus(): void {
+        this.rootDirective.handleOpen();
+    }
+
+    /** @ignore */
+    protected blur(): void {
+        this.rootDirective.handleClose();
     }
 
     /** @ignore */

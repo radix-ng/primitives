@@ -168,7 +168,7 @@ const params = `
 function styles(withAnimations = false, withEvents = false, withParams = true) {
     return `
 .container {
-    height: 500px;
+    height: 150px;
     display: flex;
     justify-content: center;
     gap: 80px;
@@ -222,7 +222,9 @@ function styles(withAnimations = false, withEvents = false, withParams = true) {
 
 .TooltipContent {
     border-radius: 4px;
-    padding: 6px 10px;
+    padding: 10px 15px;
+    font-size: 15px;
+    line-height: 1;
     background-color: white;
     box-shadow:
         hsl(206 22% 7% / 35%) 0px 10px 38px -10px,
