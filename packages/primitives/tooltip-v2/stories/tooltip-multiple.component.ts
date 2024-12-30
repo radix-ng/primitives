@@ -22,6 +22,7 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
     ],
     styles: styles(),
     template: `
+        <p class="ExampleSubtitle">Tooltip #1</p>
         <tooltip-with-option-panel
             [arrowWidth]="arrowWidth()"
             [arrowHeight]="arrowHeight()"
@@ -72,6 +73,7 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
             <div class="TooltipId">ID: {{ rootDirective1()?.uniqueId() }}</div>
         </tooltip-with-option-panel>
 
+        <p class="ExampleSubtitle">Tooltip #2</p>
         <tooltip-with-option-panel
             [arrowWidth]="arrowWidth()"
             [arrowHeight]="arrowHeight()"
@@ -87,6 +89,13 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
             <div class="ContainerAlerts">
                 <lucide-angular [img]="TriangleAlert" size="16" />
                 {{ containerAlert }}
+            </div>
+            <div class="ContainerAlerts">
+                <lucide-angular [img]="TriangleAlert" size="16" />
+                <code>[side]="'left'"</code>
+                <code>[align]="'start'"</code>
+                <code>[sideOffset]="16"</code>
+                <code>[alignOffset]="16"</code>
             </div>
             <div class="container">
                 <ng-container
@@ -126,6 +135,7 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
             <div class="TooltipId">ID: {{ rootDirective2()?.uniqueId() }}</div>
         </tooltip-with-option-panel>
 
+        <p class="ExampleSubtitle">Tooltip #3</p>
         <tooltip-with-option-panel
             [arrowWidth]="arrowWidth()"
             [arrowHeight]="arrowHeight()"
@@ -141,6 +151,13 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
             <div class="ContainerAlerts">
                 <lucide-angular [img]="TriangleAlert" size="16" />
                 {{ containerAlert }}
+            </div>
+            <div class="ContainerAlerts">
+                <lucide-angular [img]="TriangleAlert" size="16" />
+                <code>[side]="'right'"</code>
+                <code>[align]="'end'"</code>
+                <code>[sideOffset]="60"</code>
+                <code>[alignOffset]="60"</code>
             </div>
             <div class="container">
                 <ng-container
