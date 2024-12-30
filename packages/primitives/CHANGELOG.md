@@ -1,3 +1,20 @@
+## 0.26.0 (2024-12-30)
+
+### 🚀 Features
+
+- **popover:** use input transformers & embrace default standalone ([#230](https://github.com/radix-ng/primitives/pull/230))
+
+### 🩹 Fixes
+
+- **tooltip:** show tooltip on hover ([#234](https://github.com/radix-ng/primitives/pull/234))
+- **popover:** position arrow correctly ([#232](https://github.com/radix-ng/primitives/pull/232))
+- **tooltip:** added input transforms and remove standalone param ([#228](https://github.com/radix-ng/primitives/pull/228))
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+- pawel-twardziak
+
 ## 0.25.0 (2024-12-26)
 
 ### 🚀 Features
