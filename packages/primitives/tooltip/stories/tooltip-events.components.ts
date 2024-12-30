@@ -42,7 +42,7 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
             </div>
             <div class="container">
                 <ng-container [openDelay]="openDelay()" [closeDelay]="closeDelay()" rdxTooltipRoot>
-                    <button class="reset IconButton" #triggerElement rdxTooltipTrigger>
+                    <button class="reset IconButton" rdxTooltipTrigger>
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                     </button>
 
