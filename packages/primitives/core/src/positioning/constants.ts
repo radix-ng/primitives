@@ -85,7 +85,7 @@ export const RDX_POSITIONS: RdxPositions = {
 
 export const RDX_POSITIONING_DEFAULTS: RdxPositioningDefaults = {
     offsets: {
-        side: 10,
+        side: 4,
         align: 0
     },
     arrow: {
