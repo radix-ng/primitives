@@ -1,0 +1,156 @@
+import {ArgTypes, Canvas, Markdown, Meta, Source} from '@storybook/blocks';
+import * as TooltipStories from "./tooltip.stories";
+import {RdxTooltipRootDirective} from "../src/tooltip-root.directive";
+import {RdxTooltipContentDirective} from "../src/tooltip-content.directive";
+import {RdxTooltipArrowDirective} from "../src/tooltip-arrow.directive";
+import {RdxTooltipAnchorDirective} from "../src/tooltip-anchor.directive";
+import {RdxTooltipTriggerDirective} from "../src/tooltip-trigger.directive";
+import {RdxTooltipCloseDirective} from "../src/tooltip-close.directive";
+import {animationStylesOnly} from "./utils/styles.constants";
+import {RdxTooltipContentAttributesComponent} from "../src/tooltip-content-attributes.component";
+
+<Meta title="Primitives/Tooltip" />
+
+# Tooltip
+
+#### A popup that displays information ready to interact with related to an element when the element receives click on it.
+
+## Examples
+### Default
+
+<Canvas sourceState="hidden" of={TooltipStories.Default} />
+
+### Multiple
+
+<Canvas sourceState="hidden" of={TooltipStories.Multiple} />
+
+### Events
+
+<Canvas sourceState="hidden" of={TooltipStories.Events} />
+
+### Positioning
+
+<Canvas sourceState="hidden" of={TooltipStories.Positioning} />
+
+### External Triggering
+
+<Canvas sourceState="hidden" of={TooltipStories.ExternalTriggering} />
+
+### Anchor
+
+<Canvas sourceState="hidden" of={TooltipStories.Anchor} />
+
+### Initially Open
+
+<Canvas sourceState="hidden" of={TooltipStories.InitiallyOpen} />
+
+### Animations
+
+<Canvas sourceState="hidden" of={TooltipStories.Animations} />
+
+### Animation Styles
+
+<Source type="code" language="css" code={`${animationStylesOnly}`} />
+
+
+## Features
+
+- ✅ Opens when the trigger is clicked.
+- ✅ Closes when the trigger is clicked again or when pressing escape.
+- ✅ Controllable from outside.
+
+## Anatomy
+
+```html
+<ng-container rdxTooltipRoot>
+    <button class="IconButton" rdxTooltipTrigger>+</button>
+
+    <ng-template rdxTooltipContent>
+        <div class="TooltipContent" rdxTooltipContentAttributes>
+            <button class="TooltipClose" rdxTooltipClose aria-label="Close">X</button>
+            Add to library
+            <div class="TooltipArrow" rdxTooltipArrow></div>
+        </div>
+    </ng-template>
+</ng-container>
+```
+
+## Import
+
+Get started with importing the directives:
+
+<Source type="code" language="typescript" code={`import {
+  RdxTooltipRootDirective,
+  RdxTooltipRootTrigger,
+  RdxTooltipContentDirective,
+  RdxTooltipArrowDirective,
+  RdxTooltipAnchorDirective,
+  RdxTooltipCloseDirective
+} from '@radix-ng/primitives/tooltip';`} />
+
+or
+
+<Source type="code" language="typescript" code={`import { RdxTooltipModule } from '@radix-ng/primitives/tooltip';`} />
+
+## API Reference
+
+### Root
+`RdxTooltipRootDirective`
+
+Contains all the parts of a tooltip.
+
+<ArgTypes of={RdxTooltipRootDirective} />
+
+### Trigger
+`RdxTooltipTriggerDirective`
+
+The button that toggles the tooltip. By default, the TooltipContent will position itself against the trigger.
+
+<Markdown>
+{`
+| Data attribute | Value          |
+|----------------|----------------|
+| [data-state]   | <code>"closed" | "open" (type RdxTooltipState)</code>
+`}
+</Markdown>
+
+### Anchor
+`RdxTooltipAnchorDirective`
+
+An optional element to position the TooltipContent against. If this part is not used, the content will position alongside the TooltipTrigger.
+
+### Content
+`RdxTooltipContentDirective`
+
+The component that pops out when the tooltip is open.
+
+<ArgTypes of={RdxTooltipContentDirective} />
+
+### Content Attributes
+`RdxTooltipContentAttributesComponent`
+
+A component with the content attributes that are necessary to run animations.
+
+<ArgTypes of={RdxTooltipContentAttributesComponent} />
+
+<Markdown>
+{`
+| Data attribute | Value          |
+|----------------|----------------|
+| [data-state]   | <code>"closed" | "open" (enum RdxTooltipState)</code>
+| [data-side]    | <code>"left"   | "right" | "bottom" | "top" (enum RdxPositionSide)</code>
+| [data-align]   | <code>"start"  | "end" | "center" (enum RdxPositionAlign)</code>
+`}
+</Markdown>
+
+### Arrow
+`RdxTooltipArrowDirective`
+
+An optional arrow element to render alongside the tooltip. This can be used to help visually link the trigger with the TooltipContent. Must be rendered inside TooltipContent.
+
+<ArgTypes of={RdxTooltipArrowDirective} />
+
+### Close
+`RdxTooltipCloseDirective`
+
+An optional close button element to render alongside the tooltip. This can be used to close the TooltipContent. Must be rendered inside TooltipContent.
