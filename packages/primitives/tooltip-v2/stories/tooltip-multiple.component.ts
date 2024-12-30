@@ -25,17 +25,26 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
         <tooltip-with-option-panel
             [arrowWidth]="arrowWidth()"
             [arrowHeight]="arrowHeight()"
+            [openDelay]="openDelay()"
+            [closeDelay]="closeDelay()"
             (onOverlayEscapeKeyDownDisabledChange)="onOverlayEscapeKeyDownDisabled.set($event)"
             (onOverlayOutsideClickDisabledChange)="onOverlayOutsideClickDisabled.set($event)"
             (arrowWidthChange)="arrowWidth.set($event)"
             (arrowHeightChange)="arrowHeight.set($event)"
+            (openDelayChange)="openDelay.set($event)"
+            (closeDelayChange)="closeDelay.set($event)"
         >
             <div class="ContainerAlerts">
                 <lucide-angular [img]="TriangleAlert" size="16" />
                 {{ containerAlert }}
             </div>
             <div class="container">
-                <ng-container #root1="rdxTooltipRoot" rdxTooltipRoot>
+                <ng-container
+                    #root1="rdxTooltipRoot"
+                    [openDelay]="openDelay()"
+                    [closeDelay]="closeDelay()"
+                    rdxTooltipRoot
+                >
                     <button class="reset IconButton" rdxTooltipTrigger>
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                     </button>
@@ -66,17 +75,26 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
         <tooltip-with-option-panel
             [arrowWidth]="arrowWidth()"
             [arrowHeight]="arrowHeight()"
+            [openDelay]="openDelay()"
+            [closeDelay]="closeDelay()"
             (onOverlayEscapeKeyDownDisabledChange)="onOverlayEscapeKeyDownDisabled.set($event)"
             (onOverlayOutsideClickDisabledChange)="onOverlayOutsideClickDisabled.set($event)"
             (arrowWidthChange)="arrowWidth.set($event)"
             (arrowHeightChange)="arrowHeight.set($event)"
+            (openDelayChange)="openDelay.set($event)"
+            (closeDelayChange)="closeDelay.set($event)"
         >
             <div class="ContainerAlerts">
                 <lucide-angular [img]="TriangleAlert" size="16" />
                 {{ containerAlert }}
             </div>
             <div class="container">
-                <ng-container #root2="rdxTooltipRoot" rdxTooltipRoot>
+                <ng-container
+                    #root2="rdxTooltipRoot"
+                    [openDelay]="openDelay()"
+                    [closeDelay]="closeDelay()"
+                    rdxTooltipRoot
+                >
                     <button class="reset IconButton" rdxTooltipTrigger>
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                     </button>
@@ -111,17 +129,26 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
         <tooltip-with-option-panel
             [arrowWidth]="arrowWidth()"
             [arrowHeight]="arrowHeight()"
+            [openDelay]="openDelay()"
+            [closeDelay]="closeDelay()"
             (onOverlayEscapeKeyDownDisabledChange)="onOverlayEscapeKeyDownDisabled.set($event)"
             (onOverlayOutsideClickDisabledChange)="onOverlayOutsideClickDisabled.set($event)"
             (arrowWidthChange)="arrowWidth.set($event)"
             (arrowHeightChange)="arrowHeight.set($event)"
+            (openDelayChange)="openDelay.set($event)"
+            (closeDelayChange)="closeDelay.set($event)"
         >
             <div class="ContainerAlerts">
                 <lucide-angular [img]="TriangleAlert" size="16" />
                 {{ containerAlert }}
             </div>
             <div class="container">
-                <ng-container #root3="rdxTooltipRoot" rdxTooltipRoot>
+                <ng-container
+                    #root3="rdxTooltipRoot"
+                    [openDelay]="openDelay()"
+                    [closeDelay]="closeDelay()"
+                    rdxTooltipRoot
+                >
                     <button class="reset IconButton" rdxTooltipTrigger>
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                     </button>

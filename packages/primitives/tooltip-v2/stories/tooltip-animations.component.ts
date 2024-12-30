@@ -25,10 +25,14 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
         <tooltip-with-option-panel
             [arrowWidth]="arrowWidth()"
             [arrowHeight]="arrowHeight()"
+            [openDelay]="openDelay()"
+            [closeDelay]="closeDelay()"
             (onOverlayEscapeKeyDownDisabledChange)="onOverlayEscapeKeyDownDisabled.set($event)"
             (onOverlayOutsideClickDisabledChange)="onOverlayOutsideClickDisabled.set($event)"
             (arrowWidthChange)="arrowWidth.set($event)"
             (arrowHeightChange)="arrowHeight.set($event)"
+            (openDelayChange)="openDelay.set($event)"
+            (closeDelayChange)="closeDelay.set($event)"
         >
             <div class="ParamsContainer">
                 <input [ngModel]="cssAnimation()" (ngModelChange)="cssAnimation.set($event)" type="checkbox" />
@@ -56,6 +60,8 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
                     [cssAnimation]="cssAnimation()"
                     [cssOpeningAnimation]="cssOpeningAnimation()"
                     [cssClosingAnimation]="cssClosingAnimation()"
+                    [openDelay]="openDelay()"
+                    [closeDelay]="closeDelay()"
                     rdxTooltipRoot
                 >
                     <button class="IconButton reset" rdxTooltipTrigger>

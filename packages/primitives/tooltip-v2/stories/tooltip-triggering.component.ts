@@ -25,10 +25,14 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
         <tooltip-with-option-panel
             [arrowWidth]="arrowWidth()"
             [arrowHeight]="arrowHeight()"
+            [openDelay]="openDelay()"
+            [closeDelay]="closeDelay()"
             (onOverlayEscapeKeyDownDisabledChange)="onOverlayEscapeKeyDownDisabled.set($event)"
             (onOverlayOutsideClickDisabledChange)="onOverlayOutsideClickDisabled.set($event)"
             (arrowWidthChange)="arrowWidth.set($event)"
             (arrowHeightChange)="arrowHeight.set($event)"
+            (openDelayChange)="openDelay.set($event)"
+            (closeDelayChange)="closeDelay.set($event)"
         >
             <div class="ParamsContainer">
                 <button (mouseup)="triggerOpenFalse()" type="button">Open: {{ isOpenFalse() }}</button>
@@ -52,6 +56,8 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
                 <ng-container
                     #root1="rdxTooltipRoot"
                     [open]="isOpenFalse()"
+                    [openDelay]="openDelay()"
+                    [closeDelay]="closeDelay()"
                     [externalControl]="externalControlFalse()"
                     rdxTooltipRoot
                 >
@@ -89,10 +95,14 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
         <tooltip-with-option-panel
             [arrowWidth]="arrowWidth()"
             [arrowHeight]="arrowHeight()"
+            [openDelay]="openDelay()"
+            [closeDelay]="closeDelay()"
             (onOverlayEscapeKeyDownDisabledChange)="onOverlayEscapeKeyDownDisabled.set($event)"
             (onOverlayOutsideClickDisabledChange)="onOverlayOutsideClickDisabled.set($event)"
             (arrowWidthChange)="arrowWidth.set($event)"
             (arrowHeightChange)="arrowHeight.set($event)"
+            (openDelayChange)="openDelay.set($event)"
+            (closeDelayChange)="closeDelay.set($event)"
         >
             <div class="ParamsContainer">
                 <button (mouseup)="triggerOpenTrue()" type="button">Open: {{ isOpenTrue() }}</button>
@@ -116,6 +126,8 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
                 <ng-container
                     #root2="rdxTooltipRoot"
                     [open]="isOpenTrue()"
+                    [openDelay]="openDelay()"
+                    [closeDelay]="closeDelay()"
                     [externalControl]="externalControlTrue()"
                     rdxTooltipRoot
                 >

@@ -17,4 +17,9 @@ export interface IArrowDimensions {
     arrowHeight: Signal<number | undefined>;
 }
 
+export interface IOpenCloseDelay {
+    openDelay: Signal<number | undefined>;
+    closeDelay: Signal<number | undefined>;
+}
+
 export type Message = { value: string; timeFromPrev: number };

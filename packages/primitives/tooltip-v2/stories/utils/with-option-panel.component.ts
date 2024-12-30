@@ -21,7 +21,7 @@ import { Message } from './types';
     template: `
         <ng-content select=".ParamsContainer" />
 
-        @if (paramsContainerCounter() > 2) {
+        @if (paramsContainerCounter() > 3) {
             <hr />
         }
 
@@ -45,6 +45,13 @@ import { Message } from './types';
             <input [ngModel]="arrowWidth()" (ngModelChange)="arrowWidth.set($event)" type="number" />
             Arrow height
             <input [ngModel]="arrowHeight()" (ngModelChange)="arrowHeight.set($event)" type="number" />
+        </div>
+
+        <div class="ParamsContainer">
+            Open delay
+            <input [ngModel]="openDelay()" (ngModelChange)="openDelay.set($event)" type="number" />
+            Close delay
+            <input [ngModel]="closeDelay()" (ngModelChange)="closeDelay.set($event)" type="number" />
         </div>
 
         <ng-content />
@@ -81,6 +88,9 @@ export class WithOptionPanelComponent {
 
     arrowWidth = model<number>(0);
     arrowHeight = model<number>(0);
+
+    openDelay = model<number>(0);
+    closeDelay = model<number>(0);
 
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
