@@ -168,7 +168,7 @@ const params = `
 function styles(withAnimations = false, withEvents = false, withParams = true) {
     return `
 .container {
-    height: 500px;
+    height: 600px;
     display: flex;
     justify-content: center;
     gap: 80px;
@@ -221,7 +221,7 @@ function styles(withAnimations = false, withEvents = false, withParams = true) {
 }
 
 .HoverCardContent {
-    border-radius: 6px;
+    border-radius: 4px;
     padding: 20px;
     width: 300px;
     background-color: white;
@@ -286,16 +286,15 @@ ${withAnimations ? appliedAnimations : ''}
 .HoverCardClose {
     font-family: inherit;
     border-radius: 100%;
-    background-color: var(--white-a12);
-    height: 14px;
-    width: 14px;
+    height: 25px;
+    width: 25px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     color: var(--violet-11);
     position: absolute;
-    top: -12px;
-    right: -12px;
+    top: 5px;
+    right: 5px;
 }
 
 .HoverCardClose:hover {

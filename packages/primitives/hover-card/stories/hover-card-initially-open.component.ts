@@ -66,7 +66,7 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
                     >
                         <div class="HoverCardContent" rdxHoverCardContentAttributes>
                             <button class="reset HoverCardClose" rdxHoverCardClose aria-label="Close">
-                                <lucide-angular [img]="XIcon" size="12" style="display: flex" />
+                                <lucide-angular [img]="XIcon" size="16" style="display: flex" />
                             </button>
                             <div style="display: flex; flex-direction: column; gap: 7px">
                                 <img

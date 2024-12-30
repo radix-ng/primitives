@@ -6,7 +6,6 @@ import { injectHoverCardRoot } from './hover-card-root.inject';
     selector: '[rdxHoverCardTrigger]',
     hostDirectives: [CdkOverlayOrigin],
     host: {
-        type: 'button',
         '[attr.id]': 'name()',
         '[attr.aria-haspopup]': '"dialog"',
         '[attr.aria-expanded]': 'rootDirective.isOpen()',
@@ -31,27 +30,27 @@ export class RdxHoverCardTriggerDirective {
     readonly name = computed(() => `rdx-hover-card-trigger-${this.rootDirective.uniqueId()}`);
 
     /** @ignore */
-    pointerenter(): void {
+    protected pointerenter(): void {
         this.rootDirective.handleOpen();
     }
 
     /** @ignore */
-    pointerleave(): void {
+    protected pointerleave(): void {
         this.rootDirective.handleClose();
     }
 
     /** @ignore */
-    focus(): void {
+    protected focus(): void {
         this.rootDirective.handleOpen();
     }
 
     /** @ignore */
-    blur(): void {
+    protected blur(): void {
         this.rootDirective.handleClose();
     }
 
     /** @ignore */
-    click(): void {
+    protected click(): void {
         this.rootDirective.handleClose();
     }
 }
