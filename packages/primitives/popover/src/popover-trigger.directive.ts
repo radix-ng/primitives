@@ -27,7 +27,7 @@ export class RdxPopoverTriggerDirective {
     readonly name = computed(() => `rdx-popover-trigger-${this.popoverRoot.uniqueId()}`);
 
     /** @ignore */
-    click(): void {
+    protected click(): void {
         this.popoverRoot.handleToggle();
     }
 }
