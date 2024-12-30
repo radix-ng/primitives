@@ -1,6 +1,5 @@
 import { Component, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RdxPositionAlign, RdxPositionSide } from '@radix-ng/primitives/core';
 import { LucideAngularModule, MountainSnow, TriangleAlert, X } from 'lucide-angular';
 import { RdxTooltipModule, RdxTooltipRootDirective } from '../index';
 import { RdxTooltipContentAttributesComponent } from '../src/tooltip-content-attributes.component';
@@ -11,18 +10,16 @@ import styles from './utils/styles.constants';
 import { WithOptionPanelComponent } from './utils/with-option-panel.component';
 
 @Component({
-    selector: 'rdx-tooltip-events',
+    selector: 'rdx-tooltip-default',
     providers: [provideRdxCdkEventService()],
     imports: [
+        FormsModule,
         RdxTooltipModule,
         LucideAngularModule,
-        FormsModule,
         RdxTooltipContentAttributesComponent,
         WithOptionPanelComponent
     ],
-    styles: `
-        ${styles()}
-    `,
+    styles: styles(),
     template: `
         <tooltip-with-option-panel
             [arrowWidth]="arrowWidth()"
@@ -42,14 +39,13 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
             </div>
             <div class="container">
                 <ng-container [openDelay]="openDelay()" [closeDelay]="closeDelay()" rdxTooltipRoot>
-                    <button class="reset IconButton" #triggerElement rdxTooltipTrigger>
+                    <button class="reset IconButton" rdxTooltipTrigger>
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                     </button>
 
                     <ng-template
                         [onOverlayEscapeKeyDownDisabled]="onOverlayEscapeKeyDownDisabled()"
                         [onOverlayOutsideClickDisabled]="onOverlayOutsideClickDisabled()"
-                        [sideOffset]="8"
                         rdxTooltipContent
                     >
                         <div class="TooltipContent" rdxTooltipContentAttributes>
@@ -71,14 +67,11 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
         </tooltip-with-option-panel>
     `
 })
-export class RdxTooltipEventsComponent extends OptionPanelBase {
+export class RdxTooltipDefaultComponent extends OptionPanelBase {
     readonly rootDirective = viewChild(RdxTooltipRootDirective);
 
     readonly MountainSnowIcon = MountainSnow;
     readonly XIcon = X;
-
-    protected readonly sides = RdxPositionSide;
-    protected readonly aligns = RdxPositionAlign;
-    protected readonly containerAlert = containerAlert;
     protected readonly TriangleAlert = TriangleAlert;
+    protected readonly containerAlert = containerAlert;
 }

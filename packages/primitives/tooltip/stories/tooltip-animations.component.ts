@@ -1,4 +1,4 @@
-import { Component, viewChild } from '@angular/core';
+import { Component, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RdxPositionAlign, RdxPositionSide } from '@radix-ng/primitives/core';
 import { LucideAngularModule, MountainSnow, TriangleAlert, X } from 'lucide-angular';
@@ -11,18 +11,16 @@ import styles from './utils/styles.constants';
 import { WithOptionPanelComponent } from './utils/with-option-panel.component';
 
 @Component({
-    selector: 'rdx-tooltip-events',
+    selector: 'rdx-tooltip-animations',
     providers: [provideRdxCdkEventService()],
     imports: [
+        FormsModule,
         RdxTooltipModule,
         LucideAngularModule,
-        FormsModule,
         RdxTooltipContentAttributesComponent,
         WithOptionPanelComponent
     ],
-    styles: `
-        ${styles()}
-    `,
+    styles: styles(true),
     template: `
         <tooltip-with-option-panel
             [arrowWidth]="arrowWidth()"
@@ -36,25 +34,48 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
             (openDelayChange)="openDelay.set($event)"
             (closeDelayChange)="closeDelay.set($event)"
         >
+            <div class="ParamsContainer">
+                <input [ngModel]="cssAnimation()" (ngModelChange)="cssAnimation.set($event)" type="checkbox" />
+                CSS Animation
+                <input
+                    [ngModel]="cssOpeningAnimation()"
+                    (ngModelChange)="cssOpeningAnimation.set($event)"
+                    type="checkbox"
+                />
+                On Opening Animation
+                <input
+                    [ngModel]="cssClosingAnimation()"
+                    (ngModelChange)="cssClosingAnimation.set($event)"
+                    type="checkbox"
+                />
+                On Closing Animation
+            </div>
+
             <div class="ContainerAlerts">
                 <lucide-angular [img]="TriangleAlert" size="16" />
                 {{ containerAlert }}
             </div>
             <div class="container">
-                <ng-container [openDelay]="openDelay()" [closeDelay]="closeDelay()" rdxTooltipRoot>
-                    <button class="reset IconButton" #triggerElement rdxTooltipTrigger>
+                <ng-container
+                    [cssAnimation]="cssAnimation()"
+                    [cssOpeningAnimation]="cssOpeningAnimation()"
+                    [cssClosingAnimation]="cssClosingAnimation()"
+                    [openDelay]="openDelay()"
+                    [closeDelay]="closeDelay()"
+                    rdxTooltipRoot
+                >
+                    <button class="IconButton reset" rdxTooltipTrigger>
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                     </button>
 
                     <ng-template
                         [onOverlayEscapeKeyDownDisabled]="onOverlayEscapeKeyDownDisabled()"
                         [onOverlayOutsideClickDisabled]="onOverlayOutsideClickDisabled()"
-                        [sideOffset]="8"
                         rdxTooltipContent
                     >
                         <div class="TooltipContent" rdxTooltipContentAttributes>
-                            <button class="reset TooltipClose" rdxTooltipClose aria-label="Close">
-                                <lucide-angular [img]="XIcon" size="12" style="display: flex" />
+                            <button class="TooltipClose reset" rdxTooltipClose aria-label="Close">
+                                <lucide-angular [img]="XIcon" size="16" style="display: flex" />
                             </button>
                             Add to library
                             <div
@@ -71,14 +92,18 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
         </tooltip-with-option-panel>
     `
 })
-export class RdxTooltipEventsComponent extends OptionPanelBase {
+export class RdxTooltipAnimationsComponent extends OptionPanelBase {
     readonly rootDirective = viewChild(RdxTooltipRootDirective);
 
     readonly MountainSnowIcon = MountainSnow;
     readonly XIcon = X;
 
-    protected readonly sides = RdxPositionSide;
-    protected readonly aligns = RdxPositionAlign;
-    protected readonly containerAlert = containerAlert;
+    readonly sides = RdxPositionSide;
+    readonly aligns = RdxPositionAlign;
+
+    cssAnimation = signal<boolean>(true);
+    cssOpeningAnimation = signal(true);
+    cssClosingAnimation = signal(true);
     protected readonly TriangleAlert = TriangleAlert;
+    protected readonly containerAlert = containerAlert;
 }

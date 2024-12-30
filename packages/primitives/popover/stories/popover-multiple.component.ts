@@ -22,6 +22,7 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
     ],
     styles: styles(),
     template: `
+        <p class="ExampleSubtitle">Popover #1</p>
         <popover-with-option-panel
             [arrowWidth]="arrowWidth()"
             [arrowHeight]="arrowHeight()"
@@ -81,6 +82,7 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
             <div class="PopoverId">ID: {{ popoverRootDirective1()?.uniqueId() }}</div>
         </popover-with-option-panel>
 
+        <p class="ExampleSubtitle">Popover #2</p>
         <popover-with-option-panel
             [arrowWidth]="arrowWidth()"
             [arrowHeight]="arrowHeight()"
@@ -92,6 +94,13 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
             <div class="ContainerAlerts">
                 <lucide-angular [img]="TriangleAlert" size="16" />
                 {{ containerAlert }}
+            </div>
+            <div class="ContainerAlerts">
+                <lucide-angular [img]="TriangleAlert" size="16" />
+                <code>[side]="'left'"</code>
+                <code>[align]="'start'"</code>
+                <code>[sideOffset]="16"</code>
+                <code>[alignOffset]="16"</code>
             </div>
             <div class="container">
                 <ng-container #root2="rdxPopoverRoot" rdxPopoverRoot>
@@ -144,6 +153,7 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
             <div class="PopoverId">ID: {{ popoverRootDirective2()?.uniqueId() }}</div>
         </popover-with-option-panel>
 
+        <p class="ExampleSubtitle">Popover #3</p>
         <popover-with-option-panel
             [arrowWidth]="arrowWidth()"
             [arrowHeight]="arrowHeight()"
@@ -155,6 +165,13 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
             <div class="ContainerAlerts">
                 <lucide-angular [img]="TriangleAlert" size="16" />
                 {{ containerAlert }}
+            </div>
+            <div class="ContainerAlerts">
+                <lucide-angular [img]="TriangleAlert" size="16" />
+                <code>[side]="'right'"</code>
+                <code>[align]="'end'"</code>
+                <code>[sideOffset]="60"</code>
+                <code>[alignOffset]="60"</code>
             </div>
             <div class="container">
                 <ng-container #root3="rdxPopoverRoot" rdxPopoverRoot>

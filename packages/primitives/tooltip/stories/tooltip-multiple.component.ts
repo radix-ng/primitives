@@ -1,5 +1,6 @@
-import { Component, signal, viewChild } from '@angular/core';
+import { Component, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RdxPositionAlign, RdxPositionSide } from '@radix-ng/primitives/core';
 import { LucideAngularModule, MountainSnow, TriangleAlert, X } from 'lucide-angular';
 import { RdxTooltipModule } from '../index';
 import { RdxTooltipContentAttributesComponent } from '../src/tooltip-content-attributes.component';
@@ -10,7 +11,7 @@ import styles from './utils/styles.constants';
 import { WithOptionPanelComponent } from './utils/with-option-panel.component';
 
 @Component({
-    selector: 'rdx-tooltip-triggering',
+    selector: 'rdx-tooltip-multiple',
     providers: [provideRdxCdkEventService()],
     imports: [
         FormsModule,
@@ -21,7 +22,7 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
     ],
     styles: styles(),
     template: `
-        <p class="ExampleSubtitle">Initially closed</p>
+        <p class="ExampleSubtitle">Tooltip #1</p>
         <tooltip-with-option-panel
             [arrowWidth]="arrowWidth()"
             [arrowHeight]="arrowHeight()"
@@ -34,20 +35,6 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
             (openDelayChange)="openDelay.set($event)"
             (closeDelayChange)="closeDelay.set($event)"
         >
-            <div class="ParamsContainer">
-                <button (mouseup)="triggerOpenFalse()" type="button">Open: {{ isOpenFalse() }}</button>
-                onOpenChange count: {{ counterOpenFalse() }}
-            </div>
-
-            <div class="ParamsContainer">
-                <input
-                    [ngModel]="externalControlFalse()"
-                    (ngModelChange)="externalControlFalse.set($event)"
-                    type="checkbox"
-                />
-                External control
-            </div>
-
             <div class="ContainerAlerts">
                 <lucide-angular [img]="TriangleAlert" size="16" />
                 {{ containerAlert }}
@@ -55,10 +42,8 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
             <div class="container">
                 <ng-container
                     #root1="rdxTooltipRoot"
-                    [open]="isOpenFalse()"
                     [openDelay]="openDelay()"
                     [closeDelay]="closeDelay()"
-                    [externalControl]="externalControlFalse()"
                     rdxTooltipRoot
                 >
                     <button class="reset IconButton" rdxTooltipTrigger>
@@ -66,11 +51,8 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
                     </button>
 
                     <ng-template
-                        [sideOffset]="8"
                         [onOverlayEscapeKeyDownDisabled]="onOverlayEscapeKeyDownDisabled()"
                         [onOverlayOutsideClickDisabled]="onOverlayOutsideClickDisabled()"
-                        (onOpen)="countOpenFalse(true)"
-                        (onClosed)="countOpenFalse(false)"
                         rdxTooltipContent
                     >
                         <div class="TooltipContent" rdxTooltipContentAttributes>
@@ -91,7 +73,7 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
             <div class="TooltipId">ID: {{ rootDirective1()?.uniqueId() }}</div>
         </tooltip-with-option-panel>
 
-        <p class="ExampleSubtitle">Initially open</p>
+        <p class="ExampleSubtitle">Tooltip #2</p>
         <tooltip-with-option-panel
             [arrowWidth]="arrowWidth()"
             [arrowHeight]="arrowHeight()"
@@ -104,31 +86,22 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
             (openDelayChange)="openDelay.set($event)"
             (closeDelayChange)="closeDelay.set($event)"
         >
-            <div class="ParamsContainer">
-                <button (mouseup)="triggerOpenTrue()" type="button">Open: {{ isOpenTrue() }}</button>
-                <span>onOpenChange count: {{ counterOpenTrue() }}</span>
-            </div>
-
-            <div class="ParamsContainer">
-                <input
-                    [ngModel]="externalControlTrue()"
-                    (ngModelChange)="externalControlTrue.set($event)"
-                    type="checkbox"
-                />
-                External control
-            </div>
-
             <div class="ContainerAlerts">
                 <lucide-angular [img]="TriangleAlert" size="16" />
                 {{ containerAlert }}
             </div>
+            <div class="ContainerAlerts">
+                <lucide-angular [img]="TriangleAlert" size="16" />
+                <code>[side]="'left'"</code>
+                <code>[align]="'start'"</code>
+                <code>[sideOffset]="16"</code>
+                <code>[alignOffset]="16"</code>
+            </div>
             <div class="container">
                 <ng-container
                     #root2="rdxTooltipRoot"
-                    [open]="isOpenTrue()"
                     [openDelay]="openDelay()"
                     [closeDelay]="closeDelay()"
-                    [externalControl]="externalControlTrue()"
                     rdxTooltipRoot
                 >
                     <button class="reset IconButton" rdxTooltipTrigger>
@@ -136,11 +109,12 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
                     </button>
 
                     <ng-template
-                        [sideOffset]="8"
+                        [side]="RdxPositionSide.Left"
+                        [align]="RdxPositionAlign.Start"
+                        [sideOffset]="16"
+                        [alignOffset]="16"
                         [onOverlayEscapeKeyDownDisabled]="onOverlayEscapeKeyDownDisabled()"
                         [onOverlayOutsideClickDisabled]="onOverlayOutsideClickDisabled()"
-                        (onOpen)="countOpenTrue(true)"
-                        (onClosed)="countOpenTrue(false)"
                         rdxTooltipContent
                     >
                         <div class="TooltipContent" rdxTooltipContentAttributes>
@@ -160,41 +134,79 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
             </div>
             <div class="TooltipId">ID: {{ rootDirective2()?.uniqueId() }}</div>
         </tooltip-with-option-panel>
+
+        <p class="ExampleSubtitle">Tooltip #3</p>
+        <tooltip-with-option-panel
+            [arrowWidth]="arrowWidth()"
+            [arrowHeight]="arrowHeight()"
+            [openDelay]="openDelay()"
+            [closeDelay]="closeDelay()"
+            (onOverlayEscapeKeyDownDisabledChange)="onOverlayEscapeKeyDownDisabled.set($event)"
+            (onOverlayOutsideClickDisabledChange)="onOverlayOutsideClickDisabled.set($event)"
+            (arrowWidthChange)="arrowWidth.set($event)"
+            (arrowHeightChange)="arrowHeight.set($event)"
+            (openDelayChange)="openDelay.set($event)"
+            (closeDelayChange)="closeDelay.set($event)"
+        >
+            <div class="ContainerAlerts">
+                <lucide-angular [img]="TriangleAlert" size="16" />
+                {{ containerAlert }}
+            </div>
+            <div class="ContainerAlerts">
+                <lucide-angular [img]="TriangleAlert" size="16" />
+                <code>[side]="'right'"</code>
+                <code>[align]="'end'"</code>
+                <code>[sideOffset]="60"</code>
+                <code>[alignOffset]="60"</code>
+            </div>
+            <div class="container">
+                <ng-container
+                    #root3="rdxTooltipRoot"
+                    [openDelay]="openDelay()"
+                    [closeDelay]="closeDelay()"
+                    rdxTooltipRoot
+                >
+                    <button class="reset IconButton" rdxTooltipTrigger>
+                        <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
+                    </button>
+
+                    <ng-template
+                        [side]="RdxPositionSide.Right"
+                        [align]="RdxPositionAlign.End"
+                        [sideOffset]="60"
+                        [alignOffset]="60"
+                        [onOverlayEscapeKeyDownDisabled]="onOverlayEscapeKeyDownDisabled()"
+                        [onOverlayOutsideClickDisabled]="onOverlayOutsideClickDisabled()"
+                        rdxTooltipContent
+                    >
+                        <div class="TooltipContent" rdxTooltipContentAttributes>
+                            <button class="reset TooltipClose" rdxTooltipClose aria-label="Close">
+                                <lucide-angular [img]="XIcon" size="12" style="display: flex" />
+                            </button>
+                            Add to library
+                            <div
+                                class="TooltipArrow"
+                                [width]="arrowWidth()"
+                                [height]="arrowHeight()"
+                                rdxTooltipArrow
+                            ></div>
+                        </div>
+                    </ng-template>
+                </ng-container>
+            </div>
+            <div class="TooltipId">ID: {{ rootDirective3()?.uniqueId() }}</div>
+        </tooltip-with-option-panel>
     `
 })
-export class RdxTooltipTriggeringComponent extends OptionPanelBase {
+export class RdxTooltipMultipleComponent extends OptionPanelBase {
     readonly rootDirective1 = viewChild('root1');
     readonly rootDirective2 = viewChild('root2');
+    readonly rootDirective3 = viewChild('root3');
 
     readonly MountainSnowIcon = MountainSnow;
     readonly XIcon = X;
-
-    isOpenFalse = signal(false);
-    counterOpenFalse = signal(0);
-    externalControlFalse = signal(true);
-
-    isOpenTrue = signal(true);
-    counterOpenTrue = signal(0);
-    externalControlTrue = signal(true);
-
-    triggerOpenFalse(): void {
-        this.isOpenFalse.update((value) => !value);
-    }
-
-    countOpenFalse(open: boolean): void {
-        this.isOpenFalse.set(open);
-        this.counterOpenFalse.update((value) => value + 1);
-    }
-
-    triggerOpenTrue(): void {
-        this.isOpenTrue.update((value) => !value);
-    }
-
-    countOpenTrue(open: boolean): void {
-        this.isOpenTrue.set(open);
-        this.counterOpenTrue.update((value) => value + 1);
-    }
-
+    readonly RdxPositionSide = RdxPositionSide;
+    readonly RdxPositionAlign = RdxPositionAlign;
     protected readonly containerAlert = containerAlert;
     protected readonly TriangleAlert = TriangleAlert;
 }
