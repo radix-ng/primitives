@@ -2,11 +2,14 @@ import { Directive, effect, ElementRef, forwardRef, inject, Renderer2, untracked
 import { RdxTooltipCloseToken } from './tooltip-close.token';
 import { injectTooltipRoot } from './tooltip-root.inject';
 
+/**
+ * TODO: to be removed? But it seems to be useful when controlled from outside
+ */
 @Directive({
     selector: '[rdxTooltipClose]',
     host: {
         type: 'button',
-        '(click)': 'rootDirective.handleClose()'
+        '(click)': 'rootDirective.handleClose(true)'
     },
     providers: [
         {
@@ -36,7 +39,7 @@ export class RdxTooltipCloseDirective {
                 this.renderer.setStyle(
                     this.elementRef.nativeElement,
                     'display',
-                    isControlledExternally ? 'none' : null
+                    isControlledExternally ? null : 'none'
                 );
             });
         });

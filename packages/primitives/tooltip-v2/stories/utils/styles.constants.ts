@@ -222,8 +222,7 @@ function styles(withAnimations = false, withEvents = false, withParams = true) {
 
 .TooltipContent {
     border-radius: 4px;
-    padding: 20px;
-    width: 260px;
+    padding: 6px 10px;
     background-color: white;
     box-shadow:
         hsl(206 22% 7% / 35%) 0px 10px 38px -10px,
@@ -248,15 +247,16 @@ ${withAnimations ? appliedAnimations : ''}
 .TooltipClose {
     font-family: inherit;
     border-radius: 100%;
-    height: 25px;
-    width: 25px;
+    background-color: var(--white-a12);
+    height: 14px;
+    width: 14px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     color: var(--violet-11);
     position: absolute;
-    top: 5px;
-    right: 5px;
+    top: -12px;
+    right: -12px;
 }
 
 .TooltipClose:hover {

@@ -156,11 +156,11 @@ export class RdxTooltipRootDirective {
     }
 
     /** @ignore */
-    handleClose(): void {
+    handleClose(closeButton?: boolean): void {
         if (this.isFirstDefaultOpen()) {
             this.isFirstDefaultOpen.set(false);
         }
-        if (this.externalControl()) {
+        if (!closeButton && this.externalControl()) {
             return;
         }
         this.setState(RdxTooltipState.CLOSED);
