@@ -3,6 +3,11 @@ export enum RdxTooltipState {
     CLOSED = 'closed'
 }
 
+export enum RdxTooltipAction {
+    OPEN = 'open',
+    CLOSE = 'close'
+}
+
 export enum RdxTooltipAttachDetachEvent {
     ATTACH = 'attach',
     DETACH = 'detach'

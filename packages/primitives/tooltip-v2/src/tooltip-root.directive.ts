@@ -1,4 +1,4 @@
-import { BooleanInput } from '@angular/cdk/coercion';
+import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import {
     afterNextRender,
     booleanAttribute,
@@ -9,10 +9,13 @@ import {
     effect,
     inject,
     input,
+    numberAttribute,
     signal,
     untracked,
     ViewContainerRef
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { debounce, map, Subject, tap, timer } from 'rxjs';
 import { RdxTooltipAnchorDirective } from './tooltip-anchor.directive';
 import { RdxTooltipAnchorToken } from './tooltip-anchor.token';
 import { RdxTooltipArrowToken } from './tooltip-arrow.token';
@@ -20,7 +23,12 @@ import { RdxTooltipCloseToken } from './tooltip-close.token';
 import { RdxTooltipContentAttributesToken } from './tooltip-content-attributes.token';
 import { RdxTooltipContentDirective } from './tooltip-content.directive';
 import { RdxTooltipTriggerDirective } from './tooltip-trigger.directive';
-import { RdxTooltipAnimationStatus, RdxTooltipAttachDetachEvent, RdxTooltipState } from './tooltip.types';
+import {
+    RdxTooltipAction,
+    RdxTooltipAnimationStatus,
+    RdxTooltipAttachDetachEvent,
+    RdxTooltipState
+} from './tooltip.types';
 import { injectRdxCdkEventService } from './utils/cdk-event.service';
 
 let nextId = 0;
@@ -50,6 +58,18 @@ export class RdxTooltipRootDirective {
      * @default undefined
      */
     readonly open = input<boolean | undefined, BooleanInput>(void 0, { transform: booleanAttribute });
+    /**
+     * To customise the open delay for a specific tooltip.
+     */
+    readonly openDelay = input<number, NumberInput>(500, {
+        transform: numberAttribute
+    });
+    /**
+     * To customise the close delay for a specific tooltip.
+     */
+    readonly closeDelay = input<number, NumberInput>(200, {
+        transform: numberAttribute
+    });
     /**
      * @description Whether to control the state of the tooltip from external. Use in conjunction with `open` input.
      * @default undefined
@@ -106,9 +126,13 @@ export class RdxTooltipRootDirective {
     /** @ignore */
     readonly anchorDirective = computed(() => this.internalAnchorDirective() ?? this.anchor());
 
+    /** @ignore */
+    readonly actionSubject$ = new Subject<RdxTooltipAction>();
+
     constructor() {
         this.rdxCdkEventService?.registerPrimitive(this);
         this.destroyRef.onDestroy(() => this.rdxCdkEventService?.deregisterPrimitive(this));
+        this.actionSubscription();
         this.onStateChangeEffect();
         this.onCssAnimationStatusChangeChangeEffect();
         this.onOpenChangeEffect();
@@ -152,7 +176,7 @@ export class RdxTooltipRootDirective {
         if (this.externalControl()) {
             return;
         }
-        this.setState(RdxTooltipState.OPEN);
+        this.actionSubject$.next(RdxTooltipAction.OPEN);
     }
 
     /** @ignore */
@@ -163,7 +187,7 @@ export class RdxTooltipRootDirective {
         if (!closeButton && this.externalControl()) {
             return;
         }
-        this.setState(RdxTooltipState.CLOSED);
+        this.actionSubject$.next(RdxTooltipAction.CLOSE);
     }
 
     /** @ignore */
@@ -364,4 +388,34 @@ export class RdxTooltipRootDirective {
             });
         });
     };
+
+    /** @ignore */
+    private actionSubscription() {
+        this.actionSubject$
+            .asObservable()
+            .pipe(
+                map((action) => {
+                    console.log(action);
+                    switch (action) {
+                        case RdxTooltipAction.OPEN:
+                            return { action, duration: this.openDelay() };
+                        case RdxTooltipAction.CLOSE:
+                            return { action, duration: this.closeDelay() };
+                    }
+                }),
+                debounce((config) => timer(config.duration)),
+                tap((config) => {
+                    switch (config.action) {
+                        case RdxTooltipAction.OPEN:
+                            this.setState(RdxTooltipState.OPEN);
+                            break;
+                        case RdxTooltipAction.CLOSE:
+                            this.setState(RdxTooltipState.CLOSED);
+                            break;
+                    }
+                }),
+                takeUntilDestroyed()
+            )
+            .subscribe();
+    }
 }
