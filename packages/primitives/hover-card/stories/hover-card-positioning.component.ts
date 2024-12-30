@@ -2,8 +2,8 @@ import { Component, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RdxPositionAlign, RdxPositionSide } from '@radix-ng/primitives/core';
 import { LucideAngularModule, MountainSnow, TriangleAlert, X } from 'lucide-angular';
-import { RdxHoverCardModule, RdxTooltipRootDirective } from '../index';
-import { RdxTooltipContentAttributesComponent } from '../src/hover-card-content-attributes.component';
+import { RdxHoverCardModule, RdxHoverCardRootDirective } from '../index';
+import { RdxHoverCardContentAttributesComponent } from '../src/hover-card-content-attributes.component';
 import { provideRdxCdkEventService } from '../src/utils/cdk-event.service';
 import { containerAlert } from './utils/constants';
 import { OptionPanelBase } from './utils/option-panel-base.class';
@@ -11,18 +11,18 @@ import styles from './utils/styles.constants';
 import { WithOptionPanelComponent } from './utils/with-option-panel.component';
 
 @Component({
-    selector: 'rdx-tooltip-positioning',
+    selector: 'rdx-hover-card-positioning',
     providers: [provideRdxCdkEventService()],
     imports: [
         FormsModule,
         RdxHoverCardModule,
         LucideAngularModule,
-        RdxTooltipContentAttributesComponent,
+        RdxHoverCardContentAttributesComponent,
         WithOptionPanelComponent
     ],
     styles: styles(),
     template: `
-        <tooltip-with-option-panel
+        <with-option-panel
             [arrowWidth]="arrowWidth()"
             [arrowHeight]="arrowHeight()"
             [openDelay]="openDelay()"
@@ -60,8 +60,8 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
                     (ngModelChange)="disableAlternatePositions.set($event)"
                     type="checkbox"
                 />
-                Disable alternate positions (to see the result, scroll the page to make the tooltip cross the viewport
-                boundary)
+                Disable alternate positions (to see the result, scroll the page to make the hover-card cross the
+                viewport boundary)
             </div>
 
             <div class="ContainerAlerts">
@@ -69,8 +69,8 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
                 {{ containerAlert }}
             </div>
             <div class="container">
-                <ng-container [openDelay]="openDelay()" [closeDelay]="closeDelay()" rdxTooltipRoot>
-                    <button class="reset IconButton" rdxTooltipTrigger>
+                <ng-container [openDelay]="openDelay()" [closeDelay]="closeDelay()" rdxHoverCardRoot>
+                    <button class="reset IconButton" rdxHoverCardTrigger>
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                     </button>
 
@@ -82,29 +82,29 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
                         [alternatePositionsDisabled]="disableAlternatePositions()"
                         [onOverlayEscapeKeyDownDisabled]="onOverlayEscapeKeyDownDisabled()"
                         [onOverlayOutsideClickDisabled]="onOverlayOutsideClickDisabled()"
-                        rdxTooltipContent
+                        rdxHoverCardContent
                     >
-                        <div class="TooltipContent" rdxTooltipContentAttributes>
-                            <button class="reset TooltipClose" rdxTooltipClose aria-label="Close">
+                        <div class="HoverCardContent" rdxHoverCardContentAttributes>
+                            <button class="reset HoverCardClose" rdxHoverCardClose aria-label="Close">
                                 <lucide-angular [img]="XIcon" size="12" style="display: flex" />
                             </button>
                             Add to library
                             <div
-                                class="TooltipArrow"
+                                class="HoverCardArrow"
                                 [width]="arrowWidth()"
                                 [height]="arrowHeight()"
-                                rdxTooltipArrow
+                                rdxHoverCardArrow
                             ></div>
                         </div>
                     </ng-template>
                 </ng-container>
             </div>
-            <div class="TooltipId">ID: {{ rootDirective()?.uniqueId() }}</div>
-        </tooltip-with-option-panel>
+            <div class="HoverCardId">ID: {{ rootDirective()?.uniqueId() }}</div>
+        </with-option-panel>
     `
 })
-export class RdxTooltipPositioningComponent extends OptionPanelBase {
-    readonly rootDirective = viewChild(RdxTooltipRootDirective);
+export class RdxHoverCardPositioningComponent extends OptionPanelBase {
+    readonly rootDirective = viewChild(RdxHoverCardRootDirective);
 
     readonly selectedSide = signal(RdxPositionSide.Top);
     readonly selectedAlign = signal(RdxPositionAlign.Center);

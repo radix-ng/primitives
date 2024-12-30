@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
-import { RdxTooltipAnchorDirective } from './src/hover-card-anchor.directive';
-import { RdxTooltipArrowDirective } from './src/hover-card-arrow.directive';
-import { RdxTooltipCloseDirective } from './src/hover-card-close.directive';
-import { RdxTooltipContentAttributesComponent } from './src/hover-card-content-attributes.component';
-import { RdxTooltipContentDirective } from './src/hover-card-content.directive';
-import { RdxTooltipRootDirective } from './src/hover-card-root.directive';
-import { RdxTooltipTriggerDirective } from './src/hover-card-trigger.directive';
+import { RdxHoverCardAnchorDirective } from './src/hover-card-anchor.directive';
+import { RdxHoverCardArrowDirective } from './src/hover-card-arrow.directive';
+import { RdxHoverCardCloseDirective } from './src/hover-card-close.directive';
+import { RdxHoverCardContentAttributesComponent } from './src/hover-card-content-attributes.component';
+import { RdxHoverCardContentDirective } from './src/hover-card-content.directive';
+import { RdxHoverCardRootDirective } from './src/hover-card-root.directive';
+import { RdxHoverCardTriggerDirective } from './src/hover-card-trigger.directive';
 
 export * from './src/hover-card-anchor.directive';
 export * from './src/hover-card-arrow.directive';
@@ -16,13 +16,13 @@ export * from './src/hover-card-root.directive';
 export * from './src/hover-card-trigger.directive';
 
 const _imports = [
-    RdxTooltipArrowDirective,
-    RdxTooltipCloseDirective,
-    RdxTooltipContentDirective,
-    RdxTooltipTriggerDirective,
-    RdxTooltipRootDirective,
-    RdxTooltipAnchorDirective,
-    RdxTooltipContentAttributesComponent
+    RdxHoverCardArrowDirective,
+    RdxHoverCardCloseDirective,
+    RdxHoverCardContentDirective,
+    RdxHoverCardTriggerDirective,
+    RdxHoverCardRootDirective,
+    RdxHoverCardAnchorDirective,
+    RdxHoverCardContentAttributesComponent
 ];
 
 @NgModule({

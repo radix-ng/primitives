@@ -1,52 +1,55 @@
 import {ArgTypes, Canvas, Markdown, Meta, Source} from '@storybook/blocks';
-import * as TooltipStories from "./hover-card.stories";
-import {RdxTooltipRootDirective} from "../src/hover-card-root.directive";
-import {RdxTooltipContentDirective} from "../src/hover-card-content.directive";
-import {RdxTooltipArrowDirective} from "../src/hover-card-arrow.directive";
-import {RdxTooltipAnchorDirective} from "../src/hover-card-anchor.directive";
-import {RdxTooltipTriggerDirective} from "../src/hover-card-trigger.directive";
-import {RdxTooltipCloseDirective} from "../src/hover-card-close.directive";
+import * as HoverCardStories from "./hover-card.stories";
+import {RdxHoverCardRootDirective} from "../src/hover-card-root.directive";
+import {RdxHoverCardContentDirective} from "../src/hover-card-content.directive";
+import {RdxHoverCardArrowDirective} from "../src/hover-card-arrow.directive";
+import {RdxHoverCardAnchorDirective} from "../src/hover-card-anchor.directive";
+import {RdxHoverCardTriggerDirective} from "../src/hover-card-trigger.directive";
+import {RdxHoverCardCloseDirective} from "../src/hover-card-close.directive";
 import {animationStylesOnly} from "./utils/styles.constants";
-import {RdxTooltipContentAttributesComponent} from "../src/hover-card-content-attributes.component";
+import {RdxHoverCardContentAttributesComponent} from "../src/hover-card-content-attributes.component";
 
-<Meta title="Primitives/Tooltip" />
+<Meta title="Primitives/Hover Card" />
 
-# Tooltip
+# Hover Card
 
-#### A popup that displays information ready to interact with related to an element when the element receives click on it.
+#### For sighted users to preview content available behind a link.
+
+<br />
+<br />
 
 ## Examples
 ### Default
 
-<Canvas sourceState="hidden" of={TooltipStories.Default} />
+<Canvas sourceState="hidden" of={HoverCardStories.Default} />
 
 ### Multiple
 
-<Canvas sourceState="hidden" of={TooltipStories.Multiple} />
+<Canvas sourceState="hidden" of={HoverCardStories.Multiple} />
 
 ### Events
 
-<Canvas sourceState="hidden" of={TooltipStories.Events} />
+<Canvas sourceState="hidden" of={HoverCardStories.Events} />
 
 ### Positioning
 
-<Canvas sourceState="hidden" of={TooltipStories.Positioning} />
+<Canvas sourceState="hidden" of={HoverCardStories.Positioning} />
 
 ### External Triggering
 
-<Canvas sourceState="hidden" of={TooltipStories.ExternalTriggering} />
+<Canvas sourceState="hidden" of={HoverCardStories.ExternalTriggering} />
 
 ### Anchor
 
-<Canvas sourceState="hidden" of={TooltipStories.Anchor} />
+<Canvas sourceState="hidden" of={HoverCardStories.Anchor} />
 
 ### Initially Open
 
-<Canvas sourceState="hidden" of={TooltipStories.InitiallyOpen} />
+<Canvas sourceState="hidden" of={HoverCardStories.InitiallyOpen} />
 
 ### Animations
 
-<Canvas sourceState="hidden" of={TooltipStories.Animations} />
+<Canvas sourceState="hidden" of={HoverCardStories.Animations} />
 
 ### Animation Styles
 
@@ -62,14 +65,14 @@ import {RdxTooltipContentAttributesComponent} from "../src/hover-card-content-at
 ## Anatomy
 
 ```html
-<ng-container rdxTooltipRoot>
-    <button class="IconButton" rdxTooltipTrigger>+</button>
+<ng-container rdxHoverCardRoot>
+    <button class="IconButton" rdxHoverCardTrigger>+</button>
 
-    <ng-template rdxTooltipContent>
-        <div class="TooltipContent" rdxTooltipContentAttributes>
-            <button class="TooltipClose" rdxTooltipClose aria-label="Close">X</button>
+    <ng-template rdxHoverCardContent>
+        <div class="HoverCardContent" rdxHoverCardContentAttributes>
+            <button class="HoverCardClose" rdxHoverCardClose aria-label="Close">X</button>
             Add to library
-            <div class="TooltipArrow" rdxTooltipArrow></div>
+            <div class="HoverCardArrow" rdxHoverCardArrow></div>
         </div>
     </ng-template>
 </ng-container>
@@ -80,77 +83,77 @@ import {RdxTooltipContentAttributesComponent} from "../src/hover-card-content-at
 Get started with importing the directives:
 
 <Source type="code" language="typescript" code={`import {
-  RdxTooltipRootDirective,
-  RdxTooltipRootTrigger,
-  RdxTooltipContentDirective,
-  RdxTooltipArrowDirective,
-  RdxTooltipAnchorDirective,
-  RdxTooltipCloseDirective
-} from '@radix-ng/primitives/tooltip';`} />
+  RdxHoverCardRootDirective,
+  RdxHoverCardRootTrigger,
+  RdxHoverCardContentDirective,
+  RdxHoverCardArrowDirective,
+  RdxHoverCardAnchorDirective,
+  RdxHoverCardCloseDirective
+} from '@radix-ng/primitives/hover-card';`} />
 
 or
 
-<Source type="code" language="typescript" code={`import { RdxTooltipModule } from '@radix-ng/primitives/tooltip';`} />
+<Source type="code" language="typescript" code={`import { RdxHoverCardModule } from '@radix-ng/primitives/hover-card';`} />
 
 ## API Reference
 
 ### Root
-`RdxTooltipRootDirective`
+`RdxHoverCardRootDirective`
 
-Contains all the parts of a tooltip.
+Contains all the parts of a hover-card.
 
-<ArgTypes of={RdxTooltipRootDirective} />
+<ArgTypes of={RdxHoverCardRootDirective} />
 
 ### Trigger
-`RdxTooltipTriggerDirective`
+`RdxHoverCardTriggerDirective`
 
-The button that toggles the tooltip. By default, the TooltipContent will position itself against the trigger.
+The button that toggles the hover-card. By default, the HoverCardContent will position itself against the trigger.
 
 <Markdown>
 {`
 | Data attribute | Value          |
 |----------------|----------------|
-| [data-state]   | <code>"closed" | "open" (type RdxTooltipState)</code>
+| [data-state]   | <code>"closed" | "open" (type RdxHoverCardState)</code>
 `}
 </Markdown>
 
 ### Anchor
-`RdxTooltipAnchorDirective`
+`RdxHoverCardAnchorDirective`
 
-An optional element to position the TooltipContent against. If this part is not used, the content will position alongside the TooltipTrigger.
+An optional element to position the HoverCardContent against. If this part is not used, the content will position alongside the HoverCardTrigger.
 
 ### Content
-`RdxTooltipContentDirective`
+`RdxHoverCardContentDirective`
 
-The component that pops out when the tooltip is open.
+The component that pops out when the hover-card is open.
 
-<ArgTypes of={RdxTooltipContentDirective} />
+<ArgTypes of={RdxHoverCardContentDirective} />
 
 ### Content Attributes
-`RdxTooltipContentAttributesComponent`
+`RdxHoverCardContentAttributesComponent`
 
 A component with the content attributes that are necessary to run animations.
 
-<ArgTypes of={RdxTooltipContentAttributesComponent} />
+<ArgTypes of={RdxHoverCardContentAttributesComponent} />
 
 <Markdown>
 {`
 | Data attribute | Value          |
 |----------------|----------------|
-| [data-state]   | <code>"closed" | "open" (enum RdxTooltipState)</code>
+| [data-state]   | <code>"closed" | "open" (enum RdxHoverCardState)</code>
 | [data-side]    | <code>"left"   | "right" | "bottom" | "top" (enum RdxPositionSide)</code>
 | [data-align]   | <code>"start"  | "end" | "center" (enum RdxPositionAlign)</code>
 `}
 </Markdown>
 
 ### Arrow
-`RdxTooltipArrowDirective`
+`RdxHoverCardArrowDirective`
 
-An optional arrow element to render alongside the tooltip. This can be used to help visually link the trigger with the TooltipContent. Must be rendered inside TooltipContent.
+An optional arrow element to render alongside the hover-card. This can be used to help visually link the trigger with the HoverCardContent. Must be rendered inside HoverCardContent.
 
-<ArgTypes of={RdxTooltipArrowDirective} />
+<ArgTypes of={RdxHoverCardArrowDirective} />
 
 ### Close
-`RdxTooltipCloseDirective`
+`RdxHoverCardCloseDirective`
 
-An optional close button element to render alongside the tooltip. This can be used to close the TooltipContent. Must be rendered inside TooltipContent.
+An optional close button element to render alongside the hover-card. This can be used to close the HoverCardContent. Must be rendered inside HoverCardContent.

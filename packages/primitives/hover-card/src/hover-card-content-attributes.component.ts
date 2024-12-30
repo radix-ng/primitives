@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, forwardRef } from '@angular/core';
-import { RdxTooltipContentAttributesToken } from './hover-card-content-attributes.token';
-import { injectTooltipRoot } from './hover-card-root.inject';
-import { RdxTooltipAnimationStatus, RdxTooltipState } from './hover-card.types';
+import { RdxHoverCardContentAttributesToken } from './hover-card-content-attributes.token';
+import { injectHoverCardRoot } from './hover-card-root.inject';
+import { RdxHoverCardAnimationStatus, RdxHoverCardState } from './hover-card.types';
 
 @Component({
-    selector: '[rdxTooltipContentAttributes]',
+    selector: '[rdxHoverCardContentAttributes]',
     template: `
         <ng-content />
     `,
@@ -20,18 +20,18 @@ import { RdxTooltipAnimationStatus, RdxTooltipState } from './hover-card.types';
     },
     providers: [
         {
-            provide: RdxTooltipContentAttributesToken,
-            useExisting: forwardRef(() => RdxTooltipContentAttributesComponent)
+            provide: RdxHoverCardContentAttributesToken,
+            useExisting: forwardRef(() => RdxHoverCardContentAttributesComponent)
         }
     ],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RdxTooltipContentAttributesComponent {
+export class RdxHoverCardContentAttributesComponent {
     /** @ignore */
-    protected readonly rootDirective = injectTooltipRoot();
+    protected readonly rootDirective = injectHoverCardRoot();
 
     /** @ignore */
-    readonly name = computed(() => `rdx-tooltip-content-attributes-${this.rootDirective.uniqueId()}`);
+    readonly name = computed(() => `rdx-hover-card-content-attributes-${this.rootDirective.uniqueId()}`);
 
     /** @ignore */
     readonly disableAnimation = computed(() => !this.canAnimate());
@@ -39,18 +39,18 @@ export class RdxTooltipContentAttributesComponent {
     /** @ignore */
     protected onAnimationStart(_: AnimationEvent) {
         this.rootDirective.cssAnimationStatus.set(
-            this.rootDirective.state() === RdxTooltipState.OPEN
-                ? RdxTooltipAnimationStatus.OPEN_STARTED
-                : RdxTooltipAnimationStatus.CLOSED_STARTED
+            this.rootDirective.state() === RdxHoverCardState.OPEN
+                ? RdxHoverCardAnimationStatus.OPEN_STARTED
+                : RdxHoverCardAnimationStatus.CLOSED_STARTED
         );
     }
 
     /** @ignore */
     protected onAnimationEnd(_: AnimationEvent) {
         this.rootDirective.cssAnimationStatus.set(
-            this.rootDirective.state() === RdxTooltipState.OPEN
-                ? RdxTooltipAnimationStatus.OPEN_ENDED
-                : RdxTooltipAnimationStatus.CLOSED_ENDED
+            this.rootDirective.state() === RdxHoverCardState.OPEN
+                ? RdxHoverCardAnimationStatus.OPEN_ENDED
+                : RdxHoverCardAnimationStatus.CLOSED_ENDED
         );
     }
 
@@ -58,8 +58,8 @@ export class RdxTooltipContentAttributesComponent {
     private canAnimate() {
         return (
             this.rootDirective.cssAnimation() &&
-            ((this.rootDirective.cssOpeningAnimation() && this.rootDirective.state() === RdxTooltipState.OPEN) ||
-                (this.rootDirective.cssClosingAnimation() && this.rootDirective.state() === RdxTooltipState.CLOSED))
+            ((this.rootDirective.cssOpeningAnimation() && this.rootDirective.state() === RdxHoverCardState.OPEN) ||
+                (this.rootDirective.cssClosingAnimation() && this.rootDirective.state() === RdxHoverCardState.CLOSED))
         );
     }
 }

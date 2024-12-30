@@ -1,13 +1,13 @@
 import { CdkOverlayOrigin } from '@angular/cdk/overlay';
 import { computed, Directive, ElementRef, forwardRef, inject } from '@angular/core';
 import { injectDocument } from '@radix-ng/primitives/core';
-import { RdxTooltipAnchorToken } from './hover-card-anchor.token';
-import { RdxTooltipRootDirective } from './hover-card-root.directive';
-import { injectTooltipRoot } from './hover-card-root.inject';
+import { RdxHoverCardAnchorToken } from './hover-card-anchor.token';
+import { RdxHoverCardRootDirective } from './hover-card-root.directive';
+import { injectHoverCardRoot } from './hover-card-root.inject';
 
 @Directive({
-    selector: '[rdxTooltipAnchor]',
-    exportAs: 'rdxTooltipAnchor',
+    selector: '[rdxHoverCardAnchor]',
+    exportAs: 'rdxHoverCardAnchor',
     hostDirectives: [CdkOverlayOrigin],
     host: {
         type: 'button',
@@ -17,18 +17,18 @@ import { injectTooltipRoot } from './hover-card-root.inject';
     },
     providers: [
         {
-            provide: RdxTooltipAnchorToken,
-            useExisting: forwardRef(() => RdxTooltipAnchorDirective)
+            provide: RdxHoverCardAnchorToken,
+            useExisting: forwardRef(() => RdxHoverCardAnchorDirective)
         }
     ]
 })
-export class RdxTooltipAnchorDirective {
+export class RdxHoverCardAnchorDirective {
     /**
      * @ignore
      * If outside the rootDirective then null, otherwise the rootDirective directive - with optional `true` passed in as the first param.
-     * If outside the rootDirective and non-null value that means the html structure is wrong - tooltip inside tooltip.
+     * If outside the rootDirective and non-null value that means the html structure is wrong - hover-card inside hover-card.
      * */
-    protected rootDirective = injectTooltipRoot(true);
+    protected rootDirective = injectHoverCardRoot(true);
     /** @ignore */
     readonly elementRef = inject(ElementRef);
     /** @ignore */
@@ -37,7 +37,7 @@ export class RdxTooltipAnchorDirective {
     readonly document = injectDocument();
 
     /** @ignore */
-    readonly name = computed(() => `rdx-tooltip-external-anchor-${this.rootDirective?.uniqueId()}`);
+    readonly name = computed(() => `rdx-hover-card-external-anchor-${this.rootDirective?.uniqueId()}`);
 
     /** @ignore */
     click(): void {
@@ -45,7 +45,7 @@ export class RdxTooltipAnchorDirective {
     }
 
     /** @ignore */
-    setRoot(root: RdxTooltipRootDirective) {
+    setRoot(root: RdxHoverCardRootDirective) {
         this.rootDirective = root;
     }
 

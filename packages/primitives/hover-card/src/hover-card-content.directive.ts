@@ -25,18 +25,18 @@ import {
     RdxPositionSideAndAlignOffsets
 } from '@radix-ng/primitives/core';
 import { filter, tap } from 'rxjs';
-import { injectTooltipRoot } from './hover-card-root.inject';
-import { RdxTooltipAttachDetachEvent } from './hover-card.types';
+import { injectHoverCardRoot } from './hover-card-root.inject';
+import { RdxHoverCardAttachDetachEvent } from './hover-card.types';
 
 @Directive({
-    selector: '[rdxTooltipContent]',
+    selector: '[rdxHoverCardContent]',
     hostDirectives: [
         CdkConnectedOverlay
     ]
 })
-export class RdxTooltipContentDirective implements OnInit {
+export class RdxHoverCardContentDirective implements OnInit {
     /** @ignore */
-    private readonly rootDirective = injectTooltipRoot();
+    private readonly rootDirective = injectHoverCardRoot();
     /** @ignore */
     private readonly templateRef = inject(TemplateRef);
     /** @ignore */
@@ -47,7 +47,7 @@ export class RdxTooltipContentDirective implements OnInit {
     private readonly connectedOverlay = inject(CdkConnectedOverlay);
 
     /** @ignore */
-    readonly name = computed(() => `rdx-tooltip-trigger-${this.rootDirective.uniqueId()}`);
+    readonly name = computed(() => `rdx-hover-card-trigger-${this.rootDirective.uniqueId()}`);
 
     /**
      * @description The preferred side of the trigger to render against when open. Will be reversed when collisions occur and avoidCollisions is enabled.
@@ -221,7 +221,7 @@ export class RdxTooltipContentDirective implements OnInit {
                     /**
                      * `this.onOpen.emit();` is being delegated to the rootDirective directive due to the opening animation
                      */
-                    this.rootDirective.attachDetachEvent.set(RdxTooltipAttachDetachEvent.ATTACH);
+                    this.rootDirective.attachDetachEvent.set(RdxHoverCardAttachDetachEvent.ATTACH);
                 }),
                 takeUntilDestroyed(this.destroyRef)
             )
@@ -237,7 +237,7 @@ export class RdxTooltipContentDirective implements OnInit {
                     /**
                      * `this.onClosed.emit();` is being delegated to the rootDirective directive due to the closing animation
                      */
-                    this.rootDirective.attachDetachEvent.set(RdxTooltipAttachDetachEvent.DETACH);
+                    this.rootDirective.attachDetachEvent.set(RdxHoverCardAttachDetachEvent.DETACH);
                 }),
                 takeUntilDestroyed(this.destroyRef)
             )

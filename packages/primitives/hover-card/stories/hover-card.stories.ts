@@ -2,31 +2,31 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { LucideAngularModule, MountainSnow, X } from 'lucide-angular';
 import { RdxHoverCardModule } from '../index';
-import { RdxTooltipAnchorComponent } from './hover-card-anchor.component';
-import { RdxTooltipAnimationsComponent } from './hover-card-animations.component';
-import { RdxTooltipDefaultComponent } from './hover-card-default.component';
-import { RdxTooltipEventsComponent } from './hover-card-events.components';
-import { RdxTooltipInitiallyOpenComponent } from './hover-card-initially-open.component';
-import { RdxTooltipMultipleComponent } from './hover-card-multiple.component';
-import { RdxTooltipPositioningComponent } from './hover-card-positioning.component';
-import { RdxTooltipTriggeringComponent } from './hover-card-triggering.component';
+import { RdxHoverCardAnchorComponent } from './hover-card-anchor.component';
+import { RdxHoverCardAnimationsComponent } from './hover-card-animations.component';
+import { RdxHoverCardDefaultComponent } from './hover-card-default.component';
+import { RdxHoverCardEventsComponent } from './hover-card-events.components';
+import { RdxHoverCardInitiallyOpenComponent } from './hover-card-initially-open.component';
+import { RdxHoverCardMultipleComponent } from './hover-card-multiple.component';
+import { RdxHoverCardPositioningComponent } from './hover-card-positioning.component';
+import { RdxHoverCardTriggeringComponent } from './hover-card-triggering.component';
 
 const html = String.raw;
 
 export default {
-    title: 'Primitives/Tooltip',
+    title: 'Primitives/Hover Card',
     decorators: [
         moduleMetadata({
             imports: [
                 RdxHoverCardModule,
-                RdxTooltipDefaultComponent,
-                RdxTooltipEventsComponent,
-                RdxTooltipPositioningComponent,
-                RdxTooltipTriggeringComponent,
-                RdxTooltipMultipleComponent,
-                RdxTooltipAnimationsComponent,
-                RdxTooltipInitiallyOpenComponent,
-                RdxTooltipAnchorComponent,
+                RdxHoverCardDefaultComponent,
+                RdxHoverCardEventsComponent,
+                RdxHoverCardPositioningComponent,
+                RdxHoverCardTriggeringComponent,
+                RdxHoverCardMultipleComponent,
+                RdxHoverCardAnimationsComponent,
+                RdxHoverCardInitiallyOpenComponent,
+                RdxHoverCardAnchorComponent,
                 LucideAngularModule,
                 LucideAngularModule.pick({ MountainSnow, X })
             ],
@@ -52,7 +52,7 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: html`
-            <rdx-tooltip-default></rdx-tooltip-default>
+            <rdx-hover-card-default></rdx-hover-card-default>
         `
     })
 };
@@ -60,7 +60,7 @@ export const Default: Story = {
 export const Multiple: Story = {
     render: () => ({
         template: html`
-            <rdx-tooltip-multiple></rdx-tooltip-multiple>
+            <rdx-hover-card-multiple></rdx-hover-card-multiple>
         `
     })
 };
@@ -68,7 +68,7 @@ export const Multiple: Story = {
 export const Events: Story = {
     render: () => ({
         template: html`
-            <rdx-tooltip-events></rdx-tooltip-events>
+            <rdx-hover-card-events></rdx-hover-card-events>
         `
     })
 };
@@ -76,7 +76,7 @@ export const Events: Story = {
 export const Positioning: Story = {
     render: () => ({
         template: html`
-            <rdx-tooltip-positioning></rdx-tooltip-positioning>
+            <rdx-hover-card-positioning></rdx-hover-card-positioning>
         `
     })
 };
@@ -84,7 +84,7 @@ export const Positioning: Story = {
 export const ExternalTriggering: Story = {
     render: () => ({
         template: html`
-            <rdx-tooltip-triggering></rdx-tooltip-triggering>
+            <rdx-hover-card-triggering></rdx-hover-card-triggering>
         `
     })
 };
@@ -92,7 +92,7 @@ export const ExternalTriggering: Story = {
 export const Anchor: Story = {
     render: () => ({
         template: html`
-            <rdx-tooltip-anchor></rdx-tooltip-anchor>
+            <rdx-hover-card-anchor></rdx-hover-card-anchor>
         `
     })
 };
@@ -100,7 +100,7 @@ export const Anchor: Story = {
 export const InitiallyOpen: Story = {
     render: () => ({
         template: html`
-            <rdx-tooltip-initially-open></rdx-tooltip-initially-open>
+            <rdx-hover-card-initially-open></rdx-hover-card-initially-open>
         `
     })
 };
@@ -108,7 +108,7 @@ export const InitiallyOpen: Story = {
 export const Animations: Story = {
     render: () => ({
         template: html`
-            <rdx-tooltip-animations></rdx-tooltip-animations>
+            <rdx-hover-card-animations></rdx-hover-card-animations>
         `
     })
 };

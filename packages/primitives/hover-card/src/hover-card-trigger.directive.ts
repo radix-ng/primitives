@@ -1,9 +1,9 @@
 import { CdkOverlayOrigin } from '@angular/cdk/overlay';
 import { computed, Directive, ElementRef, inject } from '@angular/core';
-import { injectTooltipRoot } from './hover-card-root.inject';
+import { injectHoverCardRoot } from './hover-card-root.inject';
 
 @Directive({
-    selector: '[rdxTooltipTrigger]',
+    selector: '[rdxHoverCardTrigger]',
     hostDirectives: [CdkOverlayOrigin],
     host: {
         type: 'button',
@@ -19,16 +19,16 @@ import { injectTooltipRoot } from './hover-card-root.inject';
         '(click)': 'click()'
     }
 })
-export class RdxTooltipTriggerDirective {
+export class RdxHoverCardTriggerDirective {
     /** @ignore */
-    protected readonly rootDirective = injectTooltipRoot();
+    protected readonly rootDirective = injectHoverCardRoot();
     /** @ignore */
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     /** @ignore */
     readonly overlayOrigin = inject(CdkOverlayOrigin);
 
     /** @ignore */
-    readonly name = computed(() => `rdx-tooltip-trigger-${this.rootDirective.uniqueId()}`);
+    readonly name = computed(() => `rdx-hover-card-trigger-${this.rootDirective.uniqueId()}`);
 
     /** @ignore */
     pointerenter(): void {

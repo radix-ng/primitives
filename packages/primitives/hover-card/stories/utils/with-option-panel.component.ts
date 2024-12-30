@@ -11,12 +11,12 @@ import {
     signal
 } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RdxTooltipRootDirective } from '../../src/hover-card-root.directive';
+import { RdxHoverCardRootDirective } from '../../src/hover-card-root.directive';
 import { paramsAndEventsOnly } from './styles.constants';
 import { Message } from './types';
 
 @Component({
-    selector: 'tooltip-with-option-panel',
+    selector: 'with-option-panel',
     styles: paramsAndEventsOnly,
     template: `
         <ng-content select=".ParamsContainer" />
@@ -71,7 +71,7 @@ import { Message } from './types';
         <ng-template #messageTpl let-message="message" let-index="index">
             <p class="Message">
                 {{ index }}.
-                <span class="MessageId">[({{ message.timeFromPrev }}ms) TOOLTIP ID {{ rootUniqueId() }}]</span>
+                <span class="MessageId">[({{ message.timeFromPrev }}ms) HOVER CARD ID {{ rootUniqueId() }}]</span>
                 {{ message.value }}
             </p>
         </ng-template>
@@ -94,7 +94,7 @@ export class WithOptionPanelComponent {
 
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
-    readonly rootDirective = contentChild.required(RdxTooltipRootDirective);
+    readonly rootDirective = contentChild.required(RdxHoverCardRootDirective);
 
     readonly paramsContainerCounter = signal(0);
 
@@ -155,24 +155,24 @@ export class WithOptionPanelComponent {
 
     private onOverlayEscapeKeyDown = () => {
         this.addMessage({
-            value: `[TooltipRoot] Escape clicked! (disabled: ${this.onOverlayEscapeKeyDownDisabled()})`,
+            value: `[HoverCardRoot] Escape clicked! (disabled: ${this.onOverlayEscapeKeyDownDisabled()})`,
             timeFromPrev: this.timeFromPrev()
         });
     };
 
     private onOverlayOutsideClick = () => {
         this.addMessage({
-            value: `[TooltipRoot] Mouse clicked outside the tooltip! (disabled: ${this.onOverlayOutsideClickDisabled()})`,
+            value: `[HoverCardRoot] Mouse clicked outside the hover-card! (disabled: ${this.onOverlayOutsideClickDisabled()})`,
             timeFromPrev: this.timeFromPrev()
         });
     };
 
     private onOpen = () => {
-        this.addMessage({ value: '[TooltipContent] Open', timeFromPrev: this.timeFromPrev() });
+        this.addMessage({ value: '[HoverCardContent] Open', timeFromPrev: this.timeFromPrev() });
     };
 
     private onClose = () => {
-        this.addMessage({ value: '[TooltipContent] Closed', timeFromPrev: this.timeFromPrev() });
+        this.addMessage({ value: '[HoverCardContent] Closed', timeFromPrev: this.timeFromPrev() });
     };
 
     protected addMessage = (message: Message) => {

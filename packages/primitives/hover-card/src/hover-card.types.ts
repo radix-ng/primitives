@@ -1,19 +1,19 @@
-export enum RdxTooltipState {
+export enum RdxHoverCardState {
     OPEN = 'open',
     CLOSED = 'closed'
 }
 
-export enum RdxTooltipAction {
+export enum RdxHoverCardAction {
     OPEN = 'open',
     CLOSE = 'close'
 }
 
-export enum RdxTooltipAttachDetachEvent {
+export enum RdxHoverCardAttachDetachEvent {
     ATTACH = 'attach',
     DETACH = 'detach'
 }
 
-export enum RdxTooltipAnimationStatus {
+export enum RdxHoverCardAnimationStatus {
     OPEN_STARTED = 'open_started',
     OPEN_ENDED = 'open_ended',
     CLOSED_STARTED = 'closed_started',

@@ -16,62 +16,62 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounce, map, Subject, tap, timer } from 'rxjs';
-import { RdxTooltipAnchorDirective } from './hover-card-anchor.directive';
-import { RdxTooltipAnchorToken } from './hover-card-anchor.token';
-import { RdxTooltipArrowToken } from './hover-card-arrow.token';
-import { RdxTooltipCloseToken } from './hover-card-close.token';
-import { RdxTooltipContentAttributesToken } from './hover-card-content-attributes.token';
-import { RdxTooltipContentDirective } from './hover-card-content.directive';
-import { RdxTooltipTriggerDirective } from './hover-card-trigger.directive';
+import { RdxHoverCardAnchorDirective } from './hover-card-anchor.directive';
+import { RdxHoverCardAnchorToken } from './hover-card-anchor.token';
+import { RdxHoverCardArrowToken } from './hover-card-arrow.token';
+import { RdxHoverCardCloseToken } from './hover-card-close.token';
+import { RdxHoverCardContentAttributesToken } from './hover-card-content-attributes.token';
+import { RdxHoverCardContentDirective } from './hover-card-content.directive';
+import { RdxHoverCardTriggerDirective } from './hover-card-trigger.directive';
 import {
-    RdxTooltipAction,
-    RdxTooltipAnimationStatus,
-    RdxTooltipAttachDetachEvent,
-    RdxTooltipState
+    RdxHoverCardAction,
+    RdxHoverCardAnimationStatus,
+    RdxHoverCardAttachDetachEvent,
+    RdxHoverCardState
 } from './hover-card.types';
 import { injectRdxCdkEventService } from './utils/cdk-event.service';
 
 let nextId = 0;
 
 @Directive({
-    selector: '[rdxTooltipRoot]',
-    exportAs: 'rdxTooltipRoot'
+    selector: '[rdxHoverCardRoot]',
+    exportAs: 'rdxHoverCardRoot'
 })
-export class RdxTooltipRootDirective {
+export class RdxHoverCardRootDirective {
     /** @ignore */
     readonly uniqueId = signal(++nextId);
     /** @ignore */
-    readonly name = computed(() => `rdx-tooltip-root-${this.uniqueId()}`);
+    readonly name = computed(() => `rdx-hover-card-root-${this.uniqueId()}`);
 
     /**
-     * @description The anchor directive that comes form outside the tooltip rootDirective
+     * @description The anchor directive that comes form outside the hover-card rootDirective
      * @default undefined
      */
-    readonly anchor = input<RdxTooltipAnchorDirective | undefined>(void 0);
+    readonly anchor = input<RdxHoverCardAnchorDirective | undefined>(void 0);
     /**
-     * @description The open state of the tooltip when it is initially rendered. Use when you do not need to control its open state.
+     * @description The open state of the hover-card when it is initially rendered. Use when you do not need to control its open state.
      * @default false
      */
     readonly defaultOpen = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
     /**
-     * @description The controlled state of the tooltip. `open` input take precedence of `defaultOpen` input.
+     * @description The controlled state of the hover-card. `open` input take precedence of `defaultOpen` input.
      * @default undefined
      */
     readonly open = input<boolean | undefined, BooleanInput>(void 0, { transform: booleanAttribute });
     /**
-     * To customise the open delay for a specific tooltip.
+     * To customise the open delay for a specific hover-card.
      */
     readonly openDelay = input<number, NumberInput>(500, {
         transform: numberAttribute
     });
     /**
-     * To customise the close delay for a specific tooltip.
+     * To customise the close delay for a specific hover-card.
      */
     readonly closeDelay = input<number, NumberInput>(200, {
         transform: numberAttribute
     });
     /**
-     * @description Whether to control the state of the tooltip from external. Use in conjunction with `open` input.
+     * @description Whether to control the state of the hover-card from external. Use in conjunction with `open` input.
      * @default undefined
      */
     readonly externalControl = input<boolean | undefined, BooleanInput>(void 0, { transform: booleanAttribute });
@@ -92,20 +92,20 @@ export class RdxTooltipRootDirective {
     readonly cssClosingAnimation = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /** @ignore */
-    readonly cssAnimationStatus = signal<RdxTooltipAnimationStatus | null>(null);
+    readonly cssAnimationStatus = signal<RdxHoverCardAnimationStatus | null>(null);
 
     /** @ignore */
-    readonly contentDirective = contentChild.required(RdxTooltipContentDirective);
+    readonly contentDirective = contentChild.required(RdxHoverCardContentDirective);
     /** @ignore */
-    readonly triggerDirective = contentChild.required(RdxTooltipTriggerDirective);
+    readonly triggerDirective = contentChild.required(RdxHoverCardTriggerDirective);
     /** @ignore */
-    readonly arrowDirective = contentChild(RdxTooltipArrowToken);
+    readonly arrowDirective = contentChild(RdxHoverCardArrowToken);
     /** @ignore */
-    readonly closeDirective = contentChild(RdxTooltipCloseToken);
+    readonly closeDirective = contentChild(RdxHoverCardCloseToken);
     /** @ignore */
-    readonly contentAttributesComponent = contentChild(RdxTooltipContentAttributesToken);
+    readonly contentAttributesComponent = contentChild(RdxHoverCardContentAttributesToken);
     /** @ignore */
-    private readonly internalAnchorDirective = contentChild(RdxTooltipAnchorToken);
+    private readonly internalAnchorDirective = contentChild(RdxHoverCardAnchorToken);
 
     /** @ignore */
     readonly viewContainerRef = inject(ViewContainerRef);
@@ -115,10 +115,10 @@ export class RdxTooltipRootDirective {
     readonly destroyRef = inject(DestroyRef);
 
     /** @ignore */
-    readonly state = signal(RdxTooltipState.CLOSED);
+    readonly state = signal(RdxHoverCardState.CLOSED);
 
     /** @ignore */
-    readonly attachDetachEvent = signal(RdxTooltipAttachDetachEvent.DETACH);
+    readonly attachDetachEvent = signal(RdxHoverCardAttachDetachEvent.DETACH);
 
     /** @ignore */
     private readonly isFirstDefaultOpen = signal(false);
@@ -127,7 +127,7 @@ export class RdxTooltipRootDirective {
     readonly anchorDirective = computed(() => this.internalAnchorDirective() ?? this.anchor());
 
     /** @ignore */
-    readonly actionSubject$ = new Subject<RdxTooltipAction>();
+    readonly actionSubject$ = new Subject<RdxHoverCardAction>();
 
     constructor() {
         this.rdxCdkEventService?.registerPrimitive(this);
@@ -176,7 +176,7 @@ export class RdxTooltipRootDirective {
         if (this.externalControl()) {
             return;
         }
-        this.actionSubject$.next(RdxTooltipAction.OPEN);
+        this.actionSubject$.next(RdxHoverCardAction.OPEN);
     }
 
     /** @ignore */
@@ -187,7 +187,7 @@ export class RdxTooltipRootDirective {
         if (!closeButton && this.externalControl()) {
             return;
         }
-        this.actionSubject$.next(RdxTooltipAction.CLOSE);
+        this.actionSubject$.next(RdxHoverCardAction.CLOSE);
     }
 
     /** @ignore */
@@ -199,12 +199,12 @@ export class RdxTooltipRootDirective {
     }
 
     /** @ignore */
-    isOpen(state?: RdxTooltipState) {
-        return (state ?? this.state()) === RdxTooltipState.OPEN;
+    isOpen(state?: RdxHoverCardState) {
+        return (state ?? this.state()) === RdxHoverCardState.OPEN;
     }
 
     /** @ignore */
-    private setState(state = RdxTooltipState.CLOSED): void {
+    private setState(state = RdxHoverCardState.CLOSED): void {
         if (state === this.state()) {
             return;
         }
@@ -238,62 +238,62 @@ export class RdxTooltipRootDirective {
     }
 
     /** @ignore */
-    private ifOpenOrCloseWithoutAnimations(state: RdxTooltipState) {
+    private ifOpenOrCloseWithoutAnimations(state: RdxHoverCardState) {
         return (
             !this.contentAttributesComponent() ||
             !this.cssAnimation() ||
-            (this.cssAnimation() && !this.cssClosingAnimation() && state === RdxTooltipState.CLOSED) ||
-            (this.cssAnimation() && !this.cssOpeningAnimation() && state === RdxTooltipState.OPEN) ||
+            (this.cssAnimation() && !this.cssClosingAnimation() && state === RdxHoverCardState.CLOSED) ||
+            (this.cssAnimation() && !this.cssOpeningAnimation() && state === RdxHoverCardState.OPEN) ||
             // !this.cssAnimationStatus() ||
             (this.cssOpeningAnimation() &&
-                state === RdxTooltipState.OPEN &&
-                [RdxTooltipAnimationStatus.OPEN_STARTED].includes(this.cssAnimationStatus()!)) ||
+                state === RdxHoverCardState.OPEN &&
+                [RdxHoverCardAnimationStatus.OPEN_STARTED].includes(this.cssAnimationStatus()!)) ||
             (this.cssClosingAnimation() &&
-                state === RdxTooltipState.CLOSED &&
-                [RdxTooltipAnimationStatus.CLOSED_STARTED].includes(this.cssAnimationStatus()!))
+                state === RdxHoverCardState.CLOSED &&
+                [RdxHoverCardAnimationStatus.CLOSED_STARTED].includes(this.cssAnimationStatus()!))
         );
     }
 
     /** @ignore */
-    private ifOpenOrCloseWithAnimations(cssAnimationStatus: RdxTooltipAnimationStatus | null) {
+    private ifOpenOrCloseWithAnimations(cssAnimationStatus: RdxHoverCardAnimationStatus | null) {
         return (
             this.contentAttributesComponent() &&
             this.cssAnimation() &&
             cssAnimationStatus &&
             ((this.cssOpeningAnimation() &&
-                this.state() === RdxTooltipState.OPEN &&
-                [RdxTooltipAnimationStatus.OPEN_ENDED].includes(cssAnimationStatus)) ||
+                this.state() === RdxHoverCardState.OPEN &&
+                [RdxHoverCardAnimationStatus.OPEN_ENDED].includes(cssAnimationStatus)) ||
                 (this.cssClosingAnimation() &&
-                    this.state() === RdxTooltipState.CLOSED &&
-                    [RdxTooltipAnimationStatus.CLOSED_ENDED].includes(cssAnimationStatus)))
+                    this.state() === RdxHoverCardState.CLOSED &&
+                    [RdxHoverCardAnimationStatus.CLOSED_ENDED].includes(cssAnimationStatus)))
         );
     }
 
     /** @ignore */
-    private openOrClose(state: RdxTooltipState) {
+    private openOrClose(state: RdxHoverCardState) {
         const isOpen = this.isOpen(state);
         isOpen ? this.openContent() : this.closeContent();
     }
 
     /** @ignore */
-    private emitOnOpenOrOnClosed(state: RdxTooltipState) {
+    private emitOnOpenOrOnClosed(state: RdxHoverCardState) {
         this.isOpen(state)
-            ? this.attachDetachEvent() === RdxTooltipAttachDetachEvent.ATTACH && this.emitOnOpen()
-            : this.attachDetachEvent() === RdxTooltipAttachDetachEvent.DETACH && this.emitOnClosed();
+            ? this.attachDetachEvent() === RdxHoverCardAttachDetachEvent.ATTACH && this.emitOnOpen()
+            : this.attachDetachEvent() === RdxHoverCardAttachDetachEvent.DETACH && this.emitOnClosed();
     }
 
     /** @ignore */
     private canEmitOnOpenOrOnClosed() {
         return (
             !this.cssAnimation() ||
-            (!this.cssOpeningAnimation() && this.state() === RdxTooltipState.OPEN) ||
+            (!this.cssOpeningAnimation() && this.state() === RdxHoverCardState.OPEN) ||
             (this.cssOpeningAnimation() &&
-                this.state() === RdxTooltipState.OPEN &&
-                this.cssAnimationStatus() === RdxTooltipAnimationStatus.OPEN_ENDED) ||
-            (!this.cssClosingAnimation() && this.state() === RdxTooltipState.CLOSED) ||
+                this.state() === RdxHoverCardState.OPEN &&
+                this.cssAnimationStatus() === RdxHoverCardAnimationStatus.OPEN_ENDED) ||
+            (!this.cssClosingAnimation() && this.state() === RdxHoverCardState.CLOSED) ||
             (this.cssClosingAnimation() &&
-                this.state() === RdxTooltipState.CLOSED &&
-                this.cssAnimationStatus() === RdxTooltipAnimationStatus.CLOSED_ENDED)
+                this.state() === RdxHoverCardState.CLOSED &&
+                this.cssAnimationStatus() === RdxHoverCardAnimationStatus.CLOSED_ENDED)
         );
     }
 
@@ -358,7 +358,7 @@ export class RdxTooltipRootDirective {
         effect(() => {
             const open = this.open();
             untracked(() => {
-                this.setState(open ? RdxTooltipState.OPEN : RdxTooltipState.CLOSED);
+                this.setState(open ? RdxHoverCardState.OPEN : RdxHoverCardState.CLOSED);
             });
         });
     }
@@ -397,20 +397,20 @@ export class RdxTooltipRootDirective {
                 map((action) => {
                     console.log(action);
                     switch (action) {
-                        case RdxTooltipAction.OPEN:
+                        case RdxHoverCardAction.OPEN:
                             return { action, duration: this.openDelay() };
-                        case RdxTooltipAction.CLOSE:
+                        case RdxHoverCardAction.CLOSE:
                             return { action, duration: this.closeDelay() };
                     }
                 }),
                 debounce((config) => timer(config.duration)),
                 tap((config) => {
                     switch (config.action) {
-                        case RdxTooltipAction.OPEN:
-                            this.setState(RdxTooltipState.OPEN);
+                        case RdxHoverCardAction.OPEN:
+                            this.setState(RdxHoverCardState.OPEN);
                             break;
-                        case RdxTooltipAction.CLOSE:
-                            this.setState(RdxTooltipState.CLOSED);
+                        case RdxHoverCardAction.CLOSE:
+                            this.setState(RdxHoverCardState.CLOSED);
                             break;
                     }
                 }),

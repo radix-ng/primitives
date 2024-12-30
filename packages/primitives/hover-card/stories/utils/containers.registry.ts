@@ -1,8 +1,8 @@
 import { isDevMode } from '@angular/core';
-import { RdxTooltipRootDirective } from '../../src/hover-card-root.directive';
+import { RdxHoverCardRootDirective } from '../../src/hover-card-root.directive';
 import { injectRdxCdkEventService } from '../../src/utils/cdk-event.service';
 
-const containerRegistry: Map<HTMLElement, RdxTooltipRootDirective> = new Map();
+const containerRegistry: Map<HTMLElement, RdxHoverCardRootDirective> = new Map();
 let rdxCdkEventService: ReturnType<typeof injectRdxCdkEventService> | undefined = void 0;
 
 const domRootClickEventCallback: (event: MouseEvent) => void = (event: MouseEvent) => {
@@ -32,7 +32,7 @@ const domRootClickEventCallback: (event: MouseEvent) => void = (event: MouseEven
     });
 };
 
-export function registerContainer(container: HTMLElement, root: RdxTooltipRootDirective) {
+export function registerContainer(container: HTMLElement, root: RdxHoverCardRootDirective) {
     if (containerRegistry.has(container)) {
         return;
     }

@@ -1,5 +1,5 @@
 import { DestroyRef, ElementRef, Signal } from '@angular/core';
-import { RdxTooltipRootDirective } from '../../src/hover-card-root.directive';
+import { RdxHoverCardRootDirective } from '../../src/hover-card-root.directive';
 import { injectRdxCdkEventService } from '../../src/utils/cdk-event.service';
 
 export interface IIgnoreClickOutsideContainer {
@@ -7,7 +7,7 @@ export interface IIgnoreClickOutsideContainer {
     onOverlayOutsideClickDisabled: Signal<boolean>;
     elementRef: ElementRef<Element>;
     destroyRef: DestroyRef;
-    rootDirectives: Signal<ReadonlyArray<RdxTooltipRootDirective>>;
+    rootDirectives: Signal<ReadonlyArray<RdxHoverCardRootDirective>>;
     document: Document;
     rdxCdkEventService: ReturnType<typeof injectRdxCdkEventService>;
 }

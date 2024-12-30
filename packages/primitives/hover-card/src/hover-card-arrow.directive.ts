@@ -20,23 +20,23 @@ import {
     getSideAndAlignFromAllPossibleConnectedPositions,
     RDX_POSITIONING_DEFAULTS
 } from '@radix-ng/primitives/core';
-import { RdxTooltipArrowToken } from './hover-card-arrow.token';
-import { injectTooltipRoot } from './hover-card-root.inject';
+import { RdxHoverCardArrowToken } from './hover-card-arrow.token';
+import { injectHoverCardRoot } from './hover-card-root.inject';
 
 @Directive({
-    selector: '[rdxTooltipArrow]',
+    selector: '[rdxHoverCardArrow]',
     providers: [
         {
-            provide: RdxTooltipArrowToken,
-            useExisting: forwardRef(() => RdxTooltipArrowDirective)
+            provide: RdxHoverCardArrowToken,
+            useExisting: forwardRef(() => RdxHoverCardArrowDirective)
         }
     ]
 })
-export class RdxTooltipArrowDirective {
+export class RdxHoverCardArrowDirective {
     /** @ignore */
     private readonly renderer = inject(Renderer2);
     /** @ignore */
-    private readonly rootDirective = injectTooltipRoot();
+    private readonly rootDirective = injectHoverCardRoot();
     /** @ignore */
     readonly elementRef = inject(ElementRef);
 

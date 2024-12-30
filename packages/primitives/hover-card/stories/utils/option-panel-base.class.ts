@@ -1,6 +1,6 @@
 import { afterNextRender, DestroyRef, Directive, ElementRef, inject, signal, viewChildren } from '@angular/core';
 import { injectDocument, RDX_POSITIONING_DEFAULTS } from '@radix-ng/primitives/core';
-import { RdxTooltipRootDirective } from '../../src/hover-card-root.directive';
+import { RdxHoverCardRootDirective } from '../../src/hover-card-root.directive';
 import { injectRdxCdkEventService } from '../../src/utils/cdk-event.service';
 import { deregisterContainer, registerContainer, setRdxCdkEventService } from './containers.registry';
 import { IArrowDimensions, IIgnoreClickOutsideContainer, IOpenCloseDelay } from './types';
@@ -18,7 +18,7 @@ export abstract class OptionPanelBase implements IIgnoreClickOutsideContainer, I
 
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     readonly destroyRef = inject(DestroyRef);
-    readonly rootDirectives = viewChildren(RdxTooltipRootDirective);
+    readonly rootDirectives = viewChildren(RdxHoverCardRootDirective);
     readonly document = injectDocument();
     readonly rdxCdkEventService = injectRdxCdkEventService();
 

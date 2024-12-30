@@ -2,8 +2,8 @@ import { Component, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, MapPin, MapPinPlus, MountainSnow, TriangleAlert, X } from 'lucide-angular';
 import { RdxHoverCardModule } from '../index';
-import { RdxTooltipAnchorDirective } from '../src/hover-card-anchor.directive';
-import { RdxTooltipContentAttributesComponent } from '../src/hover-card-content-attributes.component';
+import { RdxHoverCardAnchorDirective } from '../src/hover-card-anchor.directive';
+import { RdxHoverCardContentAttributesComponent } from '../src/hover-card-content-attributes.component';
 import { provideRdxCdkEventService } from '../src/utils/cdk-event.service';
 import { containerAlert } from './utils/constants';
 import { OptionPanelBase } from './utils/option-panel-base.class';
@@ -11,20 +11,20 @@ import styles from './utils/styles.constants';
 import { WithOptionPanelComponent } from './utils/with-option-panel.component';
 
 @Component({
-    selector: 'rdx-tooltip-anchor',
+    selector: 'rdx-hover-card-anchor',
     providers: [provideRdxCdkEventService()],
     imports: [
         FormsModule,
         RdxHoverCardModule,
         LucideAngularModule,
-        RdxTooltipContentAttributesComponent,
+        RdxHoverCardContentAttributesComponent,
         WithOptionPanelComponent,
-        RdxTooltipAnchorDirective
+        RdxHoverCardAnchorDirective
     ],
     styles: styles(),
     template: `
-        <p class="ExampleSubtitle">Internal Anchor (within TooltipRoot)</p>
-        <tooltip-with-option-panel
+        <p class="ExampleSubtitle">Internal Anchor (within HoverCardRoot)</p>
+        <with-option-panel
             [arrowWidth]="arrowWidth()"
             [arrowHeight]="arrowHeight()"
             [openDelay]="openDelay()"
@@ -42,44 +42,44 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
             </div>
             <div class="container">
                 <ng-container
-                    #root1="rdxTooltipRoot"
+                    #root1="rdxHoverCardRoot"
                     [openDelay]="openDelay()"
                     [closeDelay]="closeDelay()"
-                    rdxTooltipRoot
+                    rdxHoverCardRoot
                 >
-                    <button class="reset IconButton InternalAnchor" rdxTooltipAnchor>
+                    <button class="reset IconButton InternalAnchor" rdxHoverCardAnchor>
                         <lucide-angular [img]="LucideMapPinPlusInside" size="16" style="display: flex" />
                     </button>
 
-                    <button class="reset IconButton" rdxTooltipTrigger>
+                    <button class="reset IconButton" rdxHoverCardTrigger>
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                     </button>
 
                     <ng-template
                         [onOverlayEscapeKeyDownDisabled]="onOverlayEscapeKeyDownDisabled()"
                         [onOverlayOutsideClickDisabled]="onOverlayOutsideClickDisabled()"
-                        rdxTooltipContent
+                        rdxHoverCardContent
                     >
-                        <div class="TooltipContent" rdxTooltipContentAttributes>
-                            <button class="reset TooltipClose" rdxTooltipClose aria-label="Close">
+                        <div class="HoverCardContent" rdxHoverCardContentAttributes>
+                            <button class="reset HoverCardClose" rdxHoverCardClose aria-label="Close">
                                 <lucide-angular [img]="XIcon" size="12" style="display: flex" />
                             </button>
                             Add to library
                             <div
-                                class="TooltipArrow"
+                                class="HoverCardArrow"
                                 [width]="arrowWidth()"
                                 [height]="arrowHeight()"
-                                rdxTooltipArrow
+                                rdxHoverCardArrow
                             ></div>
                         </div>
                     </ng-template>
                 </ng-container>
             </div>
-            <div class="TooltipId">ID: {{ rootDirective1()?.uniqueId() }}</div>
-        </tooltip-with-option-panel>
+            <div class="HoverCardId">ID: {{ rootDirective1()?.uniqueId() }}</div>
+        </with-option-panel>
 
-        <p class="ExampleSubtitle">External Anchor (outside TooltipRoot)</p>
-        <tooltip-with-option-panel
+        <p class="ExampleSubtitle">External Anchor (outside HoverCardRoot)</p>
+        <with-option-panel
             [arrowWidth]="arrowWidth()"
             [arrowHeight]="arrowHeight()"
             [openDelay]="openDelay()"
@@ -96,46 +96,46 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
                 {{ containerAlert }}
             </div>
             <div class="container">
-                <button class="reset IconButton ExternalAnchor" #externalAnchor="rdxTooltipAnchor" rdxTooltipAnchor>
+                <button class="reset IconButton ExternalAnchor" #externalAnchor="rdxHoverCardAnchor" rdxHoverCardAnchor>
                     <lucide-angular [img]="LucideMapPinPlus" size="16" style="display: flex" />
                 </button>
 
                 <ng-container
-                    #root2="rdxTooltipRoot"
+                    #root2="rdxHoverCardRoot"
                     [anchor]="externalAnchor"
                     [openDelay]="openDelay()"
                     [closeDelay]="closeDelay()"
-                    rdxTooltipRoot
+                    rdxHoverCardRoot
                 >
-                    <button class="reset IconButton" rdxTooltipTrigger>
+                    <button class="reset IconButton" rdxHoverCardTrigger>
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                     </button>
 
                     <ng-template
                         [onOverlayEscapeKeyDownDisabled]="onOverlayEscapeKeyDownDisabled()"
                         [onOverlayOutsideClickDisabled]="onOverlayOutsideClickDisabled()"
-                        rdxTooltipContent
+                        rdxHoverCardContent
                     >
-                        <div class="TooltipContent" rdxTooltipContentAttributes>
-                            <button class="reset TooltipClose" rdxTooltipClose aria-label="Close">
+                        <div class="HoverCardContent" rdxHoverCardContentAttributes>
+                            <button class="reset HoverCardClose" rdxHoverCardClose aria-label="Close">
                                 <lucide-angular [img]="XIcon" size="12" style="display: flex" />
                             </button>
                             Add to library
                             <div
-                                class="TooltipArrow"
+                                class="HoverCardArrow"
                                 [width]="arrowWidth()"
                                 [height]="arrowHeight()"
-                                rdxTooltipArrow
+                                rdxHoverCardArrow
                             ></div>
                         </div>
                     </ng-template>
                 </ng-container>
             </div>
-            <div class="TooltipId">ID: {{ rootDirective2()?.uniqueId() }}</div>
-        </tooltip-with-option-panel>
+            <div class="HoverCardId">ID: {{ rootDirective2()?.uniqueId() }}</div>
+        </with-option-panel>
     `
 })
-export class RdxTooltipAnchorComponent extends OptionPanelBase {
+export class RdxHoverCardAnchorComponent extends OptionPanelBase {
     readonly rootDirective1 = viewChild('root1');
     readonly rootDirective2 = viewChild('root2');
 
