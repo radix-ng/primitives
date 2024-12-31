@@ -7,6 +7,7 @@ import { RdxTooltipAnimationsComponent } from './tooltip-animations.component';
 import { RdxTooltipDefaultComponent } from './tooltip-default.component';
 import { RdxTooltipEventsComponent } from './tooltip-events.components';
 import { RdxTooltipInitiallyOpenComponent } from './tooltip-initially-open.component';
+import { RdxTooltipMoveTriggerComponent } from './tooltip-move-trigger.component';
 import { RdxTooltipMultipleComponent } from './tooltip-multiple.component';
 import { RdxTooltipPositioningComponent } from './tooltip-positioning.component';
 import { RdxTooltipTriggeringComponent } from './tooltip-triggering.component';
@@ -27,6 +28,7 @@ export default {
                 RdxTooltipAnimationsComponent,
                 RdxTooltipInitiallyOpenComponent,
                 RdxTooltipAnchorComponent,
+                RdxTooltipMoveTriggerComponent,
                 LucideAngularModule,
                 LucideAngularModule.pick({ MountainSnow, X })
             ],
@@ -85,6 +87,14 @@ export const ExternalTriggering: Story = {
     render: () => ({
         template: html`
             <rdx-tooltip-triggering></rdx-tooltip-triggering>
+        `
+    })
+};
+
+export const MoveTrigger: Story = {
+    render: () => ({
+        template: html`
+            <rdx-tooltip-move-trigger></rdx-tooltip-move-trigger>
         `
     })
 };
