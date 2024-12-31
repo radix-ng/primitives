@@ -1,3 +1,13 @@
+## 0.27.0 (2024-12-31)
+
+### 🚀 Features
+
+- **hover-card:** create hover-card primitive ([#242](https://github.com/radix-ng/primitives/pull/242))
+
+### ❤️ Thank You
+
+- pawel-twardziak
+
 ## 0.26.0 (2024-12-30)
 
 ### 🚀 Features
