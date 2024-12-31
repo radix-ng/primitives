@@ -1,3 +1,7 @@
 # Add the following users as reviewers on new pull requests
 
 * @pimenovoleg @artembelik
+
+/packages/primitives/hover-card/    @pawel-twardziak
+/packages/primitives/popover/       @pawel-twardziak
+/packages/primitives/tooltip/       @pawel-twardziak
