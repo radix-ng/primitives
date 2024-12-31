@@ -30,7 +30,7 @@ export class RdxHoverCardAnchorDirective {
      * */
     protected rootDirective = injectHoverCardRoot(true);
     /** @ignore */
-    readonly elementRef = inject(ElementRef);
+    readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     /** @ignore */
     readonly overlayOrigin = inject(CdkOverlayOrigin);
     /** @ignore */
