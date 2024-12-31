@@ -6,6 +6,7 @@ import { RdxTooltipContentAttributesComponent } from '../src/tooltip-content-att
 import { provideRdxCdkEventService } from '../src/utils/cdk-event.service';
 import { containerAlert } from './utils/constants';
 import { OptionPanelBase } from './utils/option-panel-base.class';
+import { generateRandomSentence } from './utils/rendom-sentence.util';
 import styles from './utils/styles.constants';
 import { WithOptionPanelComponent } from './utils/with-option-panel.component';
 
@@ -77,7 +78,7 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
                             <button class="reset TooltipClose" rdxTooltipClose aria-label="Close">
                                 <lucide-angular [img]="XIcon" size="12" style="display: flex" />
                             </button>
-                            Add to library
+                            {{ tooltipHtml() }}
                             <div
                                 class="TooltipArrow"
                                 [width]="arrowWidth()"
@@ -147,7 +148,7 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
                             <button class="reset TooltipClose" rdxTooltipClose aria-label="Close">
                                 <lucide-angular [img]="XIcon" size="12" style="display: flex" />
                             </button>
-                            Add to library
+                            {{ tooltipHtml() }}
                             <div
                                 class="TooltipArrow"
                                 [width]="arrowWidth()"
@@ -163,6 +164,8 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
     `
 })
 export class RdxTooltipTriggeringComponent extends OptionPanelBase {
+    tooltipHtml = signal(generateRandomSentence());
+
     readonly rootDirective1 = viewChild('root1');
     readonly rootDirective2 = viewChild('root2');
 
