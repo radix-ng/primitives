@@ -1,9 +1,10 @@
 name: Publish
 
+# Rules that triggers the workflows
 on:
-  push:
-    tags:
-      - '*@*.*.*'
+  release:
+    types:
+      - created
 
 permissions:
   contents: read
@@ -33,7 +34,7 @@ jobs:
       - name: Build shadcn
         run: pnpm shadcn:build
 
-      - name: Publish package
+      - name: Publish package 📦
         run: npx nx release publish
         shell: bash
         env:
