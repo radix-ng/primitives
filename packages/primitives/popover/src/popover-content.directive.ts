@@ -149,6 +149,10 @@ export class RdxPopoverContentDirective implements OnInit {
         return this.connectedOverlay.positionChange.asObservable();
     }
 
+    updatePosition() {
+        this.connectedOverlay.overlayRef?.updatePosition();
+    }
+
     /** @ignore */
     private connectKeydownEscape() {
         this.connectedOverlay.overlayKeydown
@@ -277,7 +281,7 @@ export class RdxPopoverContentDirective implements OnInit {
         const prevPositions = this.connectedOverlay.positions;
         this.connectedOverlay.positions = positions;
         this.fireOverlayNgOnChanges('positions', this.connectedOverlay.positions, prevPositions);
-        this.connectedOverlay.overlayRef?.updatePosition();
+        this.updatePosition();
     }
 
     /** @ignore */

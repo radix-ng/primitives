@@ -30,7 +30,7 @@ export class RdxPopoverAnchorDirective {
      * */
     protected popoverRoot = injectPopoverRoot(true);
     /** @ignore */
-    readonly elementRef = inject(ElementRef);
+    readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     /** @ignore */
     readonly overlayOrigin = inject(CdkOverlayOrigin);
     /** @ignore */
