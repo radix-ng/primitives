@@ -1,0 +1,9 @@
+---
+import { cn } from '@/utils/utils';
+
+const { className, ...props } = Astro.props;
+---
+
+<h1 class={cn('rt-Heading rt-r-size-8 rt-r-mb-2', className)} {...props}>
+    <slot />
+</h1>

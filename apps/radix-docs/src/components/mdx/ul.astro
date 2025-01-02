@@ -1,0 +1,9 @@
+---
+import { cn } from '@/utils/utils';
+
+const { className, ...props } = Astro.props;
+---
+
+<ul class={cn('my-6 ml-6 list-disc', className)} {...props}>
+    <slot />
+</ul>

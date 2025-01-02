@@ -4,7 +4,7 @@ import { getCollection } from 'astro:content';
 import DocumentationLayout from '@/layouts/DocumentationLayout.astro';
 import { generateToc } from '@/utils';
 import Toc from '@/components/layouts/Toc.astro';
-import * as console from 'node:console';
+import { components } from '@/components/mdx';
 
 export async function getStaticPaths() {
     const docEntries = await getCollection('primitives');
@@ -37,7 +37,7 @@ const sourceFilePath = `${page.collection}/${page.id}`;
         class="relative py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_300px]"
     >
         <div class="mx-auto w-full min-w-0">
-            <Content />
+            <Content components={components} />
         </div>
         <Toc toc={tocItems} sourceFilePath={sourceFilePath} />
     </main>
