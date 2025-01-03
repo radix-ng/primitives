@@ -22,7 +22,7 @@ for (const path in components) {
         component,
         source: '',
         files: [path],
-        category: 'undefined',
+        category: 'components',
         subcategory: 'undefined',
         chunks: []
     };

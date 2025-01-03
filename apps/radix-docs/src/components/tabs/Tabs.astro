@@ -1,0 +1,26 @@
+---
+import { cn } from '@/utils/utils';
+
+export interface Props {
+    class?: string;
+}
+---
+
+<div
+    class={cn(Astro.props.class)}
+    x-data="{
+      tabSelected: 1,
+      tabId: $id('tabs'),
+      tabButtonClicked(tabButton){
+         this.tabSelected = tabButton.id.replace(this.tabId + '-', '');
+      },
+      tabButtonActive(tabButton) {
+         return this.tabSelected == tabButton.id.replace(this.tabId + '-', '');
+      },
+      tabContentActive(tabContent){
+         return this.tabSelected == tabContent.id.replace(this.tabId + '-content-', '');
+      }
+   }"
+>
+    <slot />
+</div>

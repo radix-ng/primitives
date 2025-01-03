@@ -2,7 +2,6 @@
 import path from 'path';
 import { readFileSync } from 'fs';
 import { DemoThemesLoaderComponent } from './demo-themes-loader.component';
-import { Code } from 'astro-expressive-code/components';
 
 export interface Props {
     name: string;
@@ -32,7 +31,7 @@ const { code } = await loadCode(name, file);
             <DemoThemesLoaderComponent {...{ name: name, file: file }} client:visible />
         </div>
     </div>
-    <div id="CodeTheme" class="relative block h-full">
-        <Code code={code} lang="angular-ts" />
+    <div class="relative block h-full">
+        <slot name="default" slot="default"><p>Not found</p></slot>
     </div>
 </div>

@@ -1,0 +1,26 @@
+---
+import { cn } from '@/utils/utils';
+
+type Props = {
+    __rawString__: string;
+    __npmCommand__: string;
+    __yarnCommand__: string;
+    __pnpmCommand__: string;
+    __bunCommand__: string;
+    __withMeta__: boolean;
+    className?: string;
+};
+
+const {
+    __rawString__,
+    __npmCommand__,
+    __pnpmCommand__,
+    __yarnCommand__,
+    __bunCommand__,
+    __withMeta__,
+    className,
+    ...rest
+} = Astro.props;
+---
+
+<pre class={cn('mb-4 mt-6 max-h-[650px] overflow-x-auto rounded-lg border py-4 ', className)} {...rest}><slot /></pre>

@@ -1,0 +1,13 @@
+---
+import { cn } from '@/utils/utils';
+import { TabsContent as TabsComponent } from '../tabs';
+
+const { class: className, ...rest } = Astro.props;
+---
+
+<TabsComponent
+    class={cn('relative [&_h3.font-heading]:text-base [&_h3.font-heading]:font-semibold', className)}
+    {...rest}
+>
+    <slot />
+</TabsComponent>

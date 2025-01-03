@@ -1,0 +1,18 @@
+---
+import { cn } from '@/utils/utils';
+
+export interface Props {
+    class?: string;
+}
+---
+
+<div
+    :id="$id(tabId + '-content')"
+    x-show="tabContentActive($el)"
+    class={cn(
+        'mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+        Astro.props.class
+    )}
+>
+    <slot />
+</div>

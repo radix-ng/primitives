@@ -15,6 +15,8 @@ for (const path in components) {
         demos[name] = {};
     }
 
+    const cssFilePath = path.replace('.ts', '.css');
+
     demos[name][componentName] = {
         name: componentName,
         type: 'components:example',
@@ -22,7 +24,8 @@ for (const path in components) {
         component,
         source: '',
         files: [path],
-        category: 'undefined',
+        cssFile: cssFilePath,
+        category: 'primitives',
         subcategory: 'undefined',
         chunks: []
     };
