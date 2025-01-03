@@ -2,9 +2,6 @@ import { Component, computed, input, Input, numberAttribute } from '@angular/cor
 import { RadixColor, ResponsiveSize } from '@radix-ng/components/types';
 import classNames from 'classnames';
 
-/**
- * @group Components
- */
 @Component({
     selector: 'rdx-code',
     standalone: true,
@@ -17,21 +14,9 @@ import classNames from 'classnames';
     }
 })
 export class RdxCodeComponent {
-    /**
-     * @group Props
-     */
     @Input({ transform: numberAttribute }) size?: ResponsiveSize;
-    /**
-     * @group Props
-     */
     @Input() variant?: 'solid' | 'soft' | 'outline' | 'ghost' | 'surface' = 'soft';
-    /**
-     * @group Props
-     */
     @Input() weight?: 'light' | 'regular' | 'medium' | 'bold';
-    /**
-     * @group Props
-     */
     @Input() color?: RadixColor;
 
     readonly class = input<string>();
