@@ -28,7 +28,7 @@
         const currentTheme = getCurrentTheme();
         const newTheme = currentTheme === 'light' ? 'dark' : 'light';
         localStorage.setItem('theme', newTheme);
-        document.firstElementChild.setAttribute('data-theme', newTheme === 'dark' ? 'vesper' : 'light-plus');
+        document.firstElementChild.setAttribute('data-theme', newTheme === 'dark' ? 'dark' : 'light');
         document.firstElementChild.classList.toggle('dark');
         setThemeIcon(newTheme);
     }

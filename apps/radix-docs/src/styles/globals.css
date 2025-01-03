@@ -141,6 +141,19 @@
     }
 }
 
+@layer components {
+    /* Blanket syntax highlighting */
+    code[data-theme*=' '] {
+        span {
+            color: var(--shiki-light);
+        }
+
+        .dark & span {
+            color: var(--shiki-dark);
+        }
+    }
+}
+
 ::selection {
     background: hsl(var(--primary) / 0.3);
 }
@@ -164,33 +177,6 @@
 ::-webkit-scrollbar-corner,
 ::-webkit-scrollbar-corner:horizontal {
     @apply bg-transparent;
-}
-
-.expressive-code {
-    max-width: calc(100vw - 3.5rem);
-}
-
-#Code {
-    .expressive-code pre {
-        border-top-left-radius: 1px;
-        border-top-right-radius: 1px;
-    }
-}
-
-#CodeTheme {
-    .expressive-code pre {
-        border-top: none;
-        border-top-left-radius: 1px;
-        border-top-right-radius: 1px;
-    }
-}
-
-.expressive-code pre {
-    border-color: hsl(var(--muted)) !important;
-}
-
-.expressive-code .frame pre {
-    background: var(--accent-2) !important;
 }
 
 .MDX_List,

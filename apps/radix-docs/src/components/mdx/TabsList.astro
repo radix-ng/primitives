@@ -1,0 +1,10 @@
+---
+import { cn } from '@/utils/utils';
+import { TabsList as TabsComponent } from '../tabs';
+
+const { class: className, ...rest } = Astro.props;
+---
+
+<TabsComponent class={cn('w-full justify-start rounded-none border-b bg-transparent p-0', className)} {...rest}>
+    <slot />
+</TabsComponent>

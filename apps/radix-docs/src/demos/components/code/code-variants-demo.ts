@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
 import { RdxCodeComponent } from '@radix-ng/components/code';
-import { RdxThemeDirective } from '@radix-ng/components/theme';
 
 @Component({
     selector: 'kbd-variants-demo',
     standalone: true,
-    imports: [RdxThemeDirective, RdxCodeComponent],
+    imports: [RdxCodeComponent],
     template: `
         <div class="rt-Flex rt-r-fd-column rt-r-ai-start rt-r-gap-2">
             <rdx-code variant="solid">console.log()</rdx-code>

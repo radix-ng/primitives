@@ -1,15 +1,21 @@
 ---
 import path from 'path';
 import { readFileSync } from 'fs';
+
+import { cn } from '@/utils/utils';
 import { DemoLoaderComponent } from './demo-loader.component';
-import TabsComponentPreview from './TabsComponentPreview.astro';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '../tabs';
+import { CodeButtonComponent } from '@/components/code-editor/code-button.component';
 
 export interface Props {
     name: string;
     file: string;
+    class?: string;
+    codeCss: string;
+    codeDefault: string;
 }
 
-const { name, file } = Astro.props;
+const { name, file, class: className, codeCss, codeDefault, ...rest } = Astro.props;
 
 async function loadCode(name: string, file: string) {
     const filename = path.join(process.cwd(), 'src', 'demos', 'primitives', `${name}`, `${file}.ts`);
@@ -35,22 +41,9 @@ async function loadCSS(name: string, file: string) {
 
 const { code } = await loadCode(name, file);
 const { css } = await loadCSS(name, file);
-
-const tabs = [
-    {
-        label: 'main.ts',
-        content: code
-    },
-    {
-        label: 'styles.css',
-        content: css
-    }
-];
-
-const activeTab = 0;
 ---
 
-<div class="relative">
+<div x-data class={cn('group relative my-4 flex flex-col space-y-2', className)} {...rest}>
     <div
         class="vp-raw border-muted relative flex w-full items-center justify-center rounded-t-lg bg-gradient-to-br from-indigo-800 via-purple-700 to-pink-600 p-4"
     >
@@ -59,5 +52,40 @@ const activeTab = 0;
         </div>
     </div>
 
-    <TabsComponentPreview code={code} css={css} name={name} tabs={tabs} activeTab={activeTab} />
+    <div x-data>
+        <Tabs class="relative mr-auto w-full">
+            <div class="flex items-center justify-between pb-3">
+                <TabsList class="w-full justify-start rounded-none border-b bg-transparent p-0">
+                    <TabsTrigger
+                        class="text-muted-foreground data-[state=active]:border-b-primary data-[state=active]:text-foreground relative h-9 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-semibold shadow-none transition-none data-[state=active]:shadow-none"
+                    >
+                        Code
+                    </TabsTrigger>
+                    <TabsTrigger
+                        class="text-muted-foreground data-[state=active]:border-b-primary data-[state=active]:text-foreground relative h-9 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-semibold shadow-none transition-none data-[state=active]:shadow-none"
+                    >
+                        CSS
+                    </TabsTrigger>
+                    <div class="ml-auto flex items-center gap-4">
+                        <CodeButtonComponent {...{ code, name, css }} client:visible />
+                    </div>
+                </TabsList>
+            </div>
+
+            <TabsContent class="relative">
+                <div class="flex flex-col space-y-4">
+                    <div class="w-full rounded-md [&_pre]:my-0 [&_pre]:max-h-[410px] [&_pre]:overflow-auto">
+                        <slot name="default" slot="default"><p>Not found</p></slot>
+                    </div>
+                </div>
+            </TabsContent>
+            <TabsContent>
+                <div class="flex flex-col space-y-4">
+                    <div class="w-full rounded-md [&_pre]:my-0 [&_pre]:max-h-[410px] [&_pre]:overflow-auto">
+                        <slot name="css" slot="css"><p>Not found</p></slot>
+                    </div>
+                </div>
+            </TabsContent>
+        </Tabs>
+    </div>
 </div>

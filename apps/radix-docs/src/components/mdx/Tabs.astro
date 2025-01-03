@@ -1,0 +1,10 @@
+---
+import { cn } from '@/utils/utils';
+import { Tabs as TabsComponent } from '../tabs';
+
+const { class: className, ...rest } = Astro.props;
+---
+
+<TabsComponent class={cn('relative mt-6 w-full', className)} {...rest}>
+    <slot />
+</TabsComponent>
