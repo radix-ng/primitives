@@ -11,6 +11,7 @@ import rehypeSlug from 'rehype-slug';
 import { codeImport } from 'remark-code-import';
 import { visit } from 'unist-util-visit';
 import { rehypeComponent } from './plugins/rehype-component';
+import { rehypeNpmCommand } from './plugins/rehype-npm-command';
 import { siteConfig } from './src/config/site-config';
 
 /** @type {import('rehype-pretty-code').Options} */
@@ -168,7 +169,8 @@ export default defineConfig({
                         }
                     }
                 });
-            }
+            },
+            rehypeNpmCommand
 
         ]
     },

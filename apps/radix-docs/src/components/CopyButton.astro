@@ -1,0 +1,68 @@
+---
+import { cn } from '@/utils/utils';
+
+export interface Props {
+    class: string;
+    value: string;
+}
+
+const { value, class: className } = Astro.props;
+
+function escapeValue(value: string) {
+    return value.replace(/`/g, '\\`').replace(/\n/g, '\\n').replace(/\$\{/g, '\\${');
+}
+---
+
+<button
+    class={cn(
+        'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background shadow-sm relative z-10 h-6 w-6 text-foreground opacity-100 hover:bg-muted hover:text-foreground [&_svg]:h-3 [&_svg]:w-3',
+        className
+    )}
+    x-data={`{
+  copyText: \`${escapeValue(value)}\`,
+  copyNotification: false,
+  copyToClipboard() {
+    navigator.clipboard.writeText(this.copyText);
+    this.copyNotification = true;
+    let that = this;
+    setTimeout(function(){
+        that.copyNotification = false;
+    }, 2000);}
+  }`}
+    @click="copyToClipboard();"
+>
+    <span class="sr-only">Copy</span>
+
+    <svg
+        x-show="!copyNotification"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="lucide lucide-clipboard"
+    >
+        <rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect>
+        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+    </svg>
+
+    <svg
+        x-show="copyNotification"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="lucide lucide-check"
+    >
+        <path d="M20 6 9 17l-5-5"></path>
+    </svg>
+</button>
