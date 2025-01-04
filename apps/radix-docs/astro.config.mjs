@@ -6,11 +6,13 @@ import tailwind from '@astrojs/tailwind';
 import { getHighlighter } from '@shikijs/compat';
 import AutoImport from 'astro-auto-import';
 import { defineConfig } from 'astro/config';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypePrettyCode from 'rehype-pretty-code';
 import rehypeSlug from 'rehype-slug';
 import { codeImport } from 'remark-code-import';
-import { visit } from 'unist-util-visit';
+import rehypeCodeMetaProcessor from './plugins/rehype-code-meta-processor';
 import { rehypeComponent } from './plugins/rehype-component';
+import rehypeFigureProcessor from './plugins/rehype-figure-processor';
 import { rehypeNpmCommand } from './plugins/rehype-npm-command';
 import { siteConfig } from './src/config/site-config';
 
@@ -107,70 +109,22 @@ export default defineConfig({
         rehypePlugins: [
             rehypeSlug,
             rehypeComponent,
-            () => (tree) => {
-                visit(tree, (node) => {
-                    if (node?.type === 'element' && node?.tagName === 'pre') {
-                        const [codeEl] = node.children;
-                        if (codeEl.tagName !== 'code') {
-                            return;
-                        }
-
-                        if (codeEl.data?.meta) {
-                            // Extract event from meta and pass it down the tree.
-                            const regex = /event="([^"]*)"/;
-                            const match = codeEl.data?.meta.match(regex);
-                            if (match) {
-                                node.__event__ = match ? match[1] : null;
-                                codeEl.data.meta = codeEl.data.meta.replace(regex, '');
-                            }
-                        }
-
-                        node.__rawString__ = codeEl.children?.[0].value;
-                        node.__src__ = node.properties?.__src__;
-                        node.__style__ = node.properties?.__style__;
-                        node.slot = node.properties?.slot;
-                    }
-                });
-            },
+            rehypeCodeMetaProcessor,
             [
                 rehypePrettyCode,
                 prettyCodeOptions
             ],
-            () => (tree) => {
-                visit(tree, (node) => {
-                    if (node?.type === 'element' && node?.tagName === 'figure') {
-                        if (!('data-rehype-pretty-code-figure' in node.properties)) {
-                            return;
-                        }
-
-                        const preElement = node.children.at(-1);
-                        if (preElement.tagName !== 'pre') {
-                            return;
-                        }
-
-                        preElement.properties.__withMeta__ = node.children.at(0).tagName === 'figcaption';
-
-                        preElement.properties.__rawString__ = node.__rawString__;
-
-                        if (node.__src__) {
-                            preElement.properties.__src__ = node.__src__;
-                        }
-
-                        if (node.__event__) {
-                            preElement.properties.__event__ = node.__event__;
-                        }
-
-                        if (node.__style__) {
-                            preElement.properties.__style__ = node.__style__;
-                        }
-
-                        if (node.slot) {
-                            preElement.properties.slot = node.slot;
-                        }
+            rehypeFigureProcessor,
+            rehypeNpmCommand,
+            [
+                rehypeAutolinkHeadings,
+                {
+                    properties: {
+                        className: ['subheading-anchor'],
+                        ariaLabel: 'Link to section'
                     }
-                });
-            },
-            rehypeNpmCommand
+                }
+            ]
 
         ]
     },

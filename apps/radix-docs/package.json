@@ -42,6 +42,7 @@
         "@tailwindcss/typography": "^0.5.15",
         "@types/alpinejs": "^3.13.10",
         "@types/unist": "^3.0.3",
+        "rehype-autolink-headings": "^7.1.0",
         "rehype-pretty-code": "^0.14.0",
         "rehype-slug": "^6.0.0",
         "remark-code-import": "^1.2.0",
