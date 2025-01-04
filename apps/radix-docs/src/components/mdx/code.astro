@@ -4,6 +4,6 @@ import { cn } from '@/utils/utils';
 const { className, ...props } = Astro.props;
 ---
 
-<code class={cn('relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm', className)} {...props}>
+<code class={cn('relative border rounded font-mono inline-block p-1 text-sm leading-4', className)} {...props}>
     <slot />
 </code>

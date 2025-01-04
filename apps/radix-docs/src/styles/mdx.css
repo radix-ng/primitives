@@ -2,6 +2,12 @@
     @apply px-2;
 }
 
+[data-rehype-pretty-code-figure] code {
+    @apply grid min-w-full break-words rounded-none border-0 bg-transparent p-0;
+    counter-reset: line;
+    box-decoration-break: clone;
+}
+
 [data-rehype-pretty-code-figure] [data-line] {
     @apply inline-block min-h-[1rem] w-full px-4 py-0.5;
 }

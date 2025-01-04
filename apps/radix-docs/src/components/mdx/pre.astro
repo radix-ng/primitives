@@ -23,4 +23,9 @@ const {
 } = Astro.props;
 ---
 
-<pre class={cn('mb-4 mt-6 max-h-[650px] overflow-x-auto rounded-lg border py-4 ', className)} {...rest}><slot /></pre>
+<pre
+    class={cn(
+        'mb-4 mt-6 max-h-[650px] overflow-x-auto rounded-lg border py-4 !bg-transparent  dark:!bg-zinc-900',
+        className
+    )}
+    {...rest}><slot /></pre>
