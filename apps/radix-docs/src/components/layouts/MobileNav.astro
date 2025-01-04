@@ -1,0 +1,109 @@
+---
+import Sidebar from './Sidebar.astro';
+import docsConfig from '@/config/docs-config';
+
+const firstSegment = Astro.url.pathname.split('/')[1];
+
+function isActive(segment: string) {
+    return firstSegment === segment;
+}
+---
+
+<div x-data="{ slideOverOpen: false }">
+    <button
+        @click="slideOverOpen=true"
+        class="focus-visible:ring-ring hover:text-accent-foreground mr-2 inline-flex h-9 items-center justify-center gap-2 whitespace-nowrap rounded-md px-0 py-2 text-base font-medium transition-colors hover:bg-transparent focus-visible:bg-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:pointer-events-none disabled:opacity-50 md:hidden [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
+    >
+        <svg stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5">
+            <path d="M3 5H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            </path>
+            <path d="M3 12H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            </path>
+            <path d="M3 19H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            </path>
+        </svg>
+        <span class="sr-only">Toggle Menu</span>
+    </button>
+    <template x-teleport="body">
+        <div x-show="slideOverOpen" @keydown.window.escape="slideOverOpen=false" class="relative z-[99]">
+            <div
+                x-show="slideOverOpen"
+                :data-state="slideOverOpen ? 'open' : 'closed'"
+                @click="slideOverOpen = false"
+                class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80"
+            >
+            </div>
+            <div
+                x-show="slideOverOpen"
+                x-transition.duration.300ms
+                :data-state="slideOverOpen ? 'open' : 'closed'"
+                class="bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left fixed inset-y-0 left-0 z-50 h-full w-3/4 gap-4 border-r p-6 pr-0 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 sm:max-w-sm"
+            >
+                <button
+                    @click="slideOverOpen=false"
+                    type="button"
+                    class="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none"
+                >
+                    <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 15 15"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4"
+                    >
+                        <path
+                            d="M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z"
+                            fill="currentColor"
+                            fill-rule="evenodd"
+                            clip-rule="evenodd"
+                        >
+                        </path>
+                    </svg>
+                    <span class="sr-only">Close</span>
+                </button>
+
+                <a class="flex items-center" href="/">
+                    <span class="font-bold">RadixNG</span>
+                </a>
+
+                <div class="relative my-4 h-[calc(100vh-8rem)] overflow-hidden pb-5">
+                    <div class="h-full w-full overflow-auto rounded-[inherit]">
+                        <div style="min-width: 100%; display: table;">
+                            <div class="flex flex-col space-y-3 pl-3">
+                                <a
+                                    href="/themes/overview/getting-started"
+                                    class:list={[
+                                        'text-foreground transition-colors',
+                                        {
+                                            'text-foreground/60 hover:text-foreground/80': !isActive('themes'),
+                                            'text-foreground/100 hover:text-foreground font-medium': isActive('themes')
+                                        }
+                                    ]}
+                                >
+                                    Themes
+                                </a>
+                                <a
+                                    href="/primitives/overview/introduction"
+                                    class:list={[
+                                        'text-foreground transition-colors ',
+                                        {
+                                            'text-foreground/60 hover:text-foreground/80': !isActive('primitives'),
+                                            'text-foreground/100 hover:text-foreground font-medium':
+                                                isActive('primitives')
+                                        }
+                                    ]}
+                                >
+                                    Primitives
+                                </a>
+                            </div>
+                            <div class="flex flex-col space-y-2 pt-5">
+                                <Sidebar navigation={docsConfig.navigation} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</div>
