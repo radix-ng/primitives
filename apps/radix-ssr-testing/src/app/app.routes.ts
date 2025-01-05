@@ -30,6 +30,10 @@ export const appRoutes: Route[] = [
         loadComponent: () => import('./components/slider/slider.component')
     },
     {
+        path: 'switch',
+        loadComponent: () => import('./components/switch/switch.component')
+    },
+    {
         path: 'tabs',
         loadComponent: () => import('./components/tabs/tabs.component')
     }

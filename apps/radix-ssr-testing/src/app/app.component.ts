@@ -14,6 +14,7 @@ import { RouterModule } from '@angular/router';
                 <a href="/checkbox">Checkbox</a>
                 <a href="/select">Select</a>
                 <a href="/separator">Separator</a>
+                <a href="/switch">Switch</a>
                 <a href="/slider">Slider</a>
                 <a href="/tabs">Tabs</a>
             </div>
