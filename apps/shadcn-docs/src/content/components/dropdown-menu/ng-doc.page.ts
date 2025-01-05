@@ -12,8 +12,7 @@ const DropdownMenuPage: NgDocPage = {
         DropdownExampleComponent,
         DropdownExampleCheckboxComponent,
         DropdownExampleRadioComponent
-    },
-    keyword: 'DropdownMenuPage'
+    }
 };
 
 export default DropdownMenuPage;

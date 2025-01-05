@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
 import {
     ShCardComponent,
@@ -18,7 +17,6 @@ import { CardCreateAccountComponent } from './cards/card-create-account.componen
 @Component({
     selector: 'app-home',
     imports: [
-        RouterLink,
         ShCardComponent,
         ShCardHeaderComponent,
         ShCardTitleComponent,

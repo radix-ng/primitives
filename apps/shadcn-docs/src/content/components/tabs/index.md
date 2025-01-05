@@ -1,5 +1,3 @@
-# {{ NgDocPage.title }}
-
 {{ NgDocActions.demo("TabsExampleComponent", { defaultTab: "HTML", expanded: false}) }}
 
 ## Usage

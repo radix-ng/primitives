@@ -1,20 +1,12 @@
-import { JsonPipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { NavigationEnd, NavigationStart, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { NgDocNavbarComponent, NgDocRootComponent, NgDocSidebarComponent } from '@ng-doc/app';
+import { NavigationEnd, NavigationStart, Router, RouterOutlet } from '@angular/router';
 import { ConfigService } from './services/config.service';
 import { ThemeService } from './services/theme.service';
 
 @Component({
     selector: 'app-root',
     imports: [
-        RouterOutlet,
-        JsonPipe,
-        RouterLink,
-        RouterLinkActive,
-        NgDocRootComponent,
-        NgDocNavbarComponent,
-        NgDocSidebarComponent
+        RouterOutlet
     ],
     providers: [ConfigService],
     templateUrl: './app.component.html'

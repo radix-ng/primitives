@@ -18,8 +18,7 @@ const ButtonPage: NgDocPage = {
         ButtonExampleDestructiveComponent,
         ButtonExampleGhostComponent,
         ButtonExampleLinkComponent
-    },
-    keyword: 'ButtonPage'
+    }
 };
 
 export default ButtonPage;

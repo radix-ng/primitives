@@ -37,20 +37,8 @@
 
                 ],
                 "styles": [
-                    "@angular/cdk/overlay-prebuilt.css",
-                    "node_modules/@ng-doc/app/styles/global.css",
                     "apps/shadcn-docs/src/styles.scss",
-                    "apps/shadcn-docs/src/styles/themes/sh-themes.css",
-                    {
-                        "bundleName": "ngdoc-light",
-                        "inject": false,
-                        "input": "apps/shadcn-docs/src/styles/themes/ngdoc-light.scss"
-                    },
-                    {
-                        "bundleName": "ngdoc-dark",
-                        "inject": false,
-                        "input": "apps/shadcn-docs/src/styles/themes/ngdoc-dark.scss"
-                    }
+                    "apps/shadcn-docs/src/styles/themes/sh-themes.css"
                 ],
                 "scripts": [],
                 "allowedCommonJsDependencies": ["@ng-doc/core"]

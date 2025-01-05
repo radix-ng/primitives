@@ -1,5 +1,3 @@
-# {{ NgDocPage.title }}
-
 **Displays the path to the current resource using a hierarchy of links.**
 
 {{ NgDocActions.demo("BreadcrumbExampleComponent", { expanded: false}) }}

@@ -63,17 +63,15 @@ export const appConfig: ApplicationConfig = {
         provideSearchEngine(NgDocDefaultSearchEngine),
         provideNgDocContext(),
         provideNgDocApp({
-            themes: [
-                {
-                    path: 'ngdoc-light.css',
-                    id: 'light'
-                },
-                {
-                    path: 'ngdoc-dark.css',
-                    id: 'dark'
+            shiki: {
+                themes: [
+                    import('shiki/themes/material-theme-darker.mjs'),
+                    import('shiki/themes/material-theme-lighter.mjs')],
+                theme: {
+                    dark: 'material-theme-darker',
+                    light: 'material-theme-lighter'
                 }
-            ],
-            defaultThemeId: 'light'
+            }
         }),
         providePageSkeleton(NG_DOC_DEFAULT_PAGE_SKELETON),
         provideMainPageProcessor(NG_DOC_DEFAULT_PAGE_PROCESSORS),

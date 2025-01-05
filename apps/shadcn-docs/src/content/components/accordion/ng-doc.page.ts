@@ -8,8 +8,7 @@ const AccordionPage: NgDocPage = {
     category: ExamplesCategory,
     demos: {
         AccordionExampleComponent
-    },
-    keyword: 'AccordionPage'
+    }
 };
 
 export default AccordionPage;

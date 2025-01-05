@@ -14,8 +14,7 @@ const BadgePage: NgDocPage = {
         BadgeExampleSecondaryComponent,
         BadgeExampleDestructiveComponent,
         BadgeExampleLinkComponent
-    },
-    keyword: 'BadgePage'
+    }
 };
 
 export default BadgePage;

@@ -1,5 +1,3 @@
-# Introduction
-
 **Re-usable components built with Radix Angular, and Tailwind CSS.**
 
 An unofficial, community-led [Angular](https://angular.dev) port of [shadcn/ui](https://ui.shadcn.com/).

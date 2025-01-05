@@ -8,8 +8,7 @@ const TabsPage: NgDocPage = {
     category: ExamplesCategory,
     demos: {
         TabsExampleComponent
-    },
-    keyword: 'TabsPage'
+    }
 };
 
 export default TabsPage;

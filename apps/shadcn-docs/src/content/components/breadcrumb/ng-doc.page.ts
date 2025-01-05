@@ -7,8 +7,7 @@ const BreadcrumbPage: NgDocPage = {
     title: `Breadcrumb`,
     mdFile: './index.md',
     category: ExamplesCategory,
-    demos: { BreadcrumbExampleComponent, BreadcrumbCustomSeparatorExampleComponent },
-    keyword: 'BreadcrumbPage'
+    demos: { BreadcrumbExampleComponent, BreadcrumbCustomSeparatorExampleComponent }
 };
 
 export default BreadcrumbPage;

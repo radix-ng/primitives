@@ -1,80 +1,75 @@
 <ng-doc-root>
     <ng-doc-navbar
-        class="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full !backdrop-blur"
-        [leftContent]="leftContent"
-        [rightContent]="rightContent"
+        class="bg-background/95 supports-[backdrop-filter]:bg-background/60 container sticky top-0 z-50 flex h-14 w-full max-w-screen-2xl items-center !backdrop-blur"
     >
-        <div class="container flex h-14 max-w-screen-2xl items-center">
-            <ng-template #leftContent>
-                <a href="/" class="mr-6 flex items-center space-x-2">
-                    <svg fill="none" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6">
-                        <g clip-path="url(#clip0_102_1338)">
-                            <path
-                                d="M208 128L128 208"
-                                stroke="#E90464"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="16"
-                            />
-                            <path
-                                d="M192 40L40 192"
-                                stroke="#E90464"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="16"
-                            />
-                        </g>
-                        <defs>
-                            <clipPath id="clip0_102_1338">
-                                <rect fill="white" height="256" width="256" />
-                            </clipPath>
-                        </defs>
-                    </svg>
-                    <span class="hidden font-bold sm:inline-block">shadcn/ui</span>
-                </a>
-                <nav class="flex items-center gap-4 text-sm lg:gap-6">
-                    @for (route of routes; track route.path) {
-                        @if (route.external) {
-                            <a
-                                target="_blank"
-                                class="hover:text-foreground/80 transition-colors"
-                                [class]="getRouteClasses(route)"
-                                [href]="route.path"
-                            >
-                                {{ route.label }}
-                            </a>
-                        } @else {
-                            <a
-                                routerLinkActive="text-foreground"
-                                class="hover:text-foreground/80 transition-colors"
-                                [class]="getRouteClasses(route)"
-                                [routerLink]="route.path"
-                                [routerLinkActiveOptions]="{ exact: route.exact ?? false }"
-                            >
-                                {{ route.label }}
-                            </a>
-                        }
+        <div ngDocNavbarLeft class="flex">
+            <a href="/" class="mr-6 flex items-center space-x-2">
+                <svg fill="none" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6">
+                    <g clip-path="url(#clip0_102_1338)">
+                        <path
+                            d="M208 128L128 208"
+                            stroke="#E90464"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="16"
+                        />
+                        <path
+                            d="M192 40L40 192"
+                            stroke="#E90464"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="16"
+                        />
+                    </g>
+                    <defs>
+                        <clipPath id="clip0_102_1338">
+                            <rect fill="white" height="256" width="256" />
+                        </clipPath>
+                    </defs>
+                </svg>
+                <span class="hidden font-bold sm:inline-block">shadcn/ui</span>
+            </a>
+            <nav class="flex items-center gap-4 text-sm lg:gap-6">
+                @for (route of routes; track route.path) {
+                    @if (route.external) {
+                        <a
+                            target="_blank"
+                            class="hover:text-foreground/80 transition-colors"
+                            [class]="getRouteClasses(route)"
+                            [href]="route.path"
+                        >
+                            {{ route.label }}
+                        </a>
+                    } @else {
+                        <a
+                            routerLinkActive="text-foreground"
+                            class="hover:text-foreground/80 transition-colors"
+                            [class]="getRouteClasses(route)"
+                            [routerLink]="route.path"
+                            [routerLinkActiveOptions]="{ exact: route.exact ?? false }"
+                        >
+                            {{ route.label }}
+                        </a>
                     }
-                </nav>
-            </ng-template>
-            <ng-template #rightContent>
-                <nav class="flex items-center">
-                    <a
-                        href="https://github.com/radix-ng/primitives"
-                        ngDocTooltip="Repository on GitHub"
-                        shButton
-                        size="icon"
-                        target="_blank"
-                        variant="ghost"
-                    >
-                        <ng-doc-icon customIcon="github" [size]="24" />
-                    </a>
-                    <app-doc-theme-toggle />
-                </nav>
-            </ng-template>
+                }
+            </nav>
+        </div>
+        <div ngDocNavbarRight>
+            <nav class="flex items-center">
+                <a
+                    href="https://github.com/radix-ng/primitives"
+                    ngDocTooltip="Repository on GitHub"
+                    shButton
+                    size="icon"
+                    target="_blank"
+                    variant="ghost"
+                >
+                    <ng-doc-icon customIcon="github" [size]="24" />
+                </a>
+                <app-doc-theme-toggle />
+            </nav>
         </div>
     </ng-doc-navbar>
-    <!--    <ng-doc-sidebar></ng-doc-sidebar>-->
     <app-custom-sidebar ngDocCustomSidebar />
     <router-outlet />
 </ng-doc-root>

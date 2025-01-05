@@ -1,5 +1,3 @@
-# {{ NgDocPage.title }}
-
 **Displays a button or a component that looks like a button.**
 
 {{ NgDocActions.demo("ButtonExampleComponent", { expanded: false}) }}

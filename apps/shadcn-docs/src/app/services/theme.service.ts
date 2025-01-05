@@ -1,28 +1,25 @@
 import { inject, Injectable } from '@angular/core';
-import { NgDocThemeService } from '@ng-doc/app';
+import { NgDocThemeService } from '@ng-doc/app/services/theme';
 import { ConfigService } from './config.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ThemeService {
-    private readonly ngDocTheme = inject(NgDocThemeService);
     private readonly config = inject(ConfigService);
 
     colorScheme = localStorage.getItem('color-scheme') || 'dark';
 
-    constructor() {
+    constructor(protected readonly themeService: NgDocThemeService) {
         document.querySelector('body')?.classList.toggle('dark', this.colorScheme === 'dark');
-
-        this.ngDocTheme.set(this.colorScheme, false);
     }
 
     toggleColorScheme() {
         this.colorScheme = this.colorScheme === 'light' ? 'dark' : 'light';
         document.querySelector('body')?.classList.toggle('dark', this.colorScheme === 'dark');
 
+        this.themeService.set(this.colorScheme);
         localStorage.setItem('color-scheme', this.colorScheme);
-        this.ngDocTheme.set(this.colorScheme, false);
     }
 
     updateTheme(config?: any) {

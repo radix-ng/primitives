@@ -44,7 +44,7 @@ const accordionTriggerVariants = cva(
     host: {
         class: 'w-full'
     },
-    imports: [RdxAccordionHeaderDirective, RdxAccordionTriggerDirective, LucideAngularModule]
+    imports: [RdxAccordionHeaderDirective, LucideAngularModule]
 })
 export class ShAccordionTriggerComponent {
     readonly class = input<string>();

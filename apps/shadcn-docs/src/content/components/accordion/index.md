@@ -1,5 +1,3 @@
-# {{ NgDocPage.title }}
-
 **A vertically stacked set of interactive headings that each reveal a section of content.**
 
 {{ NgDocActions.demo("AccordionExampleComponent", { expanded: false}) }}

@@ -1,4 +1,8 @@
-/* You can add global styles to this file, and also import other style files */
+@import '@ng-doc/app/styles/global.css';
+@import '@ng-doc/app/styles/themes/dark.css';
+
+@import '@angular/cdk/overlay-prebuilt.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -26,11 +30,17 @@
         --ring: 240 5% 64.9%;
         --radius: 0.5rem;
 
-        --ng-doc-code-background: theme('colors.zinc.950');
         --ng-doc-sidebar-background: hsl(var(--background));
         --ng-doc-navbar-background: hsl(var(--background));
         --ng-doc-demo-displayer-background: hsl(var(--background));
         --ng-doc-demo-displayer-border: 1px solid hsl(var(--border));
+
+        --ng-doc-base-1: hsl(var(--background));
+        --ng-doc-base-2: hsl(var(--background));
+
+        --ng-doc-link-color: hsl(var(--primary));
+
+        --ng-doc-primary: hsl(var(--primary));
     }
 
     .dark {
@@ -54,11 +64,15 @@
         --input: 240 3.7% 15.9%;
         --ring: 240 4.9% 83.9%;
 
-        --ng-doc-code-background: theme('colors.zinc.900');
+        --ng-doc-heading-color: var(--foreground);
         --ng-doc-sidebar-background: hsl(var(--background));
         --ng-doc-navbar-background: hsl(var(--background));
         --ng-doc-demo-displayer-background: hsl(var(--background));
         --ng-doc-demo-displayer-border: 1px solid hsl(var(--border));
+
+        --ng-doc-link-color: hsl(var(--primary));
+
+        --ng-doc-primary: hsl(var(--primary));
     }
 }
 

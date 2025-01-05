@@ -1,12 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import {
-    NgDocNavbarComponent,
-    NgDocRootComponent,
-    NgDocSidebarComponent,
-    NgDocThemeToggleComponent
-} from '@ng-doc/app';
-import { NgDocButtonIconComponent, NgDocIconComponent, NgDocTooltipDirective } from '@ng-doc/ui-kit';
+import { NgDocNavbarComponent, NgDocRootComponent } from '@ng-doc/app';
+import { NgDocIconComponent, NgDocTooltipDirective } from '@ng-doc/ui-kit';
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
 import { ThemeSwitcherComponent } from '../../ui/theme-switcher/theme-switcher.component';
 
@@ -18,15 +13,13 @@ import { ThemeSwitcherComponent } from '../../ui/theme-switcher/theme-switcher.c
         RouterOutlet,
         NgDocRootComponent,
         NgDocNavbarComponent,
-        NgDocSidebarComponent,
-        NgDocButtonIconComponent,
         NgDocTooltipDirective,
-        NgDocThemeToggleComponent,
         NgDocIconComponent,
         ThemeSwitcherComponent,
         ShButtonDirective
     ],
-    templateUrl: './layout.component.html'
+    templateUrl: './layout.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LayoutComponent {
     private readonly router = inject(Router);

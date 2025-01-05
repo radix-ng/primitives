@@ -1,11 +1,8 @@
 <ng-doc-root [sidebar]="false">
     <ng-doc-navbar
-        data-glass-effect="false"
-        class="supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 backdrop-blur"
-        [leftContent]="leftContent"
-        [rightContent]="rightContent"
+        class="bg-background/95 supports-[backdrop-filter]:bg-background/60 container sticky top-0 z-50 flex h-14 w-full max-w-screen-2xl items-center !backdrop-blur"
     >
-        <ng-template #leftContent>
+        <div ngDocNavbarLeft class="flex">
             <a href="/" class="mr-6 flex items-center space-x-2">
                 <svg fill="none" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6">
                     <g clip-path="url(#clip0_102_1338)">
@@ -56,8 +53,8 @@
                     }
                 }
             </nav>
-        </ng-template>
-        <ng-template #rightContent>
+        </div>
+        <div ngDocNavbarRight>
             <nav class="flex items-center">
                 <a
                     href="https://github.com/radix-ng/primitives"
@@ -71,7 +68,7 @@
                 </a>
                 <app-doc-theme-toggle />
             </nav>
-        </ng-template>
+        </div>
     </ng-doc-navbar>
     <router-outlet />
 </ng-doc-root>

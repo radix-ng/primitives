@@ -1,14 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet, Routes } from '@angular/router';
-import {
-    NgDocCustomSidebarDirective,
-    NgDocNavbarComponent,
-    NgDocRootComponent,
-    NgDocSidebarComponent,
-    NgDocThemeToggleComponent
-} from '@ng-doc/app';
+import { NgDocCustomSidebarDirective, NgDocNavbarComponent, NgDocRootComponent } from '@ng-doc/app';
 import { NG_DOC_ROUTING } from '@ng-doc/generated';
-import { NgDocButtonIconComponent, NgDocIconComponent, NgDocTooltipDirective } from '@ng-doc/ui-kit';
+import { NgDocIconComponent, NgDocTooltipDirective } from '@ng-doc/ui-kit';
 import { ShButtonDirective } from '@radix-ng/shadcn/button';
 import { CustomSidebarComponent } from '../ui/custom-sidebar.component';
 import { ThemeSwitcherComponent } from '../ui/theme-switcher/theme-switcher.component';
@@ -21,10 +15,7 @@ import { ThemeSwitcherComponent } from '../ui/theme-switcher/theme-switcher.comp
         RouterOutlet,
         NgDocRootComponent,
         NgDocNavbarComponent,
-        NgDocSidebarComponent,
-        NgDocButtonIconComponent,
         NgDocTooltipDirective,
-        NgDocThemeToggleComponent,
         NgDocIconComponent,
         ThemeSwitcherComponent,
         ShButtonDirective,

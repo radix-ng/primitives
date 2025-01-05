@@ -14,8 +14,7 @@ const InputPage: NgDocPage = {
         InputFileExampleComponent,
         InputWithLabelExampleComponent,
         InputWithButtonExampleComponent
-    },
-    keyword: 'InputPage'
+    }
 };
 
 export default InputPage;
