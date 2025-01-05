@@ -1,4 +1,4 @@
-import { computed, Directive, Input, input } from '@angular/core';
+import { Component, computed, Directive, Input, input } from '@angular/core';
 import {
     RdxTabsContentDirective,
     RdxTabsListDirective,
@@ -10,7 +10,7 @@ import { cva } from 'class-variance-authority';
 
 // TabsPrimitive.Root
 @Directive({
-    selector: '[shTabs]',
+    selector: 'sh-tabs,[shTabs]',
     standalone: true,
     hostDirectives: [{ directive: RdxTabsRootDirective, inputs: ['defaultValue: shDefaultValue'] }]
 })
@@ -23,7 +23,7 @@ const tabsListVariants = cva(
     'inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground'
 );
 @Directive({
-    selector: '[shTabsList]',
+    selector: 'sh-tabs-list,[shTabsList]',
     standalone: true,
     hostDirectives: [RdxTabsListDirective],
     host: {
@@ -56,17 +56,18 @@ export class ShTabsTriggerDirective {
 const tabsContentVariants = cva(
     'mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
 );
-@Directive({
-    selector: '[shTabsContent]',
-    standalone: true,
-    hostDirectives: [{ directive: RdxTabsContentDirective, inputs: ['value: shValue'] }],
-    host: {
-        '[class]': 'computedClass()'
-    }
+@Component({
+    selector: 'sh-tabs-content,[shTabsContent]',
+    imports: [RdxTabsContentDirective],
+    template: `
+        <div [class]="computedClass()" [value]="shValue()" rdxTabsContent>
+            <ng-content />
+        </div>
+    `
 })
-export class ShTabsContentDirective {
+export class ShTabsContentComponent {
     readonly shValue = input.required<string>();
 
-    readonly class = input<string>();
-    protected computedClass = computed(() => cn(tabsContentVariants(), this.class()));
+    readonly classContent = input<string>();
+    protected computedClass = computed(() => cn(tabsContentVariants(), this.classContent()));
 }

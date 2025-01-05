@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import {
-    ShTabsContentDirective,
+    ShTabsContentComponent,
     ShTabsDirective,
     ShTabsListDirective,
     ShTabsTriggerDirective
@@ -10,7 +10,7 @@ export * from './src/tabs.directive';
 
 const tabsImports = [
     ShTabsDirective,
-    ShTabsContentDirective,
+    ShTabsContentComponent,
     ShTabsTriggerDirective,
     ShTabsListDirective
 ];

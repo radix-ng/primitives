@@ -27,13 +27,13 @@ import { ShTabsModule } from '@radix-ng/shadcn/tabs';
         ShButtonDirective
     ],
     template: `
-        <div class="w-[350px]" shTabs shDefaultValue="account">
-            <div class="grid w-full grid-cols-2" shTabsList>
+        <sh-tabs class="w-[350px]" shDefaultValue="account">
+            <sh-tabs-list class="grid w-full grid-cols-2">
                 <button shTabsTrigger shValue="account">Account</button>
                 <button shTabsTrigger shValue="password">Password</button>
-            </div>
+            </sh-tabs-list>
 
-            <div shTabsContent shValue="account">
+            <sh-tabs-content shValue="account">
                 <shCard class="block">
                     <shCardHeader>
                         <shCardTitle>Account</shCardTitle>
@@ -55,9 +55,9 @@ import { ShTabsModule } from '@radix-ng/shadcn/tabs';
                         <button shButton>Save changes</button>
                     </shCardFooter>
                 </shCard>
-            </div>
+            </sh-tabs-content>
 
-            <div shTabsContent shValue="password">
+            <sh-tabs-content shValue="password">
                 <shCard class="block">
                     <shCardHeader>
                         <shCardTitle>Password</shCardTitle>
@@ -79,8 +79,8 @@ import { ShTabsModule } from '@radix-ng/shadcn/tabs';
                         <button shButton>Save password</button>
                     </shCardFooter>
                 </shCard>
-            </div>
-        </div>
+            </sh-tabs-content>
+        </sh-tabs>
     `
 })
 export class TabsExampleComponent {}
