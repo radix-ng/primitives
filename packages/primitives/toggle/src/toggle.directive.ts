@@ -78,7 +78,10 @@ export class RdxToggleDirective implements ControlValueAccessor {
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /** @ignore */
-    readonly disabledState = computed(() => this.disabled() || this.accessorDisabled());
+    readonly disabledModel = model<boolean>(this.disabled());
+
+    /** @ignore */
+    readonly disabledState = computed(() => this.disabled() || this.disabledModel() || this.accessorDisabled());
 
     protected readonly dataState = computed<DataState>(() => {
         return this.pressed() ? 'on' : 'off';

@@ -148,3 +148,21 @@ export const Disable: Story = {
         `
     })
 };
+
+export const DisableGroup: Story = {
+    render: () => ({
+        template: html`
+            <div class="ToggleGroup" rdxToggleGroup aria-label="Text alignment" disabled>
+                <button class="ToggleGroupItem" rdxToggleGroupItem value="left" aria-label="Left aligned">
+                    <lucide-icon name="align-left" size="12"></lucide-icon>
+                </button>
+                <button class="ToggleGroupItem" rdxToggleGroupItem value="center" aria-label="Center aligned">
+                    <lucide-icon name="align-center" size="12"></lucide-icon>
+                </button>
+                <button class="ToggleGroupItem" rdxToggleGroupItem value="right" aria-label="Right aligned">
+                    <lucide-icon name="align-right" size="12"></lucide-icon>
+                </button>
+            </div>
+        `
+    })
+};

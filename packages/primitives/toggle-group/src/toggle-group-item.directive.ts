@@ -17,7 +17,7 @@ import { injectToggleGroup } from './toggle-group.token';
         },
         {
             directive: RdxToggleDirective,
-            inputs: ['pressed:isPressed', 'disabled']
+            inputs: ['pressed', 'disabled']
         }
     ],
     host: {
@@ -46,15 +46,19 @@ export class RdxToggleGroupItemDirective {
      */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    readonly isPressed = computed(() => {
+    private readonly isPressed = computed(() => {
         return this.rootContext.type() === 'single'
             ? this.rootContext.value() === this.value()
             : this.rootContext.value()?.includes(this.value());
     });
 
+    private readonly isDisabled = computed(() => this.rootContext.disabled() || this.disabled());
+
     constructor() {
         effect(() => {
             this.rdxToggleDirective.pressed.set(!!this.isPressed());
+            this.rdxToggleDirective.disabledModel.set(this.isDisabled());
+
             this.rdxRovingFocusItemDirective.active = !!this.isPressed();
         });
     }

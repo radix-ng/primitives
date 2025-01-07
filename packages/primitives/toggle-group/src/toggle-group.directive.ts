@@ -22,6 +22,9 @@ let nextId = 0;
     }
 })
 export class RdxToggleGroupDirective implements ControlValueAccessor {
+    /**
+     * @ignore
+     */
     readonly id: string = `rdx-toggle-group-${nextId++}`;
 
     readonly value = model<string | string[] | undefined>(undefined);
