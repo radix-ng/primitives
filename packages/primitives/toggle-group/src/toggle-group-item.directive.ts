@@ -1,5 +1,7 @@
-import { booleanAttribute, Directive, input, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { BooleanInput } from '@angular/cdk/coercion';
+import { booleanAttribute, computed, Directive, effect, inject, input } from '@angular/core';
 import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
+import { RdxToggleDirective } from '@radix-ng/primitives/toggle';
 import { RdxToggleGroupItemToken } from './toggle-group-item.token';
 import { injectToggleGroup } from './toggle-group.token';
 
@@ -12,27 +14,26 @@ import { injectToggleGroup } from './toggle-group.token';
         {
             directive: RdxRovingFocusItemDirective,
             inputs: ['focusable', 'active', 'allowShiftKey']
+        },
+        {
+            directive: RdxToggleDirective,
+            inputs: ['pressed:isPressed', 'disabled']
         }
     ],
     host: {
-        role: 'radio',
-        '[attr.aria-checked]': 'checked',
-        '[attr.aria-disabled]': 'disabled || toggleGroup.disabled',
-        '[attr.aria-pressed]': 'undefined',
-
-        '[attr.data-disabled]': 'disabled || toggleGroup.disabled',
-        '[attr.data-state]': 'checked ? "on" : "off"',
-        '[attr.data-orientation]': 'toggleGroup.orientation',
-
         '(click)': 'toggle()'
     }
 })
-export class RdxToggleGroupItemDirective implements OnChanges {
+export class RdxToggleGroupItemDirective {
+    private readonly rdxToggleDirective = inject(RdxToggleDirective);
+
+    private readonly rdxRovingFocusItemDirective = inject(RdxRovingFocusItemDirective);
+
     /**
      * Access the toggle group.
      * @ignore
      */
-    protected readonly toggleGroup = injectToggleGroup();
+    protected readonly rootContext = injectToggleGroup();
 
     /**
      * The value of this toggle button.
@@ -43,41 +44,29 @@ export class RdxToggleGroupItemDirective implements OnChanges {
      * Whether this toggle button is disabled.
      * @default false
      */
-    @Input({ transform: booleanAttribute }) disabled = false;
+    readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    /**
-     * Whether this toggle button is checked.
-     */
-    protected get checked(): boolean {
-        return this.toggleGroup.isSelected(this.value());
-    }
+    readonly isPressed = computed(() => {
+        return this.rootContext.type() === 'single'
+            ? this.rootContext.value() === this.value()
+            : this.rootContext.value()?.includes(this.value());
+    });
 
-    /**
-     * @ignore
-     */
-    ngOnChanges(changes: SimpleChanges): void {
-        if ('disabled' in changes) {
-            // TODO
-        }
+    constructor() {
+        effect(() => {
+            this.rdxToggleDirective.pressed.set(!!this.isPressed());
+            this.rdxRovingFocusItemDirective.active = !!this.isPressed();
+        });
     }
 
     /**
      * @ignore
      */
     toggle(): void {
-        if (this.disabled) {
+        if (this.disabled()) {
             return;
         }
 
-        this.toggleGroup.toggle(this.value());
-    }
-
-    /**
-     * Ensure the disabled state is propagated to the roving focus item.
-     * @internal
-     * @ignore
-     */
-    updateDisabled(): void {
-        // TODO
+        this.rootContext.toggle(this.value());
     }
 }

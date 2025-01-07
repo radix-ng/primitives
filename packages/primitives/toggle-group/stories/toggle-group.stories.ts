@@ -44,6 +44,10 @@ export default {
                             justify-content: center;
                             margin-left: 1px;
                         }
+                        .ToggleGroupItem[disabled] {
+                            cursor: not-allowed;
+                            opacity: 0.5;
+                        }
                         .ToggleGroupItem:first-child {
                             margin-left: 0;
                             border-top-left-radius: 4px;
@@ -111,6 +115,33 @@ export const Multiple: Story = {
                     <lucide-icon name="align-center" size="12"></lucide-icon>
                 </button>
                 <button class="ToggleGroupItem" rdxToggleGroupItem value="right" aria-label="Right aligned">
+                    <lucide-icon name="align-right" size="12"></lucide-icon>
+                </button>
+            </div>
+        `
+    })
+};
+
+export const Disable: Story = {
+    render: () => ({
+        props: {
+            selectedValues: ['center']
+        },
+        template: html`
+            <div
+                class="ToggleGroup"
+                rdxToggleGroup
+                type="multiple"
+                [value]="selectedValues"
+                aria-label="Text alignment"
+            >
+                <button class="ToggleGroupItem" disabled rdxToggleGroupItem value="left" aria-label="Left aligned">
+                    <lucide-icon name="align-left" size="12"></lucide-icon>
+                </button>
+                <button class="ToggleGroupItem" rdxToggleGroupItem value="center" aria-label="Center aligned">
+                    <lucide-icon name="align-center" size="12"></lucide-icon>
+                </button>
+                <button class="ToggleGroupItem" disabled rdxToggleGroupItem value="right" aria-label="Right aligned">
                     <lucide-icon name="align-right" size="12"></lucide-icon>
                 </button>
             </div>

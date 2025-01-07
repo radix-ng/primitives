@@ -1,18 +1,7 @@
-import {
-    AfterContentInit,
-    booleanAttribute,
-    ContentChildren,
-    Directive,
-    Input,
-    OnChanges,
-    output,
-    QueryList,
-    SimpleChanges
-} from '@angular/core';
+import { BooleanInput } from '@angular/cdk/coercion';
+import { booleanAttribute, Directive, input, model, output, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { RdxRovingFocusGroupDirective } from '@radix-ng/primitives/roving-focus';
-import type { RdxToggleGroupItemDirective } from './toggle-group-item.directive';
-import { RdxToggleGroupItemToken } from './toggle-group-item.token';
 import { RdxToggleGroupToken } from './toggle-group.token';
 
 let nextId = 0;
@@ -28,111 +17,37 @@ let nextId = 0;
     hostDirectives: [{ directive: RdxRovingFocusGroupDirective, inputs: ['dir', 'orientation', 'loop'] }],
     host: {
         role: 'group',
-        '[attr.data-orientation]': 'orientation',
 
         '(focusout)': 'onTouched?.()'
     }
 })
-export class RdxToggleGroupDirective implements OnChanges, AfterContentInit, ControlValueAccessor {
+export class RdxToggleGroupDirective implements ControlValueAccessor {
     readonly id: string = `rdx-toggle-group-${nextId++}`;
 
-    @Input()
-    set defaultValue(value: string[] | string) {
-        if (value !== this._defaultValue) {
-            this._defaultValue = Array.isArray(value) ? value : [value];
-        }
-    }
+    readonly value = model<string | string[] | undefined>(undefined);
 
-    get defaultValue(): string[] | string {
-        return this.isMultiple ? this._defaultValue : this._defaultValue[0];
-    }
-
-    /**
-     * The selected toggle button.
-     */
-    @Input()
-    set value(value: string[] | string) {
-        if (value !== this._value) {
-            this._value = Array.isArray(value) ? value : [value];
-        }
-    }
-
-    get value(): string[] | string {
-        if (this._value === undefined) {
-            return this.defaultValue;
-        }
-
-        return this.isMultiple ? this._value : this._value[0];
-    }
-
-    @Input() type: 'single' | 'multiple' = 'single';
-
-    /**
-     * The orientation of the toggle group.
-     * @default 'horizontal'
-     */
-    @Input() orientation: 'horizontal' | 'vertical' = 'horizontal';
+    readonly type = input<'single' | 'multiple'>('single');
 
     /**
      * Whether the toggle group is disabled.
      * @default false
      */
-    @Input({ transform: booleanAttribute }) disabled = false;
+    readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
      * Event emitted when the selected toggle button changes.
      */
-    readonly onValueChange = output<string[] | string | null>();
-
-    /**
-     * Access the buttons in the toggle group.
-     */
-    @ContentChildren(RdxToggleGroupItemToken)
-    protected buttons?: QueryList<RdxToggleGroupItemDirective>;
-
-    private _value?: string[];
-    private _defaultValue: string[] | string = [];
+    readonly onValueChange = output<string[] | string | undefined>();
 
     /**
      * The value change callback.
      */
-    private onChange?: (value: string | string[] | null) => void;
+    private onChange?: (value: string | string[] | undefined) => void;
 
     /**
      * onTouch function registered via registerOnTouch (ControlValueAccessor).
      */
     protected onTouched?: () => void;
-
-    get isMultiple(): boolean {
-        return this.type === 'multiple';
-    }
-
-    ngOnChanges(changes: SimpleChanges): void {
-        if ('disabled' in changes) {
-            this.buttons?.forEach((button) => button.updateDisabled());
-        }
-    }
-
-    ngAfterContentInit(): void {
-        if (this.disabled) {
-            this.buttons?.forEach((button) => button.updateDisabled());
-        }
-    }
-
-    /**
-     * Determine if a value is selected.
-     * @param value The value to check.
-     * @returns Whether the value is selected.
-     * @ignore
-     */
-    isSelected(value: string): boolean {
-        if (typeof this.value === 'string') {
-            return this.value === value;
-        } else if (Array.isArray(this.value)) {
-            return this.value.includes(value);
-        }
-        return false;
-    }
 
     /**
      * Toggle a value.
@@ -140,23 +55,25 @@ export class RdxToggleGroupDirective implements OnChanges, AfterContentInit, Con
      * @ignore
      */
     toggle(value: string): void {
-        if (this.disabled) {
+        if (this.disabled()) {
             return;
         }
 
-        if (Array.isArray(this.value)) {
-            const index = this.value.indexOf(value);
-            if (index > -1) {
-                this.value = this.value.filter((v) => v !== value);
-            } else {
-                this.value = [...this.value, value];
-            }
+        if (this.type() === 'single') {
+            this.value.set(value);
         } else {
-            this.value = this.value === value ? '' : value;
+            this.value.set(
+                ((currentValue) =>
+                    currentValue && Array.isArray(currentValue)
+                        ? currentValue.includes(value)
+                            ? currentValue.filter((v) => v !== value) // delete
+                            : [...currentValue, value] // update
+                        : [value])(this.value())
+            );
         }
 
-        this.onValueChange.emit(this.value);
-        this.onChange?.(this.value);
+        this.onValueChange.emit(this.value());
+        this.onChange?.(this.value());
     }
 
     /**
@@ -165,7 +82,7 @@ export class RdxToggleGroupDirective implements OnChanges, AfterContentInit, Con
      * @ignore
      */
     writeValue(value: string): void {
-        this.value = value;
+        this.value.set(value);
     }
 
     /**
@@ -173,7 +90,7 @@ export class RdxToggleGroupDirective implements OnChanges, AfterContentInit, Con
      * @param fn The callback to register.
      * @ignore
      */
-    registerOnChange(fn: (value: string | string[] | null) => void): void {
+    registerOnChange(fn: (value: string | string[] | undefined) => void): void {
         this.onChange = fn;
     }
 
@@ -186,13 +103,13 @@ export class RdxToggleGroupDirective implements OnChanges, AfterContentInit, Con
         this.onTouched = fn;
     }
 
+    private readonly accessorDisabled = signal(false);
     /**
      * Set the disabled state of the toggle group.
      * @param isDisabled Whether the toggle group is disabled.
      * @ignore
      */
     setDisabledState(isDisabled: boolean): void {
-        this.disabled = isDisabled;
-        this.buttons?.forEach((button) => button.updateDisabled());
+        this.accessorDisabled.set(isDisabled);
     }
 }
