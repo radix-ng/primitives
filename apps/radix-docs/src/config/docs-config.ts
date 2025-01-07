@@ -79,7 +79,7 @@ const docsConfig = {
                         { name: 'Slider', url: '/primitives/components/slider', label: 'New' },
                         { name: 'Switch', url: '/primitives/components/switch' },
                         { name: 'Tabs', url: '#', label: 'Storybook' },
-                        { name: 'Toggle', url: '#', label: 'Storybook' },
+                        { name: 'Toggle', url: '/primitives/components/toggle' },
                         { name: 'Toggle Group', url: '#', label: 'Storybook' },
                         { name: 'Tooltip', url: '#', label: 'Soon' }
                     ]
