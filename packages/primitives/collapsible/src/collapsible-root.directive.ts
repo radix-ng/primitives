@@ -1,4 +1,5 @@
-import { contentChild, Directive, EventEmitter, inject, InjectionToken, Input, Output } from '@angular/core';
+import { BooleanInput } from '@angular/cdk/coercion';
+import { booleanAttribute, contentChild, Directive, inject, InjectionToken, input, Input, output } from '@angular/core';
 import { asyncScheduler } from 'rxjs';
 import { RdxCollapsibleContentToken } from './collapsible-content.token';
 
@@ -15,25 +16,18 @@ export type RdxCollapsibleState = 'open' | 'closed';
  */
 @Directive({
     selector: '[rdxCollapsibleRoot]',
-    standalone: true,
     exportAs: 'collapsibleRoot',
     providers: [{ provide: RdxCollapsibleRootToken, useExisting: RdxCollapsibleRootDirective }],
     host: {
         '[attr.data-state]': 'getState()',
-        '[attr.data-disabled]': 'disabled ? "" : undefined'
+        '[attr.data-disabled]': 'disabled() ? "" : undefined'
     }
 })
 export class RdxCollapsibleRootDirective {
     /**
      * Reference to RdxCollapsibleContent directive
-     * @private
      */
     private readonly contentDirective = contentChild.required(RdxCollapsibleContentToken);
-
-    /**
-     * Stores collapsible state
-     */
-    private _open = false;
 
     /**
      * Determines whether a directive is available for interaction.
@@ -41,7 +35,7 @@ export class RdxCollapsibleRootDirective {
      *
      * @group Props
      */
-    @Input() disabled = false;
+    readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
      * The controlled open state of the collapsible.
@@ -64,19 +58,25 @@ export class RdxCollapsibleRootDirective {
     }
 
     /**
+     * Stores collapsible state
+     */
+    private _open = false;
+
+    /**
      * Emitted with new value when directive state changed.
      * Event handler called when the open state of the collapsible changes.
      *
      * @group Emits
      */
-    @Output() onOpenChange = new EventEmitter<boolean>();
+    readonly onOpenChange = output<boolean>();
 
     /**
      * Allows to change directive state
      * @param {boolean | undefined} value
+     * @ignore
      */
     setOpen(value?: boolean) {
-        if (this.disabled) {
+        if (this.disabled()) {
             return;
         }
 
@@ -91,6 +91,7 @@ export class RdxCollapsibleRootDirective {
 
     /**
      * Returns directive state (open | closed)
+     * @ignore
      */
     getState(): RdxCollapsibleState {
         return this.open ? 'open' : 'closed';
@@ -98,6 +99,7 @@ export class RdxCollapsibleRootDirective {
 
     /**
      * Returns current directive state
+     * @ignore
      */
     isOpen(): boolean {
         return this.open;
@@ -105,15 +107,11 @@ export class RdxCollapsibleRootDirective {
 
     /**
      * Controls visibility of content
-     * @private
-     * @ignore
      */
     private setPresence(): void {
         if (!this.contentDirective) {
             return;
         }
-
-        this.contentDirective().elementRef.nativeElement.setAttribute('data-state', this.getState());
 
         if (this.isOpen()) {
             this.contentDirective().elementRef.nativeElement.removeAttribute('hidden');

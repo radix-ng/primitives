@@ -1,8 +1,6 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/blocks';
 import * as CollapsibleStories from './collapsible.stories';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
-import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.directive';
-import { RdxCollapsibleContentDirective } from '../src/collapsible-content.directive';
 
 <Meta title="Primitives/Collapsible" />
 
@@ -20,7 +18,7 @@ import { RdxCollapsibleContentDirective } from '../src/collapsible-content.direc
 ## Anatomy
 
 ```html
-<div rdxCollapsibleRoot [open]="...">
+<div rdxCollapsibleRoot>
   <button rdxCollapsibleTrigger>Trigger</button>
   <div rdxCollapsibleContent>Content</div>
 </div>
@@ -40,14 +38,27 @@ import {
 
 ## API Reference
 
-## RdxCollapsibleRootDirective
+### Root
+
+`RdxCollapsibleRootDirective`
 
 <ArgTypes of={RdxCollapsibleRootDirective} />
 
-## RdxCollapsibleTriggerDirective
+### Trigger
 
-<ArgTypes of={RdxCollapsibleTriggerDirective} />
+`RdxCollapsibleTriggerDirective`
 
-## RdxCollapsibleContentDirective
 
-<ArgTypes of={RdxCollapsibleContentDirective} />
+### Content
+
+`RdxCollapsibleContentDirective`
+
+## Examples
+
+### Animation
+
+<Canvas sourceState="hidden" of={CollapsibleStories.Animation} />
+
+### External Trigger
+
+<Canvas sourceState="hidden" of={CollapsibleStories.ExternalTrigger} />

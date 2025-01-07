@@ -3,12 +3,13 @@ import { injectCollapsible, RdxCollapsibleState } from './collapsible-root.direc
 
 @Directive({
     selector: '[rdxCollapsibleTrigger]',
-    standalone: true,
     host: {
-        '(click)': 'onOpenToggle()',
         '[attr.data-state]': 'getState()',
+        '[attr.data-disabled]': 'getDisabled()',
         '[attr.aria-expanded]': 'getState() === "open" ? "true" : "false"',
-        '[disabled]': 'getDisabled()'
+        '[disabled]': 'getDisabled()',
+
+        '(click)': 'onOpenToggle()'
     }
 })
 export class RdxCollapsibleTriggerDirective {
@@ -39,6 +40,6 @@ export class RdxCollapsibleTriggerDirective {
      * @ignore
      */
     getDisabled(): string | undefined {
-        return this.collapsible.disabled ? 'disabled' : undefined;
+        return this.collapsible.disabled() ? 'disabled' : undefined;
     }
 }

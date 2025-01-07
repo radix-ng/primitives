@@ -4,7 +4,6 @@ import { RdxCollapsibleRootDirective } from './collapsible-root.directive';
 
 @Directive({
     selector: '[rdxCollapsibleContent]',
-    standalone: true,
     providers: [
         {
             provide: RdxCollapsibleContentToken,
@@ -23,9 +22,9 @@ export class RdxCollapsibleContentDirective {
      * Reference to CollapsibleContent host element
      * @ignore
      */
-    elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
     getDisabled(): string | undefined {
-        return this.collapsible.disabled ? 'disabled' : undefined;
+        return this.collapsible.disabled() ? 'disabled' : undefined;
     }
 }

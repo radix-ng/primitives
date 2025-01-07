@@ -59,6 +59,9 @@
             "@radix-ng/primitives/popover": [
                 "packages/primitives/popover/src/index.ts"
             ],
+            "@radix-ng/primitives/presence": [
+                "packages/primitives/presence/index.ts"
+            ],
             "@radix-ng/primitives/radio": [
                 "packages/primitives/radio/index.ts"
             ],

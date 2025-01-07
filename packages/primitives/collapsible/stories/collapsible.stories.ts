@@ -7,6 +7,8 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
 import { RdxCollapsibleAnimationComponent } from './collapsible-animation.component';
 import { RdxCollapsibleExternalTriggeringComponent } from './collapsible-external-triggering.component';
 
+const html = String.raw;
+
 export default {
     title: 'Primitives/Collapsible',
     decorators: [
@@ -24,8 +26,9 @@ export default {
             providers: [provideAnimations()]
         }),
         componentWrapperDecorator(
-            (story) => `
-                <div class="radix-themes light light-theme radix-themes-default-fonts"
+            (story) => html`
+                <div
+                    class="radix-themes light light-theme radix-themes-default-fonts"
                     data-accent-color="indigo"
                     data-radius="medium"
                     data-scaling="100%"
@@ -82,7 +85,8 @@ export default {
                         padding: 10px;
                         box-shadow: 0 2px 10px var(--black-a7);
                     }
-                </style>`
+                </style>
+            `
         )
     ]
 } as Meta;
@@ -91,16 +95,15 @@ type Story = StoryObj;
 
 export const Default: Story = {
     render: () => ({
-        template: `
+        template: html`
             <div class="CollapsibleRoot" rdxCollapsibleRoot [open]="true" #collapsibleRoot="collapsibleRoot">
-
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <span class="Text" style="color: white">&#64;peduarte starred 3 repositories</span>
                     <button class="IconButton" rdxCollapsibleTrigger>
                         @if (collapsibleRoot.isOpen()) {
-                            <lucide-angular size="16" name="x" style="display: flex;"></lucide-angular>
+                        <lucide-angular size="16" name="x" style="display: flex;"></lucide-angular>
                         } @else {
-                            <lucide-angular size="16" name="unfold-vertical" style="display: flex;"></lucide-angular>
+                        <lucide-angular size="16" name="unfold-vertical" style="display: flex;"></lucide-angular>
                         }
                     </button>
                 </div>
@@ -124,8 +127,9 @@ export const Default: Story = {
 
 export const ExternalTrigger: Story = {
     render: () => ({
-        template: `
-            <div class="radix-themes light light-theme radix-themes-default-fonts"
+        template: html`
+            <div
+                class="radix-themes light light-theme radix-themes-default-fonts"
                 data-accent-color="indigo"
                 data-radius="medium"
                 data-scaling="100%"
@@ -138,8 +142,9 @@ export const ExternalTrigger: Story = {
 
 export const Animation: Story = {
     render: () => ({
-        template: `
-            <div class="radix-themes light light-theme radix-themes-default-fonts"
+        template: html`
+            <div
+                class="radix-themes light light-theme radix-themes-default-fonts"
                 data-accent-color="indigo"
                 data-radius="medium"
                 data-scaling="100%"
