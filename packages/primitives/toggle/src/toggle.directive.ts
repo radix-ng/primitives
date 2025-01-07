@@ -45,6 +45,9 @@ export const TOGGLE_VALUE_ACCESSOR: any = {
     multi: true
 };
 
+/**
+ * @group Components
+ */
 @Directive({
     selector: '[rdxToggle]',
     exportAs: 'rdxToggle',
@@ -63,17 +66,23 @@ export class RdxToggleDirective implements ControlValueAccessor {
     /**
      * The pressed state of the toggle when it is initially rendered.
      * Use when you do not need to control its pressed state.
+     *
+     * @group Props
      */
     readonly defaultPressed = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
      * The controlled pressed state of the toggle.
      * Must be used in conjunction with `onPressedChange`.
+     *
+     * @group Props
      */
     readonly pressed = model<boolean>(this.defaultPressed());
 
     /**
      * When true, prevents the user from interacting with the toggle.
+     *
+     * @group Props
      */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
@@ -89,6 +98,8 @@ export class RdxToggleDirective implements ControlValueAccessor {
 
     /**
      * Event handler called when the pressed state of the toggle changes.
+     *
+     * @group Emits
      */
     readonly onPressedChange = output<boolean>();
 
@@ -103,6 +114,7 @@ export class RdxToggleDirective implements ControlValueAccessor {
     private readonly accessorDisabled = signal(false);
 
     private onChange: (value: any) => void = () => {};
+
     /** @ignore */
     onTouched: (() => void) | undefined;
 
