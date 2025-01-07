@@ -1,5 +1,5 @@
-import { FocusableOption } from '@angular/cdk/a11y';
-import { booleanAttribute, Directive, ElementRef, inject, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { booleanAttribute, Directive, input, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 import { RdxToggleGroupItemToken } from './toggle-group-item.token';
 import { injectToggleGroup } from './toggle-group.token';
 
@@ -8,6 +8,12 @@ import { injectToggleGroup } from './toggle-group.token';
     exportAs: 'rdxToggleGroupItem',
     standalone: true,
     providers: [{ provide: RdxToggleGroupItemToken, useExisting: RdxToggleGroupItemDirective }],
+    hostDirectives: [
+        {
+            directive: RdxRovingFocusItemDirective,
+            inputs: ['focusable', 'active', 'allowShiftKey']
+        }
+    ],
     host: {
         role: 'radio',
         '[attr.aria-checked]': 'checked',
@@ -18,22 +24,20 @@ import { injectToggleGroup } from './toggle-group.token';
         '[attr.data-state]': 'checked ? "on" : "off"',
         '[attr.data-orientation]': 'toggleGroup.orientation',
 
-        '(click)': 'toggle()',
-        '(focus)': 'focus()'
+        '(click)': 'toggle()'
     }
 })
-export class RdxToggleGroupItemDirective implements OnChanges, FocusableOption {
+export class RdxToggleGroupItemDirective implements OnChanges {
     /**
      * Access the toggle group.
      * @ignore
      */
     protected readonly toggleGroup = injectToggleGroup();
 
-    private readonly elementRef = inject(ElementRef);
     /**
      * The value of this toggle button.
      */
-    @Input({ required: true }) value!: string;
+    readonly value = input.required<string>();
 
     /**
      * Whether this toggle button is disabled.
@@ -45,7 +49,7 @@ export class RdxToggleGroupItemDirective implements OnChanges, FocusableOption {
      * Whether this toggle button is checked.
      */
     protected get checked(): boolean {
-        return this.toggleGroup.isSelected(this.value);
+        return this.toggleGroup.isSelected(this.value());
     }
 
     /**
@@ -60,19 +64,12 @@ export class RdxToggleGroupItemDirective implements OnChanges, FocusableOption {
     /**
      * @ignore
      */
-    focus(): void {
-        this.elementRef.nativeElement.focus();
-    }
-
-    /**
-     * @ignore
-     */
     toggle(): void {
         if (this.disabled) {
             return;
         }
 
-        this.toggleGroup.toggle(this.value);
+        this.toggleGroup.toggle(this.value());
     }
 
     /**

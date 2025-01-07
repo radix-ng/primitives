@@ -1,7 +1,6 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { AlignCenter, AlignLeft, AlignRight, LucideAngularModule } from 'lucide-angular';
 import { RdxToggleGroupItemDirective } from '../src/toggle-group-item.directive';
-import { RdxToggleGroupMultipleDirective } from '../src/toggle-group-multiple.directive';
 import { RdxToggleGroupDirective } from '../src/toggle-group.directive';
 
 const html = String.raw;
@@ -13,7 +12,6 @@ export default {
             imports: [
                 RdxToggleGroupDirective,
                 RdxToggleGroupItemDirective,
-                RdxToggleGroupMultipleDirective,
                 LucideAngularModule,
                 LucideAngularModule.pick({ AlignRight, AlignLeft, AlignCenter })
             ]
@@ -99,7 +97,13 @@ export const Multiple: Story = {
             selectedValues: ['left', 'center']
         },
         template: html`
-            <div class="ToggleGroup" rdxToggleGroupMultiple [value]="selectedValues" aria-label="Text alignment">
+            <div
+                class="ToggleGroup"
+                rdxToggleGroup
+                type="multiple"
+                [value]="selectedValues"
+                aria-label="Text alignment"
+            >
                 <button class="ToggleGroupItem" rdxToggleGroupItem value="left" aria-label="Left aligned">
                     <lucide-icon name="align-left" size="12"></lucide-icon>
                 </button>

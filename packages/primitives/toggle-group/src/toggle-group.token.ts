@@ -1,11 +1,8 @@
 import { inject, InjectionToken } from '@angular/core';
-import type { RdxToggleGroupMultipleDirective } from './toggle-group-multiple.directive';
 import type { RdxToggleGroupDirective } from './toggle-group.directive';
 
-export const RdxToggleGroupToken = new InjectionToken<RdxToggleGroupDirective | RdxToggleGroupMultipleDirective>(
-    'RdxToggleGroupToken'
-);
+export const RdxToggleGroupToken = new InjectionToken<RdxToggleGroupDirective>('RdxToggleGroupToken');
 
-export function injectToggleGroup(): RdxToggleGroupDirective | RdxToggleGroupMultipleDirective {
+export function injectToggleGroup(): RdxToggleGroupDirective {
     return inject(RdxToggleGroupToken);
 }
