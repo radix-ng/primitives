@@ -1,6 +1,6 @@
 {
     "name": "@radix-ng/components",
-    "version": "0.0.25",
+    "version": "0.0.26",
     "peerDependencies": {
         "@angular/common": "^19.0.0",
         "@angular/core": "^19.0.0",

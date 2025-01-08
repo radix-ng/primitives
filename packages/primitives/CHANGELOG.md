@@ -1,3 +1,18 @@
+## 0.28.0 (2025-01-08)
+
+### 🚀 Features
+
+- **toggle-group:** rewrite to signals and host as Toggle ([3fd4edb](https://github.com/radix-ng/primitives/commit/3fd4edb))
+- **toggle-group:** updated multiple selection ([f396126](https://github.com/radix-ng/primitives/commit/f396126))
+
+### 🩹 Fixes
+
+- **dialog:** set dialogClose for any elements ([c341a9b](https://github.com/radix-ng/primitives/commit/c341a9b))
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+
 ## 0.27.0 (2024-12-31)
 
 ### 🚀 Features

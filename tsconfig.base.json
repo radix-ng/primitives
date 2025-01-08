@@ -74,11 +74,11 @@
             "@radix-ng/primitives/separator": [
                 "packages/primitives/separator/index.ts"
             ],
-            "@radix-ng/primitives/switch": [
-                "packages/primitives/switch/index.ts"
-            ],
             "@radix-ng/primitives/slider": [
                 "packages/primitives/slider/index.ts"
+            ],
+            "@radix-ng/primitives/switch": [
+                "packages/primitives/switch/index.ts"
             ],
             "@radix-ng/primitives/tabs": [
                 "packages/primitives/tabs/index.ts"

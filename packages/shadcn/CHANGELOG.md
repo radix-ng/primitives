@@ -1,3 +1,9 @@
+## 0.10.3 (2025-01-08)
+
+### 🧱 Updated Dependencies
+
+- Updated primitives to 0.28.0
+
 ## 0.10.2 (2024-12-31)
 
 ### 🧱 Updated Dependencies
