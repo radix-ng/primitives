@@ -2,10 +2,9 @@ import { Directive, inject } from '@angular/core';
 import { RdxDialogRef } from './dialog-ref';
 
 @Directive({
-    selector: 'button[rdxDialogClose]',
+    selector: '[rdxDialogClose]',
     standalone: true,
     host: {
-        type: 'button',
         '(click)': 'onClick()'
     }
 })
