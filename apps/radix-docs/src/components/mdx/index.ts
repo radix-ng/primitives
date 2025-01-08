@@ -5,6 +5,7 @@ import code from './code.astro';
 import h1 from './h1.astro';
 import h2 from './h2.astro';
 import h3 from './h3.astro';
+import KeyboardTable from './KeyboardTable.astro';
 import li from './li.astro';
 import ol from './ol.astro';
 import p from './p.astro';
@@ -31,5 +32,6 @@ export const components = {
     Tabs,
     TabsContent,
     TabsList,
-    TabsTrigger
+    TabsTrigger,
+    KeyboardTable
 };

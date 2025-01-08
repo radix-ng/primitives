@@ -62,7 +62,7 @@ const docsConfig = {
                     section: 'Components',
                     pages: [
                         { name: 'Accordion', url: '/primitives/components/accordion' },
-                        { name: 'Alert Dialog', url: '#', label: 'Soon' },
+                        { name: 'Alert Dialog', url: '#', label: 'Storybook' },
                         { name: 'Aspect Ratio', url: '/primitives/components/aspect-ratio' },
                         { name: 'Avatar', url: '/primitives/components/avatar' },
                         { name: 'Checkbox', url: '#', label: 'Storybook' },
@@ -81,7 +81,7 @@ const docsConfig = {
                         { name: 'Tabs', url: '#', label: 'Storybook' },
                         { name: 'Toggle', url: '/primitives/components/toggle' },
                         { name: 'Toggle Group', url: '#', label: 'Storybook' },
-                        { name: 'Tooltip', url: '#', label: 'Soon' }
+                        { name: 'Tooltip', url: '#', label: 'Storybook' }
                     ]
                 }
             ]

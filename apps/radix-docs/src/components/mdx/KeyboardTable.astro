@@ -1,0 +1,38 @@
+---
+interface Props {
+    attributes: [{ key: string; description?: string }];
+}
+
+const { attributes } = Astro.props;
+
+const data = attributes || [];
+---
+
+<div class="rt-TableRoot rt-r-size-2 rt-variant-surface rt-Box rt-r-my-5">
+    <table class="rt-TableRootTable">
+        <thead class="rt-TableHeader">
+            <tr class="rt-TableRow">
+                <th class="rt-TableCell rt-TableColumnHeaderCell" style="width: 37%">Key</th>
+                <th class="rt-TableCell rt-TableColumnHeaderCell">Description</th>
+            </tr>
+        </thead>
+        <tbody class="rt-TableBody">
+            {
+                data.map(({ key, description }) => {
+                    return (
+                        <tr class="rt-TableRow" style="white-space: nowrap;">
+                            <th class="rt-TableCell rt-TableRowHeaderCell">
+                                <kbd class="rounded border border-gray-300 px-1.5 py-0.5 text-xs text-gray-600 shadow-md">
+                                    {key}
+                                </kbd>
+                            </th>
+                            <td class="rt-TableCell" data-label="Description">
+                                <span>{description}</span>
+                            </td>
+                        </tr>
+                    );
+                })
+            }
+        </tbody>
+    </table>
+</div>
