@@ -1,73 +1,41 @@
 // @ts-check
 
+const { readdirSync } = require('fs');
+const { resolve } = require('path');
+
+const makeScopeTypesByPath = (path) => {
+    const files = readdirSync(resolve(__dirname, path), { withFileTypes: true });
+    const directories = files.filter(
+        (file) =>
+            file.isDirectory() &&
+            file.name !== 'node_modules' &&
+            file.name !== 'dist' &&
+            !file.name.startsWith('.storybook')
+    );
+    return directories.map((dir) => dir.name);
+};
+
 /** @type {import('@commitlint/types').UserConfig} */
 const config = {
     extends: ['@commitlint/config-conventional'],
     rules: {
-        'type-enum': [
-            2,
-            'always',
-            [
-                'release',
-                'build',
-                'chore',
-                'ci',
-                'docs',
-                'feat',
-                'fix',
-                'perf',
-                'refactor',
-                'revert',
-                'style',
-                'test'
-            ]
-        ],
         'scope-enum': [
             2,
             'always',
             [
-                'primitives',
-                'accordion',
-                'alert-dialog',
-                'aspect-ratio',
-                'avatar',
-                'card',
-                'checkbox',
-                'collapsible',
-                'context-menu',
-                'dropdown-menu',
-                'dialog',
-                'radio',
-                'radio-group',
-                'toggle',
-                'toggle-group',
-                'code',
-                'separator',
-                'select',
-                'slider',
-                'tooltip',
-                'kbd',
-                'tabs',
-                'radix-docs',
-                'radix-ssr-testing',
-                'roving-focus',
-                'showcase-taxonomy',
-                'progress',
-                'shadcn',
-                'switch',
-                'docs',
-                'core',
-                'release',
+                ...makeScopeTypesByPath(resolve(__dirname, 'apps')),
+                ...makeScopeTypesByPath(resolve(__dirname, 'packages')),
+                ...makeScopeTypesByPath(resolve(__dirname, 'packages/components')),
+                ...makeScopeTypesByPath(resolve(__dirname, 'packages/primitives')),
+                ...makeScopeTypesByPath(resolve(__dirname, 'packages/shadcn')),
+
+                // others
                 'deps',
                 'deps-dev',
-                'changelog',
-                'ci',
-                'build',
-                'theme',
-                'themer',
-                'popover',
-                'hover-card'
+                'release',
+                'docs'
             ]
+
         ]
     }
 };
