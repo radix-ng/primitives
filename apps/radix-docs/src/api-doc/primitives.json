@@ -1082,13 +1082,91 @@
         "components": {}
     },
     "toggle-group-item.directive": {
-        "components": {}
+        "components": {
+            "RdxToggleGroupItemDirective": {
+                "description": "",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "value",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<string>",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": "The value of this toggle button."
+                        },
+                        {
+                            "name": "disabled",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "Whether this toggle button is disabled."
+                        }
+                    ]
+                }
+            }
+        }
     },
     "toggle-group-item.token": {
         "components": {}
     },
     "toggle-group.directive": {
-        "components": {}
+        "components": {
+            "RdxToggleGroupDirective": {
+                "description": "",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "value",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "ModelSignal<undefined | string | string[]>",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": ""
+                        },
+                        {
+                            "name": "type",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<\"single\" | \"multiple\">",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": ""
+                        },
+                        {
+                            "name": "disabled",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "Whether the toggle group is disabled."
+                        }
+                    ]
+                },
+                "emits": {
+                    "description": "Defines emit that determine the behavior of the component based on a given condition or report the actions that the component takes.",
+                    "values": [
+                        {
+                            "name": "onValueChange",
+                            "parameters": [
+                                {
+                                    "name": "value",
+                                    "type": "undefined | string | string[]"
+                                }
+                            ],
+                            "description": "Event emitted when the selected toggle button changes."
+                        }
+                    ]
+                }
+            }
+        }
     },
     "toggle-group.token": {
         "components": {}

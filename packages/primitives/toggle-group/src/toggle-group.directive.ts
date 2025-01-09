@@ -6,6 +6,9 @@ import { RdxToggleGroupToken } from './toggle-group.token';
 
 let nextId = 0;
 
+/**
+ * @group Components
+ */
 @Directive({
     selector: '[rdxToggleGroup]',
     exportAs: 'rdxToggleGroup',
@@ -27,18 +30,26 @@ export class RdxToggleGroupDirective implements ControlValueAccessor {
      */
     readonly id: string = `rdx-toggle-group-${nextId++}`;
 
+    /**
+     * @group Props
+     */
     readonly value = model<string | string[] | undefined>(undefined);
 
+    /**
+     * @group Props
+     */
     readonly type = input<'single' | 'multiple'>('single');
 
     /**
      * Whether the toggle group is disabled.
-     * @default false
+     * @defaultValue false
+     * @group Props
      */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
      * Event emitted when the selected toggle button changes.
+     * @group Emits
      */
     readonly onValueChange = output<string[] | string | undefined>();
 

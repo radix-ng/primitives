@@ -1,0 +1,100 @@
+---
+title: Toggle Group
+slug: toggle-group
+section: components
+description: A set of two-state buttons that can be toggled on or off.
+---
+
+# Toggle Group
+
+<Description>A set of two-state buttons that can be toggled on or off.</Description>
+
+<ComponentPreview name="toggle-group" file="toggle-group-demo" />
+
+<FeatureList items={['Full keyboard navigation.',
+    'Supports horizontal/vertical orientation.',
+    'Support single and multiple pressed buttons.',
+    'Can be controlled or uncontrolled.',]} />
+
+## Import
+
+Get started with importing the directives:
+
+```typescript
+import {
+  RdxToggleGroupDirective,
+  RdxToggleGroupItemDirective
+} from '@radix-ng/primitives/toggle-group';
+```
+
+## Anatomy
+
+```html
+<div rdxToggleGroup>
+  <button rdxToggleGroupItem></button>
+  <button rdxToggleGroupItem></button>
+  <button rdxToggleGroupItem></button>
+</div>
+```
+
+## API Reference
+
+### Root
+
+`RdxToggleGroupDirective`
+
+Contains all the parts of a toggle group.
+
+<PropsTable name="RdxToggleGroupDirective" />
+
+### Item
+
+`RdxToggleGroupItemDirective`
+
+An item in the group.
+
+<PropsTable name="RdxToggleGroupItemDirective" />
+
+## Accessibility
+
+### Keyboard Interactions
+
+<KeyboardTable attributes={[
+    {
+        key: 'Tab',
+        description:
+            'Moves focus to either the pressed item or the first item in the group.',
+    },
+    {
+        key: 'Space',
+        description: 'Activates/deactivates the item.',
+    },
+    {
+        key: 'Enter',
+        description: 'Activates/deactivates the item.',
+    },
+    {
+        key: 'ArrowDown',
+        description: 'Moves focus to the next item in the group.',
+    },
+    {
+        key: 'ArrowRight',
+        description: 'Moves focus to the next item in the group.',
+    },
+    {
+        key: 'ArrowUp',
+        description: 'Moves focus to the previous item in the group.',
+    },
+    {
+        key: 'ArrowLeft',
+        description: 'Moves focus to the previous item in the group.',
+    },
+    {
+        key: 'Home',
+        description: 'Moves focus to the first item.',
+    },
+    {
+        key: 'End',
+        description: 'Moves focus to the last item.',
+    },
+]} />

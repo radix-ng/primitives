@@ -5,6 +5,9 @@ import { RdxToggleDirective } from '@radix-ng/primitives/toggle';
 import { RdxToggleGroupItemToken } from './toggle-group-item.token';
 import { injectToggleGroup } from './toggle-group.token';
 
+/**
+ * @group Components
+ */
 @Directive({
     selector: '[rdxToggleGroupItem]',
     exportAs: 'rdxToggleGroupItem',
@@ -37,12 +40,15 @@ export class RdxToggleGroupItemDirective {
 
     /**
      * The value of this toggle button.
+     *
+     * @group Props
      */
     readonly value = input.required<string>();
 
     /**
      * Whether this toggle button is disabled.
-     * @default false
+     * @defaultValue false
+     * @group Props
      */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
