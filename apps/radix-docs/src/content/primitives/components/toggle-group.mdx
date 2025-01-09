@@ -47,6 +47,13 @@ Contains all the parts of a toggle group.
 
 <PropsTable name="RdxToggleGroupDirective" />
 
+<DataAttributesTable attributes={[
+    {
+        name: '[data-orientation]',
+        value: '"vertical" | "horizontal"'
+    },
+]} />
+
 ### Item
 
 `RdxToggleGroupItemDirective`
@@ -54,6 +61,21 @@ Contains all the parts of a toggle group.
 An item in the group.
 
 <PropsTable name="RdxToggleGroupItemDirective" />
+
+<DataAttributesTable attributes={[
+    {
+        name: '[data-state]',
+        value: '"on" | "off"'
+    },
+    {
+        name: '[data-disabled]',
+        value: 'Present when disabled',
+    },
+    {
+        name: '[data-orientation]',
+        value: '"vertical" | "horizontal"'
+    },
+]} />
 
 ## Accessibility
 
