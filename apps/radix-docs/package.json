@@ -12,7 +12,7 @@
     },
     "dependencies": {
         "@alpinejs/focus": "^3.14.8",
-        "@analogjs/astro-angular": "^2.0.0-alpha.2",
+        "@analogjs/astro-angular": "^2.0.0-alpha.3",
         "@astrojs/alpinejs": "^0.4.1",
         "@astrojs/check": "^0.9.4",
         "@astrojs/mdx": "^4.0.3",
@@ -34,7 +34,7 @@
         "tailwindcss-animate": "^1.0.7"
     },
     "devDependencies": {
-        "@angular/language-service": "^19.0.5",
+        "@angular/language-service": "^19.0.6",
         "@astrojs/markdown-remark": "^6.0.1",
         "@shikijs/compat": "^1.26.1",
         "@shikijs/transformers": "^1.26.1",

@@ -2,9 +2,9 @@
     import { RouteMeta } from '@analogjs/router';
     import { TxMainNavComponent } from '../components/main-nav.component';
     import { TxSiteFooterComponent } from '../components/site-footer.component';
-    import { RouterOutlet } from '@angular/router';
+    import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
     import { inject } from '@angular/core';
-    import { DOCUMENT } from '@angular/common';
+    import { filter } from 'rxjs/operators';
 
     export const routeMeta: RouteMeta = {
         title: 'Index Page'
@@ -15,9 +15,17 @@
         imports: [TxMainNavComponent, TxSiteFooterComponent, RouterOutlet]
     });
 
-    const document = inject(DOCUMENT);
+    const router = inject(Router);
 
-    const isLoginPage = document.location.pathname === '/login';
+    let isLoginPage = false;
+
+    onInit(() => {
+        this.router.events
+              .pipe(filter(event => event instanceof NavigationEnd))
+              .subscribe((event: NavigationEnd) => {
+                    this.isLoginPage = event.urlAfterRedirects === '/login';
+              });
+      });
 </script>
 <template>
     @if (!isLoginPage) {
