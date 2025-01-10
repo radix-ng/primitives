@@ -34,6 +34,10 @@ export const appRoutes: Route[] = [
         loadComponent: () => import('./components/switch/switch.component')
     },
     {
+        path: 'toggle-group',
+        loadComponent: () => import('./components/toggle-group/toggle-group.component')
+    },
+    {
         path: 'tabs',
         loadComponent: () => import('./components/tabs/tabs.component')
     }
