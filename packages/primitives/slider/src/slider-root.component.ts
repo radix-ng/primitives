@@ -4,14 +4,13 @@ import {
     booleanAttribute,
     Component,
     computed,
-    EventEmitter,
     inject,
     input,
     Input,
     model,
     numberAttribute,
     OnInit,
-    Output
+    output
 } from '@angular/core';
 import { RdxSliderHorizontalComponent } from './slider-horizontal.component';
 import { RdxSliderOrientationContextService } from './slider-orientation-context.service';
@@ -25,6 +24,9 @@ import {
     roundValue
 } from './utils';
 
+/**
+ * @group Components
+ */
 @Component({
     selector: 'rdx-slider',
     imports: [RdxSliderHorizontalComponent, RdxSliderVerticalComponent, NgIf, NgTemplateOutlet],
@@ -34,7 +36,7 @@ import {
 
         <ng-container *ngIf="orientation() === 'horizontal'">
             <rdx-slider-horizontal
-                [className]="className"
+                [className]="styleClass() || className"
                 [min]="min()"
                 [max]="max()"
                 [dir]="dir()"
@@ -55,7 +57,7 @@ import {
 
         <ng-container *ngIf="orientation() === 'vertical'">
             <rdx-slider-vertical
-                [className]="className"
+                [className]="styleClass() || className"
                 [min]="min()"
                 [max]="max()"
                 [dir]="dir()"
@@ -79,28 +81,101 @@ export class RdxSliderRootComponent implements OnInit {
     /** @ignore */
     readonly orientationContext = inject(RdxSliderOrientationContextService);
 
+    /**
+     * The minimum value for the range.
+     *
+     * @group Props
+     * @defaultValue 0
+     */
     readonly min = input<number, NumberInput>(0, { transform: numberAttribute });
 
+    /**
+     * The maximum value for the range.
+     *
+     * @group Props
+     * @defaultValue 100
+     */
     readonly max = input<number, NumberInput>(100, { transform: numberAttribute });
 
+    /**
+     * The stepping interval.
+     *
+     * @group Props
+     * @defaultValue 1
+     */
     readonly step = input<number, NumberInput>(1, { transform: numberAttribute });
 
+    /**
+     * The minimum permitted steps between multiple thumbs.
+     *
+     * @group Props
+     * @defaultValue 0
+     */
     readonly minStepsBetweenThumbs = input<number, NumberInput>(0, { transform: numberAttribute });
 
+    /**
+     * The orientation of the slider.
+     *
+     * @group Props
+     * @defaultValue 'horizontal'
+     */
     readonly orientation = input<'horizontal' | 'vertical'>('horizontal');
 
+    /**
+     * When true, prevents the user from interacting with the slider.
+     *
+     * @group Props
+     * @defaultValue false
+     */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /**
+     * Whether the slider is visually inverted.
+     *
+     * @group Props
+     * @defaultValue false
+     */
     readonly inverted = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /**
+     * The reading direction of the combobox when applicable.
+     *
+     * @group Props
+     * @defaultValue 'ltr'
+     */
     readonly dir = input<'ltr' | 'rtl'>('ltr');
 
     @Input() className: string = '';
 
-    @Output() valueChange = new EventEmitter<number[]>();
-    @Output() valueCommit = new EventEmitter<number[]>();
+    /**
+     * Style class of the component.
+     *
+     * @group Props
+     */
+    readonly styleClass = input<string>();
 
+    /**
+     * The controlled value of the slider.
+     *
+     * @group Props
+     */
     readonly modelValue = model<number[]>([0]);
+
+    /**
+     * Event handler called when the slider value changes.
+     *
+     * @group Emits
+     */
+    readonly valueChange = output<number[]>();
+
+    /**
+     * Event handler called when the value changes at the end of an interaction.
+     *
+     * Useful when you only need to capture a final value e.g. to update a backend service.
+     *
+     * @group Emits
+     */
+    readonly valueCommit = output<number[]>();
 
     /** @ignore */
     readonly valueIndexToChange = model(0);

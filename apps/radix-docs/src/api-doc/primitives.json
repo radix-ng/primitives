@@ -948,7 +948,131 @@
         "components": {}
     },
     "slider-root.component": {
-        "components": {}
+        "components": {
+            "RdxSliderRootComponent": {
+                "description": "",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "min",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<number, NumberInput>",
+                            "default": "0",
+                            "defaultValue": "0",
+                            "description": "The minimum value for the range."
+                        },
+                        {
+                            "name": "max",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<number, NumberInput>",
+                            "default": "100",
+                            "defaultValue": "100",
+                            "description": "The maximum value for the range."
+                        },
+                        {
+                            "name": "step",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<number, NumberInput>",
+                            "default": "1",
+                            "defaultValue": "1",
+                            "description": "The stepping interval."
+                        },
+                        {
+                            "name": "minStepsBetweenThumbs",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<number, NumberInput>",
+                            "default": "0",
+                            "defaultValue": "0",
+                            "description": "The minimum permitted steps between multiple thumbs."
+                        },
+                        {
+                            "name": "orientation",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<\"horizontal\" | \"vertical\">",
+                            "default": "'horizontal'",
+                            "defaultValue": "'horizontal'",
+                            "description": "The orientation of the slider."
+                        },
+                        {
+                            "name": "disabled",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "When true, prevents the user from interacting with the slider."
+                        },
+                        {
+                            "name": "inverted",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "Whether the slider is visually inverted."
+                        },
+                        {
+                            "name": "dir",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<\"ltr\" | \"rtl\">",
+                            "default": "'ltr'",
+                            "defaultValue": "'ltr'",
+                            "description": "The reading direction of the combobox when applicable."
+                        },
+                        {
+                            "name": "styleClass",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<undefined | string>",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": "Style class of the component."
+                        },
+                        {
+                            "name": "modelValue",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "ModelSignal<number[]>",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": "The controlled value of the slider."
+                        }
+                    ]
+                },
+                "emits": {
+                    "description": "Defines emit that determine the behavior of the component based on a given condition or report the actions that the component takes.",
+                    "values": [
+                        {
+                            "name": "valueChange",
+                            "parameters": [
+                                {
+                                    "name": "value",
+                                    "type": "number[]"
+                                }
+                            ],
+                            "description": "Event handler called when the slider value changes."
+                        },
+                        {
+                            "name": "valueCommit",
+                            "parameters": [
+                                {
+                                    "name": "value",
+                                    "type": "number[]"
+                                }
+                            ],
+                            "description": "Event handler called when the value changes at the end of an interaction.\n\nUseful when you only need to capture a final value e.g. to update a backend service."
+                        }
+                    ]
+                }
+            }
+        }
     },
     "slider-thumb-impl.directive": {
         "components": {}

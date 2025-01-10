@@ -37,7 +37,7 @@ export const Default: Story = {
     render: (args) => ({
         props: args,
         template: html`
-            <rdx-slider className="SliderRoot" [modelValue]="[45]" [step]="5">
+            <rdx-slider styleClass="SliderRoot" [modelValue]="[45]" [step]="5">
                 <rdx-slider-track class="SliderTrack">
                     <rdx-slider-range class="SliderRange" />
                 </rdx-slider-track>
@@ -51,7 +51,7 @@ export const Inverted: Story = {
     render: (args) => ({
         props: args,
         template: html`
-            <rdx-slider className="SliderRoot" inverted [modelValue]="[45]" [step]="5">
+            <rdx-slider styleClass="SliderRoot" inverted [modelValue]="[45]" [step]="5">
                 <rdx-slider-track class="SliderTrack">
                     <rdx-slider-range class="SliderRange" />
                 </rdx-slider-track>
@@ -65,7 +65,7 @@ export const Thumbs: Story = {
     render: (args) => ({
         props: args,
         template: html`
-            <rdx-slider className="SliderRoot" [modelValue]="[45, 80]" [step]="5">
+            <rdx-slider styleClass="SliderRoot" [modelValue]="[45, 80]" [step]="5">
                 <rdx-slider-track class="SliderTrack">
                     <rdx-slider-range class="SliderRange" />
                 </rdx-slider-track>
@@ -80,14 +80,14 @@ export const Vertical: Story = {
     render: (args) => ({
         props: args,
         template: html`
-            <rdx-slider className="SliderRootV" [orientation]="'vertical'" [modelValue]="[45]" [step]="5">
+            <rdx-slider styleClass="SliderRootV" [orientation]="'vertical'" [modelValue]="[45]" [step]="5">
                 <rdx-slider-track class="SliderTrackV">
                     <rdx-slider-range class="SliderRangeV" />
                 </rdx-slider-track>
                 <rdx-slider-thumb class="SliderThumbV" />
             </rdx-slider>
 
-            <rdx-slider className="SliderRoot" [orientation]="'horizontal'" [modelValue]="[45]" [step]="5">
+            <rdx-slider styleClass="SliderRoot" [orientation]="'horizontal'" [modelValue]="[45]" [step]="5">
                 <rdx-slider-track class="SliderTrack">
                     <rdx-slider-range class="SliderRange" />
                 </rdx-slider-track>
@@ -102,7 +102,7 @@ export const VerticalInverted: Story = {
         props: args,
         template: html`
             <rdx-slider
-                className="SliderRootV"
+                styleClass="SliderRootV"
                 style="display: flex; height: 200px;"
                 inverted
                 [orientation]="'vertical'"

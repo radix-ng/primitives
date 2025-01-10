@@ -3,11 +3,10 @@ import {
     booleanAttribute,
     Component,
     ElementRef,
-    EventEmitter,
     inject,
     input,
     Input,
-    Output,
+    output,
     signal,
     viewChild
 } from '@angular/core';
@@ -48,12 +47,12 @@ export class RdxSliderVerticalComponent {
 
     @Input() className = '';
 
-    @Output() slideStart = new EventEmitter<number>();
-    @Output() slideMove = new EventEmitter<number>();
-    @Output() slideEnd = new EventEmitter<void>();
-    @Output() stepKeyDown = new EventEmitter<{ event: KeyboardEvent; direction: number }>();
-    @Output() endKeyDown = new EventEmitter<KeyboardEvent>();
-    @Output() homeKeyDown = new EventEmitter<KeyboardEvent>();
+    readonly slideStart = output<number>();
+    readonly slideMove = output<number>();
+    readonly slideEnd = output<void>();
+    readonly stepKeyDown = output<{ event: KeyboardEvent; direction: number }>();
+    readonly endKeyDown = output<KeyboardEvent>();
+    readonly homeKeyDown = output<KeyboardEvent>();
 
     private readonly sliderElement = viewChild<ElementRef>('sliderElement');
 

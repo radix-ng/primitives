@@ -1,10 +1,9 @@
-import { Directive, EventEmitter, inject, Output } from '@angular/core';
+import { Directive, inject, output } from '@angular/core';
 import { RdxSliderRootComponent } from './slider-root.component';
 import { ARROW_KEYS, PAGE_KEYS } from './utils';
 
 @Directive({
     selector: '[rdxSliderImpl]',
-    standalone: true,
     host: {
         role: 'slider',
         tabindex: '0',
@@ -17,12 +16,12 @@ import { ARROW_KEYS, PAGE_KEYS } from './utils';
 export class RdxSliderImplDirective {
     protected readonly rootContext = inject(RdxSliderRootComponent);
 
-    @Output() slideStart = new EventEmitter<PointerEvent>();
-    @Output() slideMove = new EventEmitter<PointerEvent>();
-    @Output() slideEnd = new EventEmitter<PointerEvent>();
-    @Output() homeKeyDown = new EventEmitter<KeyboardEvent>();
-    @Output() endKeyDown = new EventEmitter<KeyboardEvent>();
-    @Output() stepKeyDown = new EventEmitter<KeyboardEvent>();
+    readonly slideStart = output<PointerEvent>();
+    readonly slideMove = output<PointerEvent>();
+    readonly slideEnd = output<PointerEvent>();
+    readonly homeKeyDown = output<KeyboardEvent>();
+    readonly endKeyDown = output<KeyboardEvent>();
+    readonly stepKeyDown = output<KeyboardEvent>();
 
     onKeyDown(event: KeyboardEvent) {
         if (event.key === 'Home') {

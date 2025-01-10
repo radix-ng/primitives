@@ -5,7 +5,6 @@ import { convertValueToPercentage, getThumbInBoundsOffset } from './utils';
 
 @Directive({
     selector: '[rdxSliderThumbImpl]',
-    standalone: true,
     host: {
         role: 'slider',
         '[tabindex]': 'rootContext.disabled() ? undefined : 0',

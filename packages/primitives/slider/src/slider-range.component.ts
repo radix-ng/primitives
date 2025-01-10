@@ -4,7 +4,6 @@ import { convertValueToPercentage } from './utils';
 
 @Component({
     selector: 'rdx-slider-range',
-    standalone: true,
     host: {
         '[attr.data-disabled]': 'rootContext.disabled() ? "" : undefined',
         '[attr.data-orientation]': 'rootContext.orientation()',

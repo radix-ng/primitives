@@ -36,19 +36,91 @@ description: .
 ### Root
 `RdxSliderRootComponent`
 
+<PropsTable name="RdxSliderRootComponent" />
+
+<EmitsTable name="RdxSliderRootComponent" />
+
+<DataAttributesTable attributes={[
+    { name: '[data-disabled]', value: 'Present when disabled' },
+    { name: '[data-orientation]', value: '"vertical" | "horizontal"' }
+]} />
 
 ### Track
 `RdxSliderTrackComponent`
 
+The track that contains the `SliderRange`.
+
+<DataAttributesTable attributes={[
+    { name: '[data-disabled]', value: 'Present when disabled' },
+    { name: '[data-orientation]', value: '"vertical" | "horizontal"' }
+]} />
 
 ### Range
 `RdxSliderRangeComponent`
 
+The range part. Must live inside `SliderTrack`.
+
+
+<DataAttributesTable attributes={[
+    { name: '[data-disabled]', value: 'Present when disabled' },
+    { name: '[data-orientation]', value: '"vertical" | "horizontal"' }
+]} />
 
 ### Thumb
 `RdxSliderThumbComponent`
+
+A draggable thumb. You can render multiple thumbs.
+
+
+<DataAttributesTable attributes={[
+    { name: '[data-disabled]', value: 'Present when disabled' },
+    { name: '[data-orientation]', value: '"vertical" | "horizontal"' }
+]} />
 
 ## Accessibility
 Adheres to the [Slider WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/slider-multithumb).
 
 ### Keyboard Interactions
+
+<KeyboardTable attributes={[
+    {
+        key: 'Home',
+        description: 'Sets the value to its minimum.',
+    },
+    {
+        key: 'End',
+        description: 'Sets the value to its maximum.',
+    },
+    {
+        key: 'PageDown',
+        description: ' Decreases the value by a larger step.',
+    },
+    {
+        key: 'PageUP',
+        description: ' Increases the value by a larger step.',
+    },
+    {
+        key: 'ArrowDown',
+        description: ' Decreases the value by the step amount.',
+    },
+    {
+        key: 'ArrowRight',
+        description: 'Increments/decrements by the step value depending on orientation.',
+    },
+    {
+        key: 'ArrowUp',
+        description: ' Increases the value by the step amount.',
+    },
+    {
+        key: 'ArrowLeft',
+        description: ' Increments/decrements by the step value depending on orientation. ',
+    },
+    {
+        key: 'Shift + ArrowUp',
+        description: ' Increases the value by a larger step.',
+    },
+    {
+        key: 'Shift + ArrowDown',
+        description: '  Decreases the value by a larger step.',
+    }
+]} />
