@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "$id": "radixng-ng-add",
+    "title": "Radix NG ng-add schematic",
+    "type": "object",
+    "properties": {
+        "project": {
+            "type": "string",
+            "description": "Name of the project",
+            "$default": {
+                "$source": "projectName"
+            }
+        }
+    }
+}

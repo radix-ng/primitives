@@ -33,6 +33,7 @@ const config = {
                 'deps',
                 'deps-dev',
                 'release',
+                'schematics',
                 'docs'
             ]
 

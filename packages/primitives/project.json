@@ -22,10 +22,20 @@
             },
             "defaultConfiguration": "production"
         },
-        "compodoc": {
-            "executor": "nx:run-script",
+        "build:schematics": {
+            "executor": "@nx/js:tsc",
+            "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
             "options": {
-                "script": "compodoc"
+                "outputPath": "dist/primitives",
+                "main": "packages/primitives/index.ts",
+                "tsConfig": "packages/primitives/tsconfig.schematics.json",
+                "assets": [
+                    {
+                        "input": "./packages/primitives/schematics",
+                        "output": "./schematics",
+                        "glob": "collection.json"
+                    }
+                ]
             }
         },
         "test": {

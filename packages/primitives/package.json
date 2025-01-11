@@ -21,9 +21,9 @@
         "@angular/core": "^19.0.0",
         "@angular/cdk": "^19.0.0"
     },
-    "scripts": {
-        "compodoc": "compodoc --config .compodocrc.json"
+    "devDependencies": {
+        "@angular-devkit/schematics": "^19.0.0"
     },
-    "dependencies": {},
+    "schematics": "./schematics/collection.json",
     "sideEffects": false
 }
