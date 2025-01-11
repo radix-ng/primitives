@@ -6,6 +6,8 @@ import tailwind from '@astrojs/tailwind';
 import { getHighlighter } from '@shikijs/compat';
 import AutoImport from 'astro-auto-import';
 import { defineConfig } from 'astro/config';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypePrettyCode from 'rehype-pretty-code';
 import rehypeSlug from 'rehype-slug';
@@ -42,6 +44,9 @@ const prettyCodeOptions = {
     }
 };
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // https://astro.build/config
 export default defineConfig({
     site: siteConfig.url,
@@ -66,6 +71,11 @@ export default defineConfig({
                 '@angular/core/rxjs-interop',
                 'lucide-angular'
             ]
+        },
+        resolve: {
+            alias: {
+                '@': path.resolve(__dirname, 'src')
+            }
         }
     },
     integrations: [

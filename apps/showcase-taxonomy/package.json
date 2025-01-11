@@ -1,10 +1,10 @@
 {
     "type": "module",
     "dependencies": {
-        "@analogjs/content": "2.0.0-alpha.3",
-        "@analogjs/router": "2.0.0-alpha.3",
-        "@analogjs/platform": "2.0.0-alpha.3",
-        "@analogjs/vite-plugin-angular": "2.0.0-alpha.3",
+        "@analogjs/content": "2.0.0-alpha.2",
+        "@analogjs/router": "2.0.0-alpha.2",
+        "@analogjs/platform": "2.0.0-alpha.2",
+        "@analogjs/vite-plugin-angular": "2.0.0-alpha.2",
         "marked": "^12.0.2",
         "front-matter": "^4.0.2"
     }
