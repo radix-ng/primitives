@@ -172,8 +172,10 @@ export const Default: Story = {
                         </button>
                     </div>
                     <div class="ToolbarSeparator" rdxToolbarSeparator orientation="vertical"></div>
-                    <a class="ToolbarLink" href="#" target="_blank" style="margin-right: 10px;">Edited 2 hours ago</a>
-                    <button class="ToolbarButton" style="margin-left: auto;">Share</button>
+                    <a class="ToolbarLink" href="#" rdxToolbarLink target="_blank" style="margin-right: 10px;">
+                        Edited 2 hours ago
+                    </a>
+                    <button class="ToolbarButton" rdxToolbarButton style="margin-left: auto;">Share</button>
                 </div>
             </div>
         `
