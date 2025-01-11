@@ -81,6 +81,7 @@ const docsConfig = {
                         { name: 'Tabs', url: '#', label: 'Storybook' },
                         { name: 'Toggle', url: '/primitives/components/toggle' },
                         { name: 'Toggle Group', url: '/primitives/components/toggle-group' },
+                        { name: 'Toolbar', url: '#', label: 'Storybook' },
                         { name: 'Tooltip', url: '#', label: 'Storybook' }
                     ]
                 }
