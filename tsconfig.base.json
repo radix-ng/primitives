@@ -89,6 +89,9 @@
             "@radix-ng/primitives/toggle-group": [
                 "packages/primitives/toggle-group/index.ts"
             ],
+            "@radix-ng/primitives/toolbar": [
+                "packages/primitives/toolbar/index.ts"
+            ],
             "@radix-ng/primitives/tooltip": [
                 "packages/primitives/tooltip/index.ts"
             ],

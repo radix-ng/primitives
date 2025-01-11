@@ -71,6 +71,6 @@ export class RdxSeparatorRootDirective {
      * @ignore
      */
     protected readonly computedAriaOrientation = computed(() =>
-        !this.decorative() && this.orientation() === 'vertical' ? 'vertical' : null
+        !this.decorative() && this.orientation() === 'vertical' ? 'vertical' : undefined
     );
 }
