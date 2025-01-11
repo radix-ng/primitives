@@ -1,5 +1,6 @@
 import { Canvas, Meta } from '@storybook/blocks';
 import * as DialogStories from './dialog.stories';
+import * as SheetStories from './sheet.stories';
 
 <Meta title="Primitives/Dialog" />
 
@@ -30,5 +31,10 @@ Import all parts and piece them together.
         <button rdxDialogDismiss>X</button>
     </div>
 </ng-template>
-
 ```
+
+## Examples
+
+### Sheet
+
+<Canvas sourceState="hidden" of={SheetStories.Default} />
