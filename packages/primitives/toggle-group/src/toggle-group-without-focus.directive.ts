@@ -1,29 +1,24 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { booleanAttribute, Directive, forwardRef, input, model, output, signal } from '@angular/core';
+import { booleanAttribute, Directive, input, model, output, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { RdxRovingFocusGroupDirective } from '@radix-ng/primitives/roving-focus';
 import { RdxToggleGroupToken } from './toggle-group.token';
 
 let nextId = 0;
 
-/**
- * @group Components
- */
 @Directive({
-    selector: '[rdxToggleGroup]',
-    exportAs: 'rdxToggleGroup',
+    selector: '[rdxToggleGroupWithoutFocus]',
+    exportAs: 'rdxToggleGroupWithoutFocus',
+    standalone: true,
     providers: [
-        { provide: RdxToggleGroupToken, useExisting: forwardRef(() => RdxToggleGroupDirective) },
-        { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => RdxToggleGroupDirective), multi: true }
+        { provide: RdxToggleGroupToken, useExisting: RdxToggleGroupWithoutFocusDirective },
+        { provide: NG_VALUE_ACCESSOR, useExisting: RdxToggleGroupWithoutFocusDirective, multi: true }
     ],
-    hostDirectives: [{ directive: RdxRovingFocusGroupDirective, inputs: ['dir', 'orientation', 'loop'] }],
     host: {
         role: 'group',
-
         '(focusout)': 'onTouched?.()'
     }
 })
-export class RdxToggleGroupDirective implements ControlValueAccessor {
+export class RdxToggleGroupWithoutFocusDirective implements ControlValueAccessor {
     /**
      * @ignore
      */
@@ -117,6 +112,7 @@ export class RdxToggleGroupDirective implements ControlValueAccessor {
     }
 
     private readonly accessorDisabled = signal(false);
+
     /**
      * Set the disabled state of the toggle group.
      * @param isDisabled Whether the toggle group is disabled.

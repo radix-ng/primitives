@@ -1,8 +1,15 @@
 import { inject, InjectionToken } from '@angular/core';
-import type { RdxToggleGroupDirective } from './toggle-group.directive';
 
-export const RdxToggleGroupToken = new InjectionToken<RdxToggleGroupDirective>('RdxToggleGroupToken');
+export interface IRdxToggleGroup {
+    toggle(value: string): void;
 
-export function injectToggleGroup(): RdxToggleGroupDirective {
+    disabled: any;
+    value: any;
+    type: any;
+}
+
+export const RdxToggleGroupToken = new InjectionToken<IRdxToggleGroup>('RdxToggleGroupToken');
+
+export function injectToggleGroup(): IRdxToggleGroup {
     return inject(RdxToggleGroupToken);
 }
