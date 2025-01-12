@@ -1,3 +1,17 @@
+## 0.10.4 (2025-01-12)
+
+### 🩹 Fixes
+
+- shadcn incompatibility version ([#254](https://github.com/radix-ng/primitives/pull/254))
+
+### 🧱 Updated Dependencies
+
+- Updated primitives to 0.29.0
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+
 ## 0.10.3 (2025-01-08)
 
 ### 🧱 Updated Dependencies

@@ -1,3 +1,16 @@
+## 0.29.0 (2025-01-12)
+
+### 🚀 Features
+
+- **schematics:** added ng-add ([57e1ad9](https://github.com/radix-ng/primitives/commit/57e1ad9))
+- **toolbar:** added Toolbar primitive ([0a1398b](https://github.com/radix-ng/primitives/commit/0a1398b))
+- **slider:** added styleClass, updated docs and move emits to signals ([439b594](https://github.com/radix-ng/primitives/commit/439b594))
+- **radix-docs:** added Toggle Group ([58e5ef3](https://github.com/radix-ng/primitives/commit/58e5ef3))
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+
 ## 0.28.0 (2025-01-08)
 
 ### 🚀 Features
