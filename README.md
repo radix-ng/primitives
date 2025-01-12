@@ -51,35 +51,35 @@ Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/cate
 
 ### Primitives
 
-| Primitive       | Description | Status      | A11y |
-| --------------- | ----------- | ----------- | ---- |
-| Accordion       |             | ✅          |      |
-| Alert Dialog    |             | beta        |      |
-| Avatar          |             | ✅          |      |
-| Aspect Ratio    |             | ✅          |      |
-| Checkbox        |             | ✅          |      |
-| Collapsible     |             | ✅          |      |
-| Context Menu    |             | ✅          |      |
-| Dialog          |             | ✅          |      |
-| DropdownMenu    |             | ✅          |      |
-| Form            |             |             |      |
-| Hover Card      |             | In Progress |      |
-| Label           |             | ✅          |      |
-| Menubar         |             | beta        |      |
-| Navigation Menu |             |             |      |
-| Popover         |             | ✅          |      |
-| Progress        |             | ✅          |      |
-| Radio           |             | ✅          |      |
-| Select          |             | beta        |      |
-| Separator       |             | ✅          |      |
-| Slider          |             | ✅          |      |
-| Switch          |             | ✅          |      |
-| Tabs            |             | ✅          |      |
-| Toast           |             |             |      |
-| Toggle          |             | ✅          |      |
-| Toggle Group    |             | ✅          |      |
-| Toolbar         |             |             |      |
-| Tooltip         |             | ✅          |      |
+| Primitive       | Description | Status | A11y |
+| --------------- | ----------- | ------ | ---- |
+| Accordion       |             | ✅     |      |
+| Alert Dialog    |             | beta   |      |
+| Avatar          |             | ✅     |      |
+| Aspect Ratio    |             | ✅     |      |
+| Checkbox        |             | ✅     |      |
+| Collapsible     |             | ✅     |      |
+| Context Menu    |             | ✅     |      |
+| Dialog          |             | ✅     |      |
+| DropdownMenu    |             | ✅     |      |
+| Form            |             |        |      |
+| Hover Card      |             | beta   |      |
+| Label           |             | ✅     |      |
+| Menubar         |             | beta   |      |
+| Navigation Menu |             |        |      |
+| Popover         |             | ✅     |      |
+| Progress        |             | ✅     |      |
+| Radio           |             | ✅     |      |
+| Select          |             | beta   |      |
+| Separator       |             | ✅     |      |
+| Slider          |             | ✅     |      |
+| Switch          |             | ✅     |      |
+| Tabs            |             | ✅     |      |
+| Toast           |             |        |      |
+| Toggle          |             | ✅     |      |
+| Toggle Group    |             | ✅     |      |
+| Toolbar         |             | beta   |      |
+| Tooltip         |             | ✅     |      |
 
 ...
 
