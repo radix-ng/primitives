@@ -21,7 +21,7 @@
     "peerDependencies": {
         "@angular/core": "^19.0.0",
         "@angular/cdk": "^19.0.0",
-        "@radix-ng/primitives": "^0.28.0",
+        "@radix-ng/primitives": ">=0.28.0",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.1",
         "lucide-angular": "^0.469.0",
