@@ -1,3 +1,13 @@
+## 0.10.5 (2025-01-12)
+
+### 🩹 Fixes
+
+- **shadcn:** peer depend radix version ([b6cbad2](https://github.com/radix-ng/primitives/commit/b6cbad2))
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+
 ## 0.10.4 (2025-01-12)
 
 ### 🩹 Fixes
