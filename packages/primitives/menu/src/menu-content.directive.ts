@@ -3,7 +3,10 @@ import { Directive } from '@angular/core';
 
 @Directive({
     selector: '[MenuContent]',
-    standalone: true,
-    hostDirectives: [CdkMenu]
+    hostDirectives: [CdkMenu],
+    host: {
+        role: 'menu',
+        '[attr.aria-orientation]': '"vertical"'
+    }
 })
 export class RdxMenuContentDirective {}

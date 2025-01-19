@@ -1,32 +1,8 @@
-import { BooleanInput } from '@angular/cdk/coercion';
-import { CdkMenuItemCheckbox } from '@angular/cdk/menu';
-import { booleanAttribute, computed, Directive, effect, inject, input, signal } from '@angular/core';
+import { Directive } from '@angular/core';
+import { RdxMenuItemCheckboxDirective } from '@radix-ng/primitives/menu';
 
 @Directive({
     selector: '[MenubarCheckboxItem]',
-    standalone: true,
-    hostDirectives: [CdkMenuItemCheckbox],
-    host: {
-        role: 'menuitemcheckbox',
-        '[attr.data-state]': 'checked() ? "checked": "unchecked"',
-        '[disabled]': 'disabledState()'
-    }
+    hostDirectives: [{ directive: RdxMenuItemCheckboxDirective, inputs: ['checked', 'disabled'] }]
 })
-export class RdxMenubarItemCheckboxDirective {
-    private readonly cdkMenuItemCheckbox = inject(CdkMenuItemCheckbox, { host: true });
-
-    readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
-    readonly checked = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
-
-    protected readonly disabledState = computed(() => this.disabled || this.disabled$());
-
-    protected readonly checked$ = signal(this.cdkMenuItemCheckbox.checked);
-    protected readonly disabled$ = signal(this.cdkMenuItemCheckbox.disabled);
-
-    constructor() {
-        effect(() => {
-            this.cdkMenuItemCheckbox.checked = this.checked();
-            this.cdkMenuItemCheckbox.disabled = this.disabled();
-        });
-    }
-}
+export class RdxMenubarItemCheckboxDirective {}

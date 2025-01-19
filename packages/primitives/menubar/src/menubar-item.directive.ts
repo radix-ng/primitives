@@ -4,7 +4,6 @@ import { RdxMenuItemDirective } from '@radix-ng/primitives/menu';
 
 @Directive({
     selector: '[MenuBarItem]',
-    standalone: true,
     hostDirectives: [{ directive: RdxMenuItemDirective, inputs: ['rdxDisabled: disabled '] }]
 })
 export class RdxMenuBarItemDirective {
