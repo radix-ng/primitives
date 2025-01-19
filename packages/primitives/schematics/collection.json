@@ -2,9 +2,8 @@
     "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
     "schematics": {
         "ng-add": {
-            "description": "Add Radix Angular to the application.",
-            "factory": "./ng-add",
-            "schema": "./ng-add/schema.json",
+            "description": "Add RadixNG to the application.",
+            "factory": "./ng-add/index#ngAdd",
             "aliases": ["install"]
         }
     }
