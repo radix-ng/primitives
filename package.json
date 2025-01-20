@@ -137,7 +137,7 @@
         "@types/jest": "29.5.12",
         "@types/node": "^20.17.10",
         "@typescript-eslint/eslint-plugin": "^8.14.0",
-        "@typescript-eslint/parser": "^8.14.0",
+        "@typescript-eslint/parser": "^8.20.0",
         "@typescript-eslint/utils": "^7.18.0",
         "autoprefixer": "^10.4.20",
         "chromatic": "^11.18.1",
