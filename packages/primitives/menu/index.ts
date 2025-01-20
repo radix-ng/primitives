@@ -7,6 +7,7 @@ import { RdxMenuItemIndicatorDirective } from './src/menu-item-indicator.directi
 import { RdxMenuItemRadioDirective } from './src/menu-item-radio.directive';
 import { RdxMenuItemDirective } from './src/menu-item.directive';
 import { RdxMenuLabelDirective } from './src/menu-label.directive';
+import { RdxMenuRadioGroupDirective } from './src/menu-radio-group.directive';
 import { RdxMenuSeparatorDirective } from './src/menu-separator.directive';
 import { RdxMenuTriggerDirective } from './src/menu-trigger.directive';
 
@@ -18,6 +19,7 @@ export * from './src/menu-item-indicator.directive';
 export * from './src/menu-item-radio.directive';
 export * from './src/menu-item.directive';
 export * from './src/menu-label.directive';
+export * from './src/menu-radio-group.directive';
 export * from './src/menu-separator.directive';
 export * from './src/menu-trigger.directive';
 
@@ -28,6 +30,7 @@ const menuImports = [
     RdxMenuItemIndicatorDirective,
     RdxMenuTriggerDirective,
     RdxMenuGroupDirective,
+    RdxMenuRadioGroupDirective,
     RdxMenuItemDirective,
     RdxMenuSeparatorDirective,
     RdxMenuContentDirective,

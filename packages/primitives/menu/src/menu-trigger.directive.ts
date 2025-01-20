@@ -7,7 +7,7 @@ import { booleanAttribute, Directive, inject, input } from '@angular/core';
     hostDirectives: [
         {
             directive: CdkMenuTrigger,
-            inputs: ['cdkMenuTriggerFor: menuTriggerFor']
+            inputs: ['cdkMenuTriggerFor: menuTriggerFor', 'cdkMenuPosition: menuPosition']
         }
     ],
     host: {
@@ -24,6 +24,8 @@ export class RdxMenuTriggerDirective {
     protected readonly cdkTrigger = inject(CdkMenuTrigger, { host: true });
 
     readonly menuTriggerFor = input.required();
+
+    readonly menuPosition = input();
 
     readonly disabled = input<boolean, BooleanInput>(false, {
         transform: booleanAttribute
