@@ -30,12 +30,10 @@ export class RdxMenuItemCheckboxDirective {
 
     private readonly isFocused = signal(false);
 
-    constructor() {
-        effect(() => {
-            this.cdkMenuItemCheckbox.checked = this.checked();
-            this.cdkMenuItemCheckbox.disabled = this.disabled();
-        });
-    }
+    private stateChanged = effect(() => {
+        this.cdkMenuItemCheckbox.checked = this.checked();
+        this.cdkMenuItemCheckbox.disabled = this.disabled();
+    });
 
     onFocus(): void {
         if (!this.disabled()) {

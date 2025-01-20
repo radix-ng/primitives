@@ -4,7 +4,12 @@ import { booleanAttribute, Directive, inject, input } from '@angular/core';
 
 @Directive({
     selector: '[MenuTrigger]',
-    hostDirectives: [{ directive: CdkMenuTrigger, inputs: ['cdkMenuTriggerFor: menuTriggerFor'] }],
+    hostDirectives: [
+        {
+            directive: CdkMenuTrigger,
+            inputs: ['cdkMenuTriggerFor: menuTriggerFor']
+        }
+    ],
     host: {
         role: 'menuitem',
         '[attr.aria-haspopup]': "'menu'",

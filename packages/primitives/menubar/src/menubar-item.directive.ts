@@ -4,7 +4,12 @@ import { RdxMenuItemDirective } from '@radix-ng/primitives/menu';
 
 @Directive({
     selector: '[MenuBarItem]',
-    hostDirectives: [{ directive: RdxMenuItemDirective, inputs: ['rdxDisabled: disabled '] }]
+    hostDirectives: [
+        {
+            directive: RdxMenuItemDirective,
+            inputs: ['rdxDisabled: disabled ']
+        }
+    ]
 })
 export class RdxMenuBarItemDirective {
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
