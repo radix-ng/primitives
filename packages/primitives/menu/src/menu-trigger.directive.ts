@@ -10,13 +10,7 @@ import {
     numberAttribute,
     untracked
 } from '@angular/core';
-import {
-    getContentPosition,
-    RDX_POSITIONING_DEFAULTS,
-    RdxPositionAlign,
-    RdxPositionSide,
-    RdxPositionSideAndAlignOffsets
-} from '@radix-ng/primitives/core';
+import { RdxPositionAlign, RdxPositionSide } from '@radix-ng/primitives/core';
 
 @Directive({
     selector: '[MenuTrigger]',
@@ -45,7 +39,7 @@ export class RdxMenuTriggerDirective {
      * @description The preferred side of the trigger to render against when open. Will be reversed when collisions occur and avoidCollisions is enabled.
      * @default top
      */
-    readonly side = input<RdxPositionSide>(RdxPositionSide.Bottom);
+    readonly side = input<RdxPositionSide | undefined>(undefined);
     /**
      * @description The distance in pixels from the trigger.
      * @default undefined
@@ -57,7 +51,7 @@ export class RdxMenuTriggerDirective {
      * @description The preferred alignment against the trigger. May change when collisions occur.
      * @default center
      */
-    readonly align = input<RdxPositionAlign>(RdxPositionAlign.Center);
+    readonly align = input<RdxPositionAlign | undefined>(undefined);
     /**
      * @description An offset in pixels from the "start" or "end" alignment options.
      * @default undefined
@@ -72,25 +66,13 @@ export class RdxMenuTriggerDirective {
 
     private readonly positions = computed(() => this.computePositions());
 
-    private computePositions() {
-        const offsets: RdxPositionSideAndAlignOffsets = {
-            sideOffset: isNaN(this.sideOffset()) ? RDX_POSITIONING_DEFAULTS.offsets.side : this.sideOffset(),
-            alignOffset: isNaN(this.alignOffset()) ? RDX_POSITIONING_DEFAULTS.offsets.align : this.alignOffset()
-        };
-        const basePosition = getContentPosition({
-            side: this.side(),
-            align: this.align(),
-            sideOffset: offsets.sideOffset,
-            alignOffset: offsets.alignOffset
-        });
-
-        return [basePosition];
-    }
+    private computePositions() {}
 
     #onPositionChangeEffect = effect(() => {
-        const positions = this.positions();
+        // const positions = this.positions();
         untracked(() => {
-            this.cdkTrigger.menuPosition = positions;
+            // TODO: added poisitions and for subMenu
+            // this.cdkTrigger.menuPosition = positions;
         });
     });
 
