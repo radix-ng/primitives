@@ -4,9 +4,13 @@ import { booleanAttribute, computed, Directive, effect, inject, input, signal } 
 import { getCheckedState, isIndeterminate } from './utils';
 
 @Directive({
-    selector: '[MenuCheckboxItem]',
-    standalone: true,
-    hostDirectives: [CdkMenuItemCheckbox],
+    selector: '[MenuItemCheckbox]',
+    hostDirectives: [
+        {
+            directive: CdkMenuItemCheckbox,
+            outputs: ['cdkMenuItemTriggered: menuItemTriggered']
+        }
+    ],
     host: {
         role: 'menuitemcheckbox',
         '[attr.aria-checked]': 'isIndeterminate(checked()) ? "mixed" : checked()',

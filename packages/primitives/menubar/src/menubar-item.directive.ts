@@ -1,5 +1,4 @@
-import { BooleanInput } from '@angular/cdk/coercion';
-import { booleanAttribute, Directive, input } from '@angular/core';
+import { Directive } from '@angular/core';
 import { RdxMenuItemDirective } from '@radix-ng/primitives/menu';
 
 @Directive({
@@ -7,10 +6,8 @@ import { RdxMenuItemDirective } from '@radix-ng/primitives/menu';
     hostDirectives: [
         {
             directive: RdxMenuItemDirective,
-            inputs: ['rdxDisabled: disabled ']
+            inputs: ['disabled']
         }
     ]
 })
-export class RdxMenuBarItemDirective {
-    readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
-}
+export class RdxMenuBarItemDirective {}

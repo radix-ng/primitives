@@ -1,6 +1,7 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { Check, Dot, LucideAngularModule } from 'lucide-angular';
 import { MenuModule } from '../index';
+import { MenuCheckboxItemsStory } from './components/menu-checkbox-items';
 import { MenuRadioItemsStory } from './components/menu-radio-items';
 
 const html = String.raw;
@@ -9,7 +10,13 @@ export default {
     title: 'Primitives/Menu [In Progress]',
     decorators: [
         moduleMetadata({
-            imports: [MenuModule, LucideAngularModule, MenuRadioItemsStory, LucideAngularModule.pick({ Check, Dot })]
+            imports: [
+                MenuModule,
+                LucideAngularModule,
+                MenuRadioItemsStory,
+                MenuCheckboxItemsStory,
+                LucideAngularModule.pick({ Check, Dot })
+            ]
         }),
         componentWrapperDecorator(
             (story) => html`
@@ -167,10 +174,39 @@ export const Default: Story = {
     })
 };
 
-export const Radio: Story = {
+export const ItemDisabled: Story = {
+    render: () => ({
+        template: html`
+            <div class="MenuRoot" MenuRoot>
+                <div class="MenuTrigger" MenuItem MenuTrigger [menuTriggerFor]="file">File</div>
+            </div>
+
+            <ng-template #file>
+                <div class="MenuContent" MenuContent>
+                    <div class="MenuItem" MenuItem disabled>Undo</div>
+                    <div class="MenuItem" MenuItem>Redo</div>
+                    <div class="MenuSeparator" MenuSeparator></div>
+                    <div class="MenuItem" MenuItem>Cut</div>
+                    <div class="MenuItem" MenuItem disabled>Copy</div>
+                    <div class="MenuItem" MenuItem>Paste</div>
+                </div>
+            </ng-template>
+        `
+    })
+};
+
+export const RadioItem: Story = {
     render: () => ({
         template: html`
             <menu-radio-items-story />
+        `
+    })
+};
+
+export const CheckboxItem: Story = {
+    render: () => ({
+        template: html`
+            <menu-checkbox-items-story />
         `
     })
 };

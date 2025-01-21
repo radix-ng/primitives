@@ -23,10 +23,7 @@ import { outputFromObservable } from '@angular/core/rxjs-interop';
 export class RdxMenuItemDirective {
     private readonly cdkMenuItem = inject(CdkMenuItem, { host: true });
 
-    readonly disabled = input<boolean, BooleanInput>(false, {
-        transform: booleanAttribute,
-        alias: 'rdxDisabled'
-    });
+    readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     readonly onSelect = outputFromObservable(this.cdkMenuItem.triggered);
 
