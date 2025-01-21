@@ -3,6 +3,7 @@ import { Check, Dot, LucideAngularModule } from 'lucide-angular';
 import { MenuModule } from '../index';
 import { MenuCheckboxItemsStory } from './components/menu-checkbox-items';
 import { MenuRadioItemsStory } from './components/menu-radio-items';
+import { MenuWithLabelsItemsStory } from './components/menu-with-labels-items';
 
 const html = String.raw;
 
@@ -15,6 +16,7 @@ export default {
                 LucideAngularModule,
                 MenuRadioItemsStory,
                 MenuCheckboxItemsStory,
+                MenuWithLabelsItemsStory,
                 LucideAngularModule.pick({ Check, Dot })
             ]
         }),
@@ -207,6 +209,14 @@ export const CheckboxItem: Story = {
     render: () => ({
         template: html`
             <menu-checkbox-items-story />
+        `
+    })
+};
+
+export const WithLabels: Story = {
+    render: () => ({
+        template: html`
+            <menu-with-labels-items-story />
         `
     })
 };

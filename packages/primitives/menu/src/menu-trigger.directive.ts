@@ -41,8 +41,6 @@ export class RdxMenuTriggerDirective {
 
     readonly menuTriggerFor = input.required();
 
-    readonly menuPosition = input();
-
     /**
      * @description The preferred side of the trigger to render against when open. Will be reversed when collisions occur and avoidCollisions is enabled.
      * @default top
@@ -72,8 +70,7 @@ export class RdxMenuTriggerDirective {
         transform: booleanAttribute
     });
 
-    /** @ingore */
-    readonly positions = computed(() => this.computePositions());
+    private readonly positions = computed(() => this.computePositions());
 
     private computePositions() {
         const offsets: RdxPositionSideAndAlignOffsets = {
