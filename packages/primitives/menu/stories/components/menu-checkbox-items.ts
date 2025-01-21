@@ -15,18 +15,12 @@ import { LucideAngularModule, X } from 'lucide-angular';
             <div class="MenuContent" MenuContent>
                 <div
                     class="MenuCheckboxItem inset"
-                    [checked]="
-                        selectedItems.length === this.options().length
-                            ? true
-                            : selectedItems.length
-                              ? 'indeterminate'
-                              : false
-                    "
+                    [checked]="checkedState()"
                     (menuItemTriggered)="handleSelectAll()"
                     MenuItemCheckbox
                 >
                     Select All
-                    <lucide-icon class="MenuItemIndicator" [img]="X" MenuItemIndicator size="16" strokeWidth="5" />
+                    <lucide-icon class="MenuItemIndicator" [img]="X" MenuItemIndicator size="16" strokeWidth="2" />
                 </div>
 
                 <div class="MenuSeparator" MenuSeparator></div>
@@ -38,7 +32,7 @@ import { LucideAngularModule, X } from 'lucide-angular';
                         MenuItemCheckbox
                     >
                         {{ item }}
-                        <lucide-icon class="MenuItemIndicator" [img]="X" MenuItemIndicator size="16" strokeWidth="5" />
+                        <lucide-icon class="MenuItemIndicator" [img]="X" MenuItemIndicator size="16" strokeWidth="2" />
                     </div>
                 }
             </div>
@@ -48,7 +42,7 @@ import { LucideAngularModule, X } from 'lucide-angular';
 export class MenuCheckboxItemsStory {
     options = signal<string[]>(['Crows', 'Ravens', 'Magpies', 'Jackdaws']);
 
-    selectedItems: string[] = this.options();
+    selectedItems = this.options();
 
     handleSelection(option: string) {
         if (this.selectedItems.includes(option)) {
@@ -61,6 +55,14 @@ export class MenuCheckboxItemsStory {
     handleSelectAll() {
         if (this.selectedItems.length === this.options().length) this.selectedItems = [];
         else this.selectedItems = this.options();
+    }
+
+    checkedState() {
+        return this.selectedItems.length === this.options().length
+            ? true
+            : this.selectedItems.length > 0
+              ? 'indeterminate'
+              : false;
     }
 
     protected readonly X = X;

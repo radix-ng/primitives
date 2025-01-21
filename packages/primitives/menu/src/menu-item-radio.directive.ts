@@ -26,8 +26,8 @@ import { getCheckedState } from './utils';
 export class RdxMenuItemRadioDirective {
     private readonly cdkMenuItemRadio = inject(CdkMenuItemRadio, { host: true });
 
-    readonly disabled = input<boolean, BooleanInput>(this.cdkMenuItemRadio.checked, { transform: booleanAttribute });
-    readonly checked = input<boolean, BooleanInput>(this.cdkMenuItemRadio.disabled, { transform: booleanAttribute });
+    readonly disabled = input<boolean, BooleanInput>(this.cdkMenuItemRadio.disabled, { transform: booleanAttribute });
+    readonly checked = input<boolean, BooleanInput>(this.cdkMenuItemRadio.checked, { transform: booleanAttribute });
 
     readonly triggered = outputFromObservable(this.cdkMenuItemRadio.triggered);
 

@@ -1,7 +1,7 @@
 import { Directive, inject } from '@angular/core';
 import { RdxMenuItemCheckboxDirective } from './menu-item-checkbox.directive';
 import { RdxMenuItemRadioDirective } from './menu-item-radio.directive';
-import { getCheckedState } from './utils';
+import { getCheckedState, isIndeterminate } from './utils';
 
 @Directive({
     selector: '[MenuItemIndicator]',
@@ -21,7 +21,7 @@ export class RdxMenuItemIndicatorDirective {
             return this.menuItemRadio.checked();
         }
         if (this.menuCheckboxItem) {
-            return this.menuCheckboxItem.checked();
+            return isIndeterminate(this.menuCheckboxItem.checked()) || this.menuCheckboxItem.checked() === true;
         }
         return false;
     }
