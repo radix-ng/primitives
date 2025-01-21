@@ -6,7 +6,12 @@ import { getCheckedState } from './utils';
 
 @Directive({
     selector: '[MenuItemRadio]',
-    hostDirectives: [CdkMenuItemRadio],
+    hostDirectives: [
+        {
+            directive: CdkMenuItemRadio,
+            outputs: ['cdkMenuItemTriggered: menuItemTriggered']
+        }
+    ],
     host: {
         role: 'menuitemradio',
         '[attr.aria-checked]': 'checked()',
