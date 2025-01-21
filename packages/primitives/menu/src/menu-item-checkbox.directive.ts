@@ -25,9 +25,7 @@ import { getCheckedState, isIndeterminate } from './utils';
 export class RdxMenuItemCheckboxDirective {
     private readonly cdkMenuItemCheckbox = inject(CdkMenuItemCheckbox, { host: true });
 
-    readonly disabled = input<boolean, BooleanInput>(this.cdkMenuItemCheckbox.disabled, {
-        transform: booleanAttribute
-    });
+    readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     readonly checked = input<boolean | 'indeterminate'>(false);
 
