@@ -1,0 +1,20 @@
+name: Algolia DocSearch Crawler
+
+on:
+  # Trigger the workflow on manual dispatch
+  workflow_dispatch:
+
+jobs:
+  algolia_docsearch_crawler:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Algolia DocSearch Crawler
+        uses: algolia/algoliasearch-crawler-github-actions@v1.1.13
+        id: algolia_docsearch_crawler
+        with:
+          crawler-user-id: ${{ secrets.ALGOLIA_DOCSEARCH_CRAWLER_USER_ID }}
+          crawler-api-key: ${{ secrets.ALGOLIA_DOCSEARCH_CRAWLER_API_KEY }}
+          algolia-app-id: KO68VM9HAD
+          algolia-api-key: ${{ secrets.ALGOLIA_DOCSEARCH_API_KEY }}
+          site-url: https://radix-ng.com
+          crawler-name: radix-ng
