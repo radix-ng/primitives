@@ -8,7 +8,18 @@ import { Dot, LucideAngularModule } from 'lucide-angular';
     styleUrl: 'styles.css',
     template: `
         <div class="MenuRoot" MenuRoot>
-            <div class="MenuTrigger" [menuTriggerFor]="menuGroup" sideOffset="8" MenuItem MenuTrigger>File</div>
+            <div
+                class="MenuTrigger"
+                [menuTriggerFor]="menuGroup"
+                side="bottom"
+                align="start"
+                sideOffset="5"
+                alignOffset="-3"
+                MenuItem
+                MenuTrigger
+            >
+                File
+            </div>
         </div>
 
         <ng-template #menuGroup>

@@ -10,7 +10,9 @@ import {
     numberAttribute,
     untracked
 } from '@angular/core';
-import { RdxPositionAlign, RdxPositionSide } from '@radix-ng/primitives/core';
+
+export type RdxMenuAlign = 'start' | 'center' | 'end';
+export type RdxMenuSide = 'top' | 'right' | 'bottom' | 'left';
 
 @Directive({
     selector: '[MenuTrigger]',
@@ -39,7 +41,10 @@ export class RdxMenuTriggerDirective {
      * @description The preferred side of the trigger to render against when open. Will be reversed when collisions occur and avoidCollisions is enabled.
      * @default top
      */
-    readonly side = input<RdxPositionSide | undefined>(undefined);
+    readonly side = input<RdxMenuSide>();
+
+    readonly align = input<RdxMenuAlign>();
+
     /**
      * @description The distance in pixels from the trigger.
      * @default undefined
@@ -47,11 +52,7 @@ export class RdxMenuTriggerDirective {
     readonly sideOffset = input<number, NumberInput>(NaN, {
         transform: numberAttribute
     });
-    /**
-     * @description The preferred alignment against the trigger. May change when collisions occur.
-     * @default center
-     */
-    readonly align = input<RdxPositionAlign | undefined>(undefined);
+
     /**
      * @description An offset in pixels from the "start" or "end" alignment options.
      * @default undefined
@@ -64,15 +65,104 @@ export class RdxMenuTriggerDirective {
         transform: booleanAttribute
     });
 
+    private enablePositions = false;
+
+    // TODO
     private readonly positions = computed(() => this.computePositions());
 
-    private computePositions() {}
+    private computePositions() {
+        if (this.align() || this.sideOffset() || this.alignOffset() || this.side()) {
+            this.enablePositions = true;
+        }
+
+        const side = this.side() || 'bottom';
+        const align = this.align() || 'center';
+        const sideOffset = this.sideOffset() || 0;
+        const alignOffset = this.alignOffset() || 0;
+
+        let originX: 'start' | 'center' | 'end' = 'center';
+        let originY: 'top' | 'center' | 'bottom' = 'center';
+        let overlayX: 'start' | 'center' | 'end' = 'center';
+        let overlayY: 'top' | 'center' | 'bottom' = 'center';
+        let offsetX = 0;
+        let offsetY = 0;
+
+        switch (side) {
+            case 'top':
+                originY = 'top';
+                overlayY = 'bottom';
+                offsetY = -sideOffset;
+                break;
+            case 'bottom':
+                originY = 'bottom';
+                overlayY = 'top';
+                offsetY = sideOffset;
+                break;
+            case 'left':
+                originX = 'start';
+                overlayX = 'end';
+                offsetX = -sideOffset;
+                break;
+            case 'right':
+                originX = 'end';
+                overlayX = 'start';
+                offsetX = sideOffset;
+                break;
+        }
+
+        switch (align) {
+            case 'start':
+                if (side === 'top' || side === 'bottom') {
+                    originX = 'start';
+                    overlayX = 'start';
+                    offsetX = alignOffset;
+                } else {
+                    originY = 'top';
+                    overlayY = 'top';
+                    offsetY = alignOffset;
+                }
+                break;
+            case 'end':
+                if (side === 'top' || side === 'bottom') {
+                    originX = 'end';
+                    overlayX = 'end';
+                    offsetX = -alignOffset;
+                } else {
+                    originY = 'bottom';
+                    overlayY = 'bottom';
+                    offsetY = -alignOffset;
+                }
+                break;
+            case 'center':
+            default:
+                if (side === 'top' || side === 'bottom') {
+                    originX = 'center';
+                    overlayX = 'center';
+                } else {
+                    originY = 'center';
+                    overlayY = 'center';
+                }
+                break;
+        }
+
+        return {
+            originX,
+            originY,
+            overlayX,
+            overlayY,
+            offsetX,
+            offsetY
+        };
+    }
+
+    /**
+     * @description The preferred alignment against the trigger. May change when collisions occur.
+     */
 
     #onPositionChangeEffect = effect(() => {
-        // const positions = this.positions();
+        const positions = this.positions();
         untracked(() => {
-            // TODO: added poisitions and for subMenu
-            // this.cdkTrigger.menuPosition = positions;
+            if (this.enablePositions) this.cdkTrigger.menuPosition = [positions];
         });
     });
 

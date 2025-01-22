@@ -9,7 +9,9 @@ import { MenuModule } from '@radix-ng/primitives/menu';
     styleUrl: 'styles.css',
     template: `
         <div class="MenuRoot" MenuRoot>
-            <div class="MenuTrigger" [menuTriggerFor]="menuGroup" sideOffset="8" MenuItem MenuTrigger>File</div>
+            <div class="MenuTrigger" [menuTriggerFor]="menuGroup" align="center" sideOffset="8" MenuItem MenuTrigger>
+                File
+            </div>
         </div>
 
         <ng-template #menuGroup>

@@ -9,7 +9,17 @@ import { ArrowRight, LucideAngularModule } from 'lucide-angular';
     styleUrl: 'styles.css',
     template: `
         <div class="MenuRoot" MenuRoot>
-            <div class="MenuTrigger" [menuTriggerFor]="menuGroup" sideOffset="8" MenuItem MenuTrigger>File</div>
+            <div
+                class="MenuTrigger"
+                [menuTriggerFor]="menuGroup"
+                align="start"
+                sideOffset="5"
+                alignOffset="-3"
+                MenuItem
+                MenuTrigger
+            >
+                File
+            </div>
         </div>
 
         <ng-template #menuGroup>
@@ -21,8 +31,9 @@ import { ArrowRight, LucideAngularModule } from 'lucide-angular';
                 <div
                     class="MenuItem"
                     [menuTriggerFor]="subMenu"
-                    [side]="RdxPositionSide.Right"
-                    sideOffset="8"
+                    align="start"
+                    sideOffset="-20"
+                    alignOffset="210"
                     MenuItem
                     MenuTrigger
                 >
