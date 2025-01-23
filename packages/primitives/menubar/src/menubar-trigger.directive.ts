@@ -8,7 +8,11 @@ import { RdxMenuTriggerDirective } from '@radix-ng/primitives/menu';
             directive: RdxMenuTriggerDirective,
             inputs: [
                 'disabled',
-                'menuTriggerFor'
+                'menuTriggerFor',
+                'sideOffset',
+                'side',
+                'align',
+                'alignOffset'
             ]
         }
     ]

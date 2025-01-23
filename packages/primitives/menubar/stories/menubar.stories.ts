@@ -31,10 +31,50 @@ export const Default: Story = {
     render: () => ({
         template: html`
             <div class="MenubarRoot" MenuBarRoot>
-                <div class="MenubarTrigger" MenuBarItem MenuBarTrigger [menuTriggerFor]="file">File</div>
-                <div class="MenubarTrigger" MenuBarItem MenuBarTrigger [menuTriggerFor]="edit">Edit</div>
-                <div class="MenubarTrigger" MenuBarItem MenuBarTrigger [menuTriggerFor]="view">View</div>
-                <div class="MenubarTrigger" MenuBarItem MenuBarTrigger [menuTriggerFor]="profiles">Profiles</div>
+                <div
+                    class="MenubarTrigger"
+                    MenuBarItem
+                    align="start"
+                    sideOffset="5"
+                    alignOffset="-3"
+                    MenuBarTrigger
+                    [menuTriggerFor]="file"
+                >
+                    File
+                </div>
+                <div
+                    class="MenubarTrigger"
+                    align="start"
+                    sideOffset="5"
+                    alignOffset="-3"
+                    MenuBarItem
+                    MenuBarTrigger
+                    [menuTriggerFor]="edit"
+                >
+                    Edit
+                </div>
+                <div
+                    class="MenubarTrigger"
+                    align="start"
+                    sideOffset="5"
+                    alignOffset="-3"
+                    MenuBarItem
+                    MenuBarTrigger
+                    [menuTriggerFor]="view"
+                >
+                    View
+                </div>
+                <div
+                    class="MenubarTrigger"
+                    align="start"
+                    sideOffset="5"
+                    alignOffset="-3"
+                    MenuBarItem
+                    MenuBarTrigger
+                    [menuTriggerFor]="profiles"
+                >
+                    Profiles
+                </div>
             </div>
 
             <ng-template #file>
