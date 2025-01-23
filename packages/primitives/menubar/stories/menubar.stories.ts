@@ -5,7 +5,7 @@ import { MenubarModule } from '../index';
 const html = String.raw;
 
 export default {
-    title: 'Primitives/Menubar [In Progress]',
+    title: 'Primitives/Menubar',
     decorators: [
         moduleMetadata({
             imports: [MenubarModule, LucideAngularModule, LucideAngularModule.pick({ Check, Dot })]

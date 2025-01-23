@@ -39,7 +39,6 @@ export class RdxMenuTriggerDirective {
 
     /**
      * @description The preferred side of the trigger to render against when open. Will be reversed when collisions occur and avoidCollisions is enabled.
-     * @default top
      */
     readonly side = input<RdxMenuSide>();
 
@@ -47,7 +46,6 @@ export class RdxMenuTriggerDirective {
 
     /**
      * @description The distance in pixels from the trigger.
-     * @default undefined
      */
     readonly sideOffset = input<number, NumberInput>(NaN, {
         transform: numberAttribute
@@ -55,7 +53,6 @@ export class RdxMenuTriggerDirective {
 
     /**
      * @description An offset in pixels from the "start" or "end" alignment options.
-     * @default undefined
      */
     readonly alignOffset = input<number, NumberInput>(NaN, {
         transform: numberAttribute
@@ -166,6 +163,7 @@ export class RdxMenuTriggerDirective {
         });
     });
 
+    /** @ignore */
     onPointerDown($event: MouseEvent) {
         // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
         // but not when the control key is pressed (avoiding MacOS right click)

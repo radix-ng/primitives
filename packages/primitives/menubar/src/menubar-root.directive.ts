@@ -9,4 +9,4 @@ import { Directive } from '@angular/core';
         '[attr.data-orientation]': '"horizontal"'
     }
 })
-export class RdxMenuBarDirective {}
+export class RdxMenuBarRootDirective {}

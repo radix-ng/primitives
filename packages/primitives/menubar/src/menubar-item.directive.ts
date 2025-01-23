@@ -6,7 +6,8 @@ import { RdxMenuItemDirective } from '@radix-ng/primitives/menu';
     hostDirectives: [
         {
             directive: RdxMenuItemDirective,
-            inputs: ['disabled']
+            inputs: ['disabled'],
+            outputs: ['onSelect']
         }
     ]
 })

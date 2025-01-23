@@ -23,6 +23,8 @@ export * from './src/menu-radio-group.directive';
 export * from './src/menu-separator.directive';
 export * from './src/menu-trigger.directive';
 
+export type { RdxMenuAlign, RdxMenuSide } from './src/menu-trigger.directive';
+
 const menuImports = [
     RdxMenuDirective,
     RdxMenuItemCheckboxDirective,

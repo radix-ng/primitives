@@ -9,7 +9,7 @@ import { MenuWithSubMenuStory } from './components/menu-with-sub-menu';
 const html = String.raw;
 
 export default {
-    title: 'Primitives/Menu [In Progress]',
+    title: 'Utilities/Menu',
     decorators: [
         moduleMetadata({
             imports: [
