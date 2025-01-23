@@ -1,6 +1,7 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { CdkMenuItemCheckbox } from '@angular/cdk/menu';
 import { booleanAttribute, computed, Directive, effect, inject, input, signal } from '@angular/core';
+import { outputFromObservable } from '@angular/core/rxjs-interop';
 import { getCheckedState, isIndeterminate } from './utils';
 
 @Directive({
@@ -28,6 +29,8 @@ export class RdxMenuItemCheckboxDirective {
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     readonly checked = input<boolean | 'indeterminate'>(false);
+
+    readonly onCheckedChange = outputFromObservable(this.cdkMenuItemCheckbox.triggered);
 
     protected readonly disabledState = computed(() => this.disabled);
 

@@ -30,7 +30,7 @@ export class RdxMenuItemRadioDirective {
 
     readonly checked = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    readonly triggered = outputFromObservable(this.cdkMenuItemRadio.triggered);
+    readonly onValueChange = outputFromObservable(this.cdkMenuItemRadio.triggered);
 
     protected readonly disabledState = computed(() => this.disabled());
 
