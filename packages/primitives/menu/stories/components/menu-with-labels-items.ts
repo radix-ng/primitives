@@ -1,32 +1,40 @@
-import { Component } from '@angular/core';
-import { MenuModule } from '@radix-ng/primitives/menu';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RdxMenuModule } from '@radix-ng/primitives/menu';
 
 @Component({
     selector: 'menu-with-labels-items-story',
     imports: [
-        MenuModule
+        RdxMenuModule
     ],
     styleUrl: 'styles.css',
+    changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-        <div class="MenuRoot" MenuRoot>
-            <div class="MenuTrigger" [menuTriggerFor]="menuGroup" align="center" sideOffset="8" MenuItem MenuTrigger>
+        <div class="MenuRoot" RdxMenuRoot>
+            <div
+                class="MenuTrigger"
+                [menuTriggerFor]="menuGroup"
+                align="center"
+                sideOffset="8"
+                RdxMenuItem
+                RdxMenuTrigger
+            >
                 File
             </div>
         </div>
 
         <ng-template #menuGroup>
-            <div class="MenuContent" MenuContent>
-                <div MenuGroup>
+            <div class="MenuContent" RdxMenuContent>
+                <div RdxMenuGroup>
                     @for (foodGroup of foodGroups; track $index) {
-                        <div class="MenuLabel" MenuLabel>{{ foodGroup.label }}</div>
+                        <div class="MenuLabel" RdxMenuLabel>{{ foodGroup.label }}</div>
 
                         @for (food of foodGroup.foods; track $index) {
-                            <div class="MenuItem" (onSelect)="handleSelect(food.value)" MenuItem>
+                            <div class="MenuItem" (onSelect)="handleSelect(food.value)" RdxMenuItem>
                                 {{ food.label }}
                             </div>
                         }
                         @if ($index < foodGroups.length - 1) {
-                            <div class="MenuSeparator" MenuSeparator></div>
+                            <div class="MenuSeparator" RdxMenuSeparator></div>
                         }
                     }
                 </div>

@@ -2,7 +2,7 @@ import { Directive } from '@angular/core';
 import { RdxMenuItemDirective } from '@radix-ng/primitives/menu';
 
 @Directive({
-    selector: '[MenuBarItem]',
+    selector: '[RdxMenuBarItem]',
     hostDirectives: [
         {
             directive: RdxMenuItemDirective,

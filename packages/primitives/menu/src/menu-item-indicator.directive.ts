@@ -4,7 +4,7 @@ import { RdxMenuItemRadioDirective } from './menu-item-radio.directive';
 import { getCheckedState, isIndeterminate } from './utils';
 
 @Directive({
-    selector: '[MenuItemIndicator]',
+    selector: '[RdxMenuItemIndicator]',
     host: {
         '[attr.data-state]': 'getCheckedState(isChecked)',
 

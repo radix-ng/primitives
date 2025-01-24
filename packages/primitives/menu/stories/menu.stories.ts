@@ -1,6 +1,6 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { Check, Dot, LucideAngularModule } from 'lucide-angular';
-import { MenuModule } from '../index';
+import { RdxMenuModule } from '../index';
 import { MenuCheckboxItemsStory } from './components/menu-checkbox-items';
 import { MenuRadioItemsStory } from './components/menu-radio-items';
 import { MenuWithLabelsItemsStory } from './components/menu-with-labels-items';
@@ -13,7 +13,7 @@ export default {
     decorators: [
         moduleMetadata({
             imports: [
-                MenuModule,
+                RdxMenuModule,
                 LucideAngularModule,
                 MenuRadioItemsStory,
                 MenuCheckboxItemsStory,
@@ -160,18 +160,18 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: html`
-            <div class="MenuRoot" MenuRoot>
-                <div class="MenuTrigger" MenuItem MenuTrigger [menuTriggerFor]="file">File</div>
+            <div class="MenuRoot" RdxMenuRoot>
+                <div class="MenuTrigger" RdxMenuItem RdxMenuTrigger [menuTriggerFor]="file">File</div>
             </div>
 
             <ng-template #file>
-                <div class="MenuContent" MenuContent>
-                    <div class="MenuItem" MenuItem>Undo</div>
-                    <div class="MenuItem" MenuItem>Redo</div>
-                    <div class="MenuSeparator" MenuSeparator></div>
-                    <div class="MenuItem" MenuItem>Cut</div>
-                    <div class="MenuItem" MenuItem>Copy</div>
-                    <div class="MenuItem" MenuItem>Paste</div>
+                <div class="MenuContent" RdxMenuContent>
+                    <div class="MenuItem" RdxMenuItem>Undo</div>
+                    <div class="MenuItem" RdxMenuItem>Redo</div>
+                    <div class="MenuSeparator" RdxMenuSeparator></div>
+                    <div class="MenuItem" RdxMenuItem>Cut</div>
+                    <div class="MenuItem" RdxMenuItem>Copy</div>
+                    <div class="MenuItem" RdxMenuItem>Paste</div>
                 </div>
             </ng-template>
         `
@@ -181,18 +181,18 @@ export const Default: Story = {
 export const ItemDisabled: Story = {
     render: () => ({
         template: html`
-            <div class="MenuRoot" MenuRoot>
-                <div class="MenuTrigger" MenuItem MenuTrigger [menuTriggerFor]="file">File</div>
+            <div class="MenuRoot" RdxMenuRoot>
+                <div class="MenuTrigger" RdxMenuItem RdxMenuTrigger [menuTriggerFor]="file">File</div>
             </div>
 
             <ng-template #file>
-                <div class="MenuContent" MenuContent>
-                    <div class="MenuItem" MenuItem disabled>Undo</div>
-                    <div class="MenuItem" MenuItem>Redo</div>
-                    <div class="MenuSeparator" MenuSeparator></div>
-                    <div class="MenuItem" MenuItem>Cut</div>
-                    <div class="MenuItem" MenuItem disabled>Copy</div>
-                    <div class="MenuItem" MenuItem>Paste</div>
+                <div class="MenuContent" RdxMenuContent>
+                    <div class="MenuItem" RdxMenuItem disabled>Undo</div>
+                    <div class="MenuItem" RdxMenuItem>Redo</div>
+                    <div class="MenuSeparator" RdxMenuSeparator></div>
+                    <div class="MenuItem" RdxMenuItem>Cut</div>
+                    <div class="MenuItem" RdxMenuItem disabled>Copy</div>
+                    <div class="MenuItem" RdxMenuItem>Paste</div>
                 </div>
             </ng-template>
         `

@@ -2,7 +2,7 @@ import { Directive } from '@angular/core';
 import { RdxMenuItemRadioDirective } from '@radix-ng/primitives/menu';
 
 @Directive({
-    selector: '[MenubarItemRadio]',
+    selector: '[RdxMenuBarItemRadio]',
     hostDirectives: [
         {
             directive: RdxMenuItemRadioDirective,

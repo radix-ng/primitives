@@ -1,48 +1,55 @@
-import { Component, signal } from '@angular/core';
-import { MenuModule } from '@radix-ng/primitives/menu';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { LucideAngularModule, X } from 'lucide-angular';
 
 @Component({
     selector: 'menu-checkbox-items-story',
-    imports: [MenuModule, LucideAngularModule],
+    imports: [RdxMenuModule, LucideAngularModule],
     styleUrl: 'styles.css',
+    changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-        <div class="MenuRoot" MenuRoot>
+        <div class="MenuRoot" RdxMenuRoot>
             <div
                 class="MenuTrigger"
                 [menuTriggerFor]="menuGroup"
                 align="start"
                 sideOffset="5"
                 alignOffset="-3"
-                MenuItem
-                MenuTrigger
+                RdxMenuItem
+                RdxMenuTrigger
             >
                 File
             </div>
         </div>
 
         <ng-template #menuGroup>
-            <div class="MenuContent" MenuContent>
+            <div class="MenuContent" RdxMenuContent>
                 <div
                     class="MenuCheckboxItem inset"
                     [checked]="checkedState()"
                     (menuItemTriggered)="handleSelectAll()"
-                    MenuItemCheckbox
+                    RdxMenuItemCheckbox
                 >
                     Select All
-                    <lucide-icon class="MenuItemIndicator" [img]="X" MenuItemIndicator size="16" strokeWidth="2" />
+                    <lucide-icon class="MenuItemIndicator" [img]="X" RdxMenuItemIndicator size="16" strokeWidth="2" />
                 </div>
 
-                <div class="MenuSeparator" MenuSeparator></div>
+                <div class="MenuSeparator" RdxMenuSeparator></div>
                 @for (item of options(); track $index) {
                     <div
                         class="MenuCheckboxItem inset"
                         [checked]="selectedItems.includes(item)"
                         (menuItemTriggered)="handleSelection(item)"
-                        MenuItemCheckbox
+                        RdxMenuItemCheckbox
                     >
                         {{ item }}
-                        <lucide-icon class="MenuItemIndicator" [img]="X" MenuItemIndicator size="16" strokeWidth="2" />
+                        <lucide-icon
+                            class="MenuItemIndicator"
+                            [img]="X"
+                            RdxMenuItemIndicator
+                            size="16"
+                            strokeWidth="2"
+                        />
                     </div>
                 }
             </div>

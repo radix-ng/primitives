@@ -2,7 +2,7 @@ import { CdkMenu } from '@angular/cdk/menu';
 import { Directive } from '@angular/core';
 
 @Directive({
-    selector: '[MenuContent]',
+    selector: '[RdxMenuContent]',
     hostDirectives: [CdkMenu],
     host: {
         role: 'menu',

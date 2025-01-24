@@ -4,7 +4,7 @@ import { booleanAttribute, computed, Directive, effect, inject, input, signal } 
 import { outputFromObservable } from '@angular/core/rxjs-interop';
 
 @Directive({
-    selector: '[MenuItem]',
+    selector: '[RdxMenuItem]',
     hostDirectives: [CdkMenuItem],
     host: {
         role: 'menuitem',

@@ -2,7 +2,7 @@ import { Directive } from '@angular/core';
 import { RdxMenuItemCheckboxDirective } from '@radix-ng/primitives/menu';
 
 @Directive({
-    selector: '[MenubarCheckboxItem]',
+    selector: '[RdxMenuBarCheckboxItem]',
     hostDirectives: [
         {
             directive: RdxMenuItemCheckboxDirective,

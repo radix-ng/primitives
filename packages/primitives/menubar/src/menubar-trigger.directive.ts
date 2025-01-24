@@ -2,7 +2,7 @@ import { Directive } from '@angular/core';
 import { RdxMenuTriggerDirective } from '@radix-ng/primitives/menu';
 
 @Directive({
-    selector: '[MenuBarTrigger]',
+    selector: '[RdxMenuBarTrigger]',
     hostDirectives: [
         {
             directive: RdxMenuTriggerDirective,

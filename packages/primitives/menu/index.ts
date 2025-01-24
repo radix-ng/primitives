@@ -43,4 +43,4 @@ const menuImports = [
     imports: [...menuImports],
     exports: [...menuImports]
 })
-export class MenuModule {}
+export class RdxMenuModule {}

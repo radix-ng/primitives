@@ -2,7 +2,7 @@ import { CdkMenuBar } from '@angular/cdk/menu';
 import { Directive } from '@angular/core';
 
 @Directive({
-    selector: '[MenuBarRoot]',
+    selector: '[RdxMenuBarRoot]',
     hostDirectives: [CdkMenuBar],
     host: {
         tabindex: '0',

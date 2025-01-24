@@ -1,7 +1,7 @@
 import { Directive } from '@angular/core';
 
 @Directive({
-    selector: '[MenuSeparator]',
+    selector: '[RdxMenuSeparator]',
     host: {
         role: 'separator',
         '[attr.aria-orientation]': "'horizontal'"

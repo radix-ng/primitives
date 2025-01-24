@@ -5,7 +5,7 @@ import { outputFromObservable } from '@angular/core/rxjs-interop';
 import { getCheckedState } from './utils';
 
 @Directive({
-    selector: '[MenuItemRadio]',
+    selector: '[RdxMenuItemRadio]',
     hostDirectives: [
         {
             directive: CdkMenuItemRadio,

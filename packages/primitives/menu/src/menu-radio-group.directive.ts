@@ -2,7 +2,7 @@ import { CdkMenuGroup } from '@angular/cdk/menu';
 import { Directive } from '@angular/core';
 
 @Directive({
-    selector: '[MenuRadioGroup]',
+    selector: '[RdxMenuRadioGroup]',
     hostDirectives: [CdkMenuGroup]
 })
 export class RdxMenuRadioGroupDirective {}

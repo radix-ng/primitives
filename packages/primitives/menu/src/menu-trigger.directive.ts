@@ -15,7 +15,7 @@ export type RdxMenuAlign = 'start' | 'center' | 'end';
 export type RdxMenuSide = 'top' | 'right' | 'bottom' | 'left';
 
 @Directive({
-    selector: '[MenuTrigger]',
+    selector: '[RdxMenuTrigger]',
     hostDirectives: [
         {
             directive: CdkMenuTrigger,
@@ -151,10 +151,6 @@ export class RdxMenuTriggerDirective {
             offsetY
         };
     }
-
-    /**
-     * @description The preferred alignment against the trigger. May change when collisions occur.
-     */
 
     #onPositionChangeEffect = effect(() => {
         const positions = this.positions();

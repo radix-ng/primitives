@@ -1,13 +1,14 @@
-import { Component, signal } from '@angular/core';
-import { MenuModule } from '@radix-ng/primitives/menu';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { Dot, LucideAngularModule } from 'lucide-angular';
 
 @Component({
     selector: 'menu-radio-items-story',
-    imports: [MenuModule, LucideAngularModule],
+    imports: [RdxMenuModule, LucideAngularModule],
     styleUrl: 'styles.css',
+    changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-        <div class="MenuRoot" MenuRoot>
+        <div class="MenuRoot" RdxMenuRoot>
             <div
                 class="MenuTrigger"
                 [menuTriggerFor]="menuGroup"
@@ -15,33 +16,33 @@ import { Dot, LucideAngularModule } from 'lucide-angular';
                 align="start"
                 sideOffset="5"
                 alignOffset="-3"
-                MenuItem
-                MenuTrigger
+                RdxMenuItem
+                RdxMenuTrigger
             >
                 File
             </div>
         </div>
 
         <ng-template #menuGroup>
-            <div class="MenuContent" MenuContent>
-                <div class="MenuItem inset" MenuItem>Minimize window</div>
-                <div class="MenuItem inset" MenuItem>Zoom</div>
-                <div class="MenuItem inset" MenuItem>Smaller</div>
+            <div class="MenuContent" RdxMenuContent>
+                <div class="MenuItem inset" RdxMenuItem>Minimize window</div>
+                <div class="MenuItem inset" RdxMenuItem>Zoom</div>
+                <div class="MenuItem inset" RdxMenuItem>Smaller</div>
 
-                <div class="MenuSeparator" MenuSeparator></div>
-                <div MenuRadioGroup>
+                <div class="MenuSeparator" RdxMenuSeparator></div>
+                <div RdxMenuRadioGroup>
                     @for (item of items(); track $index) {
                         <div
                             class="MenuRadioItem inset"
                             [checked]="item === selectedItem"
                             (menuItemTriggered)="selectedItem = item"
-                            MenuItemRadio
+                            RdxMenuItemRadio
                         >
                             {{ item }}
                             <lucide-icon
                                 class="MenuItemIndicator"
                                 [img]="Dot"
-                                MenuItemIndicator
+                                RdxMenuItemIndicator
                                 size="16"
                                 strokeWidth="5"
                             />

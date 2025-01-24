@@ -5,7 +5,7 @@ import { outputFromObservable } from '@angular/core/rxjs-interop';
 import { getCheckedState, isIndeterminate } from './utils';
 
 @Directive({
-    selector: '[MenuItemCheckbox]',
+    selector: '[RdxMenuItemCheckbox]',
     hostDirectives: [
         {
             directive: CdkMenuItemCheckbox,

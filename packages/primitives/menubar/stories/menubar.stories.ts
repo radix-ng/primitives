@@ -30,14 +30,14 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: html`
-            <div class="MenubarRoot" MenuBarRoot>
+            <div class="MenubarRoot" RdxMenuBarRoot>
                 <div
                     class="MenubarTrigger"
-                    MenuBarItem
+                    RdxMenuBarItem
+                    RdxMenuBarTrigger
                     align="start"
                     sideOffset="5"
                     alignOffset="-3"
-                    MenuBarTrigger
                     [menuTriggerFor]="file"
                 >
                     File
@@ -47,8 +47,8 @@ export const Default: Story = {
                     align="start"
                     sideOffset="5"
                     alignOffset="-3"
-                    MenuBarItem
-                    MenuBarTrigger
+                    RdxMenuBarItem
+                    RdxMenuBarTrigger
                     [menuTriggerFor]="edit"
                 >
                     Edit
@@ -58,8 +58,8 @@ export const Default: Story = {
                     align="start"
                     sideOffset="5"
                     alignOffset="-3"
-                    MenuBarItem
-                    MenuBarTrigger
+                    RdxMenuBarItem
+                    RdxMenuBarTrigger
                     [menuTriggerFor]="view"
                 >
                     View
@@ -69,8 +69,8 @@ export const Default: Story = {
                     align="start"
                     sideOffset="5"
                     alignOffset="-3"
-                    MenuBarItem
-                    MenuBarTrigger
+                    RdxMenuBarItem
+                    RdxMenuBarTrigger
                     [menuTriggerFor]="profiles"
                 >
                     Profiles
@@ -78,23 +78,23 @@ export const Default: Story = {
             </div>
 
             <ng-template #file>
-                <div class="MenubarContent" MenuBarContent>
-                    <div class="MenubarItem" MenuBarItem>
+                <div class="MenubarContent" RdxMenuBarContent>
+                    <div class="MenubarItem" RdxMenuBarItem>
                         New Tab
                         <div class="RightSlot">⌘ T</div>
                     </div>
-                    <div class="MenubarItem" MenuBarItem>
+                    <div class="MenubarItem" RdxMenuBarItem>
                         New Window
                         <div class="RightSlot">⌘ N</div>
                     </div>
-                    <div class="MenubarItem" MenuBarItem disabled>New Incognito Window</div>
-                    <div class="MenubarSeparator" MenubarSeparator></div>
-                    <div class="MenubarItem" MenuBarItem MenuBarTrigger [menuTriggerFor]="share">
+                    <div class="MenubarItem" RdxMenuBarItem disabled>New Incognito Window</div>
+                    <div class="MenubarSeparator" RdxMenuBarSeparator></div>
+                    <div class="MenubarItem" RdxMenuBarItem RdxMenuBarTrigger [menuTriggerFor]="share">
                         Share
                         <div class="RightSlot">></div>
                     </div>
-                    <div class="MenubarSeparator" MenubarSeparator></div>
-                    <div class="MenubarItem" MenuBarItem>
+                    <div class="MenubarSeparator" RdxMenuBarSeparator></div>
+                    <div class="MenubarItem" RdxMenuBarItem>
                         Print…
                         <div class="RightSlot">⌘ P</div>
                     </div>
@@ -102,85 +102,85 @@ export const Default: Story = {
             </ng-template>
 
             <ng-template #profiles>
-                <div class="MenubarContent" MenuBarContent>
-                    <div MenubarRadioGroup>
-                        <div class="MenubarRadioItem inset" MenubarItemRadio>
+                <div class="MenubarContent" RdxMenuBarContent>
+                    <div RdxMenuBarRadioGroup>
+                        <div class="MenubarRadioItem inset" RdxMenuBarItemRadio>
                             <lucide-icon
                                 class="MenubarItemIndicator"
                                 size="16"
                                 strokeWidth="5"
-                                MenubarItemIndicator
+                                RdxMenuBarItemIndicator
                                 name="dot"
                             />
                             Andy
                         </div>
-                        <div class="MenubarRadioItem inset" MenubarItemRadio checked>
+                        <div class="MenubarRadioItem inset" RdxMenuBarItemRadio checked>
                             <lucide-icon
                                 class="MenubarItemIndicator"
                                 size="16"
                                 strokeWidth="5"
-                                MenubarItemIndicator
+                                RdxMenuBarItemIndicator
                                 name="dot"
                             />
                             Luis
                         </div>
                     </div>
-                    <div class="MenubarSeparator" MenubarSeparator></div>
-                    <div class="MenubarItem inset" MenuBarItem>Edit</div>
+                    <div class="MenubarSeparator" RdxMenuBarSeparator></div>
+                    <div class="MenubarItem inset" RdxMenuBarItem>Edit</div>
                 </div>
             </ng-template>
 
             <ng-template #view>
-                <div class="MenubarContent" MenuBarContent>
-                    <div class="MenubarCheckboxItem inset" MenubarCheckboxItem>
-                        <lucide-icon class="MenubarItemIndicator" MenubarItemIndicator size="16" name="check" />
+                <div class="MenubarContent" RdxMenuBarContent>
+                    <div class="MenubarCheckboxItem inset" RdxMenuBarCheckboxItem>
+                        <lucide-icon class="MenubarItemIndicator" RdxMenuBarItemIndicator size="16" name="check" />
                         Always Show Bookmarks Bar
                     </div>
-                    <div class="MenubarCheckboxItem inset" MenubarCheckboxItem checked>
-                        <lucide-icon class="MenubarItemIndicator" MenubarItemIndicator size="16" name="check" />
+                    <div class="MenubarCheckboxItem inset" RdxMenuBarCheckboxItem [checked]="true">
+                        <lucide-icon class="MenubarItemIndicator" RdxMenuBarItemIndicator size="16" name="check" />
                         Always Show Full URLs
                     </div>
-                    <div class="MenubarSeparator" MenubarSeparator></div>
-                    <div class="MenubarItem inset" MenuBarItem>
+                    <div class="MenubarSeparator" RdxMenuBarSeparator></div>
+                    <div class="MenubarItem inset" RdxMenuBarItem>
                         Reload
                         <div class="RightSlot">⌘ R</div>
                     </div>
-                    <div class="MenubarItem inset" MenuBarItem disabled>
+                    <div class="MenubarItem inset" RdxMenuBarItem disabled>
                         Force Reload
                         <div class="RightSlot">⇧ ⌘ R</div>
                     </div>
-                    <div class="MenubarSeparator" MenubarSeparator></div>
-                    <div class="MenubarItem inset" MenuBarItem>Toggle Fullscreen</div>
-                    <div class="MenubarSeparator" MenubarSeparator></div>
-                    <div class="MenubarItem inset" MenuBarItem>Hide Sidebar</div>
+                    <div class="MenubarSeparator" RdxMenuBarSeparator></div>
+                    <div class="MenubarItem inset" RdxMenuBarItem>Toggle Fullscreen</div>
+                    <div class="MenubarSeparator" RdxMenuBarSeparator></div>
+                    <div class="MenubarItem inset" RdxMenuBarItem>Hide Sidebar</div>
                 </div>
             </ng-template>
 
             <ng-template #edit>
-                <div class="MenubarContent" MenuBarContent>
-                    <div class="MenubarItem" MenuBarItem>
+                <div class="MenubarContent" RdxMenuBarContent>
+                    <div class="MenubarItem" RdxMenuBarItem>
                         Undo
                         <div class="RightSlot">⌘ Z</div>
                     </div>
-                    <div class="MenubarItem" MenuBarItem>
+                    <div class="MenubarItem" RdxMenuBarItem>
                         Redo
                         <div class="RightSlot">⇧ ⌘ Z</div>
                     </div>
-                    <div class="MenubarSeparator" MenubarSeparator></div>
-                    <div class="MenubarItem" MenuBarItem>Cut</div>
-                    <div class="MenubarItem" MenuBarItem>Copy</div>
-                    <div class="MenubarItem" MenuBarItem>Paste</div>
+                    <div class="MenubarSeparator" RdxMenuBarSeparator></div>
+                    <div class="MenubarItem" RdxMenuBarItem>Cut</div>
+                    <div class="MenubarItem" RdxMenuBarItem>Copy</div>
+                    <div class="MenubarItem" RdxMenuBarItem>Paste</div>
                 </div>
             </ng-template>
 
             <ng-template #share>
-                <div class="MenubarSubContent" MenuBarContent>
-                    <div class="MenubarItem" MenuBarItem>Undo</div>
-                    <div class="MenubarItem" MenuBarItem>Redo</div>
-                    <div class="MenubarSeparator" MenubarSeparator></div>
-                    <div class="MenubarItem" MenuBarItem>Cut</div>
-                    <div class="MenubarItem" MenuBarItem>Copy</div>
-                    <div class="MenubarItem" MenuBarItem>Paste</div>
+                <div class="MenubarSubContent" RdxMenuBarContent>
+                    <div class="MenubarItem" RdxMenuBarItem>Undo</div>
+                    <div class="MenubarItem" RdxMenuBarItem>Redo</div>
+                    <div class="MenubarSeparator" RdxMenuBarSeparator></div>
+                    <div class="MenubarItem" RdxMenuBarItem>Cut</div>
+                    <div class="MenubarItem" RdxMenuBarItem>Copy</div>
+                    <div class="MenubarItem" RdxMenuBarItem>Paste</div>
                 </div>
             </ng-template>
 
