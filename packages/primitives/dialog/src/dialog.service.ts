@@ -53,7 +53,7 @@ export class RdxDialogService {
             hasBackdrop: config.modal ?? true,
             data: 'data' in config ? config.data : null,
             restoreFocus: true,
-            role: 'dialog',
+            role: config.isAlert ? 'alertdialog' : 'dialog',
             disableClose: true,
             closeOnDestroy: true,
             injector: this.#injector,
@@ -81,22 +81,28 @@ export class RdxDialogService {
                 .setStyle(cdkRef.componentRef.location.nativeElement, 'display', 'contents');
         }
 
-        merge(cdkRef.backdropClick, cdkRef.keydownEvents.pipe(filter((e) => e.key === 'Escape' && !e.defaultPrevented)))
-            .pipe(
-                filter(() => config.canCloseWithBackdrop ?? true),
-                switchMap(() => {
-                    const canClose = (cdkRef.componentInstance && config.canClose?.(cdkRef.componentInstance)) ?? true;
-                    const canClose$ = isObservable(canClose) ? canClose : of(canClose);
-                    return canClose$.pipe(take(1));
-                }),
-
-                takeUntil(dialogRef!.closed$)
+        if (!config.isAlert) {
+            merge(
+                cdkRef.backdropClick,
+                cdkRef.keydownEvents.pipe(filter((e) => e.key === 'Escape' && !e.defaultPrevented))
             )
-            .subscribe((canClose) => {
-                if (canClose) {
-                    cdkRef.close(DISMISSED_VALUE);
-                }
-            });
+                .pipe(
+                    filter(() => config.canCloseWithBackdrop ?? true),
+                    switchMap(() => {
+                        const canClose =
+                            (cdkRef.componentInstance && config.canClose?.(cdkRef.componentInstance)) ?? true;
+                        const canClose$ = isObservable(canClose) ? canClose : of(canClose);
+                        return canClose$.pipe(take(1));
+                    }),
+
+                    takeUntil(dialogRef!.closed$)
+                )
+                .subscribe((canClose) => {
+                    if (canClose) {
+                        cdkRef.close(DISMISSED_VALUE);
+                    }
+                });
+        }
 
         return dialogRef!;
     }

@@ -41,6 +41,8 @@ type RdxBaseDialogConfig<C> = {
     backdropClass?: string | string[];
 
     panelClasses?: string[];
+
+    isAlert?: boolean;
 };
 
 export type RdxDialogConfig<T> =

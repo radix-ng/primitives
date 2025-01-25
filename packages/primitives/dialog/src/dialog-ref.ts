@@ -45,9 +45,10 @@ export class RdxDialogRef<C = unknown> {
      * Checks the canClose condition before dismissing
      */
     dismiss(): void {
-        if (!this.instance) {
+        if (!this.instance || this.config.isAlert) {
             return;
         }
+
         const canClose = this.config.canClose?.(this.instance) ?? true;
         const canClose$ = isObservable(canClose) ? canClose : of(canClose);
         canClose$.pipe(take(1)).subscribe((close) => {
