@@ -5,7 +5,12 @@ import { outputFromObservable } from '@angular/core/rxjs-interop';
 
 @Directive({
     selector: '[RdxMenuItem]',
-    hostDirectives: [CdkMenuItem],
+    hostDirectives: [
+        {
+            directive: CdkMenuItem,
+            outputs: ['cdkMenuItemTriggered: menuItemTriggered']
+        }
+    ],
     host: {
         role: 'menuitem',
         tabindex: '-1',
