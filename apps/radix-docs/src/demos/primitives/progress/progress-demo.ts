@@ -9,7 +9,7 @@ import { RdxProgressIndicatorDirective, RdxProgressRootDirective } from '@radix-
         RdxProgressRootDirective
     ],
     template: `
-        <div class="ProgressRoot" [rdxValue]="progress()" rdxProgressRoot>
+        <div class="ProgressRoot" [value]="progress()" rdxProgressRoot>
             <div
                 class="ProgressIndicator"
                 [style.transform]="'translateX(-' + (100 - progress()) + '%)'"
@@ -29,15 +29,13 @@ export class ProgressDemoComponent {
         return value === 0 ? 10 : value;
     });
 
-    constructor() {
-        effect(() => {
-            const intervalId = setInterval(() => {
-                this.currentTime.set(Date.now());
-            }, 1000);
+    #checkProgress = effect(() => {
+        const intervalId = setInterval(() => {
+            this.currentTime.set(Date.now());
+        }, 1000);
 
-            return () => clearInterval(intervalId);
-        });
-    }
+        return () => clearInterval(intervalId);
+    });
 }
 
 export default ProgressDemoComponent;
