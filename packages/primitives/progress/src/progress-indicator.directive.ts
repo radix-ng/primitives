@@ -10,11 +10,10 @@ import { injectProgress } from './progress-root.directive';
 @Directive({
     selector: '[rdxProgressIndicator]',
     exportAs: 'rdxProgressIndicator',
-    standalone: true,
     host: {
-        '[attr.data-state]': 'progress.state',
-        '[attr.data-value]': 'progress.value',
-        '[attr.data-max]': 'progress.max'
+        '[attr.data-state]': 'progress.progressState()',
+        '[attr.data-value]': 'progress.value()',
+        '[attr.data-max]': 'progress.max()'
     }
 })
 export class RdxProgressIndicatorDirective {

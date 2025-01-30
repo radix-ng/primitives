@@ -2,6 +2,8 @@ import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@stor
 import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
 import { RdxProgressRootDirective } from '../src/progress-root.directive';
 
+const html = String.raw;
+
 export default {
     title: 'Primitives/Progress',
     decorators: [
@@ -9,10 +11,9 @@ export default {
             imports: [RdxProgressRootDirective, RdxProgressIndicatorDirective]
         }),
         componentWrapperDecorator(
-            (story) =>
-                `<div class="radix-themes light light-theme"
-                      data-radius="medium"
-                      data-scaling="100%">${story}</div>`
+            (story) => html`
+                <div class="radix-themes light light-theme" data-radius="medium" data-scaling="100%">${story}</div>
+            `
         )
     ],
     argTypes: {
@@ -31,36 +32,36 @@ export const Default: Story = {
     },
     render: (args) => ({
         props: args,
-        template: `
-<style>
-.ProgressRoot {
-  position: relative;
-  overflow: hidden;
-  background: var(--black-a9);
-  border-radius: 99999px;
-  width: 300px;
-  height: 25px;
+        template: html`
+            <div class="ProgressRoot" rdxProgressRoot [value]="progress">
+                <div
+                    class="ProgressIndicator"
+                    rdxProgressIndicator
+                    [style.transform]="'translateX(-' + (100 - progress) +'%)'"
+                ></div>
+            </div>
 
-  /* Fix overflow clipping in Safari */
-  /* https://gist.github.com/domske/b66047671c780a238b51c51ffde8d3a0 */
-  transform: translateZ(0);
-}
+            <style>
+                .ProgressRoot {
+                    position: relative;
+                    overflow: hidden;
+                    background: var(--black-a9);
+                    border-radius: 99999px;
+                    width: 300px;
+                    height: 25px;
 
-.ProgressIndicator {
-  background-color: white;
-  width: 100%;
-  height: 100%;
-  transition: transform 660ms cubic-bezier(0.65, 0, 0.35, 1);
-}
-</style>
+                    /* Fix overflow clipping in Safari */
+                    /* https://gist.github.com/domske/b66047671c780a238b51c51ffde8d3a0 */
+                    transform: translateZ(0);
+                }
 
-<div rdxProgressRoot [rdxValue]="progress" class="ProgressRoot">
-    <div rdxProgressIndicator
-        [style.transform]="'translateX(-' + (100 - progress) +'%)'"
-        class="ProgressIndicator"
-    ></div>
-</div>
-
-`
+                .ProgressIndicator {
+                    background-color: white;
+                    width: 100%;
+                    height: 100%;
+                    transition: transform 660ms cubic-bezier(0.65, 0, 0.35, 1);
+                }
+            </style>
+        `
     })
 };

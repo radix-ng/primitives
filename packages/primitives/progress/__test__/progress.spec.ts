@@ -5,14 +5,14 @@ import { RdxProgressRootDirective } from '../src/progress-root.directive';
 
 @Component({
     template: `
-        <div [rdxValue]="value" [rdxMax]="max" [id]="id" rdxProgressRoot>
+        <div [id]="id" [value]="value" [max]="max" rdxProgressRoot>
             <div rdxProgressIndicator></div>
         </div>
     `,
     imports: [RdxProgressRootDirective, RdxProgressIndicatorDirective]
 })
 class TestHostComponent {
-    value: number | null | undefined = 50;
+    value = 50;
     max = 100;
     id = 'test-progress';
 }
