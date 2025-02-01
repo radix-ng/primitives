@@ -1,5 +1,5 @@
 import { computed, Directive, effect, inject, InjectionToken, input, model } from '@angular/core';
-import { isNullish } from '@radix-ng/primitives/core';
+import { isNullish, isNumber } from '@radix-ng/primitives/core';
 
 export const RdxProgressToken = new InjectionToken<RdxProgressRootDirective>('RdxProgressDirective');
 
@@ -107,7 +107,7 @@ export class RdxProgressRootDirective {
 
     private validateValue(value: any, max: number): number | null {
         const isValidValueError =
-            isNullish(value) || (this.isNumber(value) && !Number.isNaN(value) && value <= max && value >= 0);
+            isNullish(value) || (isNumber(value) && !Number.isNaN(value) && value <= max && value >= 0);
 
         if (isValidValueError) return value as null;
 
@@ -121,7 +121,7 @@ Defaulting to \`null\`.`);
     }
 
     private validateMax(max: number): number {
-        const isValidMaxError = this.isNumber(max) && !Number.isNaN(max) && max > 0;
+        const isValidMaxError = isNumber(max) && !Number.isNaN(max) && max > 0;
 
         if (isValidMaxError) return max;
 
@@ -133,9 +133,5 @@ Defaulting to \`null\`.`);
 
     private defaultGetValueLabel(value: number, max: number) {
         return `${Math.round((value / max) * 100)}%`;
-    }
-
-    private isNumber(value: unknown): value is number {
-        return typeof value === 'number';
     }
 }
