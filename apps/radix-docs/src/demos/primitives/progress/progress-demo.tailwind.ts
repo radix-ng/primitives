@@ -11,7 +11,7 @@ import { RdxProgressIndicatorDirective, RdxProgressRootDirective } from '@radix-
     template: `
         <div
             class="relative h-2 w-[220px] overflow-hidden rounded-full bg-white sm:w-[280px] lg:w-[320px] dark:bg-stone-950"
-            [rdxValue]="progress()"
+            [value]="progress()"
             rdxProgressRoot
         >
             <div

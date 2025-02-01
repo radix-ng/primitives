@@ -9,7 +9,7 @@ import { RdxProgressIndicatorDirective, RdxProgressRootDirective } from '@radix-
         RdxProgressRootDirective
     ],
     template: `
-        <div class="ProgressRoot" [rdxValue]="progress()" rdxProgressRoot>
+        <div class="ProgressRoot" [value]="progress()" rdxProgressRoot>
             <div
                 class="ProgressIndicator"
                 [style.transform]="'translateX(-' + (100 - progress()) + '%)'"
