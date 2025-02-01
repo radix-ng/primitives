@@ -394,22 +394,22 @@ importers:
         specifier: ^3.14.8
         version: 3.14.8
       '@analogjs/astro-angular':
-        specifier: 2.0.0-alpha.2
-        version: 2.0.0-alpha.2(kkoqnehcnvdqb52h5iy2lfcxka)
+        specifier: 2.0.0-alpha.4
+        version: 2.0.0-alpha.4(kkoqnehcnvdqb52h5iy2lfcxka)
       '@astrojs/alpinejs':
-        specifier: ^0.4.1
+        specifier: ^0.4.3
         version: 0.4.3(@types/alpinejs@3.13.11)(alpinejs@3.14.8)
       '@astrojs/check':
         specifier: ^0.9.4
         version: 0.9.4(prettier-plugin-astro@0.14.1)(prettier@3.4.2)(typescript@5.5.4)
       '@astrojs/mdx':
-        specifier: ^4.0.3
+        specifier: ^4.0.8
         version: 4.0.8(astro@5.2.3(@types/node@22.13.0)(db0@0.2.3)(ioredis@5.4.2)(jiti@2.4.2)(less@4.2.2)(rollup@4.34.0)(sass@1.83.4)(stylus@0.64.0)(terser@5.37.0)(typescript@5.5.4)(yaml@2.7.0))
       '@astrojs/sitemap':
         specifier: ^3.2.1
         version: 3.2.1
       '@astrojs/tailwind':
-        specifier: ^5.1.4
+        specifier: ^5.1.5
         version: 5.1.5(astro@5.2.3(@types/node@22.13.0)(db0@0.2.3)(ioredis@5.4.2)(jiti@2.4.2)(less@4.2.2)(rollup@4.34.0)(sass@1.83.4)(stylus@0.64.0)(terser@5.37.0)(typescript@5.5.4)(yaml@2.7.0))(tailwindcss@3.4.17(ts-node@10.9.1(@swc/core@1.5.7(@swc/helpers@0.5.11))(@types/node@22.13.0)(typescript@5.5.4)))(ts-node@10.9.1(@swc/core@1.5.7(@swc/helpers@0.5.11))(@types/node@22.13.0)(typescript@5.5.4))
       '@astrojs/ts-plugin':
         specifier: ^1.10.4
@@ -430,7 +430,7 @@ importers:
         specifier: ^3.14.8
         version: 3.14.8
       astro:
-        specifier: ^5.1.2
+        specifier: ^5.2.3
         version: 5.2.3(@types/node@22.13.0)(db0@0.2.3)(ioredis@5.4.2)(jiti@2.4.2)(less@4.2.2)(rollup@4.34.0)(sass@1.83.4)(stylus@0.64.0)(terser@5.37.0)(typescript@5.5.4)(yaml@2.7.0)
       astro-auto-import:
         specifier: ^0.4.4
@@ -455,7 +455,7 @@ importers:
         version: 1.0.7(tailwindcss@3.4.17(ts-node@10.9.1(@swc/core@1.5.7(@swc/helpers@0.5.11))(@types/node@22.13.0)(typescript@5.5.4)))
     devDependencies:
       '@angular/language-service':
-        specifier: ^19.0.6
+        specifier: ^19.1.4
         version: 19.1.4
       '@astrojs/markdown-remark':
         specifier: ^6.0.1
@@ -700,8 +700,8 @@ packages:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
-  '@analogjs/astro-angular@2.0.0-alpha.2':
-    resolution: {integrity: sha512-19T0++6lZcgZ+ouuA9tMyMRAEuNI4YEQkJ9hfBUQT0FOSzqbJKTArTaAoSWy0MgYuph6F20+9pw+mMH06yWCvg==}
+  '@analogjs/astro-angular@2.0.0-alpha.4':
+    resolution: {integrity: sha512-3Llp8niAWyQURSrrYgfdJcRuBA/X1m/8aYgFXC1FJ+XqMHxsZfY7/vXumLadB3MBV+fpiq9hZnmBPPy0e96llg==}
     peerDependencies:
       '@angular-devkit/build-angular': '>=16.0.0'
       '@angular/animations': '>=16.0.0'
@@ -775,6 +775,17 @@ packages:
 
   '@analogjs/vite-plugin-angular@2.0.0-alpha.2':
     resolution: {integrity: sha512-qGjpBugbkjGjymrBMnX2ouyrW7Mh06OTAZvdJ9PkOQanSFOVe38SgSkir5u1Xh4nECYBvZefMawc+98hNMpHdQ==}
+    peerDependencies:
+      '@angular-devkit/build-angular': ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      '@angular/build': ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@angular-devkit/build-angular':
+        optional: true
+      '@angular/build':
+        optional: true
+
+  '@analogjs/vite-plugin-angular@2.0.0-alpha.4':
+    resolution: {integrity: sha512-nL1oteWj8z0PJs++1bhD0IpXV4RlWmeDEzAO67woYIsj+dm7N2M0Jj9hlaeZ1//wNZfJ53yLUXSopfEHqTX5rQ==}
     peerDependencies:
       '@angular-devkit/build-angular': ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       '@angular/build': ^18.0.0 || ^19.0.0
@@ -14495,9 +14506,9 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.8
       '@jridgewell/trace-mapping': 0.3.25
 
-  '@analogjs/astro-angular@2.0.0-alpha.2(kkoqnehcnvdqb52h5iy2lfcxka)':
+  '@analogjs/astro-angular@2.0.0-alpha.4(kkoqnehcnvdqb52h5iy2lfcxka)':
     dependencies:
-      '@analogjs/vite-plugin-angular': 2.0.0-alpha.2(@angular-devkit/build-angular@19.1.5(uijucr7l3qwdi37sx6rwq66fc4))(@angular/build@19.1.5(teg3bvggzxy5vml5jkoeken3y4))
+      '@analogjs/vite-plugin-angular': 2.0.0-alpha.4(@angular-devkit/build-angular@19.1.5(uijucr7l3qwdi37sx6rwq66fc4))(@angular/build@19.1.5(teg3bvggzxy5vml5jkoeken3y4))
       '@angular-devkit/build-angular': 19.1.5(uijucr7l3qwdi37sx6rwq66fc4)
       '@angular/animations': 19.1.4(@angular/core@19.1.4(rxjs@7.8.1)(zone.js@0.15.0))
       '@angular/common': 19.1.4(@angular/core@19.1.4(rxjs@7.8.1)(zone.js@0.15.0))(rxjs@7.8.1)
@@ -14595,7 +14606,7 @@ snapshots:
       '@angular-devkit/build-angular': 19.1.5(feyo7wzyqerx2elmxz2ajruu2q)
       '@angular/build': 19.1.5(wy7bjmb2ul5zxfhrmlle6cughe)
 
-  '@analogjs/vite-plugin-angular@2.0.0-alpha.2(@angular-devkit/build-angular@19.1.5(uijucr7l3qwdi37sx6rwq66fc4))(@angular/build@19.1.5(teg3bvggzxy5vml5jkoeken3y4))':
+  '@analogjs/vite-plugin-angular@2.0.0-alpha.4(@angular-devkit/build-angular@19.1.5(uijucr7l3qwdi37sx6rwq66fc4))(@angular/build@19.1.5(teg3bvggzxy5vml5jkoeken3y4))':
     dependencies:
       ts-morph: 21.0.1
       vfile: 6.0.3
