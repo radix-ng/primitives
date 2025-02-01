@@ -5,7 +5,7 @@ import { RdxMenubarItemIndicatorDirective } from './src/menubar-item-indicator.d
 import { RdxMenubarItemRadioDirective } from './src/menubar-item-radio.directive';
 import { RdxMenuBarItemDirective } from './src/menubar-item.directive';
 import { RdxMenubarRadioGroupDirective } from './src/menubar-radio-group.directive';
-import { RdxMenuBarDirective } from './src/menubar-root.directive';
+import { RdxMenuBarRootDirective } from './src/menubar-root.directive';
 import { RdxMenubarSeparatorDirective } from './src/menubar-separator.directive';
 import { RdxMenuBarTriggerDirective } from './src/menubar-trigger.directive';
 
@@ -24,7 +24,7 @@ const menubarImports = [
     RdxMenuBarTriggerDirective,
     RdxMenubarSeparatorDirective,
     RdxMenubarItemCheckboxDirective,
-    RdxMenuBarDirective,
+    RdxMenuBarRootDirective,
     RdxMenuBarItemDirective,
     RdxMenubarItemIndicatorDirective,
     RdxMenubarItemRadioDirective,

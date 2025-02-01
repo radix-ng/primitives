@@ -1,0 +1,132 @@
+import {ArgTypes, Canvas, Markdown, Meta} from "@storybook/blocks";
+import * as MenubarStories from "./menubar.stories";
+import {RdxMenuBarRootDirective} from "../src/menubar-root.directive";
+import {RdxMenuBarContentDirective} from "../src/menubar-content.directive";
+import {RdxMenuBarTriggerDirective} from "../src/menubar-trigger.directive";
+import {RdxMenuTriggerDirective} from "../../menu";
+
+<Meta title="Primitives/Menubar" />
+
+# Menu Bar
+
+#### A visually persistent menu common in desktop applications that provides quick access to a consistent set of commands.
+
+<Canvas sourceState="hidden" of={MenubarStories.Default} />
+
+## Features
+
+- ✅ Can be controlled or uncontrolled.
+- ✅ Supports submenus.
+- ✅ Supports items, labels, groups of items.
+- ✅ Supports checkable items (single or multiple).
+- ✅ Customize side, alignment, offsets.
+- ✅ Focus is fully managed.
+- ✅ Full keyboard navigation.
+
+## Anatomy
+
+```html
+<div MenuBarRoot>
+    <div
+        MenuBarItem
+        MenuBarTrigger
+        [menuTriggerFor]="file"
+    >
+        File
+    </div>
+</div>
+
+<ng-template #file>
+    <div MenuBarContent>
+        <div MenuBarItem>New Tab</div>
+        <div MenubarSeparator></div>
+        <div MenuBarItem MenuBarTrigger [menuTriggerFor]="share">
+            Share
+        </div>
+        <div MenubarSeparator></div>
+        <div MenuBarItem>Print…</div>
+    </div>
+</ng-template>
+
+<ng-template #share>
+    <div MenuBarContent>
+        <div MenuBarItem>Undo</div>
+        <div MenuBarItem>Redo</div>
+        <div MenubarSeparator></div>
+        <div MenuBarItem>Cut</div>
+        <div MenuBarItem>Copy</div>
+        <div MenuBarItem>Paste</div>
+    </div>
+</ng-template>
+```
+
+## API Reference
+
+### Root
+Contains all the parts of a menubar and extend `CdkMenuBar`.
+
+
+### Trigger
+The button that toggles the content. By default, the `Content` will position itself against the trigger.
+
+<ArgTypes of={RdxMenuTriggerDirective}/>
+
+<Markdown>
+    {`
+| Data attribute | Value          |
+|----------------|----------------|
+| [data-state]   | <code>"closed" or "open"</code> |
+| [data-highlighted]   | Present when highlighted |
+| [data-disabled]   | Present when disabled |
+`}
+</Markdown>
+
+### Content
+The component that pops out when a menu is open.
+
+### Item
+The component that contains the menubar items.
+
+### Group
+Used to group multiple `Items`.
+
+### Label
+Used to render a label. It won't be focusable using arrow keys.
+
+### CheckboxItem
+An item that can be controlled and rendered like a checkbox.
+
+<Markdown>
+    {`
+| Data attribute | Value          |
+|----------------|----------------|
+| [data-state]   | <code>"closed" or "open"</code> |
+| [data-highlighted]   | Present when highlighted |
+| [data-disabled]   | Present when disabled |
+`}
+</Markdown>
+
+
+### RadioGroup
+Used to group multiple `RadioItems`.
+
+### ItemIndicator
+Renders when the parent `CheckboxItem` or `RadioItem` is checked.
+You can style this element directly, or you can use it as a wrapper to put an icon into, or both.
+
+<Markdown>
+    {`
+| Data attribute | Value          |
+|----------------|----------------|
+| [data-state]   | <code>"checked" or "unchecked"</code> |
+`}
+</Markdown>
+
+### Separator
+Used to visually separate items in a menubar menu.
+
+
+## Accessibility
+Adheres to the [Menu Button WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/) and uses [roving tabindex](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_roving_tabindex)
+to manage focus movement among menu items.
+

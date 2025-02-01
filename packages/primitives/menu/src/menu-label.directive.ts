@@ -1,7 +1,6 @@
 import { Directive } from '@angular/core';
 
 @Directive({
-    selector: 'div[MenuLabel]',
-    standalone: true
+    selector: '[RdxMenuLabel]'
 })
 export class RdxMenuLabelDirective {}

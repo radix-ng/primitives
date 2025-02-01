@@ -1,23 +1,21 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { CdkMenuItem } from '@angular/cdk/menu';
+import { CdkMenuItemRadio } from '@angular/cdk/menu';
 import { booleanAttribute, computed, Directive, effect, inject, input, signal } from '@angular/core';
 import { outputFromObservable } from '@angular/core/rxjs-interop';
+import { getCheckedState } from './utils';
 
 @Directive({
-    selector: '[RdxMenuItem]',
+    selector: '[RdxMenuItemRadio]',
     hostDirectives: [
         {
-            directive: CdkMenuItem,
+            directive: CdkMenuItemRadio,
             outputs: ['cdkMenuItemTriggered: menuItemTriggered']
         }
     ],
     host: {
-        role: 'menuitem',
-        tabindex: '-1',
-        '[attr.data-orientation]': "'horizontal'",
-        '[attr.data-state]': 'isOpenState()',
-        '[attr.aria-disabled]': "disabledState() ? '' : undefined",
-        '[attr.data-disabled]': "disabledState() ? '' : undefined",
+        role: 'menuitemradio',
+        '[attr.aria-checked]': 'checked()',
+        '[attr.data-state]': 'getCheckedState(checked())',
         '[attr.data-highlighted]': "highlightedState() ? '' : undefined",
 
         '(focus)': 'onFocus()',
@@ -25,25 +23,25 @@ import { outputFromObservable } from '@angular/core/rxjs-interop';
         '(pointermove)': 'onPointerMove($event)'
     }
 })
-export class RdxMenuItemDirective {
-    private readonly cdkMenuItem = inject(CdkMenuItem, { host: true });
+export class RdxMenuItemRadioDirective {
+    private readonly cdkMenuItemRadio = inject(CdkMenuItemRadio, { host: true });
 
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    readonly onSelect = outputFromObservable(this.cdkMenuItem.triggered);
+    readonly checked = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    private readonly isFocused = signal(false);
+    readonly onValueChange = outputFromObservable(this.cdkMenuItemRadio.triggered);
 
     protected readonly disabledState = computed(() => this.disabled());
 
-    protected readonly isOpenState = signal(false);
-
     protected readonly highlightedState = computed(() => this.isFocused());
+
+    private readonly isFocused = signal(false);
 
     constructor() {
         effect(() => {
-            this.cdkMenuItem.disabled = this.disabled();
-            this.isOpenState.set(this.cdkMenuItem.isMenuOpen());
+            this.cdkMenuItemRadio.checked = this.checked();
+            this.cdkMenuItemRadio.disabled = this.disabled();
         });
     }
 
@@ -67,4 +65,6 @@ export class RdxMenuItemDirective {
             (item as HTMLElement)?.focus({ preventScroll: true });
         }
     }
+
+    protected readonly getCheckedState = getCheckedState;
 }

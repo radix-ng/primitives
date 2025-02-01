@@ -1,10 +1,7 @@
 import { Directive } from '@angular/core';
-import { RdxSeparatorRootDirective } from '@radix-ng/primitives/separator';
 
 @Directive({
-    selector: '[MenuSeparator]',
-    standalone: true,
-    hostDirectives: [RdxSeparatorRootDirective],
+    selector: '[RdxMenuSeparator]',
     host: {
         role: 'separator',
         '[attr.aria-orientation]': "'horizontal'"

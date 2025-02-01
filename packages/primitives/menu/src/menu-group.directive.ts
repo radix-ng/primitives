@@ -2,8 +2,7 @@ import { CdkMenuGroup } from '@angular/cdk/menu';
 import { Directive } from '@angular/core';
 
 @Directive({
-    selector: '[MenuGroup]',
-    standalone: true,
+    selector: '[RdxMenuGroup]',
     hostDirectives: [CdkMenuGroup],
     host: {
         role: 'group'
