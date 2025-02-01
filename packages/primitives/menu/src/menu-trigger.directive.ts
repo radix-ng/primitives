@@ -154,17 +154,7 @@ export class RdxMenuTriggerDirective {
     }
 
     constructor() {
-        effect(() => {
-            const positions = this.positions();
-
-            untracked(() => {
-                if (this.enablePositions) {
-                    const prevMenuPosition = this.cdkTrigger.menuPosition;
-                    this.cdkTrigger.menuPosition = [positions];
-                    this.fireNgOnChanges('menuPosition', this.cdkTrigger.menuPosition, prevMenuPosition);
-                }
-            });
-        });
+        this.onMenuPositionEffect();
     }
 
     /** @ignore */
@@ -179,6 +169,24 @@ export class RdxMenuTriggerDirective {
                 $event.preventDefault();
             }
         }
+    }
+
+    private onMenuPositionEffect() {
+        effect(() => {
+            const positions = this.positions();
+
+            untracked(() => {
+                if (this.enablePositions) {
+                    this.setMenuPositions([positions]);
+                }
+            });
+        });
+    }
+
+    private setMenuPositions(positions: CdkMenuTrigger['menuPosition']) {
+        const prevMenuPosition = this.cdkTrigger.menuPosition;
+        this.cdkTrigger.menuPosition = positions;
+        this.fireNgOnChanges('menuPosition', this.cdkTrigger.menuPosition, prevMenuPosition);
     }
 
     private fireNgOnChanges<K extends keyof CdkMenuTrigger, V extends CdkMenuTrigger[K]>(
