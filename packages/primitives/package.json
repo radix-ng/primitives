@@ -18,11 +18,11 @@
         "headless"
     ],
     "peerDependencies": {
-        "@angular/core": "^19.0.0",
-        "@angular/cdk": "^19.0.0"
+        "@angular/core": "^19.1.0",
+        "@angular/cdk": "^19.1.0"
     },
     "devDependencies": {
-        "@angular-devkit/schematics": "^19.0.0"
+        "@angular-devkit/schematics": "^19.1.0"
     },
     "schematics": "./schematics/collection.json",
     "sideEffects": false
