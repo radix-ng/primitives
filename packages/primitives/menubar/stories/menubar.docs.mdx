@@ -26,10 +26,10 @@ import {RdxMenuTriggerDirective} from "../../menu";
 ## Anatomy
 
 ```html
-<div MenuBarRoot>
+<div rdxMenuBarRoot>
     <div
-        MenuBarItem
-        MenuBarTrigger
+        rdxMenuBarItem
+        rdxMenuBarTrigger
         [menuTriggerFor]="file"
     >
         File
@@ -37,25 +37,25 @@ import {RdxMenuTriggerDirective} from "../../menu";
 </div>
 
 <ng-template #file>
-    <div MenuBarContent>
-        <div MenuBarItem>New Tab</div>
-        <div MenubarSeparator></div>
-        <div MenuBarItem MenuBarTrigger [menuTriggerFor]="share">
+    <div rdxMenuBarContent>
+        <div rdxMenuBarItem>New Tab</div>
+        <div rdxMenubarSeparator></div>
+        <div rdxMenuBarItem rdxMenuBarTrigger [menuTriggerFor]="share">
             Share
         </div>
-        <div MenubarSeparator></div>
-        <div MenuBarItem>Print…</div>
+        <div rdxMenubarSeparator></div>
+        <div rdxMenuBarItem>Print…</div>
     </div>
 </ng-template>
 
 <ng-template #share>
-    <div MenuBarContent>
-        <div MenuBarItem>Undo</div>
-        <div MenuBarItem>Redo</div>
-        <div MenubarSeparator></div>
-        <div MenuBarItem>Cut</div>
-        <div MenuBarItem>Copy</div>
-        <div MenuBarItem>Paste</div>
+    <div rdxMenuBarContent>
+        <div rdxMenuBarItem>Undo</div>
+        <div rdxMenuBarItem>Redo</div>
+        <div rdxMenubarSeparator></div>
+        <div rdxMenuBarItem>Cut</div>
+        <div rdxMenuBarItem>Copy</div>
+        <div rdxMenuBarItem>Paste</div>
     </div>
 </ng-template>
 ```
