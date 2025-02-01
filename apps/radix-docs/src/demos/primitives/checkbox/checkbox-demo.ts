@@ -21,9 +21,9 @@ import { Check, LucideAngularModule } from 'lucide-angular';
     ],
     template: `
         <div style="display: flex; align-items: center;">
-            <button class="CheckboxRoot" CheckboxRoot>
-                <lucide-angular class="CheckboxIndicator" [img]="CheckIcon" CheckboxIndicator size="16" />
-                <input id="r1" CheckboxInput type="checkbox" />
+            <button class="CheckboxRoot" rdxCheckboxRoot>
+                <lucide-angular class="CheckboxIndicator" [img]="CheckIcon" rdxCheckboxIndicator size="16" />
+                <input id="r1" rdxCheckboxInput type="checkbox" />
             </button>
             <label class="Label" rdxLabel htmlFor="r1">Check Item</label>
         </div>
