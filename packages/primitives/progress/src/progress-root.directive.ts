@@ -89,19 +89,21 @@ export class RdxProgressRootDirective {
         return 'loading';
     });
 
-    #checkValue = effect(() => {
-        const correctedValue = this.validateValue(this.value(), this.max());
-        if (correctedValue != null && correctedValue !== this.value()) {
-            this.value.set(correctedValue);
-        }
-    });
+    constructor() {
+        effect(() => {
+            const correctedValue = this.validateValue(this.value(), this.max());
+            if (correctedValue != null && correctedValue !== this.value()) {
+                this.value.set(correctedValue);
+            }
+        });
 
-    #checkMax = effect(() => {
-        const correctedMax = this.validateMax(this.max());
-        if (correctedMax !== this.max()) {
-            this.max.set(correctedMax);
-        }
-    });
+        effect(() => {
+            const correctedMax = this.validateMax(this.max());
+            if (correctedMax !== this.max()) {
+                this.max.set(correctedMax);
+            }
+        });
+    }
 
     private validateValue(value: any, max: number): number | null {
         const isValidValueError =

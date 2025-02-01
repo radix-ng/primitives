@@ -29,13 +29,15 @@ export class ProgressDemoComponent {
         return value === 0 ? 10 : value;
     });
 
-    #checkProgress = effect(() => {
-        const intervalId = setInterval(() => {
-            this.currentTime.set(Date.now());
-        }, 1000);
+    constructor() {
+        effect(() => {
+            const intervalId = setInterval(() => {
+                this.currentTime.set(Date.now());
+            }, 1000);
 
-        return () => clearInterval(intervalId);
-    });
+            return () => clearInterval(intervalId);
+        });
+    }
 }
 
 export default ProgressDemoComponent;
