@@ -40,10 +40,12 @@ export class RdxMenuItemDirective {
 
     protected readonly highlightedState = computed(() => this.isFocused());
 
-    private stateChanged = effect(() => {
-        this.cdkMenuItem.disabled = this.disabled();
-        this.isOpenState.set(this.cdkMenuItem.isMenuOpen());
-    });
+    constructor() {
+        effect(() => {
+            this.cdkMenuItem.disabled = this.disabled();
+            this.isOpenState.set(this.cdkMenuItem.isMenuOpen());
+        });
+    }
 
     onFocus(): void {
         if (!this.disabled()) {

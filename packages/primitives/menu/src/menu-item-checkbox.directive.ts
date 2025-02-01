@@ -38,15 +38,17 @@ export class RdxMenuItemCheckboxDirective {
 
     private readonly isFocused = signal(false);
 
-    private stateChanged = effect(() => {
-        if (isIndeterminate(this.checked())) {
-            this.cdkMenuItemCheckbox.checked = true;
-        } else {
-            this.cdkMenuItemCheckbox.checked = !this.checked();
-        }
+    constructor() {
+        effect(() => {
+            if (isIndeterminate(this.checked())) {
+                this.cdkMenuItemCheckbox.checked = true;
+            } else {
+                this.cdkMenuItemCheckbox.checked = !this.checked();
+            }
 
-        this.cdkMenuItemCheckbox.disabled = this.disabled();
-    });
+            this.cdkMenuItemCheckbox.disabled = this.disabled();
+        });
+    }
 
     onFocus(): void {
         if (!this.disabled()) {

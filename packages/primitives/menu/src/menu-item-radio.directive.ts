@@ -38,10 +38,12 @@ export class RdxMenuItemRadioDirective {
 
     private readonly isFocused = signal(false);
 
-    private stateChanged = effect(() => {
-        this.cdkMenuItemRadio.checked = this.checked();
-        this.cdkMenuItemRadio.disabled = this.disabled();
-    });
+    constructor() {
+        effect(() => {
+            this.cdkMenuItemRadio.checked = this.checked();
+            this.cdkMenuItemRadio.disabled = this.disabled();
+        });
+    }
 
     onFocus(): void {
         if (!this.disabled()) {
