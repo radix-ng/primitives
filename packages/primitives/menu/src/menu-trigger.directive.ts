@@ -8,6 +8,7 @@ import {
     inject,
     input,
     numberAttribute,
+    SimpleChange,
     untracked
 } from '@angular/core';
 
@@ -152,12 +153,19 @@ export class RdxMenuTriggerDirective {
         };
     }
 
-    #onPositionChangeEffect = effect(() => {
-        const positions = this.positions();
-        untracked(() => {
-            if (this.enablePositions) this.cdkTrigger.menuPosition = [positions];
+    constructor() {
+        effect(() => {
+            const positions = this.positions();
+
+            untracked(() => {
+                if (this.enablePositions) {
+                    const prevMenuPosition = this.cdkTrigger.menuPosition;
+                    this.cdkTrigger.menuPosition = [positions];
+                    this.fireNgOnChanges('menuPosition', this.cdkTrigger.menuPosition, prevMenuPosition);
+                }
+            });
         });
-    });
+    }
 
     /** @ignore */
     onPointerDown($event: MouseEvent) {
@@ -171,5 +179,16 @@ export class RdxMenuTriggerDirective {
                 $event.preventDefault();
             }
         }
+    }
+
+    private fireNgOnChanges<K extends keyof CdkMenuTrigger, V extends CdkMenuTrigger[K]>(
+        input: K,
+        currentValue: V,
+        previousValue: V,
+        firstChange = false
+    ) {
+        this.cdkTrigger.ngOnChanges({
+            [input]: new SimpleChange(previousValue, currentValue, firstChange)
+        });
     }
 }
