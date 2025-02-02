@@ -1,13 +1,8 @@
 import { Directive } from '@angular/core';
-import { RdxSeparatorRootDirective } from '@radix-ng/primitives/separator';
+import { RdxMenuSeparatorDirective } from '@radix-ng/primitives/menu';
 
 @Directive({
     selector: '[rdxDropdownMenuSeparator]',
-    standalone: true,
-    hostDirectives: [RdxSeparatorRootDirective],
-    host: {
-        role: 'separator',
-        '[attr.aria-orientation]': "'horizontal'"
-    }
+    hostDirectives: [RdxMenuSeparatorDirective]
 })
 export class RdxDropdownMenuSeparatorDirective {}

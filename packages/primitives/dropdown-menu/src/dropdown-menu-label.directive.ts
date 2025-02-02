@@ -1,7 +1,8 @@
 import { Directive } from '@angular/core';
+import { RdxMenuLabelDirective } from '@radix-ng/primitives/menu';
 
 @Directive({
     selector: '[rdxDropdownMenuLabel]',
-    standalone: true
+    hostDirectives: [RdxMenuLabelDirective]
 })
 export class RdxDropdownMenuLabelDirective {}
