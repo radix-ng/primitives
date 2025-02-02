@@ -1,3 +1,17 @@
+## 0.30.0 (2025-02-02)
+
+### 🚀 Features
+
+- **radix-docs:** added Checkbox ([6f32531](https://github.com/radix-ng/primitives/commit/6f32531))
+- upd angular to 19.1 ([#266](https://github.com/radix-ng/primitives/pull/266))
+- menu ([#258](https://github.com/radix-ng/primitives/pull/258))
+- **progress:** updated to signals ([#265](https://github.com/radix-ng/primitives/pull/265))
+- **alert:** added alert role to dialog config ([eb8d725](https://github.com/radix-ng/primitives/commit/eb8d725))
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+
 ## 0.29.0 (2025-01-12)
 
 ### 🚀 Features
