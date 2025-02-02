@@ -1,6 +1,7 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
 import { RdxProgressRootDirective } from '../src/progress-root.directive';
+import { ProgressCircularComponent } from './progress-circular';
 
 const html = String.raw;
 
@@ -8,7 +9,7 @@ export default {
     title: 'Primitives/Progress',
     decorators: [
         moduleMetadata({
-            imports: [RdxProgressRootDirective, RdxProgressIndicatorDirective]
+            imports: [RdxProgressRootDirective, RdxProgressIndicatorDirective, ProgressCircularComponent]
         }),
         componentWrapperDecorator(
             (story) => html`
@@ -62,6 +63,15 @@ export const Default: Story = {
                     transition: transform 660ms cubic-bezier(0.65, 0, 0.35, 1);
                 }
             </style>
+        `
+    })
+};
+
+export const ProgressCircular: Story = {
+    render: (args) => ({
+        props: args,
+        template: html`
+            <progress-circular />
         `
     })
 };
