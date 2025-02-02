@@ -17,12 +17,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - run: corepack enable
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
-      - name: Setup pnpm
-        uses: ./.github/actions/setup
+      # Cache node_modules
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+      - uses: nrwl/nx-set-shas@v4
 
       - name: Print Environment Info
         run: npx nx report
