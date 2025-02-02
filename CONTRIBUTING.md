@@ -100,3 +100,57 @@ export class ExampleDirective {
   }
 }
 ```
+
+## Components, Directives
+
+- Use `inject` for dependency injection.
+- Avoid using native DOM APIs (e.g., `document.`, `window.`).
+- Avoid using outdated lifecycle hooks (`ngOnChanges`, `ngAfterViewInit`, `ngAfterContentInit`, etc.).
+- Minimize the use of `ngOnInit` and `ngOnDestroy`. Prefer the `constructor`, as it runs within the injection context.
+
+```typescript
+export class MyComponent {
+  // dependency injection first
+  private readonly myService = inject(MyService);
+
+  // inputs
+  readonly myInput = input();
+
+  // outputs
+  readonly myOutput = output();
+
+  // private members
+  private readonly shouldDoStuff = computed(() => {});
+
+  // public members
+  readonly ICQ_LINK = ICQ;
+  readonly MSN_LINK = MSN;
+
+  readonly computedStuff = computed(() => {});
+
+  form = new FormGroup(...);
+
+  stuff = useMyExternalUtilFunction();
+
+  // constructor
+  constructor(){
+    effect(() => console.log(this.computedStuff()));
+
+    // ngOnInit
+    afterNextRender(() => console.log('init'));
+
+    // ngOnDestroy
+    inject(DestroyRef).onDestroy(() => console.log('cleanup'));
+  }
+
+  // lifecycle hooks (avoid if possible)
+
+  // public methods
+  greet() {
+    console.log('hi mom');
+  }
+
+  // private methods
+  private calculateGreeting() {}
+}
+```
