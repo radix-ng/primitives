@@ -68,8 +68,7 @@ export const Default: Story = {
 };
 
 export const ProgressCircular: Story = {
-    render: (args) => ({
-        props: args,
+    render: () => ({
         template: html`
             <progress-circular />
         `
