@@ -35,7 +35,7 @@ export async function generateComponentsTypeDocs() {
             '**/packages/**/node_modules/**',
             '**/__tests__/**'
         ],
-        tsconfig: './packages/primitives/tsconfig.json'
+        tsconfig: './packages/primitives/tsconfig.typedoc.json'
     });
 
     const project = await app.convert();

@@ -242,7 +242,7 @@
     "avatar.config": {
         "components": {}
     },
-    "button-abstract.directive": {
+    "button.directive": {
         "components": {}
     },
     "checkbox": {
@@ -258,15 +258,79 @@
         "components": {}
     },
     "checkbox.directive": {
-        "components": {}
+        "components": {
+            "RdxCheckboxDirective": {
+                "description": "",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "checked",
+                            "optional": false,
+                            "readonly": false,
+                            "type": "boolean",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "The controlled checked state of the checkbox. Must be used in conjunction with onCheckedChange."
+                        },
+                        {
+                            "name": "indeterminate",
+                            "optional": false,
+                            "readonly": false,
+                            "type": "boolean",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "Defines whether the checkbox is indeterminate."
+                        },
+                        {
+                            "name": "disabled",
+                            "optional": false,
+                            "readonly": false,
+                            "type": "boolean",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "Defines whether the checkbox is disabled."
+                        },
+                        {
+                            "name": "required",
+                            "optional": false,
+                            "readonly": false,
+                            "type": "boolean",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": ""
+                        }
+                    ]
+                },
+                "emits": {
+                    "description": "Defines emit that determine the behavior of the component based on a given condition or report the actions that the component takes.",
+                    "values": [
+                        {
+                            "name": "checkedChange",
+                            "parameters": [
+                                {
+                                    "name": "value",
+                                    "type": "boolean"
+                                }
+                            ],
+                            "description": "Event emitted when the checkbox checked state changes."
+                        },
+                        {
+                            "name": "indeterminateChange",
+                            "parameters": [
+                                {
+                                    "name": "value",
+                                    "type": "boolean"
+                                }
+                            ],
+                            "description": "Event emitted when the indeterminate state changes."
+                        }
+                    ]
+                }
+            }
+        }
     },
     "checkbox.token": {
-        "components": {}
-    },
-    "checkbox-group.component": {
-        "components": {}
-    },
-    "checkbox-indeterminate.component": {
         "components": {}
     },
     "collapsible": {
@@ -326,12 +390,6 @@
     "collapsible-trigger.directive": {
         "components": {}
     },
-    "collapsible-animation.component": {
-        "components": {}
-    },
-    "collapsible-external-triggering.component": {
-        "components": {}
-    },
     "context-menu": {
         "components": {}
     },
@@ -389,7 +447,13 @@
     "is-inside-form": {
         "components": {}
     },
+    "isNumber": {
+        "components": {}
+    },
     "mount": {
+        "components": {}
+    },
+    "nullish": {
         "components": {}
     },
     "constants": {
@@ -542,12 +606,6 @@
             }
         }
     },
-    "dropdown-menu-item-checkbox.component": {
-        "components": {}
-    },
-    "dropdown-menu-item-radio.component": {
-        "components": {}
-    },
     "hover-card": {
         "components": {}
     },
@@ -591,30 +649,6 @@
         "components": {}
     },
     "cdk-event.service": {
-        "components": {}
-    },
-    "hover-card-anchor.component": {
-        "components": {}
-    },
-    "hover-card-animations.component": {
-        "components": {}
-    },
-    "hover-card-default.component": {
-        "components": {}
-    },
-    "hover-card-events.components": {
-        "components": {}
-    },
-    "hover-card-initially-open.component": {
-        "components": {}
-    },
-    "hover-card-multiple.component": {
-        "components": {}
-    },
-    "hover-card-positioning.component": {
-        "components": {}
-    },
-    "hover-card-triggering.component": {
         "components": {}
     },
     "containers.registry": {
@@ -668,19 +702,49 @@
     "menu-group.directive": {
         "components": {}
     },
+    "menu-item-checkbox.directive": {
+        "components": {}
+    },
+    "menu-item-indicator.directive": {
+        "components": {}
+    },
+    "menu-item-radio.directive": {
+        "components": {}
+    },
     "menu-item.directive": {
         "components": {}
     },
     "menu-label.directive": {
         "components": {}
     },
+    "menu-radio-group.directive": {
+        "components": {}
+    },
     "menu-separator.directive": {
+        "components": {}
+    },
+    "menu-trigger.directive": {
+        "components": {}
+    },
+    "menu-checkbox-items": {
+        "components": {}
+    },
+    "menu-radio-items": {
+        "components": {}
+    },
+    "menu-with-labels-items": {
+        "components": {}
+    },
+    "menu-with-sub-menu": {
         "components": {}
     },
     "menubar": {
         "components": {}
     },
     "menubar-content.directive": {
+        "components": {}
+    },
+    "menubar-group.directive": {
         "components": {}
     },
     "menubar-item-checkbox.directive": {
@@ -749,30 +813,6 @@
     "popover.types": {
         "components": {}
     },
-    "popover-anchor.component": {
-        "components": {}
-    },
-    "popover-animations.component": {
-        "components": {}
-    },
-    "popover-default.component": {
-        "components": {}
-    },
-    "popover-events.components": {
-        "components": {}
-    },
-    "popover-initially-open.component": {
-        "components": {}
-    },
-    "popover-multiple.component": {
-        "components": {}
-    },
-    "popover-positioning.component": {
-        "components": {}
-    },
-    "popover-triggering.component": {
-        "components": {}
-    },
     "presence-test.component": {
         "components": {}
     },
@@ -783,9 +823,6 @@
         "components": {}
     },
     "transition.toast": {
-        "components": {}
-    },
-    "presence-story.componen": {
         "components": {}
     },
     "progress": {
@@ -804,8 +841,8 @@
                         {
                             "name": "value",
                             "optional": false,
-                            "readonly": false,
-                            "type": "number",
+                            "readonly": true,
+                            "type": "ModelSignal<number>",
                             "default": "0",
                             "defaultValue": "0",
                             "description": "The current value of the progress bar."
@@ -813,8 +850,8 @@
                         {
                             "name": "max",
                             "optional": false,
-                            "readonly": false,
-                            "type": "number",
+                            "readonly": true,
+                            "type": "ModelSignal<number>",
                             "default": "100",
                             "defaultValue": "100",
                             "description": "The maximum value of the progress bar."
@@ -822,8 +859,8 @@
                         {
                             "name": "valueLabel",
                             "optional": false,
-                            "readonly": false,
-                            "type": "(value: number, max: number) => string",
+                            "readonly": true,
+                            "type": "InputSignal<(value: number, max: number) => string>",
                             "default": "...",
                             "defaultValue": "...",
                             "description": "Function to generate the value label."
@@ -851,9 +888,6 @@
     "radio-tokens": {
         "components": {}
     },
-    "radio-group.component": {
-        "components": {}
-    },
     "roving-focus": {
         "components": {}
     },
@@ -861,9 +895,6 @@
         "components": {}
     },
     "roving-focus-item.directive": {
-        "components": {}
-    },
-    "roving-focus-events.component": {
         "components": {}
     },
     "select": {
@@ -1184,9 +1215,6 @@
             }
         }
     },
-    "switch-forms.component": {
-        "components": {}
-    },
     "tabs": {
         "components": {}
     },
@@ -1236,6 +1264,9 @@
         }
     },
     "toggle-group-item.token": {
+        "components": {}
+    },
+    "toggle-group-without-focus.directive": {
         "components": {}
     },
     "toggle-group.directive": {
@@ -1355,7 +1386,28 @@
             }
         }
     },
-    "toggle-forms.component": {
+    "toolbar": {
+        "components": {}
+    },
+    "toolbar-button.directive": {
+        "components": {}
+    },
+    "toolbar-link.directive": {
+        "components": {}
+    },
+    "toolbar-root.directive": {
+        "components": {}
+    },
+    "toolbar-root.token": {
+        "components": {}
+    },
+    "toolbar-separator.directive": {
+        "components": {}
+    },
+    "toolbar-toggle-group.directive": {
+        "components": {}
+    },
+    "toolbar-toggle-item.directive": {
         "components": {}
     },
     "tooltip": {
@@ -1398,30 +1450,6 @@
         "components": {}
     },
     "tooltip.types": {
-        "components": {}
-    },
-    "tooltip-anchor.component": {
-        "components": {}
-    },
-    "tooltip-animations.component": {
-        "components": {}
-    },
-    "tooltip-default.component": {
-        "components": {}
-    },
-    "tooltip-events.components": {
-        "components": {}
-    },
-    "tooltip-initially-open.component": {
-        "components": {}
-    },
-    "tooltip-multiple.component": {
-        "components": {}
-    },
-    "tooltip-positioning.component": {
-        "components": {}
-    },
-    "tooltip-triggering.component": {
         "components": {}
     },
     "visually-hidden": {

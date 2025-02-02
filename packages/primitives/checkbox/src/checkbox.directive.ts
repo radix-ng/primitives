@@ -4,6 +4,9 @@ import { RdxCheckboxToken } from './checkbox.token';
 
 export type CheckboxState = 'unchecked' | 'checked' | 'indeterminate';
 
+/**
+ * @group Components
+ */
 @Directive({
     selector: '[rdxCheckboxRoot]',
     standalone: true,
@@ -24,28 +27,36 @@ export type CheckboxState = 'unchecked' | 'checked' | 'indeterminate';
 export class RdxCheckboxDirective implements ControlValueAccessor, OnChanges {
     /**
      * The controlled checked state of the checkbox. Must be used in conjunction with onCheckedChange.
+     * @group Props
      */
     @Input({ transform: booleanAttribute }) checked = false;
 
     /**
      * Defines whether the checkbox is indeterminate.
+     * @group Props
      */
     @Input({ transform: booleanAttribute }) indeterminate = false;
 
     /**
      * Defines whether the checkbox is disabled.
+     * @group Props
      */
     @Input({ transform: booleanAttribute }) disabled = false;
 
+    /**
+     * @group Props
+     */
     @Input({ transform: booleanAttribute }) required = false;
 
     /**
      * Event emitted when the checkbox checked state changes.
+     * @group Emits
      */
     @Output() readonly checkedChange = new EventEmitter<boolean>();
 
     /**
      * Event emitted when the indeterminate state changes.
+     * @group Emits
      */
     @Output() readonly indeterminateChange = new EventEmitter<boolean>();
 

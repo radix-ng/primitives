@@ -2,7 +2,7 @@
 title: Checkbox
 slug: checkbox
 section: components
-description: .
+description: A control that allows the user to toggle between checked and not checked.
 ---
 
 # Checkbox
@@ -10,3 +10,57 @@ description: .
 <Description>A control that allows the user to toggle between checked and not checked.</Description>
 
 <ComponentPreview name="checkbox" file="checkbox-demo" />
+
+## Features
+
+<FeatureList items={[
+    'Full keyboard navigation.',
+    'Supports indeterminate \_state.',
+    'Can be controlled or uncontrolled.'
+]} />
+
+## Anatomy
+
+```html
+<button rdxCheckboxRoot [(checked)]="checked">
+  <lucide-angular rdxCheckboxIndicator name="check" />
+  <input rdxCheckboxInput type="checkbox" />
+</button>
+```
+
+## API Reference
+
+### Root
+`RdxCheckboxDirective`
+
+<PropsTable name="RdxCheckboxDirective" />
+
+<DataAttributesTable attributes={[
+    { name: '[data-state]', value: '"checked" | "unchecked" | "indeterminate"' },
+    { name: '[data-disabled]', value: 'Present when disabled' }
+]} />
+
+## Indicator
+`RdxCheckboxIndicator`
+
+Renders when the checkbox is in a checked or indeterminate state.
+You can style this element directly, or you can use it as a wrapper to put an icon into, or both.
+
+<DataAttributesTable attributes={[
+    { name: '[data-state]', value: '"checked" | "unchecked" | "indeterminate"' },
+    { name: '[data-disabled]', value: 'Present when disabled' }
+]} />
+
+## Input
+`RdxCheckboxInput`
+
+
+## Accessibility
+
+Adheres to the [tri-\_state Checkbox WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/checkbox).
+
+### Keyboard Interactions
+
+<KeyboardTable attributes={[
+    { key: 'Space', description: 'Checks/unchecks the checkbox.' }
+]} />

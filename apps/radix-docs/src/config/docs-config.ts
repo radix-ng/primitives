@@ -65,7 +65,7 @@ const docsConfig = {
                         { name: 'Alert Dialog', url: '#', label: 'Storybook' },
                         { name: 'Aspect Ratio', url: '/primitives/components/aspect-ratio' },
                         { name: 'Avatar', url: '/primitives/components/avatar' },
-                        { name: 'Checkbox', url: '#', label: 'Storybook' },
+                        { name: 'Checkbox', url: '/primitives/components/checkbox' },
                         { name: 'Collapsible', url: '/primitives/components/collapsible' },
                         { name: 'Context Menu', url: '#', label: 'Storybook' },
                         { name: 'Dialog', url: '/primitives/components/dialog' },

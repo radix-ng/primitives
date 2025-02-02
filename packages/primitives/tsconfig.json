@@ -20,6 +20,9 @@
         },
         {
             "path": "./tsconfig.schematics.json"
+        },
+        {
+            "path": "./tsconfig.typedoc.json"
         }
     ],
     "extends": "../../tsconfig.base.json",
