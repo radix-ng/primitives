@@ -190,8 +190,8 @@ importers:
         specifier: 8.4.7
         version: 8.4.7(storybook@8.5.3(prettier@3.4.2))
       '@storybook/addon-storysource':
-        specifier: 8.4.7
-        version: 8.4.7(storybook@8.5.3(prettier@3.4.2))
+        specifier: 8.5.3
+        version: 8.5.3(storybook@8.5.3(prettier@3.4.2))
       '@storybook/angular':
         specifier: 8.4.7
         version: 8.4.7(7zv77fuj5axtrjtqrp2mr4oeke)
@@ -4780,10 +4780,10 @@ packages:
     peerDependencies:
       storybook: ^8.4.7
 
-  '@storybook/addon-storysource@8.4.7':
-    resolution: {integrity: sha512-ckMSiVf+8V3IVN3lTdzCdToXVoGhZ57pwMv0OpkdVIEn6sqHFHwHrOYiXpF3SXTicwayjylcL1JXTGoBFFDVOQ==}
+  '@storybook/addon-storysource@8.5.3':
+    resolution: {integrity: sha512-W+QK6w2osgJSMKAHdSsMLTPgmsv/fFOiAR1Dr9NPXK0URnmg5edyFim9R2A+tGIv2QM2k7y3v8m8N534eA2C8w==}
     peerDependencies:
-      storybook: ^8.4.7
+      storybook: ^8.5.3
 
   '@storybook/addon-toolbars@8.4.7':
     resolution: {integrity: sha512-OSfdv5UZs+NdGB+nZmbafGUWimiweJ/56gShlw8Neo/4jOJl1R3rnRqqY7MYx8E4GwoX+i3GF5C3iWFNQqlDcw==}
@@ -4927,10 +4927,10 @@ packages:
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
       storybook: ^8.4.7
 
-  '@storybook/source-loader@8.4.7':
-    resolution: {integrity: sha512-DrsYGGfNbbqlMzkhbLoNyNqrPa4QIkZ6O7FJ8Z/8jWb0cerQH2N6JW6k12ZnXgs8dO2Z33+iSEDIV8odh0E0PA==}
+  '@storybook/source-loader@8.5.3':
+    resolution: {integrity: sha512-55leYMti07WGOw2XKtEwHLV9G/hmnhbjtRiSIgVnPCGoPQ0R76uCvGFazmOQqWLkcXAr8hAx2A8eAsrIyLUBNQ==}
     peerDependencies:
-      storybook: ^8.4.7
+      storybook: ^8.5.3
 
   '@storybook/test@8.4.7':
     resolution: {integrity: sha512-AhvJsu5zl3uG40itSQVuSy5WByp3UVhS6xAnme4FWRwgSxhvZjATJ3AZkkHWOYjnnk+P2/sbz/XuPli1FVCWoQ==}
@@ -21344,9 +21344,9 @@ snapshots:
       storybook: 8.5.3(prettier@3.4.2)
       ts-dedent: 2.2.0
 
-  '@storybook/addon-storysource@8.4.7(storybook@8.5.3(prettier@3.4.2))':
+  '@storybook/addon-storysource@8.5.3(storybook@8.5.3(prettier@3.4.2))':
     dependencies:
-      '@storybook/source-loader': 8.4.7(storybook@8.5.3(prettier@3.4.2))
+      '@storybook/source-loader': 8.5.3(storybook@8.5.3(prettier@3.4.2))
       estraverse: 5.3.0
       storybook: 8.5.3(prettier@3.4.2)
       tiny-invariant: 1.3.3
@@ -21546,9 +21546,9 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
       storybook: 8.5.3(prettier@3.4.2)
 
-  '@storybook/source-loader@8.4.7(storybook@8.5.3(prettier@3.4.2))':
+  '@storybook/source-loader@8.5.3(storybook@8.5.3(prettier@3.4.2))':
     dependencies:
-      '@storybook/csf': 0.1.13
+      '@storybook/csf': 0.1.12
       es-toolkit: 1.32.0
       estraverse: 5.3.0
       prettier: 3.4.2
