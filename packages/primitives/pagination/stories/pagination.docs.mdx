@@ -97,3 +97,39 @@ Placeholder element when the list is long, and only a small amount of `siblingCo
   | Enter       | When focus is on a any trigger, trigger selected page or arrow navigation.  |
   `}
 </Markdown>
+
+## Examples
+
+### With ellipsis
+
+You can add `rdxPaginationEllipsis` as a visual cue for more previous and after items.
+
+```html
+<div rdxPaginationRoot>
+    <div rdxPaginationList #list="rdxPaginationList">
+
+        @for (item of list.transformedRange(); track item) {
+            @if (item.type == 'page') {
+                <button rdxPaginationListItem [value]="item.value">{{ item.value }}</button>
+            } @else {
+                <div rdxPaginationEllipsis>&#8230;</div>
+            }
+        }
+
+    </div>
+</div>
+```
+
+### With first/last button
+
+You can add `rdxPaginationFirst` to allow user to navigate to first page, or `rdxPaginationLast` to navigate to last page.
+
+```html
+<div rdxPaginationRoot>
+    <div rdxPaginationList #list="rdxPaginationList">
+        <button rdxPaginationFirst></button>
+        ...
+        <button rdxPaginationLast></button>
+    </div>
+</div>
+```
