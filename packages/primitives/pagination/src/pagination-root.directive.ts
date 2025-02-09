@@ -33,8 +33,10 @@ export class RdxPaginationRootDirective {
 
     readonly updatePage = output<number>();
 
+    /** @ignore */
     readonly pageCount = computed(() => Math.max(1, Math.ceil(this.total() / (this.itemsPerPage() || 1))));
 
+    /** @ignore */
     onPageChange(value: number) {
         if (!this.disabled()) {
             this.page.set(value);
