@@ -56,6 +56,9 @@
             "@radix-ng/primitives/menubar": [
                 "packages/primitives/menubar/index.ts"
             ],
+            "@radix-ng/primitives/pagination": [
+                "packages/primitives/pagination/src/index.ts"
+            ],
             "@radix-ng/primitives/popover": [
                 "packages/primitives/popover/src/index.ts"
             ],
