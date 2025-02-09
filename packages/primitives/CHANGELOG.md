@@ -1,3 +1,14 @@
+## 0.31.0 (2025-02-09)
+
+### 🚀 Features
+
+- **pagination:** added pagination primitive ([#273](https://github.com/radix-ng/primitives/pull/273))
+- **config:** added provider for global config ([9b1d5b3](https://github.com/radix-ng/primitives/commit/9b1d5b3))
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+
 ## 0.30.0 (2025-02-02)
 
 ### 🚀 Features
