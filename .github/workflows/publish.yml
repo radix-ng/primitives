@@ -21,22 +21,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      # Cache node_modules
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - run: pnpm install --frozen-lockfile
-      - uses: nrwl/nx-set-shas@v4
-
-      - name: Print Environment Info
-        run: npx nx report
-        shell: bash
+      - uses: ./.github/actions/setup
 
       - name: Build
         run: pnpm primitives:build
