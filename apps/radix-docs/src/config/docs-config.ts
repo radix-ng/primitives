@@ -72,6 +72,7 @@ const docsConfig = {
                         { name: 'Dropdown Menu', url: '/primitives/components/dropdown-menu' },
                         { name: 'Label', url: '/primitives/components/label' },
                         { name: 'Menubar', url: '#', label: 'Storybook' },
+                        { name: 'Pagination', url: '#', label: 'Storybook' },
                         { name: 'Popover', url: '#', label: 'Storybook' },
                         { name: 'Progress', url: '/primitives/components/progress' },
                         { name: 'Radio Group', url: '#', label: 'Storybook' },
