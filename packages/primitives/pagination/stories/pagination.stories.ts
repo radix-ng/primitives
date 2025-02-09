@@ -1,4 +1,5 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, LucideAngularModule } from 'lucide-angular';
 import { RdxPaginationEllipsisDirective } from '../src/pagination-ellipsis.directive';
 import { RdxPaginationFirstDirective } from '../src/pagination-first.directive';
 import { RdxPaginationLastDirective } from '../src/pagination-last.directive';
@@ -22,7 +23,9 @@ export default {
                 RdxPaginationLastDirective,
                 RdxPaginationNextDirective,
                 RdxPaginationListItemDirective,
-                RdxPaginationEllipsisDirective
+                RdxPaginationEllipsisDirective,
+                LucideAngularModule,
+                LucideAngularModule.pick({ ChevronLeft, ChevronRight, ChevronsRight, ChevronsLeft })
             ]
         }),
         componentWrapperDecorator(
@@ -35,20 +38,45 @@ export default {
                             all: unset;
                         }
 
-                        .pagination-list {
+                        .Button {
+                            text-align: center;
+                            font-size: 15px;
+                            line-height: 1;
+                            align-items: center;
+                            justify-content: center;
+                            height: 2.25rem;
+                            width: 2.25rem;
+                            border-radius: 0.25rem;
+                            transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+                            cursor: pointer;
+                        }
+
+                        .Button:disabled {
+                            opacity: 0.5;
+                        }
+
+                        .Button:hover {
+                            background-color: rgb(255 255 255 / 0.1);
+                        }
+
+                        .Button[data-selected] {
+                            background-color: rgb(255 255 255);
+                            color: var(--black-a11);
+                        }
+
+                        .PaginationList {
                             display: flex;
                             align-items: center;
-                            gap: 8px;
+                            gap: 0.25rem;
+                            color: rgb(255 255 255);
                         }
 
-                        .pagination-item {
-                            border: 1px solid #ddd;
-                            border-radius: 4px;
-                            padding: 8px 16px;/
-                        }
-
-                        .pagination-item[data-selected] {
-                            background-color: var(--violet-6);
+                        .PaginationEllipsis {
+                            display: flex;
+                            height: 2.25rem;
+                            width: 2.25rem;
+                            align-items: center;
+                            justify-content: center;
                         }
                     </style>
                 </div>
@@ -61,18 +89,26 @@ type Story = StoryObj;
 
 export const Default: Story = {
     render: () => ({
-        template: html`
+        template: `
             <div rdxPaginationRoot total="34" siblingCount="1" itemsPerPage="10">
-                <div class="pagination-list" rdxPaginationList #list="rdxPaginationList">
-                    <button rdxPaginationFirst>First page</button>
-                    <button rdxPaginationPrev>Prev page</button>
+                <div class="PaginationList" rdxPaginationList #list="rdxPaginationList">
+                    <button class="Button" rdxPaginationFirst>
+                        <lucide-icon name="chevrons-left" size="16" strokeWidth="2" />
+                    </button>
+                    <button class="Button" rdxPaginationPrev style="margin-right: 16px;">
+                        <lucide-icon name="chevron-left" size="16" strokeWidth="2" />
+                    </button>
 
                     @for (item of list.transformedRange(); track item) {
-                    <button class="pagination-item" rdxPaginationListItem [value]="item.value">{{ item.value }}</button>
+                        <button class="Button" rdxPaginationListItem [value]="item.value">{{ item.value }}</button>
                     }
 
-                    <button rdxPaginationNext>Next Page</button>
-                    <button rdxPaginationLast>Last Page</button>
+                    <button class="Button" rdxPaginationNext style="margin-left: 16px;">
+                        <lucide-icon name="chevron-right" size="16" strokeWidth="2" />
+                    </button>
+                    <button class="Button" rdxPaginationLast>
+                        <lucide-icon name="chevrons-right" size="16" strokeWidth="2" />
+                    </button>
                 </div>
             </div>
         `
@@ -83,20 +119,28 @@ export const WithEllipsis: Story = {
     render: () => ({
         template: `
             <div rdxPaginationRoot total="100" siblingCount="1" defaultPage="2" showEdges itemsPerPage="10">
-                <div class="pagination-list" rdxPaginationList #list="rdxPaginationList">
-                    <button rdxPaginationFirst>First page</button>
-                    <button rdxPaginationPrev>Prev page</button>
+                <div class="PaginationList" rdxPaginationList #list="rdxPaginationList">
+                    <button class="Button" rdxPaginationFirst>
+                        <lucide-icon name="chevrons-left" size="16" strokeWidth="2" />
+                    </button>
+                    <button class="Button" rdxPaginationPrev style="margin-right: 16px;">
+                        <lucide-icon name="chevron-left" size="16" strokeWidth="2" />
+                    </button>
 
                     @for (item of list.transformedRange(); track item) {
                         @if (item.type == 'page') {
-                            <button class="pagination-item" rdxPaginationListItem [value]="item.value">{{ item.value }}</button>
+                            <button class="Button" rdxPaginationListItem [value]="item.value">{{ item.value }}</button>
                         } @else {
-                            <div rdxPaginationEllipsis>&#8230;</div>
+                            <div class="PaginationEllipsis" rdxPaginationEllipsis>&#8230;</div>
                         }
                     }
 
-                    <button rdxPaginationNext>Next Page</button>
-                    <button rdxPaginationLast>Last Page</button>
+                    <button class="Button" rdxPaginationNext style="margin-left: 16px;">
+                        <lucide-icon name="chevron-right" size="16" strokeWidth="2" />
+                    </button>
+                    <button class="Button" rdxPaginationLast>
+                        <lucide-icon name="chevrons-right" size="16" strokeWidth="2" />
+                    </button>
                 </div>
             </div>
         `

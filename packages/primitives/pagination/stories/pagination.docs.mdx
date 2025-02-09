@@ -1,0 +1,82 @@
+import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
+import * as Stories from './pagination.stories';
+import {RdxPaginationRootDirective} from "../src/pagination-root.directive";
+
+<Meta title="Primitives/Pagination" />
+
+# Pagination
+
+#### A two-\_state button that can be either on or off.
+
+<Canvas sourceState="hidden" of={Stories.WithEllipsis} />
+
+## Features
+
+- ✅ Enable quick access to first, or last page.
+- ✅ Enable to show edges constantly, or not.
+
+## Import
+
+Get started with importing the directives:
+
+```typescript
+import { RdxPaginationModule } from '@radix-ng/primitives/pagination';
+```
+
+## Anatomy
+
+```html
+<div rdxPaginationRoot>
+    <div rdxPaginationList #list="rdxPaginationList">
+        <button rdxPaginationFirst></button>
+        <button rdxPaginationPrev></button>
+
+        @for (item of list.transformedRange(); track item) {
+            <button rdxPaginationListItem [value]="item.value">{{ item.value }}</button>
+        }
+
+        <button rdxPaginationNext></button>
+        <button rdxPaginationLast></button>
+    </div>
+</div>
+```
+
+## API Reference
+
+### Root
+
+`RdxPaginationRootDirective`
+
+<ArgTypes of={RdxPaginationRootDirective} />
+
+### List
+
+`RdxPaginationListDirective`
+
+Used to show the list of pages. It also makes pagination accessible to assistive technologies.
+
+### Item
+
+`RdxPaginationListItemDirective`
+
+Used to render the button that changes the current page.
+
+### Ellipsis
+
+`RdxPaginationEllipsisDirective`
+
+Placeholder element when the list is long, and only a small amount of `siblingCount` was set and `showEdges` was set to `true`.
+
+## Accessibility
+
+### Keyboard Interactions
+
+<Markdown>
+  {`
+  | Key | Description |
+  | ----------- | --------- |
+  | Tab         | Moves focus to the next focusable element.  |
+  | Space       | When focus is on a any trigger, trigger selected page or arrow navigation.    |
+  | Enter       | When focus is on a any trigger, trigger selected page or arrow navigation.  |
+  `}
+</Markdown>
