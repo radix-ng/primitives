@@ -57,6 +57,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: install-deps
     steps:
+      - name: Checkout code repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup
+
       - name: Build Primitives
         run: pnpm primitives:build
 
