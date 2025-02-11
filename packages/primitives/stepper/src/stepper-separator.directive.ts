@@ -18,8 +18,8 @@ export class RdxStepperSeparatorDirective {
 
     constructor() {
         effect(() => {
-            this.rdxSeparator.decorativeEffect.set(true);
-            this.rdxSeparator.orientationEffect.set(this.rootContext.orientation());
+            this.rdxSeparator.updateDecorative(true);
+            this.rdxSeparator.updateOrientation(this.rootContext.orientation());
         });
     }
 }

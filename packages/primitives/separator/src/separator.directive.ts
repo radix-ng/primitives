@@ -60,12 +60,12 @@ export class RdxSeparatorRootDirective {
      *
      * @ignore
      */
-    readonly decorativeEffect = linkedSignal({
+    protected readonly decorativeEffect = linkedSignal({
         source: this.decorative,
         computation: (value) => value
     });
 
-    readonly orientationEffect = linkedSignal({
+    protected readonly orientationEffect = linkedSignal({
         source: this.orientation,
         computation: (value) => value
     });
@@ -80,4 +80,12 @@ export class RdxSeparatorRootDirective {
     protected readonly computedAriaOrientation = computed(() =>
         !this.decorativeEffect() && this.orientationEffect() === 'vertical' ? 'vertical' : undefined
     );
+
+    updateOrientation(value: Orientation) {
+        this.orientationEffect.set(value);
+    }
+
+    updateDecorative(value: boolean) {
+        this.decorativeEffect.set(value);
+    }
 }
