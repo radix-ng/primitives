@@ -1,8 +1,8 @@
 import { computed, Directive, ElementRef, inject, OnDestroy, OnInit } from '@angular/core';
-import { getActiveElement } from './getActiveElement';
 import { injectStepperItemContext } from './stepper-item-context.token';
 import { injectStepperRootContext } from './stepper-root-context.token';
-import { useArrowNavigation } from './useArrowNavigation';
+import { getActiveElement } from './utils/getActiveElement';
+import { useArrowNavigation } from './utils/useArrowNavigation';
 
 // as button
 @Directive({
