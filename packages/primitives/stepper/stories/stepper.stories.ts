@@ -2,6 +2,7 @@ import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@stor
 import { RdxStepperIndicatorDirective } from '../src/stepper-indicator.directive';
 import { RdxStepperItemDirective } from '../src/stepper-item.directive';
 import { RdxStepperRootDirective } from '../src/stepper-root.directive';
+import { RdxStepperSeparatorDirective } from '../src/stepper-separator.directive';
 import { RdxStepperTriggerDirective } from '../src/stepper-trigger.directive';
 
 const html = String.raw;
@@ -14,7 +15,8 @@ export default {
                 RdxStepperRootDirective,
                 RdxStepperItemDirective,
                 RdxStepperTriggerDirective,
-                RdxStepperIndicatorDirective
+                RdxStepperIndicatorDirective,
+                RdxStepperSeparatorDirective
             ]
         }),
         componentWrapperDecorator(
@@ -23,16 +25,24 @@ export default {
                     ${story}
 
                     <style>
+                        button {
+                            all: unset;
+                        }
+
                         .StepperList {
                             display: flex;
                             gap: 1rem;
+                            max-width: 32rem;
+                            width: 100%;
                         }
 
                         .StepperItem {
                             display: flex;
-                            gap: 1rem;
+                            gap: 0.5rem;
                             align-items: center;
-                            cursor: pointer;
+                            position: relative;
+                            padding-left: 1rem;
+                            padding-right: 1rem;
                         }
 
                         .StepperItem[data-disabled] {
@@ -66,22 +76,48 @@ export default {
                             box-shadow: 0 0 0 2px #000;
                         }
 
+                        .StepperItemText {
+                            position: absolute;
+                            text-align: center;
+                            top: 100%;
+                            left: 0;
+                            width: 100%;
+                            margin-top: 0.5rem;
+                            color: #57534e;
+                        }
+
                         .StepperTitle {
                             font-size: 0.875rem;
                             font-weight: 500;
-                            color: #000;
+                            color: white;
                         }
 
                         .StepperDescription {
                             font-size: 0.75rem;
-                            color: #000;
+                            color: white;
+                        }
+
+                        .StepperSeparator {
+                            width: 100%;
+                            height: 1px;
+                            left: calc(50% + 30px);
+                            right: calc(-50% + 20px);
+                            flex-shrink: 0;
+                            background-color: var(--green-5);
                         }
 
                         .StepperTrigger {
                             display: flex;
-                            flex-direction: column;
+                            cursor: pointer;
                             gap: 0.5rem;
+                            width: 2.5rem;
+                            height: 2.5rem;
                             align-items: center;
+                            justify-content: center;
+                        }
+
+                        .StepperTrigger:focus {
+                            box-shadow: 0 0 0 2px black;
                         }
                     </style>
                 </div>
@@ -129,22 +165,27 @@ export const Default: Story = {
             ]
         },
         template: `
-            <div rdxStepperRoot [value]="2" class="StepperList">
-                @for (item of steps; track $index) {
-                    <div rdxStepperItem [step]="item.step" class="StepperItem">
-                        <button rdxStepperTrigger class="StepperTrigger">
-                            <div rdxStepperIndicator class="StepperIndicator"></div>
+            <div style="height: 200px;">
+                <div rdxStepperRoot [value]="2" class="StepperList">
+                    @for (item of steps; track $index) {
+                        <div rdxStepperItem [step]="item.step" class="StepperItem">
+                            <button rdxStepperTrigger class="StepperTrigger">
+                                <div rdxStepperIndicator class="StepperIndicator"></div>
+                            </button>
                             <div class="StepperItemText">
-                              <h4 class="StepperTitle">
-                                {{ item.title }}
-                              </h4>
-                              <p class="StepperDescription">
-                                {{ item.description }}
-                              </p>
+                                <h4 class="StepperTitle">
+                                   {{ item.title }}
+                                </h4>
+                                <p class="StepperDescription">
+                                   {{ item.description }}
+                                </p>
                             </div>
-                        </button>
-                    </div>
-                }
+                            @if (item.step !== steps[steps.length - 1].step) {
+                                <div rdxStepperSeparator class="StepperSeparator"></div>
+                            }
+                        </div>
+                    }
+                </div>
             </div>
         `
     })
