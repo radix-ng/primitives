@@ -8,6 +8,10 @@ import { useArrowNavigation } from './utils/useArrowNavigation';
 @Directive({
     selector: 'button[rdxStepperTrigger]',
     host: {
+        '[attr.tabindex]': 'itemContext.isFocusable() ? 0 : -1',
+        '[attr.aria-describedby]': 'itemContext.descriptionId',
+        '[attr.aria-labelledby]': 'itemContext.titleId',
+
         '[attr.data-state]': 'itemContext.itemState()',
         '[attr.data-orientation]': 'rootContext.orientation()',
         '[attr.disabled]': 'itemContext.disabled() || !itemContext.isFocusable() ? "" : undefined',

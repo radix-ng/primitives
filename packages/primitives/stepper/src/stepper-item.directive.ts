@@ -1,7 +1,9 @@
 import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
-import { booleanAttribute, computed, Directive, forwardRef, input, numberAttribute } from '@angular/core';
-import { STEPPER_ITEM_CONTEXT } from './stepper-item-context.token';
+import { booleanAttribute, computed, Directive, forwardRef, inject, input, numberAttribute } from '@angular/core';
+import { _IdGenerator } from '@radix-ng/primitives/core';
+import { STEPPER_ITEM_CONTEXT, StepperItemContext } from './stepper-item-context.token';
 import { injectStepperRootContext } from './stepper-root-context.token';
+import { StepperState } from './types';
 
 @Directive({
     selector: '[rdxStepperItem]',
@@ -20,8 +22,12 @@ import { injectStepperRootContext } from './stepper-root-context.token';
         '[attr.data-orientation]': 'rootContext.orientation()'
     }
 })
-export class RdxStepperItemDirective {
+export class RdxStepperItemDirective implements StepperItemContext {
     protected readonly rootContext = injectStepperRootContext();
+
+    readonly titleId = inject(_IdGenerator).getId('rdx-stepper-item-title');
+
+    readonly descriptionId = inject(_IdGenerator).getId('rdx-stepper-item-description');
 
     readonly step = input<number, NumberInput>(NaN, { transform: numberAttribute });
 
@@ -29,7 +35,7 @@ export class RdxStepperItemDirective {
 
     readonly completed = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    readonly itemState = computed(() => {
+    readonly itemState = computed<StepperState>(() => {
         if (this.completed()) return 'completed';
         if (this.rootContext.value() === this.step()) return 'active';
 

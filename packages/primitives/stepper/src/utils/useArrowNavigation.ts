@@ -1,6 +1,6 @@
 // made by https://reka-ui.com/
 
-type Direction = 'vertical' | 'horizontal';
+import { Direction } from '@angular/cdk/bidi';
 
 type ArrowKeyOptions = 'horizontal' | 'vertical' | 'both';
 

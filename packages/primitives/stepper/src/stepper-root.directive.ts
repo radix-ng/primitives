@@ -11,7 +11,7 @@ import {
     numberAttribute,
     signal
 } from '@angular/core';
-import { STEPPER_ROOT_CONTEXT } from './stepper-root-context.token';
+import { STEPPER_ROOT_CONTEXT, StepperRootContext } from './stepper-root-context.token';
 
 @Directive({
     selector: '[rdxStepperRoot]',
@@ -29,7 +29,7 @@ import { STEPPER_ROOT_CONTEXT } from './stepper-root-context.token';
         '[attr.data-orientation]': 'orientation()'
     }
 })
-export class RdxStepperRootDirective {
+export class RdxStepperRootDirective implements StepperRootContext {
     readonly defaultValue = input<number, NumberInput>(undefined, { transform: numberAttribute });
 
     readonly value = model<number | undefined>(this.defaultValue());
