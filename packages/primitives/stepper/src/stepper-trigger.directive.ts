@@ -1,4 +1,5 @@
 import { computed, Directive, ElementRef, inject, OnDestroy, OnInit } from '@angular/core';
+import { useKbd } from '@radix-ng/primitives/core';
 import { injectStepperItemContext } from './stepper-item-context.token';
 import { injectStepperRootContext } from './stepper-root-context.token';
 import { getActiveElement } from './utils/getActiveElement';
@@ -18,7 +19,13 @@ import { useArrowNavigation } from './utils/useArrowNavigation';
         '[attr.data-disabled]': 'itemContext.disabled() || !itemContext.isFocusable() ? "" : undefined',
 
         '(mousedown)': 'handleMouseDown($event)',
-        '(keydown)': 'handleKeyDown($event)'
+
+        '(keydown.Enter)': 'handleKeyDown($event)',
+        '(keydown.Space)': 'handleKeyDown($event)',
+        '(keydown.ArrowLeft)': 'handleKeyDown($event)',
+        '(keydown.ArrowRight)': 'handleKeyDown($event)',
+        '(keydown.ArrowUp)': 'handleKeyDown($event)',
+        '(keydown.ArrowDown)': 'handleKeyDown($event)'
     }
 })
 export class RdxStepperTriggerDirective implements OnInit, OnDestroy {
@@ -28,6 +35,8 @@ export class RdxStepperTriggerDirective implements OnInit, OnDestroy {
     private readonly elementRef = inject(ElementRef);
 
     readonly stepperItems = computed(() => Array.from(this.rootContext.totalStepperItems()));
+
+    readonly kbd = useKbd();
 
     ngOnInit() {
         const current = this.rootContext.totalStepperItems();
@@ -79,31 +88,17 @@ export class RdxStepperTriggerDirective implements OnInit, OnDestroy {
             return;
         }
 
-        if (
-            event.key === 'Enter' ||
-            event.key === 'Space' ||
-            event.key === ' ' ||
-            event.key === 'ArrowLeft' ||
-            event.key === 'ArrowRight' ||
-            event.key === 'ArrowUp' ||
-            event.key === 'ArrowDown'
-        ) {
-            if (
-                (event.key === 'Enter' || event.key === 'Space' || event.key === ' ') &&
-                !event.ctrlKey &&
-                !event.shiftKey
-            )
-                this.rootContext.value.set(this.itemContext.step());
+        if ((event.key === 'Enter' || event.key === 'Space' || event.key === ' ') && !event.ctrlKey && !event.shiftKey)
+            this.rootContext.value.set(this.itemContext.step());
 
-            if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
-                useArrowNavigation(event, getActiveElement() as HTMLElement, undefined, {
-                    itemsArray: this.stepperItems() as HTMLElement[],
-                    focus: true,
-                    loop: false,
-                    arrowKeyOptions: this.rootContext.orientation(),
-                    dir: this.rootContext.dir()
-                });
-            }
+        if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
+            useArrowNavigation(event, getActiveElement() as HTMLElement, undefined, {
+                itemsArray: this.stepperItems() as HTMLElement[],
+                focus: true,
+                loop: false,
+                arrowKeyOptions: this.rootContext.orientation(),
+                dir: this.rootContext.dir()
+            });
         }
     }
 }

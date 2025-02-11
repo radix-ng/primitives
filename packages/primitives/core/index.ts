@@ -7,6 +7,7 @@ export * from './src/is-client';
 export * from './src/is-inside-form';
 export * from './src/isNumber';
 export * from './src/nullish';
+export * from './src/useKbd';
 export * from './src/window';
 
 export * from './src/positioning/constants';
