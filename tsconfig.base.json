@@ -12,7 +12,7 @@
         "target": "es2015",
         "module": "esnext",
         "lib": [
-            "es2020",
+            "es2022",
             "dom"
         ],
         "skipLibCheck": true,
