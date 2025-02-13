@@ -14,7 +14,7 @@ import { injectPaginationRootContext } from './pagination-context.token';
 export class RdxPaginationPrevDirective {
     private readonly rootContext = injectPaginationRootContext();
 
-    readonly disabled = computed((): boolean => this.rootContext.page() === 1 || this.rootContext.disabled());
+    readonly disabled = computed(() => this.rootContext.page() === 1 || this.rootContext.disabled());
 
     onClick() {
         if (!this.disabled()) {

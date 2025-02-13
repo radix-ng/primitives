@@ -6,6 +6,7 @@ export * from './src/inject-ng-control';
 export * from './src/is-client';
 export * from './src/is-inside-form';
 export * from './src/isNumber';
+export * from './src/kbd-constants';
 export * from './src/nullish';
 export * from './src/window';
 

@@ -1,5 +1,5 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { booleanAttribute, computed, Directive, input } from '@angular/core';
+import { booleanAttribute, computed, Directive, input, linkedSignal } from '@angular/core';
 
 const DEFAULT_ORIENTATION = 'horizontal';
 
@@ -29,12 +29,11 @@ export interface SeparatorProps {
  */
 @Directive({
     selector: 'div[rdxSeparatorRoot]',
-    standalone: true,
     host: {
-        '[attr.role]': 'computedRole()',
+        '[attr.role]': 'decorativeEffect() ? "none" : "separator"',
         '[attr.aria-orientation]': 'computedAriaOrientation()',
 
-        '[attr.data-orientation]': 'orientation()'
+        '[attr.data-orientation]': 'orientationEffect()'
     }
 })
 export class RdxSeparatorRootDirective {
@@ -61,7 +60,15 @@ export class RdxSeparatorRootDirective {
      *
      * @ignore
      */
-    protected readonly computedRole = computed(() => (this.decorative() ? 'none' : 'separator'));
+    protected readonly decorativeEffect = linkedSignal({
+        source: this.decorative,
+        computation: (value) => value
+    });
+
+    protected readonly orientationEffect = linkedSignal({
+        source: this.orientation,
+        computation: (value) => value
+    });
 
     /**
      * Computes the `aria-orientation` attribute. It is set to "vertical" only if
@@ -71,6 +78,14 @@ export class RdxSeparatorRootDirective {
      * @ignore
      */
     protected readonly computedAriaOrientation = computed(() =>
-        !this.decorative() && this.orientation() === 'vertical' ? 'vertical' : undefined
+        !this.decorativeEffect() && this.orientationEffect() === 'vertical' ? 'vertical' : undefined
     );
+
+    updateOrientation(value: Orientation) {
+        this.orientationEffect.set(value);
+    }
+
+    updateDecorative(value: boolean) {
+        this.decorativeEffect.set(value);
+    }
 }
