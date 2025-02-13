@@ -49,7 +49,7 @@ Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/cate
 
 ## Roadmap
 
-### Primitives
+### RadixUI Primitives
 
 | Primitive       | Description | Status | A11y |
 | --------------- | ----------- | ------ | ---- |
@@ -63,10 +63,10 @@ Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/cate
 | Dialog          |             | ✅     |      |
 | DropdownMenu    |             | ✅     |      |
 | Form            |             |        |      |
-| Hover Card      |             | beta   |      |
+| Hover Card      |             | ✅     |      |
 | Label           |             | ✅     |      |
-| Menubar         |             | beta   |      |
-| Navigation Menu |             |        |      |
+| Menubar         |             | ✅     |      |
+| Navigation Menu |             | ✅     |      |
 | Popover         |             | ✅     |      |
 | Progress        |             | ✅     |      |
 | Radio           |             | ✅     |      |
@@ -78,10 +78,15 @@ Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/cate
 | Toast           |             |        |      |
 | Toggle          |             | ✅     |      |
 | Toggle Group    |             | ✅     |      |
-| Toolbar         |             | beta   |      |
+| Toolbar         |             | ✅     |      |
 | Tooltip         |             | ✅     |      |
 
-...
+### Other Primitives
+
+| Primitive  | Description | Status |
+| ---------- | ----------- | ------ |
+| Pagination |             | ✅     |
+| Stepper    |             | ✅     |
 
 **Status Legend**
 ✅ Completed
