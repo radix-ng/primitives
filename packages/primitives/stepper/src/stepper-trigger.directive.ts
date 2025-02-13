@@ -1,5 +1,5 @@
 import { computed, Directive, ElementRef, inject, OnDestroy, OnInit } from '@angular/core';
-import { useKbd } from '@radix-ng/primitives/core';
+import * as kbd from '@radix-ng/primitives/core';
 import { injectStepperItemContext } from './stepper-item-context.token';
 import { injectStepperRootContext } from './stepper-root-context.token';
 import { getActiveElement } from './utils/getActiveElement';
@@ -35,8 +35,6 @@ export class RdxStepperTriggerDirective implements OnInit, OnDestroy {
     private readonly elementRef = inject(ElementRef);
 
     readonly stepperItems = computed(() => Array.from(this.rootContext.totalStepperItems()));
-
-    readonly kbd = useKbd();
 
     ngOnInit() {
         const current = this.rootContext.totalStepperItems();
@@ -88,10 +86,10 @@ export class RdxStepperTriggerDirective implements OnInit, OnDestroy {
             return;
         }
 
-        if ((event.key === 'Enter' || event.key === 'Space' || event.key === ' ') && !event.ctrlKey && !event.shiftKey)
+        if ((event.key === kbd.ENTER || event.key === kbd.SPACE) && !event.ctrlKey && !event.shiftKey)
             this.rootContext.value.set(this.itemContext.step());
 
-        if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
+        if ([kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.ARROW_UP, kbd.ARROW_DOWN].includes(event.key)) {
             useArrowNavigation(event, getActiveElement() as HTMLElement, undefined, {
                 itemsArray: this.stepperItems() as HTMLElement[],
                 focus: true,
