@@ -4,6 +4,7 @@ import { RdxStepperItemDirective } from '../src/stepper-item.directive';
 import { RdxStepperRootDirective } from '../src/stepper-root.directive';
 import { RdxStepperSeparatorDirective } from '../src/stepper-separator.directive';
 import { RdxStepperTriggerDirective } from '../src/stepper-trigger.directive';
+import { StepperNavigationComponent } from './stepper-navigation.component';
 
 const html = String.raw;
 
@@ -16,7 +17,8 @@ export default {
                 RdxStepperItemDirective,
                 RdxStepperTriggerDirective,
                 RdxStepperIndicatorDirective,
-                RdxStepperSeparatorDirective
+                RdxStepperSeparatorDirective,
+                StepperNavigationComponent
             ]
         }),
         componentWrapperDecorator(
@@ -267,6 +269,17 @@ export const Vertical: Story = {
                     </div>
                 }
             </div>
+        `
+    })
+};
+
+export const Navigation: Story = {
+    render: () => ({
+        props: {
+            steps: [1, 2, 3, 4]
+        },
+        template: `
+              <StepperNavigation />
         `
     })
 };
