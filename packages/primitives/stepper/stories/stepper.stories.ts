@@ -29,6 +29,7 @@ export default {
                             all: unset;
                         }
 
+                        /* StepperList */
                         .StepperList {
                             display: flex;
                             gap: 1rem;
@@ -37,15 +38,29 @@ export default {
                             flex-direction: row;
                         }
 
+                        .StepperList[data-orientation='vertical'] {
+                            flex-direction: column;
+                            max-width: 16rem;
+                            /*align-items: center;*/
+                            display: flex;
+                        }
+
+                        /* StepperItem */
                         .StepperItem {
                             padding-left: 1rem;
                             padding-right: 1rem;
                             position: relative;
+                            display: flex;
                             flex-direction: column;
                             align-items: center;
-                            display: flex;
                         }
 
+                        .StepperItem[data-orientation='vertical'] {
+                            display: block;
+                            padding: 0;
+                        }
+
+                        /* Disabled state */
                         .StepperItem[data-disabled] {
                             pointer-events: none;
                         }
@@ -59,6 +74,7 @@ export default {
                             cursor: not-allowed;
                         }
 
+                        /* Stepper states */
                         .StepperItem[data-state='inactive'] .StepperIndicator {
                             box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.38);
                             background-color: rgba(0, 0, 0, 0.38);
@@ -77,6 +93,7 @@ export default {
                             box-shadow: 0 0 0 2px var(--green-9);
                         }
 
+                        /* StepperIndicator */
                         .StepperIndicator {
                             display: inline-flex;
                             align-items: center;
@@ -88,6 +105,11 @@ export default {
                             box-shadow: 0 0 0 2px #000;
                         }
 
+                        .StepperIndicator[data-orientation='vertical'] {
+                            margin-bottom: 0.5rem;
+                        }
+
+                        /* Stepper text elements */
                         .StepperItemText {
                             text-align: center;
                             top: 100%;
@@ -95,6 +117,12 @@ export default {
                             width: 100%;
                             margin-top: 0.5rem;
                             color: #57534e;
+                        }
+
+                        .StepperItemText[data-orientation='vertical'] {
+                            text-align: left;
+                            margin-top: -50px;
+                            margin-left: 2.5rem;
                         }
 
                         .StepperTitle {
@@ -108,6 +136,7 @@ export default {
                             color: white;
                         }
 
+                        /* StepperSeparator */
                         .StepperSeparator {
                             position: absolute;
                             height: 1px;
@@ -117,6 +146,15 @@ export default {
                             background-color: var(--green-5);
                         }
 
+                        .StepperSeparator[data-orientation='vertical'] {
+                            width: 1px;
+                            height: 70%;
+                            top: 50%;
+                            left: 8%;
+                            right: auto;
+                        }
+
+                        /* StepperTrigger */
                         .StepperTrigger {
                             display: flex;
                             cursor: pointer;
@@ -140,64 +178,94 @@ export default {
 
 type Story = StoryObj;
 
+const steps = [
+    {
+        step: 1,
+        title: 'Address',
+        description: 'Add your address here',
+        icon: 'radix-icons:home'
+    },
+    {
+        step: 2,
+        title: 'Shipping',
+        description: 'Set your preferred shipping method',
+        icon: 'radix-icons:archive'
+    },
+    {
+        step: 3,
+        title: 'Trade-in',
+        description: 'Add any trade-in items you have',
+        icon: 'radix-icons:update'
+    },
+    {
+        step: 4,
+        title: 'Payment',
+        description: 'Add any payment information you have',
+        icon: 'radix-icons:sketch-logo'
+    },
+    {
+        step: 5,
+        title: 'Checkout',
+        description: 'Confirm your order',
+        icon: 'radix-icons:check'
+    }
+];
+
 export const Default: Story = {
     render: () => ({
         props: {
-            steps: [
-                {
-                    step: 1,
-                    title: 'Address',
-                    description: 'Add your address here',
-                    icon: 'radix-icons:home'
-                },
-                {
-                    step: 2,
-                    title: 'Shipping',
-                    description: 'Set your preferred shipping method',
-                    icon: 'radix-icons:archive'
-                },
-                {
-                    step: 3,
-                    title: 'Trade-in',
-                    description: 'Add any trade-in items you have',
-                    icon: 'radix-icons:update'
-                },
-                {
-                    step: 4,
-                    title: 'Payment',
-                    description: 'Add any payment information you have',
-                    icon: 'radix-icons:sketch-logo'
-                },
-                {
-                    step: 5,
-                    title: 'Checkout',
-                    description: 'Confirm your order',
-                    icon: 'radix-icons:check'
-                }
-            ]
+            steps: steps
         },
         template: `
-            <div style="height: 200px;">
-                <div rdxStepperRoot [value]="2" class="StepperList">
-                    @for (item of steps; track $index) {
-                        <div rdxStepperItem [step]="item.step" class="StepperItem">
-                            @if (item.step !== steps[steps.length - 1].step) {
-                                <div rdxStepperSeparator class="StepperSeparator"></div>
-                            }
-                            <button rdxStepperTrigger class="StepperTrigger">
-                                <div rdxStepperIndicator class="StepperIndicator">{{$index+1}}</div>
-                            </button>
-                            <div class="StepperItemText">
-                                <h4 class="StepperTitle">
-                                   {{ item.title }}
-                                </h4>
-                                <p class="StepperDescription">
-                                   {{ item.description }}
-                                </p>
-                            </div>
+            <div rdxStepperRoot [value]="2" class="StepperList">
+                @for (item of steps; track $index) {
+                    <div rdxStepperItem [step]="item.step" class="StepperItem">
+                        @if (item.step !== steps[steps.length - 1].step) {
+                            <div rdxStepperSeparator class="StepperSeparator"></div>
+                        }
+                        <button rdxStepperTrigger class="StepperTrigger">
+                            <div rdxStepperIndicator class="StepperIndicator">{{$index+1}}</div>
+                        </button>
+                        <div class="StepperItemText">
+                            <h4 class="StepperTitle">
+                               {{ item.title }}
+                            </h4>
+                            <p class="StepperDescription">
+                               {{ item.description }}
+                            </p>
                         </div>
-                    }
-                </div>
+                    </div>
+                }
+            </div>
+        `
+    })
+};
+
+export const Vertical: Story = {
+    render: () => ({
+        props: {
+            steps: steps
+        },
+        template: `
+            <div rdxStepperRoot [value]="2" orientation="vertical" class="StepperList">
+                @for (item of steps; track $index) {
+                    <div rdxStepperItem [step]="item.step" class="StepperItem">
+                        @if (item.step !== steps[steps.length - 1].step) {
+                            <div rdxStepperSeparator class="StepperSeparator"></div>
+                        }
+                        <button rdxStepperTrigger class="StepperTrigger">
+                            <div rdxStepperIndicator class="StepperIndicator">{{$index+1}}</div>
+                        </button>
+                        <div class="StepperItemText" data-orientation='vertical'>
+                            <h4 class="StepperTitle">
+                               {{ item.title }}
+                            </h4>
+                            <p class="StepperDescription">
+                               {{ item.description }}
+                            </p>
+                        </div>
+                    </div>
+                }
             </div>
         `
     })
