@@ -1,0 +1,56 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/blocks';
+import * as Stories from './stepper.stories';
+import {RdxStepperRootDirective} from "../src/stepper-root.directive";
+import {RdxStepperItemDirective} from "../src/stepper-item.directive";
+
+<Meta title="Primitives/Stepper" />
+
+# Stepper
+
+####  A set of steps that are used to indicate progress through a multi-step process.
+
+<Canvas sourceState="hidden" of={Stories.Default} />
+
+## Features
+
+- ✅ Can be controlled or uncontrolled.
+- ✅ Supports horizontal/vertical orientation.
+- ✅ Supports linear/non-linear activation.
+- ✅ Full keyboard navigation.
+
+## Anatomy
+
+Import all parts and piece them together.
+
+```html
+<div rdxStepperRoot >
+    <div rdxStepperItem >
+        <div rdxStepperSeparator></div>
+        <button rdxStepperTrigger>
+            <div rdxStepperIndicator></div>
+        </button>
+
+        <h4 rdxStepperTitle></h4>
+        <p rdxStepperDescription></p>
+    </div>
+</div>
+```
+
+## API Reference
+
+### Root
+
+`RdxStepperRootDirective`
+
+<ArgTypes of={RdxStepperRootDirective} />
+
+### Item
+
+`RdxStepperItemDirective`
+
+The step item component.
+
+<ArgTypes of={RdxStepperItemDirective} />
+
+
+

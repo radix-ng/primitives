@@ -40,23 +40,31 @@ export class RdxStepperRootDirective implements StepperRootContext {
 
     readonly orientation = input<'vertical' | 'horizontal'>('horizontal');
 
+    /** @ignore */
     readonly totalStepperItemsArray = computed(() => Array.from(this.totalStepperItems()));
 
+    /** @ignore */
     readonly isFirstStep = computed(() => this.value() === 1);
+
+    /** @ignore */
     readonly isLastStep = computed(() => this.value() === this.totalStepperItemsArray().length);
 
+    /** @ignore */
     readonly totalSteps = computed(() => this.totalStepperItems().length);
 
+    /** @ignore */
     readonly isNextDisabled = computed<boolean>(() => {
         const item = this.nextStepperItem();
         return item ? item.hasAttribute('disabled') : true;
     });
 
+    /** @ignore */
     readonly isPrevDisabled = computed<boolean>(() => {
         const item = this.prevStepperItem();
         return item ? item.hasAttribute('disabled') : true;
     });
 
+    /** @ignore */
     readonly totalStepperItems = signal<HTMLElement[]>([]);
 
     private readonly nextStepperItem = signal<HTMLElement | null>(null);

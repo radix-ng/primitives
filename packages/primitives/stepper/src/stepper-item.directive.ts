@@ -25,16 +25,20 @@ import { StepperState } from './types';
 export class RdxStepperItemDirective implements StepperItemContext {
     protected readonly rootContext = injectStepperRootContext();
 
+    /** @ignore */
     readonly titleId = inject(_IdGenerator).getId('rdx-stepper-item-title');
 
+    /** @ignore */
     readonly descriptionId = inject(_IdGenerator).getId('rdx-stepper-item-description');
 
     readonly step = input<number, NumberInput>(NaN, { transform: numberAttribute });
 
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /** @ignore */
     readonly completed = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /** @ignore */
     readonly itemState = computed<StepperState>(() => {
         if (this.completed()) return 'completed';
         if (this.rootContext.value() === this.step()) return 'active';
@@ -47,6 +51,7 @@ export class RdxStepperItemDirective implements StepperItemContext {
         return 'inactive';
     });
 
+    /** @ignore */
     readonly isFocusable = computed(() => {
         if (this.disabled()) return false;
 
