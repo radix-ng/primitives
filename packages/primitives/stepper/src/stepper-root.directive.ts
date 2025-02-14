@@ -1,3 +1,4 @@
+import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { Direction } from '@angular/cdk/bidi';
 import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import {
@@ -6,6 +7,7 @@ import {
     Directive,
     effect,
     forwardRef,
+    inject,
     input,
     model,
     numberAttribute,
@@ -30,6 +32,8 @@ import { STEPPER_ROOT_CONTEXT, StepperRootContext } from './stepper-root-context
     }
 })
 export class RdxStepperRootDirective implements StepperRootContext {
+    private readonly liveAnnouncer = inject(LiveAnnouncer);
+
     readonly defaultValue = input<number, NumberInput>(undefined, { transform: numberAttribute });
 
     readonly value = model<number | undefined>(this.defaultValue());
@@ -87,6 +91,8 @@ export class RdxStepperRootDirective implements StepperRootContext {
                 } else {
                     this.prevStepperItem.set(null);
                 }
+
+                this.liveAnnouncer.announce(`Step ${currentValue} of ${items.length}`);
             }
         });
     }
