@@ -32,17 +32,18 @@ export default {
                         .StepperList {
                             display: flex;
                             gap: 1rem;
-                            max-width: 32rem;
+                            max-width: 36rem;
                             width: 100%;
+                            flex-direction: row;
                         }
 
                         .StepperItem {
-                            display: flex;
-                            gap: 0.5rem;
-                            align-items: center;
-                            position: relative;
                             padding-left: 1rem;
                             padding-right: 1rem;
+                            position: relative;
+                            flex-direction: column;
+                            align-items: center;
+                            display: flex;
                         }
 
                         .StepperItem[data-disabled] {
@@ -51,6 +52,17 @@ export default {
 
                         .StepperItem[data-disabled] .StepperIndicator {
                             color: #9ca3af;
+                        }
+
+                        .StepperItem[data-disabled='true'] {
+                            opacity: 0.5;
+                            cursor: not-allowed;
+                        }
+
+                        .StepperItem[data-state='inactive'] .StepperIndicator {
+                            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.38);
+                            background-color: rgba(0, 0, 0, 0.38);
+                            color: white;
                         }
 
                         .StepperItem[data-state='active'] .StepperIndicator {
@@ -77,7 +89,6 @@ export default {
                         }
 
                         .StepperItemText {
-                            position: absolute;
                             text-align: center;
                             top: 100%;
                             left: 0;
@@ -98,11 +109,11 @@ export default {
                         }
 
                         .StepperSeparator {
-                            width: 100%;
+                            position: absolute;
                             height: 1px;
                             left: calc(50% + 30px);
                             right: calc(-50% + 20px);
-                            flex-shrink: 0;
+                            top: 21px;
                             background-color: var(--green-5);
                         }
 
@@ -118,6 +129,7 @@ export default {
 
                         .StepperTrigger:focus {
                             box-shadow: 0 0 0 2px black;
+                            border-radius: 9999px;
                         }
                     </style>
                 </div>
@@ -169,8 +181,11 @@ export const Default: Story = {
                 <div rdxStepperRoot [value]="2" class="StepperList">
                     @for (item of steps; track $index) {
                         <div rdxStepperItem [step]="item.step" class="StepperItem">
+                            @if (item.step !== steps[steps.length - 1].step) {
+                                <div rdxStepperSeparator class="StepperSeparator"></div>
+                            }
                             <button rdxStepperTrigger class="StepperTrigger">
-                                <div rdxStepperIndicator class="StepperIndicator"></div>
+                                <div rdxStepperIndicator class="StepperIndicator">{{$index+1}}</div>
                             </button>
                             <div class="StepperItemText">
                                 <h4 class="StepperTitle">
@@ -180,9 +195,6 @@ export const Default: Story = {
                                    {{ item.description }}
                                 </p>
                             </div>
-                            @if (item.step !== steps[steps.length - 1].step) {
-                                <div rdxStepperSeparator class="StepperSeparator"></div>
-                            }
                         </div>
                     }
                 </div>
