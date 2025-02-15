@@ -10,7 +10,7 @@
         "postcss": "^8.4.31",
         "tailwindcss": "^3.4.3",
         "install": "^0.13.0",
-        "npm": "^10.5.1",
+        "npm": "^11.1.0",
         "prettier-plugin-tailwindcss": "^0.5.13"
     },
     "type": "commonjs",
