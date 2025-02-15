@@ -4,6 +4,6 @@ import { cn } from '@/utils/utils';
 const { className, ...props } = Astro.props;
 ---
 
-<p class={cn('mb-4', className)} {...props}>
+<p class={cn('leading-7 [&:not(:first-child)]:mt-6', className)} {...props}>
     <slot />
 </p>

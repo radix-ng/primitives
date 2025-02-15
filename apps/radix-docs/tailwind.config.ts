@@ -36,16 +36,7 @@ const config = {
         extend: {
             fontFamily: {
                 mono: ['JetBrains Mono', ...defaultTheme.fontFamily.mono],
-                sans: [
-                    'Inter',
-                    'ui-sans-serif',
-                    'system-ui',
-                    'sans-serif',
-                    'Apple Color Emoji',
-                    'Segoe UI Emoji',
-                    'Segoe UI Symbol',
-                    'Noto Color Emoji'
-                ]
+                ssans: ['Inter', ...defaultTheme.fontFamily.sans]
             },
             screens: {
                 phone: '400px'
