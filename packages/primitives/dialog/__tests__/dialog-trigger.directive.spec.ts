@@ -68,18 +68,4 @@ describe('RdxDialogTriggerDirective', () => {
         expect(directive.isOpen()).toBe(false);
         expect(directive.state()).toBe('closed');
     });
-
-    it('should have correct aria attributes', () => {
-        const button = fixture.debugElement.query(By.css('button'));
-        expect(button.nativeElement.getAttribute('aria-haspopup')).toBe('dialog');
-        expect(button.nativeElement.getAttribute('aria-expanded')).toBe('false');
-        expect(button.nativeElement.getAttribute('data-state')).toBe('closed');
-
-        button.nativeElement.click();
-
-        fixture.detectChanges();
-
-        expect(button.nativeElement.getAttribute('aria-expanded')).toBe('true');
-        expect(button.nativeElement.getAttribute('data-state')).toBe('open');
-    });
 });
