@@ -35,8 +35,8 @@ const config = {
         },
         extend: {
             fontFamily: {
-                mono: ['JetBrains Mono', ...defaultTheme.fontFamily.mono],
-                ssans: ['Inter', ...defaultTheme.fontFamily.sans]
+                sans: ['Inter', ...defaultTheme.fontFamily.sans],
+                mono: ['Source Code', ...defaultTheme.fontFamily.mono]
             },
             screens: {
                 phone: '400px'
