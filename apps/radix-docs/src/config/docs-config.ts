@@ -62,29 +62,70 @@ const docsConfig = {
                     section: 'Components',
                     pages: [
                         { name: 'Accordion', url: '/primitives/components/accordion' },
-                        { name: 'Alert Dialog', url: '#', label: 'Storybook' },
+                        {
+                            name: 'Alert Dialog',
+                            url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-alert-dialog--docs',
+                            label: 'Storybook'
+                        },
                         { name: 'Aspect Ratio', url: '/primitives/components/aspect-ratio' },
                         { name: 'Avatar', url: '/primitives/components/avatar' },
                         { name: 'Checkbox', url: '/primitives/components/checkbox' },
                         { name: 'Collapsible', url: '/primitives/components/collapsible' },
-                        { name: 'Context Menu', url: '#', label: 'Storybook' },
+                        {
+                            name: 'Context Menu',
+                            url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-context-menu--docs',
+                            label: 'Storybook'
+                        },
                         { name: 'Dialog', url: '/primitives/components/dialog' },
                         { name: 'Dropdown Menu', url: '/primitives/components/dropdown-menu' },
                         { name: 'Label', url: '/primitives/components/label' },
-                        { name: 'Menubar', url: '#', label: 'Storybook' },
-                        { name: 'Pagination', url: '#', label: 'Storybook' },
-                        { name: 'Popover', url: '#', label: 'Storybook' },
+                        {
+                            name: 'Menubar',
+                            url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-menubar--docs',
+                            label: 'Storybook'
+                        },
+                        {
+                            name: 'Pagination',
+                            url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-pagination--docs',
+                            label: 'Storybook'
+                        },
+                        {
+                            name: 'Popover',
+                            url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-popover--docs',
+                            label: 'Storybook'
+                        },
                         { name: 'Progress', url: '/primitives/components/progress' },
-                        { name: 'Radio Group', url: '#', label: 'Storybook' },
+                        {
+                            name: 'Radio Group',
+                            url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-radio-group--docs',
+                            label: 'Storybook'
+                        },
                         { name: 'Select', url: '/primitives/components/select' },
                         { name: 'Separator', url: '/primitives/components/separator' },
                         { name: 'Slider', url: '/primitives/components/slider', label: 'New' },
+                        {
+                            name: 'Stepper',
+                            url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-stepper--docs',
+                            label: 'Storybook'
+                        },
                         { name: 'Switch', url: '/primitives/components/switch' },
-                        { name: 'Tabs', url: '#', label: 'Storybook' },
+                        {
+                            name: 'Tabs',
+                            url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-tabs--docs',
+                            label: 'Storybook'
+                        },
                         { name: 'Toggle', url: '/primitives/components/toggle' },
                         { name: 'Toggle Group', url: '/primitives/components/toggle-group' },
-                        { name: 'Toolbar', url: '#', label: 'Storybook' },
-                        { name: 'Tooltip', url: '#', label: 'Storybook' }
+                        {
+                            name: 'Toolbar',
+                            url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-toolbar--docs',
+                            label: 'Storybook'
+                        },
+                        {
+                            name: 'Tooltip',
+                            url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-tooltip--docs',
+                            label: 'Storybook'
+                        }
                     ]
                 }
             ]
