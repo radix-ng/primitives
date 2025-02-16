@@ -1,3 +1,13 @@
+## 0.32.2 (2025-02-16)
+
+### 🩹 Fixes
+
+- schematic build ([4bc55de](https://github.com/radix-ng/primitives/commit/4bc55de))
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+
 ## 0.32.1 (2025-02-16)
 
 ### 🩹 Fixes
