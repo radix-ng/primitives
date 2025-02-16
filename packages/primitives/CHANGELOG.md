@@ -1,3 +1,13 @@
+## 0.32.1 (2025-02-16)
+
+### 🩹 Fixes
+
+- **stepper:** package ([d67b685](https://github.com/radix-ng/primitives/commit/d67b685))
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+
 ## 0.32.0 (2025-02-16)
 
 ### 🚀 Features
