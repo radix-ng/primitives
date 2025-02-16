@@ -131,9 +131,9 @@ export function useArrowNavigation(
             loop
         });
     } else if (home) {
-        item = allCollectionItems.at(0) || null;
+        item = allCollectionItems.length ? allCollectionItems[0] : null;
     } else if (end) {
-        item = allCollectionItems.at(-1) || null;
+        item = allCollectionItems.length ? allCollectionItems[allCollectionItems.length - 1] : null;
     }
 
     if (focus) item?.focus();
