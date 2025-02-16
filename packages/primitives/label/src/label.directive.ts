@@ -1,4 +1,4 @@
-import { computed, Directive, ElementRef, inject, input, InputSignal } from '@angular/core';
+import { computed, Directive, ElementRef, inject, input } from '@angular/core';
 
 let idIterator = 0;
 
@@ -8,7 +8,6 @@ let idIterator = 0;
 @Directive({
     selector: 'label[rdxLabel]',
     exportAs: 'rdxLabel',
-    standalone: true,
     host: {
         '[attr.id]': 'this.elementId()',
         '[attr.for]': 'htmlFor ? htmlFor() : null',
@@ -16,23 +15,21 @@ let idIterator = 0;
     }
 })
 export class RdxLabelDirective {
+    private readonly elementRef = inject(ElementRef<HTMLElement>);
+
     /**
-     * @type string
      * @default 'rdx-label-{idIterator}'
      */
-    readonly id: InputSignal<string> = input<string>(`rdx-label-${idIterator++}`);
-
-    protected readonly elementId = computed(() => (this.id() ? this.id() : null));
+    readonly id = input<string>(`rdx-label-${idIterator++}`);
 
     /**
      * The id of the element the label is associated with.
      * @group Props
-     * @type string
      * @defaultValue false
      */
-    readonly htmlFor: InputSignal<string> = input<string>('');
+    readonly htmlFor = input<string>();
 
-    private readonly elementRef = inject(ElementRef<HTMLElement>);
+    protected readonly elementId = computed(() => (this.id() ? this.id() : null));
 
     // prevent text selection when double-clicking label
     // The main problem with double-clicks in a web app is that
