@@ -22,11 +22,11 @@
             },
             "defaultConfiguration": "production"
         },
-        "build:schematics": {
+        "schematics": {
             "executor": "@nx/js:tsc",
-            "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+            "outputs": ["{workspaceRoot}/dist/primitives-schematics"],
             "options": {
-                "outputPath": "dist/primitives",
+                "outputPath": "dist/primitives-schematics",
                 "main": "packages/primitives/index.ts",
                 "tsConfig": "packages/primitives/tsconfig.schematics.json",
                 "assets": [
@@ -34,6 +34,20 @@
                         "input": "./packages/primitives/schematics",
                         "output": "./schematics",
                         "glob": "collection.json"
+                    }
+                ]
+            }
+        },
+        "build:schematics": {
+            "executor": "nx:run-commands",
+            "options": {
+                "parallel": false,
+                "commands": [
+                    {
+                        "command": "nx schematics primitives"
+                    },
+                    {
+                        "command": "cpy 'dist/primitives-schematics/**/*' '!dist/primitives-schematics/package.json' dist/primitives"
                     }
                 ]
             }

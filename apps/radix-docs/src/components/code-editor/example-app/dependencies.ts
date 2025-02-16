@@ -8,7 +8,7 @@ export const dependencies = {
     '@angular/forms': '^19.0.0',
     '@angular/platform-browser': '^19.0.0',
     '@angular/platform-browser-dynamic': '^19.0.0',
-    '@radix-ng/primitives': '^0.27.0',
+    '@radix-ng/primitives': '^0.32.0',
     '@radix-ui/colors': '^3.0.0',
     '@fontsource/inter': '^5.1.0',
     '@fontsource/jetbrains-mono': '^5.1.1',

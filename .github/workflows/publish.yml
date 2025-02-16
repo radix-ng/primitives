@@ -26,6 +26,9 @@ jobs:
       - name: Build
         run: pnpm primitives:build
 
+      - name: Build Schematics
+        run: pnpm primitives:build:schematics
+
       - name: Build shadcn
         run: pnpm shadcn:build
 

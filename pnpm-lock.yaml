@@ -261,6 +261,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      cpy-cli:
+        specifier: ^5.0.0
+        version: 5.0.0
       esbuild:
         specifier: ^0.19.12
         version: 0.19.12
@@ -5813,6 +5816,10 @@ packages:
     resolution: {integrity: sha512-jRR5wdylq8CkOe6hei19GGZnxM6rBGwFl3Bg0YItGDimvjGtAvdZk4Pu6Cl4u4Igsws4a1fd1Vq3ezrhn4KmFw==}
     engines: {node: '>= 14'}
 
+  aggregate-error@4.0.1:
+    resolution: {integrity: sha512-0poP0T7el6Vq3rstR8Mn4V/IQrpBLO6POkUSrN7RhyY+GF/InCFShQzsQ39T25gkHhLgSLByyAz+Kjb+c2L98w==}
+    engines: {node: '>=12'}
+
   ajv-formats@2.1.1:
     resolution: {integrity: sha512-Wx0Kx52hxE7C18hkMEggYlEifqWZtYaRgouJor+WMdPnQyEK13vgEWyVNup7SoeeoLMsr4kf5h6dOW11I15MUA==}
     peerDependencies:
@@ -5976,6 +5983,10 @@ packages:
   arrify@2.0.1:
     resolution: {integrity: sha512-3duEwti880xqi4eAMN8AyR4a0ByT90zoYdLlevfrvU43vb0YZwZVfxOgxWrLXXXpyugL0hNZc9G6BiB5B3nUug==}
     engines: {node: '>=8'}
+
+  arrify@3.0.0:
+    resolution: {integrity: sha512-tLkvA81vQG/XqE2mjDkGQHoOINtMHtysSnemrmoGe6PydDPMRbVugqyk4A6V/WDWEfm3l+0d8anA9r8cv/5Jaw==}
+    engines: {node: '>=12'}
 
   asap@2.0.6:
     resolution: {integrity: sha512-BSHWgDSAiKs50o2Re8ppvp3seVHXSRM44cdSsT9FfNEUUZLOGWVCsiWaRPWM1Znn+mqZ1OfVZ3z3DWEzSp7hRA==}
@@ -6502,6 +6513,10 @@ packages:
     resolution: {integrity: sha512-D5J+kHaVb/wKSFcyyV75uCn8fiY4sV38XJoe4CUyGQ+mOU/fMVYUdH1hJC+CJQ5uY3EnW27SbJYS4X8BiLrAFg==}
     engines: {node: '>= 10.0'}
 
+  clean-stack@4.2.0:
+    resolution: {integrity: sha512-LYv6XPxoyODi36Dp976riBtSY27VmFo+MKqEU9QCCWyTrdEPDog+RWA7xQWHi6Vbp61j5c4cdzzX1NidnwtUWg==}
+    engines: {node: '>=12'}
+
   cli-boxes@3.0.0:
     resolution: {integrity: sha512-/lzGpEWL/8PfI0BmBOPRwp0c/wFNX1RdUML3jK/RcSBA9T8mZDdQpqYBKtCFTOfQbwPqWEOpjqW+Fnayc0969g==}
     engines: {node: '>=10'}
@@ -6830,6 +6845,19 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+
+  cp-file@10.0.0:
+    resolution: {integrity: sha512-vy2Vi1r2epK5WqxOLnskeKeZkdZvTKfFZQCplE3XWsP+SUJyd5XAUFC9lFgTjjXJF2GMne/UML14iEmkAaDfFg==}
+    engines: {node: '>=14.16'}
+
+  cpy-cli@5.0.0:
+    resolution: {integrity: sha512-fb+DZYbL9KHc0BC4NYqGRrDIJZPXUmjjtqdw4XRRg8iV8dIfghUX/WiL+q4/B/KFTy3sK6jsbUhBaz0/Hxg7IQ==}
+    engines: {node: '>=16'}
+    hasBin: true
+
+  cpy@10.1.0:
+    resolution: {integrity: sha512-VC2Gs20JcTyeQob6UViBLnyP0bYHkBh6EiKzot9vi2DmeGlFT9Wd7VG3NBrkNx/jYvFBeyDOMMHdHQhbtKLgHQ==}
+    engines: {node: '>=16'}
 
   crc-32@1.2.2:
     resolution: {integrity: sha512-ROmzCKrTnOwybPcJApAA6WBWij23HVfGVNKqqrZpuyZOHqK2CwHSvpGuyt/UNNvaIjEd8X5IFGp4Mh+Ie1IHJQ==}
@@ -8360,6 +8388,10 @@ packages:
     resolution: {integrity: sha512-wiSuFQLZ+urS9x2gGPl1H5drc5twabmm4m2gTR27XDFyjUHJUNsS8o/2aKyIF6IoBaR630atdher0XJ5g6OMmA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
+  globby@13.2.2:
+    resolution: {integrity: sha512-Y1zNGV+pzQdh7H39l9zgB4PJqjRNqydvdYCDG4HFXM4XuvSaQQlEc91IU1yALL8gUTDomgBAfz3XJdmUS+oo0w==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+
   globby@14.1.0:
     resolution: {integrity: sha512-0Ia46fDOaT7k4og1PDW4YbodWWr3scS2vAr2lTbsplOt2WkKp0vQbkI9wKis/T5LV/dqPjO3bpS/z6GTJB82LA==}
     engines: {node: '>=18'}
@@ -8817,6 +8849,10 @@ packages:
   indent-string@4.0.0:
     resolution: {integrity: sha512-EdDDZu4A2OyIK7Lr/2zG+w5jmbuk1DVBnEwREQvBzspBJkCEbRa8GxU1lghYcaGJCnRWibjDXlq779X1/y5xwg==}
     engines: {node: '>=8'}
+
+  indent-string@5.0.0:
+    resolution: {integrity: sha512-m6FAo/spmsW2Ab2fU35JTYwtOKa2yAwXSwgjSv1TJzh4Mh7mC3lzAOVLBprb72XsTrgkEIsl7YrFNAiDiRhIGg==}
+    engines: {node: '>=12'}
 
   index-to-position@0.1.2:
     resolution: {integrity: sha512-MWDKS3AS1bGCHLBA2VLImJz42f7bJh8wQsTGCzI3j519/CASStoDONUBVz2I/VID0MpiX3SGSnbOD2xUalbE5g==}
@@ -9460,6 +9496,10 @@ packages:
   jsprim@2.0.2:
     resolution: {integrity: sha512-gqXddjPqQ6G40VdnI6T6yObEC+pDNvyP95wdQhkWkg7crHH3km5qP1FsOXEkzEQwnz6gz5qGTn1c2Y52wP3OyQ==}
     engines: {'0': node >=0.6.0}
+
+  junk@4.0.1:
+    resolution: {integrity: sha512-Qush0uP+G8ZScpGMZvHUiRfI0YBWuB3gVBYlI0v0vvOJt5FLicco+IkP0a50LqTTQhmts/m6tP5SWE+USyIvcQ==}
+    engines: {node: '>=12.20'}
 
   jwa@1.4.1:
     resolution: {integrity: sha512-qiLX/xhEEFKUAJ6FiBMbes3w9ATzyk5W7Hvzpa/SLYdxNtng+gcurvrI7TbACjIXlsJyr05/S1oUhZrc63evQA==}
@@ -10455,6 +10495,9 @@ packages:
     resolution: {integrity: sha512-Z4SmBUweYa09+o6pG+eASabEpP6QkQ70yHj351pQoEXIs8uHbaU2DWVmzBANKgflPa47A50PtB2+NgRpQvr7vA==}
     engines: {node: '>= 10'}
 
+  nested-error-stacks@2.1.1:
+    resolution: {integrity: sha512-9iN1ka/9zmX1ZvLV9ewJYEk9h7RyRRtqdK0woXcqohu8EWIerfPUjYJPg0ULy0UqP7cslmdGc8xKDJcojlKiaw==}
+
   ng-morph@4.0.3:
     resolution: {integrity: sha512-4voBApzsUs0/1zJsV2sSVPoOKxWt0gBd+3yqE/q8oYOX87RN3HwcJmqQLtWEU4tbmhk11gSRIFIl61+z32cnNw==}
     peerDependencies:
@@ -10858,6 +10901,14 @@ packages:
     resolution: {integrity: sha512-BZOr3nRQHOntUjTrH8+Lh54smKHoHyur8We1V8DSMVrl5A2malOOwuJRnKRDjSnkoeBh4at6BwEnb5I7Jl31wg==}
     engines: {node: '>=8'}
 
+  p-event@5.0.1:
+    resolution: {integrity: sha512-dd589iCQ7m1L0bmC5NLlVYfy3TbBEsMUfWx9PyAgPeIcFZ/E2yaTZ4Rz4MiBmmJShviiftHVXOqfnfzJ6kyMrQ==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+
+  p-filter@3.0.0:
+    resolution: {integrity: sha512-QtoWLjXAW++uTX67HZQz1dbTpqBfiidsB6VtQUC9iR85S120+s0T5sO6s+B5MLzFcZkrEd/DGMmCjR+f2Qpxwg==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+
   p-finally@1.0.0:
     resolution: {integrity: sha512-LICb2p9CB7FS+0eR1oqWnHhp0FljGLZCWBE9aix0Uye9W8LTQPwMTYVGWQWIw9RdQiDg4+epXQODwIYJtSJaow==}
     engines: {node: '>=4'}
@@ -10894,6 +10945,14 @@ packages:
     resolution: {integrity: sha512-wPrq66Llhl7/4AGC6I+cqxT07LhXvWL08LNXz1fENOw0Ap4sRZZ/gZpTTJ5jpurzzzfS2W/Ge9BY3LgLjCShcw==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
+  p-map@5.5.0:
+    resolution: {integrity: sha512-VFqfGDHlx87K66yZrNdI4YGtD70IRyd+zSvgks6mzHPRNkoKy+9EKP4SFC77/vTTQYmRmti7dvqC+m5jBrBAcg==}
+    engines: {node: '>=12'}
+
+  p-map@6.0.0:
+    resolution: {integrity: sha512-T8BatKGY+k5rU+Q/GTYgrEf2r4xRMevAN5mtXc2aPc4rS1j3s+vWTaO2Wag94neXuCAUAs8cxBL9EeB5EA6diw==}
+    engines: {node: '>=16'}
+
   p-map@7.0.3:
     resolution: {integrity: sha512-VkndIv2fIB99swvQoA65bm+fsmt6UNdGeIB0oxBs+WhAhdh08QA04JXpI7rbB9r08/nkbysKoya9rtDERYOYMA==}
     engines: {node: '>=18'}
@@ -10905,6 +10964,10 @@ packages:
   p-retry@6.2.1:
     resolution: {integrity: sha512-hEt02O4hUct5wtwg4H4KcWgDdm+l1bOaEy/hWzd8xtXB9BqxTWBBhb+2ImAtH4Cv4rPjV76xN3Zumqk3k3AhhQ==}
     engines: {node: '>=16.17'}
+
+  p-timeout@5.1.0:
+    resolution: {integrity: sha512-auFDyzzzGZZZdHz3BtET9VEz0SE/uMEAx7uWfGPucfzEwwe/xH0iVeZibQmANYE/hp9T2+UUZT5m+BKyrDp3Ew==}
+    engines: {node: '>=12'}
 
   p-timeout@6.1.4:
     resolution: {integrity: sha512-MyIV3ZA/PmyBN/ud8vV9XzwTrNtR4jFrObymZYnZqMmW0zA8Z17vnT0rBgFE/TlohB+YCHqXMgZzb3Csp49vqg==}
@@ -14742,7 +14805,7 @@ snapshots:
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.1901.7(chokidar@4.0.3)
-      '@angular-devkit/build-webpack': 0.1901.7(chokidar@4.0.3)(webpack-dev-server@5.2.0(webpack@5.98.0(@swc/core@1.5.7(@swc/helpers@0.5.11))(esbuild@0.19.12)))(webpack@5.97.1(@swc/core@1.5.7(@swc/helpers@0.5.11))(esbuild@0.24.2))
+      '@angular-devkit/build-webpack': 0.1901.7(chokidar@4.0.3)(webpack-dev-server@5.2.0(webpack@5.97.1(@swc/core@1.5.7(@swc/helpers@0.5.11))(esbuild@0.24.2)))(webpack@5.97.1(@swc/core@1.5.7(@swc/helpers@0.5.11))(esbuild@0.24.2))
       '@angular-devkit/core': 19.1.7(chokidar@4.0.3)
       '@angular/build': 19.1.7(e2hgv3m5kzojjizrzfhelffxm4)
       '@angular/compiler-cli': 19.1.6(@angular/compiler@19.1.6(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0)))(typescript@5.5.4)
@@ -14832,7 +14895,7 @@ snapshots:
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.1901.7(chokidar@4.0.3)
-      '@angular-devkit/build-webpack': 0.1901.7(chokidar@4.0.3)(webpack-dev-server@5.2.0(webpack@5.98.0(@swc/core@1.5.7(@swc/helpers@0.5.11))(esbuild@0.19.12)))(webpack@5.97.1(@swc/core@1.5.7(@swc/helpers@0.5.11))(esbuild@0.24.2))
+      '@angular-devkit/build-webpack': 0.1901.7(chokidar@4.0.3)(webpack-dev-server@5.2.0(webpack@5.97.1(@swc/core@1.5.7(@swc/helpers@0.5.11))(esbuild@0.24.2)))(webpack@5.97.1(@swc/core@1.5.7(@swc/helpers@0.5.11))(esbuild@0.24.2))
       '@angular-devkit/core': 19.1.7(chokidar@4.0.3)
       '@angular/build': 19.1.7(acf3clpg3ap5r3asuok72h6afm)
       '@angular/compiler-cli': 19.1.6(@angular/compiler@19.1.6(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0)))(typescript@5.7.3)
@@ -14922,7 +14985,7 @@ snapshots:
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.1901.7(chokidar@4.0.3)
-      '@angular-devkit/build-webpack': 0.1901.7(chokidar@4.0.3)(webpack-dev-server@5.2.0(webpack@5.98.0(@swc/core@1.5.7(@swc/helpers@0.5.11))(esbuild@0.19.12)))(webpack@5.97.1(@swc/core@1.5.7(@swc/helpers@0.5.11))(esbuild@0.24.2))
+      '@angular-devkit/build-webpack': 0.1901.7(chokidar@4.0.3)(webpack-dev-server@5.2.0(webpack@5.97.1(@swc/core@1.5.7(@swc/helpers@0.5.11))(esbuild@0.24.2)))(webpack@5.97.1(@swc/core@1.5.7(@swc/helpers@0.5.11))(esbuild@0.24.2))
       '@angular-devkit/core': 19.1.7(chokidar@4.0.3)
       '@angular/build': 19.1.7(nnbqwz64kzduoag3dgtqo7uhka)
       '@angular/compiler-cli': 19.1.6(@angular/compiler@19.1.6(@angular/core@19.1.6(rxjs@7.8.1)(zone.js@0.15.0)))(typescript@5.7.3)
@@ -15008,7 +15071,7 @@ snapshots:
       - webpack-cli
       - yaml
 
-  '@angular-devkit/build-webpack@0.1901.7(chokidar@4.0.3)(webpack-dev-server@5.2.0(webpack@5.98.0(@swc/core@1.5.7(@swc/helpers@0.5.11))(esbuild@0.19.12)))(webpack@5.97.1(@swc/core@1.5.7(@swc/helpers@0.5.11))(esbuild@0.24.2))':
+  '@angular-devkit/build-webpack@0.1901.7(chokidar@4.0.3)(webpack-dev-server@5.2.0(webpack@5.97.1(@swc/core@1.5.7(@swc/helpers@0.5.11))(esbuild@0.24.2)))(webpack@5.97.1(@swc/core@1.5.7(@swc/helpers@0.5.11))(esbuild@0.24.2))':
     dependencies:
       '@angular-devkit/architect': 0.1901.7(chokidar@4.0.3)
       rxjs: 7.8.1
@@ -21843,7 +21906,7 @@ snapshots:
 
   '@ts-morph/common@0.21.0':
     dependencies:
-      fast-glob: 3.3.2
+      fast-glob: 3.3.3
       minimatch: 7.4.6
       mkdirp: 2.1.6
       path-browserify: 1.0.1
@@ -22782,6 +22845,11 @@ snapshots:
 
   agent-base@7.1.3: {}
 
+  aggregate-error@4.0.1:
+    dependencies:
+      clean-stack: 4.2.0
+      indent-string: 5.0.0
+
   ajv-formats@2.1.1(ajv@8.17.1):
     optionalDependencies:
       ajv: 8.17.1
@@ -22940,6 +23008,8 @@ snapshots:
   array-union@3.0.1: {}
 
   arrify@2.0.1: {}
+
+  arrify@3.0.0: {}
 
   asap@2.0.6: {}
 
@@ -23707,6 +23777,10 @@ snapshots:
     dependencies:
       source-map: 0.6.1
 
+  clean-stack@4.2.0:
+    dependencies:
+      escape-string-regexp: 5.0.0
+
   cli-boxes@3.0.0: {}
 
   cli-cursor@3.1.0:
@@ -24037,6 +24111,28 @@ snapshots:
       parse-json: 5.2.0
     optionalDependencies:
       typescript: 5.7.3
+
+  cp-file@10.0.0:
+    dependencies:
+      graceful-fs: 4.2.11
+      nested-error-stacks: 2.1.1
+      p-event: 5.0.1
+
+  cpy-cli@5.0.0:
+    dependencies:
+      cpy: 10.1.0
+      meow: 12.1.1
+
+  cpy@10.1.0:
+    dependencies:
+      arrify: 3.0.0
+      cp-file: 10.0.0
+      globby: 13.2.2
+      junk: 4.0.1
+      micromatch: 4.0.8
+      nested-error-stacks: 2.1.1
+      p-filter: 3.0.0
+      p-map: 6.0.0
 
   crc-32@1.2.2: {}
 
@@ -25870,6 +25966,14 @@ snapshots:
       merge2: 1.4.1
       slash: 4.0.0
 
+  globby@13.2.2:
+    dependencies:
+      dir-glob: 3.0.1
+      fast-glob: 3.3.3
+      ignore: 5.3.2
+      merge2: 1.4.1
+      slash: 4.0.0
+
   globby@14.1.0:
     dependencies:
       '@sindresorhus/merge-streams': 2.3.0
@@ -26555,6 +26659,8 @@ snapshots:
   imurmurhash@0.1.4: {}
 
   indent-string@4.0.0: {}
+
+  indent-string@5.0.0: {}
 
   index-to-position@0.1.2: {}
 
@@ -27555,6 +27661,8 @@ snapshots:
       extsprintf: 1.3.0
       json-schema: 0.4.0
       verror: 1.10.0
+
+  junk@4.0.1: {}
 
   jwa@1.4.1:
     dependencies:
@@ -28968,6 +29076,8 @@ snapshots:
 
   neotraverse@0.6.18: {}
 
+  nested-error-stacks@2.1.1: {}
+
   ng-morph@4.0.3(@angular-devkit/core@19.1.7(chokidar@4.0.3))(@angular-devkit/schematics@19.1.7(chokidar@4.0.3)):
     dependencies:
       '@angular-devkit/core': 19.1.7(chokidar@4.0.3)
@@ -29539,6 +29649,14 @@ snapshots:
 
   p-cancelable@2.1.1: {}
 
+  p-event@5.0.1:
+    dependencies:
+      p-timeout: 5.1.0
+
+  p-filter@3.0.0:
+    dependencies:
+      p-map: 5.5.0
+
   p-finally@1.0.0: {}
 
   p-limit@2.3.0:
@@ -29573,6 +29691,12 @@ snapshots:
     dependencies:
       p-limit: 4.0.0
 
+  p-map@5.5.0:
+    dependencies:
+      aggregate-error: 4.0.1
+
+  p-map@6.0.0: {}
+
   p-map@7.0.3: {}
 
   p-queue@8.1.0:
@@ -29585,6 +29709,8 @@ snapshots:
       '@types/retry': 0.12.2
       is-network-error: 1.1.0
       retry: 0.13.1
+
+  p-timeout@5.1.0: {}
 
   p-timeout@6.1.4: {}
 

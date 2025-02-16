@@ -71,6 +71,9 @@
             "@radix-ng/primitives/roving-focus": [
                 "packages/primitives/roving-focus/index.ts"
             ],
+            "@radix-ng/primitives/stepper": [
+                "packages/primitives/stepper/index.ts"
+            ],
             "@radix-ng/primitives/select": [
                 "packages/primitives/select/index.ts"
             ],
