@@ -1,3 +1,13 @@
+## 0.32.0 (2025-02-16)
+
+### 🚀 Features
+
+- **stepper:** added new primitive - Stepper ([#276](https://github.com/radix-ng/primitives/pull/276))
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+
 ## 0.31.0 (2025-02-09)
 
 ### 🚀 Features
