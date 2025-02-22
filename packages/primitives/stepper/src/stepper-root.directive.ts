@@ -11,6 +11,7 @@ import {
     input,
     model,
     numberAttribute,
+    output,
     signal
 } from '@angular/core';
 import { STEPPER_ROOT_CONTEXT, StepperRootContext } from './stepper-root-context.token';
@@ -46,6 +47,8 @@ export class RdxStepperRootDirective implements StepperRootContext {
 
     /** @ignore */
     readonly totalStepperItemsArray = computed(() => Array.from(this.totalStepperItems()));
+
+    readonly onValueChange = output<number>();
 
     /** @ignore */
     readonly isFirstStep = computed(() => this.value() === 1);
@@ -92,6 +95,7 @@ export class RdxStepperRootDirective implements StepperRootContext {
                     this.prevStepperItem.set(null);
                 }
 
+                this.onValueChange.emit(currentValue);
                 this.liveAnnouncer.announce(`Step ${currentValue} of ${items.length}`);
             }
         });
@@ -121,5 +125,6 @@ export class RdxStepperRootDirective implements StepperRootContext {
             }
         }
         this.value.set(step);
+        this.onValueChange.emit(step);
     }
 }
