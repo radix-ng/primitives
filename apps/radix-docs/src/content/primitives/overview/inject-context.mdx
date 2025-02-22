@@ -1,0 +1,130 @@
+---
+title: Inject Context
+slug: inject-context
+section: overview
+description: .
+---
+
+# Inject Context
+
+## Introduction
+
+When building Angular applications, you often need to pass a shared context to child components without having to propagate data through multiple `@Input()` properties.
+
+One convenient way to achieve this is by using a directive as the "context root" and an `InjectionToken` for dependency injection (DI).
+This allows child components within a single DOM tree to directly access the data and signals provided by the directive.
+
+## What is InjectionToken?
+
+`InjectionToken<T>` is a special Angular class that creates a unique token for the DI container.
+You use it when you want to inject something other than a class, such as an interface or configuration object.
+
+```typescript
+export const MY_TOKEN = new InjectionToken<string>('MyToken');
+```
+
+Here, `MyToken` is a label for debugging, and `<string>` specifies the type of data the token will provide.
+
+## Basic Usage
+
+1. Define the interface and token
+
+Create an interface describing the desired "context" and an injection token that will provide it:
+
+```typescript
+import { InjectionToken } from '@angular/core';
+
+export interface MyContext {
+  value: number;
+  message: string;
+  increment: void;
+  // ... любые другие поля/методы
+}
+
+export const MY_CONTEXT_TOKEN = new InjectionToken<MyContext>('MyContextToken');
+```
+
+2. Create a directive as the "context root"
+
+Have the directive implement `MyContext`.
+In `providers`, register the token using `useExisting`.
+This means that when `MY_CONTEXT_TOKEN` is requested, the directive instance itself will be returned.
+
+```typescript
+import {
+  Directive,
+  forwardRef
+} from '@angular/core';
+import { MyContext, MY_CONTEXT_TOKEN } from './my-context';
+
+@Directive({
+  selector: '[myContext]',
+  providers: [
+    {
+      provide: MY_CONTEXT_TOKEN,
+      useExisting: forwardRef(() => MyContextDirective)
+    }
+  ]
+})
+export class MyContextDirective implements MyContext {
+  value = 0;
+  message = 'Hello from directive';
+
+  increment() {
+    this.value++;
+  }
+}
+```
+`forwardRef` is needed to reference the directive class before it is declared.
+Without it, Angular might throw an error related to declaration order during compilation.
+
+3. Inject the context in child components
+
+Any component or directive placed within the element hosting `myContext` can get the directive via `MY_CONTEXT_TOKEN`:
+
+```typescript
+import { Component, inject } from '@angular/core';
+import { MY_CONTEXT_TOKEN } from './my-context';
+
+@Component({
+  selector: 'child-component',
+  template: `
+    <p>Value: {{ context.value }}</p>
+    <button (click)="increment()">Increment</button>
+  `
+})
+export class ChildComponent {
+  readonly context = inject(MY_CONTEXT_TOKEN);
+
+  increment() {
+    this.context.increment();
+  }
+}
+```
+
+4. Use it in a template
+
+Attach the directive to the parent element that contains the child components:
+
+```html
+<div myContext>
+  <child-component />
+  <child-component />
+</div>
+```
+Both `<child-component>` instances will now share the same context, enabling them to jointly access and modify the shared data.
+
+## Common Use Cases
+
+- Custom Styling: Access internal state to apply dynamic styles based on component state.
+- Extended Functionality: Build upon existing component logic to add new features.
+- Complex Layouts: Create intricate UI patterns by composing multiple components and sharing state between them.
+- Accessibility Enhancements: Utilize internal methods and state to improve keyboard navigation or screen reader support.
+
+## Best Practices
+
+- Use clear names: For both the `InjectionToken` and the directive itself.
+- Explicitly specify the type in the `InjectionToken` so that IDEs and TypeScript can provide better checks.
+- Don’t create unnecessary tokens: If the data is only needed in one place, a simple `@Input()` might suffice.
+- Keep logic in the directive: Implement not just fields but also methods for managing those fields, making it easier for child components to interact with them.
+- Use `useExisting` carefully: Only when you really need to return the same directive instance. If you need a different strategy (e.g., factory pattern), use `useFactory` instead.
