@@ -1,3 +1,14 @@
+## 0.32.3 (2025-03-04)
+
+### 🩹 Fixes
+
+- **radio:** unset data-disabled attr for indicator ([af7099e](https://github.com/radix-ng/primitives/commit/af7099e))
+- **stepper:** added valuechange event ([dca2dc2](https://github.com/radix-ng/primitives/commit/dca2dc2))
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+
 ## 0.32.2 (2025-02-16)
 
 ### 🩹 Fixes
