@@ -7,7 +7,7 @@ import { RDX_RADIO_GROUP, RadioGroupDirective } from './radio-tokens';
     exportAs: 'rdxRadioIndicator',
     host: {
         '[attr.data-state]': 'radioItem.checkedState() ? "checked" : "unchecked"',
-        '[attr.data-disabled]': 'radioItem.disabled ? "" : undefined'
+        '[attr.data-disabled]': 'radioItem.disabled() ? "" : undefined'
     }
 })
 export class RdxRadioIndicatorDirective {
