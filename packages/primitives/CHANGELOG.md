@@ -1,3 +1,13 @@
+## 0.32.4 (2025-03-04)
+
+### 🩹 Fixes
+
+- **radio:** unset data-disabled attr for indicator ([99036a5](https://github.com/radix-ng/primitives/commit/99036a5))
+
+### ❤️ Thank You
+
+- Oleg Pimenov
+
 ## 0.32.3 (2025-03-04)
 
 ### 🩹 Fixes
