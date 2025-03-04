@@ -5,7 +5,6 @@ import { injectRadioItem } from './radio-item.directive';
 @Directive({
     selector: '[rdxRadioItemInput]',
     exportAs: 'rdxRadioItemInput',
-    standalone: true,
     hostDirectives: [
         { directive: RdxVisuallyHiddenDirective, inputs: ['feature'] }],
     host: {

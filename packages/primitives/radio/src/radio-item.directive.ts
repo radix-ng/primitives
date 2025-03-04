@@ -22,7 +22,6 @@ export function injectRadioItem(): RdxRadioItemDirective {
 @Directive({
     selector: '[rdxRadioItem]',
     exportAs: 'rdxRadioItem',
-    standalone: true,
     providers: [{ provide: RdxRadioItemToken, useExisting: RdxRadioItemDirective }],
     hostDirectives: [
         { directive: RdxRovingFocusItemDirective, inputs: ['tabStopId: id', 'focusable', 'active', 'allowShiftKey'] }],

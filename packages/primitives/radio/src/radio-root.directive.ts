@@ -7,7 +7,6 @@ import { RadioGroupDirective, RadioGroupProps, RDX_RADIO_GROUP } from './radio-t
 @Directive({
     selector: '[rdxRadioRoot]',
     exportAs: 'rdxRadioRoot',
-    standalone: true,
     providers: [
         { provide: RDX_RADIO_GROUP, useExisting: RdxRadioGroupDirective },
         { provide: NG_VALUE_ACCESSOR, useExisting: RdxRadioGroupDirective, multi: true }
