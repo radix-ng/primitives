@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, forwardRef } from '@angular/core';
+import { CdkTrapFocus } from '@angular/cdk/a11y';
+import { afterNextRender, ChangeDetectionStrategy, Component, computed, forwardRef, inject } from '@angular/core';
 import { RdxPopoverContentAttributesToken } from './popover-content-attributes.token';
 import { injectPopoverRoot } from './popover-root.inject';
 import { RdxPopoverAnimationStatus, RdxPopoverState } from './popover.types';
@@ -18,6 +19,9 @@ import { RdxPopoverAnimationStatus, RdxPopoverState } from './popover.types';
         '(animationstart)': 'onAnimationStart($event)',
         '(animationend)': 'onAnimationEnd($event)'
     },
+    hostDirectives: [
+        CdkTrapFocus
+    ],
     providers: [
         {
             provide: RdxPopoverContentAttributesToken,
@@ -28,6 +32,9 @@ import { RdxPopoverAnimationStatus, RdxPopoverState } from './popover.types';
 })
 export class RdxPopoverContentAttributesComponent {
     /** @ignore */
+    private readonly focusTrapDirective = inject(CdkTrapFocus, { self: true });
+
+    /** @ignore */
     protected readonly popoverRoot = injectPopoverRoot();
 
     /** @ignore */
@@ -35,6 +42,12 @@ export class RdxPopoverContentAttributesComponent {
 
     /** @ignore */
     readonly disableAnimation = computed(() => !this.canAnimate());
+
+    constructor() {
+        afterNextRender({
+            write: () => this.focusTrapDirective.focusTrap.focusFirstTabbableElement()
+        });
+    }
 
     /** @ignore */
     protected onAnimationStart(_: AnimationEvent) {
