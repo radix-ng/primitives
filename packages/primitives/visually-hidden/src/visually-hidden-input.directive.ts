@@ -5,7 +5,6 @@ import { RdxVisuallyHiddenInputBubbleDirective } from './visually-hidden-input-b
 
 @Directive({
     selector: '[rdxVisuallyHiddenInput]',
-    standalone: true,
     hostDirectives: [
         {
             directive: RdxVisuallyHiddenInputBubbleDirective,

@@ -1,12 +1,11 @@
-import { Directive, effect, ElementRef, inject, input } from '@angular/core';
+import { Directive, effect, ElementRef, inject, input, linkedSignal } from '@angular/core';
 import { RdxVisuallyHiddenDirective } from './visually-hidden.directive';
 
 /**
  *
  */
 @Directive({
-    selector: '[rdxVisuallyHiddenInputBubble]',
-    standalone: true,
+    selector: 'input[rdxVisuallyHiddenInputBubble]',
     hostDirectives: [{ directive: RdxVisuallyHiddenDirective, inputs: ['feature: feature'] }],
     host: {
         '[attr.name]': 'name()',
@@ -21,16 +20,25 @@ export class RdxVisuallyHiddenInputBubbleDirective<T> {
     private readonly elementRef = inject(ElementRef);
 
     readonly name = input<string>('');
-    readonly value = input<T | null>(null);
+    readonly value = input<T | string | null>();
     readonly checked = input<boolean | undefined>(undefined);
     readonly required = input<boolean | undefined>(undefined);
     readonly disabled = input<boolean | undefined>(undefined);
     readonly feature = input<string>('fully-hidden');
 
+    protected readonly valueEffect = linkedSignal({
+        source: this.value,
+        computation: (value: NoInfer<string | T | null | undefined>) => value
+    });
+
     constructor() {
         effect(() => {
             this.updateInputValue();
         });
+    }
+
+    updateValue(value: string) {
+        this.valueEffect.set(value);
     }
 
     protected onChange() {
