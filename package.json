@@ -79,7 +79,7 @@
         "shiki": "1.22.0",
         "tailwind-merge": "^2.5.4",
         "tslib": "^2.8.1",
-        "typedoc": "0.27.5",
+        "typedoc": "0.28.1",
         "zone.js": "0.15.0"
     },
     "devDependencies": {
