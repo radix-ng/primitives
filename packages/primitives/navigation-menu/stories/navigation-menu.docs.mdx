@@ -1,0 +1,57 @@
+import { Canvas, Meta } from '@storybook/blocks';
+import * as NavigationMenuStories from './navigation-menu.stories';
+
+<Meta title="Primitives/Navigation Menu" />
+
+# Navigation Menu
+
+#### A responsive navigation component that automatically collapses navigation items into a menu when space is limited.
+
+<Canvas sourceState="hidden" of={NavigationMenuStories.Default} />
+
+## Features
+
+- ✅ Accepts a variety of item types: links, buttons, and custom components.
+- ✅ Support for submenu navigation.
+- ✅ Responsive design - automatically adjusts to available space.
+- ✅ Keyboard accessible.
+- ✅ Supports LTR and RTL layouts.
+- ✅ Focus is fully managed.
+- ✅ Thoroughly tested for accessibility.
+
+## Anatomy
+
+```html
+<nav rdxNavigationMenu>
+  <ul rdxNavigationMenuList>
+    <li rdxNavigationMenuItem value="item1">
+      <button rdxNavigationMenuTrigger>Item 1</button>
+      <div rdxNavigationMenuContent>
+        <!-- Content for Item 1 -->
+      </div>
+    </li>
+
+    <li rdxNavigationMenuItem value="item2">
+      <a rdxNavigationMenuLink href="#">Item 2</a>
+    </li>
+
+    <!-- Indicator that highlights the active item -->
+    <div rdxNavigationMenuIndicator />
+  </ul>
+
+  <!-- Viewport for displaying item content -->
+  <div rdxNavigationMenuViewport />
+</nav>
+```
+
+## Accessibility
+Adheres to the WAI-ARIA Navigation Menu Pattern.
+
+- Keyboard navigation with arrow keys to move between items.
+- Enter or Space to open a menu.
+- Escape to close an open menu.
+- Tab moves focus to the next interactive element.
+- Automatically sets appropriate ARIA attributes.
+
+## API Reference
+
