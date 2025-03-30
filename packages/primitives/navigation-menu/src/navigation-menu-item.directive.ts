@@ -1,89 +1,73 @@
-import { Directive, ElementRef, inject, Input, signal } from '@angular/core';
+import { Directive, ElementRef, inject, Input, Signal, signal } from '@angular/core';
 import { injectNavigationMenu } from './navigation-menu.token';
+import { focusFirst, getTabbableCandidates, removeFromTabOrder } from './utils';
 
 @Directive({
     selector: '[rdxNavigationMenuItem]',
     standalone: true,
-    host: {}
+    host: {
+        '[attr.value]': 'value'
+    },
+    exportAs: 'rdxNavigationMenuItem'
 })
 export class RdxNavigationMenuItemDirective {
-    protected readonly context = injectNavigationMenu();
-    protected readonly elementRef = inject(ElementRef);
+    private readonly context = injectNavigationMenu();
+    readonly elementRef = inject(ElementRef);
 
-    /** The unique value for this menu item */
-    @Input() value: string = '';
+    @Input() value = '';
 
+    // References to child elements
     readonly triggerRef = signal<HTMLElement | null>(null);
     readonly contentRef = signal<HTMLElement | null>(null);
     readonly focusProxyRef = signal<HTMLElement | null>(null);
-    readonly wasEscapeCloseRef = signal<boolean>(false);
+    readonly wasEscapeCloseRef = signal(false);
 
-    onEntryKeyDown(): void {
-        if (this.contentRef()) {
-            // Focus the first tabbable element in the content
-            setTimeout(() => {
-                const content = this.contentRef();
-                if (content) {
-                    const focusableElements = this.getTabbableCandidates(content);
-                    if (focusableElements.length > 0) {
-                        focusableElements[0].focus();
-                    }
-                }
-            });
-        }
+    private readonly _restoreContentTabOrderRef = signal<(() => void) | null>(null);
+
+    // Public access to the signal value
+    get restoreContentTabOrderRef(): Signal<(() => void) | null> {
+        return this._restoreContentTabOrderRef;
     }
 
-    onFocusProxyEnter(side: 'start' | 'end'): void {
+    onEntryKeyDown() {
         if (this.contentRef()) {
-            // Focus the first/last tabbable element depending on 'side'
-            setTimeout(() => {
-                const content = this.contentRef();
-                if (content) {
-                    const focusableElements = this.getTabbableCandidates(content);
-                    if (focusableElements.length > 0) {
-                        const elementToFocus =
-                            side === 'start' ? focusableElements[0] : focusableElements[focusableElements.length - 1];
-                        elementToFocus.focus();
-                    }
-                }
-            });
-        }
-    }
+            // Restore tab order if needed
+            const restoreFn = this._restoreContentTabOrderRef();
+            if (restoreFn) restoreFn();
 
-    onContentFocusOutside(): void {
-        if (this.contentRef()) {
-            // Remove tabbable elements from tab order
-            const content = this.contentRef();
-            if (content) {
-                const tabbables = this.getTabbableCandidates(content);
-                tabbables.forEach((el) => {
-                    el.setAttribute('tabindex', '-1');
-                });
+            // Find and focus first tabbable element
+            const candidates = getTabbableCandidates(this.contentRef()!);
+            if (candidates.length) {
+                focusFirst(candidates);
             }
         }
     }
 
-    onRootContentClose(): void {
+    onFocusProxyEnter(side: 'start' | 'end' = 'start') {
+        if (this.contentRef()) {
+            // Restore tab order if needed
+            const restoreFn = this._restoreContentTabOrderRef();
+            if (restoreFn) restoreFn();
+
+            // Find and focus appropriate element based on direction
+            const candidates = getTabbableCandidates(this.contentRef()!);
+            if (candidates.length) {
+                focusFirst(side === 'start' ? candidates : [...candidates].reverse());
+            }
+        }
+    }
+
+    onContentFocusOutside() {
+        if (this.contentRef()) {
+            // Remove elements from tab order when focus moves out
+            const candidates = getTabbableCandidates(this.contentRef()!);
+            if (candidates.length) {
+                this._restoreContentTabOrderRef.set(removeFromTabOrder(candidates));
+            }
+        }
+    }
+
+    onRootContentClose() {
         this.onContentFocusOutside();
-    }
-
-    /**
-     * Get all tabbable elements within a container
-     */
-    private getTabbableCandidates(container: HTMLElement): HTMLElement[] {
-        const candidates: HTMLElement[] = [];
-        const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
-            acceptNode: (node: any) => {
-                const isHiddenInput = node.tagName === 'INPUT' && node.type === 'hidden';
-                if (node.disabled || node.hidden || isHiddenInput) return NodeFilter.FILTER_SKIP;
-                return node.tabIndex >= 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
-            }
-        });
-
-        while (walker.nextNode()) {
-            candidates.push(walker.currentNode as HTMLElement);
-        }
-
-        return candidates;
     }
 }

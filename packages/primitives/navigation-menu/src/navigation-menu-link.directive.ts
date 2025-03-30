@@ -1,45 +1,47 @@
-import { booleanAttribute, Directive, HostListener, Input } from '@angular/core';
+import { booleanAttribute, Directive, ElementRef, HostListener, inject, Input } from '@angular/core';
+
+const LINK_SELECT = 'navigationMenu.linkSelect';
+const ROOT_CONTENT_DISMISS = 'navigationMenu.rootContentDismiss';
 
 @Directive({
     selector: '[rdxNavigationMenuLink]',
     standalone: true,
     host: {
-        role: 'link',
         '[attr.data-active]': 'active ? "" : undefined',
         '[attr.aria-current]': 'active ? "page" : undefined'
     }
 })
 export class RdxNavigationMenuLinkDirective {
+    private readonly elementRef = inject(ElementRef);
+
     @Input({ transform: booleanAttribute }) active = false;
+    @Input() onSelect: ((event: Event) => void) | undefined;
 
     @HostListener('click', ['$event'])
-    onClick(event: MouseEvent): void {
+    onClick(event: MouseEvent) {
         const target = event.target as HTMLElement;
 
-        // Dispatch a link select event
-        const linkSelectEvent = new CustomEvent('navigationMenu.linkSelect', {
+        // Dispatch link select event
+        const linkSelectEvent = new CustomEvent(LINK_SELECT, {
             bubbles: true,
             cancelable: true
         });
 
-        // Add one-time listener for the onSelect handler
-        target.addEventListener(
-            'navigationMenu.linkSelect',
-            () => {
-                // Handle onSelect callback if needed
-            },
-            { once: true }
-        );
+        // Add one-time listener for onSelect handler
+        if (this.onSelect) {
+            target.addEventListener(LINK_SELECT, this.onSelect, { once: true });
+        }
 
+        // Dispatch event
         target.dispatchEvent(linkSelectEvent);
 
-        // If the event isn't prevented and it's not a meta-click, dismiss the menu
+        // If not prevented and not meta key, dismiss content
         if (!linkSelectEvent.defaultPrevented && !event.metaKey) {
-            const rootContentDismissEvent = new CustomEvent('navigationMenu.rootContentDismiss', {
+            const dismissEvent = new CustomEvent(ROOT_CONTENT_DISMISS, {
                 bubbles: true,
                 cancelable: true
             });
-            target.dispatchEvent(rootContentDismissEvent);
+            target.dispatchEvent(dismissEvent);
         }
     }
 }

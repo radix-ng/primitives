@@ -1,16 +1,21 @@
-import { BooleanInput, coerceBooleanProperty } from '@angular/cdk/coercion';
+import { BooleanInput } from '@angular/cdk/coercion';
 import {
-    AfterViewInit,
+    booleanAttribute,
+    computed,
     Directive,
+    effect,
     ElementRef,
-    HostListener,
     inject,
     Input,
     OnDestroy,
+    OnInit,
     Renderer2,
-    signal
+    signal,
+    untracked,
+    ViewContainerRef
 } from '@angular/core';
-import { injectNavigationMenu, isNavigationMenuRoot } from './navigation-menu.token';
+import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.token';
+import { getOpenState } from './utils';
 
 @Directive({
     selector: '[rdxNavigationMenuViewport]',
@@ -18,160 +23,168 @@ import { injectNavigationMenu, isNavigationMenuRoot } from './navigation-menu.to
     host: {
         '[attr.data-state]': 'getOpenState()',
         '[attr.data-orientation]': 'context.orientation',
-        '[style.--radix-navigation-menu-viewport-width]': 'viewportWidth',
-        '[style.--radix-navigation-menu-viewport-height]': 'viewportHeight'
+        '[style.--radix-navigation-menu-viewport-width.px]': 'viewportSize()?.width',
+        '[style.--radix-navigation-menu-viewport-height.px]': 'viewportSize()?.height'
     }
 })
-export class RdxNavigationMenuViewportDirective implements AfterViewInit, OnDestroy {
-    protected readonly context = injectNavigationMenu();
-    protected readonly elementRef = inject(ElementRef);
-    protected readonly renderer = inject(Renderer2);
+export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
+    private readonly context = injectNavigationMenu();
+    private readonly elementRef = inject(ElementRef);
+    private readonly viewContainerRef = inject(ViewContainerRef);
+    private readonly renderer = inject(Renderer2);
 
-    /** Whether to force mount the viewport */
-    @Input({ transform: coerceBooleanProperty }) forceMount: BooleanInput;
+    @Input({ transform: booleanAttribute }) forceMount: BooleanInput;
 
-    /** The current size of the viewport */
-    private size = signal<{ width: number; height: number } | null>(null);
+    private readonly _contentNodes = signal(new Map<string, { embeddedView: any; element: HTMLElement }>());
+    private readonly _activeContentNode = signal<{ embeddedView: any; element: HTMLElement } | null>(null);
+    private readonly _viewportSize = signal<{ width: number; height: number } | null>(null);
+    private readonly _resizeObserver = new ResizeObserver(() => this.updateSize());
 
-    /** The current active content element */
-    private content = signal<HTMLElement | null>(null);
+    // Compute the active content value - either current value if open, or previous value if closing
+    readonly activeContentValue = computed(() => {
+        return this.open ? this.context.value() : this.context.previousValue();
+    });
 
-    /** The current viewport width */
-    get viewportWidth(): string | undefined {
-        return this.size() ? `${this.size()!.width}px` : undefined;
-    }
+    // Size for viewport CSS variables
+    readonly viewportSize = computed(() => this._viewportSize());
 
-    /** The current viewport height */
-    get viewportHeight(): string | undefined {
-        return this.size() ? `${this.size()!.height}px` : undefined;
-    }
-
-    /** Whether the viewport is open */
+    // Open state
     get open(): boolean {
-        return Boolean(this.context.value());
+        return Boolean(this.context.value() || this.forceMount);
     }
 
-    /** The active content value */
-    get activeContentValue(): string {
-        if (isNavigationMenuRoot(this.context)) {
-            return this.open ? this.context.value() : this.context.previousValue();
-        }
-        return this.context.value();
-    }
+    constructor() {
+        // Setup effect to manage content
+        effect(() => {
+            const activeValue = this.activeContentValue();
 
-    /** ResizeObserver for tracking content size changes */
-    private resizeObserver: ResizeObserver | null = null;
-    private interval: number | null = null;
-    private activeClone: HTMLElement | null = null;
+            untracked(() => {
+                if (isRootNavigationMenu(this.context) && this.context.viewportContent) {
+                    const viewportContent = this.context.viewportContent();
 
-    ngAfterViewInit() {
-        // Setup resize observer
-        this.resizeObserver = new ResizeObserver(() => {
-            this.updateSize();
+                    if (viewportContent.has(activeValue)) {
+                        const contentData = viewportContent.get(activeValue);
+
+                        // We should only render content when we have a templateRef
+                        if (contentData?.templateRef) {
+                            this.renderContent(contentData.templateRef, activeValue);
+                        }
+                    }
+                }
+            });
         });
+    }
 
-        // Register the viewport with the context
-        if (isNavigationMenuRoot(this.context)) {
-            // Use type assertion to access the internal signal
-            (this.context as any).viewport?.set(this.elementRef.nativeElement);
-        }
-
-        // Watch for viewport content changes
-        if (isNavigationMenuRoot(this.context)) {
-            // Set up periodic check for content changes
-            this.interval = window.setInterval(() => {
-                this.updateContent();
-            }, 100);
+    ngOnInit() {
+        // Register viewport with context
+        if (isRootNavigationMenu(this.context) && this.context.onViewportChange) {
+            this.context.onViewportChange(this.elementRef.nativeElement);
         }
     }
 
     ngOnDestroy() {
-        this.resizeObserver?.disconnect();
+        this._resizeObserver.disconnect();
 
-        if (this.interval) {
-            window.clearInterval(this.interval);
-        }
+        // Clear all views
+        this._contentNodes().forEach((node) => {
+            if (node.embeddedView) {
+                node.embeddedView.destroy();
+            }
+        });
 
         // Unregister viewport
-        if (isNavigationMenuRoot(this.context)) {
-            (this.context as any).viewport?.set(null);
+        if (isRootNavigationMenu(this.context) && this.context.onViewportChange) {
+            this.context.onViewportChange(null);
         }
     }
 
-    @HostListener('pointerenter')
-    onPointerEnter(): void {
-        if (isNavigationMenuRoot(this.context) && 'onContentEnter' in this.context) {
-            this.context.onContentEnter();
-        }
+    getOpenState() {
+        return getOpenState(this.open);
     }
 
-    @HostListener('pointerleave')
-    onPointerLeave(): void {
-        if (isNavigationMenuRoot(this.context) && 'onContentLeave' in this.context) {
-            this.context.onContentLeave();
-        }
+    private updateSize() {
+        const activeNode = this._activeContentNode()?.element;
+        if (!activeNode) return;
+
+        // Save original styles to restore later
+        // const originalPosition = activeNode.style.position;
+        // const originalVisibility = activeNode.style.visibility;
+
+        // Force layout recalculation while keeping element in the DOM
+        window.getComputedStyle(activeNode).getPropertyValue('width');
+
+        const firstChild = activeNode.firstChild as HTMLElement;
+        const width = Math.ceil(firstChild.offsetWidth || 400); // Fallback width
+        const height = Math.ceil(firstChild.offsetHeight || 300); // Fallback height
+
+        // Update size with valid dimensions
+        this._viewportSize.set({ width, height });
     }
 
-    /**
-     * Get the open state for the data-state attribute
-     */
-    getOpenState(): string {
-        return this.open ? 'open' : 'closed';
-    }
+    private renderContent(templateRef: any, contentValue: string) {
+        // Check if we already have a view for this content
+        let contentNode = this._contentNodes().get(contentValue);
 
-    /**
-     * Update the active content element
-     */
-    private updateContent(): void {
-        if (!isNavigationMenuRoot(this.context)) return;
+        if (!contentNode) {
+            try {
+                // Create a new embedded view
+                const embeddedView = this.viewContainerRef.createEmbeddedView(templateRef);
+                embeddedView.detectChanges();
 
-        const activeValue = this.activeContentValue;
-        const viewportContent = this.context.viewportContent();
+                // Create a container for the view
+                const container = this.renderer.createElement('div');
+                this.renderer.setAttribute(container, 'data-content-value', contentValue);
+                this.renderer.setStyle(container, 'width', '100%');
 
-        if (viewportContent.has(activeValue)) {
-            const contentData = viewportContent.get(activeValue);
-            if (contentData && contentData.ref) {
-                const sourceElement = contentData.ref.nativeElement;
+                // Add each root node to the container
+                embeddedView.rootNodes.forEach((node: Node) => {
+                    this.renderer.appendChild(container, node);
+                });
 
-                // Only update if this is a new content element
-                if (sourceElement !== this.content()) {
-                    // Clean up previous content clone
-                    if (this.activeClone) {
-                        this.renderer.removeChild(this.elementRef.nativeElement, this.activeClone);
-                    }
+                // Set styles for proper measurement and display
+                this.renderer.setStyle(container, 'position', 'relative');
+                this.renderer.setStyle(container, 'visibility', 'visible');
+                this.renderer.setStyle(container, 'pointer-events', 'auto');
+                this.renderer.setStyle(container, 'display', 'block');
 
-                    // Clone the content node for display in the viewport
-                    // We need to clone it because the original is hidden in the DOM
-                    const clone = sourceElement.cloneNode(true) as HTMLElement;
-                    this.renderer.setStyle(clone, 'position', 'absolute');
-                    this.renderer.setStyle(clone, 'top', '0');
-                    this.renderer.setStyle(clone, 'left', '0');
-                    this.renderer.appendChild(this.elementRef.nativeElement, clone);
-
-                    // Store references
-                    this.activeClone = clone;
-                    this.content.set(sourceElement);
-
-                    // Observe for size changes
-                    this.resizeObserver?.disconnect();
-                    this.resizeObserver?.observe(clone);
-
-                    // Update size immediately
-                    this.updateSize();
-                }
+                // Store in cache
+                contentNode = { embeddedView, element: container };
+                const newMap = new Map(this._contentNodes());
+                newMap.set(contentValue, contentNode);
+                this._contentNodes.set(newMap);
+            } catch (error) {
+                console.error('Error in renderContent:', error);
+                return;
             }
         }
+
+        if (contentNode) {
+            this.updateActiveContent(contentNode);
+        }
     }
 
-    /**
-     * Update the size of the viewport based on the content
-     */
-    private updateSize(): void {
-        if (!this.activeClone) return;
+    private updateActiveContent(contentNode: { embeddedView: any; element: HTMLElement }) {
+        if (contentNode !== this._activeContentNode()) {
+            // Clear viewport
+            while (this.elementRef.nativeElement.firstChild) {
+                this.renderer.removeChild(this.elementRef.nativeElement, this.elementRef.nativeElement.firstChild);
+            }
 
-        this.size.set({
-            width: this.activeClone.offsetWidth,
-            height: this.activeClone.offsetHeight
-        });
+            // Add content to viewport
+            this.renderer.appendChild(this.elementRef.nativeElement, contentNode.element);
+
+            // Update active content reference
+            this._activeContentNode.set(contentNode);
+
+            // Setup resize observation
+            this._resizeObserver.disconnect();
+            this._resizeObserver.observe(contentNode.element);
+
+            // Measure after adding to DOM
+            setTimeout(() => this.updateSize(), 0);
+
+            // Measure again after a frame to catch any style changes
+            requestAnimationFrame(() => this.updateSize());
+        }
     }
 }

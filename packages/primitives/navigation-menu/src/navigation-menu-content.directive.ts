@@ -1,103 +1,66 @@
-import { BooleanInput, coerceBooleanProperty } from '@angular/cdk/coercion';
-import { Directive, ElementRef, HostListener, inject, Input, OnDestroy, OnInit } from '@angular/core';
+import { BooleanInput } from '@angular/cdk/coercion';
+import {
+    booleanAttribute,
+    Directive,
+    ElementRef,
+    inject,
+    Input,
+    OnDestroy,
+    OnInit,
+    TemplateRef,
+    ViewContainerRef
+} from '@angular/core';
 import { RdxNavigationMenuItemDirective } from './navigation-menu-item.directive';
-import { injectNavigationMenu, isNavigationMenuRoot } from './navigation-menu.token';
+import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.token';
+import { makeContentId, makeTriggerId } from './utils';
 
-export const ROOT_CONTENT_DISMISS = 'navigationMenu.rootContentDismiss';
-
+/**
+ * Structural directive (*rdxNavigationMenuContent) that registers content
+ * with the parent menu item and root navigation menu's viewport.
+ */
 @Directive({
     selector: '[rdxNavigationMenuContent]',
-    standalone: true,
-    host: {
-        '[id]': 'contentId',
-        '[attr.data-state]': 'getOpenState()',
-        '[attr.data-motion]': 'getMotionAttribute()',
-        '[attr.data-orientation]': 'context.orientation',
-        '[attr.aria-labelledby]': 'triggerId'
-    }
+    standalone: true
 })
 export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
-    protected readonly context = injectNavigationMenu();
-    protected readonly item = inject(RdxNavigationMenuItemDirective);
-    protected readonly elementRef = inject(ElementRef);
+    private readonly context = injectNavigationMenu();
+    private readonly item = inject(RdxNavigationMenuItemDirective);
+    private readonly template = inject(TemplateRef);
+    private readonly viewContainer = inject(ViewContainerRef);
+    private readonly elementRef = inject(ElementRef);
 
-    /** Whether the content is in a viewport */
-    @Input({ transform: coerceBooleanProperty }) forceMount: BooleanInput;
-
-    /** A unique ID for the content */
-    readonly contentId = `rdx-nav-menu-content-${this.item.value || Math.random().toString(36).slice(2)}`;
-
-    /** The ID of the trigger */
-    readonly triggerId = `rdx-nav-menu-trigger-${this.item.value || Math.random().toString(36).slice(2)}`;
-
-    /** Whether the associated item is open */
-    get open(): boolean {
-        if ('value' in this.context) {
-            return this.item.value === this.context.value();
-        }
-        return false;
+    @Input({ transform: booleanAttribute })
+    set rdxNavigationMenuContent(value: BooleanInput) {
+        // Structural directive requires this input even if unused
     }
 
-    private motionAttribute: string | null = null;
+    @Input({ transform: booleanAttribute }) forceMount: BooleanInput;
+
+    readonly contentId = makeContentId(this.context.baseId, this.item.value);
+    readonly triggerId = makeTriggerId(this.context.baseId, this.item.value);
 
     ngOnInit() {
-        // Store this content element in the item's content reference
+        // Don't create the view directly when using structural directive
+        // Instead, register the template with the viewport
+
+        // Register with the item
         this.item.contentRef.set(this.elementRef.nativeElement);
 
-        // Register with the root menu for viewport rendering
-        if (isNavigationMenuRoot(this.context)) {
+        // Register with viewport in root menu
+        if (isRootNavigationMenu(this.context) && this.context.onViewportContentChange) {
             this.context.onViewportContentChange(this.item.value, {
                 ref: this.elementRef,
+                templateRef: this.template,
                 forceMount: this.forceMount,
                 value: this.item.value
             });
         }
-
-        this.updateMotionAttribute();
     }
 
     ngOnDestroy() {
-        // Unregister from the viewport when destroyed
-        if (isNavigationMenuRoot(this.context)) {
+        // Unregister from viewport
+        if (isRootNavigationMenu(this.context) && this.context.onViewportContentRemove) {
             this.context.onViewportContentRemove(this.item.value);
         }
-    }
-
-    @HostListener('pointerenter')
-    onPointerEnter(): void {
-        if ('onContentEnter' in this.context) {
-            this.context.onContentEnter();
-        }
-    }
-
-    @HostListener('pointerleave')
-    onPointerLeave(): void {
-        if ('onContentLeave' in this.context) {
-            this.context.onContentLeave();
-        }
-    }
-
-    // Rest of your existing methods...
-
-    /**
-     * Get the open state for the data-state attribute
-     */
-    getOpenState(): string {
-        return this.open ? 'open' : 'closed';
-    }
-
-    /**
-     * Get the motion attribute for animation direction
-     */
-    getMotionAttribute(): string | null {
-        this.updateMotionAttribute();
-        return this.motionAttribute;
-    }
-
-    /**
-     * Update the motion attribute based on the movement direction
-     */
-    private updateMotionAttribute(): void {
-        // Your existing implementation...
     }
 }

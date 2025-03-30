@@ -1,30 +1,36 @@
-import { AfterViewInit, Directive, ElementRef, inject } from '@angular/core';
-import { injectNavigationMenu } from './navigation-menu.token';
+import { AfterViewInit, Directive, ElementRef, inject, Renderer2 } from '@angular/core';
+import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.token';
 
 @Directive({
     selector: '[rdxNavigationMenuList]',
     standalone: true,
     host: {
-        '[attr.data-orientation]': 'context.orientation'
+        '[attr.data-orientation]': 'context.orientation',
+        role: 'menubar'
     }
 })
 export class RdxNavigationMenuListDirective implements AfterViewInit {
-    protected readonly context = injectNavigationMenu();
+    private readonly context = injectNavigationMenu();
     private readonly elementRef = inject(ElementRef);
+    private readonly renderer = inject(Renderer2);
 
     ngAfterViewInit() {
-        // If this is the root menu, set up the indicator track
-        if ('indicatorTrack' in this.context) {
-            const trackWrapper = document.createElement('div');
-            trackWrapper.style.position = 'relative';
+        if (isRootNavigationMenu(this.context) && this.context.onIndicatorTrackChange) {
+            // Create a wrapper with relative positioning for indicator track
+            const wrapper = this.renderer.createElement('div');
+            this.renderer.setStyle(wrapper, 'position', 'relative');
 
-            // Move list into the wrapper
+            // Get parent and current element
             const parent = this.elementRef.nativeElement.parentNode;
-            parent.insertBefore(trackWrapper, this.elementRef.nativeElement);
-            trackWrapper.appendChild(this.elementRef.nativeElement);
+            const element = this.elementRef.nativeElement;
 
-            // Set the indicator track
-            (this.context as any).indicatorTrack.set(trackWrapper);
+            // Move the list into the wrapper while maintaining DOM position
+            this.renderer.insertBefore(parent, wrapper, element);
+            this.renderer.removeChild(parent, element);
+            this.renderer.appendChild(wrapper, element);
+
+            // Register the wrapper as the indicator track
+            this.context.onIndicatorTrackChange(wrapper);
         }
     }
 }

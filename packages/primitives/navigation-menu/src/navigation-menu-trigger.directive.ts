@@ -1,95 +1,131 @@
-import { AfterViewInit, booleanAttribute, Directive, ElementRef, HostListener, inject, Input } from '@angular/core';
+import {
+    booleanAttribute,
+    computed,
+    Directive,
+    effect,
+    ElementRef,
+    HostListener,
+    inject,
+    Input,
+    untracked
+} from '@angular/core';
 import { RdxNavigationMenuItemDirective } from './navigation-menu-item.directive';
 import { injectNavigationMenu } from './navigation-menu.token';
+import { makeContentId, makeTriggerId } from './utils';
 
 @Directive({
     selector: '[rdxNavigationMenuTrigger]',
     standalone: true,
     host: {
-        role: 'button',
-        type: 'button',
-        '[attr.aria-expanded]': 'open',
-        '[attr.aria-controls]': 'contentId',
-        '[attr.data-state]': 'getOpenState()',
+        '[id]': 'triggerId',
+        '[attr.data-state]': 'open() ? "open" : "closed"',
+        '[attr.data-orientation]': 'context.orientation',
         '[attr.data-disabled]': 'disabled ? "" : undefined',
-        '[disabled]': 'disabled ? "" : undefined'
+        '[disabled]': 'disabled ? true : null',
+        '[attr.aria-expanded]': 'open()',
+        '[attr.aria-controls]': 'contentId',
+        type: 'button',
+        role: 'button'
     }
 })
-export class RdxNavigationMenuTriggerDirective implements AfterViewInit {
-    protected readonly context = injectNavigationMenu();
-    protected readonly item = inject(RdxNavigationMenuItemDirective);
-    protected readonly elementRef = inject(ElementRef);
+export class RdxNavigationMenuTriggerDirective {
+    private readonly context = injectNavigationMenu();
+    private readonly item = inject(RdxNavigationMenuItemDirective);
+    readonly elementRef = inject(ElementRef);
 
-    /** Whether the trigger is disabled */
     @Input({ transform: booleanAttribute }) disabled = false;
 
-    /** A unique ID for the trigger */
-    private readonly triggerId = `rdx-nav-menu-trigger-${this.item.value || Math.random().toString(36).slice(2)}`;
+    readonly triggerId = makeTriggerId(this.context.baseId, this.item.value);
+    readonly contentId = makeContentId(this.context.baseId, this.item.value);
 
-    /** The content ID for aria-controls */
-    protected readonly contentId = `rdx-nav-menu-content-${this.item.value || Math.random().toString(36).slice(2)}`;
+    private hasPointerMoveOpened = false;
+    private wasClickClose = false;
 
-    /** Whether the associated content is open */
-    get open(): boolean {
-        if ('value' in this.context) {
-            return this.item.value === this.context.value();
-        }
-        return false;
-    }
+    // Computed state based on context value and item value
+    readonly open = computed(() => {
+        return this.item.value === this.context.value();
+    });
 
-    ngAfterViewInit() {
-        // Register the trigger element with the item
+    constructor() {
+        // Register with item
         this.item.triggerRef.set(this.elementRef.nativeElement);
+
+        // Track when open state changes
+        effect(() => {
+            // This effect runs whenever open state changes
+            const isOpen = this.open();
+            untracked(() => {
+                // Reset state variables when closing
+                if (!isOpen) {
+                    this.hasPointerMoveOpened = false;
+                }
+            });
+        });
     }
 
     @HostListener('pointerenter')
-    onPointerEnter(): void {
-        if (this.disabled) return;
-
+    onPointerEnter() {
+        // Reset state flags
+        this.wasClickClose = false;
         this.item.wasEscapeCloseRef.set(false);
-        if ('onTriggerEnter' in this.context) {
+    }
+
+    @HostListener('pointermove', ['$event'])
+    onPointerMove(event: PointerEvent) {
+        // Only handle mouse events
+        if (
+            event.pointerType !== 'mouse' ||
+            this.disabled ||
+            this.wasClickClose ||
+            this.item.wasEscapeCloseRef() ||
+            this.hasPointerMoveOpened
+        ) {
+            return;
+        }
+
+        // Trigger menu open
+        if (this.context.onTriggerEnter) {
             this.context.onTriggerEnter(this.item.value);
+            this.hasPointerMoveOpened = true;
         }
     }
 
-    @HostListener('pointerleave')
-    onPointerLeave(): void {
-        if (this.disabled) return;
+    @HostListener('pointerleave', ['$event'])
+    onPointerLeave(event: PointerEvent) {
+        // Only handle mouse events
+        if (event.pointerType !== 'mouse' || this.disabled) {
+            return;
+        }
 
-        if ('onTriggerLeave' in this.context) {
+        // Trigger menu close
+        if (this.context.onTriggerLeave) {
             this.context.onTriggerLeave();
+            this.hasPointerMoveOpened = false;
         }
     }
 
     @HostListener('click')
-    onClick(): void {
-        if (this.disabled) return;
-
-        if ('onItemSelect' in this.context) {
+    onClick() {
+        // Toggle menu on click
+        if (this.context.onItemSelect) {
             this.context.onItemSelect(this.item.value);
+            this.wasClickClose = this.open();
         }
     }
 
     @HostListener('keydown', ['$event'])
-    onKeyDown(event: KeyboardEvent): void {
-        if (this.disabled) return;
-
+    onKeyDown(event: KeyboardEvent) {
+        // Handle keyboard navigation
         const verticalEntryKey = this.context.dir === 'rtl' ? 'ArrowLeft' : 'ArrowRight';
         const entryKey = {
             horizontal: 'ArrowDown',
             vertical: verticalEntryKey
         }[this.context.orientation];
 
-        if (this.open && event.key === entryKey) {
+        // Focus into content when appropriate arrow key is pressed
+        if (this.open() && event.key === entryKey) {
             this.item.onEntryKeyDown();
             event.preventDefault();
         }
-    }
-
-    /**
-     * Get the open state for the data-state attribute
-     */
-    getOpenState(): string {
-        return this.open ? 'open' : 'closed';
     }
 }

@@ -1,138 +1,134 @@
-import { BooleanInput, coerceBooleanProperty } from '@angular/cdk/coercion';
-import { AfterViewInit, Directive, ElementRef, inject, Input, OnDestroy, signal } from '@angular/core';
-import { injectNavigationMenu, isNavigationMenuRoot } from './navigation-menu.token';
+import { BooleanInput } from '@angular/cdk/coercion';
+import {
+    booleanAttribute,
+    computed,
+    Directive,
+    effect,
+    ElementRef,
+    inject,
+    Input,
+    OnDestroy,
+    Renderer2,
+    runInInjectionContext,
+    signal,
+    untracked
+} from '@angular/core';
+import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.token';
 
 @Directive({
     selector: '[rdxNavigationMenuIndicator]',
     standalone: true,
     host: {
-        '[attr.data-state]': 'isVisible ? "visible" : "hidden"',
+        '[attr.data-state]': 'isVisible() ? "visible" : "hidden"',
         '[attr.data-orientation]': 'context.orientation',
         'aria-hidden': 'true'
     }
 })
-export class RdxNavigationMenuIndicatorDirective implements OnDestroy, AfterViewInit {
-    protected readonly context = injectNavigationMenu();
-    protected readonly elementRef = inject(ElementRef);
+export class RdxNavigationMenuIndicatorDirective implements OnDestroy {
+    private readonly context = injectNavigationMenu();
+    private readonly elementRef = inject(ElementRef);
+    private readonly renderer = inject(Renderer2);
 
-    /** Whether to force mount the indicator */
-    @Input({ transform: coerceBooleanProperty }) forceMount: BooleanInput;
+    @Input({ transform: booleanAttribute }) forceMount: BooleanInput;
 
-    /** Whether the indicator is visible (any menu item is active) */
-    get isVisible(): boolean {
-        return Boolean(this.context.value());
-    }
+    private readonly _position = signal<{ size: number; offset: number } | null>(null);
+    private readonly _activeTrigger = signal<HTMLElement | null>(null);
+    private readonly _resizeObserver = new ResizeObserver(() => this.updatePosition());
 
-    /** The position of the indicator */
-    private position = signal<{ size: number; offset: number } | null>(null);
-
-    /** The active trigger element */
-    private activeTrigger = signal<HTMLElement | null>(null);
-
-    /** ResizeObserver for tracking element resizing */
-    private resizeObserver: ResizeObserver | null = null;
+    // Indicator visibility computed property
+    readonly isVisible = computed(() => Boolean(this.context.value() || this.forceMount));
 
     constructor() {
-        // Set up resize observers
-        this.resizeObserver = new ResizeObserver(() => {
-            this.updatePosition();
+        // Set up effect for tracking active trigger and position
+        effect(() => {
+            // This effect runs when the current value changes
+            const value = this.context.value();
+
+            untracked(() => {
+                if (value && isRootNavigationMenu(this.context)) {
+                    this.findAndSetActiveTrigger();
+                }
+            });
         });
 
-        // Watch for value changes to update the indicator position
-        // We would use an effect here in a real implementation
-        // For simplicity, we'll update on a basic interval
-        const interval = setInterval(() => {
-            if (this.context.value()) {
-                this.updateActiveTrigger();
-                this.updatePosition();
+        // Initialize observers for position tracking
+        runInInjectionContext(this.context as any, () => {
+            if (isRootNavigationMenu(this.context) && this.context.indicatorTrack) {
+                const track = this.context.indicatorTrack();
+                if (track) {
+                    // Observe size changes on the track
+                    this._resizeObserver.observe(track);
+                }
+
+                // Initial position update if menu is open
+                if (this.context.value()) {
+                    setTimeout(() => this.findAndSetActiveTrigger(), 0);
+                }
             }
-        }, 100);
-
-        // Clean up on destroy
-        this.destroy = () => {
-            clearInterval(interval);
-        };
+        });
     }
-
-    ngAfterViewInit() {
-        // Observe the indicator track if available - only on root menu
-        if (isNavigationMenuRoot(this.context)) {
-            const track = this.context.indicatorTrack();
-            if (track) {
-                this.resizeObserver?.observe(track);
-            }
-        }
-    }
-
-    private destroy: () => void = () => {};
 
     ngOnDestroy() {
-        this.resizeObserver?.disconnect();
-        this.destroy();
+        this._resizeObserver.disconnect();
     }
 
-    /**
-     * Update the active trigger element
-     */
-    private updateActiveTrigger(): void {
-        // We need to check if this is a root menu with an indicator track
-        if (!isNavigationMenuRoot(this.context)) return;
+    private findAndSetActiveTrigger() {
+        if (!isRootNavigationMenu(this.context) || !this.context.indicatorTrack) return;
 
-        // Find the trigger element for the active item
-        const indicatorTrack = this.context.indicatorTrack();
-        if (indicatorTrack) {
-            const triggerElements = Array.from(
-                indicatorTrack.querySelectorAll('[rdxNavigationMenuTrigger]')
-            ) as HTMLElement[];
+        const track = this.context.indicatorTrack();
+        if (!track) return;
 
-            const activeTrigger = triggerElements.find((trigger) => {
-                const item = trigger.closest('[rdxNavigationMenuItem]');
-                if (item) {
-                    const value = item.getAttribute('value') || '';
-                    return value === this.context.value();
-                }
-                return false;
-            });
+        // Find all triggers within the track
+        const triggers = Array.from(track.querySelectorAll('[rdxNavigationMenuTrigger]')) as HTMLElement[];
 
-            if (activeTrigger) {
-                this.activeTrigger.set(activeTrigger);
-            }
+        // Find the active trigger based on the current menu value
+        const activeTrigger = triggers.find((trigger) => {
+            const item = trigger.closest('[rdxNavigationMenuItem]');
+            if (!item) return false;
+
+            const value = item.getAttribute('value');
+            return value === this.context.value();
+        });
+
+        if (activeTrigger && activeTrigger !== this._activeTrigger()) {
+            this._activeTrigger.set(activeTrigger);
+            this.updatePosition();
         }
     }
 
-    /**
-     * Update the indicator position
-     */
-    private updatePosition(): void {
-        if (!this.activeTrigger()) return;
+    private updatePosition() {
+        const trigger = this._activeTrigger();
+        if (!trigger) return;
 
-        const trigger = this.activeTrigger()!;
         const isHorizontal = this.context.orientation === 'horizontal';
 
-        this.position.set({
+        // Calculate new position
+        const newPosition = {
             size: isHorizontal ? trigger.offsetWidth : trigger.offsetHeight,
             offset: isHorizontal ? trigger.offsetLeft : trigger.offsetTop
-        });
+        };
 
-        // Update the styles based on the position
-        const position = this.position();
-        if (position) {
-            const el = this.elementRef.nativeElement;
+        // Only update if position has changed
+        if (JSON.stringify(newPosition) !== JSON.stringify(this._position())) {
+            this._position.set(newPosition);
+
+            // Apply position styles
             const styles = isHorizontal
                 ? {
+                      position: 'absolute',
                       left: '0',
-                      width: `${position.size}px`,
-                      transform: `translateX(${position.offset}px)`
+                      width: `${newPosition.size}px`,
+                      transform: `translateX(${newPosition.offset}px)`
                   }
                 : {
+                      position: 'absolute',
                       top: '0',
-                      height: `${position.size}px`,
-                      transform: `translateY(${position.offset}px)`
+                      height: `${newPosition.size}px`,
+                      transform: `translateY(${newPosition.offset}px)`
                   };
 
-            Object.assign(el.style, {
-                position: 'absolute',
-                ...styles
+            Object.entries(styles).forEach(([key, value]) => {
+                this.renderer.setStyle(this.elementRef.nativeElement, key, value);
             });
         }
     }
