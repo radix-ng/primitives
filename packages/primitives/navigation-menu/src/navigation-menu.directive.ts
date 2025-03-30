@@ -9,8 +9,16 @@ import {
     OnDestroy,
     signal
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { debounce, map, Subject, tap, timer } from 'rxjs';
 import { provideNavigationMenuContext } from './navigation-menu.token';
 import { generateId } from './utils';
+
+// Define action types for clearer intent
+export enum RdxNavigationMenuAction {
+    OPEN = 'open',
+    CLOSE = 'close'
+}
 
 @Directive({
     selector: '[rdxNavigationMenu]',
@@ -42,6 +50,14 @@ export class RdxNavigationMenuDirective implements OnDestroy {
     private skipDelayTimerRef = 0;
     readonly #isOpenDelayed = signal(true);
 
+    // Pointer tracking
+    readonly #isPointerOverContent = signal(false);
+    readonly #isPointerOverTrigger = signal(false);
+    private documentMouseLeaveHandler: ((e: Event) => void) | null = null;
+
+    // Observable for handling actions with debounce
+    readonly actionSubject$ = new Subject<{ action: RdxNavigationMenuAction; itemValue?: string }>();
+
     // Inputs
     @Input() orientation: 'horizontal' | 'vertical' = 'horizontal';
     @Input() dir: 'ltr' | 'rtl' = 'ltr';
@@ -59,6 +75,11 @@ export class RdxNavigationMenuDirective implements OnDestroy {
     indicatorTrack = () => this.#indicatorTrack();
     viewport = () => this.#viewport();
     viewportContent = () => this.#viewportContent();
+
+    // Expose pointer state methods
+    setTriggerPointerState = (isOver: boolean) => this.#isPointerOverTrigger.set(isOver);
+    setContentPointerState = (isOver: boolean) => this.#isPointerOverContent.set(isOver);
+    isPointerInSystem = () => this.#isPointerOverContent() || this.#isPointerOverTrigger();
 
     constructor() {
         // Set up effect to clean delay timers when value changes
@@ -78,12 +99,49 @@ export class RdxNavigationMenuDirective implements OnDestroy {
                 }, this.skipDelayDuration);
             }
         });
+
+        // Set up action subscription for handling open/close with debounce
+        this.actionSubject$
+            .pipe(
+                map((config) => {
+                    // Use different delays for open vs close for better UX
+                    const duration = config.action === RdxNavigationMenuAction.OPEN ? this.delayDuration : 150; // Shorter close delay
+                    return { ...config, duration };
+                }),
+                debounce((config) => timer(config.duration)),
+                tap((config) => {
+                    switch (config.action) {
+                        case RdxNavigationMenuAction.OPEN:
+                            if (config.itemValue) {
+                                this.setValue(config.itemValue);
+                            }
+                            break;
+                        case RdxNavigationMenuAction.CLOSE:
+                            // Only close if not hovering over any part of the system
+                            if (!this.isPointerInSystem()) {
+                                this.setValue('');
+                            }
+                            break;
+                    }
+                }),
+                takeUntilDestroyed()
+            )
+            .subscribe();
+
+        // Set up document mouseleave handler to close menu when mouse leaves window
+        this.documentMouseLeaveHandler = () => this.handleClose();
+        document.addEventListener('mouseleave', this.documentMouseLeaveHandler);
     }
 
     ngOnDestroy() {
         window.clearTimeout(this.openTimerRef);
         window.clearTimeout(this.closeTimerRef);
         window.clearTimeout(this.skipDelayTimerRef);
+
+        // Clean up document event listener
+        if (this.documentMouseLeaveHandler) {
+            document.removeEventListener('mouseleave', this.documentMouseLeaveHandler);
+        }
     }
 
     onIndicatorTrackChange(track: HTMLElement | null) {
@@ -96,6 +154,7 @@ export class RdxNavigationMenuDirective implements OnDestroy {
 
     onTriggerEnter(itemValue: string) {
         window.clearTimeout(this.openTimerRef);
+        window.clearTimeout(this.closeTimerRef);
 
         if (this.#isOpenDelayed()) {
             this.handleDelayedOpen(itemValue);
@@ -115,6 +174,10 @@ export class RdxNavigationMenuDirective implements OnDestroy {
 
     onContentLeave() {
         this.startCloseTimer();
+    }
+
+    handleClose() {
+        this.actionSubject$.next({ action: RdxNavigationMenuAction.CLOSE });
     }
 
     onItemSelect(itemValue: string) {
@@ -141,13 +204,28 @@ export class RdxNavigationMenuDirective implements OnDestroy {
     }
 
     private setValue(value: string) {
+        // Store previous value before changing
         this.#previousValue.set(this.#value());
         this.#value.set(value);
+
+        // Immediately update viewport visibility when state changes to closed
+        if (!value && this.#viewport()) {
+            // Ensure viewport is hidden when closed
+            const viewportElement = this.#viewport();
+            if (viewportElement) {
+                viewportElement.style.display = 'none';
+            }
+        }
     }
 
     private startCloseTimer() {
         window.clearTimeout(this.closeTimerRef);
-        this.closeTimerRef = window.setTimeout(() => this.setValue(''), 150);
+        this.closeTimerRef = window.setTimeout(() => {
+            // Only close if not hovering over any part of the system
+            if (!this.isPointerInSystem()) {
+                this.setValue('');
+            }
+        }, 150);
     }
 
     private handleOpen(itemValue: string) {

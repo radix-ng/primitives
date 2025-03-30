@@ -23,6 +23,11 @@ export interface NavigationMenuContext {
     onContentLeave?: () => void;
     onItemSelect?: (itemValue: string) => void;
     onItemDismiss?: () => void;
+
+    // New pointer tracking methods
+    setTriggerPointerState?: (isOver: boolean) => void;
+    setContentPointerState?: (isOver: boolean) => void;
+    isPointerInSystem?: () => boolean;
 }
 
 export const RDX_NAVIGATION_MENU_TOKEN = new InjectionToken<NavigationMenuContext>('RdxNavigationMenuToken');

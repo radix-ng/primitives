@@ -65,9 +65,15 @@ export class RdxNavigationMenuTriggerDirective {
 
     @HostListener('pointerenter')
     onPointerEnter() {
-        // Reset state flags
-        this.wasClickClose = false;
-        this.item.wasEscapeCloseRef.set(false);
+        if (!this.disabled) {
+            // Update pointer tracking state
+            if (this.context.setTriggerPointerState) {
+                this.context.setTriggerPointerState(true);
+            }
+            // Reset state flags
+            this.wasClickClose = false;
+            this.item.wasEscapeCloseRef.set(false);
+        }
     }
 
     @HostListener('pointermove', ['$event'])
@@ -95,6 +101,11 @@ export class RdxNavigationMenuTriggerDirective {
         // Only handle mouse events
         if (event.pointerType !== 'mouse' || this.disabled) {
             return;
+        }
+
+        // Update pointer tracking state
+        if (this.context.setTriggerPointerState) {
+            this.context.setTriggerPointerState(false);
         }
 
         // Trigger menu close

@@ -5,6 +5,7 @@ import {
     Directive,
     effect,
     ElementRef,
+    HostListener,
     inject,
     Input,
     OnDestroy,
@@ -57,8 +58,12 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
         // Setup effect to manage content
         effect(() => {
             const activeValue = this.activeContentValue();
+            const open = this.open;
 
             untracked(() => {
+                // Handle visibility based on open state
+                this.renderer.setStyle(this.elementRef.nativeElement, 'display', open ? 'block' : 'none');
+
                 if (isRootNavigationMenu(this.context) && this.context.viewportContent) {
                     const viewportContent = this.context.viewportContent();
 
@@ -102,23 +107,45 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
         return getOpenState(this.open);
     }
 
+    @HostListener('pointerenter')
+    onPointerEnter(): void {
+        if (isRootNavigationMenu(this.context) && this.context.onContentEnter) {
+            this.context.onContentEnter();
+        }
+
+        // Update pointer tracking state
+        if (isRootNavigationMenu(this.context) && this.context.setContentPointerState) {
+            this.context.setContentPointerState(true);
+        }
+    }
+
+    @HostListener('pointerleave')
+    onPointerLeave(): void {
+        if (isRootNavigationMenu(this.context) && this.context.onContentLeave) {
+            this.context.onContentLeave();
+        }
+
+        // Update pointer tracking state
+        if (isRootNavigationMenu(this.context) && this.context.setContentPointerState) {
+            this.context.setContentPointerState(false);
+        }
+    }
+
     private updateSize() {
         const activeNode = this._activeContentNode()?.element;
         if (!activeNode) return;
-
-        // Save original styles to restore later
-        // const originalPosition = activeNode.style.position;
-        // const originalVisibility = activeNode.style.visibility;
 
         // Force layout recalculation while keeping element in the DOM
         window.getComputedStyle(activeNode).getPropertyValue('width');
 
         const firstChild = activeNode.firstChild as HTMLElement;
-        const width = Math.ceil(firstChild.offsetWidth || 400); // Fallback width
-        const height = Math.ceil(firstChild.offsetHeight || 300); // Fallback height
+        const width = Math.ceil(firstChild.offsetWidth);
+        const height = Math.ceil(firstChild.offsetHeight);
 
-        // Update size with valid dimensions
-        this._viewportSize.set({ width, height });
+        // Update size with valid dimensions (but only if not zero)
+        if (width !== 0 && height !== 0) {
+            this._viewportSize.set({ width, height });
+        }
     }
 
     private renderContent(templateRef: any, contentValue: string) {

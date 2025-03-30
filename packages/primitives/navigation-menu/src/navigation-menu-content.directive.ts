@@ -20,7 +20,11 @@ import { makeContentId, makeTriggerId } from './utils';
  */
 @Directive({
     selector: '[rdxNavigationMenuContent]',
-    standalone: true
+    standalone: true,
+    host: {
+        '(pointerenter)': 'onPointerEnter()',
+        '(pointerleave)': 'onPointerLeave()'
+    }
 })
 export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
     private readonly context = injectNavigationMenu();
@@ -61,6 +65,18 @@ export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
         // Unregister from viewport
         if (isRootNavigationMenu(this.context) && this.context.onViewportContentRemove) {
             this.context.onViewportContentRemove(this.item.value);
+        }
+    }
+
+    onPointerEnter(): void {
+        if (isRootNavigationMenu(this.context) && this.context.onContentEnter) {
+            this.context.onContentEnter();
+        }
+    }
+
+    onPointerLeave(): void {
+        if (isRootNavigationMenu(this.context) && this.context.onContentLeave) {
+            this.context.onContentLeave();
         }
     }
 }

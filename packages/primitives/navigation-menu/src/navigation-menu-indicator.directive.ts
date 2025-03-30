@@ -21,6 +21,7 @@ import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.to
     host: {
         '[attr.data-state]': 'isVisible() ? "visible" : "hidden"',
         '[attr.data-orientation]': 'context.orientation',
+        '[style.display]': 'isVisible() ? null : "none"',
         'aria-hidden': 'true'
     }
 })
