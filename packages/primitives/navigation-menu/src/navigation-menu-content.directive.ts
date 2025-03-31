@@ -12,19 +12,11 @@ import {
 } from '@angular/core';
 import { RdxNavigationMenuItemDirective } from './navigation-menu-item.directive';
 import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.token';
-import { makeContentId, makeTriggerId } from './utils';
+import { getMotionAttribute, makeContentId, makeTriggerId } from './utils';
 
-/**
- * Structural directive (*rdxNavigationMenuContent) that registers content
- * with the parent menu item and root navigation menu's viewport.
- */
 @Directive({
     selector: '[rdxNavigationMenuContent]',
-    standalone: true,
-    host: {
-        '(pointerenter)': 'onPointerEnter()',
-        '(pointerleave)': 'onPointerLeave()'
-    }
+    standalone: true
 })
 export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
     private readonly context = injectNavigationMenu();
@@ -43,6 +35,21 @@ export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
     readonly contentId = makeContentId(this.context.baseId, this.item.value);
     readonly triggerId = makeTriggerId(this.context.baseId, this.item.value);
 
+    // Compute motion attribute for animations
+    getMotionAttribute(): string | null {
+        if (!isRootNavigationMenu(this.context)) return null;
+
+        const itemValues = Array.from(this.context.viewportContent?.() || new Map()).map(([value]) => value);
+
+        return getMotionAttribute(
+            this.context.value(),
+            this.context.previousValue(),
+            this.item.value,
+            itemValues,
+            this.context.dir
+        );
+    }
+
     ngOnInit() {
         // Don't create the view directly when using structural directive
         // Instead, register the template with the viewport
@@ -56,7 +63,8 @@ export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
                 ref: this.elementRef,
                 templateRef: this.template,
                 forceMount: this.forceMount,
-                value: this.item.value
+                value: this.item.value,
+                getMotionAttribute: this.getMotionAttribute.bind(this) // Add this for motion attribute support
             });
         }
     }
@@ -65,18 +73,6 @@ export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
         // Unregister from viewport
         if (isRootNavigationMenu(this.context) && this.context.onViewportContentRemove) {
             this.context.onViewportContentRemove(this.item.value);
-        }
-    }
-
-    onPointerEnter(): void {
-        if (isRootNavigationMenu(this.context) && this.context.onContentEnter) {
-            this.context.onContentEnter();
-        }
-    }
-
-    onPointerLeave(): void {
-        if (isRootNavigationMenu(this.context) && this.context.onContentLeave) {
-            this.context.onContentLeave();
         }
     }
 }

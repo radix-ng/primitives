@@ -25,7 +25,8 @@ import { getOpenState } from './utils';
         '[attr.data-state]': 'getOpenState()',
         '[attr.data-orientation]': 'context.orientation',
         '[style.--radix-navigation-menu-viewport-width.px]': 'viewportSize()?.width',
-        '[style.--radix-navigation-menu-viewport-height.px]': 'viewportSize()?.height'
+        '[style.--radix-navigation-menu-viewport-height.px]': 'viewportSize()?.height',
+        '[style.display]': 'open ? null : "none"'
     }
 })
 export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
@@ -160,8 +161,20 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
 
                 // Create a container for the view
                 const container = this.renderer.createElement('div');
+                this.renderer.setAttribute(container, 'class', 'NavigationMenuContentWrapper');
                 this.renderer.setAttribute(container, 'data-content-value', contentValue);
                 this.renderer.setStyle(container, 'width', '100%');
+
+                // Add motion attribute for animations
+                const viewportContent = this.context.viewportContent && this.context.viewportContent();
+                if (!viewportContent) return;
+                const contentData = viewportContent.get(contentValue);
+                if (contentData?.getMotionAttribute) {
+                    const motionAttr = contentData.getMotionAttribute();
+                    if (motionAttr) {
+                        this.renderer.setAttribute(container, 'data-motion', motionAttr);
+                    }
+                }
 
                 // Add each root node to the container
                 embeddedView.rootNodes.forEach((node: Node) => {
@@ -190,7 +203,7 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
         }
     }
 
-    private updateActiveContent(contentNode: { embeddedView: any; element: HTMLElement }) {
+    updateActiveContent(contentNode: { embeddedView: any; element: HTMLElement }) {
         if (contentNode !== this._activeContentNode()) {
             // Clear viewport
             while (this.elementRef.nativeElement.firstChild) {

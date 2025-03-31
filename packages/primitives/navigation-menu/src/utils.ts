@@ -52,7 +52,7 @@ export function getMotionAttribute(
     if (!isSelected && !wasSelected) return null;
 
     // Don't provide direction on initial open
-    if (currentIndex !== prevIndex) {
+    if (currentIndex !== -1 && prevIndex !== -1) {
         // If moving to this item from another
         if (isSelected && prevIndex !== -1) {
             return currentIndex > prevIndex ? 'from-end' : 'from-start';
@@ -64,7 +64,7 @@ export function getMotionAttribute(
     }
 
     // Otherwise entering/leaving the list entirely
-    return null;
+    return isSelected ? 'from-end' : 'to-start';
 }
 
 /**

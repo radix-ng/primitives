@@ -97,6 +97,27 @@ export default {
                         line-height: 1;
                     }
 
+                    .NavigationMenuContentWrapper {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        animation-duration: 250ms;
+                        animation-timing-function: ease;
+                    }
+                    .NavigationMenuContentWrapper[data-motion='from-start'] {
+                        animation-name: enterFromLeft;
+                    }
+                    .NavigationMenuContentWrapper[data-motion='from-end'] {
+                        animation-name: enterFromRight;
+                    }
+                    .NavigationMenuContentWrapper[data-motion='to-start'] {
+                        animation-name: exitToLeft;
+                    }
+                    .NavigationMenuContentWrapper[data-motion='to-end'] {
+                        animation-name: exitToRight;
+                    }
+
                     .NavigationMenuContent {
                         position: absolute;
                         top: 0;
@@ -105,18 +126,7 @@ export default {
                         animation-duration: 250ms;
                         animation-timing-function: ease;
                     }
-                    .NavigationMenuContent[data-motion='from-start'] {
-                        animation-name: enterFromLeft;
-                    }
-                    .NavigationMenuContent[data-motion='from-end'] {
-                        animation-name: enterFromRight;
-                    }
-                    .NavigationMenuContent[data-motion='to-start'] {
-                        animation-name: exitToLeft;
-                    }
-                    .NavigationMenuContent[data-motion='to-end'] {
-                        animation-name: exitToRight;
-                    }
+
                     @media only screen and (min-width: 600px) {
                         .NavigationMenuContent {
                             width: auto;
