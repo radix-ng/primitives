@@ -12,6 +12,8 @@ export interface NavigationMenuContext {
     // Optional methods that only exist on root menu
     indicatorTrack?: () => HTMLElement | null;
     onIndicatorTrackChange?: (track: HTMLElement | null) => void;
+    userDismissedByClick?: () => boolean;
+    resetUserDismissed?: () => void;
     viewport?: () => HTMLElement | null;
     onViewportChange?: (viewport: HTMLElement | null) => void;
     viewportContent?: () => Map<string, any>;

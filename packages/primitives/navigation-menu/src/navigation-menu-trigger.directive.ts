@@ -108,6 +108,11 @@ export class RdxNavigationMenuTriggerDirective {
             this.context.setTriggerPointerState(false);
         }
 
+        // Reset user dismissal state when mouse fully leaves trigger
+        if (this.context.resetUserDismissed) {
+            this.context.resetUserDismissed();
+        }
+
         // Trigger menu close
         if (this.context.onTriggerLeave) {
             this.context.onTriggerLeave();

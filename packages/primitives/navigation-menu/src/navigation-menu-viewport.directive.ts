@@ -25,8 +25,7 @@ import { getOpenState } from './utils';
         '[attr.data-state]': 'getOpenState()',
         '[attr.data-orientation]': 'context.orientation',
         '[style.--radix-navigation-menu-viewport-width.px]': 'viewportSize()?.width',
-        '[style.--radix-navigation-menu-viewport-height.px]': 'viewportSize()?.height',
-        '[style.display]': 'open ? null : "none"'
+        '[style.--radix-navigation-menu-viewport-height.px]': 'viewportSize()?.height'
     }
 })
 export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {

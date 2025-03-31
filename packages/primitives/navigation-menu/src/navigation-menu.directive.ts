@@ -44,6 +44,10 @@ export class RdxNavigationMenuDirective implements OnDestroy {
     readonly #viewportContent = signal<Map<string, any>>(new Map());
     readonly #rootNavigationMenu = signal<HTMLElement | null>(this.elementRef.nativeElement);
 
+    readonly #userDismissedByClick = signal(false);
+    userDismissedByClick = () => this.#userDismissedByClick();
+    resetUserDismissed = () => this.#userDismissedByClick.set(false);
+
     // Delay timers
     private openTimerRef = 0;
     private closeTimerRef = 0;
@@ -153,6 +157,11 @@ export class RdxNavigationMenuDirective implements OnDestroy {
     }
 
     onTriggerEnter(itemValue: string) {
+        // Skip opening if user explicitly dismissed this menu
+        if (this.#userDismissedByClick() && itemValue === this.#previousValue()) {
+            return;
+        }
+
         window.clearTimeout(this.openTimerRef);
         window.clearTimeout(this.closeTimerRef);
 
@@ -181,7 +190,16 @@ export class RdxNavigationMenuDirective implements OnDestroy {
     }
 
     onItemSelect(itemValue: string) {
-        const newValue = itemValue === this.#value() ? '' : itemValue;
+        const wasOpen = this.#value() === itemValue;
+        const newValue = wasOpen ? '' : itemValue;
+
+        // If user is closing an open menu, mark as user-dismissed
+        if (wasOpen) {
+            this.#userDismissedByClick.set(true);
+        } else {
+            this.#userDismissedByClick.set(false);
+        }
+
         this.setValue(newValue);
     }
 
