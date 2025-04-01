@@ -24,7 +24,11 @@ export class RdxNavigationMenuListDirective implements AfterViewInit {
             const parent = this.elementRef.nativeElement.parentNode;
             const element = this.elementRef.nativeElement;
 
-            // Move the list into the wrapper while maintaining DOM position
+            // The indicator needs to be positioned absolutely relative to its containing
+            // block (the list), but we don't want the indicator itself to affect the
+            // layout of the list items. Creating a relative wrapper allows the indicator
+            // to be positioned correctly within the wrapper without interfering with the
+            // list items' flow.
             this.renderer.insertBefore(parent, wrapper, element);
             this.renderer.removeChild(parent, element);
             this.renderer.appendChild(wrapper, element);

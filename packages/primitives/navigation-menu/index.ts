@@ -19,6 +19,7 @@ export * from './src/navigation-menu-trigger.directive';
 export * from './src/navigation-menu-viewport.directive';
 export * from './src/navigation-menu.directive';
 export * from './src/navigation-menu.token';
+export * from './src/navigation-menu.types';
 
 const _imports = [
     RdxNavigationMenuDirective,

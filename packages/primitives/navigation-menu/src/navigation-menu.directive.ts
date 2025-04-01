@@ -4,15 +4,17 @@ import {
     effect,
     ElementRef,
     inject,
+    Injector,
     Input,
     numberAttribute,
     OnDestroy,
+    runInInjectionContext,
     signal
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounce, map, Subject, tap, timer } from 'rxjs';
 import { provideNavigationMenuContext } from './navigation-menu.token';
-import { generateId } from './utils';
+import { generateId, ROOT_CONTENT_DISMISS } from './utils';
 
 // Define action types for clearer intent
 export enum RdxNavigationMenuAction {
@@ -34,6 +36,7 @@ export enum RdxNavigationMenuAction {
 })
 export class RdxNavigationMenuDirective implements OnDestroy {
     private readonly elementRef = inject(ElementRef);
+    private readonly injector = inject(Injector);
 
     // State
     readonly #value = signal<string>('');
@@ -58,6 +61,7 @@ export class RdxNavigationMenuDirective implements OnDestroy {
     readonly #isPointerOverContent = signal(false);
     readonly #isPointerOverTrigger = signal(false);
     private documentMouseLeaveHandler: ((e: Event) => void) | null = null;
+    private rootContentDismissHandler: ((e: Event) => void) | null = null; // for closing menu when a link inside the content is clicked
 
     // Observable for handling actions with debounce
     readonly actionSubject$ = new Subject<{ action: RdxNavigationMenuAction; itemValue?: string }>();
@@ -135,6 +139,13 @@ export class RdxNavigationMenuDirective implements OnDestroy {
         // Set up document mouseleave handler to close menu when mouse leaves window
         this.documentMouseLeaveHandler = () => this.handleClose();
         document.addEventListener('mouseleave', this.documentMouseLeaveHandler);
+
+        // Listen for the custom event dispatched by RdxNavigationMenuLinkDirective
+        // Using runInInjectionContext as addEventListener is outside constructor/injection context
+        runInInjectionContext(this.injector, () => {
+            this.rootContentDismissHandler = () => this.handleClose(true); // Force close on link click
+            this.elementRef.nativeElement.addEventListener(ROOT_CONTENT_DISMISS, this.rootContentDismissHandler);
+        });
     }
 
     ngOnDestroy() {
@@ -145,6 +156,12 @@ export class RdxNavigationMenuDirective implements OnDestroy {
         // Clean up document event listener
         if (this.documentMouseLeaveHandler) {
             document.removeEventListener('mouseleave', this.documentMouseLeaveHandler);
+        }
+
+        // Clean up custom event listener
+        if (this.rootContentDismissHandler) {
+            this.elementRef.nativeElement.removeEventListener(ROOT_CONTENT_DISMISS, this.rootContentDismissHandler);
+            this.rootContentDismissHandler = null;
         }
     }
 
@@ -185,8 +202,15 @@ export class RdxNavigationMenuDirective implements OnDestroy {
         this.startCloseTimer();
     }
 
-    handleClose() {
-        this.actionSubject$.next({ action: RdxNavigationMenuAction.CLOSE });
+    /**
+     * Close the menu, optionally ignoring pointer state (e.g., on Escape or link click)
+     */
+    handleClose(force = false) {
+        if (force) {
+            this.setValue('');
+        } else {
+            this.actionSubject$.next({ action: RdxNavigationMenuAction.CLOSE });
+        }
     }
 
     onItemSelect(itemValue: string) {

@@ -405,14 +405,12 @@ export const Default: Story = {
                         >
                             <ul class="List one">
                                 <li style="grid-row: span 3;">
-                                    <a class="Callout" href="/">
-                                        <svg aria-hidden width="38" height="38" viewBox="0 0 25 25" fill="white">
+                                    <a class="Callout" href="https://www.radix-ng.com/">
+                                        <svg width="38" height="38" viewBox="0 0 24 24" fill="white">
                                             <path
-                                                d="M12 25C7.58173 25 4 21.4183 4 17C4 12.5817 7.58173 9 12 9V25Z"
-                                            ></path>
-                                            <path d="M12 0H4V8H12V0Z"></path>
-                                            <path
-                                                d="M17 8C19.2091 8 21 6.20914 21 4C21 1.79086 19.2091 0 17 0C14.7909 0 13 1.79086 13 4C13 6.20914 14.7909 8 17 8Z"
+                                                fill-rule="evenodd"
+                                                clip-rule="evenodd"
+                                                d="M11.576 2.00343L3 6.28335L3.02794 16.4367L3.02533 16.4391L3.02794 16.4379L3.02795 16.4408L3.03419 16.4352C5.58784 15.3254 7.85549 13.3817 9.4478 10.6971L9.45551 10.6902L9.45806 10.6798C11.047 7.99289 11.7245 4.96369 11.5773 2.01016L11.5794 2.00173L11.577 2.00294L11.5768 2L11.576 2.00343ZM12.424 2.00343L21 6.28335L20.9721 16.4367L20.9747 16.4391L20.9721 16.4379L20.972 16.4408L20.9658 16.4352C18.4122 15.3254 16.1445 13.3817 14.5522 10.6971L14.5445 10.6902L14.5419 10.6798C12.953 7.99289 12.2755 4.96369 12.4227 2.01016L12.4206 2.00173L12.423 2.00294L12.4232 2L12.424 2.00343ZM12.0978 22.25L3.79429 17.3315L3.79085 17.3325L3.79328 17.3309L3.79085 17.3295L3.79922 17.327C6.13674 15.7832 8.99744 14.8743 12.0874 14.8723L12.0978 14.8692L12.1082 14.8723C15.1981 14.8743 18.0588 15.7832 20.3963 17.327L20.4048 17.3295L20.4023 17.3309L20.4047 17.3325L20.4013 17.3315L12.0978 22.25Z"
                                             ></path>
                                         </svg>
                                         <div class="CalloutHeading">Radix Primitives</div>
@@ -421,9 +419,14 @@ export const Default: Story = {
                                 </li>
 
                                 <li>
-                                    <a class="ListItemLink" href="https://stitches.dev/">
-                                        <div class="ListItemHeading">Stitches</div>
-                                        <p class="ListItemText">CSS-in-JS with best-in-class developer experience.</p>
+                                    <a
+                                        class="ListItemLink"
+                                        href="https://www.radix-ng.com/themes/overview/getting-started"
+                                    >
+                                        <div class="ListItemHeading">Themes</div>
+                                        <p class="ListItemText">
+                                            Pre-styled component library designed to work out of the box.
+                                        </p>
                                     </a>
                                 </li>
                                 <li>
@@ -459,7 +462,10 @@ export const Default: Story = {
                         >
                             <ul class="List two">
                                 <li>
-                                    <a class="ListItemLink" href="/primitives/docs/overview/introduction">
+                                    <a
+                                        class="ListItemLink"
+                                        href="https://www.radix-ng.com/primitives/overview/introduction"
+                                    >
                                         <div class="ListItemHeading">Introduction</div>
                                         <p class="ListItemText">
                                             Build high-quality, accessible design systems and web apps.
@@ -467,7 +473,10 @@ export const Default: Story = {
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="ListItemLink" href="/primitives/docs/overview/getting-started">
+                                    <a
+                                        class="ListItemLink"
+                                        href="https://www.radix-ng.com/primitives/overview/getting-started"
+                                    >
                                         <div class="ListItemHeading">Getting started</div>
                                         <p class="ListItemText">
                                             A quick tutorial to get you up and running with Radix Primitives.
@@ -475,21 +484,16 @@ export const Default: Story = {
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="ListItemLink" href="/primitives/docs/guides/styling">
+                                    <a class="ListItemLink" href="https://www.radix-ng.com/primitives/overview/styling">
                                         <div class="ListItemHeading">Styling</div>
                                         <p class="ListItemText">Unstyled and compatible with any styling solution.</p>
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="ListItemLink" href="/primitives/docs/guides/animation">
-                                        <div class="ListItemHeading">Animation</div>
-                                        <p class="ListItemText">
-                                            Use CSS keyframes or any animation library of your choice.
-                                        </p>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="ListItemLink" href="/primitives/docs/overview/accessibility">
+                                    <a
+                                        class="ListItemLink"
+                                        href="https://www.radix-ng.com/primitives/overview/accessibility"
+                                    >
                                         <div class="ListItemHeading">Accessibility</div>
                                         <p class="ListItemText">
                                             Tested in a range of browsers and assistive technologies.
@@ -497,7 +501,16 @@ export const Default: Story = {
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="ListItemLink" href="/primitives/docs/overview/releases">
+                                    <a
+                                        class="ListItemLink"
+                                        href="https://www.radix-ng.com/primitives/overview/contribute"
+                                    >
+                                        <div class="ListItemHeading">Contribute</div>
+                                        <p class="ListItemText">Contribute to the open source project on GitHub.</p>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="ListItemLink" href="https://github.com/radix-ng/primitives/releases">
                                         <div class="ListItemHeading">Releases</div>
                                         <p class="ListItemText">Radix Primitives releases and their changelogs.</p>
                                     </a>

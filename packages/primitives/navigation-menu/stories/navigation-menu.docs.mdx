@@ -44,7 +44,7 @@ A responsive navigation component that automatically collapses navigation items 
 ### Root
 `rdxNavigationMenu`
 
-The root component. Contains all the parts of a navigation menu.
+The root directive. Contains all the parts of a navigation menu.
 
 | Prop | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
@@ -59,14 +59,12 @@ The root component. Contains all the parts of a navigation menu.
 
 Container for the navigation menu items.
 
+Must be rendered inside `rdxNavigationMenu` or `rdxNavigationMenuSub`. Adheres to the `menubar` role.
+
 ### Item
 `rdxNavigationMenuItem`
 
 A navigation item which can contain a trigger and content.
-
-| Prop | Type | Default | Description |
-| ---- | ---- | ------- | ----------- |
-| value | string | '' | A unique identifier for the item |
 
 ### Trigger
 `rdxNavigationMenuTrigger`
@@ -83,6 +81,10 @@ The button that opens the submenu content. Must be rendered inside NavigationMen
 
 A navigational link. Must be rendered inside NavigationMenuItem.
 
+| Prop | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| active | boolean | false | Whether the link is visually active |
+
 | Data attribute | Value |
 |----------------|-------|
 | [data-active] | Present when active |
@@ -92,9 +94,11 @@ A navigational link. Must be rendered inside NavigationMenuItem.
 
 The content that appears when a trigger is activated. Must be rendered inside NavigationMenuItem. This directive is used as a structural directive with the asterisk syntax.
 
+Content is rendered within the `rdxNavigationMenuViewport`.
+
 | Prop | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| forceMount | boolean | false | Forces mounting when more control is needed |
+| forceMount | boolean | false | Used to keep the content rendered and available in the DOM, even when closed. Useful for animations. |
 
 For manual control of data attributes:
 
@@ -114,7 +118,7 @@ A visual indicator displayed when a menu item is active. Must be rendered inside
 
 | Prop | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| forceMount | boolean | false | Forces mounting when more control is needed |
+| forceMount | boolean | false | Used to keep the indicator rendered and available in the DOM, even when hidden. Useful for animations. |
 
 | Data attribute | Value |
 |----------------|-------|
@@ -123,15 +127,26 @@ A visual indicator displayed when a menu item is active. Must be rendered inside
 ### Viewport
 `rdxNavigationMenuViewport`
 
-The component that displays the active content.
+The component that displays the active content (`*rdxNavigationMenuContent`). Must be rendered inside `rdxNavigationMenu`.
 
 | Prop | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| forceMount | boolean | false | Forces mounting when more control is needed |
+| forceMount | boolean | false | Used to keep the viewport rendered and available in the DOM, even when closed. Useful for animations. |
 
 | Data attribute | Value |
 |----------------|-------|
 | [data-state] | 'open' \| 'closed' |
+
++### Sub
++`rdxNavigationMenuSub`
++
++Container for a nested submenu. Contains its own `rdxNavigationMenuList` and items. Must be rendered inside `rdxNavigationMenuItem`.
++
++| Prop | Type | Default | Description |
++| ---- | ---- | ------- | ----------- |
++| orientation | 'horizontal' \| 'vertical' | 'horizontal' | The orientation of the submenu list |
++| defaultValue | string | '' | The value of the item that should be open by default |
+
 
 ## Accessibility
 

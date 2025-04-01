@@ -26,17 +26,29 @@ import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.to
     }
 })
 export class RdxNavigationMenuIndicatorDirective implements OnDestroy {
+    /**
+     * @ignore
+     * Injection dependencies
+     */
     private readonly context = injectNavigationMenu();
     private readonly elementRef = inject(ElementRef);
     private readonly renderer = inject(Renderer2);
 
+    /**
+     * Used to keep the indicator rendered and available in the DOM, even when hidden.
+     * Useful for animations.
+     * @default false
+     */
     @Input({ transform: booleanAttribute }) forceMount: BooleanInput;
 
+    /** @ignore */
     private readonly _position = signal<{ size: number; offset: number } | null>(null);
+    /** @ignore */
     private readonly _activeTrigger = signal<HTMLElement | null>(null);
+    /** @ignore */
     private readonly _resizeObserver = new ResizeObserver(() => this.updatePosition());
 
-    // Indicator visibility computed property
+    /** @ignore - Indicator visibility computed property */
     readonly isVisible = computed(() => Boolean(this.context.value() || this.forceMount));
 
     constructor() {
@@ -69,11 +81,13 @@ export class RdxNavigationMenuIndicatorDirective implements OnDestroy {
         });
     }
 
+    /** @ignore */
     ngOnDestroy() {
         this._resizeObserver.disconnect();
     }
 
-    private findAndSetActiveTrigger() {
+    /** @ignore */
+    private findAndSetActiveTrigger(): void {
         if (!isRootNavigationMenu(this.context) || !this.context.indicatorTrack) return;
 
         const track = this.context.indicatorTrack();
@@ -97,7 +111,8 @@ export class RdxNavigationMenuIndicatorDirective implements OnDestroy {
         }
     }
 
-    private updatePosition() {
+    /** @ignore */
+    private updatePosition(): void {
         const trigger = this._activeTrigger();
         if (!trigger) return;
 

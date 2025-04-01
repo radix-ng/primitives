@@ -2,6 +2,8 @@ export type NavigationMenuOrientation = 'horizontal' | 'vertical';
 export type NavigationMenuDirection = 'ltr' | 'rtl';
 export type MotionAttribute = 'to-start' | 'to-end' | 'from-start' | 'from-end';
 
+export const ROOT_CONTENT_DISMISS = 'navigationMenu.rootContentDismiss';
+
 /**
  * Generate a unique ID
  */
@@ -64,7 +66,7 @@ export function getMotionAttribute(
     }
 
     // Otherwise entering/leaving the list entirely
-    return isSelected ? 'from-end' : 'to-start';
+    return isSelected ? 'from-start' : 'from-end';
 }
 
 /**

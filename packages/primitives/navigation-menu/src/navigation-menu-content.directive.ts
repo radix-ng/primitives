@@ -1,15 +1,5 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import {
-    booleanAttribute,
-    Directive,
-    ElementRef,
-    inject,
-    Input,
-    OnDestroy,
-    OnInit,
-    TemplateRef,
-    ViewContainerRef
-} from '@angular/core';
+import { booleanAttribute, Directive, ElementRef, inject, Input, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { RdxNavigationMenuItemDirective } from './navigation-menu-item.directive';
 import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.token';
 import { getMotionAttribute, makeContentId, makeTriggerId } from './utils';
@@ -19,10 +9,13 @@ import { getMotionAttribute, makeContentId, makeTriggerId } from './utils';
     standalone: true
 })
 export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
+    /**
+     * @ignore
+     * Injection dependencies
+     */
     private readonly context = injectNavigationMenu();
     private readonly item = inject(RdxNavigationMenuItemDirective);
     private readonly template = inject(TemplateRef);
-    private readonly viewContainer = inject(ViewContainerRef);
     private readonly elementRef = inject(ElementRef);
 
     @Input({ transform: booleanAttribute })
@@ -30,16 +23,23 @@ export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
         // Structural directive requires this input even if unused
     }
 
+    /**
+     * Used to keep the content rendered and available in the DOM, even when closed.
+     * Useful for animations or SEO.
+     * @default false
+     */
     @Input({ transform: booleanAttribute }) forceMount: BooleanInput;
 
+    /** @ignore */
     readonly contentId = makeContentId(this.context.baseId, this.item.value);
+    /** @ignore */
     readonly triggerId = makeTriggerId(this.context.baseId, this.item.value);
 
-    // Compute motion attribute for animations
+    /** @ignore - Compute motion attribute for animations */
     getMotionAttribute(): string | null {
         if (!isRootNavigationMenu(this.context)) return null;
 
-        const itemValues = Array.from(this.context.viewportContent?.() || new Map()).map(([value]) => value);
+        const itemValues = Array.from(this.context.viewportContent?.() ?? new Map()).map(([value]) => value);
 
         return getMotionAttribute(
             this.context.value(),
@@ -50,25 +50,24 @@ export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
         );
     }
 
+    /** @ignore */
     ngOnInit() {
-        // Don't create the view directly when using structural directive
-        // Instead, register the template with the viewport
-
         // Register with the item
         this.item.contentRef.set(this.elementRef.nativeElement);
 
-        // Register with viewport in root menu
+        // Register template with viewport in root menu via context
         if (isRootNavigationMenu(this.context) && this.context.onViewportContentChange) {
             this.context.onViewportContentChange(this.item.value, {
                 ref: this.elementRef,
                 templateRef: this.template,
                 forceMount: this.forceMount,
                 value: this.item.value,
-                getMotionAttribute: this.getMotionAttribute.bind(this) // Add this for motion attribute support
+                getMotionAttribute: this.getMotionAttribute.bind(this)
             });
         }
     }
 
+    /** @ignore */
     ngOnDestroy() {
         // Unregister from viewport
         if (isRootNavigationMenu(this.context) && this.context.onViewportContentRemove) {

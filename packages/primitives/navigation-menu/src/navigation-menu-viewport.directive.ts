@@ -34,6 +34,11 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
     private readonly viewContainerRef = inject(ViewContainerRef);
     private readonly renderer = inject(Renderer2);
 
+    /**
+     * Used to keep the viewport rendered and available in the DOM, even when closed.
+     * Useful for animations.
+     * @default false
+     */
     @Input({ transform: booleanAttribute }) forceMount: BooleanInput;
 
     private readonly _contentNodes = signal(new Map<string, { embeddedView: any; element: HTMLElement }>());

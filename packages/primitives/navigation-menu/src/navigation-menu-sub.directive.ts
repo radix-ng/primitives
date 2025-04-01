@@ -12,19 +12,18 @@ import { generateId } from './utils';
     }
 })
 export class RdxNavigationMenuSubDirective {
+    private readonly parent = inject(RdxNavigationMenuDirective, { optional: true });
+
     @Input() orientation: 'horizontal' | 'vertical' = 'horizontal';
     @Input() set defaultValue(val: string) {
         if (val) this.value.set(val);
     }
-
     @Output() valueChange = new EventEmitter<string>();
 
     readonly value = signal<string>('');
     readonly previousValue = signal<string>('');
     readonly baseId = `rdx-nav-menu-sub-${generateId()}`;
     readonly isRootMenu = false;
-
-    private readonly parent = inject(RdxNavigationMenuDirective, { optional: true });
 
     get dir(): 'ltr' | 'rtl' {
         return this.parent?.dir || 'ltr';
