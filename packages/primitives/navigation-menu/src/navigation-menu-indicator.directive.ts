@@ -6,7 +6,7 @@ import {
     effect,
     ElementRef,
     inject,
-    Input,
+    input,
     OnDestroy,
     Renderer2,
     runInInjectionContext,
@@ -39,7 +39,7 @@ export class RdxNavigationMenuIndicatorDirective implements OnDestroy {
      * Useful for animations.
      * @default false
      */
-    @Input({ transform: booleanAttribute }) forceMount: BooleanInput;
+    readonly forceMount = input<BooleanInput, unknown>(undefined, { transform: booleanAttribute });
 
     /** @ignore */
     private readonly _position = signal<{ size: number; offset: number } | null>(null);
@@ -49,7 +49,7 @@ export class RdxNavigationMenuIndicatorDirective implements OnDestroy {
     private readonly _resizeObserver = new ResizeObserver(() => this.updatePosition());
 
     /** @ignore - Indicator visibility computed property */
-    readonly isVisible = computed(() => Boolean(this.context.value() || this.forceMount));
+    readonly isVisible = computed(() => Boolean(this.context.value() || this.forceMount()));
 
     constructor() {
         // Set up effect for tracking active trigger and position

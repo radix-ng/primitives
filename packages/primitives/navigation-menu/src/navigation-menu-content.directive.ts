@@ -1,5 +1,15 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { booleanAttribute, Directive, ElementRef, inject, Input, OnDestroy, OnInit, TemplateRef } from '@angular/core';
+import {
+    booleanAttribute,
+    Directive,
+    ElementRef,
+    inject,
+    Input,
+    input,
+    OnDestroy,
+    OnInit,
+    TemplateRef
+} from '@angular/core';
 import { RdxNavigationMenuItemDirective } from './navigation-menu-item.directive';
 import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.token';
 import { getMotionAttribute, makeContentId, makeTriggerId } from './utils';
@@ -28,12 +38,12 @@ export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
      * Useful for animations or SEO.
      * @default false
      */
-    @Input({ transform: booleanAttribute }) forceMount: BooleanInput;
+    readonly forceMount = input<BooleanInput, unknown>(undefined, { transform: booleanAttribute });
 
     /** @ignore */
-    readonly contentId = makeContentId(this.context.baseId, this.item.value);
+    readonly contentId = makeContentId(this.context.baseId, this.item.value());
     /** @ignore */
-    readonly triggerId = makeTriggerId(this.context.baseId, this.item.value);
+    readonly triggerId = makeTriggerId(this.context.baseId, this.item.value());
 
     /** @ignore - Compute motion attribute for animations */
     getMotionAttribute(): string | null {
@@ -44,7 +54,7 @@ export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
         return getMotionAttribute(
             this.context.value(),
             this.context.previousValue(),
-            this.item.value,
+            this.item.value(),
             itemValues,
             this.context.dir
         );
@@ -57,11 +67,11 @@ export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
 
         // Register template with viewport in root menu via context
         if (isRootNavigationMenu(this.context) && this.context.onViewportContentChange) {
-            this.context.onViewportContentChange(this.item.value, {
+            this.context.onViewportContentChange(this.item.value(), {
                 ref: this.elementRef,
                 templateRef: this.template,
-                forceMount: this.forceMount,
-                value: this.item.value,
+                forceMount: this.forceMount(),
+                value: this.item.value(),
                 getMotionAttribute: this.getMotionAttribute.bind(this)
             });
         }
@@ -71,7 +81,7 @@ export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
     ngOnDestroy() {
         // Unregister from viewport
         if (isRootNavigationMenu(this.context) && this.context.onViewportContentRemove) {
-            this.context.onViewportContentRemove(this.item.value);
+            this.context.onViewportContentRemove(this.item.value());
         }
     }
 }

@@ -7,7 +7,7 @@ import {
     ElementRef,
     HostListener,
     inject,
-    Input,
+    input,
     OnDestroy,
     OnInit,
     Renderer2,
@@ -39,34 +39,34 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
      * Useful for animations.
      * @default false
      */
-    @Input({ transform: booleanAttribute }) forceMount: BooleanInput;
+    readonly forceMount = input<BooleanInput, unknown>(undefined, { transform: booleanAttribute });
 
     private readonly _contentNodes = signal(new Map<string, { embeddedView: any; element: HTMLElement }>());
     private readonly _activeContentNode = signal<{ embeddedView: any; element: HTMLElement } | null>(null);
     private readonly _viewportSize = signal<{ width: number; height: number } | null>(null);
     private readonly _resizeObserver = new ResizeObserver(() => this.updateSize());
 
-    // Compute the active content value - either current value if open, or previous value if closing
+    // compute the active content value - either current value if open, or previous value if closing
     readonly activeContentValue = computed(() => {
         return this.open ? this.context.value() : this.context.previousValue();
     });
 
-    // Size for viewport CSS variables
+    // size for viewport CSS variables
     readonly viewportSize = computed(() => this._viewportSize());
 
-    // Open state
+    // open state
     get open(): boolean {
-        return Boolean(this.context.value() || this.forceMount);
+        return Boolean(this.context.value() || this.forceMount());
     }
 
     constructor() {
-        // Setup effect to manage content
+        // setup effect to manage content
         effect(() => {
             const activeValue = this.activeContentValue();
             const open = this.open;
 
             untracked(() => {
-                // Handle visibility based on open state
+                // handle visibility based on open state
                 this.renderer.setStyle(this.elementRef.nativeElement, 'display', open ? 'block' : 'none');
 
                 if (isRootNavigationMenu(this.context) && this.context.viewportContent) {
@@ -75,7 +75,7 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
                     if (viewportContent.has(activeValue)) {
                         const contentData = viewportContent.get(activeValue);
 
-                        // We should only render content when we have a templateRef
+                        // only render content when we have a templateRef
                         if (contentData?.templateRef) {
                             this.renderContent(contentData.templateRef, activeValue);
                         }
@@ -86,7 +86,7 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        // Register viewport with context
+        // register viewport with context
         if (isRootNavigationMenu(this.context) && this.context.onViewportChange) {
             this.context.onViewportChange(this.elementRef.nativeElement);
         }
@@ -95,14 +95,14 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
     ngOnDestroy() {
         this._resizeObserver.disconnect();
 
-        // Clear all views
+        // clear all views
         this._contentNodes().forEach((node) => {
             if (node.embeddedView) {
                 node.embeddedView.destroy();
             }
         });
 
-        // Unregister viewport
+        // unregister viewport
         if (isRootNavigationMenu(this.context) && this.context.onViewportChange) {
             this.context.onViewportChange(null);
         }
@@ -118,7 +118,7 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
             this.context.onContentEnter();
         }
 
-        // Update pointer tracking state
+        // update pointer tracking state
         if (isRootNavigationMenu(this.context) && this.context.setContentPointerState) {
             this.context.setContentPointerState(true);
         }
@@ -140,36 +140,36 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
         const activeNode = this._activeContentNode()?.element;
         if (!activeNode) return;
 
-        // Force layout recalculation while keeping element in the DOM
+        // force layout recalculation while keeping element in the DOM
         window.getComputedStyle(activeNode).getPropertyValue('width');
 
         const firstChild = activeNode.firstChild as HTMLElement;
         const width = Math.ceil(firstChild.offsetWidth);
         const height = Math.ceil(firstChild.offsetHeight);
 
-        // Update size with valid dimensions (but only if not zero)
+        // update size with valid dimensions (but only if not zero)
         if (width !== 0 && height !== 0) {
             this._viewportSize.set({ width, height });
         }
     }
 
     private renderContent(templateRef: any, contentValue: string) {
-        // Check if we already have a view for this content
+        // check if we already have a view for this content
         let contentNode = this._contentNodes().get(contentValue);
 
         if (!contentNode) {
             try {
-                // Create a new embedded view
+                // create a new embedded view
                 const embeddedView = this.viewContainerRef.createEmbeddedView(templateRef);
                 embeddedView.detectChanges();
 
-                // Create a container for the view
+                // create a container for the view
                 const container = this.renderer.createElement('div');
                 this.renderer.setAttribute(container, 'class', 'NavigationMenuContentWrapper');
                 this.renderer.setAttribute(container, 'data-content-value', contentValue);
                 this.renderer.setStyle(container, 'width', '100%');
 
-                // Add motion attribute for animations
+                // add motion attribute for animations
                 const viewportContent = this.context.viewportContent && this.context.viewportContent();
                 if (!viewportContent) return;
                 const contentData = viewportContent.get(contentValue);
@@ -180,18 +180,18 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
                     }
                 }
 
-                // Add each root node to the container
+                // add each root node to the container
                 embeddedView.rootNodes.forEach((node: Node) => {
                     this.renderer.appendChild(container, node);
                 });
 
-                // Set styles for proper measurement and display
+                // set styles for proper measurement and display
                 this.renderer.setStyle(container, 'position', 'relative');
                 this.renderer.setStyle(container, 'visibility', 'visible');
                 this.renderer.setStyle(container, 'pointer-events', 'auto');
                 this.renderer.setStyle(container, 'display', 'block');
 
-                // Store in cache
+                // store in cache
                 contentNode = { embeddedView, element: container };
                 const newMap = new Map(this._contentNodes());
                 newMap.set(contentValue, contentNode);
@@ -209,25 +209,25 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
 
     updateActiveContent(contentNode: { embeddedView: any; element: HTMLElement }) {
         if (contentNode !== this._activeContentNode()) {
-            // Clear viewport
+            // clear viewport
             while (this.elementRef.nativeElement.firstChild) {
                 this.renderer.removeChild(this.elementRef.nativeElement, this.elementRef.nativeElement.firstChild);
             }
 
-            // Add content to viewport
+            // add content to viewport
             this.renderer.appendChild(this.elementRef.nativeElement, contentNode.element);
 
-            // Update active content reference
+            // update active content reference
             this._activeContentNode.set(contentNode);
 
-            // Setup resize observation
+            // setup resize observation
             this._resizeObserver.disconnect();
             this._resizeObserver.observe(contentNode.element);
 
-            // Measure after adding to DOM
+            // measure after adding to DOM
             setTimeout(() => this.updateSize(), 0);
 
-            // Measure again after a frame to catch any style changes
+            // measure again after a frame to catch any style changes
             requestAnimationFrame(() => this.updateSize());
         }
     }

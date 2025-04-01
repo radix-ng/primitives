@@ -16,11 +16,11 @@ export class RdxNavigationMenuListDirective implements AfterViewInit {
 
     ngAfterViewInit() {
         if (isRootNavigationMenu(this.context) && this.context.onIndicatorTrackChange) {
-            // Create a wrapper with relative positioning for indicator track
+            // create a wrapper with relative positioning for indicator track
             const wrapper = this.renderer.createElement('div');
             this.renderer.setStyle(wrapper, 'position', 'relative');
 
-            // Get parent and current element
+            // get parent and current element
             const parent = this.elementRef.nativeElement.parentNode;
             const element = this.elementRef.nativeElement;
 
@@ -33,7 +33,7 @@ export class RdxNavigationMenuListDirective implements AfterViewInit {
             this.renderer.removeChild(parent, element);
             this.renderer.appendChild(wrapper, element);
 
-            // Register the wrapper as the indicator track
+            // register the wrapper as the indicator track
             this.context.onIndicatorTrackChange(wrapper);
         }
     }

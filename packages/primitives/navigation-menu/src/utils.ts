@@ -42,7 +42,7 @@ export function getMotionAttribute(
     itemValues: string[],
     dir: NavigationMenuDirection
 ): MotionAttribute | null {
-    // Reverse values in RTL
+    // reverse values in RTL
     const values = dir === 'rtl' ? [...itemValues].reverse() : itemValues;
 
     const currentIndex = values.indexOf(currentValue);
@@ -50,22 +50,22 @@ export function getMotionAttribute(
     const isSelected = itemValue === currentValue;
     const wasSelected = prevIndex === values.indexOf(itemValue);
 
-    // Only update selected and last selected content
+    // only update selected and last selected content
     if (!isSelected && !wasSelected) return null;
 
-    // Don't provide direction on initial open
+    // don't provide direction on initial open
     if (currentIndex !== -1 && prevIndex !== -1) {
-        // If moving to this item from another
+        // if moving to this item from another
         if (isSelected && prevIndex !== -1) {
             return currentIndex > prevIndex ? 'from-end' : 'from-start';
         }
-        // If leaving this item for another
+        // if leaving this item for another
         if (wasSelected && currentIndex !== -1) {
             return currentIndex > prevIndex ? 'to-start' : 'to-end';
         }
     }
 
-    // Otherwise entering/leaving the list entirely
+    // otherwise entering/leaving the list entirely
     return isSelected ? 'from-start' : 'from-end';
 }
 
@@ -75,7 +75,7 @@ export function getMotionAttribute(
 export function focusFirst(candidates: HTMLElement[], preventScroll = false): boolean {
     const prevFocusedElement = document.activeElement;
     return candidates.some((candidate) => {
-        // If focus is already where we want it, do nothing
+        // if focus is already where we want it, do nothing
         if (candidate === prevFocusedElement) return true;
 
         candidate.focus({ preventScroll });

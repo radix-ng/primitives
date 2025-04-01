@@ -1,4 +1,4 @@
-import { Directive, EventEmitter, inject, Input, Output, signal } from '@angular/core';
+import { Directive, inject, Input, input, output, signal } from '@angular/core';
 import { RdxNavigationMenuDirective } from './navigation-menu.directive';
 import { provideNavigationMenuContext } from './navigation-menu.token';
 import { generateId } from './utils';
@@ -8,17 +8,17 @@ import { generateId } from './utils';
     standalone: true,
     providers: [provideNavigationMenuContext(RdxNavigationMenuSubDirective)],
     host: {
-        '[attr.data-orientation]': 'orientation'
+        '[attr.data-orientation]': 'orientation()'
     }
 })
 export class RdxNavigationMenuSubDirective {
     private readonly parent = inject(RdxNavigationMenuDirective, { optional: true });
 
-    @Input() orientation: 'horizontal' | 'vertical' = 'horizontal';
+    readonly orientation = input<'horizontal' | 'vertical'>('horizontal');
     @Input() set defaultValue(val: string) {
         if (val) this.value.set(val);
     }
-    @Output() valueChange = new EventEmitter<string>();
+    readonly valueChange = output<string>();
 
     readonly value = signal<string>('');
     readonly previousValue = signal<string>('');
@@ -26,7 +26,7 @@ export class RdxNavigationMenuSubDirective {
     readonly isRootMenu = false;
 
     get dir(): 'ltr' | 'rtl' {
-        return this.parent?.dir || 'ltr';
+        return this.parent?.dir() || 'ltr';
     }
 
     get rootNavigationMenu(): HTMLElement | null {

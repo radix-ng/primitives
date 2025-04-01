@@ -1,20 +1,18 @@
-import { Directive, ElementRef, inject, Input, Signal, signal } from '@angular/core';
-import { injectNavigationMenu } from './navigation-menu.token';
+import { Directive, ElementRef, inject, input, Signal, signal } from '@angular/core';
 import { focusFirst, getTabbableCandidates, removeFromTabOrder } from './utils';
 
 @Directive({
     selector: '[rdxNavigationMenuItem]',
     standalone: true,
     host: {
-        '[attr.value]': 'value'
+        '[attr.value]': 'value()'
     },
     exportAs: 'rdxNavigationMenuItem'
 })
 export class RdxNavigationMenuItemDirective {
-    private readonly context = injectNavigationMenu();
     readonly elementRef = inject(ElementRef);
 
-    @Input() value = '';
+    readonly value = input('');
 
     // References to child elements
     readonly triggerRef = signal<HTMLElement | null>(null);

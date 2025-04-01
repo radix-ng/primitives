@@ -1,4 +1,6 @@
 import { inject, InjectionToken, Provider, Type } from '@angular/core';
+import { RdxNavigationMenuSubDirective } from './navigation-menu-sub.directive';
+import { RdxNavigationMenuDirective } from './navigation-menu.directive';
 
 export interface NavigationMenuContext {
     isRootMenu: boolean;
@@ -25,6 +27,7 @@ export interface NavigationMenuContext {
     onContentLeave?: () => void;
     onItemSelect?: (itemValue: string) => void;
     onItemDismiss?: () => void;
+    handleClose?: (force?: boolean) => void;
 
     // New pointer tracking methods
     setTriggerPointerState?: (isOver: boolean) => void;
@@ -42,7 +45,9 @@ export function isRootNavigationMenu(context: NavigationMenuContext): boolean {
     return context.isRootMenu;
 }
 
-export function provideNavigationMenuContext(provider: Type<any>): Provider {
+export function provideNavigationMenuContext(
+    provider: Type<RdxNavigationMenuDirective | RdxNavigationMenuSubDirective>
+): Provider {
     return {
         provide: RDX_NAVIGATION_MENU_TOKEN,
         useExisting: provider
