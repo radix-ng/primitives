@@ -12,12 +12,11 @@ import { generateId } from './utils';
     }
 })
 export class RdxNavigationMenuSubDirective {
-    private readonly parent = inject(RdxNavigationMenuDirective, { optional: true });
-
     readonly orientation = input<'horizontal' | 'vertical'>('horizontal');
     @Input() set defaultValue(val: string) {
         if (val) this.value.set(val);
     }
+
     readonly valueChange = output<string>();
 
     readonly value = signal<string>('');
@@ -25,8 +24,14 @@ export class RdxNavigationMenuSubDirective {
     readonly baseId = `rdx-nav-menu-sub-${generateId()}`;
     readonly isRootMenu = false;
 
+    private readonly parent = inject(RdxNavigationMenuDirective, { optional: true });
+
     get dir(): 'ltr' | 'rtl' {
-        return this.parent?.dir() || 'ltr';
+        if (!this.parent) {
+            return 'ltr';
+        }
+
+        return this.parent.dir || 'ltr';
     }
 
     get rootNavigationMenu(): HTMLElement | null {

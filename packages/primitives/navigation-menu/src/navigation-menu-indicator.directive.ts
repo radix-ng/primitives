@@ -26,10 +26,6 @@ import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.to
     }
 })
 export class RdxNavigationMenuIndicatorDirective implements OnDestroy {
-    /**
-     * @ignore
-     * Injection dependencies
-     */
     private readonly context = injectNavigationMenu();
     private readonly elementRef = inject(ElementRef);
     private readonly renderer = inject(Renderer2);
@@ -48,13 +44,12 @@ export class RdxNavigationMenuIndicatorDirective implements OnDestroy {
     /** @ignore */
     private readonly _resizeObserver = new ResizeObserver(() => this.updatePosition());
 
-    /** @ignore - Indicator visibility computed property */
     readonly isVisible = computed(() => Boolean(this.context.value() || this.forceMount()));
 
     constructor() {
-        // Set up effect for tracking active trigger and position
+        // set up effect for tracking active trigger and position
         effect(() => {
-            // This effect runs when the current value changes
+            // this effect runs when the current value changes
             const value = this.context.value();
 
             untracked(() => {
@@ -64,16 +59,16 @@ export class RdxNavigationMenuIndicatorDirective implements OnDestroy {
             });
         });
 
-        // Initialize observers for position tracking
+        // initialize observers for position tracking
         runInInjectionContext(this.context as any, () => {
             if (isRootNavigationMenu(this.context) && this.context.indicatorTrack) {
                 const track = this.context.indicatorTrack();
                 if (track) {
-                    // Observe size changes on the track
+                    // observe size changes on the track
                     this._resizeObserver.observe(track);
                 }
 
-                // Initial position update if menu is open
+                // initial position update if menu is open
                 if (this.context.value()) {
                     setTimeout(() => this.findAndSetActiveTrigger(), 0);
                 }
@@ -93,10 +88,10 @@ export class RdxNavigationMenuIndicatorDirective implements OnDestroy {
         const track = this.context.indicatorTrack();
         if (!track) return;
 
-        // Find all triggers within the track
+        // find all triggers within the track
         const triggers = Array.from(track.querySelectorAll('[rdxNavigationMenuTrigger]')) as HTMLElement[];
 
-        // Find the active trigger based on the current menu value
+        // find the active trigger based on the current menu value
         const activeTrigger = triggers.find((trigger) => {
             const item = trigger.closest('[rdxNavigationMenuItem]');
             if (!item) return false;
@@ -118,17 +113,17 @@ export class RdxNavigationMenuIndicatorDirective implements OnDestroy {
 
         const isHorizontal = this.context.orientation === 'horizontal';
 
-        // Calculate new position
+        // calculate new position
         const newPosition = {
             size: isHorizontal ? trigger.offsetWidth : trigger.offsetHeight,
             offset: isHorizontal ? trigger.offsetLeft : trigger.offsetTop
         };
 
-        // Only update if position has changed
+        // only update if position has changed
         if (JSON.stringify(newPosition) !== JSON.stringify(this._position())) {
             this._position.set(newPosition);
 
-            // Apply position styles
+            // apply position styles
             const styles = isHorizontal
                 ? {
                       position: 'absolute',
