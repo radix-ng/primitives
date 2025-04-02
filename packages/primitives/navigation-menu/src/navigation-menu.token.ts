@@ -9,6 +9,7 @@ export interface NavigationMenuContext {
     baseId: string;
     dir: 'ltr' | 'rtl';
     orientation: 'horizontal' | 'vertical';
+    loop: boolean;
     rootNavigationMenu: () => HTMLElement | null;
 
     // Optional methods that only exist on root menu
