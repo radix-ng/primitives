@@ -1,14 +1,4 @@
-import {
-    booleanAttribute,
-    computed,
-    Directive,
-    effect,
-    ElementRef,
-    HostListener,
-    inject,
-    input,
-    untracked
-} from '@angular/core';
+import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input, untracked } from '@angular/core';
 import { RdxNavigationMenuItemDirective } from './navigation-menu-item.directive';
 import { injectNavigationMenu } from './navigation-menu.token';
 import { makeContentId, makeTriggerId } from './utils';
@@ -23,6 +13,11 @@ import { makeContentId, makeTriggerId } from './utils';
         '[disabled]': 'disabled() ? true : null',
         '[attr.aria-expanded]': 'open()',
         '[attr.aria-controls]': 'contentId',
+        '(pointerenter)': 'onPointerEnter()',
+        '(pointermove)': 'onPointerMove($event)',
+        '(pointerleave)': 'onPointerLeave($event)',
+        '(click)': 'onClick()',
+        '(keydown)': 'onKeyDown($event)',
         type: 'button',
         role: 'button'
     }
@@ -61,7 +56,6 @@ export class RdxNavigationMenuTriggerDirective {
         });
     }
 
-    @HostListener('pointerenter')
     onPointerEnter() {
         if (!this.disabled()) {
             // update pointer tracking state
@@ -74,7 +68,6 @@ export class RdxNavigationMenuTriggerDirective {
         }
     }
 
-    @HostListener('pointermove', ['$event'])
     onPointerMove(event: PointerEvent) {
         // only handle mouse events
         if (
@@ -94,7 +87,6 @@ export class RdxNavigationMenuTriggerDirective {
         }
     }
 
-    @HostListener('pointerleave', ['$event'])
     onPointerLeave(event: PointerEvent) {
         // Only handle mouse events
         if (event.pointerType !== 'mouse' || this.disabled()) {
@@ -118,7 +110,6 @@ export class RdxNavigationMenuTriggerDirective {
         }
     }
 
-    @HostListener('click')
     onClick() {
         // toggle menu on click
         if (this.context.onItemSelect) {
@@ -127,7 +118,6 @@ export class RdxNavigationMenuTriggerDirective {
         }
     }
 
-    @HostListener('keydown', ['$event'])
     onKeyDown(event: KeyboardEvent) {
         // handle keyboard navigation
         const verticalEntryKey = this.context.dir === 'rtl' ? 'ArrowLeft' : 'ArrowRight';

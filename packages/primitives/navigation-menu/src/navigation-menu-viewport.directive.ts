@@ -5,7 +5,6 @@ import {
     Directive,
     effect,
     ElementRef,
-    HostListener,
     inject,
     input,
     OnDestroy,
@@ -24,7 +23,9 @@ import { getOpenState } from './utils';
         '[attr.data-state]': 'getOpenState()',
         '[attr.data-orientation]': 'context.orientation',
         '[style.--radix-navigation-menu-viewport-width.px]': 'viewportSize()?.width',
-        '[style.--radix-navigation-menu-viewport-height.px]': 'viewportSize()?.height'
+        '[style.--radix-navigation-menu-viewport-height.px]': 'viewportSize()?.height',
+        '(pointerenter)': 'onPointerEnter()',
+        '(pointerleave)': 'onPointerLeave()'
     }
 })
 export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
@@ -111,7 +112,6 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
         return getOpenState(this.open);
     }
 
-    @HostListener('pointerenter')
     onPointerEnter(): void {
         if (isRootNavigationMenu(this.context) && this.context.onContentEnter) {
             this.context.onContentEnter();
@@ -123,7 +123,6 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
         }
     }
 
-    @HostListener('pointerleave')
     onPointerLeave(): void {
         if (isRootNavigationMenu(this.context) && this.context.onContentLeave) {
             this.context.onContentLeave();

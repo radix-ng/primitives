@@ -1,4 +1,4 @@
-import { booleanAttribute, Directive, HostListener, input } from '@angular/core';
+import { booleanAttribute, Directive, input } from '@angular/core';
 
 const LINK_SELECT = 'navigationMenu.linkSelect';
 const ROOT_CONTENT_DISMISS = 'navigationMenu.rootContentDismiss';
@@ -7,14 +7,14 @@ const ROOT_CONTENT_DISMISS = 'navigationMenu.rootContentDismiss';
     selector: '[rdxNavigationMenuLink]',
     host: {
         '[attr.data-active]': 'active() ? "" : undefined',
-        '[attr.aria-current]': 'active() ? "page" : undefined'
+        '[attr.aria-current]': 'active() ? "page" : undefined',
+        '(click)': 'onClick($event)'
     }
 })
 export class RdxNavigationMenuLinkDirective {
     readonly active = input(false, { transform: booleanAttribute });
     readonly onSelect = input<(event: Event) => void>();
 
-    @HostListener('click', ['$event'])
     onClick(event: MouseEvent) {
         const target = event.target as HTMLElement;
 
