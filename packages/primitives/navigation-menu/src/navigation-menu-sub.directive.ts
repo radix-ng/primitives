@@ -5,7 +5,6 @@ import { generateId } from './utils';
 
 @Directive({
     selector: '[rdxNavigationMenuSub]',
-    standalone: true,
     providers: [provideNavigationMenuContext(RdxNavigationMenuSubDirective)],
     host: {
         '[attr.data-orientation]': 'orientation()'

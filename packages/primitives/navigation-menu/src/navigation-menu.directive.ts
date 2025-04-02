@@ -24,7 +24,6 @@ export enum RdxNavigationMenuAction {
 
 @Directive({
     selector: '[rdxNavigationMenu]',
-    standalone: true,
     providers: [provideNavigationMenuContext(RdxNavigationMenuDirective)],
     host: {
         '[attr.data-orientation]': 'orientation',

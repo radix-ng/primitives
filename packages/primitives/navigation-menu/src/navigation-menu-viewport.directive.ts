@@ -20,7 +20,6 @@ import { getOpenState } from './utils';
 
 @Directive({
     selector: '[rdxNavigationMenuViewport]',
-    standalone: true,
     host: {
         '[attr.data-state]': 'getOpenState()',
         '[attr.data-orientation]': 'context.orientation',

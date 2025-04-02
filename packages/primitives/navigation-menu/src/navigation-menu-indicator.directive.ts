@@ -17,7 +17,6 @@ import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.to
 
 @Directive({
     selector: '[rdxNavigationMenuIndicator]',
-    standalone: true,
     host: {
         '[attr.data-state]': 'isVisible() ? "visible" : "hidden"',
         '[attr.data-orientation]': 'context.orientation',

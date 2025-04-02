@@ -5,7 +5,6 @@ const ROOT_CONTENT_DISMISS = 'navigationMenu.rootContentDismiss';
 
 @Directive({
     selector: '[rdxNavigationMenuLink]',
-    standalone: true,
     host: {
         '[attr.data-active]': 'active() ? "" : undefined',
         '[attr.aria-current]': 'active() ? "page" : undefined'

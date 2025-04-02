@@ -15,8 +15,7 @@ import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.to
 import { getMotionAttribute, makeContentId, makeTriggerId } from './utils';
 
 @Directive({
-    selector: '[rdxNavigationMenuContent]',
-    standalone: true
+    selector: '[rdxNavigationMenuContent]'
 })
 export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
     /**

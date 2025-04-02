@@ -3,7 +3,6 @@ import { focusFirst, getTabbableCandidates, removeFromTabOrder } from './utils';
 
 @Directive({
     selector: '[rdxNavigationMenuItem]',
-    standalone: true,
     host: {
         '[attr.value]': 'value()'
     },

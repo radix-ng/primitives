@@ -3,7 +3,6 @@ import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.to
 
 @Directive({
     selector: '[rdxNavigationMenuList]',
-    standalone: true,
     host: {
         '[attr.data-orientation]': 'context.orientation',
         role: 'menubar'

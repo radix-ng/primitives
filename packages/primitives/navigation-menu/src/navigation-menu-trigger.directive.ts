@@ -15,7 +15,6 @@ import { makeContentId, makeTriggerId } from './utils';
 
 @Directive({
     selector: '[rdxNavigationMenuTrigger]',
-    standalone: true,
     host: {
         '[id]': 'triggerId',
         '[attr.data-state]': 'open() ? "open" : "closed"',
