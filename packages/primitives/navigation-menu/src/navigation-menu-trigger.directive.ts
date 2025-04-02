@@ -155,7 +155,7 @@ export class RdxNavigationMenuTriggerDirective implements OnInit {
         if (this.disabled()) return;
 
         // --- Enter or Space: Toggle the submenu ---
-        if (event.key === 'Enter' || event.key === ' ') {
+        if (event.keyCode === ENTER || event.keyCode === SPACE) {
             event.preventDefault(); // Prevent default button behavior (e.g., scrolling on space)
             this.onClick(); // Reuse click logic for toggling
 
