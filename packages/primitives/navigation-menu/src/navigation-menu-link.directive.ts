@@ -57,7 +57,6 @@ export class RdxNavigationMenuLinkDirective implements OnInit {
     onKeydown(event: KeyboardEvent): void {
         // activate link on Enter or Space
         if (event.key === 'Enter' || event.key === ' ') {
-            console.log(`Keydown on link: ${event.key}`); // DBG
 
             // prevent default behavior like scrolling (Space) or form submission (Enter) BEFORE simulating the click.
             event.preventDefault();
