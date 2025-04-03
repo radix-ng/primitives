@@ -13,7 +13,7 @@ export class RdxNavigationMenuItemDirective {
 
     readonly value = input('');
 
-    // References to child elements
+    // references to child elements
     readonly triggerRef = signal<HTMLElement | null>(null);
     readonly contentRef = signal<HTMLElement | null>(null);
     readonly focusProxyRef = signal<HTMLElement | null>(null);
@@ -21,18 +21,17 @@ export class RdxNavigationMenuItemDirective {
 
     private readonly _restoreContentTabOrderRef = signal<(() => void) | null>(null);
 
-    // Public access to the signal value
     get restoreContentTabOrderRef(): Signal<(() => void) | null> {
         return this._restoreContentTabOrderRef;
     }
 
     onEntryKeyDown() {
         if (this.contentRef()) {
-            // Restore tab order if needed
+            // restore tab order if needed
             const restoreFn = this._restoreContentTabOrderRef();
             if (restoreFn) restoreFn();
 
-            // Find and focus first tabbable element
+            // find and focus first tabbable element
             const candidates = getTabbableCandidates(this.contentRef()!);
             if (candidates.length) {
                 focusFirst(candidates);
@@ -42,11 +41,11 @@ export class RdxNavigationMenuItemDirective {
 
     onFocusProxyEnter(side: 'start' | 'end' = 'start') {
         if (this.contentRef()) {
-            // Restore tab order if needed
+            // restore tab order if needed
             const restoreFn = this._restoreContentTabOrderRef();
             if (restoreFn) restoreFn();
 
-            // Find and focus appropriate element based on direction
+            // find and focus appropriate element based on direction
             const candidates = getTabbableCandidates(this.contentRef()!);
             if (candidates.length) {
                 focusFirst(side === 'start' ? candidates : [...candidates].reverse());
@@ -56,7 +55,7 @@ export class RdxNavigationMenuItemDirective {
 
     onContentFocusOutside() {
         if (this.contentRef()) {
-            // Remove elements from tab order when focus moves out
+            // remove elements from tab order when focus moves out
             const candidates = getTabbableCandidates(this.contentRef()!);
             if (candidates.length) {
                 this._restoreContentTabOrderRef.set(removeFromTabOrder(candidates));

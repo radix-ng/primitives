@@ -54,7 +54,6 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
     // size for viewport CSS variables
     readonly viewportSize = computed(() => this._viewportSize());
 
-    // open state
     get open(): boolean {
         return Boolean(this.context.value() || this.forceMount());
     }

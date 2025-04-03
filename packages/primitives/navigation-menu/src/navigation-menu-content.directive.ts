@@ -18,10 +18,6 @@ import { getMotionAttribute, makeContentId, makeTriggerId } from './utils';
     selector: '[rdxNavigationMenuContent]'
 })
 export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
-    /**
-     * @ignore
-     * Injection dependencies
-     */
     private readonly context = injectNavigationMenu();
     private readonly item = inject(RdxNavigationMenuItemDirective);
     private readonly template = inject(TemplateRef);
@@ -29,7 +25,7 @@ export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
 
     @Input({ transform: booleanAttribute })
     set rdxNavigationMenuContent(value: BooleanInput) {
-        // Structural directive requires this input even if unused
+        // structural directive requires this input even if unused
     }
 
     /**
@@ -61,10 +57,9 @@ export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
 
     /** @ignore */
     ngOnInit() {
-        // Register with the item
         this.item.contentRef.set(this.elementRef.nativeElement);
 
-        // Register template with viewport in root menu via context
+        // register template with viewport in root menu via context
         if (isRootNavigationMenu(this.context) && this.context.onViewportContentChange) {
             this.context.onViewportContentChange(this.item.value(), {
                 ref: this.elementRef,
@@ -78,7 +73,7 @@ export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
 
     /** @ignore */
     ngOnDestroy() {
-        // Unregister from viewport
+        // unregister from viewport
         if (isRootNavigationMenu(this.context) && this.context.onViewportContentRemove) {
             this.context.onViewportContentRemove(this.item.value());
         }

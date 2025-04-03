@@ -12,7 +12,6 @@ export interface NavigationMenuContext {
     loop: boolean;
     rootNavigationMenu: () => HTMLElement | null;
 
-    // Optional methods that only exist on root menu
     indicatorTrack?: () => HTMLElement | null;
     onIndicatorTrackChange?: (track: HTMLElement | null) => void;
     userDismissedByClick?: () => boolean;
@@ -29,8 +28,6 @@ export interface NavigationMenuContext {
     onItemSelect?: (itemValue: string) => void;
     onItemDismiss?: () => void;
     handleClose?: (force?: boolean) => void;
-
-    // New pointer tracking methods
     setTriggerPointerState?: (isOver: boolean) => void;
     setContentPointerState?: (isOver: boolean) => void;
     isPointerInSystem?: () => boolean;
