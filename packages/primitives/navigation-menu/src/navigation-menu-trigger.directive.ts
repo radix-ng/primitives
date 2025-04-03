@@ -1,3 +1,4 @@
+import { ENTER, LEFT_ARROW, RIGHT_ARROW, SPACE } from '@angular/cdk/keycodes';
 import {
     booleanAttribute,
     computed,
@@ -52,16 +53,10 @@ export class RdxNavigationMenuTriggerDirective implements OnInit {
     private wasClickClose = false;
 
     constructor() {
-        // --- Effect for Roving Focus Item Focusable State ---
-        // This runs within the constructor's injection context
         effect(() => {
-            // Update the focusable state of the RovingFocusItem directive
-            // whenever the disabled input signal changes.
             this.rovingFocusItem.focusable = !this.disabled();
         });
 
-        // --- Effect for Internal State Management ---
-        // This also runs within the constructor's injection context
         effect(() => {
             const isOpen = this.open();
             untracked(() => {
@@ -139,12 +134,11 @@ export class RdxNavigationMenuTriggerDirective implements OnInit {
     onClick(): void {
         if (this.disabled()) return;
 
-        // Use context method to handle item selection (toggles open state)
         if (this.context.onItemSelect) {
             this.context.onItemSelect(this.item.value());
-            // Track if this click action resulted in closing the menu
+            // track if this click action resulted in closing the menu
             this.wasClickClose = !this.open();
-            // Reset escape flag if menu was opened by click
+            // reset escape flag if menu was opened by click
             if (this.open()) {
                 this.item.wasEscapeCloseRef.set(false);
             }
@@ -154,45 +148,39 @@ export class RdxNavigationMenuTriggerDirective implements OnInit {
     onKeydown(event: KeyboardEvent): void {
         if (this.disabled()) return;
 
-        // --- Enter or Space: Toggle the submenu ---
         if (event.keyCode === ENTER || event.keyCode === SPACE) {
-            event.preventDefault(); // Prevent default button behavior (e.g., scrolling on space)
-            this.onClick(); // Reuse click logic for toggling
+            event.preventDefault(); // prevent default button behavior (e.g., scrolling on space)
+            this.onClick();
 
-            // If menu was opened by this keypress, move focus into the content
+            // if menu was opened by this keypress, move focus into the content
             if (this.open()) {
-                // Defer focus slightly to ensure content is ready
+                // defer focus slightly to ensure content is ready
                 setTimeout(() => this.item.onEntryKeyDown(), 0);
             }
-            return; // Stop processing here
+            return;
         }
 
-        // --- Arrow keys for entering content ---
-        // Determine the correct arrow key based on orientation and text direction
+        // determine the correct arrow key based on orientation and text direction
         const isHorizontal = this.context.orientation === 'horizontal';
         const isRTL = this.context.dir === 'rtl';
-        const verticalEntryKey = isRTL ? 'ArrowLeft' : 'ArrowRight'; // Arrow key for vertical menus
-        const entryKey = isHorizontal ? 'ArrowDown' : verticalEntryKey; // Entry key depends on orientation
+        const verticalEntryKey = isRTL ? LEFT_ARROW : RIGHT_ARROW;
 
-        // Check if the pressed key matches the entry key and if content exists
+        // entry key depends on orientation: horizontal uses ArrowDown, vertical uses the determined arrow key
+        const entryKey = isHorizontal ? 'ArrowDown' : verticalEntryKey;
+
         if (this.item.contentRef() && event.key === entryKey) {
-            event.preventDefault(); // Prevent default arrow key behavior (e.g., page scrolling)
+            event.preventDefault(); // prevent default arrow key behavior (e.g., page scrolling)
 
             if (!this.open()) {
-                // If closed, open the menu first
+                // if closed, open the menu first
                 this.context.onItemSelect?.(this.item.value());
-                // Defer focus movement into content until after state update and render
+                // defer focus movement into content until after state update and render
                 setTimeout(() => this.item.onEntryKeyDown(), 0);
             } else {
-                // If already open, just move focus into the content
+                // if already open, just move focus into the content
                 this.item.onEntryKeyDown();
             }
-            return; // Stop processing here
+            return;
         }
-
-        // --- Let other keys bubble up ---
-        // Arrow keys for navigating *between* triggers (ArrowLeft/Right in horizontal, ArrowUp/Down in vertical)
-        // and Home/End keys are *not* handled here. They will bubble up to the
-        // RdxRovingFocusGroupDirective on the parent RdxNavigationMenuList.
     }
 }
