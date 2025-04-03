@@ -10,7 +10,7 @@ import {
     OnInit,
     untracked
 } from '@angular/core';
-import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT } from '@radix-ng/primitives/core';
+import { ARROW_LEFT, ARROW_RIGHT } from '@radix-ng/primitives/core';
 import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 import { RdxNavigationMenuItemDirective } from './navigation-menu-item.directive';
 import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.token';
@@ -72,12 +72,10 @@ export class RdxNavigationMenuTriggerDirective implements OnInit {
     }
 
     ngOnInit() {
-        // Register this trigger instance with its parent item directive
         this.item.triggerRef.set(this.elementRef.nativeElement);
 
-        // Configure the static part of the roving focus item directive instance
+        // configure the static part of the roving focus item directive instance
         this.rovingFocusItem.tabStopId = this.item.value();
-        // The effect for 'focusable' is now in the constructor
     }
 
     onPointerEnter(): void {
@@ -164,10 +162,11 @@ export class RdxNavigationMenuTriggerDirective implements OnInit {
         // determine the correct arrow key based on orientation and text direction
         const isHorizontal = this.context.orientation === 'horizontal';
         const isRTL = this.context.dir === 'rtl';
+
         const verticalEntryKey = isRTL ? ARROW_LEFT : ARROW_RIGHT;
 
         // entry key depends on orientation: horizontal uses ArrowDown, vertical uses the determined arrow key
-        const entryKey = isHorizontal ? ARROW_DOWN : verticalEntryKey;
+        const entryKey = isHorizontal ? ENTER : verticalEntryKey;
 
         if (this.item.contentRef() && event.key === entryKey) {
             event.preventDefault(); // prevent default arrow key behavior (e.g., page scrolling)
