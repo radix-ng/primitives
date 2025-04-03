@@ -10,7 +10,7 @@ import {
     OnInit,
     untracked
 } from '@angular/core';
-import { ARROW_LEFT, ARROW_RIGHT } from '@radix-ng/primitives/core';
+import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT } from '@radix-ng/primitives/core';
 import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 import { RdxNavigationMenuItemDirective } from './navigation-menu-item.directive';
 import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.token';
@@ -167,7 +167,7 @@ export class RdxNavigationMenuTriggerDirective implements OnInit {
         const verticalEntryKey = isRTL ? ARROW_LEFT : ARROW_RIGHT;
 
         // entry key depends on orientation: horizontal uses ArrowDown, vertical uses the determined arrow key
-        const entryKey = isHorizontal ? 'ArrowDown' : verticalEntryKey;
+        const entryKey = isHorizontal ? ARROW_DOWN : verticalEntryKey;
 
         if (this.item.contentRef() && event.key === entryKey) {
             event.preventDefault(); // prevent default arrow key behavior (e.g., page scrolling)
