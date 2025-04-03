@@ -10,6 +10,7 @@ import {
     OnInit,
     TemplateRef
 } from '@angular/core';
+import { ESCAPE } from '@radix-ng/primitives/core';
 import { RdxNavigationMenuItemDirective } from './navigation-menu-item.directive';
 import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.token';
 import { getMotionAttribute, makeContentId, makeTriggerId } from './utils';
@@ -40,20 +41,7 @@ export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
     /** @ignore */
     readonly triggerId = makeTriggerId(this.context.baseId, this.item.value());
 
-    /** @ignore - Compute motion attribute for animations */
-    getMotionAttribute(): string | null {
-        if (!isRootNavigationMenu(this.context)) return null;
-
-        const itemValues = Array.from(this.context.viewportContent?.() ?? new Map()).map(([value]) => value);
-
-        return getMotionAttribute(
-            this.context.value(),
-            this.context.previousValue(),
-            this.item.value(),
-            itemValues,
-            this.context.dir
-        );
-    }
+    private escapeHandler: ((e: KeyboardEvent) => void) | null = null;
 
     /** @ignore */
     ngOnInit() {
@@ -69,6 +57,30 @@ export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
                 getMotionAttribute: this.getMotionAttribute.bind(this)
             });
         }
+
+        // add Escape key handler
+        this.escapeHandler = (event: KeyboardEvent) => {
+            if (event.key === ESCAPE && this.context.value() === this.item.value()) {
+                // Mark that this close was triggered by Escape
+                this.item.wasEscapeCloseRef.set(true);
+
+                // Close the content
+                if (this.context.onItemDismiss) {
+                    this.context.onItemDismiss();
+                }
+
+                // Refocus the trigger
+                setTimeout(() => {
+                    const trigger = this.item.triggerRef();
+                    if (trigger) trigger.focus();
+                }, 0);
+
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        };
+
+        document.addEventListener('keydown', this.escapeHandler);
     }
 
     /** @ignore */
@@ -77,5 +89,26 @@ export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
         if (isRootNavigationMenu(this.context) && this.context.onViewportContentRemove) {
             this.context.onViewportContentRemove(this.item.value());
         }
+
+        // remove escape key handler
+        if (this.escapeHandler) {
+            document.removeEventListener('keydown', this.escapeHandler);
+            this.escapeHandler = null;
+        }
+    }
+
+    /** @ignore - Compute motion attribute for animations */
+    getMotionAttribute(): string | null {
+        if (!isRootNavigationMenu(this.context)) return null;
+
+        const itemValues = Array.from(this.context.viewportContent?.() ?? new Map()).map(([value]) => value);
+
+        return getMotionAttribute(
+            this.context.value(),
+            this.context.previousValue(),
+            this.item.value(),
+            itemValues,
+            this.context.dir
+        );
     }
 }

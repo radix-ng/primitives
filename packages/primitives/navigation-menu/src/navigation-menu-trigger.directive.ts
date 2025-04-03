@@ -1,4 +1,3 @@
-import { ENTER, SPACE } from '@angular/cdk/keycodes';
 import {
     booleanAttribute,
     computed,
@@ -10,7 +9,7 @@ import {
     OnInit,
     untracked
 } from '@angular/core';
-import { ARROW_LEFT, ARROW_RIGHT } from '@radix-ng/primitives/core';
+import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ARROW_UP, ENTER, SPACE } from '@radix-ng/primitives/core';
 import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 import { RdxNavigationMenuItemDirective } from './navigation-menu-item.directive';
 import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.token';
@@ -147,8 +146,8 @@ export class RdxNavigationMenuTriggerDirective implements OnInit {
     onKeydown(event: KeyboardEvent): void {
         if (this.disabled()) return;
 
-        if (event.keyCode === ENTER || event.keyCode === SPACE) {
-            event.preventDefault(); // prevent default button behavior (e.g., scrolling on space)
+        if (event.key === ENTER || event.key === SPACE) {
+            event.preventDefault(); // prevent default button behavior
             this.onClick();
 
             // if menu was opened by this keypress, move focus into the content
@@ -159,17 +158,48 @@ export class RdxNavigationMenuTriggerDirective implements OnInit {
             return;
         }
 
-        // determine the correct arrow key based on orientation and text direction
         const isHorizontal = this.context.orientation === 'horizontal';
         const isRTL = this.context.dir === 'rtl';
 
-        const verticalEntryKey = isRTL ? ARROW_LEFT : ARROW_RIGHT;
+        // handle ArrowDown/ArrowUp navigation in horizontal orientation
+        if (isHorizontal) {
+            if (event.key === ARROW_DOWN) {
+                event.preventDefault();
 
-        // entry key depends on orientation: horizontal uses ArrowDown, vertical uses the determined arrow key
-        const entryKey = isHorizontal ? ENTER : verticalEntryKey;
+                // if menu is open, focus into content
+                if (this.open() && this.item.contentRef()) {
+                    this.item.onEntryKeyDown();
+                    return;
+                }
+
+                // otherwise emulate a right key press to move to the next item
+                const nextEvent = new KeyboardEvent('keydown', {
+                    key: isRTL ? ARROW_LEFT : ARROW_RIGHT,
+                    bubbles: true
+                });
+                this.elementRef.nativeElement.dispatchEvent(nextEvent);
+                return;
+            }
+
+            if (event.key === ARROW_UP) {
+                event.preventDefault();
+
+                // emulate a left key press to move to the previous item
+                const nextEvent = new KeyboardEvent('keydown', {
+                    key: isRTL ? ARROW_RIGHT : ARROW_LEFT,
+                    bubbles: true
+                });
+                this.elementRef.nativeElement.dispatchEvent(nextEvent);
+                return;
+            }
+        }
+
+        // handle vertical navigation and entry into content
+        const verticalEntryKey = isRTL ? ARROW_LEFT : ARROW_RIGHT;
+        const entryKey = isHorizontal ? ARROW_DOWN : verticalEntryKey;
 
         if (this.item.contentRef() && event.key === entryKey) {
-            event.preventDefault(); // prevent default arrow key behavior (e.g., page scrolling)
+            event.preventDefault();
 
             if (!this.open()) {
                 // if closed, open the menu first

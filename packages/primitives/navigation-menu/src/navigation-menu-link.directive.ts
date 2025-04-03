@@ -1,4 +1,5 @@
 import { booleanAttribute, Directive, ElementRef, inject, input, OnInit } from '@angular/core';
+import { ENTER, SPACE } from '@radix-ng/primitives/core';
 import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 import { generateId } from './utils';
 
@@ -56,7 +57,7 @@ export class RdxNavigationMenuLinkDirective implements OnInit {
 
     onKeydown(event: KeyboardEvent): void {
         // activate link on Enter or Space
-        if (event.key === 'Enter' || event.key === ' ') {
+        if (event.key === ENTER || event.key === SPACE) {
             // prevent default behavior like scrolling (Space) or form submission (Enter) BEFORE simulating the click.
             event.preventDefault();
 

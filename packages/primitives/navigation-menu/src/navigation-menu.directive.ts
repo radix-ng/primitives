@@ -49,7 +49,7 @@ export class RdxNavigationMenuDirective implements OnDestroy {
     userDismissedByClick = () => this.#userDismissedByClick();
     resetUserDismissed = () => this.#userDismissedByClick.set(false);
 
-    // Delay timers
+    // delay timers
     private openTimerRef = 0;
     private closeTimerRef = 0;
     private skipDelayTimerRef = 0;
@@ -60,7 +60,6 @@ export class RdxNavigationMenuDirective implements OnDestroy {
     readonly #isPointerOverTrigger = signal(false);
     private documentMouseLeaveHandler: ((e: Event) => void) | null = null;
 
-    // observable for handling actions with debounce
     readonly actionSubject$ = new Subject<{ action: RdxNavigationMenuAction; itemValue?: string }>();
 
     @Input() orientation: 'horizontal' | 'vertical' = 'horizontal';
@@ -75,7 +74,7 @@ export class RdxNavigationMenuDirective implements OnDestroy {
     readonly isRootMenu = true;
     readonly cssAnimationStatus: WritableSignal<RdxNavigationMenuAnimationStatus | null> = signal(null);
 
-    // Expose state as functions for the token
+    // exposed state as functions for the token
     value = () => this.#value();
     previousValue = () => this.#previousValue();
     rootNavigationMenu = () => this.#rootNavigationMenu();
@@ -88,7 +87,7 @@ export class RdxNavigationMenuDirective implements OnDestroy {
     setContentPointerState = (isOver: boolean) => this.#isPointerOverContent.set(isOver);
     isPointerInSystem = () => this.#isPointerOverContent() || this.#isPointerOverTrigger();
 
-    // expoed  animation state
+    // exposed  animation state
     getCssAnimation = () => this.cssAnimation;
     getCssOpeningAnimation = () => this.cssOpeningAnimation;
     getCssClosingAnimation = () => this.cssClosingAnimation;
