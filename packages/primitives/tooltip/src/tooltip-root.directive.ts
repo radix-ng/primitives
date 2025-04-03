@@ -395,7 +395,6 @@ export class RdxTooltipRootDirective {
             .asObservable()
             .pipe(
                 map((action) => {
-                    console.log(action);
                     switch (action) {
                         case RdxTooltipAction.OPEN:
                             return { action, duration: this.openDelay() };
