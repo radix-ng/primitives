@@ -66,15 +66,15 @@ export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
         // add Escape key handler
         this.escapeHandler = (event: KeyboardEvent) => {
             if (event.key === ESCAPE && this.context.value() === this.item.value()) {
-                // Mark that this close was triggered by Escape
+                // mark that this close was triggered by Escape
                 this.item.wasEscapeCloseRef.set(true);
 
-                // Close the content
+                // close the content
                 if (this.context.onItemDismiss) {
                     this.context.onItemDismiss();
                 }
 
-                // Refocus the trigger
+                // refocus the trigger
                 setTimeout(() => {
                     const trigger = this.item.triggerRef();
                     if (trigger) trigger.focus();

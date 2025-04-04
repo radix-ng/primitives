@@ -34,20 +34,19 @@ export class RdxNavigationMenuItemDirective {
         if (isRootNavigationMenu(this.context) && this.context.viewport && this.context.viewport()) {
             const viewport = this.context.viewport();
             if (viewport) {
-                // Find tabbable elements in the viewport
+                // find tabbable elements in the viewport
                 const candidates = getTabbableCandidates(viewport);
                 if (candidates.length) {
-                    // Make sure all elements are in the tab order
                     this.ensureTabOrder();
 
-                    // Focus the first element
+                    // focus the first element
                     focusFirst(candidates);
                     return;
                 }
             }
         }
 
-        // Fallback to content if no viewport or no tabbable elements in viewport
+        // fallback to content if no viewport or no tabbable elements in viewport
         if (this.contentRef()) {
             // restore tab order if needed
             const restoreFn = this._restoreContentTabOrderRef();
@@ -77,7 +76,7 @@ export class RdxNavigationMenuItemDirective {
      * @param side Which side the focus is coming from (start = from trigger, end = from after content)
      */
     onFocusProxyEnter(side: 'start' | 'end' = 'start') {
-        // Check for viewport first
+        // check for viewport first
         if (isRootNavigationMenu(this.context) && this.context.viewport && this.context.viewport()) {
             const viewport = this.context.viewport();
             if (viewport) {
@@ -85,14 +84,14 @@ export class RdxNavigationMenuItemDirective {
                 if (candidates.length) {
                     this.ensureTabOrder();
 
-                    // Focus first or last element depending on direction
+                    // focus first or last element depending on direction
                     focusFirst(side === 'start' ? candidates : [...candidates].reverse());
                     return;
                 }
             }
         }
 
-        // Fallback to content
+        // fallback to content
         if (this.contentRef()) {
             // restore tab order if needed
             const restoreFn = this._restoreContentTabOrderRef();
@@ -112,10 +111,10 @@ export class RdxNavigationMenuItemDirective {
      * Remove elements from tab order when not focused
      */
     onContentFocusOutside() {
-        // Get all tabbable elements from both viewport and content
+        // get all tabbable elements from both viewport and content
         let allCandidates: HTMLElement[] = [];
 
-        // Check viewport first
+        // check viewport first
         if (isRootNavigationMenu(this.context) && this.context.viewport && this.context.viewport()) {
             const viewport = this.context.viewport();
             if (viewport) {
@@ -123,13 +122,13 @@ export class RdxNavigationMenuItemDirective {
             }
         }
 
-        // Also check direct content
+        // ... also check direct content
         if (this.contentRef()) {
             const contentCandidates = getTabbableCandidates(this.contentRef()!);
             allCandidates = [...allCandidates, ...contentCandidates];
         }
 
-        // Remove from tab order and store restore function
+        // remove from tab order and store restore function
         if (allCandidates.length) {
             this._restoreContentTabOrderRef.set(removeFromTabOrder(allCandidates));
         }

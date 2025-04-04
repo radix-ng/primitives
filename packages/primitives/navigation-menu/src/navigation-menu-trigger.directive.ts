@@ -219,21 +219,21 @@ export class RdxNavigationMenuTriggerDirective implements OnInit, OnDestroy {
         const isHorizontal = this.context.orientation === 'horizontal';
         const isRTL = this.context.dir === 'rtl';
 
-        // Handle ArrowDown specifically for viewport navigation
+        // handle `ArrowDown` specifically for viewport navigation
         if (event.key === ARROW_DOWN) {
             event.preventDefault();
 
-            // If the menu is open, focus into the content
+            // if the menu is open, focus into the content
             if (this.open()) {
-                // Direct focus handling for viewport case
+                // direct focus handling for viewport case
                 if (isRootNavigationMenu(this.context) && this.context.viewport && this.context.viewport()) {
-                    // Get the viewport element
+                    // get the viewport element
                     const viewport = this.context.viewport();
                     if (viewport) {
-                        // Find all tabbable elements in the viewport
+                        // find all tabbable elements in the viewport
                         const tabbables = getTabbableCandidates(viewport);
                         if (tabbables.length > 0) {
-                            // Focus the first tabbable element directly
+                            // focus the first tabbable element directly
                             setTimeout(() => {
                                 tabbables[0].focus();
                             }, 0);
@@ -242,12 +242,12 @@ export class RdxNavigationMenuTriggerDirective implements OnInit, OnDestroy {
                     }
                 }
 
-                // Fallback to the standard entry key down approach
+                // fallback to the standard entry key down approach
                 setTimeout(() => this.item.onEntryKeyDown(), 0);
                 return;
             }
 
-            // If not open but in horizontal orientation, emulate right key navigation
+            // if not open but in horizontal orientation, emulate right key navigation
             if (isHorizontal) {
                 const nextEvent = new KeyboardEvent('keydown', {
                     key: isRTL ? ARROW_LEFT : ARROW_RIGHT,
