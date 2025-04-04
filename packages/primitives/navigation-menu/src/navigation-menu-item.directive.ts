@@ -38,7 +38,7 @@ export class RdxNavigationMenuItemDirective {
                 const candidates = getTabbableCandidates(viewport);
                 if (candidates.length) {
                     // Make sure all elements are in the tab order
-                    this.ensureTabOrder(candidates);
+                    this.ensureTabOrder();
 
                     // Focus the first element
                     focusFirst(candidates);
@@ -83,7 +83,7 @@ export class RdxNavigationMenuItemDirective {
             if (viewport) {
                 const candidates = getTabbableCandidates(viewport);
                 if (candidates.length) {
-                    this.ensureTabOrder(candidates);
+                    this.ensureTabOrder();
 
                     // Focus first or last element depending on direction
                     focusFirst(side === 'start' ? candidates : [...candidates].reverse());
