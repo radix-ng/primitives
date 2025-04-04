@@ -26,6 +26,7 @@ import { makeContentId, makeTriggerId } from './utils';
         '[disabled]': 'disabled() ? true : null',
         '[attr.aria-expanded]': 'open()',
         '[attr.aria-controls]': 'contentId',
+        '[attr.aria-haspopup]': '"menu"',
         '(pointerenter)': 'onPointerEnter()',
         '(pointermove)': 'onPointerMove($event)',
         '(pointerleave)': 'onPointerLeave($event)',

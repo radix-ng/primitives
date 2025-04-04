@@ -396,13 +396,7 @@ export const Default: Story = {
                             </svg>
                         </button>
 
-                        <div
-                            class="NavigationMenuContent"
-                            id="learn-content"
-                            *rdxNavigationMenuContent
-                            aria-labelledby="learn-trigger"
-                            role="menu"
-                        >
+                        <div class="NavigationMenuContent" *rdxNavigationMenuContent>
                             <ul class="List one">
                                 <li style="grid-row: span 3;">
                                     <a class="Callout" href="https://www.radix-ng.com/">
@@ -453,13 +447,7 @@ export const Default: Story = {
                             </svg>
                         </button>
 
-                        <div
-                            class="NavigationMenuContent"
-                            id="overview-content"
-                            *rdxNavigationMenuContent
-                            aria-labelledby="overview-trigger"
-                            role="menu"
-                        >
+                        <div class="NavigationMenuContent" *rdxNavigationMenuContent>
                             <ul class="List two">
                                 <li>
                                     <a

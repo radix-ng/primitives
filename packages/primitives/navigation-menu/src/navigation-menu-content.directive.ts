@@ -54,7 +54,12 @@ export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
                 templateRef: this.template,
                 forceMount: this.forceMount(),
                 value: this.item.value(),
-                getMotionAttribute: this.getMotionAttribute.bind(this)
+                getMotionAttribute: this.getMotionAttribute.bind(this),
+                additionalAttrs: {
+                    id: this.contentId,
+                    'aria-labelledby': this.triggerId,
+                    role: 'menu'
+                }
             });
         }
 

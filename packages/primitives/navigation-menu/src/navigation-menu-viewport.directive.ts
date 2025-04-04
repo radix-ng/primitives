@@ -166,14 +166,30 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
                 this.renderer.setAttribute(container, 'data-content-value', contentValue);
                 this.renderer.setStyle(container, 'width', '100%');
 
-                // add motion attribute for animations
                 const viewportContent = this.context.viewportContent && this.context.viewportContent();
                 if (!viewportContent) return;
+
                 const contentData = viewportContent.get(contentValue);
+
+                // apply motion attribute if available
                 if (contentData?.getMotionAttribute) {
                     const motionAttr = contentData.getMotionAttribute();
                     if (motionAttr) {
                         this.renderer.setAttribute(container, 'data-motion', motionAttr);
+                    }
+                }
+
+                // apply additional a11y attributes to the first root node
+                if (contentData?.additionalAttrs && embeddedView.rootNodes.length > 0) {
+                    const rootNode = embeddedView.rootNodes[0];
+                    // check if rootNode has setAttribute (is an Element)
+                    if (rootNode.setAttribute) {
+                        Object.entries(contentData.additionalAttrs).forEach(([attr, value]) => {
+                            // don't override existing attributes that the user might have set manually
+                            if (!rootNode.hasAttribute(attr) || attr === 'id') {
+                                this.renderer.setAttribute(rootNode, attr, value as string);
+                            }
+                        });
                     }
                 }
 
