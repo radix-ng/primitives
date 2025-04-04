@@ -20,7 +20,7 @@ import {
 } from './navigation-menu-a11y.component';
 import { RdxNavigationMenuItemDirective } from './navigation-menu-item.directive';
 import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.token';
-import { makeContentId, makeTriggerId } from './utils';
+import { getTabbableCandidates, makeContentId, makeTriggerId } from './utils';
 
 @Directive({
     selector: '[rdxNavigationMenuTrigger]',
@@ -219,18 +219,36 @@ export class RdxNavigationMenuTriggerDirective implements OnInit, OnDestroy {
         const isHorizontal = this.context.orientation === 'horizontal';
         const isRTL = this.context.dir === 'rtl';
 
-        // handle ArrowDown/ArrowUp navigation in horizontal orientation
-        if (isHorizontal) {
-            if (event.key === ARROW_DOWN) {
-                event.preventDefault();
+        // Handle ArrowDown specifically for viewport navigation
+        if (event.key === ARROW_DOWN) {
+            event.preventDefault();
 
-                // if menu is open, focus into content
-                if (this.open() && this.item.contentRef()) {
-                    this.item.onEntryKeyDown();
-                    return;
+            // If the menu is open, focus into the content
+            if (this.open()) {
+                // Direct focus handling for viewport case
+                if (isRootNavigationMenu(this.context) && this.context.viewport && this.context.viewport()) {
+                    // Get the viewport element
+                    const viewport = this.context.viewport();
+                    if (viewport) {
+                        // Find all tabbable elements in the viewport
+                        const tabbables = getTabbableCandidates(viewport);
+                        if (tabbables.length > 0) {
+                            // Focus the first tabbable element directly
+                            setTimeout(() => {
+                                tabbables[0].focus();
+                            }, 0);
+                            return;
+                        }
+                    }
                 }
 
-                // otherwise emulate a right key press to move to the next item
+                // Fallback to the standard entry key down approach
+                setTimeout(() => this.item.onEntryKeyDown(), 0);
+                return;
+            }
+
+            // If not open but in horizontal orientation, emulate right key navigation
+            if (isHorizontal) {
                 const nextEvent = new KeyboardEvent('keydown', {
                     key: isRTL ? ARROW_LEFT : ARROW_RIGHT,
                     bubbles: true
@@ -238,25 +256,27 @@ export class RdxNavigationMenuTriggerDirective implements OnInit, OnDestroy {
                 this.elementRef.nativeElement.dispatchEvent(nextEvent);
                 return;
             }
+        }
 
-            if (event.key === ARROW_UP) {
-                event.preventDefault();
+        // handle ArrowUp in horizontal orientation
+        if (isHorizontal && event.key === ARROW_UP) {
+            event.preventDefault();
 
-                // emulate a left key press to move to the previous item
-                const nextEvent = new KeyboardEvent('keydown', {
-                    key: isRTL ? ARROW_RIGHT : ARROW_LEFT,
-                    bubbles: true
-                });
-                this.elementRef.nativeElement.dispatchEvent(nextEvent);
-                return;
-            }
+            // emulate a left key press to move to the previous item
+            const nextEvent = new KeyboardEvent('keydown', {
+                key: isRTL ? ARROW_RIGHT : ARROW_LEFT,
+                bubbles: true
+            });
+            this.elementRef.nativeElement.dispatchEvent(nextEvent);
+            return;
         }
 
         // handle vertical navigation and entry into content
         const verticalEntryKey = isRTL ? ARROW_LEFT : ARROW_RIGHT;
         const entryKey = isHorizontal ? ARROW_DOWN : verticalEntryKey;
 
-        if (this.item.contentRef() && event.key === entryKey) {
+        if (this.item.contentRef() && event.key === entryKey && event.key !== ARROW_DOWN) {
+            // Skip if it's ArrowDown as we already handled it above
             event.preventDefault();
 
             if (!this.open()) {

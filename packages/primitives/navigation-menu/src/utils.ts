@@ -71,48 +71,112 @@ export function getMotionAttribute(
 
 /**
  * Focus the first element in a list of candidates
+ * @param candidates Array of elements that can receive focus
+ * @param preventScroll Whether to prevent scrolling when focusing
+ * @param activateKeyboardNav Whether to dispatch a dummy keydown event to activate keyboard navigation handlers
+ * @returns Whether focus was successfully moved
  */
-export function focusFirst(candidates: HTMLElement[], preventScroll = false): boolean {
+export function focusFirst(candidates: HTMLElement[], preventScroll = false, activateKeyboardNav = true): boolean {
     const prevFocusedElement = document.activeElement;
-    return candidates.some((candidate) => {
+
+    // sort candidates by tabindex to ensure proper order
+    const sortedCandidates = [...candidates].sort((a, b) => {
+        const aIndex = a.tabIndex || 0;
+        const bIndex = b.tabIndex || 0;
+        return aIndex - bIndex;
+    });
+
+    const success = sortedCandidates.some((candidate) => {
         // if focus is already where we want it, do nothing
         if (candidate === prevFocusedElement) return true;
 
-        candidate.focus({ preventScroll });
-        return document.activeElement !== prevFocusedElement;
+        try {
+            candidate.focus({ preventScroll });
+            return document.activeElement !== prevFocusedElement;
+        } catch (e) {
+            console.error('Error focusing element:', e);
+            return false;
+        }
     });
+
+    // if focus was moved successfully and we want to activate keyboard navigation,
+    // dispatch a dummy keypress to ensure keyboard handlers are activated
+    if (success && activateKeyboardNav && document.activeElement !== prevFocusedElement) {
+        try {
+            // dispatch a no-op keydown event to activate any keyboard handlers
+            document.activeElement?.dispatchEvent(
+                new KeyboardEvent('keydown', {
+                    bubbles: true,
+                    cancelable: true,
+                    key: 'Tab',
+                    code: 'Tab'
+                })
+            );
+        } catch (e) {
+            console.error('Error dispatching keyboard event:', e);
+        }
+    }
+
+    return success;
 }
 
 /**
  * Get all tabbable candidates in a container
  */
 export function getTabbableCandidates(container: HTMLElement): HTMLElement[] {
-    const nodes: HTMLElement[] = [];
-    const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
-        acceptNode: (node: any) => {
-            const isHiddenInput = node.tagName === 'INPUT' && node.type === 'hidden';
-            if (node.disabled || node.hidden || isHiddenInput) return NodeFilter.FILTER_SKIP;
-            return node.tabIndex >= 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
-        }
-    });
+    if (!container || !container.querySelectorAll) return [];
 
-    while (walker.nextNode()) nodes.push(walker.currentNode as HTMLElement);
-    return nodes;
+    const TABBABLE_SELECTOR =
+        'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), ' +
+        'select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]), ' +
+        '[contenteditable="true"]:not([tabindex="-1"])';
+
+    // use querySelector for better browser support
+    const elements = Array.from(container.querySelectorAll(TABBABLE_SELECTOR)) as HTMLElement[];
+
+    // filter out elements that are hidden, have display:none, etc.
+    return elements.filter((element) => {
+        if (element.tabIndex < 0) return false;
+        if (element.hasAttribute('disabled')) return false;
+        if (element.hasAttribute('aria-hidden') && element.getAttribute('aria-hidden') === 'true') return false;
+
+        // Check if element or any parent is hidden
+        let current: HTMLElement | null = element;
+        while (current) {
+            const style = window.getComputedStyle(current);
+            if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
+                return false;
+            }
+            current = current.parentElement;
+        }
+
+        return true;
+    });
 }
 
 /**
  * Remove elements from tab order and return a function to restore them
  */
 export function removeFromTabOrder(candidates: HTMLElement[]): () => void {
+    const originalValues = new Map<HTMLElement, string | null>();
+
     candidates.forEach((candidate) => {
-        candidate.dataset['tabindex'] = candidate.getAttribute('tabindex') || '';
+        // Store original tabindex
+        originalValues.set(candidate, candidate.getAttribute('tabindex'));
+
+        // Set to -1 to remove from tab order
         candidate.setAttribute('tabindex', '-1');
     });
 
+    // Return restore function
     return () => {
         candidates.forEach((candidate) => {
-            const prevTabIndex = candidate.dataset['tabindex'] as string;
-            candidate.setAttribute('tabindex', prevTabIndex);
+            const originalValue = originalValues.get(candidate);
+            if (originalValue == null) {
+                candidate.removeAttribute('tabindex');
+            } else {
+                candidate.setAttribute('tabindex', originalValue);
+            }
         });
     };
 }
