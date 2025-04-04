@@ -1,16 +1,23 @@
 import {
     booleanAttribute,
+    ComponentRef,
     computed,
     Directive,
     effect,
     ElementRef,
     inject,
     input,
+    OnDestroy,
     OnInit,
-    untracked
+    untracked,
+    ViewContainerRef
 } from '@angular/core';
 import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ARROW_UP, ENTER, SPACE } from '@radix-ng/primitives/core';
 import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
+import {
+    RdxNavigationMenuAriaOwnsComponent,
+    RdxNavigationMenuFocusProxyComponent
+} from './navigation-menu-a11y.component';
 import { RdxNavigationMenuItemDirective } from './navigation-menu-item.directive';
 import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.token';
 import { makeContentId, makeTriggerId } from './utils';
@@ -35,12 +42,12 @@ import { makeContentId, makeTriggerId } from './utils';
         type: 'button'
     }
 })
-export class RdxNavigationMenuTriggerDirective implements OnInit {
+export class RdxNavigationMenuTriggerDirective implements OnInit, OnDestroy {
     private readonly context = injectNavigationMenu();
     private readonly item = inject(RdxNavigationMenuItemDirective);
     private readonly rovingFocusItem = inject(RdxRovingFocusItemDirective, { self: true });
-
-    readonly elementRef = inject(ElementRef);
+    private readonly elementRef = inject(ElementRef);
+    private readonly viewContainerRef = inject(ViewContainerRef);
 
     readonly disabled = input(false, { transform: booleanAttribute });
 
@@ -49,6 +56,9 @@ export class RdxNavigationMenuTriggerDirective implements OnInit {
     readonly open = computed(() => {
         return this.item.value() === this.context.value();
     });
+
+    private focusProxyRef: ComponentRef<RdxNavigationMenuFocusProxyComponent> | null = null;
+    private ariaOwnsRef: ComponentRef<RdxNavigationMenuAriaOwnsComponent> | null = null;
 
     private hasPointerMoveOpened = false;
     private wasClickClose = false;
@@ -60,12 +70,19 @@ export class RdxNavigationMenuTriggerDirective implements OnInit {
 
         effect(() => {
             const isOpen = this.open();
+
             untracked(() => {
-                if (!isOpen) {
-                    this.hasPointerMoveOpened = false;
+                // handle focus proxy and aria-owns when open state changes
+                if (isOpen) {
+                    this.createAccessibilityComponents();
+                } else {
+                    this.removeAccessibilityComponents();
+
                     if (!this.item.wasEscapeCloseRef()) {
                         this.item.onRootContentClose();
                     }
+
+                    this.hasPointerMoveOpened = false;
                 }
             });
         });
@@ -76,6 +93,46 @@ export class RdxNavigationMenuTriggerDirective implements OnInit {
 
         // configure the static part of the roving focus item directive instance
         this.rovingFocusItem.tabStopId = this.item.value();
+    }
+
+    ngOnDestroy() {
+        this.removeAccessibilityComponents();
+    }
+
+    private createAccessibilityComponents(): void {
+        if (this.focusProxyRef || this.ariaOwnsRef) {
+            return;
+        }
+
+        // create focus proxy component
+        this.focusProxyRef = this.viewContainerRef.createComponent(RdxNavigationMenuFocusProxyComponent);
+        this.focusProxyRef.instance.triggerElement = this.elementRef.nativeElement;
+        this.focusProxyRef.instance.contentElement = this.item.contentRef();
+        this.focusProxyRef.instance.proxyFocus.subscribe((direction: 'start' | 'end') => {
+            this.item.onFocusProxyEnter(direction);
+        });
+
+        // store reference in item directive
+        this.item.focusProxyRef.set(this.focusProxyRef.location.nativeElement);
+
+        // only add aria-owns component if using viewport
+        if (isRootNavigationMenu(this.context) && this.context.viewport && this.context.viewport()) {
+            this.ariaOwnsRef = this.viewContainerRef.createComponent(RdxNavigationMenuAriaOwnsComponent);
+            this.ariaOwnsRef.instance.contentId = this.contentId;
+        }
+    }
+
+    private removeAccessibilityComponents(): void {
+        if (this.focusProxyRef) {
+            this.focusProxyRef.destroy();
+            this.focusProxyRef = null;
+            this.item.focusProxyRef.set(null);
+        }
+
+        if (this.ariaOwnsRef) {
+            this.ariaOwnsRef.destroy();
+            this.ariaOwnsRef = null;
+        }
     }
 
     onPointerEnter(): void {

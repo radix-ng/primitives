@@ -48,6 +48,7 @@ export class RdxNavigationMenuItemDirective {
             // find and focus appropriate element based on direction
             const candidates = getTabbableCandidates(this.contentRef()!);
             if (candidates.length) {
+                // focus first or last element depending on which direction we're coming from
                 focusFirst(side === 'start' ? candidates : [...candidates].reverse());
             }
         }
@@ -55,9 +56,10 @@ export class RdxNavigationMenuItemDirective {
 
     onContentFocusOutside() {
         if (this.contentRef()) {
-            // remove elements from tab order when focus moves out
+            // get all tabbable elements
             const candidates = getTabbableCandidates(this.contentRef()!);
             if (candidates.length) {
+                // remove them from tab order and store restore function
                 this._restoreContentTabOrderRef.set(removeFromTabOrder(candidates));
             }
         }

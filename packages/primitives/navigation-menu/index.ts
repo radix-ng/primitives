@@ -1,4 +1,9 @@
+// ./index.ts
 import { NgModule } from '@angular/core';
+import {
+    RdxNavigationMenuAriaOwnsComponent,
+    RdxNavigationMenuFocusProxyComponent
+} from './src/navigation-menu-a11y.component';
 import { RdxNavigationMenuContentDirective } from './src/navigation-menu-content.directive';
 import { RdxNavigationMenuIndicatorDirective } from './src/navigation-menu-indicator.directive';
 import { RdxNavigationMenuItemDirective } from './src/navigation-menu-item.directive';
@@ -9,6 +14,7 @@ import { RdxNavigationMenuTriggerDirective } from './src/navigation-menu-trigger
 import { RdxNavigationMenuViewportDirective } from './src/navigation-menu-viewport.directive';
 import { RdxNavigationMenuDirective } from './src/navigation-menu.directive';
 
+export * from './src/navigation-menu-a11y.component';
 export * from './src/navigation-menu-content.directive';
 export * from './src/navigation-menu-indicator.directive';
 export * from './src/navigation-menu-item.directive';
@@ -30,7 +36,9 @@ const _imports = [
     RdxNavigationMenuLinkDirective,
     RdxNavigationMenuIndicatorDirective,
     RdxNavigationMenuContentDirective,
-    RdxNavigationMenuViewportDirective
+    RdxNavigationMenuViewportDirective,
+    RdxNavigationMenuFocusProxyComponent,
+    RdxNavigationMenuAriaOwnsComponent
 ];
 
 @NgModule({
