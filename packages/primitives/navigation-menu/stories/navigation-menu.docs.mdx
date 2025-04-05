@@ -1,0 +1,246 @@
+import {ArgTypes, Canvas, Markdown, Meta, Source} from '@storybook/blocks';
+import * as NavigationMenuStories from "./navigation-menu.stories";
+
+<Meta title="Primitives/Navigation Menu" />
+
+# Navigation Menu
+
+A navigation component that provides structured menu navigation with support for submenus and content display.
+
+## Overview
+
+The Navigation Menu component provides:
+
+- ✅ Support for different item types including links, buttons, and custom components
+- ✅ Submenu navigation capabilities
+- ✅ Keyboard navigation support
+- ✅ LTR and RTL layout compatibility
+- ✅ Focus management for accessibility compliance
+
+## Examples
+### Default
+
+<Canvas sourceState="hidden" of={NavigationMenuStories.Default} />
+
+## Component Structure
+
+```html
+<nav rdxNavigationMenu>
+  <ul rdxNavigationMenuList>
+    <li rdxNavigationMenuItem value="item1">
+      <button rdxNavigationMenuTrigger>Item 1</button>
+
+      <!-- Content as structural directive -->
+      <div *rdxNavigationMenuContent class="NavigationMenuContent">
+        <!-- Content for Item 1 -->
+      </div>
+    </li>
+
+    <li rdxNavigationMenuItem value="item2">
+      <a rdxNavigationMenuLink href="#">Item 2</a>
+    </li>
+
+    <!-- Indicator for highlighting active item -->
+    <div rdxNavigationMenuIndicator></div>
+  </ul>
+
+  <!-- Viewport for content display -->
+  <div rdxNavigationMenuViewport></div>
+</nav>
+```
+
+## API Reference
+
+### Root
+`rdxNavigationMenu`
+
+The root directive that contains all parts of a navigation menu.
+
+| Property | Type | Default | Description |
+| -------- | ---- | ------- | ----------- |
+| orientation | 'horizontal' \| 'vertical' | 'horizontal' | Determines the orientation of the navigation menu |
+| dir | 'ltr' \| 'rtl' | 'ltr' | Sets the reading direction of the navigation menu |
+| delayDuration | number | 200 | Duration (ms) from mouse enter until content opens |
+| skipDelayDuration | number | 300 | Duration (ms) after leaving a submenu before it closes |
+| loop | boolean | false | When true, keyboard navigation loops from last item to first and vice versa |
+
+### List
+`rdxNavigationMenuList`
+
+Container for navigation menu items. Must be rendered inside `rdxNavigationMenu` or `rdxNavigationMenuSub`. Has the `menubar` ARIA role.
+
+### Item
+`rdxNavigationMenuItem`
+
+A navigation item container that can hold a trigger and content.
+
+### Trigger
+`rdxNavigationMenuTrigger`
+
+Button that opens submenu content. Must be rendered inside `rdxNavigationMenuItem`.
+
+| Data attribute | Value |
+|----------------|-------|
+| [data-state] | 'open' \| 'closed' |
+| [data-disabled] | Present when disabled |
+
+### Link
+`rdxNavigationMenuLink`
+
+A navigation link. Must be rendered inside `rdxNavigationMenuItem`.
+
+| Property | Type | Default | Description |
+| -------- | ---- | ------- | ----------- |
+| active | boolean | false | Indicates if the link is active |
+
+| Data attribute | Value |
+|----------------|-------|
+| [data-active] | Present when active |
+
+### Content
+`*rdxNavigationMenuContent`
+
+Content displayed when a trigger is activated. Must be rendered inside `rdxNavigationMenuItem`. Used as a structural directive with asterisk syntax. Content renders within the `rdxNavigationMenuViewport`.
+
+| Property | Type | Default | Description |
+| -------- | ---- | ------- | ----------- |
+| forceMount | boolean | false | Keeps content in the DOM even when closed |
+
+Data attributes can be manually controlled:
+
+```html
+<div *rdxNavigationMenuContent
+     class="NavigationMenuContent"
+     [attr.data-state]="'open'"
+     [attr.data-motion]="'from-start'">
+  <!-- Content -->
+</div>
+```
+
+### Indicator
+`rdxNavigationMenuIndicator`
+
+Visual indicator for active menu items. Must be rendered inside `rdxNavigationMenuList`.
+
+| Property | Type | Default | Description |
+| -------- | ---- | ------- | ----------- |
+| forceMount | boolean | false | Keeps indicator in the DOM even when hidden |
+
+| Data attribute | Value |
+|----------------|-------|
+| [data-state] | 'visible' \| 'hidden' |
+
+### Viewport
+`rdxNavigationMenuViewport`
+
+Component that displays active content. Must be rendered inside `rdxNavigationMenu`.
+
+| Property | Type | Default | Description |
+| -------- | ---- | ------- | ----------- |
+| forceMount | boolean | false | Keeps viewport in the DOM even when closed |
+
+| Data attribute | Value |
+|----------------|-------|
+| [data-state] | 'open' \| 'closed' |
+
+### Sub
+`rdxNavigationMenuSub`
+
+Container for nested submenus. Contains its own `rdxNavigationMenuList` and items. Must be rendered inside `rdxNavigationMenuItem`.
+
+| Property | Type | Default | Description |
+| -------- | ---- | ------- | ----------- |
+| orientation | 'horizontal' \| 'vertical' | 'horizontal' | Orientation of submenu list |
+| defaultValue | string | '' | Value of item that should be open by default |
+
+## Accessibility
+
+This component implements the [WAI-ARIA Menu Button Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubutton/):
+
+- Arrow key navigation between items
+- Enter/Space to open menus
+- Escape to close open menus
+- Tab navigation to move focus between focusable elements
+- Automatic ARIA attribute management
+
+## Styling Reference
+
+The component provides data attributes for styling:
+
+```css
+/* Basic styling example */
+.NavigationMenuRoot {
+  position: relative;
+}
+
+.NavigationMenuList {
+  display: flex;
+  list-style: none;
+}
+
+.NavigationMenuTrigger,
+.NavigationMenuLink {
+  padding: 8px 12px;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.NavigationMenuTrigger[data-state="open"] {
+  background-color: var(--primary-light);
+}
+
+.NavigationMenuContent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  animation-duration: 250ms;
+  animation-timing-function: ease;
+}
+
+.NavigationMenuIndicator {
+  transition: transform 250ms ease;
+}
+
+.NavigationMenuViewport {
+  position: relative;
+  transform-origin: top center;
+}
+```
+
+## Animation
+
+Content transitions can be animated using data attributes:
+
+```css
+@keyframes enterFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(200px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes exitToRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(200px);
+  }
+}
+
+/* Apply animations based on motion direction */
+.NavigationMenuContent[data-motion="from-end"] {
+  animation-name: enterFromRight;
+}
+
+.NavigationMenuContent[data-motion="to-end"] {
+  animation-name: exitToRight;
+}
+```
