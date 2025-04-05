@@ -1,5 +1,5 @@
-import { computed, signal, WritableSignal } from '@angular/core';
-import { DateFields, DateValue, isEqualMonth } from '@internationalized/date';
+import { computed, ModelSignal, signal, WritableSignal } from '@angular/core';
+import { DateFields, DateValue, isEqualMonth, isSameDay } from '@internationalized/date';
 import {
     createFormatter,
     createMonths,
@@ -29,8 +29,58 @@ export type CalendarProps = {
     prevPage: WritableSignal<((placeholder: DateValue) => DateValue) | undefined>;
 };
 
+export type CalendarStateProps = {
+    date: ModelSignal<DateValue | DateValue[] | undefined>;
+    isDateDisabled?: DateMatcher;
+    isDateUnavailable?: DateMatcher;
+};
+
+export function calendarState(props: CalendarStateProps) {
+    function isDateSelected(dateObj: DateValue): boolean {
+        const currentValue = props.date(); // signal read
+
+        if (Array.isArray(currentValue)) {
+            return currentValue.some((d) => isSameDay(d, dateObj));
+        } else if (!currentValue) {
+            return false;
+        } else {
+            return isSameDay(currentValue, dateObj);
+        }
+    }
+
+    const isInvalid = computed(() => {
+        const currentValue = props.date();
+
+        if (Array.isArray(currentValue)) {
+            if (!currentValue.length) {
+                return false;
+            }
+            for (const dateObj of currentValue) {
+                if (props.isDateDisabled?.(dateObj)) return true;
+                if (props.isDateUnavailable?.(dateObj)) return true;
+            }
+        } else {
+            if (!currentValue) {
+                return false;
+            }
+            if (props.isDateDisabled?.(currentValue)) return true;
+            if (props.isDateUnavailable?.(currentValue)) return true;
+        }
+        return false;
+    });
+
+    return {
+        isDateSelected,
+        isInvalid
+    };
+}
+
 function handleNextPage(date: DateValue, nextPageFunc: (date: DateValue) => DateValue): DateValue {
     return nextPageFunc(date);
+}
+
+function handlePrevPage(date: DateValue, prevPageFunc: (date: DateValue) => DateValue): DateValue {
+    return prevPageFunc(date);
 }
 
 export function calendarRoot(props: CalendarProps) {
@@ -109,6 +159,50 @@ export function calendarRoot(props: CalendarProps) {
         props.placeholder.set(newMonth[0].value.set({ ...duration }));
     };
 
+    const prevPage = (prevPageFunc?: (date: DateValue) => DateValue) => {
+        const firstDate = month()[0].value;
+
+        if (!prevPageFunc && !props.prevPage()) {
+            const newDate = firstDate.subtract({ months: props.pagedNavigation() ? props.numberOfMonths() : 1 });
+
+            const newMonth = createMonths({
+                dateObj: newDate,
+                weekStartsOn: props.weekStartsOn(),
+                locale: props.locale(),
+                fixedWeeks: props.fixedWeeks(),
+                numberOfMonths: props.numberOfMonths()
+            });
+
+            month.set(newMonth);
+
+            props.placeholder.set(newMonth[0].value.set({ day: 1 }));
+            return;
+        }
+
+        const newDate = handlePrevPage(firstDate, prevPageFunc || props.prevPage()!);
+        const newMonth = createMonths({
+            dateObj: newDate,
+            weekStartsOn: props.weekStartsOn(),
+            locale: props.locale(),
+            fixedWeeks: props.fixedWeeks(),
+            numberOfMonths: props.numberOfMonths()
+        });
+
+        month.set(newMonth);
+
+        const duration: DateFields = {};
+
+        // Do not adjust the placeholder if the prevPageFunc is defined (overwrite)
+        if (!prevPageFunc) {
+            const diff = firstDate.compare(newMonth[0].value);
+            if (diff >= getDaysInMonth(firstDate)) duration.day = 1;
+
+            if (diff >= 365) duration.month = 1;
+        }
+
+        props.placeholder.set(newMonth[0].value.set({ ...duration }));
+    };
+
     const weekdays = computed(() => {
         if (!month().length) return [];
         return month()[0].weeks[0].map((date) => {
@@ -181,6 +275,7 @@ export function calendarRoot(props: CalendarProps) {
         visibleView,
         formatter,
         nextPage,
+        prevPage,
         headingValue
     };
 }

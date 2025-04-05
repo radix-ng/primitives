@@ -558,6 +558,9 @@ importers:
       '@angular-devkit/schematics':
         specifier: ^19.2.5
         version: 19.2.5(chokidar@4.0.3)
+      '@internationalized/date':
+        specifier: ^3.7.0
+        version: 3.7.0
 
   packages/shadcn:
     dependencies:
@@ -2870,6 +2873,9 @@ packages:
     peerDependenciesMeta:
       '@types/node':
         optional: true
+
+  '@internationalized/date@3.7.0':
+    resolution: {integrity: sha512-VJ5WS3fcVx0bejE/YHfbDKR/yawZgKqn/if+oEeLqNwBtPzVB06olkfcnojTmEMX+gTpH+FlQ69SHNitJ8/erQ==}
 
   '@ioredis/commands@1.2.0':
     resolution: {integrity: sha512-Sx1pU8EM64o2BrqNpEO1CNLtKQwyhuXuqyfH7oGKCk+1a33d2r5saW8zNwm3j6BTExtjrv2BxTgzzkMwts6vGg==}
@@ -18298,6 +18304,10 @@ snapshots:
   '@inquirer/type@3.0.5(@types/node@20.17.28)':
     optionalDependencies:
       '@types/node': 20.17.28
+
+  '@internationalized/date@3.7.0':
+    dependencies:
+      '@swc/helpers': 0.5.11
 
   '@ioredis/commands@1.2.0': {}
 
