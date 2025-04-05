@@ -1,18 +1,28 @@
+import {ArgTypes, Canvas, Markdown, Meta, Source} from '@storybook/blocks';
+import * as NavigationMenuStories from "./navigation-menu.stories";
+
+<Meta title="Primitives/Navigation Menu" />
+
 # Navigation Menu
 
-A responsive navigation component that automatically collapses navigation items into a menu when space is limited.
+A navigation component that provides structured menu navigation with support for submenus and content display.
 
-## Features
+## Overview
 
-- ✅ Accepts a variety of item types: links, buttons, and custom components
-- ✅ Support for submenu navigation
-- ✅ Responsive design - automatically adjusts to available space
-- ✅ Keyboard accessible
-- ✅ Supports LTR and RTL layouts
-- ✅ Focus is fully managed
-- ✅ Thoroughly tested for accessibility
+The Navigation Menu component provides:
 
-## Anatomy
+- ✅ Support for different item types including links, buttons, and custom components
+- ✅ Submenu navigation capabilities
+- ✅ Keyboard navigation support
+- ✅ LTR and RTL layout compatibility
+- ✅ Focus management for accessibility compliance
+
+## Examples
+### Default
+
+<Canvas sourceState="hidden" of={NavigationMenuStories.Default} />
+
+## Component Structure
 
 ```html
 <nav rdxNavigationMenu>
@@ -30,11 +40,11 @@ A responsive navigation component that automatically collapses navigation items 
       <a rdxNavigationMenuLink href="#">Item 2</a>
     </li>
 
-    <!-- Indicator that highlights the active item -->
+    <!-- Indicator for highlighting active item -->
     <div rdxNavigationMenuIndicator></div>
   </ul>
 
-  <!-- Viewport for displaying item content -->
+  <!-- Viewport for content display -->
   <div rdxNavigationMenuViewport></div>
 </nav>
 ```
@@ -44,32 +54,30 @@ A responsive navigation component that automatically collapses navigation items 
 ### Root
 `rdxNavigationMenu`
 
-The root directive. Contains all the parts of a navigation menu.
+The root directive that contains all parts of a navigation menu.
 
-| Prop | Type | Default | Description |
-| ---- | ---- | ------- | ----------- |
-| orientation | 'horizontal' \| 'vertical' | 'horizontal' | The orientation of the navigation menu |
-| dir | 'ltr' \| 'rtl' | 'ltr' | The reading direction of the navigation menu |
-| delayDuration | number | 200 | The duration from when the mouse enters a trigger until the content opens |
-| skipDelayDuration | number | 300 | How long the user has after leaving a submenu before it closes |
-| loop | boolean | false | When true, keyboard navigation will loop from last item to first, and vice versa |
+| Property | Type | Default | Description |
+| -------- | ---- | ------- | ----------- |
+| orientation | 'horizontal' \| 'vertical' | 'horizontal' | Determines the orientation of the navigation menu |
+| dir | 'ltr' \| 'rtl' | 'ltr' | Sets the reading direction of the navigation menu |
+| delayDuration | number | 200 | Duration (ms) from mouse enter until content opens |
+| skipDelayDuration | number | 300 | Duration (ms) after leaving a submenu before it closes |
+| loop | boolean | false | When true, keyboard navigation loops from last item to first and vice versa |
 
 ### List
 `rdxNavigationMenuList`
 
-Container for the navigation menu items.
-
-Must be rendered inside `rdxNavigationMenu` or `rdxNavigationMenuSub`. Adheres to the `menubar` role.
+Container for navigation menu items. Must be rendered inside `rdxNavigationMenu` or `rdxNavigationMenuSub`. Has the `menubar` ARIA role.
 
 ### Item
 `rdxNavigationMenuItem`
 
-A navigation item which can contain a trigger and content.
+A navigation item container that can hold a trigger and content.
 
 ### Trigger
 `rdxNavigationMenuTrigger`
 
-The button that opens the submenu content. Must be rendered inside NavigationMenuItem.
+Button that opens submenu content. Must be rendered inside `rdxNavigationMenuItem`.
 
 | Data attribute | Value |
 |----------------|-------|
@@ -79,11 +87,11 @@ The button that opens the submenu content. Must be rendered inside NavigationMen
 ### Link
 `rdxNavigationMenuLink`
 
-A navigational link. Must be rendered inside NavigationMenuItem.
+A navigation link. Must be rendered inside `rdxNavigationMenuItem`.
 
-| Prop | Type | Default | Description |
-| ---- | ---- | ------- | ----------- |
-| active | boolean | false | Whether the link is visually active |
+| Property | Type | Default | Description |
+| -------- | ---- | ------- | ----------- |
+| active | boolean | false | Indicates if the link is active |
 
 | Data attribute | Value |
 |----------------|-------|
@@ -92,15 +100,13 @@ A navigational link. Must be rendered inside NavigationMenuItem.
 ### Content
 `*rdxNavigationMenuContent`
 
-The content that appears when a trigger is activated. Must be rendered inside NavigationMenuItem. This directive is used as a structural directive with the asterisk syntax.
+Content displayed when a trigger is activated. Must be rendered inside `rdxNavigationMenuItem`. Used as a structural directive with asterisk syntax. Content renders within the `rdxNavigationMenuViewport`.
 
-Content is rendered within the `rdxNavigationMenuViewport`.
+| Property | Type | Default | Description |
+| -------- | ---- | ------- | ----------- |
+| forceMount | boolean | false | Keeps content in the DOM even when closed |
 
-| Prop | Type | Default | Description |
-| ---- | ---- | ------- | ----------- |
-| forceMount | boolean | false | Used to keep the content rendered and available in the DOM, even when closed. Useful for animations. |
-
-For manual control of data attributes:
+Data attributes can be manually controlled:
 
 ```html
 <div *rdxNavigationMenuContent
@@ -114,11 +120,11 @@ For manual control of data attributes:
 ### Indicator
 `rdxNavigationMenuIndicator`
 
-A visual indicator displayed when a menu item is active. Must be rendered inside NavigationMenuList.
+Visual indicator for active menu items. Must be rendered inside `rdxNavigationMenuList`.
 
-| Prop | Type | Default | Description |
-| ---- | ---- | ------- | ----------- |
-| forceMount | boolean | false | Used to keep the indicator rendered and available in the DOM, even when hidden. Useful for animations. |
+| Property | Type | Default | Description |
+| -------- | ---- | ------- | ----------- |
+| forceMount | boolean | false | Keeps indicator in the DOM even when hidden |
 
 | Data attribute | Value |
 |----------------|-------|
@@ -127,40 +133,39 @@ A visual indicator displayed when a menu item is active. Must be rendered inside
 ### Viewport
 `rdxNavigationMenuViewport`
 
-The component that displays the active content (`*rdxNavigationMenuContent`). Must be rendered inside `rdxNavigationMenu`.
+Component that displays active content. Must be rendered inside `rdxNavigationMenu`.
 
-| Prop | Type | Default | Description |
-| ---- | ---- | ------- | ----------- |
-| forceMount | boolean | false | Used to keep the viewport rendered and available in the DOM, even when closed. Useful for animations. |
+| Property | Type | Default | Description |
+| -------- | ---- | ------- | ----------- |
+| forceMount | boolean | false | Keeps viewport in the DOM even when closed |
 
 | Data attribute | Value |
 |----------------|-------|
 | [data-state] | 'open' \| 'closed' |
 
-+### Sub
-+`rdxNavigationMenuSub`
-+
-+Container for a nested submenu. Contains its own `rdxNavigationMenuList` and items. Must be rendered inside `rdxNavigationMenuItem`.
-+
-+| Prop | Type | Default | Description |
-+| ---- | ---- | ------- | ----------- |
-+| orientation | 'horizontal' \| 'vertical' | 'horizontal' | The orientation of the submenu list |
-+| defaultValue | string | '' | The value of the item that should be open by default |
+### Sub
+`rdxNavigationMenuSub`
 
+Container for nested submenus. Contains its own `rdxNavigationMenuList` and items. Must be rendered inside `rdxNavigationMenuItem`.
+
+| Property | Type | Default | Description |
+| -------- | ---- | ------- | ----------- |
+| orientation | 'horizontal' \| 'vertical' | 'horizontal' | Orientation of submenu list |
+| defaultValue | string | '' | Value of item that should be open by default |
 
 ## Accessibility
 
-The Navigation Menu adheres to the [WAI-ARIA Menu Button Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubutton/).
+This component implements the [WAI-ARIA Menu Button Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubutton/):
 
-- Keyboard navigation using arrow keys to move between items
-- Enter or Space to open a menu
-- Escape to close an open menu
-- Tab moves focus to the next focusable element
-- Automatically sets appropriate ARIA attributes
+- Arrow key navigation between items
+- Enter/Space to open menus
+- Escape to close open menus
+- Tab navigation to move focus between focusable elements
+- Automatic ARIA attribute management
 
-## Styling Guidelines
+## Styling Reference
 
-The component itself is unstyled, but provides all the necessary data attributes to style each part:
+The component provides data attributes for styling:
 
 ```css
 /* Basic styling example */
@@ -205,7 +210,7 @@ The component itself is unstyled, but provides all the necessary data attributes
 
 ## Animation
 
-You can animate the opening and closing of the content and transitions between menu items using data attributes:
+Content transitions can be animated using data attributes:
 
 ```css
 @keyframes enterFromRight {
