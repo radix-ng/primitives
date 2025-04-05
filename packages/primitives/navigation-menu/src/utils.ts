@@ -14,7 +14,7 @@ export function generateId(): string {
 /**
  * Get the open state for data-state attribute
  */
-export function getOpenState(open: boolean): 'open' | 'closed' {
+export function getOpenStateLabel(open: boolean): 'open' | 'closed' {
     return open ? 'open' : 'closed';
 }
 
