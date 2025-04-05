@@ -1,9 +1,24 @@
-import { Directive, ElementRef, inject, signal } from '@angular/core';
+import { BooleanInput } from '@angular/cdk/coercion';
+import {
+    booleanAttribute,
+    Directive,
+    ElementRef,
+    forwardRef,
+    inject,
+    input,
+    linkedSignal,
+    model,
+    signal
+} from '@angular/core';
 import { CalendarDate, DateValue } from '@internationalized/date';
-import { calendarRoot } from './calendar-root';
+import { calendarRoot, calendarState } from './calendar-root';
+import { CALENDAR_ROOT_CONTEXT } from './сalendar-сontext.token';
 
 @Directive({
     selector: '[rdxCalendarRoot]',
+    exportAs: 'rdxCalendarRoot',
+    providers: [
+        { provide: CALENDAR_ROOT_CONTEXT, useExisting: forwardRef(() => RdxCalendarRootDirective) }],
     host: {
         role: 'application'
     }
@@ -11,13 +26,17 @@ import { calendarRoot } from './calendar-root';
 export class RdxCalendarRootDirective {
     private readonly elementRef = inject(ElementRef);
 
+    readonly value = model<DateValue | DateValue[] | undefined>();
+
+    readonly multiple = input<BooleanInput, boolean>(false, { transform: booleanAttribute });
+
     locale = signal<string>('en');
 
     placeholder = signal<DateValue>(new CalendarDate(2024, 8, 10));
 
     weekStartsOn = signal<0 | 1 | 2 | 3 | 4 | 5 | 6>(1);
 
-    fixedWeeks = signal<boolean>(false);
+    readonly fixedWeeks = input<BooleanInput, boolean>(false, { transform: booleanAttribute });
 
     numberOfMonths = signal<number>(1);
 
@@ -25,14 +44,23 @@ export class RdxCalendarRootDirective {
 
     maxValue = signal<DateValue>(new CalendarDate(2024, 7, 10));
 
+    protected readonly fixedWeeksRef = linkedSignal({
+        source: this.fixedWeeks,
+        computation: (value) => value as boolean
+    });
+
+    months = signal<any>([]);
+
+    weekDays = signal<any>([]);
+
     constructor() {
-        const { formatter, month, weekdays, nextPage, visibleView } = calendarRoot({
+        const { formatter, month, weekdays, nextPage, prevPage, visibleView, headingValue } = calendarRoot({
             nextPage: signal(undefined),
             prevPage: signal(undefined),
             locale: this.locale,
             placeholder: this.placeholder,
             weekStartsOn: this.weekStartsOn,
-            fixedWeeks: this.fixedWeeks,
+            fixedWeeks: this.fixedWeeksRef,
             numberOfMonths: this.numberOfMonths,
             minValue: this.minValue,
             maxValue: this.maxValue,
@@ -40,6 +68,15 @@ export class RdxCalendarRootDirective {
             calendarLabel: signal(undefined),
             pagedNavigation: signal(false),
             weekdayFormat: signal('narrow')
+        });
+
+        this.months.set(month());
+        this.weekDays.set(weekdays());
+    }
+
+    ngOnInit() {
+        const { isInvalid, isDateSelected } = calendarState({
+            date: this.value
         });
     }
 }
