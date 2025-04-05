@@ -1,23 +1,30 @@
 import { BooleanInput } from '@angular/cdk/coercion';
+import { DOCUMENT } from '@angular/common';
 import {
     booleanAttribute,
     computed,
     Directive,
     effect,
     ElementRef,
-    HostListener,
+    EmbeddedViewRef,
     inject,
     input,
     OnDestroy,
     OnInit,
     Renderer2,
     signal,
+    TemplateRef,
     untracked,
     ViewContainerRef
 } from '@angular/core';
-import { ARROW_DOWN, ARROW_UP } from 'packages/primitives/core/src/kbd-constants';
+import { ARROW_DOWN, ARROW_UP } from '@radix-ng/primitives/core';
 import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.token';
-import { getOpenState, getTabbableCandidates } from './utils';
+import { getOpenStateLabel, getTabbableCandidates } from './utils';
+
+interface ContentNode {
+    embeddedView: EmbeddedViewRef<unknown>;
+    element: HTMLElement;
+}
 
 @Directive({
     selector: '[rdxNavigationMenuViewport]',
@@ -26,12 +33,15 @@ import { getOpenState, getTabbableCandidates } from './utils';
         '[attr.data-orientation]': 'context.orientation',
         '[style.--radix-navigation-menu-viewport-width.px]': 'viewportSize()?.width',
         '[style.--radix-navigation-menu-viewport-height.px]': 'viewportSize()?.height',
+        '(keydown)': 'onKeydown($event)',
         '(pointerenter)': 'onPointerEnter()',
         '(pointerleave)': 'onPointerLeave()'
     }
 })
 export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
     private readonly context = injectNavigationMenu();
+    private readonly doc = inject(DOCUMENT);
+
     private readonly elementRef = inject(ElementRef);
     private readonly viewContainerRef = inject(ViewContainerRef);
     private readonly renderer = inject(Renderer2);
@@ -43,8 +53,8 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
      */
     readonly forceMount = input<BooleanInput, unknown>(undefined, { transform: booleanAttribute });
 
-    private readonly _contentNodes = signal(new Map<string, { embeddedView: any; element: HTMLElement }>());
-    private readonly _activeContentNode = signal<{ embeddedView: any; element: HTMLElement } | null>(null);
+    private readonly _contentNodes = signal(new Map<string, ContentNode>());
+    private readonly _activeContentNode = signal<ContentNode | null>(null);
     private readonly _viewportSize = signal<{ width: number; height: number } | null>(null);
     private readonly _resizeObserver = new ResizeObserver(() => this.updateSize());
 
@@ -61,8 +71,7 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
     }
 
     // Add this method to handle keyboard navigation within the viewport
-    @HostListener('keydown', ['$event'])
-    handleKeyDown(event: KeyboardEvent): void {
+    onKeyDown(event: KeyboardEvent): void {
         // Only handle if viewport is open
         if (!this.open) return;
 
@@ -71,10 +80,11 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
         if (!tabbableElements.length) return;
 
         // Find the currently focused element
-        const currentIndex = tabbableElements.findIndex((el) => el === document.activeElement);
+        const activeElement = this.doc.activeElement as HTMLElement | null;
+        const currentIndex = tabbableElements.findIndex((el) => el === activeElement);
 
         if (event.key === ARROW_DOWN) {
-            event.preventDefault();
+            // event.preventDefault();
 
             if (currentIndex >= 0 && currentIndex < tabbableElements.length - 1) {
                 // Focus the next element
@@ -84,7 +94,7 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
                 tabbableElements[0].focus();
             }
         } else if (event.key === ARROW_UP) {
-            event.preventDefault();
+            // event.preventDefault();
 
             if (currentIndex > 0) {
                 // Focus the previous element
@@ -149,7 +159,7 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
     }
 
     getOpenState() {
-        return getOpenState(this.open);
+        return getOpenStateLabel(this.open);
     }
 
     onPointerEnter(): void {
@@ -191,7 +201,7 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
         }
     }
 
-    private renderContent(templateRef: any, contentValue: string) {
+    private renderContent(templateRef: TemplateRef<unknown>, contentValue: string) {
         // check if we already have a view for this content
         let contentNode = this._contentNodes().get(contentValue);
 
@@ -261,7 +271,7 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
         }
     }
 
-    updateActiveContent(contentNode: { embeddedView: any; element: HTMLElement }) {
+    private updateActiveContent(contentNode: ContentNode) {
         if (contentNode !== this._activeContentNode()) {
             // clear viewport
             while (this.elementRef.nativeElement.firstChild) {
