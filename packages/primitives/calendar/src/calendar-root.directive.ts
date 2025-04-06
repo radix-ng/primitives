@@ -1,7 +1,7 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, Directive, effect, forwardRef, input, linkedSignal, model, signal } from '@angular/core';
-import { CalendarDate, DateValue, isEqualDay, isSameDay } from '@internationalized/date';
-import { DateMatcher, watch } from '@radix-ng/primitives/core';
+import { DateValue, isEqualDay, isSameDay } from '@internationalized/date';
+import { DateMatcher, getDefaultDate, watch } from '@radix-ng/primitives/core';
 import { calendarRoot, calendarState } from './calendar-root';
 import { CALENDAR_ROOT_CONTEXT } from './сalendar-сontext.token';
 
@@ -17,6 +17,18 @@ import { CALENDAR_ROOT_CONTEXT } from './сalendar-сontext.token';
 export class RdxCalendarRootDirective {
     readonly value = model<DateValue | DateValue[] | undefined>();
 
+    readonly defaultPlaceholder = model<DateValue>();
+
+    readonly locale = input<string>('en');
+
+    readonly defaultDate = getDefaultDate({
+        defaultPlaceholder: this.defaultPlaceholder(),
+        defaultValue: this.value(),
+        locale: this.locale()
+    });
+
+    readonly placeholder = model<DateValue>(this.defaultPlaceholder() ?? this.defaultDate.copy());
+
     readonly multiple = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     readonly fixedWeeks = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
@@ -25,17 +37,13 @@ export class RdxCalendarRootDirective {
 
     readonly preventDeselect = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    locale = signal<string>('en');
+    readonly weekStartsOn = input<0 | 1 | 2 | 3 | 4 | 5 | 6>(1);
 
-    placeholder = signal<DateValue>(new CalendarDate(2024, 8, 10));
+    readonly numberOfMonths = input<number>(1);
 
-    weekStartsOn = signal<0 | 1 | 2 | 3 | 4 | 5 | 6>(1);
+    readonly minValue = input<DateValue>();
 
-    numberOfMonths = signal<number>(1);
-
-    minValue = signal<DateValue>(new CalendarDate(2024, 7, 10));
-
-    maxValue = signal<DateValue>(new CalendarDate(2024, 7, 10));
+    readonly maxValue = input<DateValue>();
 
     protected readonly fixedWeeksRef = linkedSignal({
         source: this.fixedWeeks,
@@ -53,31 +61,33 @@ export class RdxCalendarRootDirective {
 
     isDateSelected: DateMatcher;
 
-    constructor() {
-        const { formatter, month, weekdays, nextPage, prevPage, visibleView, headingValue } = calendarRoot({
-            nextPage: signal(undefined),
-            prevPage: signal(undefined),
-            locale: this.locale,
-            placeholder: this.placeholder,
-            weekStartsOn: this.weekStartsOn,
-            fixedWeeks: this.fixedWeeksRef,
-            numberOfMonths: this.numberOfMonths,
-            minValue: this.minValue,
-            maxValue: this.maxValue,
-            disabled: signal(true),
-            calendarLabel: signal(undefined),
-            pagedNavigation: signal(false),
-            weekdayFormat: signal('narrow')
-        });
+    private readonly calendar = calendarRoot({
+        nextPage: signal(undefined),
+        prevPage: signal(undefined),
+        locale: this.locale,
+        placeholder: this.placeholder,
+        weekStartsOn: this.weekStartsOn,
+        fixedWeeks: this.fixedWeeksRef,
+        numberOfMonths: this.numberOfMonths,
+        minValue: this.minValue,
+        maxValue: this.maxValue,
+        disabled: signal(true),
+        calendarLabel: signal(undefined),
+        pagedNavigation: signal(false),
+        weekdayFormat: signal('narrow')
+    });
 
-        this.nextPage = nextPage;
-        this.prevPage = prevPage;
+    constructor() {
+        //const { formatter, month, weekdays, nextPage, prevPage, visibleView, headingValue }
+
+        this.nextPage = this.calendar.nextPage;
+        this.prevPage = this.calendar.prevPage;
 
         effect(() => {
-            this.months.set(month());
-            this.weekDays.set(weekdays());
+            this.months.set(this.calendar.month());
+            this.weekDays.set(this.calendar.weekdays());
 
-            this.headingValue.set(headingValue());
+            this.headingValue.set(this.calendar.headingValue());
 
             const { isInvalid, isDateSelected } = calendarState({
                 date: this.value
