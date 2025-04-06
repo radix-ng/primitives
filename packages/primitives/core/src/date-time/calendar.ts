@@ -1,6 +1,7 @@
 import { DateValue, endOfMonth, startOfMonth } from '@internationalized/date';
-import { getDaysInMonth, getLastFirstDayOfWeek, getNextLastDayOfWeek, Month } from '@radix-ng/primitives/core';
 import { chunk } from '../chunk';
+import { getDaysInMonth, getLastFirstDayOfWeek, getNextLastDayOfWeek } from './comparators';
+import { Month } from './types';
 
 export type CreateMonthProps = {
     /**
