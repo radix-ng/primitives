@@ -67,6 +67,7 @@
         "@angular/platform-server": "19.2.4",
         "@angular/router": "19.2.4",
         "@angular/ssr": "19.2.5",
+        "@internationalized/date": "^3.7.0",
         "@ng-doc/app": "19.1.0",
         "@ng-doc/builder": "19.1.0",
         "@ng-doc/core": "19.1.0",
