@@ -3,17 +3,17 @@ import { DateValue } from '@internationalized/date';
 import { injectCalendarRootContext } from './сalendar-сontext.token';
 
 @Directive({
-    selector: 'button[rdxCalendarNext]',
+    selector: 'button[rdxCalendarPrev]',
     host: {
         '(click)': 'onClick()'
     }
 })
-export class RdxCalendarNextDirective {
+export class RdxCalendarPrevDirective {
     protected readonly rootContext = injectCalendarRootContext();
 
-    readonly nextPage = input<(placeholder: DateValue) => DateValue>();
+    readonly prevPage = input<(placeholder: DateValue) => DateValue>();
 
     protected onClick() {
-        this.rootContext.nextPage!(this.nextPage());
+        this.rootContext.prevPage!(this.prevPage());
     }
 }

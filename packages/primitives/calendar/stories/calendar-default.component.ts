@@ -6,6 +6,7 @@ import { RdxCalendarGridDirective } from '../src/calendar-grid.directive';
 import { RdxCalendarHeaderDirective } from '../src/calendar-header.directive';
 import { RdxCalendarHeadingDirective } from '../src/calendar-heading.directive';
 import { RdxCalendarNextDirective } from '../src/calendar-next.directive';
+import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
 
 @Component({
@@ -17,7 +18,8 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
         RdxCalendarGridHeadDirective,
         RdxCalendarCellTriggerDirective,
         RdxCalendarHeadingDirective,
-        RdxCalendarNextDirective
+        RdxCalendarNextDirective,
+        RdxCalendarPrevDirective
     ],
     styleUrl: 'calendar-default.style.css',
     template: `
@@ -30,7 +32,7 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
                 fixedWeeks
             >
                 <div rdxCalendarHeader style="display: flex;align-items: center;justify-content: space-between;">
-                    <button class="icon-button">
+                    <button class="icon-button" rdxCalendarPrev>
                         <svg
                             class="iconify iconify--radix-icons h-4 w-4"
                             xmlns="http://www.w3.org/2000/svg"
