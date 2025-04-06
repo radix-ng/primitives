@@ -1,5 +1,6 @@
 import { CalendarDate } from '@internationalized/date';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { RdxCalendarCellTriggerDirective } from '../src/calendar-cell-trigger.directive';
 import { RdxCalendarGridHeadDirective } from '../src/calendar-grid-head.directive';
 import { RdxCalendarGridDirective } from '../src/calendar-grid.directive';
 import { RdxCalendarHeaderDirective } from '../src/calendar-header.directive';
@@ -15,7 +16,8 @@ export default {
                 RdxCalendarRootDirective,
                 RdxCalendarHeaderDirective,
                 RdxCalendarGridDirective,
-                RdxCalendarGridHeadDirective
+                RdxCalendarGridHeadDirective,
+                RdxCalendarCellTriggerDirective
             ]
         }),
         componentWrapperDecorator(
@@ -47,13 +49,26 @@ export const Default: Story = {
                     <div class="CalendarContainer">
                         <table rdxCalendarGrid class="CalendarGrid">
                             @for (month of root.months(); track month) {
-                            <thead rdxCalendarGridHead>
-                                <tr>
-                                    @for (day of root.weekDays(); track $index) {
-                                        <th class="CalendarHeadCell">{{ day }}</th>
+                                <thead rdxCalendarGridHead>
+                                    <tr style="display: grid;width: 100%;grid-template-columns: repeat(7,minmax(0,1fr)); margin-bottom: .25rem;">
+                                        @for (day of root.weekDays(); track $index) {
+                                            <th class="CalendarHeadCell">{{ day }}</th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody rdxCalendarGridBody style="display: grid;">
+                                    @for (weekDates of month.weeks; track $index) {
+                                        <tr style="display: grid; grid-template-columns: repeat(7, 1fr);">
+                                            @for (weekDate of weekDates; track $index) {
+                                                <td style="position:relative; text-align: center; font-size: 0.8rem;">
+                                                    <div rdxCalendarCellTrigger #cell="rdxCalendarCellTrigger" [day]="weekDate" class="calendar-day">
+                                                        {{ cell.dayValue() }}
+                                                    </div>
+                                                </td>
+                                            }
+                                        </tr>
                                     }
-                                </tr>
-                            </thead>
+                                </tbody>
                             }
                         </table>
                     </div>
@@ -61,6 +76,70 @@ export const Default: Story = {
             </div>
 
             <style>
+
+                .calendar-day {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  white-space: nowrap;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: black;
+  outline: none;
+}
+
+.calendar-day:focus {
+  box-shadow: 0 0 0 2px black;
+}
+
+.calendar-day:hover {
+  background-color: #c3e8d1;
+}
+
+.calendar-day[data-selected] {
+  background-color: #30a46c !important;
+  color: white;
+}
+
+.calendar-day[data-outside-view] {
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.calendar-day[data-highlighted] {
+  background-color: #c3e8d1;
+}
+
+.calendar-day[data-unavailable] {
+  pointer-events: none;
+  color: rgba(0, 0, 0, 0.3);
+  text-decoration: line-through;
+}
+
+.calendar-day::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  width: 0.25rem;
+  height: 0.25rem;
+  border-radius: 9999px;
+  background-color: white;
+  display: none;
+}
+
+.calendar-day[data-today]::before {
+  display: block;
+  background-color: #298459;
+}
+
+                .CalendarGridBody {
+                    display: grid;
+                    grid-template-columns: repeat(7, 1fr);
+                }
+
                 .CalendarHeadCell {
                     border-radius: 0.375rem;
                     font-size: 0.75rem;
