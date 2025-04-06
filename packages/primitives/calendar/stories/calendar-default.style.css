@@ -1,3 +1,7 @@
+button {
+    all: unset;
+}
+
 .icon-button {
     display: inline-flex;
     align-items: center;
@@ -92,12 +96,6 @@
     color: #30a46c;
 }
 
-.CalendarGrid {
-    margin-top: 1.5rem;
-    background-color: #ffffff;
-    padding: 1rem;
-}
-
 .Calendar {
     margin-top: 1.5rem;
     border-width: 1px;
@@ -119,8 +117,4 @@
     display: flex;
     flex-direction: column;
     padding-top: 1rem;
-}
-
-.CalendarContainer > * + * {
-    margin-top: 1rem;
 }

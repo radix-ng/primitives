@@ -81,7 +81,7 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
                     </button>
                 </div>
                 <div class="CalendarContainer">
-                    <table class="CalendarGrid" rdxCalendarGrid>
+                    <table rdxCalendarGrid style="width: 100%; border-collapse: collapse; user-select: none;">
                         @for (month of root.months(); track month) {
                             <thead rdxCalendarGridHead>
                                 <tr

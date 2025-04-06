@@ -1,4 +1,4 @@
-import { computed, ModelSignal, signal, WritableSignal } from '@angular/core';
+import { computed, InputSignal, ModelSignal, signal, WritableSignal } from '@angular/core';
 import { DateFields, DateValue, isEqualMonth, isSameDay } from '@internationalized/date';
 import {
     createFormatter,
@@ -12,13 +12,13 @@ import {
 } from '@radix-ng/primitives/core';
 
 export type CalendarProps = {
-    locale: WritableSignal<string>;
+    locale: InputSignal<string>;
     placeholder: WritableSignal<DateValue>;
-    weekStartsOn: WritableSignal<0 | 1 | 2 | 3 | 4 | 5 | 6>;
+    weekStartsOn: InputSignal<0 | 1 | 2 | 3 | 4 | 5 | 6>;
     fixedWeeks: WritableSignal<boolean>;
-    numberOfMonths: WritableSignal<number>;
-    minValue: WritableSignal<DateValue | undefined>;
-    maxValue: WritableSignal<DateValue | undefined>;
+    numberOfMonths: InputSignal<number>;
+    minValue: InputSignal<DateValue | undefined>;
+    maxValue: InputSignal<DateValue | undefined>;
     disabled: WritableSignal<boolean>;
     weekdayFormat: WritableSignal<Intl.DateTimeFormatOptions['weekday']>;
     pagedNavigation: WritableSignal<boolean>;
