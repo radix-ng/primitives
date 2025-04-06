@@ -89,7 +89,7 @@ export class RdxCalendarRootDirective {
 
             this.headingValue.set(this.calendar.headingValue());
 
-            const { isInvalid, isDateSelected } = calendarState({
+            const { isDateSelected } = calendarState({
                 date: this.value
             });
 
