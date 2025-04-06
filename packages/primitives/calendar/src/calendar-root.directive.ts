@@ -1,15 +1,5 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import {
-    booleanAttribute,
-    Directive,
-    ElementRef,
-    forwardRef,
-    inject,
-    input,
-    linkedSignal,
-    model,
-    signal
-} from '@angular/core';
+import { booleanAttribute, Directive, effect, forwardRef, input, linkedSignal, model, signal } from '@angular/core';
 import { CalendarDate, DateValue } from '@internationalized/date';
 import { calendarRoot, calendarState } from './calendar-root';
 import { CALENDAR_ROOT_CONTEXT } from './сalendar-сontext.token';
@@ -24,11 +14,9 @@ import { CALENDAR_ROOT_CONTEXT } from './сalendar-сontext.token';
     }
 })
 export class RdxCalendarRootDirective {
-    private readonly elementRef = inject(ElementRef);
-
     readonly value = model<DateValue | DateValue[] | undefined>();
 
-    readonly multiple = input<BooleanInput, boolean>(false, { transform: booleanAttribute });
+    readonly multiple = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     locale = signal<string>('en');
 
@@ -36,7 +24,7 @@ export class RdxCalendarRootDirective {
 
     weekStartsOn = signal<0 | 1 | 2 | 3 | 4 | 5 | 6>(1);
 
-    readonly fixedWeeks = input<BooleanInput, boolean>(false, { transform: booleanAttribute });
+    readonly fixedWeeks = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     numberOfMonths = signal<number>(1);
 
@@ -52,6 +40,10 @@ export class RdxCalendarRootDirective {
     months = signal<any>([]);
 
     weekDays = signal<any>([]);
+
+    readonly headingValue = signal<string>('');
+
+    nextPage: (nextPageFunc?: (date: DateValue) => DateValue) => void;
 
     constructor() {
         const { formatter, month, weekdays, nextPage, prevPage, visibleView, headingValue } = calendarRoot({
@@ -70,8 +62,14 @@ export class RdxCalendarRootDirective {
             weekdayFormat: signal('narrow')
         });
 
-        this.months.set(month());
-        this.weekDays.set(weekdays());
+        this.nextPage = nextPage;
+
+        effect(() => {
+            this.months.set(month());
+            this.weekDays.set(weekdays());
+
+            this.headingValue.set(headingValue());
+        });
     }
 
     ngOnInit() {

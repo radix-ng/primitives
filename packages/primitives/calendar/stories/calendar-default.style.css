@@ -1,0 +1,126 @@
+.icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #000000;
+    background-color: transparent;
+    border-radius: 0.375rem;
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
+.icon-button:hover {
+    background-color: #f5f5f4;
+}
+
+.icon-button:active {
+    transform: scale(0.98);
+    transition: all 0.1s ease;
+}
+
+.icon-button:focus {
+    box-shadow: 0 0 0 2px black;
+}
+.calendar-day {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    white-space: nowrap;
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: black;
+    outline: none;
+    cursor: pointer;
+}
+
+.calendar-day:focus {
+    box-shadow: 0 0 0 2px black;
+}
+
+.calendar-day:hover {
+    background-color: #c3e8d1;
+}
+
+.calendar-day[data-selected] {
+    background-color: #30a46c !important;
+    color: white;
+}
+
+.calendar-day[data-outside-view] {
+    color: rgba(0, 0, 0, 0.3);
+}
+
+.calendar-day[data-highlighted] {
+    background-color: #c3e8d1;
+}
+
+.calendar-day[data-unavailable] {
+    pointer-events: none;
+    color: rgba(0, 0, 0, 0.3);
+    text-decoration: line-through;
+}
+
+.calendar-day::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    width: 0.25rem;
+    height: 0.25rem;
+    border-radius: 9999px;
+    background-color: white;
+    display: none;
+}
+
+.calendar-day[data-today]::before {
+    display: block;
+    background-color: #298459;
+}
+
+.CalendarGridBody {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.CalendarHeadCell {
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    color: #30a46c;
+}
+
+.CalendarGrid {
+    margin-top: 1.5rem;
+    background-color: #ffffff;
+    padding: 1rem;
+}
+
+.Calendar {
+    margin-top: 1.5rem;
+    border-width: 1px;
+    border-color: #000000;
+    background-color: #ffffff;
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 22px;
+}
+
+.CalendarHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.CalendarContainer {
+    display: flex;
+    flex-direction: column;
+    padding-top: 1rem;
+}
+
+.CalendarContainer > * + * {
+    margin-top: 1rem;
+}
