@@ -1,7 +1,7 @@
 import { Directive } from '@angular/core';
 
 @Directive({
-    selector: '[rdxCalendarGrid]',
+    selector: 'table[rdxCalendarGrid]',
     host: {
         tabindex: '-1',
         role: 'grid'

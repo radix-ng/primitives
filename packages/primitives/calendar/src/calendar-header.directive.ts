@@ -1,6 +1,6 @@
 import { Directive } from '@angular/core';
 
 @Directive({
-    selector: '[rdxCalendarHeader]'
+    selector: 'div[rdxCalendarHeader]'
 })
 export class RdxCalendarHeaderDirective {}

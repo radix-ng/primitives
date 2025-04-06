@@ -2,7 +2,7 @@ import { computed, Directive } from '@angular/core';
 import { injectCalendarRootContext } from './сalendar-сontext.token';
 
 @Directive({
-    selector: '[rdxCalendarHeading]',
+    selector: 'div[rdxCalendarHeading]',
     exportAs: 'rdxCalendarHeading'
 })
 export class RdxCalendarHeadingDirective {

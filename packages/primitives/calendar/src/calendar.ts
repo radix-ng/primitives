@@ -20,10 +20,10 @@ export type CalendarProps = {
     minValue: InputSignal<DateValue | undefined>;
     maxValue: InputSignal<DateValue | undefined>;
     disabled: WritableSignal<boolean>;
-    weekdayFormat: WritableSignal<Intl.DateTimeFormatOptions['weekday']>;
+    weekdayFormat: InputSignal<Intl.DateTimeFormatOptions['weekday']>;
     pagedNavigation: WritableSignal<boolean>;
-    isDateDisabled?: DateMatcher;
-    isDateUnavailable?: DateMatcher;
+    isDateDisabled?: InputSignal<DateMatcher | undefined>;
+    isDateUnavailable?: InputSignal<DateMatcher | undefined>;
     calendarLabel: WritableSignal<string | undefined>;
     nextPage: WritableSignal<((placeholder: DateValue) => DateValue) | undefined>;
     prevPage: WritableSignal<((placeholder: DateValue) => DateValue) | undefined>;
@@ -83,7 +83,7 @@ function handlePrevPage(date: DateValue, prevPageFunc: (date: DateValue) => Date
     return prevPageFunc(date);
 }
 
-export function calendarRoot(props: CalendarProps) {
+export function calendar(props: CalendarProps) {
     const formatter = createFormatter(props.locale());
 
     const headingFormatOptions = computed(() => {
@@ -269,7 +269,10 @@ export function calendarRoot(props: CalendarProps) {
         return content;
     });
 
+    const fullCalendarLabel = computed(() => `${props.calendarLabel() ?? 'Event Date'}, ${headingValue()}`);
+
     return {
+        fullCalendarLabel,
         month,
         weekdays,
         visibleView,
