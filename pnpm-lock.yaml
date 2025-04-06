@@ -41,6 +41,9 @@ importers:
       '@angular/ssr':
         specifier: 19.2.5
         version: 19.2.5(486bdb39d5eb314d085fdf78b3799df7)
+      '@internationalized/date':
+        specifier: ^3.7.0
+        version: 3.7.0
       '@ng-doc/app':
         specifier: 19.1.0
         version: 19.1.0(4bca3ae0ea10b9a58a7588a6a66b3b2a)
