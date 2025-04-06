@@ -119,4 +119,11 @@ export class RdxNavigationMenuListDirective implements AfterContentInit, AfterVi
             this.keyManager.onKeydown(event);
         }
     }
+
+    /**
+     * @ignore
+     */
+    setActiveItem(item: RdxNavigationMenuItemDirective) {
+        this.keyManager.setActiveItem(item);
+    }
 }

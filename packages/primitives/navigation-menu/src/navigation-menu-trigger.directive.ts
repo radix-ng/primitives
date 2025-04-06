@@ -19,6 +19,7 @@ import {
     RdxNavigationMenuFocusProxyComponent
 } from './navigation-menu-a11y.component';
 import { RdxNavigationMenuItemDirective } from './navigation-menu-item.directive';
+import { RdxNavigationMenuListDirective } from './navigation-menu-list.directive';
 import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.token';
 import { RdxNavigationMenuFocusableOption } from './navigation-menu.types';
 import { getTabbableCandidates, makeContentId, makeTriggerId } from './utils';
@@ -47,6 +48,7 @@ import { getTabbableCandidates, makeContentId, makeTriggerId } from './utils';
 export class RdxNavigationMenuTriggerDirective extends RdxNavigationMenuFocusableOption implements OnInit, OnDestroy {
     private readonly context = injectNavigationMenu();
     private readonly item = inject(RdxNavigationMenuItemDirective);
+    private readonly list = inject(RdxNavigationMenuListDirective);
     private readonly rovingFocusItem = inject(RdxRovingFocusItemDirective, { self: true });
     private readonly elementRef = inject(ElementRef);
     private readonly viewContainerRef = inject(ViewContainerRef);
@@ -197,6 +199,9 @@ export class RdxNavigationMenuTriggerDirective extends RdxNavigationMenuFocusabl
 
     onClick(): void {
         if (this.disabled()) return;
+
+        // manually set the `KeyManager` active item to this trigger
+        this.list.setActiveItem(this.item);
 
         if (this.context.onItemSelect) {
             this.context.onItemSelect(this.item.value());
