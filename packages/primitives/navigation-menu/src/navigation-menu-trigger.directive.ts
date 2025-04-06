@@ -12,7 +12,7 @@ import {
     untracked,
     ViewContainerRef
 } from '@angular/core';
-import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ARROW_UP, ENTER, SPACE } from '@radix-ng/primitives/core';
+import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ARROW_UP, ENTER, SPACE, TAB } from '@radix-ng/primitives/core';
 import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 import {
     RdxNavigationMenuAriaOwnsComponent,
@@ -20,6 +20,7 @@ import {
 } from './navigation-menu-a11y.component';
 import { RdxNavigationMenuItemDirective } from './navigation-menu-item.directive';
 import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.token';
+import { RdxNavigationMenuFocusableOption } from './navigation-menu.types';
 import { getTabbableCandidates, makeContentId, makeTriggerId } from './utils';
 
 @Directive({
@@ -40,9 +41,10 @@ import { getTabbableCandidates, makeContentId, makeTriggerId } from './utils';
         '(click)': 'onClick()',
         '(keydown)': 'onKeydown($event)',
         type: 'button'
-    }
+    },
+    providers: [{ provide: RdxNavigationMenuFocusableOption, useExisting: RdxNavigationMenuTriggerDirective }]
 })
-export class RdxNavigationMenuTriggerDirective implements OnInit, OnDestroy {
+export class RdxNavigationMenuTriggerDirective extends RdxNavigationMenuFocusableOption implements OnInit, OnDestroy {
     private readonly context = injectNavigationMenu();
     private readonly item = inject(RdxNavigationMenuItemDirective);
     private readonly rovingFocusItem = inject(RdxRovingFocusItemDirective, { self: true });
@@ -64,6 +66,8 @@ export class RdxNavigationMenuTriggerDirective implements OnInit, OnDestroy {
     private wasClickClose = false;
 
     constructor() {
+        super();
+
         effect(() => {
             this.rovingFocusItem.focusable = !this.disabled();
         });
@@ -97,6 +101,10 @@ export class RdxNavigationMenuTriggerDirective implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.removeAccessibilityComponents();
+    }
+
+    override focus() {
+        this.elementRef.nativeElement.focus();
     }
 
     private createAccessibilityComponents(): void {
@@ -220,11 +228,19 @@ export class RdxNavigationMenuTriggerDirective implements OnInit, OnDestroy {
         const isRTL = this.context.dir === 'rtl';
 
         // handle `ArrowDown` specifically for viewport navigation
-        if (event.key === ARROW_DOWN) {
-            event.preventDefault();
+        if (event.key === ARROW_DOWN || event.key === TAB) {
+            if (event.key === ARROW_DOWN) {
+                event.preventDefault();
+            }
 
             // if the menu is open, focus into the content
             if (this.open()) {
+                if (event.key === TAB) {
+                    // needed to ensure that the `keyManager` on the list directive does not activate
+                    // any focus updates, shifting focus to the subsequent focusable list item
+                    event.stopImmediatePropagation();
+                }
+
                 // direct focus handling for viewport case
                 if (isRootNavigationMenu(this.context) && this.context.viewport && this.context.viewport()) {
                     // get the viewport element

@@ -70,40 +70,39 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
         return Boolean(this.context.value() || this.forceMount());
     }
 
-    // Add this method to handle keyboard navigation within the viewport
-    onKeyDown(event: KeyboardEvent): void {
-        // Only handle if viewport is open
+    onKeydown(event: KeyboardEvent): void {
+        // only handle if viewport is open
         if (!this.open) return;
 
-        // Get all tabbable elements in the viewport
+        // get all tabbable elements in the viewport
         const tabbableElements = getTabbableCandidates(this.elementRef.nativeElement);
         if (!tabbableElements.length) return;
 
-        // Find the currently focused element
+        // find the currently focused element
         const activeElement = this.doc.activeElement as HTMLElement | null;
         const currentIndex = tabbableElements.findIndex((el) => el === activeElement);
 
         if (event.key === ARROW_DOWN) {
-            // event.preventDefault();
+            event.preventDefault();
 
             if (currentIndex >= 0 && currentIndex < tabbableElements.length - 1) {
-                // Focus the next element
+                // focus the next element
                 tabbableElements[currentIndex + 1].focus();
             } else if (currentIndex === -1 || currentIndex === tabbableElements.length - 1) {
-                // If no element is focused or we're at the end, focus the first element
+                // if no element is focused or we're at the end, focus the first element
                 tabbableElements[0].focus();
             }
         } else if (event.key === ARROW_UP) {
-            // event.preventDefault();
+            event.preventDefault();
 
             if (currentIndex > 0) {
-                // Focus the previous element
+                // focus the previous element
                 tabbableElements[currentIndex - 1].focus();
             } else if (currentIndex === 0) {
-                // If at the first element, loop to the last element
+                // if at the first element, loop to the last element
                 tabbableElements[tabbableElements.length - 1].focus();
             } else if (currentIndex === -1) {
-                // If no element is focused, focus the last element
+                // if no element is focused, focus the last element
                 tabbableElements[tabbableElements.length - 1].focus();
             }
         }

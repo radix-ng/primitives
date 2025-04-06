@@ -1,6 +1,7 @@
 import { booleanAttribute, Directive, ElementRef, inject, input, OnInit } from '@angular/core';
 import { ENTER, SPACE } from '@radix-ng/primitives/core';
 import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
+import { RdxNavigationMenuFocusableOption } from './navigation-menu.types';
 import { generateId } from './utils';
 
 const LINK_SELECT = 'navigationMenu.linkSelect';
@@ -14,9 +15,10 @@ const ROOT_CONTENT_DISMISS = 'navigationMenu.rootContentDismiss';
         '[attr.aria-current]': 'active() ? "page" : undefined',
         '(click)': 'onClick($event)',
         '(keydown)': 'onKeydown($event)'
-    }
+    },
+    providers: [{ provide: RdxNavigationMenuFocusableOption, useExisting: RdxNavigationMenuLinkDirective }]
 })
-export class RdxNavigationMenuLinkDirective implements OnInit {
+export class RdxNavigationMenuLinkDirective extends RdxNavigationMenuFocusableOption implements OnInit {
     private readonly rovingFocusItem = inject(RdxRovingFocusItemDirective, { self: true });
     private readonly uniqueId = generateId();
     readonly active = input(false, { transform: booleanAttribute });
@@ -25,6 +27,10 @@ export class RdxNavigationMenuLinkDirective implements OnInit {
 
     ngOnInit(): void {
         this.rovingFocusItem.tabStopId = this.elementRef.nativeElement.id || `link-${this.uniqueId}`;
+    }
+
+    override focus(): void {
+        this.elementRef.nativeElement.focus();
     }
 
     onClick(event: MouseEvent) {

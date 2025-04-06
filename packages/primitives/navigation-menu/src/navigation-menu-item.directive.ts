@@ -1,5 +1,7 @@
-import { Directive, ElementRef, inject, input, Signal, signal } from '@angular/core';
+import { FocusableOption } from '@angular/cdk/a11y';
+import { contentChild, Directive, ElementRef, inject, input, Signal, signal } from '@angular/core';
 import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.token';
+import { RdxNavigationMenuFocusableOption } from './navigation-menu.types';
 import { focusFirst, getTabbableCandidates, removeFromTabOrder } from './utils';
 
 @Directive({
@@ -9,11 +11,16 @@ import { focusFirst, getTabbableCandidates, removeFromTabOrder } from './utils';
     },
     exportAs: 'rdxNavigationMenuItem'
 })
-export class RdxNavigationMenuItemDirective {
+export class RdxNavigationMenuItemDirective implements FocusableOption {
     readonly elementRef = inject(ElementRef);
     private readonly context = injectNavigationMenu();
 
     readonly value = input('');
+
+    /**
+     * @ignore
+     */
+    readonly triggerOrLink = contentChild(RdxNavigationMenuFocusableOption);
 
     readonly triggerRef = signal<HTMLElement | null>(null);
     readonly contentRef = signal<HTMLElement | null>(null);
@@ -58,6 +65,10 @@ export class RdxNavigationMenuItemDirective {
                 focusFirst(candidates);
             }
         }
+    }
+
+    focus(): void {
+        this.triggerOrLink()?.focus();
     }
 
     /**
