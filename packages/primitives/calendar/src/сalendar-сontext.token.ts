@@ -1,13 +1,15 @@
 import { inject, InjectionToken, WritableSignal } from '@angular/core';
 import { DateValue } from '@internationalized/date';
-import { DateMatcher } from '@radix-ng/primitives/core';
+import { DateMatcher, Formatter } from '@radix-ng/primitives/core';
 
 export interface CalendarRootContextToken {
     nextPage?: (nextPageFunc?: (date: DateValue) => DateValue) => void;
     prevPage?: (nextPageFunc?: (date: DateValue) => DateValue) => void;
     headingValue: WritableSignal<string>;
     disabled: boolean;
-    isDateSelected: DateMatcher;
+    isDateSelected?: DateMatcher;
+    isDateDisabled?: DateMatcher;
+    formatter: Formatter;
     onDateChange: (date: DateValue) => void;
 }
 

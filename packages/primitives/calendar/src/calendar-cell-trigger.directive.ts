@@ -28,7 +28,7 @@ export class RdxCalendarCellTriggerDirective {
         return isToday(<DateValue>this.day(), getLocalTimeZone());
     });
 
-    readonly isSelectedDate = computed(() => this.rootContext.isDateSelected(<DateValue>this.day()));
+    readonly isSelectedDate = computed(() => this.rootContext.isDateSelected!(<DateValue>this.day()));
 
     readonly isOutsideView = computed(() => {
         return !isSameMonth(<DateValue>this.day(), <DateValue>this.month());

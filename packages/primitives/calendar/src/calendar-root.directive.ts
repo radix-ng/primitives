@@ -1,8 +1,8 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, Directive, effect, forwardRef, input, linkedSignal, model, signal } from '@angular/core';
 import { DateValue, isEqualDay, isSameDay } from '@internationalized/date';
-import { DateMatcher, getDefaultDate, watch } from '@radix-ng/primitives/core';
-import { calendarRoot, calendarState } from './calendar-root';
+import { DateMatcher, Formatter, getDefaultDate, watch } from '@radix-ng/primitives/core';
+import { calendar, calendarState } from './calendar';
 import { CALENDAR_ROOT_CONTEXT } from './сalendar-сontext.token';
 
 @Directive({
@@ -11,7 +11,10 @@ import { CALENDAR_ROOT_CONTEXT } from './сalendar-сontext.token';
     providers: [
         { provide: CALENDAR_ROOT_CONTEXT, useExisting: forwardRef(() => RdxCalendarRootDirective) }],
     host: {
-        role: 'application'
+        role: 'application',
+        '[attr.aria-label]': 'fullCalendarLabel()',
+        '[attr.data-disabled]': 'disabled() ? "" : undefined',
+        '[attr.data-readonly]': 'readonly() ? "" : undefined'
     }
 })
 export class RdxCalendarRootDirective {
@@ -45,8 +48,30 @@ export class RdxCalendarRootDirective {
 
     readonly maxValue = input<DateValue>();
 
+    readonly weekdayFormat = input<Intl.DateTimeFormatOptions['weekday']>('narrow');
+
+    /**
+     * Whether the calendar is readonly
+     */
+    readonly readonly = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /**
+     * This property causes the previous and next buttons to navigate by the number of months displayed at once, rather than one month
+     */
+    readonly pagedNavigation = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
     protected readonly fixedWeeksRef = linkedSignal({
         source: this.fixedWeeks,
+        computation: (value) => value as boolean
+    });
+
+    protected readonly disabledRef = linkedSignal({
+        source: this.disabled,
+        computation: (value) => value as boolean
+    });
+
+    protected readonly pagedNavigationRef = linkedSignal({
+        source: this.pagedNavigation,
         computation: (value) => value as boolean
     });
 
@@ -56,12 +81,20 @@ export class RdxCalendarRootDirective {
 
     readonly headingValue = signal<string>('');
 
+    readonly fullCalendarLabel = signal<string>('');
+
     nextPage: (nextPageFunc?: (date: DateValue) => DateValue) => void;
     prevPage: (nextPageFunc?: (date: DateValue) => DateValue) => void;
 
     isDateSelected: DateMatcher;
 
-    private readonly calendar = calendarRoot({
+    readonly isDateDisabled = input<DateMatcher>();
+
+    readonly isDateUnavailable = input<DateMatcher>();
+
+    formatter: Formatter;
+
+    private readonly calendar = calendar({
         nextPage: signal(undefined),
         prevPage: signal(undefined),
         locale: this.locale,
@@ -71,10 +104,12 @@ export class RdxCalendarRootDirective {
         numberOfMonths: this.numberOfMonths,
         minValue: this.minValue,
         maxValue: this.maxValue,
-        disabled: signal(true),
+        disabled: this.disabledRef,
         calendarLabel: signal(undefined),
-        pagedNavigation: signal(false),
-        weekdayFormat: signal('narrow')
+        pagedNavigation: this.pagedNavigationRef,
+        isDateDisabled: this.isDateDisabled,
+        isDateUnavailable: this.isDateUnavailable,
+        weekdayFormat: this.weekdayFormat
     });
 
     constructor() {
@@ -85,12 +120,17 @@ export class RdxCalendarRootDirective {
 
         effect(() => {
             this.months.set(this.calendar.month());
+
             this.weekDays.set(this.calendar.weekdays());
+
+            this.fullCalendarLabel.set(this.calendar.fullCalendarLabel());
 
             this.headingValue.set(this.calendar.headingValue());
 
             const { isDateSelected } = calendarState({
-                date: this.value
+                date: this.value,
+                isDateDisabled: this.isDateDisabled(),
+                isDateUnavailable: this.isDateUnavailable()
             });
 
             this.isDateSelected = isDateSelected;
