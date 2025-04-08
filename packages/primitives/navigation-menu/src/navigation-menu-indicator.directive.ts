@@ -1,4 +1,3 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -34,7 +33,7 @@ export class RdxNavigationMenuIndicatorDirective implements OnDestroy {
      * Useful for animations.
      * @default false
      */
-    readonly forceMount = input<BooleanInput, unknown>(undefined, { transform: booleanAttribute });
+    readonly forceMount = input(false, { transform: booleanAttribute });
 
     /** @ignore */
     private readonly _position = signal<{ size: number; offset: number } | null>(null);

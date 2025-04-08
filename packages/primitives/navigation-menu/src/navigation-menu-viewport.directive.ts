@@ -1,4 +1,3 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import { DOCUMENT } from '@angular/common';
 import {
     booleanAttribute,
@@ -51,7 +50,7 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
      * Useful for animations.
      * @default false
      */
-    readonly forceMount = input<BooleanInput, unknown>(undefined, { transform: booleanAttribute });
+    readonly forceMount = input(false, { transform: booleanAttribute });
 
     private readonly _contentNodes = signal(new Map<string, ContentNode>());
     private readonly _activeContentNode = signal<ContentNode | null>(null);

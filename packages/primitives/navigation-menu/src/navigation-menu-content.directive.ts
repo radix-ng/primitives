@@ -1,4 +1,3 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     Directive,
@@ -25,7 +24,7 @@ export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
     private readonly elementRef = inject(ElementRef);
 
     @Input({ transform: booleanAttribute })
-    set rdxNavigationMenuContent(value: BooleanInput) {
+    set rdxNavigationMenuContent(value: boolean) {
         // structural directive requires this input even if unused
     }
 
@@ -34,7 +33,7 @@ export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
      * Useful for animations or SEO.
      * @default false
      */
-    readonly forceMount = input<BooleanInput, unknown>(undefined, { transform: booleanAttribute });
+    readonly forceMount = input(false, { transform: booleanAttribute });
 
     /** @ignore */
     readonly contentId = makeContentId(this.context.baseId, this.item.value());
