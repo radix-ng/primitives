@@ -47,6 +47,10 @@ import {RdxPopoverContentAttributesComponent} from "../src/popover-content-attri
 
 <Canvas sourceState="hidden" of={PopoverStories.InitiallyOpen} />
 
+### Initial focus
+
+<Canvas sourceState="hidden" of={PopoverStories.InitialFocus} />
+
 ### Animations
 
 <Canvas sourceState="hidden" of={PopoverStories.Animations} />
@@ -61,6 +65,8 @@ import {RdxPopoverContentAttributesComponent} from "../src/popover-content-attri
 - ✅ Opens when the trigger is clicked.
 - ✅ Closes when the trigger is clicked again or when pressing escape.
 - ✅ Controllable from outside.
+- ✅ Focus is automatically trapped inside popover.
+- ✅ It is possible to determine which element receives focus first by `rdxFocusInitial` directive.
 
 ## Anatomy
 
