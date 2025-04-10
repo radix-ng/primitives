@@ -1,4 +1,3 @@
-import { DOCUMENT } from '@angular/common';
 import {
     booleanAttribute,
     computed,
@@ -16,7 +15,7 @@ import {
     untracked,
     ViewContainerRef
 } from '@angular/core';
-import { ARROW_DOWN, ARROW_UP } from '@radix-ng/primitives/core';
+import { ARROW_DOWN, ARROW_UP, injectDocument, injectWindow } from '@radix-ng/primitives/core';
 import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.token';
 import { getOpenStateLabel, getTabbableCandidates } from './utils';
 
@@ -39,7 +38,8 @@ interface ContentNode {
 })
 export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
     private readonly context = injectNavigationMenu();
-    private readonly doc = inject(DOCUMENT);
+    private readonly document = injectDocument();
+    private readonly window = injectWindow();
 
     private readonly elementRef = inject(ElementRef);
     private readonly viewContainerRef = inject(ViewContainerRef);
@@ -78,7 +78,7 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
         if (!tabbableElements.length) return;
 
         // find the currently focused element
-        const activeElement = this.doc.activeElement as HTMLElement | null;
+        const activeElement = this.document.activeElement as HTMLElement | null;
         const currentIndex = tabbableElements.findIndex((el) => el === activeElement);
 
         if (event.key === ARROW_DOWN) {
@@ -187,7 +187,7 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
         if (!activeNode) return;
 
         // force layout recalculation while keeping element in the DOM
-        window.getComputedStyle(activeNode).getPropertyValue('width');
+        this.window.getComputedStyle(activeNode).getPropertyValue('width');
 
         const firstChild = activeNode.firstChild as HTMLElement;
         const width = Math.ceil(firstChild.offsetWidth);

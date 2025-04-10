@@ -11,6 +11,7 @@ import {
     WritableSignal
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { injectWindow } from '@radix-ng/primitives/core';
 import { debounce, map, Subject, tap, timer } from 'rxjs';
 import { provideNavigationMenuContext } from './navigation-menu.token';
 import { RdxNavigationMenuAnimationStatus } from './navigation-menu.types';
@@ -35,6 +36,7 @@ export enum RdxNavigationMenuAction {
 })
 export class RdxNavigationMenuDirective implements OnDestroy {
     private readonly elementRef = inject(ElementRef);
+    private readonly window = injectWindow();
 
     // State
     readonly #value = signal<string>('');
@@ -96,14 +98,14 @@ export class RdxNavigationMenuDirective implements OnDestroy {
         effect(() => {
             const value = this.#value();
             if (value) {
-                window.clearTimeout(this.skipDelayTimerRef);
+                this.window.clearTimeout(this.skipDelayTimerRef);
                 if (this.skipDelayDuration > 0) {
                     this.#isOpenDelayed.set(false);
                 }
             } else {
                 // menu is closed, start skip delay timer
-                window.clearTimeout(this.skipDelayTimerRef);
-                this.skipDelayTimerRef = window.setTimeout(() => {
+                this.window.clearTimeout(this.skipDelayTimerRef);
+                this.skipDelayTimerRef = this.window.setTimeout(() => {
                     this.#isOpenDelayed.set(true);
                 }, this.skipDelayDuration);
             }
@@ -142,9 +144,9 @@ export class RdxNavigationMenuDirective implements OnDestroy {
     }
 
     ngOnDestroy() {
-        window.clearTimeout(this.openTimerRef);
-        window.clearTimeout(this.closeTimerRef);
-        window.clearTimeout(this.skipDelayTimerRef);
+        this.window.clearTimeout(this.openTimerRef);
+        this.window.clearTimeout(this.closeTimerRef);
+        this.window.clearTimeout(this.skipDelayTimerRef);
 
         // clean up document event listener
         if (this.documentMouseLeaveHandler) {
@@ -166,8 +168,8 @@ export class RdxNavigationMenuDirective implements OnDestroy {
             return;
         }
 
-        window.clearTimeout(this.openTimerRef);
-        window.clearTimeout(this.closeTimerRef);
+        this.window.clearTimeout(this.openTimerRef);
+        this.window.clearTimeout(this.closeTimerRef);
 
         if (this.#isOpenDelayed()) {
             this.handleDelayedOpen(itemValue);
@@ -177,12 +179,12 @@ export class RdxNavigationMenuDirective implements OnDestroy {
     }
 
     onTriggerLeave() {
-        window.clearTimeout(this.openTimerRef);
+        this.window.clearTimeout(this.openTimerRef);
         this.startCloseTimer();
     }
 
     onContentEnter() {
-        window.clearTimeout(this.closeTimerRef);
+        this.window.clearTimeout(this.closeTimerRef);
     }
 
     onContentLeave() {
@@ -232,8 +234,8 @@ export class RdxNavigationMenuDirective implements OnDestroy {
     }
 
     private startCloseTimer() {
-        window.clearTimeout(this.closeTimerRef);
-        this.closeTimerRef = window.setTimeout(() => {
+        this.window.clearTimeout(this.closeTimerRef);
+        this.closeTimerRef = this.window.setTimeout(() => {
             // only close if not hovering over any part of the system
             if (!this.isPointerInSystem()) {
                 this.setValue('');
@@ -242,7 +244,7 @@ export class RdxNavigationMenuDirective implements OnDestroy {
     }
 
     private handleOpen(itemValue: string) {
-        window.clearTimeout(this.closeTimerRef);
+        this.window.clearTimeout(this.closeTimerRef);
         this.setValue(itemValue);
     }
 
@@ -250,11 +252,11 @@ export class RdxNavigationMenuDirective implements OnDestroy {
         const isOpenItem = this.#value() === itemValue;
         if (isOpenItem) {
             // if the item is already open, clear close timer
-            window.clearTimeout(this.closeTimerRef);
+            this.window.clearTimeout(this.closeTimerRef);
         } else {
             // otherwise, start the open timer
-            this.openTimerRef = window.setTimeout(() => {
-                window.clearTimeout(this.closeTimerRef);
+            this.openTimerRef = this.window.setTimeout(() => {
+                this.window.clearTimeout(this.closeTimerRef);
                 this.setValue(itemValue);
             }, this.delayDuration);
         }

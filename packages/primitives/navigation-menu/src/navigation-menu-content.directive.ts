@@ -5,11 +5,12 @@ import {
     inject,
     Input,
     input,
+    NgZone,
     OnDestroy,
     OnInit,
     TemplateRef
 } from '@angular/core';
-import { ESCAPE } from '@radix-ng/primitives/core';
+import { ESCAPE, injectDocument } from '@radix-ng/primitives/core';
 import { RdxNavigationMenuItemDirective } from './navigation-menu-item.directive';
 import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.token';
 import { getMotionAttribute, makeContentId, makeTriggerId } from './utils';
@@ -18,10 +19,12 @@ import { getMotionAttribute, makeContentId, makeTriggerId } from './utils';
     selector: '[rdxNavigationMenuContent]'
 })
 export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
-    private readonly context = injectNavigationMenu();
-    private readonly item = inject(RdxNavigationMenuItemDirective);
-    private readonly template = inject(TemplateRef);
     private readonly elementRef = inject(ElementRef);
+    private readonly ngZone = inject(NgZone);
+    private readonly template = inject(TemplateRef);
+    private readonly document = injectDocument();
+    private readonly item = inject(RdxNavigationMenuItemDirective);
+    private readonly context = injectNavigationMenu();
 
     @Input({ transform: booleanAttribute })
     set rdxNavigationMenuContent(value: boolean) {
@@ -84,7 +87,11 @@ export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
             }
         };
 
-        document.addEventListener('keydown', this.escapeHandler);
+        this.ngZone.runOutsideAngular(() => {
+            if (this.escapeHandler) {
+                this.document.addEventListener('keydown', this.escapeHandler);
+            }
+        });
     }
 
     /** @ignore */
