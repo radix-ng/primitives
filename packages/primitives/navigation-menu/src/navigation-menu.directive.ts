@@ -11,7 +11,7 @@ import {
     WritableSignal
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { injectWindow } from '@radix-ng/primitives/core';
+import { injectDocument, injectWindow } from '@radix-ng/primitives/core';
 import { debounce, map, Subject, tap, timer } from 'rxjs';
 import { provideNavigationMenuContext } from './navigation-menu.token';
 import { RdxNavigationMenuAnimationStatus } from './navigation-menu.types';
@@ -36,6 +36,7 @@ export enum RdxNavigationMenuAction {
 })
 export class RdxNavigationMenuDirective implements OnDestroy {
     private readonly elementRef = inject(ElementRef);
+    private readonly document = injectDocument();
     private readonly window = injectWindow();
 
     // State
@@ -140,7 +141,7 @@ export class RdxNavigationMenuDirective implements OnDestroy {
 
         // set up document mouseleave handler to close menu when mouse leaves window
         this.documentMouseLeaveHandler = () => this.handleClose();
-        document.addEventListener('mouseleave', this.documentMouseLeaveHandler);
+        this.document.addEventListener('mouseleave', this.documentMouseLeaveHandler);
     }
 
     ngOnDestroy() {

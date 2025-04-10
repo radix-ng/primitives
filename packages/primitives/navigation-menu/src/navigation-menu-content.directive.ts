@@ -103,7 +103,7 @@ export class RdxNavigationMenuContentDirective implements OnInit, OnDestroy {
 
         // remove escape key handler
         if (this.escapeHandler) {
-            document.removeEventListener('keydown', this.escapeHandler);
+            this.document.removeEventListener('keydown', this.escapeHandler);
             this.escapeHandler = null;
         }
     }
