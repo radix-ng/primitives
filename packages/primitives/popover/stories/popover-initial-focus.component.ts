@@ -1,5 +1,6 @@
 import { Component, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RdxFocusInitialDirective } from '@radix-ng/primitives/core';
 import { LucideAngularModule, MountainSnow, TriangleAlert, X } from 'lucide-angular';
 import { RdxPopoverModule, RdxPopoverRootDirective } from '../index';
 import { RdxPopoverContentAttributesComponent } from '../src/popover-content-attributes.component';
@@ -10,14 +11,15 @@ import styles from './utils/styles.constants';
 import { WithOptionPanelComponent } from './utils/with-option-panel.component';
 
 @Component({
-    selector: 'rdx-popover-initially-open',
+    selector: 'rdx-popover-initial-focus',
     providers: [provideRdxCdkEventService()],
     imports: [
         FormsModule,
         RdxPopoverModule,
         LucideAngularModule,
         RdxPopoverContentAttributesComponent,
-        WithOptionPanelComponent
+        WithOptionPanelComponent,
+        RdxFocusInitialDirective
     ],
     styles: styles(),
     template: `
@@ -33,8 +35,16 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
                 <lucide-angular [img]="TriangleAlert" size="16" />
                 {{ containerAlert }}
             </div>
+            <div class="ContainerAlerts">
+                <lucide-angular [img]="TriangleAlert" size="16" />
+                <span>
+                    To change the element that will first receive focus inside a popover, use the
+                    <code>rdxFocusInitial</code>
+                    directive.
+                </span>
+            </div>
             <div class="container">
-                <ng-container [defaultOpen]="true" rdxPopoverRoot>
+                <ng-container rdxPopoverRoot>
                     <button class="reset IconButton" rdxPopoverTrigger>
                         <lucide-angular [img]="MountainSnowIcon" size="16" style="display: flex" />
                     </button>
@@ -53,8 +63,8 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
                                     <input class="reset Input" id="width" value="100%" />
                                 </fieldset>
                                 <fieldset class="reset Fieldset">
-                                    <label class="Label" for="maxWidth">Max. width</label>
-                                    <input class="reset Input" id="maxWidth" value="300px" />
+                                    <label class="Label" for="maxWidth">Max. width (Initial focus)</label>
+                                    <input class="reset Input" id="maxWidth" value="300px" rdxFocusInitial />
                                 </fieldset>
                                 <fieldset class="reset Fieldset">
                                     <label class="Label" for="height">Height</label>
@@ -82,7 +92,7 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
         </popover-with-option-panel>
     `
 })
-export class RdxPopoverInitiallyOpenComponent extends OptionPanelBase {
+export class RdxPopoverInitialFocusComponent extends OptionPanelBase {
     readonly popoverRootDirective = viewChild(RdxPopoverRootDirective);
 
     readonly MountainSnowIcon = MountainSnow;

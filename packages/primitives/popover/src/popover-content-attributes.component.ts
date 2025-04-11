@@ -1,5 +1,14 @@
 import { CdkTrapFocus } from '@angular/cdk/a11y';
-import { afterNextRender, ChangeDetectionStrategy, Component, computed, forwardRef, inject } from '@angular/core';
+import {
+    afterNextRender,
+    ChangeDetectionStrategy,
+    Component,
+    computed,
+    ContentChild,
+    forwardRef,
+    inject
+} from '@angular/core';
+import { RdxFocusInitialDirective } from '@radix-ng/primitives/core';
 import { RdxPopoverContentAttributesToken } from './popover-content-attributes.token';
 import { injectPopoverRoot } from './popover-root.inject';
 import { RdxPopoverAnimationStatus, RdxPopoverState } from './popover.types';
@@ -35,6 +44,10 @@ export class RdxPopoverContentAttributesComponent {
     private readonly focusTrapDirective = inject(CdkTrapFocus, { self: true });
 
     /** @ignore */
+    @ContentChild(RdxFocusInitialDirective, { descendants: true })
+    private readonly focusInitialDirective: RdxFocusInitialDirective;
+
+    /** @ignore */
     protected readonly popoverRoot = injectPopoverRoot();
 
     /** @ignore */
@@ -45,7 +58,12 @@ export class RdxPopoverContentAttributesComponent {
 
     constructor() {
         afterNextRender({
-            write: () => this.focusTrapDirective.focusTrap.focusFirstTabbableElement()
+            write: () => {
+                if (this.focusInitialDirective) {
+                    return this.focusInitialDirective.focus();
+                }
+                this.focusTrapDirective.focusTrap.focusFirstTabbableElement();
+            }
         });
     }
 

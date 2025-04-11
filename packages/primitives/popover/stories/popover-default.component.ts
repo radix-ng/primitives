@@ -45,9 +45,6 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
                         rdxPopoverContent
                     >
                         <div class="PopoverContent" rdxPopoverContentAttributes>
-                            <button class="reset PopoverClose" rdxPopoverClose aria-label="Close">
-                                <lucide-angular [img]="XIcon" size="16" style="display: flex" />
-                            </button>
                             <div style="display: flex; flex-direction: column; gap: 10px">
                                 <p class="Text" style="margin-bottom: 10px">Dimensions</p>
                                 <fieldset class="reset Fieldset">
@@ -67,6 +64,9 @@ import { WithOptionPanelComponent } from './utils/with-option-panel.component';
                                     <input class="reset Input" id="maxHeight" value="none" />
                                 </fieldset>
                             </div>
+                            <button class="reset PopoverClose" rdxPopoverClose aria-label="Close">
+                                <lucide-angular [img]="XIcon" size="16" style="display: flex" />
+                            </button>
                             <div
                                 class="PopoverArrow"
                                 [width]="arrowWidth()"
