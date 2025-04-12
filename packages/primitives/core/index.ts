@@ -1,6 +1,7 @@
 export * from './src/accessor/provide-value-accessor';
 export * from './src/auto-focus.directive';
 export * from './src/document';
+export * from './src/focus-initial.directive';
 export * from './src/id-generator';
 export * from './src/inject-ng-control';
 export * from './src/is-client';

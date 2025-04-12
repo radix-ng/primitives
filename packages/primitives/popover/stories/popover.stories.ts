@@ -6,6 +6,7 @@ import { RdxPopoverAnchorComponent } from './popover-anchor.component';
 import { RdxPopoverAnimationsComponent } from './popover-animations.component';
 import { RdxPopoverDefaultComponent } from './popover-default.component';
 import { RdxPopoverEventsComponent } from './popover-events.components';
+import { RdxPopoverInitialFocusComponent } from './popover-initial-focus.component';
 import { RdxPopoverInitiallyOpenComponent } from './popover-initially-open.component';
 import { RdxPopoverMultipleComponent } from './popover-multiple.component';
 import { RdxPopoverPositioningComponent } from './popover-positioning.component';
@@ -26,6 +27,7 @@ export default {
                 RdxPopoverMultipleComponent,
                 RdxPopoverAnimationsComponent,
                 RdxPopoverInitiallyOpenComponent,
+                RdxPopoverInitialFocusComponent,
                 RdxPopoverAnchorComponent,
                 LucideAngularModule,
                 LucideAngularModule.pick({ MountainSnow, X })
@@ -101,6 +103,14 @@ export const InitiallyOpen: Story = {
     render: () => ({
         template: html`
             <rdx-popover-initially-open></rdx-popover-initially-open>
+        `
+    })
+};
+
+export const InitialFocus: Story = {
+    render: () => ({
+        template: html`
+            <rdx-popover-initial-focus></rdx-popover-initial-focus>
         `
     })
 };
