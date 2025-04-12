@@ -1,3 +1,18 @@
+## 0.33.0 (2025-04-12)
+
+### 🚀 Features
+
+- **popover:** add the ability to define the element that receives focus first ([#296](https://github.com/radix-ng/primitives/pull/296))
+- **navigation-menu:** add navigation menu primitive ([#292](https://github.com/radix-ng/primitives/pull/292))
+- **popover:** focus management inside popover ([#285](https://github.com/radix-ng/primitives/pull/285))
+- **visually-hidden:** added updated feature effect ([0b2a6b4](https://github.com/radix-ng/primitives/commit/0b2a6b4))
+
+### ❤️ Thank You
+
+- Josh Sullivan
+- Oleg Pimenov
+- Victor Zubrinkin
+
 ## 0.32.4 (2025-03-04)
 
 ### 🩹 Fixes
