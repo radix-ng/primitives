@@ -86,6 +86,11 @@ const docsConfig = {
                             label: 'Storybook'
                         },
                         {
+                            name: 'Navigation Menu',
+                            url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-navigation-menu--docs',
+                            label: 'Storybook'
+                        },
+                        {
                             name: 'Pagination',
                             url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-pagination--docs',
                             label: 'Storybook'
