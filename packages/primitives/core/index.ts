@@ -11,6 +11,8 @@ export * from './src/is-number';
 export * from './src/kbd-constants';
 export * from './src/window';
 
+export * from './src/date-time';
 export * from './src/positioning/constants';
 export * from './src/positioning/types';
 export * from './src/positioning/utils';
+export * from './src/watch';
