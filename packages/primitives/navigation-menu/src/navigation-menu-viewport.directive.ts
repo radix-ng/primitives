@@ -272,7 +272,7 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
     private updateActiveContent(contentNode: ContentNode) {
         if (contentNode !== this._activeContentNode()) {
             // clear viewport
-            while (this.elementRef.nativeElement.firstChild) {
+            if (this.elementRef.nativeElement.firstChild) {
                 this.renderer.removeChild(this.elementRef.nativeElement, this.elementRef.nativeElement.firstChild);
             }
 
