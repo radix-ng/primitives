@@ -53,11 +53,16 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
     private readonly zone = inject(NgZone);
     private readonly destroyRef = inject(DestroyRef);
 
+    /**
+     * Used to keep the viewport rendered and available in the DOM, even when closed.
+     * Useful for animations.
+     * @default false
+     */
     readonly forceMount = input(false, { transform: booleanAttribute });
 
     private readonly _contentNodes = signal(new Map<string, ContentNode>());
     private readonly _activeContentNode = signal<ContentNode | null>(null);
-    private readonly _leavingContentNode = signal<ContentNode | null>(null); // Track leaving node
+    private readonly _leavingContentNode = signal<ContentNode | null>(null);
     private readonly _viewportSize = signal<{ width: number; height: number } | null>(null);
 
     readonly activeContentValue = computed(() => {
@@ -203,7 +208,7 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
             return existingNode;
         }
 
-        // Create if doesn't exist or view was destroyed
+        // create if doesn't exist or view was destroyed
         if (!isRootNavigationMenu(this.context) || !this.context.viewportContent) return null;
         const allContentData = this.context.viewportContent();
         const contentData = allContentData.get(contentValue);
@@ -216,7 +221,6 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
 
         try {
             const embeddedView = this.viewContainerRef.createEmbeddedView(templateRef);
-            // Note: detectChanges might be needed if view relies on inputs, but maybe not here.
             const container = this.renderer.createElement('div');
             this.renderer.setAttribute(container, 'class', 'NavigationMenuContentWrapper');
             this.renderer.setAttribute(container, 'data-content-value', contentValue);
@@ -226,7 +230,7 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
                 embeddedView,
                 element: container,
                 contentValue,
-                state: 'closed' // Initial state
+                state: 'closed'
             };
 
             const newMap = new Map(this._contentNodes());
@@ -243,7 +247,7 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
     private addNodeToDOM(node: ContentNode): void {
         if (!this.elementRef.nativeElement.contains(node.element)) {
             this.renderer.appendChild(this.elementRef.nativeElement, node.element);
-            // Observe size only when added to DOM
+            // observe size only when added to DOM
             this._resizeObserver.observe(node.element);
         }
     }
@@ -251,14 +255,14 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
     // removes node element from viewport DOM
     private removeNodeFromDOM(node: ContentNode): void {
         if (this.elementRef.nativeElement.contains(node.element)) {
-            this._resizeObserver.unobserve(node.element); // Stop observing before removal
+            this._resizeObserver.unobserve(node.element); // stop observing before removal
             this.renderer.removeChild(this.elementRef.nativeElement, node.element);
         }
     }
 
-    // Updates the data-state and motion attributes
+    // updates the data-state and motion attributes
     private setNodeState(node: ContentNode, state: 'open' | 'closed'): void {
-        if (node.state === state) return; // Avoid redundant updates
+        if (node.state === state) return; // avoid redundant updates
 
         node.state = state;
         this.renderer.setAttribute(node.element, 'data-state', state);
@@ -267,7 +271,7 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
         if (isRootNavigationMenu(this.context) && this.context.viewportContent) {
             const contentData = this.context.viewportContent().get(node.contentValue);
             if (contentData?.getMotionAttribute) {
-                // Get motion based on current state transition
+                // get motion based on current state transition
                 const motionAttr = contentData.getMotionAttribute();
                 if (motionAttr) {
                     this.renderer.setAttribute(node.element, 'data-motion', motionAttr);
@@ -367,8 +371,10 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
      */
     private forceCompleteLeaveTransition(node: ContentNode): void {
         if (node && node.transitionSubscription) {
-            node.transitionSubscription.unsubscribe(); // Stop listening
-            this.cleanupAfterLeave(node); // Perform cleanup immediately
+            node.transitionSubscription.unsubscribe();
+
+            // perform cleanup immediately
+            this.cleanupAfterLeave(node);
         }
     }
 
