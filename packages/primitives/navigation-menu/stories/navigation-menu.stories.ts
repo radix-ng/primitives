@@ -98,13 +98,15 @@ export default {
                     }
 
                     .NavigationMenuContentWrapper {
-                        position: absolute;.
+                        position: absolute;
                         top: 0;
                         left: 0;
                         width: 100%;
                         animation-duration: 250ms;
                         animation-timing-function: ease;
-                        transition: opacity 250ms ease, transform 250ms ease;
+                        transition:
+                            opacity 250ms ease,
+                            transform 250ms ease;
                     }
                     .NavigationMenuContentWrapper[data-state='closed'] {
                         opacity: 0;
@@ -171,7 +173,10 @@ export default {
                             0px 10px 38px -10px rgba(22, 23, 24, 0.35),
                             0px 10px 20px -15px rgba(22, 23, 24, 0.2);
                         height: var(--radix-navigation-menu-viewport-height);
-                        transition: width 300ms ease, height 300ms ease, opacity 200ms ease-out;
+                        transition:
+                            width 300ms ease,
+                            height 300ms ease,
+                            opacity 200ms ease-out;
                         opacity: 1;
                     }
                     .NavigationMenuViewport[data-state='open'] {
