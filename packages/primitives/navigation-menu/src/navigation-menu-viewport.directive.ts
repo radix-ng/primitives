@@ -1,33 +1,40 @@
 import {
     booleanAttribute,
     computed,
+    DestroyRef,
     Directive,
     effect,
     ElementRef,
     EmbeddedViewRef,
     inject,
     input,
+    NgZone,
     OnDestroy,
     OnInit,
     Renderer2,
     signal,
-    TemplateRef,
     untracked,
     ViewContainerRef
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ARROW_DOWN, ARROW_UP, injectDocument, injectWindow } from '@radix-ng/primitives/core';
+import { TransitionOptions, TransitionStartFn, usePresence } from '@radix-ng/primitives/presence';
+import { Subscription } from 'rxjs';
 import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.token';
 import { getOpenStateLabel, getTabbableCandidates } from './utils';
 
 interface ContentNode {
     embeddedView: EmbeddedViewRef<unknown>;
     element: HTMLElement;
+    contentValue: string;
+    state: 'open' | 'closed';
+    transitionSubscription?: Subscription | null;
 }
 
 @Directive({
     selector: '[rdxNavigationMenuViewport]',
     host: {
-        '[attr.data-state]': 'getOpenState()',
+        '[attr.data-state]': 'dataState()',
         '[attr.data-orientation]': 'context.orientation',
         '[style.--radix-navigation-menu-viewport-width.px]': 'viewportSize()?.width',
         '[style.--radix-navigation-menu-viewport-height.px]': 'viewportSize()?.height',
@@ -40,10 +47,11 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
     private readonly context = injectNavigationMenu();
     private readonly document = injectDocument();
     private readonly window = injectWindow();
-
     private readonly elementRef = inject(ElementRef);
     private readonly viewContainerRef = inject(ViewContainerRef);
     private readonly renderer = inject(Renderer2);
+    private readonly zone = inject(NgZone);
+    private readonly destroyRef = inject(DestroyRef);
 
     /**
      * Used to keep the viewport rendered and available in the DOM, even when closed.
@@ -54,87 +62,27 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
 
     private readonly _contentNodes = signal(new Map<string, ContentNode>());
     private readonly _activeContentNode = signal<ContentNode | null>(null);
+    private readonly _leavingContentNode = signal<ContentNode | null>(null);
     private readonly _viewportSize = signal<{ width: number; height: number } | null>(null);
-    private readonly _resizeObserver = new ResizeObserver(() => this.updateSize());
 
-    // compute the active content value - either current value if open, or previous value if closing
     readonly activeContentValue = computed(() => {
-        return this.open ? this.context.value() : this.context.previousValue();
+        if (!isRootNavigationMenu(this.context)) return null;
+        return this.context.value() || this.context.previousValue();
     });
-
-    // size for viewport CSS variables
+    readonly isOpen = computed(() => {
+        if (!isRootNavigationMenu(this.context)) return false;
+        return Boolean(this.context.value() || this.forceMount());
+    });
+    readonly dataState = computed(() => getOpenStateLabel(this.isOpen()));
     readonly viewportSize = computed(() => this._viewportSize());
 
-    get open(): boolean {
-        return Boolean(this.context.value() || this.forceMount());
-    }
-
-    onKeydown(event: KeyboardEvent): void {
-        // only handle if viewport is open
-        if (!this.open) return;
-
-        // get all tabbable elements in the viewport
-        const tabbableElements = getTabbableCandidates(this.elementRef.nativeElement);
-        if (!tabbableElements.length) return;
-
-        // find the currently focused element
-        const activeElement = this.document.activeElement as HTMLElement | null;
-        const currentIndex = tabbableElements.findIndex((el) => el === activeElement);
-
-        if (event.key === ARROW_DOWN) {
-            event.preventDefault();
-
-            if (currentIndex >= 0 && currentIndex < tabbableElements.length - 1) {
-                // focus the next element
-                tabbableElements[currentIndex + 1].focus();
-            } else if (currentIndex === -1 || currentIndex === tabbableElements.length - 1) {
-                // if no element is focused or we're at the end, focus the first element
-                tabbableElements[0].focus();
-            }
-        } else if (event.key === ARROW_UP) {
-            event.preventDefault();
-
-            if (currentIndex > 0) {
-                // focus the previous element
-                tabbableElements[currentIndex - 1].focus();
-            } else if (currentIndex === 0) {
-                // if at the first element, loop to the last element
-                tabbableElements[tabbableElements.length - 1].focus();
-            } else if (currentIndex === -1) {
-                // if no element is focused, focus the last element
-                tabbableElements[tabbableElements.length - 1].focus();
-            }
-        }
-    }
+    private readonly _resizeObserver = new ResizeObserver(() => this.updateSize());
 
     constructor() {
-        // setup effect to manage content
-        effect(() => {
-            const activeValue = this.activeContentValue();
-            const open = this.open;
-
-            untracked(() => {
-                // handle visibility based on open state
-                this.renderer.setStyle(this.elementRef.nativeElement, 'display', open ? 'block' : 'none');
-
-                if (isRootNavigationMenu(this.context) && this.context.viewportContent) {
-                    const viewportContent = this.context.viewportContent();
-
-                    if (viewportContent.has(activeValue)) {
-                        const contentData = viewportContent.get(activeValue);
-
-                        // only render content when we have a templateRef
-                        if (contentData?.templateRef) {
-                            this.renderContent(contentData.templateRef, activeValue);
-                        }
-                    }
-                }
-            });
-        });
+        this.setupViewportEffect();
     }
 
     ngOnInit() {
-        // register viewport with context
         if (isRootNavigationMenu(this.context) && this.context.onViewportChange) {
             this.context.onViewportChange(this.elementRef.nativeElement);
         }
@@ -142,30 +90,35 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this._resizeObserver.disconnect();
-
-        // clear all views
-        this._contentNodes().forEach((node) => {
-            if (node.embeddedView) {
-                node.embeddedView.destroy();
-            }
-        });
-
-        // unregister viewport
+        // clean up any remaining nodes/views/subscriptions
+        this._contentNodes().forEach((node) => this.cleanupAfterLeave(node));
         if (isRootNavigationMenu(this.context) && this.context.onViewportChange) {
             this.context.onViewportChange(null);
         }
     }
 
-    getOpenState() {
-        return getOpenStateLabel(this.open);
+    onKeydown(event: KeyboardEvent): void {
+        if (!this.isOpen()) return;
+        const tabbableElements = getTabbableCandidates(this.elementRef.nativeElement);
+        if (!tabbableElements.length) return;
+        const activeElement = this.document.activeElement as HTMLElement | null;
+        const currentIndex = tabbableElements.findIndex((el) => el === activeElement);
+
+        if (event.key === ARROW_DOWN) {
+            event.preventDefault();
+            const nextIndex = currentIndex >= 0 && currentIndex < tabbableElements.length - 1 ? currentIndex + 1 : 0;
+            tabbableElements[nextIndex]?.focus();
+        } else if (event.key === ARROW_UP) {
+            event.preventDefault();
+            const prevIndex = currentIndex > 0 ? currentIndex - 1 : tabbableElements.length - 1;
+            tabbableElements[prevIndex]?.focus();
+        }
     }
 
     onPointerEnter(): void {
         if (isRootNavigationMenu(this.context) && this.context.onContentEnter) {
             this.context.onContentEnter();
         }
-
-        // update pointer tracking state
         if (isRootNavigationMenu(this.context) && this.context.setContentPointerState) {
             this.context.setContentPointerState(true);
         }
@@ -175,122 +128,277 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
         if (isRootNavigationMenu(this.context) && this.context.onContentLeave) {
             this.context.onContentLeave();
         }
-
-        // Update pointer tracking state
         if (isRootNavigationMenu(this.context) && this.context.setContentPointerState) {
             this.context.setContentPointerState(false);
         }
     }
 
-    private updateSize() {
-        const activeNode = this._activeContentNode()?.element;
-        if (!activeNode) return;
+    private setupViewportEffect(): void {
+        effect(() => {
+            const currentActiveValue = this.context.value();
+            const previousActiveValue = this.context.previousValue();
+            const forceMount = this.forceMount();
 
-        // force layout recalculation while keeping element in the DOM
-        this.window.getComputedStyle(activeNode).getPropertyValue('width');
+            untracked(() => {
+                // ensure context is root before proceeding
+                if (!isRootNavigationMenu(this.context) || !this.context.viewportContent) {
+                    return;
+                }
+
+                const allContentData = this.context.viewportContent();
+                const currentNodesMap = this._contentNodes();
+                let enteringNode: ContentNode | null = null;
+                let leavingNode = this._leavingContentNode(); // get potentially already leaving node
+
+                // 1. Identify Entering Node
+                if (currentActiveValue && allContentData.has(currentActiveValue)) {
+                    enteringNode = this.getOrCreateContentNode(currentActiveValue);
+                }
+
+                // 2. Identify Leaving Node
+                const nodeThatWasActive = previousActiveValue ? currentNodesMap.get(previousActiveValue) : null;
+                // if there was a previously active node, it's different from the entering one,
+                // and it's not already leaving, mark it for removal.
+                if (nodeThatWasActive && nodeThatWasActive !== enteringNode && nodeThatWasActive !== leavingNode) {
+                    // if another node was already leaving, force complete its transition
+                    if (leavingNode) {
+                        this.forceCompleteLeaveTransition(leavingNode);
+                    }
+                    leavingNode = nodeThatWasActive;
+                    this._leavingContentNode.set(leavingNode);
+                }
+
+                // 3. Handle Entering Node
+                if (enteringNode) {
+                    // cancel any pending leave transition for this node if it was leaving
+                    if (enteringNode === leavingNode) {
+                        this.cancelLeaveTransition(enteringNode);
+                        leavingNode = null;
+                        this._leavingContentNode.set(null);
+                    }
+                    // ensure it's in the DOM and set state to open
+                    this.addNodeToDOM(enteringNode);
+                    this.setNodeState(enteringNode, 'open'); // Triggers enter animation via data-state
+                    this._activeContentNode.set(enteringNode);
+                    this.updateSize(); // Update size based on the entering node
+                } else {
+                    // no node entering, clear active node state
+                    this._activeContentNode.set(null);
+                }
+
+                // 4. Handle Leaving Node
+                if (leavingNode) {
+                    if (forceMount) {
+                        // if forceMount, just mark as closed, don't trigger removal animation
+                        this.setNodeState(leavingNode, 'closed');
+                        this._leavingContentNode.set(null); // No longer considered "leaving"
+                    } else {
+                        // start the leave transition (usePresence handles DOM removal)
+                        this.startLeaveTransition(leavingNode);
+                    }
+                }
+            });
+        });
+    }
+
+    // gets or creates the ContentNode (wrapper + view)
+    private getOrCreateContentNode(contentValue: string): ContentNode | null {
+        const existingNode = this._contentNodes().get(contentValue);
+        if (existingNode && !existingNode.embeddedView.destroyed) {
+            return existingNode;
+        }
+
+        // create if doesn't exist or view was destroyed
+        if (!isRootNavigationMenu(this.context) || !this.context.viewportContent) return null;
+        const allContentData = this.context.viewportContent();
+        const contentData = allContentData.get(contentValue);
+        const templateRef = contentData?.templateRef;
+
+        if (!templateRef) {
+            console.error(`No templateRef found for content value: ${contentValue}`);
+            return null;
+        }
+
+        try {
+            const embeddedView = this.viewContainerRef.createEmbeddedView(templateRef);
+            const container = this.renderer.createElement('div');
+            this.renderer.setAttribute(container, 'class', 'NavigationMenuContentWrapper');
+            this.renderer.setAttribute(container, 'data-content-value', contentValue);
+            embeddedView.rootNodes.forEach((node: Node) => this.renderer.appendChild(container, node));
+
+            const newNode: ContentNode = {
+                embeddedView,
+                element: container,
+                contentValue,
+                state: 'closed'
+            };
+
+            const newMap = new Map(this._contentNodes());
+            newMap.set(contentValue, newNode);
+            this._contentNodes.set(newMap);
+            return newNode;
+        } catch (error) {
+            console.error(`Error creating content node for ${contentValue}:`, error);
+            return null;
+        }
+    }
+
+    // adds node element to viewport DOM if not already present
+    private addNodeToDOM(node: ContentNode): void {
+        if (!this.elementRef.nativeElement.contains(node.element)) {
+            this.renderer.appendChild(this.elementRef.nativeElement, node.element);
+            // observe size only when added to DOM
+            this._resizeObserver.observe(node.element);
+        }
+    }
+
+    // removes node element from viewport DOM
+    private removeNodeFromDOM(node: ContentNode): void {
+        if (this.elementRef.nativeElement.contains(node.element)) {
+            this._resizeObserver.unobserve(node.element); // stop observing before removal
+            this.renderer.removeChild(this.elementRef.nativeElement, node.element);
+        }
+    }
+
+    // updates the data-state and motion attributes
+    private setNodeState(node: ContentNode, state: 'open' | 'closed'): void {
+        if (node.state === state) return; // avoid redundant updates
+
+        node.state = state;
+        this.renderer.setAttribute(node.element, 'data-state', state);
+
+        // apply motion attribute based on context
+        if (isRootNavigationMenu(this.context) && this.context.viewportContent) {
+            const contentData = this.context.viewportContent().get(node.contentValue);
+            if (contentData?.getMotionAttribute) {
+                // get motion based on current state transition
+                const motionAttr = contentData.getMotionAttribute();
+                if (motionAttr) {
+                    this.renderer.setAttribute(node.element, 'data-motion', motionAttr);
+                } else {
+                    this.renderer.removeAttribute(node.element, 'data-motion');
+                }
+            } else {
+                this.renderer.removeAttribute(node.element, 'data-motion');
+            }
+        }
+
+        // apply A11y attributes (might only be needed on open?)
+        if (state === 'open') {
+            this.applyA11yAttributes(node);
+        }
+    }
+
+    // apply A11y attributes to the first child element
+    private applyA11yAttributes(node: ContentNode): void {
+        if (!isRootNavigationMenu(this.context) || !this.context.viewportContent) return;
+        const contentData = this.context.viewportContent().get(node.contentValue);
+        if (contentData?.additionalAttrs && node.embeddedView.rootNodes.length > 0) {
+            const firstRootNode = node.embeddedView.rootNodes[0] as Element;
+            if (firstRootNode) {
+                Object.entries(contentData.additionalAttrs).forEach(([attr, value]) => {
+                    this.renderer.setAttribute(firstRootNode, attr, value as string);
+                });
+            }
+        }
+    }
+
+    private startLeaveTransition(node: ContentNode): void {
+        // ensure node exists and isn't already leaving with an active subscription
+        if (!node || node.transitionSubscription) {
+            node.transitionSubscription?.unsubscribe();
+            return;
+        }
+
+        const startFn: TransitionStartFn<null> = () => {
+            this.setNodeState(node, 'closed');
+            return () => this.cleanupAfterLeave(node);
+        };
+
+        const options: TransitionOptions<null> = {
+            animation: true, // assuming CSS animations/transitions handle the exit
+            state: 'continue' // start the leave process
+        };
+
+        node.transitionSubscription = usePresence(this.zone, node.element, startFn, options)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+                complete: () => {
+                    this.cleanupAfterLeave(node);
+                }
+            });
+    }
+
+    /**
+     * Cleanup function called after leave animation finishes
+     * @param node The node that is leaving
+     */
+    private cleanupAfterLeave(node: ContentNode): void {
+        // check if this node is still marked as the one leaving
+        if (this._leavingContentNode() === node) {
+            this.removeNodeFromDOM(node);
+            if (!this.forceMount() && node.embeddedView && !node.embeddedView.destroyed) {
+                node.embeddedView.destroy();
+                // Remove from cache if destroyed
+                const newMap = new Map(this._contentNodes());
+                newMap.delete(node.contentValue);
+                this._contentNodes.set(newMap);
+            }
+
+            node.transitionSubscription = null;
+            this._leavingContentNode.set(null);
+        } else {
+            // if this node is NOT the one currently marked as leaving, it means
+            // a new transition started before this one finished. Just clean up DOM/Sub.
+            this.removeNodeFromDOM(node);
+            node.transitionSubscription?.unsubscribe();
+            node.transitionSubscription = null;
+        }
+    }
+
+    /**
+     * Cancels an ongoing leave transition (e.g., if user hovers back)
+     * @param node The node that is leaving
+     */
+    private cancelLeaveTransition(node: ContentNode): void {
+        node.transitionSubscription?.unsubscribe();
+        node.transitionSubscription = null;
+    }
+
+    /**
+     * Force completes a leave transition (e.g., if another leave starts)
+     * @param node The node that is leaving
+     */
+    private forceCompleteLeaveTransition(node: ContentNode): void {
+        if (node && node.transitionSubscription) {
+            node.transitionSubscription.unsubscribe();
+
+            // perform cleanup immediately
+            this.cleanupAfterLeave(node);
+        }
+    }
+
+    private updateSize() {
+        const activeNode = this._activeContentNode()?.element; // measure the currently active node
+        if (!activeNode || !activeNode.isConnected) return;
 
         const firstChild = activeNode.firstChild as HTMLElement;
-        const width = Math.ceil(firstChild.offsetWidth);
-        const height = Math.ceil(firstChild.offsetHeight);
+        if (!firstChild) return;
 
-        // update size with valid dimensions (but only if not zero)
-        if (width !== 0 && height !== 0) {
-            this._viewportSize.set({ width, height });
-        }
-    }
+        this.window.requestAnimationFrame(() => {
+            // keep rAF here for measurement stability
+            activeNode.getBoundingClientRect(); // force layout
+            const width = Math.ceil(firstChild.offsetWidth);
+            const height = Math.ceil(firstChild.offsetHeight);
 
-    private renderContent(templateRef: TemplateRef<unknown>, contentValue: string) {
-        // check if we already have a view for this content
-        let contentNode = this._contentNodes().get(contentValue);
-
-        if (!contentNode) {
-            try {
-                // create a new embedded view
-                const embeddedView = this.viewContainerRef.createEmbeddedView(templateRef);
-                embeddedView.detectChanges();
-
-                // create a container for the view
-                const container = this.renderer.createElement('div');
-                this.renderer.setAttribute(container, 'class', 'NavigationMenuContentWrapper');
-                this.renderer.setAttribute(container, 'data-content-value', contentValue);
-                this.renderer.setStyle(container, 'width', '100%');
-
-                const viewportContent = this.context.viewportContent && this.context.viewportContent();
-                if (!viewportContent) return;
-
-                const contentData = viewportContent.get(contentValue);
-
-                // apply motion attribute if available
-                if (contentData?.getMotionAttribute) {
-                    const motionAttr = contentData.getMotionAttribute();
-                    if (motionAttr) {
-                        this.renderer.setAttribute(container, 'data-motion', motionAttr);
-                    }
+            if (width !== 0 || height !== 0) {
+                const currentSize = this._viewportSize();
+                if (!currentSize || currentSize.width !== width || currentSize.height !== height) {
+                    this._viewportSize.set({ width, height });
                 }
-
-                // apply additional a11y attributes to the first root node
-                if (contentData?.additionalAttrs && embeddedView.rootNodes.length > 0) {
-                    const rootNode = embeddedView.rootNodes[0];
-                    // check if rootNode has setAttribute (is an Element)
-                    if (rootNode.setAttribute) {
-                        Object.entries(contentData.additionalAttrs).forEach(([attr, value]) => {
-                            // don't override existing attributes that the user might have set manually
-                            if (!rootNode.hasAttribute(attr) || attr === 'id') {
-                                this.renderer.setAttribute(rootNode, attr, value as string);
-                            }
-                        });
-                    }
-                }
-
-                // add each root node to the container
-                embeddedView.rootNodes.forEach((node: Node) => {
-                    this.renderer.appendChild(container, node);
-                });
-
-                // set styles for proper measurement and display
-                this.renderer.setStyle(container, 'position', 'relative');
-                this.renderer.setStyle(container, 'visibility', 'visible');
-                this.renderer.setStyle(container, 'pointer-events', 'auto');
-                this.renderer.setStyle(container, 'display', 'block');
-
-                // store in cache
-                contentNode = { embeddedView, element: container };
-                const newMap = new Map(this._contentNodes());
-                newMap.set(contentValue, contentNode);
-                this._contentNodes.set(newMap);
-            } catch (error) {
-                console.error('Error in renderContent:', error);
-                return;
+            } else if (this._viewportSize() !== null) {
+                this._viewportSize.set(null);
             }
-        }
-
-        if (contentNode) {
-            this.updateActiveContent(contentNode);
-        }
-    }
-
-    private updateActiveContent(contentNode: ContentNode) {
-        if (contentNode !== this._activeContentNode()) {
-            // clear viewport
-            if (this.elementRef.nativeElement.firstChild) {
-                this.renderer.removeChild(this.elementRef.nativeElement, this.elementRef.nativeElement.firstChild);
-            }
-
-            // add content to viewport
-            this.renderer.appendChild(this.elementRef.nativeElement, contentNode.element);
-
-            // update active content reference
-            this._activeContentNode.set(contentNode);
-
-            // setup resize observation
-            this._resizeObserver.disconnect();
-            this._resizeObserver.observe(contentNode.element);
-
-            // measure after adding to DOM
-            setTimeout(() => this.updateSize(), 0);
-
-            // measure again after a frame to catch any style changes
-            requestAnimationFrame(() => this.updateSize());
-        }
+        });
     }
 }

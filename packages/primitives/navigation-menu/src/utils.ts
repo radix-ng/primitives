@@ -36,8 +36,8 @@ export function makeContentId(baseId: string, value: string): string {
  * Get the motion attribute for animations
  */
 export function getMotionAttribute(
-    currentValue: string,
-    previousValue: string,
+    currentValue: string | null,
+    previousValue: string | null,
     itemValue: string,
     itemValues: string[],
     dir: NavigationMenuDirection
@@ -45,28 +45,44 @@ export function getMotionAttribute(
     // reverse values in RTL
     const values = dir === 'rtl' ? [...itemValues].reverse() : itemValues;
 
-    const currentIndex = values.indexOf(currentValue);
-    const prevIndex = values.indexOf(previousValue);
+    const currentIndex = currentValue !== null ? values.indexOf(currentValue) : -1;
+    const prevIndex = previousValue !== null ? values.indexOf(previousValue) : -1;
+
     const isSelected = itemValue === currentValue;
-    const wasSelected = prevIndex === values.indexOf(itemValue);
+    const wasSelected = itemValue === previousValue && previousValue !== null;
 
-    // only update selected and last selected content
-    if (!isSelected && !wasSelected) return null;
+    // Preserve motion attribute for items not directly involved in the transition
+    // (This matches React's behaviour, using a ref/signal might be needed
+    // in the component using this function to fully replicate React's prevMotionAttributeRef)
+    // For now, returning null if not involved, as per the original code's intent here.
+    if (!isSelected && !wasSelected) {
+        return null;
+    }
 
-    // don't provide direction on initial open
+    // handle transitions between items
     if (currentIndex !== -1 && prevIndex !== -1) {
-        // if moving to this item from another
-        if (isSelected && prevIndex !== -1) {
+        // if moving to this item (isSelected)
+        if (isSelected) {
             return currentIndex > prevIndex ? 'from-end' : 'from-start';
         }
-        // if leaving this item for another
-        if (wasSelected && currentIndex !== -1) {
+        // if moving away from this item (wasSelected)
+        if (wasSelected) {
             return currentIndex > prevIndex ? 'to-start' : 'to-end';
         }
     }
 
-    // otherwise entering/leaving the list entirely
-    return isSelected ? 'from-start' : 'from-end';
+    // handle initial open (prevIndex is -1, currentIndex is valid)
+    if (isSelected && prevIndex === -1) {
+        return null;
+    }
+
+    // handle closing entirely (currentIndex is -1, prevIndex is valid)
+    if (wasSelected && currentIndex === -1) {
+        return null;
+    }
+
+    // fallback if none of the above conditions met (should ideally not happen with clear states)
+    return null;
 }
 
 /**

@@ -104,6 +104,15 @@ export default {
                         width: 100%;
                         animation-duration: 250ms;
                         animation-timing-function: ease;
+                        transition:
+                            opacity 250ms ease,
+                            transform 250ms ease;
+                    }
+                    .NavigationMenuContentWrapper[data-state='closed'] {
+                        opacity: 0;
+                    }
+                    .NavigationMenuContentWrapper[data-state='open'] {
+                        opacity: 1;
                     }
                     .NavigationMenuContentWrapper[data-motion='from-start'] {
                         animation-name: enterFromLeft;
@@ -165,14 +174,17 @@ export default {
                             0px 10px 20px -15px rgba(22, 23, 24, 0.2);
                         height: var(--radix-navigation-menu-viewport-height);
                         transition:
-                            width,
-                            height,
-                            300ms ease;
+                            width 300ms ease,
+                            height 300ms ease,
+                            opacity 200ms ease-out;
+                        opacity: 1;
                     }
                     .NavigationMenuViewport[data-state='open'] {
+                        opacity: 1;
                         animation: scaleIn 200ms ease;
                     }
                     .NavigationMenuViewport[data-state='closed'] {
+                        opacity: 0;
                         animation: scaleOut 200ms ease;
                     }
                     @media only screen and (min-width: 600px) {
