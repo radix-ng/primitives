@@ -1,3 +1,15 @@
+## 0.33.1 (2025-04-23)
+
+### 🩹 Fixes
+
+- **navigation-menu:** motion state ([#307](https://github.com/radix-ng/primitives/pull/307))
+- **hover-card:** remove console log from action handling ([#306](https://github.com/radix-ng/primitives/pull/306))
+- **navigation-menu:** simplify viewport content existence validation ([#302](https://github.com/radix-ng/primitives/pull/302))
+
+### ❤️ Thank You
+
+- Josh Sullivan @jpsullivan
+
 ## 0.33.0 (2025-04-12)
 
 ### 🚀 Features
