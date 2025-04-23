@@ -117,14 +117,16 @@
             }
         },
         "changelog": {
-            "projectChangelogs": {
+            "workspaceChangelog": {
                 "createRelease": "github",
                 "renderOptions": {
-                    "commitReferences": true,
                     "authors": true,
-                    "mapAuthorsToGitHubUsernames": false
+                    "mapAuthorsToGitHubUsernames": true,
+                    "commitReferences": true,
+                    "versionTitleDate": true
                 }
-            }
+            },
+            "projectChangelogs": true
         },
         "git": {
             "commitMessage": "chore(release): publish {projectName} {version}"
