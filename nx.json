@@ -117,7 +117,7 @@
             }
         },
         "changelog": {
-            "workspaceChangelog": {
+            "projectChangelogs": {
                 "createRelease": "github",
                 "renderOptions": {
                     "authors": true,
@@ -125,8 +125,7 @@
                     "commitReferences": true,
                     "versionTitleDate": true
                 }
-            },
-            "projectChangelogs": true
+            }
         },
         "git": {
             "commitMessage": "chore(release): publish {projectName} {version}"
