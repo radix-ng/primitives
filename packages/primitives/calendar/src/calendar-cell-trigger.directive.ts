@@ -1,5 +1,8 @@
-import { computed, Directive, input } from '@angular/core';
-import { DateValue, getLocalTimeZone, isSameMonth, isToday } from '@internationalized/date';
+import { AfterViewInit, computed, Directive, ElementRef, inject, input } from '@angular/core';
+import { DateValue, getLocalTimeZone, isSameDay, isSameMonth, isToday } from '@internationalized/date';
+import * as kbd from '@radix-ng/primitives/core';
+import { getDaysInMonth } from '@radix-ng/primitives/core';
+import { PrimitiveElementController, usePrimitiveElement } from './usePrimitiveElement';
 import { injectCalendarRootContext } from './сalendar-сontext.token';
 
 @Directive({
@@ -7,16 +10,23 @@ import { injectCalendarRootContext } from './сalendar-сontext.token';
     exportAs: 'rdxCalendarCellTrigger',
     host: {
         role: 'button',
-        '[attr.data-value]': 'day().toString()',
+        '[attr.data-rdx-calendar-cell-trigger]': '""',
+        '[attr.tabindex]': 'isFocusedDate() ? 0 : isOutsideView() || isDisabled() ? undefined : -1',
+        '[attr.data-value]': 'day()?.toString()',
         '[attr.data-today]': 'isDateToday() ? "" : undefined',
         '[attr.data-outside-view]': 'isOutsideView() ? "" : undefined',
         '[attr.data-selected]': 'isSelectedDate() ? "" : undefined',
 
-        '(click)': 'onClick()'
+        '(click)': 'onClick()',
+
+        '(keydown)': 'onArrowKey($event)'
     }
 })
-export class RdxCalendarCellTriggerDirective {
+export class RdxCalendarCellTriggerDirective implements AfterViewInit {
     private readonly rootContext = injectCalendarRootContext();
+    private readonly elementRef = inject(ElementRef<HTMLElement>);
+
+    private primitiveElement!: PrimitiveElementController['primitiveElement'];
 
     readonly day = input<DateValue>();
 
@@ -30,15 +40,161 @@ export class RdxCalendarCellTriggerDirective {
 
     readonly isSelectedDate = computed(() => this.rootContext.isDateSelected!(<DateValue>this.day()));
 
+    readonly isDisabled = computed(() => this.rootContext.isDateDisabled!(<DateValue>this.day()));
+
     readonly isOutsideView = computed(() => {
         return !isSameMonth(<DateValue>this.day(), <DateValue>this.month());
     });
+
+    readonly isFocusedDate = computed(() => {
+        return !this.rootContext.disabled && isSameDay(this.day()!, this.rootContext.placeholder());
+    });
+
+    currentElement!: PrimitiveElementController['currentElement'];
+
+    constructor() {
+        const { primitiveElement, currentElement } = usePrimitiveElement();
+
+        this.currentElement = currentElement;
+        this.primitiveElement = primitiveElement;
+    }
+
+    ngAfterViewInit() {
+        this.primitiveElement.set(this.elementRef.nativeElement);
+    }
 
     protected onClick() {
         this.changeDate(this.day()!);
     }
 
+    protected onArrowKey(event: KeyboardEvent) {
+        const code = event.code;
+        if (![
+                'ArrowRight',
+                'ArrowLeft',
+                'ArrowUp',
+                'ArrowDown',
+                'Enter',
+                'Space'
+            ].includes(code)) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const indexIncrementation = 7;
+        const sign = this.rootContext.dir() === 'rtl' ? -1 : 1;
+
+        switch (code) {
+            case kbd.ARROW_RIGHT:
+                this.shiftFocus(this.currentElement()!, sign);
+                break;
+            case kbd.ARROW_LEFT:
+                this.shiftFocus(this.currentElement()!, -sign);
+                break;
+            case kbd.ARROW_UP:
+                this.shiftFocus(this.currentElement()!, -indexIncrementation);
+                break;
+            case kbd.ARROW_DOWN:
+                this.shiftFocus(this.currentElement()!, indexIncrementation);
+                break;
+            case kbd.ENTER:
+            case kbd.SPACE_CODE:
+                this.changeDate(<DateValue>this.day());
+        }
+    }
+
+    private shiftFocus(node: HTMLElement, add: number) {
+        const parentElement = this.rootContext.currentElement()!;
+
+        const allCollectionItems: HTMLElement[] = this.getSelectableCells(parentElement);
+        if (!allCollectionItems.length) return;
+
+        const index = allCollectionItems.indexOf(node);
+        const newIndex = index + add;
+
+        if (newIndex >= 0 && newIndex < allCollectionItems.length) {
+            if (allCollectionItems[newIndex].hasAttribute('data-disabled')) {
+                this.shiftFocus(allCollectionItems[newIndex], add);
+            }
+            allCollectionItems[newIndex].focus();
+            return;
+        }
+
+        if (newIndex < 0) {
+            if (!this.rootContext.prevPage) return;
+
+            this.rootContext.prevPage();
+
+            setTimeout(() => {
+                const newCollectionItems = this.getSelectableCells(parentElement);
+                if (!newCollectionItems.length) return;
+
+                if (!this.rootContext.pagedNavigation && this.rootContext.numberOfMonths() > 1) {
+                    // Placeholder is set to first month of the new page
+                    const numberOfDays = getDaysInMonth(this.rootContext.placeholder());
+                    const computedIndex = numberOfDays - Math.abs(newIndex);
+                    if (newCollectionItems[computedIndex].hasAttribute('data-disabled')) {
+                        this.shiftFocus(newCollectionItems[computedIndex], add);
+                    }
+                    newCollectionItems[computedIndex].focus();
+                    return;
+                }
+
+                const computedIndex = newCollectionItems.length - Math.abs(newIndex);
+                if (newCollectionItems[computedIndex].hasAttribute('data-disabled')) {
+                    this.shiftFocus(newCollectionItems[computedIndex], add);
+                }
+                newCollectionItems[computedIndex].focus();
+            });
+        }
+
+        if (newIndex >= allCollectionItems.length) {
+            if (!this.rootContext.nextPage) return;
+
+            this.rootContext.nextPage();
+
+            setTimeout(() => {
+                const newCollectionItems = this.getSelectableCells(parentElement);
+                if (!newCollectionItems.length) return;
+
+                if (!this.rootContext.pagedNavigation && this.rootContext.numberOfMonths() > 1) {
+                    const numberOfDays = getDaysInMonth(
+                        this.rootContext.placeholder().add({ months: this.rootContext.numberOfMonths() - 1 })
+                    );
+
+                    const computedIndex =
+                        newIndex - allCollectionItems.length + (newCollectionItems.length - numberOfDays);
+
+                    if (newCollectionItems[computedIndex].hasAttribute('data-disabled')) {
+                        this.shiftFocus(newCollectionItems[computedIndex], add);
+                    }
+                    newCollectionItems[computedIndex].focus();
+                    return;
+                }
+
+                const computedIndex = newIndex - allCollectionItems.length;
+                if (newCollectionItems[computedIndex].hasAttribute('data-disabled')) {
+                    this.shiftFocus(newCollectionItems[computedIndex], add);
+                }
+
+                newCollectionItems[computedIndex].focus();
+            });
+        }
+    }
+
+    SELECTOR = '[data-rdx-calendar-cell-trigger]:not([data-outside-view]):not([data-outside-visible-view])';
+    getSelectableCells(calendar: HTMLElement): HTMLElement[] {
+        return Array.from(calendar.querySelectorAll(this.SELECTOR)) ?? [];
+    }
+
     changeDate(date: DateValue) {
         this.rootContext.onDateChange(date);
+    }
+
+    private nextTick(fn: () => void) {
+        // eslint-disable-next-line promise/catch-or-return
+        Promise.resolve().then(fn);
     }
 }

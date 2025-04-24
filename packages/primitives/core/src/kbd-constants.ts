@@ -38,3 +38,4 @@ export const p = 'p';
 export const n = 'n';
 export const j = 'j';
 export const k = 'k';
+export const SPACE_CODE = 'Space';

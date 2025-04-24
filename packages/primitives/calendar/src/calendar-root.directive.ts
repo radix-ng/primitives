@@ -1,8 +1,21 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { booleanAttribute, Directive, effect, forwardRef, input, linkedSignal, model, signal } from '@angular/core';
+import {
+    AfterViewInit,
+    booleanAttribute,
+    Directive,
+    effect,
+    ElementRef,
+    forwardRef,
+    inject,
+    input,
+    linkedSignal,
+    model,
+    signal
+} from '@angular/core';
 import { DateValue, isEqualDay, isSameDay } from '@internationalized/date';
 import { DateMatcher, Formatter, getDefaultDate, watch } from '@radix-ng/primitives/core';
 import { calendar, calendarState } from './calendar';
+import { PrimitiveElementController, usePrimitiveElement } from './usePrimitiveElement';
 import { CALENDAR_ROOT_CONTEXT } from './сalendar-сontext.token';
 
 @Directive({
@@ -17,7 +30,12 @@ import { CALENDAR_ROOT_CONTEXT } from './сalendar-сontext.token';
         '[attr.data-readonly]': 'readonly() ? "" : undefined'
     }
 })
-export class RdxCalendarRootDirective {
+export class RdxCalendarRootDirective implements AfterViewInit {
+    private readonly elementRef = inject(ElementRef<HTMLElement>);
+
+    private primitiveElement!: PrimitiveElementController['primitiveElement'];
+    currentElement!: PrimitiveElementController['currentElement'];
+
     readonly value = model<DateValue | DateValue[] | undefined>();
 
     readonly defaultPlaceholder = model<DateValue>();
@@ -43,6 +61,8 @@ export class RdxCalendarRootDirective {
     readonly weekStartsOn = input<0 | 1 | 2 | 3 | 4 | 5 | 6>(1);
 
     readonly numberOfMonths = input<number>(1);
+
+    readonly dir = input<'ltr' | 'rtl'>('ltr');
 
     readonly minValue = input<DateValue>();
 
@@ -113,7 +133,9 @@ export class RdxCalendarRootDirective {
     });
 
     constructor() {
-        //const { formatter, month, weekdays, nextPage, prevPage, visibleView, headingValue }
+        const { primitiveElement, currentElement } = usePrimitiveElement();
+        this.primitiveElement = primitiveElement;
+        this.currentElement = currentElement;
 
         this.nextPage = this.calendar.nextPage;
         this.prevPage = this.calendar.prevPage;
@@ -146,6 +168,10 @@ export class RdxCalendarRootDirective {
                 this.onPlaceholderChange(_modelValue);
             }
         });
+    }
+
+    ngAfterViewInit() {
+        this.primitiveElement.set(this.elementRef.nativeElement);
     }
 
     onPlaceholderChange(value: DateValue) {
