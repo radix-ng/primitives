@@ -27,8 +27,8 @@ export type CalendarProps = {
     isDateDisabled?: InputSignal<DateMatcher | undefined>;
     isDateUnavailable?: InputSignal<DateMatcher | undefined>;
     calendarLabel: WritableSignal<string | undefined>;
-    nextPage: WritableSignal<((placeholder: DateValue) => DateValue) | undefined>;
-    prevPage: WritableSignal<((placeholder: DateValue) => DateValue) | undefined>;
+    nextPage: InputSignal<((placeholder: DateValue) => DateValue) | undefined>;
+    prevPage: InputSignal<((placeholder: DateValue) => DateValue) | undefined>;
 };
 
 export type CalendarStateProps = {

@@ -82,6 +82,14 @@ export class RdxCalendarRootDirective implements AfterViewInit {
      */
     readonly pagedNavigation = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    readonly propsNextPage = input<(placeholder: DateValue) => DateValue>();
+
+    readonly propsPrevPage = input<(placeholder: DateValue) => DateValue>();
+
+    readonly isDateDisabled = input<DateMatcher>();
+
+    readonly isDateUnavailable = input<DateMatcher>();
+
     protected readonly fixedWeeksRef = linkedSignal({
         source: this.fixedWeeks,
         computation: (value) => value as boolean
@@ -107,6 +115,7 @@ export class RdxCalendarRootDirective implements AfterViewInit {
 
     nextPage: (nextPageFunc?: (date: DateValue) => DateValue) => void;
     prevPage: (nextPageFunc?: (date: DateValue) => DateValue) => void;
+
     isNextButtonDisabled: (nextPageFunc?: (date: DateValue) => DateValue) => boolean;
     isPrevButtonDisabled: (nextPageFunc?: (date: DateValue) => DateValue) => boolean;
 
@@ -115,10 +124,6 @@ export class RdxCalendarRootDirective implements AfterViewInit {
     isOutsideVisibleView: (date: DateValue) => boolean;
 
     formatter: Formatter;
-
-    readonly isDateDisabled = input<DateMatcher>();
-
-    readonly isDateUnavailable = input<DateMatcher>();
 
     private readonly calendar = calendar({
         locale: this.locale,
@@ -134,8 +139,8 @@ export class RdxCalendarRootDirective implements AfterViewInit {
         isDateDisabled: this.isDateDisabled,
         isDateUnavailable: this.isDateUnavailable,
         calendarLabel: signal(undefined),
-        nextPage: signal(undefined),
-        prevPage: signal(undefined)
+        nextPage: this.propsNextPage,
+        prevPage: this.propsPrevPage
     });
 
     constructor() {
