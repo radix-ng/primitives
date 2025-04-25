@@ -26,12 +26,19 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
     styleUrl: 'calendar-default.style.css',
     template: `
         <div class="wrapper">
-            <div class="calendar-root" #root="rdxCalendarRoot" [value]="date" rdxCalendarRoot fixedWeeks>
+            <div
+                class="calendar-root"
+                #root="rdxCalendarRoot"
+                [value]="date"
+                data-testid="calendar"
+                rdxCalendarRoot
+                fixedWeeks
+            >
                 <div class="calendar-header" rdxCalendarHeader>
                     <button class="icon-button" type="button" rdxCalendarPrev>
                         <lucide-angular [img]="ChevronLeft" size="16" style="display: flex;" />
                     </button>
-                    <div class="calendar-heading" #head="rdxCalendarHeading" rdxCalendarHeading>
+                    <div class="calendar-heading" #head="rdxCalendarHeading" data-testid="heading" rdxCalendarHeading>
                         {{ head.headingValue() }}
                     </div>
                     <button class="icon-button" type="button" rdxCalendarNext>
@@ -76,7 +83,7 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
     `
 })
 export class CalendarDefaultComponent {
-    readonly date = new CalendarDate(2024, 10, 3);
+    date = new CalendarDate(2024, 10, 3);
     protected readonly ChevronLeft = ChevronLeft;
     protected readonly ChevronRight = ChevronRight;
 }
