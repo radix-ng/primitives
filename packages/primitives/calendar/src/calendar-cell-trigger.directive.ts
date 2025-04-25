@@ -10,12 +10,16 @@ import { injectCalendarRootContext } from './сalendar-сontext.token';
     exportAs: 'rdxCalendarCellTrigger',
     host: {
         role: 'button',
+        '[attr.aria-disabled]': 'isDisabled() || isUnavailable() ? true : undefined',
         '[attr.data-rdx-calendar-cell-trigger]': '""',
         '[attr.tabindex]': 'isFocusedDate() ? 0 : isOutsideView() || isDisabled() ? undefined : -1',
         '[attr.data-value]': 'day()?.toString()',
+        '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
         '[attr.data-today]': 'isDateToday() ? "" : undefined',
         '[attr.data-outside-view]': 'isOutsideView() ? "" : undefined',
         '[attr.data-selected]': 'isSelectedDate() ? "" : undefined',
+        '[attr.data-unavailable]': 'isUnavailable() ? "" : undefined',
+        '[attr.data-focus]': 'isFocusedDate() ? "" : undefined',
 
         '(click)': 'onClick()',
 
@@ -47,8 +51,10 @@ export class RdxCalendarCellTriggerDirective implements AfterViewInit {
     });
 
     readonly isFocusedDate = computed(() => {
-        return !this.rootContext.disabled && isSameDay(this.day()!, this.rootContext.placeholder());
+        return !this.rootContext.disabled() && isSameDay(<DateValue>this.day(), this.rootContext.placeholder());
     });
+
+    readonly isUnavailable = computed(() => this.rootContext.isDateUnavailable?.(<DateValue>this.day()) ?? false);
 
     currentElement!: PrimitiveElementController['currentElement'];
 
@@ -70,12 +76,12 @@ export class RdxCalendarCellTriggerDirective implements AfterViewInit {
     protected onArrowKey(event: KeyboardEvent) {
         const code = event.code;
         if (![
-                'ArrowRight',
-                'ArrowLeft',
-                'ArrowUp',
-                'ArrowDown',
-                'Enter',
-                'Space'
+                kbd.ARROW_RIGHT,
+                kbd.ARROW_LEFT,
+                kbd.ARROW_UP,
+                kbd.ARROW_DOWN,
+                kbd.ENTER,
+                kbd.SPACE
             ].includes(code)) {
             return;
         }
@@ -132,7 +138,7 @@ export class RdxCalendarCellTriggerDirective implements AfterViewInit {
                 if (!newCollectionItems.length) return;
 
                 if (!this.rootContext.pagedNavigation && this.rootContext.numberOfMonths() > 1) {
-                    // Placeholder is set to first month of the new page
+                    // Placeholder is set to the first month of the new page
                     const numberOfDays = getDaysInMonth(this.rootContext.placeholder());
                     const computedIndex = numberOfDays - Math.abs(newIndex);
                     if (newCollectionItems[computedIndex].hasAttribute('data-disabled')) {
@@ -191,10 +197,5 @@ export class RdxCalendarCellTriggerDirective implements AfterViewInit {
 
     changeDate(date: DateValue) {
         this.rootContext.onDateChange(date);
-    }
-
-    private nextTick(fn: () => void) {
-        // eslint-disable-next-line promise/catch-or-return
-        Promise.resolve().then(fn);
     }
 }

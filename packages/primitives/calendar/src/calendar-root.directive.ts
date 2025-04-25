@@ -27,7 +27,9 @@ import { CALENDAR_ROOT_CONTEXT } from './сalendar-сontext.token';
         role: 'application',
         '[attr.aria-label]': 'fullCalendarLabel()',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
-        '[attr.data-readonly]': 'readonly() ? "" : undefined'
+        '[attr.data-readonly]': 'readonly() ? "" : undefined',
+        '[attr.data-invalid]': 'isInvalid ? "" : undefined',
+        '[attr.dir]': 'dir()'
     }
 })
 export class RdxCalendarRootDirective implements AfterViewInit {
@@ -107,6 +109,7 @@ export class RdxCalendarRootDirective implements AfterViewInit {
     prevPage: (nextPageFunc?: (date: DateValue) => DateValue) => void;
 
     isDateSelected: DateMatcher;
+    isInvalid: boolean;
 
     readonly isDateDisabled = input<DateMatcher>();
 
@@ -115,8 +118,6 @@ export class RdxCalendarRootDirective implements AfterViewInit {
     formatter: Formatter;
 
     private readonly calendar = calendar({
-        nextPage: signal(undefined),
-        prevPage: signal(undefined),
         locale: this.locale,
         placeholder: this.placeholder,
         weekStartsOn: this.weekStartsOn,
@@ -125,11 +126,13 @@ export class RdxCalendarRootDirective implements AfterViewInit {
         minValue: this.minValue,
         maxValue: this.maxValue,
         disabled: this.disabledRef,
-        calendarLabel: signal(undefined),
+        weekdayFormat: this.weekdayFormat,
         pagedNavigation: this.pagedNavigationRef,
         isDateDisabled: this.isDateDisabled,
         isDateUnavailable: this.isDateUnavailable,
-        weekdayFormat: this.weekdayFormat
+        calendarLabel: signal(undefined),
+        nextPage: signal(undefined),
+        prevPage: signal(undefined)
     });
 
     constructor() {
@@ -149,13 +152,14 @@ export class RdxCalendarRootDirective implements AfterViewInit {
 
             this.headingValue.set(this.calendar.headingValue());
 
-            const { isDateSelected } = calendarState({
+            const { isInvalid, isDateSelected } = calendarState({
                 date: this.value,
                 isDateDisabled: this.isDateDisabled(),
                 isDateUnavailable: this.isDateUnavailable()
             });
 
             this.isDateSelected = isDateSelected;
+            this.isInvalid = isInvalid();
         });
 
         watch([this.value], (_modelValue) => {

@@ -6,6 +6,8 @@ import {
     DateFormatterOptions,
     DateMatcher,
     getDaysInMonth,
+    isAfter,
+    isBefore,
     Month,
     toDate,
     watch
@@ -75,6 +77,24 @@ export function calendarState(props: CalendarStateProps) {
     };
 }
 
+function handleNextDisabled(lastPeriodInView: DateValue, nextPageFunc: (date: DateValue) => DateValue): DateValue {
+    const firstPeriodOfNextPage = nextPageFunc(lastPeriodInView);
+    const diff = firstPeriodOfNextPage.compare(lastPeriodInView);
+    const duration: DateFields = {};
+    if (diff >= 7) duration.day = 1;
+    if (diff >= getDaysInMonth(lastPeriodInView)) duration.month = 1;
+    return firstPeriodOfNextPage.set({ ...duration });
+}
+
+function handlePrevDisabled(firstPeriodInView: DateValue, prevPageFunc: (date: DateValue) => DateValue): DateValue {
+    const lastPeriodOfPrevPage = prevPageFunc(firstPeriodInView);
+    const diff = firstPeriodInView.compare(lastPeriodOfPrevPage);
+    const duration: DateFields = {};
+    if (diff >= 7) duration.day = 35;
+    if (diff >= getDaysInMonth(firstPeriodInView)) duration.month = 13;
+    return lastPeriodOfPrevPage.set({ ...duration });
+}
+
 function handleNextPage(date: DateValue, nextPageFunc: (date: DateValue) => DateValue): DateValue {
     return nextPageFunc(date);
 }
@@ -111,6 +131,39 @@ export function calendar(props: CalendarProps) {
     const visibleView = computed(() => {
         return month().map((month) => month.value);
     });
+
+    function isOutsideVisibleView(date: DateValue) {
+        return !visibleView().some((month) => isEqualMonth(date, month));
+    }
+
+    const isNextButtonDisabled = (nextPageFunc?: (date: DateValue) => DateValue) => {
+        if (!props.maxValue() || !month().length) return false;
+        if (props.disabled()) return true;
+
+        const lastPeriodInView = month()[month().length - 1].value;
+
+        if (!nextPageFunc && !props.nextPage()) {
+            const firstPeriodOfNextPage = lastPeriodInView.add({ months: 1 }).set({ day: 1 });
+            return isAfter(firstPeriodOfNextPage, <DateValue>props.maxValue());
+        }
+
+        const firstPeriodOfNextPage = handleNextDisabled(lastPeriodInView, nextPageFunc || props.nextPage()!);
+        return isAfter(firstPeriodOfNextPage, <DateValue>props.maxValue());
+    };
+
+    const isPrevButtonDisabled = (prevPageFunc?: (date: DateValue) => DateValue) => {
+        if (!props.minValue() || !month().length) return false;
+        if (props.disabled()) return true;
+        const firstPeriodInView = month()[0].value;
+
+        if (!prevPageFunc && !props.prevPage()) {
+            const lastPeriodOfPrevPage = firstPeriodInView.subtract({ months: 1 }).set({ day: 35 });
+            return isBefore(lastPeriodOfPrevPage, <DateValue>props.minValue());
+        }
+
+        const lastPeriodOfPrevPage = handlePrevDisabled(firstPeriodInView, prevPageFunc || props.prevPage()!);
+        return isBefore(lastPeriodOfPrevPage, <DateValue>props.minValue());
+    };
 
     const nextPage = (nextPageFunc?: (date: DateValue) => DateValue) => {
         const firstDate = month()[0].value;
@@ -203,6 +256,17 @@ export function calendar(props: CalendarProps) {
         props.placeholder.set(newMonth[0].value.set({ ...duration }));
     };
 
+    function isDateDisabled(dateObj: DateValue) {
+        if (props.isDateDisabled?.()?.(dateObj) || props.disabled()) return true;
+        if (props.maxValue() && isAfter(dateObj, <DateValue>props.maxValue())) return true;
+        if (props.minValue() && isBefore(dateObj, <DateValue>props.minValue())) return true;
+        return false;
+    }
+
+    const isDateUnavailable = (date: DateValue) => {
+        return !!props.isDateUnavailable?.()?.(date);
+    };
+
     const weekdays = computed(() => {
         if (!month().length) return [];
         return month()[0].weeks[0].map((date) => {
@@ -261,24 +325,26 @@ export function calendar(props: CalendarProps) {
         const startMonthYear = formatter.fullYear(startMonth, headingFormatOptions());
         const endMonthYear = formatter.fullYear(endMonth, headingFormatOptions());
 
-        const content =
-            startMonthYear === endMonthYear
-                ? `${startMonthName} - ${endMonthName} ${endMonthYear}`
-                : `${startMonthName} ${startMonthYear} - ${endMonthName} ${endMonthYear}`;
-
-        return content;
+        return startMonthYear === endMonthYear
+            ? `${startMonthName} - ${endMonthName} ${endMonthYear}`
+            : `${startMonthName} ${startMonthYear} - ${endMonthName} ${endMonthYear}`;
     });
 
     const fullCalendarLabel = computed(() => `${props.calendarLabel() ?? 'Event Date'}, ${headingValue()}`);
 
     return {
-        fullCalendarLabel,
+        isDateDisabled,
+        isDateUnavailable,
+        isNextButtonDisabled,
+        isPrevButtonDisabled,
         month,
         weekdays,
         visibleView,
+        isOutsideVisibleView,
         formatter,
         nextPage,
         prevPage,
-        headingValue
+        headingValue,
+        fullCalendarLabel
     };
 }

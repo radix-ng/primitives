@@ -11,9 +11,10 @@ export interface CalendarRootContextToken {
     numberOfMonths: InputSignal<number>;
     placeholder: ModelSignal<DateValue>;
     pagedNavigation: boolean;
-    disabled: boolean;
+    disabled: InputSignal<boolean>;
     isDateSelected?: DateMatcher;
     isDateDisabled?: DateMatcher;
+    isDateUnavailable: DateMatcher;
     formatter: Formatter;
     onDateChange: (date: DateValue) => void;
     currentElement: PrimitiveElementController['currentElement'];
