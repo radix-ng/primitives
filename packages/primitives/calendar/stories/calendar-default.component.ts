@@ -28,13 +28,13 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
         <div class="wrapper">
             <div class="calendar-root" #root="rdxCalendarRoot" [value]="date" rdxCalendarRoot fixedWeeks>
                 <div class="calendar-header" rdxCalendarHeader>
-                    <button class="icon-button" rdxCalendarPrev>
+                    <button class="icon-button" type="button" rdxCalendarPrev>
                         <lucide-angular [img]="ChevronLeft" size="16" style="display: flex;" />
                     </button>
                     <div class="calendar-heading" #head="rdxCalendarHeading" rdxCalendarHeading>
                         {{ head.headingValue() }}
                     </div>
-                    <button class="icon-button" rdxCalendarNext>
+                    <button class="icon-button" type="button" rdxCalendarNext>
                         <lucide-angular [img]="ChevronRight" size="16" style="display: flex;" />
                     </button>
                 </div>

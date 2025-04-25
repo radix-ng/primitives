@@ -6,8 +6,11 @@ import { PrimitiveElementController } from './usePrimitiveElement';
 export interface CalendarRootContextToken {
     nextPage?: (nextPageFunc?: (date: DateValue) => DateValue) => void;
     prevPage?: (nextPageFunc?: (date: DateValue) => DateValue) => void;
+    isNextButtonDisabled: (nextPageFunc?: (date: DateValue) => DateValue) => boolean;
+    isPrevButtonDisabled: (nextPageFunc?: (date: DateValue) => DateValue) => boolean;
     headingValue: WritableSignal<string>;
     dir: InputSignal<'ltr' | 'rtl'>;
+    readonly: boolean;
     numberOfMonths: InputSignal<number>;
     placeholder: ModelSignal<DateValue>;
     pagedNavigation: boolean;

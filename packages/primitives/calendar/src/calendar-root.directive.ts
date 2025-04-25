@@ -107,15 +107,18 @@ export class RdxCalendarRootDirective implements AfterViewInit {
 
     nextPage: (nextPageFunc?: (date: DateValue) => DateValue) => void;
     prevPage: (nextPageFunc?: (date: DateValue) => DateValue) => void;
+    isNextButtonDisabled: (nextPageFunc?: (date: DateValue) => DateValue) => boolean;
+    isPrevButtonDisabled: (nextPageFunc?: (date: DateValue) => DateValue) => boolean;
 
     isDateSelected: DateMatcher;
     isInvalid: boolean;
+    isOutsideVisibleView: (date: DateValue) => boolean;
+
+    formatter: Formatter;
 
     readonly isDateDisabled = input<DateMatcher>();
 
     readonly isDateUnavailable = input<DateMatcher>();
-
-    formatter: Formatter;
 
     private readonly calendar = calendar({
         locale: this.locale,
@@ -142,6 +145,9 @@ export class RdxCalendarRootDirective implements AfterViewInit {
 
         this.nextPage = this.calendar.nextPage;
         this.prevPage = this.calendar.prevPage;
+        this.isOutsideVisibleView = this.calendar.isOutsideVisibleView;
+        this.isNextButtonDisabled = this.calendar.isNextButtonDisabled;
+        this.isPrevButtonDisabled = this.calendar.isPrevButtonDisabled;
 
         effect(() => {
             this.months.set(this.calendar.month());

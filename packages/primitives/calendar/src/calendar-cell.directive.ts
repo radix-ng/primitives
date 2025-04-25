@@ -6,7 +6,9 @@ import { injectCalendarRootContext } from './сalendar-сontext.token';
     selector: 'td[rdxCalendarCell]',
     host: {
         role: 'gridcell',
-        '[attr.data-disabled]': 'rootContext.isDateSelected(date()) ? "" : undefined'
+        '[attr.aria-selected]': 'rootContext.isDateSelected?.(date()!) ? true : undefined',
+        '[attr.aria-disabled]': 'rootContext.isDateSelected?.(date()!) ||  rootContext.isDateUnavailable?.(date()!)',
+        '[attr.data-disabled]': 'rootContext.isDateSelected?.(date()!) ? "" : undefined'
     }
 })
 export class RdxCalendarCellDirective {
