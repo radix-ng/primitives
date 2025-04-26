@@ -13,9 +13,8 @@ import {
     signal
 } from '@angular/core';
 import { DateValue, isEqualDay, isSameDay } from '@internationalized/date';
-import { DateMatcher, Formatter, getDefaultDate, watch } from '@radix-ng/primitives/core';
+import { DateMatcher, Formatter, getDefaultDate, Month, watch } from '@radix-ng/primitives/core';
 import { calendar, calendarState } from './calendar';
-import { PrimitiveElementController, usePrimitiveElement } from './usePrimitiveElement';
 import { CALENDAR_ROOT_CONTEXT } from './сalendar-сontext.token';
 
 @Directive({
@@ -34,9 +33,6 @@ import { CALENDAR_ROOT_CONTEXT } from './сalendar-сontext.token';
 })
 export class RdxCalendarRootDirective implements AfterViewInit {
     private readonly elementRef = inject(ElementRef<HTMLElement>);
-
-    private primitiveElement!: PrimitiveElementController['primitiveElement'];
-    currentElement!: PrimitiveElementController['currentElement'];
 
     readonly value = model<DateValue | DateValue[] | undefined>();
 
@@ -90,6 +86,12 @@ export class RdxCalendarRootDirective implements AfterViewInit {
 
     readonly isDateUnavailable = input<DateMatcher>();
 
+    readonly initialFocus = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    readonly months = model<Month<DateValue>[]>();
+
+    readonly weekDays = model<string[]>();
+
     protected readonly fixedWeeksRef = linkedSignal({
         source: this.fixedWeeks,
         computation: (value) => value as boolean
@@ -104,10 +106,6 @@ export class RdxCalendarRootDirective implements AfterViewInit {
         source: this.pagedNavigation,
         computation: (value) => value as boolean
     });
-
-    months = signal<any>([]);
-
-    weekDays = signal<any>([]);
 
     readonly headingValue = signal<string>('');
 
@@ -124,6 +122,8 @@ export class RdxCalendarRootDirective implements AfterViewInit {
     isOutsideVisibleView: (date: DateValue) => boolean;
 
     formatter: Formatter;
+
+    currentElement!: HTMLElement;
 
     private readonly calendar = calendar({
         locale: this.locale,
@@ -144,10 +144,6 @@ export class RdxCalendarRootDirective implements AfterViewInit {
     });
 
     constructor() {
-        const { primitiveElement, currentElement } = usePrimitiveElement();
-        this.primitiveElement = primitiveElement;
-        this.currentElement = currentElement;
-
         this.nextPage = this.calendar.nextPage;
         this.prevPage = this.calendar.prevPage;
         this.isOutsideVisibleView = this.calendar.isOutsideVisibleView;
@@ -186,7 +182,7 @@ export class RdxCalendarRootDirective implements AfterViewInit {
     }
 
     ngAfterViewInit() {
-        this.primitiveElement.set(this.elementRef.nativeElement);
+        this.currentElement = this.elementRef.nativeElement;
     }
 
     onPlaceholderChange(value: DateValue) {

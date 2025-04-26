@@ -1,7 +1,6 @@
 import { inject, InjectionToken, InputSignal, ModelSignal, WritableSignal } from '@angular/core';
 import { DateValue } from '@internationalized/date';
 import { DateMatcher, Formatter } from '@radix-ng/primitives/core';
-import { PrimitiveElementController } from './usePrimitiveElement';
 
 export interface CalendarRootContextToken {
     nextPage?: (nextPageFunc?: (date: DateValue) => DateValue) => void;
@@ -20,7 +19,7 @@ export interface CalendarRootContextToken {
     isDateUnavailable: DateMatcher;
     formatter: Formatter;
     onDateChange: (date: DateValue) => void;
-    currentElement: PrimitiveElementController['currentElement'];
+    currentElement: HTMLElement;
 }
 
 export const CALENDAR_ROOT_CONTEXT = new InjectionToken<CalendarRootContextToken>('CalendarRootContext');

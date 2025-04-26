@@ -2,7 +2,6 @@ import { AfterViewInit, computed, Directive, ElementRef, inject, input } from '@
 import { DateValue, getLocalTimeZone, isSameDay, isSameMonth, isToday } from '@internationalized/date';
 import * as kbd from '@radix-ng/primitives/core';
 import { getDaysInMonth } from '@radix-ng/primitives/core';
-import { PrimitiveElementController, usePrimitiveElement } from './usePrimitiveElement';
 import { injectCalendarRootContext } from './сalendar-сontext.token';
 
 @Directive({
@@ -30,8 +29,6 @@ export class RdxCalendarCellTriggerDirective implements AfterViewInit {
     private readonly rootContext = injectCalendarRootContext();
     private readonly elementRef = inject(ElementRef<HTMLElement>);
 
-    private primitiveElement!: PrimitiveElementController['primitiveElement'];
-
     readonly day = input<DateValue>();
 
     readonly month = input<DateValue>();
@@ -56,17 +53,10 @@ export class RdxCalendarCellTriggerDirective implements AfterViewInit {
 
     readonly isUnavailable = computed(() => this.rootContext.isDateUnavailable?.(<DateValue>this.day()) ?? false);
 
-    currentElement!: PrimitiveElementController['currentElement'];
-
-    constructor() {
-        const { primitiveElement, currentElement } = usePrimitiveElement();
-
-        this.currentElement = currentElement;
-        this.primitiveElement = primitiveElement;
-    }
+    currentElement!: HTMLElement;
 
     ngAfterViewInit() {
-        this.primitiveElement.set(this.elementRef.nativeElement);
+        this.currentElement = this.elementRef.nativeElement;
     }
 
     protected onClick() {
@@ -94,16 +84,16 @@ export class RdxCalendarCellTriggerDirective implements AfterViewInit {
 
         switch (code) {
             case kbd.ARROW_RIGHT:
-                this.shiftFocus(this.currentElement()!, sign);
+                this.shiftFocus(this.currentElement, sign);
                 break;
             case kbd.ARROW_LEFT:
-                this.shiftFocus(this.currentElement()!, -sign);
+                this.shiftFocus(this.currentElement, -sign);
                 break;
             case kbd.ARROW_UP:
-                this.shiftFocus(this.currentElement()!, -indexIncrementation);
+                this.shiftFocus(this.currentElement, -indexIncrementation);
                 break;
             case kbd.ARROW_DOWN:
-                this.shiftFocus(this.currentElement()!, indexIncrementation);
+                this.shiftFocus(this.currentElement, indexIncrementation);
                 break;
             case kbd.ENTER:
             case kbd.SPACE_CODE:
@@ -112,7 +102,7 @@ export class RdxCalendarCellTriggerDirective implements AfterViewInit {
     }
 
     private shiftFocus(node: HTMLElement, add: number) {
-        const parentElement = this.rootContext.currentElement()!;
+        const parentElement = this.rootContext.currentElement;
 
         const allCollectionItems: HTMLElement[] = this.getSelectableCells(parentElement);
         if (!allCollectionItems.length) return;
