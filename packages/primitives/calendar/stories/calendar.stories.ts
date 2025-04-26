@@ -1,5 +1,6 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { CalendarDefaultComponent } from './calendar-default.component';
+import { CalendarWithLocaleComponent } from './calendar-with-locale.component';
 
 const html = String.raw;
 
@@ -8,7 +9,8 @@ export default {
     decorators: [
         moduleMetadata({
             imports: [
-                CalendarDefaultComponent
+                CalendarDefaultComponent,
+                CalendarWithLocaleComponent
             ]
         }),
         componentWrapperDecorator(
@@ -32,6 +34,14 @@ export const Default: Story = {
     render: () => ({
         template: html`
             <app-calendar-default />
+        `
+    })
+};
+
+export const WithLocale: Story = {
+    render: () => ({
+        template: html`
+            <app-calendar-with-locale />
         `
     })
 };

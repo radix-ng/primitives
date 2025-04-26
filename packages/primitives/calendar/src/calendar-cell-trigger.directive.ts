@@ -1,7 +1,7 @@
 import { AfterViewInit, computed, Directive, ElementRef, inject, input } from '@angular/core';
 import { DateValue, getLocalTimeZone, isSameDay, isSameMonth, isToday } from '@internationalized/date';
 import * as kbd from '@radix-ng/primitives/core';
-import { getDaysInMonth } from '@radix-ng/primitives/core';
+import { getDaysInMonth, toDate } from '@radix-ng/primitives/core';
 import { injectCalendarRootContext } from './сalendar-сontext.token';
 
 @Directive({
@@ -9,6 +9,7 @@ import { injectCalendarRootContext } from './сalendar-сontext.token';
     exportAs: 'rdxCalendarCellTrigger',
     host: {
         role: 'button',
+        '[attr.aria-label]': 'labelText()',
         '[attr.aria-disabled]': 'isDisabled() || isUnavailable() ? true : undefined',
         '[attr.data-rdx-calendar-cell-trigger]': '""',
         '[attr.tabindex]': 'isFocusedDate() ? 0 : isOutsideView() || isDisabled() ? undefined : -1',
@@ -29,8 +30,10 @@ export class RdxCalendarCellTriggerDirective implements AfterViewInit {
     private readonly rootContext = injectCalendarRootContext();
     private readonly elementRef = inject(ElementRef<HTMLElement>);
 
+    /** The date value provided to the cell trigger */
     readonly day = input<DateValue>();
 
+    /** The month in which the cell is rendered */
     readonly month = input<DateValue>();
 
     readonly dayValue = computed(() => this.day()?.day.toLocaleString());
@@ -53,6 +56,15 @@ export class RdxCalendarCellTriggerDirective implements AfterViewInit {
 
     readonly isUnavailable = computed(() => this.rootContext.isDateUnavailable?.(<DateValue>this.day()) ?? false);
 
+    readonly labelText = computed(() => {
+        return this.rootContext.formatter.custom(toDate(<DateValue>this.day()), {
+            weekday: 'long',
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric'
+        });
+    });
+
     currentElement!: HTMLElement;
 
     ngAfterViewInit() {
@@ -71,7 +83,7 @@ export class RdxCalendarCellTriggerDirective implements AfterViewInit {
                 kbd.ARROW_UP,
                 kbd.ARROW_DOWN,
                 kbd.ENTER,
-                kbd.SPACE
+                kbd.SPACE_CODE
             ].includes(code)) {
             return;
         }

@@ -32,7 +32,6 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
                 [value]="date"
                 data-testid="calendar"
                 rdxCalendarRoot
-                initialFocus
                 fixedWeeks
             >
                 <div class="calendar-header" rdxCalendarHeader>

@@ -56,6 +56,9 @@ export class RdxCalendarRootDirective implements AfterViewInit {
 
     readonly preventDeselect = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /**
+     * The day of the week to start the calendar on
+     */
     readonly weekStartsOn = input<0 | 1 | 2 | 3 | 4 | 5 | 6>(1);
 
     readonly numberOfMonths = input<number>(1);
@@ -66,7 +69,15 @@ export class RdxCalendarRootDirective implements AfterViewInit {
 
     readonly maxValue = input<DateValue>();
 
+    /**
+     * The format to use for the weekday strings provided via the weekdays slot prop
+     */
     readonly weekdayFormat = input<Intl.DateTimeFormatOptions['weekday']>('narrow');
+
+    /**
+     * The accessible label for the calendar
+     */
+    readonly calendarLabel = input<string>();
 
     /**
      * Whether the calendar is readonly
@@ -138,7 +149,7 @@ export class RdxCalendarRootDirective implements AfterViewInit {
         pagedNavigation: this.pagedNavigationRef,
         isDateDisabled: this.isDateDisabled,
         isDateUnavailable: this.isDateUnavailable,
-        calendarLabel: signal(undefined),
+        calendarLabel: this.calendarLabel,
         nextPage: this.propsNextPage,
         prevPage: this.propsPrevPage
     });
@@ -149,6 +160,7 @@ export class RdxCalendarRootDirective implements AfterViewInit {
         this.isOutsideVisibleView = this.calendar.isOutsideVisibleView;
         this.isNextButtonDisabled = this.calendar.isNextButtonDisabled;
         this.isPrevButtonDisabled = this.calendar.isPrevButtonDisabled;
+        this.formatter = this.calendar.formatter;
 
         effect(() => {
             this.months.set(this.calendar.month());

@@ -26,7 +26,7 @@ export type CalendarProps = {
     pagedNavigation: WritableSignal<boolean>;
     isDateDisabled?: InputSignal<DateMatcher | undefined>;
     isDateUnavailable?: InputSignal<DateMatcher | undefined>;
-    calendarLabel: WritableSignal<string | undefined>;
+    calendarLabel: InputSignal<string | undefined>;
     nextPage: InputSignal<((placeholder: DateValue) => DateValue) | undefined>;
     prevPage: InputSignal<((placeholder: DateValue) => DateValue) | undefined>;
 };
