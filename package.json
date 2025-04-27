@@ -126,7 +126,7 @@
         "@storybook/manager-api": "^8.6.11",
         "@storybook/theming": "^8.6.11",
         "@swc-node/register": "1.9.2",
-        "@swc/cli": "0.3.14",
+        "@swc/cli": "0.7.3",
         "@swc/core": "1.5.7",
         "@swc/helpers": "0.5.11",
         "@tailwindcss/typography": "^0.5.15",
