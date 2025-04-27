@@ -14,5 +14,8 @@ import { injectCalendarRootContext } from './сalendar-сontext.token';
 export class RdxCalendarCellDirective {
     protected readonly rootContext = injectCalendarRootContext();
 
+    /**
+     * The date of the cell
+     */
     readonly date = input<DateValue>();
 }

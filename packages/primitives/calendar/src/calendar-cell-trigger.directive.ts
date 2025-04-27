@@ -30,18 +30,31 @@ export class RdxCalendarCellTriggerDirective implements AfterViewInit {
     private readonly rootContext = injectCalendarRootContext();
     private readonly elementRef = inject(ElementRef<HTMLElement>);
 
-    /** The date value provided to the cell trigger */
+    /**
+     * The date value provided to the cell trigger
+     */
     readonly day = input<DateValue>();
 
-    /** The month in which the cell is rendered */
+    /**
+     * The month in which the cell is rendered
+     */
     readonly month = input<DateValue>();
 
+    /**
+     * Current day
+     */
     readonly dayValue = computed(() => this.day()?.day.toLocaleString());
 
+    /**
+     * Current today state
+     */
     readonly isDateToday = computed(() => {
         return isToday(<DateValue>this.day(), getLocalTimeZone());
     });
 
+    /**
+     * Current selected state
+     */
     readonly isSelectedDate = computed(() => this.rootContext.isDateSelected!(<DateValue>this.day()));
 
     readonly isDisabled = computed(() => this.rootContext.isDateDisabled!(<DateValue>this.day()));
@@ -65,6 +78,9 @@ export class RdxCalendarCellTriggerDirective implements AfterViewInit {
         });
     });
 
+    /**
+     * @ignore
+     */
     currentElement!: HTMLElement;
 
     ngAfterViewInit() {
@@ -192,11 +208,21 @@ export class RdxCalendarCellTriggerDirective implements AfterViewInit {
         }
     }
 
+    /**
+     * @ignore
+     */
     SELECTOR = '[data-rdx-calendar-cell-trigger]:not([data-outside-view]):not([data-outside-visible-view])';
+
+    /**
+     * @ignore
+     */
     getSelectableCells(calendar: HTMLElement): HTMLElement[] {
         return Array.from(calendar.querySelectorAll(this.SELECTOR)) ?? [];
     }
 
+    /**
+     * @ignore
+     */
     changeDate(date: DateValue) {
         this.rootContext.onDateChange(date);
     }

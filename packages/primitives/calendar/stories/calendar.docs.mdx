@@ -3,6 +3,7 @@ import * as Stories from './calendar.stories';
 import { RdxCalendarRootDirective } from "../src/calendar-root.directive";
 import {RdxCalendarPrevDirective} from "../src/calendar-prev.directive";
 import {RdxCalendarNextDirective} from "../src/calendar-next.directive";
+import {RdxCalendarCellDirective} from "../src/calendar-cell.directive";
 
 <Meta title="Primitives/Calendar" />
 
@@ -121,4 +122,71 @@ Import all parts and piece them together.
 | ------------- | --------- |
 | `headingValue`  | `string` Current month and year |
 
+### Grid
 
+`RdxCalendarGridDirective` Container for wrapping the calendar grid.
+
+| Data Attribute     | Value |
+| ------------------ | --------- |
+| `[data-readonly]`  | Present when readonly |
+| `[data-disabled]`  | Present when disabled |
+
+### Grid Head
+
+`RdxCalendarGridHeadDirective` Container for wrapping the grid head as `thead`.
+
+### Grid Body
+
+`RdxCalendarGridBodyDirective` Container for wrapping the grid body as `tbody`.
+
+### Grid Row
+
+`RdxCalendarGridRowDirective` Container for wrapping the grid row as `tr`.
+
+### Head Cell
+
+`RdxCalendarHeadCellDirective` Container for wrapping the head cell. Used for displaying the week days as `th`.
+
+### Cell
+
+`RdxCalendarCellDirective` Container for wrapping the calendar cells as `td`.
+
+<ArgTypes of={RdxCalendarCellDirective} />
+
+| Data Attribute     | Value |
+| ------------------ | --------- |
+| `[data-disabled]`  | Present when disabled |
+
+### Cell Trigger
+
+`RdxCalendarCellTriggerDirective` Interactable container for displaying the cell dates. Clicking it selects the date.
+
+| Data Attribute     | Value |
+| ------------------ | --------- |
+| `[data-selected]`  | Present when selected |
+| `[data-value]`  | The ISO string value of the date. |
+| `[data-disabled]`  | Present when disabled |
+| `[data-unavailable]`  | Present when unavailable |
+| `[data-today]`  | Present when today |
+| `[data-outside-view]`  | Present when the date is outside the current month it is displayed in. |
+| `[data-outside-visible-view]`  | Present when the date is outside the months that are visible on the calendar. |
+| `[data-focused]`  | Present when focused |
+
+## Examples
+
+### Calendar with Locale and Calendar System Selection
+
+This example showcases some of the available locales and how the calendar systems are displayed.
+
+<Canvas sourceState="hidden" of={Stories.WithLocale} />
+
+
+## Accessibility
+
+### Keyboard Interactions
+| Key     | Description |
+| ------------------ | --------- |
+| `Tab`  | When focus moves onto the calendar, focuses the first navigation button. |
+| `Space`  |  When the focus is on either `CalendarNext` or `CalendarPrev`, it navigates the calendar. Otherwise, it selects the date.  |
+| `Enter`  |  When the focus is on either `CalendarNext` or `CalendarPrev`, it navigates the calendar. Otherwise, it selects the date.  |
+| `ArrowLeft` `ArrowRight` `ArrowUp` `ArrowDown`  |  When the focus is on `CalendarCellTrigger`, it navigates the dates, changing the month/year/decade if necessary.  |
