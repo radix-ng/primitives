@@ -1,3 +1,15 @@
+## 0.33.2 (2025-04-27)
+
+### 🩹 Fixes
+
+- eslint ([680b248](https://github.com/radix-ng/primitives/commit/680b248))
+- stylelint css ([d8ef200](https://github.com/radix-ng/primitives/commit/d8ef200))
+- exports ([f980d22](https://github.com/radix-ng/primitives/commit/f980d22))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 0.33.1 (2025-04-23)
 
 ### 🩹 Fixes
