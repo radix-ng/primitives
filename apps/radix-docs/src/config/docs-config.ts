@@ -70,6 +70,11 @@ const docsConfig = {
                         },
                         { name: 'Aspect Ratio', url: '/primitives/components/aspect-ratio' },
                         { name: 'Avatar', url: '/primitives/components/avatar' },
+                        {
+                            name: 'Calendar',
+                            url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-calendar--docs',
+                            label: 'Storybook'
+                        },
                         { name: 'Checkbox', url: '/primitives/components/checkbox' },
                         { name: 'Collapsible', url: '/primitives/components/collapsible' },
                         {

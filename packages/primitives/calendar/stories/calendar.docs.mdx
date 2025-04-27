@@ -1,0 +1,192 @@
+import { ArgTypes, Canvas, Markdown, Meta } from "@storybook/blocks";
+import * as Stories from './calendar.stories';
+import { RdxCalendarRootDirective } from "../src/calendar-root.directive";
+import {RdxCalendarPrevDirective} from "../src/calendar-prev.directive";
+import {RdxCalendarNextDirective} from "../src/calendar-next.directive";
+import {RdxCalendarCellDirective} from "../src/calendar-cell.directive";
+
+<Meta title="Primitives/Calendar" />
+
+# Calendar
+
+####  Displays dates and days of the week, facilitating date-related interactions.
+
+<Canvas sourceState="hidden" of={Stories.Default} />
+
+## Features
+
+- ✅ Full keyboard navigation.
+- ✅ Can be controlled or uncontrolled
+- ✅ Focus is fully managed
+- ✅ Localization support
+- ✅ Highly composable
+
+## Preface
+
+The component depends on the [@internationalized/date package](https://react-spectrum.adobe.com/internationalized/date/index.html),
+which solves a lot of the problems that come with working with dates and times in JavaScript.
+
+We highly recommend reading through the documentation for the package to get a solid feel
+for how it works, and you'll need to install it in your project to use the date-related components.
+
+## Installation
+
+Install the date package.
+
+```bash
+npm install @internationalized/date
+```
+
+Install the component from your command line.
+
+```bash
+npm install @radix-ng/primitives
+```
+
+## Anatomy
+
+Import all parts and piece them together.
+
+```html
+<div
+    rdxCalendarRoot
+    #root="rdxCalendarRoot">
+    <div rdxCalendarHeader>
+        <button type="button" rdxCalendarPrev></button>
+        <div #head="rdxCalendarHeading" rdxCalendarHeading>
+            {{ head.headingValue() }}
+        </div>
+        <button type="button" rdxCalendarNext></button>
+    </div>
+
+    <table rdxCalendarGrid>
+        @for (month of root.months(); track $index) {
+            <thead rdxCalendarGridHead>
+                <tr rdxCalendarGridRow>
+                    @for (day of root.weekDays(); track $index) {
+                        <th rdxCalendarHeadCell>{{ day }}</th>
+                    }
+                </tr>
+            </thead>
+            <tbody rdxCalendarGridBody>
+                @for (weekDates of month.weeks; track $index) {
+                    <tr rdxCalendarGridRow>
+                        @for (weekDate of weekDates; track $index) {
+                            <td rdxCalendarCell>
+                                <div
+                                    #cell="rdxCalendarCellTrigger"
+                                    rdxCalendarCellTrigger
+                                >
+                                    {{ cell.dayValue() }}
+                                </div>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        }
+    </table>
+</div>
+```
+
+## API Reference
+
+### Root
+
+`RdxCalendarRootDirective` Contains all the parts of a calendar
+
+<ArgTypes of={RdxCalendarRootDirective} />
+
+### Header
+
+`RdxCalendarHeaderDirective` Contains the navigation buttons and the heading segments.
+
+### Prev Button
+
+`RdxCalendarPrevDirective` Calendar navigation button. It navigates the calendar one month/year/decade in the past based on the current calendar view.
+
+<ArgTypes of={RdxCalendarPrevDirective} />
+
+### Next Button
+
+`RdxCalendarNextDirective` Calendar navigation button. It navigates the calendar one month/year/decade in the future based on the current calendar view.
+
+<ArgTypes of={RdxCalendarNextDirective} />
+
+### Heading
+
+`RdxCalendarHeadingDirective` Heading for displaying the current month and year.
+
+
+| exportAs       | Description |
+| ------------- | --------- |
+| `headingValue`  | `string` Current month and year |
+
+### Grid
+
+`RdxCalendarGridDirective` Container for wrapping the calendar grid.
+
+| Data Attribute     | Value |
+| ------------------ | --------- |
+| `[data-readonly]`  | Present when readonly |
+| `[data-disabled]`  | Present when disabled |
+
+### Grid Head
+
+`RdxCalendarGridHeadDirective` Container for wrapping the grid head as `thead`.
+
+### Grid Body
+
+`RdxCalendarGridBodyDirective` Container for wrapping the grid body as `tbody`.
+
+### Grid Row
+
+`RdxCalendarGridRowDirective` Container for wrapping the grid row as `tr`.
+
+### Head Cell
+
+`RdxCalendarHeadCellDirective` Container for wrapping the head cell. Used for displaying the week days as `th`.
+
+### Cell
+
+`RdxCalendarCellDirective` Container for wrapping the calendar cells as `td`.
+
+<ArgTypes of={RdxCalendarCellDirective} />
+
+| Data Attribute     | Value |
+| ------------------ | --------- |
+| `[data-disabled]`  | Present when disabled |
+
+### Cell Trigger
+
+`RdxCalendarCellTriggerDirective` Interactable container for displaying the cell dates. Clicking it selects the date.
+
+| Data Attribute     | Value |
+| ------------------ | --------- |
+| `[data-selected]`  | Present when selected |
+| `[data-value]`  | The ISO string value of the date. |
+| `[data-disabled]`  | Present when disabled |
+| `[data-unavailable]`  | Present when unavailable |
+| `[data-today]`  | Present when today |
+| `[data-outside-view]`  | Present when the date is outside the current month it is displayed in. |
+| `[data-outside-visible-view]`  | Present when the date is outside the months that are visible on the calendar. |
+| `[data-focused]`  | Present when focused |
+
+## Examples
+
+### Calendar with Locale and Calendar System Selection
+
+This example showcases some of the available locales and how the calendar systems are displayed.
+
+<Canvas sourceState="hidden" of={Stories.WithLocale} />
+
+
+## Accessibility
+
+### Keyboard Interactions
+| Key     | Description |
+| ------------------ | --------- |
+| `Tab`  | When focus moves onto the calendar, focuses the first navigation button. |
+| `Space`  |  When the focus is on either `CalendarNext` or `CalendarPrev`, it navigates the calendar. Otherwise, it selects the date.  |
+| `Enter`  |  When the focus is on either `CalendarNext` or `CalendarPrev`, it navigates the calendar. Otherwise, it selects the date.  |
+| `ArrowLeft` `ArrowRight` `ArrowUp` `ArrowDown`  |  When the focus is on `CalendarCellTrigger`, it navigates the dates, changing the month/year/decade if necessary.  |

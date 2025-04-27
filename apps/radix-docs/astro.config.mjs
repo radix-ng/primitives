@@ -59,6 +59,7 @@ export default defineConfig({
                 '@angular/common',
                 '@angular/core',
                 '@angular/cdk',
+                '@internationalized/date',
                 'classnames',
                 'lucide-angular'
             ]
@@ -69,6 +70,7 @@ export default defineConfig({
                 '@angular/common',
                 '@angular/core',
                 '@angular/core/rxjs-interop',
+                '@internationalized/date',
                 'lucide-angular'
             ]
         },
