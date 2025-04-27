@@ -175,6 +175,7 @@
         "prettier-plugin-organize-attributes": "^1.0.0",
         "prettier-plugin-organize-imports": "^4.1.0",
         "prettier-plugin-tailwindcss": "^0.5.14",
+        "remark-gfm": "^4.0.1",
         "rimraf": "^6.0.1",
         "rollup-plugin-typescript-paths": "^1.5.0",
         "rollup-plugin-visualizer": "^5.12.0",

@@ -360,6 +360,9 @@ importers:
       prettier-plugin-tailwindcss:
         specifier: ^0.5.14
         version: 0.5.14(prettier-plugin-astro@0.14.1)(prettier-plugin-organize-attributes@1.0.0(prettier@3.5.3))(prettier-plugin-organize-imports@4.1.0(prettier@3.5.3)(typescript@5.7.3))(prettier@3.5.3)
+      remark-gfm:
+        specifier: ^4.0.1
+        version: 4.0.1
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1

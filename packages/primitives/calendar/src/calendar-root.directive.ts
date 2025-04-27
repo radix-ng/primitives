@@ -124,14 +124,23 @@ export class RdxCalendarRootDirective implements AfterViewInit {
 
     readonly propsPrevPage = input<(placeholder: DateValue) => DateValue>();
 
+    /**
+     * A function that returns whether a date is disabled
+     */
     readonly isDateDisabled = input<DateMatcher>();
 
+    /**
+     * A function that returns whether a date is unavailable
+     */
     readonly isDateUnavailable = input<DateMatcher>();
 
     readonly initialFocus = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     readonly months = model<Month<DateValue>[]>();
 
+    /**
+     * The days of the week
+     */
     readonly weekDays = model<string[]>();
 
     protected readonly fixedWeeksRef = linkedSignal({
@@ -149,22 +158,59 @@ export class RdxCalendarRootDirective implements AfterViewInit {
         computation: (value) => value as boolean
     });
 
+    /**
+     * @ignore
+     */
     readonly headingValue = signal<string>('');
 
+    /**
+     * @ignore
+     */
     readonly fullCalendarLabel = signal<string>('');
 
+    /**
+     * @ignore
+     */
     nextPage: (nextPageFunc?: (date: DateValue) => DateValue) => void;
+
+    /**
+     * @ignore
+     */
     prevPage: (nextPageFunc?: (date: DateValue) => DateValue) => void;
 
+    /**
+     * @ignore
+     */
     isNextButtonDisabled: (nextPageFunc?: (date: DateValue) => DateValue) => boolean;
+
+    /**
+     * @ignore
+     */
     isPrevButtonDisabled: (nextPageFunc?: (date: DateValue) => DateValue) => boolean;
 
+    /**
+     * @ignore
+     */
     isDateSelected: DateMatcher;
+
+    /**
+     * @ignore
+     */
     isInvalid: boolean;
+
+    /**
+     * @ignore
+     */
     isOutsideVisibleView: (date: DateValue) => boolean;
 
+    /**
+     * @ignore
+     */
     formatter: Formatter;
 
+    /**
+     * @ignore
+     */
     currentElement!: HTMLElement;
 
     private readonly calendar = calendar({
@@ -228,10 +274,16 @@ export class RdxCalendarRootDirective implements AfterViewInit {
         this.currentElement = this.elementRef.nativeElement;
     }
 
+    /**
+     * @ignore
+     */
     onPlaceholderChange(value: DateValue) {
         this.placeholder.set(value.copy());
     }
 
+    /**
+     * @ignore
+     */
     onDateChange(date: DateValue) {
         const currentValue = this.value();
 

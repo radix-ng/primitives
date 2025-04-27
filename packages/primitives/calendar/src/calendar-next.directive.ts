@@ -16,8 +16,14 @@ import { injectCalendarRootContext } from './сalendar-сontext.token';
 export class RdxCalendarNextDirective {
     protected readonly rootContext = injectCalendarRootContext();
 
+    /**
+     * The function to be used for the `next page`. Overwrites the nextPage function set on the `CalendarRoot`.
+     */
     readonly nextPage = input<(placeholder: DateValue) => DateValue>();
 
+    /**
+     * @ignore
+     */
     readonly disabled = computed(
         () => this.rootContext.disabled() || this.rootContext.isNextButtonDisabled(this.nextPage())
     );

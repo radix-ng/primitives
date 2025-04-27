@@ -1,5 +1,8 @@
-import { Canvas, Meta } from "@storybook/blocks";
+import { ArgTypes, Canvas, Markdown, Meta } from "@storybook/blocks";
 import * as Stories from './calendar.stories';
+import { RdxCalendarRootDirective } from "../src/calendar-root.directive";
+import {RdxCalendarPrevDirective} from "../src/calendar-prev.directive";
+import {RdxCalendarNextDirective} from "../src/calendar-next.directive";
 
 <Meta title="Primitives/Calendar" />
 
@@ -84,3 +87,38 @@ Import all parts and piece them together.
     </table>
 </div>
 ```
+
+## API Reference
+
+### Root
+
+`RdxCalendarRootDirective` Contains all the parts of a calendar
+
+<ArgTypes of={RdxCalendarRootDirective} />
+
+### Header
+
+`RdxCalendarHeaderDirective` Contains the navigation buttons and the heading segments.
+
+### Prev Button
+
+`RdxCalendarPrevDirective` Calendar navigation button. It navigates the calendar one month/year/decade in the past based on the current calendar view.
+
+<ArgTypes of={RdxCalendarPrevDirective} />
+
+### Next Button
+
+`RdxCalendarNextDirective` Calendar navigation button. It navigates the calendar one month/year/decade in the future based on the current calendar view.
+
+<ArgTypes of={RdxCalendarNextDirective} />
+
+### Heading
+
+`RdxCalendarHeadingDirective` Heading for displaying the current month and year.
+
+
+| exportAs       | Description |
+| ------------- | --------- |
+| `headingValue`  | `string` Current month and year |
+
+
