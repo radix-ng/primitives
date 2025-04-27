@@ -123,7 +123,7 @@
         "@storybook/angular": "^8.6.11",
         "@storybook/blocks": "^8.6.11",
         "@storybook/core-server": "^8.6.11",
-        "@storybook/manager-api": "^8.6.11",
+        "@storybook/manager-api": "^8.6.12",
         "@storybook/theming": "^8.6.11",
         "@swc-node/register": "1.9.2",
         "@swc/cli": "0.3.14",
