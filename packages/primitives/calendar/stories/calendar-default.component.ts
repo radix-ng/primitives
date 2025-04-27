@@ -2,8 +2,10 @@ import { Component } from '@angular/core';
 import { CalendarDate, DateValue } from '@internationalized/date';
 import { ChevronLeft, ChevronRight, LucideAngularModule } from 'lucide-angular';
 import { RdxCalendarCellTriggerDirective } from '../src/calendar-cell-trigger.directive';
+import { RdxCalendarCellDirective } from '../src/calendar-cell.directive';
 import { RdxCalendarGridHeadDirective } from '../src/calendar-grid-head.directive';
 import { RdxCalendarGridDirective } from '../src/calendar-grid.directive';
+import { RdxCalendarHeadCellDirective } from '../src/calendar-head-cell.directive';
 import { RdxCalendarHeaderDirective } from '../src/calendar-header.directive';
 import { RdxCalendarHeadingDirective } from '../src/calendar-heading.directive';
 import { RdxCalendarNextDirective } from '../src/calendar-next.directive';
@@ -18,10 +20,12 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
         RdxCalendarGridDirective,
         RdxCalendarGridHeadDirective,
         RdxCalendarCellTriggerDirective,
+        RdxCalendarCellDirective,
         RdxCalendarHeadingDirective,
         RdxCalendarNextDirective,
         RdxCalendarPrevDirective,
-        LucideAngularModule
+        LucideAngularModule,
+        RdxCalendarHeadCellDirective
     ],
     styleUrl: 'calendar-default.style.css',
     template: `
@@ -52,7 +56,7 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
                             <thead rdxCalendarGridHead>
                                 <tr class="calendar-grid-head-row">
                                     @for (day of root.weekDays(); track $index) {
-                                        <th class="calendar-head-cell">{{ day }}</th>
+                                        <th class="calendar-head-cell" rdxCalendarHeadCell>{{ day }}</th>
                                     }
                                 </tr>
                             </thead>
@@ -60,7 +64,7 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
                                 @for (weekDates of month.weeks; track $index) {
                                     <tr class="calendar-week-row">
                                         @for (weekDate of weekDates; track $index) {
-                                            <td class="calendar-cell-wrapper">
+                                            <td class="calendar-cell-wrapper" [date]="weekDate" rdxCalendarCell>
                                                 <div
                                                     class="calendar-day"
                                                     #cell="rdxCalendarCellTrigger"

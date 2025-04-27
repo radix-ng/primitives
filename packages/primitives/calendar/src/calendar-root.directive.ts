@@ -34,8 +34,14 @@ import { CALENDAR_ROOT_CONTEXT } from './сalendar-сontext.token';
 export class RdxCalendarRootDirective implements AfterViewInit {
     private readonly elementRef = inject(ElementRef<HTMLElement>);
 
+    /**
+     * The controlled checked state of the calendar
+     */
     readonly value = model<DateValue | DateValue[] | undefined>();
 
+    /**
+     * The default placeholder date
+     */
     readonly defaultPlaceholder = model<DateValue>();
 
     readonly locale = input<string>('en');
@@ -46,14 +52,27 @@ export class RdxCalendarRootDirective implements AfterViewInit {
         locale: this.locale()
     });
 
+    /**
+     * The placeholder date, which is used to determine what month to display when no date is selected.
+     * This updates as the user navigates the calendar and can be used to programmatically control the calendar view
+     */
     readonly placeholder = model<DateValue>(this.defaultPlaceholder() ?? this.defaultDate.copy());
 
     readonly multiple = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /**
+     * Whether to always display 6 weeks in the calendar
+     */
     readonly fixedWeeks = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /**
+     * Whether the calendar is disabled
+     */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /**
+     * Whether to prevent the user from deselecting a date without selecting another date first
+     */
     readonly preventDeselect = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
@@ -61,12 +80,24 @@ export class RdxCalendarRootDirective implements AfterViewInit {
      */
     readonly weekStartsOn = input<0 | 1 | 2 | 3 | 4 | 5 | 6>(1);
 
+    /**
+     * The number of months to display at once
+     */
     readonly numberOfMonths = input<number>(1);
 
+    /**
+     * The reading direction of the calendar when applicable.
+     */
     readonly dir = input<'ltr' | 'rtl'>('ltr');
 
+    /**
+     * The minimum date that can be selected
+     */
     readonly minValue = input<DateValue>();
 
+    /**
+     * The maximum date that can be selected
+     */
     readonly maxValue = input<DateValue>();
 
     /**

@@ -1,0 +1,86 @@
+import { Canvas, Meta } from "@storybook/blocks";
+import * as Stories from './calendar.stories';
+
+<Meta title="Primitives/Calendar" />
+
+# Calendar
+
+####  Displays dates and days of the week, facilitating date-related interactions.
+
+<Canvas sourceState="hidden" of={Stories.Default} />
+
+## Features
+
+- ✅ Full keyboard navigation.
+- ✅ Can be controlled or uncontrolled
+- ✅ Focus is fully managed
+- ✅ Localization support
+- ✅ Highly composable
+
+## Preface
+
+The component depends on the [@internationalized/date package](https://react-spectrum.adobe.com/internationalized/date/index.html),
+which solves a lot of the problems that come with working with dates and times in JavaScript.
+
+We highly recommend reading through the documentation for the package to get a solid feel
+for how it works, and you'll need to install it in your project to use the date-related components.
+
+## Installation
+
+Install the date package.
+
+```bash
+npm install @internationalized/date
+```
+
+Install the component from your command line.
+
+```bash
+npm install @radix-ng/primitives
+```
+
+## Anatomy
+
+Import all parts and piece them together.
+
+```html
+<div
+    rdxCalendarRoot
+    #root="rdxCalendarRoot">
+    <div rdxCalendarHeader>
+        <button type="button" rdxCalendarPrev></button>
+        <div #head="rdxCalendarHeading" rdxCalendarHeading>
+            {{ head.headingValue() }}
+        </div>
+        <button type="button" rdxCalendarNext></button>
+    </div>
+
+    <table rdxCalendarGrid>
+        @for (month of root.months(); track $index) {
+            <thead rdxCalendarGridHead>
+                <tr rdxCalendarGridRow>
+                    @for (day of root.weekDays(); track $index) {
+                        <th rdxCalendarHeadCell>{{ day }}</th>
+                    }
+                </tr>
+            </thead>
+            <tbody rdxCalendarGridBody>
+                @for (weekDates of month.weeks; track $index) {
+                    <tr rdxCalendarGridRow>
+                        @for (weekDate of weekDates; track $index) {
+                            <td rdxCalendarCell>
+                                <div
+                                    #cell="rdxCalendarCellTrigger"
+                                    rdxCalendarCellTrigger
+                                >
+                                    {{ cell.dayValue() }}
+                                </div>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        }
+    </table>
+</div>
+```
