@@ -1,3 +1,13 @@
+## 0.34.0 (2025-04-27)
+
+### 🚀 Features
+
+- **calendar:** new Calendar primitive ([#295](https://github.com/radix-ng/primitives/pull/295))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 0.33.1 (2025-04-23)
 
 ### 🩹 Fixes
