@@ -1,4 +1,5 @@
 import { Directive, InjectionToken, input, model, OnInit, output } from '@angular/core';
+import { provideToken } from '@radix-ng/primitives/core';
 
 export interface TabsProps {
     /** The value for the selected tab, if controlled */
@@ -30,9 +31,8 @@ export const RDX_TABS_ROOT_TOKEN = new InjectionToken<RdxTabsRootDirective>('Rdx
 
 @Directive({
     selector: '[rdxTabsRoot]',
-    standalone: true,
     providers: [
-        { provide: RDX_TABS_ROOT_TOKEN, useExisting: RdxTabsRootDirective }],
+        provideToken(RDX_TABS_ROOT_TOKEN, RdxTabsRootDirective)],
     host: {
         '[attr.data-orientation]': 'orientation()',
         '[attr.dir]': 'dir()'

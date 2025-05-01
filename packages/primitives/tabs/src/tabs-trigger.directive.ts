@@ -11,7 +11,6 @@ interface TabsTriggerProps {
 
 @Directive({
     selector: '[rdxTabsTrigger]',
-    standalone: true,
     hostDirectives: [
         {
             directive: RdxRovingFocusItemDirective,

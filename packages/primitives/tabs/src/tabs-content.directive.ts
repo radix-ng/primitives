@@ -4,7 +4,6 @@ import { makeContentId, makeTriggerId } from './utils';
 
 @Directive({
     selector: '[rdxTabsContent]',
-    standalone: true,
     host: {
         role: 'tabpanel',
         tabindex: '0',

@@ -4,7 +4,6 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
 @Directive({
     selector: 'input[rdxToggleVisuallyHiddenInput]',
     exportAs: 'rdxToggleVisuallyHiddenInput',
-    standalone: true,
     hostDirectives: [
         {
             directive: RdxVisuallyHiddenInputDirective,

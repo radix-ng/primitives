@@ -1,6 +1,7 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, Directive, input, model, output, signal } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ControlValueAccessor } from '@angular/forms';
+import { provideValueAccessor } from '@radix-ng/primitives/core';
 import { RdxToggleGroupToken } from './toggle-group.token';
 
 let nextId = 0;
@@ -8,11 +9,9 @@ let nextId = 0;
 @Directive({
     selector: '[rdxToggleGroupWithoutFocus]',
     exportAs: 'rdxToggleGroupWithoutFocus',
-    standalone: true,
     providers: [
         { provide: RdxToggleGroupToken, useExisting: RdxToggleGroupWithoutFocusDirective },
-        { provide: NG_VALUE_ACCESSOR, useExisting: RdxToggleGroupWithoutFocusDirective, multi: true }
-    ],
+        provideValueAccessor(RdxToggleGroupWithoutFocusDirective)],
     host: {
         role: 'group',
         '(focusout)': 'onTouched?.()'

@@ -9,7 +9,6 @@ export interface TabsListProps {
 
 @Directive({
     selector: '[rdxTabsList]',
-    standalone: true,
     hostDirectives: [{ directive: RdxRovingFocusGroupDirective, inputs: ['dir', 'orientation', 'loop'] }],
     host: {
         role: 'tablist',

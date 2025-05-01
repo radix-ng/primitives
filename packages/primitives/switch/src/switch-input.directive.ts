@@ -7,7 +7,6 @@ import { injectSwitch } from './switch-root.directive';
 @Directive({
     selector: 'input[rdxSwitchInput]',
     exportAs: 'rdxSwitchInput',
-    standalone: true,
     host: {
         type: 'checkbox',
         role: 'switch',

@@ -2,7 +2,6 @@ import { inject, InjectionToken } from '@angular/core';
 
 export interface IRdxToggleGroup {
     toggle(value: string): void;
-
     disabled: any;
     value: any;
     type: any;

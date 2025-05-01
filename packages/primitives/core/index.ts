@@ -9,6 +9,7 @@ export * from './src/is-inside-form';
 export * from './src/is-nullish';
 export * from './src/is-number';
 export * from './src/kbd-constants';
+export * from './src/provide-token';
 export * from './src/window';
 
 export * from './src/date-time';
