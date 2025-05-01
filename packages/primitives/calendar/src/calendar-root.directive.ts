@@ -143,20 +143,11 @@ export class RdxCalendarRootDirective implements AfterViewInit {
      */
     readonly weekDays = model<string[]>();
 
-    protected readonly fixedWeeksRef = linkedSignal({
-        source: this.fixedWeeks,
-        computation: (value) => value as boolean
-    });
+    protected readonly _fixedWeeks = linkedSignal(this.fixedWeeks);
 
-    protected readonly disabledRef = linkedSignal({
-        source: this.disabled,
-        computation: (value) => value as boolean
-    });
+    protected readonly _disabled = linkedSignal(this.disabled);
 
-    protected readonly pagedNavigationRef = linkedSignal({
-        source: this.pagedNavigation,
-        computation: (value) => value as boolean
-    });
+    protected readonly _pagedNavigation = linkedSignal(this.pagedNavigation);
 
     /**
      * @ignore
@@ -217,13 +208,13 @@ export class RdxCalendarRootDirective implements AfterViewInit {
         locale: this.locale,
         placeholder: this.placeholder,
         weekStartsOn: this.weekStartsOn,
-        fixedWeeks: this.fixedWeeksRef,
+        fixedWeeks: this._fixedWeeks,
         numberOfMonths: this.numberOfMonths,
         minValue: this.minValue,
         maxValue: this.maxValue,
-        disabled: this.disabledRef,
+        disabled: this._disabled,
         weekdayFormat: this.weekdayFormat,
-        pagedNavigation: this.pagedNavigationRef,
+        pagedNavigation: this._pagedNavigation,
         isDateDisabled: this.isDateDisabled,
         isDateUnavailable: this.isDateUnavailable,
         calendarLabel: this.calendarLabel,
