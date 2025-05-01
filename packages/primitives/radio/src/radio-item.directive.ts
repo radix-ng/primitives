@@ -10,6 +10,7 @@ import {
     OnInit,
     signal
 } from '@angular/core';
+import { provideToken } from '@radix-ng/primitives/core';
 import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 import { RDX_RADIO_GROUP } from './radio-tokens';
 
@@ -22,7 +23,7 @@ export function injectRadioItem(): RdxRadioItemDirective {
 @Directive({
     selector: '[rdxRadioItem]',
     exportAs: 'rdxRadioItem',
-    providers: [{ provide: RdxRadioItemToken, useExisting: RdxRadioItemDirective }],
+    providers: [provideToken(RdxRadioItemToken, RdxRadioItemDirective)],
     hostDirectives: [
         { directive: RdxRovingFocusItemDirective, inputs: ['tabStopId: id', 'focusable', 'active', 'allowShiftKey'] }],
 

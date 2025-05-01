@@ -7,7 +7,6 @@ import { injectSwitch } from './switch-root.directive';
 @Directive({
     selector: 'span[rdxSwitchThumb]',
     exportAs: 'rdxSwitchThumb',
-    standalone: true,
     host: {
         '[attr.data-disabled]': 'switchRoot.disabledState() ? "true" : null',
         '[attr.data-state]': 'switchRoot.checkedState() ? "checked" : "unchecked"'

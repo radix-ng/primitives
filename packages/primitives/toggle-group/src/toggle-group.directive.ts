@@ -1,6 +1,7 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { booleanAttribute, Directive, forwardRef, input, model, output, signal } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { booleanAttribute, Directive, input, model, output, signal } from '@angular/core';
+import { ControlValueAccessor } from '@angular/forms';
+import { provideToken, provideValueAccessor } from '@radix-ng/primitives/core';
 import { RdxRovingFocusGroupDirective } from '@radix-ng/primitives/roving-focus';
 import { RdxToggleGroupToken } from './toggle-group.token';
 
@@ -13,9 +14,8 @@ let nextId = 0;
     selector: '[rdxToggleGroup]',
     exportAs: 'rdxToggleGroup',
     providers: [
-        { provide: RdxToggleGroupToken, useExisting: forwardRef(() => RdxToggleGroupDirective) },
-        { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => RdxToggleGroupDirective), multi: true }
-    ],
+        provideToken(RdxToggleGroupToken, RdxToggleGroupDirective),
+        provideValueAccessor(RdxToggleGroupDirective)],
     hostDirectives: [{ directive: RdxRovingFocusGroupDirective, inputs: ['dir', 'orientation', 'loop'] }],
     host: {
         role: 'group',

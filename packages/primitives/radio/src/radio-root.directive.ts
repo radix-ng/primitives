@@ -1,6 +1,7 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, computed, Directive, input, Input, model, output, signal } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ControlValueAccessor } from '@angular/forms';
+import { provideValueAccessor } from '@radix-ng/primitives/core';
 import { Orientation, RdxRovingFocusGroupDirective } from '@radix-ng/primitives/roving-focus';
 import { RadioGroupDirective, RadioGroupProps, RDX_RADIO_GROUP } from './radio-tokens';
 
@@ -8,9 +9,8 @@ import { RadioGroupDirective, RadioGroupProps, RDX_RADIO_GROUP } from './radio-t
     selector: '[rdxRadioRoot]',
     exportAs: 'rdxRadioRoot',
     providers: [
-        { provide: RDX_RADIO_GROUP, useExisting: RdxRadioGroupDirective },
-        { provide: NG_VALUE_ACCESSOR, useExisting: RdxRadioGroupDirective, multi: true }
-    ],
+        provideValueAccessor(RdxRadioGroupDirective),
+        { provide: RDX_RADIO_GROUP, useExisting: RdxRadioGroupDirective }],
     hostDirectives: [{ directive: RdxRovingFocusGroupDirective, inputs: ['dir', 'orientation', 'loop'] }],
     host: {
         role: 'radiogroup',
