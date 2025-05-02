@@ -1,5 +1,13 @@
 import { Dialog } from '@angular/cdk/dialog';
-import { inject, Injectable, Injector, Renderer2 } from '@angular/core';
+import {
+    effect,
+    inject,
+    Injectable,
+    Injector,
+    Renderer2,
+    RendererFactory2,
+    runInInjectionContext
+} from '@angular/core';
 import { filter, isObservable, merge, of, switchMap, take, takeUntil } from 'rxjs';
 import { DISMISSED_VALUE, RdxDialogRef } from './dialog-ref';
 import type { RdxDialogConfig, RdxDialogResult } from './dialog.config';
@@ -25,6 +33,8 @@ import type { RdxDialogConfig, RdxDialogResult } from './dialog.config';
 export class RdxDialogService {
     #cdkDialog = inject(Dialog);
     #injector = inject(Injector);
+    #rendererFactory = inject(RendererFactory2);
+    #renderer = this.#rendererFactory.createRenderer(null, null);
 
     open<C>(config: RdxDialogConfig<C>): RdxDialogRef<C> {
         let dialogRef: RdxDialogRef<C>;
@@ -48,6 +58,12 @@ export class RdxDialogService {
                 break;
         }
 
+        // Create a new configuration with default closeDelay if not provided
+        const extendedConfig: RdxDialogConfig<C> = {
+            ...config,
+            closeDelay: config.closeDelay ?? 0
+        };
+
         const cdkRef = this.#cdkDialog.open<RdxDialogResult<C> | typeof DISMISSED_VALUE, unknown, C>(config.content, {
             ariaModal: config.modal ?? true,
             hasBackdrop: config.modal ?? true,
@@ -63,7 +79,39 @@ export class RdxDialogService {
             ariaLabel: config.ariaLabel,
             templateContext: () => ({ dialogRef: dialogRef }),
             providers: (ref) => {
-                dialogRef = new RdxDialogRef(ref, config);
+                // Create dialog ref with state tracking
+                dialogRef = new RdxDialogRef(ref, extendedConfig);
+
+                // Get overlay and backdrop references
+                const overlay = ref.overlayRef.overlayElement;
+                const backdrop = ref.overlayRef.backdropElement;
+
+                // Set up effect to track and update state attributes
+                runInInjectionContext(this.#injector, () => {
+                    effect(() => {
+                        const currentState = dialogRef.state();
+
+                        if (overlay) {
+                            this.#renderer.setAttribute(overlay, 'data-state', currentState);
+                        }
+
+                        if (backdrop) {
+                            this.#renderer.setAttribute(backdrop, 'data-state', currentState);
+                        }
+
+                        // For sheet dialogs, add data-side attribute
+                        if (config.mode?.startsWith('sheet-')) {
+                            const side = config.mode.substring(6);
+                            if (overlay) {
+                                this.#renderer.setAttribute(overlay, 'data-side', side);
+                            }
+                            if (backdrop) {
+                                this.#renderer.setAttribute(backdrop, 'data-side', side);
+                            }
+                        }
+                    });
+                });
+
                 return [
                     {
                         provide: RdxDialogRef,
@@ -99,7 +147,9 @@ export class RdxDialogService {
                 )
                 .subscribe((canClose) => {
                     if (canClose) {
-                        cdkRef.close(DISMISSED_VALUE);
+                        // rather than `cdkRef.close()`, closing the `dialogRef` directly
+                        // ensures that the `state` is represented correctly
+                        dialogRef!.close(undefined as unknown as RdxDialogResult<C>);
                     }
                 });
         }
