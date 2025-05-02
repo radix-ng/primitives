@@ -11,3 +11,35 @@ updates:
     ignore:
       - dependency-name: '*'
         update-types: ['version-update:semver-major']
+    groups:
+      linters:
+        patterns:
+          - 'eslint*'
+          - '@typescript-eslint/*'
+          - '@angular-eslint/*'
+          - 'prettier*'
+          - 'stylelint*'
+          - '@commitlint/*'
+      nx:
+        patterns:
+          - 'nx'
+          - '@nx/*'
+          - '@swc*'
+      angular:
+        patterns:
+          - '@angular/*'
+          - 'rxjs'
+          - 'zone.js'
+          - '@angular-devkit/*'
+          - '@schematics/angular'
+          - 'ng-packagr'
+      jest:
+        patterns:
+          - 'jest*'
+          - 'ts-jest'
+      radix:
+        patterns:
+          - '@radix*'
+      storybook:
+        patterns:
+          - '@storybook/*'
