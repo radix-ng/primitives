@@ -129,3 +129,28 @@ export class DateFieldLocalesTaiwan {}
     styleUrl: 'date-field.styles.css'
 })
 export class DateFieldLocalesHebrew {}
+
+@Component({
+    selector: 'app-date-field-russian',
+    imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective, RdxVisuallyHiddenInputDirective],
+    template: `
+        <div class="DateFieldWrapper">
+            <div class="DateField" #root="rdxDateFieldRoot" granularity="second" locale="ru" rdxDateFieldRoot>
+                @for (item of root.segmentContents(); track $index) {
+                    @if (item.part === 'literal') {
+                        <div class="DateFieldLiteral" [part]="item.part" rdxDateFieldInput>
+                            {{ item.value }}
+                        </div>
+                    } @else {
+                        <div class="DateFieldSegment" [part]="item.part" rdxDateFieldInput>
+                            {{ item.value }}
+                        </div>
+                    }
+                }
+                <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
+            </div>
+        </div>
+    `,
+    styleUrl: 'date-field.styles.css'
+})
+export class DateFieldLocalesRussian {}

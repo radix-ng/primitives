@@ -1,10 +1,12 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { DateFieldComponent } from './date-field.component';
+import { DateFieldInvalid } from './date-field.invalid';
 import {
     DateFieldLocalesGregorian,
     DateFieldLocalesHebrew,
     DateFieldLocalesJapanese,
     DateFieldLocalesPersian,
+    DateFieldLocalesRussian,
     DateFieldLocalesTaiwan
 } from './date-field.locales';
 
@@ -20,7 +22,9 @@ export default {
                 DateFieldLocalesJapanese,
                 DateFieldLocalesPersian,
                 DateFieldLocalesTaiwan,
-                DateFieldLocalesHebrew
+                DateFieldLocalesHebrew,
+                DateFieldLocalesRussian,
+                DateFieldInvalid
             ]
         }),
         componentWrapperDecorator(
@@ -84,6 +88,22 @@ export const LocalesHebrew: Story = {
     render: () => ({
         template: html`
             <app-date-field-hebrew style="display: flex;" />
+        `
+    })
+};
+
+export const LocalesRussian: Story = {
+    render: () => ({
+        template: html`
+            <app-date-field-russian style="display: flex;" />
+        `
+    })
+};
+
+export const Invalid: Story = {
+    render: () => ({
+        template: html`
+            <app-date-field-invalid style="display: flex;" />
         `
     })
 };
