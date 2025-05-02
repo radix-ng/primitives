@@ -9,6 +9,7 @@ import {
     inject,
     input,
     model,
+    OnInit,
     signal
 } from '@angular/core';
 import { DateValue } from '@internationalized/date';
@@ -18,6 +19,7 @@ import {
     createContent,
     createFormatter,
     DateMatcher,
+    Formatter,
     getDefaultDate,
     getSegmentElements,
     Granularity,
@@ -28,7 +30,6 @@ import {
     isNullish,
     isSegmentNavigationKey,
     provideToken,
-    SegmentPart,
     SegmentValueObj,
     syncSegmentValues,
     watch
@@ -50,7 +51,7 @@ import { DATE_FIELDS_ROOT_CONTEXT } from './date-field-context.token';
         '(keydown)': 'onKeydown($event)'
     }
 })
-export class RdxDateFieldRootDirective implements AfterViewInit {
+export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
     private readonly elementRef = inject(ElementRef<HTMLElement>);
 
     readonly value = model<DateValue | undefined>();
@@ -75,14 +76,34 @@ export class RdxDateFieldRootDirective implements AfterViewInit {
 
     readonly readonly = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    readonly defaultDate = getDefaultDate({
-        defaultPlaceholder: undefined,
-        granularity: this.granularity(),
-        defaultValue: this.value(),
-        locale: this.locale()
-    });
+    readonly defaultDate = computed(() =>
+        getDefaultDate({
+            defaultPlaceholder: undefined,
+            granularity: this.granularity(),
+            defaultValue: this.value(),
+            locale: this.locale()
+        })
+    );
 
-    readonly placeholder = model<DateValue | undefined>(this.defaultDate.copy());
+    readonly placeholder = model<DateValue | undefined>(this.defaultDate().copy());
+
+    // Internal state
+
+    readonly segmentElements = signal<Set<HTMLElement>>(new Set());
+
+    readonly currentFocusedElement = signal<HTMLElement | null>(null);
+
+    formatter: Formatter;
+
+    readonly segmentValues = signal<SegmentValueObj>({
+        year: null,
+        month: null,
+        day: null,
+        hour: null,
+        minute: null,
+        second: null,
+        dayPeriod: null
+    } as SegmentValueObj);
 
     readonly inferredGranularity = computed(() => {
         const placeholder = this.placeholder();
@@ -104,20 +125,6 @@ export class RdxDateFieldRootDirective implements AfterViewInit {
         return false;
     });
 
-    readonly formatter = createFormatter(this.locale());
-
-    segments: { part: SegmentPart; value: string }[];
-
-    readonly segmentElements = signal<Set<HTMLElement>>(new Set());
-
-    initialSegments = initializeSegmentValues(this.inferredGranularity()!);
-
-    segmentValues = signal<SegmentValueObj>(
-        this.value()
-            ? { ...syncSegmentValues({ value: <DateValue>this.value(), formatter: this.formatter }) }
-            : { ...this.initialSegments }
-    );
-
     readonly allSegmentContent = computed(() =>
         createContent({
             granularity: <Granularity>this.inferredGranularity(),
@@ -131,10 +138,6 @@ export class RdxDateFieldRootDirective implements AfterViewInit {
     );
 
     readonly segmentContents = computed(() => this.allSegmentContent().arr);
-
-    readonly editableSegmentContents = computed(() => this.segmentContents().filter(({ part }) => part !== 'literal'));
-
-    readonly currentFocusedElement = signal<HTMLElement | null>(null);
 
     readonly currentSegmentIndex = computed(() =>
         Array.from(this.segmentElements()).findIndex(
@@ -173,6 +176,27 @@ export class RdxDateFieldRootDirective implements AfterViewInit {
                 this.placeholder.set(modelValue.copy());
             }
         });
+    }
+
+    ngOnInit() {
+        const defDate = getDefaultDate({
+            defaultPlaceholder: undefined,
+            granularity: this.granularity(),
+            defaultValue: this.value(),
+            locale: this.locale()
+        });
+
+        this.placeholder.set(defDate.copy());
+
+        this.formatter = createFormatter(this.locale());
+
+        const initialSegments = initializeSegmentValues(this.inferredGranularity()!);
+
+        this.segmentValues.set(
+            this.value()
+                ? { ...syncSegmentValues({ value: <DateValue>this.value(), formatter: this.formatter }) }
+                : { ...initialSegments }
+        );
     }
 
     ngAfterViewInit() {
