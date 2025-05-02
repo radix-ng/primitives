@@ -6,7 +6,7 @@ import { injectDateFieldsRootContext } from './date-field-context.token';
     selector: '[rdxDateFieldInput]',
     host: {
         '[attr.contenteditable]': 'disabled() || readonly() ? false : part() !== "literal"',
-        '[attr.data-rdx-date-field-segment]': '"part"',
+        '[attr.data-rdx-date-field-segment]': 'part()',
         '[attr.aria-disabled]': 'disabled() ? "" : undefined',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
         '(mousedown)': "part() !== 'literal' && handleSegmentClick($event)",

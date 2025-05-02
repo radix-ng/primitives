@@ -434,12 +434,15 @@ export function useDateField(props: UseDateFieldProps) {
         const prevValue = props.segmentValues().month;
 
         if (e.key === ARROW_DOWN || e.key === ARROW_UP) {
-            props.segmentValues().month = dateTimeValueIncrementation({
-                e,
-                part: 'month',
-                dateRef: props.placeholder(),
-                prevValue
-            });
+            props.segmentValues.update((prev) => ({
+                ...prev,
+                month: dateTimeValueIncrementation({
+                    e,
+                    part: 'month',
+                    dateRef: props.placeholder(),
+                    prevValue
+                })
+            }));
             return;
         }
 
@@ -454,7 +457,7 @@ export function useDateField(props: UseDateFieldProps) {
 
         if (e.key === BACKSPACE) {
             props.hasLeftFocus.set(false);
-            props.segmentValues().month = deleteValue(prevValue);
+            props.segmentValues.update((prev) => ({ ...prev, month: deleteValue(prevValue) }));
         }
     }
 
@@ -464,12 +467,15 @@ export function useDateField(props: UseDateFieldProps) {
         const prevValue = props.segmentValues().day;
 
         if (e.key === ARROW_DOWN || e.key === ARROW_UP) {
-            props.segmentValues().day = dateTimeValueIncrementation({
-                e,
-                part: 'day',
-                dateRef: props.placeholder(),
-                prevValue
-            });
+            props.segmentValues.update((prev) => ({
+                ...prev,
+                day: dateTimeValueIncrementation({
+                    e,
+                    part: 'day',
+                    dateRef: props.placeholder(),
+                    prevValue
+                })
+            }));
             return;
         }
 
@@ -490,7 +496,7 @@ export function useDateField(props: UseDateFieldProps) {
 
         if (e.key === BACKSPACE) {
             props.hasLeftFocus.set(false);
-            props.segmentValues().day = deleteValue(prevValue);
+            props.segmentValues.update((prev) => ({ ...prev, day: deleteValue(prevValue) }));
         }
     }
 
@@ -500,12 +506,15 @@ export function useDateField(props: UseDateFieldProps) {
         const prevValue = props.segmentValues().year;
 
         if (e.key === ARROW_DOWN || e.key === ARROW_UP) {
-            props.segmentValues().year = dateTimeValueIncrementation({
-                e,
-                part: 'year',
-                dateRef: props.placeholder(),
-                prevValue
-            });
+            props.segmentValues.update((prev) => ({
+                ...prev,
+                year: dateTimeValueIncrementation({
+                    e,
+                    part: 'year',
+                    dateRef: props.placeholder(),
+                    prevValue
+                })
+            }));
             return;
         }
 
@@ -520,7 +529,7 @@ export function useDateField(props: UseDateFieldProps) {
 
         if (e.key === BACKSPACE) {
             props.hasLeftFocus.set(false);
-            props.segmentValues().year = deleteValue(prevValue);
+            props.segmentValues.update((prev) => ({ ...prev, year: deleteValue(prevValue) }));
         }
     }
 

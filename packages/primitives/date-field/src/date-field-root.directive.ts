@@ -13,6 +13,8 @@ import {
 } from '@angular/core';
 import { DateValue } from '@internationalized/date';
 import {
+    ARROW_LEFT,
+    ARROW_RIGHT,
     createContent,
     createFormatter,
     DateMatcher,
@@ -24,6 +26,7 @@ import {
     initializeSegmentValues,
     isBefore,
     isNullish,
+    isSegmentNavigationKey,
     provideToken,
     SegmentPart,
     SegmentValueObj,
@@ -42,7 +45,9 @@ import { DATE_FIELDS_ROOT_CONTEXT } from './date-field-context.token';
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
         '[attr.data-readonly]': 'readonly() ? "" : undefined',
         '[attr.data-invalid]': 'isInvalid() ? "" : undefined',
-        '[attr.dir]': 'dir()'
+        '[attr.dir]': 'dir()',
+
+        '(keydown)': 'onKeydown($event)'
     }
 })
 export class RdxDateFieldRootDirective implements AfterViewInit {
@@ -139,6 +144,16 @@ export class RdxDateFieldRootDirective implements AfterViewInit {
         )
     );
 
+    readonly prevFocusableSegment = computed(() => {
+        const sign = this.dir() === 'rtl' ? -1 : 1;
+        const prevCondition =
+            sign > 0 ? this.currentSegmentIndex() < 0 : this.currentSegmentIndex() > this.segmentElements().size - 1;
+        if (prevCondition) return null;
+
+        const segmentToFocus = Array.from(this.segmentElements())[this.currentSegmentIndex() - sign];
+        return segmentToFocus;
+    });
+
     readonly nextFocusableSegment = computed(() => {
         const sign = this.dir() === 'rtl' ? -1 : 1;
         const nextCondition =
@@ -162,11 +177,22 @@ export class RdxDateFieldRootDirective implements AfterViewInit {
         );
     }
 
+    onKeydown(event: KeyboardEvent) {
+        const code = event.code;
+        if (['ArrowLeft', 'ArrowRight'].includes(code)) {
+            if (!isSegmentNavigationKey(event.key)) return;
+            if (code === ARROW_LEFT) this.prevFocusableSegment()?.focus();
+            if (code === ARROW_RIGHT) {
+                this.nextFocusableSegment()?.focus();
+            }
+        }
+    }
+
     setFocusedElement(el: HTMLElement) {
         this.currentFocusedElement.set(el);
     }
 
-    focusNext() {
-        //nextFocusableSegment.value?.focus()
-    }
+    readonly focusNext = () => {
+        this.nextFocusableSegment()?.focus();
+    };
 }
