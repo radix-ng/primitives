@@ -21,16 +21,35 @@ import { injectDateFieldsRootContext } from './date-field-context.token';
 export class RdxDateFieldInputDirective {
     private readonly rootContext = injectDateFieldsRootContext();
 
+    /**
+     * The part of the date to render
+     * `'day' | 'month' | 'year' | 'hour' | 'minute' | 'second' | 'dayPeriod' | 'literal' | 'timeZoneName'`
+     */
     readonly part = input<SegmentPart>();
 
+    /**
+     * @ignore
+     */
     readonly disabled = computed(() => this.rootContext.disabled());
 
+    /**
+     * @ignore
+     */
     readonly readonly = computed(() => this.rootContext.readonly());
 
+    /**
+     * @ignore
+     */
     readonly isInvalid = computed(() => this.rootContext.isInvalid());
 
+    /**
+     * @ignore
+     */
     readonly hasLeftFocus = signal<boolean>(true);
 
+    /**
+     * @ignore
+     */
     readonly lastKeyZero = signal<boolean>(false);
 
     private readonly fieldData = computed(() => {
@@ -51,7 +70,14 @@ export class RdxDateFieldInputDirective {
 
     private readonly attributes = computed(() => this.fieldData().attributes());
 
+    /**
+     * @ignore
+     */
     handleSegmentClick: (e: MouseEvent) => void;
+
+    /**
+     * @ignore
+     */
     handleSegmentKeydown: (e: KeyboardEvent) => void;
 
     constructor(private el: ElementRef) {
@@ -69,10 +95,16 @@ export class RdxDateFieldInputDirective {
         });
     }
 
+    /**
+     * @ignore
+     */
     onFocus(e: FocusEvent) {
         this.rootContext.setFocusedElement(e.target as HTMLElement);
     }
 
+    /**
+     * @ignore
+     */
     onFocusOut() {
         this.hasLeftFocus.set(true);
     }

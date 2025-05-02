@@ -76,6 +76,9 @@ export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
 
     readonly readonly = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /**
+     * @ignore
+     */
     readonly defaultDate = computed(() =>
         getDefaultDate({
             defaultPlaceholder: undefined,
@@ -89,12 +92,24 @@ export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
 
     // Internal state
 
+    /**
+     * @ignore
+     */
     readonly segmentElements = signal<Set<HTMLElement>>(new Set());
 
+    /**
+     * @ignore
+     */
     readonly currentFocusedElement = signal<HTMLElement | null>(null);
 
+    /**
+     * @ignore
+     */
     formatter: Formatter;
 
+    /**
+     * @ignore
+     */
     readonly segmentValues = signal<SegmentValueObj>({
         year: null,
         month: null,
@@ -105,6 +120,9 @@ export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
         dayPeriod: null
     } as SegmentValueObj);
 
+    /**
+     * @ignore
+     */
     readonly inferredGranularity = computed(() => {
         const placeholder = this.placeholder();
 
@@ -113,6 +131,9 @@ export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
         return placeholder && hasTime(placeholder) ? 'minute' : 'day';
     });
 
+    /**
+     * @ignore
+     */
     readonly isInvalid = computed(() => {
         if (!this.value()) return false;
 
@@ -125,6 +146,9 @@ export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
         return false;
     });
 
+    /**
+     * @ignore
+     */
     readonly allSegmentContent = computed(() =>
         createContent({
             granularity: <Granularity>this.inferredGranularity(),
@@ -139,6 +163,9 @@ export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
 
     readonly segmentContents = computed(() => this.allSegmentContent().arr);
 
+    /**
+     * @ignore
+     */
     readonly currentSegmentIndex = computed(() =>
         Array.from(this.segmentElements()).findIndex(
             (el) =>
@@ -147,6 +174,9 @@ export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
         )
     );
 
+    /**
+     * @ignore
+     */
     readonly prevFocusableSegment = computed(() => {
         const sign = this.dir() === 'rtl' ? -1 : 1;
         const prevCondition =
@@ -157,6 +187,9 @@ export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
         return segmentToFocus;
     });
 
+    /**
+     * @ignore
+     */
     readonly nextFocusableSegment = computed(() => {
         const sign = this.dir() === 'rtl' ? -1 : 1;
         const nextCondition =
@@ -166,6 +199,9 @@ export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
         return segmentToFocus;
     });
 
+    /**
+     * @ignore
+     */
     readonly focusNext = () => {
         this.nextFocusableSegment()?.focus();
     };
@@ -205,6 +241,9 @@ export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
         );
     }
 
+    /**
+     * @ignore
+     */
     onKeydown(event: KeyboardEvent) {
         const code = event.code;
         if ([ARROW_LEFT, ARROW_RIGHT].includes(code)) {
@@ -220,6 +259,9 @@ export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
         }
     }
 
+    /**
+     * @ignore
+     */
     setFocusedElement(el: HTMLElement) {
         this.currentFocusedElement.set(el);
     }
