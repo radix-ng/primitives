@@ -34,6 +34,8 @@ type RdxBaseDialogConfig<C> = {
 
     canCloseWithBackdrop?: boolean;
 
+    closeDelay?: number;
+
     cdkConfigOverride?: Partial<DialogConfig<C>>;
 
     mode?: RdxDialogMode;

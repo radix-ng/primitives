@@ -1,4 +1,5 @@
 import { DialogRef } from '@angular/cdk/dialog';
+import { computed, signal } from '@angular/core';
 import { filter, isObservable, map, Observable, of, take } from 'rxjs';
 import { RdxDialogConfig, RdxDialogResult } from './dialog.config';
 
@@ -14,6 +15,12 @@ function isDismissed(v: unknown): v is typeof DISMISSED_VALUE {
  * @template C - The type of the dialog's content component
  */
 export class RdxDialogRef<C = unknown> {
+    private _previousTimeout: ReturnType<typeof setTimeout> | undefined;
+
+    // state tracking
+    private readonly _openSignal = signal(true);
+    public readonly state = computed(() => (this._openSignal() ? 'open' : 'closed'));
+
     closed$: Observable<RdxDialogResult<C> | undefined> = this.cdkRef.closed.pipe(
         map((res): RdxDialogResult<C> | undefined => (isDismissed(res) ? undefined : res))
     );
@@ -59,7 +66,23 @@ export class RdxDialogRef<C = unknown> {
     }
 
     close(result: RdxDialogResult<C>): void {
-        this.cdkRef.close(result);
+        // check if dialog is already in closing state to prevent double-closing
+        if (this.state() === 'closed') {
+            return;
+        }
+
+        this._openSignal.set(false);
+
+        if (this._previousTimeout) {
+            clearTimeout(this._previousTimeout);
+        }
+
+        const closeDelay = this.config.closeDelay ?? 100; // Default to 100ms if not specified
+
+        // Actual closing happens after delay
+        this._previousTimeout = setTimeout(() => {
+            this.cdkRef.close(result ?? DISMISSED_VALUE);
+        }, closeDelay);
     }
 }
 
