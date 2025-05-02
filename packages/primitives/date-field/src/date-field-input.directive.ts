@@ -9,9 +9,13 @@ import { injectDateFieldsRootContext } from './date-field-context.token';
         '[attr.data-rdx-date-field-segment]': 'part()',
         '[attr.aria-disabled]': 'disabled() ? "" : undefined',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
-        '(mousedown)': "part() !== 'literal' && handleSegmentClick($event)",
-        '(keydown)': "part() !== 'literal' && handleSegmentKeydown($event)",
-        '(focus)': 'onFocus($event)'
+        '[attr.data-invalid]': 'isInvalid() ? "" : undefined',
+        '[attr.aria-invalid]': 'isInvalid() ? true : undefined',
+
+        '(mousedown)': 'part() !== "literal" && handleSegmentClick($event)',
+        '(keydown)': 'part() !== "literal" && handleSegmentKeydown($event)',
+        '(focus)': 'part() !== "literal" && onFocus($event)',
+        '(focusout)': 'part() !== "literal" && onFocusOut()'
     }
 })
 export class RdxDateFieldInputDirective {
@@ -22,6 +26,8 @@ export class RdxDateFieldInputDirective {
     readonly disabled = computed(() => this.rootContext.disabled());
 
     readonly readonly = computed(() => this.rootContext.readonly());
+
+    readonly isInvalid = computed(() => this.rootContext.isInvalid());
 
     readonly hasLeftFocus = signal<boolean>(true);
 
@@ -65,5 +71,9 @@ export class RdxDateFieldInputDirective {
 
     onFocus(e: FocusEvent) {
         this.rootContext.setFocusedElement(e.target as HTMLElement);
+    }
+
+    onFocusOut() {
+        this.hasLeftFocus.set(true);
     }
 }

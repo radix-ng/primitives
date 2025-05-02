@@ -163,6 +163,10 @@ export class RdxDateFieldRootDirective implements AfterViewInit {
         return segmentToFocus;
     });
 
+    readonly focusNext = () => {
+        this.nextFocusableSegment()?.focus();
+    };
+
     constructor() {
         watch([this.value], ([modelValue]) => {
             if (!isNullish(modelValue) && this.placeholder()?.compare(modelValue) !== 0) {
@@ -179,9 +183,13 @@ export class RdxDateFieldRootDirective implements AfterViewInit {
 
     onKeydown(event: KeyboardEvent) {
         const code = event.code;
-        if (['ArrowLeft', 'ArrowRight'].includes(code)) {
+        if ([ARROW_LEFT, ARROW_RIGHT].includes(code)) {
             if (!isSegmentNavigationKey(event.key)) return;
-            if (code === ARROW_LEFT) this.prevFocusableSegment()?.focus();
+
+            if (code === ARROW_LEFT) {
+                this.prevFocusableSegment()?.focus();
+            }
+
             if (code === ARROW_RIGHT) {
                 this.nextFocusableSegment()?.focus();
             }
@@ -191,8 +199,4 @@ export class RdxDateFieldRootDirective implements AfterViewInit {
     setFocusedElement(el: HTMLElement) {
         this.currentFocusedElement.set(el);
     }
-
-    readonly focusNext = () => {
-        this.nextFocusableSegment()?.focus();
-    };
 }

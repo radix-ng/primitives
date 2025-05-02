@@ -1,4 +1,4 @@
-import { inject, InjectionToken, InputSignal, ModelSignal, WritableSignal } from '@angular/core';
+import { inject, InjectionToken, InputSignal, ModelSignal, Signal, WritableSignal } from '@angular/core';
 import { DateValue } from '@internationalized/date';
 import { Formatter, HourCycle, SegmentValueObj } from '@radix-ng/primitives/core';
 
@@ -7,6 +7,7 @@ export interface DateFieldContextToken {
     value: ModelSignal<DateValue | undefined>;
     disabled: InputSignal<boolean>;
     readonly: InputSignal<boolean>;
+    isInvalid: Signal<boolean>;
     placeholder: ModelSignal<DateValue>;
     hourCycle: InputSignal<HourCycle>;
     formatter: Formatter;

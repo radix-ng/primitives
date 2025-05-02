@@ -29,7 +29,7 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: html`
-            <app-date-field />
+            <app-date-field style="display: flex;" />
         `
     })
 };
