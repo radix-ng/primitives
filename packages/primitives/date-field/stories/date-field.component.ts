@@ -25,50 +25,7 @@ import { RdxDateFieldRootDirective } from '../src/date-field-root.directive';
             </div>
         </div>
     `,
-    styles: `
-        .DateFieldWrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .DateField {
-            display: flex;
-            padding: 0.5rem;
-            align-items: center;
-            border-radius: 0.25rem;
-            border-width: 1px;
-            text-align: center;
-            background-color: #ffffff;
-            user-select: none;
-            color: var(--green-10);
-            border: 1px solid var(--gray-9);
-        }
-
-        .DateField::placeholder {
-            color: var(--mauve-5);
-        }
-
-        .DateFieldLiteral {
-            padding: 0.25rem;
-        }
-
-        .DateFieldSegment {
-            padding: 0.25rem;
-        }
-
-        .DateFieldSegment:hover {
-            background-color: var(--grass-4);
-        }
-
-        .DateFieldSegment:focus {
-            background-color: var(--grass-2);
-        }
-
-        .datefieldsegment: [aria-valuetext= 'Empty'] {
-            color: var(--grass-6);
-        }
-    `
+    styleUrl: 'date-field.styles.css'
 })
 export class DateFieldComponent {
     readonly value = model<DateValue>();

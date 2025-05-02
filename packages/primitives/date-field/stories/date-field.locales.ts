@@ -24,49 +24,56 @@ import { RdxDateFieldRootDirective } from '../src/date-field-root.directive';
             </div>
         </div>
     `,
-    styles: `
-        .DateFieldWrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .DateField {
-            display: flex;
-            padding: 0.5rem;
-            align-items: center;
-            border-radius: 0.25rem;
-            border-width: 1px;
-            text-align: center;
-            background-color: #ffffff;
-            user-select: none;
-            color: var(--green-10);
-            border: 1px solid var(--gray-9);
-        }
-
-        .DateField::placeholder {
-            color: var(--mauve-5);
-        }
-
-        .DateFieldLiteral {
-            padding: 0.25rem;
-        }
-
-        .DateFieldSegment {
-            padding: 0.25rem;
-        }
-
-        .DateFieldSegment:hover {
-            background-color: var(--grass-4);
-        }
-
-        .DateFieldSegment:focus {
-            background-color: var(--grass-2);
-        }
-
-        .datefieldsegment: [aria-valuetext= 'Empty'] {
-            color: var(--grass-6);
-        }
-    `
+    styleUrl: 'date-field.styles.css'
 })
 export class DateFieldLocalesGregorian {}
+
+@Component({
+    selector: 'app-date-field-japanese',
+    imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective, RdxVisuallyHiddenInputDirective],
+    template: `
+        <div class="DateFieldWrapper">
+            <div class="DateField" #root="rdxDateFieldRoot" granularity="second" locale="ja" rdxDateFieldRoot>
+                @for (item of root.segmentContents(); track $index) {
+                    @if (item.part === 'literal') {
+                        <div class="DateFieldLiteral" [part]="item.part" rdxDateFieldInput>
+                            {{ item.value }}
+                        </div>
+                    } @else {
+                        <div class="DateFieldSegment" [part]="item.part" rdxDateFieldInput>
+                            {{ item.value }}
+                        </div>
+                    }
+                }
+                <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
+            </div>
+        </div>
+    `,
+    styleUrl: 'date-field.styles.css'
+})
+export class DateFieldLocalesJapanese {}
+
+@Component({
+    selector: 'app-date-field-persian',
+    imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective, RdxVisuallyHiddenInputDirective],
+    template: `
+        <div class="DateFieldWrapper">
+            <div class="DateField" #root="rdxDateFieldRoot" granularity="second" locale="fa-IR" rdxDateFieldRoot>
+                @for (item of root.segmentContents(); track $index) {
+                    @if (item.part === 'literal') {
+                        <div class="DateFieldLiteral" [part]="item.part" rdxDateFieldInput>
+                            {{ item.value }}
+                        </div>
+                    } @else {
+                        <div class="DateFieldSegment" [part]="item.part" rdxDateFieldInput>
+                            {{ item.value }}
+                        </div>
+                    }
+                }
+                <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
+            </div>
+        </div>
+    `,
+    styleUrl: 'date-field.styles.css'
+})
+export class DateFieldLocalesPersian {}

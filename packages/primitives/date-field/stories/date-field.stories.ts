@@ -1,6 +1,6 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { DateFieldComponent } from './date-field.component';
-import { DateFieldLocalesGregorian } from './date-field.locales';
+import { DateFieldLocalesGregorian, DateFieldLocalesJapanese, DateFieldLocalesPersian } from './date-field.locales';
 
 const html = String.raw;
 
@@ -8,7 +8,7 @@ export default {
     title: 'Primitives/Data Field',
     decorators: [
         moduleMetadata({
-            imports: [DateFieldComponent, DateFieldLocalesGregorian]
+            imports: [DateFieldComponent, DateFieldLocalesGregorian, DateFieldLocalesJapanese, DateFieldLocalesPersian]
         }),
         componentWrapperDecorator(
             (story) => html`
@@ -39,6 +39,22 @@ export const LocalesGregorian: Story = {
     render: () => ({
         template: html`
             <app-date-field-gregorian style="display: flex;" />
+        `
+    })
+};
+
+export const LocalesJapanese: Story = {
+    render: () => ({
+        template: html`
+            <app-date-field-japanese style="display: flex;" />
+        `
+    })
+};
+
+export const LocalesPersian: Story = {
+    render: () => ({
+        template: html`
+            <app-date-field-persian style="display: flex;" />
         `
     })
 };
