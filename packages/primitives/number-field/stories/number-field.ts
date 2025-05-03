@@ -73,6 +73,10 @@ import { RdxNumberFieldRootDirective } from '../src/number-field-root.directive'
             background-color: transparent;
             background-image: none;
         }
+
+        .ButtonField:disabled {
+            opacity: 0.2;
+        }
     `
 })
 export class NumberField {

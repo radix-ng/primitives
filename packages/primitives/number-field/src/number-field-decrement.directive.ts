@@ -28,7 +28,7 @@ export class RdxNumberFieldDecrementDirective implements OnInit {
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     readonly isDisabled = computed(
-        () => this.rootContext.disabled() || this.disabled() || this.rootContext.isIncreaseDisabled()
+        () => this.rootContext.disabled() || this.disabled() || this.rootContext.isDecreaseDisabled()
     );
 
     useHold = this.pressedHold.create({
