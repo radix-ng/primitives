@@ -44,6 +44,9 @@ importers:
       '@internationalized/date':
         specifier: ^3.7.0
         version: 3.7.0
+      '@internationalized/number':
+        specifier: ^3.6.1
+        version: 3.6.1
       '@ng-doc/app':
         specifier: 19.1.0
         version: 19.1.0(4bca3ae0ea10b9a58a7588a6a66b3b2a)
@@ -2888,6 +2891,9 @@ packages:
 
   '@internationalized/date@3.7.0':
     resolution: {integrity: sha512-VJ5WS3fcVx0bejE/YHfbDKR/yawZgKqn/if+oEeLqNwBtPzVB06olkfcnojTmEMX+gTpH+FlQ69SHNitJ8/erQ==}
+
+  '@internationalized/number@3.6.1':
+    resolution: {integrity: sha512-UVsb4bCwbL944E0SX50CHFtWEeZ2uB5VozZ5yDXJdq6iPZsZO5p+bjVMZh2GxHf4Bs/7xtDCcPwEa2NU9DaG/g==}
 
   '@ioredis/commands@1.2.0':
     resolution: {integrity: sha512-Sx1pU8EM64o2BrqNpEO1CNLtKQwyhuXuqyfH7oGKCk+1a33d2r5saW8zNwm3j6BTExtjrv2BxTgzzkMwts6vGg==}
@@ -18337,6 +18343,10 @@ snapshots:
       '@types/node': 20.17.28
 
   '@internationalized/date@3.7.0':
+    dependencies:
+      '@swc/helpers': 0.5.11
+
+  '@internationalized/number@3.6.1':
     dependencies:
       '@swc/helpers': 0.5.11
 

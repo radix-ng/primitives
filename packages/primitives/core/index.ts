@@ -1,5 +1,6 @@
 export * from './src/accessor/provide-value-accessor';
 export * from './src/auto-focus.directive';
+export * from './src/clamp';
 export * from './src/document';
 export * from './src/focus-initial.directive';
 export * from './src/id-generator';
