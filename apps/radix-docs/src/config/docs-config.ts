@@ -50,6 +50,7 @@ const docsConfig = {
                         { name: 'Getting started', url: '/primitives/overview/getting-started' },
                         { name: 'Accessibility', url: '/primitives/overview/accessibility' },
                         { name: 'Styling', url: '/primitives/overview/styling' },
+                        { name: 'Dates', url: '/primitives/overview/dates' },
                         { name: 'Inject Context', url: '/primitives/overview/inject-context' },
                         { name: 'Contribute', url: '/primitives/overview/contribute' }
                     ]
