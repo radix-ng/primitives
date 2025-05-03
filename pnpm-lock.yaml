@@ -576,6 +576,9 @@ importers:
       '@internationalized/date':
         specifier: ^3.7.0
         version: 3.7.0
+      '@internationalized/number':
+        specifier: ^3.6.1
+        version: 3.6.1
 
   packages/shadcn:
     dependencies:
