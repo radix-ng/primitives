@@ -54,26 +54,54 @@ import { DATE_FIELDS_ROOT_CONTEXT } from './date-field-context.token';
 export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
     private readonly elementRef = inject(ElementRef<HTMLElement>);
 
+    /**
+     * The controlled checked state of the calendar.
+     */
     readonly value = model<DateValue | undefined>();
 
+    /**
+     * A callback fired when the date field's value is invalid.
+     */
     readonly isDateUnavailable = input<DateMatcher | undefined>(undefined);
 
+    /**
+     * The hour cycle to use for formatting times. Defaults to the locale preference
+     */
     readonly hourCycle = input<HourCycle>();
 
+    /**
+     * The granularity to use for formatting the field. Defaults to 'day' if a CalendarDate is provided, otherwise defaults to 'minute'.
+     * The field will render segments for each part of the date up to and including the specified granularity.
+     */
     readonly granularity = input<Granularity>();
 
+    /**
+     * The locale to use for formatting dates.
+     */
     readonly locale = input<string>('en');
 
     readonly dir = input<Direction>('ltr');
 
+    /**
+     * The minimum valid date that can be entered.
+     */
     readonly minValue = input<DateValue>();
 
+    /**
+     * The maximum valid date that can be entered.
+     */
     readonly maxValue = input<DateValue>();
 
+    /**
+     * Whether or not to hide the time zone segment of the field.
+     */
     readonly hideTimeZone = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /**
+     * Whether or not the field is readonly.
+     */
     readonly readonly = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
@@ -88,6 +116,9 @@ export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
         })
     );
 
+    /**
+     * The placeholder date, which is used to determine what month to display when no date is selected. This updates as the user navigates the calendar and can be used to programmatically control the calendar view
+     */
     readonly placeholder = model<DateValue | undefined>(this.defaultDate().copy());
 
     // Internal state
@@ -161,6 +192,9 @@ export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
         })
     );
 
+    /**
+     * An array of segments that should be readonly, which prevent user input on them.
+     */
     readonly segmentContents = computed(() => this.allSegmentContent().arr);
 
     /**
