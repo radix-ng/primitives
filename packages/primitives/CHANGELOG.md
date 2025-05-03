@@ -1,3 +1,20 @@
+## 0.35.0 (2025-05-03)
+
+### 🚀 Features
+
+- **date-field:** new Primitive Date Field ([#312](https://github.com/radix-ng/primitives/pull/312))
+- internal updated - provideValueAccessor and provideToken ([#310](https://github.com/radix-ng/primitives/pull/310))
+
+### 🩹 Fixes
+
+- **navigation-menu:** remove unnecessary triggerEnter handler ([#314](https://github.com/radix-ng/primitives/pull/314))
+- **dialog:** ensure `data-state` and `data-side`  are set on CDK backdrop ([#311](https://github.com/radix-ng/primitives/pull/311))
+
+### ❤️ Thank You
+
+- Josh Sullivan @jpsullivan
+- Oleg Pimenov @pimenovoleg
+
 ## 0.34.0 (2025-04-27)
 
 ### 🚀 Features
