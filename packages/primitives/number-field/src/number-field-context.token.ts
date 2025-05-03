@@ -1,4 +1,4 @@
-import { BooleanInput } from '@angular/cdk/coercion';
+import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import { inject, InjectionToken, InputSignal, InputSignalWithTransform, ModelSignal, Signal } from '@angular/core';
 import { InputMode } from './types';
 
@@ -7,6 +7,8 @@ export interface NumberFieldContextToken {
     locale: InputSignal<string>;
     inputMode: Signal<InputMode>;
     textValue: Signal<any>;
+    max: InputSignalWithTransform<number, NumberInput>;
+    min: InputSignalWithTransform<number, NumberInput>;
     onInputElement: (el: HTMLInputElement) => void;
     disabled: InputSignalWithTransform<boolean, BooleanInput>;
     disableWheelChange: InputSignalWithTransform<boolean, BooleanInput>;

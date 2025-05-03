@@ -14,6 +14,8 @@ import { injectNumberFieldRootContext } from './number-field-context.token';
         'aria-roledescription': 'Number field',
 
         '[attr.aria-valuenow]': 'rootContext.value()',
+        '[attr.aria-valuemin]': 'rootContext.min()',
+        '[attr.aria-valuemax]': 'rootContext.max()',
         '[attr.inputmode]': 'rootContext.inputMode()',
         '[attr.disabled]': 'rootContext.disabled() ? "" : undefined',
         '[attr.data-disabled]': 'rootContext.disabled() ? "" : undefined',
