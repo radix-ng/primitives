@@ -171,8 +171,6 @@ export class RdxNavigationMenuTriggerDirective extends RdxNavigationMenuFocusabl
         ) {
             return;
         }
-        // trigger enter logic (handles delays) and mark that this move initiated an open attempt
-        this.context.onTriggerEnter?.(this.item.value());
         this.hasPointerMoveOpened = true;
     }
 
