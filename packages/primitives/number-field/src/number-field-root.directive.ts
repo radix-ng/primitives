@@ -90,6 +90,14 @@ export class RdxNumberFieldRootDirective implements OnInit, NumberFieldContextTo
         this.textValueFormatter = useNumberFormatter(this.locale, this.formatOptions);
     }
 
+    handleMinMaxValue(type: 'min' | 'max') {
+        if (type === 'min' && this.min() !== undefined) {
+            this.value.set(this.clampInputValue(this.min()));
+        } else if (type === 'max' && this.max() !== undefined) {
+            this.value.set(this.clampInputValue(this.max()));
+        }
+    }
+
     handleDecrease(multiplier = 1) {
         this.handleChangingValue('decrease', multiplier);
     }

@@ -1,7 +1,7 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, computed, Directive, ElementRef, inject, input, OnInit, signal } from '@angular/core';
 import { injectNumberFieldRootContext } from './number-field-context.token';
-import { PressedHoldService } from './number-field-increment.directive';
+import { PressedHoldService } from './utils';
 
 @Directive({
     selector: 'button[rdxNumberFieldDecrement]',

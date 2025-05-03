@@ -16,6 +16,7 @@ export interface NumberFieldContextToken {
     setInputValue: (val: string) => void;
     isIncreaseDisabled: Signal<boolean>;
     isDecreaseDisabled: Signal<boolean>;
+    handleMinMaxValue: (type: 'min' | 'max') => void;
 }
 
 export const NUMBER_FIELD_ROOT_CONTEXT = new InjectionToken<NumberFieldContextToken>('NUMBER_FIELD_ROOT_CONTEXT');

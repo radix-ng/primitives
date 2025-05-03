@@ -1,94 +1,83 @@
-import { computed, DestroyRef, effect, signal, Signal } from '@angular/core';
+import { computed, DestroyRef, effect, inject, Injectable, signal, Signal } from '@angular/core';
 import { NumberFormatter, NumberParser } from '@internationalized/number';
 import { fromEvent, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-export function usePressedHold(
-    options: { target?: Signal<HTMLElement | undefined>; disabled: Signal<boolean> },
-    destroyRef: DestroyRef
-) {
-    const timeout = signal<number | undefined>(undefined);
-    const triggerHook = new Subject<void>();
-    const isPressed = signal(false);
+@Injectable()
+export class PressedHoldService {
+    private destroyRef = inject(DestroyRef);
 
-    const resetTimeout = () => {
-        if (timeout() !== undefined) {
-            window.clearTimeout(timeout());
-            timeout.set(undefined);
-        }
-    };
+    create(options: { target?: Signal<HTMLElement | undefined>; disabled: Signal<boolean> }) {
+        const timeout = signal<number | undefined>(undefined);
+        const triggerHook = new Subject<void>();
+        const isPressed = signal(false);
 
-    const onIncrementPressStart = (delay: number) => {
-        resetTimeout();
-        if (options.disabled()) {
-            return;
-        }
+        const resetTimeout = () => {
+            const timer = timeout();
+            if (timer !== undefined) {
+                window.clearTimeout(timer);
+                timeout.set(undefined);
+            }
+        };
 
-        triggerHook.next();
+        const onIncrementPressStart = (delay: number) => {
+            resetTimeout();
+            if (options.disabled()) return;
 
-        const newTimeout = window.setTimeout(() => {
-            onIncrementPressStart(60);
-        }, delay);
-        timeout.set(newTimeout);
-    };
+            triggerHook.next();
 
-    const handlePressStart = () => {
-        onIncrementPressStart(400);
-    };
+            timeout.set(
+                window.setTimeout(() => {
+                    onIncrementPressStart(60);
+                }, delay)
+            );
+        };
 
-    const handlePressEnd = () => {
-        resetTimeout();
-    };
+        const onPressStart = (event: PointerEvent) => {
+            if (event.button !== 0 || isPressed()) return;
+            event.preventDefault();
+            isPressed.set(true);
+            onIncrementPressStart(400);
+        };
 
-    const onPressStart = (event: PointerEvent) => {
-        if (event.button !== 0 || isPressed()) {
-            return;
-        }
+        const onPressRelease = () => {
+            isPressed.set(false);
+            resetTimeout();
+        };
 
-        event.preventDefault();
-        isPressed.set(true);
-        handlePressStart();
-    };
+        effect(() => {
+            if (typeof window === 'undefined') return;
 
-    const onPressRelease = () => {
-        isPressed.set(false);
-        handlePressEnd();
-    };
+            const targetElement = options.target?.() || window;
+            const destroy$ = new Subject<void>();
 
-    effect((onCleanup) => {
-        if (typeof window === 'undefined') return;
+            const pointerDownSub = fromEvent(targetElement, 'pointerdown')
+                .pipe(takeUntil(destroy$))
+                .subscribe((e) => onPressStart(e as PointerEvent));
 
-        const targetElement = options.target?.() || window;
+            const pointerUpSub = fromEvent(window, 'pointerup').pipe(takeUntil(destroy$)).subscribe(onPressRelease);
 
-        const destroy$ = new Subject<void>();
-        destroyRef.onDestroy(() => destroy$.next());
+            const pointerCancelSub = fromEvent(window, 'pointercancel')
+                .pipe(takeUntil(destroy$))
+                .subscribe(onPressRelease);
 
-        fromEvent(targetElement, 'pointerdown')
-            .pipe(takeUntil(destroy$))
-            .subscribe((e) => onPressStart(e as PointerEvent));
-
-        fromEvent(window, 'pointerup')
-            .pipe(takeUntil(destroy$))
-            .subscribe(() => onPressRelease());
-
-        fromEvent(window, 'pointercancel')
-            .pipe(takeUntil(destroy$))
-            .subscribe(() => onPressRelease());
-
-        destroyRef.onDestroy(() => destroy$.next());
-
-        onCleanup(() => {
-            destroy$.complete();
+            this.destroyRef.onDestroy(() => {
+                destroy$.next();
+                destroy$.complete();
+                pointerDownSub.unsubscribe();
+                pointerUpSub.unsubscribe();
+                pointerCancelSub.unsubscribe();
+            });
         });
-    });
 
-    return {
-        isPressed: isPressed.asReadonly(),
-        onTrigger: (fn: () => void) => {
-            const sub = triggerHook.subscribe(fn);
-            destroyRef.onDestroy(() => sub.unsubscribe());
-        }
-    };
+        return {
+            isPressed: isPressed.asReadonly(),
+            onTrigger: (fn: () => void) => {
+                const sub = triggerHook.subscribe(fn);
+                this.destroyRef.onDestroy(() => sub.unsubscribe());
+            }
+        };
+    }
 }
 
 export function useNumberFormatter(

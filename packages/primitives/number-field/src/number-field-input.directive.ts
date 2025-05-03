@@ -23,8 +23,12 @@ import { injectNumberFieldRootContext } from './number-field-context.token';
         '(blur)': 'onKeydownEnter($event)',
         '(beforeinput)': 'onBeforeInput($event)',
         '(keydown.enter)': 'onKeydownEnter($event)',
-        '(keydown.arrowup)': 'onKeydownUp($event)',
-        '(keydown.arrowdown)': 'onKeydownDown($event)'
+        '(keydown.arrowUp)': 'onKeydownUp($event)',
+        '(keydown.arrowDown)': 'onKeydownDown($event)',
+        '(keydown.home)': 'onKeydownHome($event)',
+        '(keydown.end)': 'onKeydownEnd($event)',
+        '(keydown.pageUp)': 'onKeydownPageUp($event)',
+        '(keydown.pageDown)': 'onKeydownPageDown($event)'
     }
 })
 export class RdxNumberFieldInputDirective implements OnInit {
@@ -55,6 +59,26 @@ export class RdxNumberFieldInputDirective implements OnInit {
         if (!this.rootContext.validate(nextValue)) {
             event.preventDefault();
         }
+    }
+
+    onKeydownPageUp(event: KeyboardEvent) {
+        event.preventDefault();
+        this.rootContext.handleIncrease(10);
+    }
+
+    onKeydownPageDown(event: KeyboardEvent) {
+        event.preventDefault();
+        this.rootContext.handleDecrease(10);
+    }
+
+    onKeydownHome(event: KeyboardEvent) {
+        event.preventDefault();
+        this.rootContext.handleMinMaxValue('min');
+    }
+
+    onKeydownEnd(event: KeyboardEvent) {
+        event.preventDefault();
+        this.rootContext.handleMinMaxValue('max');
     }
 
     onInput(event: InputEvent) {
