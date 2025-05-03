@@ -33,8 +33,14 @@ export class RdxNumberFieldRootDirective implements OnInit, NumberFieldContextTo
 
     readonly formatOptions = input<Intl.NumberFormatOptions>();
 
+    /**
+     * @ignore
+     */
     readonly inputEl = signal<HTMLInputElement | undefined>(undefined);
 
+    /**
+     * @ignore
+     */
     readonly isDecreaseDisabled = computed(
         () =>
             this.clampInputValue(this.value()!) === this.min() ||
@@ -43,6 +49,9 @@ export class RdxNumberFieldRootDirective implements OnInit, NumberFieldContextTo
                 : false)
     );
 
+    /**
+     * @ignore
+     */
     readonly isIncreaseDisabled = computed(
         () =>
             this.clampInputValue(this.value()!) === this.max() ||
@@ -51,6 +60,9 @@ export class RdxNumberFieldRootDirective implements OnInit, NumberFieldContextTo
                 : false)
     );
 
+    /**
+     * @ignore
+     */
     readonly inputMode = computed<InputMode>(() => {
         // The inputMode attribute influences the software keyboard that is shown on touch devices.
         // Browsers and operating systems are quite inconsistent about what keys are available, however.
@@ -64,15 +76,31 @@ export class RdxNumberFieldRootDirective implements OnInit, NumberFieldContextTo
     /**
      * Replace negative textValue formatted using currencySign: 'accounting'
      * with a textValue that can be announced using a minus sign.
+     * @ignore
      */
     readonly textValue = computed(() => (isNaN(this.value()!) ? '' : this.textValueFormatter().format(this.value())));
 
+    /**
+     * @ignore
+     */
     readonly onInputElement = (el: HTMLInputElement) => this.inputEl.set(el);
 
+    /**
+     * @ignore
+     */
     numberParser: any;
+    /**
+     * @ignore
+     */
     numberFormatter: any;
+    /**
+     * @ignore
+     */
     textValueFormatter: any;
 
+    /**
+     * @ignore
+     */
     clampInputValue(val: number) {
         // Clamp to min and max, round to the nearest step, and round to the specified number of digits
         let clampedValue: number;
@@ -92,6 +120,9 @@ export class RdxNumberFieldRootDirective implements OnInit, NumberFieldContextTo
         this.textValueFormatter = useNumberFormatter(this.locale, this.formatOptions);
     }
 
+    /**
+     * @ignore
+     */
     handleMinMaxValue(type: 'min' | 'max') {
         if (type === 'min' && this.min() !== undefined) {
             this.value.set(this.clampInputValue(this.min()!));
@@ -100,14 +131,23 @@ export class RdxNumberFieldRootDirective implements OnInit, NumberFieldContextTo
         }
     }
 
+    /**
+     * @ignore
+     */
     handleDecrease(multiplier = 1) {
         this.handleChangingValue('decrease', multiplier);
     }
 
+    /**
+     * @ignore
+     */
     handleIncrease(multiplier = 1) {
         this.handleChangingValue('increase', multiplier);
     }
 
+    /**
+     * @ignore
+     */
     applyInputValue(val: string) {
         const parsedValue = this.numberParser().parse(val);
 
@@ -126,6 +166,9 @@ export class RdxNumberFieldRootDirective implements OnInit, NumberFieldContextTo
         return this.setInputValue(this.textValue());
     }
 
+    /**
+     * @ignore
+     */
     setInputValue(val: string) {
         if (this.inputEl()) {
             this.inputEl.update((el) => {
@@ -135,6 +178,9 @@ export class RdxNumberFieldRootDirective implements OnInit, NumberFieldContextTo
         }
     }
 
+    /**
+     * @ignore
+     */
     validate(val: string) {
         return this.numberParser().isValidPartialNumber(val, this.min(), this.max());
     }

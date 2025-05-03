@@ -21,17 +21,23 @@ import { PressedHoldService } from './utils';
 })
 export class RdxNumberFieldDecrementDirective implements OnInit {
     private readonly elementRef = inject(ElementRef<HTMLElement>);
-    private pressedHold = inject(PressedHoldService);
+    private readonly pressedHold = inject(PressedHoldService);
 
     protected readonly rootContext = injectNumberFieldRootContext();
 
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /**
+     * @ignore
+     */
     readonly isDisabled = computed(
         () => this.rootContext.disabled() || this.disabled() || this.rootContext.isDecreaseDisabled()
     );
 
-    useHold = this.pressedHold.create({
+    /**
+     * @ignore
+     */
+    readonly useHold = this.pressedHold.create({
         target: signal(this.elementRef.nativeElement),
         disabled: this.disabled
     });

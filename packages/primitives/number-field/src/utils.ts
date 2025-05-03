@@ -5,7 +5,7 @@ import { takeUntil } from 'rxjs/operators';
 
 @Injectable()
 export class PressedHoldService {
-    private destroyRef = inject(DestroyRef);
+    private readonly destroyRef = inject(DestroyRef);
 
     create(options: { target?: Signal<HTMLElement | undefined>; disabled: Signal<boolean> }) {
         const timeout = signal<number | undefined>(undefined);
@@ -46,6 +46,7 @@ export class PressedHoldService {
         };
 
         effect(() => {
+            // Skip SSR environments
             if (typeof window === 'undefined') return;
 
             const targetElement = options.target?.() || window;

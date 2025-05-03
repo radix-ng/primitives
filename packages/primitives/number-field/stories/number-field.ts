@@ -46,12 +46,12 @@ export class NumberField {
     ],
     template: `
         <div [value]="0" [formatOptions]="formatOptions" rdxNumberFieldRoot>
-            <label for="age" style="color: white;">Age</label>
+            <label for="decimal" style="color: white;">Decimal</label>
             <div class="NumberFieldWrapper">
                 <button class="ButtonField" rdxNumberFieldDecrement>
                     <lucide-angular [img]="Minus" style="display: flex;" strokeWidth="1" size="16" />
                 </button>
-                <input class="NumberFieldNumber" id="age" rdxNumberFieldInput />
+                <input class="NumberFieldNumber" id="decimal" rdxNumberFieldInput />
                 <button class="ButtonField" rdxNumberFieldIncrement>
                     <lucide-angular [img]="Plus" style="display: flex;" strokeWidth="1" size="16" />
                 </button>
@@ -82,12 +82,12 @@ export class NumberFieldDecimal {
     ],
     template: `
         <div [value]="0.05" [formatOptions]="formatOptions" step="0.01" rdxNumberFieldRoot>
-            <label for="age" style="color: white;">Age</label>
+            <label for="percentage" style="color: white;">Percentage</label>
             <div class="NumberFieldWrapper">
                 <button class="ButtonField" rdxNumberFieldDecrement>
                     <lucide-angular [img]="Minus" style="display: flex;" strokeWidth="1" size="16" />
                 </button>
-                <input class="NumberFieldNumber" id="age" rdxNumberFieldInput />
+                <input class="NumberFieldNumber" id="percentage" rdxNumberFieldInput />
                 <button class="ButtonField" rdxNumberFieldIncrement>
                     <lucide-angular [img]="Plus" style="display: flex;" strokeWidth="1" size="16" />
                 </button>
@@ -116,12 +116,12 @@ export class NumberFieldPercentage {
     ],
     template: `
         <div [value]="5" [formatOptions]="formatOptions" rdxNumberFieldRoot>
-            <label for="age" style="color: white;">Age</label>
+            <label for="currency" style="color: white;">Currency</label>
             <div class="NumberFieldWrapper">
                 <button class="ButtonField" rdxNumberFieldDecrement>
                     <lucide-angular [img]="Minus" style="display: flex;" strokeWidth="1" size="16" />
                 </button>
-                <input class="NumberFieldNumber" id="age" rdxNumberFieldInput />
+                <input class="NumberFieldNumber" id="currency" rdxNumberFieldInput />
                 <button class="ButtonField" rdxNumberFieldIncrement>
                     <lucide-angular [img]="Plus" style="display: flex;" strokeWidth="1" size="16" />
                 </button>
@@ -153,12 +153,12 @@ export class NumberFieldCurrency {
     ],
     template: `
         <div [value]="5" [formatOptions]="formatOptions" rdxNumberFieldRoot>
-            <label for="age" style="color: white;">Age</label>
+            <label for="units" style="color: white;">Units</label>
             <div class="NumberFieldWrapper">
                 <button class="ButtonField" rdxNumberFieldDecrement>
                     <lucide-angular [img]="Minus" style="display: flex;" strokeWidth="1" size="16" />
                 </button>
-                <input class="NumberFieldNumber" id="age" rdxNumberFieldInput />
+                <input class="NumberFieldNumber" id="units" rdxNumberFieldInput />
                 <button class="ButtonField" rdxNumberFieldIncrement>
                     <lucide-angular [img]="Plus" style="display: flex;" strokeWidth="1" size="16" />
                 </button>
