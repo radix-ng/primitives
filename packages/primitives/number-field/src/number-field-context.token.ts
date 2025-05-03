@@ -7,8 +7,8 @@ export interface NumberFieldContextToken {
     locale: InputSignal<string>;
     inputMode: Signal<InputMode>;
     textValue: Signal<any>;
-    max: InputSignalWithTransform<number, NumberInput>;
-    min: InputSignalWithTransform<number, NumberInput>;
+    max: InputSignalWithTransform<number | undefined, NumberInput>;
+    min: InputSignalWithTransform<number | undefined, NumberInput>;
     onInputElement: (el: HTMLInputElement) => void;
     disabled: InputSignalWithTransform<boolean, BooleanInput>;
     disableWheelChange: InputSignalWithTransform<boolean, BooleanInput>;

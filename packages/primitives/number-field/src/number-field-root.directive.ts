@@ -17,9 +17,9 @@ import { handleDecimalOperation, useNumberFormatter, useNumberParser } from './u
 export class RdxNumberFieldRootDirective implements OnInit, NumberFieldContextToken {
     readonly value = model<number>();
 
-    readonly min = input<number, NumberInput>(Infinity, { transform: numberAttribute });
+    readonly min = input<number | undefined, NumberInput>(undefined, { transform: numberAttribute });
 
-    readonly max = input<number, NumberInput>(Infinity, { transform: numberAttribute });
+    readonly max = input<number | undefined, NumberInput>(undefined, { transform: numberAttribute });
 
     readonly step = input<number, NumberInput>(1, { transform: numberAttribute });
 
@@ -39,7 +39,7 @@ export class RdxNumberFieldRootDirective implements OnInit, NumberFieldContextTo
         () =>
             this.clampInputValue(this.value()!) === this.min() ||
             (this.min() && !isNaN(this.value()!)
-                ? handleDecimalOperation('-', this.value()!, this.step()) < this.min()
+                ? handleDecimalOperation('-', this.value()!, this.step()) < this.min()!
                 : false)
     );
 
@@ -47,7 +47,7 @@ export class RdxNumberFieldRootDirective implements OnInit, NumberFieldContextTo
         () =>
             this.clampInputValue(this.value()!) === this.max() ||
             (this.max() && !isNaN(this.value()!)
-                ? handleDecimalOperation('+', this.value()!, this.step()) > this.max()
+                ? handleDecimalOperation('+', this.value()!, this.step()) > this.max()!
                 : false)
     );
 
@@ -94,9 +94,9 @@ export class RdxNumberFieldRootDirective implements OnInit, NumberFieldContextTo
 
     handleMinMaxValue(type: 'min' | 'max') {
         if (type === 'min' && this.min() !== undefined) {
-            this.value.set(this.clampInputValue(this.min()));
+            this.value.set(this.clampInputValue(this.min()!));
         } else if (type === 'max' && this.max() !== undefined) {
-            this.value.set(this.clampInputValue(this.max()));
+            this.value.set(this.clampInputValue(this.max()!));
         }
     }
 
