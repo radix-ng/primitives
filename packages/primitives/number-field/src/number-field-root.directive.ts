@@ -25,6 +25,8 @@ export class RdxNumberFieldRootDirective implements OnInit, NumberFieldContextTo
 
     readonly stepSnapping = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    readonly disableWheelChange = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
     readonly locale = input<string>('en');
 
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });

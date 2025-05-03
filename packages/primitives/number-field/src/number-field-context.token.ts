@@ -9,6 +9,7 @@ export interface NumberFieldContextToken {
     textValue: Signal<any>;
     onInputElement: (el: HTMLInputElement) => void;
     disabled: InputSignalWithTransform<boolean, BooleanInput>;
+    disableWheelChange: InputSignalWithTransform<boolean, BooleanInput>;
     handleIncrease: (multiplier?: number) => void;
     handleDecrease: (multiplier?: number) => void;
     applyInputValue: (val: string) => void;

@@ -1,4 +1,5 @@
 import { Directive, effect, ElementRef, inject, OnInit, signal } from '@angular/core';
+import { getActiveElement } from '@radix-ng/primitives/core';
 import { injectNumberFieldRootContext } from './number-field-context.token';
 
 @Directive({
@@ -28,7 +29,8 @@ import { injectNumberFieldRootContext } from './number-field-context.token';
         '(keydown.home)': 'onKeydownHome($event)',
         '(keydown.end)': 'onKeydownEnd($event)',
         '(keydown.pageUp)': 'onKeydownPageUp($event)',
-        '(keydown.pageDown)': 'onKeydownPageDown($event)'
+        '(keydown.pageDown)': 'onKeydownPageDown($event)',
+        '(wheel)': 'onWheelEvent($event)'
     }
 })
 export class RdxNumberFieldInputDirective implements OnInit {
@@ -58,6 +60,30 @@ export class RdxNumberFieldInputDirective implements OnInit {
 
         if (!this.rootContext.validate(nextValue)) {
             event.preventDefault();
+        }
+    }
+
+    onWheelEvent(event: WheelEvent) {
+        if (this.rootContext.disableWheelChange()) {
+            return;
+        }
+
+        // only handle when in focus
+        if (event.target !== getActiveElement()) return;
+
+        // if on a trackpad, users can scroll in both X and Y at once, check the magnitude of the change
+        // if it's mostly in the X direction, then just return, the user probably doesn't mean to inc/dec
+        // this isn't perfect, events come in fast with small deltas and a part of the scroll may give a false indication
+        // especially if the user is scrolling near 45deg
+        if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) {
+            return;
+        }
+
+        event.preventDefault();
+        if (event.deltaY > 0) {
+            this.rootContext.handleIncrease();
+        } else if (event.deltaY < 0) {
+            this.rootContext.handleDecrease();
         }
     }
 
