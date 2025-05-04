@@ -1,3 +1,17 @@
+## 0.36.0 (2025-05-04)
+
+### 🚀 Features
+
+- **number-field:** new primitive Number Field ([#317](https://github.com/radix-ng/primitives/pull/317))
+
+### 🩹 Fixes
+
+- storybook markdown tables and exports for Number and Date fields ([e6bc99c](https://github.com/radix-ng/primitives/commit/e6bc99c))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 0.35.0 (2025-05-03)
 
 ### 🚀 Features
