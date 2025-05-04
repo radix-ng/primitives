@@ -1,27 +1,33 @@
-import { computed, Directive, ElementRef, inject, input, OnInit, output } from '@angular/core';
-import { RdxAvatarRootContext, RdxImageLoadingStatus } from './avatar-root.directive';
+import { isPlatformBrowser } from '@angular/common';
+import { Directive, inject, input, OnDestroy, OnInit, output, PLATFORM_ID, signal } from '@angular/core';
+import { watch } from '@radix-ng/primitives/core';
+import { injectAvatarRootContext } from './avatar-context.token';
+import { HTMLAttributeReferrerPolicy, RdxImageLoadingStatus } from './types';
 
 /**
  * @group Components
  */
 @Directive({
     selector: 'img[rdxAvatarImage]',
-    standalone: true,
     exportAs: 'rdxAvatarImage',
     host: {
-        '(load)': 'onLoad()',
-        '(error)': 'onError()',
-        '[style.display]': '(imageLoadingStatus() === "loaded")? null : "none"'
+        role: 'img',
+        '[attr.src]': 'src()',
+        '[attr.referrer-policy]': 'referrerPolicy()',
+        '[style.display]': '(rootContext.imageLoadingStatus() === "loaded") ? null : "none"'
     }
 })
-export class RdxAvatarImageDirective implements OnInit {
-    private readonly avatarRoot = inject(RdxAvatarRootContext);
-    private readonly elementRef = inject(ElementRef<HTMLImageElement>);
+export class RdxAvatarImageDirective implements OnInit, OnDestroy {
+    private readonly platformId = inject(PLATFORM_ID);
+
+    protected readonly rootContext = injectAvatarRootContext();
 
     /**
      * @group Props
      */
     readonly src = input<string>();
+
+    readonly referrerPolicy = input<HTMLAttributeReferrerPolicy>();
 
     /**
      * A callback providing information about the loading status of the image.
@@ -31,34 +37,51 @@ export class RdxAvatarImageDirective implements OnInit {
      */
     readonly onLoadingStatusChange = output<RdxImageLoadingStatus>();
 
-    protected readonly imageLoadingStatus = computed(() => this.avatarRoot.imageLoadingStatus());
+    private readonly isMounted = signal<boolean>(false);
 
-    ngOnInit(): void {
-        this.nativeElement.src = this.src();
+    private readonly loadingStatus = signal<RdxImageLoadingStatus>('idle');
 
-        if (!this.nativeElement.src) {
-            this.setImageStatus('error');
-        } else if (this.nativeElement.complete) {
-            this.setImageStatus('loaded');
+    constructor() {
+        const updateStatus = (status: RdxImageLoadingStatus) => () => {
+            if (this.isMounted()) {
+                this.loadingStatus.set(status);
+            }
+        };
+
+        if (isPlatformBrowser(this.platformId)) {
+            watch([this.src, this.referrerPolicy], ([src, referrer]) => {
+                if (this.isMounted()) {
+                    if (!src) {
+                        this.loadingStatus.set('error');
+                    } else {
+                        const image = new window.Image();
+                        this.loadingStatus.set('loading');
+                        image.onload = updateStatus('loaded');
+                        image.onerror = updateStatus('error');
+                        image.src = src;
+                        if (referrer) {
+                            image.referrerPolicy = referrer;
+                        }
+                    }
+                }
+            });
+
+            watch([this.loadingStatus], ([value]) => {
+                this.onLoadingStatusChange.emit(value);
+                if (value !== 'idle') {
+                    this.rootContext.imageLoadingStatus.set(value);
+                }
+            });
         } else {
-            this.setImageStatus('loading');
+            this.loadingStatus.set('idle');
         }
     }
 
-    onLoad() {
-        this.setImageStatus('loaded');
+    ngOnInit() {
+        this.isMounted.set(true);
     }
 
-    onError() {
-        this.setImageStatus('error');
-    }
-
-    private setImageStatus(status: RdxImageLoadingStatus) {
-        this.avatarRoot.imageLoadingStatus.set(status);
-        this.onLoadingStatusChange.emit(status);
-    }
-
-    get nativeElement() {
-        return this.elementRef.nativeElement;
+    ngOnDestroy() {
+        this.isMounted.set(false);
     }
 }

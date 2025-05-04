@@ -1,5 +1,6 @@
-import { computed, Directive, effect, inject, input, OnDestroy, signal } from '@angular/core';
-import { RdxAvatarRootContext } from './avatar-root.directive';
+import { Directive, input, signal } from '@angular/core';
+import { watch } from '@radix-ng/primitives/core';
+import { injectAvatarRootContext } from './avatar-context.token';
 import { injectAvatarConfig } from './avatar.config';
 
 /**
@@ -7,16 +8,15 @@ import { injectAvatarConfig } from './avatar.config';
  */
 @Directive({
     selector: 'span[rdxAvatarFallback]',
-    standalone: true,
     exportAs: 'rdxAvatarFallback',
     host: {
-        '[style.display]': 'shouldRender() ? null : "none" '
+        '[style.display]': 'canRender() && rootContext.imageLoadingStatus() !== "loaded" ? null : "none" '
     }
 })
-export class RdxAvatarFallbackDirective implements OnDestroy {
-    protected readonly avatarRoot = inject(RdxAvatarRootContext);
-
+export class RdxAvatarFallbackDirective {
     private readonly config = injectAvatarConfig();
+
+    protected readonly rootContext = injectAvatarRootContext();
 
     /**
      * Useful for delaying rendering so it only appears for those with slower connections.
@@ -26,42 +26,23 @@ export class RdxAvatarFallbackDirective implements OnDestroy {
      */
     readonly delayMs = input<number>(this.config.delayMs);
 
-    readonly shouldRender = computed(() => this.canRender() && this.avatarRoot.imageLoadingStatus() !== 'loaded');
-
     protected readonly canRender = signal(false);
-    private timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+    private timeout: ReturnType<typeof setTimeout> | undefined;
 
     constructor() {
-        effect(() => {
-            const status = this.avatarRoot.imageLoadingStatus();
-            if (status === 'loading') {
-                this.startDelayTimer();
-            } else {
-                this.clearDelayTimer();
-                this.canRender.set(true);
+        watch([this.rootContext.imageLoadingStatus], ([value]) => {
+            if (value === 'loading') {
+                this.canRender.set(false);
+                if (this.delayMs()) {
+                    this.timeout = setTimeout(() => {
+                        this.canRender.set(true);
+                        clearTimeout(this.timeout);
+                    }, this.delayMs());
+                } else {
+                    this.canRender.set(true);
+                }
             }
         });
-    }
-
-    private startDelayTimer() {
-        this.clearDelayTimer();
-        if (this.delayMs() > 0) {
-            this.timeoutId = setTimeout(() => {
-                this.canRender.set(true);
-            }, this.delayMs());
-        } else {
-            this.canRender.set(true);
-        }
-    }
-
-    private clearDelayTimer() {
-        if (this.timeoutId !== null) {
-            clearTimeout(this.timeoutId);
-            this.timeoutId = null;
-        }
-    }
-
-    ngOnDestroy() {
-        this.clearDelayTimer();
     }
 }
