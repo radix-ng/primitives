@@ -2,7 +2,6 @@ import { computed, Directive, input } from '@angular/core';
 import { injectCheckbox } from './checkbox.token';
 
 @Directive({
-    standalone: true,
     selector: 'button[rdxCheckboxButton]',
     host: {
         type: 'button',

@@ -11,9 +11,9 @@ import {
     Output
 } from '@angular/core';
 import {
-    RdxCheckboxDirective,
     RdxCheckboxIndicatorDirective,
-    RdxCheckboxInputDirective
+    RdxCheckboxInputDirective,
+    RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
 import { cn } from '@radix-ng/shadcn/core';
 import { cva } from 'class-variance-authority';
@@ -24,7 +24,7 @@ const variants = cva('flex');
 @Component({
     selector: 'sh-checkbox',
     imports: [
-        RdxCheckboxDirective,
+        RdxCheckboxRootDirective,
         RdxCheckboxIndicatorDirective,
         LucideAngularModule,
         RdxCheckboxInputDirective

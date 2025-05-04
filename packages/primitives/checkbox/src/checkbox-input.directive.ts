@@ -3,7 +3,6 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
 import { injectCheckbox } from './checkbox.token';
 
 @Directive({
-    standalone: true,
     selector: 'input[rdxCheckboxInput]',
     hostDirectives: [{ directive: RdxVisuallyHiddenInputDirective, inputs: ['feature: "fully-hidden"'] }],
     host: {

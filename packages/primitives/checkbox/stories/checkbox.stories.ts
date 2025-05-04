@@ -3,7 +3,7 @@ import { Check, LucideAngularModule, Minus } from 'lucide-angular';
 import { RdxLabelDirective } from '../../label';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input.directive';
-import { RdxCheckboxDirective } from '../src/checkbox.directive';
+import { RdxCheckboxRootDirective } from '../src/checkbox.directive';
 import { CheckboxReactiveFormsExampleComponent } from './checkbox-group.component';
 import { CheckboxIndeterminateComponent } from './checkbox-indeterminate.component';
 
@@ -15,7 +15,7 @@ export default {
         moduleMetadata({
             imports: [
                 RdxLabelDirective,
-                RdxCheckboxDirective,
+                RdxCheckboxRootDirective,
                 RdxCheckboxIndicatorDirective,
                 RdxCheckboxInputDirective,
                 LucideAngularModule,

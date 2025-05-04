@@ -5,7 +5,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { LucideAngularModule } from 'lucide-angular';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input.directive';
-import { RdxCheckboxDirective } from '../src/checkbox.directive';
+import { RdxCheckboxRootDirective } from '../src/checkbox.directive';
 
 @Component({
     selector: 'checkbox-groups-forms-example',
@@ -62,7 +62,7 @@ import { RdxCheckboxDirective } from '../src/checkbox.directive';
         ReactiveFormsModule,
         JsonPipe,
         RdxLabelDirective,
-        RdxCheckboxDirective,
+        RdxCheckboxRootDirective,
         RdxCheckboxIndicatorDirective,
         LucideAngularModule,
         RdxCheckboxInputDirective

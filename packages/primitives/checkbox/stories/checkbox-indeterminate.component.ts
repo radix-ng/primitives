@@ -4,14 +4,14 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { LucideAngularModule } from 'lucide-angular';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input.directive';
-import { RdxCheckboxDirective } from '../src/checkbox.directive';
+import { RdxCheckboxRootDirective } from '../src/checkbox.directive';
 
 @Component({
     selector: 'checkbox-indeterminate-example',
     imports: [
         FormsModule,
         RdxLabelDirective,
-        RdxCheckboxDirective,
+        RdxCheckboxRootDirective,
         RdxCheckboxIndicatorDirective,
         LucideAngularModule,
         RdxCheckboxInputDirective

@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, Component, model } from '@angular/core';
 import {
     RdxCheckboxButtonDirective,
-    RdxCheckboxDirective,
-    RdxCheckboxIndicatorDirective
+    RdxCheckboxIndicatorDirective,
+    RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
 
 @Component({
     selector: 'app-checkbox',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [RdxCheckboxDirective, RdxCheckboxButtonDirective, RdxCheckboxIndicatorDirective],
+    imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective, RdxCheckboxIndicatorDirective],
     template: `
         <div [checked]="checked()" (checkedChange)="onChange($event)" rdxCheckboxRoot>
             <button rdxCheckboxButton>

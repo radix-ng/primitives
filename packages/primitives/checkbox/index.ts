@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RdxCheckboxButtonDirective } from './src/checkbox-button.directive';
 import { RdxCheckboxIndicatorDirective } from './src/checkbox-indicator.directive';
 import { RdxCheckboxInputDirective } from './src/checkbox-input.directive';
-import { RdxCheckboxDirective } from './src/checkbox.directive';
+import { RdxCheckboxRootDirective } from './src/checkbox.directive';
 
 export * from './src/checkbox-button.directive';
 export * from './src/checkbox-indicator.directive';
@@ -13,7 +13,7 @@ export * from './src/checkbox.token';
 
 const _imports = [
     RdxCheckboxInputDirective,
-    RdxCheckboxDirective,
+    RdxCheckboxRootDirective,
     RdxCheckboxButtonDirective,
     RdxCheckboxIndicatorDirective
 ];

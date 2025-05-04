@@ -1,6 +1,6 @@
 import { booleanAttribute, Directive, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
-import { provideValueAccessor } from '@radix-ng/primitives/core';
+import { provideToken, provideValueAccessor } from '@radix-ng/primitives/core';
 import { RdxCheckboxToken } from './checkbox.token';
 
 export type CheckboxState = 'unchecked' | 'checked' | 'indeterminate';
@@ -11,8 +11,8 @@ export type CheckboxState = 'unchecked' | 'checked' | 'indeterminate';
 @Directive({
     selector: '[rdxCheckboxRoot]',
     providers: [
-        { provide: RdxCheckboxToken, useExisting: RdxCheckboxDirective },
-        provideValueAccessor(RdxCheckboxDirective)],
+        provideToken(RdxCheckboxToken, RdxCheckboxRootDirective),
+        provideValueAccessor(RdxCheckboxRootDirective)],
     host: {
         '[disabled]': 'disabled',
         '[attr.data-disabled]': 'disabled ? "" : null',
@@ -23,7 +23,7 @@ export type CheckboxState = 'unchecked' | 'checked' | 'indeterminate';
         '(blur)': 'onBlur()'
     }
 })
-export class RdxCheckboxDirective implements ControlValueAccessor, OnChanges {
+export class RdxCheckboxRootDirective implements ControlValueAccessor, OnChanges {
     /**
      * The controlled checked state of the checkbox. Must be used in conjunction with onCheckedChange.
      * @group Props

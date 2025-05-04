@@ -3,7 +3,6 @@ import { injectCheckbox } from './checkbox.token';
 
 @Directive({
     selector: '[rdxCheckboxIndicator]',
-    standalone: true,
     host: {
         '[style.pointer-events]': '"none"',
         '[attr.aria-checked]': 'checkbox.indeterminate ? "mixed" : checkbox.checked',
