@@ -78,3 +78,19 @@ Import all parts and piece them together.
 `RdxNumberFieldDecrementDirective` The button that decreases the value.
 
 <ArgTypes of={RdxNumberFieldDecrementDirective} />
+
+## Accessibility
+
+Adheres to the [Spinbutton WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/spinbutton/).
+
+### Keyboard Interactions
+
+| Key      | Description                    |
+|----------|--------------------------------|
+| Arrow Up | Increase the value |
+| Arrow Down    | Decrease the value |
+| Page Up    | Increase the value by scale of 10 |
+| Page Down    | Decrease the value by scale of 10 |
+| Home    | Set value to minimum (if `min` is provided) |
+| End    | Set value to maximum (if `max` is provided) |
+
