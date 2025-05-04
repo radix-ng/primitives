@@ -1,0 +1,209 @@
+---
+title: Numbers
+slug: numbers
+section: overview
+description: .
+---
+
+# Numbers and Currencies
+
+The [@internationalized/number](https://react-spectrum.adobe.com/internationalized/number/index.html) package provides tools for formatting numbers,
+currencies, and units in a locale-aware way. It builds on the native `Intl.NumberFormat` API while adding additional features and fixing inconsistencies across browsers.
+
+## Installation
+
+```bash
+npm install @internationalized/number
+```
+
+## NumberFormatter
+
+The `NumberFormatter` class is the primary way to format numbers, currencies, and units.
+
+### Basic Number Formatting
+
+```ts
+import { NumberFormatter } from "@internationalized/number";
+
+const formatter = new NumberFormatter("en-US", {
+  style: "decimal", // "decimal" | "percent" | "currency" | "unit"
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+console.log(formatter.format(1234.567)); // "1,234.57"
+```
+
+### Currency Formatting
+
+```ts
+const currencyFormatter = new NumberFormatter("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
+console.log(currencyFormatter.format(1234.56)); // "$1,234.56"
+```
+
+### Percentage Formatting
+
+```ts
+const percentFormatter = new NumberFormatter("en-US", {
+  style: "percent",
+  maximumFractionDigits: 1,
+});
+
+console.log(percentFormatter.format(0.456)); // "45.6%"
+```
+
+### Unit Formatting
+
+```ts
+const unitFormatter = new NumberFormatter("en-US", {
+  style: "unit",
+  unit: "kilometer-per-hour",
+});
+
+console.log(unitFormatter.format(60)); // "60 km/h"
+```
+
+## NumberParser
+
+The NumberParser class helps parse user input into numbers while respecting locale-specific formatting (e.g., decimal separators).
+
+```ts
+import { NumberParser } from "@internationalized/number";
+
+const parser = new NumberParser("en-US");
+console.log(parser.parse("1,234.56")); // 1234.56
+
+const germanParser = new NumberParser("de-DE");
+console.log(germanParser.parse("1.234,56")); // 1234.56 (in German, comma is the decimal separator)
+```
+
+## Number Utilities
+
+### NumberFormatOptions
+
+The package provides TypeScript types for number formatting options:
+
+```ts
+import type { NumberFormatOptions } from "@internationalized/number";
+
+const options: NumberFormatOptions = {
+  style: "currency",
+  currency: "EUR",
+  currencyDisplay: "symbol", // "symbol" | "narrowSymbol" | "code" | "name"
+};
+```
+
+### Currency & Unit Types
+
+Predefined types for supported currencies and units:
+
+```ts
+import type { Currency, Unit } from "@internationalized/number";
+
+const currency: Currency = "JPY"; // Autocomplete for supported currencies
+const unit: Unit = "kilogram";    // Autocomplete for supported units
+```
+
+## Common Use Cases
+
+### Formatting User Input
+
+```ts
+const formatter = new NumberFormatter("en-US", { style: "decimal" });
+const parser = new NumberParser("en-US");
+
+function formatInput(value: string) {
+  const number = parser.parse(value);
+  return isNaN(number) ? "" : formatter.format(number);
+}
+
+console.log(formatInput("1234.567")); // "1,234.567"
+```
+
+### Dynamic Currency Display
+
+```ts
+function formatCurrency(value: number, currency: string, locale: string) {
+  const formatter = new NumberFormatter(locale, {
+    style: "currency",
+    currency,
+  });
+  return formatter.format(value);
+}
+
+console.log(formatCurrency(99.99, "EUR", "fr-FR")); // "99,99 €"
+console.log(formatCurrency(99.99, "JPY", "ja-JP")); // "￥100" (Yen has no decimals)
+```
+
+### Localized Unit Conversion
+
+```ts
+function formatSpeed(speedKmh: number, locale: string) {
+  const formatter = new NumberFormatter(locale, {
+    style: "unit",
+    unit: "kilometer-per-hour",
+  });
+  return formatter.format(speedKmh);
+}
+
+console.log(formatSpeed(60, "en-US")); // "60 km/h"
+console.log(formatSpeed(60, "de-DE")); // "60 km/h" (but formatted with German conventions)
+```
+
+## Common Gotchas
+
+1. Locale-Specific Formatting:
+ - Decimal and grouping separators vary by locale (1,234.56 vs 1.234,56).
+ - Always use NumberParser when reading user input.
+2. Currency Rounding:
+ - Some currencies (like JPY) don’t use decimals.
+3. Performance:
+- Reuse NumberFormatter instances instead of creating new ones in render loops.
+4. Unit Variations:
+- Some units may display differently in certain locales (e.g., "L" vs "ℓ" for liters).
+5. Fallback Locales:
+- If a locale isn’t supported, the browser may fall back to a default.
+
+## Advanced Usage
+
+### Custom Formatting with NumberFormatOptions
+
+```ts
+const customFormatter = new NumberFormatter("en-US", {
+  style: "currency",
+  currency: "USD",
+  currencyDisplay: "narrowSymbol", // "$" instead of "US$"
+  notation: "compact", // "compact" | "scientific" | "engineering"
+  compactDisplay: "short", // "short" | "long"
+});
+
+console.log(customFormatter.format(1_000_000)); // "$1M"
+```
+
+### Sign Display Options
+
+```ts
+const accountingFormatter = new NumberFormatter("en-US", {
+  style: "currency",
+  currency: "USD",
+  signDisplay: "exceptZero", // "auto" | "never" | "always" | "exceptZero"
+});
+
+console.log(accountingFormatter.format(100)); // "+$100.00"
+console.log(accountingFormatter.format(0));   // "$0.00"
+```
+
+### Range Formatting
+
+```ts
+const rangeFormatter = new NumberFormatter("en-US", {
+  style: "currency",
+  currency: "EUR",
+});
+
+console.log(rangeFormatter.formatRange(100, 200)); // "€100.00 – €200.00"
+```

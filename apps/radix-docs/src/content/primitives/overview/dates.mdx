@@ -36,11 +36,9 @@ These objects are immutable and provide information about the type of date they 
 
 The `DateValue` is a union of the following three types:
 
-| Type               | Description                 | Example                                          |
-|--------------------|-----------------------------|--------------------------------------------------|
-| `CalendarDate`     | Date without time component | `2024-07-10`                                     |
-| `CalendarDateTime` | Date with time              | `2024-07-10T12:30:00`                            |
-| `ZonedDateTime`    | Date with time and timezone | `2024-07-10T21:00:00:00-04:00[America/New_York]` |
+- `CalendarDate`: A date with no time component, such as `2023-10-11`.
+- `CalendarDateTime`: A date with a time component, but without a timezone, such as `2023-10-11T12:30:00`.
+- `ZonedDateTime`: A date with a time component and a timezone, such as `2023-10-11T21:00:00:00-04:00[America/New_York]`.
 
 Using these strongly typed objects allows components to adapt appropriately to the date type you provide.
 
