@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 
 import {
-    RdxCheckboxDirective,
     RdxCheckboxIndicatorDirective,
-    RdxCheckboxInputDirective
+    RdxCheckboxInputDirective,
+    RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
 
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
@@ -14,7 +14,7 @@ import { Check, LucideAngularModule } from 'lucide-angular';
     standalone: true,
     imports: [
         RdxLabelDirective,
-        RdxCheckboxDirective,
+        RdxCheckboxRootDirective,
         RdxCheckboxIndicatorDirective,
         RdxCheckboxInputDirective,
         LucideAngularModule
