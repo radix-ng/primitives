@@ -23,7 +23,8 @@
     },
     "devDependencies": {
         "@angular-devkit/schematics": "^19.2.5",
-        "@internationalized/date": "^3.7.0"
+        "@internationalized/date": "^3.7.0",
+        "@internationalized/number": "^3.6.1"
     },
     "schematics": "./schematics/collection.json",
     "sideEffects": false,

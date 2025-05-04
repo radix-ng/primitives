@@ -1,0 +1,48 @@
+:host {
+    button,
+    input {
+        all: unset;
+    }
+}
+
+.NumberFieldWrapper {
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    border: 1px solid;
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    height: 2.25rem;
+}
+
+.NumberFieldWrapper:hover {
+    background-color: #fafafa;
+}
+
+.NumberFieldWrapper:focus-within {
+    box-shadow: 0 0 0 2px #1c1917;
+}
+
+.NumberFieldNumber {
+    background-color: transparent;
+    width: 5rem;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    padding: 0.25rem;
+}
+
+.NumberFieldNumber:focus {
+    outline: none;
+}
+
+.ButtonField {
+    padding: 0.5rem;
+    cursor: pointer;
+    background-color: transparent;
+    background-image: none;
+}
+
+.ButtonField:disabled {
+    opacity: 0.2;
+}

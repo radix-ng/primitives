@@ -1,0 +1,96 @@
+import {ArgTypes, Canvas, Meta} from "@storybook/blocks";
+import * as Stories from './number-field.stories';
+import {RdxNumberFieldRootDirective} from "../src/number-field-root.directive";
+import {RdxNumberFieldInputDirective} from "../src/number-field-input.directive";
+import {RdxNumberFieldDecrementDirective} from "../src/number-field-decrement.directive";
+import {RdxNumberFieldIncrementDirective} from "../src/number-field-increment.directive";
+
+<Meta title="Primitives/Number Field" />
+
+# Number Field
+
+#### A number field allows a user to enter a number and increment or decrement the value using stepper buttons.
+
+<Canvas sourceState="hidden" of={Stories.Default} />
+
+## Features
+
+- ✅ Full keyboard navigation.
+- ✅ Can be controlled or uncontrolled.
+- ✅ Support button hold and wheel event.
+- ✅ Support numbering systems in different locale.
+- ✅ Customizable formatting.
+
+## Preface
+
+The component depends on the [@internationalized/number](https://react-spectrum.adobe.com/internationalized/number/index.html).
+
+Numbers are represented in many different ways by cultures around the world. This includes differences in currency symbols, units,
+decimal points, grouping separators, and even digits themselves.
+When building applications that support users around the world, it is important to handle these aspects correctly for each locale.
+The `@internationalized/number` package provides a utilities to format and parse numbers according to locale expectations.
+
+## Installation
+
+Install the date package.
+
+```bash
+npm install @internationalized/number
+```
+
+Install the component from your command line.
+
+```bash
+npm install @radix-ng/primitives
+```
+
+## Anatomy
+Import all parts and piece them together.
+
+```html
+<div rdxNumberFieldRoot>
+    <button rdxNumberFieldDecrement></button>
+    <input rdxNumberFieldInput />
+    <button rdxNumberFieldDecrement></button>
+</div>
+```
+
+## API Reference
+
+### Root
+
+`RdxNumberFieldRootDirective` Contains all the parts of a number field. An input will also render when used within a form to ensure events propagate correctly.
+
+<ArgTypes of={RdxNumberFieldRootDirective} />
+
+### Input
+
+`RdxNumberFieldInputDirective` The input component that renders the text value based on value and format options.
+
+### Increment
+
+`RdxNumberFieldIncrementDirective` The button that increases the value.
+
+<ArgTypes of={RdxNumberFieldIncrementDirective} />
+
+### Decrement
+
+`RdxNumberFieldDecrementDirective` The button that decreases the value.
+
+<ArgTypes of={RdxNumberFieldDecrementDirective} />
+
+## Accessibility
+
+Adheres to the [Spinbutton WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/spinbutton/).
+
+### Keyboard Interactions
+
+| Key      | Description                    |
+|----------|--------------------------------|
+| Arrow Up | Increase the value |
+| Arrow Down    | Decrease the value |
+| Page Up    | Increase the value by scale of 10 |
+| Page Down    | Decrease the value by scale of 10 |
+| Home    | Set value to minimum (if `min` is provided) |
+| End    | Set value to maximum (if `max` is provided) |
+
