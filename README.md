@@ -22,13 +22,15 @@ Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/cate
 
 - [sb-primitives.radix-ng.com](https://sb-primitives.radix-ng.com/) – Storybook
 
+## OriginUI Angular
+
+- [OriginUI](https://originui-ng.com/)
+
 ## Showcases
 
 1. [Taxonomy](https://github.com/shadcn-ui/taxonomy) build with AnalogJS – [https://primitives-taxonomy.vercel.app/](https://primitives-taxonomy.vercel.app/)
 2. [shadcn/ui blocks](https://ui.shadcn.com/blocks) - [https://blocks.shadcn-ng.com/](https://blocks.shadcn-ng.com/)
-3. [OriginUI](https://origin-ng.com/) Angular
-4. shadcn/ui – [ui.adrianub.dev](https://ui.adrianub.dev/)
-5. RadixUI Components ...'soon'
+3. shadcn/ui – [ui.adrianub.dev](https://ui.adrianub.dev/)
 
 ## Project structure
 
@@ -83,10 +85,13 @@ Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/cate
 
 ### Other Primitives
 
-| Primitive  | Description | Status |
-| ---------- | ----------- | ------ |
-| Pagination |             | ✅     |
-| Stepper    |             | ✅     |
+| Primitive    | Description | Status |
+| ------------ | ----------- | ------ |
+| Calendar     |             | ✅     |
+| Date Field   |             | ✅     |
+| Number Field |             | ✅     |
+| Pagination   |             | ✅     |
+| Stepper      |             | ✅     |
 
 **Status Legend**
 ✅ Completed
