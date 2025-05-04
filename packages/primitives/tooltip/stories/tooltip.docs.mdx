@@ -109,13 +109,9 @@ Contains all the parts of a tooltip.
 
 The button that toggles the tooltip. By default, the TooltipContent will position itself against the trigger.
 
-<Markdown>
-{`
-| Data attribute | Value          |
-|----------------|----------------|
-| [data-state]   | <code>"closed" | "open" (type RdxTooltipState)</code>
-`}
-</Markdown>
+| Data attribute | Value                                                  |
+|----------------|--------------------------------------------------------|
+| [data-state]   | <code>"closed" or "open" (type RdxTooltipState)</code> |
 
 ### Anchor
 `RdxTooltipAnchorDirective`
@@ -136,15 +132,11 @@ A component with the content attributes that are necessary to run animations.
 
 <ArgTypes of={RdxTooltipContentAttributesComponent} />
 
-<Markdown>
-{`
-| Data attribute | Value          |
-|----------------|----------------|
-| [data-state]   | <code>"closed" | "open" (enum RdxTooltipState)</code>
-| [data-side]    | <code>"left"   | "right" | "bottom" | "top" (enum RdxPositionSide)</code>
-| [data-align]   | <code>"start"  | "end" | "center" (enum RdxPositionAlign)</code>
-`}
-</Markdown>
+| Data attribute | Value                                                                        |
+|----------------|------------------------------------------------------------------------------|
+| [data-state]   | <code>"closed" or "open" (enum RdxTooltipState)</code>                       |
+| [data-side]    | <code>"left"   or "right" or "bottom" or "top" (enum RdxPositionSide)</code> |
+| [data-align]   | <code>"start"  or "end" or "center" (enum RdxPositionAlign)</code>           |
 
 ### Arrow
 `RdxTooltipArrowDirective`

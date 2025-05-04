@@ -57,13 +57,9 @@ import {
 
 `RdxTabsListDirective`
 
-<Markdown>
-    {`
-| Data attribute | Value          |
-|----------------|----------------|
-| [data-orientation]   | <code>"vertical" | "horizontal"</code>
-`}
-</Markdown>
+| Data attribute     | Value                                   |
+|--------------------|-----------------------------------------|
+| [data-orientation] | <code>"vertical" or "horizontal"</code> |
 
 ### TabsTrigger
 
@@ -92,16 +88,12 @@ state attribute and **aria-controls** to refer to the corresponding tab content 
 The content element of each tab has **tabpanel** role, an id to match the **aria-controls** of the header and **aria-labelledby**
 reference to the header as the accessible name.
 
-<Markdown>
-    {`
-  | Key | Description |
-  | ----------- | --------- |
-  | Tab       | When focus moves onto the tabs, focuses the active trigger. When a trigger is focused, moves focus to the active content.        |
-  | ArrowDown       | Moves focus to the next trigger depending on **orientation** and activates its associated content.    |
-  | ArrowRight | Moves focus to the next trigger depending on **orientation** and activates its associated content. |
-  | ArrowUp | Moves focus to the previous trigger depending on **orientation** and activates its associated content. |
-  | ArrowLeft | Moves focus to the previous trigger depending on **orientation** and activates its associated content. |
-  | Home | Moves focus to the first trigger and activates its associated content. |
-  | End | Moves focus to the last trigger and activates its associated content. |
-  `}
-</Markdown>
+| Key          | Description                                                                                                               |
+|--------------|---------------------------------------------------------------------------------------------------------------------------|
+| `Tab`        | When focus moves onto the tabs, focuses the active trigger. When a trigger is focused, moves focus to the active content. |
+| `ArrowDown`  | Moves focus to the next trigger depending on **orientation** and activates its associated content.                        |
+| `ArrowRight` | Moves focus to the next trigger depending on **orientation** and activates its associated content.                        |
+| `ArrowUp`    | Moves focus to the previous trigger depending on **orientation** and activates its associated content.                    |
+| `ArrowLeft`  | Moves focus to the previous trigger depending on **orientation** and activates its associated content.                    |
+| `Home`       | Moves focus to the first trigger and activates its associated content.                                                    |
+| `End`        | Moves focus to the last trigger and activates its associated content.                                                     |

@@ -115,13 +115,9 @@ Contains all the parts of a popover.
 
 The button that toggles the popover. By default, the PopoverContent will position itself against the trigger.
 
-<Markdown>
-{`
-| Data attribute | Value          |
-|----------------|----------------|
-| [data-state]   | <code>"closed" | "open" (type RdxPopoverState)</code>
-`}
-</Markdown>
+| Data attribute | Value                                                  |
+|----------------|--------------------------------------------------------|
+| [data-state]   | <code>`closed` or `open` (type RdxPopoverState)</code> |
 
 ### Anchor
 `RdxPopoverAnchorDirective`
@@ -142,15 +138,11 @@ A component with the content attributes that are necessary to run animations.
 
 <ArgTypes of={RdxPopoverContentAttributesComponent} />
 
-<Markdown>
-{`
-| Data attribute | Value          |
-|----------------|----------------|
-| [data-state]   | <code>"closed" | "open" (enum RdxPopoverState)</code>
-| [data-side]    | <code>"left"   | "right" | "bottom" | "top" (enum RdxPositionSide)</code>
-| [data-align]   | <code>"start"  | "end" | "center" (enum RdxPositionAlign)</code>
-`}
-</Markdown>
+| Data attribute | Value                                                                         |
+|----------------|-------------------------------------------------------------------------------|
+| [data-state]   | <code>"closed" or "open" (enum RdxPopoverState)</code>                        |
+| [data-side]    | <code>"left"   or "right"  or "bottom" or "top" (enum RdxPositionSide)</code> |
+| [data-align]   | <code>"start"  or "end"  or "center" (enum RdxPositionAlign)</code>           |
 
 ### Arrow
 `RdxPopoverArrowDirective`

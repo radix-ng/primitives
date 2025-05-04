@@ -109,13 +109,9 @@ Contains all the parts of a hover-card.
 
 The button that toggles the hover-card. By default, the HoverCardContent will position itself against the trigger.
 
-<Markdown>
-{`
-| Data attribute | Value          |
-|----------------|----------------|
-| [data-state]   | <code>"closed" | "open" (type RdxHoverCardState)</code>
-`}
-</Markdown>
+| Data attribute | Value                                                  |
+|----------------|--------------------------------------------------------|
+| [data-state]   | <code>`closed` or `open` (type RdxHoverCardState)</code> |
 
 ### Anchor
 `RdxHoverCardAnchorDirective`
@@ -136,15 +132,11 @@ A component with the content attributes that are necessary to run animations.
 
 <ArgTypes of={RdxHoverCardContentAttributesComponent} />
 
-<Markdown>
-{`
-| Data attribute | Value          |
-|----------------|----------------|
-| [data-state]   | <code>"closed" | "open" (enum RdxHoverCardState)</code>
-| [data-side]    | <code>"left"   | "right" | "bottom" | "top" (enum RdxPositionSide)</code>
-| [data-align]   | <code>"start"  | "end" | "center" (enum RdxPositionAlign)</code>
-`}
-</Markdown>
+| Data attribute | Value                                                                        |
+|----------------|------------------------------------------------------------------------------|
+| [data-state]   | <code>`closed` or  `open` (enum RdxHoverCardState)</code>                    |
+| [data-side]    | <code>`left`   or `right` or `bottom` or `top` (enum RdxPositionSide)</code> |
+| [data-align]   | <code>`start`  or `end` or `center` (enum RdxPositionAlign)</code>           |
 
 ### Arrow
 `RdxHoverCardArrowDirective`
