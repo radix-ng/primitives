@@ -107,6 +107,11 @@ const docsConfig = {
                             label: 'Storybook'
                         },
                         {
+                            name: 'Number Field',
+                            url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-number-field--docs',
+                            label: 'Storybook'
+                        },
+                        {
                             name: 'Pagination',
                             url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-pagination--docs',
                             label: 'Storybook'
