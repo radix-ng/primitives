@@ -52,21 +52,21 @@ export class RdxCropperRootDirective implements CropperContextToken {
     readonly zoomChange = output<number>();
 
     // State signals
-    readonly imgWidth = signal<number | null>(null);
-    readonly imgHeight = signal<number | null>(null);
-    readonly cropAreaWidth = signal(0);
-    readonly cropAreaHeight = signal(0);
-    readonly imageWrapperWidth = signal(0);
-    readonly imageWrapperHeight = signal(0);
-    readonly offsetX = signal(0);
-    readonly offsetY = signal(0);
-    readonly internalZoom = signal(this.minZoom());
-    readonly isDragging = signal(false);
+    private readonly imgWidth = signal<number | null>(null);
+    private readonly imgHeight = signal<number | null>(null);
+    private readonly cropAreaWidth = signal(0);
+    private readonly cropAreaHeight = signal(0);
+    private readonly imageWrapperWidth = signal(0);
+    private readonly imageWrapperHeight = signal(0);
+    private readonly offsetX = signal(0);
+    private readonly offsetY = signal(0);
+    private readonly internalZoom = signal(this.minZoom());
+    private readonly isDragging = signal(false);
     readonly descriptionId = signal(`cropper-${Math.random().toString(36).substring(2, 9)}`);
 
-    readonly isZoomControlled = computed(() => this.zoom() !== undefined);
-    readonly effectiveZoom = computed(() => (this.isZoomControlled() ? this.zoom()! : this.internalZoom()));
-    readonly zoomValueText = computed(() => {
+    private readonly isZoomControlled = computed(() => this.zoom() !== undefined);
+    protected readonly effectiveZoom = computed(() => (this.isZoomControlled() ? this.zoom()! : this.internalZoom()));
+    protected readonly zoomValueText = computed(() => {
         const zoomPercent = this.effectiveZoom() * 100;
         return `Zoom: ${zoomPercent.toFixed(0)}%`;
     });
@@ -404,6 +404,9 @@ export class RdxCropperRootDirective implements CropperContextToken {
         this.cropChange.emit(finalData);
     }
 
+    /**
+     * @ignore
+     */
     onMouseDown(e: MouseEvent): void {
         if (e.button !== 0) return;
         e.preventDefault();
@@ -566,6 +569,9 @@ export class RdxCropperRootDirective implements CropperContextToken {
         }
     }
 
+    /**
+     * @ignore
+     */
     onKeyDown(e: KeyboardEvent): void {
         if (this.imageWrapperWidth() <= 0) return;
 
@@ -605,12 +611,18 @@ export class RdxCropperRootDirective implements CropperContextToken {
         }
     }
 
+    /**
+     * @ignore
+     */
     onKeyUp(e: KeyboardEvent): void {
         if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
             this.handleInteractionEnd();
         }
     }
 
+    /**
+     * @ignore
+     */
     getImageProps(): { [key: string]: any } {
         return {
             src: this.image(),
@@ -620,6 +632,9 @@ export class RdxCropperRootDirective implements CropperContextToken {
         };
     }
 
+    /**
+     * @ignore
+     */
     getImageWrapperStyle(): Record<string, string> {
         const wrapperW = this.imageWrapperWidth();
         const wrapperH = this.imageWrapperHeight();
@@ -638,6 +653,9 @@ export class RdxCropperRootDirective implements CropperContextToken {
         };
     }
 
+    /**
+     * @ignore
+     */
     getCropAreaStyle(): Record<string, string> {
         return {
             width: `${this.cropAreaWidth()}px`,

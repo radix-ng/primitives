@@ -1,14 +1,14 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { RdxCropperCropAreaDirective } from '../src/cropper-crop-area.directive';
 import { RdxCropperDescriptionDirective } from '../src/cropper-description.directive';
-import { RdxCropperImageDirective } from '../src/cropper-image.directive';
+import { RdxCropperImageComponent } from '../src/cropper-image.component';
 import { RdxCropperRootDirective } from '../src/cropper-root.directive';
 
 @Component({
     selector: 'app-cropper-default',
     imports: [
         RdxCropperRootDirective,
-        RdxCropperImageDirective,
+        RdxCropperImageComponent,
         RdxCropperCropAreaDirective,
         RdxCropperDescriptionDirective
     ],
