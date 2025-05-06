@@ -1,0 +1,33 @@
+import {Canvas, Meta} from "@storybook/blocks";
+import * as Stories from './cropper.stories';
+
+<Meta title="Primitives/Cropper" />
+
+# Cropper
+
+#### Headless component for interactive image cropping — inspired by the experience on [X](https://x.com/)
+
+Based on React version [image-cropper](https://github.com/origin-space/image-cropper)
+
+<Canvas sourceState="hidden" of={Stories.Default} />
+
+## Features
+
+- ✅ Interactive: Supports zooming (mouse wheel, pinch gesture) and panning (mouse drag, touch drag, arrow keys).
+- ✅ Aspect Ratio: Enforces a specified aspect ratio for the crop area.
+- ✅ Controlled/Uncontrolled: Manage zoom state internally or control it via props.
+- ✅ Crop Calculation: Outputs precise pixel coordinates of the cropped area relative to the original image.
+- ✅ Accessible: Designed with ARIA attributes and requires a description element for screen reader users.
+- ✅ Customizable: Control zoom limits, sensitivity, padding, keyboard steps, and apply custom styles.
+
+## Anatomy
+
+Import all parts and piece them together.
+
+```html
+<div rdxCropperRoot>
+    <div rdxCropperDescription></div>
+    <div rdxCropperImage></div>
+    <div rdxCropperCropArea></div>
+</div>
+```

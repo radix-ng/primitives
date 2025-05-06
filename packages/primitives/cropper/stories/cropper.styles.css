@@ -1,0 +1,53 @@
+.flex-column-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem; /* 2 * 0.25rem = 0.5rem */
+}
+
+.CropperRoot {
+    position: relative;
+    display: flex;
+    width: 100%;
+    cursor: move;
+    touch-action: none;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.CropperRoot:focus {
+    outline: none;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+.CropperImage {
+    pointer-events: none;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
+
+.CropArea {
+    pointer-events: none;
+    position: absolute;
+    border: 3px solid white;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.3);
+
+    :where([data-slot='cropper']:focus-visible) & {
+        box-shadow:
+            0 0 0 9999px rgba(0, 0, 0, 0.3),
+            0 0 0 3px rgba(255, 255, 255, 0.5);
+    }
+}
