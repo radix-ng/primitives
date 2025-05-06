@@ -7,6 +7,7 @@ import {
     Directive,
     effect,
     ElementRef,
+    inject,
     input,
     numberAttribute,
     output,
@@ -35,6 +36,7 @@ export type Area = { x: number; y: number; width: number; height: number };
     }
 })
 export class RdxCropperRootDirective implements CropperContextToken {
+    private readonly elementRef = inject(ElementRef<HTMLElement>);
     private readonly CROPPER_DESC_WARN_MESSAGE = `Warning: \`Cropper\` requires a description element for accessibility.`;
 
     readonly image = input.required<string>();
@@ -80,7 +82,7 @@ export class RdxCropperRootDirective implements CropperContextToken {
     private readonly isPinching = signal(false);
     private readonly hasWarned = signal(false);
 
-    constructor(private el: ElementRef<HTMLElement>) {
+    constructor() {
         afterNextRender(() => {
             this.initializeContainerDimensions();
         });
@@ -108,7 +110,7 @@ export class RdxCropperRootDirective implements CropperContextToken {
     }
 
     private initializeContainerDimensions() {
-        const element = this.el.nativeElement;
+        const element = this.elementRef.nativeElement;
         if (element && element.clientWidth > 0 && element.clientHeight > 0) {
             this.cropAreaWidth.set(Math.max(0, element.clientWidth - this.cropPadding() * 2));
             this.cropAreaHeight.set(Math.max(0, element.clientHeight - this.cropPadding() * 2));
@@ -157,7 +159,7 @@ export class RdxCropperRootDirective implements CropperContextToken {
 
     private setupDimensionsEffects(): void {
         effect(() => {
-            const element = this.el.nativeElement;
+            const element = this.elementRef.nativeElement;
             if (!element) return;
 
             const updateDimensions = (width: number, height: number) => {
@@ -352,7 +354,7 @@ export class RdxCropperRootDirective implements CropperContextToken {
     private setupAccessibilityWarningEffect(): void {
         effect(() => {
             const checkTimeout = setTimeout(() => {
-                if (this.el.nativeElement && !this.hasWarned()) {
+                if (this.elementRef.nativeElement && !this.hasWarned()) {
                     const hasDescription = document.getElementById(this.descriptionId());
                     if (!hasDescription) {
                         console.warn(this.CROPPER_DESC_WARN_MESSAGE);
@@ -367,7 +369,7 @@ export class RdxCropperRootDirective implements CropperContextToken {
 
     private setupEventListenersEffect(): void {
         effect((onCleanup) => {
-            const node = this.el.nativeElement;
+            const node = this.elementRef.nativeElement;
             if (!node) return;
 
             const options = { passive: false } as any;
@@ -435,7 +437,7 @@ export class RdxCropperRootDirective implements CropperContextToken {
     private handleWheel(e: WheelEvent): void {
         e.preventDefault();
         e.stopPropagation();
-        if (!this.el.nativeElement || this.imageWrapperWidth() <= 0 || this.imageWrapperHeight() <= 0) return;
+        if (!this.elementRef.nativeElement || this.imageWrapperWidth() <= 0 || this.imageWrapperHeight() <= 0) return;
 
         const currentZoom = this.latestZoom();
         const currentOffsetX = this.latestRestrictedOffset().x;
@@ -445,7 +447,7 @@ export class RdxCropperRootDirective implements CropperContextToken {
 
         if (clamp(targetZoom, this.minZoom(), this.maxZoom()) === currentZoom) return;
 
-        const rect = this.el.nativeElement.getBoundingClientRect();
+        const rect = this.elementRef.nativeElement.getBoundingClientRect();
         const pointerX = e.clientX - rect.left - rect.width / 2;
         const pointerY = e.clientY - rect.top - rect.height / 2;
         const imagePointX = (pointerX - currentOffsetX) / currentZoom;
@@ -520,7 +522,7 @@ export class RdxCropperRootDirective implements CropperContextToken {
             if (clamp(targetZoom, this.minZoom(), this.maxZoom()) === this.latestZoom()) return;
 
             const pinchCenter = this.getPinchCenter(touches);
-            const rect = this.el.nativeElement.getBoundingClientRect();
+            const rect = this.elementRef.nativeElement.getBoundingClientRect();
             const pinchCenterX = pinchCenter.x - rect.left - rect.width / 2;
             const pinchCenterY = pinchCenter.y - rect.top - rect.height / 2;
             const currentOffsetX = this.dragStartOffset().x;
