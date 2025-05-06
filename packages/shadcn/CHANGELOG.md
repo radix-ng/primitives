@@ -1,3 +1,17 @@
+## 0.11.12 (2025-05-06)
+
+### 🩹 Fixes
+
+- **checkbox:** rename to RootDirective, remove standalone flag ([722471c](https://github.com/radix-ng/primitives/commit/722471c))
+
+### 🧱 Updated Dependencies
+
+- Updated primitives to 0.37.0
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 0.11.11 (2025-05-04)
 
 ### 🧱 Updated Dependencies

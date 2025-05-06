@@ -1,3 +1,18 @@
+## 0.37.0 (2025-05-06)
+
+### 🚀 Features
+
+- **cropper:** new primitive Croppper ([#323](https://github.com/radix-ng/primitives/pull/323))
+- **avatar:** rewrite effects and fallback ([0b83729](https://github.com/radix-ng/primitives/commit/0b83729))
+
+### 🩹 Fixes
+
+- **checkbox:** rename to RootDirective, remove standalone flag ([722471c](https://github.com/radix-ng/primitives/commit/722471c))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 0.36.0 (2025-05-04)
 
 ### 🚀 Features
