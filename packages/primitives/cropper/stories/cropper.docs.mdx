@@ -1,0 +1,62 @@
+import {ArgTypes, Canvas, Meta} from "@storybook/blocks";
+import * as Stories from './cropper.stories';
+import {RdxCropperRootDirective} from "../src/cropper-root.directive";
+
+<Meta title="Primitives/Cropper" />
+
+# Cropper
+
+#### Headless component for interactive image cropping — inspired by the experience on [X](https://x.com/)
+
+Based on React version [image-cropper](https://github.com/origin-space/image-cropper)
+
+<Canvas sourceState="hidden" of={Stories.Default} />
+
+## Features
+
+- ✅ Interactive: Supports zooming (mouse wheel, pinch gesture) and panning (mouse drag, touch drag, arrow keys).
+- ✅ Aspect Ratio: Enforces a specified aspect ratio for the crop area.
+- ✅ Controlled/Uncontrolled: Manage zoom state internally or control it via props.
+- ✅ Crop Calculation: Outputs precise pixel coordinates of the cropped area relative to the original image.
+- ✅ Accessible: Designed with ARIA attributes and requires a description element for screen reader users.
+- ✅ Customizable: Control zoom limits, sensitivity, padding, keyboard steps, and apply custom styles.
+
+## Anatomy
+
+Import all parts and piece them together.
+
+```html
+<div rdxCropperRoot>
+    <div rdxCropperDescription></div>
+    <div rdxCropperImage></div>
+    <div rdxCropperCropArea></div>
+</div>
+```
+
+## API Reference
+
+### Root
+
+`RdxCropperRootDirective` The main container and controller. It handles logic, state, and interactions.
+
+<ArgTypes of={RdxCropperRootDirective} />
+
+### Description
+
+`RdxCropperDescriptionDirective` The description element for screen reader users.
+Renders a `<div>` intended for accessibility instructions. Its id is automatically linked via `aria-describedby` on the *Root* element.
+
+### Image
+
+`RdxCropperImageComponent` Renders the actual `<img>` tag. It's positioned and scaled by `rdxCropperRoot`.
+
+### Crop Area
+
+`RdxCropperCropAreaDirective` A simple `<div>` representing the visual crop area. You style this component to show the bounds.
+
+## Accessibility
+
+It is crucial to include a `CropperDescription` component within `CropperRoot`.
+This provides necessary context for screen reader users about how to interact with the cropper.
+If you don't provide one, a warning will appear in the console.
+You can visually hide the description using standard CSS techniques (e.g., an `sr-only` class).
