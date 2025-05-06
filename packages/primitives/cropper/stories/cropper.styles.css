@@ -51,3 +51,10 @@
             0 0 0 3px rgba(255, 255, 255, 0.5);
     }
 }
+
+.CropFormatted {
+    overflow: auto;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+    white-space: pre;
+}

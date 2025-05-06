@@ -1,5 +1,5 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { CropperDefault } from './cropper';
+import { CropperDefault, CropperWithData } from './cropper';
 
 const html = String.raw;
 
@@ -7,7 +7,7 @@ export default {
     title: 'Primitives/Cropper',
     decorators: [
         moduleMetadata({
-            imports: [CropperDefault]
+            imports: [CropperDefault, CropperWithData]
         }),
         componentWrapperDecorator(
             (story) => html`
@@ -31,6 +31,16 @@ export const Default: Story = {
         template: html`
             <div>
                 <app-cropper-default />
+            </div>
+        `
+    })
+};
+
+export const WithData: Story = {
+    render: () => ({
+        template: html`
+            <div>
+                <app-cropper-with-data />
             </div>
         `
     })

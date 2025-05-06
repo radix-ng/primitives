@@ -48,8 +48,8 @@ export class RdxCropperRootDirective implements CropperContextToken {
     readonly keyboardStep = input(10, { transform: numberAttribute });
     readonly zoom = input<number, NumberInput>(undefined, { transform: numberAttribute });
 
-    readonly cropChange = output<Area | null>();
-    readonly zoomChange = output<number>();
+    readonly onCropChange = output<Area | null>();
+    readonly onZoomChange = output<number>();
 
     // State signals
     private readonly imgWidth = signal<number | null>(null);
@@ -101,7 +101,7 @@ export class RdxCropperRootDirective implements CropperContextToken {
     private updateZoom(newZoomValue: number): number {
         const clampedZoom = clamp(newZoomValue, this.minZoom(), this.maxZoom());
 
-        this.zoomChange.emit(clampedZoom);
+        this.onZoomChange.emit(clampedZoom);
 
         if (!this.isZoomControlled()) {
             this.internalZoom.set(clampedZoom);
@@ -317,7 +317,9 @@ export class RdxCropperRootDirective implements CropperContextToken {
                     this.latestRestrictedOffset.set(restrictedInitial);
                     this.latestZoom.set(currentZoom);
 
-                    this.cropChange.emit(this.calculateCropData(restrictedInitial.x, restrictedInitial.y, currentZoom));
+                    this.onCropChange.emit(
+                        this.calculateCropData(restrictedInitial.x, restrictedInitial.y, currentZoom)
+                    );
 
                     this.isInitialSetupDone.set(true);
                 } else {
@@ -332,7 +334,9 @@ export class RdxCropperRootDirective implements CropperContextToken {
                         this.dragStartOffset.set(restrictedCurrent);
                     }
 
-                    this.cropChange.emit(this.calculateCropData(restrictedCurrent.x, restrictedCurrent.y, currentZoom));
+                    this.onCropChange.emit(
+                        this.calculateCropData(restrictedCurrent.x, restrictedCurrent.y, currentZoom)
+                    );
                 }
             } else {
                 this.isInitialSetupDone.set(false);
@@ -346,7 +350,7 @@ export class RdxCropperRootDirective implements CropperContextToken {
                 this.dragStartOffset.set({ x: 0, y: 0 });
                 this.latestRestrictedOffset.set({ x: 0, y: 0 });
                 this.latestZoom.set(currentZoom);
-                this.cropChange.emit(null);
+                this.onCropChange.emit(null);
             }
         });
     }
@@ -401,7 +405,7 @@ export class RdxCropperRootDirective implements CropperContextToken {
             this.latestRestrictedOffset().y,
             this.effectiveZoom()
         );
-        this.cropChange.emit(finalData);
+        this.onCropChange.emit(finalData);
     }
 
     /**
@@ -467,7 +471,7 @@ export class RdxCropperRootDirective implements CropperContextToken {
         this.latestRestrictedOffset.set(restrictedNewOffset);
 
         const finalData = this.calculateCropData(restrictedNewOffset.x, restrictedNewOffset.y, finalNewZoom);
-        this.cropChange.emit(finalData);
+        this.onCropChange.emit(finalData);
     }
 
     private getPinchDistance(touches: TouchList): number {
@@ -544,7 +548,7 @@ export class RdxCropperRootDirective implements CropperContextToken {
             this.latestRestrictedOffset.set(restrictedNewOffset);
 
             const finalData = this.calculateCropData(restrictedNewOffset.x, restrictedNewOffset.y, finalNewZoom);
-            this.cropChange.emit(finalData);
+            this.onCropChange.emit(finalData);
         }
     }
 
