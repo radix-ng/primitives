@@ -94,6 +94,11 @@ const docsConfig = {
                             url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-context-menu--docs',
                             label: 'Storybook'
                         },
+                        {
+                            name: 'Cropper',
+                            url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-cropper--docs',
+                            label: 'Storybook'
+                        },
                         { name: 'Dialog', url: '/primitives/components/dialog' },
                         { name: 'Dropdown Menu', url: '/primitives/components/dropdown-menu' },
                         { name: 'Label', url: '/primitives/components/label' },
