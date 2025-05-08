@@ -12,9 +12,7 @@
 Radix Primitives is a low-level UI component library with a focus on accessibility, customization and developer experience.
 You can use these components either as the base layer of your design system, or adopt them incrementally.
 
-Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/categories).
-
----
+## Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/categories).
 
 ## Documentation
 
