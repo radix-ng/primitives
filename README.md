@@ -22,15 +22,13 @@ Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/cate
 
 - [sb-primitives.radix-ng.com](https://sb-primitives.radix-ng.com/) – Storybook
 
-## OriginUI Angular
+## OriginUI
 
 - [OriginUI](https://originui-ng.com/)
 
-## Showcases
+## shadcn/ui
 
-1. [Taxonomy](https://github.com/shadcn-ui/taxonomy) build with AnalogJS – [https://primitives-taxonomy.vercel.app/](https://primitives-taxonomy.vercel.app/)
-2. [shadcn/ui blocks](https://ui.shadcn.com/blocks) - [https://blocks.shadcn-ng.com/](https://blocks.shadcn-ng.com/)
-3. shadcn/ui – [ui.adrianub.dev](https://ui.adrianub.dev/)
+- shadcn/ui – [ui.adrianub.dev](https://ui.adrianub.dev/)
 
 ## Project structure
 
@@ -39,13 +37,10 @@ Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/cate
 ├── apps
 │   ├── radix-docs         (documentation based on Astro)
 │   ├── radix-ssr-testing  (SSR test for unstyle primitives)
-│   ├── shadcn-docs        (docs for shadcn/ui, based on ng-doc, just for usage example)
-│   ├── showcase-taxonomy  (AnalogJS showcase Taxonomy app)
-│   └── storybook-radix
+│   └── radix-storybook
 │
 └── packages
     ├── components         (components based on primitives with custom styling)
-    ├── shadcn             (shadcn/ui just for usage example)
     └── primitives         (headless primitives UI without any styling)
 ```
 

@@ -80,15 +80,6 @@ jobs:
       - name: Build Components
         run: pnpm components:build
 
-      - name: Build shadcn
-        run: pnpm shadcn:build
-
-      - name: Build taxonomy
-        run: pnpm showcase-taxonomy:build
-
-      - name: Build dashboard
-        run: pnpm showcase-dashboard:build
-
   summary:
     if: ${{ always() }}
     needs: [lint, unit, builds]

@@ -72,11 +72,4 @@ yarn-debug.log*
 yarn-error.log*
 .yarn-integrity
 .idea
-dist
 esm
-
-
-# NgDoc files
-/ng-doc
-vite.config.*.timestamp*
-vitest.config.*.timestamp*

@@ -1,5 +1,5 @@
 import { Component, computed, signal } from '@angular/core';
-import { createCalendar, getLocalTimeZone, toCalendar, today } from '@internationalized/date';
+import { CalendarIdentifier, createCalendar, getLocalTimeZone, toCalendar, today } from '@internationalized/date';
 import { ChevronLeft, ChevronRight, LucideAngularModule } from 'lucide-angular';
 import { RdxCalendarCellTriggerDirective } from '../src/calendar-cell-trigger.directive';
 import { RdxCalendarGridHeadDirective } from '../src/calendar-grid-head.directive';
@@ -183,7 +183,9 @@ export class CalendarWithLocaleComponent {
         this.calendars.filter((c) => !this.preferredCalendars().some((p) => p!.key === c.key))
     );
 
-    readonly value = computed(() => toCalendar(today(getLocalTimeZone()), createCalendar(this.calendar())));
+    readonly value = computed(() =>
+        toCalendar(today(getLocalTimeZone()), createCalendar(this.calendar() as CalendarIdentifier))
+    );
 
     updateLocale(event: Event) {
         const newLocale = (event.target as HTMLSelectElement).value;

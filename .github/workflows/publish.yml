@@ -29,9 +29,6 @@ jobs:
       - name: Build Schematics
         run: pnpm primitives:build:schematics
 
-      - name: Build shadcn
-        run: pnpm shadcn:build
-
       - name: Publish package 📦
         run: npx nx release publish
         shell: bash

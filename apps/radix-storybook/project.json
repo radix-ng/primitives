@@ -1,5 +1,5 @@
 {
-    "name": "storybook-radix",
+    "name": "radix-storybook",
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
     "projectType": "application",
     "prefix": "app",
@@ -10,8 +10,8 @@
             "executor": "@storybook/angular:start-storybook",
             "options": {
                 "port": 4400,
-                "configDir": "apps/storybook-radix/.storybook",
-                "browserTarget": "storybook-radix:build-storybook",
+                "configDir": "apps/radix-storybook/.storybook",
+                "browserTarget": "radix-storybook:build-storybook",
                 "compodoc": true,
                 "compodocArgs": [
                     "-e",
@@ -22,7 +22,7 @@
                     "--disableInternal",
                     "--disableDependencies",
                     "-d",
-                    "apps/storybook-radix/.storybook"
+                    "apps/radix-storybook/.storybook"
                 ]
             },
             "configurations": {
@@ -35,9 +35,9 @@
             "executor": "@storybook/angular:build-storybook",
             "outputs": ["{options.outputDir}"],
             "options": {
-                "outputDir": "dist/storybook-radix",
-                "configDir": "apps/storybook-radix/.storybook",
-                "browserTarget": "storybook-radix:build-storybook",
+                "outputDir": "dist/radix-storybook",
+                "configDir": "apps/radix-storybook/.storybook",
+                "browserTarget": "radix-storybook:build-storybook",
                 "compodoc": true,
                 "compodocArgs": [
                     "-e",
@@ -48,10 +48,10 @@
                     "--disableInternal",
                     "--disableDependencies",
                     "-d",
-                    "apps/storybook-radix/.storybook"
+                    "apps/radix-storybook/.storybook"
                 ],
                 "styles": [
-                    "apps/storybook-radix/.storybook/main.scss",
+                    "apps/radix-storybook/.storybook/main.scss",
                     "@radix-ui/themes/styles.css",
                     "@angular/cdk/overlay-prebuilt.css",
                     "packages/primitives/dialog/stories/sheet/sheet.styles.scss"
@@ -69,19 +69,19 @@
         "test-storybook": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "test-storybook -c apps/storybook-radix/.storybook --url=http://localhost:4400"
+                "command": "test-storybook -c apps/radix-storybook/.storybook --url=http://localhost:4400"
             }
         },
         "static-storybook": {
             "executor": "@nx/web:file-server",
             "options": {
-                "buildTarget": "storybook-radix:build-storybook",
-                "staticFilePath": "dist/storybook-radix",
+                "buildTarget": "radix-storybook:build-storybook",
+                "staticFilePath": "dist/radix-storybook",
                 "spa": true
             },
             "configurations": {
                 "ci": {
-                    "buildTarget": "storybook-radix:build-storybook:ci"
+                    "buildTarget": "radix-storybook:build-storybook:ci"
                 }
             }
         }

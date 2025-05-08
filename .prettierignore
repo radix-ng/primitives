@@ -13,7 +13,6 @@
 CHANGELOG.md
 
 apps/radix-docs/src/styles/*.css
-apps/shadcn-docs/src/styles/themes/*.css
 
 *.d.ts
 *.mdx
