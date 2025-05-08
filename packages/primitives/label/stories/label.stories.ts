@@ -1,16 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { labelExclude } from '../../../../apps/storybook-radix/docs/utils/storybook';
 import { RdxLabelDirective } from '../src/label.directive';
 
 export default {
     component: RdxLabelDirective,
     title: 'Primitives/Label',
-    parameters: {
-        controls: {
-            exclude: labelExclude
-        }
-    },
     decorators: [
         moduleMetadata({
             imports: [RdxLabelDirective, CommonModule]

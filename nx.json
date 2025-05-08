@@ -105,12 +105,11 @@
     "release": {
         "projectsRelationship": "independent",
         "projects": [
-            "shadcn",
             "primitives"
         ],
         "version": {
             "conventionalCommits": true,
-            "preVersionCommand": "npx nx run-many -t build -p primitives shadcn",
+            "preVersionCommand": "npx nx run-many -t build -p primitives",
             "generatorOptions": {
                 "updateDependents": "auto",
                 "preserveLocalDependencyProtocols": true

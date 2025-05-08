@@ -27,7 +27,6 @@ const config = {
                 ...makeScopeTypesByPath(resolve(__dirname, 'packages')),
                 ...makeScopeTypesByPath(resolve(__dirname, 'packages/components')),
                 ...makeScopeTypesByPath(resolve(__dirname, 'packages/primitives')),
-                ...makeScopeTypesByPath(resolve(__dirname, 'packages/shadcn')),
 
                 // others
                 'deps',

@@ -1,7 +1,4 @@
-dist
-tmp
 node_modules
-ng-doc
 .angular
 .nx
 .vercel

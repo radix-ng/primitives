@@ -1,6 +1,7 @@
 import {
     CalendarDate,
     CalendarDateTime,
+    CalendarIdentifier,
     createCalendar,
     DateFormatter,
     type DateValue,
@@ -207,7 +208,7 @@ export function getDefaultDate(props: GetDefaultDateProps): DateValue {
     const calendarDateTimeGranularities = ['hour', 'minute', 'second'];
 
     const defaultFormatter = new DateFormatter(locale);
-    const calendar = createCalendar(defaultFormatter.resolvedOptions().calendar);
+    const calendar = createCalendar(defaultFormatter.resolvedOptions().calendar as CalendarIdentifier);
 
     if (calendarDateTimeGranularities.includes(granularity ?? 'day'))
         return toCalendar(new CalendarDateTime(year, month, day, 0, 0, 0), calendar);

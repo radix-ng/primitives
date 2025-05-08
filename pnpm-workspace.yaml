@@ -1,5 +1,4 @@
 packages:
     - "apps/radix-docs/**"
-    - "apps/showcase-taxonomy/**"
     - "packages/**"
     - "!**/dist/**"
