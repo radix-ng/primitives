@@ -26,14 +26,14 @@ type DateTimeValueIncrementation = {
 export type UseDateFieldProps = {
     hasLeftFocus: WritableSignal<boolean>;
     lastKeyZero: WritableSignal<boolean>;
-    placeholder: ModelSignal<DateValue>;
+    placeholder: ModelSignal<DateValue> | WritableSignal<DateValue>;
     hourCycle: HourCycle;
     formatter: Formatter;
     segmentValues: WritableSignal<SegmentValueObj>;
     disabled: InputSignal<boolean>;
     readonly: InputSignal<boolean>;
     part: SegmentPart;
-    modelValue: ModelSignal<DateValue | undefined>;
+    modelValue: ModelSignal<DateValue | undefined> | WritableSignal<DateValue | undefined>;
     focusNext: () => void;
 };
 
