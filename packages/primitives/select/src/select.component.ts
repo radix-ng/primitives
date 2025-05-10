@@ -7,8 +7,9 @@ import {
     booleanAttribute,
     ChangeDetectorRef,
     Component,
-    ContentChild,
-    ContentChildren,
+    computed,
+    contentChild,
+    contentChildren,
     DestroyRef,
     ElementRef,
     EventEmitter,
@@ -18,8 +19,8 @@ import {
     NgZone,
     OnInit,
     Output,
-    QueryList,
-    ViewChild
+    signal,
+    viewChild
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { defer, delay, merge, Observable, Subscription, switchMap, take } from 'rxjs';
@@ -39,17 +40,23 @@ let nextId = 0;
             [cdkConnectedOverlayOrigin]="elementRef"
             [cdkConnectedOverlayPositions]="positions"
             [cdkConnectedOverlayScrollStrategy]="overlay.scrollStrategies.reposition()"
+            [cdkConnectedOverlayWidth]="triggerWidth() > 0 ? triggerWidth() : 'auto'"
             (attach)="onAttached()"
             (backdropClick)="close()"
             (detach)="onDetach()"
+            cdkConnectedOverlayLockPosition
+            cdkConnectedOverlayHasBackdrop
+            cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop"
             cdkConnectedOverlay
         >
             <ng-content select="[rdxSelectContent]" />
         </ng-template>
     `,
     host: {
+        '[style.--radix-select-trigger-width.px]': 'triggerSize()[0]',
+        '[style.--radix-select-trigger-height.px]': 'triggerSize()[1]',
         '(click)': 'toggle()',
-        '(keydown)': 'content.keyManager.onKeydown($event)'
+        '(keydown)': 'content().keyManager.onKeydown($event)'
     },
     imports: [
         OverlayModule
@@ -62,15 +69,28 @@ export class RdxSelectComponent implements OnInit, AfterContentInit {
     private readonly destroyRef = inject(DestroyRef);
     private readonly ngZone = inject(NgZone);
 
-    @ContentChild(RdxSelectTriggerDirective) protected trigger: RdxSelectTriggerDirective;
+    protected readonly trigger = contentChild.required(RdxSelectTriggerDirective);
+    protected readonly content = contentChild.required<RdxSelectContentDirective>(
+        forwardRef(() => RdxSelectContentDirective)
+    );
+    readonly items = contentChildren<RdxSelectItemDirective>(
+        forwardRef(() => RdxSelectItemDirective),
+        { descendants: true }
+    );
+    readonly overlayDir = viewChild.required(CdkConnectedOverlay);
 
-    @ContentChild(forwardRef(() => RdxSelectContentDirective))
-    protected content: RdxSelectContentDirective;
+    /**
+     * Tuple type for the trigger element size. Set by the trigger element itself.
+     * The first element is the width and the second element is the height.
+     * @returns The size of the trigger element.
+     */
+    readonly triggerSize = signal<[number, number]>([0, 0]);
 
-    @ContentChildren(forwardRef(() => RdxSelectItemDirective), { descendants: true })
-    items: QueryList<RdxSelectItemDirective>;
-
-    @ViewChild(CdkConnectedOverlay, { static: false }) overlayDir: CdkConnectedOverlay;
+    /**
+     * The width of the trigger element.
+     * @returns The width of the trigger element.
+     */
+    readonly triggerWidth = computed<number>(() => this.triggerSize()[0]);
 
     /** Deals with the selection logic. */
     selectionModel: SelectionModel<RdxSelectItemDirective>;
@@ -150,8 +170,9 @@ export class RdxSelectComponent implements OnInit, AfterContentInit {
     @Output() readonly onOpenChange: EventEmitter<boolean> = new EventEmitter<boolean>();
 
     readonly optionSelectionChanges: Observable<RdxSelectItemChange> = defer(() => {
-        if (this.content.options) {
-            return merge(...this.content.options.map((option) => option.onSelectionChange));
+        const content = this.content();
+        if (content.options) {
+            return merge(...content.options.map((option) => option.onSelectionChange));
         }
 
         return this.ngZone.onStable.asObservable().pipe(
@@ -187,10 +208,10 @@ export class RdxSelectComponent implements OnInit, AfterContentInit {
             this.selectionModel.select(event.source);
 
             this.close();
-            this.trigger.focus();
+            this.trigger().focus();
         });
 
-        this.content.keyManager.tabOut.subscribe(() => {
+        this.content().keyManager.tabOut.subscribe(() => {
             if (this.open) this.close();
         });
 
@@ -236,7 +257,7 @@ export class RdxSelectComponent implements OnInit, AfterContentInit {
     }
 
     updateActiveItem(item: RdxSelectItemDirective) {
-        this.content.keyManager.updateActiveItem(item);
+        this.content().keyManager.updateActiveItem(item);
     }
 
     private selectDefaultValue(): void {
@@ -246,7 +267,7 @@ export class RdxSelectComponent implements OnInit, AfterContentInit {
     }
 
     private selectValue(value: string): void {
-        const option = this.content?.options.find((option) => option.value === value);
+        const option = this.content()?.options.find((option) => option.value === value);
 
         if (option) {
             option.selected = true;
@@ -258,6 +279,6 @@ export class RdxSelectComponent implements OnInit, AfterContentInit {
     }
 
     private closingActions() {
-        return merge(this.overlayDir.overlayRef!.outsidePointerEvents(), this.overlayDir.overlayRef!.detachments());
+        return merge(this.overlayDir().overlayRef!.outsidePointerEvents(), this.overlayDir().overlayRef!.detachments());
     }
 }
