@@ -25,29 +25,27 @@ export interface SwitchContext {
 
 export const [injectSwitchRootContext, provideSwitchRootContext] = createContext<SwitchContext>('Switch');
 
+const rootContext = () => {
+    const instance = inject(RdxSwitchRootDirective);
+    const cva = injectControlValueAccessor<boolean | undefined>();
+
+    return {
+        required: instance.required,
+        value: instance.checked,
+        checked: cva.value,
+        disabled: cva.disabled,
+        ariaLabel: instance.ariaLabel,
+        ariaLabelledBy: instance.ariaLabelledBy,
+        markAsTouched: () => cva.markAsTouched(),
+        toggle: () => instance.toggle()
+    };
+};
+
 @Directive({
     selector: 'button[rdxSwitchRoot]',
     exportAs: 'rdxSwitchRoot',
-    providers: [
-        provideSwitchRootContext(() => {
-            const instance = inject(RdxSwitchRootDirective);
-            const cva = injectControlValueAccessor<boolean | undefined>();
-
-            return {
-                required: instance.required,
-                value: instance.checked,
-                checked: cva.value,
-                disabled: cva.disabled,
-                ariaLabel: instance.ariaLabel,
-                ariaLabelledBy: instance.ariaLabelledBy,
-                markAsTouched: () => cva.markAsTouched(),
-                toggle: () => instance.toggle()
-            };
-        })
-
-    ],
-    hostDirectives: [
-        { directive: RdxControlValueAccessor, inputs: ['value: checked', 'disabled'] }],
+    providers: [provideSwitchRootContext(rootContext)],
+    hostDirectives: [{ directive: RdxControlValueAccessor, inputs: ['value: checked', 'disabled'] }],
     host: {
         role: 'switch',
         type: 'button',
