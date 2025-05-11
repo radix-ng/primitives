@@ -7,6 +7,7 @@ import {
     type DateValue,
     getDayOfWeek,
     getLocalTimeZone,
+    Time,
     toCalendar,
     ZonedDateTime
 } from '@internationalized/date';
@@ -172,6 +173,8 @@ export function areAllDaysBetweenValid(
     return true;
 }
 
+export type TimeValue = Time | CalendarDateTime | ZonedDateTime;
+
 export type Granularity = 'day' | 'hour' | 'minute' | 'second';
 export type TimeGranularity = 'hour' | 'minute' | 'second';
 
@@ -214,4 +217,23 @@ export function getDefaultDate(props: GetDefaultDateProps): DateValue {
         return toCalendar(new CalendarDateTime(year, month, day, 0, 0, 0), calendar);
 
     return toCalendar(new CalendarDate(year, month, day), calendar);
+}
+
+type GetDefaultTimeProps = {
+    defaultValue?: TimeValue | undefined;
+    defaultPlaceholder?: TimeValue | undefined;
+};
+
+export function getDefaultTime(props: GetDefaultTimeProps): TimeValue {
+    const { defaultValue, defaultPlaceholder } = props;
+
+    if (defaultValue) {
+        return defaultValue.copy();
+    }
+
+    if (defaultPlaceholder) {
+        return defaultPlaceholder.copy();
+    }
+
+    return new Time(0, 0, 0);
 }

@@ -1,0 +1,74 @@
+import {ArgTypes, Canvas, Meta} from "@storybook/blocks";
+import * as Stories from './time-field.stories';
+import {RdxTimeFieldInputDirective} from "../src/time-field-input.directive";
+import {RdxTimeFieldRootDirective} from "../src/time-field-root.directive";
+
+<Meta title="Primitives/Time Field" />
+
+# Time Field
+
+#### Enables users to input specific times within a designated field.
+
+<Canvas sourceState="hidden" of={Stories.Default} />
+
+## Features
+
+- ✅ Full keyboard navigation
+- ✅ Can be controlled or uncontrolled
+- ✅ Focus is fully managed
+- ✅ Localization support
+- ✅ Highly composable
+- ✅ Accessible by default
+
+## Preface
+
+The component depends on the [@internationalized/date package](https://react-spectrum.adobe.com/internationalized/date/index.html),
+which solves a lot of the problems that come with working with dates and times in JavaScript.
+
+We highly recommend reading through the documentation for the package to get a solid feel
+for how it works, and you'll need to install it in your project to use the date-related components.
+
+## Installation
+
+Install the date package.
+
+```bash
+npm install @internationalized/date
+```
+
+Install the component from your command line.
+
+```bash
+npm install @radix-ng/primitives
+```
+
+## Anatomy
+
+Import all parts and piece them together.
+
+```html
+<div rdxTimeFieldRoot>
+    <div rdxTimeFieldInput></div>
+    <input rdxVisuallyHiddenInput />
+</div>
+```
+
+## API Reference
+
+### Root
+
+`RdxTimeFieldRootDirective` Contains all the parts of a Time field
+
+<ArgTypes of={RdxTimeFieldRootDirective} />
+
+### Input
+
+`RdxTimeFieldInputDirective` Contains the Time field segments
+
+<ArgTypes of={RdxTimeFieldInputDirective} />
+
+## Examples
+
+### With locale
+
+<Canvas sourceState="hidden" of={Stories.Locale} />
