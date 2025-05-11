@@ -1,7 +1,7 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { Directive, booleanAttribute, inject, input, linkedSignal, output, untracked } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
-import { provideValueAccessor } from '@radix-ng/primitives/core';
+import { provideValueAccessor } from './provide-value-accessor';
 
 /**
  * A reusable ControlValueAccessor implementation for form controls

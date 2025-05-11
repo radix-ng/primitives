@@ -31,7 +31,7 @@ export const [injectSwitchRootContext, provideSwitchRootContext] = createContext
     providers: [
         provideSwitchRootContext(() => {
             const instance = inject(RdxSwitchRootDirective);
-            const cva = inject<RdxControlValueAccessor<boolean | undefined>>(RdxControlValueAccessor);
+            const cva = injectControlValueAccessor<boolean | undefined>();
 
             return {
                 required: instance.required,
@@ -62,7 +62,7 @@ export const [injectSwitchRootContext, provideSwitchRootContext] = createContext
     }
 })
 export class RdxSwitchRootDirective {
-    protected readonly cva = injectControlValueAccessor();
+    protected readonly cva = injectControlValueAccessor<boolean | undefined>();
 
     readonly id = input<string>(inject(_IdGenerator).getId('rdx-switch-'));
 
