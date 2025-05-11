@@ -1,5 +1,5 @@
 import { Directive } from '@angular/core';
-import { injectSwitch } from './switch-root.directive';
+import { injectSwitchRootContext } from './switch-root.directive';
 
 /**
  * @group Components
@@ -9,29 +9,27 @@ import { injectSwitch } from './switch-root.directive';
     exportAs: 'rdxSwitchInput',
     host: {
         type: 'checkbox',
-        role: 'switch',
         tabindex: '-1',
-        '[attr.id]': 'switchRoot.inputId()',
-        '[attr.defaultChecked]': 'switchRoot.checkedState()',
-        '[attr.aria-checked]': 'switchRoot.checkedState()',
+        '[attr.defaultChecked]': 'rootContext.checked()',
+        '[attr.aria-checked]': 'rootContext.checked()',
         '[attr.aria-hidden]': 'true',
-        '[attr.aria-label]': 'switchRoot.ariaLabel()',
-        '[attr.aria-labelledby]': 'switchRoot.ariaLabelledBy()',
-        '[attr.aria-required]': 'switchRoot.required()',
-        '[attr.data-state]': 'switchRoot.checkedState() ? "checked" : "unchecked"',
-        '[attr.data-disabled]': 'switchRoot.disabledState() ? "true" : null',
-        '[attr.disabled]': 'switchRoot.disabledState() ? switchRoot.disabledState() : null',
-        '[attr.value]': 'switchRoot.checkedState() ? "on" : "off"',
+        '[attr.aria-label]': 'rootContext.ariaLabel()',
+        '[attr.aria-labelledby]': 'rootContext.ariaLabelledBy()',
+        '[attr.aria-required]': 'rootContext.required()',
+        '[attr.data-state]': 'rootContext.checked() ? "checked" : "unchecked"',
+        '[attr.data-disabled]': 'rootContext.disabled() ? "true" : null',
+        '[attr.disabled]': 'rootContext.disabled() ? rootContext.disabled() : undefined',
+        '[attr.value]': 'rootContext.checked() ? "on" : "off"',
         style: 'transform: translateX(-100%); position: absolute; overflow: hidden; pointerEvents: none; opacity: 0; margin: 0;',
 
         '(blur)': 'onBlur()'
     }
 })
 export class RdxSwitchInputDirective {
-    protected readonly switchRoot = injectSwitch();
+    protected readonly rootContext = injectSwitchRootContext()!;
 
     /** @ignore */
     protected onBlur() {
-        this.switchRoot.onTouched?.();
+        this.rootContext?.markAsTouched();
     }
 }

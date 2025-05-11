@@ -1,5 +1,5 @@
 import { Directive } from '@angular/core';
-import { injectSwitch } from './switch-root.directive';
+import { injectSwitchRootContext } from './switch-root.directive';
 
 /**
  * @group Components
@@ -8,10 +8,10 @@ import { injectSwitch } from './switch-root.directive';
     selector: 'span[rdxSwitchThumb]',
     exportAs: 'rdxSwitchThumb',
     host: {
-        '[attr.data-disabled]': 'switchRoot.disabledState() ? "true" : null',
-        '[attr.data-state]': 'switchRoot.checkedState() ? "checked" : "unchecked"'
+        '[attr.data-disabled]': 'rootContext?.disabled() ? "" : undefined',
+        '[attr.data-state]': 'rootContext?.checked() ? "checked" : "unchecked"'
     }
 })
 export class RdxSwitchThumbDirective {
-    protected readonly switchRoot = injectSwitch();
+    protected readonly rootContext = injectSwitchRootContext();
 }
