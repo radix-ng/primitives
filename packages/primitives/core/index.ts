@@ -1,3 +1,4 @@
+export * from './src/accessor/control-value-accessor';
 export * from './src/accessor/provide-value-accessor';
 export * from './src/auto-focus.directive';
 export * from './src/clamp';
@@ -14,6 +15,7 @@ export * from './src/kbd-constants';
 export * from './src/provide-token';
 export * from './src/window';
 
+export * from './src/create-context';
 export * from './src/date-time';
 export * from './src/positioning/constants';
 export * from './src/positioning/types';

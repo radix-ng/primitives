@@ -1,62 +1,57 @@
+import { _IdGenerator } from '@angular/cdk/a11y';
 import { BooleanInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
-    computed,
     Directive,
-    effect,
     inject,
-    InjectionToken,
     input,
     InputSignalWithTransform,
     model,
-    ModelSignal,
-    output,
-    OutputEmitterRef,
-    signal
+    ModelSignal
 } from '@angular/core';
-import { ControlValueAccessor } from '@angular/forms';
-import { provideToken, provideValueAccessor } from '@radix-ng/primitives/core';
+import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
+import { createContext, injectControlValueAccessor, RdxControlValueAccessor } from '@radix-ng/primitives/core';
 
-export const RdxSwitchToken = new InjectionToken<RdxSwitchRootDirective>('RdxSwitchToken');
-
-export function injectSwitch(): RdxSwitchRootDirective {
-    return inject(RdxSwitchToken);
+export interface SwitchContext {
+    checked: ModelSignal<boolean>;
+    disabled: InputSignalWithTransform<boolean, BooleanInput>;
+    toggle: () => void;
 }
 
-export interface SwitchProps {
-    checked?: ModelSignal<boolean>;
-    defaultChecked?: InputSignalWithTransform<boolean, BooleanInput>;
-    required?: InputSignalWithTransform<boolean, BooleanInput>;
-    onCheckedChange?: OutputEmitterRef<boolean>;
-}
+export const [injectSwitchRootContext, provideSwitchRootContext] = createContext<SwitchContext>('Switch');
 
-let idIterator = 0;
-
-/**
- * @group Components
- */
 @Directive({
     selector: 'button[rdxSwitchRoot]',
     exportAs: 'rdxSwitchRoot',
     providers: [
-        provideToken(RdxSwitchToken, RdxSwitchRootDirective),
-        provideValueAccessor(RdxSwitchRootDirective)],
+        provideSwitchRootContext(() => {
+            const instance = inject(RdxSwitchRootDirective);
+            return {
+                checked: instance.checked,
+                disabled: instance.disabled,
+                toggle: () => instance.toggle()
+            };
+        })
+
+    ],
+    hostDirectives: [
+        { directive: RdxControlValueAccessor, inputs: ['value: checked', 'disabled'] }],
     host: {
         type: 'button',
-        '[id]': 'elementId()',
-        '[attr.aria-checked]': 'checkedState()',
+        '[id]': 'id()',
+        '[attr.aria-checked]': 'cva.value()',
         '[attr.aria-required]': 'required()',
-        '[attr.data-state]': 'checkedState() ? "checked" : "unchecked"',
-        '[attr.data-disabled]': 'disabledState() ? "true" : null',
-        '[attr.disabled]': 'disabledState() ? disabledState() : null',
+        '[attr.data-state]': 'cva.value() ? "checked" : "unchecked"',
+        '[attr.data-disabled]': 'cva.disabled() ? "true" : null',
+        '[attr.disabled]': 'cva.disabled() ? cva.disabled() : null',
 
         '(click)': 'toggle()'
     }
 })
-export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor {
-    readonly id = input<string | null>(`rdx-switch-${idIterator++}`);
+export class RdxSwitchRootDirective {
+    protected readonly cva = injectControlValueAccessor();
 
-    protected readonly elementId = computed(() => (this.id() ? this.id() : null));
+    readonly id = input<string>(inject(_IdGenerator).getId('rdx-switch'));
 
     readonly inputId = input<string | null>(null);
 
@@ -89,13 +84,6 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
     });
 
     /**
-     * The controlled state of the switch. Must be used in conjunction with onCheckedChange.
-     * @defaultValue false
-     * @group Props
-     */
-    readonly checked = model<boolean>(false);
-
-    /**
      * The state of the switch when it is initially rendered. Use when you do not need to control its state.
      * @default false
      * @group Props
@@ -103,11 +91,11 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
     readonly defaultChecked = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
-     * The state of the switch.
-     * If `defaultChecked` is provided, it takes precedence over the `checked` state.
-     * @ignore
+     * The controlled state of the switch. Must be used in conjunction with onCheckedChange.
+     * @defaultValue false
+     * @group Props
      */
-    readonly checkedState = computed(() => this.checked());
+    readonly checked = model<boolean>(this.defaultChecked());
 
     /**
      * When `true`, prevents the user from interacting with the switch.
@@ -118,26 +106,13 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
         transform: booleanAttribute
     });
 
-    /** @ignore */
-    readonly disabledState = computed(() => this.disabled() || this.accessorDisabled());
-
     /**
      * Event handler called when the state of the switch changes.
      *
      * @param {boolean} value - Boolean value indicates that the option is changed.
      * @group Emits
      */
-    readonly onCheckedChange = output<boolean>();
-
-    private readonly defaultCheckedUsed = computed(() => this.defaultChecked());
-
-    constructor() {
-        effect(() => {
-            if (this.defaultCheckedUsed()) {
-                this.checked.set(this.defaultChecked());
-            }
-        });
-    }
+    readonly onCheckedChange = outputFromObservable(outputToObservable(this.cva.valueChange));
 
     /**
      * Toggles the checked state of the switch.
@@ -145,39 +120,8 @@ export class RdxSwitchRootDirective implements SwitchProps, ControlValueAccessor
      * @ignore
      */
     toggle(): void {
-        if (this.disabledState()) {
-            return;
-        }
+        const checked = this.cva.value();
 
-        this.checked.set(!this.checked());
-
-        this.onChange(this.checked());
-        this.onCheckedChange.emit(this.checked());
-    }
-
-    private readonly accessorDisabled = signal(false);
-
-    private onChange: (value: any) => void = () => {};
-    /** @ignore */
-    onTouched: (() => void) | undefined;
-
-    /** @ignore */
-    writeValue(value: any): void {
-        this.checked.set(value);
-    }
-
-    /** @ignore */
-    registerOnChange(fn: (value: any) => void): void {
-        this.onChange = fn;
-    }
-
-    /** @ignore */
-    registerOnTouched(fn: () => void): void {
-        this.onTouched = fn;
-    }
-
-    /** @ignore */
-    setDisabledState(isDisabled: boolean): void {
-        this.accessorDisabled.set(isDisabled);
+        this.cva.setValue(!checked);
     }
 }
