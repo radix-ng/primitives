@@ -1,3 +1,6 @@
+// Thanks for idea.
+// https://github.com/unovue/reka-ui/blob/v2/packages/core/src/shared/createContext.ts
+
 import { inject, InjectionToken, Provider } from '@angular/core';
 
 /**

@@ -5,16 +5,21 @@ import {
     Directive,
     inject,
     input,
+    InputSignal,
     InputSignalWithTransform,
     model,
-    ModelSignal
+    Signal
 } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
 import { createContext, injectControlValueAccessor, RdxControlValueAccessor } from '@radix-ng/primitives/core';
 
 export interface SwitchContext {
-    checked: ModelSignal<boolean>;
-    disabled: InputSignalWithTransform<boolean, BooleanInput>;
+    required: InputSignalWithTransform<boolean, BooleanInput>;
+    checked: Signal<boolean | undefined>;
+    disabled: Signal<boolean | undefined>;
+    ariaLabel: InputSignal<string | undefined>;
+    ariaLabelledBy: InputSignal<string | undefined>;
+    markAsTouched: () => void;
     toggle: () => void;
 }
 
@@ -26,9 +31,16 @@ export const [injectSwitchRootContext, provideSwitchRootContext] = createContext
     providers: [
         provideSwitchRootContext(() => {
             const instance = inject(RdxSwitchRootDirective);
+            const cva = inject<RdxControlValueAccessor<boolean | undefined>>(RdxControlValueAccessor);
+
             return {
-                checked: instance.checked,
-                disabled: instance.disabled,
+                required: instance.required,
+                value: instance.checked,
+                checked: cva.value,
+                disabled: cva.disabled,
+                ariaLabel: instance.ariaLabel,
+                ariaLabelledBy: instance.ariaLabelledBy,
+                markAsTouched: () => cva.markAsTouched(),
                 toggle: () => instance.toggle()
             };
         })
@@ -37,13 +49,14 @@ export const [injectSwitchRootContext, provideSwitchRootContext] = createContext
     hostDirectives: [
         { directive: RdxControlValueAccessor, inputs: ['value: checked', 'disabled'] }],
     host: {
+        role: 'switch',
         type: 'button',
         '[id]': 'id()',
         '[attr.aria-checked]': 'cva.value()',
         '[attr.aria-required]': 'required()',
         '[attr.data-state]': 'cva.value() ? "checked" : "unchecked"',
-        '[attr.data-disabled]': 'cva.disabled() ? "true" : null',
-        '[attr.disabled]': 'cva.disabled() ? cva.disabled() : null',
+        '[attr.data-disabled]': 'cva.disabled() ? "true" : undefined',
+        '[attr.disabled]': 'cva.disabled() ? cva.disabled() : undefined',
 
         '(click)': 'toggle()'
     }
@@ -52,8 +65,6 @@ export class RdxSwitchRootDirective {
     protected readonly cva = injectControlValueAccessor();
 
     readonly id = input<string>(inject(_IdGenerator).getId('rdx-switch'));
-
-    readonly inputId = input<string | null>(null);
 
     /**
      * When true, indicates that the user must check the switch before the owning form can be submitted.
