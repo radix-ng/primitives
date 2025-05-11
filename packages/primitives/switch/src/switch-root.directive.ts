@@ -64,7 +64,7 @@ export const [injectSwitchRootContext, provideSwitchRootContext] = createContext
 export class RdxSwitchRootDirective {
     protected readonly cva = injectControlValueAccessor();
 
-    readonly id = input<string>(inject(_IdGenerator).getId('rdx-switch'));
+    readonly id = input<string>(inject(_IdGenerator).getId('rdx-switch-'));
 
     /**
      * When true, indicates that the user must check the switch before the owning form can be submitted.
