@@ -73,6 +73,11 @@ const docsConfig = {
                             name: 'Date Field',
                             url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-date-field--docs',
                             label: 'Storybook'
+                        },
+                        {
+                            name: 'Time Field',
+                            url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-time-field--docs',
+                            label: 'Storybook'
                         }
                     ]
                 },

@@ -85,6 +85,7 @@ You can use these components either as the base layer of your design system, or 
 | Number Field |             | ✅     |
 | Pagination   |             | ✅     |
 | Stepper      |             | ✅     |
+| Time Field   |             | ✅     |
 
 **Status Legend**
 ✅ Completed
