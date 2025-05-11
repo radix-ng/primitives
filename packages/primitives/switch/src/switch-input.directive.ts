@@ -9,7 +9,6 @@ import { injectSwitchRootContext } from './switch-root.directive';
     exportAs: 'rdxSwitchInput',
     host: {
         type: 'checkbox',
-        role: 'switch',
         tabindex: '-1',
         '[attr.defaultChecked]': 'rootContext.checked()',
         '[attr.aria-checked]': 'rootContext.checked()',
