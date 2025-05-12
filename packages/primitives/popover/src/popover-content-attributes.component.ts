@@ -28,9 +28,7 @@ import { RdxPopoverAnimationStatus, RdxPopoverState } from './popover.types';
         '(animationstart)': 'onAnimationStart($event)',
         '(animationend)': 'onAnimationEnd($event)'
     },
-    hostDirectives: [
-        CdkTrapFocus
-    ],
+    hostDirectives: [CdkTrapFocus],
     providers: [
         {
             provide: RdxPopoverContentAttributesToken,

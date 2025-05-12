@@ -10,12 +10,7 @@ export default {
     title: 'Primitives/Tabs',
     decorators: [
         moduleMetadata({
-            imports: [
-                RdxTabsRootDirective,
-                RdxTabsListDirective,
-                RdxTabsTriggerDirective,
-                RdxTabsContentDirective
-            ]
+            imports: [RdxTabsRootDirective, RdxTabsListDirective, RdxTabsTriggerDirective, RdxTabsContentDirective]
         }),
         componentWrapperDecorator(
             (story) => html`

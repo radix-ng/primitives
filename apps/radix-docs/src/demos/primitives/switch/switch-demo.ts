@@ -6,12 +6,7 @@ import { RdxSwitchInputDirective, RdxSwitchRootDirective, RdxSwitchThumbDirectiv
 @Component({
     selector: 'primitive-switch-demo',
     standalone: true,
-    imports: [
-        RdxLabelDirective,
-        RdxSwitchRootDirective,
-        RdxSwitchInputDirective,
-        RdxSwitchThumbDirective
-    ],
+    imports: [RdxLabelDirective, RdxSwitchRootDirective, RdxSwitchInputDirective, RdxSwitchThumbDirective],
     template: `
         <label class="Label" rdxLabel htmlFor="airplane-mode-model">
             Airplane mode

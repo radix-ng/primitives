@@ -5,11 +5,7 @@ import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 
 @Component({
     selector: 'rdx-collapsible-external-triggering',
-    imports: [
-        RdxCollapsibleRootDirective,
-        RdxCollapsibleContentDirective,
-        LucideAngularModule
-    ],
+    imports: [RdxCollapsibleRootDirective, RdxCollapsibleContentDirective, LucideAngularModule],
     styles: `
         .CollapsibleRoot {
             width: 300px;

@@ -9,12 +9,7 @@ export * from './src/tabs-list.directive';
 export * from './src/tabs-root.directive';
 export * from './src/tabs-trigger.directive';
 
-const tabsImports = [
-    RdxTabsRootDirective,
-    RdxTabsContentDirective,
-    RdxTabsListDirective,
-    RdxTabsTriggerDirective
-];
+const tabsImports = [RdxTabsRootDirective, RdxTabsContentDirective, RdxTabsListDirective, RdxTabsTriggerDirective];
 
 @NgModule({
     imports: [...tabsImports],

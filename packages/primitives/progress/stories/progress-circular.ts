@@ -72,7 +72,6 @@ import { RdxProgressRootDirective } from '../src/progress-root.directive';
                 color: #333;
             }
         `
-
     ]
 })
 export class ProgressCircularComponent {

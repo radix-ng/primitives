@@ -10,7 +10,8 @@ import { RadioGroupDirective, RadioGroupProps, RDX_RADIO_GROUP } from './radio-t
     exportAs: 'rdxRadioRoot',
     providers: [
         provideValueAccessor(RdxRadioGroupDirective),
-        { provide: RDX_RADIO_GROUP, useExisting: RdxRadioGroupDirective }],
+        { provide: RDX_RADIO_GROUP, useExisting: RdxRadioGroupDirective }
+    ],
     hostDirectives: [{ directive: RdxRovingFocusGroupDirective, inputs: ['dir', 'orientation', 'loop'] }],
     host: {
         role: 'radiogroup',

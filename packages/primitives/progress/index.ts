@@ -7,10 +7,7 @@ export * from './src/progress-root.directive';
 
 export type { ProgressProps } from './src/progress-root.directive';
 
-const _imports = [
-    RdxProgressRootDirective,
-    RdxProgressIndicatorDirective
-];
+const _imports = [RdxProgressRootDirective, RdxProgressIndicatorDirective];
 
 @NgModule({
     imports: [..._imports],

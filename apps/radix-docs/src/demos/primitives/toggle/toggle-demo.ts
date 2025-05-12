@@ -6,10 +6,7 @@ import { Italic, LucideAngularModule } from 'lucide-angular';
 @Component({
     selector: 'primitive-toggle-demo',
     standalone: true,
-    imports: [
-        RdxToggleDirective,
-        LucideAngularModule
-    ],
+    imports: [RdxToggleDirective, LucideAngularModule],
     template: `
         <button class="Toggle" rdxToggle aria-label="Toggle italic">
             <lucide-angular [img]="Italic" size="16" />

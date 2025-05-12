@@ -7,11 +7,7 @@ export * from './src/switch-input.directive';
 export * from './src/switch-root.directive';
 export * from './src/switch-thumb.directive';
 
-const switchImports = [
-    RdxSwitchRootDirective,
-    RdxSwitchInputDirective,
-    RdxSwitchThumbDirective
-];
+const switchImports = [RdxSwitchRootDirective, RdxSwitchInputDirective, RdxSwitchThumbDirective];
 
 @NgModule({
     imports: [...switchImports],

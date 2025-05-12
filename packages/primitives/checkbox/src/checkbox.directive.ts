@@ -12,7 +12,8 @@ export type CheckboxState = 'unchecked' | 'checked' | 'indeterminate';
     selector: '[rdxCheckboxRoot]',
     providers: [
         provideToken(RdxCheckboxToken, RdxCheckboxRootDirective),
-        provideValueAccessor(RdxCheckboxRootDirective)],
+        provideValueAccessor(RdxCheckboxRootDirective)
+    ],
     host: {
         '[disabled]': 'disabled',
         '[attr.data-disabled]': 'disabled ? "" : null',

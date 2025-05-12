@@ -1,5 +1,3 @@
-# Add files here to ignore them from prettier formatting
-
 .angular
 .husky
 .nx
@@ -9,6 +7,7 @@
 /node_modules
 /dist
 /coverage
+/tmp
 
 CHANGELOG.md
 

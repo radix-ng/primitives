@@ -308,7 +308,8 @@ export function useDateField(props: UseDateFieldProps) {
             const cycleArgs: [keyof DateFields | keyof TimeFields, number, CycleTimeOptions?] = [
                 part,
                 sign,
-                { hourCycle }];
+                { hourCycle }
+            ];
             return dateRef.set({ [part as keyof DateValue]: prevValue }).cycle(...cycleArgs)[part];
         }
 

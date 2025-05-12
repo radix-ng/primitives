@@ -4,8 +4,5 @@
         "noEmit": true,
         "incremental": true
     },
-    "include": [
-        "**/*.ts",
-        "**/*.html"
-    ]
+    "include": ["**/*.ts", "**/*.html"]
 }

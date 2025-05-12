@@ -34,10 +34,7 @@ const prettyCodeOptions = {
         }
     },
     onVisitHighlightedLine(node) {
-        node.properties.className = [
-            ...(node.properties.className ?? []),
-            'line--highlighted'
-        ];
+        node.properties.className = [...(node.properties.className ?? []), 'line--highlighted'];
     },
     onVisitHighlightedChars(node) {
         node.properties.className = ['word--highlighted'];
@@ -113,21 +110,15 @@ export default defineConfig({
         angular(),
         alpinejs({ entrypoint: '/src/entrypoints/alpine' }),
         LlmsTXT()
-
     ],
     markdown: {
         syntaxHighlight: false,
-        remarkPlugins: [
-            codeImport
-        ],
+        remarkPlugins: [codeImport],
         rehypePlugins: [
             rehypeSlug,
             rehypeComponent,
             rehypeCodeMetaProcessor,
-            [
-                rehypePrettyCode,
-                prettyCodeOptions
-            ],
+            [rehypePrettyCode, prettyCodeOptions],
             rehypeFigureProcessor,
             rehypeNpmCommand,
             [
@@ -139,7 +130,6 @@ export default defineConfig({
                     }
                 }
             ]
-
         ]
     },
     redirects: {}

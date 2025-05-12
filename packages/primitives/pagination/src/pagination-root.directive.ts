@@ -14,8 +14,7 @@ import { PAGINATION_ROOT_CONTEXT } from './pagination-context.token';
 @Directive({
     selector: '[rdxPaginationRoot]',
     exportAs: 'rdxPaginationRoot',
-    providers: [
-        { provide: PAGINATION_ROOT_CONTEXT, useExisting: forwardRef(() => RdxPaginationRootDirective) }]
+    providers: [{ provide: PAGINATION_ROOT_CONTEXT, useExisting: forwardRef(() => RdxPaginationRootDirective) }]
 })
 export class RdxPaginationRootDirective {
     readonly defaultPage = input<number, NumberInput>(1, { transform: numberAttribute });

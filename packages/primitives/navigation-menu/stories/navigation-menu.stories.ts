@@ -9,10 +9,7 @@ export default {
     title: 'Primitives/Navigation Menu',
     decorators: [
         moduleMetadata({
-            imports: [
-                CommonModule,
-                RdxNavigationMenuModule
-            ],
+            imports: [CommonModule, RdxNavigationMenuModule],
             providers: [provideAnimations()]
         }),
         componentWrapperDecorator(

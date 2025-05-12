@@ -68,10 +68,7 @@
                 "configDir": "packages/components/.storybook",
                 "browserTarget": "components:build-storybook",
                 "compodoc": false,
-                "styles": [
-                    "@radix-ui/themes/styles.css",
-                    "@angular/cdk/overlay-prebuilt.css"
-                ],
+                "styles": ["@radix-ui/themes/styles.css", "@angular/cdk/overlay-prebuilt.css"],
                 "stylePreprocessorOptions": {
                     "includePaths": ["node_modules/"]
                 }

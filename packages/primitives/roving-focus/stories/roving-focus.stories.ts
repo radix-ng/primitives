@@ -9,11 +9,7 @@ export default {
     title: 'Utilities/Roving Focus',
     decorators: [
         moduleMetadata({
-            imports: [
-                RdxRovingFocusGroupDirective,
-                RdxRovingFocusItemDirective,
-                RovingFocusEventsComponent
-            ]
+            imports: [RdxRovingFocusGroupDirective, RdxRovingFocusItemDirective, RovingFocusEventsComponent]
         }),
         componentWrapperDecorator(
             (story) => html`

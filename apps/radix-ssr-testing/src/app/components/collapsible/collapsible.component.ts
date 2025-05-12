@@ -8,11 +8,7 @@ import {
 @Component({
     selector: 'app-collapsible',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        RdxCollapsibleRootDirective,
-        RdxCollapsibleTriggerDirective,
-        RdxCollapsibleContentDirective
-    ],
+    imports: [RdxCollapsibleRootDirective, RdxCollapsibleTriggerDirective, RdxCollapsibleContentDirective],
     template: `
         <div [open]="true" rdxCollapsibleRoot>
             <button rdxCollapsibleTrigger>Trigger</button>

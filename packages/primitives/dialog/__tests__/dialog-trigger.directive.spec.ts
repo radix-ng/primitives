@@ -49,8 +49,7 @@ describe('RdxDialogTriggerDirective', () => {
 
         await TestBed.configureTestingModule({
             imports: [TestHostComponent],
-            providers: [
-                { provide: RdxDialogService, useValue: dialogServiceMock }]
+            providers: [{ provide: RdxDialogService, useValue: dialogServiceMock }]
         }).compileComponents();
 
         fixture = TestBed.createComponent(TestHostComponent);

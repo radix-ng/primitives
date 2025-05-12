@@ -15,8 +15,7 @@ const docsConfig = {
                 },
                 {
                     section: 'Theme',
-                    pages: [
-                        { name: 'Overview', url: '/themes/theme/overview' }]
+                    pages: [{ name: 'Overview', url: '/themes/theme/overview' }]
                 },
                 {
                     section: 'Typography',
@@ -34,8 +33,7 @@ const docsConfig = {
                 },
                 {
                     section: 'Utilities',
-                    pages: [
-                        { name: 'Theme', url: '/themes/utilities/theme' }]
+                    pages: [{ name: 'Theme', url: '/themes/utilities/theme' }]
                 }
             ]
         },
@@ -58,8 +56,7 @@ const docsConfig = {
                 },
                 {
                     section: 'Storybook',
-                    pages: [
-                        { name: 'Primitives', url: 'https://sb-primitives.radix-ng.com', external: true }]
+                    pages: [{ name: 'Primitives', url: 'https://sb-primitives.radix-ng.com', external: true }]
                 },
                 {
                     section: 'Date',

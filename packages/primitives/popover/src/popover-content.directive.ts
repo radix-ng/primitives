@@ -30,9 +30,7 @@ import { RdxPopoverAttachDetachEvent } from './popover.types';
 
 @Directive({
     selector: '[rdxPopoverContent]',
-    hostDirectives: [
-        CdkConnectedOverlay
-    ]
+    hostDirectives: [CdkConnectedOverlay]
 })
 export class RdxPopoverContentDirective implements OnInit {
     /** @ignore */

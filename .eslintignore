@@ -1,7 +1,12 @@
+dist
 node_modules
 .angular
 .nx
 .vercel
+tmp
 
 # eslint ignores root level "dot" files by default
 !/.*.cjs
+
+# ignore index.html
+**/index.html
