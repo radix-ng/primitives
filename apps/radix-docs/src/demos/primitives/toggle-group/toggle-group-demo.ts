@@ -6,11 +6,7 @@ import { AlignCenter, AlignLeft, AlignRight, LucideAngularModule } from 'lucide-
 @Component({
     selector: 'primitive-toggle-group-demo',
     standalone: true,
-    imports: [
-        RdxToggleGroupDirective,
-        RdxToggleGroupItemDirective,
-        LucideAngularModule
-    ],
+    imports: [RdxToggleGroupDirective, RdxToggleGroupItemDirective, LucideAngularModule],
     template: `
         <div class="ToggleGroup" rdxToggleGroup value="center" aria-label="Text alignment">
             <button class="ToggleGroupItem" rdxToggleGroupItem value="left" aria-label="Left aligned">

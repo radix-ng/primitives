@@ -31,9 +31,7 @@ const config = {
         'prettier-plugin-organize-attributes',
         'prettier-plugin-organize-imports',
         'prettier-plugin-astro',
-        'prettier-plugin-tailwindcss',
-        // should be last
-        'prettier-plugin-multiline-arrays'
+        'prettier-plugin-tailwindcss'
     ],
     overrides: [
         {

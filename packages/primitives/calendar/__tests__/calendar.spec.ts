@@ -43,9 +43,7 @@ describe('Calendar', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [
-                CalendarDefaultComponent
-            ]
+            imports: [CalendarDefaultComponent]
         }).compileComponents();
 
         fixture = TestBed.createComponent(CalendarDefaultComponent);

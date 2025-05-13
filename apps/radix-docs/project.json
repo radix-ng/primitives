@@ -22,9 +22,7 @@
         "copy-dist": {
             "executor": "nx:run-commands",
             "options": {
-                "commands": [
-                    "node ./tools/scripts/docs-copy.mjs"
-                ]
+                "commands": ["node ./tools/scripts/docs-copy.mjs"]
             }
         }
     }

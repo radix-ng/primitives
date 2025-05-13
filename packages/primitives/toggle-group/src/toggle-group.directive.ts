@@ -15,7 +15,8 @@ let nextId = 0;
     exportAs: 'rdxToggleGroup',
     providers: [
         provideToken(RdxToggleGroupToken, RdxToggleGroupDirective),
-        provideValueAccessor(RdxToggleGroupDirective)],
+        provideValueAccessor(RdxToggleGroupDirective)
+    ],
     hostDirectives: [{ directive: RdxRovingFocusGroupDirective, inputs: ['dir', 'orientation', 'loop'] }],
     host: {
         role: 'group',

@@ -28,8 +28,7 @@ describe('RdxDialogContentDirective', () => {
 
         await TestBed.configureTestingModule({
             imports: [TestComponent],
-            providers: [
-                { provide: RdxDialogRef, useValue: dialogRefMock }]
+            providers: [{ provide: RdxDialogRef, useValue: dialogRefMock }]
         }).compileComponents();
 
         fixture = TestBed.createComponent(TestComponent);

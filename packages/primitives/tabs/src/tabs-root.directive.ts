@@ -31,8 +31,7 @@ export const RDX_TABS_ROOT_TOKEN = new InjectionToken<RdxTabsRootDirective>('Rdx
 
 @Directive({
     selector: '[rdxTabsRoot]',
-    providers: [
-        provideToken(RDX_TABS_ROOT_TOKEN, RdxTabsRootDirective)],
+    providers: [provideToken(RDX_TABS_ROOT_TOKEN, RdxTabsRootDirective)],
     host: {
         '[attr.data-orientation]': 'orientation()',
         '[attr.dir]': 'dir()'

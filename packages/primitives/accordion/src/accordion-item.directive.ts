@@ -33,8 +33,7 @@ let nextId = 0;
         '[attr.data-disabled]': 'disabled',
         '[attr.data-orientation]': 'orientation'
     },
-    providers: [
-        { provide: RdxAccordionRootToken, useValue: undefined }]
+    providers: [{ provide: RdxAccordionRootToken, useValue: undefined }]
 })
 export class RdxAccordionItemDirective implements FocusableOption, OnDestroy {
     protected readonly accordion = inject(RdxAccordionRootToken, { skipSelf: true });

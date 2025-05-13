@@ -9,8 +9,7 @@ import { provideValueAccessor } from './provide-value-accessor';
  */
 @Directive({
     exportAs: 'rdxControlValueAccessor',
-    providers: [
-        provideValueAccessor(RdxControlValueAccessor)]
+    providers: [provideValueAccessor(RdxControlValueAccessor)]
 })
 export class RdxControlValueAccessor<T> implements ControlValueAccessor {
     /**

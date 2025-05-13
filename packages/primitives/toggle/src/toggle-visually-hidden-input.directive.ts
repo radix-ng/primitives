@@ -7,12 +7,7 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
     hostDirectives: [
         {
             directive: RdxVisuallyHiddenInputDirective,
-            inputs: [
-                'name',
-                'required',
-                'value',
-                'disabled'
-            ]
+            inputs: ['name', 'required', 'value', 'disabled']
         }
     ],
     host: {

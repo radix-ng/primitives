@@ -5,19 +5,8 @@
         "declaration": true,
         "resolveJsonModule": true,
         "module": "CommonJS",
-        "types": [
-            "node"
-        ]
+        "types": ["node"]
     },
-    "include": [
-        "**/src/**.ts",
-        "**/*.ts"
-    ],
-    "exclude": [
-        "**/*.spec.ts",
-        "**/*.test.ts",
-        "**/stories/**.*",
-        "*.stories.ts",
-        "./schematics/**/*.ts"
-    ]
+    "include": ["**/src/**.ts", "**/*.ts"],
+    "exclude": ["**/*.spec.ts", "**/*.test.ts", "**/stories/**.*", "*.stories.ts", "./schematics/**/*.ts"]
 }

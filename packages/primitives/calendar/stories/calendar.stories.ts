@@ -8,10 +8,7 @@ export default {
     title: 'Primitives/Calendar',
     decorators: [
         moduleMetadata({
-            imports: [
-                CalendarDefaultComponent,
-                CalendarWithLocaleComponent
-            ]
+            imports: [CalendarDefaultComponent, CalendarWithLocaleComponent]
         }),
         componentWrapperDecorator(
             (story) => html`

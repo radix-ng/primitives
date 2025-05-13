@@ -11,12 +11,8 @@ const config = {
         commonjs: true,
         node: true
     },
-    plugins: [
-        'file-progress'
-    ],
-    extends: [
-        'plugin:eslint-comments/recommended'
-    ],
+    plugins: ['file-progress'],
+    extends: ['plugin:eslint-comments/recommended'],
     rules: {
         // plugin:file-progress
         'file-progress/activate': isCI ? 0 : 1,
@@ -29,10 +25,7 @@ const config = {
             parserOptions: {
                 sourceType: 'module'
             },
-            extends: [
-                'eslint:recommended',
-                'plugin:promise/recommended'
-            ],
+            extends: ['eslint:recommended', 'plugin:promise/recommended'],
             rules: {}
         },
         {
@@ -79,10 +72,7 @@ const config = {
         },
         {
             files: ['*.html'],
-            extends: [
-                'plugin:@angular-eslint/template/recommended',
-                'plugin:@angular-eslint/template/accessibility'
-            ],
+            extends: ['plugin:@angular-eslint/template/recommended', 'plugin:@angular-eslint/template/accessibility'],
             rules: {
                 // plugin:@angular-eslint/template
                 '@angular-eslint/template/label-has-associated-control': 0,

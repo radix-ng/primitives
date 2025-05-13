@@ -10,7 +10,8 @@ xdescribe('RdxSwitchRootDirective', () => {
         TestBed.configureTestingModule({
             providers: [
                 RdxSwitchRootDirective,
-                { provide: ElementRef, useValue: new ElementRef(document.createElement('button')) }]
+                { provide: ElementRef, useValue: new ElementRef(document.createElement('button')) }
+            ]
         });
 
         directive = TestBed.inject(RdxSwitchRootDirective);

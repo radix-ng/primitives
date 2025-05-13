@@ -11,97 +11,39 @@
         "importHelpers": true,
         "target": "es2015",
         "module": "esnext",
-        "lib": [
-            "es2020",
-            "dom"
-        ],
+        "lib": ["es2020", "dom"],
         "skipLibCheck": true,
         "skipDefaultLibCheck": true,
         "baseUrl": ".",
         "allowSyntheticDefaultImports": true,
         "paths": {
-            "@radix-ng/primitives/accordion": [
-                "packages/primitives/accordion/index.ts"
-            ],
-            "@radix-ng/primitives/aspect-ratio": [
-                "packages/primitives/aspect-ratio/index.ts"
-            ],
-            "@radix-ng/primitives/avatar": [
-                "packages/primitives/avatar/index.ts"
-            ],
-            "@radix-ng/primitives/checkbox": [
-                "packages/primitives/checkbox/index.ts"
-            ],
-            "@radix-ng/primitives/collapsible": [
-                "packages/primitives/collapsible/index.ts"
-            ],
-            "@radix-ng/primitives/core": [
-                "packages/primitives/core/index.ts"
-            ],
-            "@radix-ng/primitives/dropdown-menu": [
-                "packages/primitives/dropdown-menu/index.ts"
-            ],
-            "@radix-ng/primitives/label": [
-                "packages/primitives/label/index.ts"
-            ],
-            "@radix-ng/primitives/menu": [
-                "packages/primitives/menu/index.ts"
-            ],
-            "@radix-ng/primitives/menubar": [
-                "packages/primitives/menubar/index.ts"
-            ],
-            "@radix-ng/primitives/pagination": [
-                "packages/primitives/pagination/src/index.ts"
-            ],
-            "@radix-ng/primitives/popover": [
-                "packages/primitives/popover/src/index.ts"
-            ],
-            "@radix-ng/primitives/presence": [
-                "packages/primitives/presence/index.ts"
-            ],
-            "@radix-ng/primitives/radio": [
-                "packages/primitives/radio/index.ts"
-            ],
-            "@radix-ng/primitives/roving-focus": [
-                "packages/primitives/roving-focus/index.ts"
-            ],
-            "@radix-ng/primitives/select": [
-                "packages/primitives/select/index.ts"
-            ],
-            "@radix-ng/primitives/separator": [
-                "packages/primitives/separator/index.ts"
-            ],
-            "@radix-ng/primitives/slider": [
-                "packages/primitives/slider/index.ts"
-            ],
-            "@radix-ng/primitives/stepper": [
-                "packages/primitives/stepper/index.ts"
-            ],
-            "@radix-ng/primitives/switch": [
-                "packages/primitives/switch/index.ts"
-            ],
-            "@radix-ng/primitives/tabs": [
-                "packages/primitives/tabs/index.ts"
-            ],
-            "@radix-ng/primitives/toggle": [
-                "packages/primitives/toggle/index.ts"
-            ],
-            "@radix-ng/primitives/toggle-group": [
-                "packages/primitives/toggle-group/index.ts"
-            ],
-            "@radix-ng/primitives/toolbar": [
-                "packages/primitives/toolbar/index.ts"
-            ],
-            "@radix-ng/primitives/tooltip": [
-                "packages/primitives/tooltip/index.ts"
-            ],
-            "@radix-ng/primitives/visually-hidden": [
-                "packages/primitives/visually-hidden/index.ts"
-            ]
+            "@radix-ng/primitives/accordion": ["packages/primitives/accordion/index.ts"],
+            "@radix-ng/primitives/aspect-ratio": ["packages/primitives/aspect-ratio/index.ts"],
+            "@radix-ng/primitives/avatar": ["packages/primitives/avatar/index.ts"],
+            "@radix-ng/primitives/checkbox": ["packages/primitives/checkbox/index.ts"],
+            "@radix-ng/primitives/collapsible": ["packages/primitives/collapsible/index.ts"],
+            "@radix-ng/primitives/core": ["packages/primitives/core/index.ts"],
+            "@radix-ng/primitives/dropdown-menu": ["packages/primitives/dropdown-menu/index.ts"],
+            "@radix-ng/primitives/label": ["packages/primitives/label/index.ts"],
+            "@radix-ng/primitives/menu": ["packages/primitives/menu/index.ts"],
+            "@radix-ng/primitives/menubar": ["packages/primitives/menubar/index.ts"],
+            "@radix-ng/primitives/pagination": ["packages/primitives/pagination/src/index.ts"],
+            "@radix-ng/primitives/popover": ["packages/primitives/popover/src/index.ts"],
+            "@radix-ng/primitives/presence": ["packages/primitives/presence/index.ts"],
+            "@radix-ng/primitives/radio": ["packages/primitives/radio/index.ts"],
+            "@radix-ng/primitives/roving-focus": ["packages/primitives/roving-focus/index.ts"],
+            "@radix-ng/primitives/select": ["packages/primitives/select/index.ts"],
+            "@radix-ng/primitives/separator": ["packages/primitives/separator/index.ts"],
+            "@radix-ng/primitives/slider": ["packages/primitives/slider/index.ts"],
+            "@radix-ng/primitives/stepper": ["packages/primitives/stepper/index.ts"],
+            "@radix-ng/primitives/switch": ["packages/primitives/switch/index.ts"],
+            "@radix-ng/primitives/tabs": ["packages/primitives/tabs/index.ts"],
+            "@radix-ng/primitives/toggle": ["packages/primitives/toggle/index.ts"],
+            "@radix-ng/primitives/toggle-group": ["packages/primitives/toggle-group/index.ts"],
+            "@radix-ng/primitives/toolbar": ["packages/primitives/toolbar/index.ts"],
+            "@radix-ng/primitives/tooltip": ["packages/primitives/tooltip/index.ts"],
+            "@radix-ng/primitives/visually-hidden": ["packages/primitives/visually-hidden/index.ts"]
         }
     },
-    "exclude": [
-        "node_modules",
-        "tmp"
-    ]
+    "exclude": ["node_modules", "tmp"]
 }

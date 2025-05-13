@@ -4,10 +4,7 @@ import { RdxProgressIndicatorDirective, RdxProgressRootDirective } from '@radix-
 @Component({
     selector: 'radix-progress-tailwind-demo',
     standalone: true,
-    imports: [
-        RdxProgressIndicatorDirective,
-        RdxProgressRootDirective
-    ],
+    imports: [RdxProgressIndicatorDirective, RdxProgressRootDirective],
     template: `
         <div
             class="relative h-2 w-[220px] overflow-hidden rounded-full bg-white sm:w-[280px] lg:w-[320px] dark:bg-stone-950"

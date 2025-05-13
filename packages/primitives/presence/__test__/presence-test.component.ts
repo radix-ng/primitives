@@ -19,7 +19,6 @@ import { CollapseContext, transitionCollapsing } from '../src/transitions/transi
                 height: auto;
             }
         `
-
     ]
 })
 export class PresenceComponent implements OnInit {

@@ -3,9 +3,7 @@ import { RdxMenuModule } from '@radix-ng/primitives/menu';
 
 @Component({
     selector: 'menu-with-labels-items-story',
-    imports: [
-        RdxMenuModule
-    ],
+    imports: [RdxMenuModule],
     styleUrl: 'styles.css',
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `

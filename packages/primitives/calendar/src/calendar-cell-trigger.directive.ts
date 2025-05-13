@@ -93,14 +93,9 @@ export class RdxCalendarCellTriggerDirective implements AfterViewInit {
 
     protected onArrowKey(event: KeyboardEvent) {
         const code = event.code;
-        if (![
-                kbd.ARROW_RIGHT,
-                kbd.ARROW_LEFT,
-                kbd.ARROW_UP,
-                kbd.ARROW_DOWN,
-                kbd.ENTER,
-                kbd.SPACE_CODE
-            ].includes(code)) {
+        if (
+            ![kbd.ARROW_RIGHT, kbd.ARROW_LEFT, kbd.ARROW_UP, kbd.ARROW_DOWN, kbd.ENTER, kbd.SPACE_CODE].includes(code)
+        ) {
             return;
         }
 

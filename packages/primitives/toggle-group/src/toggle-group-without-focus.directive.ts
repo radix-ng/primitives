@@ -11,7 +11,8 @@ let nextId = 0;
     exportAs: 'rdxToggleGroupWithoutFocus',
     providers: [
         { provide: RdxToggleGroupToken, useExisting: RdxToggleGroupWithoutFocusDirective },
-        provideValueAccessor(RdxToggleGroupWithoutFocusDirective)],
+        provideValueAccessor(RdxToggleGroupWithoutFocusDirective)
+    ],
     host: {
         role: 'group',
         '(focusout)': 'onTouched?.()'

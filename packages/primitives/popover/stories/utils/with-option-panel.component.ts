@@ -69,11 +69,7 @@ import { Message } from './types';
             </p>
         </ng-template>
     `,
-    imports: [
-        ReactiveFormsModule,
-        FormsModule,
-        NgTemplateOutlet
-    ]
+    imports: [ReactiveFormsModule, FormsModule, NgTemplateOutlet]
 })
 export class WithOptionPanelComponent {
     onOverlayEscapeKeyDownDisabled = model(false);
@@ -171,10 +167,7 @@ export class WithOptionPanelComponent {
 
     protected addMessage = (message: Message) => {
         this.messages.update((messages) => {
-            return [
-                message,
-                ...messages
-            ];
+            return [message, ...messages];
         });
     };
 }

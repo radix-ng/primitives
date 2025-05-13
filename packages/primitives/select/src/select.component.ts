@@ -58,9 +58,7 @@ let nextId = 0;
         '(click)': 'toggle()',
         '(keydown)': 'content().keyManager.onKeydown($event)'
     },
-    imports: [
-        OverlayModule
-    ]
+    imports: [OverlayModule]
 })
 export class RdxSelectComponent implements OnInit, AfterContentInit {
     protected overlay = inject(Overlay);

@@ -4,10 +4,7 @@ import { RdxProgressIndicatorDirective, RdxProgressRootDirective } from '@radix-
 @Component({
     selector: 'raidx-progress-demo',
     standalone: true,
-    imports: [
-        RdxProgressIndicatorDirective,
-        RdxProgressRootDirective
-    ],
+    imports: [RdxProgressIndicatorDirective, RdxProgressRootDirective],
     template: `
         <div class="ProgressRoot" [value]="progress()" rdxProgressRoot>
             <div

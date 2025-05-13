@@ -71,7 +71,6 @@ export function rehypeComponent() {
                                         }
                                     ]
                                 })
-
                             ]
                         })
                     );
@@ -124,7 +123,6 @@ export function rehypeComponent() {
                                         }
                                     ]
                                 })
-
                             ]
                         })
                     );
@@ -160,7 +158,6 @@ export function rehypeComponent() {
                                         }
                                     ]
                                 })
-
                             ]
                         })
                     );

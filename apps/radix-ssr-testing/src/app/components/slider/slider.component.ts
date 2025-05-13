@@ -3,9 +3,7 @@ import { RdxSliderModule } from '@radix-ng/primitives/slider';
 
 @Component({
     selector: 'app-slider',
-    imports: [
-        RdxSliderModule
-    ],
+    imports: [RdxSliderModule],
     styles: `
         .SliderRoot {
             position: relative;

@@ -20,8 +20,7 @@ import { CALENDAR_ROOT_CONTEXT } from './сalendar-сontext.token';
 @Directive({
     selector: '[rdxCalendarRoot]',
     exportAs: 'rdxCalendarRoot',
-    providers: [
-        { provide: CALENDAR_ROOT_CONTEXT, useExisting: forwardRef(() => RdxCalendarRootDirective) }],
+    providers: [{ provide: CALENDAR_ROOT_CONTEXT, useExisting: forwardRef(() => RdxCalendarRootDirective) }],
     host: {
         role: 'application',
         '[attr.aria-label]': 'fullCalendarLabel()',

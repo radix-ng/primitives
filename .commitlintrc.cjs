@@ -28,14 +28,15 @@ const config = {
                 ...makeScopeTypesByPath(resolve(__dirname, 'packages/components')),
                 ...makeScopeTypesByPath(resolve(__dirname, 'packages/primitives')),
 
-                // others
+                // Dependabot scopes
                 'deps',
                 'deps-dev',
+
+                // others
                 'release',
                 'schematics',
                 'docs'
             ]
-
         ]
     }
 };

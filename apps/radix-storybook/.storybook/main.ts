@@ -31,7 +31,6 @@ const config: StorybookConfig = {
         '@storybook/addon-backgrounds',
         '@chromatic-com/storybook',
         '@storybook/addon-mdx-gfm'
-
     ],
 
     framework: {

@@ -25,7 +25,8 @@ export function injectRadioItem(): RdxRadioItemDirective {
     exportAs: 'rdxRadioItem',
     providers: [provideToken(RdxRadioItemToken, RdxRadioItemDirective)],
     hostDirectives: [
-        { directive: RdxRovingFocusItemDirective, inputs: ['tabStopId: id', 'focusable', 'active', 'allowShiftKey'] }],
+        { directive: RdxRovingFocusItemDirective, inputs: ['tabStopId: id', 'focusable', 'active', 'allowShiftKey'] }
+    ],
 
     host: {
         type: 'button',

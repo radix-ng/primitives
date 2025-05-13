@@ -30,9 +30,7 @@ import { RdxHoverCardAttachDetachEvent } from './hover-card.types';
 
 @Directive({
     selector: '[rdxHoverCardContent]',
-    hostDirectives: [
-        CdkConnectedOverlay
-    ]
+    hostDirectives: [CdkConnectedOverlay]
 })
 export class RdxHoverCardContentDirective implements OnInit {
     /** @ignore */

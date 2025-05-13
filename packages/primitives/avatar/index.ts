@@ -9,11 +9,7 @@ export * from './src/avatar-root.directive';
 export * from './src/avatar.config';
 export type { RdxImageLoadingStatus } from './src/types';
 
-const _imports = [
-    RdxAvatarRootDirective,
-    RdxAvatarFallbackDirective,
-    RdxAvatarImageDirective
-];
+const _imports = [RdxAvatarRootDirective, RdxAvatarFallbackDirective, RdxAvatarImageDirective];
 
 @NgModule({
     imports: [..._imports],

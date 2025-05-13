@@ -30,9 +30,7 @@ import { RdxTooltipAttachDetachEvent } from './tooltip.types';
 
 @Directive({
     selector: '[rdxTooltipContent]',
-    hostDirectives: [
-        CdkConnectedOverlay
-    ]
+    hostDirectives: [CdkConnectedOverlay]
 })
 export class RdxTooltipContentDirective implements OnInit {
     /** @ignore */

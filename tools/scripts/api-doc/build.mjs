@@ -30,11 +30,7 @@ export async function generateComponentsTypeDocs() {
         excludeExternals: true,
         logLevel: 'Error',
         sort: ['source-order'],
-        exclude: [
-            '**/node_modules/**',
-            '**/packages/**/node_modules/**',
-            '**/__tests__/**'
-        ],
+        exclude: ['**/node_modules/**', '**/packages/**/node_modules/**', '**/__tests__/**'],
         tsconfig: './packages/primitives/tsconfig.typedoc.json'
     });
 

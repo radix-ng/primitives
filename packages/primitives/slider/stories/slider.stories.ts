@@ -10,12 +10,7 @@ export default {
     title: 'Primitives/Slider',
     decorators: [
         moduleMetadata({
-            imports: [
-                RdxSliderRootComponent,
-                RdxSliderTrackComponent,
-                RdxSliderRangeComponent,
-                RdxSliderThumbComponent
-            ]
+            imports: [RdxSliderRootComponent, RdxSliderTrackComponent, RdxSliderRangeComponent, RdxSliderThumbComponent]
         }),
         componentWrapperDecorator(
             (story) => html`
