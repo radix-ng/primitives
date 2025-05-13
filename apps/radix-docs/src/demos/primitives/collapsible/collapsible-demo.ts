@@ -16,7 +16,7 @@ import { LucideAngularModule, UnfoldVertical, X } from 'lucide-angular';
         LucideAngularModule
     ],
     template: `
-        <div class="CollapsibleRoot" #collapsibleRoot="collapsibleRoot" [open]="true" rdxCollapsibleRoot>
+        <div class="CollapsibleRoot" #collapsibleRoot="rdxCollapsibleRoot" [open]="true" rdxCollapsibleRoot>
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 1em;">
                 <span class="Text" style="color: white;">&#64;peduarte starred 3 repositories</span>
                 <button class="IconButton" style="flex-shrink: 0;" rdxCollapsibleTrigger>

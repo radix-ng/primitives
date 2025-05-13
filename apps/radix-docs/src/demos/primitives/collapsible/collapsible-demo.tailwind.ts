@@ -8,7 +8,6 @@ import { LucideAngularModule, UnfoldVertical, X } from 'lucide-angular';
 
 @Component({
     selector: 'radix-collapsible-tailwind-demo',
-    standalone: true,
     imports: [
         RdxCollapsibleRootDirective,
         RdxCollapsibleTriggerDirective,
@@ -18,7 +17,7 @@ import { LucideAngularModule, UnfoldVertical, X } from 'lucide-angular';
     template: `
         <div
             class="sm:w w-[220px] space-y-2 text-sm sm:w-[280px] lg:w-[320px]"
-            #collapsibleRoot="collapsibleRoot"
+            #collapsibleRoot="rdxCollapsibleRoot"
             [open]="true"
             rdxCollapsibleRoot
         >
@@ -26,6 +25,7 @@ import { LucideAngularModule, UnfoldVertical, X } from 'lucide-angular';
                 <span class="font-medium ">&#64;peduarte starred 3 repositories</span>
                 <button
                     class="focus-visible:ring-ring hover:bg-accent hover:text-accent-foreground inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
+                    type="button"
                     rdxCollapsibleTrigger
                 >
                     @if (collapsibleRoot.isOpen()) {
