@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
 import { RdxCollapsibleContentDirective } from '../src/collapsible-content.directive';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
@@ -73,17 +73,11 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
         }
     `,
     template: `
-        <div
-            class="CollapsibleRoot"
-            #collapsibleRoot="collapsibleRoot"
-            [open]="open"
-            (onOpenChange)="onOpenChange($event)"
-            rdxCollapsibleRoot
-        >
+        <div class="CollapsibleRoot" [open]="open()" (onOpenChange)="open.set($event)" rdxCollapsibleRoot>
             <div style="display: flex; align-items: center; justify-content: space-between;">
                 <span class="Text" style="color: white">&#64;peduarte starred 3 repositories</span>
-                <button class="IconButton" rdxCollapsibleTrigger>
-                    @if (open) {
+                <button class="IconButton" type="button" rdxCollapsibleTrigger>
+                    @if (open()) {
                         <lucide-angular size="16" name="x" style="display: flex;" />
                     } @else {
                         <lucide-angular size="16" name="unfold-vertical" style="display: flex;" />
@@ -95,7 +89,7 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
                 <span class="Text">&#64;radix-ui/primitives</span>
             </div>
 
-            <div [@contentExpansion]="collapsibleRoot.isOpen() ? 'expanded' : 'collapsed'" rdxCollapsibleContent>
+            <div [@contentExpansion]="open() ? 'expanded' : 'collapsed'" rdxCollapsibleContent>
                 <div class="Repository">
                     <span class="Text">&#64;radix-ui/colors</span>
                 </div>
@@ -107,9 +101,5 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
     `
 })
 export class RdxCollapsibleAnimationComponent {
-    open = true;
-
-    onOpenChange($event: boolean) {
-        this.open = $event;
-    }
+    open = signal(true);
 }

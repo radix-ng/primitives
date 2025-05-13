@@ -1,11 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
+import { RdxCollapsibleContentPresenceDirective } from '../src/collapsible-content-presence.directive';
 import { RdxCollapsibleContentDirective } from '../src/collapsible-content.directive';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 
 @Component({
     selector: 'rdx-collapsible-external-triggering',
-    imports: [RdxCollapsibleRootDirective, RdxCollapsibleContentDirective, LucideAngularModule],
+    imports: [
+        RdxCollapsibleRootDirective,
+        RdxCollapsibleContentDirective,
+        LucideAngularModule,
+        RdxCollapsibleContentPresenceDirective
+    ],
     styles: `
         .CollapsibleRoot {
             width: 300px;
@@ -55,8 +61,9 @@ import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
         }
     `,
     template: `
-        <button class="ExternalTrigger" (click)="open = !open">External Trigger</button>
-        <div class="CollapsibleRoot" #collapsibleRoot="collapsibleRoot" [open]="open" rdxCollapsibleRoot>
+        <button class="ExternalTrigger" (click)="open.set(!open())">External Trigger</button>
+
+        <div class="CollapsibleRoot" [open]="open()" rdxCollapsibleRoot>
             <div style="display: flex; align-items: center; justify-content: space-between;">
                 <span class="Text" style="color: white">&#64;peduarte starred 3 repositories</span>
             </div>
@@ -66,16 +73,18 @@ import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
             </div>
 
             <div rdxCollapsibleContent>
-                <div class="Repository">
-                    <span class="Text">&#64;radix-ui/colors</span>
-                </div>
-                <div class="Repository">
-                    <span class="Text">&#64;stitches/react</span>
+                <div *rdxCollapsibleContentPresence>
+                    <div class="Repository">
+                        <span class="Text">&#64;radix-ui/colors</span>
+                    </div>
+                    <div class="Repository">
+                        <span class="Text">&#64;stitches/react</span>
+                    </div>
                 </div>
             </div>
         </div>
     `
 })
 export class RdxCollapsibleExternalTriggeringComponent {
-    open = true;
+    open = signal(true);
 }

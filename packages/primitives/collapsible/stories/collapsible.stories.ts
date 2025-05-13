@@ -96,11 +96,11 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: html`
-            <div class="CollapsibleRoot" rdxCollapsibleRoot [open]="true" #collapsibleRoot="collapsibleRoot">
+            <div class="CollapsibleRoot" rdxCollapsibleRoot [open]="true" #collapsibleRoot="rdxCollapsibleRoot">
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <span class="Text" style="color: white">&#64;peduarte starred 3 repositories</span>
-                    <button class="IconButton" rdxCollapsibleTrigger>
-                        @if (collapsibleRoot.isOpen()) {
+                    <button class="IconButton" type="button" rdxCollapsibleTrigger>
+                        @if (collapsibleRoot.open()) {
                         <lucide-angular size="16" name="x" style="display: flex;"></lucide-angular>
                         } @else {
                         <lucide-angular size="16" name="unfold-vertical" style="display: flex;"></lucide-angular>
@@ -128,14 +128,7 @@ export const Default: Story = {
 export const ExternalTrigger: Story = {
     render: () => ({
         template: html`
-            <div
-                class="radix-themes light light-theme radix-themes-default-fonts"
-                data-accent-color="indigo"
-                data-radius="medium"
-                data-scaling="100%"
-            >
-                <rdx-collapsible-external-triggering></rdx-collapsible-external-triggering>
-            </div>
+            <rdx-collapsible-external-triggering></rdx-collapsible-external-triggering>
         `
     })
 };
@@ -143,14 +136,7 @@ export const ExternalTrigger: Story = {
 export const Animation: Story = {
     render: () => ({
         template: html`
-            <div
-                class="radix-themes light light-theme radix-themes-default-fonts"
-                data-accent-color="indigo"
-                data-radius="medium"
-                data-scaling="100%"
-            >
-                <rdx-collapsible-animation></rdx-collapsible-animation>
-            </div>
+            <rdx-collapsible-animation></rdx-collapsible-animation>
         `
     })
 };
