@@ -10,9 +10,8 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: pnpm/action-setup@v4
-      with:
-        version: 9
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
 
     - name: Setup node
       uses: actions/setup-node@v4
