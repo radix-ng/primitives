@@ -4,11 +4,11 @@ import { injectCollapsibleRootContext } from './collapsible-root.directive';
 @Directive({
     selector: '[rdxCollapsibleContent]',
     host: {
-        '[attr.id]': 'rootContext.contentId',
+        '[attr.id]': 'rootContext.contentId()',
         '[attr.data-state]': 'rootContext.open() ? "open" : "closed"',
         '[attr.data-disabled]': 'rootContext.disabled() ? "true" : undefined',
-        '[attr.hidden]': '!rootContext.open() || undefined',
-        '[style]': 'style()'
+        '[attr.hidden]': '!rootContext.open() || null',
+        '[style]': 'hostStyles()'
     }
 })
 export class RdxCollapsibleContentDirective {
@@ -16,7 +16,7 @@ export class RdxCollapsibleContentDirective {
 
     protected readonly rootContext = injectCollapsibleRootContext()!;
 
-    protected style = computed(() => ({
+    protected hostStyles = computed(() => ({
         '--radix-collapsible-content-height': `${this.dimensions().height}px`,
         '--radix-collapsible-content-width': `${this.dimensions().width}px`
     }));
