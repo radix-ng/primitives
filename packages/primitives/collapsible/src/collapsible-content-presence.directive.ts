@@ -1,6 +1,6 @@
 import { Directive } from '@angular/core';
-import { injectCollapsibleRootContext } from '@radix-ng/primitives/collapsible';
 import { provideRdxPresenceContext, RdxPresenceDirective } from '@radix-ng/primitives/presence';
+import { injectCollapsibleRootContext } from './collapsible-root.directive';
 
 @Directive({
     selector: 'ng-template[rdxCollapsibleContentPresence]',
