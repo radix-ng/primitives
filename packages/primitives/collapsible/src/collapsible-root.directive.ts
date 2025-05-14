@@ -1,33 +1,68 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { booleanAttribute, contentChild, Directive, inject, InjectionToken, input, Input, output } from '@angular/core';
-import { asyncScheduler } from 'rxjs';
-import { RdxCollapsibleContentToken } from './collapsible-content.token';
-
-const RdxCollapsibleRootToken = new InjectionToken<RdxCollapsibleRootDirective>('RdxCollapsibleRootToken');
-
-export function injectCollapsible(): RdxCollapsibleRootDirective {
-    return inject(RdxCollapsibleRootDirective);
-}
+import {
+    booleanAttribute,
+    computed,
+    Directive,
+    inject,
+    input,
+    InputSignal,
+    InputSignalWithTransform,
+    model,
+    ModelSignal,
+    output,
+    untracked
+} from '@angular/core';
+import { createContext } from '@radix-ng/primitives/core';
 
 export type RdxCollapsibleState = 'open' | 'closed';
+
+export interface CollapsibleRootContext {
+    contentId: InputSignal<string>;
+    disabled: InputSignalWithTransform<boolean, BooleanInput>;
+    open: ModelSignal<boolean>;
+    onOpenToggle: () => void;
+}
+
+export const [injectCollapsibleRootContext, provideCollapsibleRootContext] =
+    createContext<CollapsibleRootContext>('CollapsibleRootContext');
+
+const rootContext = (): CollapsibleRootContext => {
+    const instance = inject(RdxCollapsibleRootDirective);
+
+    return {
+        contentId: instance.contentId,
+        disabled: instance.disabled,
+        open: instance.open,
+        onOpenToggle: () => {
+            untracked(() => instance.open.update((v) => !v));
+            instance.onOpenChange.emit(instance.open());
+        }
+    };
+};
 
 /**
  * @group Components
  */
 @Directive({
     selector: '[rdxCollapsibleRoot]',
-    exportAs: 'collapsibleRoot',
-    providers: [{ provide: RdxCollapsibleRootToken, useExisting: RdxCollapsibleRootDirective }],
+    exportAs: 'rdxCollapsibleRoot',
+    providers: [provideCollapsibleRootContext(rootContext)],
     host: {
-        '[attr.data-state]': 'getState()',
+        '[attr.data-state]': 'this.open() ? "open" : "closed"',
         '[attr.data-disabled]': 'disabled() ? "" : undefined'
     }
 })
 export class RdxCollapsibleRootDirective {
     /**
-     * Reference to RdxCollapsibleContent directive
+     * The controlled open state of the collapsible.
+     * Sets the state of the directive. `true` - expanded, `false` - collapsed
+     *
+     * @group Props
+     * @defaultValue false
      */
-    private readonly contentDirective = contentChild.required(RdxCollapsibleContentToken);
+    readonly open = model<boolean>(false);
+
+    readonly contentId = input<string>('');
 
     /**
      * Determines whether a directive is available for interaction.
@@ -38,31 +73,6 @@ export class RdxCollapsibleRootDirective {
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
-     * The controlled open state of the collapsible.
-     * Sets the state of the directive. `true` - expanded, `false` - collapsed
-     *
-     * @group Props
-     * @defaultValue false
-     */
-    @Input() set open(value: boolean) {
-        if (value !== this._open) {
-            this.onOpenChange.emit(value);
-        }
-
-        this._open = value;
-        this.setPresence();
-    }
-
-    get open(): boolean {
-        return this._open;
-    }
-
-    /**
-     * Stores collapsible state
-     */
-    private _open = false;
-
-    /**
      * Emitted with new value when directive state changed.
      * Event handler called when the open state of the collapsible changes.
      *
@@ -70,59 +80,5 @@ export class RdxCollapsibleRootDirective {
      */
     readonly onOpenChange = output<boolean>();
 
-    /**
-     * Allows to change directive state
-     * @param {boolean | undefined} value
-     * @ignore
-     */
-    setOpen(value?: boolean) {
-        if (this.disabled()) {
-            return;
-        }
-
-        if (value === undefined) {
-            this.open = !this.open;
-        } else {
-            this.open = value;
-        }
-
-        this.setPresence();
-    }
-
-    /**
-     * Returns directive state (open | closed)
-     * @ignore
-     */
-    getState(): RdxCollapsibleState {
-        return this.open ? 'open' : 'closed';
-    }
-
-    /**
-     * Returns current directive state
-     * @ignore
-     */
-    isOpen(): boolean {
-        return this.open;
-    }
-
-    /**
-     * Controls visibility of content
-     */
-    private setPresence(): void {
-        if (!this.contentDirective) {
-            return;
-        }
-
-        if (this.isOpen()) {
-            this.contentDirective().elementRef.nativeElement.removeAttribute('hidden');
-        } else {
-            asyncScheduler.schedule(() => {
-                const animations = this.contentDirective().elementRef.nativeElement.getAnimations();
-
-                if (animations === undefined || animations.length === 0) {
-                    this.contentDirective().elementRef.nativeElement.setAttribute('hidden', '');
-                }
-            });
-        }
-    }
+    isOpen = computed(() => this.open());
 }
