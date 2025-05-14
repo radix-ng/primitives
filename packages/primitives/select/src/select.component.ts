@@ -40,7 +40,9 @@ let nextId = 0;
             [cdkConnectedOverlayOrigin]="elementRef"
             [cdkConnectedOverlayPositions]="positions"
             [cdkConnectedOverlayScrollStrategy]="overlay.scrollStrategies.reposition()"
-            [cdkConnectedOverlayWidth]="triggerWidth() > 0 ? triggerWidth() : 'auto'"
+            [cdkConnectedOverlayMinWidth]="triggerWidth() > 0 ? triggerWidth() : 'auto'"
+            [cdkConnectedOverlayWidth]="matchTriggerWidth ? triggerWidth() : 'auto'"
+            [cdkConnectedOverlay]
             (attach)="onAttached()"
             (backdropClick)="close()"
             (detach)="onDetach()"
@@ -142,6 +144,12 @@ export class RdxSelectComponent implements OnInit, AfterContentInit {
     @Input({ transform: booleanAttribute }) disabled: boolean;
 
     @Input({ transform: booleanAttribute }) required: boolean;
+
+    /**
+     * The overlay width will be set to the trigger width if this is true.
+     * Otherwise, the overlay width will be set to the width of the content.
+     */
+    @Input({ transform: booleanAttribute }) matchTriggerWidth: boolean = false;
 
     /**
      * The controlled value of the item to expand

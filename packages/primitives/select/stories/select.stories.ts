@@ -93,6 +93,7 @@ export default {
 
                     .SelectViewport {
                         padding: 5px;
+                        width: 100%;
                     }
 
                     .SelectItem {
@@ -106,6 +107,11 @@ export default {
                         padding: 0 35px 0 25px;
                         position: relative;
                         user-select: none;
+                    }
+                    .SelectItem span {
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        overflow: hidden;
                     }
                     .SelectItem[data-disabled] {
                         color: var(--mauve-8);
@@ -212,7 +218,7 @@ export const Default: Story = {
                         @for (food of group.foods; track food) {
                         <div class="SelectItem" rdxSelectItem [value]="food.value" [disabled]="food.disabled">
                             <lucide-icon class="SelectItemIndicator" rdxSelectItemIndicator size="16" name="check" />
-                            {{ food.label }}
+                            <span>{{ food.label }}</span>
                         </div>
                         }
                     </div>
