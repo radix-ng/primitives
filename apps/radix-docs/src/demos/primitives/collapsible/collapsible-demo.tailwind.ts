@@ -28,7 +28,7 @@ import { LucideAngularModule, UnfoldVertical, X } from 'lucide-angular';
                     type="button"
                     rdxCollapsibleTrigger
                 >
-                    @if (collapsibleRoot.isOpen()) {
+                    @if (collapsibleRoot.open()) {
                         <lucide-angular [img]="XIcon" size="16" style="display: flex;" />
                     } @else {
                         <lucide-angular [img]="UnfoldVerticalIcon" size="16" style="display: flex;" />

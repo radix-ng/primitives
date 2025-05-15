@@ -1,3 +1,5 @@
+export type DataOrientation = 'vertical' | 'horizontal';
+
 /**
  * Nullable from `Type` adds `null` and `undefined`
  *

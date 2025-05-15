@@ -1,37 +1,25 @@
-import { Directive, ElementRef, inject } from '@angular/core';
-import { RdxAccordionItemDirective } from './accordion-item.directive';
-import { RdxAccordionRootDirective } from './accordion-root.directive';
+import { _IdGenerator } from '@angular/cdk/a11y';
+import { Directive, inject } from '@angular/core';
+import { RdxCollapsibleTriggerDirective } from '@radix-ng/primitives/collapsible';
+import { injectAccordionItemContext } from './accordion-item.directive';
+import { injectAccordionRootContext } from './accordion-root.directive';
 
 @Directive({
     selector: '[rdxAccordionTrigger]',
-    standalone: true,
+    hostDirectives: [RdxCollapsibleTriggerDirective],
     host: {
+        '[id]': 'itemContext.triggerId',
+        '[attr.data-rdx-collection-item]': '""',
         '[attr.role]': '"button"',
-        '[attr.aria-expanded]': 'item.expanded',
-        '[attr.data-state]': 'item.dataState',
-        '[attr.data-disabled]': 'item.disabled',
-        '[attr.disabled]': 'item.disabled ? "" : null',
-        '[attr.data-orientation]': 'item.orientation',
-        '(click)': 'onClick()'
+        '[attr.aria-disabled]': 'itemContext.disabled() || undefined',
+        '[attr.data-orientation]': 'rootContext.orientation()'
     }
 })
 export class RdxAccordionTriggerDirective {
-    protected readonly nativeElement = inject(ElementRef).nativeElement;
-    protected readonly accordionRoot = inject(RdxAccordionRootDirective);
-    protected readonly item = inject(RdxAccordionItemDirective);
+    protected readonly rootContext = injectAccordionRootContext()!;
+    protected readonly itemContext = injectAccordionItemContext()!;
 
-    /**
-     * Fires when trigger clicked
-     */
-    onClick(): void {
-        if (!this.accordionRoot.collapsible && this.item.expanded) return;
-
-        this.item.toggle();
-
-        this.accordionRoot.setActiveItem(this.item);
-    }
-
-    focus() {
-        this.nativeElement.focus();
+    constructor() {
+        this.itemContext.triggerId = inject(_IdGenerator).getId('rdx-accordion-trigger-');
     }
 }

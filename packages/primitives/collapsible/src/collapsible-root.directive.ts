@@ -1,15 +1,15 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
-    computed,
     Directive,
     inject,
     input,
     InputSignal,
-    InputSignalWithTransform,
+    linkedSignal,
     model,
     ModelSignal,
     output,
+    Signal,
     untracked
 } from '@angular/core';
 import { createContext } from '@radix-ng/primitives/core';
@@ -18,9 +18,9 @@ export type RdxCollapsibleState = 'open' | 'closed';
 
 export interface CollapsibleRootContext {
     contentId: InputSignal<string>;
-    disabled: InputSignalWithTransform<boolean, BooleanInput>;
     open: ModelSignal<boolean>;
-    onOpenToggle: () => void;
+    toggle: () => void;
+    disabled: Signal<boolean>;
 }
 
 export const [injectCollapsibleRootContext, provideCollapsibleRootContext] =
@@ -31,9 +31,9 @@ const rootContext = (): CollapsibleRootContext => {
 
     return {
         contentId: instance.contentId,
-        disabled: instance.disabled,
+        disabled: instance.isDisabled,
         open: instance.open,
-        onOpenToggle: () => {
+        toggle: () => {
             untracked(() => instance.open.update((v) => !v));
             instance.onOpenChange.emit(instance.open());
         }
@@ -48,7 +48,7 @@ const rootContext = (): CollapsibleRootContext => {
     exportAs: 'rdxCollapsibleRoot',
     providers: [provideCollapsibleRootContext(rootContext)],
     host: {
-        '[attr.data-state]': 'this.open() ? "open" : "closed"',
+        '[attr.data-state]': 'open() ? "open" : "closed"',
         '[attr.data-disabled]': 'disabled() ? "" : undefined'
     }
 })
@@ -72,6 +72,10 @@ export class RdxCollapsibleRootDirective {
      */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    readonly _disabled = linkedSignal(this.disabled);
+
+    readonly isDisabled = this._disabled.asReadonly();
+
     /**
      * Emitted with new value when directive state changed.
      * Event handler called when the open state of the collapsible changes.
@@ -79,6 +83,4 @@ export class RdxCollapsibleRootDirective {
      * @group Emits
      */
     readonly onOpenChange = output<boolean>();
-
-    isOpen = computed(() => this.open());
 }

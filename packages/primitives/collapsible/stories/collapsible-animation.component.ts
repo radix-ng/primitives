@@ -15,7 +15,6 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
         LucideAngularModule,
         RdxCollapsibleContentPresenceDirective
     ],
-    // prettier-ignore
     animations: [
         trigger('contentExpansion', [
             state('expanded', style({ height: '*', opacity: 1, visibility: 'visible' })),

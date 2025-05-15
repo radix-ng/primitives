@@ -20,5 +20,7 @@ export * from './src/date-time';
 export * from './src/positioning/constants';
 export * from './src/positioning/types';
 export * from './src/positioning/utils';
+export * from './src/types';
+export * from './src/useArrowNavigation';
 export * from './src/useResizeObserver';
 export * from './src/watch';

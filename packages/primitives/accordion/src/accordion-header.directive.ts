@@ -1,15 +1,16 @@
-import { Directive, inject } from '@angular/core';
-import { RdxAccordionItemDirective } from './accordion-item.directive';
+import { Directive } from '@angular/core';
+import { injectAccordionItemContext } from './accordion-item.directive';
+import { injectAccordionRootContext } from './accordion-root.directive';
 
 @Directive({
     selector: '[rdxAccordionHeader]',
-    standalone: true,
     host: {
-        '[attr.data-state]': 'item.dataState',
-        '[attr.data-disabled]': 'item.disabled',
-        '[attr.data-orientation]': 'item.orientation'
+        '[attr.data-state]': 'itemContext.dataState()',
+        '[attr.data-disabled]': 'itemContext.dataDisabled()',
+        '[attr.data-orientation]': 'rootContext.orientation()'
     }
 })
 export class RdxAccordionHeaderDirective {
-    protected readonly item = inject(RdxAccordionItemDirective);
+    protected readonly rootContext = injectAccordionRootContext()!;
+    protected readonly itemContext = injectAccordionItemContext()!;
 }

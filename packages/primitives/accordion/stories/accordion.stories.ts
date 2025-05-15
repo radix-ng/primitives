@@ -6,6 +6,7 @@ import { RdxAccordionHeaderDirective } from '../src/accordion-header.directive';
 import { RdxAccordionItemDirective } from '../src/accordion-item.directive';
 import { RdxAccordionRootDirective } from '../src/accordion-root.directive';
 import { RdxAccordionTriggerDirective } from '../src/accordion-trigger.directive';
+import { AccordionStory } from './accordion';
 
 const html = String.raw;
 
@@ -21,13 +22,15 @@ export default {
                 RdxAccordionContentDirective,
                 BrowserAnimationsModule,
                 LucideAngularModule,
-                LucideAngularModule.pick({ ChevronDown })
+                LucideAngularModule.pick({ ChevronDown }),
+                AccordionStory
             ],
             providers: [provideAnimations()]
         }),
         componentWrapperDecorator(
-            (story) => `
-                <div class="radix-themes light light-theme radix-themes-default-fonts"
+            (story) => html`
+                <div
+                    class="radix-themes light light-theme radix-themes-default-fonts"
                     data-accent-color="indigo"
                     data-radius="medium"
                     data-scaling="100%"
@@ -48,11 +51,11 @@ export default {
                         box-shadow: 0 2px 10px var(--black-a4);
                     }
 
-                    .AccordionRoot[data-orientation="vertical"] {
+                    .AccordionRoot[data-orientation='vertical'] {
                         width: 300px;
                     }
 
-                    .AccordionRoot[data-orientation="horizontal"] {
+                    .AccordionRoot[data-orientation='horizontal'] {
                         height: 300px;
 
                         display: flex;
@@ -64,28 +67,28 @@ export default {
                         margin-top: 1px;
                     }
 
-                    .AccordionItem[data-orientation="horizontal"] {
+                    .AccordionItem[data-orientation='horizontal'] {
                         display: flex;
                     }
 
-                    .AccordionItem[data-orientation="vertical"]:first-child {
+                    .AccordionItem[data-orientation='vertical']:first-child {
                         margin-top: 0;
                         border-top-left-radius: 4px;
                         border-top-right-radius: 4px;
                     }
 
-                    .AccordionItem[data-orientation="vertical"]:last-child {
+                    .AccordionItem[data-orientation='vertical']:last-child {
                         border-bottom-left-radius: 4px;
                         border-bottom-right-radius: 4px;
                     }
 
-                    .AccordionItem[data-orientation="horizontal"]:first-child {
+                    .AccordionItem[data-orientation='horizontal']:first-child {
                         margin-top: 0;
                         border-top-left-radius: 4px;
                         border-bottom-left-radius: 4px;
                     }
 
-                    .AccordionItem[data-orientation="horizontal"]:last-child {
+                    .AccordionItem[data-orientation='horizontal']:last-child {
                         border-top-right-radius: 4px;
                         border-bottom-right-radius: 4px;
                     }
@@ -116,13 +119,13 @@ export default {
                         cursor: default;
                     }
 
-                    .AccordionTrigger[data-orientation="horizontal"] {
+                    .AccordionTrigger[data-orientation='horizontal'] {
                         height: 100%;
                         padding: 20px;
                         writing-mode: vertical-rl;
                     }
 
-                    .AccordionTrigger[data-disabled="true"] {
+                    .AccordionTrigger[data-disabled='true'] {
                         color: var(--gray-7);
                     }
 
@@ -131,24 +134,26 @@ export default {
                     }
 
                     .AccordionContent {
-                        display: flex;
                         overflow: hidden;
                         font-size: 15px;
                         color: var(--mauve-11);
                         background-color: var(--mauve-2);
                     }
+
                     .AccordionContent[data-orientation='vertical'][data-state='open'] {
-                        animation: slideDown 300ms cubic-bezier(0.87, 0, 0.13, 1);
+                        animation: slideDown 300ms cubic-bezier(0.87, 0, 0.13, 1) !important;
                     }
+
                     .AccordionContent[data-orientation='vertical'][data-state='closed'] {
-                        animation: slideUp 300ms cubic-bezier(0.87, 0, 0.13, 1);
+                        animation: slideUp 300ms cubic-bezier(0.87, 0, 0.13, 1) !important;
                     }
 
                     .AccordionContent[data-orientation='horizontal'][data-state='open'] {
-                        animation: slideRight 300ms cubic-bezier(0.87, 0, 0.13, 1);
+                        animation: slideRight 300ms cubic-bezier(0.87, 0, 0.13, 1) !important;
                     }
+
                     .AccordionContent[data-orientation='horizontal'][data-state='closed'] {
-                        animation: slideLeft 300ms cubic-bezier(0.87, 0, 0.13, 1);
+                        animation: slideLeft 300ms cubic-bezier(0.87, 0, 0.13, 1) !important;
                     }
 
                     .AccordionContentText {
@@ -203,7 +208,8 @@ export default {
                             width: 0;
                         }
                     }
-                </style>`
+                </style>
+            `
         )
     ]
 } as Meta;
@@ -213,47 +219,7 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: html`
-            <div class="AccordionRoot" rdxAccordionRoot [defaultValue]="'item-1'">
-                <div class="AccordionItem" [value]="'item-1'" rdxAccordionItem>
-                    <div class="AccordionHeader" rdxAccordionHeader>
-                        <button class="AccordionTrigger" type="button" rdxAccordionTrigger>
-                            Is it accessible?
-                            <lucide-icon class="AccordionChevron" aria-hidden size="16" name="chevron-down" />
-                        </button>
-                    </div>
-                    <div class="AccordionContent" rdxAccordionContent>
-                        <div class="AccordionContentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
-                    </div>
-                </div>
-
-                <div class="AccordionItem" [value]="'item-2'" rdxAccordionItem [disabled]="true">
-                    <div class="AccordionHeader" rdxAccordionHeader>
-                        <button class="AccordionTrigger" type="button" rdxAccordionTrigger>
-                            Is it unstyled?
-                            <lucide-icon class="AccordionChevron" aria-hidden size="16" name="chevron-down" />
-                        </button>
-                    </div>
-                    <div class="AccordionContent" rdxAccordionContent>
-                        <div class="AccordionContentText">
-                            Yes. It's unstyled by default, giving you freedom over the look and feel.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="AccordionItem" [value]="'item-3'" rdxAccordionItem>
-                    <div class="AccordionHeader" rdxAccordionHeader>
-                        <button class="AccordionTrigger" type="button" rdxAccordionTrigger>
-                            Can it be animated?
-                            <lucide-icon class="AccordionChevron" aria-hidden size="16" name="chevron-down" />
-                        </button>
-                    </div>
-                    <div class="AccordionContent" rdxAccordionContent>
-                        <div class="AccordionContentText">
-                            Yes! You can animate the Accordion with CSS or JavaScript.
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <rdx-accordion-story />
         `
     })
 };

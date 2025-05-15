@@ -1,80 +1,77 @@
-import { FocusKeyManager } from '@angular/cdk/a11y';
-import { Directionality } from '@angular/cdk/bidi';
-import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
-import { ENTER, SPACE, TAB } from '@angular/cdk/keycodes';
+import { _IdGenerator } from '@angular/cdk/a11y';
+import { Direction } from '@angular/cdk/bidi';
+import { BooleanInput } from '@angular/cdk/coercion';
 import {
-    AfterContentInit,
     booleanAttribute,
-    ContentChildren,
+    computed,
     Directive,
-    EventEmitter,
-    forwardRef,
+    effect,
+    ElementRef,
     inject,
-    InjectionToken,
-    Input,
-    OnDestroy,
-    Output,
-    QueryList
+    input,
+    InputSignal,
+    InputSignalWithTransform,
+    model,
+    ModelSignal,
+    output,
+    Signal
 } from '@angular/core';
-import { merge, Subject, Subscription } from 'rxjs';
-import { RdxAccordionItemDirective } from './accordion-item.directive';
+import { createContext, DataOrientation } from '@radix-ng/primitives/core';
 
-export type RdxAccordionType = 'single' | 'multiple';
-export type RdxAccordionOrientation = 'horizontal' | 'vertical';
+export type AccordionRootContext = {
+    disabled: InputSignalWithTransform<boolean, BooleanInput>;
+    direction: InputSignal<Direction>;
+    orientation: InputSignal<DataOrientation>;
+    value: ModelSignal<string | string[] | undefined>;
+    collapsible: Signal<boolean>;
+    isSingle: Signal<boolean>;
+    elementRef: ElementRef<HTMLElement>;
+    changeModelValue: (value: string, isOpen: boolean) => void;
+    isItemOpen: (value: string) => boolean;
+};
 
-export const RdxAccordionRootToken = new InjectionToken<RdxAccordionRootDirective>('RdxAccordionRootDirective');
+export const [injectAccordionRootContext, provideAccordionRootContext] =
+    createContext<AccordionRootContext>('AccordionRootContext');
 
-let nextId = 0;
+const rootContext = (): AccordionRootContext => {
+    const instance = inject(RdxAccordionRootDirective);
+
+    return {
+        disabled: instance.disabled,
+        direction: instance.dir,
+        collapsible: instance.isCollapsible,
+        orientation: instance.orientation,
+        elementRef: instance.elementRef,
+        value: instance.value,
+        isSingle: instance.isSingle,
+        changeModelValue: instance.changeModelValue,
+        isItemOpen: instance.isItemOpen
+    };
+};
 
 /**
  * @group Components
  */
 @Directive({
     selector: '[rdxAccordionRoot]',
-    standalone: true,
-    providers: [
-        { provide: RdxAccordionRootToken, useExisting: RdxAccordionRootDirective },
-        { provide: UniqueSelectionDispatcher, useClass: UniqueSelectionDispatcher }
-    ],
+    exportAs: 'rdxAccordionRoot',
+    providers: [provideAccordionRootContext(rootContext)],
     host: {
-        '[attr.data-orientation]': 'orientation',
-        '(keydown)': 'handleKeydown($event)'
+        '[attr.data-orientation]': 'orientation()'
     }
 })
-export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
-    /**
-     * @ignore
-     */
-    protected readonly selectionDispatcher = inject(UniqueSelectionDispatcher);
-    /**
-     * @ignore
-     */
-    protected readonly dir = inject(Directionality, { optional: true });
+export class RdxAccordionRootDirective {
+    readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
-    /**
-     * @ignore
-     */
-    protected keyManager: FocusKeyManager<RdxAccordionItemDirective>;
+    readonly id = input<string>(inject(_IdGenerator).getId('rdx-accordion-'));
 
-    /**
-     * @ignore
-     */
-    readonly id: string = `rdx-accordion-${nextId++}`;
-
-    /**
-     * @ignore
-     */
-    readonly openCloseAllActions = new Subject<boolean>();
-
-    get isMultiple(): boolean {
-        return this.type === 'multiple';
-    }
+    readonly dir = input<Direction>('ltr');
 
     /** Whether the Accordion is disabled.
      * @defaultValue false
      * @group Props
      */
-    @Input({ transform: booleanAttribute }) disabled: boolean;
+    readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
      * The orientation of the accordion.
@@ -82,155 +79,65 @@ export class RdxAccordionRootDirective implements AfterContentInit, OnDestroy {
      * @defaultValue 'vertical'
      * @group Props
      */
-    @Input() orientation: RdxAccordionOrientation = 'vertical';
-    /**
-     * @private
-     * @ignore
-     */
-    @ContentChildren(forwardRef(() => RdxAccordionItemDirective), { descendants: true })
-    items: QueryList<RdxAccordionItemDirective>;
+    readonly orientation = input<DataOrientation>('vertical');
 
-    /**
-     * The value of the item to expand when initially rendered and type is "single".
-     * Use when you do not need to control the state of the items.
-     * @group Props
-     */
-    @Input()
-    set defaultValue(value: string[] | string) {
-        if (value !== this._defaultValue) {
-            this._defaultValue = Array.isArray(value) ? value : [value];
-        }
-    }
-
-    get defaultValue(): string[] | string {
-        return this.isMultiple ? this._defaultValue : this._defaultValue[0];
-    }
-
-    /**
-     * Determines whether one or multiple items can be opened at the same time.
-     * @group Props
-     * @defaultValue 'single'
-     */
-    @Input() type: RdxAccordionType = 'single';
-
-    /**
-     * @ignore
-     */
-    @Input() collapsible = true;
+    readonly defaultValue = input<string | string[]>();
 
     /**
      * The controlled value of the item to expand.
      *
      * @group Props
      */
-    @Input()
-    set value(value: string[] | string) {
-        if (value !== this._value) {
-            this._value = Array.isArray(value) ? value : [value];
+    readonly value = model<string | string[]>();
 
-            this.selectionDispatcher.notify(this.value as unknown as string, this.id);
-        }
-    }
+    readonly collapsible = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    get value(): string[] | string {
-        if (this._value === undefined) {
-            return this.defaultValue;
-        }
-
-        return this.isMultiple ? this._value : this._value[0];
-    }
+    readonly type = input<'multiple' | 'single'>('single');
 
     /**
      * Event handler called when the expanded state of an item changes and type is "multiple".
      * @group Emits
      */
-    @Output() readonly onValueChange: EventEmitter<void> = new EventEmitter<void>();
+    readonly onValueChange = output();
 
-    private _value?: string[];
-    private _defaultValue: string[] | string = [];
+    readonly isCollapsible = computed(() => {
+        return this.collapsible();
+    });
 
-    private onValueChangeSubscription: Subscription;
+    readonly isSingle = computed(() => this.type() === 'single');
 
-    /**
-     * @ignore
-     */
-    ngAfterContentInit(): void {
-        this.selectionDispatcher.notify((this._value ?? this._defaultValue) as unknown as string, this.id);
+    constructor() {
+        effect(() => {
+            if (this.defaultValue() !== undefined) {
+                this.value.set(this.defaultValue());
+            }
+        });
+    }
 
-        this.keyManager = new FocusKeyManager(this.items).withHomeAndEnd();
+    changeModelValue = (value: string, isOpen: boolean) => {
+        if (!isOpen && !this.isCollapsible()) {
+            return;
+        }
 
-        if (this.orientation === 'horizontal') {
-            this.keyManager.withHorizontalOrientation(this.dir?.value || 'ltr');
+        if (this.type() === 'multiple') {
+            this.value.update((v) => {
+                if (Array.isArray(v)) {
+                    return isOpen ? [...v, value] : v.filter((i) => i !== value);
+                }
+                return isOpen ? [value] : [];
+            });
         } else {
-            this.keyManager.withVerticalOrientation();
+            if (isOpen) {
+                this.value.set(value);
+            }
+        }
+    };
+
+    isItemOpen = (value: string) => {
+        if (this.type() == 'multiple') {
+            return !!this.value()?.includes(value);
         }
 
-        this.onValueChangeSubscription = merge(...this.items.map((item) => item.expandedChange)).subscribe(() =>
-            this.onValueChange.emit()
-        );
-    }
-
-    /**
-     * @ignore
-     */
-    ngOnDestroy() {
-        this.openCloseAllActions.complete();
-        this.onValueChangeSubscription.unsubscribe();
-    }
-
-    /**
-     * @ignore
-     */
-    handleKeydown(event: KeyboardEvent) {
-        if (!this.keyManager.activeItem) {
-            this.keyManager.setFirstItemActive();
-        }
-
-        const activeItem = this.keyManager.activeItem;
-
-        if (
-            (event.keyCode === ENTER || event.keyCode === SPACE) &&
-            !this.keyManager.isTyping() &&
-            activeItem &&
-            !activeItem.disabled
-        ) {
-            event.preventDefault();
-            activeItem.toggle();
-        } else if (event.keyCode === TAB && event.shiftKey) {
-            if (this.keyManager.activeItemIndex === 0) return;
-
-            this.keyManager.setPreviousItemActive();
-            event.preventDefault();
-        } else if (event.keyCode === TAB) {
-            if (this.keyManager.activeItemIndex === this.items.length - 1) return;
-
-            this.keyManager.setNextItemActive();
-            event.preventDefault();
-        } else {
-            this.keyManager.onKeydown(event);
-        }
-    }
-
-    /** Opens all enabled accordion items in an accordion where multi is enabled.
-     * @ignore
-     */
-    openAll(): void {
-        if (this.isMultiple) {
-            this.openCloseAllActions.next(true);
-        }
-    }
-
-    /** Closes all enabled accordion items.
-     * @ignore
-     */
-    closeAll(): void {
-        this.openCloseAllActions.next(false);
-    }
-
-    /**
-     * @ignore
-     */
-    setActiveItem(item: RdxAccordionItemDirective) {
-        this.keyManager.setActiveItem(item);
-    }
+        return this.value() === value;
+    };
 }

@@ -1,225 +1,120 @@
-import { FocusableOption } from '@angular/cdk/a11y';
-import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
-import {
-    booleanAttribute,
-    ChangeDetectorRef,
-    ContentChild,
-    Directive,
-    EventEmitter,
-    forwardRef,
-    inject,
-    Input,
-    OnDestroy,
-    Output
-} from '@angular/core';
-import { Subscription } from 'rxjs';
-import { RdxAccordionContentDirective } from './accordion-content.directive';
-import { RdxAccordionOrientation, RdxAccordionRootToken } from './accordion-root.directive';
-import { RdxAccordionTriggerDirective } from './accordion-trigger.directive';
+import { BooleanInput } from '@angular/cdk/coercion';
+import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input, Signal } from '@angular/core';
+import { injectCollapsibleRootContext, RdxCollapsibleRootDirective } from '@radix-ng/primitives/collapsible';
+import { createContext, useArrowNavigation } from '@radix-ng/primitives/core';
+import { injectAccordionRootContext } from './accordion-root.directive';
 
 export type RdxAccordionItemState = 'open' | 'closed';
 
-let nextId = 0;
+export type AccordionItemContext = {
+    open: Signal<boolean>;
+    disabled: Signal<boolean>;
+    triggerId: string;
+    dataState: Signal<RdxAccordionItemState>;
+    dataDisabled: Signal<boolean>;
+    currentElement: ElementRef<HTMLElement>;
+    value: Signal<string | undefined>;
+};
+
+export const [injectAccordionItemContext, provideAccordionItemContext] =
+    createContext<AccordionItemContext>('AccordionItemContext');
+
+const itemContext = (): AccordionItemContext => {
+    const instance = inject(RdxAccordionItemDirective);
+
+    return {
+        open: instance.open,
+        dataState: instance.dataState,
+        disabled: instance.disabled,
+        dataDisabled: instance.isDisabled,
+        triggerId: '',
+        currentElement: instance.elementRef,
+        value: computed(() => instance.value())
+    };
+};
 
 /**
  * @group Components
  */
 @Directive({
     selector: '[rdxAccordionItem]',
-    standalone: true,
     exportAs: 'rdxAccordionItem',
-    host: {
-        '[attr.data-state]': 'dataState',
-        '[attr.data-disabled]': 'disabled',
-        '[attr.data-orientation]': 'orientation'
-    },
-    providers: [{ provide: RdxAccordionRootToken, useValue: undefined }]
-})
-export class RdxAccordionItemDirective implements FocusableOption, OnDestroy {
-    protected readonly accordion = inject(RdxAccordionRootToken, { skipSelf: true });
-
-    protected readonly changeDetectorRef = inject(ChangeDetectorRef);
-
-    protected readonly expansionDispatcher = inject(UniqueSelectionDispatcher);
-
-    /**
-     * @ignore
-     */
-    @ContentChild(RdxAccordionTriggerDirective, { descendants: true }) trigger: RdxAccordionTriggerDirective;
-
-    /**
-     * @ignore
-     */
-    @ContentChild(forwardRef(() => RdxAccordionContentDirective), { descendants: true })
-    content: RdxAccordionContentDirective;
-
-    get dataState(): RdxAccordionItemState {
-        return this.expanded ? 'open' : 'closed';
-    }
-
-    /**
-     * The unique AccordionItem id.
-     * @ignore
-     */
-    readonly id: string = `rdx-accordion-item-${nextId++}`;
-
-    get orientation(): RdxAccordionOrientation {
-        return this.accordion.orientation;
-    }
-
-    /**
-     * @defaultValue false
-     * @group Props
-     */
-    @Input({ transform: booleanAttribute })
-    set expanded(expanded: boolean) {
-        // Only emit events and update the internal value if the value changes.
-        if (this._expanded !== expanded) {
-            this._expanded = expanded;
-            this.expandedChange.emit(expanded);
-
-            if (expanded) {
-                this.opened.emit();
-                /**
-                 * In the unique selection dispatcher, the id parameter is the id of the CdkAccordionItem,
-                 * the name value is the id of the accordion.
-                 */
-                const accordionId = this.accordion ? this.accordion.id : this.value;
-                this.expansionDispatcher.notify(this.value, accordionId);
-            } else {
-                this.closed.emit();
-            }
-
-            // Ensures that the animation will run when the value is set outside of an `@Input`.
-            // This includes cases like the open, close and toggle methods.
-            this.changeDetectorRef.markForCheck();
+    providers: [provideAccordionItemContext(itemContext)],
+    hostDirectives: [
+        {
+            directive: RdxCollapsibleRootDirective,
+            inputs: ['disabled: disabled']
         }
+    ],
+    host: {
+        '[attr.data-orientation]': 'rootContext.orientation()',
+        '[attr.data-disabled]': 'disabled() ? "" : undefined',
+        '[attr.data-state]': 'dataState()',
+
+        '(keydown.arrowDown)': 'handleArrowKey($event)',
+        '(keydown.arrowUp)': 'handleArrowKey($event)',
+        '(keydown.arrowLeft)': 'handleArrowKey($event)',
+        '(keydown.arrowRight)': 'handleArrowKey($event)',
+        '(keydown.home)': 'handleArrowKey($event)',
+        '(keydown.end)': 'handleArrowKey($event)'
     }
+})
+export class RdxAccordionItemDirective {
+    readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
-    get expanded(): boolean {
-        return this._expanded;
-    }
+    private readonly collapsibleContext = injectCollapsibleRootContext()!;
 
-    private _expanded = false;
+    protected readonly rootContext = injectAccordionRootContext()!;
 
-    /**
-     * Accordion value.
-     *
-     * @group Props
-     */
-    @Input() set value(value: string) {
-        this._value = value;
-    }
+    readonly value = input<string>();
 
-    get value(): string {
-        return this._value || this.id;
-    }
+    readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    private _value?: string;
+    readonly isDisabled = computed(() => {
+        return this.rootContext.disabled() || this.disabled();
+    });
 
-    /**
-     * Whether the AccordionItem is disabled.
-     *
-     * @defaultValue false
-     * @group Props
-     */
-    @Input({ transform: booleanAttribute }) set disabled(value: boolean) {
-        this._disabled = value;
-    }
+    readonly open = computed(() => this.rootContext.isItemOpen(this.value()!));
 
-    get disabled(): boolean {
-        return this.accordion.disabled ?? this._disabled;
-    }
-
-    private _disabled = false;
-
-    /**
-     * Event emitted every time the AccordionItem is closed.
-     */
-    @Output() readonly closed: EventEmitter<void> = new EventEmitter<void>();
-
-    /** Event emitted every time the AccordionItem is opened. */
-    @Output() readonly opened: EventEmitter<void> = new EventEmitter<void>();
-
-    /**
-     * Event emitted when the AccordionItem is destroyed.
-     * @ignore
-     */
-    readonly destroyed: EventEmitter<void> = new EventEmitter<void>();
-
-    /**
-     * Emits whenever the expanded state of the accordion changes.
-     * Primarily used to facilitate two-way binding.
-     * @group Emits
-     */
-    @Output() readonly expandedChange: EventEmitter<boolean> = new EventEmitter<boolean>();
-
-    /** Unregister function for expansionDispatcher. */
-    private removeUniqueSelectionListener: () => void;
-
-    /** Subscription to openAll/closeAll events. */
-    private openCloseAllSubscription = Subscription.EMPTY;
+    readonly dataState = computed((): RdxAccordionItemState => (this.open() ? 'open' : 'closed'));
 
     constructor() {
-        this.removeUniqueSelectionListener = this.expansionDispatcher.listen((id: string, accordionId: string) => {
-            if (this.accordion.isMultiple) {
-                if (this.accordion.id === accordionId && id.includes(this.value)) {
-                    this.expanded = true;
-                }
-            } else {
-                this.expanded = this.accordion.id === accordionId && id.includes(this.value);
-            }
+        effect(() => {
+            this.rootContext.changeModelValue(this.value()!, this.collapsibleContext.open());
         });
 
-        // When an accordion item is hosted in an accordion, subscribe to open/close events.
-        if (this.accordion) {
-            this.openCloseAllSubscription = this.subscribeToOpenCloseAllActions();
-        }
-    }
+        let onMount = false;
 
-    /** Emits an event for the accordion item being destroyed. */
-    ngOnDestroy() {
-        this.opened.complete();
-        this.closed.complete();
-        this.destroyed.emit();
-        this.destroyed.complete();
-        this.removeUniqueSelectionListener();
-        this.openCloseAllSubscription.unsubscribe();
-    }
+        effect(() => {
+            if (!onMount && this.open() && !this.collapsibleContext.open()) {
+                this.collapsibleContext.toggle();
+                onMount = true;
+            }
 
-    focus(): void {
-        this.trigger.focus();
-    }
-
-    /** Toggles the expanded state of the accordion item. */
-    toggle(): void {
-        if (!this.disabled) {
-            this.content.onToggle();
-
-            this.expanded = !this.expanded;
-        }
-    }
-
-    /** Sets the expanded state of the accordion item to false. */
-    close(): void {
-        if (!this.disabled) {
-            this.expanded = false;
-        }
-    }
-
-    /** Sets the expanded state of the accordion item to true. */
-    open(): void {
-        if (!this.disabled) {
-            this.expanded = true;
-        }
-    }
-
-    private subscribeToOpenCloseAllActions(): Subscription {
-        return this.accordion.openCloseAllActions.subscribe((expanded) => {
-            // Only change expanded state if item is enabled
-            if (!this.disabled) {
-                this.expanded = expanded;
+            if (!this.open() && this.collapsibleContext.open()) {
+                this.collapsibleContext.toggle();
             }
         });
+    }
+
+    handleArrowKey(event: KeyboardEvent) {
+        const target = event.target as HTMLElement;
+        const allCollectionItems: HTMLElement[] = Array.from(
+            this.rootContext.elementRef.nativeElement?.querySelectorAll('[data-rdx-collection-item]') ?? []
+        );
+
+        const collectionItemIndex = allCollectionItems.findIndex((item) => item === target);
+        if (collectionItemIndex === -1) return;
+
+        useArrowNavigation(
+            event,
+            this.elementRef.nativeElement.querySelector('[data-rdx-collection-item]')!,
+            this.rootContext.elementRef.nativeElement!,
+            {
+                arrowKeyOptions: this.rootContext.orientation(),
+                dir: this.rootContext.direction(),
+                focus: true
+            }
+        );
     }
 }

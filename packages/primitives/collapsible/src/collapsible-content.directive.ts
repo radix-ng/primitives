@@ -4,7 +4,8 @@ import { injectCollapsibleRootContext } from './collapsible-root.directive';
 @Directive({
     selector: '[rdxCollapsibleContent]',
     host: {
-        '[attr.id]': 'rootContext.contentId()',
+        id: 'rootContext.contentId()',
+
         '[attr.data-state]': 'rootContext.open() ? "open" : "closed"',
         '[attr.data-disabled]': 'rootContext.disabled() ? "true" : undefined',
         '[attr.hidden]': '!rootContext.open() || null',
