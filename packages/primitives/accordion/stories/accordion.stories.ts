@@ -1,12 +1,11 @@
 import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { ChevronDown, LucideAngularModule } from 'lucide-angular';
 import { RdxAccordionContentDirective } from '../src/accordion-content.directive';
 import { RdxAccordionHeaderDirective } from '../src/accordion-header.directive';
 import { RdxAccordionItemDirective } from '../src/accordion-item.directive';
 import { RdxAccordionRootDirective } from '../src/accordion-root.directive';
 import { RdxAccordionTriggerDirective } from '../src/accordion-trigger.directive';
-import { AccordionMultipleStory, AccordionStory } from './accordion';
+import { AccordionHorizontalStory, AccordionMultipleStory, AccordionStory } from './accordion';
 
 const html = String.raw;
 
@@ -21,10 +20,9 @@ export default {
                 RdxAccordionTriggerDirective,
                 RdxAccordionContentDirective,
                 BrowserAnimationsModule,
-                LucideAngularModule,
-                LucideAngularModule.pick({ ChevronDown }),
                 AccordionStory,
-                AccordionMultipleStory
+                AccordionMultipleStory,
+                AccordionHorizontalStory
             ],
             providers: [provideAnimations()]
         }),
@@ -64,44 +62,7 @@ export const Multiple: Story = {
 export const Horizontal: Story = {
     render: () => ({
         template: html`
-            <div class="horizontal-flex-container">
-                <div class="AccordionRoot" rdxAccordionRoot [defaultValue]="'item-1'" [orientation]="'horizontal'">
-                    <div class="AccordionItem" [value]="'item-1'" rdxAccordionItem>
-                        <div class="AccordionHeader" rdxAccordionHeader>
-                            <button class="AccordionTrigger" type="button" rdxAccordionTrigger>
-                                Is it accessible?
-                            </button>
-                        </div>
-                        <div class="AccordionContent" rdxAccordionContent>
-                            <div class="AccordionContentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
-                        </div>
-                    </div>
-
-                    <div class="AccordionItem" [value]="'item-2'" rdxAccordionItem [disabled]="true">
-                        <div class="AccordionHeader" rdxAccordionHeader>
-                            <button class="AccordionTrigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
-                        </div>
-                        <div class="AccordionContent" rdxAccordionContent>
-                            <div class="AccordionContentText">
-                                Yes. It's unstyled by default, giving you freedom over the look and feel.
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="AccordionItem" [value]="'item-3'" rdxAccordionItem>
-                        <div class="AccordionHeader" rdxAccordionHeader>
-                            <button class="AccordionTrigger" type="button" rdxAccordionTrigger>
-                                Can it be animated?
-                            </button>
-                        </div>
-                        <div class="AccordionContent" rdxAccordionContent>
-                            <div class="AccordionContentText">
-                                Yes! You can animate the Accordion with CSS or JavaScript.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <rdx-accordion-horizontal-story />
         `
     })
 };
