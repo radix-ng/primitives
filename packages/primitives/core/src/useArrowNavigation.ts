@@ -15,7 +15,7 @@ interface ArrowNavigationOptions {
     /**
      * The attribute name to find the collection items in the parent element.
      *
-     * @defaultValue "data-reka-collection-item"
+     * @defaultValue "data-rdx-collection-item"
      */
     attributeName?: string;
 
@@ -67,7 +67,7 @@ interface ArrowNavigationOptions {
 const ignoredElement = ['INPUT', 'TEXTAREA'];
 
 /**
- * Allow arrow navigation for every html element with data-reka-collection-item tag
+ * Allow arrow navigation for every html element with data-rdx-collection-item tag
  *
  * @param e               Keyboard event
  * @param currentElement  Event initiator element or any element that wants to handle the navigation
@@ -86,7 +86,7 @@ export function useArrowNavigation(
 
     const {
         arrowKeyOptions = 'both',
-        attributeName = '[data-reka-collection-item]',
+        attributeName = '[data-rdx-collection-item]',
         itemsArray = [],
         loop = true,
         dir = 'ltr',
@@ -160,6 +160,7 @@ interface FindNextFocusableElementOptions {
  * @param elements Elements to navigate
  * @param currentElement Current active element
  * @param options
+ * @param iterations
  * @returns next focusable element
  */
 function findNextFocusableElement(

@@ -1,46 +1,24 @@
-import { Directive, ElementRef, inject } from '@angular/core';
-import { RdxAccordionItemDirective } from './accordion-item.directive';
+import { Directive } from '@angular/core';
+import { RdxCollapsibleContentDirective } from '@radix-ng/primitives/collapsible';
+import { injectAccordionItemContext } from './accordion-item.directive';
+import { injectAccordionRootContext } from './accordion-root.directive';
 
 @Directive({
     selector: '[rdxAccordionContent]',
-    standalone: true,
-    exportAs: 'rdxAccordionContent',
+    hostDirectives: [RdxCollapsibleContentDirective],
     host: {
-        '[attr.role]': '"region"',
-        '[style.display]': 'hidden ? "none" : ""',
-        '[attr.data-state]': 'item.dataState',
-        '[attr.data-disabled]': 'item.disabled',
-        '[attr.data-orientation]': 'item.orientation',
-        '(animationend)': 'onAnimationEnd()'
+        role: 'region',
+        '[attr.aria-labelledby]': 'itemContext.triggerId',
+        '[attr.data-state]': 'itemContext.dataState()',
+        '[attr.data-disabled]': 'itemContext.dataDisabled()',
+        '[attr.data-orientation]': 'rootContext.orientation()',
+        '[style]': `{
+            '--radix-accordion-content-height': 'var(--radix-collapsible-content-height)',
+            '--radix-accordion-content-width': 'var(--radix-collapsible-content-width)',
+          }`
     }
 })
 export class RdxAccordionContentDirective {
-    protected readonly item = inject(RdxAccordionItemDirective);
-    protected readonly nativeElement = inject(ElementRef).nativeElement;
-
-    protected hidden = false;
-
-    protected onAnimationEnd() {
-        this.hidden = !this.item.expanded;
-
-        const { height, width } = this.nativeElement.getBoundingClientRect();
-
-        this.nativeElement.style.setProperty('--radix-collapsible-content-height', `${height}px`);
-        this.nativeElement.style.setProperty('--radix-collapsible-content-width', `${width}px`);
-
-        this.nativeElement.style.setProperty(
-            '--radix-accordion-content-height',
-            'var(--radix-collapsible-content-height)'
-        );
-        this.nativeElement.style.setProperty(
-            '--radix-accordion-content-width',
-            'var(--radix-collapsible-content-width)'
-        );
-    }
-
-    onToggle() {
-        if (!this.item.expanded) {
-            this.hidden = false;
-        }
-    }
+    protected readonly rootContext = injectAccordionRootContext()!;
+    protected readonly itemContext = injectAccordionItemContext()!;
 }

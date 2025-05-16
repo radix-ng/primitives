@@ -1,14 +1,18 @@
-import { afterNextRender, computed, Directive, ElementRef, inject } from '@angular/core';
+import { afterNextRender, computed, Directive, ElementRef, inject, signal } from '@angular/core';
+import { watch } from '@radix-ng/primitives/core';
 import { injectCollapsibleRootContext } from './collapsible-root.directive';
 
 @Directive({
     selector: '[rdxCollapsibleContent]',
     host: {
-        '[attr.id]': 'rootContext.contentId()',
+        id: 'rootContext.contentId()',
+
         '[attr.data-state]': 'rootContext.open() ? "open" : "closed"',
         '[attr.data-disabled]': 'rootContext.disabled() ? "true" : undefined',
-        '[attr.hidden]': '!rootContext.open() || null',
-        '[style]': 'hostStyles()'
+        '[style.display]': 'hiddenSignal() ? "none" : undefined',
+        '[style.--radix-collapsible-content-width.px]': 'width()',
+        '[style.--radix-collapsible-content-height.px]': 'height()',
+        '(animationend)': 'onAnimationEnd()'
     }
 })
 export class RdxCollapsibleContentDirective {
@@ -16,44 +20,57 @@ export class RdxCollapsibleContentDirective {
 
     protected readonly rootContext = injectCollapsibleRootContext()!;
 
-    protected hostStyles = computed(() => ({
-        '--radix-collapsible-content-height': `${this.dimensions().height}px`,
-        '--radix-collapsible-content-width': `${this.dimensions().width}px`
-    }));
+    readonly isOpen = computed(() => this.rootContext.open());
 
-    private dimensions = computed(() => {
-        this.rootContext.open();
+    readonly height = signal(0);
+    readonly width = signal(0);
+    readonly isMountAnimationPrevented = signal(true);
 
-        this.elementRef.nativeElement.style.transitionDuration = '0s';
-        this.elementRef.nativeElement.style.animationName = 'none';
-
-        const rect = this.elementRef.nativeElement.getBoundingClientRect();
-
-        if (this.wasMountAnimationPrevented) {
-            this.elementRef.nativeElement.style.transitionDuration = this.originalStyles.transitionDuration;
-            this.elementRef.nativeElement.style.animationName = this.originalStyles.animationName;
-        }
-
-        return rect;
-    });
-
-    private originalStyles!: {
-        transitionDuration: string;
-        animationName: string;
+    private originalStyles: { transition: string; animation: string } = {
+        transition: '',
+        animation: ''
     };
 
-    private wasMountAnimationPrevented = false;
+    protected readonly hiddenSignal = signal(false);
 
     constructor() {
+        watch([this.isOpen], ([isOpen]) => {
+            if (isOpen) {
+                this.hiddenSignal.set(false);
+
+                setTimeout(() => {
+                    const node = this.elementRef.nativeElement;
+                    if (!node) return;
+
+                    node.style.transition = 'none';
+                    node.style.animation = 'none';
+
+                    const rect = node.getBoundingClientRect();
+                    this.height.set(rect.height);
+                    this.width.set(rect.width);
+
+                    if (!this.isMountAnimationPrevented()) {
+                        node.style.transition = this.originalStyles.transition;
+                        node.style.animation = this.originalStyles.animation;
+                    }
+                });
+            }
+        });
+
         afterNextRender(() => {
             this.originalStyles = {
-                transitionDuration: this.elementRef.nativeElement.style.transitionDuration,
-                animationName: this.elementRef.nativeElement.style.animationName
+                transition: this.elementRef.nativeElement.style.transition,
+                animation: this.elementRef.nativeElement.style.animation
             };
-
             requestAnimationFrame(() => {
-                this.wasMountAnimationPrevented = true;
+                this.isMountAnimationPrevented.set(false);
             });
         });
+    }
+
+    onAnimationEnd() {
+        if (!this.rootContext.open()) {
+            this.hiddenSignal.set(true);
+        }
     }
 }

@@ -10,7 +10,7 @@ import { injectCollapsibleRootContext } from './collapsible-root.directive';
         '[attr.data-disabled]': 'rootContext.disabled() ? "true" : undefined',
         '[disabled]': 'rootContext.disabled()',
 
-        '(click)': 'rootContext.onOpenToggle()'
+        '(click)': 'rootContext.toggle()'
     }
 })
 export class RdxCollapsibleTriggerDirective {
