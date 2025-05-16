@@ -10,10 +10,8 @@ import { injectCollapsibleRootContext } from './collapsible-root.directive';
         '[attr.data-state]': 'rootContext.open() ? "open" : "closed"',
         '[attr.data-disabled]': 'rootContext.disabled() ? "true" : undefined',
         '[style.display]': 'hiddenSignal() ? "none" : undefined',
-        //  '[style.display]': "!rootContext.open() ? 'none' : undefined",
         '[style.--radix-collapsible-content-width.px]': 'width()',
         '[style.--radix-collapsible-content-height.px]': 'height()',
-        '(animationstart)': 'onAnimationStart()',
         '(animationend)': 'onAnimationEnd()'
     }
 })
@@ -37,7 +35,6 @@ export class RdxCollapsibleContentDirective {
 
     constructor() {
         watch([this.isOpen], ([isOpen]) => {
-            console.log('isOpen ', isOpen);
             if (isOpen) {
                 this.hiddenSignal.set(false);
 
@@ -48,8 +45,6 @@ export class RdxCollapsibleContentDirective {
                     node.style.transition = 'none';
                     node.style.animation = 'none';
 
-                    node.getBoundingClientRect();
-
                     const rect = node.getBoundingClientRect();
                     this.height.set(rect.height);
                     this.width.set(rect.width);
@@ -58,8 +53,6 @@ export class RdxCollapsibleContentDirective {
                         node.style.transition = this.originalStyles.transition;
                         node.style.animation = this.originalStyles.animation;
                     }
-
-                    console.log('requestAnimationFrame end');
                 });
             }
         });
@@ -72,18 +65,10 @@ export class RdxCollapsibleContentDirective {
             requestAnimationFrame(() => {
                 this.isMountAnimationPrevented.set(false);
             });
-
-            console.log('afterNextRender end');
         });
     }
 
-    onAnimationStart() {
-        console.log('animation start');
-    }
-
     onAnimationEnd() {
-        console.log('animation end');
-
         if (!this.rootContext.open()) {
             this.hiddenSignal.set(true);
         }
