@@ -1,4 +1,4 @@
-import { computed, Directive, ElementRef, inject, signal } from '@angular/core';
+import { computed, Directive, ElementRef, inject, OnInit, signal } from '@angular/core';
 import { watch } from '@radix-ng/primitives/core';
 import { injectCollapsibleRootContext } from './collapsible-root.directive';
 
@@ -9,14 +9,16 @@ import { injectCollapsibleRootContext } from './collapsible-root.directive';
 
         '[attr.data-state]': 'rootContext.open() ? "open" : "closed"',
         '[attr.data-disabled]': 'rootContext.disabled() ? "true" : undefined',
-        '[style.display]': "!rootContext.open() ? 'none' : undefined",
+        '[style.display]': 'hiddenSignal() ? "none" : undefined',
+        '[style.overflow]': '"hidden"',
+        //  '[style.display]': "!rootContext.open() ? 'none' : undefined",
         '[style.--radix-collapsible-content-width.px]': 'width()',
         '[style.--radix-collapsible-content-height.px]': 'height()',
         '(animationstart)': 'onAnimationStart()',
         '(animationend)': 'onAnimationEnd()'
     }
 })
-export class RdxCollapsibleContentDirective {
+export class RdxCollapsibleContentDirective implements OnInit {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
     protected readonly rootContext = injectCollapsibleRootContext()!;
@@ -32,40 +34,48 @@ export class RdxCollapsibleContentDirective {
         animation: ''
     };
 
+    protected readonly hiddenSignal = signal(false);
+
     constructor() {
-        watch([this.isOpen], ([value]) => {
-            requestAnimationFrame(() => {
-                const node = this.elementRef.nativeElement;
-                if (!node) return;
+        watch([this.isOpen], ([isOpen]) => {
+            console.log('isOpen ', isOpen);
+            if (isOpen) {
+                this.hiddenSignal.set(false);
 
-                if (this.isMountAnimationPrevented()) {
-                    this.originalStyles = {
-                        transition: node.style.transition,
-                        animation: node.style.animation
-                    };
-                }
+                requestAnimationFrame(() => {
+                    const node = this.elementRef.nativeElement;
+                    if (!node) return;
 
-                node.style.transition = 'none';
-                node.style.animation = 'none';
+                    if (this.isMountAnimationPrevented()) {
+                        this.originalStyles = {
+                            transition: node.style.transition,
+                            animation: node.style.animation
+                        };
+                    }
 
-                node.getBoundingClientRect();
+                    node.style.transition = 'none';
+                    node.style.animation = 'none';
 
-                const rect = node.getBoundingClientRect();
-                this.height.set(rect.height);
-                this.width.set(rect.width);
+                    node.getBoundingClientRect();
 
-                if (!this.isMountAnimationPrevented()) {
-                    node.style.transition = this.originalStyles.transition;
-                    node.style.animation = this.originalStyles.animation;
-                }
-            });
+                    const rect = node.getBoundingClientRect();
+                    this.height.set(rect.height);
+                    this.width.set(rect.width);
+
+                    if (!this.isMountAnimationPrevented()) {
+                        node.style.transition = this.originalStyles.transition;
+                        node.style.animation = this.originalStyles.animation;
+                    }
+
+                    this.isMountAnimationPrevented.set(false);
+                    console.log('requestAnimationFrame end');
+                });
+            }
         });
     }
 
     ngOnInit() {
-        setTimeout(() => {
-            this.isMountAnimationPrevented.set(false);
-        });
+        this.isMountAnimationPrevented.set(false);
     }
 
     onAnimationStart() {
@@ -74,5 +84,9 @@ export class RdxCollapsibleContentDirective {
 
     onAnimationEnd() {
         console.log('animation end');
+
+        if (!this.rootContext.open()) {
+            this.hiddenSignal.set(true);
+        }
     }
 }
