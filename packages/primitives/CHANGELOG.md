@@ -1,3 +1,20 @@
+## 0.38.0 (2025-05-16)
+
+### 🚀 Features
+
+- **accordion:** updated core code, added collapsible ([#332](https://github.com/radix-ng/primitives/pull/332))
+- updated Collapse primitive ([#331](https://github.com/radix-ng/primitives/pull/331))
+- **select:** enhance overlay width handling and improve item display ([#330](https://github.com/radix-ng/primitives/pull/330))
+- **core:** added createContext and cva directive ([#327](https://github.com/radix-ng/primitives/pull/327))
+- **time-field:** added primitive Time Field ([#326](https://github.com/radix-ng/primitives/pull/326))
+- **select:** observe trigger size to update overlay dimensions ([#325](https://github.com/radix-ng/primitives/pull/325))
+- remove old projects ([#324](https://github.com/radix-ng/primitives/pull/324))
+
+### ❤️ Thank You
+
+- Josh Sullivan @jpsullivan
+- Oleg Pimenov @pimenovoleg
+
 ## 0.37.0 (2025-05-06)
 
 ### 🚀 Features
