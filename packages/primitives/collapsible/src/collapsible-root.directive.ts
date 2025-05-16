@@ -1,6 +1,7 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
+    computed,
     Directive,
     inject,
     input,
@@ -75,6 +76,8 @@ export class RdxCollapsibleRootDirective {
     readonly _disabled = linkedSignal(this.disabled);
 
     readonly isDisabled = this._disabled.asReadonly();
+
+    readonly isOpen = computed(() => this.open());
 
     /**
      * Emitted with new value when directive state changed.
