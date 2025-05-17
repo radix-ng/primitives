@@ -1,6 +1,4 @@
-import { isPlatformServer } from '@angular/common';
-import { afterNextRender, computed, Directive, ElementRef, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
-import { watch } from '@radix-ng/primitives/core';
+import { afterNextRender, computed, Directive, effect, ElementRef, inject, PLATFORM_ID, signal } from '@angular/core';
 import { injectCollapsibleRootContext } from './collapsible-root.directive';
 
 @Directive({
@@ -9,14 +7,12 @@ import { injectCollapsibleRootContext } from './collapsible-root.directive';
         '[id]': 'rootContext.contentId()',
         '[attr.data-state]': 'rootContext.open() ? "open" : "closed"',
         '[attr.data-disabled]': 'rootContext.disabled() ? "true" : undefined',
-        '[style.display]': 'hiddenSignal() ? "none" : undefined',
+        '[attr.hidden]': '!rootContext.open() ? "until-found" : undefined',
         '[style.--radix-collapsible-content-width.px]': 'width()',
-        '[style.--radix-collapsible-content-height.px]': 'height()',
-        '(animationstart)': 'onAnimationStart()',
-        '(animationend)': 'onAnimationEnd()'
+        '[style.--radix-collapsible-content-height.px]': 'height()'
     }
 })
-export class RdxCollapsibleContentDirective implements OnInit {
+export class RdxCollapsibleContentDirective {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly platformId = inject(PLATFORM_ID);
 
@@ -27,51 +23,52 @@ export class RdxCollapsibleContentDirective implements OnInit {
     readonly height = signal<number | null>(null);
     readonly width = signal<number | null>(null);
 
-    protected readonly hiddenSignal = signal(false);
+    private isMountAnimationPrevented = signal(true);
 
-    private isAnimation = false;
-    private onMount = false;
+    private firstRender = true;
+
+    private currentStyle = signal<{ transitionDuration: string; animationName: string } | null>(null);
 
     constructor() {
-        watch([this.isOpen], ([isOpen]) => {
-            if (this.onMount) {
-                if (isOpen) {
-                    this.hiddenSignal.set(false);
-                } else if (!this.isAnimation) {
-                    this.hiddenSignal.set(true);
-                }
-            }
+        effect(() => {
+            const isOpen = this.isOpen();
+
+            requestAnimationFrame(() => {
+                this.updateDimensions(isOpen);
+            });
         });
 
         afterNextRender(() => {
-            this.onMount = true;
+            requestAnimationFrame(() => {
+                this.isMountAnimationPrevented.set(false);
+            });
         });
     }
 
-    ngOnInit() {
-        this.getMeasurements();
-    }
-
-    onAnimationStart() {
-        this.isAnimation = true;
-    }
-
-    onAnimationEnd() {
-        this.hiddenSignal.set(!this.isOpen());
-
-        this.getMeasurements();
-    }
-
-    getMeasurements() {
-        if (isPlatformServer(this.platformId)) {
-            return;
-        }
-
+    private async updateDimensions(isOpen: boolean) {
         const node = this.elementRef.nativeElement;
         if (!node) return;
 
-        const { width, height } = node.getBoundingClientRect();
-        this.height.set(height);
-        this.width.set(width);
+        if (!this.currentStyle()) {
+            this.currentStyle.set({
+                transitionDuration: node.style.transitionDuration,
+                animationName: node.style.animationName
+            });
+        }
+
+        node.style.transitionDuration = '0s';
+        node.style.animationName = 'none';
+
+        const rect = node.getBoundingClientRect();
+        this.height.set(rect.height);
+        this.width.set(rect.width);
+        //   await new Promise((resolve) => setTimeout(resolve));
+
+        if (!this.isMountAnimationPrevented() && !this.firstRender) {
+            node.style.transitionDuration = this.currentStyle()?.transitionDuration || '';
+            node.style.animationName = this.currentStyle()?.animationName || '';
+        }
+
+        this.firstRender = false;
     }
 }
