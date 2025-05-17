@@ -22,7 +22,7 @@ import { ChevronDown, LucideAngularModule, X } from 'lucide-angular';
     template: `
         <div class="block w-[220px] sm:w-[280px] lg:w-[350px]" [defaultValue]="'item-1'" rdxAccordionRoot>
             <div class="block border-b" [value]="'item-1'" rdxAccordionItem>
-                <div class="flex" rdxAccordionHeader>
+                <h3 class="flex" rdxAccordionHeader>
                     <button
                         class="flex flex-1 items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>lucide-angular]:rotate-180"
                         type="button"
@@ -35,7 +35,7 @@ import { ChevronDown, LucideAngularModule, X } from 'lucide-angular';
                             size="16"
                         />
                     </button>
-                </div>
+                </h3>
                 <div
                     class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm transition-all"
                     rdxAccordionContent
@@ -45,7 +45,7 @@ import { ChevronDown, LucideAngularModule, X } from 'lucide-angular';
             </div>
 
             <div class="block border-b" [value]="'item-2'" rdxAccordionItem>
-                <div class="flex" rdxAccordionHeader>
+                <h3 class="flex" rdxAccordionHeader>
                     <button
                         class="flex flex-1 items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>lucide-angular]:rotate-180"
                         type="button"
@@ -58,7 +58,7 @@ import { ChevronDown, LucideAngularModule, X } from 'lucide-angular';
                             size="16"
                         />
                     </button>
-                </div>
+                </h3>
                 <div
                     class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm transition-all"
                     rdxAccordionContent
@@ -70,7 +70,7 @@ import { ChevronDown, LucideAngularModule, X } from 'lucide-angular';
             </div>
 
             <div class="block border-b" [value]="'item-3'" rdxAccordionItem>
-                <div class="flex" rdxAccordionHeader>
+                <h3 class="flex" rdxAccordionHeader>
                     <button
                         class="flex flex-1 items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>lucide-angular]:rotate-180"
                         type="button"
@@ -83,7 +83,7 @@ import { ChevronDown, LucideAngularModule, X } from 'lucide-angular';
                             size="16"
                         />
                     </button>
-                </div>
+                </h3>
                 <div
                     class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm transition-all"
                     rdxAccordionContent

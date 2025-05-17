@@ -1,12 +1,12 @@
-import { afterNextRender, computed, Directive, ElementRef, inject, signal } from '@angular/core';
+import { isPlatformServer } from '@angular/common';
+import { computed, Directive, ElementRef, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { watch } from '@radix-ng/primitives/core';
 import { injectCollapsibleRootContext } from './collapsible-root.directive';
 
 @Directive({
     selector: '[rdxCollapsibleContent]',
     host: {
-        id: 'rootContext.contentId()',
-
+        '[id]': 'rootContext.contentId()',
         '[attr.data-state]': 'rootContext.open() ? "open" : "closed"',
         '[attr.data-disabled]': 'rootContext.disabled() ? "true" : undefined',
         '[style.display]': 'hiddenSignal() ? "none" : undefined',
@@ -15,21 +15,16 @@ import { injectCollapsibleRootContext } from './collapsible-root.directive';
         '(animationend)': 'onAnimationEnd()'
     }
 })
-export class RdxCollapsibleContentDirective {
+export class RdxCollapsibleContentDirective implements OnInit {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    private readonly platformId = inject(PLATFORM_ID);
 
     protected readonly rootContext = injectCollapsibleRootContext()!;
 
     readonly isOpen = computed(() => this.rootContext.open());
 
-    readonly height = signal(0);
-    readonly width = signal(0);
-    readonly isMountAnimationPrevented = signal(true);
-
-    private originalStyles: { transition: string; animation: string } = {
-        transition: '',
-        animation: ''
-    };
+    readonly height = signal<number | null>(null);
+    readonly width = signal<number | null>(null);
 
     protected readonly hiddenSignal = signal(false);
 
@@ -37,40 +32,30 @@ export class RdxCollapsibleContentDirective {
         watch([this.isOpen], ([isOpen]) => {
             if (isOpen) {
                 this.hiddenSignal.set(false);
-
-                setTimeout(() => {
-                    const node = this.elementRef.nativeElement;
-                    if (!node) return;
-
-                    node.style.transition = 'none';
-                    node.style.animation = 'none';
-
-                    const rect = node.getBoundingClientRect();
-                    this.height.set(rect.height);
-                    this.width.set(rect.width);
-
-                    if (!this.isMountAnimationPrevented()) {
-                        node.style.transition = this.originalStyles.transition;
-                        node.style.animation = this.originalStyles.animation;
-                    }
-                });
             }
-        });
-
-        afterNextRender(() => {
-            this.originalStyles = {
-                transition: this.elementRef.nativeElement.style.transition,
-                animation: this.elementRef.nativeElement.style.animation
-            };
-            requestAnimationFrame(() => {
-                this.isMountAnimationPrevented.set(false);
-            });
         });
     }
 
+    ngOnInit() {
+        this.getMeasurements();
+    }
+
     onAnimationEnd() {
-        if (!this.rootContext.open()) {
-            this.hiddenSignal.set(true);
+        this.hiddenSignal.set(!this.isOpen());
+
+        this.getMeasurements();
+    }
+
+    getMeasurements() {
+        if (isPlatformServer(this.platformId)) {
+            return;
         }
+
+        const node = this.elementRef.nativeElement;
+        if (!node) return;
+
+        const { width, height } = node.getBoundingClientRect();
+        this.height.set(height);
+        this.width.set(width);
     }
 }
