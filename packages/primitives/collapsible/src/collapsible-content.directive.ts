@@ -1,5 +1,5 @@
 import { isPlatformServer } from '@angular/common';
-import { computed, Directive, ElementRef, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { afterNextRender, computed, Directive, ElementRef, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { watch } from '@radix-ng/primitives/core';
 import { injectCollapsibleRootContext } from './collapsible-root.directive';
 
@@ -12,6 +12,7 @@ import { injectCollapsibleRootContext } from './collapsible-root.directive';
         '[style.display]': 'hiddenSignal() ? "none" : undefined',
         '[style.--radix-collapsible-content-width.px]': 'width()',
         '[style.--radix-collapsible-content-height.px]': 'height()',
+        '(animationstart)': 'onAnimationStart()',
         '(animationend)': 'onAnimationEnd()'
     }
 })
@@ -28,16 +29,31 @@ export class RdxCollapsibleContentDirective implements OnInit {
 
     protected readonly hiddenSignal = signal(false);
 
+    private isAnimation = false;
+    private onMount = false;
+
     constructor() {
         watch([this.isOpen], ([isOpen]) => {
-            if (isOpen) {
-                this.hiddenSignal.set(false);
+            if (this.onMount) {
+                if (isOpen) {
+                    this.hiddenSignal.set(false);
+                } else if (!this.isAnimation) {
+                    this.hiddenSignal.set(true);
+                }
             }
+        });
+
+        afterNextRender(() => {
+            this.onMount = true;
         });
     }
 
     ngOnInit() {
         this.getMeasurements();
+    }
+
+    onAnimationStart() {
+        this.isAnimation = true;
     }
 
     onAnimationEnd() {
@@ -58,4 +74,6 @@ export class RdxCollapsibleContentDirective implements OnInit {
         this.height.set(height);
         this.width.set(width);
     }
+
+    protected readonly onanimationstart = onanimationstart;
 }
