@@ -7,9 +7,10 @@ import { injectCollapsibleRootContext } from './collapsible-root.directive';
         '[id]': 'rootContext.contentId()',
         '[attr.data-state]': 'rootContext.open() ? "open" : "closed"',
         '[attr.data-disabled]': 'rootContext.disabled() ? "true" : undefined',
-        '[attr.hidden]': '!rootContext.open() ? "until-found" : undefined',
+        '[attr.hidden]': 'shouldHide() ? "until-found" : undefined',
         '[style.--radix-collapsible-content-width.px]': 'width()',
-        '[style.--radix-collapsible-content-height.px]': 'height()'
+        '[style.--radix-collapsible-content-height.px]': 'height()',
+        '(animationend)': 'onAnimationEnd()'
     }
 })
 export class RdxCollapsibleContentDirective {
@@ -22,12 +23,12 @@ export class RdxCollapsibleContentDirective {
 
     readonly height = signal<number | null>(null);
     readonly width = signal<number | null>(null);
+    readonly shouldHide = signal(false);
 
     private isMountAnimationPrevented = signal(true);
+    private currentStyle = signal<{ transitionDuration: string; animationName: string } | null>(null);
 
     private firstRender = true;
-
-    private currentStyle = signal<{ transitionDuration: string; animationName: string } | null>(null);
 
     constructor() {
         effect(() => {
@@ -45,6 +46,12 @@ export class RdxCollapsibleContentDirective {
         });
     }
 
+    onAnimationEnd() {
+        if (!this.isOpen()) {
+            this.shouldHide.set(true);
+        }
+    }
+
     private async updateDimensions(isOpen: boolean) {
         const node = this.elementRef.nativeElement;
         if (!node) return;
@@ -56,17 +63,25 @@ export class RdxCollapsibleContentDirective {
             });
         }
 
+        if (isOpen) {
+            this.shouldHide.set(false);
+            node.hidden = false;
+        }
+
         node.style.transitionDuration = '0s';
         node.style.animationName = 'none';
 
         const rect = node.getBoundingClientRect();
         this.height.set(rect.height);
         this.width.set(rect.width);
-        //   await new Promise((resolve) => setTimeout(resolve));
 
         if (!this.isMountAnimationPrevented() && !this.firstRender) {
             node.style.transitionDuration = this.currentStyle()?.transitionDuration || '';
             node.style.animationName = this.currentStyle()?.animationName || '';
+        }
+
+        if (!isOpen && this.firstRender) {
+            this.shouldHide.set(true);
         }
 
         this.firstRender = false;
