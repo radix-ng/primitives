@@ -23,7 +23,7 @@ export class RdxCollapsibleContentDirective {
 
     readonly height = signal<number | null>(null);
     readonly width = signal<number | null>(null);
-    readonly shouldHide = signal(false);
+    readonly shouldHide = signal(true);
 
     private isMountAnimationPrevented = signal(true);
     private currentStyle = signal<{ transitionDuration: string; animationName: string } | null>(null);
@@ -78,10 +78,6 @@ export class RdxCollapsibleContentDirective {
         if (!this.isMountAnimationPrevented() && !this.firstRender) {
             node.style.transitionDuration = this.currentStyle()?.transitionDuration || '';
             node.style.animationName = this.currentStyle()?.animationName || '';
-        }
-
-        if (!isOpen && this.firstRender) {
-            this.shouldHide.set(true);
         }
 
         this.firstRender = false;
