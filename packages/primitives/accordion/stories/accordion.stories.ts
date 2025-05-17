@@ -5,7 +5,13 @@ import { RdxAccordionHeaderDirective } from '../src/accordion-header.directive';
 import { RdxAccordionItemDirective } from '../src/accordion-item.directive';
 import { RdxAccordionRootDirective } from '../src/accordion-root.directive';
 import { RdxAccordionTriggerDirective } from '../src/accordion-trigger.directive';
-import { AccordionHorizontalStory, AccordionMultipleStory, AccordionStory } from './accordion';
+import {
+    AccordionCollapsibleStory,
+    AccordionDisabledStory,
+    AccordionHorizontalStory,
+    AccordionMultipleStory,
+    AccordionStory
+} from './accordion';
 
 const html = String.raw;
 
@@ -22,7 +28,9 @@ export default {
                 BrowserAnimationsModule,
                 AccordionStory,
                 AccordionMultipleStory,
-                AccordionHorizontalStory
+                AccordionHorizontalStory,
+                AccordionDisabledStory,
+                AccordionCollapsibleStory
             ],
             providers: [provideAnimations()]
         }),
@@ -55,6 +63,22 @@ export const Multiple: Story = {
     render: () => ({
         template: html`
             <rdx-accordion-multiple-story />
+        `
+    })
+};
+
+export const Disabled: Story = {
+    render: () => ({
+        template: html`
+            <rdx-accordion-disabled-story />
+        `
+    })
+};
+
+export const Collapsible: Story = {
+    render: () => ({
+        template: html`
+            <rdx-accordion-collapsible-story />
         `
     })
 };

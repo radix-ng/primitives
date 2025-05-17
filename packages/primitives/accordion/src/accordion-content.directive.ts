@@ -1,4 +1,4 @@
-import { Directive } from '@angular/core';
+import { Directive, OnInit } from '@angular/core';
 import { RdxCollapsibleContentDirective } from '@radix-ng/primitives/collapsible';
 import { injectAccordionItemContext } from './accordion-item.directive';
 import { injectAccordionRootContext } from './accordion-root.directive';
@@ -18,7 +18,11 @@ import { injectAccordionRootContext } from './accordion-root.directive';
           }`
     }
 })
-export class RdxAccordionContentDirective {
+export class RdxAccordionContentDirective implements OnInit {
     protected readonly rootContext = injectAccordionRootContext()!;
     protected readonly itemContext = injectAccordionItemContext()!;
+
+    ngOnInit() {
+        this.rootContext.changeModelValue(this.itemContext.value()!);
+    }
 }

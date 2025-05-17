@@ -14,6 +14,7 @@ export type AccordionItemContext = {
     dataDisabled: Signal<boolean>;
     currentElement: ElementRef<HTMLElement>;
     value: Signal<string | undefined>;
+    updateOpen: () => void;
 };
 
 export const [injectAccordionItemContext, provideAccordionItemContext] =
@@ -29,7 +30,8 @@ const itemContext = (): AccordionItemContext => {
         dataDisabled: instance.isDisabled,
         triggerId: '',
         currentElement: instance.elementRef,
-        value: computed(() => instance.value())
+        value: computed(() => instance.value()),
+        updateOpen: instance.updateOpen
     };
 };
 
@@ -43,7 +45,7 @@ const itemContext = (): AccordionItemContext => {
     hostDirectives: [
         {
             directive: RdxCollapsibleRootDirective,
-            inputs: ['disabled: disabled']
+            inputs: ['disabled: disabled', 'open: open']
         }
     ],
     host: {
@@ -74,28 +76,23 @@ export class RdxAccordionItemDirective {
         return this.rootContext.disabled() || this.disabled();
     });
 
-    readonly open = computed(() => this.rootContext.isItemOpen(this.value()!));
+    readonly open = computed(() =>
+        this.rootContext.isSingle()
+            ? this.value() === this.rootContext.value()
+            : Array.isArray(this.rootContext.value()) && this.rootContext.value()!.includes(this.value()!)
+    );
 
     readonly dataState = computed((): RdxAccordionItemState => (this.open() ? 'open' : 'closed'));
 
     constructor() {
         effect(() => {
-            this.rootContext.changeModelValue(this.value()!, this.collapsibleContext.open());
-        });
-
-        let onMount = false;
-
-        effect(() => {
-            if (!onMount && this.open() && !this.collapsibleContext.open()) {
-                this.collapsibleContext.toggle();
-                onMount = true;
-            }
-
-            if (!this.open() && this.collapsibleContext.open()) {
-                this.collapsibleContext.toggle();
-            }
+            this.updateOpen();
         });
     }
+
+    updateOpen = () => {
+        this.collapsibleContext.open.set(this.open());
+    };
 
     handleArrowKey(event: KeyboardEvent) {
         const target = event.target as HTMLElement;

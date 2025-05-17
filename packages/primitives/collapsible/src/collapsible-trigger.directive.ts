@@ -8,7 +8,7 @@ import { injectCollapsibleRootContext } from './collapsible-root.directive';
         '[attr.aria-expanded]': 'rootContext.open()',
         '[attr.data-state]': 'rootContext.open() ? "open" : "closed"',
         '[attr.data-disabled]': 'rootContext.disabled() ? "true" : undefined',
-        '[disabled]': 'rootContext.disabled()',
+        '[attr.disabled]': 'rootContext.disabled() || undefined',
 
         '(click)': 'rootContext.toggle()'
     }

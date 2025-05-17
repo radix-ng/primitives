@@ -35,7 +35,9 @@ const rootContext = (): CollapsibleRootContext => {
         disabled: instance.isDisabled,
         open: instance.open,
         toggle: () => {
-            untracked(() => instance.open.update((v) => !v));
+            untracked(() => {
+                instance.open.set(!instance.open());
+            });
             instance.onOpenChange.emit(instance.open());
         }
     };

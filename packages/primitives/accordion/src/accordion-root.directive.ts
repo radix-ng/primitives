@@ -18,16 +18,17 @@ import {
 } from '@angular/core';
 import { createContext, DataOrientation } from '@radix-ng/primitives/core';
 
+type AcceptableValue = string | Record<string, any> | null;
+
 export type AccordionRootContext = {
     disabled: InputSignalWithTransform<boolean, BooleanInput>;
     direction: InputSignal<Direction>;
     orientation: InputSignal<DataOrientation>;
-    value: ModelSignal<string | string[] | undefined>;
+    value: ModelSignal<AcceptableValue | AcceptableValue[] | undefined>;
     collapsible: Signal<boolean>;
     isSingle: Signal<boolean>;
     elementRef: ElementRef<HTMLElement>;
-    changeModelValue: (value: string, isOpen: boolean) => void;
-    isItemOpen: (value: string) => boolean;
+    changeModelValue: (value: string) => void;
 };
 
 export const [injectAccordionRootContext, provideAccordionRootContext] =
@@ -39,13 +40,12 @@ const rootContext = (): AccordionRootContext => {
     return {
         disabled: instance.disabled,
         direction: instance.dir,
-        collapsible: instance.isCollapsible,
+        collapsible: instance.collapsible,
         orientation: instance.orientation,
         elementRef: instance.elementRef,
         value: instance.value,
         isSingle: instance.isSingle,
-        changeModelValue: instance.changeModelValue,
-        isItemOpen: instance.isItemOpen
+        changeModelValue: instance.changeModelValue
     };
 };
 
@@ -88,7 +88,7 @@ export class RdxAccordionRootDirective {
      *
      * @group Props
      */
-    readonly value = model<string | string[]>();
+    readonly value = model<AcceptableValue | AcceptableValue[]>();
 
     readonly collapsible = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
@@ -100,10 +100,6 @@ export class RdxAccordionRootDirective {
      */
     readonly onValueChange = output();
 
-    readonly isCollapsible = computed(() => {
-        return this.collapsible();
-    });
-
     readonly isSingle = computed(() => this.type() === 'single');
 
     constructor() {
@@ -114,30 +110,37 @@ export class RdxAccordionRootDirective {
         });
     }
 
-    changeModelValue = (value: string, isOpen: boolean) => {
-        if (!isOpen && !this.isCollapsible()) {
-            return;
-        }
-
-        if (this.type() === 'multiple') {
-            this.value.update((v) => {
-                if (Array.isArray(v)) {
-                    return isOpen ? [...v, value] : v.filter((i) => i !== value);
-                }
-                return isOpen ? [value] : [];
-            });
+    changeModelValue = (newValue: string) => {
+        if (this.type() === 'single') {
+            this.value.set(this.isEqual(newValue, this.value()) ? undefined : newValue);
         } else {
-            if (isOpen) {
-                this.value.set(value);
+            const currentValue = this.value();
+            let modelValueArray: AcceptableValue[] = [];
+
+            if (Array.isArray(currentValue)) {
+                modelValueArray = [...currentValue];
+            } else if (currentValue !== undefined && currentValue !== null) {
+                modelValueArray = [currentValue];
             }
+
+            if (this.isValueEqualOrExist(modelValueArray, newValue)) {
+                const index = modelValueArray.findIndex((item) => this.isEqual(item, newValue));
+                if (index !== -1) {
+                    modelValueArray.splice(index, 1);
+                }
+            } else {
+                modelValueArray.push(newValue);
+            }
+
+            this.value.set(modelValueArray);
         }
     };
 
-    isItemOpen = (value: string) => {
-        if (this.type() == 'multiple') {
-            return !!this.value()?.includes(value);
-        }
+    private isValueEqualOrExist(arr: AcceptableValue[], value: AcceptableValue): boolean {
+        return arr.some((item) => this.isEqual(item, value));
+    }
 
-        return this.value() === value;
-    };
+    private isEqual(a: any, b: any): boolean {
+        return JSON.stringify(a) === JSON.stringify(b);
+    }
 }

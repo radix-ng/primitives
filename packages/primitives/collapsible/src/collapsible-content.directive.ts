@@ -74,6 +74,4 @@ export class RdxCollapsibleContentDirective implements OnInit {
         this.height.set(height);
         this.width.set(width);
     }
-
-    protected readonly onanimationstart = onanimationstart;
 }
