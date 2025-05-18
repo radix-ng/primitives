@@ -6,6 +6,7 @@ import { RdxAccordionItemDirective } from '../src/accordion-item.directive';
 import { RdxAccordionRootDirective } from '../src/accordion-root.directive';
 import { RdxAccordionTriggerDirective } from '../src/accordion-trigger.directive';
 import {
+    AccordionCollapsibleArrayStory,
     AccordionCollapsibleStory,
     AccordionDisabledStory,
     AccordionHorizontalStory,
@@ -30,7 +31,8 @@ export default {
                 AccordionMultipleStory,
                 AccordionHorizontalStory,
                 AccordionDisabledStory,
-                AccordionCollapsibleStory
+                AccordionCollapsibleStory,
+                AccordionCollapsibleArrayStory
             ],
             providers: [provideAnimations()]
         }),
@@ -79,6 +81,14 @@ export const Collapsible: Story = {
     render: () => ({
         template: html`
             <rdx-accordion-collapsible-story />
+        `
+    })
+};
+
+export const CollapsibleArray: Story = {
+    render: () => ({
+        template: html`
+            <rdx-accordion-collapsible-array-story />
         `
     })
 };

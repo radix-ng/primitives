@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxAccordionContentDirective,
     RdxAccordionHeaderDirective,
@@ -186,6 +186,52 @@ export class AccordionDisabledStory {}
     `
 })
 export class AccordionCollapsibleStory {}
+
+@Component({
+    selector: 'rdx-accordion-collapsible-array-story',
+    imports: [
+        RdxAccordionRootDirective,
+        RdxAccordionItemDirective,
+        RdxAccordionHeaderDirective,
+        RdxAccordionTriggerDirective,
+        RdxAccordionContentDirective
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    styleUrl: 'styles.css',
+    template: `
+        <div class="AccordionRoot" [defaultValue]="'item-1'" collapsible rdxAccordionRoot>
+            @for (item of items; track item.id) {
+                <div class="AccordionItem" [value]="item.id" rdxAccordionItem>
+                    <h3 class="AccordionHeader" rdxAccordionHeader>
+                        <button class="AccordionTrigger" type="button" rdxAccordionTrigger>{{ item.title }}</button>
+                    </h3>
+                    <div class="AccordionContent" rdxAccordionContent>
+                        <div class="AccordionContentText">{{ item.content }}</div>
+                    </div>
+                </div>
+            }
+        </div>
+    `
+})
+export class AccordionCollapsibleArrayStory {
+    readonly items = [
+        {
+            id: 'item-1',
+            title: 'Is it accessible?',
+            content: 'Yes. It adheres to the WAI-ARIA design pattern.'
+        },
+        {
+            id: 'item-2',
+            title: 'Is it unstyled?',
+            content: "Yes. It's unstyled by default, giving you freedom over the look and feel."
+        },
+        {
+            id: 'item-3',
+            title: 'Can it be animated?',
+            content: 'Yes! You can animate the Accordion with CSS or JavaScript.'
+        }
+    ];
+}
 
 @Component({
     selector: 'rdx-accordion-horizontal-story',
