@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import {
     RdxCollapsibleContentDirective,
+    RdxCollapsibleContentPresenceDirective,
     RdxCollapsibleRootDirective,
     RdxCollapsibleTriggerDirective
 } from '@radix-ng/primitives/collapsible';
@@ -13,6 +14,7 @@ import { LucideAngularModule, UnfoldVertical, X } from 'lucide-angular';
         RdxCollapsibleRootDirective,
         RdxCollapsibleTriggerDirective,
         RdxCollapsibleContentDirective,
+        RdxCollapsibleContentPresenceDirective,
         LucideAngularModule
     ],
     template: `
@@ -33,11 +35,13 @@ import { LucideAngularModule, UnfoldVertical, X } from 'lucide-angular';
             </div>
 
             <div rdxCollapsibleContent>
-                <div class="Repository">
-                    <span class="Text">&#64;radix-ui/colors</span>
-                </div>
-                <div class="Repository">
-                    <span class="Text">&#64;stitches/react</span>
+                <div *rdxCollapsibleContentPresence>
+                    <div class="Repository">
+                        <span class="Text">&#64;radix-ui/colors</span>
+                    </div>
+                    <div class="Repository">
+                        <span class="Text">&#64;stitches/react</span>
+                    </div>
                 </div>
             </div>
         </div>

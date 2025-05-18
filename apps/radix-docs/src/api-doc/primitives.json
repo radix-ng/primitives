@@ -2,6 +2,9 @@
     "accordion": {
         "components": {}
     },
+    "accordion-content-presence.directive": {
+        "components": {}
+    },
     "accordion-content.directive": {
         "components": {}
     },
@@ -16,44 +19,22 @@
                     "description": "Defines the input properties of the component.",
                     "values": [
                         {
-                            "name": "expanded",
-                            "optional": false,
-                            "readonly": false,
-                            "type": "boolean",
-                            "default": "false",
-                            "defaultValue": "false",
-                            "description": ""
-                        },
-                        {
                             "name": "value",
                             "optional": false,
-                            "readonly": false,
-                            "type": "string",
-                            "description": "Accordion value."
+                            "readonly": true,
+                            "type": "InputSignal<undefined | string>",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": "A string value for the accordion item. All items within an accordion should use a unique value."
                         },
                         {
                             "name": "disabled",
                             "optional": false,
-                            "readonly": false,
-                            "type": "boolean",
-                            "default": "false",
-                            "defaultValue": "false",
-                            "description": "Whether the option is disabled."
-                        }
-                    ]
-                },
-                "emits": {
-                    "description": "Defines emit that determine the behavior of the component based on a given condition or report the actions that the component takes.",
-                    "values": [
-                        {
-                            "name": "expandedChange",
-                            "parameters": [
-                                {
-                                    "name": "value",
-                                    "type": "boolean"
-                                }
-                            ],
-                            "description": "Emits whenever the expanded state of the accordion changes.\nPrimarily used to facilitate two-way binding."
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": "Whether or not an accordion item is disabled from user interaction.\nWhen  `true` , prevents the user from interacting with the item."
                         }
                     ]
                 }
@@ -68,10 +49,19 @@
                     "description": "Defines the input properties of the component.",
                     "values": [
                         {
+                            "name": "dir",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<Direction>",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": "The reading direction of the accordion when applicable. If omitted, assumes LTR (left-to-right) reading mode."
+                        },
+                        {
                             "name": "disabled",
                             "optional": false,
-                            "readonly": false,
-                            "type": "boolean",
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
                             "default": "false",
                             "defaultValue": "false",
                             "description": "Whether the Accordion is disabled."
@@ -79,8 +69,8 @@
                         {
                             "name": "orientation",
                             "optional": false,
-                            "readonly": false,
-                            "type": "RdxAccordionOrientation",
+                            "readonly": true,
+                            "type": "InputSignal<DataOrientation>",
                             "default": "'vertical'",
                             "defaultValue": "'vertical'",
                             "description": "The orientation of the accordion."
@@ -88,25 +78,38 @@
                         {
                             "name": "defaultValue",
                             "optional": false,
-                            "readonly": false,
-                            "type": "string | string[]",
-                            "description": "The value of the item to expand when initially rendered and type is \"single\".\nUse when you do not need to control the state of the items."
-                        },
-                        {
-                            "name": "type",
-                            "optional": false,
-                            "readonly": false,
-                            "type": "RdxAccordionType",
-                            "default": "'single'",
-                            "defaultValue": "'single'",
-                            "description": "Determines whether one or multiple items can be opened at the same time."
+                            "readonly": true,
+                            "type": "InputSignal<undefined | string | string[]>",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": "The default active value of the item(s).\n\nUse when you do not need to control the state of the item(s)."
                         },
                         {
                             "name": "value",
                             "optional": false,
-                            "readonly": false,
-                            "type": "string | string[]",
+                            "readonly": true,
+                            "type": "ModelSignal<undefined | AcceptableValue | AcceptableValue[]>",
+                            "default": "...",
+                            "defaultValue": "...",
                             "description": "The controlled value of the item to expand."
+                        },
+                        {
+                            "name": "collapsible",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "When type is \"single\", allows closing content when clicking trigger for an open item.\nWhen type is \"multiple\", this prop has no effect."
+                        },
+                        {
+                            "name": "type",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<\"multiple\" | \"single\">",
+                            "default": "'single'",
+                            "defaultValue": "'single'",
+                            "description": "Determines whether a \"single\" or \"multiple\" items can be selected at a time."
                         }
                     ]
                 },
@@ -179,6 +182,9 @@
     "avatar": {
         "components": {}
     },
+    "avatar-context.token": {
+        "components": {}
+    },
     "avatar-fallback.directive": {
         "components": {
             "RdxAvatarFallbackDirective": {
@@ -242,7 +248,52 @@
     "avatar.config": {
         "components": {}
     },
+    "types": {
+        "components": {}
+    },
     "button.directive": {
+        "components": {}
+    },
+    "calendar": {
+        "components": {}
+    },
+    "calendar-cell-trigger.directive": {
+        "components": {}
+    },
+    "calendar-cell.directive": {
+        "components": {}
+    },
+    "calendar-grid-body.directive": {
+        "components": {}
+    },
+    "calendar-grid-head.directive": {
+        "components": {}
+    },
+    "calendar-grid-row.directive": {
+        "components": {}
+    },
+    "calendar-grid.directive": {
+        "components": {}
+    },
+    "calendar-head-cell.directive": {
+        "components": {}
+    },
+    "calendar-header.directive": {
+        "components": {}
+    },
+    "calendar-heading.directive": {
+        "components": {}
+    },
+    "calendar-next.directive": {
+        "components": {}
+    },
+    "calendar-prev.directive": {
+        "components": {}
+    },
+    "calendar-root.directive": {
+        "components": {}
+    },
+    "сalendar-сontext.token": {
         "components": {}
     },
     "checkbox": {
@@ -259,7 +310,7 @@
     },
     "checkbox.directive": {
         "components": {
-            "RdxCheckboxDirective": {
+            "RdxCheckboxRootDirective": {
                 "description": "",
                 "props": {
                     "description": "Defines the input properties of the component.",
@@ -336,10 +387,10 @@
     "collapsible": {
         "components": {}
     },
-    "collapsible-content.directive": {
+    "collapsible-content-presence.directive": {
         "components": {}
     },
-    "collapsible-content.token": {
+    "collapsible-content.directive": {
         "components": {}
     },
     "collapsible-root.directive": {
@@ -350,6 +401,15 @@
                     "description": "Defines the input properties of the component.",
                     "values": [
                         {
+                            "name": "open",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "ModelSignal<boolean>",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "The controlled open state of the collapsible.\nSets the state of the directive.  `true`  - expanded,  `false`  - collapsed"
+                        },
+                        {
                             "name": "disabled",
                             "optional": false,
                             "readonly": true,
@@ -357,15 +417,6 @@
                             "default": "...",
                             "defaultValue": "...",
                             "description": "Determines whether a directive is available for interaction.\nWhen true, prevents the user from interacting with the collapsible."
-                        },
-                        {
-                            "name": "open",
-                            "optional": false,
-                            "readonly": false,
-                            "type": "boolean",
-                            "default": "false",
-                            "defaultValue": "false",
-                            "description": "The controlled open state of the collapsible.\nSets the state of the directive.  `true`  - expanded,  `false`  - collapsed"
                         }
                     ]
                 },
@@ -388,6 +439,12 @@
         }
     },
     "collapsible-trigger.directive": {
+        "components": {}
+    },
+    "config": {
+        "components": {}
+    },
+    "config.provider": {
         "components": {}
     },
     "context-menu": {
@@ -426,13 +483,58 @@
     "core": {
         "components": {}
     },
+    "control-value-accessor": {
+        "components": {}
+    },
     "provide-value-accessor": {
         "components": {}
     },
     "auto-focus.directive": {
         "components": {}
     },
+    "chunk": {
+        "components": {}
+    },
+    "clamp": {
+        "components": {}
+    },
+    "create-context": {
+        "components": {}
+    },
+    "comparators": {
+        "components": {}
+    },
+    "formatter": {
+        "components": {}
+    },
+    "date-time": {
+        "components": {}
+    },
+    "parser": {
+        "components": {}
+    },
+    "parts": {
+        "components": {}
+    },
+    "placeholders": {
+        "components": {}
+    },
+    "segment": {
+        "components": {}
+    },
+    "useDateField": {
+        "components": {}
+    },
+    "utils": {
+        "components": {}
+    },
     "document": {
+        "components": {}
+    },
+    "focus-initial.directive": {
+        "components": {}
+    },
+    "getActiveElement": {
         "components": {}
     },
     "id-generator": {
@@ -447,25 +549,64 @@
     "is-inside-form": {
         "components": {}
     },
-    "isNumber": {
+    "is-nullish": {
+        "components": {}
+    },
+    "is-number": {
+        "components": {}
+    },
+    "kbd-constants": {
         "components": {}
     },
     "mount": {
         "components": {}
     },
-    "nullish": {
-        "components": {}
-    },
     "constants": {
         "components": {}
     },
-    "types": {
+    "provide-token": {
         "components": {}
     },
-    "utils": {
+    "useArrowNavigation": {
+        "components": {}
+    },
+    "useResizeObserver": {
+        "components": {}
+    },
+    "watch": {
         "components": {}
     },
     "window": {
+        "components": {}
+    },
+    "cropper": {
+        "components": {}
+    },
+    "cropper-context.token": {
+        "components": {}
+    },
+    "cropper-crop-area.directive": {
+        "components": {}
+    },
+    "cropper-description.directive": {
+        "components": {}
+    },
+    "cropper-image.component": {
+        "components": {}
+    },
+    "cropper-root.directive": {
+        "components": {}
+    },
+    "date-field": {
+        "components": {}
+    },
+    "date-field-context.token": {
+        "components": {}
+    },
+    "date-field-input.directive": {
+        "components": {}
+    },
+    "date-field-root.directive": {
         "components": {}
     },
     "dialog": {
@@ -680,7 +821,7 @@
                             "name": "htmlFor",
                             "optional": false,
                             "readonly": true,
-                            "type": "InputSignal<string>",
+                            "type": "InputSignal<undefined | string>",
                             "default": "false",
                             "defaultValue": "false",
                             "description": "The id of the element the label is associated with."
@@ -771,6 +912,93 @@
     "menubar-trigger.directive": {
         "components": {}
     },
+    "navigation-menu": {
+        "components": {}
+    },
+    "navigation-menu-a11y.component": {
+        "components": {}
+    },
+    "navigation-menu-content.directive": {
+        "components": {}
+    },
+    "navigation-menu-indicator.directive": {
+        "components": {}
+    },
+    "navigation-menu-item.directive": {
+        "components": {}
+    },
+    "navigation-menu-link.directive": {
+        "components": {}
+    },
+    "navigation-menu-list.directive": {
+        "components": {}
+    },
+    "navigation-menu-sub.directive": {
+        "components": {}
+    },
+    "navigation-menu-trigger.directive": {
+        "components": {}
+    },
+    "navigation-menu-viewport.directive": {
+        "components": {}
+    },
+    "navigation-menu.directive": {
+        "components": {}
+    },
+    "navigation-menu.token": {
+        "components": {}
+    },
+    "navigation-menu.types": {
+        "components": {}
+    },
+    "number-field": {
+        "components": {}
+    },
+    "number-field-context.token": {
+        "components": {}
+    },
+    "number-field-decrement.directive": {
+        "components": {}
+    },
+    "number-field-increment.directive": {
+        "components": {}
+    },
+    "number-field-input.directive": {
+        "components": {}
+    },
+    "number-field-root.directive": {
+        "components": {}
+    },
+    "pagination": {
+        "components": {}
+    },
+    "pagination-context.token": {
+        "components": {}
+    },
+    "pagination-ellipsis.directive": {
+        "components": {}
+    },
+    "pagination-first.directive": {
+        "components": {}
+    },
+    "pagination-last.directive": {
+        "components": {}
+    },
+    "pagination-list-item.directive": {
+        "components": {}
+    },
+    "pagination-list.directive": {
+        "components": {}
+    },
+    "pagination-next.directive": {
+        "components": {}
+    },
+    "pagination-prev.directive": {
+        "components": {}
+    },
+    "pagination-root.directive": {
+        "components": {}
+    },
     "popover": {
         "components": {}
     },
@@ -817,6 +1045,9 @@
         "components": {}
     },
     "presence": {
+        "components": {}
+    },
+    "presence.directive": {
         "components": {}
     },
     "transition.collapse": {
@@ -944,7 +1175,7 @@
                             "name": "orientation",
                             "optional": false,
                             "readonly": true,
-                            "type": "InputSignal<\"horizontal\" | \"vertical\">",
+                            "type": "InputSignal<\"vertical\" | \"horizontal\">",
                             "default": "'horizontal'",
                             "defaultValue": "'horizontal'",
                             "description": "Orientation of the separator, can be either 'horizontal' or 'vertical'."
@@ -1025,7 +1256,7 @@
                             "name": "orientation",
                             "optional": false,
                             "readonly": true,
-                            "type": "InputSignal<\"horizontal\" | \"vertical\">",
+                            "type": "InputSignal<\"vertical\" | \"horizontal\">",
                             "default": "'horizontal'",
                             "defaultValue": "'horizontal'",
                             "description": "The orientation of the slider."
@@ -1117,6 +1348,36 @@
     "slider-vertical.component": {
         "components": {}
     },
+    "stepper": {
+        "components": {}
+    },
+    "stepper-description.directive": {
+        "components": {}
+    },
+    "stepper-indicator.directive": {
+        "components": {}
+    },
+    "stepper-item-context.token": {
+        "components": {}
+    },
+    "stepper-item.directive": {
+        "components": {}
+    },
+    "stepper-root-context.token": {
+        "components": {}
+    },
+    "stepper-root.directive": {
+        "components": {}
+    },
+    "stepper-separator.directive": {
+        "components": {}
+    },
+    "stepper-title.directive": {
+        "components": {}
+    },
+    "stepper-trigger.directive": {
+        "components": {}
+    },
     "switch": {
         "components": {}
     },
@@ -1162,15 +1423,6 @@
                             "description": "Used to define a string that autocomplete attribute the current element."
                         },
                         {
-                            "name": "checked",
-                            "optional": false,
-                            "readonly": true,
-                            "type": "ModelSignal<boolean>",
-                            "default": "false",
-                            "defaultValue": "false",
-                            "description": "The controlled state of the switch. Must be used in conjunction with onCheckedChange."
-                        },
-                        {
                             "name": "defaultChecked",
                             "optional": false,
                             "readonly": true,
@@ -1178,6 +1430,15 @@
                             "default": "...",
                             "defaultValue": "...",
                             "description": "The state of the switch when it is initially rendered. Use when you do not need to control its state."
+                        },
+                        {
+                            "name": "checked",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "ModelSignal<boolean>",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "The controlled state of the switch. Must be used in conjunction with onCheckedChange."
                         },
                         {
                             "name": "disabled",
@@ -1198,7 +1459,7 @@
                             "parameters": [
                                 {
                                     "name": "value",
-                                    "type": "boolean"
+                                    "type": "undefined | boolean"
                                 }
                             ],
                             "description": "Event handler called when the state of the switch changes."
@@ -1228,6 +1489,18 @@
         "components": {}
     },
     "tabs-trigger.directive": {
+        "components": {}
+    },
+    "time-field": {
+        "components": {}
+    },
+    "time-field-context.token": {
+        "components": {}
+    },
+    "time-field-input.directive": {
+        "components": {}
+    },
+    "time-field-root.directive": {
         "components": {}
     },
     "toggle-group": {
@@ -1289,7 +1562,7 @@
                             "name": "type",
                             "optional": false,
                             "readonly": true,
-                            "type": "InputSignal<\"single\" | \"multiple\">",
+                            "type": "InputSignal<\"multiple\" | \"single\">",
                             "default": "...",
                             "defaultValue": "...",
                             "description": ""

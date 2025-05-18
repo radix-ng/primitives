@@ -19,7 +19,7 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
         trigger('contentExpansion', [
             state('expanded', style({ height: '*', opacity: 1, visibility: 'visible' })),
             state('collapsed', style({ height: '0px', opacity: 0, visibility: 'hidden' })),
-            transition('expanded <=> collapsed', animate('200ms cubic-bezier(.37,1.04,.68,.98)'))
+            transition('expanded <=> collapsed', animate('600ms cubic-bezier(.37,1.04,.68,.98)'))
         ])
     ],
     styles: `
@@ -91,13 +91,11 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
             </div>
 
             <div [@contentExpansion]="open() ? 'expanded' : 'collapsed'" rdxCollapsibleContent>
-                <div *rdxCollapsibleContentPresence>
-                    <div class="Repository">
-                        <span class="Text">&#64;radix-ui/colors</span>
-                    </div>
-                    <div class="Repository">
-                        <span class="Text">&#64;stitches/react</span>
-                    </div>
+                <div class="Repository">
+                    <span class="Text">&#64;radix-ui/colors</span>
+                </div>
+                <div class="Repository">
+                    <span class="Text">&#64;stitches/react</span>
                 </div>
             </div>
         </div>

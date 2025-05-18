@@ -68,8 +68,17 @@ export class RdxAccordionItemDirective {
 
     protected readonly rootContext = injectAccordionRootContext()!;
 
+    /**
+     * A string value for the accordion item. All items within an accordion should use a unique value.
+     * @group Props
+     */
     readonly value = input<string>();
 
+    /**
+     * Whether or not an accordion item is disabled from user interaction.
+     * When `true`, prevents the user from interacting with the item.
+     * @group Props
+     */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     readonly isDisabled = computed(() => {

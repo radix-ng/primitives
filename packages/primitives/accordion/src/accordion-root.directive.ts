@@ -65,6 +65,11 @@ export class RdxAccordionRootDirective {
 
     readonly id = input<string>(inject(_IdGenerator).getId('rdx-accordion-'));
 
+    /**
+     * The reading direction of the accordion when applicable. If omitted, assumes LTR (left-to-right) reading mode.
+     *
+     * @group Props
+     */
     readonly dir = input<Direction>('ltr');
 
     /** Whether the Accordion is disabled.
@@ -81,6 +86,12 @@ export class RdxAccordionRootDirective {
      */
     readonly orientation = input<DataOrientation>('vertical');
 
+    /**
+     * The default active value of the item(s).
+     *
+     * Use when you do not need to control the state of the item(s).
+     * @group Props
+     */
     readonly defaultValue = input<string | string[]>();
 
     /**
@@ -90,8 +101,21 @@ export class RdxAccordionRootDirective {
      */
     readonly value = model<AcceptableValue | AcceptableValue[]>();
 
+    /**
+     * When type is "single", allows closing content when clicking trigger for an open item.
+     * When type is "multiple", this prop has no effect.
+     *
+     * @defaultValue false
+     * @group Props
+     */
     readonly collapsible = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /**
+     * Determines whether a "single" or "multiple" items can be selected at a time.
+     *
+     * @defaultValue 'single'
+     * @group Props
+     */
     readonly type = input<'multiple' | 'single'>('single');
 
     /**

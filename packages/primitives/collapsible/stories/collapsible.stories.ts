@@ -1,6 +1,7 @@
 import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { LucideAngularModule, UnfoldVertical, X } from 'lucide-angular';
+import { RdxCollapsibleContentPresenceDirective } from '../src/collapsible-content-presence.directive';
 import { RdxCollapsibleContentDirective } from '../src/collapsible-content.directive';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.directive';
@@ -17,6 +18,7 @@ export default {
                 RdxCollapsibleRootDirective,
                 RdxCollapsibleTriggerDirective,
                 RdxCollapsibleContentDirective,
+                RdxCollapsibleContentPresenceDirective,
                 RdxCollapsibleExternalTriggeringComponent,
                 RdxCollapsibleAnimationComponent,
                 BrowserAnimationsModule,
@@ -113,11 +115,13 @@ export const Default: Story = {
                 </div>
 
                 <div rdxCollapsibleContent>
-                    <div class="Repository">
-                        <span class="Text">&#64;radix-ui/colors</span>
-                    </div>
-                    <div class="Repository">
-                        <span class="Text">&#64;stitches/react</span>
+                    <div *rdxCollapsibleContentPresence>
+                        <div class="Repository">
+                            <span class="Text">&#64;radix-ui/colors</span>
+                        </div>
+                        <div class="Repository">
+                            <span class="Text">&#64;stitches/react</span>
+                        </div>
                     </div>
                 </div>
             </div>
