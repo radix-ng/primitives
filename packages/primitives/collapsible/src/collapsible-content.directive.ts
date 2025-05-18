@@ -1,4 +1,5 @@
-import { afterNextRender, computed, Directive, effect, ElementRef, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { afterNextRender, computed, Directive, effect, ElementRef, inject, PLATFORM_ID, signal } from '@angular/core';
 import { injectCollapsibleRootContext } from './collapsible-root.directive';
 
 @Directive({
@@ -15,6 +16,7 @@ import { injectCollapsibleRootContext } from './collapsible-root.directive';
 })
 export class RdxCollapsibleContentDirective {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    private readonly platformId = inject(PLATFORM_ID);
 
     protected readonly rootContext = injectCollapsibleRootContext()!;
 
@@ -31,6 +33,10 @@ export class RdxCollapsibleContentDirective {
     constructor() {
         effect(() => {
             const isOpen = this.isOpen();
+
+            if (!isPlatformBrowser(this.platformId)) {
+                return;
+            }
 
             requestAnimationFrame(() => {
                 this.updateDimensions(isOpen);
