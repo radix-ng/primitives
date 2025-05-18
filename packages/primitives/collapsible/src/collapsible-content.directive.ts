@@ -1,4 +1,4 @@
-import { afterNextRender, computed, Directive, effect, ElementRef, inject, PLATFORM_ID, signal } from '@angular/core';
+import { afterNextRender, computed, Directive, effect, ElementRef, inject, signal } from '@angular/core';
 import { injectCollapsibleRootContext } from './collapsible-root.directive';
 
 @Directive({
@@ -15,7 +15,6 @@ import { injectCollapsibleRootContext } from './collapsible-root.directive';
 })
 export class RdxCollapsibleContentDirective {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
-    private readonly platformId = inject(PLATFORM_ID);
 
     protected readonly rootContext = injectCollapsibleRootContext()!;
 
@@ -24,7 +23,6 @@ export class RdxCollapsibleContentDirective {
     readonly height = signal<number | null>(null);
     readonly width = signal<number | null>(null);
     readonly shouldHide = signal(true);
-
     private isMountAnimationPrevented = signal(true);
     private currentStyle = signal<{ transitionDuration: string; animationName: string } | null>(null);
 

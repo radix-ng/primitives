@@ -41,6 +41,9 @@ const rootContext = () => {
     };
 };
 
+/**
+ * @group Components
+ */
 @Directive({
     selector: 'button[rdxSwitchRoot]',
     exportAs: 'rdxSwitchRoot',
