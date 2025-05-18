@@ -1,3 +1,18 @@
+## 0.39.0 (2025-05-18)
+
+### 🚀 Features
+
+- **accordion:** block any animations/transitions when the element renders ([#334](https://github.com/radix-ng/primitives/pull/334))
+
+### 🩹 Fixes
+
+- **accordion:** collapsible property ([6ea14d9](https://github.com/radix-ng/primitives/commit/6ea14d9))
+- **accordion:** animation with SSR ([2eb84ef](https://github.com/radix-ng/primitives/commit/2eb84ef))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 0.38.0 (2025-05-16)
 
 ### 🚀 Features
