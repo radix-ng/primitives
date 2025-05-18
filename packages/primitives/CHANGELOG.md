@@ -1,3 +1,13 @@
+## 0.39.1 (2025-05-18)
+
+### 🩹 Fixes
+
+- **accordion:** remove unnecessary changeModel ([64d8b28](https://github.com/radix-ng/primitives/commit/64d8b28))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 0.39.0 (2025-05-18)
 
 ### 🚀 Features
