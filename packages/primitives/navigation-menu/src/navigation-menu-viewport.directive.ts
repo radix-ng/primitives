@@ -347,6 +347,10 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
 
             node.transitionSubscription = null;
             this._leavingContentNode.set(null);
+
+            if (!this._activeContentNode() && !this.forceMount()) {
+                this._viewportSize.set(null);
+            }
         } else {
             // if this node is NOT the one currently marked as leaving, it means
             // a new transition started before this one finished. Just clean up DOM/Sub.
