@@ -69,9 +69,9 @@ export class RdxNavigationMenuDirective implements OnDestroy {
 
     @Input() orientation: 'horizontal' | 'vertical' = 'horizontal';
     @Input() dir: 'ltr' | 'rtl' = 'ltr';
-    @Input({ transform: numberAttribute }) delayDuration = 200;
     @Input({ transform: numberAttribute }) clickIgnoreDuration = 250;
-    @Input({ transform: numberAttribute }) skipDelayDuration = 200;
+    @Input({ transform: numberAttribute }) delayDuration = 200;
+    @Input({ transform: numberAttribute }) skipDelayDuration = 300;
     @Input({ transform: booleanAttribute }) loop = false;
     @Input({ transform: booleanAttribute }) cssAnimation = false;
     @Input({ transform: booleanAttribute }) cssOpeningAnimation = false;
