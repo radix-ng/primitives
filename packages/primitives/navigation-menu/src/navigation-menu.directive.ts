@@ -56,6 +56,8 @@ export class RdxNavigationMenuDirective implements OnDestroy {
     private openTimerRef = 0;
     private closeTimerRef = 0;
     private skipDelayTimerRef = 0;
+    private recentlyActivatedTimerRef = 0;
+    private readonly recentlyActivatedItem = signal<string | null>(null);
     readonly #isOpenDelayed = signal(true);
 
     // pointer tracking
@@ -68,7 +70,8 @@ export class RdxNavigationMenuDirective implements OnDestroy {
     @Input() orientation: 'horizontal' | 'vertical' = 'horizontal';
     @Input() dir: 'ltr' | 'rtl' = 'ltr';
     @Input({ transform: numberAttribute }) delayDuration = 200;
-    @Input({ transform: numberAttribute }) skipDelayDuration = 300;
+    @Input({ transform: numberAttribute }) clickIgnoreDuration = 350;
+    @Input({ transform: numberAttribute }) skipDelayDuration = 75;
     @Input({ transform: booleanAttribute }) loop = false;
     @Input({ transform: booleanAttribute }) cssAnimation = false;
     @Input({ transform: booleanAttribute }) cssOpeningAnimation = false;
@@ -148,6 +151,7 @@ export class RdxNavigationMenuDirective implements OnDestroy {
         this.window.clearTimeout(this.openTimerRef);
         this.window.clearTimeout(this.closeTimerRef);
         this.window.clearTimeout(this.skipDelayTimerRef);
+        this.window.clearTimeout(this.recentlyActivatedTimerRef);
 
         // clean up document event listener
         if (this.documentMouseLeaveHandler) {
@@ -198,6 +202,17 @@ export class RdxNavigationMenuDirective implements OnDestroy {
 
     onItemSelect(itemValue: string) {
         const wasOpen = this.#value() === itemValue;
+
+        // if this item just opened and the click would close it,
+        // ignore the click during the brief protection window
+        const recentlyActivated = this.recentlyActivatedItem();
+        console.log(`${itemValue} was recently opened: ${recentlyActivated}`);
+        console.log(`wasOpen: ${wasOpen}`);
+        if (recentlyActivated === itemValue && wasOpen) {
+            console.log('ignoring click on recently opened item');
+            return;
+        }
+
         const newValue = wasOpen ? '' : itemValue;
 
         // if user is closing an open menu, mark as user-dismissed
@@ -229,8 +244,22 @@ export class RdxNavigationMenuDirective implements OnDestroy {
     }
 
     private setValue(value: string) {
-        // Store previous value before changing
-        this.#previousValue.set(this.#value());
+        console.log('setValue', value);
+        const previousValue = this.#value();
+
+        if (value && value !== previousValue) {
+            this.window.clearTimeout(this.recentlyActivatedTimerRef);
+
+            this.recentlyActivatedItem.set(value);
+
+            this.recentlyActivatedTimerRef = this.window.setTimeout(() => {
+                console.log('clearing recently activated item');
+                this.recentlyActivatedItem.set(null);
+            }, this.clickIgnoreDuration);
+        }
+
+        // store previous value before changing
+        this.#previousValue.set(previousValue);
         this.#value.set(value);
     }
 
