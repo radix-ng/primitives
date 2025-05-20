@@ -205,11 +205,7 @@ export class RdxNavigationMenuDirective implements OnDestroy {
 
         // if this item just opened and the click would close it,
         // ignore the click during the brief protection window
-        const recentlyActivated = this.recentlyActivatedItem();
-        console.log(`${itemValue} was recently opened: ${recentlyActivated}`);
-        console.log(`wasOpen: ${wasOpen}`);
-        if (recentlyActivated === itemValue && wasOpen) {
-            console.log('ignoring click on recently opened item');
+        if (this.recentlyActivatedItem() === itemValue && wasOpen) {
             return;
         }
 
@@ -244,7 +240,6 @@ export class RdxNavigationMenuDirective implements OnDestroy {
     }
 
     private setValue(value: string) {
-        console.log('setValue', value);
         const previousValue = this.#value();
 
         if (value && value !== previousValue) {
@@ -253,7 +248,6 @@ export class RdxNavigationMenuDirective implements OnDestroy {
             this.recentlyActivatedItem.set(value);
 
             this.recentlyActivatedTimerRef = this.window.setTimeout(() => {
-                console.log('clearing recently activated item');
                 this.recentlyActivatedItem.set(null);
             }, this.clickIgnoreDuration);
         }
