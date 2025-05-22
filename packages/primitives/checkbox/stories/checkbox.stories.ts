@@ -6,6 +6,7 @@ import { RdxCheckboxInputDirective } from '../src/checkbox-input.directive';
 import { RdxCheckboxRootDirective } from '../src/checkbox.directive';
 import { CheckboxReactiveFormsExampleComponent } from './checkbox-group.component';
 import { CheckboxIndeterminateComponent } from './checkbox-indeterminate.component';
+import { CheckboxReactiveForm } from './checkbox-reactive-form.component';
 
 const html = String.raw;
 
@@ -21,7 +22,8 @@ export default {
                 LucideAngularModule,
                 LucideAngularModule.pick({ Check, Minus }),
                 CheckboxReactiveFormsExampleComponent,
-                CheckboxIndeterminateComponent
+                CheckboxIndeterminateComponent,
+                CheckboxReactiveForm
             ]
         }),
         componentWrapperDecorator(
@@ -116,6 +118,14 @@ export const indeterminate: Story = {
     render: () => ({
         template: html`
             <checkbox-indeterminate-example></checkbox-indeterminate-example>
+        `
+    })
+};
+
+export const WithReactiveForms: Story = {
+    render: () => ({
+        template: html`
+            <checkbox-reactive-forms />
         `
     })
 };
