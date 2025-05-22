@@ -1,3 +1,14 @@
+## 0.39.2 (2025-05-22)
+
+### 🩹 Fixes
+
+- **navigation-menu:** prevent accidental menu closing when clicking immediately after hover ([#337](https://github.com/radix-ng/primitives/pull/337))
+- **navigation-menu:** clear viewport size when no active content node is present ([#336](https://github.com/radix-ng/primitives/pull/336))
+
+### ❤️ Thank You
+
+- Josh Sullivan @jpsullivan
+
 ## 0.39.1 (2025-05-18)
 
 ### 🩹 Fixes
