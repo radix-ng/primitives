@@ -35,9 +35,14 @@ const rootContext = (): CollapsibleRootContext => {
         disabled: instance.isDisabled,
         open: instance.open,
         toggle: () => {
+            if (instance.isDisabled()) {
+                return;
+            }
+
             untracked(() => {
                 instance.open.set(!instance.open());
             });
+
             instance.onOpenChange.emit(instance.open());
         }
     };
