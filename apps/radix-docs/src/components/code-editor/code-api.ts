@@ -28,4 +28,4 @@ const useStackBlitz = (props: Props) => {
     sdk.openProject(project, options);
 };
 
-export { useCodeSandbox, useStackBlitz };
+export { useStackBlitz };

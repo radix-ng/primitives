@@ -70,6 +70,7 @@ export default defineConfig({
                 '@angular/core',
                 '@angular/core/rxjs-interop',
                 '@stackblitz/sdk',
+                'classnames',
                 '@internationalized/date',
                 'lucide-angular'
             ]
