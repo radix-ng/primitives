@@ -23,7 +23,6 @@
         "@docsearch/js": "^3.6.2",
         "@radix-ui/colors": "^3.0.0",
         "@radix-ui/themes": "^3.1.6",
-        "astro-llms-txt": "^0.0.1-beta",
         "alpinejs": "^3.14.9",
         "astro": "^5.7.11",
         "astro-auto-import": "^0.4.4",

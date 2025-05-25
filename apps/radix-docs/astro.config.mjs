@@ -5,7 +5,6 @@ import sitemap from '@astrojs/sitemap';
 import tailwind from '@astrojs/tailwind';
 import { getHighlighter } from '@shikijs/compat';
 import AutoImport from 'astro-auto-import';
-import LlmsTXT from 'astro-llms-txt';
 import { defineConfig } from 'astro/config';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -108,8 +107,7 @@ export default defineConfig({
         }),
         mdx(),
         angular(),
-        alpinejs({ entrypoint: '/src/entrypoints/alpine' }),
-        LlmsTXT()
+        alpinejs({ entrypoint: '/src/entrypoints/alpine' })
     ],
     markdown: {
         syntaxHighlight: false,
