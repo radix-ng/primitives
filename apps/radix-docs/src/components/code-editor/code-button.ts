@@ -3,11 +3,9 @@ import { Component, input } from '@angular/core';
 
 @Component({
     selector: 'code-button',
-    standalone: true,
-    imports: [],
     template: `
         <button
-            class="flex cursor-default items-center gap-2 px-4 py-2 text-sm hover:underline"
+            class="flex cursor-default items-center gap-2 px-2 py-2 text-sm hover:underline"
             (click)="handleClick()"
         >
             StackBlitz
@@ -20,7 +18,7 @@ import { Component, input } from '@angular/core';
         </button>
     `
 })
-export class CodeButtonComponent {
+export class CodeButton {
     readonly code = input<string>();
     readonly name = input<string>();
     readonly css = input<string>();

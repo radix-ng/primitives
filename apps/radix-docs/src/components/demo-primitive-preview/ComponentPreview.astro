@@ -5,7 +5,8 @@ import { readFileSync } from 'fs';
 import { cn } from '@/utils/utils';
 import { DemoLoaderComponent } from './demo-loader.component';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../tabs';
-import { CodeButtonComponent } from '@/components/code-editor/code-button.component';
+import { CodeButton } from '@/components/code-editor/code-button.ts';
+import { LlmsButton } from '@/components/code-editor/llms-button.ts';
 
 export interface Props {
     name: string;
@@ -15,7 +16,7 @@ export interface Props {
     codeDefault: string;
 }
 
-const { name, file, class: className, codeCss, codeDefault, ...rest } = Astro.props;
+const { name, file, class: className, ...rest } = Astro.props;
 
 async function loadCode(name: string, file: string) {
     const filename = path.join(process.cwd(), 'src', 'demos', 'primitives', `${name}`, `${file}.ts`);
@@ -41,6 +42,11 @@ async function loadCSS(name: string, file: string) {
 
 const { code } = await loadCode(name, file);
 const { css } = await loadCSS(name, file);
+
+const { pathname } = Astro.url;
+const basePath = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+
+const llmsUrl = `${basePath}/llms.txt`;
 ---
 
 <div x-data class={cn('group relative my-4 flex flex-col space-y-2', className)} {...rest}>
@@ -66,8 +72,9 @@ const { css } = await loadCSS(name, file);
                     >
                         CSS
                     </TabsTrigger>
-                    <div class="ml-auto flex items-center gap-4">
-                        <CodeButtonComponent {...{ code, name, css }} client:visible />
+                    <div class="ml-auto flex items-center gap-2">
+                        <LlmsButton {...{ llmsUrl }} client:visible />
+                        <CodeButton {...{ code, name, css }} client:visible />
                     </div>
                 </TabsList>
             </div>
