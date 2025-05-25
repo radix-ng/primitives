@@ -17,6 +17,7 @@
         "@astrojs/check": "^0.9.4",
         "@astrojs/mdx": "^4.2.6",
         "@astrojs/sitemap": "^3.3.1",
+        "@astrojs/vercel": "^8.1.4",
         "@astrojs/tailwind": "^5.1.5",
         "@astrojs/ts-plugin": "^1.10.4",
         "@docsearch/css": "^3.6.2",

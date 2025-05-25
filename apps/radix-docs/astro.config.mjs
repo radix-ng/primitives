@@ -3,6 +3,7 @@ import alpinejs from '@astrojs/alpinejs';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tailwind from '@astrojs/tailwind';
+import vercel from '@astrojs/vercel';
 import { getHighlighter } from '@shikijs/compat';
 import AutoImport from 'astro-auto-import';
 import { defineConfig } from 'astro/config';
@@ -57,6 +58,7 @@ export default defineConfig({
                 '@angular/core',
                 '@angular/cdk',
                 '@internationalized/date',
+                '@stackblitz/sdk',
                 'classnames',
                 'lucide-angular'
             ]
@@ -67,6 +69,7 @@ export default defineConfig({
                 '@angular/common',
                 '@angular/core',
                 '@angular/core/rxjs-interop',
+                '@stackblitz/sdk',
                 '@internationalized/date',
                 'lucide-angular'
             ]
@@ -77,6 +80,7 @@ export default defineConfig({
             }
         }
     },
+    adapter: vercel(),
     integrations: [
         tailwind({
             applyBaseStyles: false
