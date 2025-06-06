@@ -103,6 +103,7 @@ const docsConfig = {
                         },
                         { name: 'Dialog', url: '/primitives/components/dialog' },
                         { name: 'Dropdown Menu', url: '/primitives/components/dropdown-menu' },
+                        { name: 'Hover Card', url: '/primitives/components/hover-card', label: 'New' },
                         { name: 'Label', url: '/primitives/components/label' },
                         {
                             name: 'Menubar',

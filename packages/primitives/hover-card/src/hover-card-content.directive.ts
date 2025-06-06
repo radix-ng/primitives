@@ -78,9 +78,13 @@ export class RdxHoverCardContentDirective implements OnInit {
      */
     readonly alternatePositionsDisabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    /** @description Whether to prevent `onOverlayEscapeKeyDown` handler from calling. */
+    /** @description Whether to prevent `onOverlayEscapeKeyDown` handler from calling.
+     * @default false
+     */
     readonly onOverlayEscapeKeyDownDisabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
-    /** @description Whether to prevent `onOverlayOutsideClick` handler from calling. */
+    /** @description Whether to prevent `onOverlayOutsideClick` handler from calling.
+     * @default false
+     */
     readonly onOverlayOutsideClickDisabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**

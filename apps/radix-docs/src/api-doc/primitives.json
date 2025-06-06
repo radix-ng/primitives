@@ -748,7 +748,140 @@
         }
     },
     "hover-card": {
-        "components": {}
+        "components": {
+            "RdxHoverCardRootDirective": {
+                "description": "",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "anchor",
+                            "type": "InputSignal<RdxHoverCardAnchorDirective | undefined>",
+                            "defaultValue": "undefined",
+                            "description": "The anchor directive that comes from outside the hover-card rootDirective"
+                        },
+                        {
+                            "name": "defaultOpen",
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "defaultValue": "false",
+                            "description": "The open state of the hover-card when it is initially rendered. Use when you do not need to control its open state."
+                        },
+                        {
+                            "name": "open",
+                            "type": "InputSignalWithTransform<boolean | undefined, BooleanInput>",
+                            "defaultValue": "undefined",
+                            "description": "The controlled state of the hover-card. `open` input takes precedence over `defaultOpen` input."
+                        },
+                        {
+                            "name": "openDelay",
+                            "type": "InputSignalWithTransform<number, NumberInput>",
+                            "defaultValue": "500",
+                            "description": "The delay in milliseconds before the hover-card opens."
+                        },
+                        {
+                            "name": "closeDelay",
+                            "type": "InputSignalWithTransform<number, NumberInput>",
+                            "defaultValue": "200",
+                            "description": "The delay in milliseconds before the hover-card closes."
+                        },
+                        {
+                            "name": "externalControl",
+                            "type": "InputSignalWithTransform<boolean | undefined, BooleanInput>",
+                            "defaultValue": "undefined",
+                            "description": "Whether to control the state of the hover-card from outside. Use in conjunction with `open` input."
+                        },
+                        {
+                            "name": "cssAnimation",
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "defaultValue": "false",
+                            "description": "Whether to take into account CSS opening/closing animations."
+                        },
+                        {
+                            "name": "cssOpeningAnimation",
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "defaultValue": "false",
+                            "description": "Whether to take into account CSS opening animations. `cssAnimation` input must be set to 'true'"
+                        },
+                        {
+                            "name": "cssClosingAnimation",
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "defaultValue": "false",
+                            "description": "Whether to take into account CSS closing animations. `cssAnimation` input must be set to 'true'"
+                        }
+                    ]
+                }
+            },
+            "RdxHoverCardArrowDirective": {
+                "description": "",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "width",
+                            "type": "InputSignalWithTransform<number, NumberInput>",
+                            "defaultValue": "10",
+                            "description": "The width of the arrow in pixels."
+                        },
+                        {
+                            "name": "height",
+                            "type": "InputSignalWithTransform<number, NumberInput>",
+                            "defaultValue": "5",
+                            "description": "The height of the arrow in pixels."
+                        }
+                    ]
+                }
+            },
+            "RdxHoverCardContentDirective": {
+                "description": "",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "side",
+                            "type": "InputSignal<RdxPositionSide>",
+                            "defaultValue": "'top'",
+                            "description": "The preferred side of the trigger to render against when open. Will be reversed when collisions occur and avoidCollisions is enabled."
+                        },
+                        {
+                            "name": "sideOffset",
+                            "type": "InputSignalWithTransform<number, NumberInput>",
+                            "defaultValue": "0",
+                            "description": "The distance in pixels from the trigger."
+                        },
+                        {
+                            "name": "align",
+                            "type": "InputSignal<RdxPositionAlign>",
+                            "defaultValue": "'center'",
+                            "description": "The preferred alignment against the trigger. May change when collisions occur."
+                        },
+                        {
+                            "name": "alignOffset",
+                            "type": "InputSignalWithTransform<number, NumberInput>",
+                            "defaultValue": "0",
+                            "description": "An offset in pixels from the \"start\" or \"end\" alignment options."
+                        },
+                        {
+                            "name": "alternatePositionsDisabled",
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "defaultValue": "false",
+                            "description": "Whether to add some alternate positions of the content."
+                        },
+                        {
+                            "name": "onOverlayEscapeKeyDownDisabled",
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "defaultValue": "false",
+                            "description": "Whether to prevent `onOverlayEscapeKeyDown` handler from calling."
+                        },
+                        {
+                            "name": "onOverlayOutsideClickDisabled",
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "defaultValue": "false",
+                            "description": "Whether to prevent `onOverlayOutsideClick` handler from calling."
+                        }
+                    ]
+                }
+            }
+        }
     },
     "hover-card-anchor.directive": {
         "components": {}
