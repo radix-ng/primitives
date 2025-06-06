@@ -2,6 +2,7 @@ import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@stor
 import { AlignCenter, AlignLeft, AlignRight, LucideAngularModule } from 'lucide-angular';
 import { RdxToggleGroupItemDirective } from '../src/toggle-group-item.directive';
 import { RdxToggleGroupDirective } from '../src/toggle-group.directive';
+import { ToggleGroup } from './toggle-group';
 
 const html = String.raw;
 
@@ -13,6 +14,7 @@ export default {
                 RdxToggleGroupDirective,
                 RdxToggleGroupItemDirective,
                 LucideAngularModule,
+                ToggleGroup,
                 LucideAngularModule.pick({ AlignRight, AlignLeft, AlignCenter })
             ]
         }),
@@ -163,6 +165,14 @@ export const DisableGroup: Story = {
                     <lucide-icon name="align-right" size="12"></lucide-icon>
                 </button>
             </div>
+        `
+    })
+};
+
+export const Component: Story = {
+    render: () => ({
+        template: html`
+            <toggle-group />
         `
     })
 };

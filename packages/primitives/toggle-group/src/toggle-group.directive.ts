@@ -1,7 +1,13 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, Directive, input, model, output, signal } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
-import { provideToken, provideValueAccessor } from '@radix-ng/primitives/core';
+import {
+    AcceptableValue,
+    isEqual,
+    isValueEqualOrExist,
+    provideToken,
+    provideValueAccessor
+} from '@radix-ng/primitives/core';
 import { RdxRovingFocusGroupDirective } from '@radix-ng/primitives/roving-focus';
 import { RdxToggleGroupToken } from './toggle-group.token';
 
@@ -33,7 +39,7 @@ export class RdxToggleGroupDirective implements ControlValueAccessor {
     /**
      * @group Props
      */
-    readonly value = model<string | string[] | undefined>(undefined);
+    readonly value = model<AcceptableValue | AcceptableValue[] | undefined>(undefined);
 
     /**
      * @group Props
@@ -51,12 +57,12 @@ export class RdxToggleGroupDirective implements ControlValueAccessor {
      * Event emitted when the selected toggle button changes.
      * @group Emits
      */
-    readonly onValueChange = output<string[] | string | undefined>();
+    readonly onValueChange = output<AcceptableValue | AcceptableValue[] | undefined>();
 
     /**
      * The value change callback.
      */
-    private onChange?: (value: string | string[] | undefined) => void;
+    private onChange?: (value: AcceptableValue | AcceptableValue[] | undefined) => void;
 
     /**
      * onTouch function registered via registerOnTouch (ControlValueAccessor).
@@ -68,22 +74,24 @@ export class RdxToggleGroupDirective implements ControlValueAccessor {
      * @param value The value to toggle.
      * @ignore
      */
-    toggle(value: string): void {
+    toggle(value: AcceptableValue): void {
         if (this.disabled()) {
             return;
         }
 
         if (this.type() === 'single') {
-            this.value.set(value);
+            this.value.set(isEqual(value, this.value()) ? undefined : value);
         } else {
-            this.value.set(
-                ((currentValue) =>
-                    currentValue && Array.isArray(currentValue)
-                        ? currentValue.includes(value)
-                            ? currentValue.filter((v) => v !== value) // delete
-                            : [...currentValue, value] // update
-                        : [value])(this.value())
-            );
+            const modelValueArray = Array.isArray(this.value())
+                ? [...((this.value() as AcceptableValue[]) || [])]
+                : [this.value()].filter(Boolean);
+            if (isValueEqualOrExist(modelValueArray, value)) {
+                const index = modelValueArray.findIndex((i) => isEqual(i, value));
+                modelValueArray.splice(index, 1);
+            } else {
+                modelValueArray.push(value);
+            }
+            this.value.set(modelValueArray);
         }
 
         this.onValueChange.emit(this.value());
@@ -104,7 +112,7 @@ export class RdxToggleGroupDirective implements ControlValueAccessor {
      * @param fn The callback to register.
      * @ignore
      */
-    registerOnChange(fn: (value: string | string[] | undefined) => void): void {
+    registerOnChange(fn: (value: AcceptableValue | AcceptableValue[] | undefined) => void): void {
         this.onChange = fn;
     }
 
