@@ -1,3 +1,15 @@
+## 0.39.3 (2025-06-08)
+
+### 🩹 Fixes
+
+- **toggle-group:** the model value was not undefined ([#343](https://github.com/radix-ng/primitives/pull/343))
+- **toggle:** ensure open does not trigger when disabled ([222f23d](https://github.com/radix-ng/primitives/commit/222f23d))
+- **slider:** keys direction PageUp ([5b93636](https://github.com/radix-ng/primitives/commit/5b93636))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 0.39.2 (2025-05-22)
 
 ### 🩹 Fixes
