@@ -44,7 +44,7 @@ export class RdxHoverCardRootDirective {
     readonly name = computed(() => `rdx-hover-card-root-${this.uniqueId()}`);
 
     /**
-     * @description The anchor directive that comes form outside the hover-card rootDirective
+     * @description The anchor directive that comes from outside the hover-card rootDirective
      * @default undefined
      */
     readonly anchor = input<RdxHoverCardAnchorDirective | undefined>(void 0);
@@ -54,24 +54,26 @@ export class RdxHoverCardRootDirective {
      */
     readonly defaultOpen = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
     /**
-     * @description The controlled state of the hover-card. `open` input take precedence of `defaultOpen` input.
+     * @description The controlled state of the hover-card. `open` input takes precedence over `defaultOpen` input.
      * @default undefined
      */
     readonly open = input<boolean | undefined, BooleanInput>(void 0, { transform: booleanAttribute });
     /**
-     * To customise the open delay for a specific hover-card.
+     * @description The delay in milliseconds before the hover-card opens.
+     * @default 500
      */
     readonly openDelay = input<number, NumberInput>(500, {
         transform: numberAttribute
     });
     /**
-     * To customise the close delay for a specific hover-card.
+     * @description The delay in milliseconds before the hover-card closes.
+     * @default 200
      */
     readonly closeDelay = input<number, NumberInput>(200, {
         transform: numberAttribute
     });
     /**
-     * @description Whether to control the state of the hover-card from external. Use in conjunction with `open` input.
+     * @description Whether to control the state of the hover-card from outside. Use in conjunction with `open` input.
      * @default undefined
      */
     readonly externalControl = input<boolean | undefined, BooleanInput>(void 0, { transform: booleanAttribute });

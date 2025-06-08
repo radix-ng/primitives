@@ -1,0 +1,83 @@
+---
+title: Hover Card
+slug: hover-card
+section: components
+description: For sighted users to preview content available behind a link.
+---
+
+# Hover Card
+
+<Description>For sighted users to preview content available behind a link.</Description>
+
+<ComponentPreview name="hover-card" file="hover-card-demo" />
+
+<FeatureList items={[
+    'Can be controlled or uncontrolled.',
+    'Customize side, alignment, offsets, collision handling.',
+    'Optionally render a pointing arrow.',
+    'Supports custom open and close delays.',
+    'Ignored by screen readers.'
+]}/>
+
+## Import
+
+Get started with importing the directives:
+
+```typescript
+import {
+  RdxHoverCardModule
+} from '@radix-ng/primitives/hover-card';
+```
+
+## Anatomy
+
+```html
+<ng-container rdxHoverCardRoot>
+    <button rdxHoverCardTrigger></button>
+
+    <ng-template rdxHoverCardContent>
+        <div rdxHoverCardContentAttributes>
+            <button rdxHoverCardClose></button>
+            Hover Card Content
+            <div rdxHoverCardArrow></div>
+        </div>
+    </ng-template>
+</ng-container>
+```
+## API Reference
+
+### Root
+
+`RdxHoverCardRootDirective`
+
+Contains all the parts of a hover-card.
+
+<PropsTable name="RdxHoverCardRootDirective" />
+
+### Trigger
+
+`RdxHoverCardTriggerDirective`
+
+The button that toggles the hover-card. By default, the `HoverCardContent` will position itself against the trigger.
+
+### Content
+
+`RdxHoverCardContentDirective`
+
+The component that pops out when the hover-card is open.
+
+<PropsTable name="RdxHoverCardContentDirective" />
+
+### Arrow
+
+`RdxHoverCardArrowDirective`
+
+An optional arrow element to render alongside the hover-card. This can be used to help visually link the trigger with the `HoverCardContent`. Must be rendered inside `HoverCardContent`.
+
+<PropsTable name="RdxHoverCardArrowDirective" />
+
+### Close
+
+`RdxHoverCardCloseDirective`
+
+An optional close button element to render alongside the hover-card. This can be used to close the `HoverCardContent`. Must be rendered inside `HoverCardContent`.
