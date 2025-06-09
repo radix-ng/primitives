@@ -42,8 +42,8 @@ import { LucideAngularModule, UnfoldVertical, X } from 'lucide-angular';
                 <span class="font-mono ">&#64;radix-ui/primitives</span>
             </div>
 
-            <div class="space-y-2 overflow-hidden" rdxCollapsibleContent>
-                <div *rdxCollapsibleContentPresence>
+            <div rdxCollapsibleContent>
+                <div class="space-y-2 overflow-hidden" *rdxCollapsibleContentPresence>
                     <div class="rounded-md border px-4 py-2">
                         <span class="font-mono">&#64;radix-ui/colors</span>
                     </div>
