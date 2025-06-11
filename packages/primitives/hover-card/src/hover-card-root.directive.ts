@@ -33,6 +33,9 @@ import { injectRdxCdkEventService } from './utils/cdk-event.service';
 
 let nextId = 0;
 
+/**
+ * @group Components
+ */
 @Directive({
     selector: '[rdxHoverCardRoot]',
     exportAs: 'rdxHoverCardRoot'
@@ -44,52 +47,61 @@ export class RdxHoverCardRootDirective {
     readonly name = computed(() => `rdx-hover-card-root-${this.uniqueId()}`);
 
     /**
-     * @description The anchor directive that comes from outside the hover-card rootDirective
-     * @default undefined
+     * The anchor directive that comes from outside the hover-card rootDirective
+     * @group Props
+     * @defaultValue undefined
      */
     readonly anchor = input<RdxHoverCardAnchorDirective | undefined>(void 0);
     /**
-     * @description The open state of the hover-card when it is initially rendered. Use when you do not need to control its open state.
-     * @default false
+     * The open state of the hover-card when it is initially rendered. Use when you do not need to control its open state.
+     * @group Props
+     * @defaultValue false
      */
     readonly defaultOpen = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
     /**
-     * @description The controlled state of the hover-card. `open` input takes precedence over `defaultOpen` input.
-     * @default undefined
+     * The controlled state of the hover-card. `open` input takes precedence over `defaultOpen` input.
+     * @group Props
+     * @defaultValue undefined
      */
     readonly open = input<boolean | undefined, BooleanInput>(void 0, { transform: booleanAttribute });
     /**
-     * @description The delay in milliseconds before the hover-card opens.
-     * @default 500
+     * The delay in milliseconds before the hover-card opens.
+     * @group Props
+     * @defaultValue 500
      */
     readonly openDelay = input<number, NumberInput>(500, {
         transform: numberAttribute
     });
     /**
-     * @description The delay in milliseconds before the hover-card closes.
-     * @default 200
+     * The delay in milliseconds before the hover-card closes.
+     * @group Props
+     * @defaultValue 200
      */
     readonly closeDelay = input<number, NumberInput>(200, {
         transform: numberAttribute
     });
     /**
-     * @description Whether to control the state of the hover-card from outside. Use in conjunction with `open` input.
-     * @default undefined
+     * Whether to control the state of the hover-card from outside. Use in conjunction with `open` input.
+     * @group Props
+     * @defaultValue undefined
      */
     readonly externalControl = input<boolean | undefined, BooleanInput>(void 0, { transform: booleanAttribute });
     /**
-     * @description Whether to take into account CSS opening/closing animations.
-     * @default false
+     * Whether to take into account CSS opening/closing animations.
+     * @group Props
+     * @defaultValue false
      */
     readonly cssAnimation = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
     /**
-     * @description Whether to take into account CSS opening animations. `cssAnimation` input must be set to 'true'
-     * @default false
+     * Whether to take into account CSS opening animations. `cssAnimation` input must be set to 'true'
+     * @group Props
+     * @defaultValue false
      */
     readonly cssOpeningAnimation = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
     /**
-     * @description Whether to take into account CSS closing animations. `cssAnimation` input must be set to 'true'
-     * @default false
+     * Whether to take into account CSS closing animations. `cssAnimation` input must be set to 'true'
+     * @group Props
+     * @defaultValue false
      */
     readonly cssClosingAnimation = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 

@@ -23,6 +23,9 @@ import {
 import { RdxHoverCardArrowToken } from './hover-card-arrow.token';
 import { injectHoverCardRoot } from './hover-card-root.inject';
 
+/**
+ * @group Components
+ */
 @Directive({
     selector: '[rdxHoverCardArrow]',
     providers: [
@@ -41,14 +44,16 @@ export class RdxHoverCardArrowDirective {
     readonly elementRef = inject(ElementRef);
 
     /**
-     * @description The width of the arrow in pixels.
-     * @default 10
+     * The width of the arrow in pixels.
+     * @group Props
+     * @defaultValue 10
      */
     readonly width = input<number, NumberInput>(RDX_POSITIONING_DEFAULTS.arrow.width, { transform: numberAttribute });
 
     /**
-     * @description The height of the arrow in pixels.
-     * @default 5
+     * The height of the arrow in pixels.
+     * @group Props
+     * @defaultValue 5
      */
     readonly height = input<number, NumberInput>(RDX_POSITIONING_DEFAULTS.arrow.height, { transform: numberAttribute });
 

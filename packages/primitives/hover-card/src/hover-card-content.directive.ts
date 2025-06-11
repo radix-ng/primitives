@@ -28,6 +28,9 @@ import { filter, tap } from 'rxjs';
 import { injectHoverCardRoot } from './hover-card-root.inject';
 import { RdxHoverCardAttachDetachEvent } from './hover-card.types';
 
+/**
+ * @group Components
+ */
 @Directive({
     selector: '[rdxHoverCardContent]',
     hostDirectives: [CdkConnectedOverlay]
@@ -48,62 +51,75 @@ export class RdxHoverCardContentDirective implements OnInit {
     readonly name = computed(() => `rdx-hover-card-trigger-${this.rootDirective.uniqueId()}`);
 
     /**
-     * @description The preferred side of the trigger to render against when open. Will be reversed when collisions occur and avoidCollisions is enabled.
-     * @default top
+     * The preferred side of the trigger to render against when open. Will be reversed when collisions occur and avoidCollisions is enabled.
+     * @group Props
+     * @defaultValue top
      */
     readonly side = input<RdxPositionSide>(RdxPositionSide.Top);
     /**
-     * @description The distance in pixels from the trigger.
-     * @default undefined
+     * The distance in pixels from the trigger.
+     * @group Props
+     * @defaultValue undefined
      */
     readonly sideOffset = input<number, NumberInput>(NaN, {
         transform: numberAttribute
     });
     /**
-     * @description The preferred alignment against the trigger. May change when collisions occur.
-     * @default center
+     * The preferred alignment against the trigger. May change when collisions occur.
+     * @group Props
+     * @defaultValue center
      */
     readonly align = input<RdxPositionAlign>(RdxPositionAlign.Center);
     /**
-     * @description An offset in pixels from the "start" or "end" alignment options.
-     * @default undefined
+     * An offset in pixels from the "start" or "end" alignment options.
+     * @group Props
+     * @defaultValue undefined
      */
     readonly alignOffset = input<number, NumberInput>(NaN, {
         transform: numberAttribute
     });
 
     /**
-     * @description Whether to add some alternate positions of the content.
-     * @default false
+     * Whether to add some alternate positions of the content.
+     * @group Props
+     * @defaultValue false
      */
     readonly alternatePositionsDisabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    /** @description Whether to prevent `onOverlayEscapeKeyDown` handler from calling.
-     * @default false
+    /**
+     * Whether to prevent `onOverlayEscapeKeyDown` handler from calling.
+     * @group Props
+     * @defaultValue false
      */
     readonly onOverlayEscapeKeyDownDisabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
-    /** @description Whether to prevent `onOverlayOutsideClick` handler from calling.
-     * @default false
+    /**
+     * Whether to prevent `onOverlayOutsideClick` handler from calling.
+     * @group Props
+     * @defaultValue false
      */
     readonly onOverlayOutsideClickDisabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
-     * @description Event handler called when the escape key is down.
+     * Event handler called when the escape key is down.
      * It can be prevented by setting `onOverlayEscapeKeyDownDisabled` input to `true`.
+     * @group Emits
      */
     readonly onOverlayEscapeKeyDown = output<KeyboardEvent>();
     /**
-     * @description Event handler called when a pointer event occurs outside the bounds of the component.
+     * Event handler called when a pointer event occurs outside the bounds of the component.
      * It can be prevented by setting `onOverlayOutsideClickDisabled` input to `true`.
+     * @group Emits
      */
     readonly onOverlayOutsideClick = output<MouseEvent>();
 
     /**
-     * @description Event handler called after the overlay is open
+     * Event handler called after the overlay is open
+     * @group Emits
      */
     readonly onOpen = output<void>();
     /**
-     * @description Event handler called after the overlay is closed
+     * Event handler called after the overlay is closed
+     * @group Emits
      */
     readonly onClosed = output<void>();
 

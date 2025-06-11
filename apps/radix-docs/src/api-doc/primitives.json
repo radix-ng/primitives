@@ -546,6 +546,9 @@
     "is-client": {
         "components": {}
     },
+    "is-equal": {
+        "components": {}
+    },
     "is-inside-form": {
         "components": {}
     },
@@ -553,6 +556,9 @@
         "components": {}
     },
     "is-number": {
+        "components": {}
+    },
+    "isValueEqualOrExist": {
         "components": {}
     },
     "kbd-constants": {
@@ -565,6 +571,9 @@
         "components": {}
     },
     "provide-token": {
+        "components": {}
+    },
+    "serialize": {
         "components": {}
     },
     "useArrowNavigation": {
@@ -657,7 +666,7 @@
                             "name": "dialogConfig",
                             "optional": false,
                             "readonly": false,
-                            "type": "Omit<RdxBaseDialogConfig<unknown>, \"data\">",
+                            "type": "RdxDialogConfig<unknown>",
                             "description": ""
                         }
                     ]
@@ -748,140 +757,7 @@
         }
     },
     "hover-card": {
-        "components": {
-            "RdxHoverCardRootDirective": {
-                "description": "",
-                "props": {
-                    "description": "Defines the input properties of the component.",
-                    "values": [
-                        {
-                            "name": "anchor",
-                            "type": "InputSignal<RdxHoverCardAnchorDirective | undefined>",
-                            "defaultValue": "undefined",
-                            "description": "The anchor directive that comes from outside the hover-card rootDirective"
-                        },
-                        {
-                            "name": "defaultOpen",
-                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
-                            "defaultValue": "false",
-                            "description": "The open state of the hover-card when it is initially rendered. Use when you do not need to control its open state."
-                        },
-                        {
-                            "name": "open",
-                            "type": "InputSignalWithTransform<boolean | undefined, BooleanInput>",
-                            "defaultValue": "undefined",
-                            "description": "The controlled state of the hover-card. `open` input takes precedence over `defaultOpen` input."
-                        },
-                        {
-                            "name": "openDelay",
-                            "type": "InputSignalWithTransform<number, NumberInput>",
-                            "defaultValue": "500",
-                            "description": "The delay in milliseconds before the hover-card opens."
-                        },
-                        {
-                            "name": "closeDelay",
-                            "type": "InputSignalWithTransform<number, NumberInput>",
-                            "defaultValue": "200",
-                            "description": "The delay in milliseconds before the hover-card closes."
-                        },
-                        {
-                            "name": "externalControl",
-                            "type": "InputSignalWithTransform<boolean | undefined, BooleanInput>",
-                            "defaultValue": "undefined",
-                            "description": "Whether to control the state of the hover-card from outside. Use in conjunction with `open` input."
-                        },
-                        {
-                            "name": "cssAnimation",
-                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
-                            "defaultValue": "false",
-                            "description": "Whether to take into account CSS opening/closing animations."
-                        },
-                        {
-                            "name": "cssOpeningAnimation",
-                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
-                            "defaultValue": "false",
-                            "description": "Whether to take into account CSS opening animations. `cssAnimation` input must be set to 'true'"
-                        },
-                        {
-                            "name": "cssClosingAnimation",
-                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
-                            "defaultValue": "false",
-                            "description": "Whether to take into account CSS closing animations. `cssAnimation` input must be set to 'true'"
-                        }
-                    ]
-                }
-            },
-            "RdxHoverCardArrowDirective": {
-                "description": "",
-                "props": {
-                    "description": "Defines the input properties of the component.",
-                    "values": [
-                        {
-                            "name": "width",
-                            "type": "InputSignalWithTransform<number, NumberInput>",
-                            "defaultValue": "10",
-                            "description": "The width of the arrow in pixels."
-                        },
-                        {
-                            "name": "height",
-                            "type": "InputSignalWithTransform<number, NumberInput>",
-                            "defaultValue": "5",
-                            "description": "The height of the arrow in pixels."
-                        }
-                    ]
-                }
-            },
-            "RdxHoverCardContentDirective": {
-                "description": "",
-                "props": {
-                    "description": "Defines the input properties of the component.",
-                    "values": [
-                        {
-                            "name": "side",
-                            "type": "InputSignal<RdxPositionSide>",
-                            "defaultValue": "'top'",
-                            "description": "The preferred side of the trigger to render against when open. Will be reversed when collisions occur and avoidCollisions is enabled."
-                        },
-                        {
-                            "name": "sideOffset",
-                            "type": "InputSignalWithTransform<number, NumberInput>",
-                            "defaultValue": "0",
-                            "description": "The distance in pixels from the trigger."
-                        },
-                        {
-                            "name": "align",
-                            "type": "InputSignal<RdxPositionAlign>",
-                            "defaultValue": "'center'",
-                            "description": "The preferred alignment against the trigger. May change when collisions occur."
-                        },
-                        {
-                            "name": "alignOffset",
-                            "type": "InputSignalWithTransform<number, NumberInput>",
-                            "defaultValue": "0",
-                            "description": "An offset in pixels from the \"start\" or \"end\" alignment options."
-                        },
-                        {
-                            "name": "alternatePositionsDisabled",
-                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
-                            "defaultValue": "false",
-                            "description": "Whether to add some alternate positions of the content."
-                        },
-                        {
-                            "name": "onOverlayEscapeKeyDownDisabled",
-                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
-                            "defaultValue": "false",
-                            "description": "Whether to prevent `onOverlayEscapeKeyDown` handler from calling."
-                        },
-                        {
-                            "name": "onOverlayOutsideClickDisabled",
-                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
-                            "defaultValue": "false",
-                            "description": "Whether to prevent `onOverlayOutsideClick` handler from calling."
-                        }
-                    ]
-                }
-            }
-        }
+        "components": {}
     },
     "hover-card-anchor.directive": {
         "components": {}
@@ -890,7 +766,34 @@
         "components": {}
     },
     "hover-card-arrow.directive": {
-        "components": {}
+        "components": {
+            "RdxHoverCardArrowDirective": {
+                "description": "",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "width",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<number, NumberInput>",
+                            "default": "10",
+                            "defaultValue": "10",
+                            "description": "The width of the arrow in pixels."
+                        },
+                        {
+                            "name": "height",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<number, NumberInput>",
+                            "default": "5",
+                            "defaultValue": "5",
+                            "description": "The height of the arrow in pixels."
+                        }
+                    ]
+                }
+            }
+        }
     },
     "hover-card-arrow.token": {
         "components": {}
@@ -908,10 +811,217 @@
         "components": {}
     },
     "hover-card-content.directive": {
-        "components": {}
+        "components": {
+            "RdxHoverCardContentDirective": {
+                "description": "",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "side",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<RdxPositionSide>",
+                            "default": "top",
+                            "defaultValue": "top",
+                            "description": "The preferred side of the trigger to render against when open. Will be reversed when collisions occur and avoidCollisions is enabled."
+                        },
+                        {
+                            "name": "sideOffset",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<number, NumberInput>",
+                            "default": "undefined",
+                            "defaultValue": "undefined",
+                            "description": "The distance in pixels from the trigger."
+                        },
+                        {
+                            "name": "align",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<RdxPositionAlign>",
+                            "default": "center",
+                            "defaultValue": "center",
+                            "description": "The preferred alignment against the trigger. May change when collisions occur."
+                        },
+                        {
+                            "name": "alignOffset",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<number, NumberInput>",
+                            "default": "undefined",
+                            "defaultValue": "undefined",
+                            "description": "An offset in pixels from the \"start\" or \"end\" alignment options."
+                        },
+                        {
+                            "name": "alternatePositionsDisabled",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "Whether to add some alternate positions of the content."
+                        },
+                        {
+                            "name": "onOverlayEscapeKeyDownDisabled",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "Whether to prevent  `onOverlayEscapeKeyDown`  handler from calling."
+                        },
+                        {
+                            "name": "onOverlayOutsideClickDisabled",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "Whether to prevent  `onOverlayOutsideClick`  handler from calling."
+                        }
+                    ]
+                },
+                "emits": {
+                    "description": "Defines emit that determine the behavior of the component based on a given condition or report the actions that the component takes.",
+                    "values": [
+                        {
+                            "name": "onOverlayEscapeKeyDown",
+                            "parameters": [
+                                {
+                                    "name": "event",
+                                    "type": "KeyboardEvent"
+                                }
+                            ],
+                            "description": "Event handler called when the escape key is down.\nIt can be prevented by setting  `onOverlayEscapeKeyDownDisabled`  input to  `true` ."
+                        },
+                        {
+                            "name": "onOverlayOutsideClick",
+                            "parameters": [
+                                {
+                                    "name": "event",
+                                    "type": "MouseEvent"
+                                }
+                            ],
+                            "description": "Event handler called when a pointer event occurs outside the bounds of the component.\nIt can be prevented by setting  `onOverlayOutsideClickDisabled`  input to  `true` ."
+                        },
+                        {
+                            "name": "onOpen",
+                            "parameters": [
+                                {
+                                    "name": "value",
+                                    "type": "void"
+                                }
+                            ],
+                            "description": "Event handler called after the overlay is open"
+                        },
+                        {
+                            "name": "onClosed",
+                            "parameters": [
+                                {
+                                    "name": "value",
+                                    "type": "void"
+                                }
+                            ],
+                            "description": "Event handler called after the overlay is closed"
+                        }
+                    ]
+                }
+            }
+        }
     },
     "hover-card-root.directive": {
-        "components": {}
+        "components": {
+            "RdxHoverCardRootDirective": {
+                "description": "",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "anchor",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<undefined | RdxHoverCardAnchorDirective>",
+                            "default": "undefined",
+                            "defaultValue": "undefined",
+                            "description": "The anchor directive that comes from outside the hover-card rootDirective"
+                        },
+                        {
+                            "name": "defaultOpen",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "The open state of the hover-card when it is initially rendered. Use when you do not need to control its open state."
+                        },
+                        {
+                            "name": "open",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<undefined | boolean, BooleanInput>",
+                            "default": "undefined",
+                            "defaultValue": "undefined",
+                            "description": "The controlled state of the hover-card.  `open`  input takes precedence over  `defaultOpen`  input."
+                        },
+                        {
+                            "name": "openDelay",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<number, NumberInput>",
+                            "default": "500",
+                            "defaultValue": "500",
+                            "description": "The delay in milliseconds before the hover-card opens."
+                        },
+                        {
+                            "name": "closeDelay",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<number, NumberInput>",
+                            "default": "200",
+                            "defaultValue": "200",
+                            "description": "The delay in milliseconds before the hover-card closes."
+                        },
+                        {
+                            "name": "externalControl",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<undefined | boolean, BooleanInput>",
+                            "default": "undefined",
+                            "defaultValue": "undefined",
+                            "description": "Whether to control the state of the hover-card from outside. Use in conjunction with  `open`  input."
+                        },
+                        {
+                            "name": "cssAnimation",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "Whether to take into account CSS opening/closing animations."
+                        },
+                        {
+                            "name": "cssOpeningAnimation",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "Whether to take into account CSS opening animations.  `cssAnimation`  input must be set to 'true'"
+                        },
+                        {
+                            "name": "cssClosingAnimation",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "Whether to take into account CSS closing animations.  `cssAnimation`  input must be set to 'true'"
+                        }
+                    ]
+                }
+            }
+        }
     },
     "hover-card-root.inject": {
         "components": {}
@@ -1686,7 +1796,7 @@
                             "name": "value",
                             "optional": false,
                             "readonly": true,
-                            "type": "ModelSignal<undefined | string | string[]>",
+                            "type": "ModelSignal<undefined | AcceptableValue | AcceptableValue[]>",
                             "default": "...",
                             "defaultValue": "...",
                             "description": ""
@@ -1719,7 +1829,7 @@
                             "parameters": [
                                 {
                                     "name": "value",
-                                    "type": "undefined | string | string[]"
+                                    "type": "undefined | AcceptableValue | AcceptableValue[]"
                                 }
                             ],
                             "description": "Event emitted when the selected toggle button changes."
