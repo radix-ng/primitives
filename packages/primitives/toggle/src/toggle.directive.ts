@@ -93,6 +93,7 @@ export class RdxToggleDirective {
         if (!this.disabled()) {
             this.pressed.set(!this.pressed());
             this.cva.writeValue(this.pressed());
+            this.cva.setValue(this.pressed());
         }
     }
 }

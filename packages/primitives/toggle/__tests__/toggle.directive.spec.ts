@@ -4,15 +4,16 @@ import { By } from '@angular/platform-browser';
 import { RdxToggleDirective } from '../src/toggle.directive';
 
 @Component({
+    imports: [RdxToggleDirective],
     template:
-        '<button rdxToggle [pressed]="pressed" [disabled]="disabled" (onPressedChange)="onToggle($event)">Toggle</button>',
-    imports: [RdxToggleDirective]
+        '<button rdxToggle [pressed]="pressed" [disabled]="disabled" (onPressedChange)="onToggle($event)">Toggle</button>'
 })
 class TestComponent {
     @Input() pressed = false;
     @Input() disabled = false;
 
     onToggle(pressed: boolean) {
+        console.log('pressed', pressed);
         this.pressed = pressed;
     }
 }
@@ -64,6 +65,7 @@ describe('RdxToggleDirective', () => {
     it('should toggle the pressed state on click', () => {
         expect(component.pressed).toBe(false);
         button.nativeElement.click();
+        fixture.detectChanges();
         expect(component.pressed).toBe(true);
         button.nativeElement.click();
         expect(component.pressed).toBe(false);
