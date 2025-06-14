@@ -1,7 +1,7 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { booleanAttribute, computed, Directive, input, model, output, OutputEmitterRef, signal } from '@angular/core';
-import { ControlValueAccessor } from '@angular/forms';
-import { provideValueAccessor } from '@radix-ng/primitives/core';
+import { booleanAttribute, Directive, inject, input, model, OutputEmitterRef } from '@angular/core';
+import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
+import { provideValueAccessor, RdxControlValueAccessor } from '@radix-ng/primitives/core';
 
 export interface ToggleProps {
     /**
@@ -37,16 +37,28 @@ export type DataState = 'on' | 'off';
     selector: '[rdxToggle]',
     exportAs: 'rdxToggle',
     providers: [provideValueAccessor(RdxToggleDirective)],
+    hostDirectives: [
+        {
+            directive: RdxControlValueAccessor,
+            inputs: ['value: pressed', 'disabled']
+        }
+    ],
     host: {
-        '[attr.aria-pressed]': 'pressed()',
-        '[attr.data-state]': 'dataState()',
-        '[attr.data-disabled]': 'disabledState() ? "" : undefined',
-        '[disabled]': 'disabledState()',
+        type: 'button',
+        '[attr.aria-pressed]': 'cva.value()',
+        '[attr.data-state]': 'cva.value() ? "on" : "off"',
+        '[attr.data-disabled]': 'cva.disabled() ? "" : undefined',
+        '[disabled]': 'cva.disabled()',
 
-        '(click)': 'togglePressed()'
+        '(click)': 'onClick()'
     }
 })
-export class RdxToggleDirective implements ControlValueAccessor {
+export class RdxToggleDirective {
+    /**
+     * @ignore
+     */
+    readonly cva = inject(RdxControlValueAccessor);
+
     /**
      * The pressed state of the toggle when it is initially rendered.
      * Use when you do not need to control its pressed state.
@@ -70,55 +82,17 @@ export class RdxToggleDirective implements ControlValueAccessor {
      */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    /** @ignore */
-    readonly disabledModel = model<boolean>(this.disabled());
-
-    /** @ignore */
-    readonly disabledState = computed(() => this.disabled() || this.disabledModel() || this.accessorDisabled());
-
-    protected readonly dataState = computed<DataState>(() => {
-        return this.pressed() ? 'on' : 'off';
-    });
-
     /**
      * Event handler called when the pressed state of the toggle changes.
      *
      * @group Emits
      */
-    readonly onPressedChange = output<boolean>();
+    readonly onPressedChange = outputFromObservable(outputToObservable(this.cva.valueChange));
 
-    protected togglePressed(): void {
+    protected onClick(): void {
         if (!this.disabled()) {
             this.pressed.set(!this.pressed());
-            this.onChange(this.pressed());
-            this.onPressedChange.emit(this.pressed());
+            this.cva.writeValue(this.pressed());
         }
-    }
-
-    private readonly accessorDisabled = signal(false);
-
-    private onChange: (value: any) => void = () => {};
-
-    /** @ignore */
-    onTouched: (() => void) | undefined;
-
-    /** @ignore */
-    writeValue(value: any): void {
-        this.pressed.set(value);
-    }
-
-    /** @ignore */
-    registerOnChange(fn: (value: any) => void): void {
-        this.onChange = fn;
-    }
-
-    /** @ignore */
-    registerOnTouched(fn: () => void): void {
-        this.onTouched = fn;
-    }
-
-    /** @ignore */
-    setDisabledState(isDisabled: boolean): void {
-        this.accessorDisabled.set(isDisabled);
     }
 }

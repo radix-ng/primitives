@@ -61,8 +61,8 @@ export class RdxToggleGroupItemDirective {
 
     constructor() {
         effect(() => {
-            this.rdxToggleDirective.pressed.set(!!this.isPressed());
-            this.rdxToggleDirective.disabledModel.set(this.isDisabled());
+            this.rdxToggleDirective.cva.writeValue(!!this.isPressed());
+            this.rdxToggleDirective.cva.setDisabledState(this.isDisabled());
 
             this.rdxRovingFocusItemDirective.active = !!this.isPressed();
         });
