@@ -48,7 +48,12 @@ const rootContext = () => {
     selector: 'button[rdxSwitchRoot]',
     exportAs: 'rdxSwitchRoot',
     providers: [provideSwitchRootContext(rootContext)],
-    hostDirectives: [{ directive: RdxControlValueAccessor, inputs: ['value: checked', 'disabled'] }],
+    hostDirectives: [
+        {
+            directive: RdxControlValueAccessor,
+            inputs: ['value: checked', 'disabled']
+        }
+    ],
     host: {
         role: 'switch',
         type: 'button',
@@ -134,8 +139,9 @@ export class RdxSwitchRootDirective {
      * @ignore
      */
     toggle(): void {
-        const checked = this.cva.value();
-
-        this.cva.setValue(!checked);
+        if (!this.disabled()) {
+            this.checked.set(!this.checked());
+            this.cva.setValue(this.checked());
+        }
     }
 }
