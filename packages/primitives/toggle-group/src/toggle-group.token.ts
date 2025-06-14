@@ -5,6 +5,7 @@ export interface IRdxToggleGroup {
     disabled: any;
     value: any;
     type: any;
+    accessorDisabled: any;
 }
 
 export const RdxToggleGroupToken = new InjectionToken<IRdxToggleGroup>('RdxToggleGroupToken');

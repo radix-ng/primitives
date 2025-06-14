@@ -57,7 +57,9 @@ export class RdxToggleGroupItemDirective {
             : this.rootContext.value()?.includes(this.value());
     });
 
-    private readonly isDisabled = computed(() => this.rootContext.disabled() || this.disabled());
+    private readonly isDisabled = computed(
+        () => this.rootContext.disabled() || this.rootContext.accessorDisabled() || this.disabled()
+    );
 
     constructor() {
         effect(() => {

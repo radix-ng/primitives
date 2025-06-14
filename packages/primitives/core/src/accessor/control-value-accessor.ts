@@ -45,7 +45,7 @@ export class RdxControlValueAccessor<T> implements ControlValueAccessor {
     readonly disabled = this._disabled.asReadonly();
 
     // Callbacks for ControlValueAccessor
-    private onChange?: (value: T | undefined) => void;
+    onChange?: (value: T | undefined) => void;
     private onTouched?: () => void;
 
     /**

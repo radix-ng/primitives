@@ -125,7 +125,7 @@ export class RdxToggleGroupDirective implements ControlValueAccessor {
         this.onTouched = fn;
     }
 
-    private readonly accessorDisabled = signal(false);
+    readonly accessorDisabled = signal(false);
     /**
      * Set the disabled state of the toggle group.
      * @param isDisabled Whether the toggle group is disabled.
