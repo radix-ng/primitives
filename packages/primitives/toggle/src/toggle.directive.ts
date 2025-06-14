@@ -1,7 +1,7 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, Directive, inject, input, model, OutputEmitterRef } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
-import { provideValueAccessor, RdxControlValueAccessor } from '@radix-ng/primitives/core';
+import { RdxControlValueAccessor } from '@radix-ng/primitives/core';
 
 export interface ToggleProps {
     /**
@@ -36,7 +36,6 @@ export type DataState = 'on' | 'off';
 @Directive({
     selector: '[rdxToggle]',
     exportAs: 'rdxToggle',
-    providers: [provideValueAccessor(RdxToggleDirective)],
     hostDirectives: [
         {
             directive: RdxControlValueAccessor,
