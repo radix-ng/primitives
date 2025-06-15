@@ -1,3 +1,14 @@
+## 0.39.4 (2025-06-15)
+
+### 🩹 Fixes
+
+- **switch:** added unit test for Reactive Form ([5feffaa](https://github.com/radix-ng/primitives/commit/5feffaa))
+- **toggle:** validation in ReactiveForms ([2b59e0d](https://github.com/radix-ng/primitives/commit/2b59e0d))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 0.39.3 (2025-06-08)
 
 ### 🩹 Fixes
