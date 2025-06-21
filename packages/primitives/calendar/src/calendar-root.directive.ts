@@ -248,7 +248,7 @@ export class RdxCalendarRootDirective implements AfterViewInit {
             this.isInvalid = isInvalid();
         });
 
-        watch([this.value], (_modelValue) => {
+        watch([this.value], ([_modelValue]) => {
             if (Array.isArray(_modelValue) && _modelValue.length) {
                 const lastValue = _modelValue[_modelValue.length - 1];
                 if (lastValue && !isEqualDay(this.placeholder(), <DateValue>lastValue)) {
