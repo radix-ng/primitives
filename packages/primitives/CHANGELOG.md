@@ -1,3 +1,13 @@
+## 0.39.5 (2025-06-21)
+
+### 🩹 Fixes
+
+- **calendar:** multiple mode, watch value #346 ([#347](https://github.com/radix-ng/primitives/pull/347), [#346](https://github.com/radix-ng/primitives/issues/346))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 0.39.4 (2025-06-15)
 
 ### 🩹 Fixes
