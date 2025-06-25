@@ -35,7 +35,8 @@ const config = {
                 // others
                 'release',
                 'schematics',
-                'docs'
+                'docs',
+                'createFormatter'
             ]
         ]
     }
