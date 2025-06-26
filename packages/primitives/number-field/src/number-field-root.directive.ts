@@ -1,6 +1,6 @@
 import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import { booleanAttribute, computed, Directive, input, model, numberAttribute, OnInit, signal } from '@angular/core';
-import { clamp, provideToken, snapValueToStep } from '@radix-ng/primitives/core';
+import { clamp, isNullish, provideToken, snapValueToStep } from '@radix-ng/primitives/core';
 import { NUMBER_FIELD_ROOT_CONTEXT, NumberFieldContextToken } from './number-field-context.token';
 import { InputMode } from './types';
 import { handleDecimalOperation, useNumberFormatter, useNumberParser } from './utils';
@@ -43,8 +43,8 @@ export class RdxNumberFieldRootDirective implements OnInit, NumberFieldContextTo
      */
     readonly isDecreaseDisabled = computed(
         () =>
-            this.clampInputValue(this.value()!) === this.min() ||
-            (this.min() && !isNaN(this.value()!)
+            !isNullish(this.value()!) &&
+            (this.clampInputValue(this.value()!) === this.min() || (this.min() && !isNaN(this.value()!))
                 ? handleDecimalOperation('-', this.value()!, this.step()) < this.min()!
                 : false)
     );
@@ -54,8 +54,8 @@ export class RdxNumberFieldRootDirective implements OnInit, NumberFieldContextTo
      */
     readonly isIncreaseDisabled = computed(
         () =>
-            this.clampInputValue(this.value()!) === this.max() ||
-            (this.max() && !isNaN(this.value()!)
+            !isNullish(this.value()!) &&
+            (this.clampInputValue(this.value()!) === this.max() || (this.min() && !isNaN(this.value()!))
                 ? handleDecimalOperation('+', this.value()!, this.step()) > this.max()!
                 : false)
     );
@@ -78,7 +78,9 @@ export class RdxNumberFieldRootDirective implements OnInit, NumberFieldContextTo
      * with a textValue that can be announced using a minus sign.
      * @ignore
      */
-    readonly textValue = computed(() => (isNaN(this.value()!) ? '' : this.textValueFormatter().format(this.value())));
+    readonly textValue = computed(() =>
+        isNullish(this.value()!) || isNaN(this.value()!) ? '' : this.textValueFormatter().format(this.value())
+    );
 
     /**
      * @ignore
@@ -151,7 +153,7 @@ export class RdxNumberFieldRootDirective implements OnInit, NumberFieldContextTo
     applyInputValue(val: string) {
         const parsedValue = this.numberParser().parse(val);
 
-        this.value.set(this.clampInputValue(parsedValue));
+        this.value.set(isNaN(parsedValue) ? undefined : this.clampInputValue(parsedValue));
 
         // Set to empty state if input value is empty
         if (!val.length) {
