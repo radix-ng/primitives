@@ -29,6 +29,7 @@ import {
     isBefore,
     isNullish,
     isSegmentNavigationKey,
+    normalizeHourCycle,
     provideToken,
     SegmentValueObj,
     syncSegmentValues,
@@ -258,7 +259,9 @@ export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
 
         this.placeholder.set(defDate.copy());
 
-        this.formatter = createFormatter(this.locale());
+        this.formatter = createFormatter(this.locale(), {
+            hourCycle: normalizeHourCycle(this.hourCycle())
+        });
 
         const initialSegments = initializeSegmentValues(this.inferredGranularity()!);
 
