@@ -1,6 +1,6 @@
 import { inject, InjectionToken, InputSignal, ModelSignal, Signal, WritableSignal } from '@angular/core';
 import { DateValue } from '@internationalized/date';
-import { Formatter, HourCycle, SegmentValueObj } from '@radix-ng/primitives/core';
+import { DateStep, Formatter, HourCycle, SegmentValueObj } from '@radix-ng/primitives/core';
 
 export interface DateFieldContextToken {
     locale: InputSignal<string>;
@@ -10,6 +10,7 @@ export interface DateFieldContextToken {
     isInvalid: Signal<boolean>;
     placeholder: ModelSignal<DateValue>;
     hourCycle: InputSignal<HourCycle>;
+    step$: Signal<DateStep>;
     formatter: Formatter;
     segmentValues: WritableSignal<SegmentValueObj>;
     focusNext: () => void;

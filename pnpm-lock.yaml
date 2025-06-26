@@ -536,6 +536,9 @@ importers:
       '@angular/core':
         specifier: ^19.2.4
         version: 19.2.4(rxjs@7.8.2)(zone.js@0.15.0)
+      defu:
+        specifier: ^6.1.4
+        version: 6.1.4
     devDependencies:
       '@angular-devkit/schematics':
         specifier: ^19.2.5

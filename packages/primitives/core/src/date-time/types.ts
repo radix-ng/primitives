@@ -7,6 +7,21 @@ import { DATE_SEGMENT_PARTS, EDITABLE_SEGMENT_PARTS, NON_EDITABLE_SEGMENT_PARTS,
 
 export type DateMatcher = (date: DateValue) => boolean;
 
+export type DateStep = {
+    year?: number;
+    month?: number;
+    day?: number;
+    hour?: number;
+    minute?: number;
+    second?: number;
+    millisecond?: number;
+};
+
+export type DateRange = {
+    start: DateValue | undefined;
+    end: DateValue | undefined;
+};
+
 export type HourCycle = 12 | 24 | undefined;
 
 export type Month<T> = {

@@ -1,5 +1,6 @@
+import { defu } from 'defu';
 import { Granularity } from './comparators';
-import { HourCycle } from './types';
+import { DateStep, HourCycle } from './types';
 
 export function getOptsByGranularity(granularity: Granularity, hourCycle: HourCycle, isTimeValue: boolean = false) {
     const opts: Intl.DateTimeFormatOptions = {
@@ -33,6 +34,18 @@ export function getOptsByGranularity(granularity: Granularity, hourCycle: HourCy
     if (granularity === 'minute') delete opts.second;
 
     return opts;
+}
+
+export function normalizeDateStep(step?: DateStep): DateStep {
+    return defu(step, {
+        year: 1,
+        month: 1,
+        day: 1,
+        hour: 1,
+        minute: 1,
+        second: 1,
+        millisecond: 1
+    } satisfies DateStep);
 }
 
 export function handleCalendarInitialFocus(calendar: HTMLElement) {

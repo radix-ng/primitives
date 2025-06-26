@@ -1,12 +1,12 @@
 // https://github.com/unovue/reka-ui/blob/v2/packages/core/src/shared/date/useDateField.ts
 
-import { computed, InputSignal, ModelSignal, WritableSignal } from '@angular/core';
+import { computed, InputSignal, ModelSignal, Signal, WritableSignal } from '@angular/core';
 import { CalendarDateTime, CycleTimeOptions, DateFields, DateValue, TimeFields } from '@internationalized/date';
 import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ARROW_UP, BACKSPACE, SHIFT, TAB } from '../kbd-constants';
 import { getDaysInMonth, toDate } from './comparators';
 import { Formatter } from './formatter';
 import { isAcceptableSegmentKey, isNumberString, isSegmentNavigationKey } from './segment';
-import { AnyExceptLiteral, DateAndTimeSegmentObj, HourCycle, SegmentPart, SegmentValueObj } from './types';
+import { AnyExceptLiteral, DateAndTimeSegmentObj, DateStep, HourCycle, SegmentPart, SegmentValueObj } from './types';
 
 type MinuteSecondIncrementProps = {
     e: KeyboardEvent;
@@ -30,6 +30,7 @@ export type UseDateFieldProps = {
     hourCycle: HourCycle;
     formatter: Formatter;
     segmentValues: WritableSignal<SegmentValueObj>;
+    step: Signal<DateStep>;
     disabled: InputSignal<boolean>;
     readonly: InputSignal<boolean>;
     part: SegmentPart;
@@ -300,7 +301,8 @@ export function useDateField(props: UseDateFieldProps) {
         prevValue,
         hourCycle
     }: DateTimeValueIncrementation): number {
-        const sign = e.key === ARROW_UP ? 1 : -1;
+        const step = props.step()[part] ?? 1;
+        const sign = e.key === ARROW_UP ? step : -step;
 
         if (prevValue === null) return dateRef[part as keyof Omit<DateFields, 'era'>];
 
@@ -587,7 +589,8 @@ export function useDateField(props: UseDateFieldProps) {
     }
 
     function minuteSecondIncrementation({ e, part, dateRef, prevValue }: MinuteSecondIncrementProps): number {
-        const sign = e.key === ARROW_UP ? 1 : -1;
+        const step = props.step()[part] ?? 1;
+        const sign = e.key === ARROW_UP ? step : -step;
         const min = 0;
         const max = 59;
 

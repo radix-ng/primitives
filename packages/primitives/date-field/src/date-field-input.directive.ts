@@ -63,6 +63,7 @@ export class RdxDateFieldInputDirective {
             part: <SegmentPart>this.part(),
             disabled: this.rootContext.disabled,
             readonly: this.rootContext.readonly,
+            step: this.rootContext.step$,
             modelValue: this.rootContext.value,
             focusNext: this.rootContext.focusNext
         });
