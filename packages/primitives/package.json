@@ -17,9 +17,6 @@
         "radix-ng",
         "headless"
     ],
-    "dependencies": {
-        "defu": "^6.1.4"
-    },
     "peerDependencies": {
         "@angular/core": "^19.2.4",
         "@angular/cdk": "^19.2.7"

@@ -1,4 +1,3 @@
-import { defu } from 'defu';
 import { Granularity } from './comparators';
 import { DateStep, HourCycle } from './types';
 
@@ -37,15 +36,15 @@ export function getOptsByGranularity(granularity: Granularity, hourCycle: HourCy
 }
 
 export function normalizeDateStep(step?: DateStep): DateStep {
-    return defu(step, {
-        year: 1,
-        month: 1,
-        day: 1,
-        hour: 1,
-        minute: 1,
-        second: 1,
-        millisecond: 1
-    } satisfies DateStep);
+    return {
+        year: step?.year ?? 1,
+        month: step?.month ?? 1,
+        day: step?.day ?? 1,
+        hour: step?.hour ?? 1,
+        minute: step?.minute ?? 1,
+        second: step?.second ?? 1,
+        millisecond: step?.millisecond ?? 1
+    };
 }
 
 export function handleCalendarInitialFocus(calendar: HTMLElement) {
