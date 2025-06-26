@@ -65,7 +65,8 @@ export class RdxTimeFieldInputDirective {
             disabled: this.rootContext.disabled,
             readonly: this.rootContext.readonly,
             modelValue: this.rootContext.convertedModelValue as unknown as WritableSignal<DateValue>,
-            focusNext: this.rootContext.focusNext
+            focusNext: this.rootContext.focusNext,
+            step: this.rootContext.step$
         });
     });
 

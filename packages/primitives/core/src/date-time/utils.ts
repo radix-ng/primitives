@@ -1,5 +1,5 @@
 import { Granularity } from './comparators';
-import { HourCycle } from './types';
+import { DateStep, HourCycle } from './types';
 
 export function getOptsByGranularity(granularity: Granularity, hourCycle: HourCycle, isTimeValue: boolean = false) {
     const opts: Intl.DateTimeFormatOptions = {
@@ -33,6 +33,18 @@ export function getOptsByGranularity(granularity: Granularity, hourCycle: HourCy
     if (granularity === 'minute') delete opts.second;
 
     return opts;
+}
+
+export function normalizeDateStep(step?: DateStep): DateStep {
+    return {
+        year: step?.year ?? 1,
+        month: step?.month ?? 1,
+        day: step?.day ?? 1,
+        hour: step?.hour ?? 1,
+        minute: step?.minute ?? 1,
+        second: step?.second ?? 1,
+        millisecond: step?.millisecond ?? 1
+    };
 }
 
 export function handleCalendarInitialFocus(calendar: HTMLElement) {

@@ -19,6 +19,7 @@ import {
     createContent,
     createFormatter,
     DateMatcher,
+    DateStep,
     Formatter,
     getDefaultDate,
     getSegmentElements,
@@ -29,6 +30,7 @@ import {
     isBefore,
     isNullish,
     isSegmentNavigationKey,
+    normalizeDateStep,
     normalizeHourCycle,
     provideToken,
     SegmentValueObj,
@@ -104,6 +106,13 @@ export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
      * Whether or not the field is readonly.
      */
     readonly readonly = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /**
+     * The stepping interval for the time fields. Defaults to 1
+     */
+    readonly step = input<DateStep>();
+
+    readonly step$ = computed(() => normalizeDateStep(this.step()));
 
     /**
      * @ignore

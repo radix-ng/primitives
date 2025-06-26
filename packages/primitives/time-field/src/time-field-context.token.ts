@@ -1,5 +1,5 @@
 import { inject, InjectionToken, InputSignal, ModelSignal, Signal, WritableSignal } from '@angular/core';
-import { Formatter, HourCycle, SegmentValueObj, TimeValue } from '@radix-ng/primitives/core';
+import { DateStep, Formatter, HourCycle, SegmentValueObj, TimeValue } from '@radix-ng/primitives/core';
 
 export interface TimeFieldContextToken {
     locale: InputSignal<string>;
@@ -15,6 +15,7 @@ export interface TimeFieldContextToken {
     setFocusedElement: (el: HTMLElement) => void;
     convertedModelValue: WritableSignal<TimeValue | undefined>;
     convertedPlaceholder: WritableSignal<TimeValue>;
+    step$: Signal<DateStep>;
 }
 
 export const TIME_FIELDS_ROOT_CONTEXT = new InjectionToken<TimeFieldContextToken>('TIME_FIELDS_ROOT_CONTEXT');
