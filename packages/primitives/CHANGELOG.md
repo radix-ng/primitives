@@ -1,3 +1,21 @@
+## 0.40.0 (2025-06-27)
+
+### 🚀 Features
+
+- **time-field:** added interval steps ([#351](https://github.com/radix-ng/primitives/pull/351))
+
+### 🩹 Fixes
+
+- update peerDependencies to support Angular 19 and 20 ([#350](https://github.com/radix-ng/primitives/pull/350))
+- **number-field:** set value to undefined instead of NaN when clearing ([ca96de6](https://github.com/radix-ng/primitives/commit/ca96de6))
+- **createFormatter:** respect hourCycle over locale for dayPeriod ([#349](https://github.com/radix-ng/primitives/pull/349))
+- **date-field:** increment minutes/seconds on ARROW_UP/ARROW_DOWN ([581cc98](https://github.com/radix-ng/primitives/commit/581cc98))
+
+### ❤️ Thank You
+
+- Josh Sullivan @jpsullivan
+- Oleg Pimenov @pimenovoleg
+
 ## 0.39.5 (2025-06-21)
 
 ### 🩹 Fixes
