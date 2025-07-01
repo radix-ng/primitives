@@ -142,7 +142,6 @@ export class RdxEditableRoot implements OnInit {
     }
 
     submit() {
-        console.log('Submit value:', this.value());
         this.value.set(this.inputValue());
         this.isEditing.set(false);
     }
