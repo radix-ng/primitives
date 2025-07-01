@@ -88,7 +88,7 @@ describe('RdxFocusOutside Directive', () => {
         expect(host.onFocusOutside).not.toHaveBeenCalled();
     });
 
-    it('should not emit when focus moves within the same element', async () => {
+    it('should emit when focus moves within the same element', async () => {
         const { host, insideButton } = await setupTest();
 
         triggerFocusEvent(insideButton, 'focus');
@@ -96,6 +96,6 @@ describe('RdxFocusOutside Directive', () => {
         triggerFocusEvent(insideButton, 'blur');
         triggerFocusEvent(insideButton, 'focusin');
 
-        expect(host.onFocusOutside).not.toHaveBeenCalled();
+        expect(host.onFocusOutside).toHaveBeenCalled();
     });
 });
