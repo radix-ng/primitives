@@ -58,7 +58,7 @@ export class RdxFocusOutside {
      */
     private readonly blurCaptureHandler = () => {
         if (!this.enabled) return;
-        this.isFocusInsideDOMTree.set(true);
+        this.isFocusInsideDOMTree.set(false);
     };
 
     constructor() {
