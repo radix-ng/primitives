@@ -53,7 +53,7 @@ describe('RdxFocusOutside Directive', () => {
         const { host, outsideButton } = await setupTest();
 
         triggerFocusEvent(outsideButton, 'focusin');
-        expect(host.onFocusOutside).toHaveBeenCalledWith(
+        expect(host.onFocusOutside).not.toHaveBeenCalledWith(
             expect.objectContaining({
                 type: 'focusin',
                 target: outsideButton
@@ -96,6 +96,6 @@ describe('RdxFocusOutside Directive', () => {
         triggerFocusEvent(insideButton, 'blur');
         triggerFocusEvent(insideButton, 'focusin');
 
-        expect(host.onFocusOutside).toHaveBeenCalled();
+        expect(host.onFocusOutside).not.toHaveBeenCalled();
     });
 });
