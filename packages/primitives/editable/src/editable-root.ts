@@ -69,11 +69,13 @@ type SubmitMode = 'blur' | 'enter' | 'none' | 'both';
     exportAs: 'rdxEditableRoot',
     providers: [provideEditableRootContext(rootContext)],
     hostDirectives: [RdxFocusOutside, RdxPointerDownOutside],
-    host: {}
+    host: {
+        '[attr.data-dismissable-layer]': '""'
+    }
 })
 export class RdxEditableRoot implements OnInit {
     private readonly focusOutside = inject(RdxFocusOutside);
-    private readonly pointerDownOutside = inject(RdxPointerDownOutside);
+    readonly pointerDownOutside = inject(RdxPointerDownOutside);
 
     readonly value = model<string>();
 
@@ -106,7 +108,7 @@ export class RdxEditableRoot implements OnInit {
             : this.placeholder();
     });
 
-    readonly isEditing = signal(this.startWithEditMode() ?? false);
+    readonly isEditing = signal(false);
 
     readonly inputValue = signal(this.value());
 
@@ -119,8 +121,10 @@ export class RdxEditableRoot implements OnInit {
             }
         });
 
-        this.pointerDownOutside.enabled = this.isEditing();
-        this.focusOutside.enabled = this.isEditing();
+        watch([this.isEditing], ([value]) => {
+            this.pointerDownOutside.enabled = value;
+            this.focusOutside.enabled = value;
+        });
 
         this.pointerDownOutside.pointerDownOutside.subscribe(() => this.handleDismiss());
         this.focusOutside.focusOutside.subscribe(() => this.handleDismiss());

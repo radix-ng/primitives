@@ -28,10 +28,10 @@ export class RdxEditableInput implements OnInit {
             watch([this.rootContext?.isEditing], ([value]) => {
                 if (value) {
                     setTimeout(() => {
-                        this.rootContext?.inputRef()?.focus({ preventScroll: true });
-                        if (this.rootContext?.selectOnFocus()) {
-                            this.rootContext?.inputRef()?.select();
-                        }
+                        // this.rootContext?.inputRef()?.focus({ preventScroll: true });
+                        // if (this.rootContext?.selectOnFocus()) {
+                        //     this.rootContext?.inputRef()?.select();
+                        // }
                     });
                 }
             });
