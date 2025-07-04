@@ -1,9 +1,8 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import {
-    afterNextRender,
     booleanAttribute,
-    DestroyRef,
     Directive,
+    effect,
     ElementRef,
     inject,
     input,
@@ -11,6 +10,23 @@ import {
     output,
     signal
 } from '@angular/core';
+
+function isLayerExist(layerElement: HTMLElement, targetElement: HTMLElement) {
+    const targetLayer = targetElement.closest('[data-dismissable-layer]');
+
+    const mainLayer =
+        layerElement.dataset['dismissableLayer'] === ''
+            ? layerElement
+            : (layerElement.querySelector('[data-dismissable-layer]') as HTMLElement);
+
+    const nodeList = Array.from(layerElement.ownerDocument.querySelectorAll('[data-dismissable-layer]'));
+
+    if (targetLayer && (mainLayer === targetLayer || nodeList.indexOf(mainLayer) < nodeList.indexOf(targetLayer))) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 /**
  * Listens for when focus happens outside a DOM subtree.
@@ -21,9 +37,6 @@ import {
     exportAs: 'rdxFocusOutside'
 })
 export class RdxFocusOutside {
-    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
-    private readonly destroyRef = inject(DestroyRef);
-
     readonly enabledInput = input<boolean, BooleanInput>(true, { transform: booleanAttribute, alias: 'enabled' });
 
     readonly #enabled = linkedSignal(() => this.enabledInput());
@@ -58,44 +71,55 @@ export class RdxFocusOutside {
      */
     private readonly blurCaptureHandler = () => {
         if (!this.enabled) return;
-        this.isFocusInsideDOMTree.set(true);
+        this.isFocusInsideDOMTree.set(false);
     };
 
     constructor() {
-        afterNextRender(() => {
-            if (!this.enabled) return;
+        const elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
-            const ownerDocument = this.elementRef.nativeElement.ownerDocument ?? globalThis.document;
+        effect((onCleanup) => {
+            if (!this.#enabled()) {
+                return;
+            }
 
-            const focusHandler = (event: FocusEvent) => {
-                if (!this.elementRef.nativeElement) {
+            const ownerDocument = elementRef.nativeElement.ownerDocument ?? globalThis.document;
+
+            const focusHandler = async (event: FocusEvent) => {
+                if (!elementRef?.nativeElement) {
                     return;
                 }
 
+                await Promise.resolve();
+                await Promise.resolve();
+
                 const target = event.target as HTMLElement | undefined;
+                if (!elementRef.nativeElement || !target || isLayerExist(elementRef.nativeElement, target)) {
+                    return;
+                }
 
                 if (target && !this.isFocusInsideDOMTree()) {
                     this.focusOutside.emit(event);
                 }
             };
 
-            this.elementRef.nativeElement.addEventListener('focus', this.focusCaptureHandler, {
+            elementRef.nativeElement.addEventListener('focus', this.focusCaptureHandler, {
                 capture: true
             });
-            this.elementRef.nativeElement.addEventListener('blur', this.blurCaptureHandler, {
+            elementRef.nativeElement.addEventListener('blur', this.blurCaptureHandler, {
                 capture: true
             });
 
             ownerDocument.addEventListener('focusin', focusHandler);
 
-            this.destroyRef.onDestroy(() => {
-                this.elementRef.nativeElement.removeEventListener('focus', this.focusCaptureHandler, {
+            onCleanup(() => {
+                elementRef.nativeElement.removeEventListener('focus', this.focusCaptureHandler, {
                     capture: true
                 });
 
-                this.elementRef.nativeElement.removeEventListener('blur', this.blurCaptureHandler, {
+                elementRef.nativeElement.removeEventListener('blur', this.blurCaptureHandler, {
                     capture: true
                 });
+
                 ownerDocument.removeEventListener('focusin', focusHandler);
             });
         });
@@ -113,7 +137,6 @@ export class RdxFocusOutside {
 })
 export class RdxPointerDownOutside {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
-    private readonly destroyRef = inject(DestroyRef);
 
     readonly enabledInput = input<boolean, BooleanInput>(true, { transform: booleanAttribute, alias: 'enabled' });
 
@@ -139,14 +162,14 @@ export class RdxPointerDownOutside {
     private handleClick: () => void | undefined;
 
     constructor() {
-        afterNextRender(() => {
-            if (!this.enabled) {
+        effect((onCleanup) => {
+            if (!this.#enabled()) {
                 return;
             }
 
             const ownerDocument = this.elementRef.nativeElement.ownerDocument ?? globalThis.document;
 
-            const pointerDownHandler = (event: PointerEvent) => {
+            const handlePointerDown = async (event: PointerEvent) => {
                 if (event.target && !this.isPointerInsideDOMTree()) {
                     /**
                      * On touch devices, we need to wait for a click event because browsers implement
@@ -190,24 +213,23 @@ export class RdxPointerDownOutside {
              * });
              */
             const timerId = window.setTimeout(() => {
-                ownerDocument.addEventListener('pointerdown', pointerDownHandler);
+                ownerDocument.addEventListener('pointerdown', handlePointerDown);
             }, 0);
 
-            const pointerDownCaptureHandler = () => {
+            const onPointerDownCapture = () => {
                 if (!this.enabled) {
                     return;
                 }
                 this.isPointerInsideDOMTree.set(true);
             };
 
-            this.elementRef.nativeElement.addEventListener('pointerdown', pointerDownCaptureHandler, { capture: true });
+            this.elementRef.nativeElement.addEventListener('pointerdown', onPointerDownCapture, { capture: true });
 
-            this.destroyRef.onDestroy(() => {
+            onCleanup(() => {
                 window.clearTimeout(timerId);
-                ownerDocument.removeEventListener('pointerdown', pointerDownHandler);
+                ownerDocument.removeEventListener('pointerdown', handlePointerDown);
                 ownerDocument.removeEventListener('click', this.handleClick);
-
-                this.elementRef.nativeElement.removeEventListener('pointerdown', pointerDownCaptureHandler, {
+                this.elementRef.nativeElement.removeEventListener('pointerdown', onPointerDownCapture, {
                     capture: true
                 });
             });
