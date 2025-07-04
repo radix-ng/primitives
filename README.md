@@ -76,14 +76,28 @@ You can use these components either as the base layer of your design system, or 
 
 ### Other Primitives
 
-| Primitive    | Status |
-| ------------ | ------ |
-| Calendar     | ✅     |
-| Date Field   | ✅     |
-| Number Field | ✅     |
-| Pagination   | ✅     |
-| Stepper      | ✅     |
-| Time Field   | ✅     |
+| Primitive         | Status |
+| ----------------- | ------ |
+| Calendar          | ✅     |
+| Date Field        | ✅     |
+| Date Picker       |        |
+| Date Range Field  |        |
+| Date Range Picker |        |
+| Editable          | ✅     |
+| Number Field      | ✅     |
+| Pagination        | ✅     |
+| Range Calendar    |        |
+| Stepper           | ✅     |
+| Time Field        | ✅     |
+
+### Utils Primitives
+
+| Primitive          | Status |
+| ------------------ | ------ |
+| FocusOutside       | ✅     |
+| PointerDownOutside | ✅     |
+| FocusGuards        |        |
+| FocusScope         |        |
 
 **Status Legend**
 ✅ Completed
