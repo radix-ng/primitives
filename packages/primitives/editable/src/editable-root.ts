@@ -1,12 +1,13 @@
-import { BooleanInput } from '@angular/cdk/coercion';
+import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import {
+    afterNextRender,
     booleanAttribute,
     computed,
     Directive,
     inject,
     input,
     model,
-    OnInit,
+    numberAttribute,
     Signal,
     signal,
     WritableSignal
@@ -25,6 +26,7 @@ type EditableRootContext = {
     edit: () => void;
     cancel: () => void;
     submit: () => void;
+    maxLength: Signal<number | undefined>;
     startWithEditMode: Signal<boolean>;
     isEmpty: Signal<boolean>;
     readonly: Signal<boolean>;
@@ -49,6 +51,7 @@ const rootContext = (): EditableRootContext => {
         edit: context.edit,
         cancel: context.cancel,
         submit: context.submit,
+        maxLength: context.maxLength,
         startWithEditMode: context.startWithEditMode,
         isEmpty: context.isEmpty,
         readonly: context.readonly,
@@ -73,7 +76,7 @@ type SubmitMode = 'blur' | 'enter' | 'none' | 'both';
         '[attr.data-dismissable-layer]': '""'
     }
 })
-export class RdxEditableRoot implements OnInit {
+export class RdxEditableRoot {
     private readonly focusOutside = inject(RdxFocusOutside);
     readonly pointerDownOutside = inject(RdxPointerDownOutside);
 
@@ -88,6 +91,8 @@ export class RdxEditableRoot implements OnInit {
     readonly selectOnFocus = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     readonly submitMode = input<SubmitMode>('blur');
+
+    readonly maxLength = input<number, NumberInput>(undefined, { transform: numberAttribute });
 
     /**
      * Whether to start with the edit mode active
@@ -128,11 +133,11 @@ export class RdxEditableRoot implements OnInit {
 
         this.pointerDownOutside.pointerDownOutside.subscribe(() => this.handleDismiss());
         this.focusOutside.focusOutside.subscribe(() => this.handleDismiss());
-    }
 
-    ngOnInit() {
-        this.isEditing.set(this.startWithEditMode() ?? false);
-        this.inputValue.set(this.value());
+        afterNextRender(() => {
+            this.isEditing.set(this.startWithEditMode() ?? false);
+            this.inputValue.set(this.value());
+        });
     }
 
     handleDismiss() {
