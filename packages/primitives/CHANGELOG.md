@@ -1,3 +1,14 @@
+## 0.41.0 (2025-07-04)
+
+### 🚀 Features
+
+- **editable:** added new primitive Editable ([#353](https://github.com/radix-ng/primitives/pull/353))
+- **dismissible-layer:** added FocusOutside and PointerDownOutside utils ([#352](https://github.com/radix-ng/primitives/pull/352))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 0.40.0 (2025-06-27)
 
 ### 🚀 Features
