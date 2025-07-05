@@ -103,6 +103,11 @@ const docsConfig = {
                         },
                         { name: 'Dialog', url: '/primitives/components/dialog' },
                         { name: 'Dropdown Menu', url: '/primitives/components/dropdown-menu' },
+                        {
+                            name: 'Editable',
+                            url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-editable--docs',
+                            label: 'Storybook'
+                        },
                         { name: 'Hover Card', url: '/primitives/components/hover-card', label: 'New' },
                         { name: 'Label', url: '/primitives/components/label' },
                         {
