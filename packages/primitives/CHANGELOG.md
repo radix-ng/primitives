@@ -1,3 +1,13 @@
+## 0.42.0 (2025-07-06)
+
+### 🚀 Features
+
+- new utilites – FocusScope ([#354](https://github.com/radix-ng/primitives/pull/354))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 0.41.0 (2025-07-04)
 
 ### 🚀 Features
