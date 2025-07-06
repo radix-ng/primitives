@@ -19,7 +19,7 @@ export default {
 
 type Story = StoryObj;
 
-export const Default: Story = {
+export const Trapped: Story = {
     render: () => ({
         template: html`
             <focus-scope-trapped />
