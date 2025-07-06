@@ -42,6 +42,9 @@ const rootContext = (): FocusScopeContext => {
     };
 };
 
+/**
+ * @group Components
+ */
 @Directive({
     selector: '[rdxFocusScope]',
     providers: [provideFocusScopeContext(rootContext)],
@@ -58,6 +61,8 @@ export class RdxFocusScope {
     /**
      * When `true`, tabbing from last item will focus first tabbable
      * and shift+tab from first item will focus last tababble.
+     *
+     * @group Props
      * @defaultValue false
      */
     readonly loop = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
@@ -65,6 +70,8 @@ export class RdxFocusScope {
     /**
      * When `true`, focus cannot escape the focus scope via keyboard,
      * pointer, or a programmatic focus.
+     *
+     * @group Props
      * @defaultValue false
      */
     readonly trapped = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
@@ -72,12 +79,16 @@ export class RdxFocusScope {
     /**
      * Event handler called when auto-focusing on mount.
      * Can be prevented.
+     *
+     * @group Emits
      */
     readonly mountAutoFocus = output<Event>();
 
     /**
      * Event handler called when auto-focusing on unmount.
      * Can be prevented.
+     *
+     * @group Emits
      */
     readonly unmountAutoFocus = output<Event>();
 

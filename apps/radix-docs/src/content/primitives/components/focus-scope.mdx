@@ -1,0 +1,71 @@
+---
+title: Focus Scope
+slug: focus-scope
+section: utils
+description: .
+---
+
+# Focus Scope
+
+<Description>Manages focus within a component boundary with support for trapping and looping focus navigation. </Description>
+
+Focus Scope provides enhanced control over keyboard focus management within component boundaries. It can trap focus within its container and optionally loop focus navigation, making it ideal for modal interfaces and other interactive components that need to manage focus states.
+
+
+## API Reference
+
+<PropsTable name="RdxFocusScope" />
+
+<EmitsTable name="RdxFocusScope" />
+
+
+## Example
+
+Basic usage with focus trapping
+
+```html
+<div rdxFocusScope trapped>
+    <button>Action 1</button>
+    <button>Action 2</button>
+    <button>Close</button>
+</div>
+```
+
+### With Focus Looping
+
+Enable both trapping and looping for complete focus management:
+
+```html
+<div rdxFocusScope trapped loop>
+    <button>Action 1</button>
+    <button>Action 2</button>
+    <button>Close</button>
+</div>
+```
+
+### Handling Focus Event
+
+```ts
+
+...
+template: `
+    <div
+        (mountAutoFocus)="handleMountFocus($event)"
+        (unmountAutoFocus)="handleUnmountAutoFocus($event)"
+        rdxFocusScope
+        trapped
+        loop
+    >
+        <button>Action 1</button>
+        <button>Action 2</button>
+        <button>Close</button>
+    </div>
+`
+...
+export class FocusScopeEvents {
+    handleMountFocus(event: Event) {
+        // Prevent default auto-focus behavior if needed
+        event.preventDefault();
+    }
+}
+```
