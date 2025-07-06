@@ -686,6 +686,9 @@
     "dialog.service": {
         "components": {}
     },
+    "dismissible-layer": {
+        "components": {}
+    },
     "dropdown-menu": {
         "components": {}
     },
@@ -755,6 +758,92 @@
                 }
             }
         }
+    },
+    "editable": {
+        "components": {}
+    },
+    "editable-area": {
+        "components": {}
+    },
+    "editable-cancel-trigger": {
+        "components": {}
+    },
+    "editable-edit-trigger": {
+        "components": {}
+    },
+    "editable-input": {
+        "components": {}
+    },
+    "editable-preview": {
+        "components": {}
+    },
+    "editable-root": {
+        "components": {
+            "RdxEditableRoot": {
+                "description": ""
+            }
+        }
+    },
+    "editable-submit-trigger": {
+        "components": {}
+    },
+    "focus-scope": {
+        "components": {
+            "RdxFocusScope": {
+                "description": "",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "loop",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "When  `true` , tabbing from last item will focus first tabbable\nand shift+tab from first item will focus last tababble."
+                        },
+                        {
+                            "name": "trapped",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "When  `true` , focus cannot escape the focus scope via keyboard,\npointer, or a programmatic focus."
+                        }
+                    ]
+                },
+                "emits": {
+                    "description": "Defines emit that determine the behavior of the component based on a given condition or report the actions that the component takes.",
+                    "values": [
+                        {
+                            "name": "mountAutoFocus",
+                            "parameters": [
+                                {
+                                    "name": "event",
+                                    "type": "Event"
+                                }
+                            ],
+                            "description": "Event handler called when auto-focusing on mount.\nCan be prevented."
+                        },
+                        {
+                            "name": "unmountAutoFocus",
+                            "parameters": [
+                                {
+                                    "name": "event",
+                                    "type": "Event"
+                                }
+                            ],
+                            "description": "Event handler called when auto-focusing on unmount.\nCan be prevented."
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "stack": {
+        "components": {}
     },
     "hover-card": {
         "components": {}
@@ -1892,7 +1981,7 @@
                             "parameters": [
                                 {
                                     "name": "value",
-                                    "type": "boolean"
+                                    "type": "any"
                                 }
                             ],
                             "description": "Event handler called when the pressed state of the toggle changes."

@@ -79,6 +79,10 @@ const docsConfig = {
                     ]
                 },
                 {
+                    section: 'Utils',
+                    pages: [{ name: 'Focus Scope', url: '/primitives/utils/focus-scope', label: 'New' }]
+                },
+                {
                     section: 'Components',
                     pages: [
                         { name: 'Accordion', url: '/primitives/components/accordion' },
@@ -108,7 +112,7 @@ const docsConfig = {
                             url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-editable--docs',
                             label: 'Storybook'
                         },
-                        { name: 'Hover Card', url: '/primitives/components/hover-card', label: 'New' },
+                        { name: 'Hover Card', url: '/primitives/components/hover-card' },
                         { name: 'Label', url: '/primitives/components/label' },
                         {
                             name: 'Menubar',
@@ -143,7 +147,7 @@ const docsConfig = {
                         },
                         { name: 'Select', url: '/primitives/components/select' },
                         { name: 'Separator', url: '/primitives/components/separator' },
-                        { name: 'Slider', url: '/primitives/components/slider', label: 'New' },
+                        { name: 'Slider', url: '/primitives/components/slider' },
                         {
                             name: 'Stepper',
                             url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-stepper--docs',
