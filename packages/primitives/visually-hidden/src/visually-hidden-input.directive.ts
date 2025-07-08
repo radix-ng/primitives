@@ -1,7 +1,8 @@
 // Implementation from https://github.com/unovue/radix-vue
 
-import { Directive, ElementRef, OnInit, computed, inject, input } from '@angular/core';
+import { Directive, ElementRef, Injector, afterNextRender, computed, effect, inject, input } from '@angular/core';
 import { RdxVisuallyHiddenInputBubbleDirective } from './visually-hidden-input-bubble.directive';
+import { VisuallyHidden } from './visually-hidden.directive';
 
 @Directive({
     selector: '[rdxVisuallyHiddenInput]',
@@ -19,17 +20,18 @@ import { RdxVisuallyHiddenInputBubbleDirective } from './visually-hidden-input-b
         }
     ]
 })
-export class RdxVisuallyHiddenInputDirective<T> implements OnInit {
+export class RdxVisuallyHiddenInputDirective<T> {
     private readonly elementRef = inject(ElementRef);
+    private readonly injector = inject(Injector);
 
-    readonly name = input<string>('');
+    readonly name = input<string | undefined>(undefined);
     readonly value = input<T | string>();
     readonly checked = input<boolean | undefined>(undefined);
     readonly required = input<boolean | undefined>(undefined);
     readonly disabled = input<boolean | undefined>(undefined);
-    readonly feature = input<'focusable' | 'fully-hidden'>('fully-hidden');
+    readonly feature = input<VisuallyHidden>('fully-hidden');
 
-    readonly parsedValue = computed<{ name: string; value: any }[]>(() => {
+    readonly parsedValue = computed(() => {
         const value = this.value();
         const name = this.name();
 
@@ -60,13 +62,20 @@ export class RdxVisuallyHiddenInputDirective<T> implements OnInit {
         return [];
     });
 
-    ngOnInit() {
-        const parsedValues = this.parsedValue();
+    constructor() {
+        afterNextRender(() => {
+            effect(
+                () => {
+                    const parsedValues = this.parsedValue();
 
-        parsedValues.forEach((parsed) => {
-            const inputElement = this.elementRef.nativeElement;
-            inputElement.setAttribute('name', parsed.name);
-            inputElement.setAttribute('value', parsed.value);
+                    parsedValues.forEach((parsed) => {
+                        const inputElement = this.elementRef.nativeElement;
+                        inputElement.setAttribute('name', parsed.name);
+                        inputElement.setAttribute('value', parsed.value);
+                    });
+                },
+                { injector: this.injector }
+            );
         });
     }
 }
