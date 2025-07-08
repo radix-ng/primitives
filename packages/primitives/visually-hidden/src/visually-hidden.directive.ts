@@ -1,43 +1,45 @@
 import { Directive, input, linkedSignal } from '@angular/core';
 
+export type VisuallyHidden = 'focusable' | 'fully-hidden';
+
 /**
  *
  * <span rdxVisuallyHidden [feature]="'fully-hidden'">
- *   <ng-content></ng-content>
+ *   <ng-content />
  * </span>
  *
- * <button (click)="directiveInstance.feature.set('focusable')">Make Focusable</button>
- * <button (click)="directiveInstance.feature.set('fully-hidden')">Hide</button>
+ * <button (click)="directiveInstance.setFeature('focusable')">Make Focusable</button>
+ * <button (click)="directiveInstance.setFeature('fully-hidden')">Hide</button>
  */
 @Directive({
     selector: '[rdxVisuallyHidden]',
     host: {
-        '[attr.aria-hidden]': 'feature() === "focusable" ? "true" : undefined',
-        '[hidden]': 'feature() === "fully-hidden" ? true : undefined',
-        '[attr.tabindex]': 'feature() === "fully-hidden" ? "-1" : undefined',
-        '[style.position]': '"absolute"',
-        '[style.border]': '"0"',
-        '[style.display]': 'feature() === "focusable" ? "inline-block" : "none"',
-        '[style.width]': '"1px"',
-        '[style.height]': '"1px"',
-        '[style.padding]': '"0"',
-        '[style.margin]': '"-1px"',
-        '[style.overflow]': '"hidden"',
-        '[style.clip]': '"rect(0, 0, 0, 0)"',
-        '[style.clipPath]': '"inset(50%)"',
-        '[style.white-space]': '"nowrap"',
-        '[style.word-wrap]': '"normal"'
+        '[attr.tabindex]': 'computedFeature() === "fully-hidden" ? "-1" : undefined',
+        '[attr.aria-hidden]': 'computedFeature() === "focusable" ? "true" : undefined',
+        '[attr.data-hidden]': 'computedFeature() === "fully-hidden" ? "" : undefined',
+        '[hidden]': 'computedFeature() === "fully-hidden" ? true : undefined',
+        '[style]': `{
+            position: 'absolute',
+            border: 0,
+            width: '1px',
+            height: '1px',
+            padding: 0,
+            margin: '-1px',
+            overflow: 'hidden',
+            clip: 'rect(0, 0, 0, 0)',
+            clipPath: 'inset(50%)',
+            whiteSpace: 'nowrap',
+            wordWrap: 'normal',
+        }`,
+        '[style.display]': 'feature() === "focusable" ? "inline-block" : "none"'
     }
 })
 export class RdxVisuallyHiddenDirective {
-    readonly feature = input<'focusable' | 'fully-hidden'>('focusable');
+    readonly feature = input<VisuallyHidden>('focusable');
 
-    protected readonly featureEffect = linkedSignal({
-        source: this.feature,
-        computation: (feature: 'focusable' | 'fully-hidden') => feature
-    });
+    protected readonly computedFeature = linkedSignal(this.feature);
 
-    updateFeature(feature: 'focusable' | 'fully-hidden') {
-        this.featureEffect.set(feature);
+    setFeature(feature: VisuallyHidden) {
+        this.computedFeature.set(feature);
     }
 }

@@ -6,7 +6,7 @@ import { RdxVisuallyHiddenDirective } from '../src/visually-hidden.directive';
 const html = String.raw;
 
 export default {
-    title: 'Utilities/Visually-HiddenInput',
+    title: 'Utilities/Visually Hidden',
     decorators: [
         moduleMetadata({
             imports: [
