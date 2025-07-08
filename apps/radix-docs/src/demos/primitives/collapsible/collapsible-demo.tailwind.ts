@@ -24,7 +24,7 @@ import { LucideAngularModule, UnfoldVertical, X } from 'lucide-angular';
             rdxCollapsibleRoot
         >
             <div class="flex items-center justify-between space-x-4 px-4">
-                <span class="font-medium ">&#64;peduarte starred 3 repositories</span>
+                <span class="font-medium">&#64;peduarte starred 3 repositories</span>
                 <button
                     class="focus-visible:ring-ring hover:bg-accent hover:text-accent-foreground inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
                     type="button"
@@ -39,7 +39,7 @@ import { LucideAngularModule, UnfoldVertical, X } from 'lucide-angular';
             </div>
 
             <div class="rounded-md border px-4 py-2">
-                <span class="font-mono ">&#64;radix-ui/primitives</span>
+                <span class="font-mono">&#64;radix-ui/primitives</span>
             </div>
 
             <div rdxCollapsibleContent>
@@ -48,7 +48,7 @@ import { LucideAngularModule, UnfoldVertical, X } from 'lucide-angular';
                         <span class="font-mono">&#64;radix-ui/colors</span>
                     </div>
                     <div class="rounded-md border px-4 py-2">
-                        <span class="font-mono ">&#64;stitches/react</span>
+                        <span class="font-mono">&#64;stitches/react</span>
                     </div>
                 </div>
             </div>
