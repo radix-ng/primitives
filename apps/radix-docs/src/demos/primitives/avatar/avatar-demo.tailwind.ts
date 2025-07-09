@@ -53,7 +53,7 @@ import {
                 rdxAvatarRoot
             >
                 <span
-                    class=" text-grass11 leading-1 flex h-full w-full items-center justify-center bg-white text-sm font-medium dark:bg-stone-800 dark:text-stone-300"
+                    class="text-grass11 leading-1 flex h-full w-full items-center justify-center bg-white text-sm font-medium dark:bg-stone-800 dark:text-stone-300"
                     rdxAvatarFallback
                 >
                     PD
