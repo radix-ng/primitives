@@ -54,6 +54,7 @@ export class RdxNavigationMenuTriggerDirective extends RdxNavigationMenuFocusabl
     private readonly viewContainerRef = inject(ViewContainerRef);
 
     readonly disabled = input(false, { transform: booleanAttribute });
+    readonly openOnHover = input(true, { transform: booleanAttribute });
 
     readonly triggerId = makeTriggerId(this.context.baseId, this.item.value());
     readonly contentId = makeContentId(this.context.baseId, this.item.value());
@@ -146,16 +147,18 @@ export class RdxNavigationMenuTriggerDirective extends RdxNavigationMenuFocusabl
     }
 
     onPointerEnter(): void {
-        // ignore if disabled or not the root menu (hover logic primarily for root)
+        // ignore if disabled or not the root menu
         if (this.disabled() || !isRootNavigationMenu(this.context)) return;
 
         this.wasClickClose = false; // Reset click close flag on enter
         this.item.wasEscapeCloseRef.set(false); // Reset escape flag
         this.context.setTriggerPointerState?.(true); // Update context state
 
-        // if the menu isn't already open for this item, trigger the enter logic (handles delays)
+        // if the menu isn't already open for this item, trigger the enter logic
         if (!this.open()) {
-            this.context.onTriggerEnter?.(this.item.value());
+            if (this.openOnHover() || this.context.value() !== '') {
+                this.context.onTriggerEnter?.(this.item.value());
+            }
         }
     }
 
