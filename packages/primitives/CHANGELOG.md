@@ -1,3 +1,16 @@
+## 0.43.0 (2025-07-16)
+
+### 🚀 Features
+
+- **navigation-menu:** add `openOnHover` input trigger to customize toggling the viewport ([#356](https://github.com/radix-ng/primitives/pull/356))
+- **visually-hidden:** refactor to signals and updated API ([#355](https://github.com/radix-ng/primitives/pull/355))
+- new utilites – Focus Guards ([b58ce01](https://github.com/radix-ng/primitives/commit/b58ce01))
+
+### ❤️ Thank You
+
+- Josh Sullivan @jpsullivan
+- Oleg Pimenov @pimenovoleg
+
 ## 0.42.0 (2025-07-06)
 
 ### 🚀 Features
