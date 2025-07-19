@@ -1,4 +1,8 @@
-import { DateValue, endOfMonth, startOfMonth } from '@internationalized/date';
+/*
+ * Implementation ported from from from https://github.com/melt-ui/melt-ui/blob/develop/src/lib/builders/calendar/create.ts
+ */
+
+import { CalendarDate, DateValue, DayOfWeek, endOfMonth, getDayOfWeek, startOfMonth } from '@internationalized/date';
 import { chunk } from '../chunk';
 import { getDaysInMonth, getLastFirstDayOfWeek, getNextLastDayOfWeek } from './comparators';
 import { Month } from './types';
@@ -122,4 +126,26 @@ export function createMonths(props: SetMonthProps) {
     }
 
     return months;
+}
+
+/**
+ * Returns the locale-specific week number
+ */
+export function getWeekNumber(date: DateValue, locale: string = 'en-US', firstDayOfWeek?: DayOfWeek): number {
+    const firstDayOfYear = new CalendarDate(date.year, 1, 1);
+
+    const firstDayOfYearWeekday = getDayOfWeek(firstDayOfYear, locale, firstDayOfWeek);
+
+    const firstWeekStart = firstDayOfYear.subtract({ days: firstDayOfYearWeekday });
+
+    // If date is before the first week start It belongs to the last week of the previous year
+    if (date.compare(firstWeekStart) < 0) {
+        const prevYearDate = new CalendarDate(date.year - 1, 12, 31);
+        return getWeekNumber(prevYearDate, locale, firstDayOfWeek);
+    }
+
+    const days = getDaysBetween(firstWeekStart, date);
+
+    // Week number is days divided by 7 plus 1
+    return Math.floor(days.length / 7) + 1;
 }

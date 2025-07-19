@@ -1,4 +1,4 @@
-import { inject, InjectionToken, InputSignal, ModelSignal, WritableSignal } from '@angular/core';
+import { inject, InjectionToken, InputSignal, ModelSignal, Signal, WritableSignal } from '@angular/core';
 import { DateValue } from '@internationalized/date';
 import { DateMatcher, Formatter } from '@radix-ng/primitives/core';
 
@@ -20,6 +20,7 @@ export interface CalendarRootContextToken {
     formatter: Formatter;
     onDateChange: (date: DateValue) => void;
     currentElement: HTMLElement;
+    startingWeekNumber: Signal<number[]>;
 }
 
 export const CALENDAR_ROOT_CONTEXT = new InjectionToken<CalendarRootContextToken>('CalendarRootContext');
