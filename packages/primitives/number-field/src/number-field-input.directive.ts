@@ -19,6 +19,8 @@ import { injectNumberFieldRootContext } from './number-field-context.token';
         '[attr.inputmode]': 'rootContext.inputMode()',
         '[attr.disabled]': 'rootContext.disabled() ? "" : undefined',
         '[attr.data-disabled]': 'rootContext.disabled() ? "" : undefined',
+        '[attr.readonly]': 'rootContext.readonly() ? "" : undefined',
+        '[attr.data-readonly]': 'rootContext.readonly() ? "" : undefined',
         '[attr.value]': 'inputValue()',
 
         '(change)': 'onChange()',

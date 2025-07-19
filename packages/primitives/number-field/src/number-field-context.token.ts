@@ -7,6 +7,7 @@ export interface NumberFieldContextToken {
     locale: InputSignal<string>;
     inputMode: Signal<InputMode>;
     textValue: Signal<any>;
+    readonly: InputSignalWithTransform<boolean, BooleanInput>;
     max: InputSignalWithTransform<number | undefined, NumberInput>;
     min: InputSignalWithTransform<number | undefined, NumberInput>;
     onInputElement: (el: HTMLInputElement) => void;
