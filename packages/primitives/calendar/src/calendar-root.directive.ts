@@ -2,6 +2,7 @@ import { BooleanInput } from '@angular/cdk/coercion';
 import {
     AfterViewInit,
     booleanAttribute,
+    computed,
     Directive,
     effect,
     ElementRef,
@@ -12,7 +13,7 @@ import {
     model,
     signal
 } from '@angular/core';
-import { DateValue, isEqualDay, isSameDay } from '@internationalized/date';
+import { DateValue, isEqualDay, isSameDay, startOfWeek, startOfYear } from '@internationalized/date';
 import { DateMatcher, Formatter, getDefaultDate, Month, watch } from '@radix-ng/primitives/core';
 import { calendar, calendarState } from './calendar';
 import { CALENDAR_ROOT_CONTEXT } from './сalendar-сontext.token';
@@ -147,6 +148,26 @@ export class RdxCalendarRootDirective implements AfterViewInit {
     protected readonly _disabled = linkedSignal(this.disabled);
 
     protected readonly _pagedNavigation = linkedSignal(this.pagedNavigation);
+
+    readonly startingWeekNumber = computed(() => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        const firstDayOfGrid = startOfWeek(this.months()[0].weeks[0][0], this.locale());
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        return Array.from({ length: this.months()[0].weeks.length })
+            .fill(null)
+            .map((_, idx) => {
+                const firstDayOfWeek = firstDayOfGrid.add({ weeks: idx });
+
+                const thursday = firstDayOfWeek.add({ days: 3 });
+
+                const firstDayOfYear = startOfYear(thursday);
+
+                return ((thursday.compare(firstDayOfYear) / 7) | 0) + 1;
+            });
+    });
 
     /**
      * @ignore
