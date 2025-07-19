@@ -11,7 +11,8 @@ import { handleDecimalOperation, useNumberFormatter, useNumberParser } from './u
     providers: [provideToken(NUMBER_FIELD_ROOT_CONTEXT, RdxNumberFieldRootDirective)],
     host: {
         role: 'group',
-        '[attr.data-disabled]': 'disabled() ? "" : undefined'
+        '[attr.data-disabled]': 'disabled() ? "" : undefined',
+        '[attr.data-readonly]': 'readonly() ? "" : undefined'
     }
 })
 export class RdxNumberFieldRootDirective implements OnInit, NumberFieldContextToken {
@@ -32,6 +33,11 @@ export class RdxNumberFieldRootDirective implements OnInit, NumberFieldContextTo
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     readonly formatOptions = input<Intl.NumberFormatOptions>();
+
+    /**
+     * When <code>true</code>, the Number Field is read-only.
+     */
+    readonly readonly = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
      * @ignore
@@ -189,11 +195,12 @@ export class RdxNumberFieldRootDirective implements OnInit, NumberFieldContextTo
 
     private handleChangingValue(type: 'increase' | 'decrease', multiplier = 1) {
         this.inputEl()?.focus();
-        const currentInputValue = this.numberParser().parse(this.inputEl()?.value ?? '');
 
-        if (this.disabled()) {
+        if (this.disabled() || this.readonly()) {
             return;
         }
+
+        const currentInputValue = this.numberParser().parse(this.inputEl()?.value ?? '');
 
         if (isNaN(currentInputValue)) {
             this.value.set(this.min() ?? 0);

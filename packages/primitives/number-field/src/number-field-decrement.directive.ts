@@ -31,7 +31,11 @@ export class RdxNumberFieldDecrementDirective implements OnInit {
      * @ignore
      */
     readonly isDisabled = computed(
-        () => this.rootContext.disabled() || this.disabled() || this.rootContext.isDecreaseDisabled()
+        () =>
+            this.rootContext.disabled() ||
+            this.rootContext.readonly() ||
+            this.disabled() ||
+            this.rootContext.isDecreaseDisabled()
     );
 
     /**
