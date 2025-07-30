@@ -1,6 +1,6 @@
-import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/blocks';
+import { ArgTypes, Canvas, Meta } from '@storybook/blocks';
 import { RdxCheckboxRootDirective } from '../src/checkbox.directive';
-import * as CheckboxDirectiveStories from './checkbox.stories';
+import * as Stories from './checkbox.stories';
 
 <Meta title="Primitives/Checkbox" />
 
@@ -8,7 +8,7 @@ import * as CheckboxDirectiveStories from './checkbox.stories';
 
 #### A control that allows the user to toggle between checked and not checked.
 
-<Canvas sourceState="hidden" of={CheckboxDirectiveStories.Default} />
+<Canvas sourceState="hidden" of={Stories.Default} />
 
 ## Features
 
@@ -52,3 +52,18 @@ Adheres to the [tri-\_state Checkbox WAI-ARIA design pattern](https://www.w3.org
 | Key   | Description                   |
 |-------|-------------------------------|
 | Space | Checks/unchecks the checkbox. |
+
+## Examples
+
+### Reactive Forms
+
+Checkbox can also be used with reactive forms. In this case, the formControlName property is used to bind the component to a form control.
+
+<Canvas sourceState="hidden" of={Stories.WithReactiveForms} />
+
+```html
+<button rdxCheckboxRoot formControlName="checkbox">
+    <lucide-angular [img]="Check" rdxCheckboxIndicator size="16" />
+    <input rdxCheckboxInput />
+</button>
+```
