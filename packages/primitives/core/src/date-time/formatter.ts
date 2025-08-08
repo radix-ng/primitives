@@ -102,7 +102,8 @@ export function createFormatter(initialLocale: string, opts: DateFormatterOption
             hourCycle: hourCycle === 24 ? 'h23' : undefined
         }).formatToParts(date);
         const value = parts.find((p) => p.type === 'dayPeriod')?.value;
-        if (value === 'PM') {
+        // Day period can be "AM"/"PM" or "a.m."/"p.m." in some locales
+        if (value === 'PM' || value === 'p.m.') {
             return 'PM';
         }
         return 'AM';
