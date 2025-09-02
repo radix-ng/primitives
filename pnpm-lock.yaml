@@ -491,11 +491,11 @@ importers:
   packages/components:
     dependencies:
       '@angular/common':
-        specifier: ^19.2.4
-        version: 19.2.14(@angular/core@19.2.14(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
+        specifier: ^20.2.3
+        version: 20.2.3(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
       '@angular/core':
-        specifier: ^19.2.4
-        version: 19.2.14(rxjs@7.8.2)(zone.js@0.15.1)
+        specifier: ^20.2.3
+        version: 20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1)
     devDependencies:
       '@radix-ng/primitives':
         specifier: workspace:*
@@ -899,13 +899,6 @@ packages:
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     hasBin: true
 
-  '@angular/common@19.2.14':
-    resolution: {integrity: sha512-NcNklcuyqaTjOVGf7aru8APX9mjsnZ01gFZrn47BxHozhaR0EMRrotYQTdi8YdVjPkeYFYanVntSLfhyobq/jg==}
-    engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0}
-    peerDependencies:
-      '@angular/core': 19.2.14
-      rxjs: ^6.5.3 || ^7.4.0
-
   '@angular/common@20.2.3':
     resolution: {integrity: sha512-QLffWL8asy2oG7p3jvoNmx9s1V1WuJAm6JmQ1S8J3AN/BxumCJan49Nj8rctP8J4uwJDPQV48hqbXUdl1v7CDg==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
@@ -927,13 +920,6 @@ packages:
   '@angular/compiler@20.2.3':
     resolution: {integrity: sha512-vYGDluko8zAIWhQmKijhcGO0tzanwGONDRgbJ01mCqUsQV+XwmDgUUDZKrUY9uve0wxxM3Xvo4/BjEpGpeG75w==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
-
-  '@angular/core@19.2.14':
-    resolution: {integrity: sha512-EVErpW9tGqJ/wNcAN3G/ErH8pHCJ8mM1E6bsJ8UJIpDTZkpqqYjBMtZS9YWH5n3KwUd1tAkAB2w8FK125AjDUQ==}
-    engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0}
-    peerDependencies:
-      rxjs: ^6.5.3 || ^7.4.0
-      zone.js: ~0.15.0
 
   '@angular/core@20.2.3':
     resolution: {integrity: sha512-pFMfg11X8SNNZHcLa+wy4y+eAN3FApt+wPzaxkaXaJ64c+tyHcrPNLotoWgE0jmiw8Idn4gGjKAL/WC0uw5dQA==}
@@ -14679,12 +14665,6 @@ snapshots:
       - chokidar
       - supports-color
 
-  '@angular/common@19.2.14(@angular/core@19.2.14(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)':
-    dependencies:
-      '@angular/core': 19.2.14(rxjs@7.8.2)(zone.js@0.15.1)
-      rxjs: 7.8.2
-      tslib: 2.8.1
-
   '@angular/common@20.2.3(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)':
     dependencies:
       '@angular/core': 20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1)
@@ -14710,12 +14690,6 @@ snapshots:
   '@angular/compiler@20.2.3':
     dependencies:
       tslib: 2.8.1
-
-  '@angular/core@19.2.14(rxjs@7.8.2)(zone.js@0.15.1)':
-    dependencies:
-      rxjs: 7.8.2
-      tslib: 2.8.1
-      zone.js: 0.15.1
 
   '@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1)':
     dependencies:
