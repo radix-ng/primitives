@@ -1,4 +1,4 @@
-import { Component, DebugElement, Input, model } from '@angular/core';
+import { Component, DebugElement, inject, Input, model } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { By } from '@angular/platform-browser';
@@ -57,11 +57,13 @@ class ToggleGroupTestComponent {
     `
 })
 class ReactiveFormToggleGroup {
+    private readonly fb = inject(FormBuilder);
+
     formGroup: FormGroup;
 
     @Input() multiple: 'single' | 'multiple' = 'single';
 
-    constructor(private fb: FormBuilder) {
+    constructor() {
         this.formGroup = this.fb.group({
             alignment: new FormControl('center', Validators.required)
         });

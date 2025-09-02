@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Component, DebugElement, ElementRef } from '@angular/core';
+import { Component, DebugElement, ElementRef, inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { RdxSwitchInputDirective } from '../src/switch-input.directive';
@@ -71,10 +71,12 @@ xdescribe('RdxSwitchRootDirective', () => {
     `
 })
 class ReactiveFormSwitch {
+    private readonly fb = inject(FormBuilder);
+
     formGroup: FormGroup;
     clickCount = 0;
 
-    constructor(private fb: FormBuilder) {
+    constructor() {
         this.formGroup = this.fb.group({
             airplaneMode: new FormControl(false)
         });

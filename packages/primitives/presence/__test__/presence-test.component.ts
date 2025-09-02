@@ -1,4 +1,4 @@
-import { Component, ElementRef, NgZone, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, NgZone, OnInit } from '@angular/core';
 import { usePresence } from '../src/presence';
 import { CollapseContext, transitionCollapsing } from '../src/transitions/transition.collapse';
 
@@ -22,16 +22,14 @@ import { CollapseContext, transitionCollapsing } from '../src/transitions/transi
     ]
 })
 export class PresenceComponent implements OnInit {
+    private readonly zone = inject(NgZone);
+    private elRef = inject(ElementRef);
+
     private context: CollapseContext = {
         direction: 'show',
         dimension: 'height'
     };
     private element!: HTMLElement;
-
-    constructor(
-        private zone: NgZone,
-        private elRef: ElementRef
-    ) {}
 
     ngOnInit(): void {
         this.element = this.elRef.nativeElement.querySelector('div');

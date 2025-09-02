@@ -1,5 +1,5 @@
 import { JsonPipe } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { LucideAngularModule } from 'lucide-angular';
@@ -69,13 +69,13 @@ import { RdxCheckboxRootDirective } from '../src/checkbox.directive';
     ]
 })
 export class CheckboxReactiveFormsExampleComponent {
+    private readonly formBuilder = inject(FormBuilder);
+
     personality = this.formBuilder.group({
         fun: false,
         serious: false,
         smart: false
     });
-
-    constructor(protected formBuilder: FormBuilder) {}
 
     toggleDisable() {
         const checkbox = this.personality.get('serious');

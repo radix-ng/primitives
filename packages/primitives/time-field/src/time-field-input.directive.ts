@@ -1,4 +1,4 @@
-import { computed, Directive, effect, ElementRef, input, signal, WritableSignal } from '@angular/core';
+import { computed, Directive, effect, ElementRef, inject, input, signal, WritableSignal } from '@angular/core';
 import { DateValue } from '@internationalized/date';
 import { SegmentPart, useDateField } from '@radix-ng/primitives/core';
 import { injectTimeFieldsRootContext } from './time-field-context.token';
@@ -20,6 +20,8 @@ import { injectTimeFieldsRootContext } from './time-field-context.token';
     }
 })
 export class RdxTimeFieldInputDirective {
+    private readonly el = inject(ElementRef);
+
     private readonly rootContext = injectTimeFieldsRootContext();
 
     /**
@@ -82,7 +84,7 @@ export class RdxTimeFieldInputDirective {
      */
     handleSegmentKeydown: (e: KeyboardEvent) => void;
 
-    constructor(private el: ElementRef) {
+    constructor() {
         effect(() => {
             const { handleSegmentClick, handleSegmentKeydown } = this.fieldData();
             this.handleSegmentKeydown = handleSegmentKeydown;

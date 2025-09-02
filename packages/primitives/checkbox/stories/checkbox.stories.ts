@@ -112,7 +112,7 @@ export const CheckboxGroup: Story = {
     })
 };
 
-export const indeterminate: Story = {
+export const Indeterminate: Story = {
     render: () => ({
         template: html`
             <checkbox-indeterminate-example></checkbox-indeterminate-example>
