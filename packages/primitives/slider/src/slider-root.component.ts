@@ -1,5 +1,5 @@
 import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
-import { NgIf, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import {
     booleanAttribute,
     Component,
@@ -29,53 +29,53 @@ import {
  */
 @Component({
     selector: 'rdx-slider',
-    imports: [RdxSliderHorizontalComponent, RdxSliderVerticalComponent, NgIf, NgTemplateOutlet],
+    imports: [RdxSliderHorizontalComponent, RdxSliderVerticalComponent, NgTemplateOutlet],
     providers: [RdxSliderOrientationContextService],
     template: `
         <ng-template #transclude><ng-content /></ng-template>
-
-        <ng-container *ngIf="orientation() === 'horizontal'">
-            <rdx-slider-horizontal
-                [className]="styleClass() || className"
-                [min]="min()"
-                [max]="max()"
-                [dir]="dir()"
-                [inverted]="inverted()"
-                [attr.aria-disabled]="disabled()"
-                [attr.data-disabled]="disabled() ? '' : undefined"
-                (pointerdown)="onPointerDown()"
-                (slideStart)="handleSlideStart($event)"
-                (slideMove)="handleSlideMove($event)"
-                (slideEnd)="handleSlideEnd()"
-                (homeKeyDown)="updateValues(min(), 0, true)"
-                (endKeyDown)="updateValues(max(), modelValue().length - 1, true)"
-                (stepKeyDown)="handleStepKeyDown($event)"
+        
+        @if (orientation() === 'horizontal') {
+          <rdx-slider-horizontal
+            [className]="styleClass() || className"
+            [min]="min()"
+            [max]="max()"
+            [dir]="dir()"
+            [inverted]="inverted()"
+            [attr.aria-disabled]="disabled()"
+            [attr.data-disabled]="disabled() ? '' : undefined"
+            (pointerdown)="onPointerDown()"
+            (slideStart)="handleSlideStart($event)"
+            (slideMove)="handleSlideMove($event)"
+            (slideEnd)="handleSlideEnd()"
+            (homeKeyDown)="updateValues(min(), 0, true)"
+            (endKeyDown)="updateValues(max(), modelValue().length - 1, true)"
+            (stepKeyDown)="handleStepKeyDown($event)"
             >
-                <ng-container *ngTemplateOutlet="transclude" />
-            </rdx-slider-horizontal>
-        </ng-container>
-
-        <ng-container *ngIf="orientation() === 'vertical'">
-            <rdx-slider-vertical
-                [className]="styleClass() || className"
-                [min]="min()"
-                [max]="max()"
-                [dir]="dir()"
-                [inverted]="inverted()"
-                [attr.aria-disabled]="disabled()"
-                [attr.data-disabled]="disabled() ? '' : undefined"
-                (pointerdown)="onPointerDown()"
-                (slideStart)="handleSlideStart($event)"
-                (slideMove)="handleSlideMove($event)"
-                (slideEnd)="handleSlideEnd()"
-                (homeKeyDown)="updateValues(min(), 0, true)"
-                (endKeyDown)="updateValues(max(), modelValue().length - 1, true)"
-                (stepKeyDown)="handleStepKeyDown($event)"
+            <ng-container *ngTemplateOutlet="transclude" />
+          </rdx-slider-horizontal>
+        }
+        
+        @if (orientation() === 'vertical') {
+          <rdx-slider-vertical
+            [className]="styleClass() || className"
+            [min]="min()"
+            [max]="max()"
+            [dir]="dir()"
+            [inverted]="inverted()"
+            [attr.aria-disabled]="disabled()"
+            [attr.data-disabled]="disabled() ? '' : undefined"
+            (pointerdown)="onPointerDown()"
+            (slideStart)="handleSlideStart($event)"
+            (slideMove)="handleSlideMove($event)"
+            (slideEnd)="handleSlideEnd()"
+            (homeKeyDown)="updateValues(min(), 0, true)"
+            (endKeyDown)="updateValues(max(), modelValue().length - 1, true)"
+            (stepKeyDown)="handleStepKeyDown($event)"
             >
-                <ng-container *ngTemplateOutlet="transclude" />
-            </rdx-slider-vertical>
-        </ng-container>
-    `
+            <ng-container *ngTemplateOutlet="transclude" />
+          </rdx-slider-vertical>
+        }
+        `
 })
 export class RdxSliderRootComponent implements OnInit {
     /** @ignore */

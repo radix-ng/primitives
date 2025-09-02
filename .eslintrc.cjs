@@ -12,7 +12,7 @@ const config = {
         node: true
     },
     plugins: ['file-progress'],
-    extends: ['plugin:eslint-comments/recommended'],
+    extends: ['plugin:eslint-comments/recommended', 'plugin:storybook/recommended'],
     rules: {
         // plugin:file-progress
         'file-progress/activate': isCI ? 0 : 1,

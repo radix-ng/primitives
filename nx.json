@@ -81,19 +81,16 @@
         "version": {
             "conventionalCommits": true,
             "preVersionCommand": "npx nx run-many -t build -p primitives",
-            "generatorOptions": {
-                "updateDependents": "auto",
-                "preserveLocalDependencyProtocols": true
-            }
+            "updateDependents": "auto"
         },
         "changelog": {
             "projectChangelogs": {
                 "createRelease": "github",
                 "renderOptions": {
                     "authors": true,
-                    "mapAuthorsToGitHubUsernames": true,
                     "commitReferences": true,
-                    "versionTitleDate": true
+                    "versionTitleDate": true,
+                    "applyUsernameToAuthors": true
                 }
             }
         },

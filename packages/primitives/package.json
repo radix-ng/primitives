@@ -22,7 +22,7 @@
         "@angular/cdk": "^19.2.0 || ^20.0.0"
     },
     "devDependencies": {
-        "@angular-devkit/schematics": "^19.2.5",
+        "@angular-devkit/schematics": "^20.2.1",
         "@internationalized/date": "^3.7.0",
         "@internationalized/number": "^3.6.1"
     },

@@ -1,0 +1,166 @@
+[16:55:26.324] [DEBUG] Extracting storybook data...
+[16:55:26.324] [DEBUG] Getting Storybook info...
+[16:55:26.325] [DEBUG] Loading main config...
+[16:55:26.400] [DEBUG] Getting stories paths...
+[16:55:26.417] [DEBUG] Getting package manager...
+[16:55:26.805] [DEBUG] Getting Storybook version...
+[16:55:26.805] [INFO] 🔎 checking possible migrations..
+[16:55:26.815] [DEBUG] Running eslintPlugin migration checks
+[16:55:26.819] [DEBUG] End of eslintPlugin migration checks
+[16:55:26.819] [INFO] 🔎 found a 'eslintPlugin' migration:
+[16:55:26.826] [INFO] automigrate-task-eslintPlugin-task-start: Automigration detected: eslintPlugin
+[16:55:26.826] [INFO] We'll install and configure the Storybook ESLint plugin for you.
+[16:55:26.826] [INFO] We'll install and configure the Storybook ESLint plugin for you.
+[16:55:34.107] [PROMPT] Do you want to run the 'eslintPlugin' migration on your project? {"choice":true}
+[16:55:34.107] [DEBUG] Adding dependencies: eslint-plugin-storybook@9.1.4
+[16:55:34.108] [DEBUG] Getting CLI versions from NPM for eslint-plugin-storybook...
+[16:55:34.640] [INFO] ✅ ran eslintPlugin migration
+[16:55:34.640] [INFO] automigrate-task-eslintPlugin-task-success: Ran eslintPlugin migration
+[16:55:34.640] [DEBUG] Running addon-mdx-gfm-remove migration checks
+[16:55:34.641] [DEBUG] End of addon-mdx-gfm-remove migration checks
+[16:55:34.641] [INFO] 🔎 found a 'addon-mdx-gfm-remove' migration:
+[16:55:34.649] [INFO] automigrate-task-addon-mdx-gfm-remove-task-start: Automigration detected: addon-mdx-gfm-remove
+[16:55:34.649] [INFO] We'll remove @storybook/addon-mdx-gfm as it's no longer needed in Storybook 9.0.
+[16:55:34.649] [INFO] We'll remove @storybook/addon-mdx-gfm as it's no longer needed in Storybook 9.0.
+[16:55:36.328] [PROMPT] Do you want to run the 'addon-mdx-gfm-remove' migration on your project? {"choice":true}
+[16:55:36.338] [DEBUG] Uninstalling @storybook/addon-mdx-gfm
+[16:55:36.339] [DEBUG] Removing '@storybook/addon-mdx-gfm' from main.js addons field.
+[16:55:36.345] [INFO] ✅ ran addon-mdx-gfm-remove migration
+[16:55:36.345] [INFO] automigrate-task-addon-mdx-gfm-remove-task-success: Ran addon-mdx-gfm-remove migration
+[16:55:36.345] [DEBUG] Running addon-storysource-code-panel migration checks
+[16:55:36.345] [DEBUG] End of addon-storysource-code-panel migration checks
+[16:55:36.345] [INFO] 🔎 found a 'addon-storysource-code-panel' migration:
+[16:55:36.358] [INFO] automigrate-task-addon-storysource-code-panel-task-start: Automigration detected: addon-storysource-code-panel
+[16:55:36.358] [INFO] We'll remove @storybook/addon-storysource and enable the Code Panel instead.
+[16:55:36.358] [INFO] We'll remove @storybook/addon-storysource and enable the Code Panel instead.
+[16:55:38.875] [PROMPT] Do you want to run the 'addon-storysource-code-panel' migration on your project? {"choice":true}
+[16:55:38.876] [DEBUG] Removing @storybook/addon-storysource...
+[16:55:38.881] [DEBUG] Uninstalling @storybook/addon-storysource
+[16:55:38.882] [DEBUG] Removing '@storybook/addon-storysource' from main.js addons field.
+[16:55:38.893] [INFO] ✅ ran addon-storysource-code-panel migration
+[16:55:38.893] [INFO] automigrate-task-addon-storysource-code-panel-task-success: Ran addon-storysource-code-panel migration
+[16:55:38.893] [DEBUG] Running initial-globals migration checks
+[16:55:38.896] [DEBUG] End of initial-globals migration checks
+[16:55:38.896] [DEBUG] Running addon-a11y-addon-test migration checks
+[16:55:38.896] [DEBUG] End of addon-a11y-addon-test migration checks
+[16:55:38.896] [DEBUG] Running consolidated-imports migration checks
+[16:55:38.897] [DEBUG] End of consolidated-imports migration checks
+[16:55:38.897] [INFO] 🔎 found a 'consolidated-imports' migration:
+[16:55:38.907] [INFO] automigrate-task-consolidated-imports-task-start: Automigration detected: consolidated-imports
+[16:55:38.907] [INFO] We've detected Storybook packages that have been renamed or consolidated. We'll update these packages by scanning your codebase and updating any imports from these packages.
+[16:55:38.907] [INFO] We've detected Storybook packages that have been renamed or consolidated. We'll update these packages by scanning your codebase and updating any imports from these packages.
+[16:55:42.565] [PROMPT] Do you want to run the 'consolidated-imports' migration on your project? {"choice":true}
+[16:55:42.614] [INFO] ✅ ran consolidated-imports migration
+[16:55:42.614] [INFO] automigrate-task-consolidated-imports-task-success: Ran consolidated-imports migration
+[16:55:42.614] [DEBUG] Running addon-experimental-test migration checks
+[16:55:42.614] [DEBUG] Getting installed version for @storybook/experimental-addon-test...
+[16:55:43.263] [DEBUG] End of addon-experimental-test migration checks
+[16:55:43.263] [DEBUG] Running rnstorybook-config migration checks
+[16:55:43.264] [DEBUG] End of rnstorybook-config migration checks
+[16:55:43.264] [DEBUG] Running remove-addon-interactions migration checks
+[16:55:43.264] [DEBUG] End of remove-addon-interactions migration checks
+[16:55:43.264] [INFO] 🔎 found a 'remove-addon-interactions' migration:
+[16:55:43.270] [INFO] automigrate-task-remove-addon-interactions-task-start: Automigration detected: remove-addon-interactions
+[16:55:43.270] [INFO] @storybook/addon-interactions has been moved to Storybook core and will be removed from your configuration.
+[16:55:43.270] [INFO] @storybook/addon-interactions has been moved to Storybook core and will be removed from your configuration.
+[16:55:45.317] [PROMPT] Do you want to run the 'remove-addon-interactions' migration on your project? {"choice":true}
+[16:55:45.324] [DEBUG] Uninstalling @storybook/addon-interactions
+[16:55:45.325] [INFO] ✅ ran remove-addon-interactions migration
+[16:55:45.326] [INFO] automigrate-task-remove-addon-interactions-task-success: Ran remove-addon-interactions migration
+[16:55:45.326] [DEBUG] Running renderer-to-framework migration checks
+[16:55:45.327] [DEBUG] End of renderer-to-framework migration checks
+[16:55:45.327] [DEBUG] Running remove-essential-addons migration checks
+[16:55:45.328] [DEBUG] End of remove-essential-addons migration checks
+[16:55:45.328] [INFO] 🔎 found a 'remove-essential-addons' migration:
+[16:55:45.340] [INFO] automigrate-task-remove-essential-addons-task-start: Automigration detected: remove-essential-addons
+[16:55:45.340] [INFO] In Storybook 9.0, several addons have been moved into Storybook's core and are no longer needed as separate packages. We'll remove the unnecessary addons from your configuration and dependencies, and update your code to use the new core features.
+[16:55:45.340] [INFO] In Storybook 9.0, several addons have been moved into Storybook's core and are no longer needed as separate packages. We'll remove the unnecessary addons from your configuration and dependencies, and update your code to use the new core features.
+[16:55:46.927] [PROMPT] Do you want to run the 'remove-essential-addons' migration on your project? {"choice":true}
+[16:55:46.931] [DEBUG] Uninstalling @storybook/addon-essentials
+[16:55:46.932] [DEBUG] Removing '@storybook/addon-essentials' from main.js addons field.
+[16:55:46.940] [DEBUG] Uninstalling @storybook/addon-backgrounds
+[16:55:46.940] [DEBUG] Removing '@storybook/addon-backgrounds' from main.js addons field.
+[16:55:46.949] [DEBUG] Getting Storybook info...
+[16:55:46.949] [DEBUG] Loading main config...
+[16:55:46.955] [DEBUG] Getting stories paths...
+[16:55:46.956] [DEBUG] Getting package manager...
+[16:55:46.971] [DEBUG] Getting Storybook version...
+[16:55:46.982] [INFO] automigrate-task-remove-essential-addons-task: Verifying @storybook/addon-docs
+[16:55:46.989] [INFO] automigrate-task-remove-essential-addons-task: Installing @storybook/addon-docs@9.1.4
+[16:55:46.989] [DEBUG] Getting CLI versions from NPM for @storybook/addon-docs...
+[16:55:47.685] [INFO] ✅ ran remove-essential-addons migration
+[16:55:47.685] [INFO] automigrate-task-remove-essential-addons-task-success: Ran remove-essential-addons migration
+[16:55:47.685] [DEBUG] Running addon-a11y-parameters migration checks
+[16:55:47.685] [DEBUG] End of addon-a11y-parameters migration checks
+[16:55:47.685] [DEBUG] Running remove-docs-autodocs migration checks
+[16:55:47.686] [DEBUG] End of remove-docs-autodocs migration checks
+[16:55:47.686] [DEBUG] Running wrap-require migration checks
+[16:55:47.688] [DEBUG] End of wrap-require migration checks
+[16:55:47.688] [INFO] 🔎 found a 'wrap-require' migration:
+[16:55:47.694] [INFO] automigrate-task-wrap-require-task-start: Automigration detected: wrap-require
+[16:55:47.695] [INFO] We have detected that you're using Storybook in a monorepo or PnP project. Some fields in your main config must be updated.
+[16:55:47.695] [INFO] We have detected that you're using Storybook in a monorepo or PnP project. Some fields in your main config must be updated.
+[16:55:49.877] [PROMPT] Do you want to run the 'wrap-require' migration on your project? {"choice":true}
+[16:55:49.886] [INFO] ✅ ran wrap-require migration
+[16:55:49.886] [INFO] automigrate-task-wrap-require-task-success: Ran wrap-require migration
+[16:55:49.886] [INFO] 
+[16:55:49.901] [INFO] Successful migrations:
+
+eslintPlugin, addon-mdx-gfm-remove, addon-storysource-code-panel, consolidated-imports, remove-addon-interactions, remove-essential-addons, wrap-require
+
+─────────────────────────────────────────────────
+
+If you'd like to run the migrations again, you can do so by running 'npx storybook automigrate'
+
+The automigrations try to migrate common patterns in your project, but might not contain everything needed to migrate to the latest version of Storybook.
+
+Please check the changelog and migration guide for manual migrations and more information: https://storybook.js.org/docs/migration-guide?ref=upgrade
+And reach out on Discord if you need help: https://discord.gg/storybook
+[16:55:49.901] [INFO] Migration check ran successfully
+[16:55:49.913] [INFO] Successful migrations:
+
+eslintPlugin, addon-mdx-gfm-remove, addon-storysource-code-panel, consolidated-imports, remove-addon-interactions, remove-essential-addons, wrap-require
+
+─────────────────────────────────────────────────
+
+If you'd like to run the migrations again, you can do so by running 'npx storybook automigrate'
+
+The automigrations try to migrate common patterns in your project, but might not contain everything needed to migrate to the latest version of Storybook.
+
+Please check the changelog and migration guide for manual migrations and more information: https://storybook.js.org/docs/migration-guide?ref=upgrade
+And reach out on Discord if you need help: https://discord.gg/storybook
+[16:55:49.925] [INFO] 
+[16:55:49.936] [INFO] Installing dependencies...
+[16:55:49.936] [INFO] install-dependencies-task-start: Installing dependencies...
+[16:55:49.937] [INFO] Checking the health of your Storybook..
+[16:55:49.937] [DEBUG] Getting Storybook info...
+[16:55:49.937] [DEBUG] Loading main config...
+[16:55:49.941] [DEBUG] Getting stories paths...
+[16:55:49.941] [DEBUG] Getting package manager...
+[16:55:49.941] [DEBUG] Getting Storybook version...
+[16:55:50.452] [INFO] WARN  `node_modules` is present. Lockfile only installation will make it out-of-date
+[16:55:50.460] [INFO] install-dependencies-task: WARN  `node_modules` is present. Lockfile only installation will make it
+out-of-date
+[16:55:50.484] [INFO] Progress: resolved 1, reused 0, downloaded 0, added 0
+[16:55:50.491] [INFO] install-dependencies-task: Progress: resolved 1, reused 0, downloaded 0, added 0
+[16:55:50.618] [WARN] apps/radix-storybook/.storybook: 1 issue found
+[16:55:50.618] [INFO] You are currently using Storybook 9.1.4 but you have packages which are incompatible with it:
+
+- @chromatic-com/storybook@3.2.6 which depends on ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
+
+Please consider updating your packages or contacting the maintainers for compatibility details.
+
+For more on Storybook 9 compatibility, see the linked GitHub issue:
+https://github.com/storybookjs/storybook/issues/30944
+[16:55:50.618] [INFO] Incompatible Packages
+[16:55:50.618] [INFO] You are currently using Storybook 9.1.4 but you have packages which are incompatible with it:
+
+- @chromatic-com/storybook@3.2.6 which depends on ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
+
+Please consider updating your packages or contacting the maintainers for compatibility details.
+
+For more on Storybook 9 compatibility, see the linked GitHub issue:
+https://github.com/storybookjs/storybook/issues/30944
+[16:55:50.618] [INFO] Storybook doctor is complete!
+[16:55:50.618] [INFO] You can always recheck the health of your project(s) by running:
+npx storybook doctor
