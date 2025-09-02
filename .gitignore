@@ -2,6 +2,7 @@
 .firebase
 .vercel
 
+debug-storybook.log
 documentation.json
 dependency-graph.png
 
