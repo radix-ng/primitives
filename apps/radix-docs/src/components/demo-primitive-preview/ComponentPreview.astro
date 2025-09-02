@@ -3,10 +3,10 @@ import path from 'path';
 import { readFileSync } from 'fs';
 
 import { cn } from '@/utils/utils';
-import { DemoLoaderComponent } from './demo-loader.component';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '../tabs';
-import { CodeButton } from '@/components/code-editor/code-button.ts';
-import { LlmsButton } from '@/components/code-editor/llms-button.ts';
+import { DemoLoaderComponent } from '@/components/demo-primitive-preview/demo-loader.component';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/tabs';
+import { CodeButton } from '@/components/code-editor/code-button';
+import { LlmsButton } from '@/components/code-editor/llms-button';
 
 export interface Props {
     name: string;
@@ -73,8 +73,8 @@ const llmsUrl = `${basePath}/llms.txt`;
                         CSS
                     </TabsTrigger>
                     <div class="ml-auto flex items-center gap-2">
-                        <LlmsButton {...{ llmsUrl }} client:visible />
-                        <CodeButton {...{ code, name, css }} client:visible />
+                        <LlmsButton {...{ llmsUrl }} client:only="angular" />
+                        <CodeButton {...{ code, name, css }} client:only="angular" />
                     </div>
                 </TabsList>
             </div>

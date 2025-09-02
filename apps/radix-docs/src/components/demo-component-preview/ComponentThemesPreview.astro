@@ -1,6 +1,4 @@
 ---
-import path from 'path';
-import { readFileSync } from 'fs';
 import { DemoThemesLoaderComponent } from './demo-themes-loader.component';
 
 export interface Props {
@@ -9,20 +7,6 @@ export interface Props {
 }
 
 const { name, file } = Astro.props;
-
-async function loadCode(name: string, file: string) {
-    const filename = path.join(process.cwd(), 'src', 'demos', 'components', `${name}`, `${file}.ts`);
-
-    const code = readFileSync(filename, 'utf-8')
-        .toString()
-        .replace(/export\s+default\s+.*;\s*/, '');
-
-    return {
-        code
-    };
-}
-
-const { code } = await loadCode(name, file);
 ---
 
 <div class="rt-Box rt-r-my-5">

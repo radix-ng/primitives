@@ -7,7 +7,6 @@ import { demos } from '@/demos/components';
 
 @Component({
     selector: 'empty-themes-component',
-    standalone: true,
     imports: [NgComponentOutlet, AsyncPipe],
     template: `
         @let componentRender = this.component() | async;
@@ -22,6 +21,7 @@ import { demos } from '@/demos/components';
 export class DemoThemesLoaderComponent {
     readonly name = input<string>();
     readonly file = input<string>();
+
     demos = demos;
 
     component = computed(async () => {

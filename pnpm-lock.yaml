@@ -376,8 +376,8 @@ importers:
         specifier: ^3.14.9
         version: 3.14.9
       '@analogjs/astro-angular':
-        specifier: 2.0.0-alpha.9
-        version: 2.0.0-alpha.9(7w7pzoaq6k634574gbfpmoi24e)
+        specifier: 2.0.0-alpha.18
+        version: 2.0.0-alpha.18(7w7pzoaq6k634574gbfpmoi24e)
       '@astrojs/alpinejs':
         specifier: ^0.4.8
         version: 0.4.8(@types/alpinejs@3.13.11)(alpinejs@3.14.9)
@@ -385,7 +385,7 @@ importers:
         specifier: ^0.9.4
         version: 0.9.4(prettier-plugin-astro@0.14.1)(prettier@3.6.2)(typescript@5.8.3)
       '@astrojs/mdx':
-        specifier: ^4.2.6
+        specifier: ^4.3.4
         version: 4.3.4(astro@5.13.5(@types/node@20.19.11)(@vercel/functions@2.2.13)(encoding@0.1.13)(jiti@2.5.1)(less@4.4.1)(rollup@4.50.0)(sass-embedded@1.91.0)(sass@1.91.0)(terser@5.44.0)(typescript@5.8.3)(yaml@2.8.1))
       '@astrojs/sitemap':
         specifier: ^3.3.1
@@ -415,7 +415,7 @@ importers:
         specifier: ^3.14.9
         version: 3.14.9
       astro:
-        specifier: ^5.7.11
+        specifier: ^5.13.5
         version: 5.13.5(@types/node@20.19.11)(@vercel/functions@2.2.13)(encoding@0.1.13)(jiti@2.5.1)(less@4.4.1)(rollup@4.50.0)(sass-embedded@1.91.0)(sass@1.91.0)(terser@5.44.0)(typescript@5.8.3)(yaml@2.8.1)
       astro-auto-import:
         specifier: ^0.4.4
@@ -443,7 +443,7 @@ importers:
         specifier: ^20.2.3
         version: 20.2.3
       '@astrojs/markdown-remark':
-        specifier: ^6.3.1
+        specifier: ^6.3.6
         version: 6.3.6
       '@shikijs/compat':
         specifier: ^1.29.2
@@ -674,8 +674,8 @@ packages:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
-  '@analogjs/astro-angular@2.0.0-alpha.9':
-    resolution: {integrity: sha512-vMhLLFN5IUT55hbT6lqKvQLyJ8+XgehsAg9FQZdMjNQG1Q95dUKRB4NaHMs6hRwtD2YitsVdDbv2Bo2nDnQ8eQ==}
+  '@analogjs/astro-angular@2.0.0-alpha.18':
+    resolution: {integrity: sha512-4JkmVmpYFez95/eXEbrGJnj2+tADkYbB7Lo0svjdonqu7IdmqizCWl9DlPKyFDtUlluSVNkxdHVH488bALo0jA==}
     peerDependencies:
       '@angular-devkit/build-angular': '>=16.0.0'
       '@angular/animations': '>=16.0.0'
@@ -14066,7 +14066,7 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.30
 
-  '@analogjs/astro-angular@2.0.0-alpha.9(7w7pzoaq6k634574gbfpmoi24e)':
+  '@analogjs/astro-angular@2.0.0-alpha.18(7w7pzoaq6k634574gbfpmoi24e)':
     dependencies:
       '@analogjs/vite-plugin-angular': 2.0.0-alpha.18(@angular-devkit/build-angular@20.2.1(2hftl5j5cgcfts3kp3cmnw5c2a))(@angular/build@20.2.1(qlls6m5ftax7nqeoqd7zkqx5zu))
       '@angular-devkit/build-angular': 20.2.1(2hftl5j5cgcfts3kp3cmnw5c2a)
