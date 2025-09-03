@@ -1,4 +1,4 @@
-import { computed, Directive, effect, ElementRef, input, signal } from '@angular/core';
+import { computed, Directive, effect, ElementRef, inject, input, signal } from '@angular/core';
 import { SegmentPart, useDateField } from '@radix-ng/primitives/core';
 import { injectDateFieldsRootContext } from './date-field-context.token';
 
@@ -19,6 +19,8 @@ import { injectDateFieldsRootContext } from './date-field-context.token';
     }
 })
 export class RdxDateFieldInputDirective {
+    private readonly elementRef = inject(ElementRef);
+
     private readonly rootContext = injectDateFieldsRootContext();
 
     /**
@@ -81,7 +83,7 @@ export class RdxDateFieldInputDirective {
      */
     handleSegmentKeydown: (e: KeyboardEvent) => void;
 
-    constructor(private el: ElementRef) {
+    constructor() {
         effect(() => {
             const { handleSegmentClick, handleSegmentKeydown } = this.fieldData();
             this.handleSegmentKeydown = handleSegmentKeydown;
@@ -91,7 +93,7 @@ export class RdxDateFieldInputDirective {
         effect(() => {
             const attrs = this.attributes();
             Object.entries(attrs).forEach(([attr, value]) => {
-                this.el.nativeElement.setAttribute(attr, String(value));
+                this.elementRef.nativeElement.setAttribute(attr, String(value));
             });
         });
     }

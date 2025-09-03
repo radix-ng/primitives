@@ -123,7 +123,6 @@ export const Preselection: Story = {
 };
 
 export const Disabled: Story = {
-    name: 'Disabled',
     render: () => ({
         template: html`
             <label class="Label" rdxLabel htmlFor="airplane-mode-disabled">

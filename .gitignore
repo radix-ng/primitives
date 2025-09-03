@@ -2,6 +2,7 @@
 .firebase
 .vercel
 
+debug-storybook.log
 documentation.json
 dependency-graph.png
 
@@ -68,3 +69,4 @@ yarn-error.log*
 esm
 
 .cursor/rules/nx-rules.mdc
+.github/instructions/nx.instructions.md

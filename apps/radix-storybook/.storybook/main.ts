@@ -1,5 +1,9 @@
 import type { StorybookConfig } from '@storybook/angular';
+import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
 import remarkGfm from 'remark-gfm';
+
+const require = createRequire(import.meta.url);
 
 const config: StorybookConfig = {
     stories: [
@@ -9,9 +13,8 @@ const config: StorybookConfig = {
     ],
 
     addons: [
-        '@storybook/addon-essentials',
         {
-            name: '@storybook/addon-docs',
+            name: getAbsolutePath('@storybook/addon-docs'),
             options: {
                 mdxPluginOptions: {
                     mdxCompileOptions: {
@@ -20,29 +23,23 @@ const config: StorybookConfig = {
                 }
             }
         },
-        {
-            name: '@storybook/addon-storysource',
-            options: {
-                sourceLoaderOptions: {
-                    injectStoryParameters: false
-                }
-            }
-        },
-        '@storybook/addon-backgrounds',
-        '@chromatic-com/storybook',
-        '@storybook/addon-mdx-gfm'
+        getAbsolutePath('@chromatic-com/storybook')
     ],
 
     framework: {
-        name: '@storybook/angular',
+        name: getAbsolutePath('@storybook/angular'),
         options: {}
     },
 
     core: {
-        disableTelemetry: true
+        disableTelemetry: false
     },
 
     docs: {}
 };
 
 export default config;
+
+function getAbsolutePath(value: string): any {
+    return dirname(require.resolve(join(value, 'package.json')));
+}

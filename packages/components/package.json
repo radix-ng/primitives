@@ -2,9 +2,9 @@
     "name": "@radix-ng/components",
     "version": "0.0.51",
     "peerDependencies": {
-        "@angular/common": "^19.2.4",
-        "@angular/core": "^19.2.4",
-        "@radix-ng/primitives": "^0.20.2",
+        "@angular/common": "^20.2.3",
+        "@angular/core": "^20.2.3",
+        "@radix-ng/primitives": "workspace:*",
         "classnames": "^2.5.1"
     },
     "devDependencies": {

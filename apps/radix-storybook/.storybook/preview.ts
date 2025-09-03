@@ -35,7 +35,9 @@ const preview: Preview = {
                 unsafeTocbotOptions: {
                     orderedList: false
                 }
-            }
+            },
+
+            codePanel: true
         },
         backgrounds: {
             default: 'blue',

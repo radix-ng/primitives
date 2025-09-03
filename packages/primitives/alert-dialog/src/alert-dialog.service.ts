@@ -1,20 +1,20 @@
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
-import { Injectable, TemplateRef, ViewContainerRef } from '@angular/core';
+import { inject, Injectable, TemplateRef, ViewContainerRef } from '@angular/core';
 
 @Injectable({
     providedIn: 'root'
 })
 export class RdxAlertDialogService {
     private overlayRef: OverlayRef | null | undefined;
+    private readonly overlay = inject(Overlay);
+
     private dialogContent:
         | {
               viewContainerRef: ViewContainerRef;
               template: TemplateRef<any>;
           }
         | undefined;
-
-    constructor(private overlay: Overlay) {}
 
     setDialogContent(viewContainerRef: ViewContainerRef, template: TemplateRef<any>) {
         this.dialogContent = { viewContainerRef, template };
