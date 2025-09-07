@@ -30,6 +30,8 @@ export type VisuallyHidden = 'focusable' | 'fully-hidden';
             clipPath: 'inset(50%)',
             whiteSpace: 'nowrap',
             wordWrap: 'normal',
+            top: '-1px',
+            left: '-1px'
         }`,
         '[style.display]': 'feature() === "focusable" ? "inline-block" : "none"'
     }
