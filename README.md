@@ -1,7 +1,9 @@
 # Radix Angular
 
-[![downloads](https://img.shields.io/npm/dm/@radix-ng/primitives.svg?style=flat-round)](https://www.npmjs.com/package/@radix-ng/primitives)
-[![Discord Chat](https://img.shields.io/discord/1231525968586346567.svg?color=5865F2&logo=discord&logoColor=FFFFFF)](https://discord.gg/NaJb2XRWX9)
+[![Build Size](https://img.shields.io/bundlephobia/minzip/@radix-ng/primitives@latest?label=bundle%20size&style=flat&colorA=000000&colorB=000000)](https://bundlephobia.com/result?p=@radix-ng/primitives@latest)
+[![Version](https://img.shields.io/npm/v/@radix-ng/primitives?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/@radix-ng/primitives)
+[![Downloads](https://img.shields.io/npm/dm/@radix-ng/primitives.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/@radix-ng/primitives)
+[![Discord Chat](https://img.shields.io/discord/1231525968586346567?style=flat&logo=discord&logoColor=fff&color=000)](https://discord.gg/NaJb2XRWX9)
 
 > It is very important for me to maintain API compatibility provided by the Radix primitives.
 
@@ -10,7 +12,7 @@
 Radix Primitives is a low-level UI component library with a focus on accessibility, customization and developer experience.
 You can use these components either as the base layer of your design system, or adopt them incrementally.
 
-## Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/categories).
+Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/categories).
 
 ## Documentation
 
@@ -103,10 +105,6 @@ You can use these components either as the base layer of your design system, or 
 ✅ Completed
 🚀 In Progress
 🛠 In Review
-
-### Forms
-
-- [ ] validations framework – [https://vestjs.dev/](https://vestjs.dev/), [Angular example](https://github.com/simplifiedcourses/ngx-vest-forms)
 
 ### DataGrid
 
