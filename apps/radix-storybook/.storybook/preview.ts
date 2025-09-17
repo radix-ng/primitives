@@ -40,17 +40,14 @@ const preview: Preview = {
             codePanel: true
         },
         backgrounds: {
-            default: 'blue',
-            values: [
-                {
-                    name: 'blue',
+            options: {
+                dark: { name: 'Dark', value: '#333' },
+                light: { name: 'Light', value: '#F7F9F2' },
+                blue: {
+                    name: 'Radix',
                     value: 'linear-gradient(330deg,color(display-p3 0.523 0.318 0.751) 0,color(display-p3 0.276 0.384 0.837) 100%)'
-                },
-                {
-                    name: 'white',
-                    value: '#ffffff'
                 }
-            ]
+            }
         },
         options: {
             storySort: {
@@ -58,6 +55,10 @@ const preview: Preview = {
                 order: ['Overview', ['Introduction', 'Installation'], 'Primitives']
             }
         }
+    },
+
+    initialGlobals: {
+        backgrounds: { value: 'blue' }
     },
 
     tags: ['autodocs']
