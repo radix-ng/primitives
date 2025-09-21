@@ -9,8 +9,8 @@ let idIterator = 0;
     selector: 'label[rdxLabel]',
     exportAs: 'rdxLabel',
     host: {
-        '[attr.id]': 'this.elementId()',
-        '[attr.for]': 'htmlFor ? htmlFor() : null',
+        '[attr.id]': 'elementId()',
+        '[attr.for]': 'htmlFor() ? htmlFor() : undefined',
         '(mousedown)': 'onMouseDown($event)'
     }
 })
