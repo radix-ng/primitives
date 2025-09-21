@@ -1,157 +1,101 @@
-import { booleanAttribute, Directive, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { ControlValueAccessor } from '@angular/forms';
-import { provideToken, provideValueAccessor } from '@radix-ng/primitives/core';
-import { RdxCheckboxToken } from './checkbox.token';
+import { BooleanInput } from '@angular/cdk/coercion';
+import { booleanAttribute, computed, Directive, inject, input } from '@angular/core';
+import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
+import { createContext, RdxControlValueAccessor } from '@radix-ng/primitives/core';
 
-export type CheckboxState = 'unchecked' | 'checked' | 'indeterminate';
+export type CheckedState = boolean | 'indeterminate';
+
+export const [injectCheckboxRootContext, provideCheckboxRootContext] = createContext<any>('CheckboxRootContext');
+
+const rootContext = () => {
+    const checkbox = inject(RdxCheckboxRootDirective);
+    const controlValueAccessor = inject<RdxControlValueAccessor<CheckedState | undefined>>(RdxControlValueAccessor);
+
+    return {
+        checked: controlValueAccessor.value,
+        disabled: controlValueAccessor.disabled,
+        required: checkbox.required,
+        value: checkbox.value,
+        name: checkbox.name,
+        form: checkbox.form,
+        state: computed(() => {
+            const checked = controlValueAccessor.value();
+
+            if (checked === 'indeterminate') {
+                return checked;
+            }
+
+            return checked ? 'checked' : 'unchecked';
+        }),
+        toggle() {
+            checkbox.toggle();
+        }
+    };
+};
 
 /**
  * @group Components
  */
 @Directive({
     selector: '[rdxCheckboxRoot]',
-    providers: [
-        provideToken(RdxCheckboxToken, RdxCheckboxRootDirective),
-        provideValueAccessor(RdxCheckboxRootDirective)
-    ],
-    host: {
-        '[disabled]': 'disabled',
-        '[attr.data-disabled]': 'disabled ? "" : null',
-        '[attr.data-state]': 'state',
-
-        '(keydown)': 'onKeyDown($event)',
-        '(click)': 'onClick($event)',
-        '(blur)': 'onBlur()'
-    }
+    providers: [provideCheckboxRootContext(rootContext)],
+    hostDirectives: [
+        {
+            directive: RdxControlValueAccessor,
+            inputs: ['value:checked', 'disabled']
+        }
+    ]
 })
-export class RdxCheckboxRootDirective implements ControlValueAccessor, OnChanges {
+export class RdxCheckboxRootDirective {
+    private readonly controlValueAccessor = inject(RdxControlValueAccessor);
+
     /**
      * The controlled checked state of the checkbox. Must be used in conjunction with onCheckedChange.
      * @group Props
      */
-    @Input({ transform: booleanAttribute }) checked = false;
+    readonly checked = input<CheckedState, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
-     * Defines whether the checkbox is indeterminate.
+     *
      * @group Props
      */
-    @Input({ transform: booleanAttribute }) indeterminate = false;
-
-    /**
-     * Defines whether the checkbox is disabled.
-     * @group Props
-     */
-    @Input({ transform: booleanAttribute }) disabled = false;
+    readonly value = input<string>('on');
 
     /**
      * @group Props
      */
-    @Input({ transform: booleanAttribute }) required = false;
+    readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /**
+     * @group Props
+     */
+    readonly required = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /**
+     * Name of the form control. Submitted with the form as part of a name/value pair.
+     * @group Props
+     */
+    readonly name = input<string>();
+
+    /**
+     * Associates the control with a form element.
+     * @group Props
+     */
+    readonly form = input<string>();
 
     /**
      * Event emitted when the checkbox checked state changes.
      * @group Emits
      */
-    @Output() readonly checkedChange = new EventEmitter<boolean>();
+    readonly onCheckedChange = outputFromObservable(outputToObservable(this.controlValueAccessor.valueChange));
 
-    /**
-     * Event emitted when the indeterminate state changes.
-     * @group Emits
-     */
-    @Output() readonly indeterminateChange = new EventEmitter<boolean>();
+    toggle() {
+        const checked = this.controlValueAccessor.value();
 
-    /**
-     * Determine the state
-     */
-    get state(): CheckboxState {
-        if (this.indeterminate) {
-            return 'indeterminate';
-        }
-        return this.checked ? 'checked' : 'unchecked';
-    }
-
-    /**
-     * Store the callback function that should be called when the checkbox checked state changes.
-     * @internal
-     */
-    private onChange?: (checked: boolean) => void;
-
-    /**
-     * Store the callback function that should be called when the checkbox is blurred.
-     * @internal
-     */
-    private onTouched?: () => void;
-
-    protected onKeyDown(event: KeyboardEvent): void {
-        // According to WAI ARIA, Checkboxes don't activate on enter keypress
-        if (event.key === 'Enter') {
-            event.preventDefault();
-        }
-    }
-
-    protected onClick($event: MouseEvent): void {
-        if (this.disabled) {
-            return;
+        if (checked === 'indeterminate') {
+            this.controlValueAccessor.setValue(true);
         }
 
-        this.checked = this.indeterminate ? true : !this.checked;
-        this.checkedChange.emit(this.checked);
-        this.onChange?.(this.checked);
-
-        if (this.indeterminate) {
-            this.indeterminate = false;
-            this.indeterminateChange.emit(this.indeterminate);
-        }
-
-        $event.preventDefault();
-    }
-
-    protected onBlur(): void {
-        this.onTouched?.();
-    }
-
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes['checked'] && !changes['checked'].isFirstChange()) {
-            this.checkedChange.emit(this.checked);
-        }
-        if (changes['indeterminate'] && !changes['indeterminate'].isFirstChange()) {
-            this.indeterminateChange.emit(this.indeterminate);
-        }
-    }
-
-    /**
-     * Sets the checked state of the checkbox.
-     * @param checked The checked state of the checkbox.
-     * @internal
-     */
-    writeValue(checked: boolean): void {
-        this.checked = checked;
-    }
-
-    /**
-     * Registers a callback function that should be called when the checkbox checked state changes.
-     * @param fn The callback function.
-     * @internal
-     */
-    registerOnChange(fn: (checked: boolean) => void): void {
-        this.onChange = fn;
-    }
-
-    /**
-     * Registers a callback function that should be called when the checkbox is blurred.
-     * @param fn The callback function.
-     * @internal
-     */
-    registerOnTouched(fn: () => void): void {
-        this.onTouched = fn;
-    }
-
-    /**
-     * Sets the disabled state of the checkbox.
-     * @param isDisabled The disabled state of the checkbox.
-     * @internal
-     */
-    setDisabledState(isDisabled: boolean): void {
-        this.disabled = isDisabled;
+        this.controlValueAccessor.setValue(!checked);
     }
 }

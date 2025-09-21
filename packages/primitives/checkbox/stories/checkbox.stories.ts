@@ -1,11 +1,12 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { Check, LucideAngularModule, Minus } from 'lucide-angular';
 import { RdxLabelDirective } from '../../label';
+import { RdxCheckboxButtonDirective } from '../src/checkbox-button.directive';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input.directive';
 import { RdxCheckboxRootDirective } from '../src/checkbox.directive';
-import { CheckboxReactiveFormsExampleComponent } from './checkbox-group.component';
-import { CheckboxIndeterminateComponent } from './checkbox-indeterminate.component';
+import { CheckboxReactiveFormsExampleComponent } from './checkbox-forms';
+import { CheckboxIndeterminate } from './checkbox-indeterminate';
 
 const html = String.raw;
 
@@ -16,12 +17,13 @@ export default {
             imports: [
                 RdxLabelDirective,
                 RdxCheckboxRootDirective,
+                RdxCheckboxButtonDirective,
                 RdxCheckboxIndicatorDirective,
                 RdxCheckboxInputDirective,
                 LucideAngularModule,
                 LucideAngularModule.pick({ Check, Minus }),
                 CheckboxReactiveFormsExampleComponent,
-                CheckboxIndeterminateComponent
+                CheckboxIndeterminate
             ]
         }),
         componentWrapperDecorator(
@@ -45,20 +47,15 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: html`
-            <form>
-                <div style="display: flex; align-items: center;">
-                    <button class="CheckboxRoot" rdxCheckboxRoot [(checked)]="checked">
-                        <lucide-angular
-                            class="CheckboxIndicator"
-                            rdxCheckboxIndicator
-                            size="16"
-                            name="check"
-                        ></lucide-angular>
-                        <input id="r1" rdxCheckboxInput type="checkbox" />
+            <div style="display: flex; align-items: center;">
+                <div rdxCheckboxRoot>
+                    <button class="CheckboxRoot" id="checkbox-1" rdxCheckboxButton>
+                        <lucide-angular class="CheckboxIndicator" rdxCheckboxIndicator size="16" name="check" />
                     </button>
-                    <label class="Label" rdxLabel htmlFor="r1">Check Item</label>
+                    <input rdxCheckboxInput />
                 </div>
-            </form>
+                <label class="Label" rdxLabel htmlFor="checkbox-1">Accept terms and conditions.</label>
+            </div>
 
             <style>
                 button {
@@ -103,11 +100,10 @@ export const Default: Story = {
     })
 };
 
-export const CheckboxGroup: Story = {
-    name: 'With Reactive forms',
+export const ReactiveForms: Story = {
     render: () => ({
         template: html`
-            <checkbox-groups-forms-example></checkbox-groups-forms-example>
+            <checkbox-groups-forms-example />
         `
     })
 };
@@ -115,7 +111,7 @@ export const CheckboxGroup: Story = {
 export const Indeterminate: Story = {
     render: () => ({
         template: html`
-            <checkbox-indeterminate-example></checkbox-indeterminate-example>
+            <checkbox-indeterminate-example />
         `
     })
 };

@@ -1,38 +1,45 @@
-import { computed, Directive, input } from '@angular/core';
-import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
-import { injectCheckbox } from './checkbox.token';
+import { afterNextRender, DestroyRef, Directive, ElementRef, inject } from '@angular/core';
+import { injectCheckboxRootContext } from './checkbox.directive';
 
 @Directive({
     selector: 'input[rdxCheckboxInput]',
-    hostDirectives: [{ directive: RdxVisuallyHiddenInputDirective, inputs: ['feature: "fully-hidden"'] }],
     host: {
         type: 'checkbox',
         tabindex: '-1',
-        '[checked]': 'checkbox.checked',
-        '[disabled]': 'checkbox.disabled',
-        '[required]': 'checkbox.required',
-        '[attr.id]': 'elementId()',
-        '[attr.aria-hidden]': 'true',
-        '[attr.aria-checked]': 'checkbox.indeterminate ? "mixed" : checkbox.checked',
-        '[attr.aria-required]': 'checkbox.required ? "" : null',
-        '[attr.data-state]': 'checkbox.state',
-        '[attr.data-disabled]': 'checkbox.disabled ? "" : null',
-        '[attr.value]': 'value()'
+        'aria-hidden': 'true',
+        '[attr.name]': 'context.name() || undefined',
+        '[attr.checked]': 'context.checked()',
+        '[attr.form]': 'context.form() || undefined',
+        '[value]': 'context.value()',
+        '[required]': 'context.required() || undefined',
+        '[disabled]': 'context.disabled()',
+        '[style]': `{
+          position: 'absolute',
+          pointerEvents: 'none',
+          opacity: 0,
+          margin: 0,
+          inset: 0,
+          transform: 'translateX(-100%)',
+        }`
     }
 })
 export class RdxCheckboxInputDirective {
-    protected readonly checkbox = injectCheckbox();
+    protected readonly context = injectCheckboxRootContext();
 
-    readonly id = input<string>();
+    constructor() {
+        const elementRef = inject<ElementRef<HTMLInputElement>>(ElementRef);
+        const destroyRef = inject(DestroyRef);
 
-    protected readonly elementId = computed(() => (this.id() ? this.id() : `rdx-checkbox-${this.id()}`));
+        afterNextRender(() => {
+            const mutationObserver = new MutationObserver(() => {
+                elementRef.nativeElement.dispatchEvent(new Event('click', { bubbles: true }));
+            });
+            mutationObserver.observe(elementRef.nativeElement, {
+                attributes: true,
+                attributeFilter: ['checked']
+            });
 
-    protected readonly value = computed(() => {
-        const state = this.checkbox.state;
-        if (state === 'indeterminate') {
-            return '';
-        }
-
-        return state ? 'on' : 'off';
-    });
+            destroyRef.onDestroy(() => mutationObserver.disconnect());
+        });
+    }
 }

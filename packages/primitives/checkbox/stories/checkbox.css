@@ -1,13 +1,3 @@
-.Input {
-    transform: translateX(-100%);
-    position: absolute;
-    pointer-events: none;
-    opacity: 0;
-    margin: 0;
-    width: 25px;
-    height: 25px;
-}
-
 .CheckboxRoot {
     all: unset;
     background-color: white;

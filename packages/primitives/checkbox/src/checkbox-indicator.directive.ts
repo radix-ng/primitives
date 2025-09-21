@@ -1,15 +1,15 @@
 import { Directive } from '@angular/core';
-import { injectCheckbox } from './checkbox.token';
+import { injectCheckboxRootContext } from './checkbox.directive';
 
 @Directive({
     selector: '[rdxCheckboxIndicator]',
     host: {
-        '[style.pointer-events]': '"none"',
-        '[attr.aria-checked]': 'checkbox.indeterminate ? "mixed" : checkbox.checked',
-        '[attr.data-state]': 'checkbox.state',
-        '[attr.data-disabled]': 'checkbox.disabled ? "" : null'
+        '[attr.data-state]': 'context.state()',
+        '[attr.data-disabled]': 'context.disabled() ? "" : undefined',
+        '[hidden]': '!context.checked()',
+        '[style.pointer-events]': '"none"'
     }
 })
 export class RdxCheckboxIndicatorDirective {
-    protected readonly checkbox = injectCheckbox();
+    protected readonly context = injectCheckboxRootContext();
 }
