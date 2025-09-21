@@ -1,4 +1,3 @@
-import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
 import {
     RdxSelectComponent,
     RdxSelectContentDirective,
@@ -27,15 +26,13 @@ export default {
                 RdxSelectItemIndicatorDirective,
                 RdxSelectItemDirective,
                 RdxSelectGroupDirective,
-                BrowserAnimationsModule,
                 RdxSelectContentDirective,
                 RdxSelectTriggerDirective,
                 RdxSelectValueDirective,
                 RdxSelectIconDirective,
                 LucideAngularModule,
                 LucideAngularModule.pick({ ChevronDown, Check })
-            ],
-            providers: [provideAnimations()]
+            ]
         }),
         componentWrapperDecorator(
             (story) => html`

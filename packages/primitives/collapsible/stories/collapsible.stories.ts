@@ -1,4 +1,3 @@
-import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { LucideAngularModule, UnfoldVertical, X } from 'lucide-angular';
 import { RdxCollapsibleContentPresenceDirective } from '../src/collapsible-content-presence.directive';
@@ -21,11 +20,9 @@ export default {
                 RdxCollapsibleContentPresenceDirective,
                 RdxCollapsibleExternalTriggeringComponent,
                 RdxCollapsibleAnimationComponent,
-                BrowserAnimationsModule,
                 LucideAngularModule,
                 LucideAngularModule.pick({ X, UnfoldVertical })
-            ],
-            providers: [provideAnimations()]
+            ]
         }),
         componentWrapperDecorator(
             (story) => html`
