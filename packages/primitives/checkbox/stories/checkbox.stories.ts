@@ -1,10 +1,10 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { Check, LucideAngularModule, Minus } from 'lucide-angular';
 import { RdxLabelDirective } from '../../label';
-import { RdxCheckboxButtonDirective } from '../src/checkbox-button.directive';
-import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
-import { RdxCheckboxInputDirective } from '../src/checkbox-input.directive';
-import { RdxCheckboxRootDirective } from '../src/checkbox.directive';
+import { RdxCheckboxRootDirective } from '../src/checkbox';
+import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
+import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
+import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import { CheckboxReactiveFormsExampleComponent } from './checkbox-forms';
 import { CheckboxIndeterminate } from './checkbox-indeterminate';
 

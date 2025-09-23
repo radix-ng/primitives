@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { CheckedState, RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { LucideAngularModule } from 'lucide-angular';
-import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator.directive';
-import { RdxCheckboxInputDirective } from '../src/checkbox-input.directive';
-import { RdxCheckboxRootDirective } from '../src/checkbox.directive';
+import { RdxCheckboxRootDirective } from '../src/checkbox';
+import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
+import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 
 @Component({
     selector: 'checkbox-indeterminate-example',

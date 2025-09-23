@@ -1,5 +1,5 @@
 import { afterNextRender, DestroyRef, Directive, ElementRef, inject } from '@angular/core';
-import { injectCheckboxRootContext } from './checkbox.directive';
+import { injectCheckboxRootContext } from './checkbox';
 
 @Directive({
     selector: 'input[rdxCheckboxInput]',
@@ -26,20 +26,20 @@ import { injectCheckboxRootContext } from './checkbox.directive';
 export class RdxCheckboxInputDirective {
     protected readonly context = injectCheckboxRootContext();
 
-    constructor() {
-        const elementRef = inject<ElementRef<HTMLInputElement>>(ElementRef);
-        const destroyRef = inject(DestroyRef);
+    private readonly elementRef = inject<ElementRef<HTMLInputElement>>(ElementRef);
+    private readonly destroyRef = inject(DestroyRef);
 
+    constructor() {
         afterNextRender(() => {
             const mutationObserver = new MutationObserver(() => {
-                elementRef.nativeElement.dispatchEvent(new Event('click', { bubbles: true }));
+                this.elementRef.nativeElement.dispatchEvent(new Event('click', { bubbles: true }));
             });
-            mutationObserver.observe(elementRef.nativeElement, {
+            mutationObserver.observe(this.elementRef.nativeElement, {
                 attributes: true,
                 attributeFilter: ['checked']
             });
 
-            destroyRef.onDestroy(() => mutationObserver.disconnect());
+            this.destroyRef.onDestroy(() => mutationObserver.disconnect());
         });
     }
 }

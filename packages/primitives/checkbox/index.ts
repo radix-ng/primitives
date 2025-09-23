@@ -1,16 +1,16 @@
 import { NgModule } from '@angular/core';
-import { RdxCheckboxButtonDirective } from './src/checkbox-button.directive';
-import { RdxCheckboxIndicatorDirective } from './src/checkbox-indicator.directive';
-import { RdxCheckboxInputDirective } from './src/checkbox-input.directive';
-import { RdxCheckboxRootDirective } from './src/checkbox.directive';
+import { RdxCheckboxRootDirective } from './src/checkbox';
+import { RdxCheckboxButtonDirective } from './src/checkbox-button';
+import { RdxCheckboxIndicatorDirective } from './src/checkbox-indicator';
+import { RdxCheckboxInputDirective } from './src/checkbox-input';
 
-export * from './src/checkbox-button.directive';
-export * from './src/checkbox-indicator.directive';
-export * from './src/checkbox-input.directive';
-export * from './src/checkbox.directive';
-export type { CheckedState } from './src/checkbox.directive';
+export * from './src/checkbox';
+export type { CheckedState } from './src/checkbox';
+export * from './src/checkbox-button';
+export * from './src/checkbox-indicator';
+export * from './src/checkbox-input';
 
-const _imports = [
+export const checkboxImports = [
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective,
     RdxCheckboxButtonDirective,
@@ -18,7 +18,7 @@ const _imports = [
 ];
 
 @NgModule({
-    imports: [..._imports],
-    exports: [..._imports]
+    imports: [...checkboxImports],
+    exports: [...checkboxImports]
 })
 export class RdxCheckboxModule {}
