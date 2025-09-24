@@ -11,5 +11,5 @@ import { injectCheckboxRootContext } from './checkbox';
     }
 })
 export class RdxCheckboxIndicatorDirective {
-    protected readonly rootContext = injectCheckboxRootContext();
+    protected readonly rootContext = injectCheckboxRootContext()!;
 }

@@ -18,9 +18,9 @@ import { injectCheckboxRootContext } from './checkbox';
     }
 })
 export class RdxCheckboxButtonDirective {
-    protected readonly rootContext = injectCheckboxRootContext();
+    protected readonly rootContext = injectCheckboxRootContext()!;
 
-    private elementRef = inject<ElementRef<HTMLButtonElement>>(ElementRef);
+    private readonly elementRef = inject<ElementRef<HTMLButtonElement>>(ElementRef);
 
     protected clicked(event: MouseEvent) {
         this.rootContext.toggle();
