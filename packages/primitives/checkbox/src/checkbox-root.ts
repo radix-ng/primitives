@@ -1,23 +1,9 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { booleanAttribute, computed, Directive, inject, input, InputSignal, Signal } from '@angular/core';
+import { booleanAttribute, computed, Directive, inject, input } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
 import { createContext, RdxControlValueAccessor } from '@radix-ng/primitives/core';
 
 export type CheckedState = boolean | 'indeterminate';
-
-export type CheckboxRootContext = {
-    checked: Signal<CheckedState | undefined>;
-    disabled: Signal<boolean>;
-    required: Signal<boolean>;
-    value: InputSignal<string>;
-    name: InputSignal<string | undefined>;
-    form: InputSignal<string | undefined>;
-    state: Signal<'indeterminate' | 'checked' | 'unchecked'>;
-    toggle(): void;
-};
-
-export const [injectCheckboxRootContext, provideCheckboxRootContext] =
-    createContext<CheckboxRootContext>('CheckboxRootContext');
 
 const rootContext = () => {
     const checkbox = inject(RdxCheckboxRootDirective);
@@ -45,6 +31,11 @@ const rootContext = () => {
     };
 };
 
+export type CheckboxRootContext = ReturnType<typeof rootContext>;
+
+export const [injectCheckboxRootContext, provideCheckboxRootContext] =
+    createContext<CheckboxRootContext>('CheckboxRootContext');
+
 /**
  * @group Components
  */
@@ -68,16 +59,19 @@ export class RdxCheckboxRootDirective {
     readonly checked = input<CheckedState, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
+     * The value of the checkbox. This is what is submitted with the form when the checkbox is checked.
      * @group Props
      */
     readonly value = input<string>('on');
 
     /**
+     * Whether or not the checkbox button is disabled. This prevents the user from interacting with it.
      * @group Props
      */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
+     * Whether or not the checkbox is required.
      * @group Props
      */
     readonly required = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
