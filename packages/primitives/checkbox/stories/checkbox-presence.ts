@@ -1,21 +1,23 @@
 import { JsonPipe } from '@angular/common';
-import { Component, model, signal } from '@angular/core';
+import { Component, model } from '@angular/core';
 import { CheckedState, RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { LucideAngularModule } from 'lucide-angular';
+import { Check, LucideAngularModule } from 'lucide-angular';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
+import { RdxCheckboxIndicatorPresenceDirective } from '../src/checkbox-indicator-presence';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 @Component({
-    selector: 'checkbox-indeterminate-example',
+    selector: 'checkbox-presence-example',
     imports: [
         RdxLabelDirective,
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
-        LucideAngularModule,
         RdxCheckboxInputDirective,
+        RdxCheckboxIndicatorPresenceDirective,
+        LucideAngularModule,
         JsonPipe
     ],
     styleUrl: 'checkbox.css',
@@ -23,7 +25,9 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
         <div style="display: flex; align-items: center;">
             <div [checked]="checked()" (onCheckedChange)="checked.set($event)" rdxCheckboxRoot>
                 <button class="CheckboxButton" id="r1" rdxCheckboxButton>
-                    <lucide-angular class="CheckboxIndicator" [name]="iconName()" rdxCheckboxIndicator size="16" />
+                    <ng-template rdxCheckboxIndicatorPresence>
+                        <lucide-angular class="CheckboxIndicator" [img]="Check" rdxCheckboxIndicator size="16" />
+                    </ng-template>
                 </button>
                 <input rdxCheckboxInput />
             </div>
@@ -33,24 +37,9 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
         <section style="color: white">
             <p>checked state:&nbsp;{{ checked() | json }}</p>
         </section>
-
-        <button
-            class="rt-reset rt-BaseButton rt-r-size-2 rt-variant-solid rt-Button"
-            (click)="toggleIndeterminate()"
-            data-accent-color="cyan"
-        >
-            Toggle Indeterminate state
-        </button>
     `
 })
-export class CheckboxIndeterminate {
+export class CheckboxPresence {
     readonly checked = model<CheckedState>(false);
-
-    readonly iconName = signal('check');
-
-    toggleIndeterminate() {
-        this.checked() === 'indeterminate' ? this.checked.set(false) : this.checked.set('indeterminate');
-
-        this.iconName() === 'check' ? this.iconName.set('minus') : this.iconName.set('check');
-    }
+    protected readonly Check = Check;
 }
