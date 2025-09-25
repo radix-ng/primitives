@@ -64,3 +64,22 @@ Adheres to the [tri-\_state Checkbox WAI-ARIA design pattern](https://www.w3.org
 <KeyboardTable attributes={[
     { key: 'Space', description: 'Checks/unchecks the checkbox.' }
 ]} />
+
+## Managing Checked State
+
+This section covers how to manage the `checked` state of the Checkbox.
+
+```ts
+@Component({
+    template: `
+        <button (click)="myChecked.set(true)"> Uncheck </button>
+
+        <div rdxCheckboxRoot [checked]="myChecked()">
+          ...
+        </div>
+    `
+})
+export class MyCheckbox {
+    myChecked = signal(true);
+}
+```

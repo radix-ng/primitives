@@ -27,6 +27,7 @@ export class RdxCheckboxInputDirective {
     protected readonly rootContext = injectCheckboxRootContext()!;
 
     private readonly elementRef = inject<ElementRef<HTMLInputElement>>(ElementRef);
+
     private readonly destroyRef = inject(DestroyRef);
 
     constructor() {
