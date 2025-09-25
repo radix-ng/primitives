@@ -24,7 +24,7 @@ import { RdxCheckboxInputDirective } from '../src/checkbox-input';
     template: `
         <div style="display: flex; align-items: center;">
             <div [checked]="checked()" (onCheckedChange)="checked.set($event)" rdxCheckboxRoot>
-                <button class="CheckboxRoot" id="r1" rdxCheckboxButton>
+                <button class="CheckboxButton" id="r1" rdxCheckboxButton>
                     <lucide-angular class="CheckboxIndicator" [name]="iconName()" rdxCheckboxIndicator size="16" />
                 </button>
                 <input rdxCheckboxInput />

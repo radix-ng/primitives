@@ -14,7 +14,7 @@ import { RdxCheckboxInputDirective } from '../src/checkbox-input';
         <section [formGroup]="personality">
             <div style="display:flex;align-items:center; padding-bottom: 15px">
                 <div rdxCheckboxRoot formControlName="fun">
-                    <button class="CheckboxRoot" id="r1" rdxCheckboxButton>
+                    <button class="CheckboxButton" id="r1" rdxCheckboxButton>
                         <lucide-angular class="CheckboxIndicator" rdxCheckboxIndicator size="16" name="check" />
                     </button>
                     <input rdxCheckboxInput />
@@ -24,7 +24,7 @@ import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 
             <div style="display:flex;align-items:center; padding-bottom: 15px">
                 <div rdxCheckboxRoot formControlName="serious">
-                    <button class="CheckboxRoot" id="r2" rdxCheckboxButton>
+                    <button class="CheckboxButton" id="r2" rdxCheckboxButton>
                         <lucide-angular class="CheckboxIndicator" rdxCheckboxIndicator size="16" name="check" />
                     </button>
                     <input rdxCheckboxInput />
@@ -34,7 +34,7 @@ import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 
             <div style="display:flex;align-items:center; padding-bottom: 15px;">
                 <div rdxCheckboxRoot formControlName="smart" form="smart">
-                    <button class="CheckboxRoot" id="r3" rdxCheckboxButton>
+                    <button class="CheckboxButton" id="r3" rdxCheckboxButton>
                         <lucide-angular class="CheckboxIndicator" rdxCheckboxIndicator size="16" name="check" />
                     </button>
                     <input rdxCheckboxInput />

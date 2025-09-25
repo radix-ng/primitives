@@ -1,4 +1,4 @@
-.CheckboxRoot {
+.CheckboxButton {
     all: unset;
     background-color: white;
     width: 25px;
@@ -16,7 +16,7 @@
     }
 }
 
-.CheckboxRoot:focus {
+.CheckboxButton:focus {
     box-shadow: 0 0 0 2px black;
 }
 
