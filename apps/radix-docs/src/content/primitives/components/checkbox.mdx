@@ -22,26 +22,40 @@ description: A control that allows the user to toggle between checked and not ch
 ## Anatomy
 
 ```html
-<button rdxCheckboxRoot [(checked)]="checked">
-  <lucide-angular rdxCheckboxIndicator name="check" />
-  <input rdxCheckboxInput type="checkbox" />
-</button>
+<div rdxCheckboxRoot>
+    <button rdxCheckboxButton>
+      <lucide-angular rdxCheckboxIndicator name="check" />
+    </button>
+    <input rdxCheckboxInput />
+</div>
 ```
 
 ## API Reference
 
 ### Root
-`RdxCheckboxDirective`
+`RdxCheckboxRootDirective`
 
-<PropsTable name="RdxCheckboxDirective" />
+<PropsTable name="RdxCheckboxRootDirective" />
 
 <DataAttributesTable attributes={[
     { name: '[data-state]', value: '"checked" | "unchecked" | "indeterminate"' },
     { name: '[data-disabled]', value: 'Present when disabled' }
 ]} />
 
-## Indicator
-`RdxCheckboxIndicator`
+### Button
+`RdxCheckboxButtonDirective`
+
+It mirrors the checkbox state via ARIA/data attributes, toggles on click, and prevents Enter activation per WAI-ARIA.
+In forms, it stops the button's click from bubbling so only the hidden input emits the native event used for form/validator integration.
+
+<DataAttributesTable attributes={[
+    { name: '[data-state]', value: '"checked" | "unchecked" | "indeterminate"' },
+    { name: '[data-disabled]', value: 'Present when disabled' }
+]} />
+
+
+### Indicator
+`RdxCheckboxIndicatorDirective`
 
 Renders when the checkbox is in a checked or indeterminate state.
 You can style this element directly, or you can use it as a wrapper to put an icon into, or both.
@@ -51,9 +65,11 @@ You can style this element directly, or you can use it as a wrapper to put an ic
     { name: '[data-disabled]', value: 'Present when disabled' }
 ]} />
 
-## Input
-`RdxCheckboxInput`
+### Input
+`RdxCheckboxInputDirective`
 
+It keeps form-related attributes in sync and dispatches native click events when the "checked" attribute changes so forms,
+validators, and external libraries receive updates.
 
 ## Accessibility
 

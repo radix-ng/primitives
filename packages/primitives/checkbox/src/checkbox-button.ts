@@ -1,6 +1,12 @@
 import { Directive, ElementRef, inject } from '@angular/core';
 import { injectCheckboxRootContext } from './checkbox';
 
+/**
+ * Directive: rdxCheckboxButton
+ * Purpose: Turns a native <button> into an accessible checkbox control bound to the Radix Checkbox context.
+ * It mirrors the checkbox state via ARIA/data attributes, toggles on click, and prevents Enter activation per WAI-ARIA.
+ * In forms, it stops the button's click from bubbling so only the hidden input emits the native event used for form/validator integration.
+ */
 @Directive({
     selector: 'button[rdxCheckboxButton]',
     host: {

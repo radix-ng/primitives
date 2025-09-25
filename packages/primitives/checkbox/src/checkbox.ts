@@ -68,7 +68,6 @@ export class RdxCheckboxRootDirective {
     readonly checked = input<CheckedState, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
-     *
      * @group Props
      */
     readonly value = input<string>('on');

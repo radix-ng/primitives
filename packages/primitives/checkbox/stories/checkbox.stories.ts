@@ -49,7 +49,7 @@ export const Default: Story = {
         template: html`
             <div style="display: flex; align-items: center;">
                 <div rdxCheckboxRoot>
-                    <button class="CheckboxRoot" id="checkbox-1" rdxCheckboxButton>
+                    <button class="CheckboxButton" id="checkbox-1" rdxCheckboxButton>
                         <lucide-angular class="CheckboxIndicator" rdxCheckboxIndicator size="16" name="check" />
                     </button>
                     <input rdxCheckboxInput />
@@ -62,7 +62,7 @@ export const Default: Story = {
                     all: unset;
                 }
 
-                .CheckboxRoot {
+                .CheckboxButton {
                     background-color: white;
                     width: 25px;
                     height: 25px;
@@ -72,10 +72,10 @@ export const Default: Story = {
                     justify-content: center;
                     box-shadow: 0 2px 10px var(--black-a7);
                 }
-                .CheckboxRoot:hover {
+                .CheckboxButton:hover {
                     background-color: var(--violet-3);
                 }
-                .CheckboxRoot:focus {
+                .CheckboxButton:focus {
                     box-shadow: 0 0 0 2px black;
                 }
 

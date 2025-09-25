@@ -297,18 +297,6 @@
         "components": {}
     },
     "checkbox": {
-        "components": {}
-    },
-    "checkbox-button.directive": {
-        "components": {}
-    },
-    "checkbox-indicator.directive": {
-        "components": {}
-    },
-    "checkbox-input.directive": {
-        "components": {}
-    },
-    "checkbox.directive": {
         "components": {
             "RdxCheckboxRootDirective": {
                 "description": "",
@@ -318,38 +306,56 @@
                         {
                             "name": "checked",
                             "optional": false,
-                            "readonly": false,
-                            "type": "boolean",
-                            "default": "false",
-                            "defaultValue": "false",
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<CheckedState, BooleanInput>",
+                            "default": "...",
+                            "defaultValue": "...",
                             "description": "The controlled checked state of the checkbox. Must be used in conjunction with onCheckedChange."
                         },
                         {
-                            "name": "indeterminate",
+                            "name": "value",
                             "optional": false,
-                            "readonly": false,
-                            "type": "boolean",
-                            "default": "false",
-                            "defaultValue": "false",
-                            "description": "Defines whether the checkbox is indeterminate."
+                            "readonly": true,
+                            "type": "InputSignal<string>",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": ""
                         },
                         {
                             "name": "disabled",
                             "optional": false,
-                            "readonly": false,
-                            "type": "boolean",
-                            "default": "false",
-                            "defaultValue": "false",
-                            "description": "Defines whether the checkbox is disabled."
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": ""
                         },
                         {
                             "name": "required",
                             "optional": false,
-                            "readonly": false,
-                            "type": "boolean",
-                            "default": "false",
-                            "defaultValue": "false",
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "...",
+                            "defaultValue": "...",
                             "description": ""
+                        },
+                        {
+                            "name": "name",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<undefined | string>",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": "Name of the form control. Submitted with the form as part of a name/value pair."
+                        },
+                        {
+                            "name": "form",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<undefined | string>",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": "Associates the control with a form element."
                         }
                     ]
                 },
@@ -357,31 +363,27 @@
                     "description": "Defines emit that determine the behavior of the component based on a given condition or report the actions that the component takes.",
                     "values": [
                         {
-                            "name": "checkedChange",
+                            "name": "onCheckedChange",
                             "parameters": [
                                 {
                                     "name": "value",
-                                    "type": "boolean"
+                                    "type": "any"
                                 }
                             ],
                             "description": "Event emitted when the checkbox checked state changes."
-                        },
-                        {
-                            "name": "indeterminateChange",
-                            "parameters": [
-                                {
-                                    "name": "value",
-                                    "type": "boolean"
-                                }
-                            ],
-                            "description": "Event emitted when the indeterminate state changes."
                         }
                     ]
                 }
             }
         }
     },
-    "checkbox.token": {
+    "checkbox-button": {
+        "components": {}
+    },
+    "checkbox-indicator": {
+        "components": {}
+    },
+    "checkbox-input": {
         "components": {}
     },
     "collapsible": {
@@ -785,6 +787,9 @@
         }
     },
     "editable-submit-trigger": {
+        "components": {}
+    },
+    "focus-guards": {
         "components": {}
     },
     "focus-scope": {
