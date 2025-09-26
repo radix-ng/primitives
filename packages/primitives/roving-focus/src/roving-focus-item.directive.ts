@@ -14,6 +14,9 @@ import {
 import { injectRovingFocusGroupContext } from './roving-focus-group.directive';
 import { focusFirst, generateId, getFocusIntent, wrapArray } from './utils';
 
+/**
+ * @group Components
+ */
 @Directive({
     selector: '[rdxRovingFocusItem]',
     host: {
@@ -35,18 +38,24 @@ export class RdxRovingFocusItemDirective {
 
     /**
      * When false, item will not be focusable.
+     * @group Props
      */
     readonly focusableInput = input<boolean, BooleanInput>(true, { transform: booleanAttribute, alias: 'focusable' });
 
     /**
      * When `true`, item will be initially focused.
+     * @group Props
      */
     readonly activeInput = input<boolean, BooleanInput>(true, { transform: booleanAttribute, alias: 'active' });
 
+    /**
+     * @group Props
+     */
     readonly tabStopIdInput = input<string>(undefined, { alias: 'tabStopId' });
 
     /**
      * When true, shift + arrow key will allow focusing on next/previous item.
+     * @group Props
      */
     readonly allowShiftKey = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
