@@ -4,7 +4,7 @@
     }
 }
 
-.CheckboxRoot {
+.CheckboxButton {
     background-color: white;
     width: 25px;
     height: 25px;
@@ -15,11 +15,11 @@
     box-shadow: 0 2px 10px var(--black-a7);
 }
 
-.CheckboxRoot:hover {
+.CheckboxButton:hover {
     background-color: var(--violet-3);
 }
 
-.CheckboxRoot:focus {
+.CheckboxButton:focus {
     box-shadow: 0 0 0 2px black;
 }
 

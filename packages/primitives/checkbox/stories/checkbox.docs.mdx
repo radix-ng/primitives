@@ -1,5 +1,5 @@
-import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/addon-docs/blocks';
-import { RdxCheckboxRootDirective } from '../src/checkbox.directive';
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 import * as CheckboxDirectiveStories from './checkbox.stories';
 
 <Meta title="Primitives/Checkbox" />
@@ -21,27 +21,38 @@ import * as CheckboxDirectiveStories from './checkbox.stories';
 Get started with importing the directives:
 
 ```typescript
-import { RdxCheckboxDirective, RdxCheckboxInputDirective, RdxCheckboxIndicatorDirective } from '@radix-ng/primitives/checkbox';
+import {
+  RdxCheckboxDirective,
+  RdxCheckboxInputDirective,
+  RdxCheckboxButtonDirective,
+  RdxCheckboxIndicatorDirective
+} from '@radix-ng/primitives/checkbox';
 ```
 
 ## Anatomy
 
 ```html
-<button rdxCheckboxRoot [(checked)]="checked">
-  <lucide-angular rdxCheckboxIndicator name="check" />
-  <input rdxCheckboxInput type="checkbox" />
-</button>
+<div rdxCheckboxRoot>
+    <button rdxCheckboxButton>
+      <lucide-angular rdxCheckboxIndicator name="check" />
+    </button>
+    <input rdxCheckboxInput />
+</div>
 ```
 
 ## API Reference
 
-### RdxCheckboxDirective
+### Root
+`RdxCheckboxRootDirective`
 
-<ArgTypes of={RdxCheckboxRootDirective} />
+### Button
+`RdxCheckboxButtonDirective`
 
-### RdxCheckboxIndicatorDirective
+### Indicator
+`RdxCheckboxIndicatorDirective`
 
-### RdxRadioIndicatorDirective
+### Input
+`RdxCheckboxInputDirective`
 
 ## Accessibility
 

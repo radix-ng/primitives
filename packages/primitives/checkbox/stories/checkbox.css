@@ -1,14 +1,4 @@
-.Input {
-    transform: translateX(-100%);
-    position: absolute;
-    pointer-events: none;
-    opacity: 0;
-    margin: 0;
-    width: 25px;
-    height: 25px;
-}
-
-.CheckboxRoot {
+.CheckboxButton {
     all: unset;
     background-color: white;
     width: 25px;
@@ -26,7 +16,7 @@
     }
 }
 
-.CheckboxRoot:focus {
+.CheckboxButton:focus {
     box-shadow: 0 0 0 2px black;
 }
 

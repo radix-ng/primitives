@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
 import {
+    RdxCheckboxButtonDirective,
     RdxCheckboxIndicatorDirective,
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
@@ -11,21 +12,23 @@ import { Check, LucideAngularModule } from 'lucide-angular';
 
 @Component({
     selector: 'radix-checkbox-demo',
-    standalone: true,
     imports: [
         RdxLabelDirective,
         RdxCheckboxRootDirective,
+        RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
         RdxCheckboxInputDirective,
         LucideAngularModule
     ],
     template: `
         <div style="display: flex; align-items: center;">
-            <button class="CheckboxRoot" rdxCheckboxRoot>
-                <lucide-angular class="CheckboxIndicator" [img]="CheckIcon" rdxCheckboxIndicator size="16" />
-                <input id="r1" rdxCheckboxInput type="checkbox" />
-            </button>
-            <label class="Label" rdxLabel htmlFor="r1">Check Item</label>
+            <div rdxCheckboxRoot>
+                <button class="CheckboxButton" id="r1" rdxCheckboxButton>
+                    <lucide-angular class="CheckboxIndicator" [img]="CheckIcon" rdxCheckboxIndicator size="16" />
+                </button>
+                <input rdxCheckboxInput />
+            </div>
+            <label class="Label" rdxLabel htmlFor="r1">Accept terms and conditions.</label>
         </div>
     `,
     styleUrl: 'checkbox-demo.css'
