@@ -5,13 +5,7 @@ import { RdxRovingFocusGroupDirective, RdxRovingFocusItemDirective } from '@radi
     selector: 'rvg-events',
     imports: [RdxRovingFocusItemDirective, RdxRovingFocusGroupDirective],
     template: `
-        <div
-            [orientation]="'horizontal'"
-            [loop]="true"
-            (entryFocus)="onEntryFocus($event)"
-            (currentTabStopIdChange)="onTabStopChange($event)"
-            rdxRovingFocusGroup
-        >
+        <div [orientation]="'horizontal'" [loop]="true" (entryFocus)="onEntryFocus($event)" rdxRovingFocusGroup>
             <button rdxRovingFocusItem tabStopId="item1">Item 1</button>
             <button rdxRovingFocusItem tabStopId="item2">Item 2</button>
             <button rdxRovingFocusItem tabStopId="item3">Item 3</button>

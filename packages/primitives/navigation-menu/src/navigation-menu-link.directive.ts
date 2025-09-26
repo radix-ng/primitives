@@ -26,7 +26,7 @@ export class RdxNavigationMenuLinkDirective extends RdxNavigationMenuFocusableOp
     readonly elementRef = inject(ElementRef);
 
     ngOnInit(): void {
-        this.rovingFocusItem.tabStopId = this.elementRef.nativeElement.id || `link-${this.uniqueId}`;
+        this.rovingFocusItem.setTabStopId(this.elementRef.nativeElement.id || `link-${this.uniqueId}`);
     }
 
     override focus(): void {

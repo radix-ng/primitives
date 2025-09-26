@@ -56,7 +56,7 @@ export class RdxTabsTriggerDirective implements TabsTriggerProps {
     protected readonly isSelected = computed(() => this.tabsContext.value() === this.value());
 
     constructor() {
-        effect(() => (this.rdxRovingFocusItemDirective.active = this.isSelected()));
+        effect(() => this.rdxRovingFocusItemDirective.setActive(this.isSelected()));
     }
 
     protected onMouseDown(event: MouseEvent) {
