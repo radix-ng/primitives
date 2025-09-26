@@ -1,77 +1,163 @@
+import { BooleanInput } from '@angular/cdk/coercion';
+import { isPlatformBrowser } from '@angular/common';
 import {
     booleanAttribute,
     Directive,
+    effect,
     ElementRef,
-    EventEmitter,
     inject,
-    Input,
-    NgZone,
-    Output,
+    input,
+    linkedSignal,
+    model,
+    output,
+    PLATFORM_ID,
     signal
 } from '@angular/core';
+import { createContext } from '@radix-ng/primitives/core';
 import { Direction, ENTRY_FOCUS, EVENT_OPTIONS, focusFirst, Orientation } from './utils';
 
+const rootContext = () => {
+    const rovingFocusGroup = inject(RdxRovingFocusGroupDirective);
+    return {
+        loop: rovingFocusGroup.loop,
+        dir: rovingFocusGroup.dir,
+        orientation: rovingFocusGroup.orientation,
+        currentTabStopId: rovingFocusGroup.currentTabStopId,
+        focusableItems: rovingFocusGroup.focusableItems,
+        onItemFocus: (tabStopId: string) => {
+            rovingFocusGroup.currentTabStopId.set(tabStopId);
+        },
+        onItemShiftTab: () => {
+            rovingFocusGroup.isTabbingBackOut.set(true);
+        },
+        onFocusableItemAdd: () => {
+            rovingFocusGroup.focusableItemsCount.update((count) => count + 1);
+        },
+        onFocusableItemRemove: () => {
+            rovingFocusGroup.focusableItemsCount.update((count) => Math.max(0, count - 1));
+        },
+        registerItem: (item: HTMLElement) => {
+            const currentItems = rovingFocusGroup.focusableItems();
+            rovingFocusGroup.focusableItems.set([...currentItems, item]);
+        },
+        unregisterItem: (item: HTMLElement) => {
+            const currentItems = rovingFocusGroup.focusableItems();
+            rovingFocusGroup.focusableItems.set(currentItems.filter((el) => el !== item));
+        }
+    };
+};
+
+export type RovingFocusGroupContext = ReturnType<typeof rootContext>;
+
+export const [injectRovingFocusGroupContext, provideRovingFocusGroupContext] =
+    createContext<RovingFocusGroupContext>('RovingFocusGroupContext');
+
+/**
+ * @group Components
+ */
 @Directive({
     selector: '[rdxRovingFocusGroup]',
-    standalone: true,
+    providers: [provideRovingFocusGroupContext(rootContext)],
     host: {
-        '[attr.data-orientation]': 'dataOrientation',
-        '[attr.tabindex]': 'tabIndex',
-        '[attr.dir]': 'dir',
+        '[attr.data-orientation]': 'orientation()',
+        '[attr.tabindex]': 'isTabbingBackOut() || focusableItemsCount() === 0 ? -1 : 0',
+        '[attr.dir]': 'dir()',
         '(focus)': 'handleFocus($event)',
-        '(blur)': 'handleBlur()',
+        '(blur)': 'isTabbingBackOut.set(false)',
         '(mouseup)': 'handleMouseUp()',
-        '(mousedown)': 'handleMouseDown()',
+        '(mousedown)': 'isClickFocus.set(true)',
         style: 'outline: none;'
     }
 })
 export class RdxRovingFocusGroupDirective {
-    private readonly ngZone = inject(NgZone);
+    private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
     private readonly elementRef = inject(ElementRef);
 
-    @Input() orientation: Orientation | undefined;
-    @Input() dir: Direction = 'ltr';
-    @Input({ transform: booleanAttribute }) loop: boolean = true;
-    @Input({ transform: booleanAttribute }) preventScrollOnEntryFocus: boolean = false;
+    /**
+     * The orientation of the group. Mainly so arrow navigation is done accordingly (left & right vs. up & down)
+     */
+    readonly orientationInput = input<Orientation>('horizontal', { alias: 'orientation' });
 
-    @Output() entryFocus = new EventEmitter<Event>();
-    @Output() currentTabStopIdChange = new EventEmitter<string | null>();
+    /**
+     * The direction of navigation between items.
+     */
+    readonly dirInput = input<Direction>('ltr', { alias: 'dir' });
 
-    /** @ignore */
-    readonly currentTabStopId = signal<string | null>(null);
+    /**
+     * Whether keyboard navigation should loop around
+     */
+    readonly loopInput = input<boolean, BooleanInput>(true, { transform: booleanAttribute, alias: 'loop' });
 
-    /** @ignore */
+    /**
+     * When `true`, will prevent scrolling to the focus item when focused.
+     * @group Props
+     */
+    readonly preventScrollOnEntryFocus = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /**
+     * The value of the current stop item.
+     *
+     * Use when you do not need to control the state of the stop item.
+     * @group Props
+     */
+    readonly defaultCurrentTabStopId = input<string | undefined>(undefined);
+
+    /**
+     * The controlled value of the current stop item. Can be binded as `model`.
+     * @group Props
+     */
+    readonly currentTabStopId = model<string | undefined>(undefined);
+
+    /**
+     * Event handler called when container is being focused. Can be prevented.
+     * @group Emits
+     */
+    readonly entryFocus = output<Event>();
+
+    private readonly _orientation = linkedSignal(() => this.orientationInput());
+    readonly orientation = this._orientation.asReadonly();
+
+    private readonly _dir = linkedSignal(() => this.dirInput());
+    readonly dir = this._dir.asReadonly();
+
+    private readonly _loop = linkedSignal(() => this.loopInput());
+    readonly loop = this._loop.asReadonly();
+
     readonly focusableItems = signal<HTMLElement[]>([]);
+    protected readonly isClickFocus = signal(false);
+    readonly isTabbingBackOut = signal(false);
+    readonly focusableItemsCount = signal(0);
 
-    private readonly isClickFocus = signal(false);
-    private readonly isTabbingBackOut = signal(false);
-    private readonly focusableItemsCount = signal(0);
-
-    /** @ignore */
-    get dataOrientation() {
-        return this.orientation || 'horizontal';
+    constructor() {
+        effect(() => {
+            if (this.currentTabStopId() === undefined) {
+                const def = this.defaultCurrentTabStopId();
+                if (def !== undefined) {
+                    this.currentTabStopId.set(def);
+                }
+            }
+        });
     }
 
-    /** @ignore */
-    get tabIndex() {
-        return this.isTabbingBackOut() || this.getFocusableItemsCount() === 0 ? -1 : 0;
+    setOrientation(value: Orientation) {
+        this._orientation.set(value);
     }
 
-    /** @ignore */
-    handleBlur() {
-        this.isTabbingBackOut.set(false);
+    setDir(value: Direction) {
+        this._dir.set(value);
+    }
+
+    setLoop(value: boolean) {
+        this._loop.set(value);
     }
 
     /** @ignore */
     handleMouseUp() {
+        if (!this.isBrowser) return;
+
         // reset `isClickFocus` after 1 tick because handleFocus might not triggered due to focused element
-        this.ngZone.runOutsideAngular(() => {
-            // eslint-disable-next-line promise/catch-or-return,promise/always-return
-            Promise.resolve().then(() => {
-                this.ngZone.run(() => {
-                    this.isClickFocus.set(false);
-                });
-            });
+        requestAnimationFrame(() => {
+            this.isClickFocus.set(false);
         });
     }
 
@@ -96,55 +182,17 @@ export class RdxRovingFocusGroupDirective {
             if (!entryFocusEvent.defaultPrevented) {
                 const items = this.focusableItems().filter((item) => item.dataset['disabled'] !== '');
                 const activeItem = items.find((item) => item.getAttribute('data-active') === 'true');
+                const highlightedItem = items.find((item) => item.getAttribute('data-highlighted') === '');
                 const currentItem = items.find((item) => item.id === this.currentTabStopId());
-                const candidateItems = [activeItem, currentItem, ...items].filter(Boolean) as HTMLElement[];
 
-                focusFirst(candidateItems, this.preventScrollOnEntryFocus);
+                const candidateItems = [activeItem, highlightedItem, currentItem, ...items].filter(
+                    Boolean
+                ) as typeof items;
+
+                focusFirst(candidateItems, this.preventScrollOnEntryFocus());
             }
         }
+
         this.isClickFocus.set(false);
-    }
-
-    /** @ignore */
-    handleMouseDown() {
-        this.isClickFocus.set(true);
-    }
-
-    /** @ignore */
-    onItemFocus(tabStopId: string) {
-        this.currentTabStopId.set(tabStopId);
-        this.currentTabStopIdChange.emit(tabStopId);
-    }
-
-    /** @ignore */
-    onItemShiftTab() {
-        this.isTabbingBackOut.set(true);
-    }
-
-    /** @ignore */
-    onFocusableItemAdd() {
-        this.focusableItemsCount.update((count) => count + 1);
-    }
-
-    /** @ignore */
-    onFocusableItemRemove() {
-        this.focusableItemsCount.update((count) => Math.max(0, count - 1));
-    }
-
-    /** @ignore */
-    registerItem(item: HTMLElement) {
-        const currentItems = this.focusableItems();
-        this.focusableItems.set([...currentItems, item]);
-    }
-
-    /** @ignore */
-    unregisterItem(item: HTMLElement) {
-        const currentItems = this.focusableItems();
-        this.focusableItems.set(currentItems.filter((el) => el !== item));
-    }
-
-    /** @ignore */
-    getFocusableItemsCount() {
-        return this.focusableItemsCount();
     }
 }
