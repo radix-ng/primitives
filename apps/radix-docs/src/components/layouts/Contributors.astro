@@ -2,8 +2,8 @@
 import { contributors } from '@/contributors';
 ---
 
-<div class="max-w-200 text-center text-lg leading-7">
-    <div class="flex flex-wrap justify-center gap-2">
+<div class="flex flex-wrap justify-center text-lg leading-7">
+    <div class="flex gap-2">
         {
             contributors.map(({ name, avatar }) => (
                 <a
@@ -24,7 +24,8 @@ import { contributors } from '@/contributors';
             ))
         }
     </div>
-    <br />
+</div>
+<div class="flex justify-center pt-4">
     <a
         href="https://discord.gg/NaJb2XRWX9"
         class="font-medium text-[#FA2C04] underline underline-offset-2"

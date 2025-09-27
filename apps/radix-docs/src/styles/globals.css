@@ -1,116 +1,227 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap");
 
+@import 'tailwindcss';
 @import '@radix-ui/themes/styles.css';
 @import '@angular/cdk/overlay-prebuilt.css';
 @import '@docsearch/css';
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@custom-variant dark (&:is(.dark *));
+
+:root {
+    --font-sans:
+        Inter, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-mono:
+        'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+        'Courier New', monospace;
+    --font-heading: 'Outfit', 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+    --background: oklch(1 0 0); /* --color-white */
+    --foreground: oklch(0.141 0.005 285.823); /* --color-zinc-950 */
+    --card: oklch(1 0 0); /* --color-white */
+    --card-foreground: oklch(0.141 0.005 285.823); /* --color-zinc-950 */
+    --popover: oklch(1 0 0); /* --color-white */
+    --popover-foreground: oklch(0.141 0.005 285.823); /* --color-zinc-950 */
+    --primary: oklch(0.21 0.006 285.885); /* --color-zinc-900 */
+    --primary-foreground: oklch(0.985 0 0); /* --color-zinc-50 */
+    --secondary: oklch(0.967 0.001 286.375); /* --color-zinc-100 */
+    --secondary-foreground: oklch(0.21 0.006 285.885); /* --color-zinc-900 */
+    --muted: oklch(0.967 0.001 286.375); /* --color-zinc-100 */
+    --muted-foreground: oklch(0.55 0.01 286); /* --color-zinc-500 */
+    --accent: oklch(0.967 0.001 286.375); /* --color-zinc-100 */
+    --accent-foreground: oklch(0.21 0.006 285.885); /* --color-zinc-900 */
+    --destructive: oklch(0.637 0.237 25.331); /* --color-red-500 */
+    --destructive-foreground: oklch(0.637 0.237 25.331); /* --color-red-500 */
+    --border: oklch(0.92 0 286); /* --color-zinc-200 */
+    --input: oklch(0.871 0.006 286.286); /* --color-zinc-300 */
+    --ring: oklch(0.871 0.006 286.286); /* --color-zinc-300 */
+    --chart-1: oklch(0.646 0.222 41.116);
+    --chart-2: oklch(0.6 0.118 184.704);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
+    --radius: 0.625rem;
+    --sidebar: oklch(0.985 0 0); /* --color-zinc-50 */
+    --sidebar-foreground: oklch(0.141 0.005 285.823); /* --color-zinc-950 */
+    --sidebar-primary: oklch(0.21 0.006 285.885); /* --color-zinc-900 */
+    --sidebar-primary-foreground: oklch(0.985 0 0); /* --color-zinc-50 */
+    --sidebar-accent: oklch(0.967 0.001 286.375); /* --color-zinc-100 */
+    --sidebar-accent-foreground: oklch(0.21 0.006 285.885); /* --color-zinc-900 */
+    --sidebar-border: oklch(0.92 0.004 286.32); /* --color-zinc-200 */
+    --sidebar-ring: oklch(0.871 0.006 286.286); /* --color-zinc-300 */
+}
+
+.dark {
+    --background: oklch(0.141 0.005 285.823); /* --color-zinc-950 */
+    --foreground: oklch(0.985 0 0); /* --color-zinc-50 */
+    --card: oklch(0.141 0.005 285.823); /* --color-zinc-950 */
+    --card-foreground: oklch(0.985 0 0); /* --color-zinc-50 */
+    --popover: oklch(0.141 0.005 285.823); /* --color-zinc-950 */
+    --popover-foreground: oklch(0.985 0 0); /* --color-zinc-50 */
+    --primary: oklch(0.985 0 0); /* --color-zinc-50 */
+    --primary-foreground: oklch(0.21 0.006 285.885); /* --color-zinc-900 */
+    --secondary: oklch(0.274 0.006 286.033); /* --color-zinc-800 */
+    --secondary-foreground: oklch(0.985 0 0); /* --color-zinc-50 */
+    --muted: oklch(0.21 0.006 285.885); /* --color-zinc-900 */
+    --muted-foreground: oklch(0.65 0.01 286); /* Between zinc-400 and zinc-500 */
+    --accent: oklch(0.21 0.006 285.885); /* --color-zinc-900 */
+    --accent-foreground: oklch(0.985 0 0); /* --color-zinc-50 */
+    --destructive: oklch(0.396 0.141 25.723); /* --color-red-900 */
+    --destructive-foreground: oklch(0.637 0.237 25.331); /* --color-red-500 */
+    --border: oklch(0.274 0.006 286.033); /* --color-zinc-800 */
+    --input: oklch(0.274 0.006 286.033); /* --color-zinc-800 */
+    --ring: oklch(0.442 0.017 285.786); /* --color-zinc-600 */
+    --chart-1: oklch(0.488 0.243 264.376);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.769 0.188 70.08);
+    --chart-4: oklch(0.627 0.265 303.9);
+    --chart-5: oklch(0.645 0.246 16.439);
+    --sidebar: oklch(0.205 0 0); /* --color-zinc-900 */
+    --sidebar-foreground: oklch(0.985 0 0); /* --color-zinc-50 */
+    --sidebar-primary: oklch(0.488 0.243 264.376); /* --color-blue-700 */
+    --sidebar-primary-foreground: oklch(0.985 0 0); /* --color-zinc-50 */
+    --sidebar-accent: oklch(0.269 0 0); /* --color-zinc-800 */
+    --sidebar-accent-foreground: oklch(0.985 0 0); /* --color-zinc-50 */
+    --sidebar-border: oklch(0.274 0.006 286.033); /* --color-zinc-800 */
+    --sidebar-ring: oklch(0.442 0.017 285.786); /* --color-zinc-600 */
+}
+
+@theme inline {
+    --font-sans: var(--font-sans);
+    --font-heading: var(--font-heading);
+
+    --radius-lg: var(--radius);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-sm: calc(var(--radius) - 4px);
+
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+
+    --animate-accordion-down: accordion-down 0.2s ease-out;
+    --animate-accordion-up: accordion-up 0.2s ease-out;
+    --animate-collapsible-down: collapsible-down 0.2s ease-out;
+    --animate-collapsible-up: collapsible-up 0.2s ease-out;
+
+    @keyframes accordion-down {
+        from {
+            height: 0;
+        }
+
+        to {
+            height: var(--radix-accordion-content-height);
+        }
+    }
+    @keyframes accordion-up {
+        from {
+            height: var(--radix-accordion-content-height);
+        }
+
+        to {
+            height: 0;
+        }
+    }
+    @keyframes collapsible-down {
+        from {
+            height: 0;
+        }
+
+        to {
+            height: var(--radix-collapsible-content-height);
+        }
+    }
+    @keyframes collapsible-up {
+        from {
+            height: var(--radix-collapsible-content-height);
+        }
+
+        to {
+            height: 0;
+        }
+    }
+}
+
 
 @layer base {
-    :root {
-        --background: 0 0% 100%;
-        --foreground: 240 10% 3.9%;
-        --card: 0 0% 100%;
-        --card-foreground: 240 10% 3.9%;
-        --popover: 0 0% 100%;
-        --popover-foreground: 240 10% 3.9%;
-        --primary: 240 5.9% 10%;
-        --primary-foreground: 0 0% 98%;
-        --secondary: 240 4.8% 95.9%;
-        --secondary-foreground: 240 5.9% 10%;
-        --muted: 240 4.8% 95.9%;
-        --muted-foreground: 240 3.8% 46.1%;
-        --accent: 240 4.8% 95.9%;
-        --accent-foreground: 240 5.9% 10%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 0 0% 100%;
-        --border: 240 5.9% 90%;
-        --input: 240 4.9% 83.9%;
-        --ring: 240 5% 64.9%;
-        --radius: 0.5rem;
-
-        /*--bg-primitive-demo: hsl(297.48deg 89.65% 24.12%);*/
-        --bg-primitive-demo: hsl(297.48deg 23.42% 15.97%);
-
-        /** --------------- Algolia DocSearch variables ---------------- */
-        --docsearch-primary-color: #5468ff;
-        --docsearch-text-color: #1c1e21;
-        --docsearch-spacing: 12px;
-        --docsearch-icon-stroke-width: 1.4;
-        --docsearch-highlight-color: var(--docsearch-primary-color);
-        --docsearch-muted-color: #969faf;
-        --docsearch-container-background: rgba(101, 108, 133, 0.8);
-        --docsearch-logo-color: #5468ff;
-        --docsearch-modal-width: 560px;
-        --docsearch-modal-height: 600px;
-        --docsearch-modal-background: #f5f6f7;
-        --docsearch-modal-shadow: inset 1px 1px 0 0 hsla(0, 0%, 100%, 0.5), 0 3px 8px 0 #555a64;
-        --docsearch-searchbox-height: 56px;
-        --docsearch-searchbox-background: #ebedf0;
-        --docsearch-searchbox-focus-background: #fff;
-        --docsearch-searchbox-shadow: inset 0 0 0 2px var(--docsearch-primary-color);
-        --docsearch-hit-height: 56px;
-        --docsearch-hit-color: #444950;
-        --docsearch-hit-active-color: #fff;
-        --docsearch-hit-background: #fff;
-        --docsearch-hit-shadow: 0 1px 3px 0 #d4d9e1;
-        --docsearch-key-gradient: linear-gradient(-225deg, #d5dbe4, #f8f8f8);
-        --docsearch-key-shadow: inset 0 -2px 0 0 #cdcde6, inset 0 0 1px 1px #fff, 0 1px 2px 1px rgba(30, 35, 90, 0.4);
-        --docsearch-key-pressed-shadow: inset 0 -2px 0 0 #cdcde6, inset 0 0 1px 1px #fff,
-            0 1px 1px 0 rgba(30, 35, 90, 0.4);
-        --docsearch-footer-height: 44px;
-        --docsearch-footer-background: #fff;
-        --docsearch-footer-shadow: 0 -1px 0 0 #e0e3e8, 0 -3px 6px 0 rgba(69, 98, 155, 0.12);
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentColor);
     }
+}
 
-    .dark {
-        --background: 141 17% 5%;
-        --foreground: 0 0% 98%;
-        --card: 240 10% 3.9%;
-        --card-foreground: 0 0% 98%;
-        --popover: 240 10% 3.9%;
-        --popover-foreground: 0 0% 98%;
-        --primary: 0 0% 98%;
-        --primary-foreground: 240 5.9% 10%;
-        --secondary: 240 3.7% 15.9%;
-        --secondary-foreground: 0 0% 98%;
-        --muted: 240 5.9% 10%;
-        --muted-foreground: 240 4.4% 58%;
-        --accent: 240 5.9% 10%;
-        --accent-foreground: 0 0% 98%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 0 0% 100%;
-        --border: 240 3.7% 15.9%;
-        --input: 240 3.7% 15.9%;
-        --ring: 240 3.8% 46.1%;
-
-        --bg-primitive-demo: hsl(297.48deg 23.42% 15.97%);
-
-        /** --------------- Algolia DocSearch variables ---------------- */
-        --docsearch-text-color: #f5f6f7;
-        --docsearch-container-background: rgba(9, 10, 17, 0.8);
-        --docsearch-modal-background: #15172a;
-        --docsearch-modal-shadow: inset 1px 1px 0 0 #2c2e40, 0 3px 8px 0 #000309;
-        --docsearch-searchbox-background: #090a11;
-        --docsearch-searchbox-focus-background: #000;
-        --docsearch-hit-color: #bec3c9;
-        --docsearch-hit-shadow: none;
-        --docsearch-hit-background: #090a11;
-        --docsearch-key-gradient: linear-gradient(-26.5deg, #565872, #31355b);
-        --docsearch-key-shadow: inset 0 -2px 0 0 #282d55, inset 0 0 1px 1px #51577d, 0 2px 2px 0 rgba(3, 4, 9, 0.3);
-        --docsearch-key-pressed-shadow: inset 0 -2px 0 0 #282d55, inset 0 0 1px 1px #51577d,
-            0 1px 1px 0 rgba(3, 4, 9, 0.30196078431372547);
-        --docsearch-footer-background: #1e2136;
-        --docsearch-footer-shadow: inset 0 1px 0 0 rgba(73, 76, 106, 0.5), 0 -4px 8px 0 rgba(0, 0, 0, 0.2);
-        --docsearch-logo-color: #fff;
-        --docsearch-muted-color: #7f8497;
-    }
-
+@layer base {
     * {
-        @apply border-border;
+        @apply border-border outline-ring/50;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+    }
+
+    /* Custom scrollbar styling. Thanks @pranathiperii. */
+    pre::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    pre::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    pre::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 5px;
+    }
+
+    pre {
+        scrollbar-width: thin;
+        scrollbar-color: var(--border) transparent;
+    }
+}
+
+@utility container {
+    padding: 2rem;
+    margin-inline: auto;
+
+    @variant 2xl {
+        max-width: 1400px;
     }
 }
 
