@@ -1,11 +1,15 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { setCompodocJson } from '@storybook/addon-docs/angular';
-import { Preview } from '@storybook/angular';
+import { applicationConfig, Preview } from '@storybook/angular';
 import docJson from './documentation.json';
 
 setCompodocJson(docJson);
 
 const preview: Preview = {
     decorators: [
+        applicationConfig({
+            providers: [provideZonelessChangeDetection()]
+        }),
         (Story, context) => {
             const storyAnchor = `anchor--${context.id}`;
             const existAnchor = context.canvasElement.closest(`#${storyAnchor}`);
