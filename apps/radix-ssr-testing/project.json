@@ -15,14 +15,14 @@
                 "browser": "apps/radix-ssr-testing/src/main.ts",
                 "polyfills": ["zone.js"],
                 "tsConfig": "apps/radix-ssr-testing/tsconfig.app.json",
-                "inlineStyleLanguage": "scss",
+                "inlineStyleLanguage": "css",
                 "assets": [
                     {
                         "glob": "**/*",
                         "input": "apps/radix-ssr-testing/public"
                     }
                 ],
-                "styles": ["apps/radix-ssr-testing/src/styles.scss"],
+                "styles": [],
                 "scripts": [],
                 "server": "apps/radix-ssr-testing/src/main.server.ts",
                 "prerender": true,

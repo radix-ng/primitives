@@ -1,6 +1,6 @@
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { LucideAngularModule, MountainSnow, X } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { RdxHoverCardModule } from '../index';
 import { RdxHoverCardAnchorComponent } from './hover-card-anchor.component';
 import { RdxHoverCardAnimationsComponent } from './hover-card-animations.component';
@@ -27,8 +27,7 @@ export default {
                 RdxHoverCardAnimationsComponent,
                 RdxHoverCardInitiallyOpenComponent,
                 RdxHoverCardAnchorComponent,
-                LucideAngularModule,
-                LucideAngularModule.pick({ MountainSnow, X })
+                LucideAngularModule
             ],
             providers: [provideAnimations()]
         }),

@@ -1,5 +1,5 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { Check, Dot, LucideAngularModule } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { MenubarModule } from '../index';
 
 const html = String.raw;
@@ -8,7 +8,7 @@ export default {
     title: 'Primitives/Menubar',
     decorators: [
         moduleMetadata({
-            imports: [MenubarModule, LucideAngularModule, LucideAngularModule.pick({ Check, Dot })]
+            imports: [MenubarModule, LucideAngularModule]
         }),
         componentWrapperDecorator(
             (story) => html`

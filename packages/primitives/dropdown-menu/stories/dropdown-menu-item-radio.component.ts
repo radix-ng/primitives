@@ -11,7 +11,7 @@ import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.di
 
 @Component({
     selector: 'dropdown-menu-item-radio',
-    styleUrl: 'dropdown-menu-item-radio.styles.scss',
+    styleUrl: 'dropdown-menu-item-radio.styles.css',
     template: `
         <button
             class="IconButton"

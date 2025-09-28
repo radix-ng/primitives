@@ -1,6 +1,27 @@
-import { provideZonelessChangeDetection } from '@angular/core';
+import { importProvidersFrom } from '@angular/core';
 import { setCompodocJson } from '@storybook/addon-docs/angular';
 import { applicationConfig, Preview } from '@storybook/angular';
+import {
+    AlignCenter,
+    AlignLeft,
+    AlignRight,
+    Bold,
+    Check,
+    ChevronDown,
+    ChevronLeft,
+    ChevronRight,
+    ChevronsLeft,
+    ChevronsRight,
+    Dot,
+    Italic,
+    LucideAngularModule,
+    Menu,
+    Minus,
+    MountainSnow,
+    Strikethrough,
+    UnfoldVertical,
+    X
+} from 'lucide-angular';
 import docJson from './documentation.json';
 
 setCompodocJson(docJson);
@@ -8,7 +29,30 @@ setCompodocJson(docJson);
 const preview: Preview = {
     decorators: [
         applicationConfig({
-            providers: [provideZonelessChangeDetection()]
+            providers: [
+                importProvidersFrom(
+                    LucideAngularModule.pick({
+                        Check,
+                        Menu,
+                        Minus,
+                        Italic,
+                        Dot,
+                        ChevronLeft,
+                        ChevronRight,
+                        ChevronsRight,
+                        ChevronsLeft,
+                        ChevronDown,
+                        Bold,
+                        Strikethrough,
+                        AlignLeft,
+                        AlignCenter,
+                        AlignRight,
+                        MountainSnow,
+                        X,
+                        UnfoldVertical
+                    })
+                )
+            ]
         }),
         (Story, context) => {
             const storyAnchor = `anchor--${context.id}`;

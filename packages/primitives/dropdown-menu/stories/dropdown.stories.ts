@@ -1,5 +1,5 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { Check, Dot, LucideAngularModule, Menu } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 
 import { RdxDropdownMenuContentDirective } from '../src/dropdown-menu-content.directive';
 import { RdxDropdownMenuItemCheckboxDirective } from '../src/dropdown-menu-item-checkbox.directive';
@@ -22,7 +22,6 @@ export default {
                 RdxDropdownMenuSeparatorDirective,
                 RdxDropdownMenuContentDirective,
                 LucideAngularModule,
-                LucideAngularModule.pick({ Menu, Check, Dot }),
                 DropdownMenuItemCheckboxExampleComponent,
                 DropdownMenuItemRadioExampleComponent
             ]

@@ -1,3 +1,5 @@
+import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { LucideAngularModule } from 'lucide-angular';
 import {
     RdxSelectComponent,
     RdxSelectContentDirective,
@@ -9,9 +11,7 @@ import {
     RdxSelectSeparatorDirective,
     RdxSelectTriggerDirective,
     RdxSelectValueDirective
-} from '@radix-ng/primitives/select';
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { Check, ChevronDown, LucideAngularModule } from 'lucide-angular';
+} from '../index';
 
 const html = String.raw;
 
@@ -30,8 +30,7 @@ export default {
                 RdxSelectTriggerDirective,
                 RdxSelectValueDirective,
                 RdxSelectIconDirective,
-                LucideAngularModule,
-                LucideAngularModule.pick({ ChevronDown, Check })
+                LucideAngularModule
             ]
         }),
         componentWrapperDecorator(

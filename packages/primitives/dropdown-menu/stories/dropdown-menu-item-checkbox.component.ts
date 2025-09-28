@@ -10,7 +10,7 @@ import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.di
 
 @Component({
     selector: 'dropdown-menu-item-checkbox',
-    styleUrl: 'dropdown-menu-item-checkbox.styles.scss',
+    styleUrl: 'dropdown-menu-item-checkbox.styles.css',
     template: `
         <button
             class="IconButton"

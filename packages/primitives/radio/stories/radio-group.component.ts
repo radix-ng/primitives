@@ -30,7 +30,7 @@ import { RdxRadioItemInputDirective } from '../src/radio-item-input.directive';
             <span>Your room is: {{ hotelRoom }}</span>
         </p>
     `,
-    styleUrl: 'radio-group.styles.scss',
+    styleUrl: 'radio-group.styles.css',
     imports: [
         FormsModule,
         RdxLabelDirective,
