@@ -60,14 +60,14 @@ export class RdxNavigationMenuListDirective implements AfterContentInit, AfterVi
      * @ignore
      */
     ngAfterViewInit() {
-        this.rovingFocusGroup.orientation = this.context.orientation;
-        this.rovingFocusGroup.dir = this.context.dir;
+        this.rovingFocusGroup.setOrientation(this.context.orientation);
+        this.rovingFocusGroup.setDir(this.context.dir);
 
         // looping typically only applies to the root menu bar
         if (isRootNavigationMenu(this.context)) {
-            this.rovingFocusGroup.loop = this.context.loop ?? false;
+            this.rovingFocusGroup.setLoop(this.context.loop ?? false);
         } else {
-            this.rovingFocusGroup.loop = false;
+            this.rovingFocusGroup.setLoop(false);
         }
 
         if (isRootNavigationMenu(this.context) && this.context.onIndicatorTrackChange) {

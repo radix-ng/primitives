@@ -46,7 +46,7 @@ import { getTabbableCandidates, makeContentId, makeTriggerId } from './utils';
     providers: [{ provide: RdxNavigationMenuFocusableOption, useExisting: RdxNavigationMenuTriggerDirective }]
 })
 export class RdxNavigationMenuTriggerDirective extends RdxNavigationMenuFocusableOption implements OnInit, OnDestroy {
-    private readonly context = injectNavigationMenu();
+    protected readonly context = injectNavigationMenu()!;
     private readonly item = inject(RdxNavigationMenuItemDirective);
     private readonly list = inject(RdxNavigationMenuListDirective);
     private readonly rovingFocusItem = inject(RdxRovingFocusItemDirective, { self: true });
@@ -72,7 +72,7 @@ export class RdxNavigationMenuTriggerDirective extends RdxNavigationMenuFocusabl
         super();
 
         effect(() => {
-            this.rovingFocusItem.focusable = !this.disabled();
+            this.rovingFocusItem.setFocusable(!this.disabled());
         });
 
         effect(() => {
@@ -99,7 +99,7 @@ export class RdxNavigationMenuTriggerDirective extends RdxNavigationMenuFocusabl
         this.item.triggerRef.set(this.elementRef.nativeElement);
 
         // configure the static part of the roving focus item directive instance
-        this.rovingFocusItem.tabStopId = this.item.value();
+        this.rovingFocusItem.setTabStopId(this.item.value());
     }
 
     ngOnDestroy() {

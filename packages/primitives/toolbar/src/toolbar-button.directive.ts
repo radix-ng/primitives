@@ -14,6 +14,6 @@ export class RdxToolbarButtonDirective {
     private readonly isDisabled = signal(this.disabled());
 
     #disableChanges = effect(() => {
-        this.rdxRovingFocusItemDirective.focusable = !this.isDisabled();
+        this.rdxRovingFocusItemDirective.setFocusable(!this.isDisabled());
     });
 }

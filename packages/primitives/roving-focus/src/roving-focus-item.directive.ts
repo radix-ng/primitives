@@ -1,93 +1,105 @@
+import { BooleanInput } from '@angular/cdk/coercion';
+import { isPlatformBrowser } from '@angular/common';
 import {
     booleanAttribute,
     computed,
+    DestroyRef,
     Directive,
     ElementRef,
     inject,
-    Input,
-    NgZone,
-    OnDestroy,
-    OnInit
+    input,
+    linkedSignal,
+    PLATFORM_ID
 } from '@angular/core';
-import { RdxRovingFocusGroupDirective } from './roving-focus-group.directive';
+import { injectRovingFocusGroupContext } from './roving-focus-group.directive';
 import { focusFirst, generateId, getFocusIntent, wrapArray } from './utils';
 
+/**
+ * @group Components
+ */
 @Directive({
     selector: '[rdxRovingFocusItem]',
-    standalone: true,
     host: {
-        '[attr.tabindex]': 'tabIndex',
-        '[attr.data-orientation]': 'parent.orientation',
-        '[attr.data-active]': 'active',
-        '[attr.data-disabled]': '!focusable ? "" : undefined',
+        '[attr.tabindex]': 'isCurrentTabStop() ? 0 : -1',
+        '[attr.data-orientation]': 'rootContext.orientation',
+        '[attr.data-active]': 'active()',
+        '[attr.data-disabled]': '!focusable() ? "" : undefined',
         '(mousedown)': 'handleMouseDown($event)',
         '(keydown)': 'handleKeydown($event)',
-        '(focus)': 'onFocus()'
+        '(focus)': 'rootContext.onItemFocus(id())'
     }
 })
-export class RdxRovingFocusItemDirective implements OnInit, OnDestroy {
+export class RdxRovingFocusItemDirective {
+    private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+    private readonly destroyRef = inject(DestroyRef);
     private readonly elementRef = inject(ElementRef);
-    private readonly ngZone = inject(NgZone);
-    protected readonly parent = inject(RdxRovingFocusGroupDirective);
 
-    @Input({ transform: booleanAttribute }) focusable: boolean = true;
-    @Input({ transform: booleanAttribute }) active: boolean = true;
-    @Input() tabStopId: string;
-    @Input({ transform: booleanAttribute }) allowShiftKey: boolean = false;
-
-    private readonly id = computed(() => this.tabStopId || generateId());
-
-    /** @ignore */
-    readonly isCurrentTabStop = computed(() => this.parent.currentTabStopId() === this.id());
+    protected readonly rootContext = injectRovingFocusGroupContext()!;
 
     /**
-     * Lifecycle hook triggered on initialization.
-     * Registers the element with the parent roving focus group if it is focusable.
-     * @ignore
+     * When false, item will not be focusable.
+     * @group Props
      */
-    ngOnInit() {
-        if (this.focusable) {
-            this.parent.registerItem(this.elementRef.nativeElement);
-            this.parent.onFocusableItemAdd();
+    readonly focusableInput = input<boolean, BooleanInput>(true, { transform: booleanAttribute, alias: 'focusable' });
+
+    /**
+     * When `true`, item will be initially focused.
+     * @group Props
+     */
+    readonly activeInput = input<boolean, BooleanInput>(true, { transform: booleanAttribute, alias: 'active' });
+
+    /**
+     * @group Props
+     */
+    readonly tabStopIdInput = input<string>(undefined, { alias: 'tabStopId' });
+
+    /**
+     * When true, shift + arrow key will allow focusing on next/previous item.
+     * @group Props
+     */
+    readonly allowShiftKey = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    protected readonly id = computed(() => this.tabStopId() || generateId());
+    protected readonly isCurrentTabStop = computed(() => this.rootContext.currentTabStopId() === this.id());
+
+    protected readonly focusable = linkedSignal(() => this.focusableInput());
+    protected readonly active = linkedSignal(() => this.activeInput());
+    private readonly tabStopId = linkedSignal(() => this.tabStopIdInput());
+
+    constructor() {
+        if (this.focusable()) {
+            this.rootContext.registerItem(this.elementRef.nativeElement);
+            this.rootContext.onFocusableItemAdd();
+
+            this.destroyRef.onDestroy(() => {
+                this.rootContext.unregisterItem(this.elementRef.nativeElement);
+                this.rootContext.onFocusableItemRemove();
+            });
         }
     }
 
-    /**
-     * Lifecycle hook triggered on destruction.
-     * Unregisters the element from the parent roving focus group if it is focusable.
-     * @ignore
-     */
-    ngOnDestroy() {
-        if (this.focusable) {
-            this.parent.unregisterItem(this.elementRef.nativeElement);
-            this.parent.onFocusableItemRemove();
-        }
+    setFocusable(value: boolean) {
+        this.focusable.set(value);
     }
 
-    /**
-     * Determines the `tabIndex` of the element.
-     * Returns `0` if the element is the current tab stop; otherwise, returns `-1`.
-     * @ignore
-     */
-    get tabIndex() {
-        return this.isCurrentTabStop() ? 0 : -1;
+    setActive(value: boolean) {
+        this.active.set(value);
+    }
+
+    setTabStopId(value: string) {
+        this.tabStopId.set(value);
     }
 
     /** @ignore */
     handleMouseDown(event: MouseEvent) {
-        if (!this.focusable) {
+        if (!this.focusable()) {
             // We prevent focusing non-focusable items on `mousedown`.
             // Even though the item has tabIndex={-1}, that only means take it out of the tab order.
             event.preventDefault();
         } else {
             // Safari doesn't focus a button when clicked so we run our logic on mousedown also
-            this.parent.onItemFocus(this.id());
+            this.rootContext.onItemFocus(this.id());
         }
-    }
-
-    /** @ignore */
-    onFocus() {
-        this.parent.onItemFocus(this.id());
     }
 
     /**
@@ -99,22 +111,22 @@ export class RdxRovingFocusItemDirective implements OnInit, OnDestroy {
      */
     handleKeydown(event: KeyboardEvent) {
         if (event.key === 'Tab' && event.shiftKey) {
-            this.parent.onItemShiftTab();
+            this.rootContext.onItemShiftTab();
             return;
         }
 
         if (event.target !== this.elementRef.nativeElement) return;
 
-        const focusIntent = getFocusIntent(event, this.parent.orientation, this.parent.dir);
+        const focusIntent = getFocusIntent(event, this.rootContext.orientation(), this.rootContext.dir());
 
         if (focusIntent !== undefined) {
-            if (event.metaKey || event.ctrlKey || event.altKey || (this.allowShiftKey ? false : event.shiftKey)) {
+            if (event.metaKey || event.ctrlKey || event.altKey || (this.allowShiftKey() ? false : event.shiftKey)) {
                 return;
             }
 
             event.preventDefault();
 
-            let candidateNodes = this.parent.focusableItems().filter((item) => item.dataset['disabled'] !== '');
+            let candidateNodes = this.rootContext.focusableItems().filter((item) => item.dataset['disabled'] !== '');
 
             if (focusIntent === 'last') {
                 candidateNodes.reverse();
@@ -122,16 +134,15 @@ export class RdxRovingFocusItemDirective implements OnInit, OnDestroy {
                 if (focusIntent === 'prev') candidateNodes.reverse();
                 const currentIndex = candidateNodes.indexOf(this.elementRef.nativeElement);
 
-                candidateNodes = this.parent.loop
+                candidateNodes = this.rootContext.loop()
                     ? wrapArray(candidateNodes, currentIndex + 1)
                     : candidateNodes.slice(currentIndex + 1);
             }
 
-            this.ngZone.runOutsideAngular(() => {
-                // eslint-disable-next-line promise/always-return,promise/catch-or-return
-                Promise.resolve().then(() => {
+            queueMicrotask(() => {
+                if (this.isBrowser) {
                     focusFirst(candidateNodes, false, this.elementRef.nativeElement);
-                });
+                }
             });
         }
     }
