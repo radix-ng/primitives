@@ -41,7 +41,6 @@
             "options": {
                 "outputDir": "dist/radix-storybook",
                 "configDir": "apps/radix-storybook/.storybook",
-                "browserTarget": "radix-storybook:build-storybook",
                 "compodoc": true,
                 "compodocArgs": ["-e", "json", "-d", "apps/radix-storybook/.storybook"],
                 "styles": [
@@ -53,7 +52,7 @@
                     "packages/primitives/dialog/stories/sheet/sheet.styles.scss"
                 ],
                 "stylePreprocessorOptions": {
-                    "includePaths": ["node_modules/"]
+                    "loadPaths": ["node_modules/"]
                 }
             },
             "configurations": {
