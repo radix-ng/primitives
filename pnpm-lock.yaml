@@ -75,6 +75,12 @@ importers:
         specifier: 0.15.1
         version: 0.15.1
     devDependencies:
+      '@analogjs/storybook-angular':
+        specifier: ^1.21.2
+        version: 1.21.2(@analogjs/vite-plugin-angular@1.21.2(@angular-devkit/build-angular@20.2.1(xx7z7uzy7kfncbgyf2zcfwpmsu))(@angular/build@20.2.1(ddvl3uiavsmilptrcr47l2vjay)))(@storybook/angular@9.1.4(mbk54eygfi6evf2ycdjx3zxfw4))(storybook@9.1.4(@testing-library/dom@10.4.0)(prettier@3.6.2)(vite@7.1.5(@types/node@20.19.11)(jiti@2.4.2)(less@4.4.1)(lightningcss@1.30.1)(sass-embedded@1.91.0)(sass@1.91.0)(terser@5.43.1)(yaml@2.8.1)))(vite@7.1.5(@types/node@20.19.11)(jiti@2.4.2)(less@4.4.1)(lightningcss@1.30.1)(sass-embedded@1.91.0)(sass@1.91.0)(terser@5.43.1)(yaml@2.8.1))
+      '@analogjs/vite-plugin-angular':
+        specifier: ^1.21.2
+        version: 1.21.2(@angular-devkit/build-angular@20.2.1(xx7z7uzy7kfncbgyf2zcfwpmsu))(@angular/build@20.2.1(ddvl3uiavsmilptrcr47l2vjay))
       '@angular-devkit/build-angular':
         specifier: 20.2.1
         version: 20.2.1(xx7z7uzy7kfncbgyf2zcfwpmsu)
@@ -687,6 +693,26 @@ packages:
       rxjs: ^7.5.6
       tslib: ^2.4.0
       zone.js: '>=0.13.3'
+
+  '@analogjs/storybook-angular@1.21.2':
+    resolution: {integrity: sha512-jHDEjv/qXXhciQTmNUJsjpmy/Dvpi+eEP6/dzU6g0KKJG0i9EfCc1SLVkeHLaujZsYmJdYLBooBIjnF8x8tM5g==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      '@analogjs/vite-plugin-angular': '*'
+      '@storybook/angular': '>=8.6.0 || ^9.0.0'
+      storybook: '>=8.6.0 || ^9.0.0'
+      vite: ^5.0.0 || ^6.0.0 || ^7.0.0
+
+  '@analogjs/vite-plugin-angular@1.21.2':
+    resolution: {integrity: sha512-40vFeaMHIfl52/oBu/Wuwe5JfpP7eZKBQlS5BvroZcxk1YsGEctvMf/jsHpmv377ARmed6qj9K151w8g1GVPiQ==}
+    peerDependencies:
+      '@angular-devkit/build-angular': ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^20.0.0
+      '@angular/build': ^18.0.0 || ^19.0.0 || ^20.0.0
+    peerDependenciesMeta:
+      '@angular-devkit/build-angular':
+        optional: true
+      '@angular/build':
+        optional: true
 
   '@analogjs/vite-plugin-angular@2.0.0-beta.4':
     resolution: {integrity: sha512-xcU0aI5NXRs339DwL1zCJb2UNSIE5WVkqwb0Jm5BF44T0/1ZO2QLIaRSQrPte96+0FDBCDbc+M9cc9cUlzkBwQ==}
@@ -4801,6 +4827,12 @@ packages:
       zone.js:
         optional: true
 
+  '@storybook/builder-vite@9.1.10':
+    resolution: {integrity: sha512-0ogI+toZJYaFptcFpRcRPOZ9/NrFUYhiaI09ggeEB1FF9ygHMVsobp4eaj4HjZI6V3x7cQwkd2ZmxAMQDBQuMA==}
+    peerDependencies:
+      storybook: ^9.1.10
+      vite: ^5.0.0 || ^6.0.0 || ^7.0.0
+
   '@storybook/builder-webpack5@9.1.4':
     resolution: {integrity: sha512-GthZ83DD0jNNWkCz+qd7qvEru3bbmQ2NDJubqA6qb6y0WhNi/XWpSSlKWnW19GEyrWi/+Ete3X4BPLGuQaJBtQ==}
     peerDependencies:
@@ -4814,6 +4846,11 @@ packages:
     resolution: {integrity: sha512-yPayX0RUliCmRxsKqBiH3kQx20OJtbsFifmji+VuwNe503efht/jJ6XVWFl0rSB3icBIodWV1EBqc5Bdo+0fsQ==}
     peerDependencies:
       storybook: ^9.1.4
+
+  '@storybook/csf-plugin@9.1.10':
+    resolution: {integrity: sha512-247F/JU0Naxm/RIUnQYpqXeCL0wG8UNJkZe+/GkLjdqzsyML0lb+8OwBsWFfG8zfj6fkjmRU2mF44TnNkzoQcg==}
+    peerDependencies:
+      storybook: ^9.1.10
 
   '@storybook/csf-plugin@9.1.4':
     resolution: {integrity: sha512-t7W6NpH7ZJ9sfBW8Snck4P7m8NWQNGgSgDNnXtjEgH4llgJveNpWy59ho+A4/xcC4Jr/0eTbbhngKXn5hkqctw==}
@@ -14045,6 +14082,22 @@ snapshots:
     transitivePeerDependencies:
       - '@angular/build'
 
+  '@analogjs/storybook-angular@1.21.2(@analogjs/vite-plugin-angular@1.21.2(@angular-devkit/build-angular@20.2.1(xx7z7uzy7kfncbgyf2zcfwpmsu))(@angular/build@20.2.1(ddvl3uiavsmilptrcr47l2vjay)))(@storybook/angular@9.1.4(mbk54eygfi6evf2ycdjx3zxfw4))(storybook@9.1.4(@testing-library/dom@10.4.0)(prettier@3.6.2)(vite@7.1.5(@types/node@20.19.11)(jiti@2.4.2)(less@4.4.1)(lightningcss@1.30.1)(sass-embedded@1.91.0)(sass@1.91.0)(terser@5.43.1)(yaml@2.8.1)))(vite@7.1.5(@types/node@20.19.11)(jiti@2.4.2)(less@4.4.1)(lightningcss@1.30.1)(sass-embedded@1.91.0)(sass@1.91.0)(terser@5.43.1)(yaml@2.8.1))':
+    dependencies:
+      '@analogjs/vite-plugin-angular': 1.21.2(@angular-devkit/build-angular@20.2.1(xx7z7uzy7kfncbgyf2zcfwpmsu))(@angular/build@20.2.1(ddvl3uiavsmilptrcr47l2vjay))
+      '@storybook/angular': 9.1.4(mbk54eygfi6evf2ycdjx3zxfw4)
+      '@storybook/builder-vite': 9.1.10(storybook@9.1.4(@testing-library/dom@10.4.0)(prettier@3.6.2)(vite@7.1.5(@types/node@20.19.11)(jiti@2.4.2)(less@4.4.1)(lightningcss@1.30.1)(sass-embedded@1.91.0)(sass@1.91.0)(terser@5.43.1)(yaml@2.8.1)))(vite@7.1.5(@types/node@20.19.11)(jiti@2.4.2)(less@4.4.1)(lightningcss@1.30.1)(sass-embedded@1.91.0)(sass@1.91.0)(terser@5.43.1)(yaml@2.8.1))
+      storybook: 9.1.4(@testing-library/dom@10.4.0)(prettier@3.6.2)(vite@7.1.5(@types/node@20.19.11)(jiti@2.4.2)(less@4.4.1)(lightningcss@1.30.1)(sass-embedded@1.91.0)(sass@1.91.0)(terser@5.43.1)(yaml@2.8.1))
+      vite: 7.1.5(@types/node@20.19.11)(jiti@2.4.2)(less@4.4.1)(lightningcss@1.30.1)(sass-embedded@1.91.0)(sass@1.91.0)(terser@5.43.1)(yaml@2.8.1)
+
+  '@analogjs/vite-plugin-angular@1.21.2(@angular-devkit/build-angular@20.2.1(xx7z7uzy7kfncbgyf2zcfwpmsu))(@angular/build@20.2.1(ddvl3uiavsmilptrcr47l2vjay))':
+    dependencies:
+      ts-morph: 21.0.1
+      vfile: 6.0.3
+    optionalDependencies:
+      '@angular-devkit/build-angular': 20.2.1(xx7z7uzy7kfncbgyf2zcfwpmsu)
+      '@angular/build': 20.2.1(ddvl3uiavsmilptrcr47l2vjay)
+
   '@analogjs/vite-plugin-angular@2.0.0-beta.4(@angular-devkit/build-angular@20.2.1(f6xh5h3v5kbrr2nltmt5kdgzqu))(@angular/build@20.2.1(hmhzr5apvklyqh7gkzqtyqlsqi))':
     dependencies:
       ts-morph: 21.0.1
@@ -19916,6 +19969,13 @@ snapshots:
       - uglify-js
       - webpack-cli
 
+  '@storybook/builder-vite@9.1.10(storybook@9.1.4(@testing-library/dom@10.4.0)(prettier@3.6.2)(vite@7.1.5(@types/node@20.19.11)(jiti@2.4.2)(less@4.4.1)(lightningcss@1.30.1)(sass-embedded@1.91.0)(sass@1.91.0)(terser@5.43.1)(yaml@2.8.1)))(vite@7.1.5(@types/node@20.19.11)(jiti@2.4.2)(less@4.4.1)(lightningcss@1.30.1)(sass-embedded@1.91.0)(sass@1.91.0)(terser@5.43.1)(yaml@2.8.1))':
+    dependencies:
+      '@storybook/csf-plugin': 9.1.10(storybook@9.1.4(@testing-library/dom@10.4.0)(prettier@3.6.2)(vite@7.1.5(@types/node@20.19.11)(jiti@2.4.2)(less@4.4.1)(lightningcss@1.30.1)(sass-embedded@1.91.0)(sass@1.91.0)(terser@5.43.1)(yaml@2.8.1)))
+      storybook: 9.1.4(@testing-library/dom@10.4.0)(prettier@3.6.2)(vite@7.1.5(@types/node@20.19.11)(jiti@2.4.2)(less@4.4.1)(lightningcss@1.30.1)(sass-embedded@1.91.0)(sass@1.91.0)(terser@5.43.1)(yaml@2.8.1))
+      ts-dedent: 2.2.0
+      vite: 7.1.5(@types/node@20.19.11)(jiti@2.4.2)(less@4.4.1)(lightningcss@1.30.1)(sass-embedded@1.91.0)(sass@1.91.0)(terser@5.43.1)(yaml@2.8.1)
+
   '@storybook/builder-webpack5@9.1.4(@rspack/core@1.5.2(@swc/helpers@0.5.11))(@swc/core@1.5.7(@swc/helpers@0.5.11))(esbuild@0.19.12)(storybook@9.1.4(@testing-library/dom@10.4.0)(prettier@3.6.2)(vite@7.1.5(@types/node@20.19.11)(jiti@2.4.2)(less@4.4.1)(lightningcss@1.30.1)(sass-embedded@1.91.0)(sass@1.91.0)(terser@5.43.1)(yaml@2.8.1)))(typescript@5.9.2)':
     dependencies:
       '@storybook/core-webpack': 9.1.4(storybook@9.1.4(@testing-library/dom@10.4.0)(prettier@3.6.2)(vite@7.1.5(@types/node@20.19.11)(jiti@2.4.2)(less@4.4.1)(lightningcss@1.30.1)(sass-embedded@1.91.0)(sass@1.91.0)(terser@5.43.1)(yaml@2.8.1)))
@@ -19947,6 +20007,11 @@ snapshots:
     dependencies:
       storybook: 9.1.4(@testing-library/dom@10.4.0)(prettier@3.6.2)(vite@7.1.5(@types/node@20.19.11)(jiti@2.4.2)(less@4.4.1)(lightningcss@1.30.1)(sass-embedded@1.91.0)(sass@1.91.0)(terser@5.43.1)(yaml@2.8.1))
       ts-dedent: 2.2.0
+
+  '@storybook/csf-plugin@9.1.10(storybook@9.1.4(@testing-library/dom@10.4.0)(prettier@3.6.2)(vite@7.1.5(@types/node@20.19.11)(jiti@2.4.2)(less@4.4.1)(lightningcss@1.30.1)(sass-embedded@1.91.0)(sass@1.91.0)(terser@5.43.1)(yaml@2.8.1)))':
+    dependencies:
+      storybook: 9.1.4(@testing-library/dom@10.4.0)(prettier@3.6.2)(vite@7.1.5(@types/node@20.19.11)(jiti@2.4.2)(less@4.4.1)(lightningcss@1.30.1)(sass-embedded@1.91.0)(sass@1.91.0)(terser@5.43.1)(yaml@2.8.1))
+      unplugin: 1.16.1
 
   '@storybook/csf-plugin@9.1.4(storybook@9.1.4(@testing-library/dom@10.4.0)(prettier@3.6.2)(vite@7.1.5(@types/node@20.19.11)(jiti@2.4.2)(less@4.4.1)(lightningcss@1.30.1)(sass-embedded@1.91.0)(sass@1.91.0)(terser@5.43.1)(yaml@2.8.1)))':
     dependencies:

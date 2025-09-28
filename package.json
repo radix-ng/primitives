@@ -71,6 +71,8 @@
         "zone.js": "0.15.1"
     },
     "devDependencies": {
+        "@analogjs/storybook-angular": "^1.21.2",
+        "@analogjs/vite-plugin-angular": "^1.21.2",
         "@angular-devkit/build-angular": "20.2.1",
         "@angular-devkit/core": "20.2.1",
         "@angular-devkit/schematics": "20.2.1",

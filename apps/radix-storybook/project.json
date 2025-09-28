@@ -7,11 +7,10 @@
     "tags": [],
     "targets": {
         "storybook": {
-            "executor": "@storybook/angular:start-storybook",
+            "executor": "@analogjs/storybook-angular:start-storybook",
             "options": {
                 "port": 4400,
                 "configDir": "apps/radix-storybook/.storybook",
-                "browserTarget": "radix-storybook:build-storybook",
                 "compodoc": true,
                 "compodocArgs": [
                     "-e",
@@ -37,7 +36,7 @@
             }
         },
         "build-storybook": {
-            "executor": "@storybook/angular:build-storybook",
+            "executor": "@analogjs/storybook-angular:build-storybook",
             "outputs": ["{options.outputDir}"],
             "options": {
                 "outputDir": "dist/radix-storybook",
