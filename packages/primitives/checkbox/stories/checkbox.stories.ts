@@ -29,7 +29,15 @@ export default {
         }),
         componentWrapperDecorator(
             (story) => html`
-                <div>${story}</div>
+                <div
+                    class="radix-themes light light-theme radix-themes-default-fonts"
+                    data-accent-color="indigo"
+                    data-gray-color="slate"
+                    data-radius="medium"
+                    data-scaling="100%"
+                >
+                    ${story}
+                </div>
             `
         )
     ]
