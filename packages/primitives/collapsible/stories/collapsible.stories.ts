@@ -1,5 +1,5 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { LucideAngularModule, UnfoldVertical, X } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { RdxCollapsibleContentPresenceDirective } from '../src/collapsible-content-presence.directive';
 import { RdxCollapsibleContentDirective } from '../src/collapsible-content.directive';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
@@ -20,8 +20,7 @@ export default {
                 RdxCollapsibleContentPresenceDirective,
                 RdxCollapsibleExternalTriggeringComponent,
                 RdxCollapsibleAnimationComponent,
-                LucideAngularModule,
-                LucideAngularModule.pick({ X, UnfoldVertical })
+                LucideAngularModule
             ]
         }),
         componentWrapperDecorator(

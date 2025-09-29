@@ -1,6 +1,6 @@
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { LucideAngularModule, MountainSnow, X } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { RdxPopoverModule } from '../index';
 import { RdxPopoverAnchorComponent } from './popover-anchor.component';
 import { RdxPopoverAnimationsComponent } from './popover-animations.component';
@@ -29,8 +29,7 @@ export default {
                 RdxPopoverInitiallyOpenComponent,
                 RdxPopoverInitialFocusComponent,
                 RdxPopoverAnchorComponent,
-                LucideAngularModule,
-                LucideAngularModule.pick({ MountainSnow, X })
+                LucideAngularModule
             ],
             providers: [provideAnimations()]
         }),

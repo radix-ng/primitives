@@ -1,5 +1,5 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { AlignCenter, AlignLeft, AlignRight, Bold, Italic, LucideAngularModule, Strikethrough } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { RdxToolbarButtonDirective } from '../src/toolbar-button.directive';
 import { RdxToolbarLinkDirective } from '../src/toolbar-link.directive';
 import { RdxToolbarRootDirective } from '../src/toolbar-root.directive';
@@ -20,8 +20,7 @@ export default {
                 RdxToolbarButtonDirective,
                 RdxToolbarToggleGroupDirective,
                 RdxToolbarToggleItemDirective,
-                LucideAngularModule,
-                LucideAngularModule.pick({ Italic, Bold, Strikethrough, AlignLeft, AlignCenter, AlignRight })
+                LucideAngularModule
             ]
         }),
         componentWrapperDecorator(

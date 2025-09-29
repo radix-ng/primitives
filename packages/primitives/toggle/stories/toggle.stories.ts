@@ -1,5 +1,5 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { Italic, LucideAngularModule } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { RdxToggleVisuallyHiddenInputDirective } from '../src/toggle-visually-hidden-input.directive';
 import { RdxToggleDirective } from '../src/toggle.directive';
 import { ToggleButtonReactiveForms } from './toggle-forms.component';
@@ -14,8 +14,7 @@ export default {
                 RdxToggleDirective,
                 RdxToggleVisuallyHiddenInputDirective,
                 ToggleButtonReactiveForms,
-                LucideAngularModule,
-                LucideAngularModule.pick({ Italic })
+                LucideAngularModule
             ]
         }),
         componentWrapperDecorator(

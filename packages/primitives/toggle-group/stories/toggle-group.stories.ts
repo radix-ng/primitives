@@ -1,5 +1,5 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { AlignCenter, AlignLeft, AlignRight, LucideAngularModule } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { RdxToggleGroupItemDirective } from '../src/toggle-group-item.directive';
 import { RdxToggleGroupDirective } from '../src/toggle-group.directive';
 import { ToggleGroup } from './toggle-group';
@@ -10,13 +10,7 @@ export default {
     title: 'Primitives/Toggle Group',
     decorators: [
         moduleMetadata({
-            imports: [
-                RdxToggleGroupDirective,
-                RdxToggleGroupItemDirective,
-                LucideAngularModule,
-                ToggleGroup,
-                LucideAngularModule.pick({ AlignRight, AlignLeft, AlignCenter })
-            ]
+            imports: [RdxToggleGroupDirective, RdxToggleGroupItemDirective, LucideAngularModule, ToggleGroup]
         }),
         componentWrapperDecorator(
             (story) => html`

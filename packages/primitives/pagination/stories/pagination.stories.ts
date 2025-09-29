@@ -1,5 +1,5 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, LucideAngularModule } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { RdxPaginationEllipsisDirective } from '../src/pagination-ellipsis.directive';
 import { RdxPaginationFirstDirective } from '../src/pagination-first.directive';
 import { RdxPaginationLastDirective } from '../src/pagination-last.directive';
@@ -24,8 +24,7 @@ export default {
                 RdxPaginationNextDirective,
                 RdxPaginationListItemDirective,
                 RdxPaginationEllipsisDirective,
-                LucideAngularModule,
-                LucideAngularModule.pick({ ChevronLeft, ChevronRight, ChevronsRight, ChevronsLeft })
+                LucideAngularModule
             ]
         }),
         componentWrapperDecorator(

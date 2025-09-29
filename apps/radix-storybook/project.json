@@ -7,11 +7,10 @@
     "tags": [],
     "targets": {
         "storybook": {
-            "executor": "@storybook/angular:start-storybook",
+            "executor": "@analogjs/storybook-angular:start-storybook",
             "options": {
                 "port": 4400,
                 "configDir": "apps/radix-storybook/.storybook",
-                "browserTarget": "radix-storybook:build-storybook",
                 "compodoc": true,
                 "compodocArgs": [
                     "-e",
@@ -23,6 +22,11 @@
                     "--disableDependencies",
                     "-d",
                     "apps/radix-storybook/.storybook"
+                ],
+                "styles": [
+                    "apps/radix-storybook/.storybook/tailwind.css",
+                    "@radix-ui/themes/styles.css",
+                    "apps/radix-storybook/.storybook/fonts.css"
                 ]
             },
             "configurations": {
@@ -32,12 +36,11 @@
             }
         },
         "build-storybook": {
-            "executor": "@storybook/angular:build-storybook",
+            "executor": "@analogjs/storybook-angular:build-storybook",
             "outputs": ["{options.outputDir}"],
             "options": {
                 "outputDir": "dist/radix-storybook",
                 "configDir": "apps/radix-storybook/.storybook",
-                "browserTarget": "radix-storybook:build-storybook",
                 "compodoc": true,
                 "compodocArgs": [
                     "-e",
@@ -52,12 +55,14 @@
                 ],
                 "styles": [
                     "apps/radix-storybook/.storybook/main.scss",
+                    "apps/radix-storybook/.storybook/tailwind.css",
                     "@radix-ui/themes/styles.css",
+                    "apps/radix-storybook/.storybook/fonts.css",
                     "@angular/cdk/overlay-prebuilt.css",
                     "packages/primitives/dialog/stories/sheet/sheet.styles.scss"
                 ],
                 "stylePreprocessorOptions": {
-                    "includePaths": ["node_modules/"]
+                    "loadPaths": ["node_modules/"]
                 }
             },
             "configurations": {

@@ -1,10 +1,10 @@
+import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { LucideAngularModule } from 'lucide-angular';
 import {
     RdxDropdownMenuContentDirective,
     RdxDropdownMenuItemDirective,
     RdxDropdownMenuTriggerDirective
-} from '@radix-ng/primitives/dropdown-menu';
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { Check, Dot, LucideAngularModule, Menu } from 'lucide-angular';
+} from '../../dropdown-menu';
 
 import { RdxContextMenuContentDirective } from '../src/context-menu-content.directive';
 import { RdxContextMenuItemCheckboxDirective } from '../src/context-menu-item-checkbox.directive';
@@ -31,8 +31,7 @@ export default {
                 RdxContextMenuSeparatorDirective,
                 RdxContextMenuContentDirective,
                 RdxDropdownMenuContentDirective,
-                LucideAngularModule,
-                LucideAngularModule.pick({ Menu, Check, Dot })
+                LucideAngularModule
             ]
         }),
         componentWrapperDecorator(

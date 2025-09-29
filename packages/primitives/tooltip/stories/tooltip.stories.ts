@@ -1,6 +1,6 @@
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { LucideAngularModule, MountainSnow, X } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { RdxTooltipModule } from '../index';
 import { RdxTooltipAnchorComponent } from './tooltip-anchor.component';
 import { RdxTooltipAnimationsComponent } from './tooltip-animations.component';
@@ -27,8 +27,7 @@ export default {
                 RdxTooltipAnimationsComponent,
                 RdxTooltipInitiallyOpenComponent,
                 RdxTooltipAnchorComponent,
-                LucideAngularModule,
-                LucideAngularModule.pick({ MountainSnow, X })
+                LucideAngularModule
             ],
             providers: [provideAnimations()]
         }),
