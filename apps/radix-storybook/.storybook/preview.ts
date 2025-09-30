@@ -1,5 +1,4 @@
 import { importProvidersFrom } from '@angular/core';
-import { setCompodocJson } from '@storybook/addon-docs/angular';
 import { applicationConfig, Preview } from '@storybook/angular';
 import {
     AlignCenter,
@@ -22,9 +21,9 @@ import {
     UnfoldVertical,
     X
 } from 'lucide-angular';
-import docJson from './documentation.json';
+import CompodocPlugin from './plugins/compodoc';
 
-setCompodocJson(docJson);
+CompodocPlugin.init();
 
 const preview: Preview = {
     decorators: [

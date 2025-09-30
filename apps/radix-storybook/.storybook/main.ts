@@ -1,9 +1,7 @@
-import type { StorybookConfig } from '@analogjs/storybook-angular';
+import type { StorybookConfig } from '@storybook/angular';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import remarkGfm from 'remark-gfm';
-import { mergeConfig, UserConfig } from 'vite';
-import viteTsConfigPaths from 'vite-tsconfig-paths';
 
 const require = createRequire(import.meta.url);
 
@@ -11,7 +9,7 @@ const config: StorybookConfig = {
     stories: [
         '../docs/**/*.docs.mdx',
         '../../../packages/primitives/**/*.docs.mdx',
-        '../../../packages/primitives/**/*.stories.ts'
+        '../../../packages/primitives/**/*.stories.@(js|ts)'
     ],
 
     addons: [
@@ -29,18 +27,12 @@ const config: StorybookConfig = {
     ],
 
     framework: {
-        name: '@analogjs/storybook-angular',
+        name: getAbsolutePath('@storybook/angular'),
         options: {}
     },
 
     core: {
         disableTelemetry: false
-    },
-
-    async viteFinal(config: UserConfig) {
-        return mergeConfig(config, {
-            plugins: [viteTsConfigPaths()]
-        });
     },
 
     docs: {}

@@ -15,6 +15,7 @@
         "storybook:primitives": "nx run radix-storybook:storybook",
         "storybook:components": "nx run components:storybook",
         "build-storybook": "nx run radix-storybook:build-storybook",
+        "static-storybook": "nx run radix-storybook:static-storybook",
         "----Radix Primitives---": "-----------------------------------------------------------------",
         "primitives:build": "nx run primitives:build",
         "primitives:build:schematics": "nx run primitives:build:schematics",
@@ -70,8 +71,6 @@
         "zone.js": "0.15.1"
     },
     "devDependencies": {
-        "@analogjs/storybook-angular": "^2.0.0-beta.4",
-        "@analogjs/vite-plugin-angular": "^2.0.0-beta.4",
         "@angular-devkit/build-angular": "20.2.1",
         "@angular-devkit/core": "20.2.1",
         "@angular-devkit/schematics": "20.2.1",

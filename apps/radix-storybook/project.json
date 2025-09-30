@@ -7,10 +7,11 @@
     "tags": [],
     "targets": {
         "storybook": {
-            "executor": "@analogjs/storybook-angular:start-storybook",
+            "executor": "@storybook/angular:start-storybook",
             "options": {
                 "port": 4400,
                 "configDir": "apps/radix-storybook/.storybook",
+                "browserTarget": "radix-storybook:build-storybook",
                 "compodoc": true,
                 "compodocArgs": [
                     "-e",
@@ -36,23 +37,14 @@
             }
         },
         "build-storybook": {
-            "executor": "@analogjs/storybook-angular:build-storybook",
+            "executor": "@storybook/angular:build-storybook",
             "outputs": ["{options.outputDir}"],
             "options": {
                 "outputDir": "dist/radix-storybook",
                 "configDir": "apps/radix-storybook/.storybook",
+                "browserTarget": "radix-storybook:build-storybook",
                 "compodoc": true,
-                "compodocArgs": [
-                    "-e",
-                    "json",
-                    "--disablePrivate",
-                    "--disableProtected",
-                    "--disableLifeCycleHooks",
-                    "--disableInternal",
-                    "--disableDependencies",
-                    "-d",
-                    "apps/radix-storybook/.storybook"
-                ],
+                "compodocArgs": ["-e", "json", "-d", "apps/radix-storybook/.storybook"],
                 "styles": [
                     "apps/radix-storybook/.storybook/main.scss",
                     "apps/radix-storybook/.storybook/tailwind.css",
@@ -62,7 +54,7 @@
                     "packages/primitives/dialog/stories/sheet/sheet.styles.scss"
                 ],
                 "stylePreprocessorOptions": {
-                    "loadPaths": ["node_modules/"]
+                    "includePaths": ["node_modules/"]
                 }
             },
             "configurations": {
