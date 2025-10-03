@@ -14,8 +14,10 @@ import { injectCheckboxRootContext } from './checkbox-root';
         role: 'checkbox',
         '[attr.aria-checked]': 'rootContext.checked() === "indeterminate" ? "mixed" : rootContext.checked()',
         '[attr.aria-required]': 'rootContext.required() || undefined',
+        '[attr.aria-readonly]': 'rootContext.readonly() || undefined',
         '[attr.data-state]': 'rootContext.state()',
         '[attr.data-disabled]': 'rootContext.disabled() || undefined',
+        '[attr.data-readonly]': 'rootContext.readonly() || undefined',
         '[disabled]': 'rootContext.disabled()',
         '[value]': 'rootContext.value()',
         '(click)': 'clicked($event)',
@@ -29,6 +31,10 @@ export class RdxCheckboxButtonDirective {
     private readonly elementRef = inject<ElementRef<HTMLButtonElement>>(ElementRef);
 
     protected clicked(event: MouseEvent) {
+        if (event.defaultPrevented || this.rootContext.readonly()) {
+            return;
+        }
+
         this.rootContext.toggle();
 
         if (this.rootContext.form() || this.elementRef.nativeElement.closest('form')) {

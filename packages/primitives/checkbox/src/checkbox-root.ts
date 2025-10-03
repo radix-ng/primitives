@@ -16,6 +16,7 @@ const rootContext = () => {
         value: checkbox.value,
         name: checkbox.name,
         form: checkbox.form,
+        readonly: checkbox.readonly,
         state: computed(() => {
             const checked = controlValueAccessor.value();
 
@@ -69,6 +70,12 @@ export class RdxCheckboxRootDirective {
      * @group Props
      */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /**
+     * Whether the user should be unable to tick or untick the checkbox.
+     * @group Props
+     */
+    readonly readonly = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
      * Whether or not the checkbox is required.
