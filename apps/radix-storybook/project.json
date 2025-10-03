@@ -26,7 +26,8 @@
                 "styles": [
                     "apps/radix-storybook/.storybook/tailwind.css",
                     "@radix-ui/themes/styles.css",
-                    "apps/radix-storybook/.storybook/fonts.css"
+                    "apps/radix-storybook/.storybook/fonts.css",
+                    "packages/primitives/dialog/stories/sheet/sheet.styles.css"
                 ]
             },
             "configurations": {
@@ -44,12 +45,12 @@
                 "compodoc": true,
                 "compodocArgs": ["-e", "json", "-d", "apps/radix-storybook/.storybook"],
                 "styles": [
-                    "apps/radix-storybook/.storybook/main.scss",
+                    "apps/radix-storybook/.storybook/main.css",
                     "apps/radix-storybook/.storybook/tailwind.css",
                     "@radix-ui/themes/styles.css",
                     "apps/radix-storybook/.storybook/fonts.css",
                     "@angular/cdk/overlay-prebuilt.css",
-                    "packages/primitives/dialog/stories/sheet/sheet.styles.scss"
+                    "packages/primitives/dialog/stories/sheet/sheet.styles.css"
                 ],
                 "stylePreprocessorOptions": {
                     "loadPaths": ["node_modules/"]
