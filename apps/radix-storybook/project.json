@@ -11,6 +11,7 @@
             "options": {
                 "port": 4400,
                 "configDir": "apps/radix-storybook/.storybook",
+                "experimentalZoneless": true,
                 "compodoc": true,
                 "compodocArgs": [
                     "-e",
@@ -24,6 +25,7 @@
                     "apps/radix-storybook/.storybook"
                 ],
                 "styles": [
+                    "apps/radix-storybook/.storybook/main.css",
                     "apps/radix-storybook/.storybook/tailwind.css",
                     "@radix-ui/themes/styles.css",
                     "apps/radix-storybook/.storybook/fonts.css",
@@ -52,6 +54,7 @@
                     "@angular/cdk/overlay-prebuilt.css",
                     "packages/primitives/dialog/stories/sheet/sheet.styles.css"
                 ],
+                "experimentalZoneless": true,
                 "stylePreprocessorOptions": {
                     "loadPaths": ["node_modules/"]
                 }
@@ -73,7 +76,8 @@
             "options": {
                 "buildTarget": "radix-storybook:build-storybook",
                 "staticFilePath": "dist/radix-storybook",
-                "spa": true
+                "spa": true,
+                "experimentalZoneless": true
             },
             "configurations": {
                 "ci": {

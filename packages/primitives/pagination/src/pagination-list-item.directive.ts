@@ -5,7 +5,7 @@ import { injectPaginationRootContext } from './pagination-context.token';
 @Directive({
     selector: '[rdxPaginationListItem]',
     host: {
-        '[data-type]': '"page"',
+        '[attr.data-type]': '"page"',
 
         '[attr.aria-label]': '"Page " + value()',
         '[attr.aria-current]': 'isSelected() ? "page" : undefined',

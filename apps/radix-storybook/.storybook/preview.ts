@@ -1,4 +1,4 @@
-import { importProvidersFrom } from '@angular/core';
+import { importProvidersFrom, provideZonelessChangeDetection } from '@angular/core';
 import { applicationConfig, Preview } from '@storybook/angular';
 import {
     AlignCenter,
@@ -29,6 +29,7 @@ const preview: Preview = {
     decorators: [
         applicationConfig({
             providers: [
+                provideZonelessChangeDetection(),
                 importProvidersFrom(
                     LucideAngularModule.pick({
                         Check,

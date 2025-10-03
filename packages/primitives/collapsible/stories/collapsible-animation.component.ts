@@ -1,7 +1,5 @@
-import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, signal } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
-import { RdxCollapsibleContentPresenceDirective } from '../src/collapsible-content-presence.directive';
 import { RdxCollapsibleContentDirective } from '../src/collapsible-content.directive';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.directive';
@@ -12,19 +10,23 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
         RdxCollapsibleRootDirective,
         RdxCollapsibleTriggerDirective,
         RdxCollapsibleContentDirective,
-        LucideAngularModule,
-        RdxCollapsibleContentPresenceDirective
-    ],
-    animations: [
-        trigger('contentExpansion', [
-            state('expanded', style({ height: '*', opacity: 1, visibility: 'visible' })),
-            state('collapsed', style({ height: '0px', opacity: 0, visibility: 'hidden' })),
-            transition('expanded <=> collapsed', animate('600ms cubic-bezier(.37,1.04,.68,.98)'))
-        ])
+        LucideAngularModule
     ],
     styles: `
         button {
             all: unset;
+        }
+
+        .expanded {
+            height: 100%;
+            opacity: 1;
+            transition: 600ms cubic-bezier(0.37, 1.04, 0.68, 0.98);
+        }
+
+        .collapsed {
+            height: 0;
+            opacity: 0;
+            transition: 600ms cubic-bezier(0.37, 1.04, 0.68, 0.98);
         }
 
         .CollapsibleRoot {
@@ -90,7 +92,7 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
                 <span class="Text">&#64;radix-ui/primitives</span>
             </div>
 
-            <div [@contentExpansion]="open() ? 'expanded' : 'collapsed'" rdxCollapsibleContent>
+            <div [class]="open() ? 'expanded' : 'collapsed'" rdxCollapsibleContent>
                 <div class="Repository">
                     <span class="Text">&#64;radix-ui/colors</span>
                 </div>

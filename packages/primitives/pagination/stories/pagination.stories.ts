@@ -38,6 +38,7 @@ export default {
                         }
 
                         .Button {
+                            display: flex;
                             text-align: center;
                             font-size: 15px;
                             line-height: 1;

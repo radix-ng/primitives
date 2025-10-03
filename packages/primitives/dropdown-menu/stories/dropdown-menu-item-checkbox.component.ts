@@ -19,7 +19,7 @@ import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.di
             alignOffset="-5"
             aria-label="Customise options"
         >
-            <lucide-angular size="16" name="menu" style="height: 1.2rem;" />
+            <lucide-angular size="16" name="menu" />
         </button>
 
         <ng-template #menu>

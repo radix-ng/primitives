@@ -124,33 +124,26 @@ export const Default: Story = {
 </ng-template>
 
 <style>
-    .context-menu-trigger {
-        display: block;
-        border: 2px dashed #fff;
-        color: #fff;
-        border-radius: 4px;
-        font-size: 15px;
-        -webkit-user-select: none;
-        user-select: none;
-        padding: 45px 0;
-        width: 300px;
-        text-align: center;
+.context-menu-trigger {
+    display: block;
+    border: 2px dashed #fff;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 15px;
+    -webkit-user-select: none;
+    user-select: none;
+    padding: 45px 0;
+    width: 300px;
+    text-align: center;
+}
 
-      &:focus: {
-        outline: none;
-        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.5);
-      },
-
-        &[data-state="open"]: {
-            background-color: lightblue;
-            /*display: flex;*/
-            /*align-items: center;*/
-            /*justify-content: center;*/
-            /*width: 200vw;*/
-            /*height: 200vh;*/
-            /*gap: 20;*/
-        }
-    }
+.context-menu-trigger:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.5);
+}
+.context-menu-trigger[data-state="open"] {
+    background-color: lightblue;
+}
 /* reset */
 button {
   all: unset;

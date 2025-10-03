@@ -48,7 +48,7 @@ export const Default: Story = {
         sideOffset="4"
         alignOffset="-5"
         class="IconButton" aria-label="Customise options">
-    <lucide-angular size="16" name="menu" style="height: 1.2rem;"></lucide-angular>
+    <lucide-angular size="16" name="menu" />
 </button>
 
 <ng-template #menu>
