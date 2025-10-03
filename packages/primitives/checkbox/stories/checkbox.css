@@ -9,11 +9,11 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 10px var(--black-a7);
+}
 
-    &:where(:disabled) {
-        cursor: var(--cursor-disabled);
-        background-color: var(--gray-5);
-    }
+.CheckboxButton:where(:disabled) {
+    cursor: var(--cursor-disabled);
+    background-color: var(--gray-5);
 }
 
 .CheckboxButton:focus {

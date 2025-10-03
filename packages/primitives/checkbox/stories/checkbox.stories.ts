@@ -1,5 +1,6 @@
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { argsToTemplate, componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { LucideAngularModule } from 'lucide-angular';
+import { expect } from 'storybook/test';
 import { RdxLabelDirective } from '../../label';
 import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
@@ -46,10 +47,16 @@ export default {
 type Story = StoryObj;
 
 export const Default: Story = {
-    render: () => ({
+    args: {
+        readonly: false,
+        disabled: false
+    },
+
+    render: (args) => ({
+        props: args,
         template: html`
             <div style="display: flex; align-items: center;">
-                <div rdxCheckboxRoot>
+                <div rdxCheckboxRoot ${argsToTemplate(args)}>
                     <button class="CheckboxButton" id="checkbox-1" rdxCheckboxButton>
                         <lucide-angular class="CheckboxIndicator" rdxCheckboxIndicator size="16" name="check" />
                     </button>
@@ -57,48 +64,11 @@ export const Default: Story = {
                 </div>
                 <label class="Label" rdxLabel htmlFor="checkbox-1">Accept terms and conditions.</label>
             </div>
-
-            <style>
-                button {
-                    all: unset;
-                }
-
-                .CheckboxButton {
-                    background-color: white;
-                    width: 25px;
-                    height: 25px;
-                    border-radius: 4px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    box-shadow: 0 2px 10px var(--black-a7);
-                }
-                .CheckboxButton:hover {
-                    background-color: var(--violet-3);
-                }
-                .CheckboxButton:focus {
-                    box-shadow: 0 0 0 2px black;
-                }
-
-                .CheckboxIndicator {
-                    align-items: center;
-                    display: flex;
-                    color: var(--violet-11);
-                }
-
-                .CheckboxIndicator[data-state='unchecked'] {
-                    display: none;
-                }
-
-                .Label {
-                    color: white;
-                    padding-left: 15px;
-                    font-size: 15px;
-                    line-height: 1;
-                }
-            </style>
         `
-    })
+    }),
+    play: async ({ canvas }) => {
+        await expect(canvas.getByText(/Accept terms and conditions/gi)).toBeTruthy();
+    }
 };
 
 export const ReactiveForms: Story = {

@@ -1,14 +1,15 @@
-import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import { ArgTypes, Primary, Controls, Meta } from '@storybook/addon-docs/blocks';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 import * as CheckboxDirectiveStories from './checkbox.stories';
 
-<Meta title="Primitives/Checkbox" />
+<Meta title="Primitives/Checkbox" of={CheckboxDirectiveStories} />
 
 # Checkbox
 
 #### A control that allows the user to toggle between checked and not checked.
 
-<Canvas sourceState="hidden" of={CheckboxDirectiveStories.Default} />
+<Primary />
+<Controls />
 
 ## Features
 

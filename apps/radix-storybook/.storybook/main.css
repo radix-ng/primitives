@@ -1,1 +1,7 @@
-@import url('slider.css');
+@import './tailwind.css';
+@import './fonts.css';
+
+@import './slider.css';
+
+@import '../../../packages/primitives/dialog/stories/sheet/sheet.styles.css';
+@import '../../../packages/primitives/checkbox/stories/checkbox.css';
