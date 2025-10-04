@@ -20,7 +20,7 @@ const config = {
         'scss/at-rule-no-unknown': [
             true,
             {
-                ignoreAtRules: ['tailwind', 'apply', 'custom-variant', 'theme', 'utility', 'variant']
+                ignoreAtRules: ['tailwind', 'plugin', 'apply', 'custom-variant', 'theme', 'utility', 'variant']
             }
         ],
         'no-descending-specificity': null,

@@ -7,6 +7,8 @@
 @import '@angular/cdk/overlay-prebuilt.css';
 @import '@docsearch/css';
 
+@plugin 'tailwindcss-animate';
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -73,11 +75,6 @@
     --border: oklch(0.274 0.006 286.033); /* --color-zinc-800 */
     --input: oklch(0.274 0.006 286.033); /* --color-zinc-800 */
     --ring: oklch(0.442 0.017 285.786); /* --color-zinc-600 */
-    --chart-1: oklch(0.488 0.243 264.376);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.769 0.188 70.08);
-    --chart-4: oklch(0.627 0.265 303.9);
-    --chart-5: oklch(0.645 0.246 16.439);
     --sidebar: oklch(0.205 0 0); /* --color-zinc-900 */
     --sidebar-foreground: oklch(0.985 0 0); /* --color-zinc-50 */
     --sidebar-primary: oklch(0.488 0.243 264.376); /* --color-blue-700 */
@@ -213,6 +210,40 @@
     pre {
         scrollbar-width: thin;
         scrollbar-color: var(--border) transparent;
+    }
+
+    .toc-link {
+        @apply hover:text-muted-foreground block border-l-2 border-transparent py-1;
+    }
+
+    .toc-link.active {
+        @apply text-primary font-medium;
+    }
+
+    [data-rehype-pretty-code-figure] [data-line-numbers] [data-line] {
+        @apply px-2;
+    }
+
+    [data-rehype-pretty-code-figure] code {
+        @apply grid min-w-full break-words rounded-none border-0 bg-transparent p-0;
+        counter-reset: line;
+        box-decoration-break: clone;
+    }
+
+    [data-rehype-pretty-code-figure] [data-line] {
+        @apply inline-block min-h-[1rem] w-full px-4 py-0.5;
+    }
+
+    [data-rehype-pretty-code-figure] {
+        @apply relative text-white;
+    }
+
+    [data-rehype-pretty-code-title] {
+        @apply text-foreground mt-2 px-4 pt-6 text-sm font-medium;
+    }
+
+    [data-rehype-pretty-code-title] + pre {
+        @apply mt-2;
     }
 }
 
