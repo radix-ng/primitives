@@ -29,4 +29,4 @@ import {
         </div>
     `
 })
-export default class TabsComponent {}
+export default class Page {}

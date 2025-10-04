@@ -13,7 +13,6 @@
                 "outputPath": "dist/apps/radix-ssr-testing",
                 "index": "apps/radix-ssr-testing/src/index.html",
                 "browser": "apps/radix-ssr-testing/src/main.ts",
-                "polyfills": ["zone.js"],
                 "tsConfig": "apps/radix-ssr-testing/tsconfig.app.json",
                 "inlineStyleLanguage": "css",
                 "assets": [
@@ -25,7 +24,7 @@
                 "styles": [],
                 "scripts": [],
                 "server": "apps/radix-ssr-testing/src/main.server.ts",
-                "prerender": true,
+                "outputMode": "server",
                 "ssr": {
                     "entry": "apps/radix-ssr-testing/server.ts"
                 }
@@ -55,7 +54,7 @@
             "defaultConfiguration": "production"
         },
         "serve": {
-            "executor": "@angular-devkit/build-angular:dev-server",
+            "executor": "@angular/build:dev-server",
             "configurations": {
                 "production": {
                     "buildTarget": "radix-ssr-testing:build:production"

@@ -43,4 +43,4 @@ import {
         </span>
     `
 })
-export default class SelectComponent {}
+export default class Page {}

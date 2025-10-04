@@ -44,4 +44,4 @@ import { RdxSliderModule } from '@radix-ng/primitives/slider';
         </rdx-slider>
     `
 })
-export default class SliderComponent {}
+export default class Page {}

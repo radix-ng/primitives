@@ -11,4 +11,4 @@ import { RdxToggleGroupDirective, RdxToggleGroupItemDirective } from '@radix-ng/
         </div>
     `
 })
-export default class ToggleGroupComponent {}
+export default class Page {}

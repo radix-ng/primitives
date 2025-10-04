@@ -9,4 +9,4 @@ import { RdxSeparatorRootDirective } from '@radix-ng/primitives/separator';
         <div rdxSeparatorRoot>***</div>
     `
 })
-export default class SeparatorComponent {}
+export default class Page {}

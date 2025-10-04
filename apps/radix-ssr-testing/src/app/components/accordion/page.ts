@@ -72,4 +72,4 @@ import {
         </div>
     `
 })
-export default class AccordionComponent {}
+export default class Page {}

@@ -10,4 +10,4 @@ import { RdxSwitchModule } from '@radix-ng/primitives/switch';
         </button>
     `
 })
-export default class SwitchComponent {}
+export default class Page {}

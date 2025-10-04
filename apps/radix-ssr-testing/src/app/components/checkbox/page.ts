@@ -27,4 +27,4 @@ import {
         </div>
     `
 })
-export default class CheckboxComponent {}
+export default class Page {}

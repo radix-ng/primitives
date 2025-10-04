@@ -11,4 +11,4 @@ import { RdxAvatarFallbackDirective, RdxAvatarRootDirective } from '@radix-ng/pr
         </span>
     `
 })
-export default class AvatarComponent {}
+export default class Page {}
