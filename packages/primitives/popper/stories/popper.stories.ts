@@ -1,4 +1,4 @@
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { argsToTemplate, componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { RdxPopper } from '../src/popper';
 import { RdxPopperAnchor } from '../src/popper-anchor';
 import { RdxPopperArrow } from '../src/popper-arrow';
@@ -74,17 +74,36 @@ export default {
                 </div>
             `
         )
-    ]
+    ],
+    argTypes: {
+        align: {
+            options: ['start', 'center', 'end'],
+            control: { type: 'select' }
+        },
+        side: {
+            options: ['top', 'right', 'bottom', 'left'],
+            control: { type: 'select' }
+        },
+        sideOffset: {
+            control: { type: 'number' }
+        }
+    }
 } as Meta;
 
 type Story = StoryObj;
 
 export const Default: Story = {
-    render: () => ({
+    args: {
+        side: 'left',
+        align: 'start',
+        sideOffset: 5
+    },
+    render: (args) => ({
+        props: args,
         template: html`
             <div rdxPopperRoot>
                 <div class="popper_anchorClass" rdxPopperAnchor>open</div>
-                <div class="popper_contentClass" side="left" align="center" sideOffset="5" rdxPopperContentWrapper>
+                <div class="popper_contentClass" ${argsToTemplate(args)} rdxPopperContentWrapper>
                     <div rdxPopperContent>Dimensions</div>
                     <div class="popper_arrowClass" rdxPopperArrow></div>
                 </div>
