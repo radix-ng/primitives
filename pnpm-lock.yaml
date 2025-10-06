@@ -41,6 +41,9 @@ importers:
       '@angular/ssr':
         specifier: 20.3.4
         version: 20.3.4(jgggrsfsi6ouga5ombvdg2nzuq)
+      '@floating-ui/dom':
+        specifier: ^1.7.4
+        version: 1.7.4
       '@internationalized/date':
         specifier: ^3.7.0
         version: 3.10.0
