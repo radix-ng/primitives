@@ -13,6 +13,8 @@ export const dependencies = {
     '@fontsource/inter': '^5.1.0',
     '@fontsource/jetbrains-mono': '^5.1.1',
     '@internationalized/date': '^3.7.0',
+    '@internationalized/number': '^3.6.1',
+    '@floating-ui/dom': '^1.7.4',
     'lucide-angular': '~0.542.0',
     rxjs: '~7.8.1',
     tslib: '^2.5.0',
