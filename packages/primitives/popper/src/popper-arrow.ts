@@ -11,7 +11,7 @@ import {
     numberAttribute
 } from '@angular/core';
 import { RdxArrow } from '@radix-ng/primitives/arrow';
-import { injectPopperContentContext } from './popper-content-wrapper';
+import { injectPopperContentWrapperContext } from './popper-content-wrapper';
 
 @Directive({
     selector: '[rdxPopperArrow]',
@@ -20,7 +20,7 @@ import { injectPopperContentContext } from './popper-content-wrapper';
     }
 })
 export class RdxPopperArrow {
-    private readonly popperContentContext = injectPopperContentContext()!;
+    private readonly popperContentContext = injectPopperContentWrapperContext()!;
 
     private readonly environmentInjector = inject(EnvironmentInjector);
 

@@ -1,5 +1,5 @@
 import { computed, Directive } from '@angular/core';
-import { injectPopperContentContext } from './popper-content-wrapper';
+import { injectPopperContentWrapperContext } from './popper-content-wrapper';
 
 @Directive({
     selector: '[rdxPopperContent]',
@@ -10,8 +10,12 @@ import { injectPopperContentContext } from './popper-content-wrapper';
     }
 })
 export class RdxPopperContent {
-    protected readonly popperPanel = injectPopperContentContext()!;
+    protected readonly popperPanel = injectPopperContentWrapperContext()!;
 
+    /**
+     * if the PopperContent hasn't been placed yet (not all measurements done)
+     * we prevent animations so that users's animation don't kick in too early referring wrong sides
+     */
     protected readonly style = computed(() => ({
         animation: !this.popperPanel.isPositioned() ? 'none' : ''
     }));

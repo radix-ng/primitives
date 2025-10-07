@@ -105,7 +105,7 @@ export const Default: Story = {
                 <div class="popper_anchorClass" rdxPopperAnchor>open</div>
                 <div class="popper_contentClass" ${argsToTemplate(args)} rdxPopperContentWrapper>
                     <div rdxPopperContent>Dimensions</div>
-                    <div class="popper_arrowClass" rdxPopperArrow></div>
+                    <span class="popper_arrowClass" rdxPopperArrow></span>
                 </div>
             </div>
         `
@@ -119,11 +119,11 @@ export const CustomArrow: Story = {
                 <div class="popper_anchorClass" rdxPopperAnchor>open</div>
                 <div class="popper_contentClass" side="left" align="center" rdxPopperContentWrapper>
                     <div rdxPopperContent>Dimensions</div>
-                    <div class="popper_arrowClass" rdxPopperArrow>
+                    <span class="popper_arrowClass" rdxPopperArrow>
                         <div
                             style="width: 20px; height: 10px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; background-color: tomato;"
                         ></div>
-                    </div>
+                    </span>
                 </div>
             </div>
         `

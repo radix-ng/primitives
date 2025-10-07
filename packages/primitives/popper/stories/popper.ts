@@ -27,7 +27,7 @@ import { popperImports } from '../index';
             <div class="popper_anchorClass" [style.margin-left]="left() + 'px'" rdxPopperAnchor>open</div>
             <div class="popper_contentClass" side="left" align="center" sideOffset="5" rdxPopperContentWrapper>
                 <div rdxPopperContent>Dimensions</div>
-                <div class="popper_arrowClass" rdxPopperArrow></div>
+                <span class="popper_arrowClass" rdxPopperArrow></span>
             </div>
         </div>
     `

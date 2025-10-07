@@ -18,10 +18,10 @@ import {
     resource
 } from '@angular/core';
 import {
-    arrow,
     autoUpdate,
     computePosition,
     flip,
+    arrow as floatingUIArrow,
     hide,
     limitShift,
     offset,
@@ -33,30 +33,31 @@ import { createContext, elementSize } from '@radix-ng/primitives/core';
 import { RdxPopper } from './popper';
 import { RdxPopperArrow } from './popper-arrow';
 import { RdxPopperContent } from './popper-content';
-import { Align, Side, transformOrigin } from './utils';
+import { Align, isNotNull, Side, transformOrigin } from './utils';
 
 const context = () => {
-    const popperContentContext = inject(RdxPopperContentWrapper);
+    const popperContentWrapper = inject(RdxPopperContentWrapper);
 
     return {
-        placedSide: popperContentContext.placedSide,
-        placedAlign: popperContentContext.placedAlign,
-        arrowX: popperContentContext.arrowX,
-        arrowY: popperContentContext.arrowY,
-        shouldHideArrow: popperContentContext.shouldHideArrow,
-        isPositioned: popperContentContext.isPositioned
+        placedSide: popperContentWrapper.placedSide,
+        placedAlign: popperContentWrapper.placedAlign,
+        arrowX: popperContentWrapper.arrowX,
+        arrowY: popperContentWrapper.arrowY,
+        shouldHideArrow: popperContentWrapper.shouldHideArrow,
+        isPositioned: popperContentWrapper.isPositioned
     };
 };
 
-export type PopperContentContext = ReturnType<typeof context>;
+export type PopperContentWrapperContext = ReturnType<typeof context>;
 
-export const [injectPopperContentContext, providePopperContentContext] =
-    createContext<PopperContentContext>('PopperContentWrapperContext');
+export const [injectPopperContentWrapperContext, providePopperContentWrapperContext] =
+    createContext<PopperContentWrapperContext>('PopperContentWrapperContext');
 
 @Directive({
     selector: '[rdxPopperContentWrapper]',
-    providers: [providePopperContentContext(context)],
+    providers: [providePopperContentWrapperContext(context)],
     host: {
+        'data-radix-popper-content-wrapper': '',
         '[style]': 'style()'
     }
 })
@@ -74,17 +75,21 @@ export class RdxPopperContentWrapper {
      */
     readonly side = input<Side>('bottom');
 
-    /** The distance in pixels from the anchor. */
+    /**
+     * Distance between the anchor and the popup in pixels.
+     */
     readonly sideOffset = input<number, NumberInput>(0, { transform: numberAttribute });
 
-    /** The preferred alignment against the anchor. May change when collisions occur. */
+    /**
+     * How to align the popup relative to the specified side. May change when collisions occur.
+     */
     readonly align = input<Align>('center');
 
     /** An offset in pixels from the `start` or `end` alignment options. */
     readonly alignOffset = input<number, NumberInput>(0, { transform: numberAttribute });
 
     /**
-     * The padding between the arrow and the edges of the content.
+     * Minimum distance to maintain between the arrow and the edges of the popup.
      * If your content has border-radius, this will prevent it from overflowing the corners.
      */
     readonly arrowPadding = input<number, NumberInput>(0, { transform: numberAttribute });
@@ -104,25 +109,36 @@ export class RdxPopperContentWrapper {
     readonly collisionPadding = input<number | Partial<Record<Side, number>>>(0);
 
     /**
-     * The sticky behavior on the `align` axis.
-     * - `partial` will keep the content in the boundary as long as the trigger is at least partially in the boundary
-     * - `always` will keep the content in the boundary regardless.
+     * The sticky behavior on the align axis. `partial` will keep the
+     * content in the boundary as long as the trigger is at least partially
+     * in the boundary whilst "always" will keep the content in the boundary
+     * regardless.
      */
     readonly sticky = input<'partial' | 'always'>('partial');
 
-    /** Whether to hide the content when the trigger becomes fully occluded. */
+    /**
+     * Whether to hide the content when the trigger becomes fully occluded.
+     */
     readonly hideWhenDetached = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    /** Whether to update the position of the floating element on every animation frame if required. */
+    /**
+     *  The type of CSS position property to use.
+     */
+    readonly positionStrategy = input<'fixed' | 'absolute'>('fixed');
+
+    /**
+     * Strategy to update the position of the floating element on every animation frame.
+     */
     readonly updatePositionStrategy = input<'optimized' | 'always'>('optimized');
 
-    /** Emits when the element is placed. */
+    /**
+     * Emits when the element is placed.
+     */
     readonly placed = output<void>();
 
     readonly arrow = contentChild(forwardRef(() => RdxPopperArrow));
 
     readonly shouldHideArrow = computed(() => this.position.value()?.middlewareData['arrow']?.centerOffset !== 0);
-
     readonly arrowX = computed(() => this.position.value()?.middlewareData['arrow']?.x);
     readonly arrowY = computed(() => this.position.value()?.middlewareData['arrow']?.y);
 
@@ -164,7 +180,7 @@ export class RdxPopperContentWrapper {
 
     private readonly detectOverflowOptions = computed(() => ({
         padding: this.collisionPadding(),
-        boundary: this.boundary(),
+        boundary: this.boundary().filter(isNotNull),
         // with `strategy: 'fixed'`, this is the only way to get it to respect boundaries
         altBoundary: this.hasExplicitBoundaries()
     }));
@@ -173,7 +189,7 @@ export class RdxPopperContentWrapper {
         loader: () =>
             computePosition(this.context.anchor().elementRef.nativeElement, this.elementRef.nativeElement, {
                 // default to `fixed` strategy so users don't have to pick and we also avoid focus scroll issues
-                strategy: 'fixed',
+                strategy: this.positionStrategy(),
                 placement: this.desiredPlacement(),
                 middleware: [
                     offset({
@@ -200,7 +216,7 @@ export class RdxPopperContentWrapper {
                         }
                     }),
                     this.arrow() &&
-                        arrow({
+                        floatingUIArrow({
                             element: this.arrow()!.elementRef.nativeElement,
                             padding: this.arrowPadding()
                         }),
@@ -217,10 +233,14 @@ export class RdxPopperContentWrapper {
             })
     });
 
-    /** Whether the panel is positioned. */
+    /**
+     * Whether the panel is positioned.
+     */
     readonly isPositioned = computed(() => this.position.hasValue());
 
-    /** The current placement of the panel. */
+    /**
+     * The current placement of the panel.
+     */
     readonly placement = computed(() => {
         const placement = this.position.value()?.placement;
 
@@ -236,10 +256,14 @@ export class RdxPopperContentWrapper {
         };
     });
 
-    /** The side the panel is currently placed against. */
+    /**
+     * The side the panel is currently placed against.
+     */
     readonly placedSide = computed(() => this.placement()?.side);
 
-    /** The current alignment of the panel. */
+    /**
+     * The current alignment of the panel.
+     */
     readonly placedAlign = computed(() => this.placement()?.align);
 
     private readonly contentElementRef = contentChild.required<RdxPopperContent, ElementRef<HTMLElement>>(
@@ -272,7 +296,11 @@ export class RdxPopperContentWrapper {
                 pos?.middlewareData['transformOrigin']?.x,
                 pos?.middlewareData['transformOrigin']?.y
             ].join(' '),
-            transform: this.isPositioned() ? '' : 'translate(0, -200%)',
+            transform: this.isPositioned() ? '' : 'translate(0, -200%)', // keep off the page when measuring
+
+            // hide the content if using the hide middleware and should be hidden
+            // set visibility to hidden and disable pointer events so the UI behaves
+            // as if the PopperContent isn't there at all
             visibility: pos?.middlewareData.hide?.referenceHidden ? 'hidden' : '',
             pointerEvents: pos?.middlewareData.hide?.referenceHidden ? 'none' : ''
         };
