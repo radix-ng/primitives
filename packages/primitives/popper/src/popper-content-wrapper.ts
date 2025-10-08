@@ -287,7 +287,8 @@ export class RdxPopperContentWrapper {
         const y = pos?.y;
 
         return {
-            position: 'absolute',
+            position: this.positionStrategy(),
+            transform: this.isPositioned() ? '' : 'translate(0, -200%)', // keep off the page when measuring
             minWidth: 'max-content',
             zIndex: this.contentZIndex(),
             top: Number.isFinite(y as number) ? `${y}px` : '',
@@ -296,13 +297,14 @@ export class RdxPopperContentWrapper {
                 pos?.middlewareData['transformOrigin']?.x,
                 pos?.middlewareData['transformOrigin']?.y
             ].join(' '),
-            transform: this.isPositioned() ? '' : 'translate(0, -200%)', // keep off the page when measuring
 
             // hide the content if using the hide middleware and should be hidden
             // set visibility to hidden and disable pointer events so the UI behaves
             // as if the PopperContent isn't there at all
-            visibility: pos?.middlewareData.hide?.referenceHidden ? 'hidden' : '',
-            pointerEvents: pos?.middlewareData.hide?.referenceHidden ? 'none' : ''
+            ...(pos?.middlewareData.hide?.referenceHidden && {
+                visibility: 'hidden',
+                pointerEvents: 'none'
+            })
         };
     });
 
@@ -318,6 +320,8 @@ export class RdxPopperContentWrapper {
             }
         );
 
-        this.destroyRef.onDestroy(cleanup);
+        this.destroyRef.onDestroy(() => {
+            cleanup();
+        });
     });
 }

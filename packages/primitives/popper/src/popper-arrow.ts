@@ -12,6 +12,14 @@ import {
 } from '@angular/core';
 import { RdxArrow } from '@radix-ng/primitives/arrow';
 import { injectPopperContentWrapperContext } from './popper-content-wrapper';
+import { Side } from './utils';
+
+const OPPOSITE_SIDE: Record<Side, Side> = {
+    top: 'bottom',
+    right: 'left',
+    bottom: 'top',
+    left: 'right'
+};
 
 @Directive({
     selector: '[rdxPopperArrow]',
@@ -30,55 +38,28 @@ export class RdxPopperArrow {
 
     readonly height = input(5, { transform: numberAttribute });
 
-    private readonly transformOrigin = computed(() => {
-        switch (this.popperContentContext.placedSide()) {
-            case 'bottom':
-                return 'center 0';
-            case 'left':
-                return '100% 0';
-            case 'right':
-                return '0 0';
-            case 'top':
-                return '';
-        }
-        return;
-    });
-
-    private readonly transform = computed(() => {
-        switch (this.popperContentContext.placedSide()) {
-            case 'bottom':
-                return 'rotate(180deg)';
-            case 'left':
-                return 'translateY(50%) rotate(-90deg) translateX(50%)';
-            case 'right':
-                return 'translateY(50%) rotate(90deg) translateX(-50%)';
-            case 'top':
-                return 'translateY(100%)';
-        }
-        return;
-    });
+    baseSide = computed(() => OPPOSITE_SIDE[this.popperContentContext.placedSide()!]);
 
     protected readonly style = computed(() => {
-        const side = this.popperContentContext.placedSide();
-        const x = this.popperContentContext.arrowX();
-        const y = this.popperContentContext.arrowY();
-
-        const staticSide = side === 'top' ? 'bottom' : side === 'bottom' ? 'top' : side === 'left' ? 'right' : 'left';
-
-        const s: Record<string, any> = {
-            display: 'block',
+        return {
             position: 'absolute',
-            transformOrigin: this.transformOrigin(),
-            transform: this.transform(),
+            left: this.popperContentContext.arrowX() ? `${this.popperContentContext.arrowX()}px` : undefined,
+            top: this.popperContentContext.arrowY() ? `${this.popperContentContext.arrowY()}px` : undefined,
+            [this.baseSide()]: 0,
+            transformOrigin: {
+                top: '',
+                right: '0 0',
+                bottom: 'center 0',
+                left: '100% 0'
+            }[this.popperContentContext.placedSide()!],
+            transform: {
+                top: 'translateY(100%)',
+                right: 'translateY(50%) rotate(90deg) translateX(-50%)',
+                bottom: `rotate(180deg)`,
+                left: 'translateY(50%) rotate(-90deg) translateX(50%)'
+            }[this.popperContentContext.placedSide()!],
             visibility: this.popperContentContext.shouldHideArrow() ? 'hidden' : undefined
         };
-
-        if (x != null) s['left'] = `${x}px`;
-        if (y != null) s['top'] = `${y}px`;
-
-        s[staticSide] = '0';
-
-        return s;
     });
 
     private onCleanup = effect((onCleanup) => {
