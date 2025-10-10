@@ -9,7 +9,7 @@ import { injectRdxTooltipContext } from './tooltip';
         'data-grace-area-trigger': "''",
         '[attr.aria-describedby]': 'rootContext.isOpen() ? rootContext.contentId : undefined',
         '[attr.data-state]': 'rootContext.state()',
-        '(pointermove)': 'pointerMoved($event)',
+        '(pointermove)': 'handlePointerMove($event)',
         '(pointerleave)': 'handlePointerLeave()',
         '(pointerdown)': 'handlePointerDown($event)',
         '(focus)': 'handleFocus()',
@@ -33,27 +33,27 @@ export class RdxTooltipTrigger {
     private readonly hasPointerMoveOpened = signal(false);
 
     protected handleFocus() {
-        if (this.rootContext.controlledState()) return;
+        if (this.rootContext.isControlledState()) return;
         if (this.isPointerDown()) return;
 
         this.rootContext.open();
     }
 
     protected handleBlur() {
-        if (this.rootContext.controlledState()) return;
+        if (this.rootContext.isControlledState()) return;
         this.rootContext.close();
     }
 
     protected handleClick() {
-        if (this.rootContext.controlledState()) return;
+        if (this.rootContext.isControlledState()) return;
         if (!this.rootContext.disableClosingTrigger()) {
             this.rootContext.close();
         }
     }
 
-    protected pointerMoved(event: PointerEvent) {
+    protected handlePointerMove(event: PointerEvent) {
         if (event.pointerType === 'touch') return;
-        if (this.rootContext.controlledState()) return;
+        if (this.rootContext.isControlledState()) return;
         if (!this.hasPointerMoveOpened() && !this.rootContext.isPointerInTransit()) {
             this.rootContext.onTriggerEnter();
             this.hasPointerMoveOpened.set(true);
@@ -61,7 +61,7 @@ export class RdxTooltipTrigger {
     }
 
     protected handlePointerLeave() {
-        if (this.rootContext.controlledState()) return;
+        if (this.rootContext.isControlledState()) return;
         this.rootContext.onTriggerLeave();
         this.hasPointerMoveOpened.set(false);
     }

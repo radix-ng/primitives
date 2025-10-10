@@ -21,12 +21,13 @@ import { tooltipImports } from '@radix-ng/primitives/tooltip2';
             <rdx-slider-track class="SliderTrack">
                 <rdx-slider-range class="SliderRange" />
             </rdx-slider-track>
+
             <ng-container
                 [open]="showTooltipState()"
-                [delayDuration]="0"
-                [skipDelayDuration]="0"
+                delayDuration="0"
+                skipDelayDuration="0"
                 rdxTooltip
-                controlledState
+                isControlledState
             >
                 <rdx-slider-thumb class="SliderThumb" [rdxOnPointerDown]="handlePointerDown" rdxTooltipTriggerV2 />
 
@@ -47,26 +48,23 @@ import { tooltipImports } from '@radix-ng/primitives/tooltip2';
     `
 })
 export class TooltipSlider {
-    readonly showTooltipState = signal(false);
-
-    private pointerUpListener = this.handlePointerUp.bind(this);
-
     private readonly ngZone = inject(NgZone);
+
+    readonly showTooltipState = signal(false);
 
     handlePointerDown = () => {
         this.showTooltipState.set(true);
-        console.log(this.showTooltipState());
+
+        const handlePointerUp = () => {
+            this.showTooltipState.set(false);
+
+            document.removeEventListener('pointerup', handlePointerUp);
+        };
 
         this.ngZone.runOutsideAngular(() => {
-            document.addEventListener('pointerup', this.pointerUpListener);
+            document.addEventListener('pointerup', handlePointerUp);
         });
 
         return;
     };
-
-    handlePointerUp() {
-        this.showTooltipState.set(false);
-
-        document.removeEventListener('pointerup', this.pointerUpListener);
-    }
 }

@@ -29,7 +29,7 @@ const context = () => {
         disableClosingTrigger: context.disableClosingTrigger,
         disableHoverableContent: context.disableHoverableContent,
         isPointerInTransit: context.isPointerInTransit.asReadonly(),
-        controlledState: context.controlledState,
+        isControlledState: context.isControlledState,
         open() {
             context.handleOpen();
         },
@@ -88,7 +88,7 @@ export class RdxTooltip {
 
     readonly disableClosingTrigger = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    readonly controlledState = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+    readonly isControlledState = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     readonly isPointerInTransit = signal(false);
     readonly isOpenDelayed = signal(true);

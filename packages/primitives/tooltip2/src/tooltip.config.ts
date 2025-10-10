@@ -19,7 +19,7 @@ export type RdxTooltipConfig = {
 };
 
 export const defaultTooltipConfig: RdxTooltipConfig = {
-    delayDuration: 1700,
+    delayDuration: 700,
     skipDelayDuration: 300,
     disableHoverableContent: false
 };
