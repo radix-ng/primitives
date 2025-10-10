@@ -29,6 +29,7 @@ export class RdxDismissibleLayer {
     private readonly injector = inject(Injector);
     private readonly context = inject(RdxDismissibleLayersContextToken);
     private readonly configLayer = inject(RdxDismissibleLayerConfigToken);
+    private readonly destroyRef = inject(DestroyRef);
 
     /**
      * Event handler called when the escape key is down.
@@ -166,7 +167,7 @@ export class RdxDismissibleLayer {
             }
         });
 
-        inject(DestroyRef).onDestroy(() => {
+        this.destroyRef.onDestroy(() => {
             this.context.layersRoot.update((v) => v.filter((i) => i !== this));
         });
     }
