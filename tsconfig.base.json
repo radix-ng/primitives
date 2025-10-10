@@ -20,6 +20,7 @@
             "@radix-ng/primitives/accordion": ["packages/primitives/accordion/index.ts"],
             "@radix-ng/primitives/aspect-ratio": ["packages/primitives/aspect-ratio/index.ts"],
             "@radix-ng/primitives/avatar": ["packages/primitives/avatar/index.ts"],
+            "@radix-ng/primitives/arrow": ["packages/primitives/arrow/index.ts"],
             "@radix-ng/primitives/checkbox": ["packages/primitives/checkbox/index.ts"],
             "@radix-ng/primitives/collapsible": ["packages/primitives/collapsible/index.ts"],
             "@radix-ng/primitives/core": ["packages/primitives/core/index.ts"],

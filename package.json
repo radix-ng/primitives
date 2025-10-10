@@ -60,6 +60,7 @@
         "@angular/platform-server": "20.3.3",
         "@angular/router": "20.3.3",
         "@angular/ssr": "20.3.4",
+        "@floating-ui/dom": "^1.7.4",
         "@internationalized/date": "^3.7.0",
         "@internationalized/number": "^3.6.1",
         "class-variance-authority": "^0.7.1",

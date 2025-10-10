@@ -41,6 +41,9 @@ importers:
       '@angular/ssr':
         specifier: 20.3.4
         version: 20.3.4(jgggrsfsi6ouga5ombvdg2nzuq)
+      '@floating-ui/dom':
+        specifier: ^1.7.4
+        version: 1.7.4
       '@internationalized/date':
         specifier: ^3.7.0
         version: 3.10.0
@@ -518,6 +521,9 @@ importers:
       '@angular/core':
         specifier: ^19.2.0 || ^20.0.0
         version: 20.3.3(@angular/compiler@20.3.3)(rxjs@7.8.2)(zone.js@0.15.1)
+      '@floating-ui/dom':
+        specifier: ^1.7.4
+        version: 1.7.4
     devDependencies:
       '@angular-devkit/schematics':
         specifier: ^20.2.1
@@ -22071,7 +22077,7 @@ snapshots:
 
   agent-base@6.0.2:
     dependencies:
-      debug: 4.4.0
+      debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
 
