@@ -129,7 +129,7 @@ export class RdxPopperContentWrapper {
     /**
      * Strategy to update the position of the floating element on every animation frame.
      */
-    readonly updatePositionStrategy = input<'optimized' | 'always'>('optimized');
+    readonly updatePositionStrategy = input<'optimized' | 'always'>('always');
 
     /**
      * Emits when the element is placed.
@@ -286,6 +286,8 @@ export class RdxPopperContentWrapper {
         const x = pos?.x;
         const y = pos?.y;
 
+        const ready = Number.isFinite(x) && Number.isFinite(y);
+
         return {
             position: this.positionStrategy(),
             transform: this.isPositioned() ? '' : 'translate(0, -200%)', // keep off the page when measuring
@@ -297,6 +299,9 @@ export class RdxPopperContentWrapper {
                 pos?.middlewareData['transformOrigin']?.x,
                 pos?.middlewareData['transformOrigin']?.y
             ].join(' '),
+
+            visibility: ready ? 'visible' : 'hidden',
+            pointerEvents: ready ? 'auto' : 'none',
 
             // hide the content if using the hide middleware and should be hidden
             // set visibility to hidden and disable pointer events so the UI behaves
