@@ -8,6 +8,7 @@ export class RdxPortal {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly platformId = inject(PLATFORM_ID);
     private readonly document = inject(DOCUMENT, { optional: true }) as Document | null;
+    private readonly destroyRef = inject(DestroyRef);
 
     /**
      * Specify a container element to portal the content into.
@@ -34,7 +35,7 @@ export class RdxPortal {
         this.elementRef.nativeElement.parentNode?.insertBefore(node, this.elementRef.nativeElement);
         this.elementContainer()?.appendChild(this.elementRef.nativeElement);
 
-        inject(DestroyRef).onDestroy(() => {
+        this.destroyRef.onDestroy(() => {
             node.parentNode?.replaceChild(this.elementRef.nativeElement, node);
         });
     }

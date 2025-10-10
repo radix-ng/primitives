@@ -12,7 +12,7 @@ import { injectRdxTooltipContext } from './tooltip';
         '(pointermove)': 'handlePointerMove($event)',
         '(pointerleave)': 'handlePointerLeave()',
         '(pointerdown)': 'handlePointerDown($event)',
-        '(focus)': 'handleFocus()',
+        '(focus)': 'handleFocus($event)',
         '(blur)': 'handleBlur()',
         '(click)': 'handleClick()'
     }
@@ -32,9 +32,13 @@ export class RdxTooltipTrigger {
 
     private readonly hasPointerMoveOpened = signal(false);
 
-    protected handleFocus() {
+    protected handleFocus(event: FocusEvent) {
         if (this.rootContext.isControlledState()) return;
         if (this.isPointerDown()) return;
+
+        if (this.rootContext.ignoreNonKeyboardFocus() && !(event.target as HTMLElement).matches?.(':focus-visible')) {
+            return;
+        }
 
         this.rootContext.open();
     }

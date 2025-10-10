@@ -26,6 +26,7 @@ const context = () => {
         state: context.state,
         contentId: inject(_IdGenerator).getId('rdx-tooltip-content-'),
         trigger: context.trigger,
+        ignoreNonKeyboardFocus: context.ignoreNonKeyboardFocus,
         disableClosingTrigger: context.disableClosingTrigger,
         disableHoverableContent: context.disableHoverableContent,
         isPointerInTransit: context.isPointerInTransit.asReadonly(),
@@ -86,7 +87,18 @@ export class RdxTooltip {
         transform: booleanAttribute
     });
 
+    readonly closeDelay = input(this.defaultConfig.closeDelay, { transform: numberAttribute });
+
     readonly disableClosingTrigger = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /**
+     * Prevent the tooltip from opening if the focus did not come from
+     * the keyboard by matching against the `:focus-visible` selector.
+     * This is useful if you want to avoid opening it when switching
+     * browser tabs or closing a dialog.
+     * @defaultValue false
+     */
+    readonly ignoreNonKeyboardFocus = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     readonly isControlledState = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
@@ -146,7 +158,10 @@ export class RdxTooltip {
 
     handleClose() {
         this.clearTimer();
-        this.open.set(false);
+
+        window.setTimeout(() => {
+            this.open.set(false);
+        }, this.closeDelay());
     }
 
     handleDelayedOpen() {

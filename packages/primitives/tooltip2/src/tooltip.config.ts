@@ -16,12 +16,24 @@ export type RdxTooltipConfig = {
      * @defaultValue false
      */
     disableHoverableContent?: boolean;
+    /**
+     * When `true`, clicking on trigger will not close the content.
+     * @defaultValue false
+     */
+    disableClosingTrigger?: boolean;
+
+    /**
+     * How long to wait before closing the tooltip. Specified in milliseconds.
+     */
+    closeDelay?: number;
 };
 
 export const defaultTooltipConfig: RdxTooltipConfig = {
     delayDuration: 700,
     skipDelayDuration: 300,
-    disableHoverableContent: false
+    disableHoverableContent: false,
+    disableClosingTrigger: false,
+    closeDelay: 0
 };
 
 export const RdxTooltipDefaultsToken = new InjectionToken<RdxTooltipConfig>('RdxTooltipDefaults Token');

@@ -50,12 +50,13 @@ export const Default: Story = {
     args: {
         open: true,
         sideOffset: 8,
+        closeDelay: 0,
         side: 'top'
     },
     render: (args) => ({
         props: args,
         template: html`
-            <ng-container rdxTooltip>
+            <ng-container rdxTooltip [closeDelay]="closeDelay">
                 <button
                     class="text-violet11 shadow-blackA7 hover:bg-violet3 inline-flex h-[35px] w-[35px] items-center justify-center rounded-full bg-white shadow-[0_2px_10px] outline-none focus:shadow-[0_0_0_2px] focus:shadow-black"
                     rdxTooltipTriggerV2
