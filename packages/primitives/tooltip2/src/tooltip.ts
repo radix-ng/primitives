@@ -26,6 +26,7 @@ const context = () => {
         state: context.state,
         contentId: inject(_IdGenerator).getId('rdx-tooltip-content-'),
         trigger: context.trigger,
+        isDisabled: context.disabled,
         ignoreNonKeyboardFocus: context.ignoreNonKeyboardFocus,
         disableClosingTrigger: context.disableClosingTrigger,
         disableHoverableContent: context.disableHoverableContent,
@@ -86,6 +87,8 @@ export class RdxTooltip {
     readonly disableHoverableContent = input(this.defaultConfig.disableHoverableContent, {
         transform: booleanAttribute
     });
+
+    readonly disabled = input(false, { transform: booleanAttribute });
 
     readonly closeDelay = input(this.defaultConfig.closeDelay, { transform: numberAttribute });
 

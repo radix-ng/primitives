@@ -9,12 +9,12 @@ import { injectRdxTooltipContext } from './tooltip';
         'data-grace-area-trigger': "''",
         '[attr.aria-describedby]': 'rootContext.isOpen() ? rootContext.contentId : undefined',
         '[attr.data-state]': 'rootContext.state()',
-        '(pointermove)': 'handlePointerMove($event)',
-        '(pointerleave)': 'handlePointerLeave()',
-        '(pointerdown)': 'handlePointerDown($event)',
-        '(focus)': 'handleFocus($event)',
-        '(blur)': 'handleBlur()',
-        '(click)': 'handleClick()'
+        '(pointermove)': 'rootContext.isDisabled() ? undefined : handlePointerMove($event)',
+        '(pointerleave)': 'rootContext.isDisabled() ? undefined : handlePointerLeave()',
+        '(pointerdown)': 'rootContext.isDisabled() ? undefined : handlePointerDown($event)',
+        '(focus)': 'rootContext.isDisabled() ? undefined : handleFocus($event)',
+        '(blur)': 'rootContext.isDisabled() ? undefined : handleBlur()',
+        '(click)': 'rootContext.isDisabled() ? undefined : handleClick()'
     }
 })
 export class RdxTooltipTrigger {

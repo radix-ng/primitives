@@ -1,4 +1,5 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { tooltipImports } from '../index';
 import { TooltipSlider } from './tooltip';
 
@@ -8,7 +9,7 @@ export default {
     title: 'Primitives/Tooltip2',
     decorators: [
         moduleMetadata({
-            imports: [...tooltipImports, TooltipSlider]
+            imports: [...tooltipImports, TooltipSlider, LucideAngularModule]
         }),
         componentWrapperDecorator(
             (story) => html`
@@ -49,6 +50,7 @@ type Story = StoryObj;
 export const Default: Story = {
     args: {
         open: true,
+        disabled: false,
         sideOffset: 8,
         closeDelay: 0,
         side: 'top'
@@ -56,12 +58,13 @@ export const Default: Story = {
     render: (args) => ({
         props: args,
         template: html`
-            <ng-container rdxTooltip [closeDelay]="closeDelay">
+            <ng-container rdxTooltip [closeDelay]="closeDelay" [disabled]="disabled">
                 <button
                     class="text-violet11 shadow-blackA7 hover:bg-violet3 inline-flex h-[35px] w-[35px] items-center justify-center rounded-full bg-white shadow-[0_2px_10px] outline-none focus:shadow-[0_0_0_2px] focus:shadow-black"
                     rdxTooltipTriggerV2
+                    [attr.disabled]="disabled"
                 >
-                    +
+                    <lucide-angular name="plus" size="16" />
                 </button>
 
                 <div rdxTooltipPortal [container]="tooltipContent">
