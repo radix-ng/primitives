@@ -87,7 +87,6 @@ export function useGraceArea(
         }
     }
 
-    // Подписываемся и пересоздаём слушатели, когда меняются элементы
     effect((onCleanupFn) => {
         const trigger = triggerEl();
         const container = containerEl();
@@ -114,9 +113,7 @@ export function useGraceArea(
     });
 
     return {
-        /** readonly-сигнал для UI */
         isPointerInTransit: isPointerInTransit.asReadonly(),
-        /** подписка на выход указателя из grace-area */
         onPointerExit: pointerExit.on
     };
 }

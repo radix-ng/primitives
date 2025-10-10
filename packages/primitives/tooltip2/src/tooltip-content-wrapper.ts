@@ -49,9 +49,10 @@ import { useGraceArea } from './useGraceArea';
     }
 })
 export class RdxTooltipContentWrapper {
-    private readonly destroyRef = inject(DestroyRef);
     protected readonly rootContext = injectRdxTooltipContext()!;
+    private readonly destroyRef = inject(DestroyRef);
     private readonly dismissibleLayer = inject(RdxDismissibleLayer);
+    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
     /**
      * The preferred side of the anchor to render against when open.
@@ -59,13 +60,19 @@ export class RdxTooltipContentWrapper {
      */
     readonly side = input<Side>('bottom');
 
-    /** The distance in pixels from the anchor. */
+    /**
+     * The distance in pixels from the anchor.
+     */
     readonly sideOffset = input(0, { transform: numberAttribute });
 
-    /** The preferred alignment against the anchor. May change when collisions occur. */
+    /**
+     * The preferred alignment against the anchor. May change when collisions occur.
+     */
     readonly align = input<Align>('center');
 
-    /** An offset in pixels from the `start` or `end` alignment options. */
+    /**
+     * An offset in pixels from the `start` or `end` alignment options.
+     */
     readonly alignOffset = input(0, { transform: numberAttribute });
 
     /**
@@ -74,18 +81,23 @@ export class RdxTooltipContentWrapper {
      */
     readonly arrowPadding = input(0, { transform: numberAttribute });
 
-    /** When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges. */
+    /**
+     * When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges.
+     */
     readonly avoidCollisions = input(true, { transform: booleanAttribute });
+
     /**
      * The element used as the collision boundary.
      * By default this is the viewport, though you can provide additional element(s) to be included in this check.
      */
     readonly collisionBoundary = input<ElementRef<HTMLElement> | ElementRef<HTMLElement>[]>();
+
     /**
      * The distance in pixels from the boundary edges where collision detection should occur.
      * Accepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`.
      */
     readonly collisionPadding = input<number | Partial<Record<Side, number>>>(0);
+
     /**
      * The sticky behavior on the `align` axis.
      * - `partial` will keep the content in the boundary as long as the trigger is at least partially in the boundary
@@ -93,13 +105,19 @@ export class RdxTooltipContentWrapper {
      */
     readonly sticky = input<'partial' | 'always'>('partial');
 
-    /** Whether to hide the content when the trigger becomes fully occluded. */
+    /**
+     * Whether to hide the content when the trigger becomes fully occluded.
+     */
     readonly hideWhenDetached = input(false, { transform: booleanAttribute });
 
-    /** Whether to update the position of the floating element on every animation frame if required. */
+    /**
+     * Whether to update the position of the floating element on every animation frame if required.
+     */
     readonly updatePositionStrategy = input<'optimized' | 'always'>('always');
 
-    /** Emits when the element is placed. */
+    /**
+     * Emits when the element is placed.
+     */
     readonly placed = outputFromObservable(outputToObservable(inject(RdxPopperContentWrapper).placed));
 
     /**
@@ -114,11 +132,10 @@ export class RdxTooltipContentWrapper {
      */
     readonly pointerDownOutside = outputFromObservable(outputToObservable(this.dismissibleLayer.pointerDownOutside));
 
-    readonly triggerEl = signal<HTMLElement | null>(null);
-    readonly containerEl = signal<HTMLElement | null>(null);
-    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    private readonly triggerEl = signal<HTMLElement | null>(null);
+    private readonly containerEl = signal<HTMLElement | null>(null);
 
-    readonly graceArea = useGraceArea(this.triggerEl, this.containerEl, 300);
+    private readonly graceArea = useGraceArea(this.triggerEl, this.containerEl, 300);
 
     private readonly afterNextRender = afterNextRender(() => {
         this.triggerEl.set(this.rootContext.trigger().elementRef.nativeElement);
@@ -146,6 +163,7 @@ export class RdxTooltipContentWrapper {
 
     constructor() {
         this.dismissibleLayer.focusOutside.subscribe((e) => e.preventDefault());
+
         this.dismissibleLayer.dismiss.subscribe(() => this.rootContext.close());
 
         this.dismissibleLayer.pointerDownOutside.subscribe((event) => {

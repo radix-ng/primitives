@@ -70,6 +70,9 @@ export class RdxTooltip {
     private readonly defaultConfig = injectRdxTooltipConfig();
     private readonly destroyRef = inject(DestroyRef);
 
+    /**
+     * Whether the tooltip is currently open.
+     */
     readonly open = model(false);
 
     /**
@@ -79,6 +82,10 @@ export class RdxTooltip {
         transform: numberAttribute
     });
 
+    /**
+     * How much time a user has to enter another trigger without incurring a delay again.
+     * @defaultValue 300
+     */
     readonly skipDelayDuration = input(this.defaultConfig.skipDelayDuration, { transform: numberAttribute });
 
     /**
@@ -88,10 +95,21 @@ export class RdxTooltip {
         transform: booleanAttribute
     });
 
+    /**
+     * When `true`, disable tooltip
+     * @defaultValue false
+     */
     readonly disabled = input(false, { transform: booleanAttribute });
 
+    /**
+     * How long to wait before closing the tooltip. Specified in milliseconds.
+     */
     readonly closeDelay = input(this.defaultConfig.closeDelay, { transform: numberAttribute });
 
+    /**
+     * When `true`, clicking on trigger will not close the content.
+     * @defaultValue false
+     */
     readonly disableClosingTrigger = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
@@ -103,6 +121,9 @@ export class RdxTooltip {
      */
     readonly ignoreNonKeyboardFocus = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /**
+     * To render a controlled tooltip
+     */
     readonly isControlledState = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     readonly isPointerInTransit = signal(false);
