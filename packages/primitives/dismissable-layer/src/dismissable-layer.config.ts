@@ -1,9 +1,9 @@
 import { computed, InjectionToken, Provider, Signal, signal } from '@angular/core';
-import { RdxDismissibleLayer } from './dismissible-layer';
+import { RdxDismissableLayer } from './dismissable-layer';
 
-export const RdxDismissibleLayersContextToken = new InjectionToken('RdxDismissibleLayersContextToken', {
+export const RdxDismissableLayersContextToken = new InjectionToken('RdxDismissableLayersContextToken', {
     factory() {
-        const layersRoot = signal<RdxDismissibleLayer[]>([]);
+        const layersRoot = signal<RdxDismissableLayer[]>([]);
 
         return {
             layersRoot,
@@ -15,7 +15,7 @@ export const RdxDismissibleLayersContextToken = new InjectionToken('RdxDismissib
     }
 });
 
-export type RdxDismissibleLayerConfig = {
+export type RdxDismissableLayerConfig = {
     /**
      * When `true`, hover/focus/click interactions will be disabled on elements outside
      * the `DismissableLayer`. Users will need to click twice on outside elements to
@@ -24,8 +24,8 @@ export type RdxDismissibleLayerConfig = {
     disableOutsidePointerEvents: Signal<boolean>;
 };
 
-export const RdxDismissibleLayerConfigToken = new InjectionToken<RdxDismissibleLayerConfig>(
-    'RdxDismissibleLayerConfig',
+export const RdxDismissableLayerConfigToken = new InjectionToken<RdxDismissableLayerConfig>(
+    'RdxDismissableLayerConfig',
     {
         factory: () => ({
             disableOutsidePointerEvents: signal(false)
@@ -33,6 +33,6 @@ export const RdxDismissibleLayerConfigToken = new InjectionToken<RdxDismissibleL
     }
 );
 
-export function provideRdxDismissibleLayerConfig(factory: () => RdxDismissibleLayerConfig): Provider {
-    return { provide: RdxDismissibleLayerConfigToken, useFactory: factory };
+export function provideRdxDismissableLayerConfig(factory: () => RdxDismissableLayerConfig): Provider {
+    return { provide: RdxDismissableLayerConfigToken, useFactory: factory };
 }

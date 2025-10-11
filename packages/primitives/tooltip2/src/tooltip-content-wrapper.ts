@@ -10,15 +10,15 @@ import {
     signal
 } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
-import { RdxDismissibleLayer } from '@radix-ng/primitives/dismissible-layer';
 import { Align, RdxPopperContentWrapper, Side } from '@radix-ng/primitives/popper';
+import { RdxDismissableLayer } from '../../dismissable-layer';
 import { injectRdxTooltipContext } from './tooltip';
 import { useGraceArea } from './useGraceArea';
 
 @Directive({
     selector: '[rdxTooltipContentWrapper]',
     hostDirectives: [
-        RdxDismissibleLayer,
+        RdxDismissableLayer,
         {
             directive: RdxPopperContentWrapper,
             inputs: [
@@ -51,7 +51,7 @@ import { useGraceArea } from './useGraceArea';
 export class RdxTooltipContentWrapper {
     protected readonly rootContext = injectRdxTooltipContext()!;
     private readonly destroyRef = inject(DestroyRef);
-    private readonly dismissibleLayer = inject(RdxDismissibleLayer);
+    private readonly dismissableLayer = inject(RdxDismissableLayer);
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
     /**
@@ -124,13 +124,13 @@ export class RdxTooltipContentWrapper {
      * Event handler called when the escape key is down.
      * Can be prevented.
      */
-    readonly escapeKeyDown = outputFromObservable(outputToObservable(this.dismissibleLayer.escapeKeyDown));
+    readonly escapeKeyDown = outputFromObservable(outputToObservable(this.dismissableLayer.escapeKeyDown));
 
     /**
      * Event handler called when a `pointerdown` event happens outside of the `DismissableLayer`.
      * Can be prevented.
      */
-    readonly pointerDownOutside = outputFromObservable(outputToObservable(this.dismissibleLayer.pointerDownOutside));
+    readonly pointerDownOutside = outputFromObservable(outputToObservable(this.dismissableLayer.pointerDownOutside));
 
     private readonly triggerEl = signal<HTMLElement | null>(null);
     private readonly containerEl = signal<HTMLElement | null>(null);
@@ -162,11 +162,11 @@ export class RdxTooltipContentWrapper {
     });
 
     constructor() {
-        this.dismissibleLayer.focusOutside.subscribe((e) => e.preventDefault());
+        this.dismissableLayer.focusOutside.subscribe((e) => e.preventDefault());
 
-        this.dismissibleLayer.dismiss.subscribe(() => this.rootContext.close());
+        this.dismissableLayer.dismiss.subscribe(() => this.rootContext.close());
 
-        this.dismissibleLayer.pointerDownOutside.subscribe((event) => {
+        this.dismissableLayer.pointerDownOutside.subscribe((event) => {
             if (
                 this.rootContext.disableClosingTrigger() &&
                 this.rootContext.trigger().elementRef.nativeElement.contains(event.target as HTMLElement)

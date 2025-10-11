@@ -24,7 +24,7 @@
             "@radix-ng/primitives/checkbox": ["packages/primitives/checkbox/index.ts"],
             "@radix-ng/primitives/collapsible": ["packages/primitives/collapsible/index.ts"],
             "@radix-ng/primitives/core": ["packages/primitives/core/index.ts"],
-            "@radix-ng/primitives/dismissible-layer": ["packages/primitives/dismissible-layer/index.ts"],
+            "@radix-ng/primitives/dismissable-layer": ["packages/primitives/dismissable-layer/index.ts"],
             "@radix-ng/primitives/dropdown-menu": ["packages/primitives/dropdown-menu/index.ts"],
             "@radix-ng/primitives/editable": ["packages/primitives/editable/index.ts"],
             "@radix-ng/primitives/label": ["packages/primitives/label/index.ts"],

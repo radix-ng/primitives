@@ -10,25 +10,27 @@ import {
     output,
     untracked
 } from '@angular/core';
-import { RdxDismissibleLayerConfigToken, RdxDismissibleLayersContextToken } from './dismissible-layer.config';
+import { RdxDismissableLayerConfigToken, RdxDismissableLayersContextToken } from './dismissable-layer.config';
 import { RdxEscapeKeyDown, RdxFocusOutside, RdxPointerDownOutside } from './utils';
 
 let originalBodyPointerEvents: string;
 
 @Directive({
-    selector: '[rdxDismissibleLayer]',
-    exportAs: 'rdxDismissibleLayer',
+    selector: '[rdxDismissableLayer]',
+    exportAs: 'rdxDismissableLayer',
     hostDirectives: [RdxPointerDownOutside, RdxFocusOutside, RdxEscapeKeyDown],
     host: {
         'data-dismissable-layer': '',
-        '[style]': `{ pointerEvents: isBodyPointerEventsDisabled() ? (isPointerEventsEnabled() ? 'auto' : 'none') : undefined}`
+        '[style]': `{
+            pointerEvents: isBodyPointerEventsDisabled() ? (isPointerEventsEnabled() ? 'auto' : 'none') : undefined
+        }`
     }
 })
-export class RdxDismissibleLayer {
+export class RdxDismissableLayer {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly injector = inject(Injector);
-    private readonly context = inject(RdxDismissibleLayersContextToken);
-    private readonly configLayer = inject(RdxDismissibleLayerConfigToken);
+    private readonly context = inject(RdxDismissableLayersContextToken);
+    private readonly configLayer = inject(RdxDismissableLayerConfigToken);
     private readonly destroyRef = inject(DestroyRef);
 
     /**
@@ -121,8 +123,9 @@ export class RdxDismissibleLayer {
         this.context.layersRoot.update((v) => [...v, this]);
 
         inject(RdxPointerDownOutside).pointerDownOutside.subscribe((event) => {
-            const target = event.target as HTMLElement;
-            const isPointerDownOnBranch = this.context.branches().some((branch) => branch.contains(target));
+            const isPointerDownOnBranch = this.context
+                .branches()
+                .some((branch) => branch.contains(event.target as HTMLElement));
 
             if (!this.isPointerEventsEnabled() || isPointerDownOnBranch) {
                 return;
@@ -137,8 +140,9 @@ export class RdxDismissibleLayer {
         });
 
         inject(RdxFocusOutside).focusOutside.subscribe((event) => {
-            const target = event.target as HTMLElement;
-            const isFocusInBranch = this.context.branches().some((branch) => branch.contains(target));
+            const isFocusInBranch = this.context
+                .branches()
+                .some((branch) => branch.contains(event.target as HTMLElement));
 
             if (isFocusInBranch) {
                 return;
@@ -153,12 +157,6 @@ export class RdxDismissibleLayer {
         });
 
         inject(RdxEscapeKeyDown).escapeKeyDown.subscribe((event) => {
-            const isHighestLayer = this.index() === this.context.layersRoot().length - 1;
-
-            if (!isHighestLayer) {
-                return;
-            }
-
             this.escapeKeyDown.emit(event);
 
             if (!event.defaultPrevented) {
