@@ -29,6 +29,7 @@
             "@radix-ng/primitives/editable": ["packages/primitives/editable/index.ts"],
             "@radix-ng/primitives/label": ["packages/primitives/label/index.ts"],
             "@radix-ng/primitives/focus-scope": ["packages/primitives/focus-scope/index.ts"],
+            "@radix-ng/primitives/focus-guards": ["packages/primitives/focus-guards/index.ts"],
             "@radix-ng/primitives/menu": ["packages/primitives/menu/index.ts"],
             "@radix-ng/primitives/menubar": ["packages/primitives/menubar/index.ts"],
             "@radix-ng/primitives/pagination": ["packages/primitives/pagination/index.ts"],
