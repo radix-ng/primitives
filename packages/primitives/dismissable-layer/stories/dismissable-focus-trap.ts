@@ -19,17 +19,18 @@ import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
                 <div
                     (dismiss)="handleDismiss()"
                     (pointerDownOutside)="handlePointerDownOutside($event)"
+                    disableOutsidePointerEvents
                     rdxDismissableLayer
                 >
                     <div
-                        class="flex h-[300px] w-[400px] flex-col items-center justify-center rounded bg-black"
+                        class="bg-gray flex h-[300px] w-[400px] flex-col items-center justify-center rounded"
                         rdxFocusScope
                         trapped
                         loop
                     >
-                        <input type="text" />
-                        <input type="text" />
-                        <input type="text" />
+                        <input class="border-2 bg-white" type="text" />
+                        <input class="border-2 bg-white" type="text" />
+                        <input class="border-2 bg-white" type="text" />
                     </div>
                 </div>
             }

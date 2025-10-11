@@ -99,27 +99,35 @@ export class RdxDismissableLayer {
     private readonly afterNextRender = afterNextRender(() => {
         const ownerDocument = this.elementRef.nativeElement.ownerDocument ?? globalThis.document;
 
+        let lastDisabledCount = 0;
+
+        untracked(() => {
+            this.context.layersRoot.update((v) => (v.includes(this) ? v : [...v, this]));
+        });
+        this.destroyRef.onDestroy(() => {
+            untracked(() => {
+                this.context.layersRoot.update((v) => v.filter((x) => x !== this));
+            });
+        });
+
         effect(
             (onCleanup) => {
-                if (!this.elementRef.nativeElement) return;
+                const disabledCount = this.context.layersWithOutsidePointerEventsDisabled().length;
 
-                if (this.disableOutsidePointerEvents()) {
-                    if (this.context.layersWithOutsidePointerEventsDisabled().length === 0) {
-                        originalBodyPointerEvents = ownerDocument.body.style.pointerEvents;
-                        ownerDocument.body.style.pointerEvents = 'none';
-                    }
+                if (lastDisabledCount === 0 && disabledCount > 0) {
+                    originalBodyPointerEvents = ownerDocument.body.style.pointerEvents;
+                    ownerDocument.body.style.pointerEvents = 'none';
                 }
 
-                untracked(() => this.context.layersRoot.update((v) => [...v, this]));
-
                 onCleanup(() => {
-                    if (
-                        this.disableOutsidePointerEvents() &&
-                        this.context.layersWithOutsidePointerEventsDisabled().length === 1
-                    ) {
+                    const next = untracked(() => this.context.layersWithOutsidePointerEventsDisabled().length);
+                    if (lastDisabledCount > 0 && next === 0) {
                         ownerDocument.body.style.pointerEvents = originalBodyPointerEvents;
                     }
+                    lastDisabledCount = next;
                 });
+
+                lastDisabledCount = disabledCount;
             },
             { injector: this.injector }
         );
