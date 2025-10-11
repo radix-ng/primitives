@@ -43,16 +43,18 @@ import { RdxPortal } from '@radix-ng/primitives/portal';
                         rdxDismissableLayer
                     >
                         <div [trapped]="trapped()" rdxFocusScope>
-                            <div
-                                class="flex min-h-[150px] min-w-[200px] items-start gap-4 rounded-md bg-white p-6"
-                                rdxPopperContentWrapper
-                                sideOffset="8"
-                                align="start"
-                                side="bottom"
-                            >
-                                <div rdxPopperContent>
-                                    <button (click)="open.set(false)">Close Popover</button>
-                                    <input type="text" value="hello world" />
+                            <div rdxPopperContentWrapper sideOffset="8" align="start" side="bottom">
+                                <div
+                                    class="flex min-h-[150px] min-w-[200px] items-start gap-4 rounded-md bg-white p-6"
+                                    rdxPopperContent
+                                >
+                                    <button
+                                        class="rounded-md border-2 border-black px-4 py-2"
+                                        (click)="open.set(false)"
+                                    >
+                                        Close Popover
+                                    </button>
+                                    <input class="rounded-md border-2 border-black" type="text" value="hello world" />
                                 </div>
                                 <span class="fill-white" rdxPopperArrow width="10" height="4"></span>
                             </div>

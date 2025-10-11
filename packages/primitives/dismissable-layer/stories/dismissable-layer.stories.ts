@@ -87,6 +87,20 @@ export const Popover: Story = {
     render: (args) => ({
         props: args,
         template: html`
+            <ul class="ml-4 list-disc text-white">
+                <li>✅ focus should move inside \`Popover\` when mounted</li>
+                <li>✅ focus should be trapped inside \`Popover\`</li>
+                <li>✅ scrolling outside \`Popover\` should be disabled</li>
+                <li>✅ should be able to dismiss \`Popover\` on pressing escape</li>
+                <li class="ml-6">✅ focus should return to the open button</li>
+                <li>
+                    ✅ interacting outside \`Popover\` should be disabled (clicking the "alert me" button shouldn't do
+                    anything)
+                </li>
+                <li>➕</li>
+                <li>✅ should be able to dismiss \`Popover\` when interacting outside</li>
+                <li class="ml-6">✅ focus should return to the open button</li>
+            </ul>
             <dummy-popover [disableOutsidePointerEvents]="disableOutsidePointerEvents" [trapped]="trapped" />
         `
     })
