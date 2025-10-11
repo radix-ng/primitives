@@ -10,8 +10,8 @@ import {
     signal
 } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
+import { RdxDismissableLayer } from '@radix-ng/primitives/dismissable-layer';
 import { Align, RdxPopperContentWrapper, Side } from '@radix-ng/primitives/popper';
-import { RdxDismissableLayer } from '../../dismissable-layer';
 import { injectRdxTooltipContext } from './tooltip';
 import { useGraceArea } from './useGraceArea';
 

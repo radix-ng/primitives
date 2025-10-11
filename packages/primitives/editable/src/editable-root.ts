@@ -13,7 +13,7 @@ import {
     WritableSignal
 } from '@angular/core';
 import { createContext, watch } from '@radix-ng/primitives/core';
-import { RdxFocusOutside, RdxPointerDownOutside } from '../../dismissable-layer';
+import { RdxFocusOutside, RdxPointerDownOutside } from '@radix-ng/primitives/dismissable-layer';
 
 type EditableRootContext = {
     disabled: Signal<boolean>;
