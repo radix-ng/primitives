@@ -1,4 +1,5 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { DismissableBox } from './dismissable-box';
 import { DismissableLayer } from './dismissable-layer';
 
 const html = String.raw;
@@ -7,7 +8,7 @@ export default {
     title: 'Primitives/Dismissable Layer',
     decorators: [
         moduleMetadata({
-            imports: [DismissableLayer]
+            imports: [DismissableLayer, DismissableBox]
         }),
         componentWrapperDecorator(
             (story) => html`
@@ -33,6 +34,14 @@ export const Default: Story = {
                 [preventPointerDownOutsideEvent]="preventPointerDownOutsideEvent"
                 [preventFocusOutsideEvent]="preventFocusOutsideEvent"
             />
+        `
+    })
+};
+
+export const Nested: Story = {
+    render: () => ({
+        template: html`
+            <dismissable-box />
         `
     })
 };
