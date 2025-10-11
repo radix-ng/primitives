@@ -4,19 +4,19 @@ import { injectPopperContentWrapperContext } from './popper-content-wrapper';
 @Directive({
     selector: '[rdxPopperContent]',
     host: {
-        '[attr.data-side]': 'popperPanel.placedSide()',
-        '[attr.data-align]': 'popperPanel.placedAlign()',
+        '[attr.data-side]': 'popperContentWrapper.placedSide()',
+        '[attr.data-align]': 'popperContentWrapper.placedAlign()',
         '[style]': 'style()'
     }
 })
 export class RdxPopperContent {
-    protected readonly popperPanel = injectPopperContentWrapperContext()!;
+    protected readonly popperContentWrapper = injectPopperContentWrapperContext()!;
 
     /**
      * if the PopperContent hasn't been placed yet (not all measurements done)
      * we prevent animations so that users's animation don't kick in too early referring wrong sides
      */
     protected readonly style = computed(() => ({
-        animation: !this.popperPanel.isPositioned() ? 'none' : ''
+        animation: !this.popperContentWrapper.isPositioned() ? 'none' : undefined
     }));
 }

@@ -1,5 +1,5 @@
 import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
-import { NgIf, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import {
     booleanAttribute,
     Component,
@@ -29,12 +29,12 @@ import {
  */
 @Component({
     selector: 'rdx-slider',
-    imports: [RdxSliderHorizontalComponent, RdxSliderVerticalComponent, NgIf, NgTemplateOutlet],
+    imports: [RdxSliderHorizontalComponent, RdxSliderVerticalComponent, NgTemplateOutlet],
     providers: [RdxSliderOrientationContextService],
     template: `
         <ng-template #transclude><ng-content /></ng-template>
 
-        <ng-container *ngIf="orientation() === 'horizontal'">
+        @if (orientation() === 'horizontal') {
             <rdx-slider-horizontal
                 [className]="styleClass() || className"
                 [min]="min()"
@@ -53,9 +53,9 @@ import {
             >
                 <ng-container *ngTemplateOutlet="transclude" />
             </rdx-slider-horizontal>
-        </ng-container>
+        }
 
-        <ng-container *ngIf="orientation() === 'vertical'">
+        @if (orientation() === 'vertical') {
             <rdx-slider-vertical
                 [className]="styleClass() || className"
                 [min]="min()"
@@ -74,7 +74,7 @@ import {
             >
                 <ng-container *ngTemplateOutlet="transclude" />
             </rdx-slider-vertical>
-        </ng-container>
+        }
     `
 })
 export class RdxSliderRootComponent implements OnInit {

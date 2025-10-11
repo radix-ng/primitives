@@ -17,6 +17,7 @@ import {
     Menu,
     Minus,
     MountainSnow,
+    Plus,
     Strikethrough,
     UnfoldVertical,
     X
@@ -49,6 +50,7 @@ const preview: Preview = {
                         AlignRight,
                         MountainSnow,
                         X,
+                        Plus,
                         UnfoldVertical
                     })
                 )

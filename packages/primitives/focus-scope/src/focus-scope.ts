@@ -2,6 +2,7 @@ import { BooleanInput } from '@angular/cdk/coercion';
 import {
     afterNextRender,
     booleanAttribute,
+    DestroyRef,
     Directive,
     effect,
     ElementRef,
@@ -55,6 +56,7 @@ const rootContext = (): FocusScopeContext => {
 })
 export class RdxFocusScope {
     private readonly injector = inject(Injector);
+    private readonly destroyRef = inject(DestroyRef);
 
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
@@ -102,7 +104,13 @@ export class RdxFocusScope {
         resume: () => this.focusScope.paused.set(false)
     };
 
+    private alive = true;
+
     constructor() {
+        this.destroyRef.onDestroy(() => {
+            this.alive = false;
+        });
+
         afterNextRender(() => {
             effect(
                 (onCleanup) => {
@@ -200,12 +208,15 @@ export class RdxFocusScope {
                         }
                     }
 
+                    const unmountEventHandler = (ev: Event) => {
+                        if (this.alive) this.unmountAutoFocus.emit(ev);
+                    };
+                    container.addEventListener(AUTOFOCUS_ON_UNMOUNT, unmountEventHandler);
+
                     onCleanup(() => {
                         container.removeEventListener(AUTOFOCUS_ON_MOUNT, (ev: Event) => this.mountAutoFocus.emit(ev));
 
                         const unmountEvent = new CustomEvent(AUTOFOCUS_ON_UNMOUNT, EVENT_OPTIONS);
-                        const unmountEventHandler = (ev: Event) => this.unmountAutoFocus.emit(ev);
-                        container.addEventListener(AUTOFOCUS_ON_UNMOUNT, unmountEventHandler);
                         container.dispatchEvent(unmountEvent);
 
                         setTimeout(() => {
