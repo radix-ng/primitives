@@ -1,8 +1,8 @@
 import { Component, signal } from '@angular/core';
 import { RdxDismissableLayer } from '@radix-ng/primitives/dismissable-layer';
+import { RdxFocusGuards } from '@radix-ng/primitives/focus-guards';
 import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import { RdxPortal } from '@radix-ng/primitives/portal';
-import { RdxFocusGuards } from '../../focus-guards';
 
 @Component({
     selector: 'dummy-dialog',

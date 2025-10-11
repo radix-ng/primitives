@@ -6,9 +6,9 @@ import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
     selector: 'dismissable-focus-trap',
     imports: [RdxDismissableLayer, RdxFocusScope],
     template: `
-        <div class="flex flex-col justify-center">
+        <div class="flex w-[450px] flex-col justify-center">
             <button
-                class="border-white-600 rounded-md border-2 px-4 py-2 text-white"
+                class="border-white-600 w-32 rounded-md border-2 px-4 py-2 text-white"
                 #buttonRef
                 (click)="openWithFocusScope.set(!openWithFocusScope())"
             >

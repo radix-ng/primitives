@@ -3,6 +3,7 @@ import { DismissableFocusTrap } from './dismissable-focus-trap';
 import { DismissableLayer } from './dismissable-layer';
 import { DismissableNested } from './dismissable-nested';
 import { DummyDialog } from './dummy-dialog';
+import { DummyPopover } from './dummy-popover';
 
 const html = String.raw;
 
@@ -10,7 +11,7 @@ export default {
     title: 'Primitives/Dismissable Layer',
     decorators: [
         moduleMetadata({
-            imports: [DismissableLayer, DismissableNested, DismissableFocusTrap, DummyDialog]
+            imports: [DismissableLayer, DismissableNested, DismissableFocusTrap, DummyDialog, DummyPopover]
         }),
         componentWrapperDecorator(
             (story) => html`
@@ -74,6 +75,19 @@ export const Dialog: Story = {
                 <li class="ml-6">✅ focus should return to the open button</li>
             </ul>
             <dummy-dialog />
+        `
+    })
+};
+
+export const Popover: Story = {
+    args: {
+        disableOutsidePointerEvents: false,
+        trapped: false
+    },
+    render: (args) => ({
+        props: args,
+        template: html`
+            <dummy-popover [disableOutsidePointerEvents]="disableOutsidePointerEvents" [trapped]="trapped" />
         `
     })
 };
