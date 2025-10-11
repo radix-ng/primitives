@@ -27,9 +27,11 @@ export type RdxDismissableLayerConfig = {
 export const RdxDismissableLayerConfigToken = new InjectionToken<RdxDismissableLayerConfig>(
     'RdxDismissableLayerConfig',
     {
-        factory: () => ({
-            disableOutsidePointerEvents: signal(false)
-        })
+        factory: () => {
+            return {
+                disableOutsidePointerEvents: signal(false)
+            };
+        }
     }
 );
 

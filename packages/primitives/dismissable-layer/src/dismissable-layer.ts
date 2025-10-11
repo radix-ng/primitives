@@ -1,5 +1,6 @@
 import {
     afterNextRender,
+    booleanAttribute,
     computed,
     DestroyRef,
     Directive,
@@ -7,6 +8,7 @@ import {
     ElementRef,
     inject,
     Injector,
+    input,
     output,
     untracked
 } from '@angular/core';
@@ -68,7 +70,9 @@ export class RdxDismissableLayer {
      * the `DismissableLayer`. Users will need to click twice on outside elements to
      * interact with them: once to close the `DismissableLayer`, and again to trigger the element.
      */
-    readonly disableOutsidePointerEvents = this.configLayer.disableOutsidePointerEvents;
+    readonly disableOutsidePointerEvents = input(this.configLayer.disableOutsidePointerEvents(), {
+        transform: booleanAttribute
+    });
 
     readonly layers = computed(() => this.context.layersRoot);
 
@@ -97,7 +101,9 @@ export class RdxDismissableLayer {
 
         effect(
             (onCleanup) => {
-                if (this.configLayer.disableOutsidePointerEvents()) {
+                if (!this.elementRef.nativeElement) return;
+
+                if (this.disableOutsidePointerEvents()) {
                     if (this.context.layersWithOutsidePointerEventsDisabled().length === 0) {
                         originalBodyPointerEvents = ownerDocument.body.style.pointerEvents;
                         ownerDocument.body.style.pointerEvents = 'none';
@@ -108,8 +114,8 @@ export class RdxDismissableLayer {
 
                 onCleanup(() => {
                     if (
-                        this.configLayer.disableOutsidePointerEvents() &&
-                        this.context.layersWithOutsidePointerEventsDisabled.length === 1
+                        this.disableOutsidePointerEvents() &&
+                        this.context.layersWithOutsidePointerEventsDisabled().length === 1
                     ) {
                         ownerDocument.body.style.pointerEvents = originalBodyPointerEvents;
                     }

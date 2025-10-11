@@ -1,8 +1,8 @@
-import { Component, contentChild, input, signal } from '@angular/core';
+import { Component, ElementRef, input, signal, viewChild } from '@angular/core';
 import { RdxDismissableLayer } from '@radix-ng/primitives/dismissable-layer';
 
 @Component({
-    selector: 'dismissable-box',
+    selector: 'dismissable-nested',
     imports: [RdxDismissableLayer],
     template: `
         <div
@@ -21,26 +21,26 @@ import { RdxDismissableLayer } from '@radix-ng/primitives/dismissable-layer';
             </button>
             <div class="p-2"></div>
             @if (open()) {
-                <dismissable-box [onDismiss]="setDismiss" [onPointerDownOutside]="setonPointerDownOutside" />
+                <dismissable-nested [onDismiss]="setDismiss" [onPointerDownOutside]="setonPointerDownOutside" />
             }
         </div>
     `
 })
-export class DismissableBox {
+export class DismissableNested {
     readonly onDismiss = input<() => void>();
     readonly onFocusOutside = input<(ev: Event) => void>();
     readonly onPointerDownOutside = input<(ev: PointerEvent) => void>();
 
     readonly open = signal(false);
 
-    readonly buttonRef = contentChild('buttonRef');
+    readonly buttonRef = viewChild<ElementRef>('buttonRef');
 
     setDismiss() {
         this.open.set(false);
     }
 
     setonPointerDownOutside(event: PointerEvent) {
-        if (event.target === this.buttonRef()) {
+        if (event.target === this.buttonRef()?.nativeElement) {
             event.preventDefault();
         }
     }

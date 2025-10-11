@@ -1,6 +1,7 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { DismissableBox } from './dismissable-box';
+import { DismissableFocusTrap } from './dismissable-focus-trap';
 import { DismissableLayer } from './dismissable-layer';
+import { DismissableNested } from './dismissable-nested';
 
 const html = String.raw;
 
@@ -8,7 +9,7 @@ export default {
     title: 'Primitives/Dismissable Layer',
     decorators: [
         moduleMetadata({
-            imports: [DismissableLayer, DismissableBox]
+            imports: [DismissableLayer, DismissableNested, DismissableFocusTrap]
         }),
         componentWrapperDecorator(
             (story) => html`
@@ -41,7 +42,15 @@ export const Default: Story = {
 export const Nested: Story = {
     render: () => ({
         template: html`
-            <dismissable-box />
+            <dismissable-nested />
+        `
+    })
+};
+
+export const FocusTrap: Story = {
+    render: () => ({
+        template: html`
+            <dismissable-focus-trap />
         `
     })
 };
