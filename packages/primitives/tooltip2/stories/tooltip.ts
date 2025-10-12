@@ -29,7 +29,7 @@ import { tooltipImports } from '@radix-ng/primitives/tooltip2';
                 rdxTooltip
                 isControlledState
             >
-                <rdx-slider-thumb class="SliderThumb" [rdxOnPointerDown]="handlePointerDown" rdxTooltipTriggerV2 />
+                <rdx-slider-thumb class="SliderThumb" [rdxOnPointerDown]="handlePointerDown" rdxTooltipTrigger />
 
                 <div [container]="tooltipContent" rdxTooltipPortal>
                     <ng-template #tooltipContent rdxTooltipPortalPresence>

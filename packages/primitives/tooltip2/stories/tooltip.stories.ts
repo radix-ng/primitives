@@ -61,7 +61,7 @@ export const Default: Story = {
             <ng-container rdxTooltip [closeDelay]="closeDelay" [disabled]="disabled">
                 <button
                     class="text-violet11 shadow-blackA7 hover:bg-violet3 inline-flex h-[35px] w-[35px] items-center justify-center rounded-full bg-white shadow-[0_2px_10px] outline-none focus:shadow-[0_0_0_2px] focus:shadow-black"
-                    rdxTooltipTriggerV2
+                    rdxTooltipTrigger
                     [attr.disabled]="disabled"
                 >
                     <lucide-angular name="plus" size="16" />

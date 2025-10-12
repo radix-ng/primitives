@@ -3,7 +3,7 @@ import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { injectRdxTooltipContext } from './tooltip';
 
 @Directive({
-    selector: '[rdxTooltipTriggerV2]',
+    selector: '[rdxTooltipTrigger]',
     hostDirectives: [RdxPopperAnchor],
     host: {
         'data-grace-area-trigger': "''",

@@ -7,3 +7,37 @@ import * as Stories from './tooltip.stories';
 
 <Primary />
 <Controls />
+
+```html
+<ng-container rdxTooltip>
+    <button class="IconButton" rdxTooltipTrigger>+</button>
+
+    <ng-template rdxTooltipContent>
+        <div class="TooltipContent" rdxTooltipContentAttributes>
+            <button class="TooltipClose" rdxTooltipClose aria-label="Close">X</button>
+            Tooltip Content
+            <div class="TooltipArrow" rdxTooltipArrow></div>
+        </div>
+    </ng-template>
+</ng-container>
+```
+
+```html
+<ng-container rdxTooltip>
+    <button rdxTooltipTrigger>+</button>
+
+    <div rdxTooltipPortal [container]="tooltipContent">
+        <ng-template rdxTooltipPortalPresence #tooltipContent>
+            <div rdxTooltipContentWrapper>
+                <div rdxTooltipContent>Add to library</div>
+                <span rdxTooltipArrow></span>
+            </div>
+        </ng-template>
+    </div>
+</ng-container>
+```
+
+### What`s changes between Tooltip and Tooltip2
+
+
+
