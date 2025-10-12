@@ -7,7 +7,9 @@ let count = 0;
  * Injects a pair of focus guards at the edges of the whole DOM tree
  * to ensure `focusin` & `focusout` events can be caught consistently.
  */
-@Directive()
+@Directive({
+    selector: '[rdxFocusGuards]'
+})
 export class RdxFocusGuards {
     private readonly injector = inject(Injector);
 

@@ -1,6 +1,8 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import {
+    afterNextRender,
     booleanAttribute,
+    DestroyRef,
     Directive,
     effect,
     ElementRef,
@@ -235,4 +237,34 @@ export class RdxPointerDownOutside {
             });
         });
     }
+}
+
+@Directive({
+    selector: '[rdxEscapeKeyDown]',
+    exportAs: 'rdxEscapeKeyDown'
+})
+export class RdxEscapeKeyDown {
+    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    private readonly destroyRef = inject(DestroyRef);
+
+    readonly escapeKeyDown = output<KeyboardEvent>();
+
+    private readonly afterNextRender = afterNextRender(() => {
+        const ownerDocument = this.elementRef.nativeElement.ownerDocument ?? globalThis.document;
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                this.escapeKeyDown.emit(event);
+            }
+        };
+
+        ownerDocument.addEventListener('keydown', handleKeyDown, {
+            capture: true
+        });
+
+        this.destroyRef.onDestroy(() =>
+            ownerDocument.removeEventListener('keydown', handleKeyDown, {
+                capture: true
+            })
+        );
+    });
 }
