@@ -31,9 +31,14 @@ let originalBodyPointerEvents: string;
 export class RdxDismissableLayer {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly injector = inject(Injector);
-    private readonly context = inject(RdxDismissableLayersContextToken);
-    private readonly configLayer = inject(RdxDismissableLayerConfigToken);
     private readonly destroyRef = inject(DestroyRef);
+
+    private readonly context = inject(RdxDismissableLayersContextToken);
+    private readonly config = inject(RdxDismissableLayerConfigToken);
+
+    private readonly rdxPointerDownOutside = inject(RdxPointerDownOutside);
+    private readonly rdxFocusOutside = inject(RdxFocusOutside);
+    private readonly rdxEscapeKeyDown = inject(RdxEscapeKeyDown);
 
     /**
      * Event handler called when the escape key is down.
@@ -70,13 +75,11 @@ export class RdxDismissableLayer {
      * the `DismissableLayer`. Users will need to click twice on outside elements to
      * interact with them: once to close the `DismissableLayer`, and again to trigger the element.
      */
-    readonly disableOutsidePointerEvents = input(this.configLayer.disableOutsidePointerEvents(), {
+    readonly disableOutsidePointerEvents = input(this.config.disableOutsidePointerEvents(), {
         transform: booleanAttribute
     });
 
     readonly layers = computed(() => this.context.layersRoot);
-
-    private readonly index = computed(() => this.context.layersRoot().indexOf(this));
 
     protected readonly isBodyPointerEventsDisabled = computed(
         () => this.context.layersWithOutsidePointerEventsDisabled().length > 0
@@ -95,6 +98,8 @@ export class RdxDismissableLayer {
 
         return this.index() >= highestLayerWithOutsidePointerEventsDisabledIndex;
     });
+
+    private readonly index = computed(() => this.context.layersRoot().indexOf(this));
 
     private readonly afterNextRender = afterNextRender(() => {
         const ownerDocument = this.elementRef.nativeElement.ownerDocument ?? globalThis.document;
@@ -136,7 +141,7 @@ export class RdxDismissableLayer {
     constructor() {
         this.context.layersRoot.update((v) => [...v, this]);
 
-        inject(RdxPointerDownOutside).pointerDownOutside.subscribe((event) => {
+        this.rdxPointerDownOutside.pointerDownOutside.subscribe((event: PointerEvent) => {
             const isPointerDownOnBranch = this.context
                 .branches()
                 .some((branch) => branch.contains(event.target as HTMLElement));
@@ -153,7 +158,7 @@ export class RdxDismissableLayer {
             }
         });
 
-        inject(RdxFocusOutside).focusOutside.subscribe((event) => {
+        this.rdxFocusOutside.focusOutside.subscribe((event: FocusEvent) => {
             const isFocusInBranch = this.context
                 .branches()
                 .some((branch) => branch.contains(event.target as HTMLElement));
@@ -170,7 +175,7 @@ export class RdxDismissableLayer {
             }
         });
 
-        inject(RdxEscapeKeyDown).escapeKeyDown.subscribe((event) => {
+        this.rdxEscapeKeyDown.escapeKeyDown.subscribe((event: KeyboardEvent) => {
             this.escapeKeyDown.emit(event);
 
             if (!event.defaultPrevented) {

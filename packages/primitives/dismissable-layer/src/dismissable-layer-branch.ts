@@ -5,15 +5,18 @@ import { RdxDismissableLayersContextToken } from './dismissable-layer.config';
     selector: '[rdxDismissableLayerBranch]'
 })
 export class RdxDismissableLayerBranch {
+    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    private readonly destroyRef = inject(DestroyRef);
+
     private readonly dismissableLayersContext = inject(RdxDismissableLayersContextToken);
 
-    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
-
     constructor() {
-        this.dismissableLayersContext.branches.update((v) => [...v, this.elementRef.nativeElement]);
+        this.dismissableLayersContext.branches.update((elements) => [...elements, this.elementRef.nativeElement]);
 
-        inject(DestroyRef).onDestroy(() =>
-            this.dismissableLayersContext.branches.update((v) => v.filter((i) => i !== this.elementRef.nativeElement))
+        this.destroyRef.onDestroy(() =>
+            this.dismissableLayersContext.branches.update((elements) =>
+                elements.filter((el) => el !== this.elementRef.nativeElement)
+            )
         );
     }
 }
