@@ -80,7 +80,24 @@ const docsConfig = {
                 },
                 {
                     section: 'Utils',
-                    pages: [{ name: 'Focus Scope', url: '/primitives/utils/focus-scope', label: 'New' }]
+                    pages: [
+                        {
+                            name: 'Dismissable Layer',
+                            url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-dismissable-layer--docs',
+                            label: 'New'
+                        },
+                        { name: 'Focus Scope', url: '/primitives/utils/focus-scope' },
+                        {
+                            name: 'Popper',
+                            url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-popper--docs',
+                            label: 'New'
+                        },
+                        {
+                            name: 'Roving Focus',
+                            url: 'https://sb-primitives.radix-ng.com/?path=/docs/utilities-roving-focus--docs',
+                            label: 'Storybook'
+                        }
+                    ]
                 },
                 {
                     section: 'Components',
@@ -93,7 +110,7 @@ const docsConfig = {
                         },
                         { name: 'Aspect Ratio', url: '/primitives/components/aspect-ratio' },
                         { name: 'Avatar', url: '/primitives/components/avatar' },
-                        { name: 'Checkbox', url: '/primitives/components/checkbox' },
+                        { name: 'Checkbox', url: '/primitives/components/checkbox', label: 'updated' },
                         { name: 'Collapsible', url: '/primitives/components/collapsible' },
                         {
                             name: 'Context Menu',
