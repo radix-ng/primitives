@@ -1,3 +1,28 @@
+## 0.44.0 (2025-10-12)
+
+### 🚀 Features
+
+- added Tooltip v2 based on floating-ui and Dismissable layer ([#367](https://github.com/radix-ng/primitives/pull/367))
+- added Popper primitive ([#366](https://github.com/radix-ng/primitives/pull/366))
+- **checkbox:** added readonly property ([33f8a82](https://github.com/radix-ng/primitives/commit/33f8a82))
+- experimentalZoneless is on ([9b47489](https://github.com/radix-ng/primitives/commit/9b47489))
+- **radix-storybook:** migrated to vite and supported TailwindCSS 4 ([#364](https://github.com/radix-ng/primitives/pull/364))
+- **roving-focus:** updated to Signals ([#362](https://github.com/radix-ng/primitives/pull/362))
+- **checkbox:** migrated to Signals ([#361](https://github.com/radix-ng/primitives/pull/361))
+- updated Angular to 20.2, Storybook to 9.1 ([#360](https://github.com/radix-ng/primitives/pull/360))
+- **calendar:** add getWeekNumber utility function ([#358](https://github.com/radix-ng/primitives/pull/358))
+- **number-field:** support readonly ([#357](https://github.com/radix-ng/primitives/pull/357))
+
+### 🩹 Fixes
+
+- **label:** htmlFor attribute ([937c7fa](https://github.com/radix-ng/primitives/commit/937c7fa))
+- **visually-hidden:** prevent causing unnecessary container scroll ([d430553](https://github.com/radix-ng/primitives/commit/d430553))
+- **core:** compatibility for AM/PM switching ([4eaabeb](https://github.com/radix-ng/primitives/commit/4eaabeb))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 0.43.0 (2025-07-16)
 
 ### 🚀 Features
