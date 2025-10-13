@@ -5,6 +5,14 @@ import { createContext, RdxControlValueAccessor } from '@radix-ng/primitives/cor
 
 export type CheckedState = boolean | 'indeterminate';
 
+export function isIndeterminate(checked?: CheckedState): checked is 'indeterminate' {
+    return checked === 'indeterminate';
+}
+
+export function getState(checked: CheckedState) {
+    return isIndeterminate(checked) ? 'indeterminate' : checked ? 'checked' : 'unchecked';
+}
+
 const rootContext = () => {
     const checkbox = inject(RdxCheckboxRootDirective);
     const controlValueAccessor = inject<RdxControlValueAccessor<CheckedState>>(RdxControlValueAccessor);
@@ -17,15 +25,7 @@ const rootContext = () => {
         name: checkbox.name,
         form: checkbox.form,
         readonly: checkbox.readonly,
-        state: computed(() => {
-            const checked = controlValueAccessor.value();
-
-            if (checked === 'indeterminate') {
-                return checked;
-            }
-
-            return checked ? 'checked' : 'unchecked';
-        }),
+        state: checkbox.state,
         toggle() {
             checkbox.toggle();
         }
@@ -48,7 +48,10 @@ export const [injectCheckboxRootContext, provideCheckboxRootContext] =
             directive: RdxControlValueAccessor,
             inputs: ['value:checked', 'disabled']
         }
-    ]
+    ],
+    host: {
+        '[attr.data-state]': 'state()'
+    }
 })
 export class RdxCheckboxRootDirective {
     private readonly controlValueAccessor = inject(RdxControlValueAccessor);
@@ -100,6 +103,16 @@ export class RdxCheckboxRootDirective {
      * @group Emits
      */
     readonly onCheckedChange = outputFromObservable(outputToObservable(this.controlValueAccessor.valueChange));
+
+    readonly state = computed(() => {
+        const checked = this.controlValueAccessor.value();
+
+        if (checked === 'indeterminate') {
+            return checked;
+        }
+
+        return checked ? 'checked' : 'unchecked';
+    });
 
     toggle() {
         const checked = this.controlValueAccessor.value();
