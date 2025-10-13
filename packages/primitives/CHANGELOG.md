@@ -1,3 +1,13 @@
+## 0.50.0 (2025-10-13)
+
+### 🚀 Features
+
+- **checkbox:** checked as model ([ef0e4e1](https://github.com/radix-ng/primitives/commit/ef0e4e1))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 0.44.0 (2025-10-12)
 
 ### 🚀 Features
