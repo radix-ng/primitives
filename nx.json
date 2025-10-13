@@ -79,7 +79,7 @@
         "projectsRelationship": "independent",
         "projects": ["primitives"],
         "version": {
-            "conventionalCommits": true,
+            "conventionalCommits": false,
             "preVersionCommand": "npx nx run-many -t build -p primitives",
             "updateDependents": "auto"
         },
