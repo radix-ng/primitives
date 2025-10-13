@@ -22,7 +22,7 @@ import { Check, LucideAngularModule } from 'lucide-angular';
     ],
     template: `
         <div style="display: flex; align-items: center;">
-            <div rdxCheckboxRoot>
+            <div [checked]="true" rdxCheckboxRoot>
                 <button class="CheckboxButton" id="r1" rdxCheckboxButton>
                     <lucide-angular class="CheckboxIndicator" [img]="CheckIcon" rdxCheckboxIndicator size="16" />
                 </button>

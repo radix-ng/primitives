@@ -56,7 +56,7 @@ export const Default: Story = {
         props: args,
         template: html`
             <div style="display: flex; align-items: center;">
-                <div rdxCheckboxRoot ${argsToTemplate(args)}>
+                <div rdxCheckboxRoot ${argsToTemplate(args)} [checked]="true">
                     <button class="CheckboxButton" id="checkbox-1" rdxCheckboxButton>
                         <lucide-angular class="CheckboxIndicator" rdxCheckboxIndicator size="16" name="check" />
                     </button>

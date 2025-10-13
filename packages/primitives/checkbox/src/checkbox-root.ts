@@ -1,5 +1,5 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { booleanAttribute, computed, Directive, inject, input } from '@angular/core';
+import { booleanAttribute, computed, Directive, inject, input, model } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
 import { createContext, RdxControlValueAccessor } from '@radix-ng/primitives/core';
 
@@ -57,7 +57,7 @@ export class RdxCheckboxRootDirective {
      * The controlled checked state of the checkbox. Must be used in conjunction with onCheckedChange.
      * @group Props
      */
-    readonly checked = input<CheckedState, BooleanInput>(false, { transform: booleanAttribute });
+    readonly checked = model<CheckedState>(false);
 
     /**
      * The value of the checkbox. This is what is submitted with the form when the checkbox is checked.
