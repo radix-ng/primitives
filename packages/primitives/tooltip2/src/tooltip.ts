@@ -63,6 +63,7 @@ export const [injectRdxTooltipContext, provideRdxTooltipContext] =
 
 @Directive({
     selector: '[rdxTooltip]',
+    exportAs: 'rdxTooltip',
     providers: [provideRdxTooltipContext(context)],
     hostDirectives: [RdxPopper]
 })
