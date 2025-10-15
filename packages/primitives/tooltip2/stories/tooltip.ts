@@ -1,4 +1,4 @@
-import { Component, inject, NgZone, signal } from '@angular/core';
+import { Component, ElementRef, inject, NgZone, signal, viewChild } from '@angular/core';
 import {
     RdxSliderRangeComponent,
     RdxSliderRootComponent,
@@ -31,8 +31,8 @@ import { tooltipImports } from '@radix-ng/primitives/tooltip2';
             >
                 <rdx-slider-thumb class="SliderThumb" [rdxOnPointerDown]="handlePointerDown" rdxTooltipTrigger />
 
-                <div [container]="tooltipContent" rdxTooltipPortal>
-                    <ng-template #tooltipContent rdxTooltipPortalPresence>
+                <ng-template #tooltipContent rdxTooltipPortalPresence>
+                    <ng-container [container]="tooltipContentRef()" rdxTooltipPortal>
                         <div
                             class="data-[state=delayed-open]:data-[side=top]:animate-slideDownAndFade data-[state=delayed-open]:data-[side=right]:animate-slideLeftAndFade data-[state=delayed-open]:data-[side=left]:animate-slideRightAndFade data-[state=delayed-open]:data-[side=bottom]:animate-slideUpAndFade text-violet11 select-none rounded-[4px] bg-white px-[15px] py-[10px] text-[15px] leading-none shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] will-change-[transform,opacity]"
                             sideOffset="8"
@@ -41,14 +41,16 @@ import { tooltipImports } from '@radix-ng/primitives/tooltip2';
                         >
                             <div rdxTooltipContent>Add to library</div>
                         </div>
-                    </ng-template>
-                </div>
+                    </ng-container>
+                </ng-template>
             </ng-container>
         </rdx-slider>
     `
 })
 export class TooltipSlider {
     private readonly ngZone = inject(NgZone);
+
+    readonly tooltipContentRef = viewChild.required<ElementRef<HTMLElement>>('tooltipContent');
 
     readonly showTooltipState = signal(false);
 

@@ -1,4 +1,4 @@
-import { Directive, ElementRef, input, TemplateRef } from '@angular/core';
+import { Directive, ElementRef, input } from '@angular/core';
 import { RdxPortal } from '@radix-ng/primitives/portal';
 
 @Directive({
@@ -11,5 +11,5 @@ import { RdxPortal } from '@radix-ng/primitives/portal';
     ]
 })
 export class RdxTooltipPortal {
-    readonly container = input<ElementRef<HTMLElement> | TemplateRef<any>>();
+    readonly container = input.required<ElementRef<HTMLElement>>();
 }

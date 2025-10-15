@@ -67,8 +67,8 @@ export const Default: Story = {
                     <lucide-angular name="plus" size="16" />
                 </button>
 
-                <div rdxTooltipPortal [container]="tooltipContent">
-                    <ng-template rdxTooltipPortalPresence #tooltipContent>
+                <ng-template rdxTooltipPortalPresence #tooltipContent>
+                    <ng-container rdxTooltipPortal [container]="tooltipContent">
                         <div
                             class="data-[state=delayed-open]:data-[side=top]:animate-slideDownAndFade data-[state=delayed-open]:data-[side=right]:animate-slideLeftAndFade data-[state=delayed-open]:data-[side=left]:animate-slideRightAndFade data-[state=delayed-open]:data-[side=bottom]:animate-slideUpAndFade text-violet11 select-none rounded-[4px] bg-white px-[15px] py-[10px] text-[15px] leading-none shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] will-change-[transform,opacity]"
                             [sideOffset]="sideOffset"
@@ -78,8 +78,8 @@ export const Default: Story = {
                             <div rdxTooltipContent>Add to library</div>
                             <span class="fill-white" rdxTooltipArrow></span>
                         </div>
-                    </ng-template>
-                </div>
+                    </ng-container>
+                </ng-template>
             </ng-container>
         `
     })
