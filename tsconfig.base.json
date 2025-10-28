@@ -23,6 +23,7 @@
             "@radix-ng/primitives/arrow": ["packages/primitives/arrow/index.ts"],
             "@radix-ng/primitives/checkbox": ["packages/primitives/checkbox/index.ts"],
             "@radix-ng/primitives/collapsible": ["packages/primitives/collapsible/index.ts"],
+            "@radix-ng/primitives/collection": ["packages/primitives/collection/index.ts"],
             "@radix-ng/primitives/core": ["packages/primitives/core/index.ts"],
             "@radix-ng/primitives/dismissable-layer": ["packages/primitives/dismissable-layer/index.ts"],
             "@radix-ng/primitives/dropdown-menu": ["packages/primitives/dropdown-menu/index.ts"],
