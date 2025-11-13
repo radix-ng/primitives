@@ -1,22 +1,9 @@
 import { Directive, inject } from '@angular/core';
-import { _IdGenerator, createContext } from '@radix-ng/primitives/core';
-
-const context = () => {
-    const context = inject(RdxSelectGroup);
-
-    return {
-        id: context.id
-    };
-};
-
-export type RdxSelectGroupContext = ReturnType<typeof context>;
-
-export const [injectSelectGroupContext, provideSelectGroupContext] =
-    createContext<RdxSelectGroupContext>('RdxSelectGroup');
+import { _IdGenerator } from '@radix-ng/primitives/core';
 
 @Directive({
     selector: '[rdxSelectGroup]',
-    providers: [provideSelectGroupContext(context)],
+    exportAs: 'rdxSelectGroup',
     host: {
         role: 'group',
         '[attr.aria-labelledby]': 'id'
