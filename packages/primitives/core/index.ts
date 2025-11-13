@@ -20,6 +20,7 @@ export * from './src/window';
 
 export * from './src/create-context';
 export * from './src/date-time';
+export * from './src/handleAndDispatchCustomEvent';
 export * from './src/positioning/constants';
 export * from './src/positioning/types';
 export * from './src/positioning/utils';

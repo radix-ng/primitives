@@ -25,4 +25,4 @@ export type Nullable<Type> = null | Type | undefined;
  */
 export type SafeFunction = (...args: unknown[]) => unknown;
 
-export type AcceptableValue = string | number | Record<string, any> | null;
+export type AcceptableValue = string | number | bigint | Record<string, any> | null;
