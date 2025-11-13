@@ -12,7 +12,7 @@ import { RdxCollectionItem } from '@radix-ng/primitives/collection';
 import { _IdGenerator, createContext, getActiveElement, handleAndDispatchCustomEvent } from '@radix-ng/primitives/core';
 import { injectSelectContentContext } from './select-content';
 import { injectSelectRootContext } from './select-root';
-import { valueComparator } from './utils';
+import { SELECTION_KEYS, valueComparator } from './utils';
 
 const context = () => {
     const context = inject(RdxSelectItem);
@@ -80,6 +80,8 @@ export class RdxSelectItem {
         this.contentContext.itemRefCallback(this.currentElement.nativeElement, this.value(), this.disabled());
     });
 
+    private SELECT_SELECT = 'select.select';
+
     onPointerDown(event: PointerEvent) {
         (event.currentTarget as HTMLElement).focus({ preventScroll: true });
     }
@@ -88,12 +90,11 @@ export class RdxSelectItem {
         if (event.defaultPrevented) return;
 
         const eventDetail = { originalEvent: event, value: this.value() };
-        const SELECT_SELECT = 'select.select';
 
         handleAndDispatchCustomEvent(
-            SELECT_SELECT,
-            async (ev: SelectEvent) => {
-                if (ev.defaultPrevented) return;
+            this.SELECT_SELECT,
+            async (event: SelectEvent) => {
+                if (event.defaultPrevented) return;
 
                 this.rootContext.onValueChange(this.value());
                 if (!this.rootContext.multiple()) {
@@ -124,7 +125,27 @@ export class RdxSelectItem {
     handleKeyDown(event: KeyboardEvent) {
         if (event.defaultPrevented) return;
 
+        if (SELECTION_KEYS.includes(event.key)) this.handleSelectCustomEvent(event);
+
         // prevent page scroll if using the space key to select an item
         if (event.key === ' ') event.preventDefault();
+    }
+
+    async handleSelectCustomEvent(event: PointerEvent | KeyboardEvent) {
+        if (event.defaultPrevented) return;
+
+        const eventDetail = { originalEvent: event, value: this.value() };
+        handleAndDispatchCustomEvent(
+            this.SELECT_SELECT,
+            async (event: SelectEvent) => {
+                if (event.defaultPrevented) return;
+
+                if (!this.disabled()) {
+                    this.rootContext.onValueChange(this.value());
+                    if (!this.rootContext.multiple()) this.rootContext.onOpenChange(false);
+                }
+            },
+            eventDetail
+        );
     }
 }

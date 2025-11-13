@@ -1,6 +1,7 @@
 import { afterNextRender, booleanAttribute, computed, Directive, ElementRef, inject, input } from '@angular/core';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { injectSelectRootContext } from './select-root';
+import { OPEN_KEYS } from './utils';
 
 @Directive({
     selector: 'button[rdxSelectTrigger]',
@@ -14,7 +15,8 @@ import { injectSelectRootContext } from './select-root';
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
         '(click)': 'onClickHandler($event)',
         '(pointerdown)': 'onPointerDown($event)',
-        '(pointerup)': 'onPointerUp($event)'
+        '(pointerup)': 'onPointerUp($event)',
+        '(keydown)': 'onKeydown($event)'
     }
 })
 export class RdxSelectTrigger {
@@ -78,5 +80,12 @@ export class RdxSelectTrigger {
         event.preventDefault();
         // Only open on pointer up when using touch devices
         if (event.pointerType === 'touch') this.handlePointerOpen(event);
+    }
+
+    onKeydown(event: KeyboardEvent) {
+        if (OPEN_KEYS.includes(event.key)) {
+            this.handleOpen();
+            event.preventDefault();
+        }
     }
 }
