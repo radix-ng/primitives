@@ -6,7 +6,8 @@ import {
     ElementRef,
     inject,
     input,
-    linkedSignal
+    linkedSignal,
+    signal
 } from '@angular/core';
 import { RdxCollectionItem } from '@radix-ng/primitives/collection';
 import { _IdGenerator, createContext, getActiveElement, handleAndDispatchCustomEvent } from '@radix-ng/primitives/core';
@@ -49,6 +50,9 @@ export type SelectEvent = CustomEvent<{ originalEvent: PointerEvent | KeyboardEv
         '[attr.tabindex]': 'disabled() ? undefined : -1',
         '[attr.aria-selected]': 'isSelected() ? "checked" : "unchecked"',
         '[attr.data-state]': 'isSelected() ? "checked" : "unchecked"',
+        '[attr.data-highlighted]': 'isFocused() ? "" : undefined',
+        '(focus)': 'isFocused.set(true)',
+        '(blur)': 'isFocused.set(false)',
         '(pointerdown)': 'onPointerDown($event)',
         '(pointerup)': 'onPointerUp($event)',
         '(pointerleave)': 'onPointerLeave($event)',
@@ -73,6 +77,8 @@ export class RdxSelectItem {
     readonly isSelected = computed(() =>
         valueComparator(this.rootContext.value(), this.value(), this.rootContext.by())
     );
+
+    readonly isFocused = signal(false);
 
     readonly textId = inject(_IdGenerator).getId('rdx-select-item-text-');
 

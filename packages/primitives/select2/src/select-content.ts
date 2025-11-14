@@ -1,24 +1,26 @@
-import { afterNextRender, Directive, inject, signal } from '@angular/core';
+import { afterNextRender, Directive, effect, ElementRef, inject, signal } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
 import { RdxCollectionProvider, useCollection } from '@radix-ng/primitives/collection';
 import { createContext } from '@radix-ng/primitives/core';
 import { provideRdxDismissableLayerConfig, RdxDismissableLayer } from '@radix-ng/primitives/dismissable-layer';
 import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
-import { focusFirst } from '@radix-ng/primitives/roving-focus';
 import { injectSelectRootContext } from './select-root';
-import { valueComparator } from './utils';
+import { focusFirst, valueComparator } from './utils';
 
 const context = () => {
     const context = inject(RdxSelectContent);
 
     return {
+        content: context.content,
         viewport: context.viewport,
         selectedItem: context.selectedItem,
         selectedItemText: context.selectedItemText,
         onViewportChange: (node: any) => {
             context.viewport.set(node);
         },
-        onItemLeave: () => {},
+        onItemLeave: () => {
+            context.content()?.focus();
+        },
         itemRefCallback: (node: any, value: any, disabled: boolean) => {
             const isFirstValidItem = !context.firstValidItemFoundRef() && !disabled;
             const isSelectedItem = valueComparator(context.rootContext.value(), value, context.rootContext.by());
@@ -49,7 +51,7 @@ export const [injectSelectContentContext, provideSelectContentContext] =
 
 @Directive({
     selector: '[rdxSelectContent]',
-    hostDirectives: [RdxDismissableLayer, RdxFocusScope, RdxCollectionProvider],
+    hostDirectives: [RdxFocusScope, RdxDismissableLayer, RdxCollectionProvider],
     providers: [
         provideSelectContentContext(context),
         provideRdxDismissableLayerConfig(() => {
@@ -63,12 +65,20 @@ export const [injectSelectContentContext, provideSelectContentContext] =
         '[attr.data-state]': 'rootContext.open() ? "open" : "closed"',
         '[dir]': 'rootContext.dir()',
 
-        '(keydown)': 'handleKeyDown($event)'
+        '(keydown)': 'handleKeyDown($event)',
+
+        '[style]': `{
+            display: 'flex',
+            flexDirection: 'column',
+            outline: 'none'
+        }`
     }
 })
 export class RdxSelectContent {
-    readonly rootContext = injectSelectRootContext()!;
     private readonly dismissableLayer = inject(RdxDismissableLayer);
+    private readonly currentElement = inject(ElementRef);
+
+    readonly rootContext = injectSelectRootContext()!;
 
     readonly selectedItem = signal<HTMLElement | undefined>(undefined);
 
@@ -92,6 +102,8 @@ export class RdxSelectContent {
 
     readonly getItems: ReturnType<typeof useCollection>['getItems'];
 
+    readonly content = signal<HTMLElement | null>(null);
+
     constructor() {
         const { getItems } = useCollection();
         this.getItems = getItems;
@@ -106,7 +118,7 @@ export class RdxSelectContent {
             focusScope.unmountAutoFocus.subscribe((event) => {
                 if (event.defaultPrevented) return;
 
-                this.rootContext.triggerElement()!.focus({ preventScroll: true });
+                this.rootContext.triggerElement()?.focus({ preventScroll: true });
 
                 event.preventDefault();
             });
@@ -114,7 +126,60 @@ export class RdxSelectContent {
             focusScope.mountAutoFocus.subscribe((event) => {
                 event.preventDefault();
             });
+
+            this.content.set(this.currentElement.nativeElement.firstElementChild);
+
+            this.focusSelectedItem();
         });
+
+        effect((onCleanup) => {
+            if (!this.content()) return;
+
+            let pointerMoveDelta = { x: 0, y: 0 };
+
+            const handlePointerMove = (event: PointerEvent) => {
+                pointerMoveDelta = {
+                    x: Math.abs(Math.round(event.pageX) - (this.rootContext.triggerPointerDownPosRef()?.x ?? 0)),
+                    y: Math.abs(Math.round(event.pageY) - (this.rootContext.triggerPointerDownPosRef()?.y ?? 0))
+                };
+            };
+
+            const handlePointerUp = (event: PointerEvent) => {
+                // Prevent options from being untappable on touch devices
+                if (event.pointerType === 'touch') return;
+
+                // If the pointer hasn't moved by a certain threshold then we prevent selecting item on `pointerup`.
+                if (pointerMoveDelta.x <= 10 && pointerMoveDelta.y <= 10) {
+                    event.preventDefault();
+                } else {
+                    // otherwise, if the event was outside the content, close.
+                    if (!this.content()?.contains(event.target as HTMLElement)) this.rootContext.onOpenChange(false);
+                }
+                document.removeEventListener('pointermove', handlePointerMove);
+                this.rootContext.triggerPointerDownPosRef.set(null);
+            };
+
+            if (this.rootContext.triggerPointerDownPosRef() !== null) {
+                document.addEventListener('pointermove', handlePointerMove);
+                document.addEventListener('pointerup', handlePointerUp, {
+                    capture: true,
+                    once: true
+                });
+            }
+
+            onCleanup(() => {
+                document.removeEventListener('pointermove', handlePointerMove);
+                document.removeEventListener('pointerup', handlePointerUp, {
+                    capture: true
+                });
+            });
+        });
+    }
+
+    focusSelectedItem() {
+        if (this.selectedItem() && this.content()) {
+            setTimeout(() => focusFirst([this.selectedItem()!, this.content()!]));
+        }
     }
 
     handleKeyDown(event: KeyboardEvent) {

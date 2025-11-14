@@ -100,7 +100,7 @@ export class RdxSelectRoot {
 
     readonly triggerElement = signal<HTMLElement | null>(null);
     readonly valueElement = signal<HTMLElement | null>(null);
-    readonly triggerPointerDownPosRef = signal({
+    readonly triggerPointerDownPosRef = signal<{ x: number; y: number } | null>({
         x: 0,
         y: 0
     });

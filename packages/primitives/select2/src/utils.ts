@@ -1,4 +1,4 @@
-import { AcceptableValue, isEqual } from '@radix-ng/primitives/core';
+import { AcceptableValue, getActiveElement, isEqual } from '@radix-ng/primitives/core';
 
 export const OPEN_KEYS = [' ', 'Enter', 'ArrowUp', 'ArrowDown'];
 export const SELECTION_KEYS = [' ', 'Enter'];
@@ -28,4 +28,14 @@ export function compare<T>(value?: T, currentValue?: T, comparator?: string | ((
 
 export function shouldShowPlaceholder(value?: AcceptableValue | AcceptableValue[]): boolean {
     return value === undefined || value === null || value === '' || (Array.isArray(value) && value.length === 0);
+}
+
+export function focusFirst(candidates: HTMLElement[]) {
+    const PREVIOUSLY_FOCUSED_ELEMENT = getActiveElement();
+    for (const candidate of candidates) {
+        // if focus is already where we want to go, we don't want to keep going through the candidates
+        if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
+        candidate.focus();
+        if (getActiveElement() !== PREVIOUSLY_FOCUSED_ELEMENT) return;
+    }
 }

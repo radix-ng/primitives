@@ -1,4 +1,5 @@
 import { Component, signal } from '@angular/core';
+import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import { LucideAngularModule } from 'lucide-angular';
 import { RdxSelectContent } from '../src/select-content';
 import { RdxSelectGroup } from '../src/select-group';
@@ -35,7 +36,8 @@ import { RdxSelectViewport } from '../src/select-viewport';
         RdxSelectPopperPositionWrapper,
         RdxSelectPopperPositionContent,
         RdxSelectItemText,
-        RdxSelectItemIndicator
+        RdxSelectItemIndicator,
+        RdxFocusScope
     ],
     template: `
         <ng-container rdxSelectRoot>
@@ -67,7 +69,7 @@ import { RdxSelectViewport } from '../src/select-viewport';
                                     <div rdxSelectGroup>
                                         @for (option of options; track $index) {
                                             <div
-                                                class="text-grass11 data-[disabled]:text-mauve8 data-[highlighted]:bg-green9 data-[highlighted]:text-green1 relative flex h-[25px] select-none items-center rounded-[3px] pl-[25px] pr-[35px] text-xs leading-none data-[disabled]:pointer-events-none data-[highlighted]:outline-none"
+                                                class="text-grass11 data-[disabled]:text-mauve8 data-[highlighted]:bg-blue relative flex h-[25px] select-none items-center rounded-[3px] pl-[25px] pr-[35px] text-xs leading-none data-[disabled]:pointer-events-none data-[highlighted]:text-white data-[highlighted]:outline-none"
                                                 [value]="option"
                                                 rdxSelectItem
                                             >
@@ -90,7 +92,7 @@ import { RdxSelectViewport } from '../src/select-viewport';
                                     <div rdxSelectGroup>
                                         @for (vegetable of vegetables; track $index) {
                                             <div
-                                                class="text-grass11 data-[disabled]:text-mauve8 data-[highlighted]:bg-green9 data-[highlighted]:text-green1 relative flex h-[25px] select-none items-center rounded-[3px] pl-[25px] pr-[35px] text-xs leading-none data-[disabled]:pointer-events-none data-[highlighted]:outline-none"
+                                                class="text-grass11 data-[disabled]:text-mauve8 data-[highlighted]:bg-blue relative flex h-[25px] select-none items-center rounded-[3px] pl-[25px] pr-[35px] text-xs leading-none data-[disabled]:pointer-events-none data-[highlighted]:text-white data-[highlighted]:outline-none"
                                                 [value]="vegetable"
                                                 rdxSelectItem
                                             >

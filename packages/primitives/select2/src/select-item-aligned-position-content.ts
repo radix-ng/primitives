@@ -5,7 +5,6 @@ import { Directive, ElementRef, inject } from '@angular/core';
     host: {
         '[style]': `{
             boxSizing: 'border-box',
-            maxHeight: '100%'
         }`
     }
 })

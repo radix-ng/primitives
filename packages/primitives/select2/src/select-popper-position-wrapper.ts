@@ -25,6 +25,7 @@ import { Align, RdxPopperContentWrapper, Side } from '@radix-ng/primitives/poppe
     host: {
         // re-namespace exposed content custom properties
         '[style]': `{
+          'boxSizing': 'border-box',
           '--radix-tooltip-content-transform-origin': 'var(--radix-popper-transform-origin)',
           '--radix-tooltip-content-available-width': 'var(--radix-popper-available-width)',
           '--radix-tooltip-content-available-height': 'var(--radix-popper-available-height)',
