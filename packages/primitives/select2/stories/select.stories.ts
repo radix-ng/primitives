@@ -35,15 +35,12 @@ export default {
         )
     ],
     argTypes: {
-        side: {
-            options: ['top', 'right', 'bottom', 'left'],
+        align: {
+            options: ['start', 'center', 'end'],
             control: { type: 'select' }
         },
         sideOffset: {
             control: { type: 'number' }
-        },
-        open: {
-            control: { type: 'boolean' }
         }
     }
 } as Meta;
@@ -52,17 +49,14 @@ type Story = StoryObj;
 
 export const Default: Story = {
     args: {
-        open: true,
         disabled: false,
-        sideOffset: 8,
-        closeDelay: 0,
-        side: 'top',
-        options: ['Apple', 'Banana', 'Blueberry', 'Grapes', 'Pineapple']
+        sideOffset: 5,
+        align: 'start'
     },
     render: (args) => ({
         props: args,
         template: html`
-            <select-default />
+            <select-default [align]="align" [sideOffset]="sideOffset" />
         `
     })
 };
@@ -77,14 +71,6 @@ export const DefaultWithScroll: Story = {
 };
 
 export const AlignedPosition: Story = {
-    args: {
-        open: true,
-        disabled: false,
-        sideOffset: 8,
-        closeDelay: 0,
-        side: 'top',
-        options: ['Apple', 'Banana', 'Blueberry', 'Grapes', 'Pineapple']
-    },
     render: (args) => ({
         props: args,
         template: html`

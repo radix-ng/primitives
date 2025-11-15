@@ -1,4 +1,5 @@
-import { Component, signal } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
+import { Align } from '@radix-ng/primitives/popper';
 import { LucideAngularModule } from 'lucide-angular';
 import { RdxSelectContent } from '../src/select-content';
 import { RdxSelectGroup } from '../src/select-group';
@@ -57,8 +58,8 @@ import { RdxSelectViewport } from '../src/select-viewport';
                     <div rdxSelectContent>
                         <div
                             class="data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] min-w-[160px] rounded-lg border bg-white shadow-sm will-change-[opacity,transform]"
-                            [sideOffset]="5"
-                            align="start"
+                            [sideOffset]="sideOffset()"
+                            [align]="align()"
                             rdxSelectPopperPositionWrapper
                         >
                             <div rdxSelectPopperPositionContent>
@@ -118,6 +119,9 @@ import { RdxSelectViewport } from '../src/select-viewport';
     `
 })
 export class SelectDefault {
+    readonly sideOffset = input<number>(5);
+    readonly align = input<Align>('start');
+
     readonly options = ['Apple', 'Banana', 'Blueberry', 'Grapes', 'Pineapple'];
     readonly vegetables = ['Aubergine', 'Broccoli', 'Carrot', 'Courgette', 'Leek'];
 }
