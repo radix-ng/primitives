@@ -1,9 +1,16 @@
-import { booleanAttribute, Directive, ElementRef, inject, input, numberAttribute } from '@angular/core';
+import { booleanAttribute, Directive, ElementRef, forwardRef, inject, input, numberAttribute } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
 import { Align, RdxPopperContentWrapper, Side } from '@radix-ng/primitives/popper';
+import { RDX_SELECT_POSITIONER_TOKEN, RdxPositionerImpl } from './select-content';
 
 @Directive({
     selector: '[rdxSelectPopperPositionWrapper]',
+    providers: [
+        {
+            provide: RDX_SELECT_POSITIONER_TOKEN,
+            useExisting: forwardRef(() => RdxSelectPopperPositionWrapper)
+        }
+    ],
     hostDirectives: [
         {
             directive: RdxPopperContentWrapper,
@@ -34,7 +41,7 @@ import { Align, RdxPopperContentWrapper, Side } from '@radix-ng/primitives/poppe
         }`
     }
 })
-export class RdxSelectPopperPositionWrapper {
+export class RdxSelectPopperPositionWrapper implements RdxPositionerImpl {
     /**
      * The preferred side of the anchor to render against when open.
      * Will be reversed when collisions occur and avoidCollisions is enabled.

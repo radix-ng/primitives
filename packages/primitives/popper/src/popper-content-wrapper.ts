@@ -29,7 +29,7 @@ import {
     shift,
     size
 } from '@floating-ui/dom';
-import { createContext, elementSize } from '@radix-ng/primitives/core';
+import { createContext, elementSize, watch } from '@radix-ng/primitives/core';
 import { RdxPopper } from './popper';
 import { RdxPopperArrow } from './popper-arrow';
 import { RdxPopperContent } from './popper-content';
@@ -329,4 +329,15 @@ export class RdxPopperContentWrapper {
             cleanup();
         });
     });
+
+    constructor() {
+        watch([this.isPositioned], () => {
+            afterNextRender(
+                () => {
+                    this.placed.emit();
+                },
+                { injector: this.injector }
+            );
+        });
+    }
 }

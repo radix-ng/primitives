@@ -1,13 +1,29 @@
-import { afterNextRender, contentChild, Directive, ElementRef, inject, Injector, signal } from '@angular/core';
+import {
+    afterNextRender,
+    contentChild,
+    Directive,
+    ElementRef,
+    forwardRef,
+    inject,
+    Injector,
+    output,
+    signal
+} from '@angular/core';
 import { useCollection } from '@radix-ng/primitives/collection';
 import { clamp, resizeEffect } from '@radix-ng/primitives/core';
-import { injectSelectContentContext } from './select-content';
+import { injectSelectContentContext, RDX_SELECT_POSITIONER_TOKEN, RdxPositionerImpl } from './select-content';
 import { RdxSelectItemAlignedPositionContent } from './select-item-aligned-position-content';
 import { injectSelectRootContext } from './select-root';
 import { CONTENT_MARGIN } from './utils';
 
 @Directive({
     selector: '[rdxSelectItemAlignedPosition]',
+    providers: [
+        {
+            provide: RDX_SELECT_POSITIONER_TOKEN,
+            useExisting: forwardRef(() => RdxSelectItemAlignedPosition)
+        }
+    ],
     host: {
         '[style]': `{
             display: 'flex',
@@ -17,10 +33,12 @@ import { CONTENT_MARGIN } from './utils';
         }`
     }
 })
-export class RdxSelectItemAlignedPosition {
+export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
     private readonly currentElement = inject(ElementRef);
     private readonly rootContext = injectSelectRootContext()!;
     readonly contentContext = injectSelectContentContext()!;
+
+    readonly placed = output();
 
     readonly contentZIndex = signal('');
 
@@ -172,7 +190,7 @@ export class RdxSelectItemAlignedPosition {
             this.contentWrapperElement()!.style.maxHeight = `${availableHeight}px`;
             // -----------------------------------------------------------------------------------------
 
-            //emits('placed');
+            this.placed.emit();
 
             // we don't want the initial scroll position adjustment to trigger "expand on scroll"
             // so we explicitly turn it on only after they've registered.

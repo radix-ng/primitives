@@ -138,7 +138,8 @@ export class SelectDefault {
         RdxSelectContent,
         RdxSelectItemAlignedPosition,
         RdxSelectItemText,
-        RdxSelectItemAlignedPositionContent
+        RdxSelectItemAlignedPositionContent,
+        RdxSelectItemIndicator
     ],
     template: `
         <ng-container [value]="fruit()" rdxSelectRoot>
@@ -168,10 +169,16 @@ export class SelectDefault {
                                     <div rdxSelectGroup>
                                         @for (option of options; track $index) {
                                             <div
-                                                class="text-grass11 data-[disabled]:text-mauve8 data-[highlighted]:bg-green9 data-[highlighted]:text-green1 relative flex h-[25px] select-none items-center rounded-[3px] pl-[25px] pr-[35px] text-xs leading-none data-[disabled]:pointer-events-none data-[highlighted]:outline-none"
+                                                class="text-grass11 data-[disabled]:text-mauve8 data-[highlighted]:bg-blue relative flex h-[25px] select-none items-center rounded-[3px] pl-[25px] pr-[35px] text-xs leading-none data-[disabled]:pointer-events-none data-[highlighted]:text-white data-[highlighted]:outline-none"
                                                 [value]="option"
                                                 rdxSelectItem
                                             >
+                                                <span
+                                                    class="absolute left-0 inline-flex w-[25px] items-center justify-center"
+                                                    rdxSelectItemIndicator
+                                                >
+                                                    <lucide-angular name="check" size="16" />
+                                                </span>
                                                 <div rdxSelectItemText>{{ option }}</div>
                                             </div>
                                         }
@@ -183,10 +190,16 @@ export class SelectDefault {
                                     <div rdxSelectGroup>
                                         @for (vegetable of vegetables; track $index) {
                                             <div
-                                                class="text-grass11 data-[disabled]:text-mauve8 data-[highlighted]:bg-green9 data-[highlighted]:text-green1 relative flex h-[25px] select-none items-center rounded-[3px] pl-[25px] pr-[35px] text-xs leading-none data-[disabled]:pointer-events-none data-[highlighted]:outline-none"
+                                                class="text-grass11 data-[disabled]:text-mauve8 data-[highlighted]:bg-blue relative flex h-[25px] select-none items-center rounded-[3px] pl-[25px] pr-[35px] text-xs leading-none data-[disabled]:pointer-events-none data-[highlighted]:text-white data-[highlighted]:outline-none"
                                                 [value]="vegetable"
                                                 rdxSelectItem
                                             >
+                                                <span
+                                                    class="absolute left-0 inline-flex w-[25px] items-center justify-center"
+                                                    rdxSelectItemIndicator
+                                                >
+                                                    <lucide-angular name="check" size="16" />
+                                                </span>
                                                 <div rdxSelectItemText>
                                                     {{ vegetable }}
                                                 </div>

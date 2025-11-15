@@ -1,4 +1,14 @@
-import { afterNextRender, Directive, effect, ElementRef, inject, signal } from '@angular/core';
+import {
+    afterNextRender,
+    ContentChild,
+    Directive,
+    effect,
+    ElementRef,
+    inject,
+    InjectionToken,
+    OutputRef,
+    signal
+} from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
 import { RdxCollectionProvider, useCollection } from '@radix-ng/primitives/collection';
 import { createContext } from '@radix-ng/primitives/core';
@@ -48,6 +58,12 @@ export type RdxSelectContentContext = ReturnType<typeof context>;
 
 export const [injectSelectContentContext, provideSelectContentContext] =
     createContext<RdxSelectContentContext>('RdxSelectContent');
+
+export interface RdxPositionerImpl {
+    placed: OutputRef<any>;
+}
+
+export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>('RDX_SELECT_POSITIONER_TOKEN');
 
 @Directive({
     selector: '[rdxSelectContent]',
@@ -104,6 +120,15 @@ export class RdxSelectContent {
 
     readonly content = signal<HTMLElement | null>(null);
 
+    @ContentChild(RDX_SELECT_POSITIONER_TOKEN, { descendants: true })
+    set positioner(port: RdxPositionerImpl | undefined) {
+        if (port) {
+            port.placed.subscribe(() => {
+                this.focusSelectedItem();
+            });
+        }
+    }
+
     constructor() {
         const { getItems } = useCollection();
         this.getItems = getItems;
@@ -128,8 +153,6 @@ export class RdxSelectContent {
             });
 
             this.content.set(this.currentElement.nativeElement.firstElementChild);
-
-            this.focusSelectedItem();
         });
 
         effect((onCleanup) => {
@@ -178,7 +201,7 @@ export class RdxSelectContent {
 
     focusSelectedItem() {
         if (this.selectedItem() && this.content()) {
-            setTimeout(() => focusFirst([this.selectedItem()!, this.content()!]));
+            focusFirst([this.selectedItem()!, this.content()!]);
         }
     }
 
