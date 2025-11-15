@@ -1,5 +1,10 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { SelectAlignedPosition, SelectDefault } from './select';
+import {
+    SelectAlignedPosition,
+    SelectAlignedPositionWithScroll,
+    SelectDefault,
+    SelectDefaultWithScroll
+} from './select';
 
 const html = String.raw;
 
@@ -7,7 +12,7 @@ export default {
     title: 'Primitives/Select2',
     decorators: [
         moduleMetadata({
-            imports: [SelectDefault, SelectAlignedPosition]
+            imports: [SelectDefault, SelectDefaultWithScroll, SelectAlignedPosition, SelectAlignedPositionWithScroll]
         }),
         componentWrapperDecorator(
             (story) => html`
@@ -62,6 +67,15 @@ export const Default: Story = {
     })
 };
 
+export const DefaultWithScroll: Story = {
+    render: (args) => ({
+        props: args,
+        template: html`
+            <select-default-with-scroll />
+        `
+    })
+};
+
 export const AlignedPosition: Story = {
     args: {
         open: true,
@@ -75,6 +89,15 @@ export const AlignedPosition: Story = {
         props: args,
         template: html`
             <select-aligned-position />
+        `
+    })
+};
+
+export const AlignedPositionWithScroll: Story = {
+    render: (args) => ({
+        props: args,
+        template: html`
+            <select-aligned-position-with-scroll />
         `
     })
 };

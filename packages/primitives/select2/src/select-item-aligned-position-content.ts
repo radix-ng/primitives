@@ -4,7 +4,7 @@ import { Directive, ElementRef, inject } from '@angular/core';
     selector: '[rdxSelectItemAlignedPositionContent]',
     host: {
         '[style]': `{
-            boxSizing: 'border-box',
+            boxSizing: 'border-box'
         }`
     }
 })

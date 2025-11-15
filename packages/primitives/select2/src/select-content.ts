@@ -23,6 +23,7 @@ const context = () => {
     return {
         content: context.content,
         viewport: context.viewport,
+        isPositioned: context.isPositioned,
         selectedItem: context.selectedItem,
         selectedItemText: context.selectedItemText,
         onViewportChange: (node: any) => {
@@ -104,6 +105,8 @@ export class RdxSelectContent {
 
     readonly viewport = signal<HTMLElement | undefined>(undefined);
 
+    readonly isPositioned = signal(false);
+
     /**
      * Event handler called when the escape key is down.
      * Can be prevented.
@@ -125,6 +128,7 @@ export class RdxSelectContent {
         if (port) {
             port.placed.subscribe(() => {
                 this.focusSelectedItem();
+                this.isPositioned.set(true);
             });
         }
     }

@@ -10,6 +10,7 @@ import { injectSelectContentContext } from './select-content';
             position: 'relative',
             flex: 1,
             overflow: 'hidden auto',
+            scrollbarWidth: 'none'
         }`,
         '(scroll)': 'handleScroll($event)'
     }
