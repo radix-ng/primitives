@@ -1,11 +1,5 @@
-name: Setup pnpm
-description: Common setup steps used by our workflows
-
-inputs:
-  node-version:
-    description: The version of node.js
-    required: false
-    default: '20.19.0'
+name: Setup environment
+description: Setup Node.js environment and install dependencies
 
 runs:
   using: composite
@@ -13,10 +7,10 @@ runs:
     - name: Setup pnpm
       uses: pnpm/action-setup@v4
 
-    - name: Setup node
-      uses: actions/setup-node@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v6
       with:
-        node-version: ${{ inputs.node-version }}
+        node-version-file: .nvmrc
         cache: pnpm
         registry-url: 'https://registry.npmjs.org'
 
