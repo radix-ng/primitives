@@ -10,3 +10,6 @@ tmp
 
 # ignore index.html
 **/index.html
+
+# ignore storybook configs
+**/.storybook
