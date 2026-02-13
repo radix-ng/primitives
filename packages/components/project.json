@@ -40,14 +40,6 @@
                 "script": "compodoc"
             }
         },
-        "test": {
-            "executor": "@nx/jest:jest",
-            "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-            "options": {
-                "jestConfig": "packages/components/jest.config.ts",
-                "tsConfig": "packages/components/tsconfig.spec.json"
-            }
-        },
         "storybook": {
             "executor": "@storybook/angular:start-storybook",
             "options": {

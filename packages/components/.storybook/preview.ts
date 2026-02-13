@@ -15,17 +15,17 @@ const preview: Preview = {
             }
         },
         backgrounds: {
-            default: 'blue',
-            values: [
-                {
+            options: {
+                blue: {
                     name: 'blue',
                     value: '#ffffff'
                 },
-                {
+
+                white: {
                     name: 'white',
                     value: '#ffffff'
                 }
-            ]
+            }
         },
         options: {
             storySort: {
@@ -35,7 +35,13 @@ const preview: Preview = {
         }
     },
 
-    tags: ['autodocs']
+    tags: ['autodocs'],
+
+    initialGlobals: {
+        backgrounds: {
+            value: 'blue'
+        }
+    }
 };
 
 export default preview;

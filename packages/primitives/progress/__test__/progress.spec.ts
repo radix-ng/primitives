@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
 import { RdxProgressRootDirective } from '../src/progress-root.directive';
-
 @Component({
     template: `
         <div [id]="id" [value]="value" [max]="max" rdxProgressRoot>
@@ -16,24 +15,19 @@ class TestHostComponent {
     max = 100;
     id = 'test-progress';
 }
-
 describe('RdxProgress', () => {
     let component: TestHostComponent;
     let fixture: ComponentFixture<TestHostComponent>;
-
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [TestHostComponent]
         }).compileComponents();
-
         fixture = TestBed.createComponent(TestHostComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
-
     it('should set the correct aria attributes and data attributes', () => {
         const progressElement: HTMLElement = fixture.nativeElement.querySelector('div[role="progressbar"]');
-
         expect(progressElement.getAttribute('aria-valuemax')).toBe('100');
         expect(progressElement.getAttribute('aria-valuemin')).toBe('0');
         expect(progressElement.getAttribute('aria-valuenow')).toBe('50');
@@ -43,13 +37,10 @@ describe('RdxProgress', () => {
         expect(progressElement.getAttribute('data-max')).toBe('100');
         expect(progressElement.id).toBe('test-progress');
     });
-
     it('should show complete state when value equals max', () => {
         component.value = 100;
         fixture.detectChanges();
-
         const progressElement: HTMLElement = fixture.nativeElement.querySelector('div[role="progressbar"]');
-
         expect(progressElement.getAttribute('data-state')).toBe('complete');
     });
 });

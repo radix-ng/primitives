@@ -4,7 +4,6 @@ import { By } from '@angular/platform-browser';
 import { RdxAvatarFallbackDirective } from '../src/avatar-fallback.directive';
 import { RdxAvatarImageDirective } from '../src/avatar-image.directive';
 import { RdxAvatarRootDirective } from '../src/avatar-root.directive';
-
 @Component({
     selector: 'rdx-mock-component',
     standalone: true,
@@ -21,20 +20,16 @@ import { RdxAvatarRootDirective } from '../src/avatar-root.directive';
     `
 })
 class RdxMockComponent {}
-
 describe('RdxAvatarImageDirective', () => {
     let component: RdxMockComponent;
     let fixture: ComponentFixture<RdxMockComponent>;
-
     beforeEach(() => {
         fixture = TestBed.createComponent(RdxMockComponent);
         component = fixture.componentInstance;
     });
-
     it('should compile', () => {
         expect(component).toBeTruthy();
     });
-
     it('should display the image initially', () => {
         const imgElement = fixture.debugElement.query(By.css('img[rdxAvatarImage]'));
         expect(imgElement).toBeTruthy();
