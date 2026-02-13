@@ -1,3 +1,4 @@
+// This file has been automatically migrated to valid ESM format by Storybook.
 import type { StorybookConfig } from '@analogjs/storybook-angular';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
@@ -29,7 +30,7 @@ const config: StorybookConfig = {
     ],
 
     framework: {
-        name: '@analogjs/storybook-angular',
+        name: getAbsolutePath("@analogjs/storybook-angular"),
         options: {}
     },
 

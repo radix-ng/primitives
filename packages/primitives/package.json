@@ -18,8 +18,8 @@
         "headless"
     ],
     "peerDependencies": {
-        "@angular/core": "^19.2.0 || ^20.0.0",
-        "@angular/cdk": "^19.2.0 || ^20.0.0",
+        "@angular/core": "^19.2.0 || ^20.0.0 || ^21.0.0",
+        "@angular/cdk": "^19.2.0 || ^20.0.0 || ^21.0.0",
         "@floating-ui/dom": "^1.7.4"
     },
     "devDependencies": {
