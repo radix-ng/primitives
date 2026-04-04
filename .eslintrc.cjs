@@ -1,6 +1,5 @@
 // @ts-check
 
-const isCI = !!process.env.CI;
 const jsFileExtension = ['*.js', '*.cjs', '*.mjs'];
 
 /** @type {import('eslint').Linter.Config} */
@@ -11,11 +10,8 @@ const config = {
         commonjs: true,
         node: true
     },
-    plugins: ['file-progress'],
     extends: ['plugin:eslint-comments/recommended', 'plugin:storybook/recommended'],
     rules: {
-        // plugin:file-progress
-        'file-progress/activate': isCI ? 0 : 1,
         // plugin:eslint-comments
         'eslint-comments/no-unused-disable': 1
     },
