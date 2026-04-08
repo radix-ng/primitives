@@ -48,6 +48,7 @@ const config = {
         },
         {
             files: ['*.html'],
+            excludeFiles: ['index.html'],
             options: {
                 parser: 'angular',
                 ...organizeAttributesPluginAngularConfig

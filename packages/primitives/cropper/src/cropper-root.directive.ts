@@ -581,6 +581,7 @@ export class RdxCropperRootDirective implements CropperContextToken {
 
         let targetOffsetX = this.latestRestrictedOffset().x;
         let targetOffsetY = this.latestRestrictedOffset().y;
+        // eslint-disable-next-line no-useless-assignment
         let moved = false;
 
         switch (e.key) {
