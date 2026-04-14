@@ -23,7 +23,7 @@
         "@floating-ui/dom": "^1.7.4"
     },
     "devDependencies": {
-        "@angular-devkit/schematics": "^20.2.1",
+        "@angular-devkit/schematics": "^20.3.23",
         "@internationalized/date": "^3.7.0",
         "@internationalized/number": "^3.6.1"
     },
