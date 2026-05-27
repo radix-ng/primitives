@@ -10,7 +10,6 @@
     "scripts": {
         "----Storybook----": "-----------------------------------------------------------------------",
         "storybook:primitives": "nx run radix-storybook:storybook",
-        "storybook:components": "nx run components:storybook",
         "build-storybook": "nx run radix-storybook:build-storybook",
         "static-storybook": "nx run radix-storybook:static-storybook",
         "----Radix Primitives---": "-----------------------------------------------------------------",
@@ -24,8 +23,6 @@
         "----Radix Docs---": "-----------------------------------------------------------------------",
         "radix-docs:dev": "nx run radix-docs:dev",
         "radix-docs:build": "nx run radix-docs:build",
-        "----Radix Components---": "-----------------------------------------------------------------",
-        "components:build": "nx run-many --targets=build --projects=components",
         "----Others-------": "-----------------------------------------------------------------------",
         "clean:node-modules": "rimraf ./apps/**/node_modules && rimraf ./packages/**/**/node_modules && rimraf ./node_modules",
         "prepare": "husky",

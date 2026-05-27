@@ -51,7 +51,6 @@ export default defineConfig({
         optimizeDeps: {
             include: [
                 '@radix-ng/primitives',
-                '@radix-ng/components',
                 '@angular/common',
                 '@angular/core',
                 '@angular/cdk',

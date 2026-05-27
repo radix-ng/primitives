@@ -1,4 +1,3 @@
-import ComponentThemesPreview from '../demo-component-preview/ComponentThemesPreview.astro';
 import ComponentPreview from '../demo-primitive-preview/ComponentPreview.astro';
 import a from './a.astro';
 import code from './code.astro';
@@ -28,7 +27,6 @@ export const components = {
     code,
     pre,
     ComponentPreview,
-    ComponentThemesPreview,
     Tabs,
     TabsContent,
     TabsList,

@@ -3,41 +3,6 @@ import type { SiteConfig } from '@/types';
 const docsConfig = {
     navigation: [
         {
-            name: 'Theme',
-            section: 'themes',
-            sections: [
-                {
-                    section: 'Overview',
-                    pages: [
-                        { name: 'Getting started', url: '/themes/overview/getting-started' },
-                        { name: 'Styling', url: '/themes/overview/styling' }
-                    ]
-                },
-                {
-                    section: 'Theme',
-                    pages: [{ name: 'Overview', url: '/themes/theme/overview' }]
-                },
-                {
-                    section: 'Typography',
-                    pages: [
-                        { name: 'Code', url: '/themes/typography/code' },
-                        { name: 'Kbd', url: '/themes/typography/kbd' }
-                    ]
-                },
-                {
-                    section: 'Components',
-                    pages: [
-                        { name: 'Avatar', url: '/themes/components/avatar' },
-                        { name: 'Switch', url: '/themes/components/switch' }
-                    ]
-                },
-                {
-                    section: 'Utilities',
-                    pages: [{ name: 'Theme', url: '/themes/utilities/theme' }]
-                }
-            ]
-        },
-        {
             name: 'Primitives',
             section: 'primitives',
             sections: [

@@ -19,18 +19,6 @@ function isActive(segment: string) {
             class="mb-8 flex flex-col gap-2 pl-3 text-lg md:relative md:top-0.5 md:mb-0 md:flex-row md:items-center md:gap-4 md:p-0 md:text-sm lg:gap-6"
         >
             <a
-                href="/themes/overview/getting-started"
-                class:list={[
-                    'text-foreground transition-colors',
-                    {
-                        'text-foreground/60 hover:text-foreground/80': !isActive('themes'),
-                        'text-foreground/100 hover:text-foreground font-medium': isActive('themes')
-                    }
-                ]}
-            >
-                Themes
-            </a>
-            <a
                 href="/primitives/overview/introduction"
                 class:list={[
                     'text-foreground transition-colors ',
