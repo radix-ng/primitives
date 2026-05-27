@@ -32,7 +32,7 @@ jobs:
 
       - name: Publish package 📦
         run: |
-          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" >> ~/.npmrc
+          npm config set //registry.npmjs.org/:_authToken "${NODE_AUTH_TOKEN}"
           npx nx release publish
         shell: bash
         env:
