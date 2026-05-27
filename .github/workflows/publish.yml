@@ -30,7 +30,9 @@ jobs:
         run: pnpm primitives:build:schematics
 
       - name: Publish package 📦
-        run: npx nx release publish
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" >> ~/.npmrc
+          npx nx release publish
         shell: bash
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
