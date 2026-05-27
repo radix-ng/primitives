@@ -10,13 +10,7 @@ Build components and primitives
 pnpm -w run primitives:build
 ```
 
-2. Build Radix Components
-
-```bash
-pnpm -w run components:build
-```
-
-3. Start documentation
+2. Start documentation
 
 ```bash
 pnpm -w run radix-docs:dev

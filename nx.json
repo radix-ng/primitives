@@ -97,5 +97,6 @@
         "git": {
             "commitMessage": "chore(release): publish {projectName} {version}"
         }
-    }
+    },
+    "analytics": false
 }
