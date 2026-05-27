@@ -18,12 +18,12 @@
         "headless"
     ],
     "peerDependencies": {
-        "@angular/core": "^19.2.0 || ^20.0.0",
-        "@angular/cdk": "^19.2.0 || ^20.0.0",
+        "@angular/core": "^19.2.0 || ^20.0.0 || ^21.0.0",
+        "@angular/cdk": "^19.2.0 || ^20.0.0 || ^21.0.0",
         "@floating-ui/dom": "^1.7.4"
     },
     "devDependencies": {
-        "@angular-devkit/schematics": "^20.2.1",
+        "@angular-devkit/schematics": "^21.0.0",
         "@internationalized/date": "^3.7.0",
         "@internationalized/number": "^3.6.1"
     },

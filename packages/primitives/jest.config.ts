@@ -1,4 +1,4 @@
-export default {
+module.exports = {
     displayName: 'primitives',
     preset: '../../jest.preset.cjs',
     setupFilesAfterEnv: ['<rootDir>/test-setup.ts'],

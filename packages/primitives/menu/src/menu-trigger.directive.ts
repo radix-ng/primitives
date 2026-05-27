@@ -158,10 +158,11 @@ export class RdxMenuTriggerDirective {
     }
 
     /** @ignore */
-    onPointerDown($event: MouseEvent) {
+    onPointerDown($event: Event) {
+        const mouseEvent = $event as MouseEvent;
         // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
         // but not when the control key is pressed (avoiding MacOS right click)
-        if (!this.disabled() && $event.button === 0 && !$event.ctrlKey) {
+        if (!this.disabled() && mouseEvent.button === 0 && !mouseEvent.ctrlKey) {
             /* empty */
             if (!this.cdkTrigger.isOpen()) {
                 // prevent trigger focusing when opening

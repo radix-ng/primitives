@@ -19,8 +19,9 @@ export class RdxNavigationMenuFocusProxyComponent {
     @Input() contentElement: HTMLElement | null = null;
     @Output() proxyFocus = new EventEmitter<'start' | 'end'>();
 
-    onFocus(event: FocusEvent): void {
-        const prevFocusedElement = event.relatedTarget as HTMLElement | null;
+    onFocus(event: Event): void {
+        const focusEvent = event as FocusEvent;
+        const prevFocusedElement = focusEvent.relatedTarget as HTMLElement | null;
         const wasTriggerFocused = prevFocusedElement === this.triggerElement;
         const wasFocusFromContent = this.contentElement ? this.contentElement.contains(prevFocusedElement) : false;
 

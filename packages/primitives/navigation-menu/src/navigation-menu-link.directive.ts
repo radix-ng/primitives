@@ -33,7 +33,8 @@ export class RdxNavigationMenuLinkDirective extends RdxNavigationMenuFocusableOp
         this.elementRef.nativeElement.focus();
     }
 
-    onClick(event: MouseEvent) {
+    onClick(event: Event) {
+        const mouseEvent = event as MouseEvent;
         const target = event.target as HTMLElement;
 
         // dispatch link select event
@@ -52,7 +53,7 @@ export class RdxNavigationMenuLinkDirective extends RdxNavigationMenuFocusableOp
         target.dispatchEvent(linkSelectEvent);
 
         // if not prevented and not meta key, dismiss content
-        if (!linkSelectEvent.defaultPrevented && !event.metaKey) {
+        if (!linkSelectEvent.defaultPrevented && !mouseEvent.metaKey) {
             const dismissEvent = new CustomEvent(ROOT_CONTENT_DISMISS, {
                 bubbles: true,
                 cancelable: true
@@ -61,9 +62,10 @@ export class RdxNavigationMenuLinkDirective extends RdxNavigationMenuFocusableOp
         }
     }
 
-    onKeydown(event: KeyboardEvent): void {
+    onKeydown(event: Event): void {
+        const keyEvent = event as KeyboardEvent;
         // activate link on Enter or Space
-        if (event.key === ENTER || event.key === SPACE) {
+        if (keyEvent.key === ENTER || keyEvent.key === SPACE) {
             // prevent default behavior like scrolling (Space) or form submission (Enter) BEFORE simulating the click.
             event.preventDefault();
 

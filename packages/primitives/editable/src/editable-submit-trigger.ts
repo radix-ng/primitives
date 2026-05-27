@@ -8,7 +8,7 @@ import { injectEditableRootContext } from './editable-root';
         '[attr.aria-label]': '"submit"',
         '[attr.aria-disabled]': 'rootContext?.disabled() ? "" : undefined',
         '[attr.data-disabled]': 'rootContext?.disabled() ? "" : undefined',
-        '[disabled]': 'rootContext?.disabled()',
+        '[attr.disabled]': 'rootContext?.disabled() ? "" : undefined',
         '(click)': 'rootContext?.submit()'
     }
 })

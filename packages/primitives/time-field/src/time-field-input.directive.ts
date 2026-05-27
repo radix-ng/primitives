@@ -77,18 +77,18 @@ export class RdxTimeFieldInputDirective {
     /**
      * @ignore
      */
-    handleSegmentClick: (e: MouseEvent) => void;
+    handleSegmentClick: (e: Event) => void;
 
     /**
      * @ignore
      */
-    handleSegmentKeydown: (e: KeyboardEvent) => void;
+    handleSegmentKeydown: (e: Event) => void;
 
     constructor() {
         effect(() => {
             const { handleSegmentClick, handleSegmentKeydown } = this.fieldData();
-            this.handleSegmentKeydown = handleSegmentKeydown;
-            this.handleSegmentClick = handleSegmentClick;
+            this.handleSegmentKeydown = handleSegmentKeydown as (e: Event) => void;
+            this.handleSegmentClick = handleSegmentClick as (e: Event) => void;
         });
 
         effect(() => {
@@ -102,7 +102,7 @@ export class RdxTimeFieldInputDirective {
     /**
      * @ignore
      */
-    onFocus(e: FocusEvent) {
+    onFocus(e: Event) {
         this.rootContext.setFocusedElement(e.target as HTMLElement);
     }
 

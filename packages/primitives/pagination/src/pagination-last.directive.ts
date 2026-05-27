@@ -7,7 +7,7 @@ import { injectPaginationRootContext } from './pagination-context.token';
     host: {
         '[attr.aria-label]': '"Last Page"',
 
-        '[disabled]': 'disabled()',
+        '[attr.disabled]': 'disabled() ? "" : undefined',
         '(click)': 'onClick()'
     }
 })

@@ -9,7 +9,7 @@ import { OPEN_KEYS } from './utils';
     host: {
         role: 'combobox',
         type: 'button',
-        '[disabled]': 'isDisabled()',
+        '[attr.disabled]': 'isDisabled() ? "" : undefined',
         '[dir]': 'rootContext.dir()',
         '[attr.data-state]': 'rootContext.open() ? "open" : "closed"',
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
@@ -40,15 +40,16 @@ export class RdxSelectTrigger {
         }
     }
 
-    handlePointerOpen(event: PointerEvent) {
+    handlePointerOpen(event: Event) {
+        const pointerEvent = event as PointerEvent;
         this.handleOpen();
         this.rootContext.triggerPointerDownPosRef.set({
-            x: Math.round(event.pageX),
-            y: Math.round(event.pageY)
+            x: Math.round(pointerEvent.pageX),
+            y: Math.round(pointerEvent.pageY)
         });
     }
 
-    onClickHandler(event: MouseEvent) {
+    onClickHandler(event: Event) {
         // Whilst browsers generally have no issue focusing the trigger when clicking
         // on a label, Safari seems to struggle with the fact that there's no `onClick`.
         // We force `focus` in this case. Note: this doesn't create any other side-effect
@@ -57,33 +58,36 @@ export class RdxSelectTrigger {
         (event?.currentTarget as HTMLElement)?.focus();
     }
 
-    onPointerDown(event: PointerEvent) {
-        if (event.pointerType === 'touch') return event.preventDefault();
+    onPointerDown(event: Event) {
+        const pointerEvent = event as PointerEvent;
+        if (pointerEvent.pointerType === 'touch') return event.preventDefault();
 
         // prevent implicit pointer capture
         // https://www.w3.org/TR/pointerevents3/#implicit-pointer-capture
         const target = event.target as HTMLElement;
-        if (target.hasPointerCapture(event.pointerId)) {
-            target.releasePointerCapture(event.pointerId);
+        if (target.hasPointerCapture(pointerEvent.pointerId)) {
+            target.releasePointerCapture(pointerEvent.pointerId);
         }
 
         // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
         // but not when the control key is pressed (avoiding MacOS right click)
-        if (event.button === 0 && event.ctrlKey === false) {
+        if (pointerEvent.button === 0 && pointerEvent.ctrlKey === false) {
             this.handlePointerOpen(event);
             // prevent trigger from stealing focus from the active item after opening.
             event.preventDefault();
         }
     }
 
-    onPointerUp(event: PointerEvent) {
+    onPointerUp(event: Event) {
+        const pointerEvent = event as PointerEvent;
         event.preventDefault();
         // Only open on pointer up when using touch devices
-        if (event.pointerType === 'touch') this.handlePointerOpen(event);
+        if (pointerEvent.pointerType === 'touch') this.handlePointerOpen(event);
     }
 
-    onKeydown(event: KeyboardEvent) {
-        if (OPEN_KEYS.includes(event.key)) {
+    onKeydown(event: Event) {
+        const keyEvent = event as KeyboardEvent;
+        if (OPEN_KEYS.includes(keyEvent.key)) {
             this.handleOpen();
             event.preventDefault();
         }

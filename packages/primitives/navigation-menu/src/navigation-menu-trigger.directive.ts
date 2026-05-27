@@ -32,7 +32,7 @@ import { getTabbableCandidates, makeContentId, makeTriggerId } from './utils';
         '[attr.data-state]': 'open() ? "open" : "closed"',
         '[attr.data-orientation]': 'context.orientation',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
-        '[disabled]': 'disabled() ? true : null',
+        '[attr.disabled]': 'disabled() ? "" : undefined',
         '[attr.aria-expanded]': 'open()',
         '[attr.aria-controls]': 'contentId',
         '[attr.aria-haspopup]': '"menu"',
@@ -162,10 +162,11 @@ export class RdxNavigationMenuTriggerDirective extends RdxNavigationMenuFocusabl
         }
     }
 
-    onPointerMove(event: PointerEvent): void {
+    onPointerMove(event: Event): void {
+        const pointerEvent = event as PointerEvent;
         // ignore if not a mouse event, disabled, closed by click/escape, or already opened by this move
         if (
-            event.pointerType !== 'mouse' ||
+            pointerEvent.pointerType !== 'mouse' ||
             this.disabled() ||
             this.wasClickClose ||
             this.item.wasEscapeCloseRef() ||
@@ -177,9 +178,10 @@ export class RdxNavigationMenuTriggerDirective extends RdxNavigationMenuFocusabl
         this.hasPointerMoveOpened = true;
     }
 
-    onPointerLeave(event: PointerEvent): void {
+    onPointerLeave(event: Event): void {
+        const pointerEvent = event as PointerEvent;
         // ignore if not a mouse event or disabled
-        if (event.pointerType !== 'mouse' || this.disabled() || !isRootNavigationMenu(this.context)) {
+        if (pointerEvent.pointerType !== 'mouse' || this.disabled() || !isRootNavigationMenu(this.context)) {
             return;
         }
 
@@ -215,10 +217,11 @@ export class RdxNavigationMenuTriggerDirective extends RdxNavigationMenuFocusabl
         }
     }
 
-    onKeydown(event: KeyboardEvent): void {
+    onKeydown(event: Event): void {
+        const keyEvent = event as KeyboardEvent;
         if (this.disabled()) return;
 
-        if (event.key === ENTER || event.key === SPACE) {
+        if (keyEvent.key === ENTER || keyEvent.key === SPACE) {
             event.preventDefault(); // prevent default button behavior
             this.onClick();
 
@@ -234,14 +237,14 @@ export class RdxNavigationMenuTriggerDirective extends RdxNavigationMenuFocusabl
         const isRTL = this.context.dir === 'rtl';
 
         // handle `ArrowDown` specifically for viewport navigation
-        if (event.key === ARROW_DOWN || event.key === TAB) {
-            if (event.key === ARROW_DOWN) {
+        if (keyEvent.key === ARROW_DOWN || keyEvent.key === TAB) {
+            if (keyEvent.key === ARROW_DOWN) {
                 event.preventDefault();
             }
 
             // if the menu is open, focus into the content
             if (this.open()) {
-                if (event.key === TAB) {
+                if (keyEvent.key === TAB) {
                     // needed to ensure that the `keyManager` on the list directive does not activate
                     // any focus updates, shifting focus to the subsequent focusable list item
                     event.stopImmediatePropagation();
@@ -281,7 +284,7 @@ export class RdxNavigationMenuTriggerDirective extends RdxNavigationMenuFocusabl
         }
 
         // handle ArrowUp in horizontal orientation
-        if (isHorizontal && event.key === ARROW_UP) {
+        if (isHorizontal && keyEvent.key === ARROW_UP) {
             event.preventDefault();
 
             // emulate a left key press to move to the previous item
@@ -297,7 +300,7 @@ export class RdxNavigationMenuTriggerDirective extends RdxNavigationMenuFocusabl
         const verticalEntryKey = isRTL ? ARROW_LEFT : ARROW_RIGHT;
         const entryKey = isHorizontal ? ARROW_DOWN : verticalEntryKey;
 
-        if (this.item.contentRef() && event.key === entryKey && event.key !== ARROW_DOWN) {
+        if (this.item.contentRef() && keyEvent.key === entryKey && keyEvent.key !== ARROW_DOWN) {
             // Skip if it's ArrowDown as we already handled it above
             event.preventDefault();
 

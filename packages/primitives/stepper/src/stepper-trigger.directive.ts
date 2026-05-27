@@ -47,13 +47,14 @@ export class RdxStepperTriggerDirective implements OnInit, OnDestroy {
         this.rootContext.totalStepperItems.set(updated);
     }
 
-    handleMouseDown(event: MouseEvent) {
+    handleMouseDown(event: Event) {
+        const mouseEvent = event as MouseEvent;
         if (this.itemContext.disabled()) {
             return;
         }
 
         // handler only left mouse click
-        if (event.button !== 0) {
+        if (mouseEvent.button !== 0) {
             return;
         }
 
@@ -62,13 +63,13 @@ export class RdxStepperTriggerDirective implements OnInit, OnDestroy {
                 this.itemContext.step() <= this.rootContext.value()! ||
                 this.itemContext.step() === this.rootContext.value()! + 1
             ) {
-                if (!event.ctrlKey) {
+                if (!mouseEvent.ctrlKey) {
                     this.rootContext.value.set(this.itemContext.step());
                     return;
                 }
             }
         } else {
-            if (!event.ctrlKey) {
+            if (!mouseEvent.ctrlKey) {
                 this.rootContext.value.set(this.itemContext.step());
                 return;
             }
@@ -78,18 +79,19 @@ export class RdxStepperTriggerDirective implements OnInit, OnDestroy {
         event.preventDefault();
     }
 
-    handleKeyDown(event: KeyboardEvent) {
+    handleKeyDown(event: Event) {
+        const keyEvent = event as KeyboardEvent;
         event.preventDefault();
 
         if (this.itemContext.disabled()) {
             return;
         }
 
-        if ((event.key === kbd.ENTER || event.key === kbd.SPACE) && !event.ctrlKey && !event.shiftKey)
+        if ((keyEvent.key === kbd.ENTER || keyEvent.key === kbd.SPACE) && !keyEvent.ctrlKey && !keyEvent.shiftKey)
             this.rootContext.value.set(this.itemContext.step());
 
-        if ([kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.ARROW_UP, kbd.ARROW_DOWN].includes(event.key)) {
-            useArrowNavigation(event, getActiveElement() as HTMLElement, undefined, {
+        if ([kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.ARROW_UP, kbd.ARROW_DOWN].includes(keyEvent.key)) {
+            useArrowNavigation(keyEvent, getActiveElement() as HTMLElement, undefined, {
                 itemsArray: this.stepperItems() as HTMLElement[],
                 focus: true,
                 loop: false,

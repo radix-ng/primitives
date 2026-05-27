@@ -1,6 +1,6 @@
 import { computed, Directive, inject, Input, input, signal, TemplateRef } from '@angular/core';
 import { RdxDialogRef } from './dialog-ref';
-import { getState, RdxDialogConfig, RdxDialogState } from './dialog.config';
+import { getState, type RdxDialogConfig, RdxDialogState } from './dialog.config';
 import { provideRdxDialog } from './dialog.providers';
 import { RdxDialogService } from './dialog.service';
 

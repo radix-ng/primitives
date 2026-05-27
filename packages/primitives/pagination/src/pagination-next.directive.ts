@@ -7,7 +7,7 @@ import { injectPaginationRootContext } from './pagination-context.token';
     host: {
         '[attr.aria-label]': '"Next Page"',
 
-        '[disabled]': 'disabled()',
+        '[attr.disabled]': 'disabled() ? "" : undefined',
         '(click)': 'onClick()'
     }
 })

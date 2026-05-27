@@ -70,7 +70,7 @@ const dropdownPositions: Record<DropdownSide, ConnectedPosition> = {
         '[attr.aria-expanded]': 'isOpen()',
         '[attr.data-state]': "isOpen() ? 'open': 'closed'",
         '[attr.data-disabled]': "disabled() ? '' : undefined",
-        '[disabled]': 'disabled()',
+        '[attr.disabled]': 'disabled() ? "" : undefined',
 
         '(pointerdown)': 'onPointerDown($event)'
     },

@@ -7,7 +7,7 @@ import { injectCalendarRootContext } from './сalendar-сontext.token';
     exportAs: 'rdxCalendarNext',
     host: {
         '(click)': 'onClick()',
-        '[disabled]': 'disabled()',
+        '[attr.disabled]': 'disabled() ? "" : undefined',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
         '[attr.aria-disabled]': 'disabled() ? "" : undefined',
         'aria-label': 'Next page'

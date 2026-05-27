@@ -91,8 +91,9 @@ export class RdxCalendarCellTriggerDirective implements AfterViewInit {
         this.changeDate(this.day()!);
     }
 
-    protected onArrowKey(event: KeyboardEvent) {
-        const code = event.code;
+    protected onArrowKey(event: Event) {
+        const keyEvent = event as KeyboardEvent;
+        const code = keyEvent.code;
         if (
             ![kbd.ARROW_RIGHT, kbd.ARROW_LEFT, kbd.ARROW_UP, kbd.ARROW_DOWN, kbd.ENTER, kbd.SPACE_CODE].includes(code)
         ) {

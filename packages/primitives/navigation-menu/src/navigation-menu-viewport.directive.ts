@@ -44,7 +44,7 @@ interface ContentNode {
     }
 })
 export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
-    private readonly context = injectNavigationMenu();
+    protected readonly context = injectNavigationMenu();
     private readonly document = injectDocument();
     private readonly window = injectWindow();
     private readonly elementRef = inject(ElementRef);
@@ -97,18 +97,19 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
         }
     }
 
-    onKeydown(event: KeyboardEvent): void {
+    onKeydown(event: Event): void {
+        const keyEvent = event as KeyboardEvent;
         if (!this.isOpen()) return;
         const tabbableElements = getTabbableCandidates(this.elementRef.nativeElement);
         if (!tabbableElements.length) return;
         const activeElement = this.document.activeElement as HTMLElement | null;
         const currentIndex = tabbableElements.findIndex((el) => el === activeElement);
 
-        if (event.key === ARROW_DOWN) {
+        if (keyEvent.key === ARROW_DOWN) {
             event.preventDefault();
             const nextIndex = currentIndex >= 0 && currentIndex < tabbableElements.length - 1 ? currentIndex + 1 : 0;
             tabbableElements[nextIndex]?.focus();
-        } else if (event.key === ARROW_UP) {
+        } else if (keyEvent.key === ARROW_UP) {
             event.preventDefault();
             const prevIndex = currentIndex > 0 ? currentIndex - 1 : tabbableElements.length - 1;
             tabbableElements[prevIndex]?.focus();

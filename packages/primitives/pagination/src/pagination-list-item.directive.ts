@@ -11,7 +11,7 @@ import { injectPaginationRootContext } from './pagination-context.token';
         '[attr.aria-current]': 'isSelected() ? "page" : undefined',
         '[attr.data-selected]': 'isSelected() ? true : undefined',
 
-        '[disabled]': 'disabled()',
+        '[attr.disabled]': 'disabled() ? "" : undefined',
         '(click)': 'onClick()'
     }
 })

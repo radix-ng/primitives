@@ -77,9 +77,6 @@ jobs:
       - name: Build Schematics
         run: pnpm primitives:build:schematics
 
-      - name: Build Components
-        run: pnpm components:build
-
   summary:
     if: ${{ always() }}
     needs: [lint, unit, builds]

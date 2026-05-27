@@ -12,7 +12,9 @@
             {
                 "name": "@angular/language-service"
             }
-        ]
+        ],
+        "module": "preserve",
+        "moduleResolution": "bundler"
     },
     "angularCompilerOptions": {
         "strictTemplates": true

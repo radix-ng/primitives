@@ -13,7 +13,7 @@ import { injectAccordionRootContext } from './accordion-root.directive';
         '[attr.role]': '"button"',
         '[attr.aria-disabled]': 'itemContext.open() && !rootContext.collapsible() ? "true" : undefined',
         '[attr.data-orientation]': 'rootContext.orientation()',
-        '[disabled]': 'itemContext.disabled()',
+        '[attr.disabled]': 'itemContext.disabled() ? "" : undefined',
 
         '(click)': 'changeItem()'
     }

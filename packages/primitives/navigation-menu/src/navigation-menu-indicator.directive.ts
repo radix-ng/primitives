@@ -24,7 +24,7 @@ import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.to
     }
 })
 export class RdxNavigationMenuIndicatorDirective implements OnDestroy {
-    private readonly context = injectNavigationMenu();
+    protected readonly context = injectNavigationMenu();
     private readonly elementRef = inject(ElementRef);
     private readonly renderer = inject(Renderer2);
 
