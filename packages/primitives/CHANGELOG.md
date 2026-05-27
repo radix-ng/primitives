@@ -1,3 +1,21 @@
+## 0.51.0 (2026-05-27)
+
+### 🚀 Features
+
+- upgrade Angular to 21 and NX to 22 ([#402](https://github.com/radix-ng/primitives/pull/402))
+- **select2:** added Select v2 impl with Popper ([#372](https://github.com/radix-ng/primitives/pull/372))
+- added Collection ([#368](https://github.com/radix-ng/primitives/pull/368))
+- **checkbox:** added data-state to root and exports for isIndeterminate ([6b8ad51](https://github.com/radix-ng/primitives/commit/6b8ad51))
+
+### 🩹 Fixes
+
+- **tooltip2:** correct container type as ElementRef ([68b086f](https://github.com/radix-ng/primitives/commit/68b086f))
+
+### ❤️ Thank You
+
+- Claude Sonnet 4.6
+- Oleg Pimenov @pimenovoleg
+
 ## 0.50.0 (2025-10-13)
 
 ### 🚀 Features
