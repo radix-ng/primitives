@@ -22,6 +22,7 @@ export class RdxSelectValue {
     });
 
     readonly selectedLabel = computed(() => {
+        // eslint-disable-next-line no-useless-assignment
         let list: string[] = [];
         const options = Array.from(this.rootContext.optionsSet());
 

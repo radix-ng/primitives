@@ -13,6 +13,7 @@ export class RdxToolbarButtonDirective {
 
     private readonly isDisabled = signal(this.disabled());
 
+    // eslint-disable-next-line no-unused-private-class-members
     #disableChanges = effect(() => {
         this.rdxRovingFocusItemDirective.setFocusable(!this.isDisabled());
     });

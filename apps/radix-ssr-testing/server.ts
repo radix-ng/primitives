@@ -1,5 +1,3 @@
-// eslint-disable-next-line eslint-comments/disable-enable-pair
-/* eslint-disable promise/no-callback-in-promise */
 import {
     AngularNodeAppEngine,
     createNodeRequestHandler,
