@@ -99,16 +99,17 @@ export class RdxNavigationMenuListDirective implements AfterContentInit, AfterVi
     /**
      * @ignore
      */
-    onKeydown(event: KeyboardEvent) {
+    onKeydown(event: Event) {
+        const keyEvent = event as KeyboardEvent;
         if (!this.keyManager.activeItem) {
             this.keyManager.setFirstItemActive();
         }
 
-        if (event.key === TAB && event.shiftKey) {
+        if (keyEvent.key === TAB && keyEvent.shiftKey) {
             if (this.keyManager.activeItemIndex === 0) return;
             this.keyManager.setPreviousItemActive();
             event.preventDefault();
-        } else if (event.key === TAB) {
+        } else if (keyEvent.key === TAB) {
             const items = this.items();
             if (this.keyManager.activeItemIndex === items.length - 1) {
                 return;
@@ -116,7 +117,7 @@ export class RdxNavigationMenuListDirective implements AfterContentInit, AfterVi
             this.keyManager.setNextItemActive();
             event.preventDefault();
         } else {
-            this.keyManager.onKeydown(event);
+            this.keyManager.onKeydown(keyEvent);
         }
     }
 

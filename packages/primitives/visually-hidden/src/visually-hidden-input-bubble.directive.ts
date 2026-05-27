@@ -18,7 +18,7 @@ import { RdxVisuallyHiddenDirective, VisuallyHidden } from './visually-hidden.di
         '[attr.required]': 'required()',
         '[attr.disabled]': 'disabled()',
         '[attr.checked]': 'checked()',
-        '[value]': 'computedValue()'
+        '[attr.value]': 'computedValue()'
     }
 })
 export class RdxVisuallyHiddenInputBubbleDirective<T> {

@@ -63,7 +63,7 @@ const rootContext = () => {
         '[attr.data-state]': 'cva.value() ? "checked" : "unchecked"',
         '[attr.data-disabled]': 'cva.disabled() ? "true" : undefined',
         '[attr.disabled]': 'cva.disabled() ? cva.disabled() : undefined',
-        '[value]': 'cva.value()',
+        '[attr.value]': 'cva.value()',
 
         '(click)': 'toggle()',
         '(keydown.enter)': '$event.preventDefault()'

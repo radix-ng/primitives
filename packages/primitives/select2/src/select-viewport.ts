@@ -27,7 +27,7 @@ export class RdxSelectViewport {
         });
     }
 
-    handleScroll(event: MouseEvent) {
+    handleScroll(event: Event) {
         const viewport = event.currentTarget as HTMLElement;
 
         this.prevScrollTopRef.set(viewport.scrollTop);

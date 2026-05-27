@@ -10,9 +10,9 @@ import { injectCheckboxRootContext } from './checkbox-root';
         '[attr.name]': 'rootContext.name() || undefined',
         '[attr.checked]': 'rootContext.checked()',
         '[attr.form]': 'rootContext.form() || undefined',
-        '[value]': 'rootContext.value()',
+        '[attr.value]': 'rootContext.value()',
         '[required]': 'rootContext.required() || undefined',
-        '[disabled]': 'rootContext.disabled()',
+        '[attr.disabled]': 'rootContext.disabled() ? "" : undefined',
         '[style]': `{
           position: 'absolute',
           pointerEvents: 'none',

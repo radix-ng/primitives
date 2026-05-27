@@ -91,7 +91,7 @@ export class RdxRovingFocusItemDirective {
     }
 
     /** @ignore */
-    handleMouseDown(event: MouseEvent) {
+    handleMouseDown(event: Event) {
         if (!this.focusable()) {
             // We prevent focusing non-focusable items on `mousedown`.
             // Even though the item has tabIndex={-1}, that only means take it out of the tab order.
@@ -109,18 +109,24 @@ export class RdxRovingFocusItemDirective {
      * @param event The `KeyboardEvent` object.
      * @ignore
      */
-    handleKeydown(event: KeyboardEvent) {
-        if (event.key === 'Tab' && event.shiftKey) {
+    handleKeydown(event: Event) {
+        const keyEvent = event as KeyboardEvent;
+        if (keyEvent.key === 'Tab' && keyEvent.shiftKey) {
             this.rootContext.onItemShiftTab();
             return;
         }
 
         if (event.target !== this.elementRef.nativeElement) return;
 
-        const focusIntent = getFocusIntent(event, this.rootContext.orientation(), this.rootContext.dir());
+        const focusIntent = getFocusIntent(keyEvent, this.rootContext.orientation(), this.rootContext.dir());
 
         if (focusIntent !== undefined) {
-            if (event.metaKey || event.ctrlKey || event.altKey || (this.allowShiftKey() ? false : event.shiftKey)) {
+            if (
+                keyEvent.metaKey ||
+                keyEvent.ctrlKey ||
+                keyEvent.altKey ||
+                (this.allowShiftKey() ? false : keyEvent.shiftKey)
+            ) {
                 return;
             }
 

@@ -55,15 +55,16 @@ export class RdxNumberFieldInputDirective implements OnInit {
         this.rootContext.onInputElement(this.elementRef.nativeElement as HTMLInputElement);
     }
 
-    onBeforeInput(event: InputEvent) {
-        const target = event.target as HTMLInputElement;
+    onBeforeInput(event: Event) {
+        const inputEvent = event as InputEvent;
+        const target = inputEvent.target as HTMLInputElement;
         const nextValue =
             target.value.slice(0, target.selectionStart ?? undefined) +
-            (event.data ?? '') +
+            (inputEvent.data ?? '') +
             target.value.slice(target.selectionEnd ?? undefined);
 
         if (!this.rootContext.validate(nextValue)) {
-            event.preventDefault();
+            inputEvent.preventDefault();
         }
     }
 
@@ -91,27 +92,27 @@ export class RdxNumberFieldInputDirective implements OnInit {
         }
     }
 
-    onKeydownPageUp(event: KeyboardEvent) {
+    onKeydownPageUp(event: Event) {
         event.preventDefault();
         this.rootContext.handleIncrease(10);
     }
 
-    onKeydownPageDown(event: KeyboardEvent) {
+    onKeydownPageDown(event: Event) {
         event.preventDefault();
         this.rootContext.handleDecrease(10);
     }
 
-    onKeydownHome(event: KeyboardEvent) {
+    onKeydownHome(event: Event) {
         event.preventDefault();
         this.rootContext.handleMinMaxValue('min');
     }
 
-    onKeydownEnd(event: KeyboardEvent) {
+    onKeydownEnd(event: Event) {
         event.preventDefault();
         this.rootContext.handleMinMaxValue('max');
     }
 
-    onInput(event: InputEvent) {
+    onInput(event: Event) {
         const target = event.target as HTMLInputElement;
         this.rootContext.applyInputValue(target.value);
     }
@@ -120,17 +121,17 @@ export class RdxNumberFieldInputDirective implements OnInit {
         this.inputValue.set(this.rootContext.textValue());
     }
 
-    onKeydownEnter(event: KeyboardEvent) {
+    onKeydownEnter(event: Event) {
         const target = event.target as HTMLInputElement;
         this.rootContext.applyInputValue(target.value);
     }
 
-    onKeydownUp(event: KeyboardEvent) {
+    onKeydownUp(event: Event) {
         event.preventDefault();
         this.rootContext.handleIncrease();
     }
 
-    onKeydownDown(event: KeyboardEvent) {
+    onKeydownDown(event: Event) {
         event.preventDefault();
         this.rootContext.handleDecrease();
     }

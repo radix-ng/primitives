@@ -1,14 +1,34 @@
 import { getActiveElement } from '@radix-ng/primitives/core';
 
-export function useTypeahead(callback?: (search: string) => void) {
-    // Reset `search` 1 second after it was last updated
-    const search = refAutoReset('', 1000);
+function makeAutoResetRef<T>(defaultValue: T, delayMs: number) {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    let current = defaultValue;
+    return {
+        get value() {
+            return current;
+        },
+        set value(v: T) {
+            current = v;
+            if (timer) clearTimeout(timer);
+            timer = setTimeout(() => {
+                current = defaultValue;
+            }, delayMs);
+        }
+    };
+}
 
-    const handleTypeaheadSearch = (key: string, items: { ref: HTMLElement; value?: any }[]) => {
+export function useTypeahead(callback?: (search: string) => void) {
+    const search = makeAutoResetRef('', 1000);
+
+    const handleTypeaheadSearch = (
+        key: string,
+        items: { ref: HTMLElement; value?: any }[]
+    ): HTMLElement | undefined => {
         search.value = search.value + key;
 
         if (callback) {
             callback(key);
+            return undefined;
         } else {
             const currentItem = getActiveElement();
             const itemsWithTextValue = items.map((item) => ({

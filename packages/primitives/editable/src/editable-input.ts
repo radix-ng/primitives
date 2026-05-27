@@ -9,7 +9,7 @@ import { injectEditableRootContext } from './editable-root';
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
         '[attr.data-readonly]': 'rootContext?.readonly() ? "" : undefined',
         '[readonly]': 'rootContext?.readonly()',
-        '[disabled]': 'disabled()',
+        '[attr.disabled]': 'disabled() ? "" : undefined',
         '[maxlength]': 'rootContext?.maxLength()',
         '[attr.value]': 'rootContext?.inputValue()',
         '[attr.placeholder]': 'placeholder()',
@@ -63,12 +63,13 @@ export class RdxEditableInput {
         this.rootContext?.inputValue.set((event.target as HTMLInputElement).value);
     }
 
-    handleSubmitKeyDown(event: KeyboardEvent) {
+    handleSubmitKeyDown(event: Event) {
+        const keyEvent = event as KeyboardEvent;
         if (
             (this.rootContext?.submitMode() === 'enter' || this.rootContext?.submitMode() === 'both') &&
-            event.key === ENTER &&
-            !event.shiftKey &&
-            !event.metaKey
+            keyEvent.key === ENTER &&
+            !keyEvent.shiftKey &&
+            !keyEvent.metaKey
         ) {
             this.rootContext?.submit();
         }

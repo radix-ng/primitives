@@ -18,8 +18,8 @@ import { injectCheckboxRootContext } from './checkbox-root';
         '[attr.data-state]': 'rootContext.state()',
         '[attr.data-disabled]': 'rootContext.disabled() || undefined',
         '[attr.data-readonly]': 'rootContext.readonly() || undefined',
-        '[disabled]': 'rootContext.disabled()',
-        '[value]': 'rootContext.value()',
+        '[attr.disabled]': 'rootContext.disabled() ? "" : undefined',
+        '[attr.value]': 'rootContext.value()',
         '(click)': 'clicked($event)',
         // According to WAI ARIA, Checkboxes don't activate on enter keypress
         '(keydown.enter)': '$event.preventDefault()'

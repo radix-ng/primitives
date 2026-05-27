@@ -103,7 +103,8 @@ export class RdxAccordionItemDirective {
         this.collapsibleContext.open.set(this.open());
     };
 
-    handleArrowKey(event: KeyboardEvent) {
+    handleArrowKey(event: Event) {
+        const keyEvent = event as KeyboardEvent;
         const target = event.target as HTMLElement;
         const allCollectionItems: HTMLElement[] = Array.from(
             this.rootContext.elementRef.nativeElement?.querySelectorAll('[data-rdx-collection-item]') ?? []
@@ -113,7 +114,7 @@ export class RdxAccordionItemDirective {
         if (collectionItemIndex === -1) return;
 
         useArrowNavigation(
-            event,
+            keyEvent,
             this.elementRef.nativeElement.querySelector('[data-rdx-collection-item]')!,
             this.rootContext.elementRef.nativeElement!,
             {

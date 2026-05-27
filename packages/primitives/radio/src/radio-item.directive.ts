@@ -34,7 +34,7 @@ export function injectRadioItem(): RdxRadioItemDirective {
         '[attr.aria-checked]': 'checkedState()',
         '[attr.data-disabled]': 'disabledState() ? "" : null',
         '[attr.data-state]': 'checkedState() ? "checked" : "unchecked"',
-        '[disabled]': 'disabledState()',
+        '[attr.disabled]': 'disabledState() ? "" : undefined',
         '(click)': 'onClick()',
         '(keydown)': 'onKeyDown($event)',
         '(keyup)': 'onKeyUp()',
@@ -76,8 +76,9 @@ export class RdxRadioItemDirective implements OnInit {
     }
 
     /** @ignore */
-    onKeyDown(event: KeyboardEvent): void {
-        if (this.ARROW_KEYS.includes(event.key)) {
+    onKeyDown(event: Event): void {
+        const keyEvent = event as KeyboardEvent;
+        if (this.ARROW_KEYS.includes(keyEvent.key)) {
             this.isArrowKeyPressedSignal.set(true);
         }
     }

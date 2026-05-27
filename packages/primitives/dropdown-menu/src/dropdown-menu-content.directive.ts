@@ -8,9 +8,9 @@ import { RdxDropdownMenuTriggerDirective } from './dropdown-menu-trigger.directi
     selector: '[rdxDropdownMenuContent]',
     standalone: true,
     host: {
-        '[attr.data-state]': "menuTrigger.isOpen() ? 'open': 'closed'",
-        '[attr.data-align]': 'menuTrigger!.align',
-        '[attr.data-side]': 'menuTrigger!.side',
+        '[attr.data-state]': "menuTrigger?.isOpen() ? 'open': 'closed'",
+        '[attr.data-align]': 'menuTrigger?.align',
+        '[attr.data-side]': 'menuTrigger?.side',
         '[attr.data-orientation]': 'orientation'
     },
     providers: [

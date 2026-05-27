@@ -47,7 +47,7 @@ export type DataState = 'on' | 'off';
         '[attr.aria-pressed]': 'cva.value()',
         '[attr.data-state]': 'cva.value() ? "on" : "off"',
         '[attr.data-disabled]': 'cva.disabled() ? "" : undefined',
-        '[disabled]': 'cva.disabled()',
+        '[attr.disabled]': 'cva.disabled() ? "" : undefined',
 
         '(click)': 'onClick()'
     }

@@ -12,7 +12,7 @@ import { injectRadioItem } from './radio-item.directive';
         '[attr.required]': 'required()',
         '[attr.disabled]': 'disabled() ? disabled() : undefined',
         '[attr.checked]': 'checked()',
-        '[value]': 'value()'
+        '[attr.value]': 'value()'
     }
 })
 export class RdxRadioItemInputDirective {

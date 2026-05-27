@@ -10,7 +10,7 @@ import { RdxContextMenuTriggerDirective } from './context-menu-trigger.directive
     standalone: true,
     host: {
         '[attr.role]': "'menu'",
-        '[attr.data-state]': "menuTrigger.isOpen() ? 'open': 'closed'",
+        '[attr.data-state]': "menuTrigger?.isOpen() ? 'open': 'closed'",
         '[attr.data-orientation]': 'orientation'
     },
     providers: [

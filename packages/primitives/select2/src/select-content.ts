@@ -209,17 +209,18 @@ export class RdxSelectContent {
         }
     }
 
-    handleKeyDown(event: KeyboardEvent) {
+    handleKeyDown(event: Event) {
+        const keyEvent = event as KeyboardEvent;
         // select should not be navigated using tab key so we prevent it
-        if (event.key === 'Tab') event.preventDefault();
+        if (keyEvent.key === 'Tab') event.preventDefault();
 
-        if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
+        if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(keyEvent.key)) {
             const collectionItems = this.getItems().map((i) => i.ref);
             let candidateNodes = [...collectionItems];
 
-            if (['ArrowUp', 'End'].includes(event.key)) candidateNodes = candidateNodes.slice().reverse();
+            if (['ArrowUp', 'End'].includes(keyEvent.key)) candidateNodes = candidateNodes.slice().reverse();
 
-            if (['ArrowUp', 'ArrowDown'].includes(event.key)) {
+            if (['ArrowUp', 'ArrowDown'].includes(keyEvent.key)) {
                 const currentElement = event.target as HTMLElement;
                 const currentIndex = candidateNodes.indexOf(currentElement);
                 candidateNodes = candidateNodes.slice(currentIndex + 1);

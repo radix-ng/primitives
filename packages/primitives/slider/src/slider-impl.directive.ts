@@ -23,25 +23,27 @@ export class RdxSliderImplDirective {
     readonly endKeyDown = output<KeyboardEvent>();
     readonly stepKeyDown = output<KeyboardEvent>();
 
-    onKeyDown(event: KeyboardEvent) {
-        if (event.key === 'Home') {
-            this.homeKeyDown.emit(event);
+    onKeyDown(event: Event) {
+        const keyEvent = event as KeyboardEvent;
+        if (keyEvent.key === 'Home') {
+            this.homeKeyDown.emit(keyEvent);
             // Prevent scrolling to page start
             event.preventDefault();
-        } else if (event.key === 'End') {
-            this.endKeyDown.emit(event);
+        } else if (keyEvent.key === 'End') {
+            this.endKeyDown.emit(keyEvent);
             // Prevent scrolling to page end
             event.preventDefault();
-        } else if (PAGE_KEYS.concat(ARROW_KEYS).includes(event.key)) {
-            this.stepKeyDown.emit(event);
+        } else if (PAGE_KEYS.concat(ARROW_KEYS).includes(keyEvent.key)) {
+            this.stepKeyDown.emit(keyEvent);
             // Prevent scrolling for directional key presses
             event.preventDefault();
         }
     }
 
-    onPointerDown(event: PointerEvent) {
+    onPointerDown(event: Event) {
+        const pointerEvent = event as PointerEvent;
         const target = event.target as HTMLElement;
-        target.setPointerCapture(event.pointerId);
+        target.setPointerCapture(pointerEvent.pointerId);
 
         // Prevent browser focus behaviour because we focus a thumb manually when values change.
         event.preventDefault();
@@ -51,22 +53,24 @@ export class RdxSliderImplDirective {
         if (this.rootContext.thumbElements.includes(target)) {
             target.focus();
         } else {
-            this.slideStart.emit(event);
+            this.slideStart.emit(pointerEvent);
         }
     }
 
-    onPointerMove(event: PointerEvent) {
+    onPointerMove(event: Event) {
+        const pointerEvent = event as PointerEvent;
         const target = event.target as HTMLElement;
-        if (target.hasPointerCapture(event.pointerId)) {
-            this.slideMove.emit(event);
+        if (target.hasPointerCapture(pointerEvent.pointerId)) {
+            this.slideMove.emit(pointerEvent);
         }
     }
 
-    onPointerUp(event: PointerEvent) {
+    onPointerUp(event: Event) {
+        const pointerEvent = event as PointerEvent;
         const target = event.target as HTMLElement;
-        if (target.hasPointerCapture(event.pointerId)) {
-            target.releasePointerCapture(event.pointerId);
-            this.slideEnd.emit(event);
+        if (target.hasPointerCapture(pointerEvent.pointerId)) {
+            target.releasePointerCapture(pointerEvent.pointerId);
+            this.slideEnd.emit(pointerEvent);
         }
     }
 }

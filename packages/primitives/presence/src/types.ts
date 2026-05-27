@@ -17,4 +17,4 @@ type TransitionStartFn<T = any> = (element: HTMLElement, animation: boolean, con
 
 type TransitionEndFn = () => void;
 
-export { TransitionContext, TransitionEndFn, TransitionOptions, TransitionStartFn };
+export type { TransitionContext, TransitionEndFn, TransitionOptions, TransitionStartFn };

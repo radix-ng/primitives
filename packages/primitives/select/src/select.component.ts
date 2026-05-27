@@ -42,7 +42,6 @@ let nextId = 0;
             [cdkConnectedOverlayScrollStrategy]="overlay.scrollStrategies.reposition()"
             [cdkConnectedOverlayMinWidth]="triggerWidth() > 0 ? triggerWidth() : 'auto'"
             [cdkConnectedOverlayWidth]="matchTriggerWidth ? triggerWidth() : 'auto'"
-            [cdkConnectedOverlay]
             (attach)="onAttached()"
             (backdropClick)="close()"
             (detach)="onDetach()"

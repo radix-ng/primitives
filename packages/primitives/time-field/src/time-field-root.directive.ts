@@ -319,9 +319,10 @@ export class RdxTimeFieldRootDirective implements OnInit, AfterViewInit {
     /**
      * @ignore
      */
-    onKeydown(event: KeyboardEvent) {
-        if (!isSegmentNavigationKey(event.key)) return;
-        const code = event.code;
+    onKeydown(event: Event) {
+        const keyEvent = event as KeyboardEvent;
+        if (!isSegmentNavigationKey(keyEvent.key)) return;
+        const code = keyEvent.code;
 
         if (code === ARROW_LEFT) {
             this.prevFocusableSegment()?.focus();

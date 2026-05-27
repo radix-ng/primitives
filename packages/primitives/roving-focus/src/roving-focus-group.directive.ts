@@ -162,7 +162,7 @@ export class RdxRovingFocusGroupDirective {
     }
 
     /** @ignore */
-    handleFocus(event: FocusEvent) {
+    handleFocus(event: Event) {
         // We normally wouldn't need this check, because we already check
         // that the focus is on the current target and not bubbling to it.
         // We do this because Safari doesn't focus buttons when clicked, and

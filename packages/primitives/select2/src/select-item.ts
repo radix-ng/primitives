@@ -88,7 +88,7 @@ export class RdxSelectItem {
 
     private SELECT_SELECT = 'select.select';
 
-    onPointerDown(event: PointerEvent) {
+    onPointerDown(event: Event) {
         (event.currentTarget as HTMLElement).focus({ preventScroll: true });
     }
 
@@ -111,13 +111,13 @@ export class RdxSelectItem {
         );
     }
 
-    onPointerLeave(event: PointerEvent) {
+    onPointerLeave(event: Event) {
         if (event.defaultPrevented) return;
 
         if (event.currentTarget === getActiveElement()) this.contentContext.onItemLeave?.();
     }
 
-    onPointerMove(event: PointerEvent) {
+    onPointerMove(event: Event) {
         if (event.defaultPrevented) return;
         if (this.disabled()) {
             this.contentContext.onItemLeave?.();
@@ -128,13 +128,14 @@ export class RdxSelectItem {
         }
     }
 
-    handleKeyDown(event: KeyboardEvent) {
+    handleKeyDown(event: Event) {
+        const keyEvent = event as KeyboardEvent;
         if (event.defaultPrevented) return;
 
-        if (SELECTION_KEYS.includes(event.key)) this.handleSelectCustomEvent(event);
+        if (SELECTION_KEYS.includes(keyEvent.key)) this.handleSelectCustomEvent(keyEvent);
 
         // prevent page scroll if using the space key to select an item
-        if (event.key === ' ') event.preventDefault();
+        if (keyEvent.key === ' ') event.preventDefault();
     }
 
     async handleSelectCustomEvent(event: PointerEvent | KeyboardEvent) {

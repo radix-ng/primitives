@@ -25,7 +25,7 @@ interface TabsTriggerProps {
         '[attr.aria-selected]': 'isSelected()',
         '[attr.aria-controls]': 'contentId()',
         '[attr.data-disabled]': "disabled() ? '' : undefined",
-        '[disabled]': 'disabled()',
+        '[attr.disabled]': 'disabled() ? "" : undefined',
         '[attr.data-state]': "isSelected() ? 'active' : 'inactive'",
         '[attr.data-orientation]': 'tabsContext.orientation()',
         '(mousedown)': 'onMouseDown($event)',
@@ -59,10 +59,11 @@ export class RdxTabsTriggerDirective implements TabsTriggerProps {
         effect(() => this.rdxRovingFocusItemDirective.setActive(this.isSelected()));
     }
 
-    protected onMouseDown(event: MouseEvent) {
+    protected onMouseDown(event: Event) {
+        const mouseEvent = event as MouseEvent;
         // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
         // but not when the control key is pressed (avoiding MacOS right click)
-        if (!this.disabled() && event.button === 0 && !event.ctrlKey) {
+        if (!this.disabled() && mouseEvent.button === 0 && !mouseEvent.ctrlKey) {
             this.tabsContext?.select(this.value());
         } else {
             // prevent focus to avoid accidental activation
@@ -70,8 +71,9 @@ export class RdxTabsTriggerDirective implements TabsTriggerProps {
         }
     }
 
-    protected onKeyDown(event: KeyboardEvent) {
-        if ([' ', 'Enter'].includes(event.key)) {
+    protected onKeyDown(event: Event) {
+        const keyEvent = event as KeyboardEvent;
+        if ([' ', 'Enter'].includes(keyEvent.key)) {
             this.tabsContext?.select(this.value());
         }
     }
