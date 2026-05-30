@@ -1,85 +1,111 @@
-import { Meta } from '@storybook/addon-docs/blocks';
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './portal.stories';
+import { RdxPortal } from '../src/portal';
 
 <Meta title="Utilities/Portal" />
 
 # Portal
 
-#### Renders an Angular component or template in a different part of the DOM.
+#### Renders its host element into a different part of the DOM (`document.body` by default).
+
+The badge is declared inside a clipping box, yet `rdxPortal` renders it under `document.body`, so it escapes
+`overflow: hidden` and pins to the viewport corner.
+
+<Canvas sourceState="hidden" of={Stories.Default} />
 
 ## Features
 
-- ✅ Render any Angular component or template outside of your App's main structure.
-- ✅ Appends to a custom container element, which can be configured as needed.
+- ✅ Teleports the element it is attached to out of the normal document flow.
+- ✅ Appends to `document.body` by default, or to a custom container element.
+- ✅ Reactive container — changing the target moves the element to the new container.
+- ✅ Restores the element to its original position when destroyed.
+- ✅ SSR safe — does nothing on the server.
 
-## Installation
+## Anatomy
 
-To use the [Angular CDK Portal](https://material.angular.io/cdk/portal/overview), first install the CDK package:
+`rdxPortal` is an attribute directive applied directly to the element you want to teleport.
 
-```bash
-npm install @angular/cdk
+```html
+<div rdxPortal>This content is moved to the document body.</div>
 ```
 
 ## Basic Usage
 
-### Defining a Portal
-
-First, create the component or template that you want to render in a different location:
+Add `rdxPortal` to any element. On the browser it is detached from its current position and appended to
+`document.body`, leaving a comment node behind as an anchor so it can be put back on destroy.
 
 ```typescript
 import { Component } from '@angular/core';
+import { RdxPortal } from '@radix-ng/primitives/portal';
 
 @Component({
-  selector: 'component-portal-content',
-  standalone: true,
-  template: `
-    <p>This is portal content!</p>
-  `
+    selector: 'app-example',
+    imports: [RdxPortal],
+    template: `
+        <div class="card">
+            <h2>Card</h2>
+
+            <!-- Rendered under <body>, not inside .card -->
+            <div rdxPortal class="overlay">Portaled content</div>
+        </div>
+    `
 })
-export class PortalContentComponent {}
+export class ExampleComponent {}
 ```
 
-### Using the Portal
+## Custom Container
 
-In your main component, set up the portal and the outlet:
+Use the `container` input to portal into a specific element instead of `document.body`. It accepts an
+`ElementRef`, a native `HTMLElement`, or a CSS selector string (resolved against the document). When a
+selector matches nothing, it falls back to `document.body`. The move is reactive: if the bound container
+changes later, the element is relocated to the new one.
+
+<Canvas sourceState="hidden" of={Stories.CustomContainer} />
 
 ```typescript
-// app.component.ts
-import { Component, ViewChild, AfterViewInit, inject, ApplicationRef, Injector, ViewContainerRef } from '@angular/core';
-import { CdkPortal, DomPortalOutlet } from '@angular/cdk/portal';
-import { PortalContentComponent } from './portal-content.component';
+import { Component, ElementRef, viewChild } from '@angular/core';
+import { RdxPortal } from '@radix-ng/primitives/portal';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  template: `
-    <ng-template cdkPortal>
-      <app-portal-content></app-portal-content>
-    </ng-template>
-    <div #portalOutlet></div>
-  `
+    selector: 'app-example',
+    imports: [RdxPortal],
+    template: `
+        <div #host class="portal-host"></div>
+
+        <!-- ElementRef -->
+        <div rdxPortal [container]="host()">Rendered inside .portal-host</div>
+
+        <!-- Native element -->
+        <div rdxPortal [container]="host().nativeElement">…</div>
+
+        <!-- CSS selector -->
+        <div rdxPortal container=".portal-host">…</div>
+    `
 })
-export class AppComponent implements AfterViewInit {
-  private readonly appRef = inject(ApplicationRef);
-  private readonly injector = inject(Injector);
-
-  @ViewChild(CdkPortal) portal: CdkPortal;
-  @ViewChild('portalOutlet', { read: ViewContainerRef }) portalOutlet: ViewContainerRef;
-
-  private host: DomPortalOutlet;
-
-  ngAfterViewInit() {
-    this.host = new DomPortalOutlet(this.portalOutlet.element.nativeElement, this.injector, this.appRef);
-    this.host.attach(this.portal);
-  }
+export class ExampleComponent {
+    readonly host = viewChild.required('host', { read: ElementRef });
 }
 ```
 
-## Anatomy
+You can also change the container imperatively via the exported instance:
 
-The Angular CDK Portal utility consists of a few key elements:
+```html
+<div rdxPortal #portal="rdxPortal">…</div>
+```
 
-1. **Portal**:
-   An Angular directive (`CdkPortal`) that defines the content to be rendered elsewhere.
+```typescript
+portal.setContainer(someElementRef);
+```
 
-2. **Portal Outlet**:
-   An Angular directive (`CdkPortalOutlet`) or a host (`DomPortalOutlet`) where the portal content will be rendered.
+## Notes
+
+- The directive moves **the element it is attached to**, so place `rdxPortal` on the element you want to teleport.
+- On destroy the element is returned to its original position (tracked by an internal comment anchor), so Angular
+  can tear the view down cleanly.
+- The default container is `document.body`; the provided `container` takes precedence when set.
+
+## API Reference
+
+### RdxPortal
+
+<ArgTypes of={RdxPortal} />

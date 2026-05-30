@@ -1,8 +1,25 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { computed, DestroyRef, Directive, ElementRef, inject, input, linkedSignal, PLATFORM_ID } from '@angular/core';
+import {
+    computed,
+    DestroyRef,
+    Directive,
+    effect,
+    ElementRef,
+    inject,
+    input,
+    linkedSignal,
+    PLATFORM_ID
+} from '@angular/core';
+
+/**
+ * A target container for the portal. Accepts an `ElementRef`, a native element, or a CSS selector
+ * resolved against the document.
+ */
+export type RdxPortalContainer = ElementRef<HTMLElement> | HTMLElement | string;
 
 @Directive({
-    selector: '[rdxPortal]'
+    selector: '[rdxPortal]',
+    exportAs: 'rdxPortal'
 })
 export class RdxPortal {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -11,15 +28,16 @@ export class RdxPortal {
     private readonly destroyRef = inject(DestroyRef);
 
     /**
-     * Specify a container element to portal the content into.
+     * Specify a container to portal the content into. Can be an `ElementRef`, a native element, or a
+     * CSS selector. Defaults to `document.body` when not set (or when a selector matches nothing).
      */
-    readonly container = input<ElementRef<HTMLElement>>();
+    readonly container = input<RdxPortalContainer>();
 
-    private _computedContainer = linkedSignal(this.container);
-    readonly computedContainer = this._computedContainer;
+    private readonly _computedContainer = linkedSignal(this.container);
+    readonly computedContainer = this._computedContainer.asReadonly();
 
     private readonly elementContainer = computed<HTMLElement | null>(() => {
-        const provided = this.computedContainer()?.nativeElement ?? null;
+        const provided = this.resolveContainer(this.computedContainer());
         const body = this.document?.body ?? null;
         return provided ?? body;
     });
@@ -30,17 +48,38 @@ export class RdxPortal {
             return;
         }
 
-        const node = this.document.createComment('rdx-portal');
+        const element = this.elementRef.nativeElement;
+        // Anchor the original DOM position with a comment node, so the element can be restored
+        // exactly where it was when the directive is destroyed.
+        const anchor = this.document.createComment('rdx-portal');
+        element.parentNode?.insertBefore(anchor, element);
 
-        this.elementRef.nativeElement.parentNode?.insertBefore(node, this.elementRef.nativeElement);
-        this.elementContainer()?.appendChild(this.elementRef.nativeElement);
+        // Move reactively: the effect runs after inputs are bound (so `container` is respected on
+        // first render) and re-runs whenever the target container changes. `appendChild` relocates
+        // the element, it does not clone it.
+        effect(() => {
+            this.elementContainer()?.appendChild(element);
+        });
 
         this.destroyRef.onDestroy(() => {
-            node.parentNode?.replaceChild(this.elementRef.nativeElement, node);
+            anchor.parentNode?.replaceChild(element, anchor);
         });
     }
 
-    setContainer(container: ElementRef<HTMLElement>) {
+    setContainer(container: RdxPortalContainer) {
         this._computedContainer.set(container);
+    }
+
+    private resolveContainer(container: RdxPortalContainer | undefined): HTMLElement | null {
+        if (!container) {
+            return null;
+        }
+        if (typeof container === 'string') {
+            return this.document?.querySelector<HTMLElement>(container) ?? null;
+        }
+        if (container instanceof ElementRef) {
+            return container.nativeElement ?? null;
+        }
+        return container;
     }
 }

@@ -1,5 +1,5 @@
-import { Directive, ElementRef, input } from '@angular/core';
-import { RdxPortal } from '@radix-ng/primitives/portal';
+import { Directive, input } from '@angular/core';
+import { RdxPortal, RdxPortalContainer } from '@radix-ng/primitives/portal';
 
 @Directive({
     selector: '[rdxSelectPortal]',
@@ -11,5 +11,5 @@ import { RdxPortal } from '@radix-ng/primitives/portal';
     ]
 })
 export class RdxSelectPortal {
-    readonly container = input.required<ElementRef<HTMLElement>>();
+    readonly container = input.required<RdxPortalContainer>();
 }
