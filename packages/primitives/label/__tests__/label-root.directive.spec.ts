@@ -18,11 +18,21 @@ import { RdxLabelDirective } from '../src/label.directive';
             Test Label
             <div>Click Me</div>
             <input type="button" value="Button" />
+            <button type="button"><span>Nested</span></button>
         </label>
     `,
     imports: [RdxLabelDirective]
 })
 class TestComponent {}
+
+@Component({
+    template: `
+        <label rdxLabel>Plain</label>
+        <label id="custom-id" rdxLabel htmlFor="ctrl">Wired</label>
+    `,
+    imports: [RdxLabelDirective]
+})
+class AttributeHostComponent {}
 
 describe('RdxLabelDirective', () => {
     let fixture: ComponentFixture<TestComponent>;
@@ -95,5 +105,45 @@ describe('RdxLabelDirective', () => {
 
         labelElement.triggerEventHandler('mousedown', mockEvent);
         expect(mockEvent.preventDefault).toHaveBeenCalled();
+    });
+
+    it('should not prevent default when double-clicking an element nested inside a control', () => {
+        const nestedSpan = fixture.debugElement.query(By.css('button span'));
+        const mockEvent = new MouseEvent('mousedown', {
+            bubbles: true,
+            cancelable: true,
+            detail: 2
+        });
+        Object.defineProperty(mockEvent, 'target', { value: nestedSpan.nativeElement });
+        jest.spyOn(mockEvent, 'preventDefault');
+
+        labelElement.triggerEventHandler('mousedown', mockEvent);
+        expect(mockEvent.preventDefault).not.toHaveBeenCalled();
+    });
+});
+
+describe('RdxLabelDirective attributes', () => {
+    let fixture: ComponentFixture<AttributeHostComponent>;
+    let labels: DebugElement[];
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [AttributeHostComponent] });
+        fixture = TestBed.createComponent(AttributeHostComponent);
+        fixture.detectChanges();
+        labels = fixture.debugElement.queryAll(By.directive(RdxLabelDirective));
+    });
+
+    it('assigns a generated id by default and no "for" attribute', () => {
+        const plain = labels[0].nativeElement as HTMLLabelElement;
+
+        expect(plain.getAttribute('id')).toMatch(/^rdx-label-\d+$/);
+        expect(plain.hasAttribute('for')).toBe(false);
+    });
+
+    it('reflects the provided id and htmlFor inputs', () => {
+        const wired = labels[1].nativeElement as HTMLLabelElement;
+
+        expect(wired.getAttribute('id')).toBe('custom-id');
+        expect(wired.getAttribute('for')).toBe('ctrl');
     });
 });

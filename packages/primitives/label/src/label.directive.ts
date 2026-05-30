@@ -1,4 +1,4 @@
-import { computed, Directive, ElementRef, inject, input } from '@angular/core';
+import { Directive, ElementRef, inject, input } from '@angular/core';
 
 let idIterator = 0;
 
@@ -9,7 +9,7 @@ let idIterator = 0;
     selector: 'label[rdxLabel]',
     exportAs: 'rdxLabel',
     host: {
-        '[attr.id]': 'elementId()',
+        '[attr.id]': 'id()',
         '[attr.for]': 'htmlFor() ? htmlFor() : undefined',
         '(mousedown)': 'onMouseDown($event)'
     }
@@ -29,8 +29,6 @@ export class RdxLabelDirective {
      */
     readonly htmlFor = input<string>();
 
-    protected readonly elementId = computed(() => (this.id() ? this.id() : null));
-
     // prevent text selection when double-clicking label
     // The main problem with double-clicks in a web app is that
     // you will have to create special code to handle this on touch enabled devices.
@@ -40,8 +38,9 @@ export class RdxLabelDirective {
     onMouseDown(event: MouseEvent): void {
         const target = event.target as HTMLElement;
 
-        // only prevent text selection if clicking inside the label itself
-        if (['BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].includes(target.tagName)) {
+        // only prevent text selection if not clicking inside an interactive control (or its
+        // descendants), so clicks still focus/activate the associated control.
+        if (target.closest('button, input, select, textarea')) {
             return;
         }
 
