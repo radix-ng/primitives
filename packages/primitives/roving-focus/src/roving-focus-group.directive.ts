@@ -14,7 +14,7 @@ import {
     signal
 } from '@angular/core';
 import { createContext } from '@radix-ng/primitives/core';
-import { Direction, ENTRY_FOCUS, EVENT_OPTIONS, focusFirst, Orientation } from './utils';
+import { Direction, ENTRY_FOCUS, EVENT_OPTIONS, focusFirst, Orientation, sortByDocumentPosition } from './utils';
 
 const rootContext = () => {
     const rovingFocusGroup = inject(RdxRovingFocusGroupDirective);
@@ -30,19 +30,13 @@ const rootContext = () => {
         onItemShiftTab: () => {
             rovingFocusGroup.isTabbingBackOut.set(true);
         },
-        onFocusableItemAdd: () => {
-            rovingFocusGroup.focusableItemsCount.update((count) => count + 1);
-        },
-        onFocusableItemRemove: () => {
-            rovingFocusGroup.focusableItemsCount.update((count) => Math.max(0, count - 1));
-        },
         registerItem: (item: HTMLElement) => {
-            const currentItems = rovingFocusGroup.focusableItems();
-            rovingFocusGroup.focusableItems.set([...currentItems, item]);
+            // Keep the registry in DOM order, so arrow navigation matches the visual order
+            // regardless of the order in which items are created/registered.
+            rovingFocusGroup.focusableItems.update((items) => sortByDocumentPosition([...items, item]));
         },
         unregisterItem: (item: HTMLElement) => {
-            const currentItems = rovingFocusGroup.focusableItems();
-            rovingFocusGroup.focusableItems.set(currentItems.filter((el) => el !== item));
+            rovingFocusGroup.focusableItems.update((items) => items.filter((el) => el !== item));
         }
     };
 };
@@ -60,7 +54,7 @@ export const [injectRovingFocusGroupContext, provideRovingFocusGroupContext] =
     providers: [provideRovingFocusGroupContext(rootContext)],
     host: {
         '[attr.data-orientation]': 'orientation()',
-        '[attr.tabindex]': 'isTabbingBackOut() || focusableItemsCount() === 0 ? -1 : 0',
+        '[attr.tabindex]': 'isTabbingBackOut() || focusableItems().length === 0 ? -1 : 0',
         '[attr.dir]': 'dir()',
         '(focus)': 'handleFocus($event)',
         '(blur)': 'isTabbingBackOut.set(false)',
@@ -126,7 +120,6 @@ export class RdxRovingFocusGroupDirective {
     readonly focusableItems = signal<HTMLElement[]>([]);
     protected readonly isClickFocus = signal(false);
     readonly isTabbingBackOut = signal(false);
-    readonly focusableItemsCount = signal(0);
 
     constructor() {
         effect(() => {
@@ -182,12 +175,12 @@ export class RdxRovingFocusGroupDirective {
             if (!entryFocusEvent.defaultPrevented) {
                 const items = this.focusableItems().filter((item) => item.dataset['disabled'] !== '');
                 const activeItem = items.find((item) => item.getAttribute('data-active') === 'true');
-                const highlightedItem = items.find((item) => item.getAttribute('data-highlighted') === '');
-                const currentItem = items.find((item) => item.id === this.currentTabStopId());
+                // The current tab stop is the only item with `tabindex="0"` (driven by
+                // `currentTabStopId`). We match on it instead of the DOM `id`, because consumers
+                // (tabs, navigation-menu) own the element `id` and it may not equal the internal id.
+                const currentItem = items.find((item) => item.getAttribute('tabindex') === '0');
 
-                const candidateItems = [activeItem, highlightedItem, currentItem, ...items].filter(
-                    Boolean
-                ) as typeof items;
+                const candidateItems = [activeItem, currentItem, ...items].filter(Boolean) as typeof items;
 
                 focusFirst(candidateItems, this.preventScrollOnEntryFocus());
             }

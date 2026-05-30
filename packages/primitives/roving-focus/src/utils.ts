@@ -47,6 +47,15 @@ export function wrapArray<T>(array: T[], startIndex: number) {
     return array.map((_, index) => array[(startIndex + index) % array.length]);
 }
 
+/**
+ * Sorts elements by their position in the document, so the order matches what the user sees.
+ */
+export function sortByDocumentPosition(elements: HTMLElement[]): HTMLElement[] {
+    return [...elements].sort((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
+}
+
+let idCounter = 0;
+
 export function generateId(): string {
-    return `rf-item-${Math.random().toString(36).slice(2, 11)}`;
+    return `rf-item-${++idCounter}`;
 }

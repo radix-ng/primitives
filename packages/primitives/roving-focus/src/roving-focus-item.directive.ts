@@ -3,13 +3,14 @@ import { isPlatformBrowser } from '@angular/common';
 import {
     booleanAttribute,
     computed,
-    DestroyRef,
     Directive,
+    effect,
     ElementRef,
     inject,
     input,
     linkedSignal,
-    PLATFORM_ID
+    PLATFORM_ID,
+    untracked
 } from '@angular/core';
 import { injectRovingFocusGroupContext } from './roving-focus-group.directive';
 import { focusFirst, generateId, getFocusIntent, wrapArray } from './utils';
@@ -22,7 +23,7 @@ import { focusFirst, generateId, getFocusIntent, wrapArray } from './utils';
     host: {
         '[attr.tabindex]': 'isCurrentTabStop() ? 0 : -1',
         '[attr.data-orientation]': 'rootContext.orientation',
-        '[attr.data-active]': 'active()',
+        '[attr.data-active]': 'active() ? "true" : undefined',
         '[attr.data-disabled]': '!focusable() ? "" : undefined',
         '(mousedown)': 'handleMouseDown($event)',
         '(keydown)': 'handleKeydown($event)',
@@ -31,7 +32,6 @@ import { focusFirst, generateId, getFocusIntent, wrapArray } from './utils';
 })
 export class RdxRovingFocusItemDirective {
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
-    private readonly destroyRef = inject(DestroyRef);
     private readonly elementRef = inject(ElementRef);
 
     protected readonly rootContext = injectRovingFocusGroupContext()!;
@@ -43,10 +43,10 @@ export class RdxRovingFocusItemDirective {
     readonly focusableInput = input<boolean, BooleanInput>(true, { transform: booleanAttribute, alias: 'focusable' });
 
     /**
-     * When `true`, item will be initially focused.
+     * When `true`, marks the item as the active one, so it is preferred when focus enters the group.
      * @group Props
      */
-    readonly activeInput = input<boolean, BooleanInput>(true, { transform: booleanAttribute, alias: 'active' });
+    readonly activeInput = input<boolean, BooleanInput>(false, { transform: booleanAttribute, alias: 'active' });
 
     /**
      * @group Props
@@ -59,7 +59,9 @@ export class RdxRovingFocusItemDirective {
      */
     readonly allowShiftKey = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    protected readonly id = computed(() => this.tabStopId() || generateId());
+    // Stable fallback id, generated once so it never changes across recomputations of `id`.
+    private readonly generatedId = generateId();
+    protected readonly id = computed(() => this.tabStopId() || this.generatedId);
     protected readonly isCurrentTabStop = computed(() => this.rootContext.currentTabStopId() === this.id());
 
     protected readonly focusable = linkedSignal(() => this.focusableInput());
@@ -67,15 +69,19 @@ export class RdxRovingFocusItemDirective {
     private readonly tabStopId = linkedSignal(() => this.tabStopIdInput());
 
     constructor() {
-        if (this.focusable()) {
-            this.rootContext.registerItem(this.elementRef.nativeElement);
-            this.rootContext.onFocusableItemAdd();
+        // Keep the group's registry in sync with `focusable`, which can change after creation
+        // (e.g. toolbar/navigation-menu toggle it via `setFocusable`). The cleanup also runs on
+        // destroy, so a single effect covers register/unregister for the whole lifecycle.
+        effect((onCleanup) => {
+            if (!this.focusable()) return;
 
-            this.destroyRef.onDestroy(() => {
-                this.rootContext.unregisterItem(this.elementRef.nativeElement);
-                this.rootContext.onFocusableItemRemove();
-            });
-        }
+            const element = this.elementRef.nativeElement;
+            // `registerItem` reads and writes the group's `focusableItems` signal; calling it
+            // untracked prevents the effect from depending on its own write and looping.
+            untracked(() => this.rootContext.registerItem(element));
+
+            onCleanup(() => this.rootContext.unregisterItem(element));
+        });
     }
 
     setFocusable(value: boolean) {
@@ -147,7 +153,8 @@ export class RdxRovingFocusItemDirective {
 
             queueMicrotask(() => {
                 if (this.isBrowser) {
-                    focusFirst(candidateNodes, false, this.elementRef.nativeElement);
+                    const rootNode = this.elementRef.nativeElement.getRootNode() as Document | ShadowRoot;
+                    focusFirst(candidateNodes, false, rootNode);
                 }
             });
         }
