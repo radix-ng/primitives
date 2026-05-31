@@ -29,15 +29,23 @@
     --color-gray-900: oklch(12% 5% 264deg / 90%);
     --color-gray-950: oklch(12% 5% 264deg / 95%);
 
-    /* Other colors used in Tailwind demos */
-    --color-blue-800: var(--color-blue);
-    --color-red-800: var(--color-red);
+    /* Semantic colors shared by Tailwind demos */
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-border: var(--border);
+    --color-ring: var(--ring);
 
     /* Functional colors for the docs */
     --color-content: white;
-    --color-background: var(--color-gray-50);
-    --color-foreground: var(--color-gray-900);
-    --color-popup: white;
+    --color-popup: var(--popover);
     --color-gridline: oklch(91.6% 1% 264deg);
     --color-selection: oklch(80% 50% 264deg / 25%);
     --color-highlight: var(--color-blue);
@@ -112,41 +120,65 @@
 }
 
 :root {
-    @media (prefers-color-scheme: dark) {
-        --color-gray-50: oklch(17% 0.25% 264deg);
-        --color-gray-75: oklch(19% 0.5% 264deg); /* Not a Tailwind step, don't use it in the demos */
-        --color-gray-100: oklch(28% 0.75% 264deg / 65%);
-        --color-gray-200: oklch(29% 0.75% 264deg / 80%);
-        --color-gray-300: oklch(35% 0.75% 264deg / 80%);
-        --color-gray-400: oklch(47% 0.875% 264deg / 80%);
-        --color-gray-500: oklch(64% 1% 264deg / 80%);
-        --color-gray-600: oklch(82% 1% 264deg / 80%);
-        --color-gray-700: oklch(92% 1.125% 264deg / 80%);
-        --color-gray-800: oklch(93% 0.875% 264deg / 85%);
-        --color-gray-900: oklch(95% 0.5% 264deg / 90%);
-        --color-gray-950: oklch(94% 0.375% 264deg / 95%);
+    --background: white;
+    --foreground: oklch(14.5% 1% 264deg);
+    --card: white;
+    --card-foreground: var(--foreground);
+    --popover: white;
+    --popover-foreground: var(--foreground);
+    --primary: oklch(20.5% 1% 264deg);
+    --primary-foreground: white;
+    --muted: oklch(96.5% 0.5% 264deg);
+    --muted-foreground: oklch(46% 1% 264deg);
+    --border: oklch(90% 1% 264deg);
+    --ring: oklch(55% 1% 264deg);
+}
 
-        /* Functional colors */
-        --color-content: black;
-        --color-background: black;
-        --color-foreground: oklch(90% 2% 264deg);
-        --color-popup: var(--color-gray-50);
-        --color-gridline: oklch(24% 1% 264deg);
-        --color-highlight: oklch(45% 40% 264deg);
-        --color-selection: oklch(50% 50% 264deg / 40%);
-        --color-line-highlight: oklch(50% 50% 264deg / 20%);
-        --color-line-highlight-strong: oklch(50% 50% 264deg / 35%);
-        --color-inline-highlight: oklch(50% 50% 264deg / 35%);
+:root[data-theme='dark'] {
+    --color-gray-50: oklch(17% 0.25% 264deg);
+    --color-gray-75: oklch(19% 0.5% 264deg); /* Not a Tailwind step, don't use it in the demos */
+    --color-gray-100: oklch(28% 0.75% 264deg / 65%);
+    --color-gray-200: oklch(29% 0.75% 264deg / 80%);
+    --color-gray-300: oklch(35% 0.75% 264deg / 80%);
+    --color-gray-400: oklch(47% 0.875% 264deg / 80%);
+    --color-gray-500: oklch(64% 1% 264deg / 80%);
+    --color-gray-600: oklch(82% 1% 264deg / 80%);
+    --color-gray-700: oklch(92% 1.125% 264deg / 80%);
+    --color-gray-800: oklch(93% 0.875% 264deg / 85%);
+    --color-gray-900: oklch(95% 0.5% 264deg / 90%);
+    --color-gray-950: oklch(94% 0.375% 264deg / 95%);
 
-        /* Text colors */
-        --color-gray: var(--color-gray-600);
-        --color-blue: oklch(69% 50% 264deg);
-        --color-green: oklch(75% 25% 150deg);
-        --color-navy: oklch(85% 25% 264deg);
-        --color-purple: oklch(85% 30% 360deg);
-        --color-red: oklch(80% 55% 31deg);
-        --color-violet: oklch(80% 60% 280deg);
-    }
+    /* Semantic colors */
+    --background: oklch(14.5% 1% 264deg);
+    --foreground: oklch(96% 0.5% 264deg);
+    --card: oklch(18% 1% 264deg);
+    --card-foreground: var(--foreground);
+    --popover: oklch(18% 1% 264deg);
+    --popover-foreground: var(--foreground);
+    --primary: oklch(92% 0.5% 264deg);
+    --primary-foreground: oklch(18% 1% 264deg);
+    --muted: oklch(24% 1% 264deg);
+    --muted-foreground: oklch(70% 1% 264deg);
+    --border: oklch(30% 1% 264deg);
+    --ring: oklch(65% 1% 264deg);
+
+    /* Functional colors */
+    --color-content: black;
+    --color-gridline: oklch(24% 1% 264deg);
+    --color-highlight: oklch(45% 40% 264deg);
+    --color-selection: oklch(50% 50% 264deg / 40%);
+    --color-line-highlight: oklch(50% 50% 264deg / 20%);
+    --color-line-highlight-strong: oklch(50% 50% 264deg / 35%);
+    --color-inline-highlight: oklch(50% 50% 264deg / 35%);
+
+    /* Text colors */
+    --color-gray: var(--color-gray-600);
+    --color-blue: oklch(69% 50% 264deg);
+    --color-green: oklch(75% 25% 150deg);
+    --color-navy: oklch(85% 25% 264deg);
+    --color-purple: oklch(85% 30% 360deg);
+    --color-red: oklch(80% 55% 31deg);
+    --color-violet: oklch(80% 60% 280deg);
 }
 
 /* Disable docs-specific variables in the demos. Keep this in sync with the "@theme" block above */
@@ -162,9 +194,6 @@
         --color-purple: initial;
         --color-violet: initial;
         --color-content: initial;
-        --color-background: initial;
-        --color-foreground: initial;
-        --color-popup: initial;
         --color-gridline: initial;
         --color-highlight: initial;
         --color-gray-75: initial;
@@ -205,6 +234,8 @@
     }
 
     body {
+        color: var(--foreground);
+        background-color: var(--background);
         font-synthesis: none;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;

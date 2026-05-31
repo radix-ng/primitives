@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { componentWrapperDecorator, moduleMetadata } from '@storybook/angular';
+import { moduleMetadata } from '@storybook/angular';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxSeparatorRootDirective } from '../src/separator.directive';
 
 const html = String.raw;
@@ -11,60 +12,33 @@ export default {
         moduleMetadata({
             imports: [RdxSeparatorRootDirective, CommonModule]
         }),
-        componentWrapperDecorator(
-            (story) => html`
-                <div class="radix-themes light light-theme" data-radius="medium" data-scaling="100%">${story}</div>
-            `
-        )
+        tailwindDemoDecorator()
     ]
 };
 
 export const Default = {
     render: () => ({
         template: html`
-            <style>
-                .SeparatorRoot {
-                    background-color: var(--violet-6);
-                }
-
-                .SeparatorRoot[data-orientation='horizontal'] {
-                    height: 1px;
-                    width: 100%;
-                }
-
-                .SeparatorRoot[data-orientation='vertical'] {
-                    height: 100%;
-                    width: 1px;
-                }
-
-                .Text {
-                    color: white;
-                    font-size: 15px;
-                    line-height: 20px;
-                }
-            </style>
-            <div style="width: 100%; max-width: 300px; margin: 0 15px;">
-                <div class="Text">Radix Primitives</div>
-                <div class="Text" style="font-weight: 500;">An open-source UI component library.</div>
-                <div class="SeparatorRoot" rdxSeparatorRoot style="margin: 15px 0;"></div>
-                <div style="display: flex; height: 1.25rem; align-items: center;">
-                    <div class="Text">Blog</div>
+            <div class="flex w-full max-w-sm flex-col gap-3">
+                <div class="text-foreground text-sm font-medium">Radix Primitives</div>
+                <div class="text-muted-foreground text-sm">An open-source UI component library.</div>
+                <div class="bg-border h-px w-full" rdxSeparatorRoot></div>
+                <div class="flex h-5 items-center">
+                    <div class="text-foreground text-sm">Blog</div>
                     <div
-                        class="SeparatorRoot"
+                        class="bg-border mx-4 h-5 w-px"
                         rdxSeparatorRoot
                         decorative="decorative"
                         orientation="vertical"
-                        style="margin: 0 15px;"
                     ></div>
-                    <div class="Text">Docs</div>
+                    <div class="text-foreground text-sm">Docs</div>
                     <div
-                        class="SeparatorRoot"
+                        class="bg-border mx-4 h-5 w-px"
                         rdxSeparatorRoot
                         decorative="decorative"
                         orientation="vertical"
-                        style="margin: 0 15px;"
                     ></div>
-                    <div class="Text">Source</div>
+                    <div class="text-foreground text-sm">Source</div>
                 </div>
             </div>
         `

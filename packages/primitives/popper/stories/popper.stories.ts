@@ -1,4 +1,5 @@
-import { argsToTemplate, componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxPopper } from '../src/popper';
 import { RdxPopperAnchor } from '../src/popper-anchor';
 import { RdxPopperArrow } from '../src/popper-arrow';
@@ -22,16 +23,7 @@ export default {
                 PopperFollowPointer
             ]
         }),
-        componentWrapperDecorator(
-            (story) => html`
-                <div
-                    class="flex h-[500px] items-center justify-center gap-20 rounded-xl border border-gray-300 p-8"
-                    data-demo="tailwind"
-                >
-                    ${story}
-                </div>
-            `
-        )
+        tailwindDemoDecorator()
     ],
     argTypes: {
         align: {
@@ -60,11 +52,11 @@ export const Default: Story = {
         props: args,
         template: html`
             <div
-                class="flex h-48 w-80 items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50"
+                class="border-border bg-muted flex h-48 w-80 items-center justify-center rounded-xl border border-dashed"
                 rdxPopperRoot
             >
                 <button
-                    class="inline-flex h-10 min-w-28 items-center justify-center rounded-lg border border-black bg-black px-4 text-sm font-semibold text-white shadow-sm"
+                    class="border-primary bg-primary text-primary-foreground focus-visible:ring-ring focus-visible:ring-offset-background inline-flex h-10 min-w-28 items-center justify-center rounded-lg border px-4 text-sm font-semibold shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                     type="button"
                     rdxPopperAnchor
                 >
@@ -72,12 +64,12 @@ export const Default: Story = {
                 </button>
                 <div ${argsToTemplate(args)} rdxPopperContentWrapper>
                     <div
-                        class="max-w-56 rounded-lg bg-gray-950 px-3.5 py-3 text-sm leading-5 text-white shadow-xl [transform-origin:var(--radix-popper-transform-origin)]"
+                        class="border-border bg-popover text-popover-foreground max-w-56 rounded-lg border px-3.5 py-3 text-sm leading-5 shadow-md [transform-origin:var(--radix-popper-transform-origin)]"
                         rdxPopperContent
                     >
                         Positioned relative to the anchor
                     </div>
-                    <span class="fill-gray-950" rdxPopperArrow></span>
+                    <span class="fill-popover" rdxPopperArrow></span>
                 </div>
             </div>
         `
@@ -88,11 +80,11 @@ export const CustomArrow: Story = {
     render: () => ({
         template: html`
             <div
-                class="flex h-48 w-80 items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50"
+                class="border-border bg-muted flex h-48 w-80 items-center justify-center rounded-xl border border-dashed"
                 rdxPopperRoot
             >
                 <button
-                    class="inline-flex h-10 min-w-28 items-center justify-center rounded-lg border border-black bg-black px-4 text-sm font-semibold text-white shadow-sm"
+                    class="border-primary bg-primary text-primary-foreground focus-visible:ring-ring focus-visible:ring-offset-background inline-flex h-10 min-w-28 items-center justify-center rounded-lg border px-4 text-sm font-semibold shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                     type="button"
                     rdxPopperAnchor
                 >
@@ -100,13 +92,13 @@ export const CustomArrow: Story = {
                 </button>
                 <div side="top" sideOffset="8" rdxPopperContentWrapper>
                     <div
-                        class="max-w-56 rounded-lg bg-gray-950 px-3.5 py-3 text-sm leading-5 text-white shadow-xl [transform-origin:var(--radix-popper-transform-origin)]"
+                        class="border-border bg-popover text-popover-foreground max-w-56 rounded-lg border px-3.5 py-3 text-sm leading-5 shadow-md [transform-origin:var(--radix-popper-transform-origin)]"
                         rdxPopperContent
                     >
                         The arrow can project custom content
                     </div>
-                    <span class="fill-gray-950" rdxPopperArrow>
-                        <div class="h-2.5 w-5 rounded-b-full bg-gray-950"></div>
+                    <span class="fill-popover" rdxPopperArrow>
+                        <div class="bg-popover h-2.5 w-5 rounded-b-full"></div>
                     </span>
                 </div>
             </div>

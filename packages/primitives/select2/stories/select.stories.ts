@@ -1,4 +1,5 @@
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import {
     SelectAlignedPosition,
     SelectAlignedPositionWithScroll,
@@ -14,25 +15,7 @@ export default {
         moduleMetadata({
             imports: [SelectDefault, SelectDefaultWithScroll, SelectAlignedPosition, SelectAlignedPositionWithScroll]
         }),
-        componentWrapperDecorator(
-            (story) => html`
-                <div class="radix-themes light light-theme" data-radius="medium" data-scaling="100%">
-                    <div
-                        style="height: 500px;
-                                display: flex;
-                                justify-content: center;
-                                gap: 80px;
-                                align-items: center;
-                                border: 3px dashed var(--white-a8);
-                                border-radius: 12px;"
-                    >
-                        ${story}
-                    </div>
-
-                    <style></style>
-                </div>
-            `
-        )
+        tailwindDemoDecorator()
     ],
     argTypes: {
         align: {

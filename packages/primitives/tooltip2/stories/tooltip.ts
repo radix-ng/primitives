@@ -17,9 +17,13 @@ import { tooltipImports } from '@radix-ng/primitives/tooltip2';
         RdxSliderThumbComponent
     ],
     template: `
-        <rdx-slider [modelValue]="[45]" [step]="5" styleClass="SliderRoot">
-            <rdx-slider-track class="SliderTrack">
-                <rdx-slider-range class="SliderRange" />
+        <rdx-slider
+            [modelValue]="[45]"
+            [step]="5"
+            styleClass="relative flex h-5 w-52 touch-none select-none items-center"
+        >
+            <rdx-slider-track class="bg-muted relative h-1 grow overflow-hidden rounded-full">
+                <rdx-slider-range class="bg-primary absolute h-full" />
             </rdx-slider-track>
 
             <ng-container
@@ -29,17 +33,22 @@ import { tooltipImports } from '@radix-ng/primitives/tooltip2';
                 rdxTooltip
                 isControlledState
             >
-                <rdx-slider-thumb class="SliderThumb" [rdxOnPointerDown]="handlePointerDown" rdxTooltipTrigger />
+                <rdx-slider-thumb
+                    class="border-border bg-background focus-visible:ring-ring focus-visible:ring-offset-background block size-5 rounded-full border shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                    [rdxOnPointerDown]="handlePointerDown"
+                    aria-label="Volume"
+                    rdxTooltipTrigger
+                />
 
                 <ng-container [container]="tooltipContentRef()" rdxTooltipPortal>
                     <ng-template #tooltipContent rdxTooltipPortalPresence>
-                        <div
-                            class="data-[state=delayed-open]:data-[side=top]:animate-slideDownAndFade data-[state=delayed-open]:data-[side=right]:animate-slideLeftAndFade data-[state=delayed-open]:data-[side=left]:animate-slideRightAndFade data-[state=delayed-open]:data-[side=bottom]:animate-slideUpAndFade text-violet11 select-none rounded-[4px] bg-white px-[15px] py-[10px] text-[15px] leading-none shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] will-change-[transform,opacity]"
-                            sideOffset="8"
-                            side="top"
-                            rdxTooltipContentWrapper
-                        >
-                            <div rdxTooltipContent>Add to library</div>
+                        <div sideOffset="8" side="top" updatePositionStrategy="always" rdxTooltipContentWrapper>
+                            <div
+                                class="border-border bg-popover text-popover-foreground select-none rounded-md border px-3 py-2 text-sm leading-none shadow-md"
+                                rdxTooltipContent
+                            >
+                                Volume
+                            </div>
                         </div>
                     </ng-template>
                 </ng-container>

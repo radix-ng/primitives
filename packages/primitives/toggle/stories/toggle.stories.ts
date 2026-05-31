@@ -1,5 +1,6 @@
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { LucideAngularModule } from 'lucide-angular';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxToggleVisuallyHiddenInputDirective } from '../src/toggle-visually-hidden-input.directive';
 import { RdxToggleDirective } from '../src/toggle.directive';
 import { ToggleButtonReactiveForms } from './toggle-forms.component';
@@ -17,46 +18,7 @@ export default {
                 LucideAngularModule
             ]
         }),
-        componentWrapperDecorator(
-            (story) => html`
-                <div class="radix-themes light light-theme" data-radius="medium" data-scaling="100%">
-                    ${story}
-
-                    <style>
-                        button {
-                            all: unset;
-                        }
-                        .Toggle {
-                            background-color: white;
-                            color: var(--mauve-11);
-                            height: 35px;
-                            width: 35px;
-                            border-radius: 4px;
-                            display: flex;
-                            font-size: 15px;
-                            line-height: 1;
-                            align-items: center;
-                            justify-content: center;
-                            box-shadow: 0 2px 10px var(--black-a7);
-                        }
-                        .Toggle:hover {
-                            background-color: var(--violet-3);
-                        }
-                        .Toggle[disabled] {
-                            pointer-events: none;
-                            opacity: 0.5;
-                        }
-                        .Toggle[data-state='on'] {
-                            background-color: var(--violet-6);
-                            color: var(--violet-12);
-                        }
-                        .Toggle:focus {
-                            box-shadow: 0 0 0 2px black;
-                        }
-                    </style>
-                </div>
-            `
-        )
+        tailwindDemoDecorator()
     ]
 } as Meta;
 
@@ -65,8 +27,13 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: html`
-            <button class="Toggle" rdxToggle aria-label="Toggle italic">
-                <lucide-angular name="italic" size="12"></lucide-angular>
+            <button
+                class="border-border bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 inline-flex h-9 w-9 items-center justify-center rounded-md border shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                rdxToggle
+                aria-label="Toggle italic"
+                type="button"
+            >
+                <lucide-angular class="flex" name="italic" size="12"></lucide-angular>
             </button>
         `
     })
@@ -87,13 +54,14 @@ export const State: Story = {
         },
         template: html`
             <button
-                class="Toggle"
+                class="border-border bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 inline-flex h-9 w-9 items-center justify-center rounded-md border shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
                 rdxToggle
                 [disabled]="config.disabled"
                 [pressed]="config.pressed"
                 aria-label="Toggle italic"
+                type="button"
             >
-                <lucide-angular name="italic" size="12"></lucide-angular>
+                <lucide-angular class="flex" name="italic" size="12"></lucide-angular>
             </button>
         `
     })
@@ -107,25 +75,33 @@ export const Controlled: Story = {
         template: html`
             <h1>Uncontrolled</h1>
             <span class="">default off</span>
-            <button class="Toggle" rdxToggle [pressed]="false" aria-label="Toggle bold" #toggle="rdxToggle">
+            <button
+                class="border-border bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 inline-flex h-9 w-9 items-center justify-center rounded-md border shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                rdxToggle
+                [pressed]="false"
+                aria-label="Toggle bold"
+                #toggle="rdxToggle"
+                type="button"
+            >
                 <input
                     rdxToggleVisuallyHiddenInput
                     [name]="'toggleDef'"
                     [value]="toggle.pressed()"
                     [required]="false"
                 />
-                <lucide-angular name="italic" size="12"></lucide-angular>
+                <lucide-angular class="flex" name="italic" size="12"></lucide-angular>
             </button>
 
             <h1>Controlled</h1>
             <span class="">default on</span>
             <button
-                class="Toggle"
+                class="border-border bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 inline-flex h-9 w-9 items-center justify-center rounded-md border shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
                 rdxToggle
                 [defaultPressed]="true"
                 [pressed]="true"
                 aria-label="Toggle bold"
                 #toggle="rdxToggle"
+                type="button"
             >
                 <input
                     rdxToggleVisuallyHiddenInput
@@ -133,17 +109,18 @@ export const Controlled: Story = {
                     [value]="toggle.pressed()"
                     [required]="false"
                 />
-                <lucide-angular name="italic" size="12"></lucide-angular>
+                <lucide-angular class="flex" name="italic" size="12"></lucide-angular>
             </button>
 
             <span class="">default off</span>
             <button
-                class="Toggle"
+                class="border-border bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 inline-flex h-9 w-9 items-center justify-center rounded-md border shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
                 rdxToggle
                 [defaultPressed]="false"
                 [pressed]="false"
                 aria-label="Toggle bold"
                 #toggle="rdxToggle"
+                type="button"
             >
                 <input
                     rdxToggleVisuallyHiddenInput
@@ -151,19 +128,26 @@ export const Controlled: Story = {
                     [value]="toggle.pressed()"
                     [required]="false"
                 />
-                <lucide-angular name="italic" size="12"></lucide-angular>
+                <lucide-angular class="flex" name="italic" size="12"></lucide-angular>
             </button>
 
             <h1>Events</h1>
             <span class="">default off</span>
-            <button class="Toggle" rdxToggle [pressed]="false" aria-label="Toggle bold" #toggle="rdxToggle">
+            <button
+                class="border-border bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 inline-flex h-9 w-9 items-center justify-center rounded-md border shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                rdxToggle
+                [pressed]="false"
+                aria-label="Toggle bold"
+                #toggle="rdxToggle"
+                type="button"
+            >
                 <input
                     rdxToggleVisuallyHiddenInput
                     [name]="'toggleDef'"
                     [value]="toggle.pressed()"
                     [required]="false"
                 />
-                <lucide-angular name="italic" size="12"></lucide-angular>
+                <lucide-angular class="flex" name="italic" size="12"></lucide-angular>
             </button>
         `
     })
@@ -172,7 +156,14 @@ export const Controlled: Story = {
 export const Disabled: Story = {
     render: () => ({
         template: html`
-            <button class="Toggle" disabled rdxToggle #toggle="rdxToggle" aria-label="Toggle disabled">
+            <button
+                class="border-border bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 inline-flex h-9 w-9 items-center justify-center rounded-md border shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                disabled
+                rdxToggle
+                #toggle="rdxToggle"
+                aria-label="Toggle disabled"
+                type="button"
+            >
                 <input
                     rdxToggleVisuallyHiddenInput
                     [name]="'toggleDef'"
@@ -180,7 +171,7 @@ export const Disabled: Story = {
                     [required]="false"
                     [disabled]="toggle.disabled()"
                 />
-                <lucide-angular name="italic" size="12"></lucide-angular>
+                <lucide-angular class="flex" name="italic" size="12"></lucide-angular>
             </button>
         `
     })

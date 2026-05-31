@@ -1,4 +1,5 @@
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxSliderRangeComponent } from '../src/slider-range.component';
 import { RdxSliderRootComponent } from '../src/slider-root.component';
 import { RdxSliderThumbComponent } from '../src/slider-thumb.component';
@@ -12,17 +13,7 @@ export default {
         moduleMetadata({
             imports: [RdxSliderRootComponent, RdxSliderTrackComponent, RdxSliderRangeComponent, RdxSliderThumbComponent]
         }),
-        componentWrapperDecorator(
-            (story) => html`
-                <div class="radix-themes light light-theme" data-radius="medium" data-scaling="100%">
-                    ${story}
-
-                    <style>
-                        /*Look at root main.scss*/
-                    </style>
-                </div>
-            `
-        )
+        tailwindDemoDecorator()
     ]
 } as Meta;
 
@@ -32,11 +23,17 @@ export const Default: Story = {
     render: (args) => ({
         props: args,
         template: html`
-            <rdx-slider styleClass="SliderRoot" [modelValue]="[45]" [step]="5">
-                <rdx-slider-track class="SliderTrack">
-                    <rdx-slider-range class="SliderRange" />
+            <rdx-slider
+                styleClass="relative flex h-5 w-52 touch-none select-none items-center"
+                [modelValue]="[45]"
+                [step]="5"
+            >
+                <rdx-slider-track class="bg-muted relative h-1 grow overflow-hidden rounded-full">
+                    <rdx-slider-range class="bg-primary absolute h-full rounded-full" />
                 </rdx-slider-track>
-                <rdx-slider-thumb class="SliderThumb" />
+                <rdx-slider-thumb
+                    class="border-border bg-background focus-visible:ring-ring block size-5 rounded-full border shadow-sm outline-none focus-visible:ring-2"
+                />
             </rdx-slider>
         `
     })
@@ -46,11 +43,18 @@ export const Inverted: Story = {
     render: (args) => ({
         props: args,
         template: html`
-            <rdx-slider styleClass="SliderRoot" inverted [modelValue]="[45]" [step]="5">
-                <rdx-slider-track class="SliderTrack">
-                    <rdx-slider-range class="SliderRange" />
+            <rdx-slider
+                styleClass="relative flex h-5 w-52 touch-none select-none items-center"
+                inverted
+                [modelValue]="[45]"
+                [step]="5"
+            >
+                <rdx-slider-track class="bg-muted relative h-1 grow overflow-hidden rounded-full">
+                    <rdx-slider-range class="bg-primary absolute h-full rounded-full" />
                 </rdx-slider-track>
-                <rdx-slider-thumb class="SliderThumb" />
+                <rdx-slider-thumb
+                    class="border-border bg-background focus-visible:ring-ring block size-5 rounded-full border shadow-sm outline-none focus-visible:ring-2"
+                />
             </rdx-slider>
         `
     })
@@ -60,12 +64,20 @@ export const Thumbs: Story = {
     render: (args) => ({
         props: args,
         template: html`
-            <rdx-slider styleClass="SliderRoot" [modelValue]="[45, 80]" [step]="5">
-                <rdx-slider-track class="SliderTrack">
-                    <rdx-slider-range class="SliderRange" />
+            <rdx-slider
+                styleClass="relative flex h-5 w-52 touch-none select-none items-center"
+                [modelValue]="[45, 80]"
+                [step]="5"
+            >
+                <rdx-slider-track class="bg-muted relative h-1 grow overflow-hidden rounded-full">
+                    <rdx-slider-range class="bg-primary absolute h-full rounded-full" />
                 </rdx-slider-track>
-                <rdx-slider-thumb class="SliderThumb" />
-                <rdx-slider-thumb class="SliderThumb" />
+                <rdx-slider-thumb
+                    class="border-border bg-background focus-visible:ring-ring block size-5 rounded-full border shadow-sm outline-none focus-visible:ring-2"
+                />
+                <rdx-slider-thumb
+                    class="border-border bg-background focus-visible:ring-ring block size-5 rounded-full border shadow-sm outline-none focus-visible:ring-2"
+                />
             </rdx-slider>
         `
     })
@@ -75,18 +87,32 @@ export const Vertical: Story = {
     render: (args) => ({
         props: args,
         template: html`
-            <rdx-slider styleClass="SliderRootV" [orientation]="'vertical'" [modelValue]="[45]" [step]="5">
-                <rdx-slider-track class="SliderTrackV">
-                    <rdx-slider-range class="SliderRangeV" />
+            <rdx-slider
+                styleClass="relative flex h-52 w-5 touch-none select-none flex-col items-center"
+                [orientation]="'vertical'"
+                [modelValue]="[45]"
+                [step]="5"
+            >
+                <rdx-slider-track class="bg-muted relative w-1 grow overflow-hidden rounded-full">
+                    <rdx-slider-range class="bg-primary absolute w-full rounded-full" />
                 </rdx-slider-track>
-                <rdx-slider-thumb class="SliderThumbV" />
+                <rdx-slider-thumb
+                    class="border-border bg-background focus-visible:ring-ring absolute block size-5 -translate-y-1/2 rounded-full border shadow-sm outline-none focus-visible:ring-2"
+                />
             </rdx-slider>
 
-            <rdx-slider styleClass="SliderRoot" [orientation]="'horizontal'" [modelValue]="[45]" [step]="5">
-                <rdx-slider-track class="SliderTrack">
-                    <rdx-slider-range class="SliderRange" />
+            <rdx-slider
+                styleClass="relative flex h-5 w-52 touch-none select-none items-center"
+                [orientation]="'horizontal'"
+                [modelValue]="[45]"
+                [step]="5"
+            >
+                <rdx-slider-track class="bg-muted relative h-1 grow overflow-hidden rounded-full">
+                    <rdx-slider-range class="bg-primary absolute h-full rounded-full" />
                 </rdx-slider-track>
-                <rdx-slider-thumb class="SliderThumb" />
+                <rdx-slider-thumb
+                    class="border-border bg-background focus-visible:ring-ring block size-5 rounded-full border shadow-sm outline-none focus-visible:ring-2"
+                />
             </rdx-slider>
         `
     })
@@ -97,17 +123,18 @@ export const VerticalInverted: Story = {
         props: args,
         template: html`
             <rdx-slider
-                styleClass="SliderRootV"
-                style="display: flex; height: 200px;"
+                styleClass="relative flex h-52 w-5 touch-none select-none flex-col items-center"
                 inverted
                 [orientation]="'vertical'"
                 [modelValue]="[45]"
                 [step]="5"
             >
-                <rdx-slider-track class="SliderTrackV">
-                    <rdx-slider-range class="SliderRangeV" />
+                <rdx-slider-track class="bg-muted relative w-1 grow overflow-hidden rounded-full">
+                    <rdx-slider-range class="bg-primary absolute w-full rounded-full" />
                 </rdx-slider-track>
-                <rdx-slider-thumb class="SliderThumbV" />
+                <rdx-slider-thumb
+                    class="border-border bg-background focus-visible:ring-ring absolute block size-5 -translate-y-1/2 rounded-full border shadow-sm outline-none focus-visible:ring-2"
+                />
             </rdx-slider>
         `
     })

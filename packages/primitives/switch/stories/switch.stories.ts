@@ -1,5 +1,6 @@
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { RdxLabelDirective } from '../../label';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxSwitchInputDirective } from '../src/switch-input.directive';
 import { RdxSwitchRootDirective } from '../src/switch-root.directive';
 import { RdxSwitchThumbDirective } from '../src/switch-thumb.directive';
@@ -19,64 +20,7 @@ export default {
                 SwitchReactiveForms
             ]
         }),
-        componentWrapperDecorator(
-            (story) => html`
-                <div class="radix-themes light light-theme" data-radius="medium" data-scaling="100%">
-                    ${story}
-
-                    <style>
-                        button {
-                            all: unset;
-                        }
-
-                        .SwitchRoot {
-                            width: 42px;
-                            height: 25px;
-                            background-color: var(--black-a9);
-                            border-radius: 9999px;
-                            margin-left: 15px;
-                            position: relative;
-                            box-shadow: 0 2px 10px var(--black-a7);
-                            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-                        }
-                        .SwitchRoot:focus {
-                            box-shadow: 0 0 0 2px black;
-                        }
-                        .SwitchRoot[data-state='checked'] {
-                            background-color: black;
-                        }
-                        .SwitchRoot[data-disabled='true'] {
-                            background-color: var(--black-a6);
-                            cursor: not-allowed;
-                            box-shadow: none;
-                        }
-
-                        .SwitchThumb {
-                            display: block;
-                            width: 21px;
-                            height: 21px;
-                            background-color: white;
-                            border-radius: 9999px;
-                            box-shadow: 0 2px 2px var(--black-a7);
-                            transition: transform 100ms;
-                            transform: translateX(2px);
-                            will-change: transform;
-                        }
-                        .SwitchThumb[data-state='checked'] {
-                            transform: translateX(19px);
-                        }
-
-                        .Label {
-                            color: white;
-                            font-size: 15px;
-                            line-height: 1;
-                            display: flex;
-                            align-items: center;
-                        }
-                    </style>
-                </div>
-            `
-        )
+        tailwindDemoDecorator()
     ]
 } as Meta;
 
@@ -85,10 +29,18 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: html`
-            <label class="Label" rdxLabel htmlFor="airplane-mode">
+            <label class="text-foreground flex items-center gap-3 text-sm font-medium" rdxLabel htmlFor="airplane-mode">
                 Airplane mode
-                <button class="SwitchRoot" id="airplane-mode" rdxSwitchRoot defaultChecked>
-                    <span class="SwitchThumb" rdxSwitchThumb></span>
+                <button
+                    class="bg-muted data-[state=checked]:bg-primary focus-visible:ring-ring relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-0 p-0 shadow-sm outline-none transition-colors focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    id="airplane-mode"
+                    rdxSwitchRoot
+                    defaultChecked
+                >
+                    <span
+                        class="bg-background pointer-events-none block size-5 translate-x-0.5 rounded-full shadow-sm transition-transform data-[state=checked]:translate-x-[22px]"
+                        rdxSwitchThumb
+                    ></span>
                 </button>
             </label>
         `
@@ -111,11 +63,23 @@ export const Preselection: Story = {
             config: args
         },
         template: html`
-            <label class="Label" rdxLabel htmlFor="airplane-mode-model">
+            <label
+                class="text-foreground flex items-center gap-3 text-sm font-medium"
+                rdxLabel
+                htmlFor="airplane-mode-model"
+            >
                 Airplane mode
-                <button class="SwitchRoot" id="airplane-mode-model" rdxSwitchRoot [checked]="config.checked">
+                <button
+                    class="bg-muted data-[state=checked]:bg-primary focus-visible:ring-ring relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-0 p-0 shadow-sm outline-none transition-colors focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    id="airplane-mode-model"
+                    rdxSwitchRoot
+                    [checked]="config.checked"
+                >
                     <input rdxSwitchInput />
-                    <span class="SwitchThumb" rdxSwitchThumb></span>
+                    <span
+                        class="bg-background pointer-events-none block size-5 translate-x-0.5 rounded-full shadow-sm transition-transform data-[state=checked]:translate-x-[22px]"
+                        rdxSwitchThumb
+                    ></span>
                 </button>
             </label>
         `
@@ -125,11 +89,23 @@ export const Preselection: Story = {
 export const Disabled: Story = {
     render: () => ({
         template: html`
-            <label class="Label" rdxLabel htmlFor="airplane-mode-disabled">
+            <label
+                class="text-foreground flex items-center gap-3 text-sm font-medium"
+                rdxLabel
+                htmlFor="airplane-mode-disabled"
+            >
                 Airplane mode
-                <button class="SwitchRoot" id="airplane-mode-disabled" rdxSwitchRoot disabled>
+                <button
+                    class="bg-muted data-[state=checked]:bg-primary focus-visible:ring-ring relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-0 p-0 shadow-sm outline-none transition-colors focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    id="airplane-mode-disabled"
+                    rdxSwitchRoot
+                    disabled
+                >
                     <input rdxSwitchInput />
-                    <span class="SwitchThumb" rdxSwitchThumb></span>
+                    <span
+                        class="bg-background pointer-events-none block size-5 translate-x-0.5 rounded-full shadow-sm transition-transform data-[state=checked]:translate-x-[22px]"
+                        rdxSwitchThumb
+                    ></span>
                 </button>
             </label>
         `

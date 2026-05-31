@@ -21,27 +21,27 @@ import { RdxEditableSubmitTrigger } from '../src/editable-submit-trigger';
         RdxVisuallyHiddenInputDirective
     ],
     template: `
-        <div style="width: 250px;">
+        <div class="w-[250px]">
             <div
+                class="flex flex-col gap-4"
                 #root="rdxEditableRoot"
                 rdxEditableRoot
                 placeholder="Enter text ..."
                 autoResize
                 value="Click to edit"
-                style="flex-direction: column; display: flex; gap: 1rem;"
             >
-                <div rdxEditableArea style="color: white;">
-                    <span #preview="rdxEditablePreview" rdxEditablePreview style="width: 250px;">
+                <div class="text-foreground" rdxEditableArea>
+                    <span class="inline-block w-[250px]" #preview="rdxEditablePreview" rdxEditablePreview>
                         {{ root.value() || preview.placeholder() }}
                     </span>
                     <input rdxEditableInput />
                 </div>
                 @if (!root.isEditing()) {
-                    <button class="Button" rdxEditableEditTrigger>Edit</button>
+                    <button class="Button" rdxEditableEditTrigger type="button">Edit</button>
                 } @else {
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button class="Button" rdxEditableSubmitTrigger>Submit</button>
-                        <button class="Button red" rdxEditableCancelTrigger>Cancel</button>
+                    <div class="flex gap-2">
+                        <button class="Button" rdxEditableSubmitTrigger type="button">Submit</button>
+                        <button class="Button red" rdxEditableCancelTrigger type="button">Cancel</button>
                     </div>
                 }
                 <input
@@ -58,7 +58,7 @@ import { RdxEditableSubmitTrigger } from '../src/editable-submit-trigger';
         button {
             all: unset;
         }
-        Button {
+        .Button {
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -69,23 +69,23 @@ import { RdxEditableSubmitTrigger } from '../src/editable-submit-trigger';
             padding-right: 15px;
             line-height: 35px;
             height: 35px;
-            background-color: white;
-            color: #27a65d;
+            background-color: var(--background);
+            color: var(--foreground);
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            border: 1px solid;
+            border: 1px solid var(--border);
             outline: none;
             width: max-content;
         }
         .Button:hover {
-            background-color: #fafafa;
+            background-color: var(--muted);
         }
         .Button:focus {
-            box-shadow: 0 0 0 2px black;
+            box-shadow: 0 0 0 2px var(--ring);
         }
 
         .Button.red {
-            background-color: var(--red-9);
-            color: white;
+            background-color: var(--primary);
+            color: var(--primary-foreground);
         }
     `
 })

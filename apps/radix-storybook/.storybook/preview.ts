@@ -28,6 +28,21 @@ import CompodocPlugin from './plugins/compodoc';
 CompodocPlugin.init();
 
 const preview: Preview = {
+    globalTypes: {
+        theme: {
+            description: 'Global theme for component examples',
+            toolbar: {
+                title: 'Theme',
+                icon: 'circlehollow',
+                items: [
+                    { value: 'light', title: 'Light' },
+                    { value: 'dark', title: 'Dark' }
+                ],
+                dynamicTitle: true
+            }
+        }
+    },
+
     decorators: [
         applicationConfig({
             providers: [
@@ -59,9 +74,12 @@ const preview: Preview = {
             ]
         }),
         (Story, context) => {
+            const theme = context.globals['theme'] === 'dark' ? 'dark' : 'light';
             const storyAnchor = `anchor--${context.id}`;
             const existAnchor = context.canvasElement.closest(`#${storyAnchor}`);
             const storyContainer = context.canvasElement.closest('.sbdocs');
+
+            document.documentElement.setAttribute('data-theme', theme);
 
             /**
              * Fix for https://github.com/radix-ng/primitives/issues/220
@@ -91,16 +109,6 @@ const preview: Preview = {
 
             codePanel: true
         },
-        backgrounds: {
-            options: {
-                dark: { name: 'Dark', value: '#333' },
-                light: { name: 'Light', value: '#F7F9F2' },
-                blue: {
-                    name: 'Radix',
-                    value: 'linear-gradient(330deg,color(display-p3 0.523 0.318 0.751) 0,color(display-p3 0.276 0.384 0.837) 100%)'
-                }
-            }
-        },
         options: {
             storySort: {
                 method: 'alphabetical',
@@ -110,7 +118,7 @@ const preview: Preview = {
     },
 
     initialGlobals: {
-        backgrounds: { value: 'blue' }
+        theme: 'light'
     },
 
     tags: ['autodocs']

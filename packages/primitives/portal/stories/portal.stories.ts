@@ -1,4 +1,5 @@
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxPortal } from '../src/portal';
 
 const html = String.raw;
@@ -8,7 +9,8 @@ export default {
     decorators: [
         moduleMetadata({
             imports: [RdxPortal]
-        })
+        }),
+        tailwindDemoDecorator()
     ]
 } as Meta;
 
@@ -19,26 +21,32 @@ export const Default: Story = {
         template: html`
             <section class="font-sans">
                 <div
-                    class="relative h-40 w-80 overflow-hidden rounded-lg border-2 border-dashed border-violet-500 p-4 text-white"
+                    class="border-border bg-card text-card-foreground relative h-48 w-96 overflow-hidden rounded-xl border-2 border-dashed p-5 shadow-sm"
                 >
-                    <h3 class="mb-2 font-semibold">Clipping box</h3>
-                    <p>
+                    <h3 class="text-foreground mb-2 text-sm font-semibold">Clipping box</h3>
+                    <p class="text-muted-foreground text-sm leading-6">
                         This box has
-                        <code>overflow: hidden</code>
+                        <code class="border-border bg-muted text-foreground rounded border px-1.5 py-0.5 text-xs">
+                            overflow: hidden
+                        </code>
                         . The badge is declared
                         <strong>inside</strong>
                         it, but
-                        <code>rdxPortal</code>
+                        <code class="border-border bg-muted text-foreground rounded border px-1.5 py-0.5 text-xs">
+                            rdxPortal
+                        </code>
                         moves it to
-                        <code>document.body</code>
+                        <code class="border-border bg-muted text-foreground rounded border px-1.5 py-0.5 text-xs">
+                            document.body
+                        </code>
                         , so it escapes the clipping and pins to the viewport corner.
                     </p>
 
                     <div
-                        class="fixed right-4 top-4 z-[1000] rounded-full bg-violet-500 px-4 py-2.5 font-semibold text-white shadow-lg"
+                        class="bg-primary text-primary-foreground fixed right-4 top-4 z-[1000] rounded-full px-4 py-2.5 text-sm font-semibold shadow-lg"
                         rdxPortal
                     >
-                        📦 Portaled to &lt;body&gt;
+                        Portaled to &lt;body&gt;
                     </div>
                 </div>
             </section>
@@ -49,26 +57,28 @@ export const Default: Story = {
 export const CustomContainer: Story = {
     render: () => ({
         template: html`
-            <section class="flex gap-4 font-sans">
-                <div class="min-h-[120px] flex-1 rounded-lg border-2 border-dashed border-white/40 p-4 text-white">
-                    <h3 class="mb-2 font-semibold">Source</h3>
-                    <p>The pill below is declared here…</p>
+            <section class="flex w-full max-w-3xl gap-4 font-sans">
+                <div
+                    class="border-border bg-card text-card-foreground min-h-36 flex-1 rounded-xl border-2 border-dashed p-5"
+                >
+                    <h3 class="text-foreground mb-2 text-sm font-semibold">Source</h3>
+                    <p class="text-muted-foreground text-sm leading-6">The pill below is declared here...</p>
 
                     <!-- Resolved against the document via a CSS selector -->
                     <div
-                        class="mt-3 inline-block rounded-full bg-green-500 px-3.5 py-2 font-semibold text-green-950"
+                        class="bg-primary text-primary-foreground mt-3 inline-block rounded-full px-3.5 py-2 text-sm font-semibold shadow-sm"
                         container="#portal-target"
                         rdxPortal
                     >
-                        🎯 …but rendered into the target container
+                        Rendered into the target container
                     </div>
                 </div>
 
                 <div
-                    class="min-h-[120px] flex-1 rounded-lg border-2 border-dashed border-green-500 p-4 text-white"
+                    class="border-primary bg-card text-card-foreground min-h-36 flex-1 rounded-xl border-2 border-dashed p-5"
                     id="portal-target"
                 >
-                    <h3 class="mb-2 font-semibold">Target (#portal-target)</h3>
+                    <h3 class="text-foreground mb-2 text-sm font-semibold">Target (#portal-target)</h3>
                 </div>
             </section>
         `

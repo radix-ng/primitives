@@ -1,7 +1,8 @@
-import { argsToTemplate, componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { LucideAngularModule } from 'lucide-angular';
 import { expect } from 'storybook/test';
 import { RdxLabelDirective } from '../../label';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input';
@@ -28,19 +29,7 @@ export default {
                 CheckboxPresence
             ]
         }),
-        componentWrapperDecorator(
-            (story) => html`
-                <div
-                    class="radix-themes light light-theme radix-themes-default-fonts"
-                    data-accent-color="indigo"
-                    data-gray-color="slate"
-                    data-radius="medium"
-                    data-scaling="100%"
-                >
-                    ${story}
-                </div>
-            `
-        )
+        tailwindDemoDecorator()
     ]
 } as Meta;
 
@@ -55,14 +44,25 @@ export const Default: Story = {
     render: (args) => ({
         props: args,
         template: html`
-            <div style="display: flex; align-items: center;">
+            <div class="flex items-center gap-3">
                 <div rdxCheckboxRoot ${argsToTemplate(args)} [checked]="true">
-                    <button class="CheckboxButton" id="checkbox-1" rdxCheckboxButton>
-                        <lucide-angular class="CheckboxIndicator" rdxCheckboxIndicator size="16" name="check" />
+                    <button
+                        class="border-border bg-background focus-visible:ring-ring flex size-6 items-center justify-center rounded-md border shadow-sm outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        id="checkbox-1"
+                        rdxCheckboxButton
+                    >
+                        <lucide-angular
+                            class="text-primary flex items-center data-[state=unchecked]:hidden"
+                            rdxCheckboxIndicator
+                            size="16"
+                            name="check"
+                        />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
-                <label class="Label" rdxLabel htmlFor="checkbox-1">Accept terms and conditions.</label>
+                <label class="text-foreground flex items-center text-sm font-medium" rdxLabel htmlFor="checkbox-1">
+                    Accept terms and conditions.
+                </label>
             </div>
         `
     }),

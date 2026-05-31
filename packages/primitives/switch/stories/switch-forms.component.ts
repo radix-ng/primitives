@@ -14,20 +14,42 @@ import { RdxSwitchThumbDirective } from '../src/switch-thumb.directive';
         RdxSwitchInputDirective,
         RdxSwitchThumbDirective
     ],
-    styleUrl: './switch.styles.css',
     template: `
-        <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-            <label class="Label" rdxLabel htmlFor="airplane-mode-form">
+        <form class="space-y-3" [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+            <label
+                class="text-foreground flex items-center gap-3 text-sm font-medium"
+                rdxLabel
+                htmlFor="airplane-mode-form"
+            >
                 Airplane mode
-                <button class="SwitchRoot" id="airplane-mode-form" formControlName="policy" rdxSwitchRoot>
+                <button
+                    class="bg-muted data-[state=checked]:bg-primary focus-visible:ring-ring relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-0 p-0 shadow-sm outline-none transition-colors focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    id="airplane-mode-form"
+                    formControlName="policy"
+                    rdxSwitchRoot
+                >
                     <input rdxSwitchInput />
-                    <span class="SwitchThumb" rdxSwitchThumb></span>
+                    <span
+                        class="bg-background pointer-events-none block size-5 translate-x-0.5 rounded-full shadow-sm transition-transform data-[state=checked]:translate-x-[22px]"
+                        rdxSwitchThumb
+                    ></span>
                 </button>
             </label>
-            <button class="Button violet" style="margin-top: 8px;" type="submit">Submit</button>
+            <button
+                class="bg-primary text-primary-foreground focus-visible:ring-ring inline-flex h-9 items-center rounded-md px-3 text-sm font-medium shadow-sm outline-none focus-visible:ring-2"
+                type="submit"
+            >
+                Submit
+            </button>
         </form>
-        <p>
-            <button class="Button violet" (click)="setValue()">Set preset value</button>
+        <p class="mt-3">
+            <button
+                class="border-border bg-background text-foreground focus-visible:ring-ring inline-flex h-9 items-center rounded-md border px-3 text-sm font-medium shadow-sm outline-none focus-visible:ring-2"
+                (click)="setValue()"
+                type="button"
+            >
+                Set preset value
+            </button>
         </p>
     `
 })

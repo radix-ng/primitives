@@ -1,5 +1,6 @@
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { LucideAngularModule } from 'lucide-angular';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxToggleGroupItemDirective } from '../src/toggle-group-item.directive';
 import { RdxToggleGroupDirective } from '../src/toggle-group.directive';
 import { ToggleGroup } from './toggle-group';
@@ -12,62 +13,7 @@ export default {
         moduleMetadata({
             imports: [RdxToggleGroupDirective, RdxToggleGroupItemDirective, LucideAngularModule, ToggleGroup]
         }),
-        componentWrapperDecorator(
-            (story) => html`
-                <div class="radix-themes light light-theme" data-radius="medium" data-scaling="100%">
-                    ${story}
-
-                    <style>
-                        button {
-                            all: unset;
-                        }
-                        .ToggleGroup {
-                            display: inline-flex;
-                            background-color: var(--mauve-6);
-                            border-radius: 4px;
-                            box-shadow: 0 2px 10px var(--black-a7);
-                        }
-
-                        .ToggleGroupItem {
-                            background-color: white;
-                            color: var(--mauve-11);
-                            height: 35px;
-                            width: 35px;
-                            display: flex;
-                            font-size: 15px;
-                            line-height: 1;
-                            align-items: center;
-                            justify-content: center;
-                            margin-left: 1px;
-                        }
-                        .ToggleGroupItem[disabled] {
-                            cursor: not-allowed;
-                            opacity: 0.5;
-                        }
-                        .ToggleGroupItem:first-child {
-                            margin-left: 0;
-                            border-top-left-radius: 4px;
-                            border-bottom-left-radius: 4px;
-                        }
-                        .ToggleGroupItem:last-child {
-                            border-top-right-radius: 4px;
-                            border-bottom-right-radius: 4px;
-                        }
-                        .ToggleGroupItem:hover {
-                            background-color: var(--violet-3);
-                        }
-                        .ToggleGroupItem[data-state='on'] {
-                            background-color: var(--violet-5);
-                            color: var(--violet-11);
-                        }
-                        .ToggleGroupItem:focus {
-                            position: relative;
-                            box-shadow: 0 0 0 2px black;
-                        }
-                    </style>
-                </div>
-            `
-        )
+        tailwindDemoDecorator()
     ]
 } as Meta;
 
@@ -76,15 +22,38 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: html`
-            <div class="ToggleGroup" rdxToggleGroup value="center" aria-label="Text alignment">
-                <button class="ToggleGroupItem" rdxToggleGroupItem value="left" aria-label="Left aligned">
-                    <lucide-icon name="align-left" size="12"></lucide-icon>
+            <div
+                class="border-border bg-muted inline-flex rounded-md border shadow-sm"
+                rdxToggleGroup
+                value="center"
+                aria-label="Text alignment"
+            >
+                <button
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    rdxToggleGroupItem
+                    value="left"
+                    aria-label="Left aligned"
+                    type="button"
+                >
+                    <lucide-icon class="flex" name="align-left" size="12"></lucide-icon>
                 </button>
-                <button class="ToggleGroupItem" rdxToggleGroupItem value="center" aria-label="Center aligned">
-                    <lucide-icon name="align-center" size="12"></lucide-icon>
+                <button
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    rdxToggleGroupItem
+                    value="center"
+                    aria-label="Center aligned"
+                    type="button"
+                >
+                    <lucide-icon class="flex" name="align-center" size="12"></lucide-icon>
                 </button>
-                <button class="ToggleGroupItem" rdxToggleGroupItem value="right" aria-label="Right aligned">
-                    <lucide-icon name="align-right" size="12"></lucide-icon>
+                <button
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    rdxToggleGroupItem
+                    value="right"
+                    aria-label="Right aligned"
+                    type="button"
+                >
+                    <lucide-icon class="flex" name="align-right" size="12"></lucide-icon>
                 </button>
             </div>
         `
@@ -98,20 +67,38 @@ export const Multiple: Story = {
         },
         template: html`
             <div
-                class="ToggleGroup"
+                class="border-border bg-muted inline-flex rounded-md border shadow-sm"
                 rdxToggleGroup
                 type="multiple"
                 [value]="selectedValues"
                 aria-label="Text alignment"
             >
-                <button class="ToggleGroupItem" rdxToggleGroupItem value="left" aria-label="Left aligned">
-                    <lucide-icon name="align-left" size="12"></lucide-icon>
+                <button
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    rdxToggleGroupItem
+                    value="left"
+                    aria-label="Left aligned"
+                    type="button"
+                >
+                    <lucide-icon class="flex" name="align-left" size="12"></lucide-icon>
                 </button>
-                <button class="ToggleGroupItem" rdxToggleGroupItem value="center" aria-label="Center aligned">
-                    <lucide-icon name="align-center" size="12"></lucide-icon>
+                <button
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    rdxToggleGroupItem
+                    value="center"
+                    aria-label="Center aligned"
+                    type="button"
+                >
+                    <lucide-icon class="flex" name="align-center" size="12"></lucide-icon>
                 </button>
-                <button class="ToggleGroupItem" rdxToggleGroupItem value="right" aria-label="Right aligned">
-                    <lucide-icon name="align-right" size="12"></lucide-icon>
+                <button
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    rdxToggleGroupItem
+                    value="right"
+                    aria-label="Right aligned"
+                    type="button"
+                >
+                    <lucide-icon class="flex" name="align-right" size="12"></lucide-icon>
                 </button>
             </div>
         `
@@ -125,20 +112,40 @@ export const Disable: Story = {
         },
         template: html`
             <div
-                class="ToggleGroup"
+                class="border-border bg-muted inline-flex rounded-md border shadow-sm"
                 rdxToggleGroup
                 type="multiple"
                 [value]="selectedValues"
                 aria-label="Text alignment"
             >
-                <button class="ToggleGroupItem" disabled rdxToggleGroupItem value="left" aria-label="Left aligned">
-                    <lucide-icon name="align-left" size="12"></lucide-icon>
+                <button
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    disabled
+                    rdxToggleGroupItem
+                    value="left"
+                    aria-label="Left aligned"
+                    type="button"
+                >
+                    <lucide-icon class="flex" name="align-left" size="12"></lucide-icon>
                 </button>
-                <button class="ToggleGroupItem" rdxToggleGroupItem value="center" aria-label="Center aligned">
-                    <lucide-icon name="align-center" size="12"></lucide-icon>
+                <button
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    rdxToggleGroupItem
+                    value="center"
+                    aria-label="Center aligned"
+                    type="button"
+                >
+                    <lucide-icon class="flex" name="align-center" size="12"></lucide-icon>
                 </button>
-                <button class="ToggleGroupItem" disabled rdxToggleGroupItem value="right" aria-label="Right aligned">
-                    <lucide-icon name="align-right" size="12"></lucide-icon>
+                <button
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    disabled
+                    rdxToggleGroupItem
+                    value="right"
+                    aria-label="Right aligned"
+                    type="button"
+                >
+                    <lucide-icon class="flex" name="align-right" size="12"></lucide-icon>
                 </button>
             </div>
         `
@@ -148,15 +155,38 @@ export const Disable: Story = {
 export const DisableGroup: Story = {
     render: () => ({
         template: html`
-            <div class="ToggleGroup" rdxToggleGroup aria-label="Text alignment" disabled>
-                <button class="ToggleGroupItem" rdxToggleGroupItem value="left" aria-label="Left aligned">
-                    <lucide-icon name="align-left" size="12"></lucide-icon>
+            <div
+                class="border-border bg-muted inline-flex rounded-md border shadow-sm"
+                rdxToggleGroup
+                aria-label="Text alignment"
+                disabled
+            >
+                <button
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    rdxToggleGroupItem
+                    value="left"
+                    aria-label="Left aligned"
+                    type="button"
+                >
+                    <lucide-icon class="flex" name="align-left" size="12"></lucide-icon>
                 </button>
-                <button class="ToggleGroupItem" rdxToggleGroupItem value="center" aria-label="Center aligned">
-                    <lucide-icon name="align-center" size="12"></lucide-icon>
+                <button
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    rdxToggleGroupItem
+                    value="center"
+                    aria-label="Center aligned"
+                    type="button"
+                >
+                    <lucide-icon class="flex" name="align-center" size="12"></lucide-icon>
                 </button>
-                <button class="ToggleGroupItem" rdxToggleGroupItem value="right" aria-label="Right aligned">
-                    <lucide-icon name="align-right" size="12"></lucide-icon>
+                <button
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    rdxToggleGroupItem
+                    value="right"
+                    aria-label="Right aligned"
+                    type="button"
+                >
+                    <lucide-icon class="flex" name="align-right" size="12"></lucide-icon>
                 </button>
             </div>
         `

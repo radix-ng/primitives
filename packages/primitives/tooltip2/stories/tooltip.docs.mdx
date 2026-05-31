@@ -1,26 +1,19 @@
-import { Primary, Controls, Meta } from '@storybook/addon-docs/blocks';
+import { Canvas, Controls, Meta } from '@storybook/addon-docs/blocks';
 import * as Stories from './tooltip.stories';
 
-<Meta title="Primitives/Tooltip2" of={Stories}/>
+<Meta title="Primitives/Tooltip2" of={Stories} />
 
 # Tooltip2
 
-<Primary />
+#### Displays contextual information when a trigger is hovered or focused.
+
+Tooltip2 composes Popper, Portal, Presence, and Dismissable Layer. It manages visibility and pointer grace areas while
+leaving visual styling to the consumer.
+
+<Canvas of={Stories.Default} />
 <Controls />
 
-```html
-<ng-container rdxTooltip>
-    <button class="IconButton" rdxTooltipTrigger>+</button>
-
-    <ng-template rdxTooltipContent>
-        <div class="TooltipContent" rdxTooltipContentAttributes>
-            <button class="TooltipClose" rdxTooltipClose aria-label="Close">X</button>
-            Tooltip Content
-            <div class="TooltipArrow" rdxTooltipArrow></div>
-        </div>
-    </ng-template>
-</ng-container>
-```
+## Anatomy
 
 ```html
 <ng-container rdxTooltip>
@@ -37,7 +30,18 @@ import * as Stories from './tooltip.stories';
 </ng-container>
 ```
 
-### What`s changes between Tooltip and Tooltip2
+`rdxTooltipContentWrapper` owns positioning. Apply visual styles and read `data-side` or `data-align` from the inner
+`rdxTooltipContent` element.
 
+## Moving Anchors
 
+Tooltip2 uses `updatePositionStrategy="always"` by default so that it can follow moving triggers. Keep that strategy
+when the trigger moves continuously through a CSS transform, animation, pointer tracking, or slider dragging.
 
+<Canvas sourceState="hidden" of={Stories.Slider} />
+
+```html
+<div updatePositionStrategy="always" rdxTooltipContentWrapper>
+    <div rdxTooltipContent>Content that follows a moving trigger</div>
+</div>
+```

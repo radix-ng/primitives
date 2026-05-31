@@ -1,4 +1,5 @@
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import {
     NumberField,
     NumberFieldCurrency,
@@ -15,18 +16,7 @@ export default {
         moduleMetadata({
             imports: [NumberField, NumberFieldDecimal, NumberFieldPercentage, NumberFieldCurrency, NumberFieldUnits]
         }),
-        componentWrapperDecorator(
-            (story) => html`
-                <div
-                    class="radix-themes light light-theme radix-themes-default-fonts"
-                    data-accent-color="indigo"
-                    data-radius="medium"
-                    data-scaling="100%"
-                >
-                    ${story}
-                </div>
-            `
-        )
+        tailwindDemoDecorator()
     ]
 } as Meta;
 
@@ -35,7 +25,7 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: html`
-            <app-number-field style="display: flex;" />
+            <app-number-field class="flex" />
         `
     })
 };
@@ -43,7 +33,7 @@ export const Default: Story = {
 export const Decimal: Story = {
     render: () => ({
         template: html`
-            <app-number-field-decimal style="display: flex;" />
+            <app-number-field-decimal class="flex" />
         `
     })
 };
@@ -51,7 +41,7 @@ export const Decimal: Story = {
 export const Percentage: Story = {
     render: () => ({
         template: html`
-            <app-number-field-percentage style="display: flex;" />
+            <app-number-field-percentage class="flex" />
         `
     })
 };
@@ -59,7 +49,7 @@ export const Percentage: Story = {
 export const Currency: Story = {
     render: () => ({
         template: html`
-            <app-number-field-currency style="display: flex;" />
+            <app-number-field-currency class="flex" />
         `
     })
 };
@@ -67,7 +57,7 @@ export const Currency: Story = {
 export const Units: Story = {
     render: () => ({
         template: html`
-            <app-number-field-units style="display: flex;" />
+            <app-number-field-units class="flex" />
         `
     })
 };

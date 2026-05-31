@@ -8,29 +8,40 @@ import { RdxRadioItemInputDirective } from '../src/radio-item-input.directive';
     selector: 'radio-groups-forms-example',
     template: `
         <div
-            class="RadioGroupRoot"
+            class="flex flex-col gap-2.5"
             [(ngModel)]="hotelRoom"
             orientation="vertical"
             rdxRadioRoot
             aria-label="View density"
         >
             @for (room of rooms; track $index) {
-                <div class="RadioGroup">
-                    <button class="RadioGroupItem" [value]="room" [id]="room" rdxRadioItem>
-                        <div class="RadioGroupIndicator" rdxRadioIndicator></div>
-                        <input class="Input" rdxRadioItemInput feature="fully-hidden" />
+                <div class="flex items-center gap-3">
+                    <button
+                        class="border-border bg-background hover:bg-muted focus-visible:ring-ring flex size-6 items-center justify-center rounded-full border shadow-sm outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        [value]="room"
+                        [id]="room"
+                        rdxRadioItem
+                    >
+                        <div
+                            class="after:bg-primary flex size-full items-center justify-center after:block after:size-2.5 after:rounded-full data-[state=unchecked]:hidden"
+                            rdxRadioIndicator
+                        ></div>
+                        <input
+                            class="pointer-events-none absolute m-0 size-6 -translate-x-full opacity-0"
+                            rdxRadioItemInput
+                            feature="fully-hidden"
+                        />
                     </button>
-                    <label class="Label" [htmlFor]="room" rdxLabel>
+                    <label class="text-foreground text-sm font-medium" [htmlFor]="room" rdxLabel>
                         {{ room }}
                     </label>
                 </div>
             }
         </div>
-        <p>
+        <p class="text-muted-foreground mt-3 text-sm">
             <span>Your room is: {{ hotelRoom }}</span>
         </p>
     `,
-    styleUrl: 'radio-group.styles.css',
     imports: [
         FormsModule,
         RdxLabelDirective,

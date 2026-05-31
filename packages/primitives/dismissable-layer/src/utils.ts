@@ -91,6 +91,9 @@ export class RdxFocusOutside {
                     return;
                 }
 
+                // Defer past the focus settling: the first microtask lets the matching capture
+                // `focus`/`blur` handler update `isFocusInsideDOMTree`, the second lets the browser
+                // finish moving focus, so the check below reflects the final focus target.
                 await Promise.resolve();
                 await Promise.resolve();
 
@@ -161,7 +164,7 @@ export class RdxPointerDownOutside {
     private readonly handleAndDispatchPointerDownOutsideEvent = (e: PointerEvent) => () =>
         this.pointerDownOutside.emit(e);
 
-    private handleClick: () => void | undefined;
+    private handleClick?: () => void;
 
     constructor() {
         effect((onCleanup) => {
@@ -170,6 +173,16 @@ export class RdxPointerDownOutside {
             }
 
             const ownerDocument = this.elementRef.nativeElement.ownerDocument ?? globalThis.document;
+            // Avoid the global `window` so this stays safe under SSR; `globalThis` provides
+            // `setTimeout`/`clearTimeout` in both the browser and Node.
+            const ownerWindow = ownerDocument.defaultView ?? globalThis;
+
+            const removeClickListener = () => {
+                if (this.handleClick) {
+                    ownerDocument.removeEventListener('click', this.handleClick);
+                    this.handleClick = undefined;
+                }
+            };
 
             const handlePointerDown = async (event: PointerEvent) => {
                 if (event.target && !this.isPointerInsideDOMTree()) {
@@ -186,7 +199,7 @@ export class RdxPointerDownOutside {
                      * certain that it was raised, and therefore cleaned-up.
                      */
                     if (event.pointerType === 'touch') {
-                        ownerDocument.removeEventListener('click', this.handleClick);
+                        removeClickListener();
                         this.handleClick = this.handleAndDispatchPointerDownOutsideEvent(event);
                         ownerDocument.addEventListener('click', this.handleClick, {
                             once: true
@@ -197,7 +210,7 @@ export class RdxPointerDownOutside {
                 } else {
                     // We need to remove the event listener in case the outside click has been canceled.
                     // See: https://github.com/radix-ui/primitives/issues/2171
-                    ownerDocument.removeEventListener('click', this.handleClick);
+                    removeClickListener();
                 }
                 this.isPointerInsideDOMTree.set(false);
             };
@@ -214,7 +227,7 @@ export class RdxPointerDownOutside {
              *   })
              * });
              */
-            const timerId = window.setTimeout(() => {
+            const timerId = ownerWindow.setTimeout(() => {
                 ownerDocument.addEventListener('pointerdown', handlePointerDown);
             }, 0);
 
@@ -228,9 +241,9 @@ export class RdxPointerDownOutside {
             this.elementRef.nativeElement.addEventListener('pointerdown', onPointerDownCapture, { capture: true });
 
             onCleanup(() => {
-                window.clearTimeout(timerId);
+                ownerWindow.clearTimeout(timerId);
                 ownerDocument.removeEventListener('pointerdown', handlePointerDown);
-                ownerDocument.removeEventListener('click', this.handleClick);
+                removeClickListener();
                 this.elementRef.nativeElement.removeEventListener('pointerdown', onPointerDownCapture, {
                     capture: true
                 });
@@ -249,22 +262,24 @@ export class RdxEscapeKeyDown {
 
     readonly escapeKeyDown = output<KeyboardEvent>();
 
-    private readonly afterNextRender = afterNextRender(() => {
-        const ownerDocument = this.elementRef.nativeElement.ownerDocument ?? globalThis.document;
-        const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') {
-                this.escapeKeyDown.emit(event);
-            }
-        };
+    constructor() {
+        afterNextRender(() => {
+            const ownerDocument = this.elementRef.nativeElement.ownerDocument ?? globalThis.document;
+            const handleKeyDown = (event: KeyboardEvent) => {
+                if (event.key === 'Escape') {
+                    this.escapeKeyDown.emit(event);
+                }
+            };
 
-        ownerDocument.addEventListener('keydown', handleKeyDown, {
-            capture: true
-        });
-
-        this.destroyRef.onDestroy(() =>
-            ownerDocument.removeEventListener('keydown', handleKeyDown, {
+            ownerDocument.addEventListener('keydown', handleKeyDown, {
                 capture: true
-            })
-        );
-    });
+            });
+
+            this.destroyRef.onDestroy(() =>
+                ownerDocument.removeEventListener('keydown', handleKeyDown, {
+                    capture: true
+                })
+            );
+        });
+    }
 }

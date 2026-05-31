@@ -1,6 +1,7 @@
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { RdxLabelDirective } from '../../label';
 import { RdxRovingFocusGroupDirective, RdxRovingFocusItemDirective } from '../../roving-focus';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxRadioIndicatorDirective } from '../src/radio-indicator.directive';
 import { RdxRadioItemInputDirective } from '../src/radio-item-input.directive';
 import { RdxRadioItemDirective } from '../src/radio-item.directive';
@@ -24,86 +25,7 @@ export default {
                 RadioGroupComponent
             ]
         }),
-        componentWrapperDecorator(
-            (story) => html`
-                <div class="radix-themes light light-theme" data-radius="medium" data-scaling="100%">${story}</div>
-
-                <style>
-                    /* reset */
-                    button {
-                        all: unset;
-                    }
-
-                    .RadioGroupRoot {
-                        display: flex;
-                        flex-direction: column;
-                        gap: 10px;
-                    }
-
-                    .RadioGroupItem {
-                        background-color: white;
-                        width: 25px;
-                        height: 25px;
-                        border-radius: 100%;
-                        box-shadow: 0 2px 10px var(--black-a7);
-                    }
-                    .RadioGroupItem:hover {
-                        background-color: var(--violet-3);
-                    }
-                    .RadioGroupItem:focus {
-                        box-shadow: 0 0 0 2px black;
-                    }
-
-                    .RadioGroupItem:disabled {
-                        background-color: var(--gray-4);
-                        box-shadow: none;
-                        cursor: not-allowed;
-                    }
-
-                    .RadioGroupItem:disabled:hover {
-                        background-color: var(--gray-4);
-                    }
-
-                    .RadioGroupIndicator {
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        width: 100%;
-                        height: 100%;
-                        position: relative;
-                    }
-                    .RadioGroupIndicator::after {
-                        content: '';
-                        display: block;
-                        width: 11px;
-                        height: 11px;
-                        border-radius: 50%;
-                        background-color: var(--violet-11);
-                    }
-
-                    .RadioGroupIndicator[data-state='unchecked'] {
-                        display: none;
-                    }
-
-                    .Input {
-                        transform: translateX(-100%);
-                        position: absolute;
-                        pointer-events: none;
-                        opacity: 0;
-                        margin: 0;
-                        width: 25px;
-                        height: 25px;
-                    }
-
-                    .Label {
-                        color: white;
-                        font-size: 15px;
-                        line-height: 1;
-                        padding-left: 15px;
-                    }
-                </style>
-            `
-        )
+        tailwindDemoDecorator()
     ]
 } as Meta;
 
@@ -113,27 +35,64 @@ export const Default: Story = {
     render: () => ({
         template: html`
             <form>
-                <div class="RadioGroupRoot" rdxRadioRoot orientation="vertical" aria-label="View density">
-                    <div style="display: flex; align-items: center;">
-                        <button class="RadioGroupItem" id="r1" rdxRadioItem value="default">
-                            <div class="RadioGroupIndicator" rdxRadioIndicator></div>
-                            <input class="Input" rdxRadioItemInput feature="fully-hidden" />
+                <div class="flex flex-col gap-2.5" rdxRadioRoot orientation="vertical" aria-label="View density">
+                    <div class="flex items-center gap-3">
+                        <button
+                            class="border-border bg-background hover:bg-muted focus-visible:ring-ring flex size-6 items-center justify-center rounded-full border shadow-sm outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            id="r1"
+                            rdxRadioItem
+                            value="default"
+                        >
+                            <div
+                                class="after:bg-primary flex size-full items-center justify-center after:block after:size-2.5 after:rounded-full data-[state=unchecked]:hidden"
+                                rdxRadioIndicator
+                            ></div>
+                            <input
+                                class="pointer-events-none absolute m-0 size-6 -translate-x-full opacity-0"
+                                rdxRadioItemInput
+                                feature="fully-hidden"
+                            />
                         </button>
-                        <label class="Label" rdxLabel htmlFor="r1">Default</label>
+                        <label class="text-foreground text-sm font-medium" rdxLabel htmlFor="r1">Default</label>
                     </div>
-                    <div style="display: flex; align-items: center;">
-                        <button class="RadioGroupItem" id="r2" rdxRadioItem [required]="true" value="comfortable">
-                            <div class="RadioGroupIndicator" rdxRadioIndicator></div>
-                            <input class="Input" rdxRadioItemInput feature="fully-hidden" />
+                    <div class="flex items-center gap-3">
+                        <button
+                            class="border-border bg-background hover:bg-muted focus-visible:ring-ring flex size-6 items-center justify-center rounded-full border shadow-sm outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            id="r2"
+                            rdxRadioItem
+                            [required]="true"
+                            value="comfortable"
+                        >
+                            <div
+                                class="after:bg-primary flex size-full items-center justify-center after:block after:size-2.5 after:rounded-full data-[state=unchecked]:hidden"
+                                rdxRadioIndicator
+                            ></div>
+                            <input
+                                class="pointer-events-none absolute m-0 size-6 -translate-x-full opacity-0"
+                                rdxRadioItemInput
+                                feature="fully-hidden"
+                            />
                         </button>
-                        <label class="Label" rdxLabel htmlFor="r2">Comfortable</label>
+                        <label class="text-foreground text-sm font-medium" rdxLabel htmlFor="r2">Comfortable</label>
                     </div>
-                    <div style="display: flex; align-items: center;">
-                        <button class="RadioGroupItem" id="r3" rdxRadioItem value="compact">
-                            <div class="RadioGroupIndicator" rdxRadioIndicator></div>
-                            <input class="Input" rdxRadioItemInput feature="fully-hidden" />
+                    <div class="flex items-center gap-3">
+                        <button
+                            class="border-border bg-background hover:bg-muted focus-visible:ring-ring flex size-6 items-center justify-center rounded-full border shadow-sm outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            id="r3"
+                            rdxRadioItem
+                            value="compact"
+                        >
+                            <div
+                                class="after:bg-primary flex size-full items-center justify-center after:block after:size-2.5 after:rounded-full data-[state=unchecked]:hidden"
+                                rdxRadioIndicator
+                            ></div>
+                            <input
+                                class="pointer-events-none absolute m-0 size-6 -translate-x-full opacity-0"
+                                rdxRadioItemInput
+                                feature="fully-hidden"
+                            />
                         </button>
-                        <label class="Label" rdxLabel htmlFor="r3">Compact</label>
+                        <label class="text-foreground text-sm font-medium" rdxLabel htmlFor="r3">Compact</label>
                     </div>
                 </div>
             </form>
@@ -151,33 +110,70 @@ export const DisabledGroup: Story = {
     render: () => ({
         template: html`
             <div
-                class="RadioGroupRoot"
+                class="flex flex-col gap-2.5"
                 rdxRadioRoot
                 [value]="'comfortable'"
                 disabled
                 orientation="vertical"
                 aria-label="View density"
             >
-                <div style="display: flex; align-items: center;">
-                    <button class="RadioGroupItem" id="r1" rdxRadioItem value="default">
-                        <div class="RadioGroupIndicator" rdxRadioIndicator></div>
-                        <input class="Input" rdxRadioItemInput feature="fully-hidden" />
+                <div class="flex items-center gap-3">
+                    <button
+                        class="border-border bg-background hover:bg-muted focus-visible:ring-ring flex size-6 items-center justify-center rounded-full border shadow-sm outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        id="r1"
+                        rdxRadioItem
+                        value="default"
+                    >
+                        <div
+                            class="after:bg-primary flex size-full items-center justify-center after:block after:size-2.5 after:rounded-full data-[state=unchecked]:hidden"
+                            rdxRadioIndicator
+                        ></div>
+                        <input
+                            class="pointer-events-none absolute m-0 size-6 -translate-x-full opacity-0"
+                            rdxRadioItemInput
+                            feature="fully-hidden"
+                        />
                     </button>
-                    <label class="Label" rdxLabel htmlFor="r1">Default</label>
+                    <label class="text-foreground text-sm font-medium" rdxLabel htmlFor="r1">Default</label>
                 </div>
-                <div style="display: flex; align-items: center;">
-                    <button class="RadioGroupItem" id="r2" rdxRadioItem [required]="true" value="comfortable">
-                        <div class="RadioGroupIndicator" rdxRadioIndicator></div>
-                        <input class="Input" rdxRadioItemInput feature="fully-hidden" />
+                <div class="flex items-center gap-3">
+                    <button
+                        class="border-border bg-background hover:bg-muted focus-visible:ring-ring flex size-6 items-center justify-center rounded-full border shadow-sm outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        id="r2"
+                        rdxRadioItem
+                        [required]="true"
+                        value="comfortable"
+                    >
+                        <div
+                            class="after:bg-primary flex size-full items-center justify-center after:block after:size-2.5 after:rounded-full data-[state=unchecked]:hidden"
+                            rdxRadioIndicator
+                        ></div>
+                        <input
+                            class="pointer-events-none absolute m-0 size-6 -translate-x-full opacity-0"
+                            rdxRadioItemInput
+                            feature="fully-hidden"
+                        />
                     </button>
-                    <label class="Label" rdxLabel htmlFor="r2">Comfortable</label>
+                    <label class="text-foreground text-sm font-medium" rdxLabel htmlFor="r2">Comfortable</label>
                 </div>
-                <div style="display: flex; align-items: center;">
-                    <button class="RadioGroupItem" id="r3" rdxRadioItem value="compact">
-                        <div class="RadioGroupIndicator" rdxRadioIndicator></div>
-                        <input class="Input" rdxRadioItemInput feature="fully-hidden" />
+                <div class="flex items-center gap-3">
+                    <button
+                        class="border-border bg-background hover:bg-muted focus-visible:ring-ring flex size-6 items-center justify-center rounded-full border shadow-sm outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        id="r3"
+                        rdxRadioItem
+                        value="compact"
+                    >
+                        <div
+                            class="after:bg-primary flex size-full items-center justify-center after:block after:size-2.5 after:rounded-full data-[state=unchecked]:hidden"
+                            rdxRadioIndicator
+                        ></div>
+                        <input
+                            class="pointer-events-none absolute m-0 size-6 -translate-x-full opacity-0"
+                            rdxRadioItemInput
+                            feature="fully-hidden"
+                        />
                     </button>
-                    <label class="Label" rdxLabel htmlFor="r3">Compact</label>
+                    <label class="text-foreground text-sm font-medium" rdxLabel htmlFor="r3">Compact</label>
                 </div>
             </div>
         `

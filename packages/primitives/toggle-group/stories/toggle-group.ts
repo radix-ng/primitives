@@ -5,22 +5,36 @@ import { LucideAngularModule } from 'lucide-angular';
 @Component({
     selector: 'toggle-group',
     imports: [RdxToggleGroupDirective, RdxToggleGroupItemDirective, LucideAngularModule],
-    styleUrl: 'toggle.styles.css',
     template: `
         <div
-            class="ToggleGroup"
+            class="border-border bg-muted inline-flex rounded-md border shadow-sm"
             [value]="align()"
             (onValueChange)="setAlign($event)"
             rdxToggleGroup
             aria-label="Text alignment"
         >
-            <button class="ToggleGroupItem" rdxToggleGroupItem value="left" aria-label="Left aligned">
+            <button
+                class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-l-md border border-transparent outline-none transition-[color,box-shadow] focus-visible:z-10 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                rdxToggleGroupItem
+                value="left"
+                aria-label="Left aligned"
+            >
                 <lucide-icon name="align-left" size="12" />
             </button>
-            <button class="ToggleGroupItem" rdxToggleGroupItem value="center" aria-label="Center aligned">
+            <button
+                class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 cursor-pointer items-center justify-center border border-transparent outline-none transition-[color,box-shadow] focus-visible:z-10 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                rdxToggleGroupItem
+                value="center"
+                aria-label="Center aligned"
+            >
                 <lucide-icon name="align-center" size="12" />
             </button>
-            <button class="ToggleGroupItem" rdxToggleGroupItem value="right" aria-label="Right aligned">
+            <button
+                class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-r-md border border-transparent outline-none transition-[color,box-shadow] focus-visible:z-10 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                rdxToggleGroupItem
+                value="right"
+                aria-label="Right aligned"
+            >
                 <lucide-icon name="align-right" size="12" />
             </button>
         </div>

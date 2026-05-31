@@ -44,6 +44,12 @@ export function ngAdd(): Rule {
                 type: NodeDependencyType.Default,
                 version: pkg.peerDependencies['@angular/cdk'],
                 overwrite: false
+            },
+            {
+                name: '@floating-ui/dom',
+                type: NodeDependencyType.Default,
+                version: pkg.peerDependencies['@floating-ui/dom'],
+                overwrite: false
             }
         ];
 

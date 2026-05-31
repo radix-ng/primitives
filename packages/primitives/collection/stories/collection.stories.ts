@@ -1,4 +1,5 @@
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { List } from './collection';
 
 const html = String.raw;
@@ -9,18 +10,7 @@ export default {
         moduleMetadata({
             imports: [List]
         }),
-        componentWrapperDecorator(
-            (story) => html`
-                <div
-                    class="radix-themes light light-theme radix-themes-default-fonts"
-                    data-accent-color="indigo"
-                    data-radius="medium"
-                    data-scaling="100%"
-                >
-                    ${story}
-                </div>
-            `
-        )
+        tailwindDemoDecorator()
     ]
 } as Meta;
 

@@ -6,10 +6,15 @@ import { RdxToggleDirective } from '../src/toggle.directive';
 @Component({
     selector: 'toggle-reactive-forms',
     imports: [ReactiveFormsModule, RdxToggleDirective, RdxToggleVisuallyHiddenInputDirective],
-    styleUrl: 'toggle.styles.css',
     template: `
         <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-            <button class="Toggle" #toggle="rdxToggle" formControlName="pressed" rdxToggle aria-label="Toggle bold">
+            <button
+                class="border-border bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                #toggle="rdxToggle"
+                formControlName="pressed"
+                rdxToggle
+                aria-label="Toggle bold"
+            >
                 <input
                     [name]="'toggleDef'"
                     [value]="toggle.pressed() ? 'on' : 'off'"
@@ -23,7 +28,12 @@ import { RdxToggleDirective } from '../src/toggle.directive';
                 }
             </button>
 
-            <button class="Button violet" style="margin-top: 8px;" type="submit">Submit</button>
+            <button
+                class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 mt-2 inline-flex h-9 cursor-pointer items-center justify-center rounded-md border px-4 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                type="submit"
+            >
+                Submit
+            </button>
         </form>
     `
 })

@@ -1,4 +1,5 @@
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxAccordionContentDirective } from '../src/accordion-content.directive';
 import { RdxAccordionHeaderDirective } from '../src/accordion-header.directive';
 import { RdxAccordionItemDirective } from '../src/accordion-item.directive';
@@ -33,18 +34,7 @@ export default {
                 AccordionCollapsibleArrayStory
             ]
         }),
-        componentWrapperDecorator(
-            (story) => html`
-                <div
-                    class="radix-themes light light-theme radix-themes-default-fonts"
-                    data-accent-color="indigo"
-                    data-radius="medium"
-                    data-scaling="100%"
-                >
-                    ${story}
-                </div>
-            `
-        )
+        tailwindDemoDecorator()
     ]
 } as Meta;
 

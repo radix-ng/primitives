@@ -13,91 +13,49 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
         LucideAngularModule
     ],
     styles: `
-        button {
-            all: unset;
-        }
-
         .expanded {
-            height: 100%;
+            max-height: 12rem;
             opacity: 1;
-            transition: 600ms cubic-bezier(0.37, 1.04, 0.68, 0.98);
+            transition:
+                max-height 600ms cubic-bezier(0.37, 1.04, 0.68, 0.98),
+                opacity 600ms cubic-bezier(0.37, 1.04, 0.68, 0.98);
         }
 
         .collapsed {
-            height: 0;
+            max-height: 0;
             opacity: 0;
-            transition: 600ms cubic-bezier(0.37, 1.04, 0.68, 0.98);
-        }
-
-        .CollapsibleRoot {
-            width: 300px;
-        }
-
-        .IconButton {
-            font-family: inherit;
-            border-radius: 100%;
-            height: 25px;
-            width: 25px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--violet-11);
-            box-shadow: 0 2px 10px var(--black-a7);
-        }
-
-        .IconButton[data-state='closed'] {
-            background-color: white;
-        }
-
-        .IconButton[data-state='open'] {
-            background-color: var(--violet-3);
-        }
-
-        .IconButton:hover {
-            background-color: var(--violet-3);
-        }
-
-        .IconButton:focus {
-            box-shadow: 0 0 0 2px black;
-        }
-
-        .Text {
-            color: var(--violet-11);
-            font-size: 15px;
-            line-height: 25px;
-        }
-
-        .Repository {
-            background-color: white;
-            border-radius: 4px;
-            margin: 10px 0;
-            padding: 10px;
-            box-shadow: 0 2px 10px var(--black-a7);
+            transition:
+                max-height 600ms cubic-bezier(0.37, 1.04, 0.68, 0.98),
+                opacity 600ms cubic-bezier(0.37, 1.04, 0.68, 0.98);
         }
     `,
     template: `
-        <div class="CollapsibleRoot" [open]="open()" (onOpenChange)="open.set($event)" rdxCollapsibleRoot>
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-                <span class="Text" style="color: white">&#64;peduarte starred 3 repositories</span>
-                <button class="IconButton" type="button" rdxCollapsibleTrigger>
+        <div class="w-full max-w-sm" [open]="open()" (onOpenChange)="open.set($event)" rdxCollapsibleRoot>
+            <div class="flex items-center justify-between gap-3">
+                <span class="text-foreground text-sm font-medium">&#64;peduarte starred 3 repositories</span>
+                <button
+                    class="bg-muted text-primary hover:bg-muted/80 focus-visible:ring-ring border-border inline-flex size-6 items-center justify-center rounded-full border shadow-sm outline-none transition-colors focus-visible:ring-2"
+                    type="button"
+                    rdxCollapsibleTrigger
+                >
                     @if (open()) {
-                        <lucide-angular size="16" name="x" style="display: flex;" />
+                        <lucide-angular class="flex" size="16" name="x" />
                     } @else {
-                        <lucide-angular size="16" name="unfold-vertical" style="display: flex;" />
+                        <lucide-angular class="flex" size="16" name="unfold-vertical" />
                     }
                 </button>
             </div>
 
-            <div class="Repository">
-                <span class="Text">&#64;radix-ui/primitives</span>
+            <div class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm">
+                <span class="text-sm">&#64;radix-ui/primitives</span>
             </div>
 
-            <div [class]="open() ? 'expanded' : 'collapsed'" rdxCollapsibleContent>
-                <div class="Repository">
-                    <span class="Text">&#64;radix-ui/colors</span>
+            <div class="overflow-hidden" [class]="open() ? 'expanded' : 'collapsed'" rdxCollapsibleContent>
+                <div class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm">
+                    <span class="text-sm">&#64;radix-ui/colors</span>
                 </div>
-                <div class="Repository">
-                    <span class="Text">&#64;stitches/react</span>
+                <div class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm">
+                    <span class="text-sm">&#64;stitches/react</span>
                 </div>
             </div>
         </div>

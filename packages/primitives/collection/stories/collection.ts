@@ -14,10 +14,10 @@ interface OptionData {
         <ng-content />
     `,
     host: {
-        class: 'block rounded-md border border-white/40 px-2.5 py-1.5',
+        class: 'block rounded-md border border-border bg-card px-2.5 py-1.5 text-card-foreground shadow-sm',
         '[class.cursor-pointer]': '!disabled()',
         '[class.cursor-not-allowed]': 'disabled()',
-        '[class.opacity-45]': 'disabled()'
+        '[class.opacity-50]': 'disabled()'
     },
     hostDirectives: [
         {
@@ -34,34 +34,39 @@ export class Option {
     selector: 'collection-list',
     imports: [Option, RdxCollectionProvider],
     template: `
-        <div class="flex w-[280px] flex-col gap-3 font-sans text-white">
-            <div class="flex flex-col gap-1" #collection="rdxCollectionProvider" rdxCollectionProvider>
+        <div class="flex w-[320px] flex-col gap-3">
+            <div class="flex flex-col gap-2" #collection="rdxCollectionProvider" rdxCollectionProvider>
                 @for (option of options(); track option.value) {
                     <collection-option
                         [value]="option.value"
                         [disabled]="option.disabled"
                         (click)="toggleDisabled(option)"
                     >
-                        {{ option.label }} {{ option.disabled ? '(disabled — click to enable)' : '' }}
+                        <div class="flex flex-col">
+                            <span class="text-sm font-medium">{{ option.label }}</span>
+                            <span class="text-muted-foreground text-xs">
+                                {{ option.disabled ? '(disabled — click to enable)' : 'click to toggle' }}
+                            </span>
+                        </div>
                     </collection-option>
                 }
             </div>
 
-            <div class="tabular-nums">
+            <div class="text-muted-foreground text-sm tabular-nums">
                 <div>items(): {{ collection.items().length }} → [{{ values(collection) }}]</div>
                 <div>enabledItems(): {{ collection.enabledItems().length }} → [{{ enabledValues(collection) }}]</div>
             </div>
 
             <div class="flex gap-2">
                 <button
-                    class="cursor-pointer rounded-md border border-white/40 bg-transparent px-2.5 py-1 text-inherit"
+                    class="bg-background text-foreground border-border focus-visible:ring-ring hover:bg-muted cursor-pointer rounded-md border px-2.5 py-1 text-sm shadow-sm outline-none transition-colors focus-visible:ring-2"
                     (click)="addOption()"
                     type="button"
                 >
                     Add
                 </button>
                 <button
-                    class="cursor-pointer rounded-md border border-white/40 bg-transparent px-2.5 py-1 text-inherit"
+                    class="bg-background text-foreground border-border focus-visible:ring-ring hover:bg-muted cursor-pointer rounded-md border px-2.5 py-1 text-sm shadow-sm outline-none transition-colors focus-visible:ring-2"
                     (click)="removeLast()"
                     type="button"
                 >

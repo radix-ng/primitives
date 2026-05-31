@@ -1,4 +1,5 @@
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxRovingFocusGroupDirective } from '../src/roving-focus-group.directive';
 import { RdxRovingFocusItemDirective } from '../src/roving-focus-item.directive';
 import { RovingFocusEventsComponent } from './roving-focus-events.component';
@@ -11,62 +12,7 @@ export default {
         moduleMetadata({
             imports: [RdxRovingFocusGroupDirective, RdxRovingFocusItemDirective, RovingFocusEventsComponent]
         }),
-        componentWrapperDecorator(
-            (story) => html`
-                <div class="radix-themes light light-theme" data-radius="medium" data-scaling="100%">
-                    ${story}
-
-                    <style>
-                        h2,
-                        p {
-                            color: #ffffff;
-                        }
-
-                        section {
-                            width: 500px;
-                        }
-
-                        [rdxRovingFocusGroup] {
-                            display: flex;
-                            gap: 8px;
-                        }
-
-                        [rdxRovingFocusGroup][data-orientation='vertical'] {
-                            width: 90px;
-                            flex-direction: column;
-                        }
-
-                        [rdxRovingFocusGroup][data-orientation='horizontal'] {
-                            flex-direction: row;
-                        }
-
-                        [rdxRovingFocusItem] {
-                            padding: 8px 16px;
-                            border: 1px solid #ccc;
-                            border-radius: 4px;
-                            background-color: #f9f9f9;
-                            cursor: pointer;
-                            transition:
-                                background-color 0.2s,
-                                transform 0.2s;
-                        }
-
-                        [rdxRovingFocusItem]:focus {
-                            outline: none;
-                            background-color: #007bff;
-                            color: white;
-                            transform: scale(1.05);
-                        }
-
-                        [rdxRovingFocusItem][data-disabled] {
-                            cursor: not-allowed;
-                            opacity: 0.5;
-                            background-color: #f1f1f1;
-                        }
-                    </style>
-                </div>
-            `
-        )
+        tailwindDemoDecorator()
     ]
 } as Meta;
 
@@ -75,16 +21,31 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: html`
-            <section>
-                <h2>Horizontal Navigation with Looping</h2>
-                <p>
+            <section class="w-full max-w-2xl space-y-4">
+                <h2 class="text-foreground text-lg font-semibold">Horizontal Navigation with Looping</h2>
+                <p class="text-muted-foreground text-sm leading-6">
                     Use the ArrowLeft and ArrowRight keys to navigate between buttons. Ensure that when reaching the end
                     of the group, the focus cycles back to the first item (and vice versa).
                 </p>
-                <div rdxRovingFocusGroup [orientation]="'horizontal'" [loop]="true">
-                    <button rdxRovingFocusItem>Item 1</button>
-                    <button rdxRovingFocusItem>Item 2</button>
-                    <button rdxRovingFocusItem>Item 3</button>
+                <div class="flex gap-2" rdxRovingFocusGroup [orientation]="'horizontal'" [loop]="true">
+                    <button
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        rdxRovingFocusItem
+                    >
+                        Item 1
+                    </button>
+                    <button
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        rdxRovingFocusItem
+                    >
+                        Item 2
+                    </button>
+                    <button
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        rdxRovingFocusItem
+                    >
+                        Item 3
+                    </button>
                 </div>
             </section>
         `
@@ -94,16 +55,31 @@ export const Default: Story = {
 export const HorizontalRTL: Story = {
     render: () => ({
         template: html`
-            <section>
-                <h2>Horizontal Navigation in RTL Direction</h2>
-                <p>
+            <section class="w-full max-w-2xl space-y-4">
+                <h2 class="text-foreground text-lg font-semibold">Horizontal Navigation in RTL Direction</h2>
+                <p class="text-muted-foreground text-sm leading-6">
                     Use the ArrowLeft and ArrowRight keys. In RTL direction, the keys should behave inversely
                     (ArrowRight moves to the previous item, and ArrowLeft moves to the next item).
                 </p>
-                <div rdxRovingFocusGroup [orientation]="'horizontal'" [dir]="'rtl'" [loop]="true">
-                    <button rdxRovingFocusItem>Left</button>
-                    <button rdxRovingFocusItem>Center</button>
-                    <button rdxRovingFocusItem>Right</button>
+                <div class="flex gap-2" rdxRovingFocusGroup [orientation]="'horizontal'" [dir]="'rtl'" [loop]="true">
+                    <button
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        rdxRovingFocusItem
+                    >
+                        Left
+                    </button>
+                    <button
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        rdxRovingFocusItem
+                    >
+                        Center
+                    </button>
+                    <button
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        rdxRovingFocusItem
+                    >
+                        Right
+                    </button>
                 </div>
             </section>
         `
@@ -113,16 +89,31 @@ export const HorizontalRTL: Story = {
 export const WithHomeAndEnd: Story = {
     render: () => ({
         template: html`
-            <section>
-                <h2>Navigation with "Home" and "End" Keys</h2>
-                <p>
+            <section class="w-full max-w-2xl space-y-4">
+                <h2 class="text-foreground text-lg font-semibold">Navigation with "Home" and "End" Keys</h2>
+                <p class="text-muted-foreground text-sm leading-6">
                     Press the Home key to move focus to the first item. Press the End key to move focus to the last
                     item.
                 </p>
-                <div rdxRovingFocusGroup [orientation]="'horizontal'" [loop]="false">
-                    <button rdxRovingFocusItem>Left</button>
-                    <button rdxRovingFocusItem>Center</button>
-                    <button rdxRovingFocusItem>Right</button>
+                <div class="flex gap-2" rdxRovingFocusGroup [orientation]="'horizontal'" [loop]="false">
+                    <button
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        rdxRovingFocusItem
+                    >
+                        Left
+                    </button>
+                    <button
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        rdxRovingFocusItem
+                    >
+                        Center
+                    </button>
+                    <button
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        rdxRovingFocusItem
+                    >
+                        Right
+                    </button>
                 </div>
             </section>
         `
@@ -132,13 +123,33 @@ export const WithHomeAndEnd: Story = {
 export const MixedActiveAndInactive: Story = {
     render: () => ({
         template: html`
-            <section>
-                <h2>Mixed Active and Inactive States</h2>
-                <p>Try navigating with arrow keys. Ensure that the inactive item (Disabled) is skipped.</p>
-                <div rdxRovingFocusGroup [orientation]="'horizontal'" [loop]="true">
-                    <button rdxRovingFocusItem [focusable]="true">Left</button>
-                    <button rdxRovingFocusItem [focusable]="false">Center</button>
-                    <button rdxRovingFocusItem [focusable]="true">Right</button>
+            <section class="w-full max-w-2xl space-y-4">
+                <h2 class="text-foreground text-lg font-semibold">Mixed Active and Inactive States</h2>
+                <p class="text-muted-foreground text-sm leading-6">
+                    Try navigating with arrow keys. Ensure that the inactive item (Disabled) is skipped.
+                </p>
+                <div class="flex gap-2" rdxRovingFocusGroup [orientation]="'horizontal'" [loop]="true">
+                    <button
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 data-[disabled]:bg-muted inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px] data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                        rdxRovingFocusItem
+                        [focusable]="true"
+                    >
+                        Left
+                    </button>
+                    <button
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 data-[disabled]:bg-muted inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px] data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                        rdxRovingFocusItem
+                        [focusable]="false"
+                    >
+                        Center
+                    </button>
+                    <button
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 data-[disabled]:bg-muted inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px] data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                        rdxRovingFocusItem
+                        [focusable]="true"
+                    >
+                        Right
+                    </button>
                 </div>
             </section>
         `
@@ -148,16 +159,31 @@ export const MixedActiveAndInactive: Story = {
 export const VerticalWithoutLooping: Story = {
     render: () => ({
         template: html`
-            <section>
-                <h2>Vertical Navigation without Looping</h2>
-                <p>
+            <section class="w-full max-w-2xl space-y-4">
+                <h2 class="text-foreground text-lg font-semibold">Vertical Navigation without Looping</h2>
+                <p class="text-muted-foreground text-sm leading-6">
                     Use the ArrowLeft and ArrowRight keys to navigate between buttons. Ensure that when reaching the end
                     of the group, the focus cycles back to the first item (and vice versa).
                 </p>
-                <div rdxRovingFocusGroup [orientation]="'vertical'" [loop]="false">
-                    <button rdxRovingFocusItem>Item 1</button>
-                    <button rdxRovingFocusItem>Item 2</button>
-                    <button rdxRovingFocusItem>Item 3</button>
+                <div class="flex w-fit flex-col gap-2" rdxRovingFocusGroup [orientation]="'vertical'" [loop]="false">
+                    <button
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        rdxRovingFocusItem
+                    >
+                        Item 1
+                    </button>
+                    <button
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        rdxRovingFocusItem
+                    >
+                        Item 2
+                    </button>
+                    <button
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        rdxRovingFocusItem
+                    >
+                        Item 3
+                    </button>
                 </div>
             </section>
         `
@@ -167,17 +193,34 @@ export const VerticalWithoutLooping: Story = {
 export const IgnoreShiftKey: Story = {
     render: () => ({
         template: html`
-            <section>
-                <h2>Ignore Shift Key (allowShiftKey)</h2>
-                <p>
+            <section class="w-full max-w-2xl space-y-4">
+                <h2 class="text-foreground text-lg font-semibold">Ignore Shift Key (allowShiftKey)</h2>
+                <p class="text-muted-foreground text-sm leading-6">
                     Use the ArrowLeft and ArrowRight keys to navigate between buttons. Holding the
-                    <code>Shift</code>
+                    <code class="border-border bg-muted rounded border px-1.5 py-0.5 text-xs">Shift</code>
                     key should not affect focus behavior.
                 </p>
-                <div rdxRovingFocusGroup [orientation]="'horizontal'" [loop]="true">
-                    <button rdxRovingFocusItem allowShiftKey="true">Item 1 (Shift Allowed)</button>
-                    <button rdxRovingFocusItem>Item 2 (Default)</button>
-                    <button rdxRovingFocusItem allowShiftKey="true">Item 3 (Shift Allowed)</button>
+                <div class="flex gap-2" rdxRovingFocusGroup [orientation]="'horizontal'" [loop]="true">
+                    <button
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        rdxRovingFocusItem
+                        allowShiftKey="true"
+                    >
+                        Item 1 (Shift Allowed)
+                    </button>
+                    <button
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        rdxRovingFocusItem
+                    >
+                        Item 2 (Default)
+                    </button>
+                    <button
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        rdxRovingFocusItem
+                        allowShiftKey="true"
+                    >
+                        Item 3 (Shift Allowed)
+                    </button>
                 </div>
             </section>
         `
@@ -187,15 +230,19 @@ export const IgnoreShiftKey: Story = {
 export const EventHandling: Story = {
     render: () => ({
         template: html`
-            <h2>Event Handling</h2>
-            <p>
-                Verify that the
-                <code>entryFocus</code>
-                and
-                <code>currentTabStopIdChange</code>
-                events are triggered during the appropriate actions.
-            </p>
-            <rvg-events />
+            <section class="w-full max-w-2xl space-y-4">
+                <h2 class="text-foreground text-lg font-semibold">Event Handling</h2>
+                <p class="text-muted-foreground text-sm leading-6">
+                    Verify that the
+                    <code class="border-border bg-muted rounded border px-1.5 py-0.5 text-xs">entryFocus</code>
+                    and
+                    <code class="border-border bg-muted rounded border px-1.5 py-0.5 text-xs">
+                        currentTabStopIdChange
+                    </code>
+                    events are triggered during the appropriate actions.
+                </p>
+                <rvg-events />
+            </section>
         `
     })
 };

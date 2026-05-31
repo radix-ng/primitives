@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxLabelDirective } from '../src/label.directive';
 
 export default {
@@ -9,12 +10,7 @@ export default {
         moduleMetadata({
             imports: [RdxLabelDirective, CommonModule]
         }),
-        componentWrapperDecorator(
-            (story) =>
-                `<div class="radix-themes light light-theme"
-                      data-radius="medium"
-                      data-scaling="100%">${story}</div>`
-        )
+        tailwindDemoDecorator()
     ]
 } as Meta<RdxLabelDirective>;
 
@@ -26,45 +22,14 @@ export const Default: Story = {
             ...args
         },
         template: `
-<label rdxLabel htmlFor="uniqId">First Name </label>
-<input type="text" class="Input" id="uniqId" />
-
-<style>
-input {
-  all: unset;
-}
-
-.Input {
-  width: 200px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  padding: 0 10px;
-  margin-left: 10px;
-  height: 35px;
-  font-size: 15px;
-  line-height: 1;
-  color: white;
-  background-color: var(--black-a5);
-  box-shadow: 0 0 0 1px var(--black-a9);
-}
-
-.Input:focus {
-  box-shadow: 0 0 0 2px black;
-}
-.Input::selection {
-  background-color: var(--black-a9);
-  color: white;
-}
-
-label {
-    color: white;
-    font-size: 15px;
-    line-height: 35px;
-    font-weight: 500;
-}
-</style>
-`
+            <div class="flex items-center gap-3">
+                <label class="text-foreground text-sm font-medium leading-9" rdxLabel htmlFor="uniqId">First Name</label>
+                <input
+                    id="uniqId"
+                    type="text"
+                    class="bg-background text-foreground border-border focus-visible:ring-ring h-9 w-52 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2"
+                />
+            </div>
+        `
     })
 };

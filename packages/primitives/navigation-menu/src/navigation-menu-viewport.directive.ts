@@ -1,14 +1,12 @@
 import {
     booleanAttribute,
     computed,
-    DestroyRef,
     Directive,
     effect,
     ElementRef,
     EmbeddedViewRef,
     inject,
     input,
-    NgZone,
     OnDestroy,
     OnInit,
     Renderer2,
@@ -16,10 +14,7 @@ import {
     untracked,
     ViewContainerRef
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ARROW_DOWN, ARROW_UP, injectDocument, injectWindow } from '@radix-ng/primitives/core';
-import { TransitionOptions, TransitionStartFn, usePresence } from '@radix-ng/primitives/presence';
-import { Subscription } from 'rxjs';
 import { injectNavigationMenu, isRootNavigationMenu } from './navigation-menu.token';
 import { getOpenStateLabel, getTabbableCandidates } from './utils';
 
@@ -28,7 +23,8 @@ interface ContentNode {
     element: HTMLElement;
     contentValue: string;
     state: 'open' | 'closed';
-    transitionSubscription?: Subscription | null;
+    /** Cancels a running leave transition (removes listeners/timer); null when not leaving. */
+    leaveCancel?: (() => void) | null;
 }
 
 @Directive({
@@ -50,8 +46,6 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
     private readonly elementRef = inject(ElementRef);
     private readonly viewContainerRef = inject(ViewContainerRef);
     private readonly renderer = inject(Renderer2);
-    private readonly zone = inject(NgZone);
-    private readonly destroyRef = inject(DestroyRef);
 
     /**
      * Used to keep the viewport rendered and available in the DOM, even when closed.
@@ -194,7 +188,7 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
                         this.setNodeState(leavingNode, 'closed');
                         this._leavingContentNode.set(null); // No longer considered "leaving"
                     } else {
-                        // start the leave transition (usePresence handles DOM removal)
+                        // start the leave transition (removes the node from the DOM when it ends)
                         this.startLeaveTransition(leavingNode);
                     }
                 }
@@ -305,29 +299,75 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
     }
 
     private startLeaveTransition(node: ContentNode): void {
-        // ensure node exists and isn't already leaving with an active subscription
-        if (!node || node.transitionSubscription) {
-            node.transitionSubscription?.unsubscribe();
+        // ensure node exists and isn't already leaving
+        if (!node || node.leaveCancel) {
             return;
         }
 
-        const startFn: TransitionStartFn<null> = () => {
-            this.setNodeState(node, 'closed');
-            return () => this.cleanupAfterLeave(node);
+        // mark closed → triggers the CSS exit animation/transition (via data-state / data-motion)
+        this.setNodeState(node, 'closed');
+
+        node.leaveCancel = this.runLeaveTransition(node.element, () => this.cleanupAfterLeave(node));
+    }
+
+    /**
+     * Keeps `element` in the DOM until its closed-state CSS animation or transition finishes,
+     * then invokes `onComplete`. Returns a canceller that removes the listeners/timer.
+     *
+     * Replaces the former `usePresence` helper: it races `animationend`/`transitionend` against
+     * a fallback timer derived from the computed duration (in case the events never fire).
+     */
+    private runLeaveTransition(element: HTMLElement, onComplete: () => void): () => void {
+        const durationMs = this.getExitDurationMs(element);
+
+        // no exit animation/transition — remove immediately
+        if (durationMs <= 0) {
+            onComplete();
+            return () => {};
+        }
+
+        let finished = false;
+        let timer = 0;
+
+        const cleanup = () => {
+            element.removeEventListener('transitionend', onEnd);
+            element.removeEventListener('animationend', onEnd);
+            element.removeEventListener('animationcancel', onEnd);
+            this.window.clearTimeout(timer);
         };
 
-        const options: TransitionOptions<null> = {
-            animation: true, // assuming CSS animations/transitions handle the exit
-            state: 'continue' // start the leave process
+        const finish = () => {
+            if (finished) return;
+            finished = true;
+            cleanup();
+            onComplete();
         };
 
-        node.transitionSubscription = usePresence(this.zone, node.element, startFn, options)
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe({
-                complete: () => {
-                    this.cleanupAfterLeave(node);
-                }
-            });
+        const onEnd = (event: Event) => {
+            // ignore bubbling from descendants
+            if (event.target === element) finish();
+        };
+
+        element.addEventListener('transitionend', onEnd);
+        element.addEventListener('animationend', onEnd);
+        element.addEventListener('animationcancel', onEnd);
+        timer = this.window.setTimeout(finish, durationMs + 50);
+
+        return cleanup;
+    }
+
+    /** Computed exit duration (ms) — the longer of the CSS transition and animation. */
+    private getExitDurationMs(element: HTMLElement): number {
+        const styles = this.window.getComputedStyle(element);
+        const maxMs = (value: string) => Math.max(0, ...value.split(',').map((part) => (parseFloat(part) || 0) * 1000));
+
+        const transitionMs = maxMs(styles.transitionDuration) + maxMs(styles.transitionDelay);
+        const animationMs =
+            styles.animationName && styles.animationName !== 'none'
+                ? maxMs(styles.animationDuration) + maxMs(styles.animationDelay)
+                : 0;
+
+        return Math.max(transitionMs, animationMs);
     }
 
     /**
@@ -335,6 +375,10 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
      * @param node The node that is leaving
      */
     private cleanupAfterLeave(node: ContentNode): void {
+        // stop any pending leave listeners/timer for this node
+        node.leaveCancel?.();
+        node.leaveCancel = null;
+
         // check if this node is still marked as the one leaving
         if (this._leavingContentNode() === node) {
             this.removeNodeFromDOM(node);
@@ -346,7 +390,6 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
                 this._contentNodes.set(newMap);
             }
 
-            node.transitionSubscription = null;
             this._leavingContentNode.set(null);
 
             if (!this._activeContentNode() && !this.forceMount()) {
@@ -354,10 +397,8 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
             }
         } else {
             // if this node is NOT the one currently marked as leaving, it means
-            // a new transition started before this one finished. Just clean up DOM/Sub.
+            // a new transition started before this one finished. Just clean up DOM.
             this.removeNodeFromDOM(node);
-            node.transitionSubscription?.unsubscribe();
-            node.transitionSubscription = null;
         }
     }
 
@@ -366,8 +407,8 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
      * @param node The node that is leaving
      */
     private cancelLeaveTransition(node: ContentNode): void {
-        node.transitionSubscription?.unsubscribe();
-        node.transitionSubscription = null;
+        node.leaveCancel?.();
+        node.leaveCancel = null;
     }
 
     /**
@@ -375,10 +416,8 @@ export class RdxNavigationMenuViewportDirective implements OnInit, OnDestroy {
      * @param node The node that is leaving
      */
     private forceCompleteLeaveTransition(node: ContentNode): void {
-        if (node && node.transitionSubscription) {
-            node.transitionSubscription.unsubscribe();
-
-            // perform cleanup immediately
+        if (node && node.leaveCancel) {
+            // perform cleanup immediately (cleanupAfterLeave cancels the pending transition)
             this.cleanupAfterLeave(node);
         }
     }

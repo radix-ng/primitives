@@ -9,23 +9,24 @@
     margin-top: 0.25rem;
     display: flex;
     align-items: center;
-    border: 1px solid;
-    background-color: white;
+    border: 1px solid var(--border);
+    background-color: var(--background);
     border-radius: 0.5rem;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     height: 2.25rem;
 }
 
 .NumberFieldWrapper:hover {
-    background-color: #fafafa;
+    background-color: var(--muted);
 }
 
 .NumberFieldWrapper:focus-within {
-    box-shadow: 0 0 0 2px #1c1917;
+    box-shadow: 0 0 0 2px var(--ring);
 }
 
 .NumberFieldNumber {
     background-color: transparent;
+    color: var(--foreground);
     width: 5rem;
     font-variant-numeric: tabular-nums;
     text-align: center;
@@ -41,8 +42,9 @@
     cursor: pointer;
     background-color: transparent;
     background-image: none;
+    color: var(--foreground);
 }
 
 .ButtonField:disabled {
-    opacity: 0.2;
+    opacity: 0.4;
 }

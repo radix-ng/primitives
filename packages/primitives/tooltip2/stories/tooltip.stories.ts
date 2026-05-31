@@ -1,5 +1,6 @@
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { LucideAngularModule } from 'lucide-angular';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { tooltipImports } from '../index';
 import { TooltipSlider } from './tooltip';
 
@@ -11,25 +12,7 @@ export default {
         moduleMetadata({
             imports: [...tooltipImports, TooltipSlider, LucideAngularModule]
         }),
-        componentWrapperDecorator(
-            (story) => html`
-                <div class="radix-themes light light-theme" data-radius="medium" data-scaling="100%">
-                    <div
-                        style="height: 500px;
-                                display: flex;
-                                justify-content: center;
-                                gap: 80px;
-                                align-items: center;
-                                border: 3px dashed var(--white-a8);
-                                border-radius: 12px;"
-                    >
-                        ${story}
-                    </div>
-
-                    <style></style>
-                </div>
-            `
-        )
+        tailwindDemoDecorator()
     ],
     argTypes: {
         side: {
@@ -58,25 +41,27 @@ export const Default: Story = {
     render: (args) => ({
         props: args,
         template: html`
-            <ng-container rdxTooltip [closeDelay]="closeDelay" [disabled]="disabled">
+            <ng-container rdxTooltip [open]="open" [closeDelay]="closeDelay" [disabled]="disabled">
                 <button
-                    class="text-violet11 shadow-blackA7 hover:bg-violet3 inline-flex h-[35px] w-[35px] items-center justify-center rounded-full bg-white shadow-[0_2px_10px] outline-none focus:shadow-[0_0_0_2px] focus:shadow-black"
+                    class="border-border bg-background text-foreground hover:bg-muted focus-visible:ring-ring focus-visible:ring-offset-background inline-flex size-9 items-center justify-center rounded-md border shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+                    type="button"
+                    aria-label="Add to library"
                     rdxTooltipTrigger
                     [attr.disabled]="disabled"
                 >
-                    <lucide-angular name="plus" size="16" />
+                    <lucide-angular aria-hidden="true" name="plus" size="16" />
                 </button>
 
                 <div rdxTooltipPortal [container]="tooltipContent">
                     <ng-template rdxTooltipPortalPresence #tooltipContent>
-                        <div
-                            class="data-[state=delayed-open]:data-[side=top]:animate-slideDownAndFade data-[state=delayed-open]:data-[side=right]:animate-slideLeftAndFade data-[state=delayed-open]:data-[side=left]:animate-slideRightAndFade data-[state=delayed-open]:data-[side=bottom]:animate-slideUpAndFade text-violet11 select-none rounded-[4px] bg-white px-[15px] py-[10px] text-[15px] leading-none shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] will-change-[transform,opacity]"
-                            [sideOffset]="sideOffset"
-                            [side]="side"
-                            rdxTooltipContentWrapper
-                        >
-                            <div rdxTooltipContent>Add to library</div>
-                            <span class="fill-white" rdxTooltipArrow></span>
+                        <div [sideOffset]="sideOffset" [side]="side" rdxTooltipContentWrapper>
+                            <div
+                                class="border-border bg-popover text-popover-foreground select-none rounded-md border px-3 py-2 text-sm leading-none shadow-md"
+                                rdxTooltipContent
+                            >
+                                Add to library
+                            </div>
+                            <span class="fill-popover" rdxTooltipArrow></span>
                         </div>
                     </ng-template>
                 </div>

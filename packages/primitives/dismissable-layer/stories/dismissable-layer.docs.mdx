@@ -1,0 +1,84 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './dismissable-layer.stories';
+import { RdxDismissableLayer } from '../src/dismissable-layer';
+import { RdxDismissableLayerBranch } from '../src/dismissable-layer-branch';
+
+<Meta title="Primitives/Dismissable Layer" />
+
+# Dismissable Layer
+
+#### Detects interactions outside a layer and provides the low-level behavior used by dialogs, popovers, and menus.
+
+<Canvas sourceState="hidden" of={Stories.Default} />
+
+## Features
+
+- Emits events for Escape, pointer interactions outside, focus outside, and combined outside interactions.
+- Dismisses the topmost active layer when an event is not prevented.
+- Supports nested layers and closes them one at a time.
+- Can disable pointer events outside the active layer.
+- Supports detached branches that remain interactive without dismissing the layer.
+
+## Anatomy
+
+```html
+<div (dismiss)="close()" rdxDismissableLayer>
+  Layer content
+</div>
+```
+
+Prevent an individual dismiss reason by calling `preventDefault()` on the corresponding event:
+
+```html
+<div
+  (escapeKeyDown)="$event.preventDefault()"
+  (pointerDownOutside)="$event.preventDefault()"
+  (focusOutside)="$event.preventDefault()"
+  rdxDismissableLayer
+>
+  Layer content
+</div>
+```
+
+## Examples
+
+### Nested Layers
+
+Only the topmost layer responds to Escape. Open several children and close them one by one.
+
+<Canvas sourceState="hidden" of={Stories.Nested} />
+
+### Branch
+
+Use `rdxDismissableLayerBranch` for detached controls that should behave as part of the layer even though they are
+outside its DOM subtree.
+
+<Canvas sourceState="hidden" of={Stories.Branch} />
+
+### Focus Trap
+
+Combine a dismissable layer with Focus Scope when keyboard focus must stay inside the active surface.
+
+<Canvas sourceState="hidden" of={Stories.FocusTrap} />
+
+### Dialog
+
+Dialogs commonly combine a portal, focus guards, Focus Scope, a backdrop, and a dismissable layer.
+
+<Canvas sourceState="hidden" of={Stories.Dialog} />
+
+### Popover
+
+Popovers combine positioning with optional focus trapping and optional outside pointer event blocking.
+
+<Canvas sourceState="hidden" of={Stories.Popover} />
+
+## API Reference
+
+### Layer
+
+<ArgTypes of={RdxDismissableLayer} />
+
+### Branch
+
+<ArgTypes of={RdxDismissableLayerBranch} />

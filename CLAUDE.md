@@ -29,7 +29,6 @@ packages/
       stories/
         <name>.stories.ts
         <name>.ts                    ← standalone story components
-        styles.css
   components/          ← styled components that consume primitives
 apps/
   radix-storybook/     ← Storybook app for primitives
@@ -138,7 +137,7 @@ Prefer `hostDirectives` to re-use existing primitives (e.g., Accordion Item comp
    - `src/<name>-<role>.directive.ts` — each child part
    - `index.ts` — re-exports + optional NgModule
    - `__tests__/<name>-*.spec.ts`
-   - `stories/<name>.stories.ts` + `stories/<name>.ts` + `stories/styles.css`
+   - `stories/<name>.stories.ts` + optional `stories/<name>.ts`
 2. Register secondary entry in **`tsconfig.base.json`** under `compilerOptions.paths`:
    ```json
    "@radix-ng/primitives/<name>": ["packages/primitives/<name>/index.ts"]
@@ -148,9 +147,13 @@ Prefer `hostDirectives` to re-use existing primitives (e.g., Accordion Item comp
 ## Stories & Storybook
 
 - Dev server: `pnpm storybook:primitives` (runs on `http://localhost:4400`). Full compile check: `nx run radix-storybook:build-storybook` (add `--skip-nx-cache` to force a real rebuild — Nx caches this target).
-- **Tailwind v4 is available in stories** — prefer utility classes directly in story templates over inline `<style>`/`styles`. Config is CSS-based at `apps/radix-storybook/.storybook/tailwind.css` (`@import 'tailwindcss/...'` + a `@theme {}` block); there is **no** `tailwind.config.js`.
-- Utilities work globally. The Tailwind preflight reset is stripped for non-Tailwind demos (`[data-demo]:not([data-demo='tailwind'])`); wrap a demo in an element with `data-demo="tailwind"` when you need the reset + Tailwind theme variables.
+- **Use Tailwind v4 utilities directly in story templates and standalone story components.** Do not add story-local CSS files, Angular `styleUrl` / `styleUrls` / `styles`, inline `<style>` blocks, or `style="..."` attributes. If a demo cannot reasonably be expressed with Tailwind utilities, document the reason and ask before adding CSS.
+- Use semantic tokens first: `bg-background`, `text-foreground`, `bg-muted`, `bg-popover`, `border-border`, `text-popover-foreground`, `text-primary-foreground`. Avoid reintroducing raw Radix theme colors such as `violet`, `mauve`, `black-a*`, or hard-coded `white`/`black` when a semantic token exists.
+- Story shells should use the shared wrapper from `packages/primitives/storybook/tailwind-demo.ts`. It applies the standard centered demo frame and marks the root with `data-demo="tailwind"` so Tailwind preflight and theme variables stay active.
+- If a story needs the reset/theme variables, keep `data-demo="tailwind"` on the outermost demo container. If it does not, leave the wrapper alone and only use utilities that do not depend on the reset.
+- Storybook Tailwind config is CSS-based at `apps/radix-storybook/.storybook/tailwind.css` (`@import 'tailwindcss/...'` + a `@theme {}` block); there is **no** `tailwind.config.js`.
 - Files: `stories/<name>.stories.ts` (CSF) + optional `stories/<name>.ts` (standalone story components) + optional `stories/<name>.docs.mdx`. In the mdx, `<Meta title="…">` matching the CSF `title` attaches it as that group's docs page; use `<Canvas of={Stories.X} />` to embed a story and `<ArgTypes of={Directive} />` for the props table.
+- Storybook theme switching is controlled from the toolbar, not OS color scheme. The preview decorator sets `document.documentElement[data-theme]`, so stories should use tokens that respond to that attribute instead of reading `prefers-color-scheme`.
 
 ## Shared composition primitives
 

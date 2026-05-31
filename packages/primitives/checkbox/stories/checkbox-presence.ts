@@ -20,21 +20,31 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
         LucideAngularModule,
         JsonPipe
     ],
-    styleUrl: 'checkbox.css',
     template: `
-        <div style="display: flex; align-items: center;">
+        <div class="flex items-center gap-3">
             <div [checked]="checked()" (onCheckedChange)="checked.set($event)" rdxCheckboxRoot>
-                <button class="CheckboxButton" id="r1" rdxCheckboxButton>
+                <button
+                    class="border-border bg-background focus-visible:ring-ring flex size-6 items-center justify-center rounded-md border shadow-sm outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    id="r1"
+                    rdxCheckboxButton
+                >
                     <ng-template rdxCheckboxIndicatorPresence>
-                        <lucide-angular class="CheckboxIndicator" [img]="Check" rdxCheckboxIndicator size="16" />
+                        <lucide-angular
+                            class="text-primary flex items-center"
+                            [img]="Check"
+                            rdxCheckboxIndicator
+                            size="16"
+                        />
                     </ng-template>
                 </button>
                 <input rdxCheckboxInput />
             </div>
-            <label class="Label" rdxLabel htmlFor="r1">I'm a checkbox</label>
+            <label class="text-foreground flex items-center text-sm font-medium" rdxLabel htmlFor="r1">
+                I'm a checkbox
+            </label>
         </div>
 
-        <section style="color: white">
+        <section class="text-muted-foreground mt-3 text-sm">
             <p>checked state:&nbsp;{{ checked() | json }}</p>
         </section>
     `

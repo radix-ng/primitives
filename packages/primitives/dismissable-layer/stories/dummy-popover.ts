@@ -11,6 +11,13 @@ import {
 } from '@radix-ng/primitives/popper';
 import { RdxPortal } from '@radix-ng/primitives/portal';
 
+const buttonClasses =
+    'border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-ring/50 inline-flex h-10 items-center justify-center rounded-md border px-4 text-sm font-medium shadow-xs outline-none transition-[color,box-shadow] focus-visible:ring-[3px]';
+const primaryButtonClasses =
+    'bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:border-ring focus-visible:ring-ring/50 inline-flex h-10 items-center justify-center rounded-md border border-transparent px-4 text-sm font-medium shadow-xs outline-none transition-[color,box-shadow] focus-visible:ring-[3px]';
+const inputClasses =
+    'border-input bg-background text-foreground focus-visible:border-ring focus-visible:ring-ring/50 h-10 rounded-md border px-3 text-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]';
+
 @Component({
     selector: 'dummy-popover',
     imports: [
@@ -26,13 +33,8 @@ import { RdxPortal } from '@radix-ng/primitives/portal';
     ],
     template: `
         <ng-container rdxPopperRoot>
-            <button
-                class="border-white-600 rounded-md border-2 px-4 py-2 text-white"
-                (click)="open.set(!open())"
-                type="button"
-                rdxPopperAnchor
-            >
-                Open Popover
+            <button class="${primaryButtonClasses}" (click)="open.set(!open())" type="button" rdxPopperAnchor>
+                Open popover
             </button>
 
             @if (open()) {
@@ -45,18 +47,19 @@ import { RdxPortal } from '@radix-ng/primitives/portal';
                         <div [trapped]="trapped()" rdxFocusScope>
                             <div rdxPopperContentWrapper sideOffset="8" align="start" side="bottom">
                                 <div
-                                    class="flex min-h-[150px] min-w-[200px] items-start gap-4 rounded-md bg-white p-6"
+                                    class="border-border bg-card text-card-foreground flex min-w-64 flex-col gap-4 rounded-xl border p-5 shadow-lg"
                                     rdxPopperContent
                                 >
-                                    <button
-                                        class="rounded-md border-2 border-black px-4 py-2"
-                                        (click)="open.set(false)"
-                                    >
-                                        Close Popover
-                                    </button>
-                                    <input class="rounded-md border-2 border-black" type="text" value="hello world" />
+                                    <div>
+                                        <h3 class="text-sm font-semibold">Quick note</h3>
+                                        <p class="text-muted-foreground mt-1 text-xs leading-5">
+                                            Click outside or press Escape to dismiss.
+                                        </p>
+                                    </div>
+                                    <input class="${inputClasses}" aria-label="Note" type="text" value="Review draft" />
+                                    <button class="${buttonClasses}" (click)="open.set(false)">Close Popover</button>
                                 </div>
-                                <span class="fill-white" rdxPopperArrow width="10" height="4"></span>
+                                <span class="fill-card" rdxPopperArrow width="10" height="4"></span>
                             </div>
                         </div>
                     </div>

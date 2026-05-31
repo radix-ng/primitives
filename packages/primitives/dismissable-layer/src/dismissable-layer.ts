@@ -15,7 +15,13 @@ import {
 import { RdxDismissableLayerConfigToken, RdxDismissableLayersContextToken } from './dismissable-layer.config';
 import { RdxEscapeKeyDown, RdxFocusOutside, RdxPointerDownOutside } from './utils';
 
-let originalBodyPointerEvents: string;
+/**
+ * Shared across all layers. Holds the body's original `pointer-events` value while at least one
+ * layer disables outside pointer events. `null` means the body is not currently overridden — it
+ * doubles as the "ownership" flag so stacked layers don't overwrite the saved original with
+ * `none`.
+ */
+let originalBodyPointerEvents: string | null = null;
 
 @Directive({
     selector: '[rdxDismissableLayer]',
@@ -79,67 +85,33 @@ export class RdxDismissableLayer {
         transform: booleanAttribute
     });
 
-    readonly layers = computed(() => this.context.layersRoot);
-
     protected readonly isBodyPointerEventsDisabled = computed(
         () => this.context.layersWithOutsidePointerEventsDisabled().length > 0
     );
 
     protected readonly isPointerEventsEnabled = computed(() => {
-        const localLayers = this.layers();
+        const layers = this.context.layersRoot();
+        const disabledLayers = this.context.layersWithOutsidePointerEventsDisabled();
+        const highestDisabledLayer = disabledLayers[disabledLayers.length - 1];
 
-        const [highestLayerWithOutsidePointerEventsDisabled] = [
-            ...this.context.layersWithOutsidePointerEventsDisabled()
-        ].slice(-1);
-
-        const highestLayerWithOutsidePointerEventsDisabledIndex = localLayers().indexOf(
-            highestLayerWithOutsidePointerEventsDisabled
-        );
-
-        return this.index() >= highestLayerWithOutsidePointerEventsDisabledIndex;
+        return this.index() >= layers.indexOf(highestDisabledLayer);
     });
 
     private readonly index = computed(() => this.context.layersRoot().indexOf(this));
 
-    private readonly afterNextRender = afterNextRender(() => {
-        const ownerDocument = this.elementRef.nativeElement.ownerDocument ?? globalThis.document;
-
-        let lastDisabledCount = 0;
-
-        untracked(() => {
-            this.context.layersRoot.update((v) => (v.includes(this) ? v : [...v, this]));
-        });
-        this.destroyRef.onDestroy(() => {
-            untracked(() => {
-                this.context.layersRoot.update((v) => v.filter((x) => x !== this));
-            });
-        });
-
-        effect(
-            (onCleanup) => {
-                const disabledCount = this.context.layersWithOutsidePointerEventsDisabled().length;
-
-                if (lastDisabledCount === 0 && disabledCount > 0) {
-                    originalBodyPointerEvents = ownerDocument.body.style.pointerEvents;
-                    ownerDocument.body.style.pointerEvents = 'none';
-                }
-
-                onCleanup(() => {
-                    const next = untracked(() => this.context.layersWithOutsidePointerEventsDisabled().length);
-                    if (lastDisabledCount > 0 && next === 0) {
-                        ownerDocument.body.style.pointerEvents = originalBodyPointerEvents;
-                    }
-                    lastDisabledCount = next;
-                });
-
-                lastDisabledCount = disabledCount;
-            },
-            { injector: this.injector }
-        );
+    /** The topmost layer in the stack — the only one that should react to the Escape key. */
+    private readonly isHighestLayer = computed(() => {
+        const layers = this.context.layersRoot();
+        return layers.indexOf(this) === layers.length - 1;
     });
 
     constructor() {
         this.context.layersRoot.update((v) => [...v, this]);
+        this.destroyRef.onDestroy(() => {
+            this.context.layersRoot.update((v) => v.filter((i) => i !== this));
+        });
+
+        this.setupBodyPointerEvents();
 
         this.rdxPointerDownOutside.pointerDownOutside.subscribe((event: PointerEvent) => {
             const isPointerDownOnBranch = this.context
@@ -176,6 +148,11 @@ export class RdxDismissableLayer {
         });
 
         this.rdxEscapeKeyDown.escapeKeyDown.subscribe((event: KeyboardEvent) => {
+            // Only the topmost layer is dismissed by Escape; stacked layers close one at a time.
+            if (!this.isHighestLayer()) {
+                return;
+            }
+
             this.escapeKeyDown.emit(event);
 
             if (!event.defaultPrevented) {
@@ -183,9 +160,37 @@ export class RdxDismissableLayer {
                 this.dismiss.emit();
             }
         });
+    }
 
-        this.destroyRef.onDestroy(() => {
-            this.context.layersRoot.update((v) => v.filter((i) => i !== this));
+    /**
+     * Toggles `pointer-events: none` on the document body while any layer has
+     * `disableOutsidePointerEvents`. Ownership is shared across all layers via
+     * {@link originalBodyPointerEvents}: the original value is saved only on the global
+     * `0 -> >0` transition and restored only when the count returns to `0`.
+     */
+    private setupBodyPointerEvents(): void {
+        afterNextRender(() => {
+            const ownerDocument = this.elementRef.nativeElement.ownerDocument ?? globalThis.document;
+
+            effect(
+                (onCleanup) => {
+                    const disabledCount = this.context.layersWithOutsidePointerEventsDisabled().length;
+
+                    if (disabledCount > 0 && originalBodyPointerEvents === null) {
+                        originalBodyPointerEvents = ownerDocument.body.style.pointerEvents;
+                        ownerDocument.body.style.pointerEvents = 'none';
+                    }
+
+                    onCleanup(() => {
+                        const remaining = untracked(() => this.context.layersWithOutsidePointerEventsDisabled().length);
+                        if (remaining === 0 && originalBodyPointerEvents !== null) {
+                            ownerDocument.body.style.pointerEvents = originalBodyPointerEvents;
+                            originalBodyPointerEvents = null;
+                        }
+                    });
+                },
+                { injector: this.injector }
+            );
         });
     }
 }

@@ -4,38 +4,67 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 # Installation
 
-A quick tutorial to walk through installing the packages, as well as the supported plugins.
+A quick tutorial to walk through installing the package and using your first primitive.
+
+Radix NG supports **Angular 19.2, 20 and 21**.
 
 ## Installing the packages
+
+Install the library together with its peer dependencies:
 
 ```bash
 npm install @radix-ng/primitives @angular/cdk @floating-ui/dom
 ```
 
+- `@angular/cdk` — used by primitives that rely on the CDK (e.g. overlays/portals).
+- `@floating-ui/dom` — powers positioning for floating primitives (Popover, Tooltip, Select, …).
+
+Alternatively, use the schematic, which adds the library together with its peer dependencies
+(`@angular/cdk`, `@floating-ui/dom`) for you:
+
+```bash
+ng add @radix-ng/primitives
+```
+
 ## Import the parts
+
+Each primitive is published as its own secondary entry point, so you import only what you use
+from `@radix-ng/primitives/<name>`:
 
 ```typescript
 import { Component } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-import 'zone.js';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [RdxLabelDirective],
-  template: `
-    <h1>Hello from {{ name }}!</h1>
-    <a target="_blank" href="https://angular.dev/overview">Learn more about Angular</a>
-    <div>
-      <label rdxLabel htmlFor="uniqId">First Name</label>
-      <input class="Input" id="uniqId" type="text" />
-    </div>
-  `
+    selector: 'app-root',
+    imports: [RdxLabelDirective],
+    template: `
+        <label rdxLabel htmlFor="firstName">First Name</label>
+        <input id="firstName" type="text" />
+    `
 })
-export class App {
-  name = 'Angular';
-}
+export class App {}
 
 bootstrapApplication(App);
+```
+
+The primitives are headless — they carry no styles. See **Theming** for how to style the parts
+via their `data-*` attributes.
+
+## Overlay styles
+
+Components that render content in a CDK overlay (Popover, Tooltip, Menu, Select, …) need the CDK
+overlay stylesheet. Add it once at the root of your app:
+
+```json
+"styles": [
+    "@angular/cdk/overlay-prebuilt.css"
+]
+```
+
+Or import it from your global stylesheet:
+
+```css
+@import '@angular/cdk/overlay-prebuilt.css';
 ```

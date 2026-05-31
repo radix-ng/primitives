@@ -1,29 +1,21 @@
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { PresenceStoryComponent } from './presence-story.componen';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
+import { PresenceExample } from './presence';
 
 export default {
     title: 'Primitives/Presence',
     decorators: [
         moduleMetadata({
-            imports: [PresenceStoryComponent]
+            imports: [PresenceExample]
         }),
-        componentWrapperDecorator(
-            (story) =>
-                `<div class="radix-themes light light-theme"
-                      data-radius="medium"
-                      data-scaling="100%">${story}</div>`
-        )
+        tailwindDemoDecorator()
     ]
 } as Meta;
 
 type Story = StoryObj;
 
 export const Default: Story = {
-    render: (args) => ({
-        props: args,
-        template: `
-<app-presence></app-presence>
-
-`
+    render: () => ({
+        template: `<presence-example />`
     })
 };

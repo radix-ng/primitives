@@ -4,57 +4,140 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 # Theming
 
-Use CSS Variables to customize the look and feel of your application.
+Radix NG primitives are **headless**: the directives ship no styles of their own. They render
+the correct semantics (roles, `aria-*`) and expose their state through `data-*` attributes, so
+you stay in full control of the look and feel. You can style them with plain CSS, CSS Modules,
+Tailwind, or any other approach.
 
-1. Write own Theme and Styles for components
-2. Using Radix Themes
+## Styling with data attributes
 
-## 1. Write own Theme and Styles for components
+Every stateful part reflects its state via `data-*` attributes that you can target from CSS.
+Use `undefined` semantics in mind — an attribute is only present when the state is active.
 
-// TODO
+```css
+/* state */
+[data-state='open'] {
+}
+[data-state='closed'] {
+}
 
-## 2. Using Radix Themes
+/* flags (present only when active) */
+[data-disabled] {
+}
+[data-highlighted] {
+}
 
-Install [Radix Themes](https://www.radix-ui.com/themes/docs/overview/getting-started) and start building in minutes.
-
-### Install Radix Themes
-
-```bash
-npm install @radix-ui/themes
-```
-
-### Import the CSS file
-
-Import the global CSS file at the root of your application.
-
-Example for `global.css`
-
-```bash
-@import '@radix-ui/themes/styles.css';
-@import '@angular/cdk/overlay-prebuilt.css';
-```
-
-For NX added to `build.options`
-
-```JSON
-"styles": [
-    "@radix-ui/themes/styles.css",
-     // For styling overlay, `cdk-overlay-dark-backdrop`
-    "@angular/cdk/overlay-prebuilt.css"
-],
-"stylePreprocessorOptions": {
-    "includePaths": [
-        "node_modules/"
-    ]
+/* orientation / direction */
+[data-orientation='vertical'] {
+}
+[dir='rtl'] {
 }
 ```
 
-### Setup CSS selectors
+For example, styling an accordion trigger and its content:
 
-Add selectors to **body** `radix-themes light light-theme`
+```css
+.AccordionTrigger[data-state='open'] {
+    background-color: var(--accent);
+}
+
+.AccordionContent[data-state='closed'] {
+    display: none;
+}
+```
+
+## Enter / exit animations
+
+Because state lives on `data-*` attributes, you can drive CSS animations straight from them.
+Primitives backed by `RdxPresenceDirective` (e.g. Tooltip, Select, Collapsible content) keep
+the element mounted until the exit animation defined for the closed state finishes:
+
+```css
+.Content[data-state='open'] {
+    animation: fade-in 150ms ease-out;
+}
+.Content[data-state='closed'] {
+    animation: fade-out 150ms ease-in;
+}
+```
+
+For size-based animations, components such as Collapsible and Accordion expose CSS variables
+with the measured dimensions:
+
+```css
+.AccordionContent[data-state='open'] {
+    animation: slide-down 150ms ease-out;
+}
+
+@keyframes slide-down {
+    from {
+        height: 0;
+    }
+    to {
+        height: var(--radix-accordion-content-height);
+    }
+}
+```
+
+## Design tokens & dark mode
+
+Use CSS custom properties to centralize your palette, and override them under a theme selector
+(a `data-theme` attribute or a `.dark` class) to support light/dark — no JavaScript required.
+
+```css
+:root {
+    --background: white;
+    --foreground: oklch(14.5% 1% 264deg);
+    --border: oklch(90% 1% 264deg);
+    --primary: oklch(20.5% 1% 264deg);
+}
+
+:root[data-theme='dark'] {
+    --background: oklch(14.5% 1% 264deg);
+    --foreground: oklch(96% 0.5% 264deg);
+    --border: oklch(30% 1% 264deg);
+    --primary: oklch(92% 0.5% 264deg);
+}
+```
+
+```css
+.Button {
+    color: var(--foreground);
+    background-color: var(--background);
+    border: 1px solid var(--border);
+}
+```
+
+## Using Tailwind
+
+The primitives work well with Tailwind — apply utility classes to the part elements and use
+state variants for the `data-*` attributes:
 
 ```html
-<body class="radix-themes light light-theme">
-  ...
-</body>
+<button
+    class="border-border bg-background text-foreground data-[state=open]:bg-muted rounded-md border px-4 py-2"
+    rdxAccordionTrigger
+>
+    Trigger
+</button>
+```
+
+Map your design tokens to Tailwind theme colors (Tailwind v4 uses a CSS-first `@theme` block)
+so utilities like `bg-background` and `border-border` resolve to the variables above. This is
+exactly how the demos in this Storybook are themed; the theme toggle in the toolbar simply sets
+`data-theme` on the document root.
+
+## Overlay styles
+
+Components that use the CDK overlay (e.g. for portalled content) need the CDK overlay
+stylesheet:
+
+```bash
+npm install @angular/cdk
+```
+
+```json
+"styles": [
+    "@angular/cdk/overlay-prebuilt.css"
+]
 ```

@@ -5,9 +5,10 @@ h3 {
 }
 
 .AccordionRoot {
-    border-radius: 6px;
-    background-color: var(--mauve-6);
-    box-shadow: 0 2px 10px var(--black-a4);
+    border-radius: 0.75rem;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 10px rgb(0 0 0 / 0.08);
 }
 
 .AccordionRoot[data-orientation='vertical'] {
@@ -55,7 +56,7 @@ h3 {
 .AccordionItem:focus-within {
     position: relative;
     z-index: 1;
-    box-shadow: 0 0 0 2px var(--mauve-12);
+    box-shadow: 0 0 0 2px var(--ring);
 }
 
 .AccordionHeader {
@@ -72,9 +73,9 @@ h3 {
     justify-content: space-between;
     font-size: 15px;
     line-height: 1;
-    color: var(--violet-11);
-    box-shadow: 0 1px 0 var(--mauve-6);
-    background-color: white;
+    color: var(--foreground);
+    box-shadow: 0 1px 0 var(--border);
+    background-color: var(--background);
     cursor: default;
 }
 
@@ -85,19 +86,19 @@ h3 {
 }
 
 .AccordionTrigger[data-disabled='true'] {
-    color: var(--gray-7);
+    color: var(--muted-foreground);
 }
 
 .AccordionTrigger:hover {
-    background-color: var(--mauve-2);
+    background-color: var(--muted);
 }
 
 .AccordionContent {
     display: flex;
     overflow: hidden;
     font-size: 15px;
-    color: var(--mauve-11);
-    background-color: var(--mauve-2);
+    color: var(--muted-foreground);
+    background-color: var(--muted);
 }
 
 .AccordionContent[hidden] {
@@ -126,7 +127,7 @@ h3 {
 
 .AccordionChevron {
     display: flex;
-    color: var(--violet-10);
+    color: var(--primary);
     transition: transform 300ms cubic-bezier(0.87, 0, 0.13, 1);
 }
 

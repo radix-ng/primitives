@@ -1,4 +1,5 @@
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { FocusScope, FocusScopeEvents, FocusScopeLoop } from './focus-scope';
 
 const html = String.raw;
@@ -9,11 +10,7 @@ export default {
         moduleMetadata({
             imports: [FocusScope, FocusScopeLoop, FocusScopeEvents]
         }),
-        componentWrapperDecorator(
-            (story) => html`
-                <div class="radix-themes light light-theme" data-radius="medium" data-scaling="100%">${story}</div>
-            `
-        )
+        tailwindDemoDecorator()
     ]
 } as Meta;
 

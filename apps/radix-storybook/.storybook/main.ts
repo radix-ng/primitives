@@ -38,6 +38,10 @@ const config: StorybookConfig = {
         disableTelemetry: false
     },
 
+    features: {
+        backgrounds: false
+    },
+
     async viteFinal(config: UserConfig) {
         return mergeConfig(config, {
             plugins: [viteTsConfigPaths()]

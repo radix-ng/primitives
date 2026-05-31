@@ -43,7 +43,7 @@ import { RdxSelectViewport } from '../src/select-viewport';
     template: `
         <ng-container rdxSelectRoot>
             <button
-                class="text-grass11 data-[placeholder]:text-green9 inline-flex h-[35px] min-w-[160px] items-center justify-between gap-[5px] rounded-lg border bg-white px-[15px] text-xs leading-none shadow-sm outline-none hover:bg-stone-50 focus:shadow-[0_0_0_2px] focus:shadow-black"
+                class="border-border bg-background text-foreground data-[placeholder]:text-muted-foreground hover:bg-muted focus-visible:ring-ring focus-visible:ring-offset-background inline-flex h-9 min-w-40 items-center justify-between gap-2 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 aria-label="Customise options"
                 rdxSelectTrigger
             >
@@ -57,25 +57,25 @@ import { RdxSelectViewport } from '../src/select-viewport';
                 <ng-template rdxSelectPortalPresence>
                     <div rdxSelectContent>
                         <div
-                            class="data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] min-w-[160px] rounded-lg border bg-white shadow-sm will-change-[opacity,transform]"
+                            class="data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade border-border bg-popover text-popover-foreground z-[100] min-w-40 rounded-lg border shadow-md will-change-[opacity,transform]"
                             [sideOffset]="sideOffset()"
                             [align]="align()"
                             rdxSelectPopperPositionWrapper
                         >
                             <div rdxSelectPopperPositionContent>
-                                <div class="p-[5px]" rdxSelectViewport>
-                                    <div class="px-[25px] text-xs leading-[25px] text-gray-600" rdxSelectLabel>
+                                <div class="p-1" rdxSelectViewport>
+                                    <div class="text-muted-foreground px-6 text-xs leading-6" rdxSelectLabel>
                                         Fruits
                                     </div>
                                     <div rdxSelectGroup>
                                         @for (option of options; track $index) {
                                             <div
-                                                class="text-grass11 data-[disabled]:text-mauve8 data-[highlighted]:bg-blue relative flex h-[25px] select-none items-center rounded-[3px] pl-[25px] pr-[35px] text-xs leading-none data-[disabled]:pointer-events-none data-[highlighted]:text-white data-[highlighted]:outline-none"
+                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 select-none items-center rounded-sm pl-6 pr-8 text-sm leading-none outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                                                 [value]="option"
                                                 rdxSelectItem
                                             >
                                                 <span
-                                                    class="absolute left-0 inline-flex w-[25px] items-center justify-center"
+                                                    class="absolute left-0 inline-flex w-6 items-center justify-center"
                                                     rdxSelectItemIndicator
                                                 >
                                                     <lucide-angular name="check" size="16" />
@@ -86,19 +86,19 @@ import { RdxSelectViewport } from '../src/select-viewport';
                                             </div>
                                         }
                                     </div>
-                                    <div class="bg-green m-[5px] h-[1px]"></div>
-                                    <div class="px-[25px] text-xs leading-[25px] text-gray-600" rdxSelectLabel>
+                                    <div class="bg-border mx-1 my-1 h-px"></div>
+                                    <div class="text-muted-foreground px-6 text-xs leading-6" rdxSelectLabel>
                                         Vegetables
                                     </div>
                                     <div rdxSelectGroup>
                                         @for (vegetable of vegetables; track $index) {
                                             <div
-                                                class="text-grass11 data-[disabled]:text-mauve8 data-[highlighted]:bg-blue relative flex h-[25px] select-none items-center rounded-[3px] pl-[25px] pr-[35px] text-xs leading-none data-[disabled]:pointer-events-none data-[highlighted]:text-white data-[highlighted]:outline-none"
+                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 select-none items-center rounded-sm pl-6 pr-8 text-sm leading-none outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                                                 [value]="vegetable"
                                                 rdxSelectItem
                                             >
                                                 <span
-                                                    class="absolute left-0 inline-flex w-[25px] items-center justify-center"
+                                                    class="absolute left-0 inline-flex w-6 items-center justify-center"
                                                     rdxSelectItemIndicator
                                                 >
                                                     <lucide-angular name="check" size="16" />
@@ -151,7 +151,7 @@ export class SelectDefault {
     template: `
         <ng-container rdxSelectRoot>
             <button
-                class="text-grass11 data-[placeholder]:text-green9 inline-flex h-[35px] min-w-[160px] items-center justify-between gap-[5px] rounded-lg border bg-white px-[15px] text-xs leading-none shadow-sm outline-none hover:bg-stone-50 focus:shadow-[0_0_0_2px] focus:shadow-black"
+                class="border-border bg-background text-foreground data-[placeholder]:text-muted-foreground hover:bg-muted focus-visible:ring-ring focus-visible:ring-offset-background inline-flex h-9 min-w-40 items-center justify-between gap-2 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 aria-label="Customise options"
                 rdxSelectTrigger
             >
@@ -165,31 +165,31 @@ export class SelectDefault {
                 <ng-template rdxSelectPortalPresence>
                     <div rdxSelectContent>
                         <div
-                            class="data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] min-w-[160px] overflow-auto rounded-lg border bg-white shadow-sm will-change-[opacity,transform]"
+                            class="data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade border-border bg-popover text-popover-foreground z-[100] min-w-40 overflow-auto rounded-lg border shadow-md will-change-[opacity,transform]"
                             [sideOffset]="5"
                             align="start"
                             rdxSelectPopperPositionWrapper
                         >
                             <div rdxSelectPopperPositionContent>
                                 <div
-                                    class="flex cursor-default items-center justify-center py-1"
+                                    class="text-muted-foreground hover:bg-muted bg-popover flex h-7 cursor-default items-center justify-center"
                                     rdxSelectScrollUpButton
                                 >
                                     <lucide-angular name="chevron-up" size="16" />
                                 </div>
-                                <div class="h-[230px] p-[5px]" rdxSelectViewport>
-                                    <div class="px-[25px] text-xs leading-[25px] text-gray-600" rdxSelectLabel>
+                                <div class="h-[230px] p-1" rdxSelectViewport>
+                                    <div class="text-muted-foreground px-6 text-xs leading-6" rdxSelectLabel>
                                         Fruits
                                     </div>
                                     <div rdxSelectGroup>
                                         @for (option of options; track $index) {
                                             <div
-                                                class="text-grass11 data-[disabled]:text-mauve8 data-[highlighted]:bg-blue relative flex h-[25px] select-none items-center rounded-[3px] pl-[25px] pr-[35px] text-xs leading-none data-[disabled]:pointer-events-none data-[highlighted]:text-white data-[highlighted]:outline-none"
+                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 select-none items-center rounded-sm pl-6 pr-8 text-sm leading-none outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                                                 [value]="option"
                                                 rdxSelectItem
                                             >
                                                 <span
-                                                    class="absolute left-0 inline-flex w-[25px] items-center justify-center"
+                                                    class="absolute left-0 inline-flex w-6 items-center justify-center"
                                                     rdxSelectItemIndicator
                                                 >
                                                     <lucide-angular name="check" size="16" />
@@ -200,19 +200,19 @@ export class SelectDefault {
                                             </div>
                                         }
                                     </div>
-                                    <div class="bg-green m-[5px] h-[1px]"></div>
-                                    <div class="px-[25px] text-xs leading-[25px] text-gray-600" rdxSelectLabel>
+                                    <div class="bg-border mx-1 my-1 h-px"></div>
+                                    <div class="text-muted-foreground px-6 text-xs leading-6" rdxSelectLabel>
                                         Vegetables
                                     </div>
                                     <div rdxSelectGroup>
                                         @for (vegetable of vegetables; track $index) {
                                             <div
-                                                class="text-grass11 data-[disabled]:text-mauve8 data-[highlighted]:bg-blue relative flex h-[25px] select-none items-center rounded-[3px] pl-[25px] pr-[35px] text-xs leading-none data-[disabled]:pointer-events-none data-[highlighted]:text-white data-[highlighted]:outline-none"
+                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 select-none items-center rounded-sm pl-6 pr-8 text-sm leading-none outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                                                 [value]="vegetable"
                                                 rdxSelectItem
                                             >
                                                 <span
-                                                    class="absolute left-0 inline-flex w-[25px] items-center justify-center"
+                                                    class="absolute left-0 inline-flex w-6 items-center justify-center"
                                                     rdxSelectItemIndicator
                                                 >
                                                     <lucide-angular name="check" size="16" />
@@ -225,7 +225,7 @@ export class SelectDefault {
                                     </div>
                                 </div>
                                 <div
-                                    class="flex cursor-default items-center justify-center py-1"
+                                    class="text-muted-foreground hover:bg-muted bg-popover flex h-7 cursor-default items-center justify-center"
                                     rdxSelectScrollDownButton
                                 >
                                     <lucide-angular name="chevron-down" size="16" />
@@ -276,7 +276,7 @@ export class SelectDefaultWithScroll {
     template: `
         <ng-container [value]="fruit()" rdxSelectRoot>
             <button
-                class="text-violet11 hover:bg-mauve3 data-[placeholder]:text-violet9 inline-flex h-[35px] min-w-[160px] items-center justify-between gap-[5px] rounded bg-white px-[15px] text-[13px] leading-none shadow-[0_2px_10px] shadow-black/10 outline-none focus:shadow-[0_0_0_2px] focus:shadow-black"
+                class="border-border bg-background text-foreground data-[placeholder]:text-muted-foreground hover:bg-muted focus-visible:ring-ring focus-visible:ring-offset-background inline-flex h-9 min-w-40 items-center justify-between gap-2 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 aria-label="Customise options"
                 rdxSelectTrigger
             >
@@ -288,25 +288,25 @@ export class SelectDefaultWithScroll {
 
             <div rdxSelectPortal>
                 <ng-template rdxSelectPortalPresence>
-                    <div class="min-w-[160px]" rdxSelectContent>
+                    <div class="min-w-40" rdxSelectContent>
                         <div rdxSelectItemAlignedPosition>
                             <div
-                                class="data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] min-w-[160px] rounded-lg border bg-white shadow-sm will-change-[opacity,transform]"
+                                class="data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade border-border bg-popover text-popover-foreground z-[100] min-w-40 rounded-lg border shadow-md will-change-[opacity,transform]"
                                 rdxSelectItemAlignedPositionContent
                             >
-                                <div class="p-[5px]" rdxSelectViewport>
-                                    <div class="px-[25px] text-xs leading-[25px] text-gray-600" rdxSelectLabel>
+                                <div class="p-1" rdxSelectViewport>
+                                    <div class="text-muted-foreground px-6 text-xs leading-6" rdxSelectLabel>
                                         Fruits
                                     </div>
                                     <div rdxSelectGroup>
                                         @for (option of options; track $index) {
                                             <div
-                                                class="text-grass11 data-[disabled]:text-mauve8 data-[highlighted]:bg-blue relative flex h-[25px] select-none items-center rounded-[3px] pl-[25px] pr-[35px] text-xs leading-none data-[disabled]:pointer-events-none data-[highlighted]:text-white data-[highlighted]:outline-none"
+                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 select-none items-center rounded-sm pl-6 pr-8 text-sm leading-none outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                                                 [value]="option"
                                                 rdxSelectItem
                                             >
                                                 <span
-                                                    class="absolute left-0 inline-flex w-[25px] items-center justify-center"
+                                                    class="absolute left-0 inline-flex w-6 items-center justify-center"
                                                     rdxSelectItemIndicator
                                                 >
                                                     <lucide-angular name="check" size="16" />
@@ -315,19 +315,19 @@ export class SelectDefaultWithScroll {
                                             </div>
                                         }
                                     </div>
-                                    <div class="bg-green m-[5px] h-[1px]"></div>
-                                    <div class="px-[25px] text-xs leading-[25px] text-gray-600" rdxSelectLabel>
+                                    <div class="bg-border mx-1 my-1 h-px"></div>
+                                    <div class="text-muted-foreground px-6 text-xs leading-6" rdxSelectLabel>
                                         Vegetables
                                     </div>
                                     <div rdxSelectGroup>
                                         @for (vegetable of vegetables; track $index) {
                                             <div
-                                                class="text-grass11 data-[disabled]:text-mauve8 data-[highlighted]:bg-blue relative flex h-[25px] select-none items-center rounded-[3px] pl-[25px] pr-[35px] text-xs leading-none data-[disabled]:pointer-events-none data-[highlighted]:text-white data-[highlighted]:outline-none"
+                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 select-none items-center rounded-sm pl-6 pr-8 text-sm leading-none outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                                                 [value]="vegetable"
                                                 rdxSelectItem
                                             >
                                                 <span
-                                                    class="absolute left-0 inline-flex w-[25px] items-center justify-center"
+                                                    class="absolute left-0 inline-flex w-6 items-center justify-center"
                                                     rdxSelectItemIndicator
                                                 >
                                                     <lucide-angular name="check" size="16" />
@@ -378,7 +378,7 @@ export class SelectAlignedPosition {
     template: `
         <ng-container [value]="fruit()" rdxSelectRoot>
             <button
-                class="text-violet11 hover:bg-mauve3 data-[placeholder]:text-violet9 inline-flex h-[35px] min-w-[160px] items-center justify-between gap-[5px] rounded bg-white px-[15px] text-[13px] leading-none shadow-[0_2px_10px] shadow-black/10 outline-none focus:shadow-[0_0_0_2px] focus:shadow-black"
+                class="border-border bg-background text-foreground data-[placeholder]:text-muted-foreground hover:bg-muted focus-visible:ring-ring focus-visible:ring-offset-background inline-flex h-9 min-w-40 items-center justify-between gap-2 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 aria-label="Customise options"
                 rdxSelectTrigger
             >
@@ -390,31 +390,31 @@ export class SelectAlignedPosition {
 
             <div rdxSelectPortal>
                 <ng-template rdxSelectPortalPresence>
-                    <div class="min-w-[160px]" rdxSelectContent>
+                    <div class="min-w-40" rdxSelectContent>
                         <div rdxSelectItemAlignedPosition>
                             <div
-                                class="data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] min-w-[160px] overflow-hidden rounded-lg border bg-white shadow-sm will-change-[opacity,transform]"
+                                class="data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade border-border bg-popover text-popover-foreground z-[100] min-w-40 overflow-hidden rounded-lg border shadow-md will-change-[opacity,transform]"
                                 rdxSelectItemAlignedPositionContent
                             >
                                 <div
-                                    class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                                    class="text-muted-foreground hover:bg-muted bg-popover flex h-7 cursor-default items-center justify-center"
                                     rdxSelectScrollUpButton
                                 >
                                     <lucide-angular name="chevron-up" size="16" />
                                 </div>
-                                <div class="p-[5px]" rdxSelectViewport>
-                                    <div class="px-[25px] text-xs leading-[25px] text-gray-600" rdxSelectLabel>
+                                <div class="p-1" rdxSelectViewport>
+                                    <div class="text-muted-foreground px-6 text-xs leading-6" rdxSelectLabel>
                                         Fruits
                                     </div>
                                     <div rdxSelectGroup>
                                         @for (option of options; track $index) {
                                             <div
-                                                class="text-grass11 data-[disabled]:text-mauve8 data-[highlighted]:bg-blue relative flex h-[25px] select-none items-center rounded-[3px] pl-[25px] pr-[35px] text-xs leading-none data-[disabled]:pointer-events-none data-[highlighted]:text-white data-[highlighted]:outline-none"
+                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 select-none items-center rounded-sm pl-6 pr-8 text-sm leading-none outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                                                 [value]="option"
                                                 rdxSelectItem
                                             >
                                                 <span
-                                                    class="absolute left-0 inline-flex w-[25px] items-center justify-center"
+                                                    class="absolute left-0 inline-flex w-6 items-center justify-center"
                                                     rdxSelectItemIndicator
                                                 >
                                                     <lucide-angular name="check" size="16" />
@@ -423,19 +423,19 @@ export class SelectAlignedPosition {
                                             </div>
                                         }
                                     </div>
-                                    <div class="bg-green m-[5px] h-[1px]"></div>
-                                    <div class="px-[25px] text-xs leading-[25px] text-gray-600" rdxSelectLabel>
+                                    <div class="bg-border mx-1 my-1 h-px"></div>
+                                    <div class="text-muted-foreground px-6 text-xs leading-6" rdxSelectLabel>
                                         Vegetables
                                     </div>
                                     <div rdxSelectGroup>
                                         @for (vegetable of vegetables; track $index) {
                                             <div
-                                                class="text-grass11 data-[disabled]:text-mauve8 data-[highlighted]:bg-blue relative flex h-[25px] select-none items-center rounded-[3px] pl-[25px] pr-[35px] text-xs leading-none data-[disabled]:pointer-events-none data-[highlighted]:text-white data-[highlighted]:outline-none"
+                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 select-none items-center rounded-sm pl-6 pr-8 text-sm leading-none outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                                                 [value]="vegetable"
                                                 rdxSelectItem
                                             >
                                                 <span
-                                                    class="absolute left-0 inline-flex w-[25px] items-center justify-center"
+                                                    class="absolute left-0 inline-flex w-6 items-center justify-center"
                                                     rdxSelectItemIndicator
                                                 >
                                                     <lucide-angular name="check" size="16" />
@@ -448,7 +448,7 @@ export class SelectAlignedPosition {
                                     </div>
                                 </div>
                                 <div
-                                    class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                                    class="text-muted-foreground hover:bg-muted bg-popover flex h-7 cursor-default items-center justify-center"
                                     rdxSelectScrollDownButton
                                 >
                                     <lucide-angular name="chevron-down" size="16" />
