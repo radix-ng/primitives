@@ -1,12 +1,12 @@
 import { Directive } from '@angular/core';
-import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
+import { RdxVisuallyHiddenInputBubbleDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Directive({
     selector: 'input[rdxToggleVisuallyHiddenInput]',
     exportAs: 'rdxToggleVisuallyHiddenInput',
     hostDirectives: [
         {
-            directive: RdxVisuallyHiddenInputDirective,
+            directive: RdxVisuallyHiddenInputBubbleDirective,
             inputs: ['name', 'required', 'value', 'disabled']
         }
     ],

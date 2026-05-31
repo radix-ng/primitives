@@ -1,81 +1,29 @@
-// Implementation from https://github.com/unovue/radix-vue
-
-import { Directive, ElementRef, Injector, afterNextRender, computed, effect, inject, input } from '@angular/core';
+import { Directive } from '@angular/core';
 import { RdxVisuallyHiddenInputBubbleDirective } from './visually-hidden-input-bubble.directive';
-import { VisuallyHidden } from './visually-hidden.directive';
 
+/**
+ * Mirrors a control's value into a visually hidden `<input>` so it participates in form
+ * submission while staying out of the visual and (when `fully-hidden`) accessibility tree.
+ *
+ * Apply it to a real `<input>` element. It carries a **single scalar value** — the composed
+ * {@link RdxVisuallyHiddenInputBubbleDirective} owns `name`/`value`/`checked` and keeps the
+ * native value in sync, re-dispatching `input`/`change` events so the value bubbles to the form.
+ *
+ * A single `<input>` can only represent one form field, so object/array values are not
+ * supported here; render one directive per field instead.
+ *
+ * @example
+ * ```html
+ * <input rdxVisuallyHiddenInput [name]="'agree'" [value]="checked() ? 'on' : 'off'" />
+ * ```
+ */
 @Directive({
-    selector: '[rdxVisuallyHiddenInput]',
+    selector: 'input[rdxVisuallyHiddenInput]',
     hostDirectives: [
         {
             directive: RdxVisuallyHiddenInputBubbleDirective,
-            inputs: [
-                'feature: feature',
-                'name: name ',
-                'value: value',
-                'checked: checked',
-                'disabled: disabled',
-                'required: required'
-            ]
+            inputs: ['feature', 'name', 'value', 'checked', 'required', 'disabled']
         }
     ]
 })
-export class RdxVisuallyHiddenInputDirective<T> {
-    private readonly elementRef = inject(ElementRef);
-    private readonly injector = inject(Injector);
-
-    readonly name = input<string | undefined>(undefined);
-    readonly value = input<T | string>();
-    readonly checked = input<boolean | undefined>(undefined);
-    readonly required = input<boolean | undefined>(undefined);
-    readonly disabled = input<boolean | undefined>(undefined);
-    readonly feature = input<VisuallyHidden>('fully-hidden');
-
-    readonly parsedValue = computed(() => {
-        const value = this.value();
-        const name = this.name();
-
-        if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
-            return [{ name, value }];
-        }
-
-        if (Array.isArray(value)) {
-            return value.flatMap((obj, index) => {
-                if (typeof obj === 'object') {
-                    return Object.entries(obj).map(([key, val]) => ({
-                        name: `[${name}][${index}][${key}]`,
-                        value: val
-                    }));
-                } else {
-                    return { name: `[${name}][${index}]`, value: obj };
-                }
-            });
-        }
-
-        if (value !== null && typeof value === 'object') {
-            return Object.entries(value).map(([key, val]) => ({
-                name: `[${name}][${key}]`,
-                value: val
-            }));
-        }
-
-        return [];
-    });
-
-    constructor() {
-        afterNextRender(() => {
-            effect(
-                () => {
-                    const parsedValues = this.parsedValue();
-
-                    parsedValues.forEach((parsed) => {
-                        const inputElement = this.elementRef.nativeElement;
-                        inputElement.setAttribute('name', parsed.name);
-                        inputElement.setAttribute('value', parsed.value);
-                    });
-                },
-                { injector: this.injector }
-            );
-        });
-    }
-}
+export class RdxVisuallyHiddenInputDirective {}

@@ -15,7 +15,7 @@ export type VisuallyHidden = 'focusable' | 'fully-hidden';
     selector: '[rdxVisuallyHidden]',
     host: {
         '[attr.tabindex]': 'computedFeature() === "fully-hidden" ? "-1" : undefined',
-        '[attr.aria-hidden]': 'computedFeature() === "focusable" ? "true" : undefined',
+        '[attr.aria-hidden]': 'computedFeature() === "fully-hidden" ? "true" : undefined',
         '[attr.data-hidden]': 'computedFeature() === "fully-hidden" ? "" : undefined',
         '[hidden]': 'computedFeature() === "fully-hidden" ? true : undefined',
         '[style]': `{
@@ -29,11 +29,9 @@ export type VisuallyHidden = 'focusable' | 'fully-hidden';
             clip: 'rect(0, 0, 0, 0)',
             clipPath: 'inset(50%)',
             whiteSpace: 'nowrap',
-            wordWrap: 'normal',
-            top: '-1px',
-            left: '-1px'
+            wordWrap: 'normal'
         }`,
-        '[style.display]': 'feature() === "focusable" ? "inline-block" : "none"'
+        '[style.display]': 'computedFeature() === "focusable" ? "inline-block" : "none"'
     }
 })
 export class RdxVisuallyHiddenDirective {

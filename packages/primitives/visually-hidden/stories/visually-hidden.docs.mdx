@@ -1,36 +1,93 @@
-import { Meta } from '@storybook/addon-docs/blocks';
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './visually-hidden.stories';
+import { RdxVisuallyHiddenDirective } from '../src/visually-hidden.directive';
+import { RdxVisuallyHiddenInputDirective } from '../src/visually-hidden-input.directive';
+import { RdxVisuallyHiddenInputBubbleDirective } from '../src/visually-hidden-input-bubble.directive';
 
 <Meta title="Utilities/Visually Hidden" />
 
 # Visually Hidden
 
-#### Hides content from the screen in an accessible way.
+#### Hides content visually while keeping it available to assistive technology.
 
-#### You can use also [a11y](https://material.angular.io/cdk/a11y), they also have an auxiliary class for this.
+<Canvas sourceState="hidden" of={Stories.AccessibleName} />
 
 ## Features
 
-- ✅ Visually hides content while preserving it for assistive technology.
+- ✅ Hides content from the screen while preserving it for screen readers.
+- ✅ `focusable` mode keeps the element in the tab order and accessibility tree.
+- ✅ `fully-hidden` mode removes it from layout, the tab order and the accessibility tree.
+- ✅ Companion directives mirror a value into a visually hidden `<input>` for form participation.
 
 ## Import
 
-Screen readers and other assistive technology skip elements that have display: none, visibility: hidden, opacity: 0, height: 0, or width: 0. In some cases you may need to visually hide an element while keeping it available to assistive technology.
-You can do so using the a11y-visually-hidden Sass mixin, which emits the .cdk-visually-hidden CSS class:
-
-```scss
-@use '@angular/cdk';
-
-@include cdk.a11y-visually-hidden();
+```typescript
+import {
+  RdxVisuallyHiddenDirective,
+  RdxVisuallyHiddenInputDirective,
+  RdxVisuallyHiddenInputBubbleDirective
+} from '@radix-ng/primitives/visually-hidden';
 ```
 
-## Examples
+## Anatomy
+
+Most often you wrap a label that gives an icon-only control an accessible name:
 
 ```html
-<div class="custom-checkbox">
-  <input class="cdk-visually-hidden" type="checkbox" />
-</div>
+<button>
+  <icon aria-hidden="true" />
+  <span rdxVisuallyHidden>Add to favorites</span>
+</button>
 ```
+
+## API Reference
+
+### VisuallyHidden
+
+`RdxVisuallyHiddenDirective` — selector `[rdxVisuallyHidden]`.
+
+Applies the visually-hidden style recipe to its host element.
+
+<ArgTypes of={RdxVisuallyHiddenDirective} />
+
+It also exposes a `setFeature(feature)` method to switch the mode imperatively at runtime.
+
+| Data Attribute | Value                          |
+| -------------- | ------------------------------ |
+| `[data-hidden]` | Present when `fully-hidden` |
+
+#### Feature modes
+
+- **`focusable`** (default) — the element stays in the accessibility tree and tab order; use it for screen-reader-only
+  content that must remain reachable.
+- **`fully-hidden`** — adds `aria-hidden`, `tabindex="-1"`, the `hidden` attribute and `display: none`, removing the
+  element from layout, the tab order and the accessibility tree.
+
+<Canvas sourceState="hidden" of={Stories.FeatureModes} />
+
+### VisuallyHiddenInput
+
+`RdxVisuallyHiddenInputDirective` — selector `input[rdxVisuallyHiddenInput]`.
+
+Apply it to a real `<input>` to mirror a control's value into a form while the field stays hidden. It carries a single
+scalar value and re-dispatches `input`/`change` events so the value participates in form submission. Defaults the field
+to `fully-hidden`.
+
+<ArgTypes of={RdxVisuallyHiddenInputBubbleDirective} />
+
+<Canvas sourceState="hidden" of={Stories.FormInput} />
+
+### VisuallyHiddenInputBubble
+
+`RdxVisuallyHiddenInputBubbleDirective` — selector `input[rdxVisuallyHiddenInputBubble]`.
+
+The low-level building block behind `VisuallyHiddenInput`. It owns the `name`/`value`/`checked` attributes and keeps the
+native input value in sync, re-emitting `input`/`change` events. Compose it via `hostDirectives` when building your own
+form-aware primitive.
 
 ## Accessibility
 
-This is useful in certain scenarios as an alternative to traditional labelling with aria-label or aria-labelledby.
+Use visually hidden content as an alternative to `aria-label`/`aria-labelledby` when you need rendered text (for
+example, an accessible name for an icon-only button) that should not be visible on screen. Keep the `focusable` default
+for anything that must stay in the accessibility tree; reserve `fully-hidden` for elements that should be entirely
+removed, such as form bubble inputs.
