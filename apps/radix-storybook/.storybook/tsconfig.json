@@ -11,6 +11,7 @@
         "../../../packages/primitives/**/*.stories.mdx",
         "../../../packages/primitives/**/*.directive.ts",
         "../../../packages/primitives/**/*.component.ts",
+        "../../../packages/primitives/**/src/**/*.ts",
         "*.ts",
         "*.tsx"
     ]
