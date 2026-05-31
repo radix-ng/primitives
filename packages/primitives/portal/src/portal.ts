@@ -80,6 +80,8 @@ export class RdxPortal {
         if (container instanceof ElementRef) {
             return container.nativeElement ?? null;
         }
-        return container;
+        // Anything that isn't a real element (e.g. a TemplateRef passed by mistake) falls back to
+        // the default container so the element still leaves the flow instead of staying in place.
+        return container instanceof HTMLElement ? container : null;
     }
 }

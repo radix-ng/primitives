@@ -13,5 +13,8 @@
             "Bash(git diff *)",
             "Bash(git log *)"
         ]
+    },
+    "enabledPlugins": {
+        "frontend-design@claude-plugins-official": true
     }
 }

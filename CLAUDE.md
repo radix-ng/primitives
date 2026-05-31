@@ -4,11 +4,12 @@
 
 Angular port of Radix UI headless primitives. This is a **signals-first, headless** component library — directives carry no styles; state is exposed via `data-*` attributes for consumers to style.
 
-- **Monorepo**: Nx 21, pnpm workspaces
-- **Angular**: 20 (signals API: `input()`, `model()`, `computed()`, `signal()`, `linkedSignal()`)
+- **Monorepo**: Nx 22, pnpm workspaces
+- **Angular**: 21 (signals API: `input()`, `model()`, `computed()`, `signal()`, `linkedSignal()`)
 - **TypeScript**: 5.9
 - **Testing**: Jest + `jest-preset-angular` + `@testing-library/angular`
-- **Storybook**: 9 (AnalogJS vite plugin)
+- **Storybook**: 10 (`@storybook/angular` + AnalogJS vite plugin)
+- **Styling in stories**: Tailwind v4 (see "Stories & Storybook")
 - **Prefix**: `rdx` (selectors and `exportAs`)
 - **Class prefix**: `Rdx`
 
@@ -143,6 +144,23 @@ Prefer `hostDirectives` to re-use existing primitives (e.g., Accordion Item comp
    "@radix-ng/primitives/<name>": ["packages/primitives/<name>/index.ts"]
    ```
 3. Run `pnpm primitives:build` to verify build.
+
+## Stories & Storybook
+
+- Dev server: `pnpm storybook:primitives` (runs on `http://localhost:4400`). Full compile check: `nx run radix-storybook:build-storybook` (add `--skip-nx-cache` to force a real rebuild — Nx caches this target).
+- **Tailwind v4 is available in stories** — prefer utility classes directly in story templates over inline `<style>`/`styles`. Config is CSS-based at `apps/radix-storybook/.storybook/tailwind.css` (`@import 'tailwindcss/...'` + a `@theme {}` block); there is **no** `tailwind.config.js`.
+- Utilities work globally. The Tailwind preflight reset is stripped for non-Tailwind demos (`[data-demo]:not([data-demo='tailwind'])`); wrap a demo in an element with `data-demo="tailwind"` when you need the reset + Tailwind theme variables.
+- Files: `stories/<name>.stories.ts` (CSF) + optional `stories/<name>.ts` (standalone story components) + optional `stories/<name>.docs.mdx`. In the mdx, `<Meta title="…">` matching the CSF `title` attaches it as that group's docs page; use `<Canvas of={Stories.X} />` to embed a story and `<ArgTypes of={Directive} />` for the props table.
+
+## Shared composition primitives
+
+Complex components compose these headless building blocks — good entry points when tracing behavior:
+
+- `core` — `createContext`, `useArrowNavigation`, id generators, shared types/utils.
+- `collection` — `RdxCollectionProvider` + `RdxCollectionItem`: collects item directives in **DOM order** via `contentChildren` (matches `hostDirectives` too). Read items off the instance (`item.element`, `item.value()`, `item.disabled()`); `useCollection()` = `inject(RdxCollectionProvider)`. Only consumer: `select2`.
+- `portal` — `RdxPortal`: teleports its host element into a container (default `document.body`), reactively; non-element containers fall back to body.
+- `presence` — conditional mount/unmount with enter/leave animation support.
+- `roving-focus`, `focus-scope`, `dismissable-layer`, `popper` — focus roving, focus trapping, outside-dismiss, positioning.
 
 ## Useful commands
 

@@ -1,5 +1,5 @@
 import { DestroyRef, Directive, effect, inject, output, signal } from '@angular/core';
-import { useCollection } from '@radix-ng/primitives/collection';
+import { RdxCollectionProvider } from '@radix-ng/primitives/collection';
 import { getActiveElement } from '@radix-ng/primitives/core';
 import { injectSelectContentContext } from './select-content';
 
@@ -22,15 +22,13 @@ export class RdxSelectScrollButtonBase {
 
     readonly autoScroll = output();
 
-    readonly getItems: ReturnType<typeof useCollection>['getItems'];
+    private readonly collection = inject(RdxCollectionProvider);
 
     constructor() {
-        const { getItems } = useCollection();
-        this.getItems = getItems;
-
         effect(() => {
-            const activeItem = getItems()
-                .map((i) => i.ref)
+            const activeItem = this.collection
+                .items()
+                .map((i) => i.element)
                 .find((item) => item === getActiveElement());
             activeItem?.scrollIntoView({ block: 'nearest' });
         });

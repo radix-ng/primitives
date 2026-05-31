@@ -53,8 +53,8 @@ import { RdxSelectViewport } from '../src/select-viewport';
                 <lucide-angular name="chevron-down" size="16" />
             </button>
 
-            <div [container]="portalContent" rdxSelectPortal>
-                <ng-template #portalContent rdxSelectPortalPresence>
+            <div rdxSelectPortal>
+                <ng-template rdxSelectPortalPresence>
                     <div rdxSelectContent>
                         <div
                             class="data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] min-w-[160px] rounded-lg border bg-white shadow-sm will-change-[opacity,transform]"
@@ -161,8 +161,8 @@ export class SelectDefault {
                 <lucide-angular name="chevron-down" size="16" />
             </button>
 
-            <div [container]="portalContent" rdxSelectPortal>
-                <ng-template #portalContent rdxSelectPortalPresence>
+            <div rdxSelectPortal>
+                <ng-template rdxSelectPortalPresence>
                     <div rdxSelectContent>
                         <div
                             class="data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] min-w-[160px] overflow-auto rounded-lg border bg-white shadow-sm will-change-[opacity,transform]"
@@ -286,8 +286,8 @@ export class SelectDefaultWithScroll {
                 <lucide-angular name="chevron-down" size="16" />
             </button>
 
-            <div [container]="portalContent" rdxSelectPortal>
-                <ng-template #portalContent rdxSelectPortalPresence>
+            <div rdxSelectPortal>
+                <ng-template rdxSelectPortalPresence>
                     <div class="min-w-[160px]" rdxSelectContent>
                         <div rdxSelectItemAlignedPosition>
                             <div
@@ -388,8 +388,8 @@ export class SelectAlignedPosition {
                 <lucide-angular name="chevron-down" size="16" />
             </button>
 
-            <div [container]="portalContent" rdxSelectPortal>
-                <ng-template #portalContent rdxSelectPortalPresence>
+            <div rdxSelectPortal>
+                <ng-template rdxSelectPortalPresence>
                     <div class="min-w-[160px]" rdxSelectContent>
                         <div rdxSelectItemAlignedPosition>
                             <div
@@ -402,7 +402,7 @@ export class SelectAlignedPosition {
                                 >
                                     <lucide-angular name="chevron-up" size="16" />
                                 </div>
-                                <div class="h-[230px] p-[5px] " rdxSelectViewport>
+                                <div class="p-[5px]" rdxSelectViewport>
                                     <div class="px-[25px] text-xs leading-[25px] text-gray-600" rdxSelectLabel>
                                         Fruits
                                     </div>
@@ -465,16 +465,15 @@ export class SelectAlignedPositionWithScroll {
     readonly fruit = signal('Apple');
 
     readonly options = ['Apple', 'Banana', 'Blueberry', 'Grapes', 'Pineapple'];
+
+    // Long enough to overflow the available viewport height, so the item-aligned popup scrolls
+    // and the up/down scroll buttons appear (matches base-ui's item-aligned + scroll behaviour).
     readonly vegetables = [
         'Aubergine',
         'Broccoli',
         'Carrot',
         'Courgette',
         'Leek',
-        'Aubergine1',
-        'Broccoli1',
-        'Carrot1',
-        'Courgette1',
-        'Leek1'
+        ...Array.from({ length: 25 }, (_, i) => `Vegetable ${i + 1}`)
     ];
 }

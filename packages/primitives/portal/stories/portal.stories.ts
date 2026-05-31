@@ -17,9 +17,11 @@ type Story = StoryObj;
 export const Default: Story = {
     render: () => ({
         template: html`
-            <section class="portal-demo">
-                <div class="portal-demo__box">
-                    <h3>Clipping box</h3>
+            <section class="font-sans">
+                <div
+                    class="relative h-40 w-80 overflow-hidden rounded-lg border-2 border-dashed border-violet-500 p-4 text-white"
+                >
+                    <h3 class="mb-2 font-semibold">Clipping box</h3>
                     <p>
                         This box has
                         <code>overflow: hidden</code>
@@ -32,40 +34,14 @@ export const Default: Story = {
                         , so it escapes the clipping and pins to the viewport corner.
                     </p>
 
-                    <div class="portal-demo__badge" rdxPortal>📦 Portaled to &lt;body&gt;</div>
+                    <div
+                        class="fixed right-4 top-4 z-[1000] rounded-full bg-violet-500 px-4 py-2.5 font-semibold text-white shadow-lg"
+                        rdxPortal
+                    >
+                        📦 Portaled to &lt;body&gt;
+                    </div>
                 </div>
             </section>
-
-            <style>
-                .portal-demo {
-                    font-family: sans-serif;
-                }
-                .portal-demo__box {
-                    position: relative;
-                    width: 320px;
-                    height: 160px;
-                    padding: 16px;
-                    overflow: hidden;
-                    border: 2px dashed #8b5cf6;
-                    border-radius: 8px;
-                    color: #e5e7eb;
-                }
-                .portal-demo__box h3 {
-                    margin: 0 0 8px;
-                }
-                .portal-demo__badge {
-                    position: fixed;
-                    top: 16px;
-                    right: 16px;
-                    z-index: 1000;
-                    padding: 10px 16px;
-                    border-radius: 9999px;
-                    background: #8b5cf6;
-                    color: #fff;
-                    font-weight: 600;
-                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-                }
-            </style>
         `
     })
 };
@@ -73,52 +49,28 @@ export const Default: Story = {
 export const CustomContainer: Story = {
     render: () => ({
         template: html`
-            <section class="portal-demo">
-                <div class="portal-demo__panel">
-                    <h3>Source</h3>
+            <section class="flex gap-4 font-sans">
+                <div class="min-h-[120px] flex-1 rounded-lg border-2 border-dashed border-white/40 p-4 text-white">
+                    <h3 class="mb-2 font-semibold">Source</h3>
                     <p>The pill below is declared here…</p>
 
                     <!-- Resolved against the document via a CSS selector -->
-                    <div class="portal-demo__pill" container="#portal-target" rdxPortal>
+                    <div
+                        class="mt-3 inline-block rounded-full bg-green-500 px-3.5 py-2 font-semibold text-green-950"
+                        container="#portal-target"
+                        rdxPortal
+                    >
                         🎯 …but rendered into the target container
                     </div>
                 </div>
 
-                <div class="portal-demo__panel portal-demo__panel--target" id="portal-target">
-                    <h3>Target (#portal-target)</h3>
+                <div
+                    class="min-h-[120px] flex-1 rounded-lg border-2 border-dashed border-green-500 p-4 text-white"
+                    id="portal-target"
+                >
+                    <h3 class="mb-2 font-semibold">Target (#portal-target)</h3>
                 </div>
             </section>
-
-            <style>
-                .portal-demo {
-                    display: flex;
-                    gap: 16px;
-                    font-family: sans-serif;
-                }
-                .portal-demo__panel {
-                    flex: 1;
-                    min-height: 120px;
-                    padding: 16px;
-                    border: 2px dashed #6b7280;
-                    border-radius: 8px;
-                    color: #e5e7eb;
-                }
-                .portal-demo__panel--target {
-                    border-color: #22c55e;
-                }
-                .portal-demo__panel h3 {
-                    margin: 0 0 8px;
-                }
-                .portal-demo__pill {
-                    display: inline-block;
-                    margin-top: 12px;
-                    padding: 8px 14px;
-                    border-radius: 9999px;
-                    background: #22c55e;
-                    color: #052e16;
-                    font-weight: 600;
-                }
-            </style>
         `
     })
 };

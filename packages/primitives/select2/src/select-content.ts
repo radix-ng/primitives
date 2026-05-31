@@ -10,7 +10,7 @@ import {
     signal
 } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
-import { RdxCollectionProvider, useCollection } from '@radix-ng/primitives/collection';
+import { RdxCollectionProvider } from '@radix-ng/primitives/collection';
 import { createContext } from '@radix-ng/primitives/core';
 import { provideRdxDismissableLayerConfig, RdxDismissableLayer } from '@radix-ng/primitives/dismissable-layer';
 import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
@@ -94,6 +94,7 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
 export class RdxSelectContent {
     private readonly dismissableLayer = inject(RdxDismissableLayer);
     private readonly currentElement = inject(ElementRef);
+    private readonly collection = inject(RdxCollectionProvider);
 
     readonly rootContext = injectSelectRootContext()!;
 
@@ -119,8 +120,6 @@ export class RdxSelectContent {
      */
     readonly pointerDownOutside = outputFromObservable(outputToObservable(this.dismissableLayer.pointerDownOutside));
 
-    readonly getItems: ReturnType<typeof useCollection>['getItems'];
-
     readonly content = signal<HTMLElement | null>(null);
 
     @ContentChild(RDX_SELECT_POSITIONER_TOKEN, { descendants: true })
@@ -134,9 +133,6 @@ export class RdxSelectContent {
     }
 
     constructor() {
-        const { getItems } = useCollection();
-        this.getItems = getItems;
-
         this.dismissableLayer.focusOutside.subscribe((e) => e.preventDefault());
 
         this.dismissableLayer.dismiss.subscribe(() => this.rootContext.onOpenChange(false));
@@ -215,7 +211,7 @@ export class RdxSelectContent {
         if (keyEvent.key === 'Tab') event.preventDefault();
 
         if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(keyEvent.key)) {
-            const collectionItems = this.getItems().map((i) => i.ref);
+            const collectionItems = this.collection.items().map((i) => i.element);
             let candidateNodes = [...collectionItems];
 
             if (['ArrowUp', 'End'].includes(keyEvent.key)) candidateNodes = candidateNodes.slice().reverse();

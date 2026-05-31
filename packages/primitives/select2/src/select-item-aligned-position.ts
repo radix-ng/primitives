@@ -9,7 +9,7 @@ import {
     output,
     signal
 } from '@angular/core';
-import { useCollection } from '@radix-ng/primitives/collection';
+import { RdxCollectionProvider } from '@radix-ng/primitives/collection';
 import { clamp, resizeEffect } from '@radix-ng/primitives/core';
 import { injectSelectContentContext, RDX_SELECT_POSITIONER_TOKEN, RdxPositionerImpl } from './select-content';
 import { RdxSelectItemAlignedPositionContent } from './select-item-aligned-position-content';
@@ -48,12 +48,9 @@ export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
 
     readonly contentElement = contentChild.required(RdxSelectItemAlignedPositionContent);
 
-    readonly getItems: ReturnType<typeof useCollection>['getItems'];
+    private readonly collection = inject(RdxCollectionProvider);
 
     constructor() {
-        const { getItems } = useCollection();
-        this.getItems = getItems;
-
         afterNextRender(() => {
             this.position();
             if (this.contentElement().currentElementRef.nativeElement) {
@@ -119,7 +116,7 @@ export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
             // -----------------------------------------------------------------------------------------
             // Vertical positioning
             // -----------------------------------------------------------------------------------------
-            const items = this.getItems().map((i) => i.ref);
+            const items = this.collection.items().map((i) => i.element);
             const availableHeight = window.innerHeight - CONTENT_MARGIN * 2;
             const itemsHeight = this.contentContext.viewport()!.scrollHeight;
 

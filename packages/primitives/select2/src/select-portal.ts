@@ -11,5 +11,8 @@ import { RdxPortal, RdxPortalContainer } from '@radix-ng/primitives/portal';
     ]
 })
 export class RdxSelectPortal {
-    readonly container = input.required<RdxPortalContainer>();
+    /**
+     * Optional container to portal the content into. Defaults to `document.body` when not set.
+     */
+    readonly container = input<RdxPortalContainer>();
 }
