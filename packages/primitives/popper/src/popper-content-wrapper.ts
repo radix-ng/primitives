@@ -2,10 +2,10 @@ import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import { isPlatformBrowser } from '@angular/common';
 import {
     afterNextRender,
+    afterRenderEffect,
     booleanAttribute,
     computed,
     contentChild,
-    DestroyRef,
     Directive,
     ElementRef,
     forwardRef,
@@ -63,7 +63,6 @@ export const [injectPopperContentWrapperContext, providePopperContentWrapperCont
 })
 export class RdxPopperContentWrapper {
     private readonly elementRef = inject(ElementRef);
-    private readonly destroyRef = inject(DestroyRef);
     private readonly injector = inject(Injector);
 
     private readonly context = inject(RdxPopper);
@@ -129,7 +128,7 @@ export class RdxPopperContentWrapper {
     /**
      * Strategy to update the position of the floating element on every animation frame.
      */
-    readonly updatePositionStrategy = input<'optimized' | 'always'>('always');
+    readonly updatePositionStrategy = input<'optimized' | 'always'>('optimized');
 
     /**
      * Emits when the element is placed.
@@ -186,26 +185,40 @@ export class RdxPopperContentWrapper {
     }));
 
     private readonly position = resource({
-        loader: () =>
+        params: () => ({
+            strategy: this.positionStrategy(),
+            placement: this.desiredPlacement(),
+            sideOffset: this.sideOffset(),
+            alignOffset: this.alignOffset(),
+            arrowHeight: this.arrowSize()().height,
+            arrowWidth: this.arrowSize()().width,
+            avoidCollisions: this.avoidCollisions(),
+            sticky: this.sticky(),
+            detectOverflowOptions: this.detectOverflowOptions(),
+            arrow: this.arrow(),
+            arrowPadding: this.arrowPadding(),
+            hideWhenDetached: this.hideWhenDetached()
+        }),
+        loader: ({ params }) =>
             computePosition(this.context.anchor().elementRef.nativeElement, this.elementRef.nativeElement, {
                 // default to `fixed` strategy so users don't have to pick and we also avoid focus scroll issues
-                strategy: this.positionStrategy(),
-                placement: this.desiredPlacement(),
+                strategy: params.strategy,
+                placement: params.placement,
                 middleware: [
                     offset({
-                        mainAxis: this.sideOffset() + this.arrowSize()().height || 0,
-                        alignmentAxis: this.alignOffset()
+                        mainAxis: params.sideOffset + params.arrowHeight || 0,
+                        alignmentAxis: params.alignOffset
                     }),
-                    this.avoidCollisions() &&
+                    params.avoidCollisions &&
                         shift({
                             mainAxis: true,
                             crossAxis: false,
-                            limiter: this.sticky() === 'partial' ? limitShift() : undefined,
-                            ...this.detectOverflowOptions()
+                            limiter: params.sticky === 'partial' ? limitShift() : undefined,
+                            ...params.detectOverflowOptions
                         }),
-                    this.avoidCollisions() && flip({ ...this.detectOverflowOptions() }),
+                    params.avoidCollisions && flip({ ...params.detectOverflowOptions }),
                     size({
-                        ...this.detectOverflowOptions(),
+                        ...params.detectOverflowOptions,
                         apply: ({ elements, rects, availableWidth, availableHeight }) => {
                             const { width: anchorWidth, height: anchorHeight } = rects.reference;
                             const contentStyle = elements.floating.style;
@@ -215,19 +228,19 @@ export class RdxPopperContentWrapper {
                             contentStyle.setProperty('--radix-popper-anchor-height', `${anchorHeight}px`);
                         }
                     }),
-                    this.arrow() &&
+                    params.arrow &&
                         floatingUIArrow({
-                            element: this.arrow()!.elementRef.nativeElement,
-                            padding: this.arrowPadding()
+                            element: params.arrow.elementRef.nativeElement,
+                            padding: params.arrowPadding
                         }),
                     transformOrigin({
-                        arrowWidth: this.arrowSize()().width,
-                        arrowHeight: this.arrowSize()().height
+                        arrowWidth: params.arrowWidth,
+                        arrowHeight: params.arrowHeight
                     }),
-                    this.hideWhenDetached() &&
+                    params.hideWhenDetached &&
                         hide({
                             strategy: 'referenceHidden',
-                            ...this.detectOverflowOptions()
+                            ...params.detectOverflowOptions
                         })
                 ]
             })
@@ -313,7 +326,7 @@ export class RdxPopperContentWrapper {
         };
     });
 
-    private readonly afterNextRender = afterNextRender(() => {
+    private readonly afterRenderEffect = afterRenderEffect((onCleanup) => {
         this.position.reload();
 
         const cleanup = autoUpdate(
@@ -325,13 +338,15 @@ export class RdxPopperContentWrapper {
             }
         );
 
-        this.destroyRef.onDestroy(() => {
-            cleanup();
-        });
+        onCleanup(cleanup);
     });
 
     constructor() {
-        watch([this.isPositioned], () => {
+        watch([this.isPositioned], ([isPositioned]) => {
+            if (!isPositioned) {
+                return;
+            }
+
             afterNextRender(
                 () => {
                     this.placed.emit();
