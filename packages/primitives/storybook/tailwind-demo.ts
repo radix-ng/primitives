@@ -2,7 +2,7 @@ import { componentWrapperDecorator } from '@storybook/angular';
 
 const html = String.raw;
 
-export const tailwindDemoDecorator = () =>
+export const tailwindDemoDecorator = (): ReturnType<typeof componentWrapperDecorator> =>
     componentWrapperDecorator(
         (story) => html`
             <div

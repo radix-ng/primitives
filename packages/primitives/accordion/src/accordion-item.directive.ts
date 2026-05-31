@@ -1,5 +1,16 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input, Signal } from '@angular/core';
+import {
+    booleanAttribute,
+    computed,
+    Directive,
+    effect,
+    ElementRef,
+    inject,
+    input,
+    signal,
+    Signal,
+    WritableSignal
+} from '@angular/core';
 import { injectCollapsibleRootContext, RdxCollapsibleRootDirective } from '@radix-ng/primitives/collapsible';
 import { createContext, useArrowNavigation } from '@radix-ng/primitives/core';
 import { injectAccordionRootContext } from './accordion-root.directive';
@@ -9,7 +20,7 @@ export type RdxAccordionItemState = 'open' | 'closed';
 export type AccordionItemContext = {
     open: Signal<boolean>;
     disabled: Signal<boolean>;
-    triggerId: string;
+    triggerId: WritableSignal<string>;
     dataState: Signal<RdxAccordionItemState>;
     dataDisabled: Signal<boolean>;
     currentElement: ElementRef<HTMLElement>;
@@ -28,7 +39,7 @@ const itemContext = (): AccordionItemContext => {
         dataState: instance.dataState,
         disabled: instance.disabled,
         dataDisabled: instance.isDisabled,
-        triggerId: '',
+        triggerId: instance.triggerId,
         currentElement: instance.elementRef,
         value: computed(() => instance.value()),
         updateOpen: instance.updateOpen
@@ -85,13 +96,18 @@ export class RdxAccordionItemDirective {
         return this.rootContext.disabled() || this.disabled();
     });
 
-    readonly open = computed(() =>
-        this.rootContext.isSingle()
-            ? this.value() === this.rootContext.value()
-            : Array.isArray(this.rootContext.value()) && this.rootContext.value()!.includes(this.value()!)
-    );
+    readonly open = computed(() => {
+        const rootValue = this.rootContext.value();
+
+        return this.rootContext.isSingle()
+            ? this.value() === rootValue
+            : Array.isArray(rootValue) && rootValue.includes(this.value()!);
+    });
 
     readonly dataState = computed((): RdxAccordionItemState => (this.open() ? 'open' : 'closed'));
+
+    /** Set by the trigger; links the content's `aria-labelledby` to the trigger `id`. */
+    readonly triggerId = signal('');
 
     constructor() {
         effect(() => {

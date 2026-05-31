@@ -1,5 +1,4 @@
-import { isPlatformBrowser } from '@angular/common';
-import { afterNextRender, computed, Directive, effect, ElementRef, inject, PLATFORM_ID, signal } from '@angular/core';
+import { afterRenderEffect, Directive, ElementRef, inject, signal } from '@angular/core';
 import { injectCollapsibleRootContext } from './collapsible-root.directive';
 
 @Directive({
@@ -11,67 +10,65 @@ import { injectCollapsibleRootContext } from './collapsible-root.directive';
         '[attr.hidden]': 'shouldHide() ? "until-found" : undefined',
         '[style.--radix-collapsible-content-width.px]': 'width()',
         '[style.--radix-collapsible-content-height.px]': 'height()',
-        '(animationend)': 'onAnimationEnd()'
+        '(animationend)': 'onExitComplete($event)',
+        '(transitionend)': 'onExitComplete($event)'
     }
 })
 export class RdxCollapsibleContentDirective {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
-    private readonly platformId = inject(PLATFORM_ID);
 
     protected readonly rootContext = injectCollapsibleRootContext()!;
-
-    readonly isOpen = computed(() => this.rootContext.open());
 
     readonly height = signal<number | null>(null);
     readonly width = signal<number | null>(null);
     readonly shouldHide = signal(true);
-    private isMountAnimationPrevented = signal(true);
-    private currentStyle = signal<{ transitionDuration: string; animationName: string } | null>(null);
 
-    private firstRender = true;
+    /**
+     * The first measurement (the initial mount) must not re-enable animations, so an element that
+     * mounts already open renders at its final size without playing the open animation.
+     */
+    private isFirstMeasure = true;
+    private originalStyles?: { transitionDuration: string; animationName: string };
 
     constructor() {
-        effect(() => {
-            const isOpen = this.isOpen();
-
-            if (!isPlatformBrowser(this.platformId)) {
-                return;
-            }
-
-            requestAnimationFrame(() => {
-                this.updateDimensions(isOpen);
-            });
-        });
-
-        afterNextRender(() => {
-            requestAnimationFrame(() => {
-                this.isMountAnimationPrevented.set(false);
-            });
+        // `afterRenderEffect` runs after the DOM is committed (but before paint) with the settled
+        // `open` state — no `requestAnimationFrame` race — and is a no-op during SSR.
+        afterRenderEffect(() => {
+            const isOpen = this.rootContext.open();
+            this.updateDimensions(isOpen);
         });
     }
 
-    onAnimationEnd() {
-        if (!this.isOpen()) {
+    /**
+     * Hide the content once its close animation/transition finishes. Handles both `@keyframes`
+     * (animationend) and CSS `transition` (transitionend) exits. Ignores events bubbling from
+     * descendants.
+     */
+    onExitComplete(event: Event): void {
+        if (event.target !== this.elementRef.nativeElement) {
+            return;
+        }
+
+        if (!this.rootContext.open()) {
             this.shouldHide.set(true);
         }
     }
 
-    private async updateDimensions(isOpen: boolean) {
+    private updateDimensions(isOpen: boolean): void {
         const node = this.elementRef.nativeElement;
         if (!node) return;
 
-        if (!this.currentStyle()) {
-            this.currentStyle.set({
-                transitionDuration: node.style.transitionDuration,
-                animationName: node.style.animationName
-            });
-        }
+        this.originalStyles ??= {
+            transitionDuration: node.style.transitionDuration,
+            animationName: node.style.animationName
+        };
 
         if (isOpen) {
             this.shouldHide.set(false);
             node.hidden = false;
         }
 
+        // Block any animation/transition so we can measure the element at its natural size.
         node.style.transitionDuration = '0s';
         node.style.animationName = 'none';
 
@@ -79,11 +76,12 @@ export class RdxCollapsibleContentDirective {
         this.height.set(rect.height);
         this.width.set(rect.width);
 
-        if (!this.isMountAnimationPrevented() && !this.firstRender) {
-            node.style.transitionDuration = this.currentStyle()?.transitionDuration || '';
-            node.style.animationName = this.currentStyle()?.animationName || '';
+        // Re-enable the original animation, unless this is the very first (mount) measurement.
+        if (!this.isFirstMeasure) {
+            node.style.transitionDuration = this.originalStyles.transitionDuration;
+            node.style.animationName = this.originalStyles.animationName;
         }
 
-        this.firstRender = false;
+        this.isFirstMeasure = false;
     }
 }

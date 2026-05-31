@@ -16,9 +16,7 @@ import {
     output,
     Signal
 } from '@angular/core';
-import { createContext, DataOrientation } from '@radix-ng/primitives/core';
-
-type AcceptableValue = string | Record<string, any> | null;
+import { AcceptableValue, createContext, DataOrientation } from '@radix-ng/primitives/core';
 
 export type AccordionRootContext = {
     disabled: InputSignalWithTransform<boolean, BooleanInput>;
@@ -119,10 +117,10 @@ export class RdxAccordionRootDirective {
     readonly type = input<'multiple' | 'single'>('single');
 
     /**
-     * Event handler called when the expanded state of an item changes and type is "multiple".
+     * Event handler called when the expanded state of an item changes.
      * @group Emits
      */
-    readonly onValueChange = output();
+    readonly onValueChange = output<AcceptableValue | AcceptableValue[] | undefined>();
 
     readonly isSingle = computed(() => this.type() === 'single');
 
@@ -158,6 +156,8 @@ export class RdxAccordionRootDirective {
 
             this.value.set(modelValueArray);
         }
+
+        this.onValueChange.emit(this.value());
     };
 
     private isValueEqualOrExist(arr: AcceptableValue[], value: AcceptableValue): boolean {

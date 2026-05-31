@@ -8,7 +8,7 @@ import { injectAccordionRootContext } from './accordion-root.directive';
     hostDirectives: [RdxCollapsibleContentDirective],
     host: {
         role: 'region',
-        '[attr.aria-labelledby]': 'itemContext.triggerId',
+        '[attr.aria-labelledby]': 'itemContext.triggerId()',
         '[attr.data-state]': 'itemContext.dataState()',
         '[attr.data-disabled]': 'itemContext.dataDisabled()',
         '[attr.data-orientation]': 'rootContext.orientation()',
