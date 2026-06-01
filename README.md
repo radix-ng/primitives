@@ -1,50 +1,79 @@
-# Radix Angular
+# Radix NG
 
 [![Build Size](https://img.shields.io/bundlephobia/minzip/@radix-ng/primitives@latest?label=bundle%20size&style=flat&colorA=000000&colorB=000000)](https://bundlephobia.com/result?p=@radix-ng/primitives@latest)
 [![Version](https://img.shields.io/npm/v/@radix-ng/primitives?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/@radix-ng/primitives)
 [![Downloads](https://img.shields.io/npm/dm/@radix-ng/primitives.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/@radix-ng/primitives)
+[![License](https://img.shields.io/npm/l/@radix-ng/primitives?style=flat&colorA=000000&colorB=000000)](/LICENSE)
+[![Angular](https://img.shields.io/badge/Angular-21+-000000?style=flat&logo=angular&logoColor=fff&colorA=000000&colorB=000000)](https://angular.dev)
 [![Discord Chat](https://img.shields.io/discord/1231525968586346567?style=flat&logo=discord&logoColor=fff&color=000)](https://discord.gg/NaJb2XRWX9)
 
-> It is very important for me to maintain API compatibility provided by the Radix primitives.
+> **Headless, signals-first UI primitives for Angular.**
 
-> Radix-NG is an unofficial Angular port of [Radix UI](https://www.radix-ui.com/), thus we share the same principal and vision when building primitives.
+Radix NG is a low-level UI primitive library for Angular with a focus on accessibility, customization,
+and developer experience. The primitives are **headless** — they ship no styles and expose state via
+`data-*` attributes, so you can use them as the base layer of your design system or adopt them
+incrementally.
 
-Radix Primitives is a low-level UI component library with a focus on accessibility, customization and developer experience.
-You can use these components either as the base layer of your design system, or adopt them incrementally.
+The library grew out of an Angular port of [Radix UI](https://www.radix-ui.com/); its API and behavior
+now align primarily with [Base UI](https://base-ui.com/). Some primitives build on
+[@angular/cdk](https://material.angular.io/cdk/categories).
 
-Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/categories).
+## Features
+
+- 🎯 **Headless** — no styles, full control. State is exposed through `data-*` attributes.
+- ♿ **Accessible** — built to the [WAI-ARIA authoring practices](https://www.w3.org/WAI/ARIA/apg/), with keyboard navigation and focus management.
+- ⚡ **Signals-first** — modern Angular API (`input()`, `model()`, `computed()`, `signal()`).
+- 🧩 **Composable** — primitives compose via `hostDirectives` and shared building blocks.
+- 🌗 **Theme-ready** — state-driven styling works with light/dark and any design tokens.
+- 📦 **Tree-shakeable** — granular secondary entry points (`@radix-ng/primitives/<name>`).
+
+## Installation
+
+```bash
+npm install @radix-ng/primitives
+# or
+pnpm add @radix-ng/primitives
+# or
+yarn add @radix-ng/primitives
+```
+
+## Quick start
+
+```ts
+import { Component } from '@angular/core';
+import {
+  RdxCollapsibleRootDirective,
+  RdxCollapsibleTriggerDirective,
+  RdxCollapsibleContentDirective
+} from '@radix-ng/primitives/collapsible';
+
+@Component({
+  selector: 'app-demo',
+  imports: [RdxCollapsibleRootDirective, RdxCollapsibleTriggerDirective, RdxCollapsibleContentDirective],
+  template: `
+    <div rdxCollapsibleRoot>
+      <button rdxCollapsibleTrigger>Toggle</button>
+      <div rdxCollapsibleContent>Content</div>
+    </div>
+  `
+})
+export class DemoComponent {}
+```
+
+Primitives are headless: style them via the `data-*` attributes they expose (e.g.
+`[data-state="open"]`, `[data-disabled]`) with the tooling of your choice.
 
 ## Documentation
 
-- [radix-ng.com](https://radix-ng.com)
+- 📖 [radix-ng.com](https://radix-ng.com) — guides and API reference
+- 🧪 [sb-primitives.radix-ng.com](https://sb-primitives.radix-ng.com/) — Storybook
 
-- [sb-primitives.radix-ng.com](https://sb-primitives.radix-ng.com/) – Storybook
+## Components
 
-## OriginUI
+**Status:** ✅ Completed · 🚀 In Progress · 🛠 In Review
 
-- [OriginUI](https://originui-ng.com/)
-
-## shadcn/ui
-
-- shadcn/ui – [ui.adrianub.dev](https://ui.adrianub.dev/)
-
-## Project structure
-
-```angular2html
-.
-├── apps
-│   ├── radix-docs         (documentation based on Astro)
-│   ├── radix-ssr-testing  (SSR test for unstyle primitives)
-│   └── radix-storybook
-│
-└── packages
-    ├── components         (components based on primitives with custom styling)
-    └── primitives         (headless primitives UI without any styling)
-```
-
-## Roadmap
-
-### RadixUI Primitives
+<details>
+<summary><strong>Core primitives</strong></summary>
 
 | Primitive       | Status |
 | --------------- | ------ |
@@ -52,6 +81,7 @@ Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/cate
 | Alert Dialog    | beta   |
 | Avatar          | ✅     |
 | Aspect Ratio    | ✅     |
+| Button          | ✅     |
 | Checkbox        | ✅     |
 | Collapsible     | ✅     |
 | Context Menu    | ✅     |
@@ -76,7 +106,10 @@ Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/cate
 | Toolbar         | ✅     |
 | Tooltip         | ✅     |
 
-### Other Primitives
+</details>
+
+<details>
+<summary><strong>Dates & inputs</strong></summary>
 
 | Primitive         | Status |
 | ----------------- | ------ |
@@ -92,7 +125,10 @@ Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/cate
 | Stepper           | ✅     |
 | Time Field        | ✅     |
 
-### Utils Primitives
+</details>
+
+<details>
+<summary><strong>Utilities</strong></summary>
 
 | Primitive          | Status |
 | ------------------ | ------ |
@@ -101,19 +137,39 @@ Some primitives are based on [@angular/cdk](https://material.angular.io/cdk/cate
 | FocusGuards        |        |
 | FocusScope         |        |
 
-**Status Legend**
-✅ Completed
-🚀 In Progress
-🛠 In Review
+</details>
 
-### DataGrid
+## Ecosystem
 
-- [x] with [Tanstack Table](https://tanstack.com/table/latest), [https://originui-ng.com/table](https://originui-ng.com/table)
+- [OriginUI for Angular](https://originui-ng.com/) — styled components built on these primitives
+- [shadcn/ui for Angular](https://ui.adrianub.dev/) — shadcn-style components
+- [DataGrid](https://originui-ng.com/table) — built with [TanStack Table](https://tanstack.com/table/latest)
+
+## Contributing
+
+Contributions are welcome! The repository is an Nx monorepo:
+
+```
+.
+├── apps
+│   ├── radix-docs         documentation (Astro)
+│   ├── radix-ssr-testing  SSR tests for unstyled primitives
+│   └── radix-storybook    Storybook for primitives
+└── packages
+    ├── components         styled components built on primitives
+    └── primitives         headless primitives (no styling)
+```
+
+```bash
+pnpm primitives:test       # run tests
+pnpm primitives:build      # build the library
+pnpm storybook:primitives  # start Storybook
+```
 
 ## Community
 
-We're excited to see the community adopt, raise issues, and provide feedback.
-Whether it's a feature request, bug report, or a project to showcase, please get involved!
+We're excited to see the community adopt Radix NG, raise issues, and provide feedback —
+whether it's a feature request, bug report, or a project to showcase.
 
 - [Join our Discord](https://discord.gg/NaJb2XRWX9)
 - [Join our Telegram](https://t.me/radixng)
@@ -121,7 +177,7 @@ Whether it's a feature request, bug report, or a project to showcase, please get
 
 ## Contributor analytics
 
-![Alt](https://repobeats.axiom.co/api/embed/7c1e0b2754a8973c9cfd458060d168e9dd7b5b8e.svg 'Repobeats analytics image')
+![Repobeats analytics image](https://repobeats.axiom.co/api/embed/7c1e0b2754a8973c9cfd458060d168e9dd7b5b8e.svg 'Repobeats analytics image')
 
 ## License
 
