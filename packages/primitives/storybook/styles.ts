@@ -75,3 +75,20 @@ export const demoInput = cn(
     'placeholder:text-muted-foreground',
     demoFocusRing
 );
+
+/**
+ * Avatar parts: a circular image with a text/initials fallback.
+ *
+ * Compose `root` with one `size`; the font size set by `size` is inherited by
+ * the `fallback`.
+ */
+export const demoAvatar = {
+    root: 'relative inline-flex shrink-0 select-none items-center justify-center overflow-hidden rounded-full bg-muted align-middle',
+    image: 'size-full object-cover',
+    fallback: 'flex size-full items-center justify-center font-medium text-foreground',
+    size: {
+        sm: 'size-8 text-xs',
+        md: 'size-10 text-sm',
+        lg: 'size-12 text-base'
+    }
+} as const;

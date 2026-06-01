@@ -9,5 +9,5 @@ import { RdxImageLoadingStatus } from './types';
     providers: [provideToken(AVATAR_ROOT_CONTEXT, RdxAvatarRootDirective)]
 })
 export class RdxAvatarRootDirective implements AvatarContextToken {
-    readonly imageLoadingStatus = signal<RdxImageLoadingStatus>('loading');
+    readonly imageLoadingStatus = signal<RdxImageLoadingStatus>('idle');
 }

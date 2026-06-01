@@ -1,5 +1,7 @@
-import { Canvas, Meta } from '@storybook/addon-docs/blocks';
-import * as AvatarDirectiveStories from './avatar.stories';
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as AvatarStories from './avatar.stories';
+import { RdxAvatarImageDirective } from '../src/avatar-image.directive';
+import { RdxAvatarFallbackDirective } from '../src/avatar-fallback.directive';
 
 <Meta title="Primitives/Avatar" />
 
@@ -7,17 +9,38 @@ import * as AvatarDirectiveStories from './avatar.stories';
 
 #### An image element with a fallback for representing the user.
 
-<Canvas sourceState="hidden" of={AvatarDirectiveStories.Default} />
+<Canvas sourceState="hidden" of={AvatarStories.Default} />
 
 ## Features
 
 - ✅ Automatic and manual control over when the image renders.
 - ✅ Fallback part accepts any children.
-- ✅ Optionally delayMs fallback rendering to avoid content flashing.
+- ✅ Optionally delay fallback rendering to avoid content flashing.
 
-## Global Configuration
+## Import
 
-You can configure the default options for all avatars in your application by using the `provideRdxAvatarConfig` function in a providers array.
+```typescript
+import {
+  RdxAvatarRootDirective,
+  RdxAvatarImageDirective,
+  RdxAvatarFallbackDirective
+} from '@radix-ng/primitives/avatar';
+```
+
+## Anatomy
+
+Assemble the parts: a root, the image, and a fallback shown until the image loads.
+
+```html
+<span rdxAvatarRoot>
+  <img rdxAvatarImage src="..." alt="..." />
+  <span rdxAvatarFallback>AB</span>
+</span>
+```
+
+## Global configuration
+
+Configure the default options for all avatars with `provideRdxAvatarConfig` in a providers array.
 
 ```ts
 import { provideRdxAvatarConfig } from '@radix-ng/primitives/avatar';
@@ -27,11 +50,32 @@ bootstrapApplication(AppComponent, {
 });
 ```
 
-## Anatomy
+## Examples
 
-```html
-<span rdxAvatarRoot>
-  <img rdxAvatarImage src="..." alt="..." />
-  <span rdxAvatarFallback>Angular</span>
-</span>
-```
+### Sizes
+
+`sm`, `md`, and `lg` from the demo style layer.
+
+<Canvas of={AvatarStories.Sizes} />
+
+### Fallback
+
+The fallback renders when there is no image or the image fails to load.
+
+<Canvas of={AvatarStories.Fallback} />
+
+### Delayed fallback
+
+`delayMs` waits before showing the fallback, so it only appears for slower connections.
+
+<Canvas of={AvatarStories.DelayedFallback} />
+
+## API Reference
+
+### Image
+
+<ArgTypes of={RdxAvatarImageDirective} />
+
+### Fallback
+
+<ArgTypes of={RdxAvatarFallbackDirective} />

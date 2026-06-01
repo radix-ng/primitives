@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Directive, inject, input, OnDestroy, OnInit, output, PLATFORM_ID, signal } from '@angular/core';
+import { Directive, inject, input, output, PLATFORM_ID, signal } from '@angular/core';
 import { watch } from '@radix-ng/primitives/core';
 import { injectAvatarRootContext } from './avatar-context.token';
 import { HTMLAttributeReferrerPolicy, RdxImageLoadingStatus } from './types';
@@ -13,11 +13,11 @@ import { HTMLAttributeReferrerPolicy, RdxImageLoadingStatus } from './types';
     host: {
         role: 'img',
         '[attr.src]': 'src()',
-        '[attr.referrer-policy]': 'referrerPolicy()',
+        '[attr.referrerpolicy]': 'referrerPolicy()',
         '[style.display]': '(rootContext.imageLoadingStatus() === "loaded") ? null : "none"'
     }
 })
-export class RdxAvatarImageDirective implements OnInit, OnDestroy {
+export class RdxAvatarImageDirective {
     private readonly platformId = inject(PLATFORM_ID);
 
     protected readonly rootContext = injectAvatarRootContext();
@@ -37,51 +37,43 @@ export class RdxAvatarImageDirective implements OnInit, OnDestroy {
      */
     readonly onLoadingStatusChange = output<RdxImageLoadingStatus>();
 
-    private readonly isMounted = signal<boolean>(false);
-
     private readonly loadingStatus = signal<RdxImageLoadingStatus>('idle');
 
     constructor() {
-        const updateStatus = (status: RdxImageLoadingStatus) => () => {
-            if (this.isMounted()) {
-                this.loadingStatus.set(status);
-            }
-        };
-
-        if (isPlatformBrowser(this.platformId)) {
-            watch([this.src, this.referrerPolicy], ([src, referrer]) => {
-                if (this.isMounted()) {
-                    if (!src) {
-                        this.loadingStatus.set('error');
-                    } else {
-                        const image = new window.Image();
-                        this.loadingStatus.set('loading');
-                        image.onload = updateStatus('loaded');
-                        image.onerror = updateStatus('error');
-                        image.src = src;
-                        if (referrer) {
-                            image.referrerPolicy = referrer;
-                        }
-                    }
-                }
-            });
-
-            watch([this.loadingStatus], ([value]) => {
-                this.onLoadingStatusChange.emit(value);
-                if (value !== 'idle') {
-                    this.rootContext.imageLoadingStatus.set(value);
-                }
-            });
-        } else {
-            this.loadingStatus.set('idle');
+        // Loading is browser-only; on the server the status stays 'idle'.
+        if (!isPlatformBrowser(this.platformId)) {
+            return;
         }
-    }
 
-    ngOnInit() {
-        this.isMounted.set(true);
-    }
+        watch([this.src, this.referrerPolicy], ([src, referrer], onCleanup) => {
+            if (!src) {
+                this.loadingStatus.set('error');
+                return;
+            }
 
-    ngOnDestroy() {
-        this.isMounted.set(false);
+            const image = new window.Image();
+            this.loadingStatus.set('loading');
+            image.onload = () => this.loadingStatus.set('loaded');
+            image.onerror = () => this.loadingStatus.set('error');
+            // Set referrerPolicy before src so it applies to the fetch.
+            if (referrer) {
+                image.referrerPolicy = referrer;
+            }
+            image.src = src;
+
+            // Drop handlers for a stale src (or on destroy) so a late load/error
+            // can't overwrite the status for the current one.
+            onCleanup(() => {
+                image.onload = null;
+                image.onerror = null;
+            });
+        });
+
+        watch([this.loadingStatus], ([value]) => {
+            this.onLoadingStatusChange.emit(value);
+            if (value !== 'idle') {
+                this.rootContext.imageLoadingStatus.set(value);
+            }
+        });
     }
 }

@@ -15,4 +15,4 @@ const _imports = [RdxAvatarRootDirective, RdxAvatarFallbackDirective, RdxAvatarI
     imports: [..._imports],
     exports: [..._imports]
 })
-export class RdxCheckboxModule {}
+export class RdxAvatarModule {}

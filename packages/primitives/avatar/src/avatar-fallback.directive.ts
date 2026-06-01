@@ -10,7 +10,7 @@ import { injectAvatarConfig } from './avatar.config';
     selector: 'span[rdxAvatarFallback]',
     exportAs: 'rdxAvatarFallback',
     host: {
-        '[style.display]': 'canRender() && rootContext.imageLoadingStatus() !== "loaded" ? null : "none" '
+        '[style.display]': 'canRender() && rootContext.imageLoadingStatus() !== "loaded" ? null : "none"'
     }
 })
 export class RdxAvatarFallbackDirective {
@@ -28,20 +28,21 @@ export class RdxAvatarFallbackDirective {
 
     protected readonly canRender = signal(false);
 
-    private timeout: ReturnType<typeof setTimeout> | undefined;
-
     constructor() {
-        watch([this.rootContext.imageLoadingStatus], ([value]) => {
-            if (value === 'loading') {
-                this.canRender.set(false);
-                if (this.delayMs()) {
-                    this.timeout = setTimeout(() => {
-                        this.canRender.set(true);
-                        clearTimeout(this.timeout);
-                    }, this.delayMs());
-                } else {
-                    this.canRender.set(true);
-                }
+        // Enable the fallback after an optional delay (so it only appears for
+        // those on slower connections), independent of the image load status —
+        // matches Radix/Base UI. The `display` binding then hides it once the
+        // image has loaded.
+        watch([this.delayMs], ([delayMs], onCleanup) => {
+            this.canRender.set(false);
+
+            if (delayMs) {
+                const timeout = setTimeout(() => this.canRender.set(true), delayMs);
+                // Cancel a pending delay if delayMs changes or the directive is
+                // destroyed before it fires.
+                onCleanup(() => clearTimeout(timeout));
+            } else {
+                this.canRender.set(true);
             }
         });
     }
