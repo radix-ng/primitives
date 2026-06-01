@@ -156,6 +156,26 @@ Prefer `hostDirectives` to re-use existing primitives (e.g., Accordion Item comp
 - Storybook Tailwind config is CSS-based at `apps/radix-storybook/.storybook/tailwind.css` (`@import 'tailwindcss/...'` + a `@theme {}` block); there is **no** `tailwind.config.js`.
 - Files: `stories/<name>.stories.ts` (CSF) + optional `stories/<name>.ts` (standalone story components) + optional `stories/<name>.docs.mdx`. In the mdx, `<Meta title="…">` matching the CSF `title` attaches it as that group's docs page; use `<Canvas of={Stories.X} />` to embed a story and `<ArgTypes of={Directive} />` for the props table.
 - Storybook theme switching is controlled from the toolbar, not OS color scheme. The preview decorator sets `document.documentElement[data-theme]`, so stories should use tokens that respond to that attribute instead of reading `prefers-color-scheme`.
+- **Lucide icons must be registered manually.** Any `<lucide-angular name="…">` used in a story needs its icon added to `LucideAngularModule.pick({...})` in `apps/radix-storybook/.storybook/preview.ts` (import the PascalCase export, e.g. `name="loader-circle"` → import `LoaderCircle` and add it to the `pick` map). An unregistered icon throws `The "…" icon has not been provided by any available icon providers.` at runtime — `build-storybook` does **not** catch it, so check the running story.
+
+### Centralized demo styles
+
+- **Single source of truth: `packages/primitives/storybook/styles.ts`** (`cn`, `demoFocusRing`, `demoButton`, `demoCard`, `demoInput`). Reuse these constants instead of inlining/copy-pasting long Tailwind class strings; extend the file when a pattern recurs. Visual reference is [coss.com](https://coss.com/ui) / Base UI. Guide page: `storybook/styling.docs.mdx` ("Guides/Styling").
+- In a standalone story component, expose them and bind via `[class]`:
+  ```ts
+  protected readonly cn = cn;
+  protected readonly b = demoButton;
+  // template: <button rdxButton [class]="cn(b.base, b.primary, b.size.md)">…</button>
+  ```
+- Semantic tokens live in `apps/radix-storybook/.storybook/tailwind.css` (`primary`, `muted`, `destructive`, `border`, `ring`, …). Add a token there (light + dark + `@theme`) rather than reaching for raw palette colors — note the theme strips default Tailwind palettes and resets `--color-red`/`--color-blue` inside `[data-demo="tailwind"]`.
+- Reference example to copy from: **`packages/primitives/button/`** (primitive + stories + docs).
+
+### Docs MDX template (`stories/<name>.docs.mdx`)
+
+Follow this section order (modeled on Base UI): **`# Name` + one-line `####` summary → hero `<Canvas sourceState="hidden" of={…} />` → `## Features` (✅ bullets) → `## Import` → `## Anatomy` → `## Examples` → `## API Reference` (`<ArgTypes of={Directive} />`)**.
+
+- **Anatomy**: short text + an HTML block showing the primitive assembled from all its parts (for compound primitives, every Root/Item/Trigger/Content part nested).
+- **Examples**: each example gets `### Title` + a one-line description, then its `<Canvas of={Stories.X} />` — never a bare Canvas without a caption.
 
 ## Shared composition primitives
 

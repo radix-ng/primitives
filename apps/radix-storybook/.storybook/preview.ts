@@ -14,11 +14,13 @@ import {
     ChevronUp,
     Dot,
     Italic,
+    LoaderCircle,
     LucideAngularModule,
     Menu,
     Minus,
     MountainSnow,
     Plus,
+    Save,
     Strikethrough,
     UnfoldVertical,
     X
@@ -68,6 +70,8 @@ const preview: Preview = {
                         MountainSnow,
                         X,
                         Plus,
+                        Save,
+                        LoaderCircle,
                         UnfoldVertical
                     })
                 )

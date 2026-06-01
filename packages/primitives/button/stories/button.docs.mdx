@@ -1,0 +1,91 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as ButtonStories from './button.stories';
+import { RdxButtonDirective } from '../src/button.directive';
+
+<Meta title="Primitives/Button" />
+
+# Button
+
+#### A button, or any element that should behave like one.
+
+Headless button behavior modeled on [Base UI](https://base-ui.com/)'s `useButton`. It carries no
+styles — visual variants in the examples come from the centralized demo style layer (see the
+**Guides/Styling** page).
+
+<Canvas sourceState="hidden" of={ButtonStories.Variants} />
+
+## Features
+
+- ✅ Works on a native `<button>` or any other element (`<a>`, `<span>`, …).
+- ✅ Exposes state via the `data-disabled` attribute for styling.
+- ✅ `focusableWhenDisabled` keeps the control in the tab order (uses `aria-disabled`).
+- ✅ Adds `role="button"`, `tabindex`, and Enter/Space activation on non-button hosts.
+
+## Import
+
+```typescript
+import { RdxButtonDirective } from '@radix-ng/primitives/button';
+```
+
+## Anatomy
+
+Button is a single directive — apply `rdxButton` to a native `<button>` or to any element you want
+to behave like a button.
+
+```html
+<button rdxButton>...</button>
+
+<!-- or on any other host -->
+<a rdxButton href="...">...</a>
+```
+
+## Examples
+
+### Variants
+
+Visual variants — `primary`, `secondary`, `outline`, `ghost`, and `destructive` — come from the
+shared `demoButton` style layer, not the directive itself.
+
+<Canvas of={ButtonStories.Variants} />
+
+### Sizes
+
+`sm`, `md`, `lg`, and a square `icon` size.
+
+<Canvas of={ButtonStories.Sizes} />
+
+### Disabled
+
+The first button uses the native `disabled` attribute (removed from the tab order). The second sets
+`focusableWhenDisabled`, so it stays focusable via `aria-disabled` while its activation is suppressed.
+
+<Canvas of={ButtonStories.Disabled} />
+
+### As link
+
+The directive applies button semantics to any element. Here an `<a>` renders as a button while
+keeping native link behavior.
+
+<Canvas of={ButtonStories.AsLink} />
+
+### Loading
+
+For buttons that enter a loading state after being clicked, set `disabled` while pending together
+with `focusableWhenDisabled` so focus stays on the button. Add `aria-busy` and render a spinner to
+communicate the state.
+
+<Canvas of={ButtonStories.Loading} />
+
+```html
+<button rdxButton>Button</button>
+
+<!-- disabled but still focusable -->
+<button rdxButton disabled focusableWhenDisabled>Disabled</button>
+
+<!-- render a link as a button -->
+<a rdxButton href="/docs">Docs</a>
+```
+
+## API Reference
+
+<ArgTypes of={RdxButtonDirective} />

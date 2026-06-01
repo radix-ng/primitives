@@ -40,6 +40,8 @@
     --color-primary-foreground: var(--primary-foreground);
     --color-muted: var(--muted);
     --color-muted-foreground: var(--muted-foreground);
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
     --color-border: var(--border);
     --color-ring: var(--ring);
 
@@ -130,6 +132,8 @@
     --primary-foreground: white;
     --muted: oklch(96.5% 0.5% 264deg);
     --muted-foreground: oklch(46% 1% 264deg);
+    --destructive: oklch(57.7% 0.245 27.325deg);
+    --destructive-foreground: white;
     --border: oklch(90% 1% 264deg);
     --ring: oklch(55% 1% 264deg);
 }
@@ -159,6 +163,8 @@
     --primary-foreground: oklch(18% 1% 264deg);
     --muted: oklch(24% 1% 264deg);
     --muted-foreground: oklch(70% 1% 264deg);
+    --destructive: oklch(70.4% 0.191 22.216deg);
+    --destructive-foreground: oklch(18% 1% 264deg);
     --border: oklch(30% 1% 264deg);
     --ring: oklch(65% 1% 264deg);
 
