@@ -1,12 +1,54 @@
 // This file has been automatically migrated to valid ESM format by Storybook.
 import type { StorybookConfig } from '@analogjs/storybook-angular';
+import { readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import remarkGfm from 'remark-gfm';
-import { mergeConfig, UserConfig } from 'vite';
+import { mergeConfig, Plugin, UserConfig } from 'vite';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
 
 const require = createRequire(import.meta.url);
+
+/**
+ * Loads `*.ts?raw` imports as plain text.
+ *
+ * Vite's built-in `?raw` loader is shadowed by the AnalogJS Angular plugin,
+ * which compiles `.ts` files. We resolve `?raw` ids to a virtual `\0`-prefixed
+ * module (ignored by other plugins) and return the file contents, so stories can
+ * show their full component source in the "Show code" panel.
+ */
+function rawTsPlugin(): Plugin {
+    // Opaque virtual ids (no `.ts` suffix) so the esbuild/Angular transforms
+    // don't touch the generated module and strip its default export.
+    const rawModules = new Map<string, string>();
+    let counter = 0;
+
+    return {
+        name: 'rdx-raw-ts',
+        enforce: 'pre',
+        async resolveId(id, importer) {
+            if (!id.endsWith('?raw')) {
+                return null;
+            }
+            const resolved = await this.resolve(id.slice(0, -'?raw'.length), importer, { skipSelf: true });
+            // Only take over `.ts?raw`; leave other raw assets to Vite.
+            if (!resolved || !resolved.id.endsWith('.ts')) {
+                return null;
+            }
+            const virtualId = `\0raw-${counter++}`;
+            rawModules.set(virtualId, resolved.id);
+            return virtualId;
+        },
+        async load(id) {
+            const file = rawModules.get(id);
+            if (!file) {
+                return null;
+            }
+            const code = await readFile(file, 'utf-8');
+            return `export default ${JSON.stringify(code)};`;
+        }
+    };
+}
 
 const config: StorybookConfig = {
     stories: [
@@ -45,7 +87,7 @@ const config: StorybookConfig = {
 
     async viteFinal(config: UserConfig) {
         return mergeConfig(config, {
-            plugins: [viteTsConfigPaths()]
+            plugins: [rawTsPlugin(), viteTsConfigPaths()]
         });
     },
 

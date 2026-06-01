@@ -176,6 +176,28 @@ Follow this section order (modeled on Base UI): **`# Name` + one-line `####` sum
 
 - **Anatomy**: short text + an HTML block showing the primitive assembled from all its parts (for compound primitives, every Root/Item/Trigger/Content part nested).
 - **Examples**: each example gets `### Title` + a one-line description, then its `<Canvas of={Stories.X} />` — never a bare Canvas without a caption.
+- **API Reference**: only render `<ArgTypes of={Directive} />` for parts that actually have inputs/outputs. Skip parts that read everything from context (a one-line note is enough) — an empty ArgTypes table is noise.
+
+### "Show code" / full source in stories
+
+- The demo wrapper is already stripped from the snippet globally via `parameters.docs.source.excludeDecorators` in `apps/radix-storybook/.storybook/preview.ts`.
+- For a story that just renders a standalone component tag (e.g. `<checkbox-validation-example />`), the "Show code" panel would only show that tag. To show the **full component source**, import it raw and feed it to `source.code`:
+
+  ```ts
+  import validationSource from './checkbox-validation?raw';
+  const source = (code: string) => ({ docs: { source: { code, language: 'typescript' } } });
+
+  export const Validation: Story = {
+    parameters: source(validationSource),
+    render: () => ({
+      template: html`
+        <checkbox-validation-example />
+      `
+    })
+  };
+  ```
+
+- `*.ts?raw` is wired by the `rawTsPlugin` in `.storybook/main.ts` (the AnalogJS Angular plugin shadows Vite's built-in `?raw`); types come from `packages/primitives/storybook/raw.d.ts`. Inline-template stories (source lives in the `.stories.ts`) don't need this.
 
 ## Shared composition primitives
 

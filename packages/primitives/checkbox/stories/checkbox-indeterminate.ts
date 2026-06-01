@@ -3,6 +3,7 @@ import { Component, model, signal } from '@angular/core';
 import { CheckedState, RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { LucideAngularModule } from 'lucide-angular';
+import { cn, demoButton, demoCheckbox } from '../../storybook/styles';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
@@ -21,17 +22,8 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
     template: `
         <div class="flex items-center gap-3">
             <div [checked]="checked()" (onCheckedChange)="checked.set($event)" rdxCheckboxRoot>
-                <button
-                    class="border-border bg-background focus-visible:ring-ring flex size-6 items-center justify-center rounded-md border shadow-sm outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    id="r1"
-                    rdxCheckboxButton
-                >
-                    <lucide-angular
-                        class="text-primary flex items-center data-[state=unchecked]:hidden"
-                        [name]="iconName()"
-                        rdxCheckboxIndicator
-                        size="16"
-                    />
+                <button id="r1" [class]="c.button" rdxCheckboxButton>
+                    <lucide-angular [class]="c.indicator" [name]="iconName()" rdxCheckboxIndicator size="16" />
                 </button>
                 <input rdxCheckboxInput />
             </div>
@@ -44,11 +36,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
             <p>checked state:&nbsp;{{ checked() | json }}</p>
         </section>
 
-        <button
-            class="bg-primary text-primary-foreground focus-visible:ring-ring mt-3 inline-flex h-9 items-center rounded-md px-3 text-sm font-medium shadow-sm outline-none focus-visible:ring-2"
-            (click)="toggleIndeterminate()"
-            type="button"
-        >
+        <button [class]="cn(b.base, b.primary, b.size.md, 'mt-3')" (click)="toggleIndeterminate()" type="button">
             Toggle Indeterminate state
         </button>
     `
@@ -57,6 +45,10 @@ export class CheckboxIndeterminate {
     readonly checked = model<CheckedState>(false);
 
     readonly iconName = signal('check');
+
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly c = demoCheckbox;
 
     toggleIndeterminate() {
         this.checked() === 'indeterminate' ? this.checked.set(false) : this.checked.set('indeterminate');

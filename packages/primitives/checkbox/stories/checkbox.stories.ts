@@ -2,6 +2,7 @@ import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angul
 import { LucideAngularModule } from 'lucide-angular';
 import { expect } from 'storybook/test';
 import { RdxLabelDirective } from '../../label';
+import { demoCheckbox } from '../../storybook/styles';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
@@ -9,7 +10,20 @@ import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 import { CheckboxReactiveFormsExampleComponent } from './checkbox-forms';
 import { CheckboxIndeterminate } from './checkbox-indeterminate';
+import { CheckboxNgModelExample } from './checkbox-ngmodel';
 import { CheckboxPresence } from './checkbox-presence';
+import { CheckboxSelectAllExample } from './checkbox-select-all';
+import { CheckboxValidationExample } from './checkbox-validation';
+
+// Full component source for the "Show code" panel (Vite `?raw` import).
+import formsSource from './checkbox-forms?raw';
+import indeterminateSource from './checkbox-indeterminate?raw';
+import ngModelSource from './checkbox-ngmodel?raw';
+import presenceSource from './checkbox-presence?raw';
+import selectAllSource from './checkbox-select-all?raw';
+import validationSource from './checkbox-validation?raw';
+
+const source = (code: string) => ({ docs: { source: { code, language: 'typescript' } } });
 
 const html = String.raw;
 
@@ -26,7 +40,10 @@ export default {
                 LucideAngularModule,
                 CheckboxReactiveFormsExampleComponent,
                 CheckboxIndeterminate,
-                CheckboxPresence
+                CheckboxPresence,
+                CheckboxNgModelExample,
+                CheckboxValidationExample,
+                CheckboxSelectAllExample
             ]
         }),
         tailwindDemoDecorator()
@@ -42,21 +59,12 @@ export const Default: Story = {
     },
 
     render: (args) => ({
-        props: args,
+        props: { ...args, c: demoCheckbox },
         template: html`
             <div class="flex items-center gap-3">
                 <div rdxCheckboxRoot ${argsToTemplate(args)} [checked]="true">
-                    <button
-                        class="border-border bg-background focus-visible:ring-ring flex size-6 items-center justify-center rounded-md border shadow-sm outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        id="checkbox-1"
-                        rdxCheckboxButton
-                    >
-                        <lucide-angular
-                            class="text-primary flex items-center data-[state=unchecked]:hidden"
-                            rdxCheckboxIndicator
-                            size="16"
-                            name="check"
-                        />
+                    <button id="checkbox-1" [class]="c.button" rdxCheckboxButton>
+                        <lucide-angular [class]="c.indicator" rdxCheckboxIndicator size="16" name="check" />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -72,6 +80,7 @@ export const Default: Story = {
 };
 
 export const ReactiveForms: Story = {
+    parameters: source(formsSource),
     render: () => ({
         template: html`
             <checkbox-groups-forms-example />
@@ -80,6 +89,7 @@ export const ReactiveForms: Story = {
 };
 
 export const Indeterminate: Story = {
+    parameters: source(indeterminateSource),
     render: () => ({
         template: html`
             <checkbox-indeterminate-example />
@@ -88,9 +98,37 @@ export const Indeterminate: Story = {
 };
 
 export const Presence: Story = {
+    parameters: source(presenceSource),
     render: () => ({
         template: html`
             <checkbox-presence-example />
+        `
+    })
+};
+
+export const TemplateDrivenForms: Story = {
+    parameters: source(ngModelSource),
+    render: () => ({
+        template: html`
+            <checkbox-ngmodel-example />
+        `
+    })
+};
+
+export const Validation: Story = {
+    parameters: source(validationSource),
+    render: () => ({
+        template: html`
+            <checkbox-validation-example />
+        `
+    })
+};
+
+export const SelectAll: Story = {
+    parameters: source(selectAllSource),
+    render: () => ({
+        template: html`
+            <checkbox-select-all-example />
         `
     })
 };

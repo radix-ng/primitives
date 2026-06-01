@@ -1,8 +1,8 @@
-import { ArgTypes, Primary, Controls, Meta } from '@storybook/addon-docs/blocks';
+import { ArgTypes, Canvas, Controls, Meta, Primary } from '@storybook/addon-docs/blocks';
+import * as CheckboxStories from './checkbox.stories';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
-import * as CheckboxDirectiveStories from './checkbox.stories';
 
-<Meta title="Primitives/Checkbox" of={CheckboxDirectiveStories} />
+<Meta title="Primitives/Checkbox" of={CheckboxStories} />
 
 # Checkbox
 
@@ -14,53 +14,87 @@ import * as CheckboxDirectiveStories from './checkbox.stories';
 ## Features
 
 - ✅ Full keyboard navigation.
-- ✅ Supports indeterminate \_state.
+- ✅ Supports indeterminate state.
 - ✅ Can be controlled or uncontrolled.
+- ✅ Hidden native input for form submission and validation.
 
 ## Import
 
-Get started with importing the directives:
-
 ```typescript
 import {
-  RdxCheckboxDirective,
-  RdxCheckboxInputDirective,
+  RdxCheckboxRootDirective,
   RdxCheckboxButtonDirective,
-  RdxCheckboxIndicatorDirective
+  RdxCheckboxIndicatorDirective,
+  RdxCheckboxInputDirective
 } from '@radix-ng/primitives/checkbox';
 ```
 
 ## Anatomy
 
+Assemble the parts: a root, a button trigger, the indicator, and a hidden input for forms.
+
 ```html
 <div rdxCheckboxRoot>
-    <button rdxCheckboxButton>
-      <lucide-angular rdxCheckboxIndicator name="check" />
-    </button>
-    <input rdxCheckboxInput />
+  <button rdxCheckboxButton>
+    <lucide-angular rdxCheckboxIndicator name="check" />
+  </button>
+  <input rdxCheckboxInput />
 </div>
 ```
 
+## Examples
+
+### Indeterminate
+
+The third "mixed" state. Clicking a checkbox in the indeterminate state resolves it to checked.
+
+<Canvas of={CheckboxStories.Indeterminate} />
+
+### Presence
+
+Mount/unmount the indicator with enter/leave animation support via `rdxCheckboxIndicatorPresence`.
+
+<Canvas of={CheckboxStories.Presence} />
+
+### Template-driven forms
+
+Two-way bind the root with `[(ngModel)]`.
+
+<Canvas of={CheckboxStories.TemplateDrivenForms} />
+
+### Reactive forms
+
+Bind the root with `formControlName`; `disabled` reacts to the control's enable/disable state.
+
+<Canvas of={CheckboxStories.ReactiveForms} />
+
+### Validation
+
+`Validators.requiredTrue` enforces acceptance; the error shows once the field is touched and submit is guarded.
+
+<Canvas of={CheckboxStories.Validation} />
+
+### Select all
+
+A parent checkbox derived from its children — `indeterminate` when only some are checked.
+
+<Canvas of={CheckboxStories.SelectAll} />
+
 ## API Reference
 
+The `Button`, `Indicator` and `Input` parts take no inputs of their own — they read
+the checkbox state from the root context. All configuration lives on the root.
+
 ### Root
-`RdxCheckboxRootDirective`
 
-### Button
-`RdxCheckboxButtonDirective`
-
-### Indicator
-`RdxCheckboxIndicatorDirective`
-
-### Input
-`RdxCheckboxInputDirective`
+<ArgTypes of={RdxCheckboxRootDirective} />
 
 ## Accessibility
 
-Adheres to the [tri-\_state Checkbox WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/checkbox).
+Adheres to the [tri-state Checkbox WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/checkbox).
 
 ### Keyboard Interactions
 
 | Key   | Description                   |
-|-------|-------------------------------|
+| ----- | ----------------------------- |
 | Space | Checks/unchecks the checkbox. |

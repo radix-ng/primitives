@@ -1,5 +1,5 @@
-import { afterNextRender, DestroyRef, Directive, ElementRef, inject } from '@angular/core';
-import { injectCheckboxRootContext } from './checkbox-root';
+import { Directive, effect, ElementRef, inject } from '@angular/core';
+import { injectCheckboxRootContext, isIndeterminate } from './checkbox-root';
 
 @Directive({
     selector: 'input[rdxCheckboxInput]',
@@ -8,7 +8,9 @@ import { injectCheckboxRootContext } from './checkbox-root';
         tabindex: '-1',
         'aria-hidden': 'true',
         '[attr.name]': 'rootContext.name() || undefined',
-        '[attr.checked]': 'rootContext.checked()',
+        // Only a truly checked box is submitted; `indeterminate` is a property
+        // (set below), never a submitted "checked" value.
+        '[attr.checked]': 'rootContext.state() === "checked" ? "" : undefined',
         '[attr.form]': 'rootContext.form() || undefined',
         '[attr.value]': 'rootContext.value()',
         '[required]': 'rootContext.required() || undefined',
@@ -26,30 +28,34 @@ import { injectCheckboxRootContext } from './checkbox-root';
 export class RdxCheckboxInputDirective {
     protected readonly rootContext = injectCheckboxRootContext()!;
 
-    private readonly elementRef = inject<ElementRef<HTMLInputElement>>(ElementRef);
-
-    private readonly destroyRef = inject(DestroyRef);
+    private readonly input = inject<ElementRef<HTMLInputElement>>(ElementRef).nativeElement;
 
     constructor() {
-        /**
-         * Sets up an observer to bubble native input events when the underlying "checked" attribute changes.
-         *
-         * Why this exists
-         * - The checkbox input in this directive is visually hidden and controlled by the Radix checkbox state.
-         * - When Radix changes the checked state, it updates the input's DOM attribute ("checked").
-         * - Some forms and frameworks rely on native events (click/change) from the input to sync value, validity and
-         *   form state. If the attribute changes programmatically without a user click, no event is fired by default.
-         */
-        afterNextRender(() => {
-            const mutationObserver = new MutationObserver(() => {
-                this.elementRef.nativeElement.dispatchEvent(new Event('click', { bubbles: true }));
-            });
-            mutationObserver.observe(this.elementRef.nativeElement, {
-                attributes: true,
-                attributeFilter: ['checked']
-            });
+        let isInitial = true;
 
-            this.destroyRef.onDestroy(() => mutationObserver.disconnect());
+        /**
+         * Keeps the hidden native input in sync so form submission, native
+         * validation and form events reflect the checkbox state.
+         *
+         * - `indeterminate` is a native property (not a submittable value), so we
+         *   mirror it here rather than via an attribute.
+         * - On every change (but not the initial render) we emit bubbling
+         *   `input`/`change` events so native form listeners react. We do NOT
+         *   dispatch a `click`: a click on a checkbox runs the toggle activation
+         *   behavior and would desync the input from the bound state.
+         */
+        effect(() => {
+            const checked = this.rootContext.checked();
+
+            this.input.indeterminate = isIndeterminate(checked);
+
+            if (isInitial) {
+                isInitial = false;
+                return;
+            }
+
+            this.input.dispatchEvent(new Event('input', { bubbles: true }));
+            this.input.dispatchEvent(new Event('change', { bubbles: true }));
         });
     }
 }

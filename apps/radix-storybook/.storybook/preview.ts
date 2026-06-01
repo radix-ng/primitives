@@ -111,7 +111,9 @@ const preview: Preview = {
                 }
             },
 
-            codePanel: true
+            codePanel: true,
+            // Drop the demo wrapper decorator from the "Show code" snippet.
+            source: { excludeDecorators: true }
         },
         options: {
             storySort: {

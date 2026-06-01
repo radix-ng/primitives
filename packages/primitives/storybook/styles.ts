@@ -77,6 +77,21 @@ export const demoInput = cn(
 );
 
 /**
+ * Checkbox parts: a small square button toggling a centered indicator.
+ *
+ * The indicator keeps `data-[state=unchecked]:hidden` because its `flex` display
+ * would otherwise override the native `[hidden]` attribute set by the directive.
+ */
+export const demoCheckbox = {
+    button: cn(
+        'flex size-6 items-center justify-center rounded-md border border-border bg-background shadow-sm',
+        'disabled:cursor-not-allowed disabled:opacity-50',
+        demoFocusRing
+    ),
+    indicator: 'flex items-center text-primary data-[state=unchecked]:hidden'
+} as const;
+
+/**
  * Avatar parts: a circular image with a text/initials fallback.
  *
  * Compose `root` with one `size`; the font size set by `size` is inherited by

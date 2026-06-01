@@ -50,11 +50,21 @@ export const [injectCheckboxRootContext, provideCheckboxRootContext] =
         }
     ],
     host: {
-        '[attr.data-state]': 'state()'
+        '[attr.data-state]': 'state()',
+        '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
+        '[attr.data-readonly]': 'readonly() ? "" : undefined',
+        '[attr.data-required]': 'required() ? "" : undefined'
     }
 })
 export class RdxCheckboxRootDirective {
     private readonly controlValueAccessor = inject(RdxControlValueAccessor);
+
+    /**
+     * @ignore
+     * Reflects the CVA disabled state (covers reactive-forms `.disable()`),
+     * used for the `data-disabled` host attribute.
+     */
+    protected readonly isDisabled = computed(() => this.controlValueAccessor.disabled());
 
     /**
      * The controlled checked state of the checkbox. Must be used in conjunction with onCheckedChange.
@@ -104,23 +114,14 @@ export class RdxCheckboxRootDirective {
      */
     readonly onCheckedChange = outputFromObservable(outputToObservable(this.controlValueAccessor.valueChange));
 
-    readonly state = computed(() => {
-        const checked = this.controlValueAccessor.value();
-
-        if (checked === 'indeterminate') {
-            return checked;
-        }
-
-        return checked ? 'checked' : 'unchecked';
-    });
+    readonly state = computed(() => getState(this.controlValueAccessor.value()));
 
     toggle() {
         const checked = this.controlValueAccessor.value();
 
-        if (checked === 'indeterminate') {
-            this.controlValueAccessor.setValue(true);
-        }
-
-        this.controlValueAccessor.setValue(!checked);
+        // From the indeterminate state a click resolves to checked (matching
+        // Radix/Base UI), otherwise it flips the boolean. A single setValue so
+        // onCheckedChange fires once.
+        this.controlValueAccessor.setValue(isIndeterminate(checked) ? true : !checked);
     }
 }
