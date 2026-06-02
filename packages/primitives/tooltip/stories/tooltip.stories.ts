@@ -1,113 +1,76 @@
-import { provideAnimations } from '@angular/platform-browser/animations';
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { LucideAngularModule } from 'lucide-angular';
-import { RdxTooltipModule } from '../index';
-import { RdxTooltipAnchorComponent } from './tooltip-anchor.component';
-import { RdxTooltipAnimationsComponent } from './tooltip-animations.component';
-import { RdxTooltipDefaultComponent } from './tooltip-default.component';
-import { RdxTooltipEventsComponent } from './tooltip-events.components';
-import { RdxTooltipInitiallyOpenComponent } from './tooltip-initially-open.component';
-import { RdxTooltipMultipleComponent } from './tooltip-multiple.component';
-import { RdxTooltipPositioningComponent } from './tooltip-positioning.component';
-import { RdxTooltipTriggeringComponent } from './tooltip-triggering.component';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
+import { RdxTooltipDefaultComponent } from './tooltip-default';
+import defaultSource from './tooltip-default?raw';
+import { RdxTooltipProviderComponent } from './tooltip-provider';
+import providerSource from './tooltip-provider?raw';
+import { RdxTooltipSliderComponent } from './tooltip-slider';
+import sliderSource from './tooltip-slider?raw';
+import { RdxTooltipTrackCursorComponent } from './tooltip-track-cursor';
+import trackCursorSource from './tooltip-track-cursor?raw';
 
 const html = String.raw;
+
+const source = (code: string) => ({
+    docs: {
+        source: {
+            code,
+            language: 'typescript'
+        }
+    }
+});
 
 export default {
     title: 'Primitives/Tooltip',
     decorators: [
         moduleMetadata({
             imports: [
-                RdxTooltipModule,
                 RdxTooltipDefaultComponent,
-                RdxTooltipEventsComponent,
-                RdxTooltipPositioningComponent,
-                RdxTooltipTriggeringComponent,
-                RdxTooltipMultipleComponent,
-                RdxTooltipAnimationsComponent,
-                RdxTooltipInitiallyOpenComponent,
-                RdxTooltipAnchorComponent,
+                RdxTooltipProviderComponent,
+                RdxTooltipTrackCursorComponent,
+                RdxTooltipSliderComponent,
                 LucideAngularModule
-            ],
-            providers: [provideAnimations()]
+            ]
         }),
-        componentWrapperDecorator(
-            (story) => html`
-                <div
-                    class="radix-themes light light-theme radix-themes-default-fonts"
-                    data-accent-color="indigo"
-                    data-radius="medium"
-                    data-scaling="100%"
-                >
-                    ${story}
-                </div>
-            `
-        )
+        tailwindDemoDecorator()
     ]
 } as Meta;
 
 type Story = StoryObj;
 
 export const Default: Story = {
+    parameters: source(defaultSource),
     render: () => ({
         template: html`
-            <rdx-tooltip-default></rdx-tooltip-default>
+            <rdx-tooltip-default />
         `
     })
 };
 
-export const Multiple: Story = {
+export const Provider: Story = {
+    parameters: source(providerSource),
     render: () => ({
         template: html`
-            <rdx-tooltip-multiple></rdx-tooltip-multiple>
+            <rdx-tooltip-provider />
         `
     })
 };
 
-export const Events: Story = {
+export const TrackCursor: Story = {
+    parameters: source(trackCursorSource),
     render: () => ({
         template: html`
-            <rdx-tooltip-events></rdx-tooltip-events>
+            <rdx-tooltip-track-cursor />
         `
     })
 };
 
-export const Positioning: Story = {
+export const Slider: Story = {
+    parameters: source(sliderSource),
     render: () => ({
         template: html`
-            <rdx-tooltip-positioning></rdx-tooltip-positioning>
-        `
-    })
-};
-
-export const ExternalTriggering: Story = {
-    render: () => ({
-        template: html`
-            <rdx-tooltip-triggering></rdx-tooltip-triggering>
-        `
-    })
-};
-
-export const Anchor: Story = {
-    render: () => ({
-        template: html`
-            <rdx-tooltip-anchor></rdx-tooltip-anchor>
-        `
-    })
-};
-
-export const InitiallyOpen: Story = {
-    render: () => ({
-        template: html`
-            <rdx-tooltip-initially-open></rdx-tooltip-initially-open>
-        `
-    })
-};
-
-export const Animations: Story = {
-    render: () => ({
-        template: html`
-            <rdx-tooltip-animations></rdx-tooltip-animations>
+            <rdx-tooltip-slider />
         `
     })
 };

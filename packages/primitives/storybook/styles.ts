@@ -120,3 +120,10 @@ export const demoAvatar = {
         lg: 'size-12 text-base'
     }
 } as const;
+
+/** Tooltip parts: a small popup anchored to a trigger. */
+export const demoTooltip = {
+    positioner: 'z-50',
+    popup: 'border-border bg-popover text-popover-foreground select-none rounded-md border px-3 py-2 text-sm leading-none shadow-md',
+    arrow: 'fill-popover'
+} as const;

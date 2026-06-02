@@ -1,0 +1,348 @@
+import { _IdGenerator } from '@angular/cdk/a11y';
+import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
+import {
+    booleanAttribute,
+    computed,
+    DestroyRef,
+    Directive,
+    effect,
+    inject,
+    input,
+    model,
+    numberAttribute,
+    output,
+    Signal,
+    signal,
+    untracked
+} from '@angular/core';
+import type { ReferenceElement } from '@floating-ui/dom';
+import { createContext, watch } from '@radix-ng/primitives/core';
+import { RdxPopper } from '@radix-ng/primitives/popper';
+import { RdxTooltipHandle } from './tooltip-handle';
+import { injectRdxTooltipProviderContext } from './tooltip-provider';
+import { injectRdxTooltipConfig, RdxTrackCursorAxis } from './tooltip.config';
+import { createTooltipInstantController, TooltipInstantController, useTimeoutFn } from './utils';
+
+export interface RdxTooltipContext {
+    contentId: string;
+    isOpen: Signal<boolean>;
+    /** Whether the tooltip opened/closed without waiting for the delay. */
+    instant: Signal<boolean>;
+    disabled: Signal<boolean>;
+    disableHoverablePopup: Signal<boolean>;
+    trackCursorAxis: Signal<RdxTrackCursorAxis>;
+    /** The active trigger element. */
+    trigger: Signal<HTMLElement | undefined>;
+    triggers: Signal<HTMLElement[]>;
+    payload: Signal<unknown>;
+    open: (trigger?: HTMLElement, payload?: unknown) => void;
+    close: () => void;
+    /** Closes after the resolved close delay (used when hover/focus is lost). */
+    closeDelayed: () => void;
+    registerTrigger: (trigger: HTMLElement) => () => void;
+    /** Hover entered a trigger — opens after the resolved delay (or instantly). */
+    onTriggerEnter: (trigger?: HTMLElement, payload?: unknown) => void;
+    /** Hover left a trigger — cancels a pending open and closes when appropriate. */
+    onTriggerLeave: () => void;
+    setCursorPosition: (position: { x: number; y: number } | undefined) => void;
+}
+
+export const [injectRdxTooltipContext, provideRdxTooltipContext] =
+    createContext<RdxTooltipContext>('RdxTooltipContext');
+
+const context = () => contextFor(inject(RdxTooltip));
+
+@Directive({
+    selector: '[rdxTooltip]',
+    exportAs: 'rdxTooltip',
+    providers: [provideRdxTooltipContext(context)],
+    hostDirectives: [RdxPopper]
+})
+export class RdxTooltip {
+    private readonly idGenerator = inject(_IdGenerator);
+    private readonly defaultConfig = injectRdxTooltipConfig();
+    private readonly provider = injectRdxTooltipProviderContext(true);
+    private readonly popper = inject(RdxPopper);
+    private readonly destroyRef = inject(DestroyRef);
+    private hasAppliedDefaultOpen = false;
+
+    /**
+     * Whether the tooltip is currently open.
+     */
+    readonly open = model(false);
+
+    /**
+     * Whether the tooltip is initially open. Uncontrolled.
+     */
+    readonly defaultOpen = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /**
+     * How long to wait before opening the tooltip. Specified in milliseconds.
+     * Falls back to the surrounding provider, then to the global config.
+     */
+    readonly delay = input<number | undefined, NumberInput | undefined>(undefined, {
+        transform: (value) => (value == null ? undefined : numberAttribute(value))
+    });
+
+    /**
+     * How long to wait before closing the tooltip. Specified in milliseconds.
+     */
+    readonly closeDelay = input<number | undefined, NumberInput | undefined>(undefined, {
+        transform: (value) => (value == null ? undefined : numberAttribute(value))
+    });
+
+    /**
+     * When `true`, the tooltip closes as the pointer leaves the trigger instead of
+     * staying open while the pointer moves over the popup.
+     */
+    readonly disableHoverablePopup = input<boolean, BooleanInput>(this.defaultConfig.disableHoverablePopup, {
+        transform: booleanAttribute
+    });
+
+    /**
+     * Determines which axis the tooltip should track the cursor on.
+     */
+    readonly trackCursorAxis = input<RdxTrackCursorAxis>('none');
+
+    /**
+     * When `true`, the tooltip will not open.
+     */
+    readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /**
+     * Associates this root with detached trigger elements.
+     */
+    readonly handle = input<RdxTooltipHandle<any>>();
+
+    /**
+     * Event handler called when the open state changes.
+     */
+    readonly onOpenChange = output<boolean>();
+
+    readonly contentId = this.idGenerator.getId('rdx-tooltip-content-');
+    readonly trigger = signal<HTMLElement | undefined>(undefined);
+    readonly triggers = signal<HTMLElement[]>([]);
+    readonly payload = signal<unknown>(undefined);
+    readonly cursorPosition = signal<{ x: number; y: number } | undefined>(undefined);
+
+    private readonly openedInstant = signal(false);
+
+    /** Local instant window used when this tooltip is not inside a provider. */
+    private readonly localInstant: TooltipInstantController = createTooltipInstantController(
+        () => this.defaultConfig.timeout,
+        this.destroyRef
+    );
+
+    private readonly instantGroup = this.provider ?? this.localInstant;
+
+    private readonly resolvedDelay = computed(() => this.delay() ?? this.provider?.delay() ?? this.defaultConfig.delay);
+    private readonly resolvedCloseDelay = computed(
+        () => this.closeDelay() ?? this.provider?.closeDelay() ?? this.defaultConfig.closeDelay
+    );
+
+    /** Whether the most recent open happened without the delay. */
+    readonly instant = this.openedInstant.asReadonly();
+
+    private readonly virtualAnchor = computed<ReferenceElement | undefined>(() => {
+        const axis = this.trackCursorAxis();
+        const element = this.trigger();
+
+        if (axis === 'none' || !element) {
+            return element;
+        }
+
+        const position = this.cursorPosition();
+
+        if (!position) {
+            return element;
+        }
+
+        const followX = axis === 'x' || axis === 'both';
+        const followY = axis === 'y' || axis === 'both';
+
+        return {
+            getBoundingClientRect: () => {
+                const rect = element.getBoundingClientRect();
+                const width = followX ? 0 : rect.width;
+                const height = followY ? 0 : rect.height;
+                const x = followX ? position.x : rect.x;
+                const y = followY ? position.y : rect.y;
+
+                return { width, height, x, y, top: y, left: x, right: x + width, bottom: y + height };
+            }
+        };
+    });
+
+    private readonly openTimer = useTimeoutFn(
+        () => this.applyOpen(false),
+        () => this.resolvedDelay()!,
+        { immediate: false },
+        this.destroyRef
+    );
+
+    private readonly closeTimer = useTimeoutFn(
+        () => this.applyClose(),
+        () => this.resolvedCloseDelay()!,
+        { immediate: false },
+        this.destroyRef
+    );
+
+    constructor() {
+        effect(() => {
+            const defaultOpen = this.defaultOpen();
+
+            if (!this.hasAppliedDefaultOpen && defaultOpen) {
+                this.hasAppliedDefaultOpen = true;
+                this.open.set(defaultOpen);
+            }
+        });
+
+        effect((onCleanup) => {
+            const handle = this.handle();
+
+            if (handle) {
+                onCleanup(untracked(() => handle.registerRoot(contextFor(this))));
+            }
+        });
+
+        // Keep the popper anchored to the active trigger, or to the cursor while tracking.
+        effect(() => this.popper.anchorOverride.set(this.virtualAnchor()));
+
+        watch(
+            [this.open],
+            ([isOpen]) => {
+                this.onOpenChange.emit(isOpen);
+
+                if (isOpen) {
+                    this.instantGroup.onOpen();
+                } else {
+                    this.instantGroup.onClose();
+                    this.openedInstant.set(false);
+                }
+            },
+            { defer: true }
+        );
+    }
+
+    /** Opens immediately, optionally switching the active trigger/payload. */
+    show(trigger = this.trigger(), payload?: unknown) {
+        this.applyOpen(true, trigger, payload);
+    }
+
+    close() {
+        this.openTimer.stop();
+        this.closeTimer.stop();
+        this.applyClose();
+    }
+
+    /** Closes after the resolved close delay, e.g. when the pointer or focus leaves. */
+    scheduleClose() {
+        this.openTimer.stop();
+
+        if (this.resolvedCloseDelay()! <= 0) {
+            this.applyClose();
+        } else {
+            this.closeTimer.start();
+        }
+    }
+
+    /** Hover/focus entered — open after the delay, or instantly within the instant window. */
+    onTriggerEnter(trigger = this.trigger(), payload?: unknown) {
+        if (this.disabled()) {
+            return;
+        }
+
+        if (trigger) {
+            this.trigger.set(trigger);
+        }
+
+        this.payload.set(payload);
+        this.closeTimer.stop();
+
+        if (this.instantGroup.isInstant() || this.resolvedDelay()! <= 0) {
+            this.applyOpen(true, trigger, payload);
+        } else {
+            this.openTimer.start();
+        }
+    }
+
+    onTriggerLeave() {
+        this.openTimer.stop();
+
+        if (this.disableHoverablePopup()) {
+            this.scheduleClose();
+        }
+        // Otherwise the positioner's grace area decides when to close.
+    }
+
+    registerTrigger(trigger: HTMLElement) {
+        this.triggers.update((triggers) => (triggers.includes(trigger) ? triggers : [...triggers, trigger]));
+
+        if (!this.trigger()) {
+            this.trigger.set(trigger);
+        }
+
+        return () => {
+            this.triggers.update((triggers) => triggers.filter((candidate) => candidate !== trigger));
+
+            if (this.trigger() === trigger) {
+                const nextTrigger = this.triggers()[0];
+                this.trigger.set(nextTrigger);
+
+                if (!nextTrigger && !this.destroyRef.destroyed) {
+                    this.applyClose();
+                }
+            }
+        };
+    }
+
+    setCursorPosition(position: { x: number; y: number } | undefined) {
+        this.cursorPosition.set(position);
+    }
+
+    private applyOpen(instant: boolean, trigger = this.trigger(), payload?: unknown) {
+        if (this.disabled()) {
+            return;
+        }
+
+        this.openTimer.stop();
+        this.closeTimer.stop();
+
+        if (trigger) {
+            this.trigger.set(trigger);
+        }
+
+        if (payload !== undefined) {
+            this.payload.set(payload);
+        }
+
+        this.openedInstant.set(instant || this.instantGroup.isInstant());
+        this.open.set(true);
+    }
+
+    private applyClose() {
+        this.openedInstant.set(this.instantGroup.isInstant());
+        this.open.set(false);
+    }
+}
+
+function contextFor(root: RdxTooltip): RdxTooltipContext {
+    return {
+        contentId: root.contentId,
+        isOpen: root.open,
+        instant: root.instant,
+        disabled: root.disabled,
+        disableHoverablePopup: root.disableHoverablePopup,
+        trackCursorAxis: root.trackCursorAxis,
+        trigger: root.trigger.asReadonly(),
+        triggers: root.triggers.asReadonly(),
+        payload: root.payload.asReadonly(),
+        open: (trigger?: HTMLElement, payload?: unknown) => root.show(trigger, payload),
+        close: () => root.close(),
+        closeDelayed: () => root.scheduleClose(),
+        registerTrigger: (trigger: HTMLElement) => root.registerTrigger(trigger),
+        onTriggerEnter: (trigger?: HTMLElement, payload?: unknown) => root.onTriggerEnter(trigger, payload),
+        onTriggerLeave: () => root.onTriggerLeave(),
+        setCursorPosition: (position) => root.setCursorPosition(position)
+    };
+}

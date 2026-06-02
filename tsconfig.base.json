@@ -51,7 +51,6 @@
             "@radix-ng/primitives/toggle-group": ["packages/primitives/toggle-group/index.ts"],
             "@radix-ng/primitives/toolbar": ["packages/primitives/toolbar/index.ts"],
             "@radix-ng/primitives/tooltip": ["packages/primitives/tooltip/index.ts"],
-            "@radix-ng/primitives/tooltip2": ["packages/primitives/tooltip2/index.ts"],
             "@radix-ng/primitives/visually-hidden": ["packages/primitives/visually-hidden/index.ts"]
         }
     },

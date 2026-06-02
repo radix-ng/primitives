@@ -10,7 +10,7 @@ interface OptionData {
     disabled: boolean;
 }
 
-// Mirrors the real-world `select2` pattern: the collection item is composed via `hostDirectives`,
+// Mirrors the real-world `select` pattern: the collection item is composed via `hostDirectives`,
 // not applied directly. This proves `contentChildren` matches host directives.
 @Component({
     selector: 'collection-test-option',

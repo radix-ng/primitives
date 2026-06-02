@@ -1,32 +1,30 @@
-import { NgModule } from '@angular/core';
-import { RdxTooltipAnchorDirective } from './src/tooltip-anchor.directive';
-import { RdxTooltipArrowDirective } from './src/tooltip-arrow.directive';
-import { RdxTooltipCloseDirective } from './src/tooltip-close.directive';
-import { RdxTooltipContentAttributesComponent } from './src/tooltip-content-attributes.component';
-import { RdxTooltipContentDirective } from './src/tooltip-content.directive';
-import { RdxTooltipRootDirective } from './src/tooltip-root.directive';
-import { RdxTooltipTriggerDirective } from './src/tooltip-trigger.directive';
+import { RdxTooltip } from './src/tooltip';
+import { RdxTooltipArrow } from './src/tooltip-arrow';
+import { RdxTooltipPopup } from './src/tooltip-popup';
+import { RdxTooltipPortal } from './src/tooltip-portal';
+import { RdxTooltipPortalPresence } from './src/tooltip-portal-presence';
+import { RdxTooltipPositioner } from './src/tooltip-positioner';
+import { RdxTooltipProvider } from './src/tooltip-provider';
+import { RdxTooltipTrigger } from './src/tooltip-trigger';
 
-export * from './src/tooltip-anchor.directive';
-export * from './src/tooltip-arrow.directive';
-export * from './src/tooltip-close.directive';
-export * from './src/tooltip-content-attributes.component';
-export * from './src/tooltip-content.directive';
-export * from './src/tooltip-root.directive';
-export * from './src/tooltip-trigger.directive';
+export * from './src/tooltip';
+export * from './src/tooltip-arrow';
+export * from './src/tooltip-handle';
+export * from './src/tooltip-popup';
+export * from './src/tooltip-portal';
+export * from './src/tooltip-portal-presence';
+export * from './src/tooltip-positioner';
+export * from './src/tooltip-provider';
+export * from './src/tooltip-trigger';
+export * from './src/tooltip.config';
 
-const _imports = [
-    RdxTooltipArrowDirective,
-    RdxTooltipCloseDirective,
-    RdxTooltipContentDirective,
-    RdxTooltipTriggerDirective,
-    RdxTooltipRootDirective,
-    RdxTooltipAnchorDirective,
-    RdxTooltipContentAttributesComponent
+export const tooltipImports = [
+    RdxTooltip,
+    RdxTooltipArrow,
+    RdxTooltipPopup,
+    RdxTooltipPortal,
+    RdxTooltipPortalPresence,
+    RdxTooltipPositioner,
+    RdxTooltipProvider,
+    RdxTooltipTrigger
 ];
-
-@NgModule({
-    imports: [..._imports],
-    exports: [..._imports]
-})
-export class RdxTooltipModule {}
