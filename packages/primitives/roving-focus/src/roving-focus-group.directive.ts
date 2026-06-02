@@ -2,6 +2,7 @@ import { BooleanInput } from '@angular/cdk/coercion';
 import { isPlatformBrowser } from '@angular/common';
 import {
     booleanAttribute,
+    DestroyRef,
     Directive,
     effect,
     ElementRef,
@@ -30,14 +31,8 @@ const rootContext = () => {
         onItemShiftTab: () => {
             rovingFocusGroup.isTabbingBackOut.set(true);
         },
-        registerItem: (item: HTMLElement) => {
-            // Keep the registry in DOM order, so arrow navigation matches the visual order
-            // regardless of the order in which items are created/registered.
-            rovingFocusGroup.focusableItems.update((items) => sortByDocumentPosition([...items, item]));
-        },
-        unregisterItem: (item: HTMLElement) => {
-            rovingFocusGroup.focusableItems.update((items) => items.filter((el) => el !== item));
-        }
+        registerItem: (item: HTMLElement, tabStopId: string) => rovingFocusGroup.registerItem(item, tabStopId),
+        unregisterItem: (item: HTMLElement, tabStopId: string) => rovingFocusGroup.unregisterItem(item, tabStopId)
     };
 };
 
@@ -57,15 +52,15 @@ export const [injectRovingFocusGroupContext, provideRovingFocusGroupContext] =
         '[attr.tabindex]': 'isTabbingBackOut() || focusableItems().length === 0 ? -1 : 0',
         '[attr.dir]': 'dir()',
         '(focus)': 'handleFocus($event)',
-        '(blur)': 'isTabbingBackOut.set(false)',
+        '(focusout)': 'isTabbingBackOut.set(false)',
         '(mouseup)': 'handleMouseUp()',
-        '(mousedown)': 'isClickFocus.set(true)',
-        style: 'outline: none;'
+        '(mousedown)': 'isClickFocus.set(true)'
     }
 })
 export class RdxRovingFocusGroupDirective {
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
     private readonly elementRef = inject(ElementRef);
+    private readonly destroyRef = inject(DestroyRef);
 
     /**
      * The orientation of the group. Mainly so arrow navigation is done accordingly (left & right vs. up & down)
@@ -120,8 +115,14 @@ export class RdxRovingFocusGroupDirective {
     readonly focusableItems = signal<HTMLElement[]>([]);
     protected readonly isClickFocus = signal(false);
     readonly isTabbingBackOut = signal(false);
+    private readonly itemIds = new WeakMap<HTMLElement, string>();
+    private isDestroyed = false;
 
     constructor() {
+        this.destroyRef.onDestroy(() => {
+            this.isDestroyed = true;
+        });
+
         effect(() => {
             if (this.currentTabStopId() === undefined) {
                 const def = this.defaultCurrentTabStopId();
@@ -142,6 +143,26 @@ export class RdxRovingFocusGroupDirective {
 
     setLoop(value: boolean) {
         this._loop.set(value);
+    }
+
+    /** @ignore */
+    registerItem(item: HTMLElement, tabStopId: string) {
+        this.itemIds.set(item, tabStopId);
+        // Keep the registry in DOM order, so arrow navigation matches the visual order
+        // regardless of the order in which items are created/registered.
+        this.focusableItems.update((items) => sortByDocumentPosition([...items, item]));
+    }
+
+    /** @ignore */
+    unregisterItem(item: HTMLElement, tabStopId: string) {
+        const remainingItems = this.focusableItems().filter((el) => el !== item);
+
+        this.focusableItems.set(remainingItems);
+        this.itemIds.delete(item);
+
+        if (!this.isDestroyed && this.currentTabStopId() === tabStopId) {
+            this.currentTabStopId.set(this.itemIds.get(remainingItems[0]));
+        }
     }
 
     /** @ignore */

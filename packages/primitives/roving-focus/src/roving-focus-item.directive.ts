@@ -21,8 +21,8 @@ import { focusFirst, generateId, getFocusIntent, wrapArray } from './utils';
 @Directive({
     selector: '[rdxRovingFocusItem]',
     host: {
-        '[attr.tabindex]': 'isCurrentTabStop() ? 0 : -1',
-        '[attr.data-orientation]': 'rootContext.orientation',
+        '[attr.tabindex]': 'focusable() && isCurrentTabStop() ? 0 : -1',
+        '[attr.data-orientation]': 'rootContext.orientation()',
         '[attr.data-active]': 'active() ? "true" : undefined',
         '[attr.data-disabled]': '!focusable() ? "" : undefined',
         '(mousedown)': 'handleMouseDown($event)',
@@ -78,9 +78,10 @@ export class RdxRovingFocusItemDirective {
             const element = this.elementRef.nativeElement;
             // `registerItem` reads and writes the group's `focusableItems` signal; calling it
             // untracked prevents the effect from depending on its own write and looping.
-            untracked(() => this.rootContext.registerItem(element));
+            const tabStopId = this.id();
+            untracked(() => this.rootContext.registerItem(element, tabStopId));
 
-            onCleanup(() => this.rootContext.unregisterItem(element));
+            onCleanup(() => this.rootContext.unregisterItem(element, tabStopId));
         });
     }
 

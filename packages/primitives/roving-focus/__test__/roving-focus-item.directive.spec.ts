@@ -5,8 +5,8 @@ import { RdxRovingFocusItemDirective } from '../src/roving-focus-item.directive'
 
 const flushMicrotasks = () => Promise.resolve();
 
-function pressKey(element: HTMLElement, key: string): void {
-    element.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
+function pressKey(element: HTMLElement, key: string, init: KeyboardEventInit = {}): void {
+    element.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, ...init }));
 }
 
 @Component({
@@ -140,6 +140,18 @@ describe('RdxRovingFocusItemDirective', () => {
         expect(document.activeElement).toBe(buttons[2]);
     });
 
+    it('moves the tab stop when the current item becomes non-focusable', () => {
+        buttons[1].focus();
+        fixture.detectChanges();
+
+        fixture.componentInstance.secondFocusable = false;
+        fixture.detectChanges();
+
+        expect(buttons[0].getAttribute('tabindex')).toBe('0');
+        expect(buttons[1].getAttribute('tabindex')).toBe('-1');
+        expect(buttons[2].getAttribute('tabindex')).toBe('-1');
+    });
+
     it('registers an item once focusable flips to true', async () => {
         fixture.componentInstance.secondFocusable = false;
         fixture.detectChanges();
@@ -174,5 +186,32 @@ describe('RdxRovingFocusItemDirective', () => {
         host.focus();
 
         expect(document.activeElement).toBe(buttons[2]);
+    });
+
+    it('restores the group tab stop after tabbing backwards out', () => {
+        buttons[0].focus();
+        fixture.detectChanges();
+
+        pressKey(buttons[0], 'Tab', { shiftKey: true });
+        fixture.detectChanges();
+        expect(host.getAttribute('tabindex')).toBe('-1');
+
+        buttons[0].dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+        fixture.detectChanges();
+
+        expect(host.getAttribute('tabindex')).toBe('0');
+    });
+
+    it('exposes the orientation value on items', () => {
+        expect(buttons[0].getAttribute('data-orientation')).toBe('horizontal');
+
+        fixture.componentInstance.orientation = 'vertical';
+        fixture.detectChanges();
+
+        expect(buttons[0].getAttribute('data-orientation')).toBe('vertical');
+    });
+
+    it('does not apply visual styles to the group', () => {
+        expect(host.style.outline).toBe('');
     });
 });
