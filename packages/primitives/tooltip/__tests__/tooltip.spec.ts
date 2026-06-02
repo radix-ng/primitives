@@ -1,9 +1,12 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
 import {
     createRdxTooltipHandle,
     RdxTooltip,
+    RdxTooltipPopup,
+    RdxTooltipPositioner,
     RdxTooltipProvider,
     RdxTooltipTrigger
 } from '@radix-ng/primitives/tooltip';
@@ -79,6 +82,42 @@ class MultipleTriggersHostComponent {}
     `
 })
 class TriggerDelayHostComponent {}
+
+@Component({
+    imports: [RdxTooltip, RdxTooltipTrigger],
+    template: `
+        <div [delay]="0" rdxTooltip>
+            <button disabled rdxTooltipTrigger>Trigger</button>
+        </div>
+    `
+})
+class DisabledTriggerHostComponent {}
+
+@Component({
+    imports: [RdxTooltip, RdxTooltipTrigger, RdxTooltipPositioner, RdxTooltipPopup],
+    template: `
+        <div [open]="true" rdxTooltip>
+            <button rdxTooltipTrigger>Trigger</button>
+            <div rdxTooltipPositioner>
+                <div rdxTooltipPopup>Popup</div>
+            </div>
+        </div>
+    `
+})
+class PositionerDefaultsHostComponent {}
+
+@Component({
+    imports: [RdxTooltip, RdxTooltipTrigger, RdxTooltipPositioner, RdxTooltipPopup],
+    template: `
+        <div [open]="true" rdxTooltip>
+            <button rdxTooltipTrigger>Trigger</button>
+            <div [side]="'left'" [arrowPadding]="9" rdxTooltipPositioner>
+                <div rdxTooltipPopup>Popup</div>
+            </div>
+        </div>
+    `
+})
+class PositionerOverrideHostComponent {}
 
 @Component({
     imports: [RdxTooltip, RdxTooltipTrigger],
@@ -336,6 +375,59 @@ describe('Tooltip per-trigger delay', () => {
         jest.advanceTimersByTime(1);
         fixture.detectChanges();
         expect(root.open()).toBe(true);
+    });
+});
+
+describe('Tooltip disabled trigger', () => {
+    beforeEach(() => jest.useFakeTimers());
+    afterEach(() => {
+        jest.clearAllTimers();
+        jest.useRealTimers();
+    });
+
+    it('never opens and reflects data-trigger-disabled', () => {
+        TestBed.configureTestingModule({ imports: [DisabledTriggerHostComponent] });
+        const fixture = TestBed.createComponent(DisabledTriggerHostComponent);
+        fixture.detectChanges();
+
+        const trigger: HTMLButtonElement = fixture.nativeElement.querySelector('[rdxTooltipTrigger]');
+        const root = getRoot(fixture);
+
+        expect(trigger.getAttribute('data-trigger-disabled')).toBe('');
+
+        trigger.dispatchEvent(new Event('focus'));
+        trigger.dispatchEvent(new Event('pointermove'));
+        jest.advanceTimersByTime(50);
+        fixture.detectChanges();
+
+        expect(root.open()).toBe(false);
+    });
+});
+
+describe('Tooltip positioner defaults', () => {
+    function popperOf(fixture: ComponentFixture<unknown>): RdxPopperContentWrapper {
+        return fixture.debugElement.query(By.directive(RdxTooltipPositioner)).injector.get(RdxPopperContentWrapper);
+    }
+
+    it('applies Base UI defaults (side top, arrow/collision padding 5) to the popper', () => {
+        TestBed.configureTestingModule({ imports: [PositionerDefaultsHostComponent] });
+        const fixture = TestBed.createComponent(PositionerDefaultsHostComponent);
+        fixture.detectChanges();
+
+        const popper = popperOf(fixture);
+        expect(popper.side()).toBe('top');
+        expect(popper.arrowPadding()).toBe(5);
+        expect(popper.collisionPadding()).toBe(5);
+    });
+
+    it('lets consumer bindings override the provided defaults', () => {
+        TestBed.configureTestingModule({ imports: [PositionerOverrideHostComponent] });
+        const fixture = TestBed.createComponent(PositionerOverrideHostComponent);
+        fixture.detectChanges();
+
+        const popper = popperOf(fixture);
+        expect(popper.side()).toBe('left');
+        expect(popper.arrowPadding()).toBe(9);
     });
 });
 

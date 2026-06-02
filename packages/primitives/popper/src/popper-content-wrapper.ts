@@ -34,6 +34,7 @@ import { createContext, elementSize, watch } from '@radix-ng/primitives/core';
 import { RdxPopper } from './popper';
 import { RdxPopperArrow } from './popper-arrow';
 import { RdxPopperContent } from './popper-content';
+import { RdxPopperContentConfigToken } from './popper-content.config';
 import { Align, isNotNull, Side, transformOrigin } from './utils';
 
 export type RdxPopperAnchorElement =
@@ -77,6 +78,9 @@ export class RdxPopperContentWrapper {
     private readonly context = inject(RdxPopper);
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
+    /** Optional positioning defaults provided by a composing primitive (e.g. tooltip). */
+    private readonly config = inject(RdxPopperContentConfigToken);
+
     /**
      * An element to position the popup against. Defaults to the popper anchor.
      */
@@ -86,29 +90,31 @@ export class RdxPopperContentWrapper {
      * The preferred side of the anchor to render against when open.
      * Will be reversed when collisions occur and avoidCollisions is enabled.
      */
-    readonly side = input<Side>('bottom');
+    readonly side = input<Side>(this.config.side ?? 'bottom');
 
     /**
      * Distance between the anchor and the popup in pixels.
      */
-    readonly sideOffset = input<number, NumberInput>(0, { transform: numberAttribute });
+    readonly sideOffset = input<number, NumberInput>(this.config.sideOffset ?? 0, { transform: numberAttribute });
 
     /**
      * How to align the popup relative to the specified side. May change when collisions occur.
      */
-    readonly align = input<Align>('center');
+    readonly align = input<Align>(this.config.align ?? 'center');
 
     /** An offset in pixels from the `start` or `end` alignment options. */
-    readonly alignOffset = input<number, NumberInput>(0, { transform: numberAttribute });
+    readonly alignOffset = input<number, NumberInput>(this.config.alignOffset ?? 0, { transform: numberAttribute });
 
     /**
      * Minimum distance to maintain between the arrow and the edges of the popup.
      * If your content has border-radius, this will prevent it from overflowing the corners.
      */
-    readonly arrowPadding = input<number, NumberInput>(0, { transform: numberAttribute });
+    readonly arrowPadding = input<number, NumberInput>(this.config.arrowPadding ?? 0, { transform: numberAttribute });
 
     /** When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges. */
-    readonly avoidCollisions = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
+    readonly avoidCollisions = input<boolean, BooleanInput>(this.config.avoidCollisions ?? true, {
+        transform: booleanAttribute
+    });
 
     /**
      * The element used as the collision boundary.
@@ -119,7 +125,7 @@ export class RdxPopperContentWrapper {
      * The distance in pixels from the boundary edges where collision detection should occur.
      * Accepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`.
      */
-    readonly collisionPadding = input<number | Partial<Record<Side, number>>>(0);
+    readonly collisionPadding = input<number | Partial<Record<Side, number>>>(this.config.collisionPadding ?? 0);
 
     /**
      * The sticky behavior on the align axis. `partial` will keep the
@@ -127,22 +133,24 @@ export class RdxPopperContentWrapper {
      * in the boundary whilst "always" will keep the content in the boundary
      * regardless.
      */
-    readonly sticky = input<'partial' | 'always'>('partial');
+    readonly sticky = input<'partial' | 'always'>(this.config.sticky ?? 'partial');
 
     /**
      * Whether to hide the content when the trigger becomes fully occluded.
      */
-    readonly hideWhenDetached = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+    readonly hideWhenDetached = input<boolean, BooleanInput>(this.config.hideWhenDetached ?? false, {
+        transform: booleanAttribute
+    });
 
     /**
      *  The type of CSS position property to use.
      */
-    readonly positionStrategy = input<'fixed' | 'absolute'>('fixed');
+    readonly positionStrategy = input<'fixed' | 'absolute'>(this.config.positionStrategy ?? 'fixed');
 
     /**
      * Strategy to update the position of the floating element on every animation frame.
      */
-    readonly updatePositionStrategy = input<'optimized' | 'always'>('optimized');
+    readonly updatePositionStrategy = input<'optimized' | 'always'>(this.config.updatePositionStrategy ?? 'optimized');
 
     /**
      * Emits when the element is placed.

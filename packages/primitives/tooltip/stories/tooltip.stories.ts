@@ -5,6 +5,8 @@ import { RdxTooltipDefaultComponent } from './tooltip-default';
 import defaultSource from './tooltip-default?raw';
 import { RdxTooltipDelayComponent } from './tooltip-delay';
 import delaySource from './tooltip-delay?raw';
+import { RdxTooltipDisabledComponent } from './tooltip-disabled';
+import disabledSource from './tooltip-disabled?raw';
 import { RdxTooltipProviderComponent } from './tooltip-provider';
 import providerSource from './tooltip-provider?raw';
 import { RdxTooltipSliderComponent } from './tooltip-slider';
@@ -31,6 +33,7 @@ export default {
                 RdxTooltipDefaultComponent,
                 RdxTooltipProviderComponent,
                 RdxTooltipDelayComponent,
+                RdxTooltipDisabledComponent,
                 RdxTooltipTrackCursorComponent,
                 RdxTooltipSliderComponent,
                 LucideAngularModule
@@ -65,6 +68,15 @@ export const Delay: Story = {
     render: () => ({
         template: html`
             <rdx-tooltip-delay />
+        `
+    })
+};
+
+export const Disabled: Story = {
+    parameters: source(disabledSource),
+    render: () => ({
+        template: html`
+            <rdx-tooltip-disabled />
         `
     })
 };

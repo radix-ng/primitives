@@ -98,6 +98,13 @@ values for that trigger only.
 
 <Canvas of={Stories.Delay} />
 
+### Disabled trigger
+
+Set `disabled` on `rdxTooltipTrigger` (or `disabled` on `rdxTooltip` for all triggers). A disabled
+trigger never opens the tooltip and reflects `data-trigger-disabled`.
+
+<Canvas of={Stories.Disabled} />
+
 ### Tracking the cursor
 
 Set `trackCursorAxis` on the root to `'x'`, `'y'`, or `'both'` to make the popup follow the pointer

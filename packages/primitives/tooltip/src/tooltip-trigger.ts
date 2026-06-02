@@ -25,7 +25,7 @@ import { RdxTooltipHandle } from './tooltip-handle';
         '[id]': 'triggerId()',
         '[attr.aria-describedby]': 'isOpen() ? rootContext()?.contentId : undefined',
         '[attr.data-popup-open]': 'isOpen() ? "" : undefined',
-        '[attr.data-trigger-disabled]': 'rootContext()?.disabled() ? "" : undefined',
+        '[attr.data-trigger-disabled]': 'isDisabled() ? "" : undefined',
         '(pointermove)': 'handlePointerMove($event)',
         '(pointerleave)': 'handlePointerLeave()',
         '(pointerdown)': 'handlePointerDown($event)',
@@ -61,6 +61,12 @@ export class RdxTooltipTrigger {
     readonly closeOnClick = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
 
     /**
+     * Whether this trigger is disabled. A disabled trigger never opens the tooltip.
+     * @defaultValue false
+     */
+    readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /**
      * Overrides the open delay (ms) for this trigger. Falls back to the root/provider/global delay.
      */
     readonly delay = input<number | undefined, NumberInput | undefined>(undefined, {
@@ -81,6 +87,9 @@ export class RdxTooltipTrigger {
 
     protected readonly triggerId = computed(() => this.id() ?? this.generatedId);
     protected readonly rootContext = computed(() => this.handle()?.context() ?? this.parentRootContext);
+
+    /** Disabled if either the root or this trigger is disabled. */
+    protected readonly isDisabled = computed(() => (this.rootContext()?.disabled() ?? false) || this.disabled());
 
     /** Whether this specific trigger is the active anchor of an open tooltip. */
     protected readonly isOpen = computed(
@@ -109,7 +118,7 @@ export class RdxTooltipTrigger {
     protected handleFocus() {
         const rootContext = this.rootContext();
 
-        if (!rootContext || rootContext.disabled() || this.isPointerDown()) {
+        if (!rootContext || this.isDisabled() || this.isPointerDown()) {
             return;
         }
 
@@ -136,7 +145,7 @@ export class RdxTooltipTrigger {
 
         const rootContext = this.rootContext();
 
-        if (!rootContext || rootContext.disabled()) {
+        if (!rootContext || this.isDisabled()) {
             return;
         }
 

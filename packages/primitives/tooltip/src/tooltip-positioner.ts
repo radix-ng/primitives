@@ -12,7 +12,13 @@ import {
 } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
 import { RdxDismissableLayer } from '@radix-ng/primitives/dismissable-layer';
-import { Align, RdxPopperAnchorElement, RdxPopperContentWrapper, Side } from '@radix-ng/primitives/popper';
+import {
+    Align,
+    provideRdxPopperContentConfig,
+    RdxPopperAnchorElement,
+    RdxPopperContentWrapper,
+    Side
+} from '@radix-ng/primitives/popper';
 import { injectRdxTooltipContext } from './tooltip';
 import { useGraceArea } from './useGraceArea';
 
@@ -21,6 +27,7 @@ import { useGraceArea } from './useGraceArea';
  */
 @Directive({
     selector: '[rdxTooltipPositioner]',
+    providers: [provideRdxPopperContentConfig({ side: 'top', arrowPadding: 5, collisionPadding: 5 })],
     hostDirectives: [
         RdxDismissableLayer,
         {
@@ -91,7 +98,7 @@ export class RdxTooltipPositioner {
     /**
      * The padding between the arrow and the edges of the content.
      */
-    readonly arrowPadding = input<number, NumberInput>(0, { transform: numberAttribute });
+    readonly arrowPadding = input<number, NumberInput>(5, { transform: numberAttribute });
 
     /**
      * When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges.
@@ -106,7 +113,7 @@ export class RdxTooltipPositioner {
     /**
      * The distance in pixels from the boundary edges where collision detection should occur.
      */
-    readonly collisionPadding = input<number | Partial<Record<Side, number>>>(0);
+    readonly collisionPadding = input<number | Partial<Record<Side, number>>>(5);
 
     /**
      * The sticky behavior on the `align` axis.
