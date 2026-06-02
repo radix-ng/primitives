@@ -8,6 +8,8 @@ import { RdxPopoverCustomAnchorComponent } from './popover-custom-anchor';
 import customAnchorSource from './popover-custom-anchor?raw';
 import { RdxPopoverDefaultComponent } from './popover-default';
 import defaultSource from './popover-default?raw';
+import { RdxPopoverDetachedComponent } from './popover-detached';
+import detachedSource from './popover-detached?raw';
 import { RdxPopoverModalComponent } from './popover-modal';
 import modalSource from './popover-modal?raw';
 import { RdxPopoverPositioningComponent } from './popover-positioning';
@@ -34,7 +36,8 @@ export default {
                 RdxPopoverPositioningComponent,
                 RdxPopoverAnimatedComponent,
                 RdxPopoverModalComponent,
-                RdxPopoverCustomAnchorComponent
+                RdxPopoverCustomAnchorComponent,
+                RdxPopoverDetachedComponent
             ]
         }),
         tailwindDemoDecorator()
@@ -93,6 +96,15 @@ export const CustomAnchor: Story = {
     render: () => ({
         template: html`
             <rdx-popover-custom-anchor />
+        `
+    })
+};
+
+export const Detached: Story = {
+    parameters: source(detachedSource),
+    render: () => ({
+        template: html`
+            <rdx-popover-detached />
         `
     })
 };

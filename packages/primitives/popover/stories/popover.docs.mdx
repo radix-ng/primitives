@@ -26,6 +26,7 @@ It remains headless: styles and native CSS animations belong to the consumer.
 - ✅ Supports uncontrolled state, `defaultOpen`, and Angular two-way binding with `[(open)]`.
 - ✅ Positions content with the shared Floating UI-based Popper primitive.
 - ✅ Supports a custom positioning anchor independently from the trigger.
+- ✅ Connects detached roots and multiple triggers through a shared handle.
 - ✅ Supports non-modal, modal, and focus-trapping-only behavior.
 - ✅ Closes on Escape, outside pointer interaction, or an explicit close button.
 - ✅ Restores focus through the shared Focus Scope behavior.
@@ -37,6 +38,7 @@ It remains headless: styles and native CSS animations belong to the consumer.
 
 ```typescript
 import {
+    createRdxPopoverHandle,
     RdxPopoverArrow,
     RdxPopoverBackdrop,
     RdxPopoverClose,
@@ -124,6 +126,13 @@ Pass `[anchor]` to `rdxPopoverPositioner` when the popup should open from a trig
 itself against a different element.
 
 <Canvas of={Stories.CustomAnchor} />
+
+### Detached handles
+
+Create a shared handle when triggers live outside the root or multiple triggers should control the
+same popup. The handle also supports imperative `open(id)`, `toggle(id)`, and `close()` calls.
+
+<Canvas of={Stories.Detached} />
 
 ## API Reference
 
