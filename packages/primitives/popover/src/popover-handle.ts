@@ -23,27 +23,33 @@ export class RdxPopoverHandle<Payload = unknown> {
             throw new Error(`No popover trigger registered with id "${triggerId}".`);
         }
 
-        this.rootContext()?.open(trigger.element, trigger.payload());
+        this.rootContext()?.open(
+            trigger.element,
+            trigger.payload(),
+            triggerId,
+            'imperative-action',
+            new Event('popover.open')
+        );
     }
 
     close() {
-        this.rootContext()?.close();
+        this.rootContext()?.close('imperative-action', new Event('popover.close'));
     }
 
-    toggle(triggerId: string) {
+    toggle(triggerId: string, event = new Event('popover.toggle')) {
         const trigger = this.triggers.get(triggerId);
 
         if (!trigger) {
             throw new Error(`No popover trigger registered with id "${triggerId}".`);
         }
 
-        this.rootContext()?.toggle(trigger.element, trigger.payload());
+        this.rootContext()?.toggle(triggerId, trigger.element, trigger.payload(), event);
     }
 
     registerRoot(rootContext: RdxPopoverRootContext) {
         this.rootContext.set(rootContext);
         this.triggers.forEach((trigger, id) => {
-            this.rootTriggerCleanups.set(id, rootContext.registerTrigger(trigger.element));
+            this.rootTriggerCleanups.set(id, rootContext.registerTrigger(id, trigger.element, trigger.payload));
         });
 
         return () => {
@@ -58,7 +64,7 @@ export class RdxPopoverHandle<Payload = unknown> {
     registerTrigger(id: string, trigger: HTMLElement, payload: () => Payload | undefined) {
         this.rootTriggerCleanups.get(id)?.();
         this.triggers.set(id, { element: trigger, payload });
-        const unregisterFromRoot = this.rootContext()?.registerTrigger(trigger);
+        const unregisterFromRoot = this.rootContext()?.registerTrigger(id, trigger, payload);
 
         if (unregisterFromRoot) {
             this.rootTriggerCleanups.set(id, unregisterFromRoot);

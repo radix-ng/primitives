@@ -6,6 +6,7 @@ import {
     createRdxPopoverHandle,
     RdxPopoverClose,
     RdxPopoverDescription,
+    RdxPopoverOpenChange,
     RdxPopoverPopup,
     RdxPopoverPortal,
     RdxPopoverPortalPresence,
@@ -187,6 +188,40 @@ class HoverHostComponent {
     `
 })
 class ViewportHostComponent {}
+
+@Component({
+    imports: [RdxPopoverClose, RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
+    template: `
+        <div
+            #root="rdxPopoverRoot"
+            [(open)]="open"
+            [(triggerId)]="triggerId"
+            [defaultOpen]="defaultOpen"
+            [defaultTriggerId]="defaultTriggerId"
+            (onOpenChange)="changes.push($event)"
+            rdxPopoverRoot
+        >
+            <button id="controlled-one" payload="one" rdxPopoverTrigger>One</button>
+            <button id="controlled-two" payload="two" rdxPopoverTrigger>Two</button>
+
+            @if (root.open()) {
+                <div rdxPopoverPositioner>
+                    <div rdxPopoverPopup>
+                        Popup
+                        <button rdxPopoverClose>Close</button>
+                    </div>
+                </div>
+            }
+        </div>
+    `
+})
+class ControlledMultipleTriggersHostComponent {
+    open = false;
+    triggerId: string | null = null;
+    defaultOpen = false;
+    defaultTriggerId: string | null = null;
+    readonly changes: RdxPopoverOpenChange[] = [];
+}
 
 function pointerEvent(type: string, pointerType = 'mouse') {
     const event = new Event(type);
@@ -676,5 +711,118 @@ describe('Popover', () => {
 
         expect(viewport.querySelector('[data-previous]')).toBeNull();
         expect(viewport.hasAttribute('data-transitioning')).toBe(false);
+    });
+
+    describe('controlled multiple triggers', () => {
+        it('positions against the externally selected trigger id', () => {
+            const controlledFixture = TestBed.createComponent(ControlledMultipleTriggersHostComponent);
+            controlledFixture.componentInstance.open = true;
+            controlledFixture.componentInstance.triggerId = 'controlled-two';
+            controlledFixture.detectChanges();
+
+            const root = controlledFixture.debugElement
+                .query(By.directive(RdxPopoverRoot))
+                .injector.get(RdxPopoverRoot);
+            const popper = controlledFixture.debugElement.query(By.directive(RdxPopoverRoot)).injector.get(RdxPopper);
+            const triggers: HTMLButtonElement[] =
+                controlledFixture.nativeElement.querySelectorAll('[rdxPopoverTrigger]');
+
+            expect(root.open()).toBe(true);
+            expect(root.triggerId()).toBe('controlled-two');
+            expect(root.trigger()).toBe(triggers[1]);
+            expect(root.payload()).toBe('two');
+            expect(popper.anchorOverride()).toBe(triggers[1]);
+        });
+
+        it('uses defaultTriggerId with defaultOpen', () => {
+            const controlledFixture = TestBed.createComponent(ControlledMultipleTriggersHostComponent);
+            controlledFixture.componentInstance.defaultOpen = true;
+            controlledFixture.componentInstance.defaultTriggerId = 'controlled-two';
+            controlledFixture.detectChanges();
+
+            const root = controlledFixture.debugElement
+                .query(By.directive(RdxPopoverRoot))
+                .injector.get(RdxPopoverRoot);
+            const triggers: HTMLButtonElement[] =
+                controlledFixture.nativeElement.querySelectorAll('[rdxPopoverTrigger]');
+
+            expect(root.open()).toBe(true);
+            expect(root.triggerId()).toBe('controlled-two');
+            expect(root.trigger()).toBe(triggers[1]);
+            expect(root.payload()).toBe('two');
+        });
+
+        it('emits details and updates triggerId when another trigger is pressed', () => {
+            const controlledFixture = TestBed.createComponent(ControlledMultipleTriggersHostComponent);
+            controlledFixture.detectChanges();
+
+            const triggers: HTMLButtonElement[] =
+                controlledFixture.nativeElement.querySelectorAll('[rdxPopoverTrigger]');
+
+            expect(controlledFixture.componentInstance.triggerId).toBeNull();
+
+            triggers[0].click();
+            controlledFixture.detectChanges();
+
+            expect(controlledFixture.componentInstance.open).toBe(true);
+            expect(controlledFixture.componentInstance.triggerId).toBe('controlled-one');
+            expect(controlledFixture.componentInstance.changes[0]).toMatchObject({
+                open: true,
+                triggerId: 'controlled-one',
+                trigger: triggers[0],
+                reason: 'trigger-press'
+            });
+
+            triggers[1].click();
+            controlledFixture.detectChanges();
+
+            expect(controlledFixture.componentInstance.open).toBe(true);
+            expect(controlledFixture.componentInstance.triggerId).toBe('controlled-two');
+            expect(controlledFixture.componentInstance.changes[1]).toMatchObject({
+                open: true,
+                triggerId: 'controlled-two',
+                trigger: triggers[1],
+                reason: 'trigger-press'
+            });
+        });
+
+        it('clears the active anchor when the externally controlled trigger id is cleared', () => {
+            const controlledFixture = TestBed.createComponent(ControlledMultipleTriggersHostComponent);
+            controlledFixture.componentInstance.triggerId = 'controlled-two';
+            controlledFixture.detectChanges();
+
+            const root = controlledFixture.debugElement
+                .query(By.directive(RdxPopoverRoot))
+                .injector.get(RdxPopoverRoot);
+            const popper = controlledFixture.debugElement.query(By.directive(RdxPopoverRoot)).injector.get(RdxPopper);
+
+            controlledFixture.componentInstance.triggerId = null;
+            controlledFixture.detectChanges();
+
+            expect(root.trigger()).toBeUndefined();
+            expect(root.payload()).toBeUndefined();
+            expect(popper.anchorOverride()).toBeUndefined();
+        });
+
+        it('emits close details from the popup close button', () => {
+            const controlledFixture = TestBed.createComponent(ControlledMultipleTriggersHostComponent);
+            controlledFixture.detectChanges();
+
+            const trigger: HTMLButtonElement = controlledFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
+            trigger.click();
+            controlledFixture.detectChanges();
+
+            const close: HTMLButtonElement = controlledFixture.nativeElement.querySelector('[rdxPopoverClose]');
+            close.click();
+            controlledFixture.detectChanges();
+
+            expect(controlledFixture.componentInstance.open).toBe(false);
+            expect(controlledFixture.componentInstance.changes[1]).toMatchObject({
+                open: false,
+                triggerId: 'controlled-one',
+                trigger,
+                reason: 'close-press'
+            });
+        });
     });
 });

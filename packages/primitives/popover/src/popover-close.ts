@@ -9,7 +9,7 @@ import { injectRdxPopoverRootContext } from './popover-root';
     selector: 'button[rdxPopoverClose]',
     host: {
         type: 'button',
-        '(click)': 'rootContext.close()'
+        '(click)': 'rootContext.close("close-press", $event)'
     }
 })
 export class RdxPopoverClose {

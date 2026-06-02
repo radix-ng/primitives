@@ -4,7 +4,7 @@ import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-int
 import { provideRdxDismissableLayerConfig, RdxDismissableLayer } from '@radix-ng/primitives/dismissable-layer';
 import { provideRdxFocusScopeConfig, RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import { RdxPopperContent } from '@radix-ng/primitives/popper';
-import { injectRdxPopoverRootContext } from './popover-root';
+import { injectRdxPopoverRootContext, RdxPopoverOpenChangeReason } from './popover-root';
 
 let originalBodyOverflow: string | null = null;
 let scrollLockCount = 0;
@@ -53,6 +53,10 @@ export class RdxPopoverPopup {
     private readonly document = inject(DOCUMENT);
     private readonly focusScope = inject(RdxFocusScope);
     private isScrollLocked = false;
+    private dismissDetails: { reason: RdxPopoverOpenChangeReason; event: Event } = {
+        reason: 'none',
+        event: new Event('popover.dismiss')
+    };
 
     /**
      * Event handler called when the escape key is down. Can be prevented.
@@ -96,15 +100,23 @@ export class RdxPopoverPopup {
         inject(DestroyRef).onDestroy(() => this.unlockScroll());
 
         this.dismissableLayer.pointerDownOutside.subscribe((event) => {
+            this.dismissDetails = { reason: 'outside-press', event };
+
             if (this.rootContext.triggers().some((trigger) => trigger.contains(event.target as Node))) {
                 event.preventDefault();
             }
         });
 
         this.dismissableLayer.focusOutside.subscribe((event) => {
+            this.dismissDetails = { reason: 'focus-out', event };
+
             if (this.rootContext.isPointerDownOnTrigger()) {
                 event.preventDefault();
             }
+        });
+
+        this.dismissableLayer.escapeKeyDown.subscribe((event) => {
+            this.dismissDetails = { reason: 'escape-key', event };
         });
 
         this.focusScope.mountAutoFocus.subscribe((event) => {
@@ -113,7 +125,10 @@ export class RdxPopoverPopup {
             }
         });
 
-        this.dismissableLayer.dismiss.subscribe(() => this.rootContext.close());
+        this.dismissableLayer.dismiss.subscribe(() => {
+            this.rootContext.close(this.dismissDetails.reason, this.dismissDetails.event);
+            this.dismissDetails = { reason: 'none', event: new Event('popover.dismiss') };
+        });
     }
 
     private lockScroll() {

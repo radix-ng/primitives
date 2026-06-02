@@ -3,6 +3,8 @@ import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxPopoverAnimatedComponent } from './popover-animated';
 import animatedSource from './popover-animated?raw';
 import { RdxPopoverControlledComponent } from './popover-controlled';
+import { RdxPopoverControlledMultipleComponent } from './popover-controlled-multiple';
+import controlledMultipleSource from './popover-controlled-multiple?raw';
 import controlledSource from './popover-controlled?raw';
 import { RdxPopoverCustomAnchorComponent } from './popover-custom-anchor';
 import customAnchorSource from './popover-custom-anchor?raw';
@@ -37,6 +39,7 @@ export default {
             imports: [
                 RdxPopoverDefaultComponent,
                 RdxPopoverControlledComponent,
+                RdxPopoverControlledMultipleComponent,
                 RdxPopoverPositioningComponent,
                 RdxPopoverAnimatedComponent,
                 RdxPopoverModalComponent,
@@ -66,6 +69,15 @@ export const Controlled: Story = {
     render: () => ({
         template: html`
             <rdx-popover-controlled />
+        `
+    })
+};
+
+export const ControlledMultiple: Story = {
+    parameters: source(controlledMultipleSource),
+    render: () => ({
+        template: html`
+            <rdx-popover-controlled-multiple />
         `
     })
 };

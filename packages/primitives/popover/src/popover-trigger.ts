@@ -30,7 +30,7 @@ import { injectRdxPopoverRootContext } from './popover-root';
         '[attr.data-popup-open]': 'isOpen() ? "" : undefined',
         '[attr.disabled]': 'disabled() ? "" : undefined',
         '[id]': 'triggerId()',
-        '(click)': 'handleClick()',
+        '(click)': 'handleClick($event)',
         '(pointerenter)': 'handlePointerEnter($event)',
         '(pointerleave)': 'handlePointerLeave($event)',
         '(pointerdown)': 'handlePointerDown()',
@@ -94,12 +94,18 @@ export class RdxPopoverTrigger {
                     )
                 );
             } else if (this.parentRootContext) {
-                onCleanup(untracked(() => this.parentRootContext!.registerTrigger(this.elementRef.nativeElement)));
+                onCleanup(
+                    untracked(() =>
+                        this.parentRootContext!.registerTrigger(this.triggerId(), this.elementRef.nativeElement, () =>
+                            this.payload()
+                        )
+                    )
+                );
             }
         });
     }
 
-    protected handleClick() {
+    protected handleClick(event: MouseEvent) {
         if (this.disabled()) {
             return;
         }
@@ -107,9 +113,9 @@ export class RdxPopoverTrigger {
         this.rootContext()?.setPointerDownOnTrigger(false);
 
         if (this.handle()) {
-            this.handle()!.toggle(this.triggerId());
+            this.handle()!.toggle(this.triggerId(), event);
         } else {
-            this.parentRootContext?.toggle(this.elementRef.nativeElement, this.payload());
+            this.parentRootContext?.toggle(this.triggerId(), this.elementRef.nativeElement, this.payload(), event);
         }
     }
 
@@ -121,7 +127,7 @@ export class RdxPopoverTrigger {
         }
 
         rootContext.setHoverDelays(this.delay(), this.closeDelay());
-        rootContext.openOnHover(this.elementRef.nativeElement, this.payload());
+        rootContext.openOnHover(this.elementRef.nativeElement, this.payload(), this.triggerId(), event);
     }
 
     protected handlePointerLeave(event: PointerEvent) {
