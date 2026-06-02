@@ -158,6 +158,29 @@ Prefer `hostDirectives` to re-use existing primitives (e.g., Accordion Item comp
 - Storybook theme switching is controlled from the toolbar, not OS color scheme. The preview decorator sets `document.documentElement[data-theme]`, so stories should use tokens that respond to that attribute instead of reading `prefers-color-scheme`.
 - **Lucide icons must be registered manually.** Any `<lucide-angular name="…">` used in a story needs its icon added to `LucideAngularModule.pick({...})` in `apps/radix-storybook/.storybook/preview.ts` (import the PascalCase export, e.g. `name="loader-circle"` → import `LoaderCircle` and add it to the `pick` map). An unregistered icon throws `The "…" icon has not been provided by any available icon providers.` at runtime — `build-storybook` does **not** catch it, so check the running story.
 
+### Storybook handbook index
+
+Before changing primitive behavior, wrappers, demos, or docs, read the relevant handbook page instead
+of rediscovering the project conventions from individual stories:
+
+| Topic            | Read first                                                                                   | Use when                                                                                                                                       |
+| ---------------- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Styling demos    | `packages/primitives/storybook/styling.docs.mdx` (`Guides/Styling`)                          | Adding or changing story markup, Tailwind utilities, semantic tokens, or shared demo classes                                                   |
+| Composition      | `apps/radix-storybook/docs/guides/composition.docs.mdx` (`Guides/Composition`)               | Applying primitives to custom markup, stacking directives, or building wrapper components with `hostDirectives`                                |
+| Customization    | `apps/radix-storybook/docs/guides/customization.docs.mdx` (`Guides/Customization`)           | Working with inputs, outputs, controlled state, two-way binding, DOM events, or primitive-specific hooks                                       |
+| Animation        | `apps/radix-storybook/docs/guides/animation.docs.mdx` (`Guides/Animation`)                   | Adding transitions, CSS `@keyframes`, `RdxPresenceDirective`, Angular 21+ `animate.enter` / `animate.leave`, or JavaScript animation libraries |
+| Naming           | `apps/radix-storybook/docs/guides/naming-conventions.docs.mdx` (`Guides/Naming Conventions`) | Naming selectors and directive classes                                                                                                         |
+| Consumer theming | `apps/radix-storybook/docs/overview/theming.docs.mdx` (`Overview/Theming`)                   | Documenting `data-*` state styling, design tokens, dark mode, or CDK overlay styles                                                            |
+| Accessibility    | `apps/radix-storybook/docs/overview/accessibility.docs.mdx` (`Overview/Accessibility`)       | Reviewing semantics, labels, keyboard navigation, or focus management                                                                          |
+
+For animation work, distinguish the lifecycle owner before choosing an API:
+
+- Always-mounted primitive parts: use CSS transitions driven by `data-state`.
+- Application-owned conditional DOM (`@if`): prefer Angular 21+ `animate.enter` / `animate.leave`;
+  legacy `@angular/animations` is not required.
+- Parts mounted through `RdxPresenceDirective`: use exit CSS `@keyframes` driven by `data-state`;
+  the current presence implementation waits for `animationend`, not `transitionend`.
+
 ### Centralized demo styles
 
 - **Single source of truth: `packages/primitives/storybook/styles.ts`** (`cn`, `demoFocusRing`, `demoButton`, `demoCard`, `demoInput`). Reuse these constants instead of inlining/copy-pasting long Tailwind class strings; extend the file when a pattern recurs. Visual reference is [coss.com](https://coss.com/ui) / Base UI. Guide page: `storybook/styling.docs.mdx` ("Guides/Styling").

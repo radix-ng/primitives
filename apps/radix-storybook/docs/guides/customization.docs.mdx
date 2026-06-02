@@ -1,0 +1,148 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Guides/Customization" />
+
+# Customization
+
+#### A guide to customizing the behavior of Radix NG primitives.
+
+Radix NG primitives provide accessible behavior without prescribing application state or visual
+design. Start with the inputs and outputs documented for each primitive. When an application needs
+shared behavior, wrap the primitive in your own directive or component.
+
+## Configuring behavior with inputs
+
+Primitive inputs are the first customization point. They keep common behavior explicit in the
+template and preserve the built-in accessibility handling.
+
+For example, a tooltip can use a shorter opening delay and remain open when its trigger is clicked:
+
+```html
+<ng-container [delayDuration]="100" [disableClosingTrigger]="true" rdxTooltip>
+    ...
+</ng-container>
+```
+
+Inputs vary by primitive. Check the API Reference on the primitive's Storybook page before adding
+application-level workarounds.
+
+## Listening to change events
+
+Stateful primitives expose Angular outputs such as `onOpenChange`, `onValueChange`, and
+`onPressedChange`. Use them to react to changes caused by user interaction.
+
+```html
+<div (onOpenChange)="trackOpenChange($event)" rdxCollapsibleRoot>
+    ...
+</div>
+```
+
+```ts
+trackOpenChange(open: boolean) {
+    this.analytics.track('collapsible_changed', { open });
+}
+```
+
+Change outputs currently emit the new value. Unlike Base UI's React API, Radix NG does not provide
+a shared `eventDetails` object with `reason`, `cancel()`, or `allowPropagation()` across all
+primitives.
+
+## Controlling components with state
+
+Many stateful primitives use Angular `model()` inputs. Bind your own state when an application
+needs to open a primitive programmatically, read its state elsewhere, or decide which changes to
+accept.
+
+```ts
+import { Component, signal } from '@angular/core';
+import { RdxCollapsibleModule } from '@radix-ng/primitives/collapsible';
+
+@Component({
+    selector: 'app-details',
+    imports: [RdxCollapsibleModule],
+    template: `
+        <button type="button" (click)="open.set(true)">Show details</button>
+
+        <div [open]="open()" (onOpenChange)="setOpen($event)" rdxCollapsibleRoot>
+            ...
+        </div>
+    `
+})
+export class Details {
+    protected readonly open = signal(false);
+
+    protected setOpen(open: boolean) {
+        this.open.set(open);
+    }
+}
+```
+
+When no external state is needed, omit the binding and let the primitive manage its own state.
+
+For `model()` inputs, standard Angular two-way binding is also available when every change should be
+accepted:
+
+```html
+<div [(open)]="open" rdxCollapsibleRoot>...</div>
+```
+
+## Customizing DOM event handling
+
+Use native DOM event methods when customizing how an event moves through your application:
+
+```html
+<button type="button" (click)="$event.stopPropagation()">Do not notify parent click handlers</button>
+```
+
+- `preventDefault()` prevents the browser's default action.
+- `stopPropagation()` prevents the event from bubbling to ancestors.
+- `stopImmediatePropagation()` also prevents later listeners on the same element from running.
+
+Stopping propagation does not automatically cancel a primitive's internal state update. For that,
+prefer controlled state or a hook explicitly exposed by the primitive.
+
+## Using primitive-specific event hooks
+
+Some primitives expose a hook for a specific native event. For example, `rdxTooltipTrigger`
+supports `rdxOnPointerDown`. Its callback runs before the tooltip's internal pointer-down handling.
+Call `preventDefault()` or return `false` to skip that internal handling.
+
+```html
+<button [rdxOnPointerDown]="handlePointerDown" rdxTooltipTrigger>Account</button>
+```
+
+```ts
+protected readonly handlePointerDown = (event: PointerEvent) => {
+    if (this.keepTooltipOpen) {
+        event.preventDefault();
+    }
+};
+```
+
+These hooks are escape hatches, not a uniform API. Use only the hooks documented by the primitive
+you are composing.
+
+## Creating reusable custom behavior
+
+When the same policy appears in several templates, create a wrapper component and compose the
+primitive with `hostDirectives`. Expose only the inputs and outputs that belong to the wrapper's
+public API.
+
+```ts
+import { Component } from '@angular/core';
+import { RdxButtonDirective } from '@radix-ng/primitives/button';
+
+@Component({
+    selector: 'app-submit-button',
+    template: '<ng-content />',
+    hostDirectives: [
+        {
+            directive: RdxButtonDirective,
+            inputs: ['disabled', 'focusableWhenDisabled']
+        }
+    ]
+})
+export class SubmitButton {}
+```
+
+See **Guides/Composition** for more examples of building custom components with `hostDirectives`.

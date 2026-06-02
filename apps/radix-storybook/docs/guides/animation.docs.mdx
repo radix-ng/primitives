@@ -1,0 +1,199 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Guides/Animation" />
+
+# Animation
+
+#### A guide to animating Radix NG primitives with native CSS and Angular 21+.
+
+Radix NG primitives are headless. They expose state through `data-*` attributes and leave animation
+styles to your application. Prefer native CSS transitions and `@keyframes`; you do not need the
+legacy `@angular/animations` package for these approaches.
+
+Angular 21 also provides compiler-level
+[`animate.enter` and `animate.leave`](https://angular.dev/guide/animations) APIs. They apply CSS
+classes at the correct lifecycle points and wait for the longest CSS transition or keyframe
+animation before removing an element from the DOM.
+
+## Choosing an approach
+
+Use the lifecycle owner to choose the animation API:
+
+| Scenario | Recommended approach |
+| --- | --- |
+| The element always remains mounted | CSS transition driven by `data-state` or a class |
+| Your template adds and removes the element with `@if` | Angular `animate.enter` and `animate.leave` |
+| A Radix NG presence directive mounts and unmounts the primitive part | CSS `@keyframes` driven by `data-state` |
+| A third-party JavaScript library owns the animation | Angular animation callbacks or a controlled primitive |
+
+## CSS transitions
+
+Use transitions for elements that remain mounted while their state changes. Transitions can reverse
+smoothly if the user changes state before an animation completes.
+
+For example, `rdxCollapsibleContent` remains available while its close transition finishes:
+
+```html
+<div [open]="open()" rdxCollapsibleRoot>
+    <button rdxCollapsibleTrigger>Toggle</button>
+    <div class="CollapsibleContent" rdxCollapsibleContent>...</div>
+</div>
+```
+
+```css
+.CollapsibleContent {
+    overflow: hidden;
+    transition:
+        height 200ms ease-out,
+        opacity 200ms ease-out;
+}
+
+.CollapsibleContent[data-state='open'] {
+    height: var(--radix-collapsible-content-height);
+    opacity: 1;
+}
+
+.CollapsibleContent[data-state='closed'] {
+    height: 0;
+    opacity: 0;
+}
+```
+
+`rdxCollapsibleContent` exposes measured width and height as CSS custom properties and handles both
+`transitionend` and `animationend` for its exit lifecycle.
+
+## CSS keyframe animations
+
+Use `@keyframes` when a primitive part is conditionally mounted through a Radix NG presence
+directive, such as `rdxCollapsibleContentPresence` or `rdxTooltipPortalPresence`.
+
+```html
+<ng-template rdxCollapsibleContentPresence>
+    <div class="CollapsibleContent" rdxCollapsibleContent>...</div>
+</ng-template>
+```
+
+```css
+@keyframes collapsible-open {
+    from {
+        height: 0;
+        opacity: 0;
+    }
+    to {
+        height: var(--radix-collapsible-content-height);
+        opacity: 1;
+    }
+}
+
+@keyframes collapsible-close {
+    from {
+        height: var(--radix-collapsible-content-height);
+        opacity: 1;
+    }
+    to {
+        height: 0;
+        opacity: 0;
+    }
+}
+
+.CollapsibleContent[data-state='open'] {
+    animation: collapsible-open 200ms ease-out;
+}
+
+.CollapsibleContent[data-state='closed'] {
+    animation: collapsible-close 200ms ease-in;
+}
+```
+
+`RdxPresenceDirective` checks the computed `animation-name` after the closed state is applied. If an
+exit animation is running, it keeps the element mounted until `animationend`. If no exit animation
+exists, it unmounts immediately.
+
+Place the exit `@keyframes` on the first DOM element inside the presence template. That is the
+element whose animation lifecycle is observed.
+
+> `RdxPresenceDirective` currently waits for CSS keyframe animations, not CSS transitions. Use
+> `@keyframes` for presence-managed exit animations.
+
+## Angular `animate.enter` and `animate.leave`
+
+When your application owns the conditional rendering, use Angular's built-in lifecycle APIs. They
+work with native CSS and do not require `@angular/animations`.
+
+```html
+<button type="button" (click)="open.update((value) => !value)">Toggle</button>
+
+@if (open()) {
+    <div animate.enter="entering" animate.leave="leaving">Content</div>
+}
+```
+
+```css
+.entering {
+    animation: fade-in 150ms ease-out;
+}
+
+.leaving {
+    animation: fade-out 150ms ease-in;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes fade-out {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+}
+```
+
+Use this for application content around primitives. Do not add `animate.leave` to a part already
+managed by `RdxPresenceDirective`; both APIs would try to control the same unmount lifecycle.
+
+## Animating with Tailwind
+
+Tailwind utilities work well for simple transitions because primitives expose `data-state`:
+
+```html
+<div
+    class="transition-opacity duration-200 data-[state=closed]:opacity-0 data-[state=open]:opacity-100"
+    rdxCollapsibleContent
+>
+    ...
+</div>
+```
+
+For presence-managed exits, define reusable keyframes in your application's global Tailwind CSS and
+apply animation utilities for the open and closed states.
+
+## JavaScript animation libraries
+
+For application-owned conditional elements, Angular's
+[`animate.enter` and `animate.leave` event bindings](https://angular.dev/guide/animations#event-bindings-functions-and-third-party-libraries)
+can integrate third-party animation libraries.
+
+For a primitive-owned lifecycle, use a controlled primitive and keep the content mounted until the
+library's exit animation completes. Avoid mixing multiple lifecycle owners on the same element.
+
+## Legacy Angular animations
+
+The legacy `@angular/animations` APIs are not required for new Radix NG integrations. Native CSS,
+`animate.enter`, and `animate.leave` cover the common cases with less framework-specific code.
+
+Existing code that already uses legacy Angular animations can continue to do so while it is being
+migrated. See Angular's
+[animations documentation](https://angular.dev/guide/animations) for the current compiler-level
+APIs and the separate legacy documentation.
