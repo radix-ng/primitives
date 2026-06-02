@@ -152,6 +152,10 @@ export class RdxPopperContentWrapper {
     readonly arrow = contentChild(forwardRef(() => RdxPopperArrow));
 
     readonly shouldHideArrow = computed(() => this.position.value()?.middlewareData['arrow']?.centerOffset !== 0);
+    /** Whether the arrow could not be centered on the anchor because the popup was shifted. */
+    readonly arrowUncentered = computed(
+        () => (this.position.value()?.middlewareData['arrow']?.centerOffset ?? 0) !== 0
+    );
     readonly arrowX = computed(() => this.position.value()?.middlewareData['arrow']?.x);
     readonly arrowY = computed(() => this.position.value()?.middlewareData['arrow']?.y);
 

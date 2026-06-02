@@ -1,5 +1,5 @@
 import { _IdGenerator } from '@angular/cdk/a11y';
-import { BooleanInput } from '@angular/cdk/coercion';
+import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -8,6 +8,7 @@ import {
     ElementRef,
     inject,
     input,
+    numberAttribute,
     signal,
     untracked
 } from '@angular/core';
@@ -59,6 +60,20 @@ export class RdxTooltipTrigger {
      */
     readonly closeOnClick = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
 
+    /**
+     * Overrides the open delay (ms) for this trigger. Falls back to the root/provider/global delay.
+     */
+    readonly delay = input<number | undefined, NumberInput | undefined>(undefined, {
+        transform: (value) => (value == null ? undefined : numberAttribute(value))
+    });
+
+    /**
+     * Overrides the close delay (ms) for this trigger. Falls back to the root/provider/global delay.
+     */
+    readonly closeDelay = input<number | undefined, NumberInput | undefined>(undefined, {
+        transform: (value) => (value == null ? undefined : numberAttribute(value))
+    });
+
     readonly userOnPointerDown = input<(event: PointerEvent) => void | boolean | Promise<void | boolean> | undefined>(
         undefined,
         { alias: 'rdxOnPointerDown' }
@@ -98,6 +113,7 @@ export class RdxTooltipTrigger {
             return;
         }
 
+        rootContext.setDelays(this.delay(), this.closeDelay());
         rootContext.open(this.elementRef.nativeElement, this.payload());
     }
 
@@ -129,6 +145,7 @@ export class RdxTooltipTrigger {
         }
 
         if (!this.hasPointerMoveOpened()) {
+            rootContext.setDelays(this.delay(), this.closeDelay());
             rootContext.onTriggerEnter(this.elementRef.nativeElement, this.payload());
             this.hasPointerMoveOpened.set(true);
         }

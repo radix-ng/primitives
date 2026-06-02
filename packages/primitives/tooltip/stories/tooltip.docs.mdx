@@ -91,6 +91,13 @@ ms after the last one closes.
 
 <Canvas of={Stories.Provider} />
 
+### Per-trigger delay
+
+Set `delay` (and `closeDelay`) on `rdxTooltipTrigger` to override the root, provider, and global
+values for that trigger only.
+
+<Canvas of={Stories.Delay} />
+
 ### Tracking the cursor
 
 Set `trackCursorAxis` on the root to `'x'`, `'y'`, or `'both'` to make the popup follow the pointer
@@ -141,4 +148,5 @@ optional `anchor` input overrides the trigger only for positioning.
 ### Popup and Arrow
 
 `RdxTooltipPopup` and `RdxTooltipArrow` read their behavior and state from context and do not expose
-additional inputs or outputs.
+additional inputs or outputs. The arrow also reflects `data-uncentered` when it cannot be centered on
+the anchor (because the popup was shifted to avoid a collision).

@@ -73,6 +73,16 @@ class MultipleTriggersHostComponent {}
 @Component({
     imports: [RdxTooltip, RdxTooltipTrigger],
     template: `
+        <div [delay]="600" rdxTooltip>
+            <button [delay]="50" rdxTooltipTrigger>Trigger</button>
+        </div>
+    `
+})
+class TriggerDelayHostComponent {}
+
+@Component({
+    imports: [RdxTooltip, RdxTooltipTrigger],
+    template: `
         <button id="detached" [handle]="handle" payload="one" rdxTooltipTrigger>One</button>
         <div [handle]="handle" rdxTooltip></div>
     `
@@ -300,6 +310,32 @@ describe('Tooltip multiple triggers', () => {
         expect(root.trigger()).toBe(b);
         expect(b.getAttribute('data-popup-open')).toBe('');
         expect(a.hasAttribute('data-popup-open')).toBe(false);
+    });
+});
+
+describe('Tooltip per-trigger delay', () => {
+    beforeEach(() => jest.useFakeTimers());
+    afterEach(() => {
+        jest.clearAllTimers();
+        jest.useRealTimers();
+    });
+
+    it('lets the trigger override the root open delay', () => {
+        TestBed.configureTestingModule({ imports: [TriggerDelayHostComponent] });
+        const fixture = TestBed.createComponent(TriggerDelayHostComponent);
+        fixture.detectChanges();
+
+        const trigger: HTMLButtonElement = fixture.nativeElement.querySelector('[rdxTooltipTrigger]');
+        const root = getRoot(fixture);
+
+        trigger.dispatchEvent(new Event('pointermove'));
+        jest.advanceTimersByTime(49);
+        fixture.detectChanges();
+        expect(root.open()).toBe(false);
+
+        jest.advanceTimersByTime(1);
+        fixture.detectChanges();
+        expect(root.open()).toBe(true);
     });
 });
 

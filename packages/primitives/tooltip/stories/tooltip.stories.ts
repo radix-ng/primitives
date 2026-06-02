@@ -3,6 +3,8 @@ import { LucideAngularModule } from 'lucide-angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxTooltipDefaultComponent } from './tooltip-default';
 import defaultSource from './tooltip-default?raw';
+import { RdxTooltipDelayComponent } from './tooltip-delay';
+import delaySource from './tooltip-delay?raw';
 import { RdxTooltipProviderComponent } from './tooltip-provider';
 import providerSource from './tooltip-provider?raw';
 import { RdxTooltipSliderComponent } from './tooltip-slider';
@@ -28,6 +30,7 @@ export default {
             imports: [
                 RdxTooltipDefaultComponent,
                 RdxTooltipProviderComponent,
+                RdxTooltipDelayComponent,
                 RdxTooltipTrackCursorComponent,
                 RdxTooltipSliderComponent,
                 LucideAngularModule
@@ -53,6 +56,15 @@ export const Provider: Story = {
     render: () => ({
         template: html`
             <rdx-tooltip-provider />
+        `
+    })
+};
+
+export const Delay: Story = {
+    parameters: source(delaySource),
+    render: () => ({
+        template: html`
+            <rdx-tooltip-delay />
         `
     })
 };

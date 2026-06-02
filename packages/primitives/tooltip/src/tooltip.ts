@@ -45,6 +45,7 @@ export interface RdxTooltipContext {
     /** Hover left a trigger — cancels a pending open and closes when appropriate. */
     onTriggerLeave: () => void;
     setCursorPosition: (position: { x: number; y: number } | undefined) => void;
+    setDelays: (delay: number | undefined, closeDelay: number | undefined) => void;
 }
 
 export const [injectRdxTooltipContext, provideRdxTooltipContext] =
@@ -135,9 +136,19 @@ export class RdxTooltip {
 
     private readonly instantGroup = this.provider ?? this.localInstant;
 
-    private readonly resolvedDelay = computed(() => this.delay() ?? this.provider?.delay() ?? this.defaultConfig.delay);
+    /** Per-trigger overrides set by the active trigger, taking precedence over the root/provider. */
+    private readonly triggerDelay = signal<number | undefined>(undefined);
+    private readonly triggerCloseDelay = signal<number | undefined>(undefined);
+
+    private readonly resolvedDelay = computed(
+        () => this.triggerDelay() ?? this.delay() ?? this.provider?.delay() ?? this.defaultConfig.delay
+    );
     private readonly resolvedCloseDelay = computed(
-        () => this.closeDelay() ?? this.provider?.closeDelay() ?? this.defaultConfig.closeDelay
+        () =>
+            this.triggerCloseDelay() ??
+            this.closeDelay() ??
+            this.provider?.closeDelay() ??
+            this.defaultConfig.closeDelay
     );
 
     /** Whether the most recent open happened without the delay. */
@@ -300,6 +311,12 @@ export class RdxTooltip {
         this.cursorPosition.set(position);
     }
 
+    /** Applies per-trigger delay overrides from the trigger that is becoming active. */
+    setDelays(delay: number | undefined, closeDelay: number | undefined) {
+        this.triggerDelay.set(delay);
+        this.triggerCloseDelay.set(closeDelay);
+    }
+
     private applyOpen(instant: boolean, trigger = this.trigger(), payload?: unknown) {
         if (this.disabled()) {
             return;
@@ -343,6 +360,7 @@ function contextFor(root: RdxTooltip): RdxTooltipContext {
         registerTrigger: (trigger: HTMLElement) => root.registerTrigger(trigger),
         onTriggerEnter: (trigger?: HTMLElement, payload?: unknown) => root.onTriggerEnter(trigger, payload),
         onTriggerLeave: () => root.onTriggerLeave(),
-        setCursorPosition: (position) => root.setCursorPosition(position)
+        setCursorPosition: (position) => root.setCursorPosition(position),
+        setDelays: (delay, closeDelay) => root.setDelays(delay, closeDelay)
     };
 }
