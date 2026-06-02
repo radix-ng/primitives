@@ -28,13 +28,15 @@ import { injectRdxPopoverRootContext } from './popover-root';
         '[attr.aria-haspopup]': '"dialog"',
         '[attr.data-state]': 'isOpen() ? "open" : "closed"',
         '[attr.data-popup-open]': 'isOpen() ? "" : undefined',
+        '[attr.data-pressed]': 'isPressed() ? "" : undefined',
         '[attr.disabled]': 'disabled() ? "" : undefined',
         '[id]': 'triggerId()',
         '(click)': 'handleClick($event)',
         '(pointerenter)': 'handlePointerEnter($event)',
         '(pointerleave)': 'handlePointerLeave($event)',
         '(pointerdown)': 'handlePointerDown()',
-        '(pointerup)': 'handlePointerUp()'
+        '(pointerup)': 'handlePointerUp()',
+        '(pointercancel)': 'handlePointerUp()'
     }
 })
 export class RdxPopoverTrigger {
@@ -80,6 +82,9 @@ export class RdxPopoverTrigger {
     protected readonly rootContext = computed(() => this.handle()?.context() ?? this.parentRootContext);
     protected readonly isOpen = computed(
         () => this.rootContext()?.isOpen() === true && this.rootContext()?.trigger() === this.elementRef.nativeElement
+    );
+    protected readonly isPressed = computed(
+        () => this.isOpen() && this.rootContext()?.openChangeReason() === 'trigger-press'
     );
     private readonly generatedId = inject(_IdGenerator).getId('rdx-popover-trigger-');
 
@@ -135,7 +140,7 @@ export class RdxPopoverTrigger {
             return;
         }
 
-        this.rootContext()?.closeOnHover(true);
+        this.rootContext()?.cancelHoverOpen();
     }
 
     protected handlePointerDown() {

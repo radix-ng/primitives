@@ -54,7 +54,8 @@ const context = () => {
         arrowX: popperContentWrapper.arrowX,
         arrowY: popperContentWrapper.arrowY,
         shouldHideArrow: popperContentWrapper.shouldHideArrow,
-        isPositioned: popperContentWrapper.isPositioned
+        isPositioned: popperContentWrapper.isPositioned,
+        anchorHidden: popperContentWrapper.anchorHidden
     };
 };
 
@@ -166,6 +167,7 @@ export class RdxPopperContentWrapper {
     );
     readonly arrowX = computed(() => this.position.value()?.middlewareData['arrow']?.x);
     readonly arrowY = computed(() => this.position.value()?.middlewareData['arrow']?.y);
+    readonly anchorHidden = computed(() => this.position.value()?.middlewareData.hide?.referenceHidden === true);
 
     private readonly desiredPlacement = computed(
         () => (this.side() + (this.align() !== 'center' ? '-' + this.align() : '')) as Placement
@@ -360,6 +362,8 @@ export class RdxPopperContentWrapper {
                 pos?.middlewareData['transformOrigin']?.x,
                 pos?.middlewareData['transformOrigin']?.y
             ].join(' '),
+            '--radix-popper-content-wrapper-width': `${this.elementRef.nativeElement.offsetWidth}px`,
+            '--radix-popper-content-wrapper-height': `${this.elementRef.nativeElement.offsetHeight}px`,
 
             visibility: ready ? 'visible' : 'hidden',
             pointerEvents: ready ? 'auto' : 'none',

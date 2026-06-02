@@ -30,11 +30,14 @@ It remains headless: styles and native CSS animations belong to the consumer.
 - ✅ Supports a custom positioning anchor independently from the trigger.
 - ✅ Connects detached roots and multiple triggers through a shared handle.
 - ✅ Opens on hover with configurable per-trigger open and close delays.
+- ✅ Keeps hover-opened content interactive with a polygon grace area, including nested popup content.
+- ✅ Exposes pressed state on triggers for press interactions.
 - ✅ Animates content changes between triggers with an optional viewport.
+- ✅ Exposes transition lifecycle attributes and `onOpenChangeComplete` for CSS animations.
 - ✅ Supports non-modal, modal, and focus-trapping-only behavior.
 - ✅ Closes on Escape, outside pointer interaction, or an explicit close button.
 - ✅ Restores focus through the shared Focus Scope behavior.
-- ✅ Exposes `data-state`, `data-open`, `data-closed`, `data-side`, and `data-align` for styling.
+- ✅ Exposes state, transition, placement, and anchor measurement attributes and CSS variables for styling.
 - ✅ Keeps portal content mounted while CSS exit keyframes finish.
 - ✅ Links the popup to optional title and description parts for accessible labeling.
 

@@ -26,5 +26,6 @@ export * from './src/positioning/types';
 export * from './src/positioning/utils';
 export * from './src/types';
 export * from './src/useArrowNavigation';
+export * from './src/useGraceArea';
 export * from './src/useResizeObserver';
 export * from './src/watch';

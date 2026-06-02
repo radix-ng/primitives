@@ -1,9 +1,9 @@
 import { DOCUMENT } from '@angular/common';
-import { computed, DestroyRef, Directive, effect, inject } from '@angular/core';
+import { computed, DestroyRef, Directive, effect, ElementRef, inject } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
 import { provideRdxDismissableLayerConfig, RdxDismissableLayer } from '@radix-ng/primitives/dismissable-layer';
 import { provideRdxFocusScopeConfig, RdxFocusScope } from '@radix-ng/primitives/focus-scope';
-import { RdxPopperContent } from '@radix-ng/primitives/popper';
+import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
 import { injectRdxPopoverRootContext, RdxPopoverOpenChangeReason } from './popover-root';
 
 let originalBodyOverflow: string | null = null;
@@ -40,11 +40,15 @@ let scrollLockCount = 0;
         '[attr.aria-describedby]': 'rootContext.descriptionId()',
         '[attr.aria-labelledby]': 'rootContext.titleId()',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
+        '[attr.data-ending-style]': 'rootContext.transitionStatus() === "ending" ? "" : undefined',
+        '[attr.data-instant]': 'rootContext.instant() ? "" : undefined',
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
+        '[attr.data-starting-style]': 'rootContext.transitionStatus() === "starting" ? "" : undefined',
         '[attr.data-state]': 'rootContext.isOpen() ? "open" : "closed"',
+        '[attr.data-align]': 'align()',
+        '[attr.data-side]': 'side()',
         '[id]': 'rootContext.contentId',
-        '(pointerenter)': 'rootContext.cancelHoverClose()',
-        '(pointerleave)': 'rootContext.closeOnHover()'
+        '(pointerenter)': 'rootContext.cancelHoverClose()'
     }
 })
 export class RdxPopoverPopup {
@@ -52,6 +56,9 @@ export class RdxPopoverPopup {
     private readonly dismissableLayer = inject(RdxDismissableLayer);
     private readonly document = inject(DOCUMENT);
     private readonly focusScope = inject(RdxFocusScope);
+    private readonly wrapper = inject(RdxPopperContentWrapper, { optional: true });
+    protected readonly align = computed(() => this.wrapper?.placedAlign());
+    protected readonly side = computed(() => this.wrapper?.placedSide());
     private isScrollLocked = false;
     private dismissDetails: { reason: RdxPopoverOpenChangeReason; event: Event } = {
         reason: 'none',
@@ -97,7 +104,14 @@ export class RdxPopoverPopup {
             }
         });
 
-        inject(DestroyRef).onDestroy(() => this.unlockScroll());
+        const unregisterTransitionElement = this.rootContext.registerTransitionElement(
+            inject<ElementRef<HTMLElement>>(ElementRef).nativeElement
+        );
+
+        inject(DestroyRef).onDestroy(() => {
+            unregisterTransitionElement();
+            this.unlockScroll();
+        });
 
         this.dismissableLayer.pointerDownOutside.subscribe((event) => {
             this.dismissDetails = { reason: 'outside-press', event };

@@ -193,7 +193,7 @@ export class RdxFocusScope {
                     const container = this.elementRef.nativeElement;
 
                     await Promise.resolve();
-                    if (!container) {
+                    if (!container || !this.alive) {
                         return;
                     }
 
@@ -201,10 +201,13 @@ export class RdxFocusScope {
 
                     const previouslyFocusedElement = getActiveElement() as HTMLElement | null;
                     const hasFocusedCandidate = container.contains(previouslyFocusedElement);
+                    const mountEventHandler = (ev: Event) => {
+                        if (this.alive) this.mountAutoFocus.emit(ev);
+                    };
 
                     if (!hasFocusedCandidate) {
                         const mountEvent = new CustomEvent(AUTOFOCUS_ON_MOUNT, EVENT_OPTIONS);
-                        container.addEventListener(AUTOFOCUS_ON_MOUNT, (ev: Event) => this.mountAutoFocus.emit(ev));
+                        container.addEventListener(AUTOFOCUS_ON_MOUNT, mountEventHandler);
                         container.dispatchEvent(mountEvent);
 
                         if (!mountEvent.defaultPrevented) {
@@ -221,7 +224,7 @@ export class RdxFocusScope {
                     container.addEventListener(AUTOFOCUS_ON_UNMOUNT, unmountEventHandler);
 
                     onCleanup(() => {
-                        container.removeEventListener(AUTOFOCUS_ON_MOUNT, (ev: Event) => this.mountAutoFocus.emit(ev));
+                        container.removeEventListener(AUTOFOCUS_ON_MOUNT, mountEventHandler);
 
                         const unmountEvent = new CustomEvent(AUTOFOCUS_ON_UNMOUNT, EVENT_OPTIONS);
                         container.dispatchEvent(unmountEvent);

@@ -11,6 +11,7 @@ import {
     signal
 } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
+import { useGraceArea } from '@radix-ng/primitives/core';
 import { RdxDismissableLayer } from '@radix-ng/primitives/dismissable-layer';
 import {
     Align,
@@ -20,7 +21,6 @@ import {
     Side
 } from '@radix-ng/primitives/popper';
 import { injectRdxTooltipContext } from './tooltip';
-import { useGraceArea } from './useGraceArea';
 
 /**
  * Positions the tooltip popup against its trigger (or a custom anchor).

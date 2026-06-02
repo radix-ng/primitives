@@ -4,6 +4,7 @@ import { By } from '@angular/platform-browser';
 import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import {
     createRdxPopoverHandle,
+    RdxPopoverArrow,
     RdxPopoverClose,
     RdxPopoverDescription,
     RdxPopoverOpenChange,
@@ -16,7 +17,7 @@ import {
     RdxPopoverTrigger,
     RdxPopoverViewport
 } from '@radix-ng/primitives/popover';
-import { RdxPopper } from '@radix-ng/primitives/popper';
+import { RdxPopper, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
 
 @Component({
     imports: [
@@ -72,6 +73,87 @@ class DefaultOpenHostComponent {}
     `
 })
 class PortalHostComponent {}
+
+@Component({
+    imports: [
+        RdxPopoverPopup,
+        RdxPopoverPortal,
+        RdxPopoverPortalPresence,
+        RdxPopoverPositioner,
+        RdxPopoverRoot,
+        RdxPopoverTrigger
+    ],
+    template: `
+        <div #root="rdxPopoverRoot" (onOpenChangeComplete)="complete.push($event)" rdxPopoverRoot>
+            <button rdxPopoverTrigger>Open</button>
+
+            <ng-template rdxPopoverPortalPresence>
+                <div data-test-lifecycle-portal rdxPopoverPortal>
+                    <div rdxPopoverPositioner>
+                        <div rdxPopoverPopup>Popup</div>
+                    </div>
+                </div>
+            </ng-template>
+        </div>
+    `
+})
+class LifecycleHostComponent {
+    readonly complete: boolean[] = [];
+}
+
+@Component({
+    imports: [
+        RdxPopoverPopup,
+        RdxPopoverPortal,
+        RdxPopoverPortalPresence,
+        RdxPopoverPositioner,
+        RdxPopoverRoot,
+        RdxPopoverTrigger
+    ],
+    template: `
+        <div #parent="rdxPopoverRoot" rdxPopoverRoot>
+            <button [delay]="0" openOnHover rdxPopoverTrigger>Parent trigger</button>
+
+            @if (parent.open()) {
+                <div rdxPopoverPositioner>
+                    <div rdxPopoverPopup>
+                        <div #child="rdxPopoverRoot" rdxPopoverRoot>
+                            <button [delay]="0" openOnHover rdxPopoverTrigger>Child trigger</button>
+
+                            <ng-template rdxPopoverPortalPresence>
+                                <div data-test-child-portal rdxPopoverPortal>
+                                    <div rdxPopoverPositioner>
+                                        <div rdxPopoverPopup>Child popup</div>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    `
+})
+class NestedHoverPopupHostComponent {}
+
+@Component({
+    imports: [RdxPopoverArrow, RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
+    template: `
+        <div #root="rdxPopoverRoot" rdxPopoverRoot>
+            <button rdxPopoverTrigger>Open</button>
+
+            @if (root.open()) {
+                <div rdxPopoverPositioner>
+                    <div rdxPopoverPopup>
+                        Popup
+                        <span rdxPopoverArrow></span>
+                    </div>
+                </div>
+            }
+        </div>
+    `
+})
+class PositionerDefaultsHostComponent {}
 
 @Component({
     imports: [RdxPopoverClose, RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
@@ -223,9 +305,11 @@ class ControlledMultipleTriggersHostComponent {
     readonly changes: RdxPopoverOpenChange[] = [];
 }
 
-function pointerEvent(type: string, pointerType = 'mouse') {
-    const event = new Event(type);
+function pointerEvent(type: string, pointerType = 'mouse', clientX = 0, clientY = 0) {
+    const event = new Event(type, { bubbles: true });
     Object.defineProperty(event, 'pointerType', { value: pointerType });
+    Object.defineProperty(event, 'clientX', { value: clientX });
+    Object.defineProperty(event, 'clientY', { value: clientY });
     return event;
 }
 
@@ -255,6 +339,18 @@ describe('Popover', () => {
         fixture.detectChanges();
 
         expect(fixture.componentInstance.open).toBe(false);
+    });
+
+    it('exposes pressed state while the trigger press keeps the popover open', () => {
+        trigger.click();
+        fixture.detectChanges();
+
+        expect(trigger.hasAttribute('data-pressed')).toBe(true);
+
+        trigger.click();
+        fixture.detectChanges();
+
+        expect(trigger.hasAttribute('data-pressed')).toBe(false);
     });
 
     it('links the trigger and popup with accessible ids', () => {
@@ -339,6 +435,72 @@ describe('Popover', () => {
         portalFixture.detectChanges();
 
         expect(document.body.querySelector('[data-test-popover-portal]')).not.toBeNull();
+    });
+
+    it('emits open completion and exposes transition lifecycle attributes', async () => {
+        const lifecycleFixture = TestBed.createComponent(LifecycleHostComponent);
+        lifecycleFixture.detectChanges();
+
+        const lifecycleTrigger: HTMLButtonElement = lifecycleFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
+        lifecycleTrigger.click();
+        lifecycleFixture.detectChanges();
+
+        const popup: HTMLElement = document.body.querySelector('[data-test-lifecycle-portal] [rdxPopoverPopup]')!;
+        expect(popup.hasAttribute('data-starting-style')).toBe(true);
+
+        await new Promise((resolve) => setTimeout(resolve, 30));
+        lifecycleFixture.detectChanges();
+
+        expect(popup.hasAttribute('data-starting-style')).toBe(false);
+        expect(lifecycleFixture.componentInstance.complete).toEqual([true]);
+
+        lifecycleTrigger.click();
+        lifecycleFixture.detectChanges();
+
+        expect(popup.hasAttribute('data-ending-style')).toBe(true);
+
+        await new Promise((resolve) => setTimeout(resolve));
+        lifecycleFixture.detectChanges();
+
+        expect(lifecycleFixture.componentInstance.complete).toEqual([true, false]);
+        lifecycleFixture.destroy();
+    });
+
+    it('uses Base UI-aligned positioner defaults and state attributes', () => {
+        const originalResizeObserver = globalThis.ResizeObserver;
+        Object.defineProperty(globalThis, 'ResizeObserver', {
+            configurable: true,
+            value: class {
+                observe() {}
+                disconnect() {}
+            }
+        });
+
+        const defaultsFixture = TestBed.createComponent(PositionerDefaultsHostComponent);
+        defaultsFixture.detectChanges();
+
+        const defaultsTrigger: HTMLButtonElement = defaultsFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
+        defaultsTrigger.click();
+        defaultsFixture.detectChanges();
+
+        const positionerDebug = defaultsFixture.debugElement.query(By.directive(RdxPopoverPositioner));
+        const positioner = positionerDebug.injector.get(RdxPopoverPositioner);
+        const wrapper = positionerDebug.injector.get(RdxPopperContentWrapper);
+        const positionerElement: HTMLElement = positionerDebug.nativeElement;
+        const arrow: HTMLElement = defaultsFixture.nativeElement.querySelector('[rdxPopoverArrow]');
+
+        expect(positioner.arrowPadding()).toBe(5);
+        expect(positioner.collisionPadding()).toBe(5);
+        expect(positioner.updatePositionStrategy()).toBe('always');
+        expect(wrapper.arrowPadding()).toBe(5);
+        expect(wrapper.collisionPadding()).toBe(5);
+        expect(wrapper.updatePositionStrategy()).toBe('always');
+        expect(positionerElement.hasAttribute('data-open')).toBe(true);
+        expect(positionerElement.style.getPropertyValue('--anchor-width')).toBe('var(--radix-popper-anchor-width)');
+        expect(arrow.hasAttribute('data-open')).toBe(true);
+
+        defaultsFixture.destroy();
+        Object.defineProperty(globalThis, 'ResizeObserver', { configurable: true, value: originalResizeObserver });
     });
 
     it('positions against a custom anchor', () => {
@@ -566,6 +728,7 @@ describe('Popover', () => {
 
             jest.advanceTimersByTime(1);
             expect(root.open()).toBe(true);
+            expect(hoverTrigger.hasAttribute('data-pressed')).toBe(false);
         });
 
         it('cancels a delayed open when the pointer leaves the trigger', () => {
@@ -595,13 +758,15 @@ describe('Popover', () => {
             hoverFixture.detectChanges();
 
             const popup: HTMLElement = hoverFixture.nativeElement.querySelector('[rdxPopoverPopup]');
-            hoverTrigger.dispatchEvent(pointerEvent('pointerleave'));
-            popup.dispatchEvent(pointerEvent('pointerenter'));
+            const positioner: HTMLElement = hoverFixture.nativeElement.querySelector('[rdxPopoverPositioner]');
+            hoverTrigger.dispatchEvent(pointerEvent('pointerleave', 'mouse', 0, 0));
+            popup.dispatchEvent(pointerEvent('pointermove', 'mouse', 10, 10));
             jest.advanceTimersByTime(100);
 
             expect(root.open()).toBe(true);
 
-            popup.dispatchEvent(pointerEvent('pointerleave'));
+            positioner.dispatchEvent(pointerEvent('pointerleave', 'mouse', 10, 10));
+            document.body.dispatchEvent(pointerEvent('pointermove', 'mouse', 1000, 1000));
             jest.advanceTimersByTime(0);
             expect(root.open()).toBe(false);
         });
@@ -635,14 +800,69 @@ describe('Popover', () => {
             hoverFixture.detectChanges();
 
             const popup: HTMLElement = hoverFixture.nativeElement.querySelector('[rdxPopoverPopup]');
-            hoverTrigger.dispatchEvent(pointerEvent('pointerleave'));
-            popup.dispatchEvent(pointerEvent('pointerenter'));
-            popup.dispatchEvent(pointerEvent('pointerleave'));
+            const positioner: HTMLElement = hoverFixture.nativeElement.querySelector('[rdxPopoverPositioner]');
+            hoverTrigger.dispatchEvent(pointerEvent('pointerleave', 'mouse', 0, 0));
+            popup.dispatchEvent(pointerEvent('pointermove', 'mouse', 10, 10));
+            positioner.dispatchEvent(pointerEvent('pointerleave', 'mouse', 10, 10));
+            document.body.dispatchEvent(pointerEvent('pointermove', 'mouse', 1000, 1000));
             jest.advanceTimersByTime(199);
             expect(root.open()).toBe(true);
 
             jest.advanceTimersByTime(1);
             expect(root.open()).toBe(false);
+        });
+
+        it('keeps the popover open while moving into nested popup content', () => {
+            const hoverFixture = TestBed.createComponent(HoverHostComponent);
+            hoverFixture.componentInstance.delay = 0;
+            hoverFixture.detectChanges();
+
+            const root = hoverFixture.debugElement.query(By.directive(RdxPopoverRoot)).injector.get(RdxPopoverRoot);
+            const hoverTrigger: HTMLButtonElement = hoverFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
+
+            hoverTrigger.dispatchEvent(pointerEvent('pointerenter'));
+            jest.advanceTimersByTime(0);
+            hoverFixture.detectChanges();
+
+            const close: HTMLButtonElement = hoverFixture.nativeElement.querySelector('[rdxPopoverClose]');
+            hoverTrigger.dispatchEvent(pointerEvent('pointerleave', 'mouse', 0, 0));
+            close.dispatchEvent(pointerEvent('pointermove', 'mouse', 10, 10));
+            jest.advanceTimersByTime(300);
+
+            expect(root.open()).toBe(true);
+        });
+
+        it('keeps a parent open while moving into a nested portaled hoverable popup', () => {
+            const hoverFixture = TestBed.createComponent(NestedHoverPopupHostComponent);
+            hoverFixture.detectChanges();
+
+            const parentTrigger: HTMLButtonElement = hoverFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
+            parentTrigger.dispatchEvent(pointerEvent('pointerenter'));
+            jest.advanceTimersByTime(0);
+            hoverFixture.detectChanges();
+
+            const childTrigger: HTMLButtonElement =
+                hoverFixture.nativeElement.querySelectorAll('[rdxPopoverTrigger]')[1];
+            childTrigger.dispatchEvent(pointerEvent('pointerenter'));
+            jest.advanceTimersByTime(0);
+            hoverFixture.detectChanges();
+
+            const roots = hoverFixture.debugElement
+                .queryAll(By.directive(RdxPopoverRoot))
+                .map((element) => element.injector.get(RdxPopoverRoot));
+            const parentPositioner: HTMLElement = hoverFixture.nativeElement.querySelector('[rdxPopoverPositioner]');
+            const childPopup: HTMLElement | null = document.body.querySelector(
+                '[data-test-child-portal] [rdxPopoverPopup]'
+            );
+
+            expect(childPopup).not.toBeNull();
+
+            parentPositioner.dispatchEvent(pointerEvent('pointerleave', 'mouse', 10, 10));
+            childPopup?.dispatchEvent(pointerEvent('pointermove', 'mouse', 1000, 1000));
+            jest.advanceTimersByTime(0);
+
+            expect(roots[0].open()).toBe(true);
+            hoverFixture.destroy();
         });
 
         it('ignores touch pointer hover events', () => {

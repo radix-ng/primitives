@@ -1,30 +1,25 @@
 import { effect, signal, type Signal, type WritableSignal } from '@angular/core';
-import { Side } from '@radix-ng/primitives/popper';
+
+type Side = 'top' | 'right' | 'bottom' | 'left';
+
+const graceAreaContainers = new WeakMap<HTMLElement, HTMLElement>();
 
 function createSignalEvent<T = void>() {
-    const handlers = new Set<(v: T) => void>();
+    const handlers = new Set<(value: T) => void>();
+
     return {
-        on(cb: (v: T) => void): () => void {
-            handlers.add(cb);
-            return () => handlers.delete(cb);
-        },
-        emit(v: T extends void ? never : T extends undefined ? never : T): void {
-            handlers.forEach((h) => h(v));
+        on(callback: (value: T) => void): () => void {
+            handlers.add(callback);
+            return () => handlers.delete(callback);
         },
         emitVoid(): void {
-            handlers.forEach((h) => h(undefined as unknown as T));
-        },
-        clear() {
-            handlers.clear();
+            handlers.forEach((handler) => handler(undefined as unknown as T));
         }
     };
 }
 
 /**
- *
- * @param triggerEl   Signal<HTMLElement | null | undefined>
- * @param containerEl Signal<HTMLElement | null | undefined>
- * @param resetMs
+ * Keeps hover content open while the pointer crosses the gap between a trigger and a popup.
  */
 export function useGraceArea(
     triggerEl: Signal<HTMLElement | null | undefined>,
@@ -48,6 +43,7 @@ export function useGraceArea(
     function clearGraceArea() {
         pointerGraceArea = null;
         isPointerInTransit.set(false);
+
         if (resetTimer !== null) {
             window.clearTimeout(resetTimer);
             resetTimer = null;
@@ -66,8 +62,7 @@ export function useGraceArea(
     }
 
     function trackPointerGrace(event: PointerEvent) {
-        if (!pointerGraceArea) return;
-        if (!(event.target instanceof HTMLElement)) return;
+        if (!pointerGraceArea || !(event.target instanceof HTMLElement)) return;
 
         const trigger = triggerEl();
         const container = containerEl();
@@ -75,7 +70,12 @@ export function useGraceArea(
 
         const target = event.target;
         const pointerPosition = { x: event.clientX, y: event.clientY };
-        const hasEnteredTarget = trigger.contains(target) || container.contains(target);
+        const enteredContainer = target.closest<HTMLElement>('[data-grace-area-container]');
+        const nestedTrigger = enteredContainer ? graceAreaContainers.get(enteredContainer) : undefined;
+        const hasEnteredTarget =
+            trigger.contains(target) ||
+            container.contains(target) ||
+            (nestedTrigger ? container.contains(nestedTrigger) : false);
         const isOutsideGrace = !isPointInPolygon(pointerPosition, pointerGraceArea);
         const isAnotherGraceAreaTrigger = !!target.closest('[data-grace-area-trigger]');
 
@@ -87,25 +87,36 @@ export function useGraceArea(
         }
     }
 
-    effect((onCleanupFn) => {
+    effect((onCleanup) => {
         const trigger = triggerEl();
         const container = containerEl();
+        const onTriggerLeave = (event: PointerEvent) => {
+            if (container) createGraceArea(event, container);
+        };
+        const onContainerLeave = (event: PointerEvent) => {
+            if (trigger) createGraceArea(event, trigger);
+        };
 
-        onCleanupFn(() => {
+        onCleanup(() => {
             const doc = trigger?.ownerDocument;
             trigger?.removeEventListener('pointerleave', onTriggerLeave as EventListener);
             container?.removeEventListener('pointerleave', onContainerLeave as EventListener);
             doc?.removeEventListener('pointermove', trackPointerGrace as EventListener);
             trigger?.removeAttribute('data-grace-area-trigger');
+            container?.removeAttribute('data-grace-area-container');
+
+            if (container && graceAreaContainers.get(container) === trigger) {
+                graceAreaContainers.delete(container);
+            }
+
             clearGraceArea();
         });
 
         if (!trigger || !container) return;
 
         trigger.setAttribute('data-grace-area-trigger', '');
-
-        const onTriggerLeave = (e: PointerEvent) => createGraceArea(e, container);
-        const onContainerLeave = (e: PointerEvent) => createGraceArea(e, trigger);
+        container.setAttribute('data-grace-area-container', '');
+        graceAreaContainers.set(container, trigger);
 
         trigger.addEventListener('pointerleave', onTriggerLeave as EventListener, { passive: true });
         container.addEventListener('pointerleave', onContainerLeave as EventListener, { passive: true });
@@ -122,6 +133,7 @@ interface Point {
     x: number;
     y: number;
 }
+
 type Polygon = Point[];
 
 function getExitSideFromRect(point: Point, rect: DOMRect): Side {
@@ -129,8 +141,13 @@ function getExitSideFromRect(point: Point, rect: DOMRect): Side {
     const bottom = Math.abs(rect.bottom - point.y);
     const right = Math.abs(rect.right - point.x);
     const left = Math.abs(rect.left - point.x);
+    const min = Math.min(top, bottom, right, left);
 
-    switch (Math.min(top, bottom, right, left)) {
+    if (!Number.isFinite(min)) {
+        return 'bottom';
+    }
+
+    switch (min) {
         case left:
             return 'left';
         case right:
@@ -145,34 +162,36 @@ function getExitSideFromRect(point: Point, rect: DOMRect): Side {
 }
 
 function getPaddedExitPoints(exitPoint: Point, exitSide: Side, padding = 5) {
-    const pts: Point[] = [];
+    const points: Point[] = [];
+
     switch (exitSide) {
         case 'top':
-            pts.push(
+            points.push(
                 { x: exitPoint.x - padding, y: exitPoint.y + padding },
                 { x: exitPoint.x + padding, y: exitPoint.y + padding }
             );
             break;
         case 'bottom':
-            pts.push(
+            points.push(
                 { x: exitPoint.x - padding, y: exitPoint.y - padding },
                 { x: exitPoint.x + padding, y: exitPoint.y - padding }
             );
             break;
         case 'left':
-            pts.push(
+            points.push(
                 { x: exitPoint.x + padding, y: exitPoint.y - padding },
                 { x: exitPoint.x + padding, y: exitPoint.y + padding }
             );
             break;
         case 'right':
-            pts.push(
+            points.push(
                 { x: exitPoint.x - padding, y: exitPoint.y - padding },
                 { x: exitPoint.x - padding, y: exitPoint.y + padding }
             );
             break;
     }
-    return pts;
+
+    return points;
 }
 
 function getPointsFromRect(rect: DOMRect) {
@@ -188,55 +207,56 @@ function getPointsFromRect(rect: DOMRect) {
 function isPointInPolygon(point: Point, polygon: Polygon) {
     const { x, y } = point;
     let inside = false;
+
     for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-        const xi = polygon[i].x,
-            yi = polygon[i].y;
-        const xj = polygon[j].x,
-            yj = polygon[j].y;
+        const xi = polygon[i].x;
+        const yi = polygon[i].y;
+        const xj = polygon[j].x;
+        const yj = polygon[j].y;
         const intersect = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
         if (intersect) inside = !inside;
     }
+
     return inside;
 }
 
-function getHull<P extends Point>(points: Readonly<Array<P>>): Array<P> {
-    const newPoints: Array<P> = points.slice() as Array<P>;
-    newPoints.sort((a, b) => a.x - b.x || a.y - b.y);
-    return getHullPresorted(newPoints);
+function getHull<PointType extends Point>(points: Readonly<Array<PointType>>): Array<PointType> {
+    const sortedPoints: Array<PointType> = points.slice() as Array<PointType>;
+    sortedPoints.sort((a, b) => a.x - b.x || a.y - b.y);
+    return getHullPresorted(sortedPoints);
 }
 
-function getHullPresorted<P extends Point>(points: Readonly<Array<P>>): Array<P> {
-    if (points.length <= 1) return points.slice() as Array<P>;
+function getHullPresorted<PointType extends Point>(points: Readonly<Array<PointType>>): Array<PointType> {
+    if (points.length <= 1) return points.slice() as Array<PointType>;
 
-    const upper: Array<P> = [];
-    for (let i = 0; i < points.length; i++) {
-        const p = points[i]!;
+    const upper: Array<PointType> = [];
+    for (const point of points) {
         while (upper.length >= 2) {
             const q = upper[upper.length - 1]!;
             const r = upper[upper.length - 2]!;
-            if ((q.x - r.x) * (p.y - r.y) >= (q.y - r.y) * (p.x - r.x)) upper.pop();
+            if ((q.x - r.x) * (point.y - r.y) >= (q.y - r.y) * (point.x - r.x)) upper.pop();
             else break;
         }
-        upper.push(p);
+        upper.push(point);
     }
     upper.pop();
 
-    const lower: Array<P> = [];
-    for (let i = points.length - 1; i >= 0; i--) {
-        const p = points[i]!;
+    const lower: Array<PointType> = [];
+    for (let index = points.length - 1; index >= 0; index--) {
+        const point = points[index]!;
         while (lower.length >= 2) {
             const q = lower[lower.length - 1]!;
             const r = lower[lower.length - 2]!;
-            if ((q.x - r.x) * (p.y - r.y) >= (q.y - r.y) * (p.x - r.x)) lower.pop();
+            if ((q.x - r.x) * (point.y - r.y) >= (q.y - r.y) * (point.x - r.x)) lower.pop();
             else break;
         }
-        lower.push(p);
+        lower.push(point);
     }
     lower.pop();
 
     if (upper.length === 1 && lower.length === 1 && upper[0]!.x === lower[0]!.x && upper[0]!.y === lower[0]!.y) {
         return upper;
-    } else {
-        return upper.concat(lower);
     }
+
+    return upper.concat(lower);
 }

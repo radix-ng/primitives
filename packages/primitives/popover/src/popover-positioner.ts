@@ -1,13 +1,24 @@
 import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
-import { booleanAttribute, Directive, ElementRef, inject, input, numberAttribute } from '@angular/core';
+import { booleanAttribute, Directive, effect, ElementRef, inject, input, numberAttribute, signal } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
-import { Align, RdxPopperAnchorElement, RdxPopperContentWrapper, Side } from '@radix-ng/primitives/popper';
+import { useGraceArea } from '@radix-ng/primitives/core';
+import {
+    Align,
+    provideRdxPopperContentConfig,
+    RdxPopperAnchorElement,
+    RdxPopperContentWrapper,
+    Side
+} from '@radix-ng/primitives/popper';
+import { injectRdxPopoverRootContext } from './popover-root';
 
 /**
  * Positions the popover against its trigger.
  */
 @Directive({
     selector: '[rdxPopoverPositioner]',
+    providers: [
+        provideRdxPopperContentConfig({ arrowPadding: 5, collisionPadding: 5, updatePositionStrategy: 'always' })
+    ],
     hostDirectives: [
         {
             directive: RdxPopperContentWrapper,
@@ -29,7 +40,20 @@ import { Align, RdxPopperAnchorElement, RdxPopperContentWrapper, Side } from '@r
         }
     ],
     host: {
+        '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
+        '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
+        '[attr.data-anchor-hidden]': 'wrapper.anchorHidden() ? "" : undefined',
+        '[attr.data-align]': 'wrapper.placedAlign()',
+        '[attr.data-side]': 'wrapper.placedSide()',
+        '[attr.data-instant]': 'rootContext.instant() ? "" : undefined',
         '[style]': `{
+            '--anchor-width': 'var(--radix-popper-anchor-width)',
+            '--anchor-height': 'var(--radix-popper-anchor-height)',
+            '--available-width': 'var(--radix-popper-available-width)',
+            '--available-height': 'var(--radix-popper-available-height)',
+            '--positioner-width': 'var(--radix-popper-content-wrapper-width)',
+            '--positioner-height': 'var(--radix-popper-content-wrapper-height)',
+            '--transform-origin': 'var(--radix-popper-transform-origin)',
             '--radix-popover-content-transform-origin': 'var(--radix-popper-transform-origin)',
             '--radix-popover-content-available-width': 'var(--radix-popper-available-width)',
             '--radix-popover-content-available-height': 'var(--radix-popper-available-height)',
@@ -39,6 +63,13 @@ import { Align, RdxPopperAnchorElement, RdxPopperContentWrapper, Side } from '@r
     }
 })
 export class RdxPopoverPositioner {
+    protected readonly rootContext = injectRdxPopoverRootContext()!;
+    protected readonly wrapper = inject(RdxPopperContentWrapper);
+    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    private readonly triggerEl = signal<HTMLElement | null>(null);
+    private readonly containerEl = signal<HTMLElement | null>(this.elementRef.nativeElement);
+    private readonly graceArea = useGraceArea(this.triggerEl, this.containerEl);
+
     /**
      * An element to position the popup against. Defaults to the trigger.
      */
@@ -67,7 +98,7 @@ export class RdxPopoverPositioner {
     /**
      * Minimum distance to maintain between the arrow and the edges of the popup.
      */
-    readonly arrowPadding = input<number, NumberInput>(0, { transform: numberAttribute });
+    readonly arrowPadding = input<number, NumberInput>(5, { transform: numberAttribute });
 
     /**
      * Whether to override side and alignment preferences to prevent collisions.
@@ -82,7 +113,7 @@ export class RdxPopoverPositioner {
     /**
      * Distance in pixels from the boundary edges where collision detection should occur.
      */
-    readonly collisionPadding = input<number | Partial<Record<Side, number>>>(0);
+    readonly collisionPadding = input<number | Partial<Record<Side, number>>>(5);
 
     /**
      * The sticky behavior on the alignment axis.
@@ -102,10 +133,18 @@ export class RdxPopoverPositioner {
     /**
      * Whether to update position on every animation frame.
      */
-    readonly updatePositionStrategy = input<'optimized' | 'always'>('optimized');
+    readonly updatePositionStrategy = input<'optimized' | 'always'>('always');
 
     /**
      * Emits when the popup has been placed.
      */
     readonly placed = outputFromObservable(outputToObservable(inject(RdxPopperContentWrapper).placed));
+
+    constructor() {
+        effect(() => this.triggerEl.set(this.rootContext.trigger() ?? null));
+
+        this.graceArea.onPointerExit(() => {
+            this.rootContext.closeOnHover();
+        });
+    }
 }
