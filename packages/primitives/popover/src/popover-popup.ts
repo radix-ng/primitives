@@ -1,9 +1,13 @@
-import { Directive, inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { computed, DestroyRef, Directive, effect, inject } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
-import { RdxDismissableLayer } from '@radix-ng/primitives/dismissable-layer';
-import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
+import { provideRdxDismissableLayerConfig, RdxDismissableLayer } from '@radix-ng/primitives/dismissable-layer';
+import { provideRdxFocusScopeConfig, RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import { RdxPopperContent } from '@radix-ng/primitives/popper';
 import { injectRdxPopoverRootContext } from './popover-root';
+
+let originalBodyOverflow: string | null = null;
+let scrollLockCount = 0;
 
 /**
  * A container for the popover contents.
@@ -11,6 +15,26 @@ import { injectRdxPopoverRootContext } from './popover-root';
 @Directive({
     selector: '[rdxPopoverPopup]',
     hostDirectives: [RdxPopperContent, RdxDismissableLayer, RdxFocusScope],
+    providers: [
+        provideRdxDismissableLayerConfig(() => {
+            const rootContext = injectRdxPopoverRootContext()!;
+
+            return {
+                disableOutsidePointerEvents: computed(() => rootContext.modal() === true)
+            };
+        }),
+        provideRdxFocusScopeConfig(() => {
+            const rootContext = injectRdxPopoverRootContext()!;
+
+            return {
+                trapped: computed(
+                    () =>
+                        rootContext.modal() === 'trap-focus' ||
+                        (rootContext.modal() === true && rootContext.hasPopupClose())
+                )
+            };
+        })
+    ],
     host: {
         role: 'dialog',
         '[attr.aria-describedby]': 'rootContext.descriptionId()',
@@ -24,7 +48,9 @@ import { injectRdxPopoverRootContext } from './popover-root';
 export class RdxPopoverPopup {
     protected readonly rootContext = injectRdxPopoverRootContext()!;
     private readonly dismissableLayer = inject(RdxDismissableLayer);
+    private readonly document = inject(DOCUMENT);
     private readonly focusScope = inject(RdxFocusScope);
+    private isScrollLocked = false;
 
     /**
      * Event handler called when the escape key is down. Can be prevented.
@@ -57,8 +83,18 @@ export class RdxPopoverPopup {
     readonly closeAutoFocus = outputFromObservable(outputToObservable(this.focusScope.unmountAutoFocus));
 
     constructor() {
+        effect(() => {
+            if (this.rootContext.modal() === true) {
+                this.lockScroll();
+            } else {
+                this.unlockScroll();
+            }
+        });
+
+        inject(DestroyRef).onDestroy(() => this.unlockScroll());
+
         this.dismissableLayer.pointerDownOutside.subscribe((event) => {
-            if (this.rootContext.trigger()?.contains(event.target as Node)) {
+            if (this.rootContext.triggers().some((trigger) => trigger.contains(event.target as Node))) {
                 event.preventDefault();
             }
         });
@@ -70,5 +106,35 @@ export class RdxPopoverPopup {
         });
 
         this.dismissableLayer.dismiss.subscribe(() => this.rootContext.close());
+    }
+
+    private lockScroll() {
+        if (this.isScrollLocked) {
+            return;
+        }
+
+        const body = this.document.body;
+
+        if (scrollLockCount === 0) {
+            originalBodyOverflow = body.style.overflow;
+            body.style.overflow = 'hidden';
+        }
+
+        scrollLockCount++;
+        this.isScrollLocked = true;
+    }
+
+    private unlockScroll() {
+        if (!this.isScrollLocked) {
+            return;
+        }
+
+        scrollLockCount--;
+        this.isScrollLocked = false;
+
+        if (scrollLockCount === 0 && originalBodyOverflow !== null) {
+            this.document.body.style.overflow = originalBodyOverflow;
+            originalBodyOverflow = null;
+        }
     }
 }

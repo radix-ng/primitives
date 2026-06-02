@@ -1,3 +1,4 @@
+import { BooleanInput } from '@angular/cdk/coercion';
 import {
     afterNextRender,
     booleanAttribute,
@@ -81,9 +82,13 @@ export class RdxDismissableLayer {
      * the `DismissableLayer`. Users will need to click twice on outside elements to
      * interact with them: once to close the `DismissableLayer`, and again to trigger the element.
      */
-    readonly disableOutsidePointerEvents = input(this.config.disableOutsidePointerEvents(), {
-        transform: booleanAttribute
+    readonly disableOutsidePointerEvents = input<boolean | undefined, BooleanInput | undefined>(undefined, {
+        transform: (value) => (value === undefined ? undefined : booleanAttribute(value))
     });
+
+    readonly isOutsidePointerEventsDisabled = computed(
+        () => this.disableOutsidePointerEvents() ?? this.config.disableOutsidePointerEvents()
+    );
 
     protected readonly isBodyPointerEventsDisabled = computed(
         () => this.context.layersWithOutsidePointerEventsDisabled().length > 0

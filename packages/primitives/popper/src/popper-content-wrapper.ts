@@ -17,6 +17,7 @@ import {
     PLATFORM_ID,
     resource
 } from '@angular/core';
+import type { ReferenceElement, VirtualElement } from '@floating-ui/dom';
 import {
     autoUpdate,
     computePosition,
@@ -34,6 +35,14 @@ import { RdxPopper } from './popper';
 import { RdxPopperArrow } from './popper-arrow';
 import { RdxPopperContent } from './popper-content';
 import { Align, isNotNull, Side, transformOrigin } from './utils';
+
+export type RdxPopperAnchorElement =
+    | Element
+    | ElementRef<Element>
+    | VirtualElement
+    | (() => Element | VirtualElement | null)
+    | null
+    | undefined;
 
 const context = () => {
     const popperContentWrapper = inject(RdxPopperContentWrapper);
@@ -67,6 +76,11 @@ export class RdxPopperContentWrapper {
 
     private readonly context = inject(RdxPopper);
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
+    /**
+     * An element to position the popup against. Defaults to the popper anchor.
+     */
+    readonly anchor = input<RdxPopperAnchorElement>();
 
     /**
      * The preferred side of the anchor to render against when open.
@@ -184,8 +198,30 @@ export class RdxPopperContentWrapper {
         altBoundary: this.hasExplicitBoundaries()
     }));
 
+    private readonly resolvedAnchor = computed<ReferenceElement>(() => {
+        const anchor = this.anchor();
+        const resolvedAnchor = typeof anchor === 'function' ? anchor() : anchor;
+
+        if (resolvedAnchor instanceof ElementRef) {
+            return resolvedAnchor.nativeElement;
+        }
+
+        if (resolvedAnchor) {
+            return resolvedAnchor;
+        }
+
+        const fallbackAnchor = this.context.anchorOverride() ?? this.context.anchor()?.elementRef.nativeElement;
+
+        if (!fallbackAnchor) {
+            throw new Error('RdxPopperContentWrapper requires an anchor.');
+        }
+
+        return fallbackAnchor;
+    });
+
     private readonly position = resource({
         params: () => ({
+            anchor: this.resolvedAnchor(),
             strategy: this.positionStrategy(),
             placement: this.desiredPlacement(),
             sideOffset: this.sideOffset(),
@@ -200,7 +236,7 @@ export class RdxPopperContentWrapper {
             hideWhenDetached: this.hideWhenDetached()
         }),
         loader: ({ params }) =>
-            computePosition(this.context.anchor().elementRef.nativeElement, this.elementRef.nativeElement, {
+            computePosition(params.anchor, this.elementRef.nativeElement, {
                 // default to `fixed` strategy so users don't have to pick and we also avoid focus scroll issues
                 strategy: params.strategy,
                 placement: params.placement,
@@ -329,14 +365,9 @@ export class RdxPopperContentWrapper {
     private readonly afterRenderEffect = afterRenderEffect((onCleanup) => {
         this.position.reload();
 
-        const cleanup = autoUpdate(
-            this.context.anchor().elementRef.nativeElement,
-            this.elementRef.nativeElement,
-            () => this.position.reload(),
-            {
-                animationFrame: this.updatePositionStrategy() === 'always'
-            }
-        );
+        const cleanup = autoUpdate(this.resolvedAnchor(), this.elementRef.nativeElement, () => this.position.reload(), {
+            animationFrame: this.updatePositionStrategy() === 'always'
+        });
 
         onCleanup(cleanup);
     });

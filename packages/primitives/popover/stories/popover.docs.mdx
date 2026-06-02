@@ -25,6 +25,8 @@ It remains headless: styles and native CSS animations belong to the consumer.
 - ✅ Opens and closes from a native button trigger.
 - ✅ Supports uncontrolled state, `defaultOpen`, and Angular two-way binding with `[(open)]`.
 - ✅ Positions content with the shared Floating UI-based Popper primitive.
+- ✅ Supports a custom positioning anchor independently from the trigger.
+- ✅ Supports non-modal, modal, and focus-trapping-only behavior.
 - ✅ Closes on Escape, outside pointer interaction, or an explicit close button.
 - ✅ Restores focus through the shared Focus Scope behavior.
 - ✅ Exposes `data-state`, `data-open`, `data-closed`, `data-side`, and `data-align` for styling.
@@ -109,11 +111,25 @@ The closed animation keeps the portal mounted until `animationend`.
 
 <Canvas of={Stories.Animated} />
 
+### Modal behavior
+
+Set `modal` on `rdxPopoverRoot` to block outside interaction, or use `"trap-focus"` to keep focus
+inside while leaving document scrolling and outside pointer interactions available.
+
+<Canvas of={Stories.Modal} />
+
+### Custom anchor
+
+Pass `[anchor]` to `rdxPopoverPositioner` when the popup should open from a trigger but position
+itself against a different element.
+
+<Canvas of={Stories.CustomAnchor} />
+
 ## API Reference
 
 ### Root
 
-`RdxPopoverRoot` owns the open state.
+`RdxPopoverRoot` owns the open state and optional modal behavior.
 
 <ArgTypes of={RdxPopoverRoot} />
 
@@ -131,7 +147,8 @@ The closed animation keeps the portal mounted until `animationend`.
 
 ### Positioner
 
-`RdxPopoverPositioner` delegates placement and collision handling to the shared Popper primitive.
+`RdxPopoverPositioner` delegates placement and collision handling to the shared Popper primitive. Its
+optional `anchor` input overrides the trigger only for positioning.
 
 <ArgTypes of={RdxPopoverPositioner} />
 

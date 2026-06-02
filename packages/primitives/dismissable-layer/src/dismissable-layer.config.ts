@@ -8,7 +8,7 @@ export const RdxDismissableLayersContextToken = new InjectionToken('RdxDismissab
         return {
             layersRoot,
             layersWithOutsidePointerEventsDisabled: computed(() =>
-                layersRoot().filter((i) => i.disableOutsidePointerEvents())
+                layersRoot().filter((i) => i.isOutsidePointerEventsDisabled())
             ),
             branches: signal<HTMLElement[]>([])
         };

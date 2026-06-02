@@ -1,4 +1,5 @@
-import { Directive } from '@angular/core';
+import { DestroyRef, Directive, inject } from '@angular/core';
+import { RdxPopoverPopup } from './popover-popup';
 import { injectRdxPopoverRootContext } from './popover-root';
 
 /**
@@ -13,4 +14,11 @@ import { injectRdxPopoverRootContext } from './popover-root';
 })
 export class RdxPopoverClose {
     protected readonly rootContext = injectRdxPopoverRootContext()!;
+
+    constructor() {
+        if (inject(RdxPopoverPopup, { optional: true })) {
+            const unregister = this.rootContext.registerPopupClose();
+            inject(DestroyRef).onDestroy(unregister);
+        }
+    }
 }

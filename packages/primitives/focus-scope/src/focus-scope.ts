@@ -2,6 +2,7 @@ import { BooleanInput } from '@angular/cdk/coercion';
 import {
     afterNextRender,
     booleanAttribute,
+    computed,
     DestroyRef,
     Directive,
     effect,
@@ -14,6 +15,7 @@ import {
     signal
 } from '@angular/core';
 import { createContext, getActiveElement } from '@radix-ng/primitives/core';
+import { RdxFocusScopeConfigToken } from './focus-scope.config';
 import { createFocusScopesStack, FocusScopeAPI, removeLinks } from './stack';
 import {
     AUTOFOCUS_ON_MOUNT,
@@ -39,7 +41,7 @@ const rootContext = (): FocusScopeContext => {
 
     return {
         loop: context.loop,
-        trapped: context.trapped
+        trapped: context.isTrapped
     };
 };
 
@@ -59,6 +61,7 @@ export class RdxFocusScope {
     private readonly destroyRef = inject(DestroyRef);
 
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    private readonly config = inject(RdxFocusScopeConfigToken);
 
     /**
      * When `true`, tabbing from last item will focus first tabbable
@@ -76,7 +79,11 @@ export class RdxFocusScope {
      * @group Props
      * @defaultValue false
      */
-    readonly trapped = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+    readonly trapped = input<boolean | undefined, BooleanInput | undefined>(undefined, {
+        transform: (value) => (value === undefined ? undefined : booleanAttribute(value))
+    });
+
+    readonly isTrapped = computed(() => this.trapped() ?? this.config.trapped());
 
     /**
      * Event handler called when auto-focusing on mount.
@@ -116,7 +123,7 @@ export class RdxFocusScope {
                 (onCleanup) => {
                     const container = this.elementRef.nativeElement;
 
-                    if (this.trapped()) {
+                    if (this.isTrapped()) {
                         const handleFocusIn = (event: FocusEvent) => {
                             if (this.focusScope.paused() || !container) {
                                 return;

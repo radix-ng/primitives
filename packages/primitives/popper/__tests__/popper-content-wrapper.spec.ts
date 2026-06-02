@@ -65,6 +65,19 @@ class ReactivePopperHostComponent {
     readonly updatePositionStrategy = signal<'optimized' | 'always'>('optimized');
 }
 
+@Component({
+    imports: [popperImports],
+    template: `
+        <div rdxPopperRoot>
+            <button #customAnchor>Custom anchor</button>
+            <div [anchor]="customAnchor" rdxPopperContentWrapper>
+                <div rdxPopperContent>Content</div>
+            </div>
+        </div>
+    `
+})
+class CustomAnchorPopperHostComponent {}
+
 describe('RdxPopperContentWrapper', () => {
     const autoUpdateMock = jest.mocked(autoUpdate);
     const computePositionMock = jest.mocked(computePosition);
@@ -74,7 +87,12 @@ describe('RdxPopperContentWrapper', () => {
         computePositionMock.mockClear();
 
         TestBed.configureTestingModule({
-            imports: [DefaultPopperHostComponent, AlwaysPopperHostComponent, ReactivePopperHostComponent]
+            imports: [
+                DefaultPopperHostComponent,
+                AlwaysPopperHostComponent,
+                ReactivePopperHostComponent,
+                CustomAnchorPopperHostComponent
+            ]
         });
     });
 
@@ -191,5 +209,19 @@ describe('RdxPopperContentWrapper', () => {
         await fixture.whenStable();
 
         expect(placed).toHaveBeenCalledTimes(1);
+    });
+
+    it('positions against an explicit anchor when provided', async () => {
+        const fixture = TestBed.createComponent(CustomAnchorPopperHostComponent);
+
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        const buttons: HTMLButtonElement[] = fixture.nativeElement.querySelectorAll('button');
+
+        expect(computePositionMock).toHaveBeenCalledWith(buttons[0], expect.any(HTMLElement), expect.any(Object));
+        expect(autoUpdateMock).toHaveBeenCalledWith(buttons[0], expect.any(HTMLElement), expect.any(Function), {
+            animationFrame: false
+        });
     });
 });

@@ -15,6 +15,7 @@ export * from './src/popover-arrow';
 export * from './src/popover-backdrop';
 export * from './src/popover-close';
 export * from './src/popover-description';
+export * from './src/popover-handle';
 export * from './src/popover-popup';
 export * from './src/popover-portal';
 export * from './src/popover-portal-presence';

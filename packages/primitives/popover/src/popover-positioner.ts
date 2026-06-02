@@ -1,7 +1,7 @@
 import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import { booleanAttribute, Directive, ElementRef, inject, input, numberAttribute } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
-import { Align, RdxPopperContentWrapper, Side } from '@radix-ng/primitives/popper';
+import { Align, RdxPopperAnchorElement, RdxPopperContentWrapper, Side } from '@radix-ng/primitives/popper';
 
 /**
  * Positions the popover against its trigger.
@@ -12,6 +12,7 @@ import { Align, RdxPopperContentWrapper, Side } from '@radix-ng/primitives/poppe
         {
             directive: RdxPopperContentWrapper,
             inputs: [
+                'anchor',
                 'side',
                 'sideOffset',
                 'align',
@@ -38,6 +39,11 @@ import { Align, RdxPopperContentWrapper, Side } from '@radix-ng/primitives/poppe
     }
 })
 export class RdxPopoverPositioner {
+    /**
+     * An element to position the popup against. Defaults to the trigger.
+     */
+    readonly anchor = input<RdxPopperAnchorElement>();
+
     /**
      * The preferred side of the trigger to render against when open.
      */

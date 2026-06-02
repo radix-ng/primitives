@@ -1,5 +1,7 @@
-import { booleanAttribute, computed, DestroyRef, Directive, ElementRef, inject, input } from '@angular/core';
+import { _IdGenerator } from '@angular/cdk/a11y';
+import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input, untracked } from '@angular/core';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
+import { RdxPopoverHandle } from './popover-handle';
 import { injectRdxPopoverRootContext } from './popover-root';
 
 /**
@@ -10,33 +12,61 @@ import { injectRdxPopoverRootContext } from './popover-root';
     hostDirectives: [RdxPopperAnchor],
     host: {
         type: 'button',
-        '[attr.aria-controls]': 'rootContext.contentId',
-        '[attr.aria-expanded]': 'rootContext.isOpen()',
+        '[attr.aria-controls]': 'rootContext()?.contentId',
+        '[attr.aria-expanded]': 'isOpen()',
         '[attr.aria-haspopup]': '"dialog"',
-        '[attr.data-state]': 'rootContext.isOpen() ? "open" : "closed"',
-        '[attr.data-popup-open]': 'rootContext.isOpen() ? "" : undefined',
+        '[attr.data-state]': 'isOpen() ? "open" : "closed"',
+        '[attr.data-popup-open]': 'isOpen() ? "" : undefined',
         '[attr.disabled]': 'disabled() ? "" : undefined',
+        '[id]': 'triggerId()',
         '(click)': 'handleClick()',
         '(pointerdown)': 'handlePointerDown()',
         '(pointerup)': 'handlePointerUp()'
     }
 })
 export class RdxPopoverTrigger {
-    protected readonly rootContext = injectRdxPopoverRootContext()!;
+    private readonly parentRootContext = injectRdxPopoverRootContext(true);
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+
+    /**
+     * Associates this trigger with a detached popover root.
+     */
+    readonly handle = input<RdxPopoverHandle<any>>();
+
+    /**
+     * Data associated with this trigger while it is active.
+     */
+    readonly payload = input<unknown>();
+
+    /**
+     * ID used to identify this trigger when opening a detached popover imperatively.
+     */
+    readonly id = input<string>();
 
     /**
      * Whether the trigger should ignore user interaction.
      */
     readonly disabled = input(false, { transform: booleanAttribute });
 
-    protected readonly isOpen = computed(() => this.rootContext.isOpen());
+    protected readonly triggerId = computed(() => this.id() ?? this.generatedId);
+    protected readonly rootContext = computed(() => this.handle()?.context() ?? this.parentRootContext);
+    protected readonly isOpen = computed(
+        () => this.rootContext()?.isOpen() === true && this.rootContext()?.trigger() === this.elementRef.nativeElement
+    );
+    private readonly generatedId = inject(_IdGenerator).getId('rdx-popover-trigger-');
 
     constructor() {
-        this.rootContext.setTrigger(this.elementRef.nativeElement);
-        inject(DestroyRef).onDestroy(() => {
-            if (this.rootContext.trigger() === this.elementRef.nativeElement) {
-                this.rootContext.setTrigger(undefined);
+        effect((onCleanup) => {
+            const handle = this.handle();
+
+            if (handle) {
+                onCleanup(
+                    untracked(() =>
+                        handle.registerTrigger(this.triggerId(), this.elementRef.nativeElement, () => this.payload())
+                    )
+                );
+            } else if (this.parentRootContext) {
+                onCleanup(untracked(() => this.parentRootContext!.registerTrigger(this.elementRef.nativeElement)));
             }
         });
     }
@@ -46,15 +76,20 @@ export class RdxPopoverTrigger {
             return;
         }
 
-        this.rootContext.setPointerDownOnTrigger(false);
-        this.rootContext.toggle();
+        this.rootContext()?.setPointerDownOnTrigger(false);
+
+        if (this.handle()) {
+            this.handle()!.toggle(this.triggerId());
+        } else {
+            this.parentRootContext?.toggle(this.elementRef.nativeElement, this.payload());
+        }
     }
 
     protected handlePointerDown() {
-        this.rootContext.setPointerDownOnTrigger(true);
+        this.rootContext()?.setPointerDownOnTrigger(true);
     }
 
     protected handlePointerUp() {
-        this.rootContext.setPointerDownOnTrigger(false);
+        this.rootContext()?.setPointerDownOnTrigger(false);
     }
 }
