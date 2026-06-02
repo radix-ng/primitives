@@ -1,0 +1,52 @@
+import { Component } from '@angular/core';
+import { popoverImports } from '@radix-ng/primitives/popover';
+import { LucideAngularModule } from 'lucide-angular';
+import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
+
+@Component({
+    selector: 'rdx-popover-default',
+    imports: [...popoverImports, LucideAngularModule],
+    template: `
+        <ng-container rdxPopoverRoot>
+            <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>
+                <lucide-angular aria-hidden="true" name="plus" size="16" />
+                Add details
+            </button>
+
+            <ng-template rdxPopoverPortalPresence>
+                <div rdxPopoverPortal>
+                    <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
+                        <div [class]="p.popup" rdxPopoverPopup>
+                            <span [class]="p.arrow" rdxPopoverArrow></span>
+                            <h2 [class]="p.title" rdxPopoverTitle>Dimensions</h2>
+                            <p [class]="p.description" rdxPopoverDescription>
+                                Set the width and height for the element.
+                            </p>
+
+                            <div class="mt-4 grid gap-3">
+                                <label class="grid gap-1 text-xs font-medium">
+                                    Width
+                                    <input [class]="input" value="100%" />
+                                </label>
+                                <label class="grid gap-1 text-xs font-medium">
+                                    Max width
+                                    <input [class]="input" value="300px" />
+                                </label>
+                            </div>
+
+                            <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                                <lucide-angular aria-hidden="true" name="x" size="14" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </ng-container>
+    `
+})
+export class RdxPopoverDefaultComponent {
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly input = demoInput;
+    protected readonly p = demoPopover;
+}

@@ -76,6 +76,19 @@ export const demoInput = cn(
     demoFocusRing
 );
 
+/** Popover surfaces and parts. */
+export const demoPopover = {
+    positioner: 'z-50',
+    popup: cn(demoCard, 'relative w-80 p-4'),
+    popupAnimated: 'data-[state=open]:animate-popover-popup-in data-[state=closed]:animate-popover-popup-out',
+    portalAnimated: 'data-[state=open]:animate-popover-in data-[state=closed]:animate-popover-out',
+    backdrop: 'fixed inset-0 bg-foreground/10',
+    arrow: 'fill-popover',
+    title: 'text-sm font-semibold text-popover-foreground',
+    description: 'mt-1 text-sm text-muted-foreground',
+    close: cn(demoButton.base, demoButton.ghost, 'absolute top-2 right-2 size-7 p-0')
+} as const;
+
 /**
  * Checkbox parts: a small square button toggling a centered indicator.
  *

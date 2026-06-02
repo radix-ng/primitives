@@ -1,0 +1,47 @@
+import { Component, signal } from '@angular/core';
+import { popoverImports } from '@radix-ng/primitives/popover';
+import { LucideAngularModule } from 'lucide-angular';
+import { cn, demoButton, demoPopover } from '../../storybook/styles';
+
+@Component({
+    selector: 'rdx-popover-controlled',
+    imports: [...popoverImports, LucideAngularModule],
+    template: `
+        <div class="flex flex-col items-center gap-4">
+            <div class="flex items-center gap-2">
+                <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="open.set(true)">Open externally</button>
+                <button [class]="cn(b.base, b.ghost, b.size.sm)" (click)="open.set(false)">Close externally</button>
+            </div>
+
+            <p class="text-muted-foreground text-xs">State: {{ open() ? 'open' : 'closed' }}</p>
+
+            <ng-container [(open)]="open" rdxPopoverRoot>
+                <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Toggle popover</button>
+
+                <ng-template rdxPopoverPortalPresence>
+                    <div rdxPopoverPortal>
+                        <div [class]="p.backdrop" rdxPopoverBackdrop></div>
+                        <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
+                            <div [class]="p.popup" rdxPopoverPopup>
+                                <span [class]="p.arrow" rdxPopoverArrow></span>
+                                <h2 [class]="p.title" rdxPopoverTitle>Controlled state</h2>
+                                <p [class]="p.description" rdxPopoverDescription>
+                                    The root uses Angular two-way binding with a signal.
+                                </p>
+                                <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                                    <lucide-angular aria-hidden="true" name="x" size="14" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-container>
+        </div>
+    `
+})
+export class RdxPopoverControlledComponent {
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly p = demoPopover;
+    protected readonly open = signal(false);
+}

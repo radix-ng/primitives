@@ -1,123 +1,74 @@
-import { provideAnimations } from '@angular/platform-browser/animations';
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { LucideAngularModule } from 'lucide-angular';
-import { RdxPopoverModule } from '../index';
-import { RdxPopoverAnchorComponent } from './popover-anchor.component';
-import { RdxPopoverAnimationsComponent } from './popover-animations.component';
-import { RdxPopoverDefaultComponent } from './popover-default.component';
-import { RdxPopoverEventsComponent } from './popover-events.components';
-import { RdxPopoverInitialFocusComponent } from './popover-initial-focus.component';
-import { RdxPopoverInitiallyOpenComponent } from './popover-initially-open.component';
-import { RdxPopoverMultipleComponent } from './popover-multiple.component';
-import { RdxPopoverPositioningComponent } from './popover-positioning.component';
-import { RdxPopoverTriggeringComponent } from './popover-triggering.component';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
+import { RdxPopoverAnimatedComponent } from './popover-animated';
+import animatedSource from './popover-animated?raw';
+import { RdxPopoverControlledComponent } from './popover-controlled';
+import controlledSource from './popover-controlled?raw';
+import { RdxPopoverDefaultComponent } from './popover-default';
+import defaultSource from './popover-default?raw';
+import { RdxPopoverPositioningComponent } from './popover-positioning';
+import positioningSource from './popover-positioning?raw';
 
 const html = String.raw;
+
+const source = (code: string) => ({
+    docs: {
+        source: {
+            code,
+            language: 'typescript'
+        }
+    }
+});
 
 export default {
     title: 'Primitives/Popover',
     decorators: [
         moduleMetadata({
             imports: [
-                RdxPopoverModule,
                 RdxPopoverDefaultComponent,
-                RdxPopoverEventsComponent,
+                RdxPopoverControlledComponent,
                 RdxPopoverPositioningComponent,
-                RdxPopoverTriggeringComponent,
-                RdxPopoverMultipleComponent,
-                RdxPopoverAnimationsComponent,
-                RdxPopoverInitiallyOpenComponent,
-                RdxPopoverInitialFocusComponent,
-                RdxPopoverAnchorComponent,
-                LucideAngularModule
-            ],
-            providers: [provideAnimations()]
+                RdxPopoverAnimatedComponent
+            ]
         }),
-        componentWrapperDecorator(
-            (story) => html`
-                <div
-                    class="radix-themes light light-theme radix-themes-default-fonts"
-                    data-accent-color="indigo"
-                    data-radius="medium"
-                    data-scaling="100%"
-                >
-                    ${story}
-                </div>
-            `
-        )
+        tailwindDemoDecorator()
     ]
 } as Meta;
 
 type Story = StoryObj;
 
 export const Default: Story = {
+    parameters: source(defaultSource),
     render: () => ({
         template: html`
-            <rdx-popover-default></rdx-popover-default>
+            <rdx-popover-default />
         `
     })
 };
 
-export const Multiple: Story = {
+export const Controlled: Story = {
+    parameters: source(controlledSource),
     render: () => ({
         template: html`
-            <rdx-popover-multiple></rdx-popover-multiple>
-        `
-    })
-};
-
-export const Events: Story = {
-    render: () => ({
-        template: html`
-            <rdx-popover-events></rdx-popover-events>
+            <rdx-popover-controlled />
         `
     })
 };
 
 export const Positioning: Story = {
+    parameters: source(positioningSource),
     render: () => ({
         template: html`
-            <rdx-popover-positioning></rdx-popover-positioning>
+            <rdx-popover-positioning />
         `
     })
 };
 
-export const ExternalTriggering: Story = {
+export const Animated: Story = {
+    parameters: source(animatedSource),
     render: () => ({
         template: html`
-            <rdx-popover-triggering></rdx-popover-triggering>
-        `
-    })
-};
-
-export const Anchor: Story = {
-    render: () => ({
-        template: html`
-            <rdx-popover-anchor></rdx-popover-anchor>
-        `
-    })
-};
-
-export const InitiallyOpen: Story = {
-    render: () => ({
-        template: html`
-            <rdx-popover-initially-open></rdx-popover-initially-open>
-        `
-    })
-};
-
-export const InitialFocus: Story = {
-    render: () => ({
-        template: html`
-            <rdx-popover-initial-focus></rdx-popover-initial-focus>
-        `
-    })
-};
-
-export const Animations: Story = {
-    render: () => ({
-        template: html`
-            <rdx-popover-animations></rdx-popover-animations>
+            <rdx-popover-animated />
         `
     })
 };

@@ -1,157 +1,146 @@
-import {ArgTypes, Canvas, Markdown, Meta, Source} from '@storybook/addon-docs/blocks';
-import * as PopoverStories from "./popover.stories";
-import {RdxPopoverRootDirective} from "../src/popover-root.directive";
-import {RdxPopoverContentDirective} from "../src/popover-content.directive";
-import {RdxPopoverArrowDirective} from "../src/popover-arrow.directive";
-import {RdxPopoverAnchorDirective} from "../src/popover-anchor.directive";
-import {RdxPopoverTriggerDirective} from "../src/popover-trigger.directive";
-import {RdxPopoverCloseDirective} from "../src/popover-close.directive";
-import {animationStylesOnly} from "./utils/styles.constants";
-import {RdxPopoverContentAttributesComponent} from "../src/popover-content-attributes.component";
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './popover.stories';
+import {
+    RdxPopoverClose,
+    RdxPopoverPortal,
+    RdxPopoverPositioner,
+    RdxPopoverPopup,
+    RdxPopoverRoot,
+    RdxPopoverTrigger
+} from '../index';
 
 <Meta title="Primitives/Popover" />
 
 # Popover
 
-#### Displays rich content in a portal, triggered by a button.
+#### An accessible popup anchored to a button.
 
-<br />
-<br />
+Popover composes the shared Popper, Portal, Presence, Dismissable Layer, and Focus Scope primitives.
+It remains headless: styles and native CSS animations belong to the consumer.
 
-## Examples
-### Default
-
-<Canvas sourceState="hidden" of={PopoverStories.Default} />
-
-### Multiple
-
-<Canvas sourceState="hidden" of={PopoverStories.Multiple} />
-
-### Events
-
-<Canvas sourceState="hidden" of={PopoverStories.Events} />
-
-### Positioning
-
-<Canvas sourceState="hidden" of={PopoverStories.Positioning} />
-
-### External Triggering
-
-<Canvas sourceState="hidden" of={PopoverStories.ExternalTriggering} />
-
-### Anchor
-
-<Canvas sourceState="hidden" of={PopoverStories.Anchor} />
-
-### Initially Open
-
-<Canvas sourceState="hidden" of={PopoverStories.InitiallyOpen} />
-
-### Initial focus
-
-<Canvas sourceState="hidden" of={PopoverStories.InitialFocus} />
-
-### Animations
-
-<Canvas sourceState="hidden" of={PopoverStories.Animations} />
-
-### Animation Styles
-
-<Source type="code" language="css" code={`${animationStylesOnly}`} />
-
+<Canvas sourceState="hidden" of={Stories.Default} />
 
 ## Features
 
-- ✅ Opens when the trigger is clicked.
-- ✅ Closes when the trigger is clicked again or when pressing escape.
-- ✅ Controllable from outside.
-- ✅ Focus is automatically trapped inside popover.
-- ✅ It is possible to determine which element receives focus first by `rdxFocusInitial` directive.
+- ✅ Opens and closes from a native button trigger.
+- ✅ Supports uncontrolled state, `defaultOpen`, and Angular two-way binding with `[(open)]`.
+- ✅ Positions content with the shared Floating UI-based Popper primitive.
+- ✅ Closes on Escape, outside pointer interaction, or an explicit close button.
+- ✅ Restores focus through the shared Focus Scope behavior.
+- ✅ Exposes `data-state`, `data-open`, `data-closed`, `data-side`, and `data-align` for styling.
+- ✅ Keeps portal content mounted while CSS exit keyframes finish.
+- ✅ Links the popup to optional title and description parts for accessible labeling.
+
+## Import
+
+```typescript
+import {
+    RdxPopoverArrow,
+    RdxPopoverBackdrop,
+    RdxPopoverClose,
+    RdxPopoverDescription,
+    RdxPopoverPopup,
+    RdxPopoverPortal,
+    RdxPopoverPortalPresence,
+    RdxPopoverPositioner,
+    RdxPopoverRoot,
+    RdxPopoverTitle,
+    RdxPopoverTrigger
+} from '@radix-ng/primitives/popover';
+```
+
+Or import all parts through the module:
+
+```typescript
+import { RdxPopoverModule } from '@radix-ng/primitives/popover';
+```
 
 ## Anatomy
 
+Apply the parts to your own markup. `rdxPopoverPortalPresence` manages mounting and waits for exit
+keyframes on the first DOM element inside its template.
+
 ```html
 <ng-container rdxPopoverRoot>
-    <button class="IconButton" rdxPopoverTrigger>+</button>
+    <button rdxPopoverTrigger>Open</button>
 
-    <ng-template rdxPopoverContent>
-        <div class="PopoverContent" rdxPopoverContentAttributes>
-            <button class="PopoverClose" rdxPopoverClose aria-label="Close">X</button>
-            Popover Content
-            <div class="PopoverArrow" rdxPopoverArrow></div>
+    <ng-template rdxPopoverPortalPresence>
+        <div rdxPopoverPortal>
+            <div rdxPopoverBackdrop></div>
+            <div sideOffset="8" rdxPopoverPositioner>
+                <div rdxPopoverPopup>
+                    <span rdxPopoverArrow></span>
+                    <h2 rdxPopoverTitle>Notifications</h2>
+                    <p rdxPopoverDescription>You are all caught up.</p>
+                    <button rdxPopoverClose>Close</button>
+                </div>
+            </div>
         </div>
     </ng-template>
 </ng-container>
 ```
 
-## Import
+## Examples
 
-Get started with importing the directives:
+### Default
 
-<Source type="code" language="typescript" code={`import {
-  RdxPopoverRootDirective,
-  RdxPopoverRootTrigger,
-  RdxPopoverContentDirective,
-  RdxPopoverArrowDirective,
-  RdxPopoverAnchorDirective,
-  RdxPopoverCloseDirective
-} from '@radix-ng/primitives/popover';`} />
+A form-like popup with an arrow, accessible title and description, and a close button.
 
-or
+<Canvas of={Stories.Default} />
 
-<Source type="code" language="typescript" code={`import { RdxPopoverModule } from '@radix-ng/primitives/popover';`} />
+### Controlled
+
+Bind `[(open)]` when application state should open or close the popover programmatically. This
+example also includes the optional backdrop part.
+
+<Canvas of={Stories.Controlled} />
+
+### Positioning
+
+Configure `side`, `sideOffset`, `align`, and collision behavior on `rdxPopoverPositioner`. The
+shared Popper primitive updates `data-side` and `data-align` after collision handling.
+
+<Canvas of={Stories.Positioning} />
+
+### Animation
+
+For presence-managed content, apply native CSS keyframe animation utilities to the portal element.
+The closed animation keeps the portal mounted until `animationend`.
+
+<Canvas of={Stories.Animated} />
 
 ## API Reference
 
 ### Root
-`RdxPopoverRootDirective`
 
-Contains all the parts of a popover.
+`RdxPopoverRoot` owns the open state.
 
-<ArgTypes of={RdxPopoverRootDirective} />
+<ArgTypes of={RdxPopoverRoot} />
 
 ### Trigger
-`RdxPopoverTriggerDirective`
 
-The button that toggles the popover. By default, the PopoverContent will position itself against the trigger.
+`RdxPopoverTrigger` toggles the popover and exposes ARIA attributes.
 
-| Data attribute | Value                                                  |
-|----------------|--------------------------------------------------------|
-| [data-state]   | <code>`closed` or `open` (type RdxPopoverState)</code> |
+<ArgTypes of={RdxPopoverTrigger} />
 
-### Anchor
-`RdxPopoverAnchorDirective`
+### Portal
 
-An optional element to position the PopoverContent against. If this part is not used, the content will position alongside the PopoverTrigger.
+`RdxPopoverPortal` moves content to `document.body` by default or to a configured container.
 
-### Content
-`RdxPopoverContentDirective`
+<ArgTypes of={RdxPopoverPortal} />
 
-The component that pops out when the popover is open.
+### Positioner
 
-<ArgTypes of={RdxPopoverContentDirective} />
+`RdxPopoverPositioner` delegates placement and collision handling to the shared Popper primitive.
 
-### Content Attributes
-`RdxPopoverContentAttributesComponent`
+<ArgTypes of={RdxPopoverPositioner} />
 
-A component with the content attributes that are necessary to run animations.
+### Popup
 
-<ArgTypes of={RdxPopoverContentAttributesComponent} />
+`RdxPopoverPopup` owns dialog semantics, dismissal events, and focus lifecycle events.
 
-| Data attribute | Value                                                                         |
-|----------------|-------------------------------------------------------------------------------|
-| [data-state]   | <code>"closed" or "open" (enum RdxPopoverState)</code>                        |
-| [data-side]    | <code>"left"   or "right"  or "bottom" or "top" (enum RdxPositionSide)</code> |
-| [data-align]   | <code>"start"  or "end"  or "center" (enum RdxPositionAlign)</code>           |
+<ArgTypes of={RdxPopoverPopup} />
 
-### Arrow
-`RdxPopoverArrowDirective`
+### Arrow, Backdrop, Title, Description, and Close
 
-An optional arrow element to render alongside the popover. This can be used to help visually link the trigger with the PopoverContent. Must be rendered inside PopoverContent.
-
-<ArgTypes of={RdxPopoverArrowDirective} />
-
-### Close
-`RdxPopoverCloseDirective`
-
-An optional close button element to render alongside the popover. This can be used to close the PopoverContent. Must be rendered inside PopoverContent.
+These parts read their behavior and state from context and do not expose additional inputs or outputs.

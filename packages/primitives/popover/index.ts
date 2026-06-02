@@ -1,32 +1,44 @@
 import { NgModule } from '@angular/core';
-import { RdxPopoverAnchorDirective } from './src/popover-anchor.directive';
-import { RdxPopoverArrowDirective } from './src/popover-arrow.directive';
-import { RdxPopoverCloseDirective } from './src/popover-close.directive';
-import { RdxPopoverContentAttributesComponent } from './src/popover-content-attributes.component';
-import { RdxPopoverContentDirective } from './src/popover-content.directive';
-import { RdxPopoverRootDirective } from './src/popover-root.directive';
-import { RdxPopoverTriggerDirective } from './src/popover-trigger.directive';
+import { RdxPopoverArrow } from './src/popover-arrow';
+import { RdxPopoverBackdrop } from './src/popover-backdrop';
+import { RdxPopoverClose } from './src/popover-close';
+import { RdxPopoverDescription } from './src/popover-description';
+import { RdxPopoverPopup } from './src/popover-popup';
+import { RdxPopoverPortal } from './src/popover-portal';
+import { RdxPopoverPortalPresence } from './src/popover-portal-presence';
+import { RdxPopoverPositioner } from './src/popover-positioner';
+import { RdxPopoverRoot } from './src/popover-root';
+import { RdxPopoverTitle } from './src/popover-title';
+import { RdxPopoverTrigger } from './src/popover-trigger';
 
-export * from './src/popover-anchor.directive';
-export * from './src/popover-arrow.directive';
-export * from './src/popover-close.directive';
-export * from './src/popover-content-attributes.component';
-export * from './src/popover-content.directive';
-export * from './src/popover-root.directive';
-export * from './src/popover-trigger.directive';
+export * from './src/popover-arrow';
+export * from './src/popover-backdrop';
+export * from './src/popover-close';
+export * from './src/popover-description';
+export * from './src/popover-popup';
+export * from './src/popover-portal';
+export * from './src/popover-portal-presence';
+export * from './src/popover-positioner';
+export * from './src/popover-root';
+export * from './src/popover-title';
+export * from './src/popover-trigger';
 
-const _imports = [
-    RdxPopoverArrowDirective,
-    RdxPopoverCloseDirective,
-    RdxPopoverContentDirective,
-    RdxPopoverTriggerDirective,
-    RdxPopoverRootDirective,
-    RdxPopoverAnchorDirective,
-    RdxPopoverContentAttributesComponent
+export const popoverImports = [
+    RdxPopoverRoot,
+    RdxPopoverTrigger,
+    RdxPopoverPortalPresence,
+    RdxPopoverPortal,
+    RdxPopoverBackdrop,
+    RdxPopoverPositioner,
+    RdxPopoverPopup,
+    RdxPopoverArrow,
+    RdxPopoverTitle,
+    RdxPopoverDescription,
+    RdxPopoverClose
 ];
 
 @NgModule({
-    imports: [..._imports],
-    exports: [..._imports]
+    imports: [...popoverImports],
+    exports: [...popoverImports]
 })
 export class RdxPopoverModule {}
