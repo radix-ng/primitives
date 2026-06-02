@@ -10,7 +10,7 @@ import {
 const html = String.raw;
 
 export default {
-    title: 'Primitives/Select2',
+    title: 'Primitives/Select',
     decorators: [
         moduleMetadata({
             imports: [SelectDefault, SelectDefaultWithScroll, SelectAlignedPosition, SelectAlignedPositionWithScroll]

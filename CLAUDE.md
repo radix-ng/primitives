@@ -227,7 +227,7 @@ Follow this section order (modeled on Base UI): **`# Name` + one-line `####` sum
 Complex components compose these headless building blocks — good entry points when tracing behavior:
 
 - `core` — `createContext`, `useArrowNavigation`, id generators, shared types/utils.
-- `collection` — `RdxCollectionProvider` + `RdxCollectionItem`: collects item directives in **DOM order** via `contentChildren` (matches `hostDirectives` too). Read items off the instance (`item.element`, `item.value()`, `item.disabled()`); `useCollection()` = `inject(RdxCollectionProvider)`. Only consumer: `select2`.
+- `collection` — `RdxCollectionProvider` + `RdxCollectionItem`: collects item directives in **DOM order** via `contentChildren` (matches `hostDirectives` too). Read items off the instance (`item.element`, `item.value()`, `item.disabled()`); `useCollection()` = `inject(RdxCollectionProvider)`. Only consumer: `select`.
 - `portal` — `RdxPortal`: teleports its host element into a container (default `document.body`), reactively; non-element containers fall back to body.
 - `presence` — conditional mount/unmount with enter/leave animation support.
 - `roving-focus`, `focus-scope`, `dismissable-layer`, `popper` — focus roving, focus trapping, outside-dismiss, positioning.
