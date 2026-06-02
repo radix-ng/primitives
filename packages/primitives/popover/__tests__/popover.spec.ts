@@ -12,7 +12,8 @@ import {
     RdxPopoverPositioner,
     RdxPopoverRoot,
     RdxPopoverTitle,
-    RdxPopoverTrigger
+    RdxPopoverTrigger,
+    RdxPopoverViewport
 } from '@radix-ng/primitives/popover';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 
@@ -142,6 +143,55 @@ class DetachedTriggersHostComponent {
 })
 class RemovableTriggerHostComponent {
     readonly showTrigger = signal(true);
+}
+
+@Component({
+    imports: [RdxPopoverClose, RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
+    template: `
+        <div #root="rdxPopoverRoot" rdxPopoverRoot>
+            <button [closeDelay]="closeDelay" [delay]="delay" openOnHover rdxPopoverTrigger>Open</button>
+
+            @if (root.open()) {
+                <div rdxPopoverPositioner>
+                    <div rdxPopoverPopup>
+                        Popup
+                        <button rdxPopoverClose>Close</button>
+                    </div>
+                </div>
+            }
+        </div>
+    `
+})
+class HoverHostComponent {
+    delay = 300;
+    closeDelay = 0;
+}
+
+@Component({
+    imports: [RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger, RdxPopoverViewport],
+    template: `
+        <div #root="rdxPopoverRoot" rdxPopoverRoot>
+            <button id="viewport-one" payload="one" rdxPopoverTrigger>One</button>
+            <button id="viewport-two" payload="two" rdxPopoverTrigger>Two</button>
+
+            @if (root.open()) {
+                <div rdxPopoverPositioner>
+                    <div rdxPopoverPopup>
+                        <div rdxPopoverViewport>
+                            <div>{{ root.payload() }}</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    `
+})
+class ViewportHostComponent {}
+
+function pointerEvent(type: string, pointerType = 'mouse') {
+    const event = new Event(type);
+    Object.defineProperty(event, 'pointerType', { value: pointerType });
+    return event;
 }
 
 describe('Popover', () => {
@@ -462,5 +512,169 @@ describe('Popover', () => {
 
         expect(root.open()).toBe(false);
         expect(root.trigger()).toBeUndefined();
+    });
+
+    describe('openOnHover', () => {
+        beforeEach(() => jest.useFakeTimers());
+        afterEach(() => jest.useRealTimers());
+
+        it('opens after the configured delay', () => {
+            const hoverFixture = TestBed.createComponent(HoverHostComponent);
+            hoverFixture.detectChanges();
+
+            const root = hoverFixture.debugElement.query(By.directive(RdxPopoverRoot)).injector.get(RdxPopoverRoot);
+            const hoverTrigger: HTMLButtonElement = hoverFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
+
+            hoverTrigger.dispatchEvent(pointerEvent('pointerenter'));
+            jest.advanceTimersByTime(299);
+            expect(root.open()).toBe(false);
+
+            jest.advanceTimersByTime(1);
+            expect(root.open()).toBe(true);
+        });
+
+        it('cancels a delayed open when the pointer leaves the trigger', () => {
+            const hoverFixture = TestBed.createComponent(HoverHostComponent);
+            hoverFixture.detectChanges();
+
+            const root = hoverFixture.debugElement.query(By.directive(RdxPopoverRoot)).injector.get(RdxPopoverRoot);
+            const hoverTrigger: HTMLButtonElement = hoverFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
+
+            hoverTrigger.dispatchEvent(pointerEvent('pointerenter'));
+            hoverTrigger.dispatchEvent(pointerEvent('pointerleave'));
+            jest.advanceTimersByTime(300);
+
+            expect(root.open()).toBe(false);
+        });
+
+        it('stays open while the pointer moves from the trigger into the popup', () => {
+            const hoverFixture = TestBed.createComponent(HoverHostComponent);
+            hoverFixture.componentInstance.delay = 0;
+            hoverFixture.detectChanges();
+
+            const root = hoverFixture.debugElement.query(By.directive(RdxPopoverRoot)).injector.get(RdxPopoverRoot);
+            const hoverTrigger: HTMLButtonElement = hoverFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
+
+            hoverTrigger.dispatchEvent(pointerEvent('pointerenter'));
+            jest.advanceTimersByTime(0);
+            hoverFixture.detectChanges();
+
+            const popup: HTMLElement = hoverFixture.nativeElement.querySelector('[rdxPopoverPopup]');
+            hoverTrigger.dispatchEvent(pointerEvent('pointerleave'));
+            popup.dispatchEvent(pointerEvent('pointerenter'));
+            jest.advanceTimersByTime(100);
+
+            expect(root.open()).toBe(true);
+
+            popup.dispatchEvent(pointerEvent('pointerleave'));
+            jest.advanceTimersByTime(0);
+            expect(root.open()).toBe(false);
+        });
+
+        it('opens immediately on click and cancels a pending hover open', () => {
+            const hoverFixture = TestBed.createComponent(HoverHostComponent);
+            hoverFixture.detectChanges();
+
+            const root = hoverFixture.debugElement.query(By.directive(RdxPopoverRoot)).injector.get(RdxPopoverRoot);
+            const hoverTrigger: HTMLButtonElement = hoverFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
+
+            hoverTrigger.dispatchEvent(pointerEvent('pointerenter'));
+            hoverTrigger.click();
+            expect(root.open()).toBe(true);
+
+            jest.advanceTimersByTime(300);
+            expect(root.open()).toBe(true);
+        });
+
+        it('respects the configured close delay after leaving the popup', () => {
+            const hoverFixture = TestBed.createComponent(HoverHostComponent);
+            hoverFixture.componentInstance.delay = 0;
+            hoverFixture.componentInstance.closeDelay = 200;
+            hoverFixture.detectChanges();
+
+            const root = hoverFixture.debugElement.query(By.directive(RdxPopoverRoot)).injector.get(RdxPopoverRoot);
+            const hoverTrigger: HTMLButtonElement = hoverFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
+
+            hoverTrigger.dispatchEvent(pointerEvent('pointerenter'));
+            jest.advanceTimersByTime(0);
+            hoverFixture.detectChanges();
+
+            const popup: HTMLElement = hoverFixture.nativeElement.querySelector('[rdxPopoverPopup]');
+            hoverTrigger.dispatchEvent(pointerEvent('pointerleave'));
+            popup.dispatchEvent(pointerEvent('pointerenter'));
+            popup.dispatchEvent(pointerEvent('pointerleave'));
+            jest.advanceTimersByTime(199);
+            expect(root.open()).toBe(true);
+
+            jest.advanceTimersByTime(1);
+            expect(root.open()).toBe(false);
+        });
+
+        it('ignores touch pointer hover events', () => {
+            const hoverFixture = TestBed.createComponent(HoverHostComponent);
+            hoverFixture.detectChanges();
+
+            const root = hoverFixture.debugElement.query(By.directive(RdxPopoverRoot)).injector.get(RdxPopoverRoot);
+            const hoverTrigger: HTMLButtonElement = hoverFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
+
+            hoverTrigger.dispatchEvent(pointerEvent('pointerenter', 'touch'));
+            jest.advanceTimersByTime(300);
+
+            expect(root.open()).toBe(false);
+        });
+
+        it('prevents popup autofocus when opened by hovering', () => {
+            const hoverFixture = TestBed.createComponent(HoverHostComponent);
+            hoverFixture.componentInstance.delay = 0;
+            hoverFixture.detectChanges();
+
+            const hoverTrigger: HTMLButtonElement = hoverFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
+            hoverTrigger.dispatchEvent(pointerEvent('pointerenter'));
+            jest.advanceTimersByTime(0);
+            hoverFixture.detectChanges();
+
+            const focusScope = hoverFixture.debugElement.query(By.directive(RdxFocusScope)).injector.get(RdxFocusScope);
+            const event = new Event('mountAutoFocus', { cancelable: true });
+            focusScope.mountAutoFocus.emit(event);
+
+            expect(event.defaultPrevented).toBe(true);
+        });
+    });
+
+    it('retains previous viewport content while switching triggers', () => {
+        const viewportFixture = TestBed.createComponent(ViewportHostComponent);
+        viewportFixture.detectChanges();
+
+        const triggers: HTMLButtonElement[] = viewportFixture.nativeElement.querySelectorAll('[rdxPopoverTrigger]');
+        triggers[0].getBoundingClientRect = () => new DOMRect(0, 0, 40, 20);
+        triggers[1].getBoundingClientRect = () => new DOMRect(100, 50, 40, 20);
+
+        triggers[0].click();
+        viewportFixture.detectChanges();
+
+        const popup: HTMLElement = viewportFixture.nativeElement.querySelector('[rdxPopoverPopup]');
+        popup.getBoundingClientRect = () => new DOMRect(0, 0, 240, 120);
+
+        triggers[1].click();
+        viewportFixture.detectChanges();
+
+        const viewport: HTMLElement = viewportFixture.nativeElement.querySelector('[rdxPopoverViewport]');
+        const previous: HTMLElement = viewport.querySelector('[data-previous]')!;
+        const current: HTMLElement = viewport.querySelector('[data-current]')!;
+
+        expect(viewport.getAttribute('data-activation-direction')).toBe('right down');
+        expect(viewport.hasAttribute('data-transitioning')).toBe(true);
+        expect(previous.textContent).toContain('one');
+        expect(previous.getAttribute('aria-hidden')).toBe('true');
+        expect(previous.hasAttribute('inert')).toBe(true);
+        expect(previous.style.getPropertyValue('--popup-width')).toBe('240px');
+        expect(previous.style.getPropertyValue('--popup-height')).toBe('120px');
+        expect(current.textContent).toContain('two');
+
+        previous.dispatchEvent(new Event('transitionend'));
+        viewportFixture.detectChanges();
+
+        expect(viewport.querySelector('[data-previous]')).toBeNull();
+        expect(viewport.hasAttribute('data-transitioning')).toBe(false);
     });
 });

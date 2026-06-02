@@ -1,5 +1,16 @@
 import { _IdGenerator } from '@angular/cdk/a11y';
-import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input, untracked } from '@angular/core';
+import { NumberInput } from '@angular/cdk/coercion';
+import {
+    booleanAttribute,
+    computed,
+    Directive,
+    effect,
+    ElementRef,
+    inject,
+    input,
+    numberAttribute,
+    untracked
+} from '@angular/core';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { RdxPopoverHandle } from './popover-handle';
 import { injectRdxPopoverRootContext } from './popover-root';
@@ -20,6 +31,8 @@ import { injectRdxPopoverRootContext } from './popover-root';
         '[attr.disabled]': 'disabled() ? "" : undefined',
         '[id]': 'triggerId()',
         '(click)': 'handleClick()',
+        '(pointerenter)': 'handlePointerEnter($event)',
+        '(pointerleave)': 'handlePointerLeave($event)',
         '(pointerdown)': 'handlePointerDown()',
         '(pointerup)': 'handlePointerUp()'
     }
@@ -47,6 +60,21 @@ export class RdxPopoverTrigger {
      * Whether the trigger should ignore user interaction.
      */
     readonly disabled = input(false, { transform: booleanAttribute });
+
+    /**
+     * Whether the popover should also open when this trigger is hovered.
+     */
+    readonly openOnHover = input(false, { transform: booleanAttribute });
+
+    /**
+     * How long to wait before opening the popover on hover, in milliseconds.
+     */
+    readonly delay = input<number, NumberInput>(300, { transform: numberAttribute });
+
+    /**
+     * How long to wait before closing a hover-opened popover, in milliseconds.
+     */
+    readonly closeDelay = input<number, NumberInput>(0, { transform: numberAttribute });
 
     protected readonly triggerId = computed(() => this.id() ?? this.generatedId);
     protected readonly rootContext = computed(() => this.handle()?.context() ?? this.parentRootContext);
@@ -83,6 +111,25 @@ export class RdxPopoverTrigger {
         } else {
             this.parentRootContext?.toggle(this.elementRef.nativeElement, this.payload());
         }
+    }
+
+    protected handlePointerEnter(event: PointerEvent) {
+        const rootContext = this.rootContext();
+
+        if (event.pointerType === 'touch' || !rootContext || this.disabled() || !this.openOnHover()) {
+            return;
+        }
+
+        rootContext.setHoverDelays(this.delay(), this.closeDelay());
+        rootContext.openOnHover(this.elementRef.nativeElement, this.payload());
+    }
+
+    protected handlePointerLeave(event: PointerEvent) {
+        if (event.pointerType === 'touch' || !this.openOnHover()) {
+            return;
+        }
+
+        this.rootContext()?.closeOnHover(true);
     }
 
     protected handlePointerDown() {

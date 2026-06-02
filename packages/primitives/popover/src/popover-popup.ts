@@ -42,7 +42,9 @@ let scrollLockCount = 0;
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
         '[attr.data-state]': 'rootContext.isOpen() ? "open" : "closed"',
-        '[id]': 'rootContext.contentId'
+        '[id]': 'rootContext.contentId',
+        '(pointerenter)': 'rootContext.cancelHoverClose()',
+        '(pointerleave)': 'rootContext.closeOnHover()'
     }
 })
 export class RdxPopoverPopup {
@@ -101,6 +103,12 @@ export class RdxPopoverPopup {
 
         this.dismissableLayer.focusOutside.subscribe((event) => {
             if (this.rootContext.isPointerDownOnTrigger()) {
+                event.preventDefault();
+            }
+        });
+
+        this.focusScope.mountAutoFocus.subscribe((event) => {
+            if (this.rootContext.isHoverActive()) {
                 event.preventDefault();
             }
         });

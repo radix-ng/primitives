@@ -10,10 +10,14 @@ import { RdxPopoverDefaultComponent } from './popover-default';
 import defaultSource from './popover-default?raw';
 import { RdxPopoverDetachedComponent } from './popover-detached';
 import detachedSource from './popover-detached?raw';
+import { RdxPopoverHoverComponent } from './popover-hover';
+import hoverSource from './popover-hover?raw';
 import { RdxPopoverModalComponent } from './popover-modal';
 import modalSource from './popover-modal?raw';
 import { RdxPopoverPositioningComponent } from './popover-positioning';
 import positioningSource from './popover-positioning?raw';
+import { RdxPopoverViewportComponent } from './popover-viewport';
+import viewportSource from './popover-viewport?raw';
 
 const html = String.raw;
 
@@ -37,7 +41,9 @@ export default {
                 RdxPopoverAnimatedComponent,
                 RdxPopoverModalComponent,
                 RdxPopoverCustomAnchorComponent,
-                RdxPopoverDetachedComponent
+                RdxPopoverDetachedComponent,
+                RdxPopoverHoverComponent,
+                RdxPopoverViewportComponent
             ]
         }),
         tailwindDemoDecorator()
@@ -105,6 +111,24 @@ export const Detached: Story = {
     render: () => ({
         template: html`
             <rdx-popover-detached />
+        `
+    })
+};
+
+export const Hover: Story = {
+    parameters: source(hoverSource),
+    render: () => ({
+        template: html`
+            <rdx-popover-hover />
+        `
+    })
+};
+
+export const Viewport: Story = {
+    parameters: source(viewportSource),
+    render: () => ({
+        template: html`
+            <rdx-popover-viewport />
         `
     })
 };

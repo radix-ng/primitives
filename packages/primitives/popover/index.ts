@@ -10,6 +10,7 @@ import { RdxPopoverPositioner } from './src/popover-positioner';
 import { RdxPopoverRoot } from './src/popover-root';
 import { RdxPopoverTitle } from './src/popover-title';
 import { RdxPopoverTrigger } from './src/popover-trigger';
+import { RdxPopoverViewport } from './src/popover-viewport';
 
 export * from './src/popover-arrow';
 export * from './src/popover-backdrop';
@@ -23,6 +24,7 @@ export * from './src/popover-positioner';
 export * from './src/popover-root';
 export * from './src/popover-title';
 export * from './src/popover-trigger';
+export * from './src/popover-viewport';
 
 export const popoverImports = [
     RdxPopoverRoot,
@@ -35,7 +37,8 @@ export const popoverImports = [
     RdxPopoverArrow,
     RdxPopoverTitle,
     RdxPopoverDescription,
-    RdxPopoverClose
+    RdxPopoverClose,
+    RdxPopoverViewport
 ];
 
 @NgModule({

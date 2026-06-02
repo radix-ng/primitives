@@ -33,15 +33,21 @@ export interface RdxPopoverRootContext {
     trigger: Signal<HTMLElement | undefined>;
     triggers: Signal<HTMLElement[]>;
     hasPopupClose: Signal<boolean>;
+    isHoverActive: Signal<boolean>;
     isPointerDownOnTrigger: Signal<boolean>;
     close: () => void;
+    cancelHoverClose: () => void;
+    closeOnHover: (withGracePeriod?: boolean) => void;
     payload: Signal<unknown>;
     open: (trigger?: HTMLElement, payload?: unknown) => void;
+    openOnHover: (trigger: HTMLElement, payload?: unknown) => void;
     registerTrigger: (trigger: HTMLElement) => () => void;
     setDescriptionId: (id: string | undefined) => void;
     setTitleId: (id: string | undefined) => void;
     setPointerDownOnTrigger: (pointerDown: boolean) => void;
+    setHoverDelays: (delay: number, closeDelay: number) => void;
     registerPopupClose: () => () => void;
+    registerViewport: (onTriggerChange: (previous: HTMLElement, next: HTMLElement) => void) => () => void;
     toggle: (trigger: HTMLElement, payload?: unknown) => void;
 }
 
@@ -62,6 +68,11 @@ export class RdxPopoverRoot {
     private readonly popper = inject(RdxPopper);
     private readonly destroyRef = inject(DestroyRef);
     private hasAppliedDefaultOpen = false;
+    private openTimer: ReturnType<typeof setTimeout> | undefined;
+    private closeTimer: ReturnType<typeof setTimeout> | undefined;
+    private hoverDelay = 300;
+    private hoverCloseDelay = 0;
+    readonly isHoverActive = signal(false);
 
     /**
      * Whether the popover is currently open.
@@ -91,6 +102,7 @@ export class RdxPopoverRoot {
     readonly payload = signal<unknown>(undefined);
     readonly isPointerDownOnTrigger = signal(false);
     readonly popupCloseCount = signal(0);
+    private readonly viewportTriggerChange = new Set<(previous: HTMLElement, next: HTMLElement) => void>();
 
     readonly state = computed(() => (this.open() ? 'open' : 'closed'));
 
@@ -113,10 +125,21 @@ export class RdxPopoverRoot {
         });
 
         effect(() => this.popper.anchorOverride.set(this.trigger()));
+
+        this.destroyRef.onDestroy(() => this.clearHoverTimers());
     }
 
-    show(trigger = this.trigger(), payload?: unknown) {
+    show(trigger = this.trigger(), payload?: unknown, fromHover = false) {
+        this.clearHoverTimers();
+        this.isHoverActive.set(fromHover);
+
         if (trigger) {
+            const previousTrigger = this.trigger();
+
+            if (previousTrigger && previousTrigger !== trigger) {
+                this.viewportTriggerChange.forEach((notify) => notify(previousTrigger, trigger));
+            }
+
             this.trigger.set(trigger);
         }
 
@@ -125,16 +148,54 @@ export class RdxPopoverRoot {
     }
 
     close() {
+        this.clearHoverTimers();
+        this.isHoverActive.set(false);
         this.open.set(false);
     }
 
     toggle(trigger: HTMLElement, payload?: unknown) {
+        this.clearHoverTimers();
+
         if (this.open() && this.trigger() === trigger) {
             this.close();
             return;
         }
 
         this.show(trigger, payload);
+    }
+
+    openOnHover(trigger: HTMLElement, payload?: unknown) {
+        this.clearHoverTimers();
+        this.isHoverActive.set(true);
+
+        if (this.open()) {
+            this.show(trigger, payload, true);
+            return;
+        }
+
+        this.openTimer = setTimeout(() => this.show(trigger, payload, true), this.hoverDelay);
+    }
+
+    closeOnHover(withGracePeriod = false) {
+        if (!this.isHoverActive()) {
+            return;
+        }
+
+        this.clearOpenTimer();
+        this.clearCloseTimer();
+
+        // Leave enough time to cross the gap between the trigger and popup.
+        const delay = withGracePeriod ? Math.max(this.hoverCloseDelay, 100) : this.hoverCloseDelay;
+        this.closeTimer = setTimeout(() => this.close(), delay);
+    }
+
+    cancelHoverClose() {
+        this.clearCloseTimer();
+    }
+
+    setHoverDelays(delay: number, closeDelay: number) {
+        this.hoverDelay = delay;
+        this.hoverCloseDelay = closeDelay;
     }
 
     registerTrigger(trigger: HTMLElement) {
@@ -158,6 +219,30 @@ export class RdxPopoverRoot {
             }
         };
     }
+
+    registerViewport(onTriggerChange: (previous: HTMLElement, next: HTMLElement) => void) {
+        this.viewportTriggerChange.add(onTriggerChange);
+        return () => this.viewportTriggerChange.delete(onTriggerChange);
+    }
+
+    private clearHoverTimers() {
+        this.clearOpenTimer();
+        this.clearCloseTimer();
+    }
+
+    private clearOpenTimer() {
+        if (this.openTimer !== undefined) {
+            clearTimeout(this.openTimer);
+            this.openTimer = undefined;
+        }
+    }
+
+    private clearCloseTimer() {
+        if (this.closeTimer !== undefined) {
+            clearTimeout(this.closeTimer);
+            this.closeTimer = undefined;
+        }
+    }
 }
 
 function contextFor(root: RdxPopoverRoot): RdxPopoverRootContext {
@@ -171,17 +256,23 @@ function contextFor(root: RdxPopoverRoot): RdxPopoverRootContext {
         triggers: root.triggers.asReadonly(),
         payload: root.payload.asReadonly(),
         hasPopupClose: computed(() => root.popupCloseCount() > 0),
+        isHoverActive: root.isHoverActive.asReadonly(),
         isPointerDownOnTrigger: root.isPointerDownOnTrigger.asReadonly(),
         close: () => root.close(),
+        cancelHoverClose: () => root.cancelHoverClose(),
+        closeOnHover: (withGracePeriod?: boolean) => root.closeOnHover(withGracePeriod),
         open: (trigger?: HTMLElement, payload?: unknown) => root.show(trigger, payload),
+        openOnHover: (trigger: HTMLElement, payload?: unknown) => root.openOnHover(trigger, payload),
         registerTrigger: (trigger: HTMLElement) => root.registerTrigger(trigger),
         setDescriptionId: (id: string | undefined) => root.descriptionId.set(id),
         setTitleId: (id: string | undefined) => root.titleId.set(id),
         setPointerDownOnTrigger: (pointerDown: boolean) => root.isPointerDownOnTrigger.set(pointerDown),
+        setHoverDelays: (delay: number, closeDelay: number) => root.setHoverDelays(delay, closeDelay),
         registerPopupClose: () => {
             root.popupCloseCount.update((count) => count + 1);
             return () => root.popupCloseCount.update((count) => count - 1);
         },
+        registerViewport: (onTriggerChange) => root.registerViewport(onTriggerChange),
         toggle: (trigger: HTMLElement, payload?: unknown) => root.toggle(trigger, payload)
     };
 }

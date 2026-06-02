@@ -6,7 +6,8 @@ import {
     RdxPopoverPositioner,
     RdxPopoverPopup,
     RdxPopoverRoot,
-    RdxPopoverTrigger
+    RdxPopoverTrigger,
+    RdxPopoverViewport
 } from '../index';
 
 <Meta title="Primitives/Popover" />
@@ -27,6 +28,8 @@ It remains headless: styles and native CSS animations belong to the consumer.
 - ✅ Positions content with the shared Floating UI-based Popper primitive.
 - ✅ Supports a custom positioning anchor independently from the trigger.
 - ✅ Connects detached roots and multiple triggers through a shared handle.
+- ✅ Opens on hover with configurable per-trigger open and close delays.
+- ✅ Animates content changes between triggers with an optional viewport.
 - ✅ Supports non-modal, modal, and focus-trapping-only behavior.
 - ✅ Closes on Escape, outside pointer interaction, or an explicit close button.
 - ✅ Restores focus through the shared Focus Scope behavior.
@@ -49,7 +52,8 @@ import {
     RdxPopoverPositioner,
     RdxPopoverRoot,
     RdxPopoverTitle,
-    RdxPopoverTrigger
+    RdxPopoverTrigger,
+    RdxPopoverViewport
 } from '@radix-ng/primitives/popover';
 ```
 
@@ -74,9 +78,13 @@ keyframes on the first DOM element inside its template.
             <div sideOffset="8" rdxPopoverPositioner>
                 <div rdxPopoverPopup>
                     <span rdxPopoverArrow></span>
-                    <h2 rdxPopoverTitle>Notifications</h2>
-                    <p rdxPopoverDescription>You are all caught up.</p>
-                    <button rdxPopoverClose>Close</button>
+                    <div rdxPopoverViewport>
+                        <div>
+                            <h2 rdxPopoverTitle>Notifications</h2>
+                            <p rdxPopoverDescription>You are all caught up.</p>
+                            <button rdxPopoverClose>Close</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -134,6 +142,21 @@ same popup. The handle also supports imperative `open(id)`, `toggle(id)`, and `c
 
 <Canvas of={Stories.Detached} />
 
+### Opening on hover
+
+Add `openOnHover` to a trigger when pointer users should be able to open its popup without clicking.
+Use `delay` and `closeDelay` on the same trigger to configure the timing.
+
+<Canvas of={Stories.Hover} />
+
+### Animating between triggers
+
+Wrap one direct content element with `rdxPopoverViewport` to animate content changes when a popup
+moves between triggers. The viewport exposes `data-activation-direction` and retains a
+`data-previous` snapshot until its CSS transition or animation completes.
+
+<Canvas of={Stories.Viewport} />
+
 ## API Reference
 
 ### Root
@@ -166,6 +189,10 @@ optional `anchor` input overrides the trigger only for positioning.
 `RdxPopoverPopup` owns dialog semantics, dismissal events, and focus lifecycle events.
 
 <ArgTypes of={RdxPopoverPopup} />
+
+### Viewport
+
+`RdxPopoverViewport` coordinates direction-aware content transitions between multiple triggers.
 
 ### Arrow, Backdrop, Title, Description, and Close
 

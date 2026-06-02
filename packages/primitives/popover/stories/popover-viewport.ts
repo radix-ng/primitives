@@ -1,0 +1,56 @@
+import { Component } from '@angular/core';
+import { popoverImports } from '@radix-ng/primitives/popover';
+import { cn, demoButton, demoPopover } from '../../storybook/styles';
+
+@Component({
+    selector: 'rdx-popover-viewport',
+    imports: [...popoverImports],
+    template: `
+        <ng-container #root="rdxPopoverRoot" rdxPopoverRoot>
+            <div class="flex flex-wrap justify-center gap-2">
+                @for (item of items; track item.id) {
+                    <button
+                        [class]="cn(b.base, b.outline, b.size.sm)"
+                        [payload]="item"
+                        [id]="item.id"
+                        rdxPopoverTrigger
+                    >
+                        {{ item.label }}
+                    </button>
+                }
+            </div>
+
+            <ng-template rdxPopoverPortalPresence>
+                <div rdxPopoverPortal>
+                    <div class="transition-[left,right,top,bottom] duration-200" sideOffset="8" rdxPopoverPositioner>
+                        <div
+                            [class]="cn(p.popup, 'overflow-hidden transition-[width,height] duration-200')"
+                            rdxPopoverPopup
+                        >
+                            <div class="relative" rdxPopoverViewport>
+                                <div
+                                    class="data-[previous]:animate-popover-viewport-out data-[current]:animate-popover-viewport-in data-[previous]:absolute data-[previous]:inset-0"
+                                >
+                                    <h2 [class]="p.title" rdxPopoverTitle>{{ root.payload()?.label }}</h2>
+                                    <p [class]="p.description" rdxPopoverDescription>
+                                        {{ root.payload()?.description }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </ng-container>
+    `
+})
+export class RdxPopoverViewportComponent {
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly p = demoPopover;
+    protected readonly items = [
+        { id: 'notifications', label: 'Notifications', description: 'You are all caught up.' },
+        { id: 'activity', label: 'Activity', description: 'Nothing interesting happened recently.' },
+        { id: 'profile', label: 'Profile', description: 'Manage your profile settings and account preferences.' }
+    ];
+}
