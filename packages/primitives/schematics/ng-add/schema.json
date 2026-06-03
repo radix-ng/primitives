@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "$id": "RadixNgPrimitivesNgAdd",
+    "title": "Radix NG Primitives ng-add options",
+    "type": "object",
+    "properties": {
+        "skipInstall": {
+            "description": "Skip package manager install after updating package.json.",
+            "type": "boolean",
+            "default": false
+        }
+    },
+    "additionalProperties": false
+}

@@ -32,7 +32,12 @@
                     {
                         "input": "./packages/primitives/schematics",
                         "output": "./schematics",
-                        "glob": "collection.json"
+                        "glob": "**/*.json"
+                    },
+                    {
+                        "input": "./tools/schematics/primitives",
+                        "output": "./schematics",
+                        "glob": "package.json"
                     }
                 ]
             }

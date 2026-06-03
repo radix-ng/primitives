@@ -10,20 +10,46 @@ Radix NG supports **Angular 19.2, 20 and 21**.
 
 ## Installing the packages
 
-Install the library together with its peer dependencies:
-
-```bash
-npm install @radix-ng/primitives @angular/cdk @floating-ui/dom
-```
-
-- `@angular/cdk` — used by primitives that rely on the CDK (e.g. overlays/portals).
-- `@floating-ui/dom` — powers positioning for floating primitives (Popover, Tooltip, Select, …).
-
-Alternatively, use the schematic, which adds the library together with its peer dependencies
-(`@angular/cdk`, `@floating-ui/dom`) for you:
+Use Angular CLI to add the library and its runtime peer dependencies:
 
 ```bash
 ng add @radix-ng/primitives
+```
+
+The schematic updates `package.json` and installs the packages with your configured package
+manager. It adds:
+
+- `@angular/cdk` — used by primitives that rely on the CDK (e.g. overlays/portals).
+- `@floating-ui/dom` — powers positioning for floating primitives (Popover, Tooltip, Select, …).
+- `@internationalized/date` — powers calendar and date/time primitives.
+- `@internationalized/number` — powers locale-aware number primitives.
+
+If you need to update `package.json` without running the package manager install, pass
+`--skip-install`:
+
+```bash
+ng add @radix-ng/primitives --skip-install
+```
+
+## Nx workspaces
+
+In an Nx Angular workspace, run the same Angular CLI schematic from the workspace root:
+
+```bash
+npx ng add @radix-ng/primitives
+```
+
+This package exposes an Angular `ng-add` schematic. If the package is already installed and you
+prefer Nx generator syntax, you can run the schematic directly:
+
+```bash
+nx g @radix-ng/primitives:ng-add
+```
+
+Alternatively, install the packages manually:
+
+```bash
+npm install @radix-ng/primitives @angular/cdk @floating-ui/dom @internationalized/date @internationalized/number
 ```
 
 ## Import the parts

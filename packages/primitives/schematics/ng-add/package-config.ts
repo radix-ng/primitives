@@ -9,9 +9,11 @@
 import { Tree } from '@angular-devkit/schematics';
 
 export interface PackageJson {
-    dependencies: Record<string, string>;
+    dependencies?: Record<string, string>;
+    devDependencies?: Record<string, string>;
     name: string;
-    peerDependencies: Record<string, string>;
+    optionalDependencies?: Record<string, string>;
+    peerDependencies?: Record<string, string>;
     version: string;
 }
 
@@ -59,9 +61,17 @@ export function getPackageVersionFromPackageJson(tree: Tree, name: string): stri
     }
 
     const packageJson = JSON.parse(tree.read('package.json')!.toString('utf8')) as PackageJson;
+    const dependencyTypes = [
+        packageJson.dependencies,
+        packageJson.devDependencies,
+        packageJson.peerDependencies,
+        packageJson.optionalDependencies
+    ];
 
-    if (packageJson.dependencies && packageJson.dependencies[name]) {
-        return packageJson.dependencies[name];
+    for (const dependencies of dependencyTypes) {
+        if (dependencies?.[name]) {
+            return dependencies[name];
+        }
     }
 
     return null;
