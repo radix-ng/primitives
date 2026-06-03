@@ -121,10 +121,10 @@
                             "parameters": [
                                 {
                                     "name": "value",
-                                    "type": "void"
+                                    "type": "undefined | AcceptableValue | AcceptableValue[]"
                                 }
                             ],
-                            "description": "Event handler called when the expanded state of an item changes and type is \"multiple\"."
+                            "description": "Event handler called when the expanded state of an item changes."
                         }
                     ]
                 }
@@ -253,6 +253,48 @@
     },
     "types": {
         "components": {}
+    },
+    "button": {
+        "components": {}
+    },
+    "button.directive": {
+        "components": {
+            "RdxButtonDirective": {
+                "description": "Headless button behavior, modeled on Base UI's  `useButton` .\n\nRenders accessible button semantics on a native  `<button>`  or on any other\nelement (e.g.  `<a>` ,  `<span>` ). Carries no styles — state is exposed via\n `data-disabled`  for consumers to style.",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "disabled",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": "Whether the button is disabled."
+                        },
+                        {
+                            "name": "focusableWhenDisabled",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": "Keep the button focusable while disabled (uses  `aria-disabled` )."
+                        },
+                        {
+                            "name": "type",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<RdxButtonType>",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": "The  `type`  attribute applied to native  `<button>`  hosts."
+                        }
+                    ]
+                }
+            }
+        }
     },
     "calendar": {
         "components": {}
@@ -458,6 +500,26 @@
     "collapsible-trigger.directive": {
         "components": {}
     },
+    "collection": {
+        "components": {}
+    },
+    "collection-item": {
+        "components": {
+            "RdxCollectionItem": {
+                "description": "Marks an element as a member of a collection. Items are discovered by the\n RdxCollectionProvider  via  `contentChildren` , so registration is automatic — no manual\nbook-keeping or marker attributes are needed."
+            }
+        }
+    },
+    "collection-provider": {
+        "components": {
+            "RdxCollectionProvider": {
+                "description": "Collects  RdxCollectionItem  descendants in DOM order, reactively, using Angular's\n `contentChildren` . Matches host directives too, so items composed via  `hostDirectives`  are found."
+            }
+        }
+    },
+    "use-collection": {
+        "components": {}
+    },
     "config": {
         "components": {}
     },
@@ -557,6 +619,9 @@
     "getActiveElement": {
         "components": {}
     },
+    "handleAndDispatchCustomEvent": {
+        "components": {}
+    },
     "id-generator": {
         "components": {}
     },
@@ -587,9 +652,6 @@
     "mount": {
         "components": {}
     },
-    "constants": {
-        "components": {}
-    },
     "provide-token": {
         "components": {}
     },
@@ -597,6 +659,9 @@
         "components": {}
     },
     "useArrowNavigation": {
+        "components": {}
+    },
+    "useGraceArea": {
         "components": {}
     },
     "useResizeObserver": {
@@ -836,7 +901,7 @@
                             "name": "trapped",
                             "optional": false,
                             "readonly": true,
-                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "type": "InputSignalWithTransform<undefined | boolean, BooleanInput>",
                             "default": "false",
                             "defaultValue": "false",
                             "description": "When  `true` , focus cannot escape the focus scope via keyboard,\npointer, or a programmatic focus."
@@ -871,301 +936,10 @@
             }
         }
     },
+    "focus-scope.config": {
+        "components": {}
+    },
     "stack": {
-        "components": {}
-    },
-    "hover-card": {
-        "components": {}
-    },
-    "hover-card-anchor.directive": {
-        "components": {}
-    },
-    "hover-card-anchor.token": {
-        "components": {}
-    },
-    "hover-card-arrow.directive": {
-        "components": {
-            "RdxHoverCardArrowDirective": {
-                "description": "",
-                "props": {
-                    "description": "Defines the input properties of the component.",
-                    "values": [
-                        {
-                            "name": "width",
-                            "optional": false,
-                            "readonly": true,
-                            "type": "InputSignalWithTransform<number, NumberInput>",
-                            "default": "10",
-                            "defaultValue": "10",
-                            "description": "The width of the arrow in pixels."
-                        },
-                        {
-                            "name": "height",
-                            "optional": false,
-                            "readonly": true,
-                            "type": "InputSignalWithTransform<number, NumberInput>",
-                            "default": "5",
-                            "defaultValue": "5",
-                            "description": "The height of the arrow in pixels."
-                        }
-                    ]
-                }
-            }
-        }
-    },
-    "hover-card-arrow.token": {
-        "components": {}
-    },
-    "hover-card-close.directive": {
-        "components": {}
-    },
-    "hover-card-close.token": {
-        "components": {}
-    },
-    "hover-card-content-attributes.component": {
-        "components": {}
-    },
-    "hover-card-content-attributes.token": {
-        "components": {}
-    },
-    "hover-card-content.directive": {
-        "components": {
-            "RdxHoverCardContentDirective": {
-                "description": "",
-                "props": {
-                    "description": "Defines the input properties of the component.",
-                    "values": [
-                        {
-                            "name": "side",
-                            "optional": false,
-                            "readonly": true,
-                            "type": "InputSignal<RdxPositionSide>",
-                            "default": "top",
-                            "defaultValue": "top",
-                            "description": "The preferred side of the trigger to render against when open. Will be reversed when collisions occur and avoidCollisions is enabled."
-                        },
-                        {
-                            "name": "sideOffset",
-                            "optional": false,
-                            "readonly": true,
-                            "type": "InputSignalWithTransform<number, NumberInput>",
-                            "default": "undefined",
-                            "defaultValue": "undefined",
-                            "description": "The distance in pixels from the trigger."
-                        },
-                        {
-                            "name": "align",
-                            "optional": false,
-                            "readonly": true,
-                            "type": "InputSignal<RdxPositionAlign>",
-                            "default": "center",
-                            "defaultValue": "center",
-                            "description": "The preferred alignment against the trigger. May change when collisions occur."
-                        },
-                        {
-                            "name": "alignOffset",
-                            "optional": false,
-                            "readonly": true,
-                            "type": "InputSignalWithTransform<number, NumberInput>",
-                            "default": "undefined",
-                            "defaultValue": "undefined",
-                            "description": "An offset in pixels from the \"start\" or \"end\" alignment options."
-                        },
-                        {
-                            "name": "alternatePositionsDisabled",
-                            "optional": false,
-                            "readonly": true,
-                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
-                            "default": "false",
-                            "defaultValue": "false",
-                            "description": "Whether to add some alternate positions of the content."
-                        },
-                        {
-                            "name": "onOverlayEscapeKeyDownDisabled",
-                            "optional": false,
-                            "readonly": true,
-                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
-                            "default": "false",
-                            "defaultValue": "false",
-                            "description": "Whether to prevent  `onOverlayEscapeKeyDown`  handler from calling."
-                        },
-                        {
-                            "name": "onOverlayOutsideClickDisabled",
-                            "optional": false,
-                            "readonly": true,
-                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
-                            "default": "false",
-                            "defaultValue": "false",
-                            "description": "Whether to prevent  `onOverlayOutsideClick`  handler from calling."
-                        }
-                    ]
-                },
-                "emits": {
-                    "description": "Defines emit that determine the behavior of the component based on a given condition or report the actions that the component takes.",
-                    "values": [
-                        {
-                            "name": "onOverlayEscapeKeyDown",
-                            "parameters": [
-                                {
-                                    "name": "event",
-                                    "type": "KeyboardEvent"
-                                }
-                            ],
-                            "description": "Event handler called when the escape key is down.\nIt can be prevented by setting  `onOverlayEscapeKeyDownDisabled`  input to  `true` ."
-                        },
-                        {
-                            "name": "onOverlayOutsideClick",
-                            "parameters": [
-                                {
-                                    "name": "event",
-                                    "type": "MouseEvent"
-                                }
-                            ],
-                            "description": "Event handler called when a pointer event occurs outside the bounds of the component.\nIt can be prevented by setting  `onOverlayOutsideClickDisabled`  input to  `true` ."
-                        },
-                        {
-                            "name": "onOpen",
-                            "parameters": [
-                                {
-                                    "name": "value",
-                                    "type": "void"
-                                }
-                            ],
-                            "description": "Event handler called after the overlay is open"
-                        },
-                        {
-                            "name": "onClosed",
-                            "parameters": [
-                                {
-                                    "name": "value",
-                                    "type": "void"
-                                }
-                            ],
-                            "description": "Event handler called after the overlay is closed"
-                        }
-                    ]
-                }
-            }
-        }
-    },
-    "hover-card-root.directive": {
-        "components": {
-            "RdxHoverCardRootDirective": {
-                "description": "",
-                "props": {
-                    "description": "Defines the input properties of the component.",
-                    "values": [
-                        {
-                            "name": "anchor",
-                            "optional": false,
-                            "readonly": true,
-                            "type": "InputSignal<undefined | RdxHoverCardAnchorDirective>",
-                            "default": "undefined",
-                            "defaultValue": "undefined",
-                            "description": "The anchor directive that comes from outside the hover-card rootDirective"
-                        },
-                        {
-                            "name": "defaultOpen",
-                            "optional": false,
-                            "readonly": true,
-                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
-                            "default": "false",
-                            "defaultValue": "false",
-                            "description": "The open state of the hover-card when it is initially rendered. Use when you do not need to control its open state."
-                        },
-                        {
-                            "name": "open",
-                            "optional": false,
-                            "readonly": true,
-                            "type": "InputSignalWithTransform<undefined | boolean, BooleanInput>",
-                            "default": "undefined",
-                            "defaultValue": "undefined",
-                            "description": "The controlled state of the hover-card.  `open`  input takes precedence over  `defaultOpen`  input."
-                        },
-                        {
-                            "name": "openDelay",
-                            "optional": false,
-                            "readonly": true,
-                            "type": "InputSignalWithTransform<number, NumberInput>",
-                            "default": "500",
-                            "defaultValue": "500",
-                            "description": "The delay in milliseconds before the hover-card opens."
-                        },
-                        {
-                            "name": "closeDelay",
-                            "optional": false,
-                            "readonly": true,
-                            "type": "InputSignalWithTransform<number, NumberInput>",
-                            "default": "200",
-                            "defaultValue": "200",
-                            "description": "The delay in milliseconds before the hover-card closes."
-                        },
-                        {
-                            "name": "externalControl",
-                            "optional": false,
-                            "readonly": true,
-                            "type": "InputSignalWithTransform<undefined | boolean, BooleanInput>",
-                            "default": "undefined",
-                            "defaultValue": "undefined",
-                            "description": "Whether to control the state of the hover-card from outside. Use in conjunction with  `open`  input."
-                        },
-                        {
-                            "name": "cssAnimation",
-                            "optional": false,
-                            "readonly": true,
-                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
-                            "default": "false",
-                            "defaultValue": "false",
-                            "description": "Whether to take into account CSS opening/closing animations."
-                        },
-                        {
-                            "name": "cssOpeningAnimation",
-                            "optional": false,
-                            "readonly": true,
-                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
-                            "default": "false",
-                            "defaultValue": "false",
-                            "description": "Whether to take into account CSS opening animations.  `cssAnimation`  input must be set to 'true'"
-                        },
-                        {
-                            "name": "cssClosingAnimation",
-                            "optional": false,
-                            "readonly": true,
-                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
-                            "default": "false",
-                            "defaultValue": "false",
-                            "description": "Whether to take into account CSS closing animations.  `cssAnimation`  input must be set to 'true'"
-                        }
-                    ]
-                }
-            }
-        }
-    },
-    "hover-card-root.inject": {
-        "components": {}
-    },
-    "hover-card-trigger.directive": {
-        "components": {}
-    },
-    "hover-card.types": {
-        "components": {}
-    },
-    "cdk-event.service": {
-        "components": {}
-    },
-    "containers.registry": {
-        "components": {}
-    },
-    "option-panel-base.class": {
-        "components": {}
-    },
-    "styles.constants": {
-        "components": {}
-    },
-    "with-option-panel.component": {
-        "components": {}
-    },
-    "jest.config": {
         "components": {}
     },
     "label": {
@@ -1363,43 +1137,43 @@
     "popover": {
         "components": {}
     },
-    "popover-anchor.directive": {
+    "popover-arrow": {
         "components": {}
     },
-    "popover-anchor.token": {
+    "popover-backdrop": {
         "components": {}
     },
-    "popover-arrow.directive": {
+    "popover-close": {
         "components": {}
     },
-    "popover-arrow.token": {
+    "popover-description": {
         "components": {}
     },
-    "popover-close.directive": {
+    "popover-handle": {
         "components": {}
     },
-    "popover-close.token": {
+    "popover-popup": {
         "components": {}
     },
-    "popover-content-attributes.component": {
+    "popover-portal-presence": {
         "components": {}
     },
-    "popover-content-attributes.token": {
+    "popover-portal": {
         "components": {}
     },
-    "popover-content.directive": {
+    "popover-positioner": {
         "components": {}
     },
-    "popover-root.directive": {
+    "popover-root": {
         "components": {}
     },
-    "popover-root.inject": {
+    "popover-title": {
         "components": {}
     },
-    "popover-trigger.directive": {
+    "popover-trigger": {
         "components": {}
     },
-    "popover.types": {
+    "popover-viewport": {
         "components": {}
     },
     "popper": {
@@ -1414,13 +1188,13 @@
     "popper-content-wrapper": {
         "components": {}
     },
+    "popper-content.config": {
+        "components": {}
+    },
     "popper-content": {
         "components": {}
     },
     "portal": {
-        "components": {}
-    },
-    "presence-test.component": {
         "components": {}
     },
     "presence": {
@@ -1429,10 +1203,37 @@
     "presence.directive": {
         "components": {}
     },
-    "transition.collapse": {
+    "preview-card": {
         "components": {}
     },
-    "transition.toast": {
+    "preview-card-arrow": {
+        "components": {}
+    },
+    "preview-card-backdrop": {
+        "components": {}
+    },
+    "preview-card-handle": {
+        "components": {}
+    },
+    "preview-card-popup": {
+        "components": {}
+    },
+    "preview-card-portal-presence": {
+        "components": {}
+    },
+    "preview-card-portal": {
+        "components": {}
+    },
+    "preview-card-positioner": {
+        "components": {}
+    },
+    "preview-card-root": {
+        "components": {}
+    },
+    "preview-card-trigger": {
+        "components": {}
+    },
+    "preview-card-viewport": {
         "components": {}
     },
     "progress": {
@@ -1578,7 +1379,7 @@
                             "type": "InputSignalWithTransform<boolean, BooleanInput>",
                             "default": "...",
                             "defaultValue": "...",
-                            "description": "When  `true` , item will be initially focused."
+                            "description": "When  `true` , marks the item as the active one, so it is preferred when focus enters the group."
                         },
                         {
                             "name": "tabStopIdInput",
@@ -1606,34 +1407,64 @@
     "select": {
         "components": {}
     },
-    "select-content.directive": {
+    "select-content": {
         "components": {}
     },
-    "select-group.directive": {
+    "select-group": {
         "components": {}
     },
-    "select-icon.directive": {
+    "select-item-aligned-position-content": {
         "components": {}
     },
-    "select-item-indicator.directive": {
+    "select-item-aligned-position": {
         "components": {}
     },
-    "select-item.directive": {
+    "select-item-indicator": {
         "components": {}
     },
-    "select-label.directive": {
+    "select-item-text": {
         "components": {}
     },
-    "select-separator.directive": {
+    "select-item": {
         "components": {}
     },
-    "select-trigger.directive": {
+    "select-label": {
         "components": {}
     },
-    "select-value.directive": {
+    "select-popper-position-content": {
         "components": {}
     },
-    "select.component": {
+    "select-popper-position-wrapper": {
+        "components": {}
+    },
+    "select-portal-presence": {
+        "components": {}
+    },
+    "select-portal": {
+        "components": {}
+    },
+    "select-root": {
+        "components": {}
+    },
+    "select-scroll-button-base": {
+        "components": {}
+    },
+    "select-scroll-down-button": {
+        "components": {}
+    },
+    "select-scroll-up-button": {
+        "components": {}
+    },
+    "select-trigger": {
+        "components": {}
+    },
+    "select-value": {
+        "components": {}
+    },
+    "select-viewport": {
+        "components": {}
+    },
+    "useTypeahead": {
         "components": {}
     },
     "separator": {
@@ -1642,7 +1473,7 @@
     "separator.directive": {
         "components": {
             "RdxSeparatorRootDirective": {
-                "description": "Directive that adds accessible and configurable separator element to the DOM.\nThis can be either horizontal or vertical and optionally decorative (which removes\nit from the accessibility tree).",
+                "description": "Directive that adds accessible and configurable separator element to the DOM.\nThis can be either horizontal or vertical.",
                 "props": {
                     "description": "Defines the input properties of the component.",
                     "values": [
@@ -1650,19 +1481,10 @@
                             "name": "orientation",
                             "optional": false,
                             "readonly": true,
-                            "type": "InputSignal<\"vertical\" | \"horizontal\">",
+                            "type": "InputSignal<Orientation>",
                             "default": "'horizontal'",
                             "defaultValue": "'horizontal'",
                             "description": "Orientation of the separator, can be either 'horizontal' or 'vertical'."
-                        },
-                        {
-                            "name": "decorative",
-                            "optional": false,
-                            "readonly": true,
-                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
-                            "default": "false",
-                            "defaultValue": "false",
-                            "description": "If true, the separator will be considered decorative and removed from\nthe accessibility tree. Defaults to false."
                         }
                     ]
                 }
@@ -1851,6 +1673,15 @@
         "components": {}
     },
     "stepper-trigger.directive": {
+        "components": {}
+    },
+    "raw": {
+        "components": {}
+    },
+    "styles": {
+        "components": {}
+    },
+    "tailwind-demo": {
         "components": {}
     },
     "switch": {
@@ -2161,55 +1992,13 @@
     "tooltip": {
         "components": {}
     },
-    "tooltip-anchor.directive": {
-        "components": {}
-    },
-    "tooltip-anchor.token": {
-        "components": {}
-    },
-    "tooltip-arrow.directive": {
-        "components": {}
-    },
-    "tooltip-arrow.token": {
-        "components": {}
-    },
-    "tooltip-close.directive": {
-        "components": {}
-    },
-    "tooltip-close.token": {
-        "components": {}
-    },
-    "tooltip-content-attributes.component": {
-        "components": {}
-    },
-    "tooltip-content-attributes.token": {
-        "components": {}
-    },
-    "tooltip-content.directive": {
-        "components": {}
-    },
-    "tooltip-root.directive": {
-        "components": {}
-    },
-    "tooltip-root.inject": {
-        "components": {}
-    },
-    "tooltip-trigger.directive": {
-        "components": {}
-    },
-    "tooltip.types": {
-        "components": {}
-    },
-    "tooltip2": {
-        "components": {}
-    },
     "tooltip-arrow": {
         "components": {}
     },
-    "tooltip-content-wrapper": {
+    "tooltip-handle": {
         "components": {}
     },
-    "tooltip-content": {
+    "tooltip-popup": {
         "components": {}
     },
     "tooltip-portal-presence": {
@@ -2218,13 +2007,16 @@
     "tooltip-portal": {
         "components": {}
     },
+    "tooltip-positioner": {
+        "components": {}
+    },
+    "tooltip-provider": {
+        "components": {}
+    },
     "tooltip-trigger": {
         "components": {}
     },
     "tooltip.config": {
-        "components": {}
-    },
-    "useGraceArea": {
         "components": {}
     },
     "visually-hidden": {

@@ -4,7 +4,7 @@
         "outDir": "../../dist/out-tsc",
         "declaration": true,
         "resolveJsonModule": true,
-        "module": "CommonJS",
+        "module": "ES2022",
         "types": ["node"]
     },
     "include": ["**/src/**.ts", "**/*.ts"],
