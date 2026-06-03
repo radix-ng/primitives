@@ -2,10 +2,12 @@
  * Implementation ported from from from https://github.com/melt-ui/melt-ui/blob/develop/src/lib/builders/calendar/create.ts
  */
 
-import { CalendarDate, DateValue, DayOfWeek, endOfMonth, getDayOfWeek, startOfMonth } from '@internationalized/date';
+import { CalendarDate, DateValue, endOfMonth, getDayOfWeek, startOfMonth } from '@internationalized/date';
 import { chunk } from '../chunk';
 import { getDaysInMonth, getLastFirstDayOfWeek, getNextLastDayOfWeek } from './comparators';
 import { Month } from './types';
+
+type DayOfWeek = 'sun' | 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat';
 
 export type CreateMonthProps = {
     /**
