@@ -221,6 +221,7 @@ Follow this section order (modeled on Base UI): **`# Name` + one-line `####` sum
   ```
 
 - `*.ts?raw` is wired by the `rawTsPlugin` in `.storybook/main.ts` (the AnalogJS Angular plugin shadows Vite's built-in `?raw`); types come from `packages/primitives/storybook/raw.d.ts`. Inline-template stories (source lives in the `.stories.ts`) don't need this.
+- When a story has a separate component file for `show code`, keep the `parameters: source(...)` import pointed at that story's own raw file. Do not point multiple story exports at one combined raw source if the storybook docs should show only the corresponding example.
 
 ## Shared composition primitives
 

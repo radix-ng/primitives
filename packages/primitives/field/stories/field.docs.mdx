@@ -1,0 +1,85 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import { RdxFieldControl } from '../src/field-control';
+import { RdxFieldDescription } from '../src/field-description';
+import { RdxFieldError } from '../src/field-error';
+import { RdxFieldLabel } from '../src/field-label';
+import { RdxFieldRoot } from '../src/field-root';
+import * as FieldStories from './field.stories';
+
+<Meta title="Primitives/Field" />
+
+# Field
+
+#### Groups a control with accessible label, description, error message, and field state.
+
+Field is form-agnostic. It does not replace Angular Forms; pass validation state from Reactive
+Forms, template-driven forms, or Signal Forms when using them.
+
+<Canvas sourceState="hidden" of={FieldStories.Default} />
+
+## Features
+
+- ✅ Wires labels to controls with `for` and generated control ids.
+- ✅ Wires descriptions and errors with `aria-describedby`.
+- ✅ Exposes state via `data-invalid`, `data-disabled`, `data-required`, `data-dirty`, `data-touched`, `data-filled`, and `data-focused`.
+- ✅ Works with native controls and custom controls.
+- ✅ Leaves validation and form submission to Angular Forms.
+
+## Import
+
+```typescript
+import {
+    RdxFieldRoot,
+    RdxFieldLabel,
+    RdxFieldControl,
+    RdxFieldDescription,
+    RdxFieldError
+} from '@radix-ng/primitives/field';
+```
+
+## Anatomy
+
+```html
+<div rdxFieldRoot>
+    <label rdxFieldLabel>Label</label>
+    <input rdxFieldControl />
+    <p rdxFieldDescription>Description</p>
+    <p rdxFieldError>Error</p>
+</div>
+```
+
+## Examples
+
+### Default
+
+The root owns the relationships between the field parts.
+
+<Canvas of={FieldStories.Default} />
+
+### Invalid
+
+Pass invalid, dirty, and touched state from your form model.
+
+<Canvas of={FieldStories.Invalid} />
+
+### Reactive Forms
+
+Angular Forms remains responsible for validation. Field reflects the resulting state and ARIA
+relationships.
+
+<Canvas of={FieldStories.ReactiveForms} />
+
+### Custom Control
+
+For custom controls, pass `filled` and `focused` state to the root when the native events are not
+enough.
+
+<Canvas of={FieldStories.CustomControl} />
+
+## API Reference
+
+<ArgTypes of={RdxFieldRoot} />
+<ArgTypes of={RdxFieldLabel} />
+<ArgTypes of={RdxFieldControl} />
+<ArgTypes of={RdxFieldDescription} />
+<ArgTypes of={RdxFieldError} />

@@ -878,6 +878,168 @@
     "editable-submit-trigger": {
         "components": {}
     },
+    "field": {
+        "components": {}
+    },
+    "field-control": {
+        "components": {
+            "RdxFieldControl": {
+                "description": "Connects a form control to the field label, description, error, and state.",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "id",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<string>",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": "Control id. Labels and descriptions use this value for accessible relationships."
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "field-description": {
+        "components": {
+            "RdxFieldDescription": {
+                "description": "Describes the field control.",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "id",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<string>",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": "Description id."
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "field-error": {
+        "components": {
+            "RdxFieldError": {
+                "description": "Describes an invalid field control.",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "id",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<string>",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": "Error message id."
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "field-label": {
+        "components": {
+            "RdxFieldLabel": {
+                "description": "Labels the field control.",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "id",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<string>",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": "Label id."
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "field-root": {
+        "components": {
+            "RdxFieldRoot": {
+                "description": "Groups a form control with its label, description, error message, and field state.",
+                "props": {
+                    "description": "Defines the input properties of the component.",
+                    "values": [
+                        {
+                            "name": "invalid",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "Whether the field is invalid."
+                        },
+                        {
+                            "name": "disabled",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "Whether the field is disabled."
+                        },
+                        {
+                            "name": "required",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "Whether the field is required."
+                        },
+                        {
+                            "name": "dirty",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "Whether the field value has changed from its initial value."
+                        },
+                        {
+                            "name": "touched",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignalWithTransform<boolean, BooleanInput>",
+                            "default": "false",
+                            "defaultValue": "false",
+                            "description": "Whether the field has been blurred after receiving focus."
+                        },
+                        {
+                            "name": "filled",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<undefined | boolean>",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": "Overrides whether the control has a non-empty value."
+                        },
+                        {
+                            "name": "focused",
+                            "optional": false,
+                            "readonly": true,
+                            "type": "InputSignal<undefined | boolean>",
+                            "default": "...",
+                            "defaultValue": "...",
+                            "description": "Overrides whether the control is focused."
+                        }
+                    ]
+                }
+            }
+        }
+    },
     "focus-guards": {
         "components": {}
     },
