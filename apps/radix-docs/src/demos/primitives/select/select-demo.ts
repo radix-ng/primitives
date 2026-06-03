@@ -1,16 +1,20 @@
 import { Component } from '@angular/core';
 
 import {
-    RdxSelectComponent,
-    RdxSelectContentDirective,
-    RdxSelectGroupDirective,
-    RdxSelectIconDirective,
-    RdxSelectItemDirective,
-    RdxSelectItemIndicatorDirective,
-    RdxSelectLabelDirective,
-    RdxSelectSeparatorDirective,
-    RdxSelectTriggerDirective,
-    RdxSelectValueDirective
+    RdxSelectContent,
+    RdxSelectGroup,
+    RdxSelectItem,
+    RdxSelectItemIndicator,
+    RdxSelectItemText,
+    RdxSelectLabel,
+    RdxSelectPopperPositionContent,
+    RdxSelectPopperPositionWrapper,
+    RdxSelectPortal,
+    RdxSelectPortalPresence,
+    RdxSelectRoot,
+    RdxSelectTrigger,
+    RdxSelectValue,
+    RdxSelectViewport
 } from '@radix-ng/primitives/select';
 import { Check, ChevronDown, LucideAngularModule } from 'lucide-angular';
 
@@ -18,46 +22,70 @@ import { Check, ChevronDown, LucideAngularModule } from 'lucide-angular';
     selector: 'radix-select-demo',
     standalone: true,
     imports: [
-        RdxSelectComponent,
-        RdxSelectSeparatorDirective,
-        RdxSelectLabelDirective,
-        RdxSelectItemIndicatorDirective,
-        RdxSelectItemDirective,
-        RdxSelectGroupDirective,
-        RdxSelectContentDirective,
-        RdxSelectTriggerDirective,
-        RdxSelectValueDirective,
-        RdxSelectIconDirective,
+        RdxSelectRoot,
+        RdxSelectPortal,
+        RdxSelectPortalPresence,
+        RdxSelectContent,
+        RdxSelectPopperPositionWrapper,
+        RdxSelectPopperPositionContent,
+        RdxSelectViewport,
+        RdxSelectLabel,
+        RdxSelectItemIndicator,
+        RdxSelectItem,
+        RdxSelectItemText,
+        RdxSelectGroup,
+        RdxSelectTrigger,
+        RdxSelectValue,
         LucideAngularModule
     ],
     template: `
-        <span rdxSelect>
+        <ng-container rdxSelectRoot>
             <button class="SelectTrigger" rdxSelectTrigger>
-                <span rdxSelectValue placeholder="Select a fruit…"></span>
-                <lucide-icon class="SelectIcon" [img]="LucideChevronDownIcon" size="16" rdxSelectIcon />
+                <span #selectedValue="rdxSelectedValue" rdxSelectValue placeholder="Select a fruit…">
+                    {{ selectedValue.slotText() }}
+                </span>
+                <lucide-icon class="SelectIcon" [img]="LucideChevronDownIcon" size="16" />
             </button>
-            <div class="SelectContent SelectViewport" rdxSelectContent>
-                @for (group of foodGroups; track group; let last = $last) {
-                    <div class="SelectGroup" rdxSelectGroup>
-                        <div class="SelectLabel" rdxSelectLabel>{{ group.label }}</div>
-                        @for (food of group.foods; track food) {
-                            <div class="SelectItem" [value]="food.value" [disabled]="food.disabled" rdxSelectItem>
-                                <lucide-icon
-                                    class="SelectItemIndicator"
-                                    [img]="LucideCheckIcon"
-                                    rdxSelectItemIndicator
-                                    size="16"
-                                />
-                                {{ food.label }}
+
+            <div rdxSelectPortal>
+                <ng-template rdxSelectPortalPresence>
+                    <div rdxSelectContent>
+                        <div class="SelectContent" [sideOffset]="5" align="start" rdxSelectPopperPositionWrapper>
+                            <div rdxSelectPopperPositionContent>
+                                <div class="SelectViewport" rdxSelectViewport>
+                                    @for (group of foodGroups; track group; let last = $last) {
+                                        <div class="SelectGroup" rdxSelectGroup>
+                                            @if (group.label) {
+                                                <div class="SelectLabel" rdxSelectLabel>{{ group.label }}</div>
+                                            }
+                                            @for (food of group.foods; track food) {
+                                                <div
+                                                    class="SelectItem"
+                                                    [value]="food.value"
+                                                    [disabled]="food.disabled"
+                                                    rdxSelectItem
+                                                >
+                                                    <lucide-icon
+                                                        class="SelectItemIndicator"
+                                                        [img]="LucideCheckIcon"
+                                                        rdxSelectItemIndicator
+                                                        size="16"
+                                                    />
+                                                    <span rdxSelectItemText>{{ food.label }}</span>
+                                                </div>
+                                            }
+                                        </div>
+                                        @if (!last) {
+                                            <div class="SelectSeparator"></div>
+                                        }
+                                    }
+                                </div>
                             </div>
-                        }
+                        </div>
                     </div>
-                    @if (!last) {
-                        <div class="SelectSeparator" rdxSelectSeparator></div>
-                    }
-                }
+                </ng-template>
             </div>
-        </span>
+        </ng-container>
     `,
     styleUrl: 'select-demo.css'
 })
