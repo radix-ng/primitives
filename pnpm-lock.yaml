@@ -229,7 +229,7 @@ importers:
         specifier: ^22.19.19
         version: 22.19.19
       '@typescript-eslint/utils':
-        specifier: ^8.58.0
+        specifier: ^8.60.1
         version: 8.60.1(eslint@10.4.1(jiti@2.4.2))(typescript@5.9.2)
       '@vitest/coverage-v8':
         specifier: 4.1.7
@@ -253,17 +253,17 @@ importers:
         specifier: ^0.19.12
         version: 0.19.12
       eslint:
-        specifier: ^10.2.0
+        specifier: ^10.4.1
         version: 10.4.1(jiti@2.4.2)
       eslint-config-prettier:
         specifier: ^10.1.8
         version: 10.1.8(eslint@10.4.1(jiti@2.4.2))
       eslint-plugin-prettier:
-        specifier: ^5.5.5
+        specifier: ^5.5.6
         version: 5.5.6(@types/eslint@9.6.1)(eslint-config-prettier@10.1.8(eslint@10.4.1(jiti@2.4.2)))(eslint@10.4.1(jiti@2.4.2))(prettier@3.8.3)
       eslint-plugin-storybook:
-        specifier: 10.4.1
-        version: 10.4.1(eslint@10.4.1(jiti@2.4.2))(storybook@10.4.1(@testing-library/dom@9.3.4)(@types/react@19.2.16)(prettier@3.8.3)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(typescript@5.9.2)
+        specifier: 10.4.2
+        version: 10.4.2(eslint@10.4.1(jiti@2.4.2))(storybook@10.4.1(@testing-library/dom@9.3.4)(@types/react@19.2.16)(prettier@3.8.3)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(typescript@5.9.2)
       globals:
         specifier: ^17.4.0
         version: 17.6.0
@@ -304,7 +304,7 @@ importers:
         specifier: ~10.1.3
         version: 10.1.4(postcss@8.5.15)
       prettier:
-        specifier: ^3.5.3
+        specifier: ^3.8.3
         version: 3.8.3
       prettier-plugin-astro:
         specifier: ^0.14.1
@@ -316,8 +316,8 @@ importers:
         specifier: ^4.1.0
         version: 4.3.0(prettier@3.8.3)(typescript@5.9.2)
       prettier-plugin-tailwindcss:
-        specifier: ^0.5.14
-        version: 0.5.14(prettier-plugin-astro@0.14.1)(prettier-plugin-organize-attributes@1.0.0(prettier@3.8.3))(prettier-plugin-organize-imports@4.3.0(prettier@3.8.3)(typescript@5.9.2))(prettier@3.8.3)
+        specifier: ^0.8.0
+        version: 0.8.0(prettier-plugin-astro@0.14.1)(prettier-plugin-organize-attributes@1.0.0(prettier@3.8.3))(prettier-plugin-organize-imports@4.3.0(prettier@3.8.3)(typescript@5.9.2))(prettier@3.8.3)
       remark-gfm:
         specifier: ^4.0.1
         version: 4.0.1
@@ -334,7 +334,7 @@ importers:
         specifier: 10.4.1
         version: 10.4.1(@testing-library/dom@9.3.4)(@types/react@19.2.16)(prettier@3.8.3)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       stylelint:
-        specifier: ^16.12.0
+        specifier: ^16.26.1
         version: 16.26.1(typescript@5.9.2)
       stylelint-config-recommended-scss:
         specifier: ^14.1.0
@@ -8595,11 +8595,11 @@ packages:
       eslint-config-prettier:
         optional: true
 
-  eslint-plugin-storybook@10.4.1:
-    resolution: {integrity: sha512-sLEvd/7lg/LtXwMjj3iFxZtoeAC/8l1Qhuw3Noa8iF8i0UIgAejUs7k6DNSqHkwrPR8caWT4+3fxdMXs1iGLTg==}
+  eslint-plugin-storybook@10.4.2:
+    resolution: {integrity: sha512-l3/vzLRmb8VSi3X1Bo6/Pa+64naw1jFsZE5jPPA4izvVdNhH1rF4rGuOC3kDTU926qKVBQtKua8D24XWQtvcGg==}
     peerDependencies:
       eslint: '>=8'
-      storybook: ^10.4.1
+      storybook: ^10.4.2
 
   eslint-scope@5.1.1:
     resolution: {integrity: sha512-2NxwbF/hZ0KpepYN0cNbo+FN6XoK7GaHlQhgx/hIZl6Va0bF45RQOOwhLIy8lQDbuCiadSLCBnH2CFYquit5bw==}
@@ -11961,28 +11961,33 @@ packages:
       vue-tsc:
         optional: true
 
-  prettier-plugin-tailwindcss@0.5.14:
-    resolution: {integrity: sha512-Puaz+wPUAhFp8Lo9HuciYKM2Y2XExESjeT+9NQoVFXZsPPnc9VYss2SpxdQ6vbatmt8/4+SN0oe0I1cPDABg9Q==}
-    engines: {node: '>=14.21.3'}
+  prettier-plugin-tailwindcss@0.8.0:
+    resolution: {integrity: sha512-V8ITGH87yuBDF6JpEZTOVlUz/saAwqb8f3HRgUj8Lh+tGCcrmorhsLpYqzygwFwK0PE2Ib6Mv3M7T/uE2tZV1g==}
+    engines: {node: '>=20.19'}
     peerDependencies:
       '@ianvs/prettier-plugin-sort-imports': '*'
+      '@prettier/plugin-hermes': '*'
+      '@prettier/plugin-oxc': '*'
       '@prettier/plugin-pug': '*'
       '@shopify/prettier-plugin-liquid': '*'
       '@trivago/prettier-plugin-sort-imports': '*'
-      '@zackad/prettier-plugin-twig-melody': '*'
+      '@zackad/prettier-plugin-twig': '*'
       prettier: ^3.0
       prettier-plugin-astro: '*'
       prettier-plugin-css-order: '*'
-      prettier-plugin-import-sort: '*'
       prettier-plugin-jsdoc: '*'
       prettier-plugin-marko: '*'
+      prettier-plugin-multiline-arrays: '*'
       prettier-plugin-organize-attributes: '*'
       prettier-plugin-organize-imports: '*'
       prettier-plugin-sort-imports: '*'
-      prettier-plugin-style-order: '*'
       prettier-plugin-svelte: '*'
     peerDependenciesMeta:
       '@ianvs/prettier-plugin-sort-imports':
+        optional: true
+      '@prettier/plugin-hermes':
+        optional: true
+      '@prettier/plugin-oxc':
         optional: true
       '@prettier/plugin-pug':
         optional: true
@@ -11990,25 +11995,23 @@ packages:
         optional: true
       '@trivago/prettier-plugin-sort-imports':
         optional: true
-      '@zackad/prettier-plugin-twig-melody':
+      '@zackad/prettier-plugin-twig':
         optional: true
       prettier-plugin-astro:
         optional: true
       prettier-plugin-css-order:
         optional: true
-      prettier-plugin-import-sort:
-        optional: true
       prettier-plugin-jsdoc:
         optional: true
       prettier-plugin-marko:
+        optional: true
+      prettier-plugin-multiline-arrays:
         optional: true
       prettier-plugin-organize-attributes:
         optional: true
       prettier-plugin-organize-imports:
         optional: true
       prettier-plugin-sort-imports:
-        optional: true
-      prettier-plugin-style-order:
         optional: true
       prettier-plugin-svelte:
         optional: true
@@ -19732,7 +19735,7 @@ snapshots:
 
   '@npmcli/fs@5.0.0':
     dependencies:
-      semver: 7.7.4
+      semver: 7.8.1
 
   '@npmcli/git@7.0.2':
     dependencies:
@@ -25307,7 +25310,7 @@ snapshots:
       '@types/eslint': 9.6.1
       eslint-config-prettier: 10.1.8(eslint@10.4.1(jiti@2.4.2))
 
-  eslint-plugin-storybook@10.4.1(eslint@10.4.1(jiti@2.4.2))(storybook@10.4.1(@testing-library/dom@9.3.4)(@types/react@19.2.16)(prettier@3.8.3)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(typescript@5.9.2):
+  eslint-plugin-storybook@10.4.2(eslint@10.4.1(jiti@2.4.2))(storybook@10.4.1(@testing-library/dom@9.3.4)(@types/react@19.2.16)(prettier@3.8.3)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(typescript@5.9.2):
     dependencies:
       '@typescript-eslint/utils': 8.60.1(eslint@10.4.1(jiti@2.4.2))(typescript@5.9.2)
       eslint: 10.4.1(jiti@2.4.2)
@@ -27259,7 +27262,7 @@ snapshots:
       lodash.isstring: 4.0.1
       lodash.once: 4.1.1
       ms: 2.1.3
-      semver: 7.8.0
+      semver: 7.8.1
 
   jsprim@2.0.2:
     dependencies:
@@ -28457,7 +28460,7 @@ snapshots:
       graceful-fs: 4.2.11
       nopt: 9.0.0
       proc-log: 6.1.0
-      semver: 7.7.4
+      semver: 7.8.1
       tar: 7.5.16
       tinyglobby: 0.2.17
       undici: 6.26.0
@@ -28495,7 +28498,7 @@ snapshots:
 
   npm-install-checks@8.0.0:
     dependencies:
-      semver: 7.7.4
+      semver: 7.8.1
 
   npm-normalize-package-bin@5.0.0: {}
 
@@ -29688,7 +29691,7 @@ snapshots:
       prettier: 3.8.3
       typescript: 5.9.2
 
-  prettier-plugin-tailwindcss@0.5.14(prettier-plugin-astro@0.14.1)(prettier-plugin-organize-attributes@1.0.0(prettier@3.8.3))(prettier-plugin-organize-imports@4.3.0(prettier@3.8.3)(typescript@5.9.2))(prettier@3.8.3):
+  prettier-plugin-tailwindcss@0.8.0(prettier-plugin-astro@0.14.1)(prettier-plugin-organize-attributes@1.0.0(prettier@3.8.3))(prettier-plugin-organize-imports@4.3.0(prettier@3.8.3)(typescript@5.9.2))(prettier@3.8.3):
     dependencies:
       prettier: 3.8.3
     optionalDependencies:
