@@ -76,11 +76,17 @@
             "executor": "@nx/eslint:lint"
         },
         "test": {
-            "executor": "@nx/jest:jest",
+            "executor": "@nx/vitest:test",
             "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
             "options": {
-                "jestConfig": "apps/radix-ssr-testing/jest.config.ts",
-                "tsConfig": "apps/radix-ssr-testing/tsconfig.spec.json"
+                "configFile": "apps/radix-ssr-testing/vite.config.ts",
+                "reportsDirectory": "../../coverage/apps/radix-ssr-testing",
+                "watch": false
+            },
+            "configurations": {
+                "ci": {
+                    "mode": "ci"
+                }
             }
         },
         "serve-static": {

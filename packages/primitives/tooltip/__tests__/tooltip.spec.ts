@@ -10,6 +10,7 @@ import {
     RdxTooltipProvider,
     RdxTooltipTrigger
 } from '@radix-ng/primitives/tooltip';
+import { vi } from 'vitest';
 import { defaultTooltipConfig, injectRdxTooltipConfig, provideRdxTooltipConfig } from '../src/tooltip.config';
 
 @Component({
@@ -156,7 +157,7 @@ describe('Tooltip', () => {
     let root: RdxTooltip;
 
     beforeEach(() => {
-        jest.useFakeTimers();
+        vi.useFakeTimers();
         TestBed.configureTestingModule({ imports: [TestHostComponent] });
         fixture = TestBed.createComponent(TestHostComponent);
         host = fixture.componentInstance;
@@ -166,8 +167,8 @@ describe('Tooltip', () => {
     });
 
     afterEach(() => {
-        jest.clearAllTimers();
-        jest.useRealTimers();
+        vi.clearAllTimers();
+        vi.useRealTimers();
     });
 
     it('renders closed without describing the trigger', () => {
@@ -189,7 +190,7 @@ describe('Tooltip', () => {
         fixture.detectChanges();
         host.open = false;
         fixture.detectChanges();
-        jest.advanceTimersByTime(0);
+        vi.advanceTimersByTime(0);
         fixture.detectChanges();
 
         expect(host.changes).toEqual([true, false]);
@@ -209,7 +210,7 @@ describe('Tooltip', () => {
         fixture.detectChanges();
 
         trigger.dispatchEvent(new Event('blur'));
-        jest.advanceTimersByTime(0);
+        vi.advanceTimersByTime(0);
         fixture.detectChanges();
 
         expect(root.open()).toBe(false);
@@ -223,11 +224,11 @@ describe('Tooltip', () => {
         fixture.detectChanges();
 
         trigger.dispatchEvent(new Event('blur'));
-        jest.advanceTimersByTime(199);
+        vi.advanceTimersByTime(199);
         fixture.detectChanges();
         expect(root.open()).toBe(true);
 
-        jest.advanceTimersByTime(1);
+        vi.advanceTimersByTime(1);
         fixture.detectChanges();
         expect(root.open()).toBe(false);
     });
@@ -238,7 +239,7 @@ describe('Tooltip', () => {
         expect(root.open()).toBe(true);
 
         trigger.click();
-        jest.advanceTimersByTime(0);
+        vi.advanceTimersByTime(0);
         fixture.detectChanges();
 
         expect(root.open()).toBe(false);
@@ -253,7 +254,7 @@ describe('Tooltip', () => {
         expect(root.open()).toBe(true);
 
         trigger.click();
-        jest.advanceTimersByTime(0);
+        vi.advanceTimersByTime(0);
         fixture.detectChanges();
 
         expect(root.open()).toBe(true);
@@ -264,11 +265,11 @@ describe('Tooltip', () => {
         fixture.detectChanges();
         expect(root.open()).toBe(false);
 
-        jest.advanceTimersByTime(599);
+        vi.advanceTimersByTime(599);
         fixture.detectChanges();
         expect(root.open()).toBe(false);
 
-        jest.advanceTimersByTime(1);
+        vi.advanceTimersByTime(1);
         fixture.detectChanges();
         expect(root.open()).toBe(true);
         expect(root.instant()).toBe(false);
@@ -279,7 +280,7 @@ describe('Tooltip', () => {
         fixture.detectChanges();
 
         trigger.dispatchEvent(new Event('pointerleave'));
-        jest.advanceTimersByTime(600);
+        vi.advanceTimersByTime(600);
         fixture.detectChanges();
 
         expect(root.open()).toBe(false);
@@ -291,12 +292,12 @@ describe('Tooltip', () => {
         fixture.detectChanges();
 
         trigger.dispatchEvent(new Event('pointermove'));
-        jest.advanceTimersByTime(0);
+        vi.advanceTimersByTime(0);
         fixture.detectChanges();
         expect(root.open()).toBe(true);
 
         trigger.dispatchEvent(new Event('pointerleave'));
-        jest.advanceTimersByTime(0);
+        vi.advanceTimersByTime(0);
         fixture.detectChanges();
         expect(root.open()).toBe(false);
     });
@@ -308,7 +309,7 @@ describe('Tooltip', () => {
 
         trigger.dispatchEvent(new Event('focus'));
         trigger.dispatchEvent(new Event('pointermove'));
-        jest.advanceTimersByTime(600);
+        vi.advanceTimersByTime(600);
         fixture.detectChanges();
 
         expect(root.open()).toBe(false);
@@ -326,10 +327,10 @@ describe('Tooltip', () => {
 });
 
 describe('Tooltip multiple triggers', () => {
-    beforeEach(() => jest.useFakeTimers());
+    beforeEach(() => vi.useFakeTimers());
     afterEach(() => {
-        jest.clearAllTimers();
-        jest.useRealTimers();
+        vi.clearAllTimers();
+        vi.useRealTimers();
     });
 
     it('tracks the trigger the pointer entered as the active anchor', () => {
@@ -342,7 +343,7 @@ describe('Tooltip multiple triggers', () => {
         const root = getRoot(fixture);
 
         b.dispatchEvent(new Event('pointermove'));
-        jest.advanceTimersByTime(0);
+        vi.advanceTimersByTime(0);
         fixture.detectChanges();
 
         expect(root.open()).toBe(true);
@@ -353,10 +354,10 @@ describe('Tooltip multiple triggers', () => {
 });
 
 describe('Tooltip per-trigger delay', () => {
-    beforeEach(() => jest.useFakeTimers());
+    beforeEach(() => vi.useFakeTimers());
     afterEach(() => {
-        jest.clearAllTimers();
-        jest.useRealTimers();
+        vi.clearAllTimers();
+        vi.useRealTimers();
     });
 
     it('lets the trigger override the root open delay', () => {
@@ -368,21 +369,21 @@ describe('Tooltip per-trigger delay', () => {
         const root = getRoot(fixture);
 
         trigger.dispatchEvent(new Event('pointermove'));
-        jest.advanceTimersByTime(49);
+        vi.advanceTimersByTime(49);
         fixture.detectChanges();
         expect(root.open()).toBe(false);
 
-        jest.advanceTimersByTime(1);
+        vi.advanceTimersByTime(1);
         fixture.detectChanges();
         expect(root.open()).toBe(true);
     });
 });
 
 describe('Tooltip disabled trigger', () => {
-    beforeEach(() => jest.useFakeTimers());
+    beforeEach(() => vi.useFakeTimers());
     afterEach(() => {
-        jest.clearAllTimers();
-        jest.useRealTimers();
+        vi.clearAllTimers();
+        vi.useRealTimers();
     });
 
     it('never opens and reflects data-trigger-disabled', () => {
@@ -397,7 +398,7 @@ describe('Tooltip disabled trigger', () => {
 
         trigger.dispatchEvent(new Event('focus'));
         trigger.dispatchEvent(new Event('pointermove'));
-        jest.advanceTimersByTime(50);
+        vi.advanceTimersByTime(50);
         fixture.detectChanges();
 
         expect(root.open()).toBe(false);
@@ -432,10 +433,10 @@ describe('Tooltip positioner defaults', () => {
 });
 
 describe('Tooltip handle', () => {
-    beforeEach(() => jest.useFakeTimers());
+    beforeEach(() => vi.useFakeTimers());
     afterEach(() => {
-        jest.clearAllTimers();
-        jest.useRealTimers();
+        vi.clearAllTimers();
+        vi.useRealTimers();
     });
 
     it('opens and closes a detached root imperatively', () => {
@@ -454,17 +455,17 @@ describe('Tooltip handle', () => {
         expect(detached.getAttribute('data-popup-open')).toBe('');
 
         handle.close();
-        jest.advanceTimersByTime(0);
+        vi.advanceTimersByTime(0);
         fixture.detectChanges();
         expect(handle.isOpen()).toBe(false);
     });
 });
 
 describe('Tooltip provider', () => {
-    beforeEach(() => jest.useFakeTimers());
+    beforeEach(() => vi.useFakeTimers());
     afterEach(() => {
-        jest.clearAllTimers();
-        jest.useRealTimers();
+        vi.clearAllTimers();
+        vi.useRealTimers();
     });
 
     it('inherits the open delay from the provider', () => {
@@ -476,21 +477,21 @@ describe('Tooltip provider', () => {
         const root = getRoot(fixture);
 
         trigger.dispatchEvent(new Event('pointermove'));
-        jest.advanceTimersByTime(499);
+        vi.advanceTimersByTime(499);
         fixture.detectChanges();
         expect(root.open()).toBe(false);
 
-        jest.advanceTimersByTime(1);
+        vi.advanceTimersByTime(1);
         fixture.detectChanges();
         expect(root.open()).toBe(true);
     });
 });
 
 describe('Tooltip trigger removal', () => {
-    beforeEach(() => jest.useFakeTimers());
+    beforeEach(() => vi.useFakeTimers());
     afterEach(() => {
-        jest.clearAllTimers();
-        jest.useRealTimers();
+        vi.clearAllTimers();
+        vi.useRealTimers();
     });
 
     it('closes and clears the active trigger when it is removed', () => {
@@ -514,8 +515,8 @@ describe('Tooltip trigger removal', () => {
 
 describe('Tooltip config', () => {
     afterEach(() => {
-        jest.clearAllTimers();
-        jest.useRealTimers();
+        vi.clearAllTimers();
+        vi.useRealTimers();
     });
 
     it('falls back to the default config without a provider', () => {
@@ -529,7 +530,7 @@ describe('Tooltip config', () => {
     });
 
     it('uses the provided config delay when none is set on the root', () => {
-        jest.useFakeTimers();
+        vi.useFakeTimers();
         TestBed.configureTestingModule({ imports: [ConfiguredHostComponent] });
         const fixture = TestBed.createComponent(ConfiguredHostComponent);
         fixture.detectChanges();
@@ -537,11 +538,11 @@ describe('Tooltip config', () => {
         const trigger: HTMLButtonElement = fixture.nativeElement.querySelector('[rdxTooltipTrigger]');
 
         trigger.dispatchEvent(new Event('pointermove'));
-        jest.advanceTimersByTime(1233);
+        vi.advanceTimersByTime(1233);
         fixture.detectChanges();
         expect(root.open()).toBe(false);
 
-        jest.advanceTimersByTime(1);
+        vi.advanceTimersByTime(1);
         fixture.detectChanges();
         expect(root.open()).toBe(true);
     });

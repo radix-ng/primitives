@@ -37,10 +37,11 @@ updates:
           - '@angular-devkit/*'
           - '@schematics/angular'
           - 'ng-packagr'
-      jest:
+      testing:
         patterns:
-          - 'jest*'
-          - 'ts-jest'
+          - 'jest-axe'
+          - 'vitest'
+          - '@vitest/*'
       radix:
         patterns:
           - '@radix*'

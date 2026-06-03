@@ -1,5 +1,6 @@
 import { Component, Directive, inject, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { vi, type MockInstance } from 'vitest';
 import { provideRdxPresenceContext, RdxPresenceDirective } from '../src/presence.directive';
 
 // Wrapper that mirrors how real consumers apply the presence directive:
@@ -115,7 +116,7 @@ describe('RdxPresenceDirective', () => {
 describe('RdxPresenceDirective — exit animation', () => {
     let fixture: ComponentFixture<PresenceAnimHostComponent>;
     let host: PresenceAnimHostComponent;
-    let gcsSpy: jest.SpyInstance;
+    let gcsSpy: MockInstance;
 
     const content = () => fixture.nativeElement.querySelector('.content') as HTMLElement | null;
 
@@ -127,7 +128,7 @@ describe('RdxPresenceDirective — exit animation', () => {
 
     beforeEach(() => {
         // jsdom does not run CSS, so emulate `[data-state='closed'] { animation: exit ... }`.
-        gcsSpy = jest.spyOn(window, 'getComputedStyle').mockImplementation(
+        gcsSpy = vi.spyOn(window, 'getComputedStyle').mockImplementation(
             (el: Element) =>
                 ({
                     animationName: el.getAttribute?.('data-state') === 'closed' ? 'exit' : 'none',

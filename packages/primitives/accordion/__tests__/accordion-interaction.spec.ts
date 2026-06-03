@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { vi } from 'vitest';
 import { RdxAccordionContentDirective } from '../src/accordion-content.directive';
 import { RdxAccordionHeaderDirective } from '../src/accordion-header.directive';
 import { RdxAccordionItemDirective } from '../src/accordion-item.directive';
@@ -34,7 +35,7 @@ import { RdxAccordionTriggerDirective } from '../src/accordion-trigger.directive
 })
 class AccordionHost {
     readonly rootDisabled = signal(false);
-    readonly onValueChange = jest.fn();
+    readonly onValueChange = vi.fn();
 }
 
 describe('RdxAccordion — interaction', () => {

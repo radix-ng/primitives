@@ -2,6 +2,7 @@ import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
+import { vi, type Mocked } from 'vitest';
 import { RdxDialogRef } from '../src/dialog-ref';
 import { RdxDialogTriggerDirective } from '../src/dialog-trigger.directive';
 import { RdxDialogConfig } from '../src/dialog.config';
@@ -35,8 +36,8 @@ class TestHostComponent implements OnInit {
 describe('RdxDialogTriggerDirective', () => {
     let fixture: ComponentFixture<TestHostComponent>;
     let directive: RdxDialogTriggerDirective;
-    let dialogServiceMock: jest.Mocked<RdxDialogService>;
-    let dialogRefMock: jest.Mocked<RdxDialogRef>;
+    let dialogServiceMock: Mocked<RdxDialogService>;
+    let dialogRefMock: Mocked<RdxDialogRef>;
 
     beforeEach(async () => {
         dialogRefMock = {
@@ -44,7 +45,7 @@ describe('RdxDialogTriggerDirective', () => {
         } as any;
 
         dialogServiceMock = {
-            open: jest.fn().mockReturnValue(dialogRefMock)
+            open: vi.fn().mockReturnValue(dialogRefMock)
         } as any;
 
         await TestBed.configureTestingModule({

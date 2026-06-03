@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { vi } from 'vitest';
 import { RdxFocusOutside } from '../src/utils';
 
 @Component({
@@ -16,7 +17,7 @@ import { RdxFocusOutside } from '../src/utils';
 })
 class TestComponent {
     enabled = true;
-    onFocusOutside = jest.fn();
+    onFocusOutside = vi.fn();
 }
 
 // The focusin handler defers two microtasks before deciding; flush a few to let it settle.

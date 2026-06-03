@@ -9,7 +9,7 @@ Angular port of headless UI primitives. This is a **signals-first, headless** co
 - **Monorepo**: Nx 22, pnpm workspaces
 - **Angular**: 21 (signals API: `input()`, `model()`, `computed()`, `signal()`, `linkedSignal()`)
 - **TypeScript**: 5.9
-- **Testing**: Jest + `jest-preset-angular` + `@testing-library/angular`
+- **Testing**: Vitest + AnalogJS Angular Vite plugin + `@testing-library/angular`
 - **Storybook**: 10 (`@storybook/angular` + AnalogJS vite plugin)
 - **Styling in stories**: Tailwind v4 (see "Stories & Storybook")
 - **Prefix**: `rdx` (selectors and `exportAs`)
@@ -236,13 +236,20 @@ Complex components compose these headless building blocks — good entry points 
 ## Useful commands
 
 ```bash
-pnpm primitives:test              # run Jest tests
+pnpm primitives:test              # run Vitest tests
 pnpm primitives:build             # build the library
 pnpm storybook:primitives         # start Storybook dev server
 pnpm eslint:fix                   # lint + fix
 pnpm prettier:fix                 # format
 nx run primitives:test --testFile packages/primitives/<name>/__tests__/<file>.spec.ts
 ```
+
+## Tests
+
+- `packages/primitives` uses `@nx/vitest:test` with `packages/primitives/vite.config.ts`.
+- Test setup lives in `packages/primitives/test-setup.ts`; it initializes Angular's testing environment through `@analogjs/vite-plugin-angular/setup-vitest`, loads `@testing-library/jest-dom/vitest`, and registers the `jest-axe` matcher.
+- Use Vitest APIs (`vi.fn`, `vi.spyOn`, `vi.mock`, `vi.importActual`) instead of Jest globals. Legacy skipped suites may still use `xdescribe` / `xit`, which are mapped to `describe.skip` / `it.skip` in the setup file.
+- `apps/radix-ssr-testing:test` is also a Vitest target, but currently has no specs and uses `passWithNoTests`.
 
 ## Accessibility
 

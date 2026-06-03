@@ -18,6 +18,7 @@ import {
     RdxPopoverViewport
 } from '@radix-ng/primitives/popover';
 import { RdxPopper, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
+import { vi } from 'vitest';
 
 @Component({
     imports: [
@@ -712,8 +713,8 @@ describe('Popover', () => {
     });
 
     describe('openOnHover', () => {
-        beforeEach(() => jest.useFakeTimers());
-        afterEach(() => jest.useRealTimers());
+        beforeEach(() => vi.useFakeTimers());
+        afterEach(() => vi.useRealTimers());
 
         it('opens after the configured delay', () => {
             const hoverFixture = TestBed.createComponent(HoverHostComponent);
@@ -723,10 +724,10 @@ describe('Popover', () => {
             const hoverTrigger: HTMLButtonElement = hoverFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
 
             hoverTrigger.dispatchEvent(pointerEvent('pointerenter'));
-            jest.advanceTimersByTime(299);
+            vi.advanceTimersByTime(299);
             expect(root.open()).toBe(false);
 
-            jest.advanceTimersByTime(1);
+            vi.advanceTimersByTime(1);
             expect(root.open()).toBe(true);
             expect(hoverTrigger.hasAttribute('data-pressed')).toBe(false);
         });
@@ -740,7 +741,7 @@ describe('Popover', () => {
 
             hoverTrigger.dispatchEvent(pointerEvent('pointerenter'));
             hoverTrigger.dispatchEvent(pointerEvent('pointerleave'));
-            jest.advanceTimersByTime(300);
+            vi.advanceTimersByTime(300);
 
             expect(root.open()).toBe(false);
         });
@@ -754,20 +755,20 @@ describe('Popover', () => {
             const hoverTrigger: HTMLButtonElement = hoverFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
 
             hoverTrigger.dispatchEvent(pointerEvent('pointerenter'));
-            jest.advanceTimersByTime(0);
+            vi.advanceTimersByTime(0);
             hoverFixture.detectChanges();
 
             const popup: HTMLElement = hoverFixture.nativeElement.querySelector('[rdxPopoverPopup]');
             const positioner: HTMLElement = hoverFixture.nativeElement.querySelector('[rdxPopoverPositioner]');
             hoverTrigger.dispatchEvent(pointerEvent('pointerleave', 'mouse', 0, 0));
             popup.dispatchEvent(pointerEvent('pointermove', 'mouse', 10, 10));
-            jest.advanceTimersByTime(100);
+            vi.advanceTimersByTime(100);
 
             expect(root.open()).toBe(true);
 
             positioner.dispatchEvent(pointerEvent('pointerleave', 'mouse', 10, 10));
             document.body.dispatchEvent(pointerEvent('pointermove', 'mouse', 1000, 1000));
-            jest.advanceTimersByTime(0);
+            vi.advanceTimersByTime(0);
             expect(root.open()).toBe(false);
         });
 
@@ -782,7 +783,7 @@ describe('Popover', () => {
             hoverTrigger.click();
             expect(root.open()).toBe(true);
 
-            jest.advanceTimersByTime(300);
+            vi.advanceTimersByTime(300);
             expect(root.open()).toBe(true);
         });
 
@@ -796,7 +797,7 @@ describe('Popover', () => {
             const hoverTrigger: HTMLButtonElement = hoverFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
 
             hoverTrigger.dispatchEvent(pointerEvent('pointerenter'));
-            jest.advanceTimersByTime(0);
+            vi.advanceTimersByTime(0);
             hoverFixture.detectChanges();
 
             const popup: HTMLElement = hoverFixture.nativeElement.querySelector('[rdxPopoverPopup]');
@@ -805,10 +806,10 @@ describe('Popover', () => {
             popup.dispatchEvent(pointerEvent('pointermove', 'mouse', 10, 10));
             positioner.dispatchEvent(pointerEvent('pointerleave', 'mouse', 10, 10));
             document.body.dispatchEvent(pointerEvent('pointermove', 'mouse', 1000, 1000));
-            jest.advanceTimersByTime(199);
+            vi.advanceTimersByTime(199);
             expect(root.open()).toBe(true);
 
-            jest.advanceTimersByTime(1);
+            vi.advanceTimersByTime(1);
             expect(root.open()).toBe(false);
         });
 
@@ -821,13 +822,13 @@ describe('Popover', () => {
             const hoverTrigger: HTMLButtonElement = hoverFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
 
             hoverTrigger.dispatchEvent(pointerEvent('pointerenter'));
-            jest.advanceTimersByTime(0);
+            vi.advanceTimersByTime(0);
             hoverFixture.detectChanges();
 
             const close: HTMLButtonElement = hoverFixture.nativeElement.querySelector('[rdxPopoverClose]');
             hoverTrigger.dispatchEvent(pointerEvent('pointerleave', 'mouse', 0, 0));
             close.dispatchEvent(pointerEvent('pointermove', 'mouse', 10, 10));
-            jest.advanceTimersByTime(300);
+            vi.advanceTimersByTime(300);
 
             expect(root.open()).toBe(true);
         });
@@ -838,13 +839,13 @@ describe('Popover', () => {
 
             const parentTrigger: HTMLButtonElement = hoverFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
             parentTrigger.dispatchEvent(pointerEvent('pointerenter'));
-            jest.advanceTimersByTime(0);
+            vi.advanceTimersByTime(0);
             hoverFixture.detectChanges();
 
             const childTrigger: HTMLButtonElement =
                 hoverFixture.nativeElement.querySelectorAll('[rdxPopoverTrigger]')[1];
             childTrigger.dispatchEvent(pointerEvent('pointerenter'));
-            jest.advanceTimersByTime(0);
+            vi.advanceTimersByTime(0);
             hoverFixture.detectChanges();
 
             const roots = hoverFixture.debugElement
@@ -859,7 +860,7 @@ describe('Popover', () => {
 
             parentPositioner.dispatchEvent(pointerEvent('pointerleave', 'mouse', 10, 10));
             childPopup?.dispatchEvent(pointerEvent('pointermove', 'mouse', 1000, 1000));
-            jest.advanceTimersByTime(0);
+            vi.advanceTimersByTime(0);
 
             expect(roots[0].open()).toBe(true);
             hoverFixture.destroy();
@@ -873,7 +874,7 @@ describe('Popover', () => {
             const hoverTrigger: HTMLButtonElement = hoverFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
 
             hoverTrigger.dispatchEvent(pointerEvent('pointerenter', 'touch'));
-            jest.advanceTimersByTime(300);
+            vi.advanceTimersByTime(300);
 
             expect(root.open()).toBe(false);
         });
@@ -885,7 +886,7 @@ describe('Popover', () => {
 
             const hoverTrigger: HTMLButtonElement = hoverFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
             hoverTrigger.dispatchEvent(pointerEvent('pointerenter'));
-            jest.advanceTimersByTime(0);
+            vi.advanceTimersByTime(0);
             hoverFixture.detectChanges();
 
             const focusScope = hoverFixture.debugElement.query(By.directive(RdxFocusScope)).injector.get(RdxFocusScope);

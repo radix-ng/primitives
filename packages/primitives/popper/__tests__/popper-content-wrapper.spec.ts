@@ -2,16 +2,17 @@ import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { autoUpdate, computePosition } from '@floating-ui/dom';
+import { vi } from 'vitest';
 import { popperImports } from '../index';
 import { RdxPopperContentWrapper } from '../src/popper-content-wrapper';
 
-jest.mock('@floating-ui/dom', () => {
-    const actual = jest.requireActual('@floating-ui/dom');
+vi.mock('@floating-ui/dom', async () => {
+    const actual = await vi.importActual<typeof import('@floating-ui/dom')>('@floating-ui/dom');
 
     return {
         ...actual,
-        autoUpdate: jest.fn(() => jest.fn()),
-        computePosition: jest.fn(() =>
+        autoUpdate: vi.fn(() => vi.fn()),
+        computePosition: vi.fn(() =>
             Promise.resolve({
                 x: 0,
                 y: 0,
@@ -79,8 +80,8 @@ class ReactivePopperHostComponent {
 class CustomAnchorPopperHostComponent {}
 
 describe('RdxPopperContentWrapper', () => {
-    const autoUpdateMock = jest.mocked(autoUpdate);
-    const computePositionMock = jest.mocked(computePosition);
+    const autoUpdateMock = vi.mocked(autoUpdate);
+    const computePositionMock = vi.mocked(computePosition);
 
     beforeEach(() => {
         autoUpdateMock.mockClear();
@@ -153,7 +154,7 @@ describe('RdxPopperContentWrapper', () => {
     });
 
     it('reconfigures auto updates when the update strategy changes', async () => {
-        const cleanup = jest.fn();
+        const cleanup = vi.fn();
         autoUpdateMock.mockReturnValueOnce(cleanup);
 
         const fixture = TestBed.createComponent(ReactivePopperHostComponent);
@@ -191,7 +192,7 @@ describe('RdxPopperContentWrapper', () => {
         const wrapper = fixture.debugElement
             .query(By.directive(RdxPopperContentWrapper))
             .injector.get(RdxPopperContentWrapper);
-        const placed = jest.fn();
+        const placed = vi.fn();
         wrapper.placed.subscribe(placed);
 
         await Promise.resolve();

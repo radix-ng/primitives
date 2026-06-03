@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
 import { RdxDismissableLayer } from '../src/dismissable-layer';
 
 @Component({
@@ -19,8 +20,8 @@ class StackHost {
     readonly disableA = signal(false);
     readonly disableB = signal(false);
 
-    readonly onDismissA = jest.fn();
-    readonly onDismissB = jest.fn();
+    readonly onDismissA = vi.fn();
+    readonly onDismissB = vi.fn();
 }
 
 function pressEscape(): void {

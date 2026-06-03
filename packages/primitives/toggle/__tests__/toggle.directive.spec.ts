@@ -2,6 +2,7 @@ import { Component, DebugElement, Input } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
+import { vi } from 'vitest';
 import { RdxToggleDirective } from '../src/toggle.directive';
 
 @Component({
@@ -90,7 +91,7 @@ describe('RdxToggleDirective', () => {
     });
 
     it('should emit the pressed state change event on toggle', () => {
-        const spy = jest.spyOn(component, 'onToggle');
+        const spy = vi.spyOn(component, 'onToggle');
         button.nativeElement.click();
         expect(spy).toHaveBeenCalledWith(true);
         button.nativeElement.click();

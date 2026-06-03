@@ -14,6 +14,7 @@ import {
     RdxPreviewCardTrigger,
     RdxPreviewCardViewport
 } from '@radix-ng/primitives/preview-card';
+import { vi } from 'vitest';
 
 @Component({
     imports: [
@@ -267,7 +268,7 @@ describe('PreviewCard', () => {
     });
 
     afterEach(() => {
-        jest.useRealTimers();
+        vi.useRealTimers();
     });
 
     beforeEach(() => {
@@ -278,13 +279,13 @@ describe('PreviewCard', () => {
     });
 
     it('opens on hover after the configured delay and closes on click', () => {
-        jest.useFakeTimers();
+        vi.useFakeTimers();
 
         trigger.dispatchEvent(pointerEvent('pointerenter'));
-        jest.advanceTimersByTime(599);
+        vi.advanceTimersByTime(599);
         expect(fixture.componentInstance.open).toBe(false);
 
-        jest.advanceTimersByTime(1);
+        vi.advanceTimersByTime(1);
         fixture.detectChanges();
 
         expect(fixture.componentInstance.open).toBe(true);
@@ -294,14 +295,14 @@ describe('PreviewCard', () => {
         fixture.detectChanges();
 
         expect(fixture.componentInstance.open).toBe(false);
-        jest.useRealTimers();
+        vi.useRealTimers();
     });
 
     it('opens on focus and closes on blur', () => {
-        jest.useFakeTimers();
+        vi.useFakeTimers();
 
         trigger.dispatchEvent(new FocusEvent('focus'));
-        jest.advanceTimersByTime(600);
+        vi.advanceTimersByTime(600);
         fixture.detectChanges();
 
         expect(fixture.componentInstance.open).toBe(true);
@@ -310,7 +311,7 @@ describe('PreviewCard', () => {
         fixture.detectChanges();
 
         expect(fixture.componentInstance.open).toBe(false);
-        jest.useRealTimers();
+        vi.useRealTimers();
     });
 
     it('uses defaultOpen with defaultTriggerId', () => {
@@ -326,7 +327,7 @@ describe('PreviewCard', () => {
     });
 
     it('switches active anchors between triggers inside one root', () => {
-        jest.useFakeTimers();
+        vi.useFakeTimers();
         const multipleFixture = TestBed.createComponent(MultipleTriggersHostComponent);
         multipleFixture.detectChanges();
 
@@ -334,7 +335,7 @@ describe('PreviewCard', () => {
         const triggers: HTMLAnchorElement[] = multipleFixture.nativeElement.querySelectorAll('[rdxPreviewCardTrigger]');
 
         triggers[0].dispatchEvent(pointerEvent('pointerenter'));
-        jest.advanceTimersByTime(600);
+        vi.advanceTimersByTime(600);
         multipleFixture.detectChanges();
 
         expect(root.open()).toBe(true);
@@ -342,7 +343,7 @@ describe('PreviewCard', () => {
         expect(root.payload()).toBe('one');
 
         triggers[1].dispatchEvent(pointerEvent('pointerenter'));
-        jest.advanceTimersByTime(600);
+        vi.advanceTimersByTime(600);
         multipleFixture.detectChanges();
 
         expect(root.open()).toBe(true);
@@ -395,16 +396,16 @@ describe('PreviewCard', () => {
     });
 
     it('uses Base UI-aligned positioner defaults and state attributes', () => {
-        jest.useFakeTimers();
+        vi.useFakeTimers();
         const defaultsFixture = TestBed.createComponent(PositionerDefaultsHostComponent);
         defaultsFixture.detectChanges();
 
         const defaultsTrigger: HTMLAnchorElement =
             defaultsFixture.nativeElement.querySelector('[rdxPreviewCardTrigger]');
         defaultsTrigger.dispatchEvent(pointerEvent('pointerenter'));
-        jest.advanceTimersByTime(600);
+        vi.advanceTimersByTime(600);
         defaultsFixture.detectChanges();
-        jest.useRealTimers();
+        vi.useRealTimers();
 
         const positionerDebug = defaultsFixture.debugElement.query(By.directive(RdxPreviewCardPositioner));
         const positioner = positionerDebug.injector.get(RdxPreviewCardPositioner);
@@ -426,19 +427,19 @@ describe('PreviewCard', () => {
     });
 
     it('keeps a parent open while moving into a nested portaled preview card', () => {
-        jest.useFakeTimers();
+        vi.useFakeTimers();
         const nestedFixture = TestBed.createComponent(NestedPreviewCardHostComponent);
         nestedFixture.detectChanges();
 
         const parentTrigger: HTMLAnchorElement = nestedFixture.nativeElement.querySelector('[rdxPreviewCardTrigger]');
         parentTrigger.dispatchEvent(pointerEvent('pointerenter'));
-        jest.advanceTimersByTime(0);
+        vi.advanceTimersByTime(0);
         nestedFixture.detectChanges();
 
         const childTrigger: HTMLAnchorElement =
             nestedFixture.nativeElement.querySelectorAll('[rdxPreviewCardTrigger]')[1];
         childTrigger.dispatchEvent(pointerEvent('pointerenter'));
-        jest.advanceTimersByTime(0);
+        vi.advanceTimersByTime(0);
         nestedFixture.detectChanges();
 
         const roots = nestedFixture.componentInstance.roots.toArray();
@@ -451,14 +452,14 @@ describe('PreviewCard', () => {
 
         parentPositioner.dispatchEvent(pointerEvent('pointerleave', 'mouse', 10, 10));
         childPopup?.dispatchEvent(pointerEvent('pointermove', 'mouse', 1000, 1000));
-        jest.advanceTimersByTime(0);
+        vi.advanceTimersByTime(0);
 
         expect(roots[0].open()).toBe(true);
         nestedFixture.destroy();
     });
 
     it('retains previous viewport content while switching triggers', () => {
-        jest.useFakeTimers();
+        vi.useFakeTimers();
         const viewportFixture = TestBed.createComponent(ViewportHostComponent);
         viewportFixture.detectChanges();
 
@@ -467,14 +468,14 @@ describe('PreviewCard', () => {
         triggers[1].getBoundingClientRect = () => new DOMRect(100, 50, 40, 20);
 
         triggers[0].dispatchEvent(pointerEvent('pointerenter'));
-        jest.advanceTimersByTime(600);
+        vi.advanceTimersByTime(600);
         viewportFixture.detectChanges();
 
         const popup: HTMLElement = viewportFixture.nativeElement.querySelector('[rdxPreviewCardPopup]');
         popup.getBoundingClientRect = () => new DOMRect(0, 0, 240, 120);
 
         triggers[1].dispatchEvent(pointerEvent('pointerenter'));
-        jest.advanceTimersByTime(600);
+        vi.advanceTimersByTime(600);
         viewportFixture.detectChanges();
 
         const viewport: HTMLElement = viewportFixture.nativeElement.querySelector('[rdxPreviewCardViewport]');
@@ -523,14 +524,14 @@ describe('PreviewCard', () => {
             readonly changes: RdxPreviewCardOpenChange[] = [];
         }
 
-        jest.useFakeTimers();
+        vi.useFakeTimers();
         const controlledFixture = TestBed.createComponent(ControlledHostComponent);
         controlledFixture.detectChanges();
 
         const triggers: HTMLAnchorElement[] =
             controlledFixture.nativeElement.querySelectorAll('[rdxPreviewCardTrigger]');
         triggers[1].dispatchEvent(pointerEvent('pointerenter'));
-        jest.advanceTimersByTime(600);
+        vi.advanceTimersByTime(600);
         controlledFixture.detectChanges();
 
         expect(controlledFixture.componentInstance.open).toBe(true);

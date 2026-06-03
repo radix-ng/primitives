@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
 
 import { Component, DebugElement, ElementRef, inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -28,7 +29,7 @@ xdescribe('RdxSwitchRootDirective', () => {
     });
 
     it('should toggle checked state and emit event', () => {
-        const onCheckedChangeSpy = jest.spyOn(directive.onCheckedChange, 'subscribe');
+        const onCheckedChangeSpy = vi.spyOn(directive.onCheckedChange, 'subscribe');
         directive.toggle();
 
         expect(directive.checked()).toBe(true);
@@ -41,7 +42,7 @@ xdescribe('RdxSwitchRootDirective', () => {
     });
 
     it('should emit correct values for controlled checked state', () => {
-        const onCheckedChangeSpy = jest.spyOn(directive.onCheckedChange, 'subscribe');
+        const onCheckedChangeSpy = vi.spyOn(directive.onCheckedChange, 'subscribe');
 
         directive.checked.set(true);
         directive.toggle(); // Controlled state logic

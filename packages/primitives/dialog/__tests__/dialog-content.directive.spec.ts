@@ -2,6 +2,7 @@ import { Component, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
+import { vi, type Mocked } from 'vitest';
 import { RdxDialogContentDirective } from '../src/dialog-content.directive';
 import { RdxDialogRef } from '../src/dialog-ref';
 
@@ -15,15 +16,15 @@ describe('RdxDialogContentDirective', () => {
     let fixture: ComponentFixture<TestComponent>;
     let directiveElement: DebugElement;
     let directive: RdxDialogContentDirective;
-    let dialogRefMock: jest.Mocked<RdxDialogRef>;
+    let dialogRefMock: Mocked<RdxDialogRef>;
     let closedSubject: Subject<any>;
 
     beforeEach(async () => {
         closedSubject = new Subject();
         dialogRefMock = {
             closed$: closedSubject.asObservable(),
-            close: jest.fn(),
-            dismiss: jest.fn()
+            close: vi.fn(),
+            dismiss: vi.fn()
         } as any;
 
         await TestBed.configureTestingModule({

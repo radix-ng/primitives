@@ -7,16 +7,21 @@
             "dependsOn": ["^build"],
             "inputs": ["production", "^production"]
         },
-        "@nx/jest:jest": {
+        "@angular/build:unit-test": {
             "cache": true,
-            "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"],
-            "options": {
-                "passWithNoTests": true
-            },
+            "inputs": ["default", "^production"],
             "configurations": {
                 "ci": {
-                    "ci": true,
-                    "codeCoverage": true
+                    "coverage": true
+                }
+            }
+        },
+        "@nx/vitest:test": {
+            "cache": true,
+            "inputs": ["default", "^production"],
+            "configurations": {
+                "ci": {
+                    "mode": "ci"
                 }
             }
         },
@@ -52,6 +57,8 @@
             "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
             "!{projectRoot}/tsconfig.spec.json",
             "!{projectRoot}/jest.config.[jt]s",
+            "!{projectRoot}/vite.config.[jt]s",
+            "!{projectRoot}/vitest.config.[jt]s",
             "!{projectRoot}/src/test-setup.[jt]s",
             "!{projectRoot}/test-setup.[jt]s",
             "!{projectRoot}/**/*.stories.@(js|jsx|ts|tsx|mdx)",
@@ -65,10 +72,10 @@
             "e2eTestRunner": "none",
             "linter": "eslint",
             "style": "scss",
-            "unitTestRunner": "jest"
+            "unitTestRunner": "vitest"
         },
         "@nx/angular:library": {
-            "unitTestRunner": "jest"
+            "unitTestRunner": "vitest"
         },
         "@nx/angular:component": {
             "style": "scss"

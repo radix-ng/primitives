@@ -1,6 +1,7 @@
 import { Component, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { vi } from 'vitest';
 import { RdxLabelDirective } from '../src/label.directive';
 
 /* Explanation:
@@ -63,7 +64,7 @@ describe('RdxLabelDirective', () => {
             detail: 2
         });
         Object.defineProperty(mockEventLabel, 'target', { value: labelElement.nativeElement });
-        jest.spyOn(mockEventLabel, 'preventDefault');
+        vi.spyOn(mockEventLabel, 'preventDefault');
 
         labelElement.triggerEventHandler('mousedown', mockEventLabel);
         expect(mockEventLabel.preventDefault).toHaveBeenCalled();
@@ -75,7 +76,7 @@ describe('RdxLabelDirective', () => {
             detail: 2
         });
         Object.defineProperty(mockEventInput, 'target', { value: inputElement.nativeElement });
-        jest.spyOn(mockEventInput, 'preventDefault');
+        vi.spyOn(mockEventInput, 'preventDefault');
 
         labelElement.triggerEventHandler('mousedown', mockEventInput);
         expect(mockEventInput.preventDefault).not.toHaveBeenCalled();
@@ -88,7 +89,7 @@ describe('RdxLabelDirective', () => {
             detail: 1
         });
         Object.defineProperty(mockEvent, 'target', { value: labelElement.nativeElement });
-        jest.spyOn(mockEvent, 'preventDefault');
+        vi.spyOn(mockEvent, 'preventDefault');
 
         labelElement.triggerEventHandler('mousedown', mockEvent);
         expect(mockEvent.preventDefault).not.toHaveBeenCalled();
@@ -101,7 +102,7 @@ describe('RdxLabelDirective', () => {
             detail: 2
         });
         Object.defineProperty(mockEvent, 'target', { value: divElement.nativeElement });
-        jest.spyOn(mockEvent, 'preventDefault');
+        vi.spyOn(mockEvent, 'preventDefault');
 
         labelElement.triggerEventHandler('mousedown', mockEvent);
         expect(mockEvent.preventDefault).toHaveBeenCalled();
@@ -115,7 +116,7 @@ describe('RdxLabelDirective', () => {
             detail: 2
         });
         Object.defineProperty(mockEvent, 'target', { value: nestedSpan.nativeElement });
-        jest.spyOn(mockEvent, 'preventDefault');
+        vi.spyOn(mockEvent, 'preventDefault');
 
         labelElement.triggerEventHandler('mousedown', mockEvent);
         expect(mockEvent.preventDefault).not.toHaveBeenCalled();

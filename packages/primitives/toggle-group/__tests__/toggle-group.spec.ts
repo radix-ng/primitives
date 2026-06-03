@@ -2,6 +2,7 @@ import { Component, DebugElement, inject, Input, model } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { By } from '@angular/platform-browser';
+import { vi } from 'vitest';
 import { RdxToggleGroupItemDirective } from '../src/toggle-group-item.directive';
 import { RdxToggleGroupDirective } from '../src/toggle-group.directive';
 
@@ -117,7 +118,7 @@ describe('RdxToggleGroupDirective', () => {
     });
 
     it('should emit valueChange event', () => {
-        const spy = jest.spyOn(component, 'onValueChange');
+        const spy = vi.spyOn(component, 'onValueChange');
 
         items[2].nativeElement.click();
         fixture.detectChanges();
