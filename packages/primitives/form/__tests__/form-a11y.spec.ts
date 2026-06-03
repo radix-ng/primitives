@@ -1,10 +1,10 @@
+import { _importsForm, RdxFormErrors } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFieldsetLegend, RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
 import { axe } from 'jest-axe';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsForm, RdxFormErrors } from '../index';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -18,7 +18,7 @@ import { _importsForm, RdxFormErrors } from '../index';
         RdxFieldError
     ],
     template: `
-        <form [errors]="errors()" rdxFormRoot>
+        <form rdxFormRoot [errors]="errors()">
             <fieldset rdxFieldsetRoot>
                 <legend rdxFieldsetLegend>Account</legend>
                 <div name="email" rdxFieldRoot>

@@ -1,20 +1,20 @@
+import { cn, demoNavigationMenu } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
-import { cn, demoNavigationMenu } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-rtl',
     imports: [...navigationMenuImports, LucideChevronDown],
     template: `
-        <nav [class]="m.root" dir="rtl" rdxNavigationMenuRoot>
-            <ul [class]="m.list" dir="rtl" rdxNavigationMenuList>
+        <nav dir="rtl" rdxNavigationMenuRoot [class]="m.root">
+            <ul dir="rtl" rdxNavigationMenuList [class]="m.list">
                 @for (group of groups; track group.value) {
-                    <li [value]="group.value" rdxNavigationMenuItem>
-                        <button [class]="m.trigger" rdxNavigationMenuTrigger>
+                    <li rdxNavigationMenuItem [value]="group.value">
+                        <button rdxNavigationMenuTrigger [class]="m.trigger">
                             {{ group.label }}
-                            <svg [class]="m.icon" rdxNavigationMenuIcon lucideChevronDown></svg>
+                            <svg rdxNavigationMenuIcon lucideChevronDown [class]="m.icon"></svg>
                         </button>
 
                         <ng-container *rdxNavigationMenuContent>
@@ -22,7 +22,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                                 <ul [class]="m.contentGrid">
                                     @for (link of group.links; track link) {
                                         <li>
-                                            <a [class]="m.cardLink" rdxNavigationMenuLink href="#">
+                                            <a rdxNavigationMenuLink href="#" [class]="m.cardLink">
                                                 <div [class]="m.cardHeading">{{ link }}</div>
                                             </a>
                                         </li>
@@ -34,9 +34,9 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 }
             </ul>
 
-            <div *rdxNavigationMenuPortal [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
-                <div [class]="m.popup" rdxNavigationMenuPopup>
-                    <div [class]="m.viewport" rdxNavigationMenuViewport></div>
+            <div *rdxNavigationMenuPortal sideOffset="8" rdxNavigationMenuPositioner [class]="m.positioner">
+                <div rdxNavigationMenuPopup [class]="m.popup">
+                    <div rdxNavigationMenuViewport [class]="m.viewport"></div>
                 </div>
             </div>
         </nav>

@@ -1,7 +1,7 @@
+import { injectToolbarGroupContext, injectToolbarRootContext } from './toolbar-context';
 import { booleanAttribute, computed, Directive, effect, inject, input } from '@angular/core';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import { BooleanInput } from '@radix-ng/primitives/core';
-import { injectToolbarGroupContext, injectToolbarRootContext } from './toolbar-context';
 
 /**
  * A button within a toolbar.

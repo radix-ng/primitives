@@ -1,7 +1,7 @@
+import { _importsAutocomplete } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsAutocomplete } from '../index';
 
 /**
  * Regression (ADR 0014 review, Finding 3): autocomplete is always `selectionMode="none"`, so options
@@ -12,13 +12,13 @@ import { _importsAutocomplete } from '../index';
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsAutocomplete],
     template: `
-        <div [(value)]="value" [(open)]="open" rdxAutocompleteRoot>
+        <div rdxAutocompleteRoot [(value)]="value" [(open)]="open">
             <input rdxAutocompleteInput aria-label="Fruit" />
             <div *rdxAutocompletePortal rdxAutocompletePositioner>
                 <div rdxAutocompletePopup>
                     <div rdxAutocompleteList aria-label="Fruits">
                         @for (fruit of fruits; track fruit) {
-                            <div [value]="fruit" rdxAutocompleteItem>{{ fruit }}</div>
+                            <div rdxAutocompleteItem [value]="fruit">{{ fruit }}</div>
                         }
                     </div>
                 </div>

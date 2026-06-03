@@ -1,6 +1,3 @@
-import { LucideCheck } from '@lucide/angular';
-import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { expect } from 'storybook/test';
 import { RdxLabelDirective } from '../../label';
 import { demoCheckbox } from '../../storybook/styles';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
@@ -9,21 +6,23 @@ import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 import { CheckboxReactiveFormsExampleComponent } from './checkbox-forms';
-import { CheckboxGroupExample } from './checkbox-group';
-import { CheckboxIndeterminate } from './checkbox-indeterminate';
-import { CheckboxNgModelExample } from './checkbox-ngmodel';
-import { CheckboxKeepMountedExample } from './checkbox-presence';
-import { CheckboxSelectAllExample } from './checkbox-select-all';
-import { CheckboxValidationExample } from './checkbox-validation';
-
 // Full component source for the "Show code" panel (Vite `?raw` import).
 import formsSource from './checkbox-forms?raw';
+import { CheckboxGroupExample } from './checkbox-group';
 import groupSource from './checkbox-group?raw';
+import { CheckboxIndeterminate } from './checkbox-indeterminate';
 import indeterminateSource from './checkbox-indeterminate?raw';
+import { CheckboxNgModelExample } from './checkbox-ngmodel';
 import ngModelSource from './checkbox-ngmodel?raw';
+import { CheckboxKeepMountedExample } from './checkbox-presence';
 import presenceSource from './checkbox-presence?raw';
+import { CheckboxSelectAllExample } from './checkbox-select-all';
 import selectAllSource from './checkbox-select-all?raw';
+import { CheckboxValidationExample } from './checkbox-validation';
 import validationSource from './checkbox-validation?raw';
+import { LucideCheck } from '@lucide/angular';
+import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { expect } from 'storybook/test';
 
 const source = (code: string) => ({
     docs: {

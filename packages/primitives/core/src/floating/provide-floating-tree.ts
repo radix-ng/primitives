@@ -1,6 +1,6 @@
-import { inject, InjectionToken, Provider } from '@angular/core';
 import { RdxFloatingRootContext } from './floating-root-context';
 import { RdxFloatingTree } from './floating-tree';
+import { inject, InjectionToken, Provider } from '@angular/core';
 
 /**
  * The nearest shared {@link RdxFloatingTree}. **Scoped-by-default, sharing explicit** — strict Base UI

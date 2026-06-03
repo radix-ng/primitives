@@ -1,7 +1,7 @@
+import { cn, demoButton, demoDialog } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
-import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 /**
  * Placing elements outside the popup — a 1-1 port of the Base UI "uncontained" dialog.
@@ -18,10 +18,10 @@ import { cn, demoButton, demoDialog } from '../../storybook/styles';
     imports: [...dialogImports, LucideX],
     template: `
         <div rdxDialogRoot>
-            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open dialog</button>
+            <button rdxDialogTrigger [class]="cn(b.base, b.primary, b.size.md)">Open dialog</button>
 
             <ng-template rdxDialogPortal>
-                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
+                <div rdxDialogBackdrop [class]="cn(d.backdrop, d.backdropAnimated)"></div>
 
                 <div class="fixed inset-0 z-50 grid place-items-center px-4 py-12 xl:py-6" rdxDialogViewport>
                     <!-- Transparent frame: pointer-events-none so the gaps around the card stay dismissable. -->
@@ -41,8 +41,8 @@ import { cn, demoButton, demoDialog } from '../../storybook/styles';
                         <div
                             class="border-border bg-card text-card-foreground pointer-events-auto h-full w-full max-w-[70rem] rounded-md border p-6 shadow-sm transition-[scale] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-data-[starting-style]/popup:scale-105"
                         >
-                            <h2 [class]="d.title" rdxDialogTitle>Uncontained dialog</h2>
-                            <p [class]="d.description" rdxDialogDescription>
+                            <h2 rdxDialogTitle [class]="d.title">Uncontained dialog</h2>
+                            <p rdxDialogDescription [class]="d.description">
                                 The close button lives in the popup but is rendered outside this card, above its
                                 top-right corner.
                             </p>

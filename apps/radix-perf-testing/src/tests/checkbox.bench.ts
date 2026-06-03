@@ -1,8 +1,8 @@
+import { benchmark, BenchmarkResult } from '../harness/benchmark';
+import { writeResults } from '../harness/reporter';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxCheckboxButtonDirective, RdxCheckboxRootDirective } from '@radix-ng/primitives/checkbox';
 import { afterAll, describe, expect, it } from 'vitest';
-import { benchmark, BenchmarkResult } from '../harness/benchmark';
-import { writeResults } from '../harness/reporter';
 
 const FILE = 'checkbox.bench.ts';
 const COUNT = 500;
@@ -16,7 +16,7 @@ const COUNT = 500;
     imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective],
     template: `
         @for (item of items(); track item) {
-            <button [checked]="allChecked()" rdxCheckboxRoot rdxCheckboxButton type="button">·</button>
+            <button rdxCheckboxRoot rdxCheckboxButton type="button" [checked]="allChecked()">·</button>
         }
     `
 })

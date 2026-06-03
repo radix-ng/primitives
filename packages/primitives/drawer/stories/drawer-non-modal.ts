@@ -1,6 +1,6 @@
+import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -13,21 +13,21 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                 there is no backdrop.
             </p>
 
-            <div [modal]="false" rdxDrawerRoot>
-                <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Open non-modal drawer</button>
+            <div rdxDrawerRoot [modal]="false">
+                <button rdxDrawerTrigger [class]="cn(b.base, b.primary, b.size.md)">Open non-modal drawer</button>
 
                 <ng-template rdxDrawerPortal>
-                    <div [class]="cn(d.popup, d.side.bottom, d.overlayAnimated)" rdxDrawerPopup>
-                        <div [class]="d.grip" aria-hidden="true"></div>
+                    <div rdxDrawerPopup [class]="cn(d.popup, d.side.bottom, d.overlayAnimated)">
+                        <div aria-hidden="true" [class]="d.grip"></div>
 
-                        <div [class]="d.body" rdxDrawerContent>
-                            <h2 [class]="d.title" rdxDrawerTitle>Non-modal drawer</h2>
-                            <p [class]="d.description" rdxDrawerDescription>
+                        <div rdxDrawerContent [class]="d.body">
+                            <h2 rdxDrawerTitle [class]="d.title">Non-modal drawer</h2>
+                            <p rdxDrawerDescription [class]="d.description">
                                 Keep interacting with the rest of the page; the counter below still works.
                             </p>
 
                             <div [class]="d.footer">
-                                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Close</button>
+                                <button rdxDrawerClose [class]="cn(b.base, b.primary, b.size.sm)">Close</button>
                             </div>
                         </div>
                     </div>

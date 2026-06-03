@@ -1,17 +1,17 @@
+import { _importsCombobox } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsCombobox } from '../index';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
-        <div [(value)]="value" [(open)]="open" [dir]="dir()" multiple rdxComboboxRoot>
+        <div multiple rdxComboboxRoot [dir]="dir()" [(value)]="value" [(open)]="open">
             <div rdxComboboxAnchor>
                 <div rdxComboboxChips>
                     @for (v of value(); track v) {
-                        <span [value]="v" rdxComboboxChip>
+                        <span rdxComboboxChip [value]="v">
                             {{ v }}
                             <button rdxComboboxChipRemove aria-label="Remove">×</button>
                         </span>
@@ -24,7 +24,7 @@ import { _importsCombobox } from '../index';
                 <div rdxComboboxPopup>
                     <div rdxComboboxList aria-label="Fruits">
                         @for (f of fruits; track f) {
-                            <div [value]="f" rdxComboboxItem>{{ f }}</div>
+                            <div rdxComboboxItem [value]="f">{{ f }}</div>
                         }
                     </div>
                 </div>

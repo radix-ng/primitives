@@ -1,5 +1,3 @@
-import { computed, Directive, effect, ElementRef, inject, output, signal } from '@angular/core';
-import { createContext } from '@radix-ng/primitives/core';
 import {
     RdxCompositeItemMetadata,
     RdxCompositeItemRegistration,
@@ -7,6 +5,8 @@ import {
     RdxCompositeMetadata
 } from './types';
 import { sortByDocumentPosition } from './utils';
+import { computed, Directive, effect, ElementRef, inject, output, signal } from '@angular/core';
+import { createContext } from '@radix-ng/primitives/core';
 
 const listContext = (): RdxCompositeListContext => {
     const list = inject(RdxCompositeList);

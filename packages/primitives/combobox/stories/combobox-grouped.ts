@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 
 /** Options organized into sections with `RdxComboboxGroup` / `RdxComboboxGroupLabel`. A group hides
  * its heading automatically when all of its items are filtered out. */
@@ -10,22 +10,22 @@ import { _importsCombobox } from '../index';
     selector: 'combobox-grouped',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
-        <div [(value)]="value" rdxComboboxRoot>
+        <div rdxComboboxRoot [(value)]="value">
             <div [class]="c.control">
-                <input [class]="c.input" rdxComboboxInput placeholder="Search produce…" aria-label="Produce" />
-                <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                <input rdxComboboxInput placeholder="Search produce…" aria-label="Produce" [class]="c.input" />
+                <button rdxComboboxTrigger aria-label="Open" [class]="c.trigger">
                     <svg lucideChevronDown size="16"></svg>
                 </button>
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" rdxComboboxPopup>
-                    <div [class]="c.list" rdxComboboxList aria-label="Produce">
+            <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                <div rdxComboboxPopup [class]="c.popup">
+                    <div rdxComboboxList aria-label="Produce" [class]="c.list">
                         <div rdxComboboxGroup>
-                            <div [class]="c.groupLabel" rdxComboboxGroupLabel>Fruits</div>
+                            <div rdxComboboxGroupLabel [class]="c.groupLabel">Fruits</div>
                             @for (fruit of fruits; track fruit) {
-                                <div [class]="c.item" [value]="fruit" rdxComboboxItem>
-                                    <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                <div rdxComboboxItem [class]="c.item" [value]="fruit">
+                                    <span rdxComboboxItemIndicator [class]="c.itemIndicator">
                                         <svg lucideCheck size="14"></svg>
                                     </span>
                                     {{ fruit }}
@@ -33,10 +33,10 @@ import { _importsCombobox } from '../index';
                             }
                         </div>
                         <div rdxComboboxGroup>
-                            <div [class]="c.groupLabel" rdxComboboxGroupLabel>Vegetables</div>
+                            <div rdxComboboxGroupLabel [class]="c.groupLabel">Vegetables</div>
                             @for (vegetable of vegetables; track vegetable) {
-                                <div [class]="c.item" [value]="vegetable" rdxComboboxItem>
-                                    <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                <div rdxComboboxItem [class]="c.item" [value]="vegetable">
+                                    <span rdxComboboxItemIndicator [class]="c.itemIndicator">
                                         <svg lucideCheck size="14"></svg>
                                     </span>
                                     {{ vegetable }}
@@ -44,7 +44,7 @@ import { _importsCombobox } from '../index';
                             }
                         </div>
                     </div>
-                    <div [class]="c.empty" rdxComboboxEmpty>No produce found.</div>
+                    <div rdxComboboxEmpty [class]="c.empty">No produce found.</div>
                 </div>
             </div>
         </div>

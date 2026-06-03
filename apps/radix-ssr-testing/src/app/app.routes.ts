@@ -1,5 +1,5 @@
-import { Route } from '@angular/router';
 import { List } from './pages/list';
+import { Route } from '@angular/router';
 
 export const appRoutes: Route[] = [
     { path: '', redirectTo: 'list', pathMatch: 'full' },

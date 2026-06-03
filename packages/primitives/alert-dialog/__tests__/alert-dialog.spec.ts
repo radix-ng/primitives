@@ -28,7 +28,7 @@ import { axe } from 'jest-axe';
         RdxAlertDialogClose
     ],
     template: `
-        <div [(open)]="open" (onOpenChange)="changes.push($event.reason)" rdxAlertDialogRoot>
+        <div rdxAlertDialogRoot [(open)]="open" (onOpenChange)="changes.push($event.reason)">
             <button rdxAlertDialogTrigger>Delete</button>
 
             <ng-template rdxAlertDialogPortal>
@@ -51,8 +51,8 @@ class TestHostComponent {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxAlertDialogTrigger, RdxAlertDialogRoot, RdxAlertDialogPortal, RdxAlertDialogPopup],
     template: `
-        <button id="detached" [handle]="handle" rdxAlertDialogTrigger>Open</button>
-        <div [handle]="handle" rdxAlertDialogRoot>
+        <button id="detached" rdxAlertDialogTrigger [handle]="handle">Open</button>
+        <div rdxAlertDialogRoot [handle]="handle">
             <ng-template rdxAlertDialogPortal>
                 <div rdxAlertDialogPopup>Popup</div>
             </ng-template>

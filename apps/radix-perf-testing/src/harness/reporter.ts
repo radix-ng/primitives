@@ -1,5 +1,5 @@
-import { commands } from 'vitest/browser';
 import { BenchmarkResult } from './benchmark';
+import { commands } from 'vitest/browser';
 
 // Custom browser command registered in vite.config.mts. It runs in Node (has fs access) and
 // accumulates rows across all bench files in the run, writing BENCH_OUTPUT_PATH each time.

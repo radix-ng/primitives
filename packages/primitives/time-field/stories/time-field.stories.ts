@@ -1,4 +1,3 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { TimeFieldDefaultExample } from './time-field-default';
 import defaultSource from './time-field-default?raw';
@@ -14,6 +13,7 @@ import { TimeFieldReadonlyExample } from './time-field-readonly';
 import readonlySource from './time-field-readonly?raw';
 import { TimeFieldValidationExample } from './time-field-validation';
 import validationSource from './time-field-validation?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 

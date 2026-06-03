@@ -1,7 +1,7 @@
+import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
-import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -15,29 +15,29 @@ import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
             </p>
 
             <div modal="trap-focus" rdxDialogRoot>
-                <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open dialog</button>
+                <button rdxDialogTrigger [class]="cn(b.base, b.primary, b.size.md)">Open dialog</button>
 
                 <ng-template rdxDialogPortal>
-                    <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-                        <h2 [class]="d.title" rdxDialogTitle>Focus is trapped</h2>
-                        <p [class]="d.description" rdxDialogDescription>
+                    <div rdxDialogPopup [class]="cn(d.popup, d.popupAnimated)">
+                        <h2 rdxDialogTitle [class]="d.title">Focus is trapped</h2>
+                        <p rdxDialogDescription [class]="d.description">
                             Press Tab and notice focus never leaves the dialog.
                         </p>
 
                         <label [class]="d.field">
                             First field
-                            <input [class]="input" placeholder="Focused when opened" />
+                            <input placeholder="Focused when opened" [class]="input" />
                         </label>
                         <label [class]="d.field">
                             Second field
-                            <input [class]="input" placeholder="Tab to reach me" />
+                            <input placeholder="Tab to reach me" [class]="input" />
                         </label>
 
                         <div [class]="d.footer">
-                            <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Done</button>
+                            <button rdxDialogClose [class]="cn(b.base, b.primary, b.size.sm)">Done</button>
                         </div>
 
-                        <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                        <button aria-label="Close" rdxDialogClose [class]="d.close">
                             <svg aria-hidden="true" lucideX size="16" />
                         </button>
                     </div>

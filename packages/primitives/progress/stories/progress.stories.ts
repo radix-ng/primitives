@@ -1,4 +1,3 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { cn } from '../../storybook/styles';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
@@ -10,6 +9,7 @@ import { ProgressCircularComponent } from './progress-circular';
 import circularSource from './progress-circular?raw';
 import { ProgressLinearComponent } from './progress-linear';
 import linearSource from './progress-linear?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const source = (code: string) => ({ docs: { source: { code, language: 'typescript' } } });
 const html = String.raw;

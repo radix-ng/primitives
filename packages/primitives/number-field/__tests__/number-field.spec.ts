@@ -1,14 +1,14 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { form, FormField } from '@angular/forms/signals';
-import { By } from '@angular/platform-browser';
-import { vi } from 'vitest';
 import { RdxNumberFieldDecrement } from '../src/number-field-decrement';
 import { RdxNumberFieldGroup } from '../src/number-field-group';
 import { RdxNumberFieldHiddenInput } from '../src/number-field-hidden-input';
 import { RdxNumberFieldIncrement } from '../src/number-field-increment';
 import { RdxNumberFieldInput } from '../src/number-field-input';
 import { RdxNumberFieldRoot, RdxNumberFieldValueChangeEvent } from '../src/number-field-root';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { form, FormField } from '@angular/forms/signals';
+import { By } from '@angular/platform-browser';
+import { vi } from 'vitest';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -22,7 +22,7 @@ import { RdxNumberFieldRoot, RdxNumberFieldValueChangeEvent } from '../src/numbe
     ],
     template: `
         <div
-            [(value)]="value"
+            rdxNumberFieldRoot
             [defaultValue]="defaultValue()"
             [min]="min()"
             [max]="max()"
@@ -32,9 +32,9 @@ import { RdxNumberFieldRoot, RdxNumberFieldValueChangeEvent } from '../src/numbe
             [readonly]="readonly()"
             [required]="required()"
             [format]="format()"
+            [(value)]="value"
             (onValueChange)="onValueChange($event)"
             (onValueCommitted)="onValueCommitted($event)"
-            rdxNumberFieldRoot
         >
             <input rdxNumberFieldHiddenInput />
             <div rdxNumberFieldGroup>
@@ -280,7 +280,7 @@ describe('RdxNumberField', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxNumberFieldRoot, RdxNumberFieldInput, RdxNumberFieldIncrement],
     template: `
-        <div [invalid]="invalid()" [errors]="errors()" rdxNumberFieldRoot>
+        <div rdxNumberFieldRoot [invalid]="invalid()" [errors]="errors()">
             <input rdxNumberFieldInput />
             <button rdxNumberFieldIncrement>+</button>
         </div>
@@ -347,7 +347,7 @@ describe('RdxNumberField validation state (batch #4)', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [FormField, RdxNumberFieldRoot, RdxNumberFieldInput, RdxNumberFieldIncrement],
     template: `
-        <div [formField]="amount" rdxNumberFieldRoot>
+        <div rdxNumberFieldRoot [formField]="amount">
             <input rdxNumberFieldInput />
             <button rdxNumberFieldIncrement>+</button>
         </div>

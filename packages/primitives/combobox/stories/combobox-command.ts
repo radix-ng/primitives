@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideArrowRight } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideArrowRight } from '@lucide/angular';
 
 /**
  * A command/search palette: `selectionMode="none"` (no value is committed — it filters and runs an
@@ -14,20 +14,20 @@ import { _importsCombobox } from '../index';
     template: `
         <div
             class="flex w-64 flex-col gap-2"
-            (onValueChange)="run($event.value)"
             selectionMode="none"
             autoHighlight="always"
             rdxComboboxRoot
+            (onValueChange)="run($event.value)"
         >
             <div [class]="c.control">
-                <input [class]="c.input" rdxComboboxInput placeholder="Run a command…" aria-label="Command" />
+                <input rdxComboboxInput placeholder="Run a command…" aria-label="Command" [class]="c.input" />
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" rdxComboboxPopup>
-                    <div [class]="c.list" rdxComboboxList aria-label="Commands">
+            <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                <div rdxComboboxPopup [class]="c.popup">
+                    <div rdxComboboxList aria-label="Commands" [class]="c.list">
                         @for (command of commands; track command) {
-                            <div [class]="c.item" [value]="command" rdxComboboxItem>
+                            <div rdxComboboxItem [class]="c.item" [value]="command">
                                 <span [class]="c.itemIndicator">
                                     <svg lucideArrowRight size="14"></svg>
                                 </span>
@@ -35,7 +35,7 @@ import { _importsCombobox } from '../index';
                             </div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxComboboxEmpty>No commands.</div>
+                    <div rdxComboboxEmpty [class]="c.empty">No commands.</div>
                 </div>
             </div>
 

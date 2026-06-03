@@ -70,7 +70,7 @@ class MenubarHost {}
             </ng-container>
 
             <ng-container #editMenu="rdxMenuRoot" rdxMenuRoot>
-                <button [disabled]="true" rdxMenuTrigger>Edit</button>
+                <button rdxMenuTrigger [disabled]="true">Edit</button>
                 @if (editMenu.open()) {
                     <div rdxMenuPositioner>
                         <div rdxMenuPopup>

@@ -1,3 +1,4 @@
+import { RdxRadioValueChangeReason } from './radio-tokens';
 import {
     booleanAttribute,
     computed,
@@ -8,8 +9,8 @@ import {
     input,
     model,
     output,
-    signal,
     Signal,
+    signal,
     untracked
 } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
@@ -24,7 +25,6 @@ import {
     RdxFormUiTouchTarget,
     RdxFormValueControl
 } from '@radix-ng/primitives/core';
-import { RdxRadioValueChangeReason } from './radio-tokens';
 
 export type { RdxRadioValueChangeReason } from './radio-tokens';
 

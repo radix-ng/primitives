@@ -1,6 +1,6 @@
-import { NgModule } from '@angular/core';
 import { RdxContextMenuRoot } from './src/context-menu-root';
 import { RdxContextMenuTrigger } from './src/context-menu-trigger';
+import { NgModule } from '@angular/core';
 
 export * from './src/context-menu-root';
 export * from './src/context-menu-trigger';

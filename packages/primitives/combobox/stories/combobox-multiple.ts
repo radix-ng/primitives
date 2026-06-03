@@ -1,21 +1,21 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown, LucideX } from '@lucide/angular';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown, LucideX } from '@lucide/angular';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-multiple',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck, LucideX],
     template: `
-        <div [(value)]="value" multiple rdxComboboxRoot>
-            <div [class]="control" rdxComboboxAnchor>
+        <div multiple rdxComboboxRoot [(value)]="value">
+            <div rdxComboboxAnchor [class]="control">
                 @if (value().length) {
-                    <div [class]="c.chips" rdxComboboxChips>
+                    <div rdxComboboxChips [class]="c.chips">
                         @for (fruit of value(); track fruit) {
-                            <span [class]="c.chip" [value]="fruit" rdxComboboxChip>
+                            <span rdxComboboxChip [class]="c.chip" [value]="fruit">
                                 {{ fruit }}
-                                <button [class]="c.chipRemove" rdxComboboxChipRemove aria-label="Remove">
+                                <button rdxComboboxChipRemove aria-label="Remove" [class]="c.chipRemove">
                                     <svg lucideX size="12"></svg>
                                 </button>
                             </span>
@@ -23,29 +23,29 @@ import { _importsCombobox } from '../index';
                     </div>
                 }
                 <input
-                    [class]="c.inputInline"
-                    [placeholder]="value().length ? '' : 'Add fruits…'"
                     rdxComboboxInput
                     aria-label="Fruits"
+                    [class]="c.inputInline"
+                    [placeholder]="value().length ? '' : 'Add fruits…'"
                 />
-                <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                <button rdxComboboxTrigger aria-label="Open" [class]="c.trigger">
                     <svg lucideChevronDown size="16"></svg>
                 </button>
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" rdxComboboxPopup>
-                    <div [class]="c.list" rdxComboboxList aria-label="Fruits">
+            <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                <div rdxComboboxPopup [class]="c.popup">
+                    <div rdxComboboxList aria-label="Fruits" [class]="c.list">
                         @for (fruit of fruits; track fruit) {
-                            <div [class]="c.item" [value]="fruit" rdxComboboxItem>
-                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                            <div rdxComboboxItem [class]="c.item" [value]="fruit">
+                                <span rdxComboboxItemIndicator [class]="c.itemIndicator">
                                     <svg lucideCheck size="14"></svg>
                                 </span>
                                 {{ fruit }}
                             </div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
+                    <div rdxComboboxEmpty [class]="c.empty">No fruit found.</div>
                 </div>
             </div>
         </div>

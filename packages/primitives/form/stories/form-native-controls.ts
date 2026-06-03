@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { RdxFieldControl, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormRoot, RdxFormSubmitEvent } from '../index';
 import { formField, formInput, formLabel, formSubmit } from './form.shared';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { RdxFieldControl, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 
 /**
  * No `@angular/forms` at all — just native controls. On a valid submit the Form serializes the form's
@@ -12,17 +12,17 @@ import { formField, formInput, formLabel, formSubmit } from './form.shared';
     selector: 'form-native-controls-example',
     imports: [RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl],
     template: `
-        <form class="flex w-80 flex-col gap-4" (onFormSubmit)="onSubmit($event)" rdxFormRoot>
-            <div [class]="field" name="name" rdxFieldRoot>
-                <label [class]="label" rdxFieldLabel>Name</label>
-                <input [class]="input" name="name" rdxFieldControl value="Ada" />
+        <form class="flex w-80 flex-col gap-4" rdxFormRoot (onFormSubmit)="onSubmit($event)">
+            <div name="name" rdxFieldRoot [class]="field">
+                <label rdxFieldLabel [class]="label">Name</label>
+                <input name="name" rdxFieldControl value="Ada" [class]="input" />
             </div>
-            <div [class]="field" name="role" rdxFieldRoot>
-                <label [class]="label" rdxFieldLabel>Role</label>
-                <input [class]="input" name="role" rdxFieldControl value="Engineer" />
+            <div name="role" rdxFieldRoot [class]="field">
+                <label rdxFieldLabel [class]="label">Role</label>
+                <input name="role" rdxFieldControl value="Engineer" [class]="input" />
             </div>
 
-            <button [class]="submit" type="submit">Submit</button>
+            <button type="submit" [class]="submit">Submit</button>
             @if (values()) {
                 <pre class="bg-muted text-foreground rounded-md p-3 text-xs">{{ values() }}</pre>
             }

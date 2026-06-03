@@ -1,7 +1,7 @@
+import { cn, demoNavigationMenu } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideArrowUpRight, LucideBookOpen, LucideChevronDown, LucideCode, LucideLifeBuoy } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
-import { cn, demoNavigationMenu } from '../../storybook/styles';
 
 /**
  * Custom links: `rdxNavigationMenuLink` composes onto your own anchor markup — rich rows with icons,
@@ -21,18 +21,18 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
         LucideLifeBuoy
     ],
     template: `
-        <nav [class]="m.root" rdxNavigationMenuRoot>
-            <ul [class]="m.list" rdxNavigationMenuList>
+        <nav rdxNavigationMenuRoot [class]="m.root">
+            <ul rdxNavigationMenuList [class]="m.list">
                 <li rdxNavigationMenuItem value="resources">
-                    <button [class]="m.trigger" rdxNavigationMenuTrigger>
+                    <button rdxNavigationMenuTrigger [class]="m.trigger">
                         Resources
-                        <svg [class]="m.icon" rdxNavigationMenuIcon lucideChevronDown></svg>
+                        <svg rdxNavigationMenuIcon lucideChevronDown [class]="m.icon"></svg>
                     </button>
 
                     <ng-container *rdxNavigationMenuContent>
                         <ul class="grid w-[420px] gap-1 p-2">
                             <li>
-                                <a [class]="row" rdxNavigationMenuLink href="#">
+                                <a rdxNavigationMenuLink href="#" [class]="row">
                                     <span [class]="iconBox"><svg lucideBookOpen size="18"></svg></span>
                                     <span class="flex min-w-0 flex-1 flex-col">
                                         <span [class]="m.cardHeading">Documentation</span>
@@ -41,7 +41,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                                 </a>
                             </li>
                             <li>
-                                <a [class]="row" rdxNavigationMenuLink href="#">
+                                <a rdxNavigationMenuLink href="#" [class]="row">
                                     <span [class]="iconBox"><svg lucideLifeBuoy size="18"></svg></span>
                                     <span class="flex min-w-0 flex-1 flex-col">
                                         <span [class]="m.cardHeading">Support</span>
@@ -52,11 +52,11 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                             <li>
                                 <!-- An external link — the directive sits on a normal anchor. -->
                                 <a
-                                    [class]="row"
                                     rel="noreferrer noopener"
                                     target="_blank"
                                     rdxNavigationMenuLink
                                     href="https://github.com/radix-ng/primitives"
+                                    [class]="row"
                                 >
                                     <span [class]="iconBox"><svg lucideCode size="18"></svg></span>
                                     <span class="flex min-w-0 flex-1 flex-col">
@@ -70,7 +70,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                             </li>
                             <li>
                                 <!-- Action link: keeps the menu open and runs a handler instead of navigating. -->
-                                <a [class]="row" (onSelect)="copy($event)" rdxNavigationMenuLink href="#">
+                                <a rdxNavigationMenuLink href="#" [class]="row" (onSelect)="copy($event)">
                                     <span [class]="iconBox"><svg lucideCode size="18"></svg></span>
                                     <span class="flex min-w-0 flex-1 flex-col">
                                         <span [class]="m.cardHeading">
@@ -87,9 +87,9 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 </li>
             </ul>
 
-            <div *rdxNavigationMenuPortal [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
-                <div [class]="m.popup" rdxNavigationMenuPopup>
-                    <div [class]="m.viewport" rdxNavigationMenuViewport></div>
+            <div *rdxNavigationMenuPortal sideOffset="8" rdxNavigationMenuPositioner [class]="m.positioner">
+                <div rdxNavigationMenuPopup [class]="m.popup">
+                    <div rdxNavigationMenuViewport [class]="m.viewport"></div>
                 </div>
             </div>
         </nav>

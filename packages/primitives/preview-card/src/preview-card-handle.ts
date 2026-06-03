@@ -1,5 +1,5 @@
-import { computed, signal } from '@angular/core';
 import type { RdxPreviewCardRootContext } from './preview-card-root';
+import { computed, signal } from '@angular/core';
 
 /**
  * Connects a preview-card root with trigger elements rendered elsewhere in the DOM.

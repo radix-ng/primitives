@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { cn, demoAvatar } from '../../storybook/styles';
 import { RdxAvatarFallbackDirective } from '../src/avatar-fallback.directive';
 import { RdxAvatarImageDirective } from '../src/avatar-image.directive';
 import { RdxAvatarRootDirective } from '../src/avatar-root.directive';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 const IMG_COLM = 'https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?&w=128&h=128&dpr=2&q=80';
 const IMG_PEDRO = 'https://images.unsplash.com/photo-1511485977113-f34c92461ad9?ixlib=rb-1.2.1&w=128&h=128&dpr=2&q=80';
@@ -18,14 +18,14 @@ const AVATAR_DIRECTIVES = [RdxAvatarRootDirective, RdxAvatarImageDirective, RdxA
     imports: AVATAR_DIRECTIVES,
     template: `
         <div class="flex items-center gap-4">
-            <span [class]="cn(a.root, a.size.md)" rdxAvatarRoot>
-                <img [class]="a.image" [src]="imgColm" rdxAvatarImage alt="Colm Tuite" />
-                <span [class]="a.fallback" [delayMs]="600" rdxAvatarFallback>CT</span>
+            <span rdxAvatarRoot [class]="cn(a.root, a.size.md)">
+                <img rdxAvatarImage alt="Colm Tuite" [class]="a.image" [src]="imgColm" />
+                <span rdxAvatarFallback [class]="a.fallback" [delayMs]="600">CT</span>
             </span>
 
-            <span [class]="cn(a.root, a.size.md)" rdxAvatarRoot>
-                <img [class]="a.image" [src]="imgPedro" rdxAvatarImage alt="Pedro Duarte" />
-                <span [class]="a.fallback" [delayMs]="600" rdxAvatarFallback>PD</span>
+            <span rdxAvatarRoot [class]="cn(a.root, a.size.md)">
+                <img rdxAvatarImage alt="Pedro Duarte" [class]="a.image" [src]="imgPedro" />
+                <span rdxAvatarFallback [class]="a.fallback" [delayMs]="600">PD</span>
             </span>
         </div>
     `
@@ -46,17 +46,17 @@ export class RdxAvatarDemoComponent {
     imports: AVATAR_DIRECTIVES,
     template: `
         <div class="flex items-center gap-4">
-            <span [class]="cn(a.root, a.size.sm)" rdxAvatarRoot>
-                <img [class]="a.image" [src]="img" rdxAvatarImage alt="Colm Tuite" />
-                <span [class]="a.fallback" rdxAvatarFallback>CT</span>
+            <span rdxAvatarRoot [class]="cn(a.root, a.size.sm)">
+                <img rdxAvatarImage alt="Colm Tuite" [class]="a.image" [src]="img" />
+                <span rdxAvatarFallback [class]="a.fallback">CT</span>
             </span>
-            <span [class]="cn(a.root, a.size.md)" rdxAvatarRoot>
-                <img [class]="a.image" [src]="img" rdxAvatarImage alt="Colm Tuite" />
-                <span [class]="a.fallback" rdxAvatarFallback>CT</span>
+            <span rdxAvatarRoot [class]="cn(a.root, a.size.md)">
+                <img rdxAvatarImage alt="Colm Tuite" [class]="a.image" [src]="img" />
+                <span rdxAvatarFallback [class]="a.fallback">CT</span>
             </span>
-            <span [class]="cn(a.root, a.size.lg)" rdxAvatarRoot>
-                <img [class]="a.image" [src]="img" rdxAvatarImage alt="Colm Tuite" />
-                <span [class]="a.fallback" rdxAvatarFallback>CT</span>
+            <span rdxAvatarRoot [class]="cn(a.root, a.size.lg)">
+                <img rdxAvatarImage alt="Colm Tuite" [class]="a.image" [src]="img" />
+                <span rdxAvatarFallback [class]="a.fallback">CT</span>
             </span>
         </div>
     `
@@ -77,14 +77,14 @@ export class RdxAvatarSizesComponent {
     template: `
         <div class="flex items-center gap-4">
             <!-- no image at all -->
-            <span [class]="cn(a.root, a.size.md)" rdxAvatarRoot>
-                <span [class]="a.fallback" rdxAvatarFallback>PD</span>
+            <span rdxAvatarRoot [class]="cn(a.root, a.size.md)">
+                <span rdxAvatarFallback [class]="a.fallback">PD</span>
             </span>
 
             <!-- image that fails to load -->
-            <span [class]="cn(a.root, a.size.md)" rdxAvatarRoot>
-                <img [class]="a.image" rdxAvatarImage alt="Broken" src="" />
-                <span [class]="a.fallback" rdxAvatarFallback>JD</span>
+            <span rdxAvatarRoot [class]="cn(a.root, a.size.md)">
+                <img rdxAvatarImage alt="Broken" src="" [class]="a.image" />
+                <span rdxAvatarFallback [class]="a.fallback">JD</span>
             </span>
         </div>
     `
@@ -103,9 +103,9 @@ export class RdxAvatarFallbackComponent {
     selector: 'rdx-avatar-delay',
     imports: AVATAR_DIRECTIVES,
     template: `
-        <span [class]="cn(a.root, a.size.md)" rdxAvatarRoot>
-            <img [class]="a.image" rdxAvatarImage alt="Slow" src="https://invalid.example/none.png" />
-            <span [class]="a.fallback" [delayMs]="600" rdxAvatarFallback>RN</span>
+        <span rdxAvatarRoot [class]="cn(a.root, a.size.md)">
+            <img rdxAvatarImage alt="Slow" src="https://invalid.example/none.png" [class]="a.image" />
+            <span rdxAvatarFallback [class]="a.fallback" [delayMs]="600">RN</span>
         </span>
     `
 })

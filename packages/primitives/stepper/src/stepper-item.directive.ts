@@ -1,8 +1,8 @@
-import { booleanAttribute, computed, Directive, forwardRef, input, numberAttribute } from '@angular/core';
-import { BooleanInput, injectId, NumberInput } from '@radix-ng/primitives/core';
 import { STEPPER_ITEM_CONTEXT, StepperItemContext } from './stepper-item-context.token';
 import { injectStepperRootContext } from './stepper-root-context.token';
 import { StepperState } from './types';
+import { booleanAttribute, computed, Directive, forwardRef, input, numberAttribute } from '@angular/core';
+import { BooleanInput, injectId, NumberInput } from '@radix-ng/primitives/core';
 
 @Directive({
     selector: '[rdxStepperItem]',

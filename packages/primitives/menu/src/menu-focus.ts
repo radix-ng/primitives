@@ -1,4 +1,4 @@
-import { RdxCompositeList, RdxCompositeMetadata, isElementVisible } from '@radix-ng/primitives/composite';
+import { isElementVisible, RdxCompositeList, RdxCompositeMetadata } from '@radix-ng/primitives/composite';
 
 export type RdxMenuCompositeItemType =
     | 'regular-item'

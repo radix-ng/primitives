@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { injectStepperItemContext } from './stepper-item-context.token';
+import { Directive } from '@angular/core';
 
 @Directive({
     selector: '[rdxStepperDescription]',

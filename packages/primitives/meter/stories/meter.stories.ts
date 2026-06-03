@@ -1,4 +1,3 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { cn } from '../../storybook/styles';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxMeterIndicatorDirective } from '../src/meter-indicator.directive';
@@ -8,6 +7,7 @@ import { RdxMeterTrackDirective } from '../src/meter-track.directive';
 import { RdxMeterValueDirective } from '../src/meter-value.directive';
 import { MeterStorageComponent } from './meter';
 import storageSource from './meter?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const source = (code: string) => ({ docs: { source: { code, language: 'typescript' } } });
 const html = String.raw;

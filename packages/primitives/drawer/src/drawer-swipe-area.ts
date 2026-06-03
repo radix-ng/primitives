@@ -1,9 +1,9 @@
-import { booleanAttribute, computed, Directive, input, signal } from '@angular/core';
-import { BooleanInput } from '@radix-ng/primitives/core';
-import { injectRdxDialogRootContext } from '@radix-ng/primitives/dialog';
 import { usePointerDrag } from './drawer-pointer';
 import { injectRdxDrawerRootContext } from './drawer-root';
 import { RdxDrawerSwipeDirection } from './drawer-swipe';
+import { booleanAttribute, computed, Directive, input, signal } from '@angular/core';
+import { BooleanInput } from '@radix-ng/primitives/core';
+import { injectRdxDialogRootContext } from '@radix-ng/primitives/dialog';
 
 /** Pointer travel (px) inward past which releasing the swipe keeps the drawer open. */
 const OPEN_THRESHOLD = 30;

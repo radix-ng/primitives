@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { injectFieldsetRootContext } from './fieldset-root';
+import { Directive } from '@angular/core';
 
 const attr = (value: boolean) => (value ? '' : undefined);
 

@@ -47,15 +47,15 @@ afterEach(() => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
     template: `
-        <div #root="rdxMenuRoot" [(open)]="open" rdxMenuRoot>
+        <div #root="rdxMenuRoot" rdxMenuRoot [(open)]="open">
             <button rdxMenuTrigger>Open</button>
 
             @if (root.open()) {
                 <div rdxMenuPositioner>
                     <div rdxMenuPopup>
-                        <button (onSelect)="selected.push('a')" rdxMenuItem>Alpha</button>
-                        <button (onSelect)="selected.push('b')" rdxMenuItem>Beta</button>
-                        <button (onSelect)="selected.push('c')" rdxMenuItem>Charlie</button>
+                        <button rdxMenuItem (onSelect)="selected.push('a')">Alpha</button>
+                        <button rdxMenuItem (onSelect)="selected.push('b')">Beta</button>
+                        <button rdxMenuItem (onSelect)="selected.push('c')">Charlie</button>
                     </div>
                 </div>
             }
@@ -71,13 +71,13 @@ class BasicMenuComponent {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
     template: `
-        <div #root="rdxMenuRoot" [(open)]="open" rdxMenuRoot>
+        <div #root="rdxMenuRoot" rdxMenuRoot [(open)]="open">
             <button rdxMenuTrigger>Open</button>
 
             @if (root.open()) {
                 <div rdxMenuPositioner>
                     <div rdxMenuPopup>
-                        <button [closeOnClick]="false" (onSelect)="selected.push('a')" rdxMenuItem>Alpha</button>
+                        <button rdxMenuItem [closeOnClick]="false" (onSelect)="selected.push('a')">Alpha</button>
                     </div>
                 </div>
             }
@@ -93,14 +93,14 @@ class NonClosingItemMenuComponent {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuLinkItem],
     template: `
-        <div #root="rdxMenuRoot" [(open)]="open" rdxMenuRoot>
+        <div #root="rdxMenuRoot" rdxMenuRoot [(open)]="open">
             <button rdxMenuTrigger>Open</button>
 
             @if (root.open()) {
                 <div rdxMenuPositioner>
                     <div rdxMenuPopup>
-                        <a (onSelect)="selected.push('alpha')" href="#alpha" rdxMenuLinkItem>Alpha</a>
-                        <a (onSelect)="selected.push('beta')" href="#beta" rdxMenuLinkItem>Beta</a>
+                        <a href="#alpha" rdxMenuLinkItem (onSelect)="selected.push('alpha')">Alpha</a>
+                        <a href="#beta" rdxMenuLinkItem (onSelect)="selected.push('beta')">Beta</a>
                     </div>
                 </div>
             }
@@ -117,7 +117,7 @@ class LinkMenuComponent {
     imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
     template: `
         <button data-testid="previous">Previous</button>
-        <div #root="rdxMenuRoot" [(open)]="open" rdxMenuRoot>
+        <div #root="rdxMenuRoot" rdxMenuRoot [(open)]="open">
             <button rdxMenuTrigger>Open</button>
 
             @if (root.open()) {
@@ -158,7 +158,7 @@ class HoverMenuComponent {}
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
     template: `
-        <div #root="rdxMenuRoot" [modal]="false" rdxMenuRoot>
+        <div #root="rdxMenuRoot" rdxMenuRoot [modal]="false">
             <button rdxMenuTrigger>Open</button>
 
             @if (root.open()) {
@@ -177,7 +177,7 @@ class NonModalMenuComponent {}
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
     template: `
-        <div #root="rdxMenuRoot" [defaultOpen]="true" rdxMenuRoot>
+        <div #root="rdxMenuRoot" rdxMenuRoot [defaultOpen]="true">
             <button rdxMenuTrigger>Open</button>
 
             @if (root.open()) {
@@ -196,7 +196,7 @@ class DefaultOpenMenuComponent {}
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
     template: `
-        <div #root="rdxMenuRoot" [disabled]="disabled" rdxMenuRoot>
+        <div #root="rdxMenuRoot" rdxMenuRoot [disabled]="disabled">
             <button rdxMenuTrigger>Open</button>
 
             @if (root.open()) {
@@ -227,15 +227,15 @@ class DisabledRootMenuComponent {
         RdxMenuSubTrigger
     ],
     template: `
-        <div [open]="true" [disabled]="true" rdxMenuRoot>
+        <div rdxMenuRoot [open]="true" [disabled]="true">
             <div rdxMenuPositioner>
                 <div rdxMenuPopup>
-                    <button (onSelect)="selections.push('item')" rdxMenuItem>Item</button>
-                    <button [(checked)]="checked" rdxMenuCheckboxItem>Checkbox</button>
-                    <div [(value)]="radioValue" rdxMenuRadioGroup>
+                    <button rdxMenuItem (onSelect)="selections.push('item')">Item</button>
+                    <button rdxMenuCheckboxItem [(checked)]="checked">Checkbox</button>
+                    <div rdxMenuRadioGroup [(value)]="radioValue">
                         <button value="radio" rdxMenuRadioItem>Radio</button>
                     </div>
-                    <a (onSelect)="selections.push('link')" href="#disabled-link" rdxMenuLinkItem>Link</a>
+                    <a href="#disabled-link" rdxMenuLinkItem (onSelect)="selections.push('link')">Link</a>
 
                     <ng-container #submenu="rdxMenuRoot" rdxMenuRoot>
                         <button rdxMenuSubTrigger>Submenu</button>
@@ -269,7 +269,7 @@ class DisabledRootItemsMenuComponent {
                 <div rdxMenuPositioner>
                     <div rdxMenuPopup>
                         <button rdxMenuItem>Enabled</button>
-                        <button [disabled]="true" rdxMenuItem>Disabled</button>
+                        <button rdxMenuItem [disabled]="true">Disabled</button>
                         <button rdxMenuItem>Last</button>
                     </div>
                 </div>
@@ -297,14 +297,14 @@ class DisabledItemMenuComponent {}
                 <div rdxMenuPositioner>
                     <div rdxMenuPopup>
                         <label
+                            rdxMenuCheckboxItem
                             [(checked)]="bookmarks"
                             (onCheckedChange)="changes.push($event.checked)"
-                            rdxMenuCheckboxItem
                         >
                             <span rdxMenuCheckboxItemIndicator></span>
                             Bookmarks
                         </label>
-                        <label [checked]="'indeterminate'" rdxMenuCheckboxItem>Indeterminate</label>
+                        <label rdxMenuCheckboxItem [checked]="'indeterminate'">Indeterminate</label>
                     </div>
                 </div>
             }
@@ -334,7 +334,7 @@ class CheckboxMenuComponent {
             @if (root.open()) {
                 <div rdxMenuPositioner>
                     <div rdxMenuPopup>
-                        <div [(value)]="selected" (onValueChange)="changes.push($event.value)" rdxMenuRadioGroup>
+                        <div rdxMenuRadioGroup [(value)]="selected" (onValueChange)="changes.push($event.value)">
                             <label value="a" rdxMenuRadioItem>
                                 <span rdxMenuRadioItemIndicator></span>
                                 A
@@ -360,14 +360,14 @@ class RadioMenuComponent {
     imports: [RdxMenuRadioGroup, RdxMenuRadioItem, RdxMenuGroupLabel],
     template: `
         <div
+            rdxMenuRadioGroup
             [defaultValue]="first"
             [disabled]="disabled"
             (onValueChange)="changes.push($event.value)"
-            rdxMenuRadioGroup
         >
             <div rdxMenuGroupLabel>Choices</div>
-            <button [value]="first" rdxMenuRadioItem>First</button>
-            <button [value]="second" rdxMenuRadioItem>Second</button>
+            <button rdxMenuRadioItem [value]="first">First</button>
+            <button rdxMenuRadioItem [value]="second">Second</button>
         </div>
     `
 })
@@ -1290,7 +1290,7 @@ describe('Menu', () => {
                         @if (root.open()) {
                             <div rdxMenuPositioner>
                                 <div rdxMenuPopup>
-                                    <button [closeOnClick]="false" rdxMenuItem>Item</button>
+                                    <button rdxMenuItem [closeOnClick]="false">Item</button>
                                 </div>
                             </div>
                         }
@@ -1369,7 +1369,7 @@ describe('Menu', () => {
                             <div rdxMenuPositioner>
                                 <div rdxMenuPopup>
                                     <div rdxMenuRadioGroup>
-                                        <label [closeOnClick]="true" value="a" rdxMenuRadioItem>A</label>
+                                        <label value="a" rdxMenuRadioItem [closeOnClick]="true">A</label>
                                     </div>
                                 </div>
                             </div>
@@ -1400,7 +1400,7 @@ describe('Menu', () => {
                 changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
                 template: `
-                    <div #root="rdxMenuRoot" [loopFocus]="loop" rdxMenuRoot>
+                    <div #root="rdxMenuRoot" rdxMenuRoot [loopFocus]="loop">
                         <button rdxMenuTrigger>Open</button>
                         @if (root.open()) {
                             <div rdxMenuPositioner>
@@ -1597,7 +1597,7 @@ describe('Menu', () => {
                             <div rdxMenuPositioner>
                                 <div rdxMenuPopup>
                                     <label rdxMenuCheckboxItem>
-                                        <span [keepMounted]="true" rdxMenuCheckboxItemIndicator></span>
+                                        <span rdxMenuCheckboxItemIndicator [keepMounted]="true"></span>
                                     </label>
                                 </div>
                             </div>
@@ -1639,7 +1639,7 @@ describe('Menu', () => {
                                 <div rdxMenuPopup>
                                     <div rdxMenuRadioGroup>
                                         <label value="a" rdxMenuRadioItem>
-                                            <span [keepMounted]="true" rdxMenuRadioItemIndicator></span>
+                                            <span rdxMenuRadioItemIndicator [keepMounted]="true"></span>
                                         </label>
                                     </div>
                                 </div>
@@ -1750,7 +1750,7 @@ describe('Menu', () => {
                 changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem, RdxMenuSubTrigger],
                 template: `
-                    <div #root="rdxMenuRoot" [modal]="false" rdxMenuRoot>
+                    <div #root="rdxMenuRoot" rdxMenuRoot [modal]="false">
                         <button rdxMenuTrigger>Open</button>
                         @if (root.open()) {
                             <div rdxMenuPositioner>
@@ -2041,7 +2041,7 @@ describe('Menu', () => {
                 changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
                 template: `
-                    <div #root="rdxMenuRoot" [highlightItemOnHover]="false" rdxMenuRoot>
+                    <div #root="rdxMenuRoot" rdxMenuRoot [highlightItemOnHover]="false">
                         <button rdxMenuTrigger>Open</button>
                         @if (root.open()) {
                             <div rdxMenuPositioner>
@@ -2111,7 +2111,7 @@ describe('Menu', () => {
                         @if (root.open()) {
                             <div rdxMenuPositioner>
                                 <div rdxMenuPopup>
-                                    <ng-container #sub="rdxMenuRoot" [closeParentOnEsc]="true" rdxMenuRoot>
+                                    <ng-container #sub="rdxMenuRoot" rdxMenuRoot [closeParentOnEsc]="true">
                                         <button rdxMenuSubTrigger>Sub</button>
                                         @if (sub.open()) {
                                             <div rdxMenuPositioner>
@@ -2256,7 +2256,7 @@ describe('Menu', () => {
                 changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
                 template: `
-                    <div #root="rdxMenuRoot" [(open)]="open" (onOpenChangeComplete)="events.push($event)" rdxMenuRoot>
+                    <div #root="rdxMenuRoot" rdxMenuRoot [(open)]="open" (onOpenChangeComplete)="events.push($event)">
                         <button rdxMenuTrigger>Open</button>
                         @if (root.open()) {
                             <div rdxMenuPositioner>
@@ -2294,7 +2294,7 @@ describe('Menu', () => {
                 changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
                 template: `
-                    <div #root="rdxMenuRoot" (onOpenChangeComplete)="events.push($event)" rdxMenuRoot>
+                    <div #root="rdxMenuRoot" rdxMenuRoot (onOpenChangeComplete)="events.push($event)">
                         <button rdxMenuTrigger>Open</button>
                         @if (root.open()) {
                             <div rdxMenuPositioner>
@@ -2327,7 +2327,7 @@ describe('Menu', () => {
                 changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
                 template: `
-                    <div #root="rdxMenuRoot" (onOpenChange)="events.push($event)" rdxMenuRoot>
+                    <div #root="rdxMenuRoot" rdxMenuRoot (onOpenChange)="events.push($event)">
                         <button rdxMenuTrigger>Open</button>
                         @if (root.open()) {
                             <div rdxMenuPositioner>
@@ -2378,7 +2378,7 @@ describe('Menu', () => {
                 changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
                 template: `
-                    <div [(open)]="open" (onOpenChange)="handleOpenChange($event)" rdxMenuRoot>
+                    <div rdxMenuRoot [(open)]="open" (onOpenChange)="handleOpenChange($event)">
                         <button rdxMenuTrigger>Open</button>
                         @if (open) {
                             <div rdxMenuPositioner>
@@ -2424,7 +2424,7 @@ describe('Menu', () => {
                 changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
                 template: `
-                    <div #root="rdxMenuRoot" [(open)]="open" (onOpenChange)="handleOpenChange($event)" rdxMenuRoot>
+                    <div #root="rdxMenuRoot" rdxMenuRoot [(open)]="open" (onOpenChange)="handleOpenChange($event)">
                         <button rdxMenuTrigger>Open</button>
                         @if (open) {
                             <div rdxMenuPositioner>
@@ -2473,7 +2473,7 @@ describe('Menu', () => {
                 changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPortal, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
                 template: `
-                    <div #root="rdxMenuRoot" [(open)]="open" (onOpenChange)="handleOpenChange($event)" rdxMenuRoot>
+                    <div #root="rdxMenuRoot" rdxMenuRoot [(open)]="open" (onOpenChange)="handleOpenChange($event)">
                         <button rdxMenuTrigger>Open</button>
                         <div *rdxMenuPortal rdxMenuPositioner>
                             <div rdxMenuPopup>

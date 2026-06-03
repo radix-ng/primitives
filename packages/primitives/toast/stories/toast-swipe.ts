@@ -1,6 +1,6 @@
+import { cn, demoButton, demoToast } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
-import { cn, demoButton, demoToast } from '../../storybook/styles';
 
 /**
  * Toasts can be dismissed by swiping. `swipeDirection` lists the allowed directions; the gesture
@@ -16,17 +16,17 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
         <button [class]="cn(b.base, b.primary, b.size.md)" (click)="add()">Show swipeable toast</button>
 
         <div rdxToastPortal>
-            <div [class]="t.viewport" rdxToastViewport>
+            <div rdxToastViewport [class]="t.viewport">
                 @for (toast of manager.toasts(); track toast.id) {
-                    <div [class]="t.root" [toast]="toast" [swipeDirection]="['right', 'down']" rdxToastRoot>
-                        <div [class]="t.content" rdxToastContent>
+                    <div rdxToastRoot [class]="t.root" [toast]="toast" [swipeDirection]="['right', 'down']">
+                        <div rdxToastContent [class]="t.content">
                             <div class="min-w-0 flex-1">
-                                <p [class]="t.title" rdxToastTitle>Swipe me away</p>
-                                <p [class]="t.description" rdxToastDescription>
+                                <p rdxToastTitle [class]="t.title">Swipe me away</p>
+                                <p rdxToastDescription [class]="t.description">
                                     Drag right or down to dismiss. Release early to snap back.
                                 </p>
                             </div>
-                            <button [class]="t.close" aria-label="Dismiss" rdxToastClose>✕</button>
+                            <button aria-label="Dismiss" rdxToastClose [class]="t.close">✕</button>
                         </div>
                     </div>
                 }

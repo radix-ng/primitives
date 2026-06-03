@@ -1,7 +1,7 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../storybook/tailwind-demo';
 import { ConfirmationDialogExample } from './confirmation-dialog';
 import confirmationDialogSource from './confirmation-dialog?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 

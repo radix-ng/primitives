@@ -1,6 +1,6 @@
+import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -8,7 +8,7 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
     imports: [...drawerImports],
     template: `
         <div class="w-full" rdxDrawerProvider>
-            <div class="relative w-full overflow-hidden [--bleed:3rem]" #portalContainer>
+            <div #portalContainer class="relative w-full overflow-hidden [--bleed:3rem]">
                 <div class="bg-foreground absolute inset-0" rdxDrawerIndentBackground></div>
 
                 <div
@@ -16,10 +16,10 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                     rdxDrawerIndent
                 >
                     <div class="flex min-h-80 items-center justify-center">
-                        <div [modal]="false" rdxDrawerRoot>
-                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerTrigger>Open drawer</button>
+                        <div rdxDrawerRoot [modal]="false">
+                            <button rdxDrawerTrigger [class]="cn(b.base, b.outline, b.size.sm)">Open drawer</button>
 
-                            <ng-template [container]="portalContainer" rdxDrawerPortal>
+                            <ng-template rdxDrawerPortal [container]="portalContainer">
                                 <div
                                     class="bg-foreground/20 absolute inset-0 opacity-[calc(1-var(--drawer-swipe-progress))] transition-opacity duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)] data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0"
                                     rdxDrawerBackdrop
@@ -32,14 +32,14 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                                     >
                                         <div class="bg-muted mx-auto mb-4 h-1 w-12"></div>
                                         <div class="mx-auto w-full max-w-lg" rdxDrawerContent>
-                                            <h2 class="text-center" [class]="cn(d.title, 'text-center')" rdxDrawerTitle>
+                                            <h2 class="text-center" rdxDrawerTitle [class]="cn(d.title, 'text-center')">
                                                 Notifications
                                             </h2>
-                                            <p [class]="cn(d.description, 'mb-6 text-center')" rdxDrawerDescription>
+                                            <p rdxDrawerDescription [class]="cn(d.description, 'mb-6 text-center')">
                                                 You are all caught up. Good job!
                                             </p>
                                             <div class="flex justify-center gap-3">
-                                                <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>
+                                                <button rdxDrawerClose [class]="cn(b.base, b.outline, b.size.sm)">
                                                     Close
                                                 </button>
                                             </div>

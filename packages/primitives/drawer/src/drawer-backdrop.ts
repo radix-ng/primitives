@@ -1,6 +1,6 @@
+import { injectRdxDrawerRootContext } from './drawer-root';
 import { Directive } from '@angular/core';
 import { RdxDialogBackdrop } from '@radix-ng/primitives/dialog';
-import { injectRdxDrawerRootContext } from './drawer-root';
 
 /**
  * An overlay displayed beneath the drawer popup.

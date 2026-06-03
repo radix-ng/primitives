@@ -1,6 +1,6 @@
+import { cn, demoButton, demoMenu } from '../../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoMenu } from '../../../storybook/styles';
 
 @Component({
     selector: 'menu-radio-items-story',
@@ -8,17 +8,17 @@ import { cn, demoButton, demoMenu } from '../../../storybook/styles';
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <ng-container #root="rdxMenuRoot" rdxMenuRoot>
-            <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>View</button>
+            <button rdxMenuTrigger [class]="cn(b.base, b.outline, b.size.md)">View</button>
 
-            <div *rdxMenuPortal [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-                <div [class]="m.popup" rdxMenuPopup>
-                    <button [class]="m.item" rdxMenuItem>Minimize window</button>
-                    <button [class]="m.item" rdxMenuItem>Zoom</button>
-                    <div [class]="m.separator" rdxMenuSeparator></div>
-                    <div [(value)]="selectedItem" rdxMenuRadioGroup>
+            <div *rdxMenuPortal sideOffset="4" rdxMenuPositioner [class]="m.positioner">
+                <div rdxMenuPopup [class]="m.popup">
+                    <button rdxMenuItem [class]="m.item">Minimize window</button>
+                    <button rdxMenuItem [class]="m.item">Zoom</button>
+                    <div rdxMenuSeparator [class]="m.separator"></div>
+                    <div rdxMenuRadioGroup [(value)]="selectedItem">
                         @for (item of items(); track item) {
-                            <label [class]="m.selectableItem" [value]="item" rdxMenuRadioItem>
-                                <span [class]="m.itemIndicator" rdxMenuRadioItemIndicator>●</span>
+                            <label rdxMenuRadioItem [class]="m.selectableItem" [value]="item">
+                                <span rdxMenuRadioItemIndicator [class]="m.itemIndicator">●</span>
                                 {{ item }}
                             </label>
                         }

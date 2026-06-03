@@ -20,6 +20,7 @@ function keydown(element: HTMLElement, key: string, init: KeyboardEventInit = {}
     changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <div
+            rdxCompositeRoot
             [dir]="dir"
             [disabledIndices]="disabledIndices"
             [enableHomeAndEndKeys]="enableHomeAndEndKeys"
@@ -28,18 +29,17 @@ function keydown(element: HTMLElement, key: string, init: KeyboardEventInit = {}
             [modifierKeys]="modifierKeys"
             [orientation]="orientation"
             (onMapChange)="itemMap = $event"
-            rdxCompositeRoot
         >
-            <button [metadata]="{ id: 'one' }" rdxCompositeItem>One</button>
+            <button rdxCompositeItem [metadata]="{ id: 'one' }">One</button>
             <button
+                rdxCompositeItem
                 [attr.aria-disabled]="ariaDisableSecond ? 'true' : undefined"
                 [attr.data-composite-item-active]="activeSecond ? '' : undefined"
                 [metadata]="{ id: 'two' }"
-                rdxCompositeItem
             >
                 Two
             </button>
-            <button [metadata]="{ id: 'three' }" rdxCompositeItem>Three</button>
+            <button rdxCompositeItem [metadata]="{ id: 'three' }">Three</button>
         </div>
     `,
     imports: [RdxCompositeRoot, RdxCompositeItem]
@@ -84,9 +84,9 @@ class CompositeCheckboxHostComponent {}
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     template: `
-        <div (onMapChange)="itemMap = $event" rdxCompositeList>
-            <button [metadata]="{ id: 'one' }" rdxCompositeListItem>One</button>
-            <button [metadata]="{ id: 'two' }" rdxCompositeListItem>Two</button>
+        <div rdxCompositeList (onMapChange)="itemMap = $event">
+            <button rdxCompositeListItem [metadata]="{ id: 'one' }">One</button>
+            <button rdxCompositeListItem [metadata]="{ id: 'two' }">Two</button>
         </div>
     `,
     imports: [RdxCompositeList, RdxCompositeListItem]

@@ -1,3 +1,5 @@
+import { cn, demoButton, demoCheckbox, demoInput } from '../../storybook/styles';
+import { RdxInputDirective } from '../src/input.directive';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LucideCheck } from '@lucide/angular';
@@ -9,8 +11,6 @@ import {
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
 import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
-import { cn, demoButton, demoCheckbox, demoInput } from '../../storybook/styles';
-import { RdxInputDirective } from '../src/input.directive';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -34,47 +34,47 @@ import { RdxInputDirective } from '../src/input.directive';
             <div class="grid grid-cols-2 gap-3">
                 <div
                     class="flex flex-col gap-2"
+                    rdxFieldRoot
+                    required
                     [invalid]="firstName.invalid && (firstName.dirty || firstName.touched)"
                     [dirty]="firstName.dirty"
                     [touched]="firstName.touched"
-                    rdxFieldRoot
-                    required
                 >
                     <label class="text-foreground text-sm font-medium" rdxFieldLabel>First name</label>
-                    <input [class]="inputClass" rdxInput autocomplete="given-name" formControlName="firstName" />
+                    <input rdxInput autocomplete="given-name" formControlName="firstName" [class]="inputClass" />
                     <p class="text-destructive text-sm" rdxFieldError>Enter your first name.</p>
                 </div>
 
                 <div
                     class="flex flex-col gap-2"
+                    rdxFieldRoot
+                    required
                     [invalid]="lastName.invalid && (lastName.dirty || lastName.touched)"
                     [dirty]="lastName.dirty"
                     [touched]="lastName.touched"
-                    rdxFieldRoot
-                    required
                 >
                     <label class="text-foreground text-sm font-medium" rdxFieldLabel>Last name</label>
-                    <input [class]="inputClass" rdxInput autocomplete="family-name" formControlName="lastName" />
+                    <input rdxInput autocomplete="family-name" formControlName="lastName" [class]="inputClass" />
                     <p class="text-destructive text-sm" rdxFieldError>Enter your last name.</p>
                 </div>
             </div>
 
             <div
                 class="flex flex-col gap-2"
+                rdxFieldRoot
+                required
                 [invalid]="email.invalid && (email.dirty || email.touched)"
                 [dirty]="email.dirty"
                 [touched]="email.touched"
-                rdxFieldRoot
-                required
             >
                 <label class="text-foreground text-sm font-medium" rdxFieldLabel>Email</label>
                 <input
-                    [class]="inputClass"
                     rdxInput
                     type="email"
                     autocomplete="email"
                     placeholder="name@example.com"
                     formControlName="email"
+                    [class]="inputClass"
                 />
                 <p class="text-muted-foreground text-sm" rdxFieldDescription>
                     Used for product updates and account recovery.
@@ -84,19 +84,19 @@ import { RdxInputDirective } from '../src/input.directive';
 
             <div
                 class="flex flex-col gap-2"
+                rdxFieldRoot
+                required
                 [invalid]="password.invalid && (password.dirty || password.touched)"
                 [dirty]="password.dirty"
                 [touched]="password.touched"
-                rdxFieldRoot
-                required
             >
                 <label class="text-foreground text-sm font-medium" rdxFieldLabel>Password</label>
                 <input
-                    [class]="inputClass"
                     rdxInput
                     type="password"
                     autocomplete="new-password"
                     formControlName="password"
+                    [class]="inputClass"
                 />
                 <p class="text-muted-foreground text-sm" rdxFieldDescription>Use at least 8 characters.</p>
                 <p class="text-destructive text-sm" rdxFieldError>Password must be at least 8 characters.</p>
@@ -104,8 +104,8 @@ import { RdxInputDirective } from '../src/input.directive';
 
             <div class="flex items-start gap-3">
                 <div rdxCheckboxRoot required formControlName="terms">
-                    <button id="signup-terms" [class]="checkbox.button" type="button" rdxCheckboxButton>
-                        <svg [class]="checkbox.indicator" rdxCheckboxIndicator size="16" lucideCheck />
+                    <button id="signup-terms" type="button" rdxCheckboxButton [class]="checkbox.button">
+                        <svg rdxCheckboxIndicator size="16" lucideCheck [class]="checkbox.indicator" />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -115,7 +115,7 @@ import { RdxInputDirective } from '../src/input.directive';
                 </label>
             </div>
 
-            <button [class]="submitClass" rdxButton type="submit">Create workspace</button>
+            <button rdxButton type="submit" [class]="submitClass">Create workspace</button>
         </form>
     `
 })

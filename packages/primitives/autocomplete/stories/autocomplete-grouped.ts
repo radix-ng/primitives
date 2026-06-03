@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
 interface Group {
     label: string;
@@ -12,24 +12,24 @@ interface Group {
     selector: 'autocomplete-grouped',
     imports: [_importsAutocomplete],
     template: `
-        <div [(value)]="value" rdxAutocompleteRoot>
-            <div [class]="c.control" rdxAutocompleteInputGroup>
-                <input [class]="c.input" rdxAutocompleteInput placeholder="e.g. fix" aria-label="Search tags" />
+        <div rdxAutocompleteRoot [(value)]="value">
+            <div rdxAutocompleteInputGroup [class]="c.control">
+                <input rdxAutocompleteInput placeholder="e.g. fix" aria-label="Search tags" [class]="c.input" />
             </div>
 
-            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
-                <div [class]="c.popup" rdxAutocompletePopup>
-                    <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
+            <div *rdxAutocompletePortal rdxAutocompletePositioner [class]="c.positioner">
+                <div rdxAutocompletePopup [class]="c.popup">
+                    <div rdxAutocompleteList aria-label="Tags" [class]="c.list">
                         @for (group of groups; track group.label) {
                             <div rdxAutocompleteGroup>
-                                <div [class]="c.groupLabel" rdxAutocompleteGroupLabel>{{ group.label }}</div>
+                                <div rdxAutocompleteGroupLabel [class]="c.groupLabel">{{ group.label }}</div>
                                 @for (item of group.items; track item) {
-                                    <div [class]="c.item" rdxAutocompleteItem>{{ item }}</div>
+                                    <div rdxAutocompleteItem [class]="c.item">{{ item }}</div>
                                 }
                             </div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
+                    <div rdxAutocompleteEmpty [class]="c.empty">No tags found.</div>
                 </div>
             </div>
         </div>

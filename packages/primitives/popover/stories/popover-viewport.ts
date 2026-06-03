@@ -1,6 +1,6 @@
+import { cn, demoButton, demoPopover } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { popoverImports } from '@radix-ng/primitives/popover';
-import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -11,10 +11,10 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
             <div class="flex flex-wrap justify-center gap-2">
                 @for (item of items; track item.id) {
                     <button
+                        rdxPopoverTrigger
                         [class]="cn(b.base, b.outline, b.size.sm)"
                         [payload]="item"
                         [id]="item.id"
-                        rdxPopoverTrigger
                     >
                         {{ item.label }}
                     </button>
@@ -22,18 +22,18 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
             </div>
 
             <div
-                class="transition-[left,right,top,bottom] duration-200"
                 *rdxPopoverPortal
+                class="transition-[left,right,top,bottom] duration-200"
                 sideOffset="8"
                 rdxPopoverPositioner
             >
-                <div [class]="cn(p.popup, 'overflow-hidden transition-[width,height] duration-200')" rdxPopoverPopup>
+                <div rdxPopoverPopup [class]="cn(p.popup, 'overflow-hidden transition-[width,height] duration-200')">
                     <div class="relative" rdxPopoverViewport>
                         <div
                             class="data-[previous]:animate-popover-viewport-out data-[current]:animate-popover-viewport-in data-[previous]:absolute data-[previous]:inset-0"
                         >
-                            <h2 [class]="p.title" rdxPopoverTitle>{{ root.payload()?.label }}</h2>
-                            <p [class]="p.description" rdxPopoverDescription>{{ root.payload()?.description }}</p>
+                            <h2 rdxPopoverTitle [class]="p.title">{{ root.payload()?.label }}</h2>
+                            <p rdxPopoverDescription [class]="p.description">{{ root.payload()?.description }}</p>
                         </div>
                     </div>
                 </div>

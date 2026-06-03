@@ -1,5 +1,5 @@
-import { Directive, inject } from '@angular/core';
 import { RdxAutocompleteRoot } from './autocomplete-root';
+import { Directive, inject } from '@angular/core';
 
 const attr = (value: boolean) => (value ? '' : undefined);
 

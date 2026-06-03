@@ -11,29 +11,29 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
         <div class="flex flex-col gap-1.5">
             <label class="text-foreground text-sm font-medium" id="time-disabled-label">Time</label>
             <div
-                class="border-border bg-background text-foreground inline-flex w-fit items-center rounded-md border px-3 py-2 text-sm shadow-sm select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
                 #root="rdxTimeFieldRoot"
-                [value]="value"
+                class="border-border bg-background text-foreground inline-flex w-fit items-center rounded-md border px-3 py-2 text-sm shadow-sm select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
                 aria-labelledby="time-disabled-label"
                 disabled
                 rdxTimeFieldRoot
+                [value]="value"
             >
                 @for (item of root.segmentContents(); track $index) {
                     @if (item.part === 'literal') {
-                        <span class="text-muted-foreground px-px" [part]="item.part" rdxTimeFieldInput>
+                        <span class="text-muted-foreground px-px" rdxTimeFieldInput [part]="item.part">
                             {{ item.value }}
                         </span>
                     } @else {
                         <div
                             class="data-[placeholder]:text-muted-foreground rounded px-0.5 tabular-nums outline-none"
-                            [part]="item.part"
                             rdxTimeFieldInput
+                            [part]="item.part"
                         >
                             {{ item.value }}
                         </div>
                     }
                 }
-                <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
+                <input rdxVisuallyHiddenInput feature="focusable" [value]="root.value()" />
             </div>
         </div>
     `

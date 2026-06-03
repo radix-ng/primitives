@@ -1,5 +1,5 @@
-import { Directive, ElementRef, inject } from '@angular/core';
 import { injectCollapsibleRootContext } from './collapsible-root.directive';
+import { Directive, ElementRef, inject } from '@angular/core';
 
 /**
  * A button that opens and closes the collapsible panel.

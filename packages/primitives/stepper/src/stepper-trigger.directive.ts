@@ -1,8 +1,8 @@
+import { injectStepperItemContext } from './stepper-item-context.token';
+import { injectStepperRootContext } from './stepper-root-context.token';
 import { computed, DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 import * as kbd from '@radix-ng/primitives/core';
 import { getActiveElement, useArrowNavigation } from '@radix-ng/primitives/core';
-import { injectStepperItemContext } from './stepper-item-context.token';
-import { injectStepperRootContext } from './stepper-root-context.token';
 
 // as button
 @Directive({

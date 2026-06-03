@@ -1,6 +1,6 @@
+import { injectComboboxRootContext } from './combobox-root';
 import { DestroyRef, Directive, ElementRef, inject, signal } from '@angular/core';
 import { RdxFloatingInsideElement } from '@radix-ng/primitives/dismissable-layer';
-import { injectComboboxRootContext } from './combobox-root';
 
 /**
  * Toggles the combobox popup. Its semantics depend on the layout (Base UI's `inputInsidePopup`):

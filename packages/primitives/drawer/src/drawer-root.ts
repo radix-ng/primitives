@@ -1,3 +1,6 @@
+import { RdxDrawerProvider } from './drawer-provider';
+import { RdxDrawerSnapPoint } from './drawer-snap';
+import { RdxDrawerSwipeDirection } from './drawer-swipe';
 import {
     booleanAttribute,
     computed,
@@ -7,15 +10,12 @@ import {
     input,
     model,
     output,
-    signal,
     Signal,
+    signal,
     untracked
 } from '@angular/core';
 import { BooleanInput, createContext } from '@radix-ng/primitives/core';
 import { RdxDialogRoot } from '@radix-ng/primitives/dialog';
-import { RdxDrawerProvider } from './drawer-provider';
-import { RdxDrawerSnapPoint } from './drawer-snap';
-import { RdxDrawerSwipeDirection } from './drawer-swipe';
 
 export interface RdxDrawerRootContext {
     /** Direction a swipe travels to dismiss the drawer. */

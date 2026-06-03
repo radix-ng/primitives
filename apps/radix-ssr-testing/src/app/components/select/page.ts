@@ -40,13 +40,13 @@ import {
                 <span aria-hidden="true">▼</span>
             </button>
 
-            <div *rdxSelectPortal [sideOffset]="4" align="start" rdxSelectPositioner>
+            <div *rdxSelectPortal align="start" rdxSelectPositioner [sideOffset]="4">
                 <div rdxSelectPopup>
                     <div rdxSelectList>
                         <div rdxSelectGroupLabel>Fruits</div>
                         <div rdxSelectGroup>
                             @for (option of options; track option) {
-                                <div [value]="option" rdxSelectItem>
+                                <div rdxSelectItem [value]="option">
                                     <span rdxSelectItemIndicator>✔</span>
                                     <span rdxSelectItemText>{{ option }}</span>
                                 </div>

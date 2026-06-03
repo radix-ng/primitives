@@ -1,6 +1,6 @@
+import { injectRdxMenuRadioItemContext } from './menu-radio-item';
 import { booleanAttribute, computed, Directive, input } from '@angular/core';
 import { BooleanInput } from '@radix-ng/primitives/core';
-import { injectRdxMenuRadioItemContext } from './menu-radio-item';
 
 /**
  * Renders when the parent radio item is selected.

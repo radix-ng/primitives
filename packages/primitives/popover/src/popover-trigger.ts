@@ -1,3 +1,5 @@
+import { RdxPopoverHandle } from './popover-handle';
+import { injectRdxPopoverRootContext } from './popover-root';
 import {
     booleanAttribute,
     computed,
@@ -12,8 +14,6 @@ import {
 import { injectId, NumberInput, rdxDevError } from '@radix-ng/primitives/core';
 import { createRdxTriggerInteraction, useTriggerFocusGuards } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
-import { RdxPopoverHandle } from './popover-handle';
-import { injectRdxPopoverRootContext } from './popover-root';
 
 /**
  * A button that opens the popover.

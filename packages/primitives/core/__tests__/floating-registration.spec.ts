@@ -1,6 +1,4 @@
 // @vitest-environment jsdom
-import { computed, inject, Injector } from '@angular/core';
-import { describe, expect, it } from 'vitest';
 import {
     provideFloatingRegistration,
     RDX_FLOATING_REGISTRATION,
@@ -8,6 +6,8 @@ import {
 } from '../src/floating/floating-registration';
 import { RdxFloatingTree } from '../src/floating/floating-tree';
 import { provideFloatingTree, RDX_FLOATING_TREE, resolveFloatingTree } from '../src/floating/provide-floating-tree';
+import { computed, inject, Injector } from '@angular/core';
+import { describe, expect, it } from 'vitest';
 
 // ─── RdxFloatingRegistrationContext ──────────────────────────────────────────
 

@@ -1,7 +1,7 @@
+import { cn, demoButton, demoPopover } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { popoverImports, RdxPopoverOpenChange } from '@radix-ng/primitives/popover';
-import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -10,18 +10,18 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
     template: `
         <div class="flex flex-col items-center gap-4">
             <ng-container
+                rdxPopoverRoot
                 [(open)]="open"
                 [(triggerId)]="triggerId"
                 (onOpenChange)="handleOpenChange($event)"
-                rdxPopoverRoot
             >
                 <div class="flex flex-wrap justify-center gap-2">
                     @for (item of items; track item.id) {
                         <button
+                            rdxPopoverTrigger
                             [class]="cn(b.base, b.outline, b.size.sm)"
                             [id]="item.id"
                             [payload]="item"
-                            rdxPopoverTrigger
                         >
                             {{ item.label }}
                         </button>
@@ -32,14 +32,14 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
                     </button>
                 </div>
 
-                <div *rdxPopoverPortal [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                    <div [class]="p.popup" rdxPopoverPopup>
-                        <span [class]="p.arrow" rdxPopoverArrow></span>
-                        <h2 [class]="p.title" rdxPopoverTitle>{{ activeItem()?.label }}</h2>
-                        <p [class]="p.description" rdxPopoverDescription>
+                <div *rdxPopoverPortal sideOffset="8" rdxPopoverPositioner [class]="p.positioner">
+                    <div rdxPopoverPopup [class]="p.popup">
+                        <span rdxPopoverArrow [class]="p.arrow"></span>
+                        <h2 rdxPopoverTitle [class]="p.title">{{ activeItem()?.label }}</h2>
+                        <p rdxPopoverDescription [class]="p.description">
                             The externally controlled trigger id is {{ triggerId() }}.
                         </p>
-                        <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                        <button aria-label="Close" rdxPopoverClose [class]="p.close">
                             <svg aria-hidden="true" lucideX size="14" />
                         </button>
                     </div>

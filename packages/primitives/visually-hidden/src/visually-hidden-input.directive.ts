@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { RdxVisuallyHiddenInputBubbleDirective } from './visually-hidden-input-bubble.directive';
+import { Directive } from '@angular/core';
 
 /**
  * Mirrors a control's value into a visually hidden `<input>` so it participates in form

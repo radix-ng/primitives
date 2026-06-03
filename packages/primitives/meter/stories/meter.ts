@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { cn } from '../../storybook/styles';
 import { RdxMeterIndicatorDirective } from '../src/meter-indicator.directive';
 import { RdxMeterLabelDirective } from '../src/meter-label.directive';
 import { RdxMeterRootDirective } from '../src/meter-root.directive';
 import { RdxMeterTrackDirective } from '../src/meter-track.directive';
 import { RdxMeterValueDirective } from '../src/meter-value.directive';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 
 const storageSteps = [24, 38, 52, 67, 81] as const;
 
@@ -21,10 +21,10 @@ const storageSteps = [24, 38, 52, 67, 81] as const;
     template: `
         <div
             class="flex w-80 flex-col gap-2"
+            rdxMeterRoot
             [value]="value()"
             [format]="format"
             [getAriaValueText]="getAriaValueText"
-            rdxMeterRoot
         >
             <div class="flex items-center justify-between gap-4">
                 <span class="text-foreground text-sm font-medium" rdxMeterLabel>Storage used</span>
@@ -32,7 +32,7 @@ const storageSteps = [24, 38, 52, 67, 81] as const;
             </div>
 
             <div class="bg-muted h-3 overflow-hidden rounded-full" rdxMeterTrack>
-                <div [class]="indicatorClass()" rdxMeterIndicator></div>
+                <div rdxMeterIndicator [class]="indicatorClass()"></div>
             </div>
         </div>
     `

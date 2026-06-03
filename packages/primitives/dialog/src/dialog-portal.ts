@@ -1,8 +1,8 @@
+import { injectRdxDialogRootContext } from './dialog-root';
 import { Directive, input, isDevMode } from '@angular/core';
 import { rdxDevError } from '@radix-ng/primitives/core';
 import { RdxPortalContainer, RdxPortalPresence } from '@radix-ng/primitives/portal';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
-import { injectRdxDialogRootContext } from './dialog-root';
 
 /**
  * Structural directive that teleports the dialog content (backdrop + popup) into a container (default

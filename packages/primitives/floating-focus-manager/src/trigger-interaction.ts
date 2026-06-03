@@ -1,3 +1,4 @@
+import { getInteractionTypeFromEvent, RdxInteractionType } from './floating-focus-manager';
 import { computed, effect, Signal, signal } from '@angular/core';
 import {
     composedContains,
@@ -9,7 +10,6 @@ import {
     getTabbableBeforeElement,
     isOutsideEvent
 } from '@radix-ng/primitives/focus-scope';
-import { getInteractionTypeFromEvent, RdxInteractionType } from './floating-focus-manager';
 
 export interface RdxTriggerInteractionOptions {
     trigger: () => HTMLElement;

@@ -1,4 +1,4 @@
-import { computed, DestroyRef, inject, numberAttribute, signal, Signal } from '@angular/core';
+import { computed, DestroyRef, inject, numberAttribute, Signal, signal } from '@angular/core';
 import { NumberFormatter, NumberParser } from '@internationalized/number';
 import { clamp, NumberInput } from '@radix-ng/primitives/core';
 

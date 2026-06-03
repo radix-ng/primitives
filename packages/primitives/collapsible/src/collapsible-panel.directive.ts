@@ -1,3 +1,4 @@
+import { injectCollapsibleRootContext } from './collapsible-root.directive';
 import {
     afterRenderEffect,
     booleanAttribute,
@@ -13,7 +14,6 @@ import {
     untracked
 } from '@angular/core';
 import { BooleanInput } from '@radix-ng/primitives/core';
-import { injectCollapsibleRootContext } from './collapsible-root.directive';
 
 /**
  * Coerces a collapsible boolean input that distinguishes "not set" (`undefined`) from `false`,

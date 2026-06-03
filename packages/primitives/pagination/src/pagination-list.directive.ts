@@ -1,6 +1,6 @@
-import { computed, Directive } from '@angular/core';
 import { injectPaginationRootContext } from './pagination-context.token';
 import { getRange, transform } from './utils';
+import { computed, Directive } from '@angular/core';
 
 @Directive({
     selector: '[rdxPaginationList]',

@@ -1,3 +1,4 @@
+import { injectRdxPopoverRootContext } from './popover-root';
 import { computed, DestroyRef, Directive, ElementRef, inject, output } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
 import {
@@ -13,7 +14,6 @@ import {
 } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
-import { injectRdxPopoverRootContext } from './popover-root';
 
 /**
  * A container for the popover contents.

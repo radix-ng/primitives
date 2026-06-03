@@ -1,3 +1,4 @@
+import { injectCheckboxGroupContext } from './checkbox-group';
 import {
     booleanAttribute,
     computed,
@@ -10,8 +11,8 @@ import {
     model,
     output,
     Renderer2,
-    signal,
-    Signal
+    Signal,
+    signal
 } from '@angular/core';
 import {
     BooleanInput,
@@ -22,7 +23,6 @@ import {
     RdxFormCheckboxControl,
     RdxValidationError
 } from '@radix-ng/primitives/core';
-import { injectCheckboxGroupContext } from './checkbox-group';
 
 /**
  * Internal tri-state used only for the derived `parent` (select-all) state in

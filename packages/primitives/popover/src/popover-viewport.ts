@@ -1,6 +1,6 @@
+import { injectRdxPopoverRootContext } from './popover-root';
 import { afterNextRender, DestroyRef, Directive, ElementRef, inject, signal } from '@angular/core';
 import { getMaxTransitionDuration } from '@radix-ng/primitives/core';
-import { injectRdxPopoverRootContext } from './popover-root';
 
 /**
  * A viewport for animating content changes when a popover moves between triggers.

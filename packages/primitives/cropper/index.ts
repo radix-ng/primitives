@@ -1,8 +1,8 @@
-import { NgModule } from '@angular/core';
 import { RdxCropperCropAreaDirective } from './src/cropper-crop-area.directive';
 import { RdxCropperDescriptionDirective } from './src/cropper-description.directive';
 import { RdxCropperImageComponent } from './src/cropper-image.component';
 import { RdxCropperRootDirective } from './src/cropper-root.directive';
+import { NgModule } from '@angular/core';
 
 export * from './src/cropper-context.token';
 export * from './src/cropper-crop-area.directive';

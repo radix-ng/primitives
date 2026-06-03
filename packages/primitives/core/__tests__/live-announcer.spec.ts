@@ -1,7 +1,7 @@
+import { RdxLiveAnnouncer } from '../src/live-announcer';
 import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { RdxLiveAnnouncer } from '../src/live-announcer';
 
 function queryLiveRegions(): HTMLElement[] {
     return Array.from(document.querySelectorAll<HTMLElement>('.rdx-live-announcer'));

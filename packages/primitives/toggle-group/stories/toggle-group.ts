@@ -10,9 +10,9 @@ import { RdxToggleGroup } from '@radix-ng/primitives/toggle-group';
     template: `
         <div
             class="border-border bg-muted inline-flex rounded-md border shadow-sm"
-            [(value)]="align"
             rdxToggleGroup
             aria-label="Text alignment"
+            [(value)]="align"
         >
             <button
                 class="bg-background text-foreground hover:bg-muted data-[pressed]:bg-primary data-[pressed]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-l-md border border-transparent transition-[color,box-shadow] outline-none focus-visible:z-10 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"

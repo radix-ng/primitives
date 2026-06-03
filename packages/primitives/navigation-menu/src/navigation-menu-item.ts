@@ -1,6 +1,6 @@
+import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
 import { computed, Directive, input, signal } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
-import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
 
 /**
  * A single navigation menu item. Holds a trigger + content pair, or a standalone link.

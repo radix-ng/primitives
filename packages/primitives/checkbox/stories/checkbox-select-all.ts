@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
-import { LucideCheck, LucideDynamicIcon } from '@lucide/angular';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { demoCheckbox } from '../../storybook/styles';
 import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import { CheckedState, RdxCheckboxRootDirective } from '../src/checkbox-root';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { LucideCheck, LucideDynamicIcon } from '@lucide/angular';
+import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 interface Item {
     id: string;
@@ -33,17 +33,17 @@ interface Item {
         <div class="flex flex-col gap-3">
             <div class="flex items-center gap-3">
                 <div
+                    rdxCheckboxRoot
                     [checked]="parentState() === true"
                     [indeterminate]="parentState() === 'indeterminate'"
                     (onCheckedChange)="toggleAll($event)"
-                    rdxCheckboxRoot
                 >
-                    <button id="all" [class]="c.button" rdxCheckboxButton>
+                    <button id="all" rdxCheckboxButton [class]="c.button">
                         <svg
-                            [class]="c.indicator"
-                            [lucideIcon]="parentState() === 'indeterminate' ? 'minus' : 'check'"
                             rdxCheckboxIndicator
                             size="16"
+                            [class]="c.indicator"
+                            [lucideIcon]="parentState() === 'indeterminate' ? 'minus' : 'check'"
                         />
                     </button>
                     <input rdxCheckboxInput />
@@ -54,13 +54,13 @@ interface Item {
             <div class="ml-6 flex flex-col gap-3">
                 @for (item of items(); track item.id) {
                     <div class="flex items-center gap-3">
-                        <div [checked]="item.checked" (onCheckedChange)="toggleItem(item.id, $event)" rdxCheckboxRoot>
-                            <button [class]="c.button" [id]="item.id" rdxCheckboxButton>
-                                <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
+                        <div rdxCheckboxRoot [checked]="item.checked" (onCheckedChange)="toggleItem(item.id, $event)">
+                            <button rdxCheckboxButton [class]="c.button" [id]="item.id">
+                                <svg rdxCheckboxIndicator size="16" lucideCheck [class]="c.indicator" />
                             </button>
                             <input rdxCheckboxInput />
                         </div>
-                        <label class="text-foreground text-sm font-medium" [htmlFor]="item.id" rdxLabel>
+                        <label class="text-foreground text-sm font-medium" rdxLabel [htmlFor]="item.id">
                             {{ item.label }}
                         </label>
                     </div>

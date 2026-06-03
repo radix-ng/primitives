@@ -1,3 +1,4 @@
+import { injectRdxTooltipContext } from './tooltip';
 import { afterNextRender, DestroyRef, Directive, effect, ElementRef, inject, output, signal } from '@angular/core';
 import {
     RDX_FLOATING_REGISTRATION,
@@ -11,7 +12,6 @@ import {
     provideRdxPopperContentWrapper,
     RdxPopperContentWrapper
 } from '@radix-ng/primitives/popper';
-import { injectRdxTooltipContext } from './tooltip';
 
 /**
  * Positions the tooltip popup against its trigger (or a custom anchor).

@@ -1,3 +1,4 @@
+import { injectRdxPreviewCardRootContext, RdxPreviewCardOpenChangeReason } from './preview-card-root';
 import { computed, DestroyRef, Directive, ElementRef, inject, output } from '@angular/core';
 import {
     RDX_FLOATING_REGISTRATION,
@@ -6,7 +7,6 @@ import {
 } from '@radix-ng/primitives/core';
 import { RdxDismiss, RdxOutsidePressDomEvent } from '@radix-ng/primitives/dismissable-layer';
 import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
-import { injectRdxPreviewCardRootContext, RdxPreviewCardOpenChangeReason } from './preview-card-root';
 
 /**
  * A container for the preview-card contents.

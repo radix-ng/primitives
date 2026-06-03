@@ -1,8 +1,8 @@
+import { provideToolbarRootContext, RdxToolbarRootContext } from './toolbar-context';
 import { booleanAttribute, computed, Directive, effect, inject, input } from '@angular/core';
 import { RdxCompositeMetadata, RdxCompositeRoot } from '@radix-ng/primitives/composite';
 import { BooleanInput, DataOrientation, Direction } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
-import { provideToolbarRootContext, RdxToolbarRootContext } from './toolbar-context';
 
 const rootContext = (): RdxToolbarRootContext => {
     const root = inject(RdxToolbarRoot);

@@ -1,4 +1,3 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import {
     RdxScrollAreaContent,
@@ -9,13 +8,13 @@ import {
     RdxScrollAreaViewport
 } from '../index';
 import { ScrollAreaBothExample } from './scroll-area-both';
-import { ScrollAreaGradientExample } from './scroll-area-gradient';
-import { ScrollAreaTabsExample } from './scroll-area-tabs';
-
 // Full component source for the "Show code" panel (Vite `?raw` import).
 import bothSource from './scroll-area-both?raw';
+import { ScrollAreaGradientExample } from './scroll-area-gradient';
 import gradientSource from './scroll-area-gradient?raw';
+import { ScrollAreaTabsExample } from './scroll-area-tabs';
 import tabsSource from './scroll-area-tabs?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const source = (code: string) => ({
     docs: {

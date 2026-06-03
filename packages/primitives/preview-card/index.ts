@@ -1,4 +1,3 @@
-import { NgModule } from '@angular/core';
 import { RdxPreviewCardArrow } from './src/preview-card-arrow';
 import { RdxPreviewCardBackdrop } from './src/preview-card-backdrop';
 import { RdxPreviewCardPopup } from './src/preview-card-popup';
@@ -7,6 +6,7 @@ import { RdxPreviewCardPositioner } from './src/preview-card-positioner';
 import { RdxPreviewCardRoot } from './src/preview-card-root';
 import { RdxPreviewCardTrigger } from './src/preview-card-trigger';
 import { RdxPreviewCardViewport } from './src/preview-card-viewport';
+import { NgModule } from '@angular/core';
 
 export * from './src/preview-card-arrow';
 export * from './src/preview-card-backdrop';

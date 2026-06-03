@@ -1,6 +1,6 @@
+import { cn, demoButton, demoMenu } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoMenu } from '../../storybook/styles';
 
 /**
  * Demonstrates `rdxMenuViewport`: the popup smoothly resizes as its content
@@ -14,32 +14,32 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <ng-container #root="rdxMenuRoot" rdxMenuRoot>
-            <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Settings</button>
+            <button rdxMenuTrigger [class]="cn(b.base, b.outline, b.size.md)">Settings</button>
 
-            <div *rdxMenuPortal [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
+            <div *rdxMenuPortal sideOffset="4" rdxMenuPositioner [class]="m.positioner">
                 <div
+                    rdxMenuPopup
                     [class]="
                         cn(
                             m.popup,
                             '[height:var(--popup-height)] [width:var(--popup-width)] overflow-hidden transition-[width,height] duration-200 ease-out'
                         )
                     "
-                    rdxMenuPopup
                 >
                     <div rdxMenuViewport>
-                        <button [class]="m.item" [closeOnClick]="false" (onSelect)="toggle()" rdxMenuItem>
+                        <button rdxMenuItem [class]="m.item" [closeOnClick]="false" (onSelect)="toggle()">
                             {{ expanded() ? 'Hide advanced' : 'Show advanced' }}
                         </button>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" rdxMenuItem>Profile</button>
-                        <button [class]="m.item" rdxMenuItem>Billing</button>
+                        <div rdxMenuSeparator [class]="m.separator"></div>
+                        <button rdxMenuItem [class]="m.item">Profile</button>
+                        <button rdxMenuItem [class]="m.item">Billing</button>
 
                         @if (expanded()) {
-                            <div [class]="m.separator" rdxMenuSeparator></div>
-                            <button [class]="m.item" rdxMenuItem>Keyboard shortcuts</button>
-                            <button [class]="m.item" rdxMenuItem>Developer tools</button>
-                            <button [class]="m.item" rdxMenuItem>Feature flags</button>
-                            <button [class]="m.item" rdxMenuItem>API tokens</button>
+                            <div rdxMenuSeparator [class]="m.separator"></div>
+                            <button rdxMenuItem [class]="m.item">Keyboard shortcuts</button>
+                            <button rdxMenuItem [class]="m.item">Developer tools</button>
+                            <button rdxMenuItem [class]="m.item">Feature flags</button>
+                            <button rdxMenuItem [class]="m.item">API tokens</button>
                         }
                     </div>
                 </div>

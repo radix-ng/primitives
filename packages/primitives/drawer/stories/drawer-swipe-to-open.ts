@@ -1,6 +1,6 @@
+import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -8,10 +8,10 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
     imports: [...drawerImports],
     template: `
         <div
-            class="border-border bg-background text-foreground relative min-h-80 w-full max-w-2xl overflow-hidden border"
             #portalContainer
+            class="border-border bg-background text-foreground relative min-h-80 w-full max-w-2xl overflow-hidden border"
         >
-            <div [modal]="false" swipeDirection="right" rdxDrawerRoot>
+            <div swipeDirection="right" rdxDrawerRoot [modal]="false">
                 <div
                     class="border-primary bg-primary/10 absolute inset-y-0 right-0 z-[1] w-10 cursor-grab border-l-2 border-dashed data-[swiping]:cursor-grabbing"
                     rdxDrawerSwipeArea
@@ -27,8 +27,9 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                     <p class="text-muted-foreground text-sm">Swipe from the right edge to open the drawer.</p>
                 </div>
 
-                <ng-template [container]="portalContainer" rdxDrawerPortal>
+                <ng-template rdxDrawerPortal [container]="portalContainer">
                     <div
+                        rdxDrawerBackdrop
                         [class]="
                             cn(
                                 'bg-foreground/20 absolute inset-0 opacity-[calc(1-var(--drawer-swipe-progress))]',
@@ -38,7 +39,6 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                                 'data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0'
                             )
                         "
-                        rdxDrawerBackdrop
                     ></div>
 
                     <div class="absolute inset-0 z-20 flex items-stretch justify-end" rdxDrawerViewport>
@@ -47,12 +47,12 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                             rdxDrawerPopup
                         >
                             <div class="mx-auto w-full max-w-lg" rdxDrawerContent>
-                                <h2 [class]="d.title" rdxDrawerTitle>Library</h2>
-                                <p [class]="d.description" rdxDrawerDescription>
+                                <h2 rdxDrawerTitle [class]="d.title">Library</h2>
+                                <p rdxDrawerDescription [class]="d.description">
                                     Swipe from the edge whenever you want to jump back into your playlists.
                                 </p>
                                 <div [class]="d.footer">
-                                    <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>Close</button>
+                                    <button rdxDrawerClose [class]="cn(b.base, b.outline, b.size.sm)">Close</button>
                                 </div>
                             </div>
                         </div>

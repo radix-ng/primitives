@@ -1,15 +1,15 @@
+import { _importsCombobox } from '../index';
+import { RdxComboboxRoot } from '../src/combobox-root';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsCombobox } from '../index';
-import { RdxComboboxRoot } from '../src/combobox-root';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
-        <div [(value)]="value" [(open)]="open" (onItemHighlighted)="highlighted.set($event)" rdxComboboxRoot>
+        <div rdxComboboxRoot [(value)]="value" [(open)]="open" (onItemHighlighted)="highlighted.set($event)">
             <span rdxComboboxLabel>Fruit</span>
             <button rdxComboboxTrigger>
                 <span #v="rdxComboboxValue" rdxComboboxValue placeholder="Pick one">{{ v.slotText() }}</span>
@@ -19,7 +19,7 @@ import { RdxComboboxRoot } from '../src/combobox-root';
                 <div rdxComboboxPopup>
                     <div rdxComboboxList aria-label="Fruits">
                         @for (fruit of fruits; track fruit) {
-                            <div [value]="fruit" rdxComboboxItem>{{ fruit }}</div>
+                            <div rdxComboboxItem [value]="fruit">{{ fruit }}</div>
                         }
                     </div>
                 </div>

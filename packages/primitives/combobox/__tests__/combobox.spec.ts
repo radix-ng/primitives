@@ -1,10 +1,10 @@
+import { _importsCombobox } from '../index';
+import { ComboboxFilter, RdxComboboxRoot } from '../src/combobox-root';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { axe } from 'jest-axe';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsCombobox } from '../index';
-import { ComboboxFilter, RdxComboboxRoot } from '../src/combobox-root';
 
 interface Fruit {
     label: string;
@@ -16,12 +16,12 @@ interface Fruit {
     imports: [_importsCombobox],
     template: `
         <div
-            [(value)]="value"
-            [(open)]="open"
+            rdxComboboxRoot
             [multiple]="multiple()"
             [filter]="filter()"
             [autoHighlight]="autoHighlight()"
-            rdxComboboxRoot
+            [(value)]="value"
+            [(open)]="open"
         >
             <label [attr.for]="'cb'">Fruit</label>
             <input id="cb" rdxComboboxInput />
@@ -32,7 +32,7 @@ interface Fruit {
                 <div rdxComboboxPopup>
                     <div rdxComboboxList aria-label="Fruits">
                         @for (fruit of fruits(); track fruit.value) {
-                            <div [value]="fruit.value" rdxComboboxItem>
+                            <div rdxComboboxItem [value]="fruit.value">
                                 {{ fruit.label }}
                                 <span rdxComboboxItemIndicator>✓</span>
                             </div>

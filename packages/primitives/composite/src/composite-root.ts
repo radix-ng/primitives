@@ -1,16 +1,3 @@
-import {
-    booleanAttribute,
-    Directive,
-    effect,
-    ElementRef,
-    inject,
-    input,
-    linkedSignal,
-    model,
-    output
-} from '@angular/core';
-import { BooleanInput, createContext, Direction } from '@radix-ng/primitives/core';
-import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { RdxCompositeList } from './composite-list';
 import {
     RdxCompositeMetadata,
@@ -34,6 +21,19 @@ import {
     scrollIntoViewIfNeeded,
     shouldKeepNativeTextInputBehavior
 } from './utils';
+import {
+    booleanAttribute,
+    Directive,
+    effect,
+    ElementRef,
+    inject,
+    input,
+    linkedSignal,
+    model,
+    output
+} from '@angular/core';
+import { BooleanInput, createContext, Direction } from '@radix-ng/primitives/core';
+import { injectDirection } from '@radix-ng/primitives/direction-provider';
 
 const rootContext = (): RdxCompositeRootContext => {
     const root = inject(RdxCompositeRoot);

@@ -1,3 +1,4 @@
+import { RdxAutocompleteRoot } from './autocomplete-root';
 import { afterNextRender, Directive, ElementRef, inject, Injector } from '@angular/core';
 import { setupInternalBackdrop } from '@radix-ng/primitives/core';
 import {
@@ -5,7 +6,6 @@ import {
     provideRdxPopperContentWrapper,
     RdxPopperContentWrapper
 } from '@radix-ng/primitives/popper';
-import { RdxAutocompleteRoot } from './autocomplete-root';
 
 /**
  * Positions the autocomplete popup relative to the input anchor using the popper engine.

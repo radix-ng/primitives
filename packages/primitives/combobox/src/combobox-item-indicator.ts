@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { injectComboboxItemContext } from './combobox-item';
+import { Directive } from '@angular/core';
 
 /**
  * Renders only when its item is selected (e.g. a checkmark).

@@ -1,7 +1,7 @@
-import { isDevMode } from '@angular/core';
 import { rdxDevError } from '../dev/diagnostics';
 import { createFloatingEvents, RdxFloatingEvents, RdxFloatingRootContextEventMap } from './floating-events';
 import { RdxTriggerRegistry } from './trigger-registry';
+import { isDevMode } from '@angular/core';
 
 const DOCS = 'utils/floating-tree';
 

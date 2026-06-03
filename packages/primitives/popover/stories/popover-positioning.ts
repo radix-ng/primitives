@@ -1,8 +1,8 @@
+import { cn, demoButton, demoPopover } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { popoverImports } from '@radix-ng/primitives/popover';
 import { Side } from '@radix-ng/primitives/popper';
-import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -22,22 +22,22 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
             </div>
 
             <ng-container rdxPopoverRoot>
-                <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Open {{ selectedSide() }}</button>
+                <button rdxPopoverTrigger [class]="cn(b.base, b.outline, b.size.md)">Open {{ selectedSide() }}</button>
 
                 <div
                     *rdxPopoverPortal
-                    [class]="p.positioner"
-                    [side]="selectedSide()"
                     sideOffset="8"
                     rdxPopoverPositioner
+                    [class]="p.positioner"
+                    [side]="selectedSide()"
                 >
-                    <div [class]="p.popup" rdxPopoverPopup>
-                        <span [class]="p.arrow" rdxPopoverArrow></span>
-                        <h2 [class]="p.title" rdxPopoverTitle>Positioned popup</h2>
-                        <p [class]="p.description" rdxPopoverDescription>
+                    <div rdxPopoverPopup [class]="p.popup">
+                        <span rdxPopoverArrow [class]="p.arrow"></span>
+                        <h2 rdxPopoverTitle [class]="p.title">Positioned popup</h2>
+                        <p rdxPopoverDescription [class]="p.description">
                             The positioner delegates collision handling to the shared Popper primitive.
                         </p>
-                        <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                        <button aria-label="Close" rdxPopoverClose [class]="p.close">
                             <svg aria-hidden="true" lucideX size="14" />
                         </button>
                     </div>

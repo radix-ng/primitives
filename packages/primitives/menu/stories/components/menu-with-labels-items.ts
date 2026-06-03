@@ -1,6 +1,6 @@
+import { cn, demoButton, demoMenu } from '../../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoMenu } from '../../../storybook/styles';
 
 @Component({
     selector: 'menu-with-labels-items-story',
@@ -8,28 +8,28 @@ import { cn, demoButton, demoMenu } from '../../../storybook/styles';
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <ng-container #root="rdxMenuRoot" rdxMenuRoot>
-            <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Foods</button>
+            <button rdxMenuTrigger [class]="cn(b.base, b.outline, b.size.md)">Foods</button>
 
-            <div *rdxMenuPortal [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-                <div [class]="m.popup" rdxMenuPopup>
+            <div *rdxMenuPortal sideOffset="4" rdxMenuPositioner [class]="m.positioner">
+                <div rdxMenuPopup [class]="m.popup">
                     @for (group of foodGroups; track $index) {
                         <div rdxMenuGroup>
                             @if (group.label) {
-                                <span [class]="m.groupLabel" rdxMenuGroupLabel>{{ group.label }}</span>
+                                <span rdxMenuGroupLabel [class]="m.groupLabel">{{ group.label }}</span>
                             }
                             @for (food of group.foods; track food.value) {
                                 <button
+                                    rdxMenuItem
                                     [class]="m.item"
                                     [disabled]="food.disabled ?? false"
                                     (onSelect)="handleSelect(food.value)"
-                                    rdxMenuItem
                                 >
                                     {{ food.label }}
                                 </button>
                             }
                         </div>
                         @if ($index < foodGroups.length - 1) {
-                            <div [class]="m.separator" rdxMenuSeparator></div>
+                            <div rdxMenuSeparator [class]="m.separator"></div>
                         }
                     }
                 </div>

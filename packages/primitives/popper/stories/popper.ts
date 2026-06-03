@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, effect, signal } from '@angular/core';
 import { popperImports } from '../index';
+import { ChangeDetectionStrategy, Component, effect, signal } from '@angular/core';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -15,10 +15,10 @@ import { popperImports } from '../index';
             </span>
             <button
                 class="bg-primary text-primary-foreground absolute top-[132px] left-14 h-10 w-10 [transform:translateX(var(--offset))] rounded-full transition-transform duration-300 ease-out"
-                [style.--offset]="left() + 'px'"
                 type="button"
                 aria-label="Moving anchor"
                 rdxPopperAnchor
+                [style.--offset]="left() + 'px'"
             >
                 <span class="sr-only">Moving anchor</span>
             </button>
@@ -57,15 +57,15 @@ export class PopperUpdPosition {
     template: `
         <div
             class="border-border bg-muted relative h-80 w-[min(600px,80vw)] overflow-hidden rounded-xl border-2 border-dashed"
-            (pointermove)="onPointerMove($event)"
             rdxPopperRoot
+            (pointermove)="onPointerMove($event)"
         >
             <span class="text-muted-foreground absolute top-3 left-3 text-xs">Move the pointer inside this area</span>
             <span
                 class="bg-primary absolute h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+                rdxPopperAnchor
                 [style.left.px]="pointer().x"
                 [style.top.px]="pointer().y"
-                rdxPopperAnchor
             ></span>
             <div side="top" sideOffset="6" updatePositionStrategy="always" rdxPopperContentWrapper>
                 <div

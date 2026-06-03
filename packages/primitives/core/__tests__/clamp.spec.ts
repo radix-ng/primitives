@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
 import { clamp, roundToStepPrecision, snapValueToStep } from '../src/clamp';
+import { describe, expect, it } from 'vitest';
 
 describe('clamp', () => {
     it('returns the value when it is within range', () => {

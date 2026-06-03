@@ -1,13 +1,13 @@
+import { cn, demoButton, demoCheckbox } from '../../storybook/styles';
+import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
+import { RdxCheckboxInputDirective } from '../src/checkbox-input';
+import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LucideCheck } from '@lucide/angular';
 import { RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { cn, demoButton, demoCheckbox } from '../../storybook/styles';
-import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
-import { RdxCheckboxInputDirective } from '../src/checkbox-input';
-import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -16,8 +16,8 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
         <section [formGroup]="personality">
             <div class="flex items-center gap-3 pb-3">
                 <div rdxCheckboxRoot formControlName="fun">
-                    <button id="r1" [class]="c.button" rdxCheckboxButton>
-                        <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
+                    <button id="r1" rdxCheckboxButton [class]="c.button">
+                        <svg rdxCheckboxIndicator size="16" lucideCheck [class]="c.indicator" />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -26,8 +26,8 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
             <div class="flex items-center gap-3 pb-3">
                 <div rdxCheckboxRoot formControlName="serious">
-                    <button id="r2" [class]="c.button" rdxCheckboxButton>
-                        <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
+                    <button id="r2" rdxCheckboxButton [class]="c.button">
+                        <svg rdxCheckboxIndicator size="16" lucideCheck [class]="c.indicator" />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -38,8 +38,8 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
             <div class="flex items-center gap-3 pb-3">
                 <div rdxCheckboxRoot formControlName="smart" form="smart">
-                    <button id="r3" [class]="c.button" rdxCheckboxButton>
-                        <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
+                    <button id="r3" rdxCheckboxButton [class]="c.button">
+                        <svg rdxCheckboxIndicator size="16" lucideCheck [class]="c.indicator" />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -52,7 +52,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
             {{ personality.value | json }}
         </section>
 
-        <button [class]="cn(b.base, b.primary, b.size.md)" (click)="toggleDisable()" type="button">
+        <button type="button" [class]="cn(b.base, b.primary, b.size.md)" (click)="toggleDisable()">
             Toggle disabled state
         </button>
     `,

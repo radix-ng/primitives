@@ -1,5 +1,5 @@
-import { Directive, effect, ElementRef, inject } from '@angular/core';
 import { injectCheckboxRootContext } from './checkbox-root';
+import { Directive, effect, ElementRef, inject } from '@angular/core';
 
 @Directive({
     selector: 'input[rdxCheckboxInput]',

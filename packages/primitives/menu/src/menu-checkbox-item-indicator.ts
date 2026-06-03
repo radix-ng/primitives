@@ -1,7 +1,7 @@
-import { booleanAttribute, computed, Directive, input } from '@angular/core';
-import { BooleanInput } from '@radix-ng/primitives/core';
 import { injectRdxMenuCheckboxItemContext } from './menu-checkbox-item';
 import { isIndeterminate } from './menu-utils';
+import { booleanAttribute, computed, Directive, input } from '@angular/core';
+import { BooleanInput } from '@radix-ng/primitives/core';
 
 /**
  * Renders when the parent checkbox item is checked or indeterminate.

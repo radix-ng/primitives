@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
 import { isEqual, isNullish } from '../src/predicates';
+import { describe, expect, it } from 'vitest';
 
 describe('isNullish', () => {
     it('is true only for null and undefined', () => {

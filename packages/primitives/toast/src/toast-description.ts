@@ -1,5 +1,5 @@
-import { DestroyRef, Directive, inject } from '@angular/core';
 import { injectRdxToastRootContext } from './toast-root';
+import { DestroyRef, Directive, inject } from '@angular/core';
 
 /** Supporting body text for a toast; registers so `aria-describedby` only targets a real node. */
 @Directive({

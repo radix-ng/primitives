@@ -1,4 +1,3 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { PresenceExample } from './presence';
 import { PresenceWaapiSpinner } from './presence-waapi-spinner';
@@ -7,6 +6,7 @@ import { PresenceWaapiSubtree } from './presence-waapi-subtree';
 import subtreeSource from './presence-waapi-subtree?raw';
 import { PresenceWaapiTransition } from './presence-waapi-transition';
 import transitionSource from './presence-waapi-transition?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const source = (code: string) => ({ docs: { source: { code, language: 'typescript' } } });
 

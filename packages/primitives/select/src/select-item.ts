@@ -1,3 +1,6 @@
+import { injectSelectPopupContext } from './select-popup';
+import { injectSelectRootContext } from './select-root';
+import { SELECTION_KEYS, valueComparator } from './utils';
 import {
     afterNextRender,
     booleanAttribute,
@@ -12,9 +15,6 @@ import {
 } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { AcceptableValue, createContext, handleAndDispatchCustomEvent, injectId } from '@radix-ng/primitives/core';
-import { injectSelectPopupContext } from './select-popup';
-import { injectSelectRootContext } from './select-root';
-import { SELECTION_KEYS, valueComparator } from './utils';
 
 export interface RdxSelectItemContext {
     value: Signal<AcceptableValue | undefined>;

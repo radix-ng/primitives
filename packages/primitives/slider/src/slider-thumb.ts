@@ -1,3 +1,6 @@
+import { getInsetThumbPositionPercent, valueToPercent } from './slider.utils';
+import { injectSliderRootContext } from './slider-context';
+import { RdxSliderThumbMetadata, RdxSliderThumbRef } from './slider-root';
 import {
     afterNextRender,
     afterRenderEffect,
@@ -15,9 +18,6 @@ import {
 } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
-import { injectSliderRootContext } from './slider-context';
-import { RdxSliderThumbMetadata, RdxSliderThumbRef } from './slider-root';
-import { getInsetThumbPositionPercent, valueToPercent } from './slider.utils';
 
 /**
  * A draggable handle. Render one per value; place an `input[rdxSliderThumbInput]`

@@ -1,6 +1,6 @@
+import { cn, demoButton, demoToast } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, RdxToastObject, toastImports } from '@radix-ng/primitives/toast';
-import { cn, demoButton, demoToast } from '../../storybook/styles';
 
 /**
  * `rdxToastAction` renders an in-toast action button. The label and handler are passed through the
@@ -18,19 +18,19 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
         </div>
 
         <div rdxToastPortal>
-            <div [class]="t.viewport" rdxToastViewport>
+            <div rdxToastViewport [class]="t.viewport">
                 @for (toast of manager.toasts(); track toast.id) {
-                    <div [class]="t.root" [toast]="toast" rdxToastRoot>
-                        <div [class]="t.content" rdxToastContent>
+                    <div rdxToastRoot [class]="t.root" [toast]="toast">
+                        <div rdxToastContent [class]="t.content">
                             <div class="min-w-0 flex-1">
-                                <p [class]="t.title" rdxToastTitle>{{ toast.title }}</p>
+                                <p rdxToastTitle [class]="t.title">{{ toast.title }}</p>
                                 @if (toast.actionProps; as action) {
-                                    <button [class]="t.action" (click)="runAction(toast, $event)" rdxToastAction>
+                                    <button rdxToastAction [class]="t.action" (click)="runAction(toast, $event)">
                                         {{ action.label }}
                                     </button>
                                 }
                             </div>
-                            <button [class]="t.close" aria-label="Dismiss" rdxToastClose>✕</button>
+                            <button aria-label="Dismiss" rdxToastClose [class]="t.close">✕</button>
                         </div>
                     </div>
                 }

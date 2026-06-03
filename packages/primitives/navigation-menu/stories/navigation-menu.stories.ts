@@ -1,4 +1,3 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxNavigationMenuCustomLinksComponent } from './navigation-menu-custom-links';
 import customLinksSource from './navigation-menu-custom-links?raw';
@@ -9,13 +8,14 @@ import largeSource from './navigation-menu-large?raw';
 import { RdxNavigationMenuLinksComponent } from './navigation-menu-links';
 import linksSource from './navigation-menu-links?raw';
 import { RdxNavigationMenuNestedComponent } from './navigation-menu-nested';
+import nestedSource from './navigation-menu-nested?raw';
 import { RdxNavigationMenuNestedInlineComponent } from './navigation-menu-nested-inline';
 import nestedInlineSource from './navigation-menu-nested-inline?raw';
-import nestedSource from './navigation-menu-nested?raw';
 import { RdxNavigationMenuRtlComponent } from './navigation-menu-rtl';
 import rtlSource from './navigation-menu-rtl?raw';
 import { RdxNavigationMenuVerticalComponent } from './navigation-menu-vertical';
 import verticalSource from './navigation-menu-vertical?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 

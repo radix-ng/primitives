@@ -14,7 +14,7 @@ import { RdxEditableArea, RdxEditableInput, RdxEditablePreview, RdxEditableRoot 
             autoResize
             submitMode="both"
         >
-            <div [class]="area" rdxEditableArea>
+            <div rdxEditableArea [class]="area">
                 <span #preview="rdxEditablePreview" rdxEditablePreview>
                     {{ root.value() || preview.placeholder() }}
                 </span>

@@ -7,8 +7,8 @@ import {
     ElementRef,
     inject,
     input,
-    signal,
-    Signal
+    Signal,
+    signal
 } from '@angular/core';
 import { RdxCompositeList, RdxCompositeRoot } from '@radix-ng/primitives/composite';
 import { BooleanInput, createContext, provideFloatingTree } from '@radix-ng/primitives/core';

@@ -1,18 +1,18 @@
+import { RdxButtonDirective } from '../src/button.directive';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { RdxButtonDirective } from '../src/button.directive';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxButtonDirective],
     template: `
         <button
+            rdxButton
             [disabled]="disabled"
             [focusableWhenDisabled]="focusableWhenDisabled"
             [type]="type"
             (click)="onClick()"
-            rdxButton
         >
             Button
         </button>
@@ -33,7 +33,7 @@ class NativeButtonHost {
     imports: [RdxButtonDirective],
     template: `
         <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events -->
-        <a [disabled]="disabled" (click)="onClick()" rdxButton>Link</a>
+        <a rdxButton [disabled]="disabled" (click)="onClick()">Link</a>
     `
 })
 class AnchorHost {

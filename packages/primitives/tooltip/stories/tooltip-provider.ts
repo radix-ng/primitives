@@ -1,26 +1,26 @@
+import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideDynamicIcon } from '@lucide/angular';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
-import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-tooltip-provider',
     imports: [...tooltipImports, LucideDynamicIcon],
     template: `
-        <div class="flex items-center gap-2" [delay]="600" [timeout]="400" rdxTooltipProvider>
+        <div class="flex items-center gap-2" rdxTooltipProvider [delay]="600" [timeout]="400">
             @for (action of actions; track action.name) {
                 <ng-container rdxTooltip>
                     <button
+                        rdxTooltipTrigger
                         [class]="cn(b.base, b.outline, b.size.icon)"
                         [attr.aria-label]="action.name"
-                        rdxTooltipTrigger
                     >
-                        <svg [lucideIcon]="action.icon" aria-hidden="true" size="16" />
+                        <svg aria-hidden="true" size="16" [lucideIcon]="action.icon" />
                     </button>
 
-                    <div *rdxTooltipPortal [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
-                        <div [class]="t.popup" rdxTooltipPopup>{{ action.name }}</div>
+                    <div *rdxTooltipPortal sideOffset="8" rdxTooltipPositioner [class]="t.positioner">
+                        <div rdxTooltipPopup [class]="t.popup">{{ action.name }}</div>
                     </div>
                 </ng-container>
             }

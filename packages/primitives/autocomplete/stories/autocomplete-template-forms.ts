@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 /**
  * Template-driven forms: `[(ngModel)]` binds the input string two-way.
@@ -12,19 +12,19 @@ import { _importsAutocomplete } from '../index';
     imports: [_importsAutocomplete, FormsModule],
     template: `
         <div class="flex flex-col gap-3">
-            <div [(ngModel)]="value" rdxAutocompleteRoot>
-                <div [class]="c.control" rdxAutocompleteInputGroup>
-                    <input [class]="c.input" rdxAutocompleteInput placeholder="Search a fruit…" aria-label="Fruit" />
+            <div rdxAutocompleteRoot [(ngModel)]="value">
+                <div rdxAutocompleteInputGroup [class]="c.control">
+                    <input rdxAutocompleteInput placeholder="Search a fruit…" aria-label="Fruit" [class]="c.input" />
                 </div>
 
-                <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
-                    <div [class]="c.popup" rdxAutocompletePopup>
-                        <div [class]="c.list" rdxAutocompleteList aria-label="Fruits">
+                <div *rdxAutocompletePortal rdxAutocompletePositioner [class]="c.positioner">
+                    <div rdxAutocompletePopup [class]="c.popup">
+                        <div rdxAutocompleteList aria-label="Fruits" [class]="c.list">
                             @for (item of fruits; track item) {
-                                <div [class]="c.item" rdxAutocompleteItem>{{ item }}</div>
+                                <div rdxAutocompleteItem [class]="c.item">{{ item }}</div>
                             }
                         </div>
-                        <div [class]="c.empty" rdxAutocompleteEmpty>No fruit found.</div>
+                        <div rdxAutocompleteEmpty [class]="c.empty">No fruit found.</div>
                     </div>
                 </div>
             </div>

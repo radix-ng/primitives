@@ -1,5 +1,3 @@
-import { CalendarDate, CalendarDateTime, parseZonedDateTime, Time } from '@internationalized/date';
-import { describe, expect, it } from 'vitest';
 import {
     areAllDaysBetweenValid,
     getDaysInMonth,
@@ -17,6 +15,8 @@ import {
     isCalendarDateTime,
     isZonedDateTime
 } from '../src/date-time/comparators';
+import { CalendarDate, CalendarDateTime, parseZonedDateTime, Time } from '@internationalized/date';
+import { describe, expect, it } from 'vitest';
 
 describe('date-time type guards', () => {
     it('isCalendarDateTime / isZonedDateTime narrow by instance', () => {

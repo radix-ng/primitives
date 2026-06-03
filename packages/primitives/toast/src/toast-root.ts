@@ -1,8 +1,8 @@
-import { computed, DestroyRef, Directive, effect, ElementRef, inject, Injector, input, signal } from '@angular/core';
-import { createContext, elementSize, injectId } from '@radix-ng/primitives/core';
+import { RdxToastObject } from './toast.types';
 import { RdxToastManager } from './toast-provider';
 import { RdxToastSwipeDirection, useToastSwipe } from './toast-swipe';
-import { RdxToastObject } from './toast.types';
+import { computed, DestroyRef, Directive, effect, ElementRef, inject, Injector, input, signal } from '@angular/core';
+import { createContext, elementSize, injectId } from '@radix-ng/primitives/core';
 
 export interface RdxToastRootContext {
     /** The toast model this part tree renders. */

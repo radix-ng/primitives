@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { injectProgressRootContext } from './progress-root.directive';
+import { Directive } from '@angular/core';
 
 const attr = (value: boolean) => (value ? '' : undefined);
 

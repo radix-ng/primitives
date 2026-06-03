@@ -24,7 +24,7 @@ import {
     template: `
         <div class="flex flex-col gap-3">
             <label class="text-foreground text-sm" id="volume-label">Volume</label>
-            <div class="relative w-56 select-none" [formControl]="volume" [step]="5" rdxSliderRoot>
+            <div class="relative w-56 select-none" rdxSliderRoot [formControl]="volume" [step]="5">
                 <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>
                     <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
                         <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>

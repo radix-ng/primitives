@@ -1,5 +1,5 @@
-import { DestroyRef, Directive, effect, inject, output, signal } from '@angular/core';
 import { injectSelectPopupContext } from './select-popup';
+import { DestroyRef, Directive, effect, inject, output, signal } from '@angular/core';
 
 @Directive({
     selector: '[rdxSelectScrollButtonBase]',

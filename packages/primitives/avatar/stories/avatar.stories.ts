@@ -1,4 +1,3 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxAvatarFallbackDirective } from '../src/avatar-fallback.directive';
 import { RdxAvatarImageDirective } from '../src/avatar-image.directive';
@@ -9,6 +8,7 @@ import {
     RdxAvatarFallbackComponent,
     RdxAvatarSizesComponent
 } from './avatar';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 

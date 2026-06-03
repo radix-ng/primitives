@@ -29,7 +29,7 @@ afterEach(() => {
     imports: [RdxContextMenuModule, RdxMenuModule],
     template: `
         <ng-container #root="rdxContextMenuRoot" rdxContextMenuRoot>
-            <div [attr.data-disabled-trigger]="disabled" rdxContextMenuTrigger>Right click area</div>
+            <div rdxContextMenuTrigger [attr.data-disabled-trigger]="disabled">Right click area</div>
 
             @if (root.menuRoot.open()) {
                 <div rdxMenuPositioner>
@@ -51,7 +51,7 @@ class ContextMenuHost {
     imports: [RdxContextMenuModule, RdxMenuModule],
     template: `
         <ng-container #root="rdxContextMenuRoot" rdxContextMenuRoot>
-            <div [disabled]="true" rdxContextMenuTrigger>Right click area</div>
+            <div rdxContextMenuTrigger [disabled]="true">Right click area</div>
 
             @if (root.menuRoot.open()) {
                 <div rdxMenuPositioner>

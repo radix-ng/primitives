@@ -1,24 +1,24 @@
+import { RdxSwitchInput } from '../src/switch-input';
+import { RdxSwitchCheckedChangeEvent, RdxSwitchRoot } from '../src/switch-root';
+import { RdxSwitchThumb } from '../src/switch-thumb';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
-import { RdxSwitchInput } from '../src/switch-input';
-import { RdxSwitchCheckedChangeEvent, RdxSwitchRoot } from '../src/switch-root';
-import { RdxSwitchThumb } from '../src/switch-thumb';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxSwitchRoot, RdxSwitchThumb, RdxSwitchInput],
     template: `
         <button
-            [(checked)]="checked"
+            rdxSwitchRoot
             [disabled]="disabled()"
             [readonly]="readonly()"
             [required]="required()"
+            [(checked)]="checked"
             (onCheckedChange)="onChange($event)"
-            rdxSwitchRoot
         >
             <input rdxSwitchInput />
             <span rdxSwitchThumb></span>
@@ -229,7 +229,7 @@ describe('RdxSwitch with ReactiveForms', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
     template: `
-        <button [value]="'enabled'" name="airplane" rdxSwitchRoot>
+        <button name="airplane" rdxSwitchRoot [value]="'enabled'">
             <input rdxSwitchInput />
             <span rdxSwitchThumb></span>
         </button>
@@ -263,7 +263,7 @@ describe('RdxSwitch submit value (`value` alias)', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
     template: `
-        <button [invalid]="invalid()" [errors]="errors()" rdxSwitchRoot>
+        <button rdxSwitchRoot [invalid]="invalid()" [errors]="errors()">
             <input rdxSwitchInput />
             <span rdxSwitchThumb></span>
         </button>
@@ -326,7 +326,7 @@ describe('RdxSwitch validation state (batch #4)', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [FormField, RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
     template: `
-        <button [formField]="enabled" rdxSwitchRoot>
+        <button rdxSwitchRoot [formField]="enabled">
             <input rdxSwitchInput />
             <span rdxSwitchThumb></span>
         </button>

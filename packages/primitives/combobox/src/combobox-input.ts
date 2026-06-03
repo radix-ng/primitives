@@ -1,3 +1,5 @@
+import { RdxComboboxPositioner } from './combobox-positioner';
+import { injectComboboxRootContext } from './combobox-root';
 import {
     afterNextRender,
     booleanAttribute,
@@ -12,8 +14,6 @@ import { BooleanInput, injectId } from '@radix-ng/primitives/core';
 import { RdxFloatingInsideElement } from '@radix-ng/primitives/dismissable-layer';
 import { injectFieldRootContext } from '@radix-ng/primitives/field';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
-import { RdxComboboxPositioner } from './combobox-positioner';
-import { injectComboboxRootContext } from './combobox-root';
 
 const attr = (value: boolean) => (value ? '' : undefined);
 

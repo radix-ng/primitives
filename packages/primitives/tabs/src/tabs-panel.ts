@@ -1,3 +1,5 @@
+import { injectTabsRootContext } from './tabs-root-context';
+import { makePanelId, makeTabId, RdxTabsValue } from './utils';
 import {
     booleanAttribute,
     computed,
@@ -13,8 +15,6 @@ import {
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { useTransitionStatus } from '@radix-ng/primitives/core';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
-import { injectTabsRootContext } from './tabs-root-context';
-import { makePanelId, makeTabId, RdxTabsValue } from './utils';
 
 const panelPresenceContext = () => ({ present: inject(RdxTabsPanel).present });
 

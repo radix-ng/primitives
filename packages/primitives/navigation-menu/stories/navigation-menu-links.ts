@@ -1,25 +1,25 @@
+import { demoNavigationMenu } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
-import { demoNavigationMenu } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-links',
     imports: [...navigationMenuImports],
     template: `
-        <nav [class]="m.root" rdxNavigationMenuRoot>
-            <ul [class]="m.list" rdxNavigationMenuList>
+        <nav rdxNavigationMenuRoot [class]="m.root">
+            <ul rdxNavigationMenuList [class]="m.list">
                 <li rdxNavigationMenuItem>
-                    <a [class]="m.link" rdxNavigationMenuLink active href="#">Home</a>
+                    <a rdxNavigationMenuLink active href="#" [class]="m.link">Home</a>
                 </li>
                 <li rdxNavigationMenuItem>
-                    <a [class]="m.link" rdxNavigationMenuLink href="#">Docs</a>
+                    <a rdxNavigationMenuLink href="#" [class]="m.link">Docs</a>
                 </li>
                 <li rdxNavigationMenuItem>
-                    <a [class]="m.link" rdxNavigationMenuLink href="#">Pricing</a>
+                    <a rdxNavigationMenuLink href="#" [class]="m.link">Pricing</a>
                 </li>
                 <li rdxNavigationMenuItem>
-                    <a [class]="m.link" rdxNavigationMenuLink href="#">Blog</a>
+                    <a rdxNavigationMenuLink href="#" [class]="m.link">Blog</a>
                 </li>
             </ul>
         </nav>

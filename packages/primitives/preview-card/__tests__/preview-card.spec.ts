@@ -27,7 +27,7 @@ import { vi } from 'vitest';
         RdxPreviewCardTrigger
     ],
     template: `
-        <ng-container #root="rdxPreviewCardRoot" [(open)]="open" rdxPreviewCardRoot>
+        <ng-container #root="rdxPreviewCardRoot" rdxPreviewCardRoot [(open)]="open">
             <a href="#" rdxPreviewCardTrigger>Typography</a>
 
             <div *rdxPreviewCardPortal data-test-preview-card-portal rdxPreviewCardPositioner>
@@ -55,9 +55,9 @@ class TestHostComponent {
     template: `
         <ng-container
             #root="rdxPreviewCardRoot"
-            [defaultOpen]="true"
             defaultTriggerId="default-trigger"
             rdxPreviewCardRoot
+            [defaultOpen]="true"
         >
             <a id="default-trigger" href="#" rdxPreviewCardTrigger>Default</a>
 
@@ -97,10 +97,10 @@ class MultipleTriggersHostComponent {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPreviewCardPopup, RdxPreviewCardPositioner, RdxPreviewCardRoot, RdxPreviewCardTrigger],
     template: `
-        <a id="detached-one" [handle]="handle" href="#" payload="one" rdxPreviewCardTrigger>One</a>
-        <a id="detached-two" [handle]="handle" href="#" payload="two" rdxPreviewCardTrigger>Two</a>
+        <a id="detached-one" href="#" payload="one" rdxPreviewCardTrigger [handle]="handle">One</a>
+        <a id="detached-two" href="#" payload="two" rdxPreviewCardTrigger [handle]="handle">Two</a>
 
-        <ng-container #root="rdxPreviewCardRoot" [handle]="handle" rdxPreviewCardRoot>
+        <ng-container #root="rdxPreviewCardRoot" rdxPreviewCardRoot [handle]="handle">
             @if (root.open()) {
                 <div rdxPreviewCardPositioner>
                     <div rdxPreviewCardPopup>{{ root.payload() }}</div>
@@ -126,8 +126,8 @@ class DetachedTriggersHostComponent {
         RdxPreviewCardTrigger
     ],
     template: `
-        <ng-container #root="rdxPreviewCardRoot" (onOpenChangeComplete)="complete.push($event)" rdxPreviewCardRoot>
-            <a [delay]="0" href="#" rdxPreviewCardTrigger>Open</a>
+        <ng-container #root="rdxPreviewCardRoot" rdxPreviewCardRoot (onOpenChangeComplete)="complete.push($event)">
+            <a href="#" rdxPreviewCardTrigger [delay]="0">Open</a>
 
             <div *rdxPreviewCardPortal rdxPreviewCardPositioner>
                 <div rdxPreviewCardPopup>Preview</div>
@@ -179,9 +179,9 @@ class ViewportHostComponent {}
     template: `
         <ng-container
             #root="rdxPreviewCardRoot"
+            rdxPreviewCardRoot
             [(open)]="open"
             (onOpenChange)="handleOpenChange($event)"
-            rdxPreviewCardRoot
         >
             <a href="#" rdxPreviewCardTrigger>Open</a>
 
@@ -258,13 +258,13 @@ class PositionerDefaultsHostComponent {}
     ],
     template: `
         <ng-container #parent="rdxPreviewCardRoot" rdxPreviewCardRoot>
-            <a [delay]="0" href="#" rdxPreviewCardTrigger>Parent</a>
+            <a href="#" rdxPreviewCardTrigger [delay]="0">Parent</a>
 
             @if (parent.open()) {
                 <div rdxPreviewCardPositioner>
                     <div rdxPreviewCardPopup>
                         <ng-container #child="rdxPreviewCardRoot" rdxPreviewCardRoot>
-                            <a [delay]="0" href="#" rdxPreviewCardTrigger>Child</a>
+                            <a href="#" rdxPreviewCardTrigger [delay]="0">Child</a>
 
                             <div *rdxPreviewCardPortal data-test-child-portal rdxPreviewCardPositioner>
                                 <div rdxPreviewCardPopup>Child popup</div>
@@ -549,10 +549,10 @@ describe('PreviewCard', () => {
             imports: [RdxPreviewCardPopup, RdxPreviewCardPositioner, RdxPreviewCardRoot, RdxPreviewCardTrigger],
             template: `
                 <ng-container
+                    rdxPreviewCardRoot
                     [(open)]="open"
                     [(triggerId)]="triggerId"
                     (onOpenChange)="changes.push($event)"
-                    rdxPreviewCardRoot
                 >
                     <a id="controlled-one" href="#" payload="one" rdxPreviewCardTrigger>One</a>
                     <a id="controlled-two" href="#" payload="two" rdxPreviewCardTrigger>Two</a>

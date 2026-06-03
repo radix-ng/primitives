@@ -1,3 +1,4 @@
+import { RdxToggleGroupContext } from './toggle-group-context';
 import { booleanAttribute, computed, Directive, effect, input, model, output, signal, untracked } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 import {
@@ -9,7 +10,6 @@ import {
     RdxFormUiTouchTarget,
     RdxFormValueControl
 } from '@radix-ng/primitives/core';
-import { RdxToggleGroupContext } from './toggle-group-context';
 
 export type RdxToggleGroupValueChangeReason = 'none';
 export type RdxToggleGroupValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxToggleGroupValueChangeReason>;

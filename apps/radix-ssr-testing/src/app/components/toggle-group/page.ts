@@ -7,7 +7,7 @@ import { RdxToggleGroup } from '@radix-ng/primitives/toggle-group';
     selector: 'app-toggle-group',
     imports: [RdxToggleGroup, RdxToggle],
     template: `
-        <div [value]="['1']" rdxToggleGroup>
+        <div rdxToggleGroup [value]="['1']">
             <button rdxToggle value="1">Item 1</button>
             <button rdxToggle value="2">Item 2</button>
         </div>

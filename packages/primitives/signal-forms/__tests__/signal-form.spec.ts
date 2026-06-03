@@ -1,18 +1,18 @@
+import { RdxSignalField } from '../src/signal-field';
+import { RdxSignalForm } from '../src/signal-form';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { form, FormField, required } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { RdxFieldError, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormRoot } from '@radix-ng/primitives/form';
-import { RdxSignalField } from '../src/signal-field';
-import { RdxSignalForm } from '../src/signal-form';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [FormField, RdxFormRoot, RdxFieldRoot, RdxSignalForm],
     // The form is bound once; the field carries only `name` — its errors are routed by `errorsFor`.
     template: `
-        <form [rdxSignalForm]="formTree" rdxFormRoot>
+        <form rdxFormRoot [rdxSignalForm]="formTree">
             <div rdxFieldRoot name="email">
                 <input [formField]="email" />
             </div>
@@ -68,7 +68,7 @@ describe('RdxSignalForm — aggregate state + errorsFor routing', () => {
     imports: [FormField, RdxFormRoot, RdxFieldRoot, RdxSignalForm],
     // A nested field — `errorsFor` must walk the dotted path `address.street`, not just top-level keys.
     template: `
-        <form [rdxSignalForm]="formTree" rdxFormRoot>
+        <form rdxFormRoot [rdxSignalForm]="formTree">
             <div rdxFieldRoot name="address.street">
                 <input [formField]="street" />
             </div>
@@ -116,9 +116,9 @@ describe('RdxSignalForm — errorsFor resolves a dotted path', () => {
     // Both adapters on the same field: per-field `rdxSignalField` AND form-level `name` routing.
     // `messages()` must dedupe so the shared error renders once.
     template: `
-        <form [rdxSignalForm]="formTree" rdxFormRoot>
+        <form rdxFormRoot [rdxSignalForm]="formTree">
             <div rdxFieldRoot name="email">
-                <input [formField]="email" rdxSignalField />
+                <input rdxSignalField [formField]="email" />
                 <p #err="rdxFieldError" rdxFieldError>{{ err.messages().join('|') }}</p>
             </div>
         </form>

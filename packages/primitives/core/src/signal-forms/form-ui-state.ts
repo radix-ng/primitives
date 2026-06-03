@@ -1,3 +1,5 @@
+import { BooleanInput } from '../types';
+import { RdxValidationError } from './form-control';
 import {
     booleanAttribute,
     computed,
@@ -10,11 +12,9 @@ import {
     output,
     OutputEmitterRef,
     Provider,
-    signal,
-    Signal
+    Signal,
+    signal
 } from '@angular/core';
-import { BooleanInput } from '../types';
-import { RdxValidationError } from './form-control';
 
 /**
  * Optional form-control UI state derived from a control's `invalid`/`errors`/`touched`/`dirty`

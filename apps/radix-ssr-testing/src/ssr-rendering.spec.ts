@@ -1,10 +1,6 @@
 // `@angular/platform-server` ships partially-compiled code; load the compiler so JIT is available
 // as a fallback in the test environment (otherwise PlatformLocation fails to compile).
 import '@angular/compiler';
-import { provideZonelessChangeDetection, Type } from '@angular/core';
-import { bootstrapApplication, BootstrapContext, provideClientHydration } from '@angular/platform-browser';
-import { provideServerRendering, renderApplication } from '@angular/platform-server';
-import { describe, expect, it } from 'vitest';
 import AccordionPage from './app/components/accordion/page';
 import AvatarPage from './app/components/avatar/page';
 import CheckboxPage from './app/components/checkbox/page';
@@ -18,6 +14,10 @@ import SliderPage from './app/components/slider/page';
 import SwitchPage from './app/components/switch/page';
 import TabsPage from './app/components/tabs/page';
 import ToggleGroupPage from './app/components/toggle-group/page';
+import { provideZonelessChangeDetection, Type } from '@angular/core';
+import { bootstrapApplication, BootstrapContext, provideClientHydration } from '@angular/platform-browser';
+import { provideServerRendering, renderApplication } from '@angular/platform-server';
+import { describe, expect, it } from 'vitest';
 
 /**
  * Server-side rendering smoke tests for the primitives.

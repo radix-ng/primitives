@@ -1,4 +1,3 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { SliderDefaultExample } from './slider-default';
 import defaultSource from './slider-default?raw';
@@ -16,6 +15,7 @@ import { SliderValueExample } from './slider-value';
 import valueSource from './slider-value?raw';
 import { SliderVerticalExample } from './slider-vertical';
 import verticalSource from './slider-vertical?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 

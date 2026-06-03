@@ -1,5 +1,5 @@
-import { computed, Directive } from '@angular/core';
 import { injectPaginationRootContext } from './pagination-context.token';
+import { computed, Directive } from '@angular/core';
 
 // as Button
 @Directive({

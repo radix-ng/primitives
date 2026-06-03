@@ -1,6 +1,6 @@
+import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { createRdxDrawerHandle, drawerImports } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -10,10 +10,10 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
         <div class="flex flex-col items-center gap-3">
             <!-- Triggers live outside the root and are linked through a shared handle. -->
             <div class="flex gap-2">
-                <button id="cart" [class]="cn(b.base, b.outline, b.size.md)" [handle]="handle" rdxDrawerTrigger>
+                <button id="cart" rdxDrawerTrigger [class]="cn(b.base, b.outline, b.size.md)" [handle]="handle">
                     Cart
                 </button>
-                <button id="account" [class]="cn(b.base, b.outline, b.size.md)" [handle]="handle" rdxDrawerTrigger>
+                <button id="account" rdxDrawerTrigger [class]="cn(b.base, b.outline, b.size.md)" [handle]="handle">
                     Account
                 </button>
             </div>
@@ -22,21 +22,21 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                 Open account imperatively
             </button>
 
-            <div [handle]="handle" rdxDrawerRoot>
+            <div rdxDrawerRoot [handle]="handle">
                 <ng-template rdxDrawerPortal>
-                    <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
+                    <div rdxDrawerBackdrop [class]="cn(d.backdrop, d.overlayAnimated)"></div>
 
-                    <div [class]="cn(d.popup, d.side.right)" rdxDrawerPopup>
-                        <div [class]="d.body" rdxDrawerContent>
-                            <h2 [class]="d.title" rdxDrawerTitle>Detached triggers</h2>
-                            <p [class]="d.description" rdxDrawerDescription>
+                    <div rdxDrawerPopup [class]="cn(d.popup, d.side.right)">
+                        <div rdxDrawerContent [class]="d.body">
+                            <h2 rdxDrawerTitle [class]="d.title">Detached triggers</h2>
+                            <p rdxDrawerDescription [class]="d.description">
                                 The triggers and this drawer are connected with
                                 <code>createRdxDrawerHandle()</code>
                                 rather than DOM nesting.
                             </p>
 
                             <div [class]="d.footer">
-                                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Close</button>
+                                <button rdxDrawerClose [class]="cn(b.base, b.primary, b.size.sm)">Close</button>
                             </div>
                         </div>
                     </div>

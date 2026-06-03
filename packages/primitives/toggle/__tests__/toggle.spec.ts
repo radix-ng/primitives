@@ -1,20 +1,20 @@
+import { RdxToggle, RdxTogglePressedChangeEvent } from '../src/toggle';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RdxToggleGroup } from '@radix-ng/primitives/toggle-group';
 import { vi } from 'vitest';
-import { RdxToggle, RdxTogglePressedChangeEvent } from '../src/toggle';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxToggle],
     template: `
         <button
-            [(pressed)]="pressed"
+            rdxToggle
             [disabled]="disabled()"
             [defaultPressed]="defaultPressed()"
+            [(pressed)]="pressed"
             (onPressedChange)="onToggle($event)"
-            rdxToggle
         >
             Toggle
         </button>
@@ -104,7 +104,7 @@ describe('RdxToggle (standalone)', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxToggle],
     template: `
-        <div [(pressed)]="pressed" [nativeButton]="false" rdxToggle>Toggle</div>
+        <div rdxToggle [nativeButton]="false" [(pressed)]="pressed">Toggle</div>
     `
 })
 class NonNativeToggleComponent {
@@ -150,7 +150,7 @@ describe('RdxToggle (non-native host)', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxToggleGroup, RdxToggle],
     template: `
-        <div [(value)]="value" [multiple]="multiple()" rdxToggleGroup aria-label="Text formatting">
+        <div rdxToggleGroup aria-label="Text formatting" [multiple]="multiple()" [(value)]="value">
             <button rdxToggle value="bold">Bold</button>
             <button rdxToggle value="italic">Italic</button>
             <button rdxToggle value="underline">Underline</button>

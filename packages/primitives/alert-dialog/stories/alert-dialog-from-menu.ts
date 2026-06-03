@@ -1,7 +1,7 @@
+import { cn, demoButton, demoDialog, demoMenu } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoDialog, demoMenu } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -9,32 +9,32 @@ import { cn, demoButton, demoDialog, demoMenu } from '../../storybook/styles';
     imports: [...alertDialogImports, RdxMenuModule],
     template: `
         <ng-container #menu="rdxMenuRoot" rdxMenuRoot>
-            <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Project</button>
+            <button rdxMenuTrigger [class]="cn(b.base, b.outline, b.size.md)">Project</button>
 
             @if (menu.open()) {
-                <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-                    <div [class]="m.popup" rdxMenuPopup>
-                        <button [class]="m.item" rdxMenuItem>Rename</button>
-                        <button [class]="m.item" rdxMenuItem>Duplicate</button>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" (click)="deleteOpen.set(true)" rdxMenuItem>Delete…</button>
+                <div sideOffset="4" rdxMenuPositioner [class]="m.positioner">
+                    <div rdxMenuPopup [class]="m.popup">
+                        <button rdxMenuItem [class]="m.item">Rename</button>
+                        <button rdxMenuItem [class]="m.item">Duplicate</button>
+                        <div rdxMenuSeparator [class]="m.separator"></div>
+                        <button rdxMenuItem [class]="m.item" (click)="deleteOpen.set(true)">Delete…</button>
                     </div>
                 </div>
             }
         </ng-container>
 
         <!-- Controlled alert dialog opened from the menu item. -->
-        <div [(open)]="deleteOpen" rdxAlertDialogRoot>
+        <div rdxAlertDialogRoot [(open)]="deleteOpen">
             <ng-template rdxAlertDialogPortal>
-                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxAlertDialogBackdrop></div>
-                <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
-                    <h2 [class]="d.title" rdxAlertDialogTitle>Delete project?</h2>
-                    <p [class]="d.description" rdxAlertDialogDescription>
+                <div rdxAlertDialogBackdrop [class]="cn(d.backdrop, d.backdropAnimated)"></div>
+                <div rdxAlertDialogPopup [class]="cn(d.popup, d.popupAnimated)">
+                    <h2 rdxAlertDialogTitle [class]="d.title">Delete project?</h2>
+                    <p rdxAlertDialogDescription [class]="d.description">
                         This permanently deletes the project. Opened by controlling the alert dialog from a menu item.
                     </p>
                     <div [class]="d.footer">
-                        <button [class]="cn(b.base, b.outline, b.size.sm)" rdxAlertDialogClose>Cancel</button>
-                        <button [class]="cn(b.base, b.destructive, b.size.sm)" rdxAlertDialogClose>Delete</button>
+                        <button rdxAlertDialogClose [class]="cn(b.base, b.outline, b.size.sm)">Cancel</button>
+                        <button rdxAlertDialogClose [class]="cn(b.base, b.destructive, b.size.sm)">Delete</button>
                     </div>
                 </div>
             </ng-template>

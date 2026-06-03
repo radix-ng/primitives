@@ -1,5 +1,5 @@
-import { computed, Directive } from '@angular/core';
 import { injectCalendarRootContext } from './calendar-context.token';
+import { computed, Directive } from '@angular/core';
 
 @Directive({
     selector: 'div[rdxCalendarHeading]',

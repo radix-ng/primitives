@@ -1,22 +1,22 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
 import { RdxFieldError } from '../src/field-error';
 import { RdxFieldLabel } from '../src/field-label';
 import { RdxFieldRoot } from '../src/field-root';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <div
+            rdxFieldRoot
             [invalid]="invalid"
             [disabled]="disabled"
             [required]="required"
             [dirty]="dirty"
             [touched]="touched"
-            rdxFieldRoot
         >
             <label rdxFieldLabel>Email</label>
             <input id="email" rdxFieldControl />

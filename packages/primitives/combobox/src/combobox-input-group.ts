@@ -1,5 +1,5 @@
-import { computed, Directive } from '@angular/core';
 import { injectComboboxRootContext } from './combobox-root';
+import { computed, Directive } from '@angular/core';
 
 const attr = (value: boolean) => (value ? '' : undefined);
 

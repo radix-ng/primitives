@@ -1,6 +1,6 @@
+import { demoTooltip } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
-import { demoTooltip } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -16,8 +16,8 @@ import { demoTooltip } from '../../storybook/styles';
                 Move the cursor over me
             </button>
 
-            <div *rdxTooltipPortal [class]="t.positioner" sideOffset="12" rdxTooltipPositioner>
-                <div [class]="t.popup" rdxTooltipPopup>Following the cursor</div>
+            <div *rdxTooltipPortal sideOffset="12" rdxTooltipPositioner [class]="t.positioner">
+                <div rdxTooltipPopup [class]="t.popup">Following the cursor</div>
             </div>
         </ng-container>
     `

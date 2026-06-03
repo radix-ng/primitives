@@ -1,7 +1,7 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { InjectIdExample } from './inject-id';
 import injectIdSource from './inject-id?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const source = (code: string) => ({ docs: { source: { code, language: 'typescript' } } });
 const html = String.raw;

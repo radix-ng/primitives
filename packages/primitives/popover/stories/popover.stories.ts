@@ -1,11 +1,10 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxPopoverAnimatedComponent } from './popover-animated';
 import animatedSource from './popover-animated?raw';
 import { RdxPopoverControlledComponent } from './popover-controlled';
+import controlledSource from './popover-controlled?raw';
 import { RdxPopoverControlledMultipleComponent } from './popover-controlled-multiple';
 import controlledMultipleSource from './popover-controlled-multiple?raw';
-import controlledSource from './popover-controlled?raw';
 import { RdxPopoverCustomAnchorComponent } from './popover-custom-anchor';
 import customAnchorSource from './popover-custom-anchor?raw';
 import { RdxPopoverDefaultComponent } from './popover-default';
@@ -20,6 +19,7 @@ import { RdxPopoverPositioningComponent } from './popover-positioning';
 import positioningSource from './popover-positioning?raw';
 import { RdxPopoverViewportComponent } from './popover-viewport';
 import viewportSource from './popover-viewport?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 

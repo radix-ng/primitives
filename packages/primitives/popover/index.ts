@@ -1,4 +1,3 @@
-import { NgModule } from '@angular/core';
 import { RdxPopoverArrow } from './src/popover-arrow';
 import { RdxPopoverBackdrop } from './src/popover-backdrop';
 import { RdxPopoverClose } from './src/popover-close';
@@ -10,6 +9,7 @@ import { RdxPopoverRoot } from './src/popover-root';
 import { RdxPopoverTitle } from './src/popover-title';
 import { RdxPopoverTrigger } from './src/popover-trigger';
 import { RdxPopoverViewport } from './src/popover-viewport';
+import { NgModule } from '@angular/core';
 
 export * from './src/popover-arrow';
 export * from './src/popover-backdrop';

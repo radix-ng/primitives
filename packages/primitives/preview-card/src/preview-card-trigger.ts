@@ -1,3 +1,5 @@
+import { RdxPreviewCardHandle } from './preview-card-handle';
+import { injectRdxPreviewCardRootContext } from './preview-card-root';
 import {
     booleanAttribute,
     computed,
@@ -11,8 +13,6 @@ import {
 } from '@angular/core';
 import { injectId, NumberInput, rdxCheckTriggerElement } from '@radix-ng/primitives/core';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
-import { RdxPreviewCardHandle } from './preview-card-handle';
-import { injectRdxPreviewCardRootContext } from './preview-card-root';
 
 /**
  * A link or element that opens the preview card.

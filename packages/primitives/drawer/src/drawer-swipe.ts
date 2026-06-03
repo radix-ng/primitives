@@ -1,7 +1,7 @@
-import { assertInInjectionContext, DestroyRef, effect, inject, Signal } from '@angular/core';
-import { clamp } from '@radix-ng/primitives/core';
 import { usePointerDrag } from './drawer-pointer';
 import { dismissUnitVector } from './drawer-snap';
+import { assertInInjectionContext, DestroyRef, effect, inject, Signal } from '@angular/core';
+import { clamp } from '@radix-ng/primitives/core';
 
 /**
  * Direction a swipe travels to dismiss the drawer. Mirrors Base UI's `swipeDirection`:

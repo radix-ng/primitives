@@ -1,7 +1,7 @@
-import { NgModule } from '@angular/core';
 import { RdxCollapsiblePanelDirective } from './src/collapsible-panel.directive';
 import { RdxCollapsibleRootDirective } from './src/collapsible-root.directive';
 import { RdxCollapsibleTriggerDirective } from './src/collapsible-trigger.directive';
+import { NgModule } from '@angular/core';
 
 export * from './src/collapsible-panel.directive';
 export * from './src/collapsible-root.directive';

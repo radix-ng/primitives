@@ -1,3 +1,4 @@
+import { PAGINATION_ROOT_CONTEXT } from './pagination-context.token';
 import {
     booleanAttribute,
     computed,
@@ -9,7 +10,6 @@ import {
     output
 } from '@angular/core';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
-import { PAGINATION_ROOT_CONTEXT } from './pagination-context.token';
 
 @Directive({
     selector: '[rdxPaginationRoot]',

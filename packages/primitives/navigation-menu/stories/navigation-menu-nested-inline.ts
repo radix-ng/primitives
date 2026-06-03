@@ -1,7 +1,7 @@
+import { cn, demoNavigationMenu } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
-import { cn, demoNavigationMenu } from '../../storybook/styles';
 
 /**
  * Nested inline submenus: a second level that stays in the same panel. Inside the outer Content we
@@ -14,32 +14,32 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
     selector: 'rdx-navigation-menu-nested-inline',
     imports: [...navigationMenuImports, LucideChevronDown],
     template: `
-        <nav [class]="m.root" rdxNavigationMenuRoot>
-            <ul [class]="m.list" rdxNavigationMenuList>
+        <nav rdxNavigationMenuRoot [class]="m.root">
+            <ul rdxNavigationMenuList [class]="m.list">
                 <li rdxNavigationMenuItem value="browse">
-                    <button [class]="m.trigger" rdxNavigationMenuTrigger>
+                    <button rdxNavigationMenuTrigger [class]="m.trigger">
                         Browse
-                        <svg [class]="m.icon" rdxNavigationMenuIcon lucideChevronDown></svg>
+                        <svg rdxNavigationMenuIcon lucideChevronDown [class]="m.icon"></svg>
                     </button>
 
                     <ng-container *rdxNavigationMenuContent>
                         <!-- Inline second-level menu (flex row): categories left, viewport right. -->
                         <nav
                             class="flex w-[560px]"
-                            [value]="active()"
-                            (onValueChange)="onActive($event)"
                             orientation="vertical"
                             rdxNavigationMenuRoot
+                            [value]="active()"
+                            (onValueChange)="onActive($event)"
                         >
                             <ul
                                 class="border-border flex w-44 shrink-0 flex-col gap-1 border-r p-2"
                                 rdxNavigationMenuList
                             >
                                 @for (cat of categories; track cat.value) {
-                                    <li [value]="cat.value" rdxNavigationMenuItem>
+                                    <li rdxNavigationMenuItem [value]="cat.value">
                                         <button
-                                            [class]="cn(m.trigger, 'w-full justify-start')"
                                             rdxNavigationMenuTrigger
+                                            [class]="cn(m.trigger, 'w-full justify-start')"
                                         >
                                             {{ cat.label }}
                                         </button>
@@ -48,7 +48,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                                             <ul class="grid gap-1">
                                                 @for (link of cat.links; track link.title) {
                                                     <li>
-                                                        <a [class]="m.cardLink" rdxNavigationMenuLink href="#">
+                                                        <a rdxNavigationMenuLink href="#" [class]="m.cardLink">
                                                             <div [class]="m.cardHeading">{{ link.title }}</div>
                                                             <p [class]="m.cardText">{{ link.text }}</p>
                                                         </a>
@@ -60,19 +60,19 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                                 }
                             </ul>
 
-                            <div [class]="inlineViewport" rdxNavigationMenuViewport></div>
+                            <div rdxNavigationMenuViewport [class]="inlineViewport"></div>
                         </nav>
                     </ng-container>
                 </li>
 
                 <li rdxNavigationMenuItem>
-                    <a [class]="m.link" rdxNavigationMenuLink href="#">Pricing</a>
+                    <a rdxNavigationMenuLink href="#" [class]="m.link">Pricing</a>
                 </li>
             </ul>
 
-            <div *rdxNavigationMenuPortal [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
-                <div [class]="m.popup" rdxNavigationMenuPopup>
-                    <div [class]="m.viewport" rdxNavigationMenuViewport></div>
+            <div *rdxNavigationMenuPortal sideOffset="8" rdxNavigationMenuPositioner [class]="m.positioner">
+                <div rdxNavigationMenuPopup [class]="m.popup">
+                    <div rdxNavigationMenuViewport [class]="m.viewport"></div>
                 </div>
             </div>
         </nav>

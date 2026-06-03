@@ -1,6 +1,6 @@
+import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { previewCardImports } from '@radix-ng/primitives/preview-card';
-import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -11,20 +11,20 @@ import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
             <p class="text-muted-foreground max-w-md text-sm leading-6">
                 The principles of good
                 <a
-                    [class]="link"
                     href="https://en.wikipedia.org/wiki/Typography"
                     rel="noreferrer"
                     target="_blank"
                     rdxPreviewCardTrigger
+                    [class]="link"
                 >
                     typography
                 </a>
                 remain in the digital age.
             </p>
 
-            <div *rdxPreviewCardPortal [class]="p.positioner" sideOffset="8" rdxPreviewCardPositioner>
-                <div [class]="p.popup" rdxPreviewCardPopup>
-                    <span [class]="p.arrow" rdxPreviewCardArrow></span>
+            <div *rdxPreviewCardPortal sideOffset="8" rdxPreviewCardPositioner [class]="p.positioner">
+                <div rdxPreviewCardPopup [class]="p.popup">
+                    <span rdxPreviewCardArrow [class]="p.arrow"></span>
                     <div class="grid gap-3">
                         <div class="bg-muted h-28 rounded-md"></div>
                         <p class="text-muted-foreground text-sm">

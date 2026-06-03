@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { injectRdxToastRootContext } from './toast-root';
+import { Directive } from '@angular/core';
 
 /**
  * An action button inside a toast (e.g. "Undo"). Unlike {@link RdxToastClose} it does not dismiss

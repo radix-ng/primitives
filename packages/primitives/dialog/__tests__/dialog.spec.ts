@@ -32,13 +32,13 @@ import { axe } from 'jest-axe';
     template: `
         <div
             #root="rdxDialogRoot"
-            [(open)]="open"
+            rdxDialogRoot
             [defaultOpen]="defaultOpen"
             [modal]="modal"
             [disablePointerDismissal]="disablePointerDismissal"
+            [(open)]="open"
             (onOpenChange)="changes.push($event)"
             (onOpenChangeComplete)="complete.push($event)"
-            rdxDialogRoot
         >
             <button rdxDialogTrigger>Open</button>
 
@@ -66,7 +66,7 @@ class TestHostComponent {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPopup],
     template: `
-        <div [defaultOpen]="true" rdxDialogRoot>
+        <div rdxDialogRoot [defaultOpen]="true">
             <button rdxDialogTrigger>Open</button>
             <ng-template rdxDialogPortal>
                 <div rdxDialogPopup>Popup</div>
@@ -80,7 +80,7 @@ class DefaultOpenHostComponent {}
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPopup],
     template: `
-        <div [(open)]="open" (onOpenChange)="changes.push($event)" rdxDialogRoot>
+        <div rdxDialogRoot [(open)]="open" (onOpenChange)="changes.push($event)">
             <button rdxDialogTrigger>Open</button>
             <ng-template rdxDialogPortal>
                 <div rdxDialogPopup>Popup</div>
@@ -97,7 +97,7 @@ class NoBackdropHostComponent {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPopup, RdxDialogClose],
     template: `
-        <div [(open)]="open" (onOpenChange)="handleOpenChange($event)" rdxDialogRoot>
+        <div rdxDialogRoot [(open)]="open" (onOpenChange)="handleOpenChange($event)">
             <button rdxDialogTrigger>Open</button>
             <ng-template rdxDialogPortal>
                 <div rdxDialogPopup>
@@ -139,7 +139,7 @@ class DialogCancelableHostComponent {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPopup],
     template: `
-        <div #root="rdxDialogRoot" [(open)]="open" [(triggerId)]="triggerId" rdxDialogRoot>
+        <div #root="rdxDialogRoot" rdxDialogRoot [(open)]="open" [(triggerId)]="triggerId">
             <button id="trigger-one" rdxDialogTrigger>One</button>
             <button id="trigger-two" rdxDialogTrigger>Two</button>
             <ng-template rdxDialogPortal>
@@ -157,9 +157,9 @@ class MultipleTriggersHostComponent {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPopup],
     template: `
-        <button id="detached-one" [handle]="handle" rdxDialogTrigger>One</button>
-        <button id="detached-two" [handle]="handle" rdxDialogTrigger>Two</button>
-        <div [handle]="handle" rdxDialogRoot>
+        <button id="detached-one" rdxDialogTrigger [handle]="handle">One</button>
+        <button id="detached-two" rdxDialogTrigger [handle]="handle">Two</button>
+        <div rdxDialogRoot [handle]="handle">
             <ng-template rdxDialogPortal>
                 <div rdxDialogPopup>Popup</div>
             </ng-template>

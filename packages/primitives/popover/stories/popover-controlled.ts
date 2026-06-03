@@ -1,7 +1,7 @@
+import { cn, demoButton, demoPopover } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { popoverImports } from '@radix-ng/primitives/popover';
-import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -16,19 +16,19 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
             <p class="text-muted-foreground text-xs">State: {{ open() ? 'open' : 'closed' }}</p>
 
-            <ng-container [(open)]="open" rdxPopoverRoot>
-                <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Toggle popover</button>
+            <ng-container rdxPopoverRoot [(open)]="open">
+                <button rdxPopoverTrigger [class]="cn(b.base, b.outline, b.size.md)">Toggle popover</button>
 
                 <ng-template rdxPopoverPortal>
-                    <div [class]="p.backdrop" rdxPopoverBackdrop></div>
-                    <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                        <div [class]="p.popup" rdxPopoverPopup>
-                            <span [class]="p.arrow" rdxPopoverArrow></span>
-                            <h2 [class]="p.title" rdxPopoverTitle>Controlled state</h2>
-                            <p [class]="p.description" rdxPopoverDescription>
+                    <div rdxPopoverBackdrop [class]="p.backdrop"></div>
+                    <div sideOffset="8" rdxPopoverPositioner [class]="p.positioner">
+                        <div rdxPopoverPopup [class]="p.popup">
+                            <span rdxPopoverArrow [class]="p.arrow"></span>
+                            <h2 rdxPopoverTitle [class]="p.title">Controlled state</h2>
+                            <p rdxPopoverDescription [class]="p.description">
                                 The root uses Angular two-way binding with a signal.
                             </p>
-                            <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                            <button aria-label="Close" rdxPopoverClose [class]="p.close">
                                 <svg aria-hidden="true" lucideX size="14" />
                             </button>
                         </div>

@@ -1,3 +1,4 @@
+import { injectToolbarGroupContext, injectToolbarRootContext } from './toolbar-context';
 import { isPlatformBrowser } from '@angular/common';
 import {
     booleanAttribute,
@@ -12,7 +13,6 @@ import {
 } from '@angular/core';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import { BooleanInput } from '@radix-ng/primitives/core';
-import { injectToolbarGroupContext, injectToolbarRootContext } from './toolbar-context';
 
 /**
  * A native input within a toolbar. Participates in the toolbar's composite focus while keeping native

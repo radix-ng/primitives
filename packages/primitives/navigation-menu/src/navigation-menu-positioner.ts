@@ -1,3 +1,4 @@
+import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
 import { DestroyRef, Directive, effect, ElementRef, inject, signal } from '@angular/core';
 import { useGraceArea } from '@radix-ng/primitives/core';
 import {
@@ -5,7 +6,6 @@ import {
     provideRdxPopperContentWrapper,
     RdxPopperContentWrapper
 } from '@radix-ng/primitives/popper';
-import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
 
 /**
  * Positions the shared popup against the active trigger.

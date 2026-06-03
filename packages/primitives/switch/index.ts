@@ -1,7 +1,7 @@
-import { NgModule } from '@angular/core';
 import { RdxSwitchInput } from './src/switch-input';
 import { RdxSwitchRoot } from './src/switch-root';
 import { RdxSwitchThumb } from './src/switch-thumb';
+import { NgModule } from '@angular/core';
 
 export * from './src/switch-context';
 export * from './src/switch-input';

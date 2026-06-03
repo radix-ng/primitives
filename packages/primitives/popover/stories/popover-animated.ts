@@ -1,7 +1,7 @@
+import { cn, demoButton, demoPopover } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { popoverImports } from '@radix-ng/primitives/popover';
-import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -9,16 +9,16 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
     imports: [...popoverImports, LucideX],
     template: `
         <ng-container rdxPopoverRoot>
-            <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Animated popover</button>
+            <button rdxPopoverTrigger [class]="cn(b.base, b.outline, b.size.md)">Animated popover</button>
 
-            <div *rdxPopoverPortal [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                <div [class]="cn(p.popup, p.popupAnimated)" rdxPopoverPopup>
-                    <span [class]="p.arrow" rdxPopoverArrow></span>
-                    <h2 [class]="p.title" rdxPopoverTitle>Native CSS keyframes</h2>
-                    <p [class]="p.description" rdxPopoverDescription>
+            <div *rdxPopoverPortal sideOffset="8" rdxPopoverPositioner [class]="p.positioner">
+                <div rdxPopoverPopup [class]="cn(p.popup, p.popupAnimated)">
+                    <span rdxPopoverArrow [class]="p.arrow"></span>
+                    <h2 rdxPopoverTitle [class]="p.title">Native CSS keyframes</h2>
+                    <p rdxPopoverDescription [class]="p.description">
                         Presence keeps this content mounted until the exit animation finishes.
                     </p>
-                    <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                    <button aria-label="Close" rdxPopoverClose [class]="p.close">
                         <svg aria-hidden="true" lucideX size="14" />
                     </button>
                 </div>

@@ -1,3 +1,7 @@
+import { injectRdxTooltipConfig, RdxTrackCursorAxis } from './tooltip.config';
+import { RdxTooltipHandle } from './tooltip-handle';
+import { injectRdxTooltipProviderContext } from './tooltip-provider';
+import { createTooltipInstantController, TooltipInstantController, useTimeoutFn } from './utils';
 import {
     booleanAttribute,
     computed,
@@ -29,10 +33,6 @@ import {
     watch
 } from '@radix-ng/primitives/core';
 import { RdxPopper } from '@radix-ng/primitives/popper';
-import { RdxTooltipHandle } from './tooltip-handle';
-import { injectRdxTooltipProviderContext } from './tooltip-provider';
-import { injectRdxTooltipConfig, RdxTrackCursorAxis } from './tooltip.config';
-import { createTooltipInstantController, TooltipInstantController, useTimeoutFn } from './utils';
 
 export interface RdxTooltipContext {
     contentId: string;

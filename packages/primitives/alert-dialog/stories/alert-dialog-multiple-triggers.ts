@@ -1,6 +1,6 @@
+import { cn, demoButton, demoDialog } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
-import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -9,29 +9,29 @@ import { cn, demoButton, demoDialog } from '../../storybook/styles';
     template: `
         <div #root="rdxAlertDialogRoot" rdxAlertDialogRoot>
             <div class="flex gap-2">
-                <button [class]="cn(b.base, b.outline, b.size.md)" payload="photo" rdxAlertDialogTrigger>
+                <button payload="photo" rdxAlertDialogTrigger [class]="cn(b.base, b.outline, b.size.md)">
                     Delete photo
                 </button>
-                <button [class]="cn(b.base, b.outline, b.size.md)" payload="video" rdxAlertDialogTrigger>
+                <button payload="video" rdxAlertDialogTrigger [class]="cn(b.base, b.outline, b.size.md)">
                     Delete video
                 </button>
-                <button [class]="cn(b.base, b.outline, b.size.md)" payload="album" rdxAlertDialogTrigger>
+                <button payload="album" rdxAlertDialogTrigger [class]="cn(b.base, b.outline, b.size.md)">
                     Delete album
                 </button>
             </div>
 
             <ng-template rdxAlertDialogPortal>
-                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxAlertDialogBackdrop></div>
-                <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
-                    <h2 [class]="d.title" rdxAlertDialogTitle>Delete this {{ root.payload() || 'item' }}?</h2>
-                    <p [class]="d.description" rdxAlertDialogDescription>
+                <div rdxAlertDialogBackdrop [class]="cn(d.backdrop, d.backdropAnimated)"></div>
+                <div rdxAlertDialogPopup [class]="cn(d.popup, d.popupAnimated)">
+                    <h2 rdxAlertDialogTitle [class]="d.title">Delete this {{ root.payload() || 'item' }}?</h2>
+                    <p rdxAlertDialogDescription [class]="d.description">
                         Every trigger opens the same alert dialog; the active trigger's
                         <code>payload</code>
                         decides what is being deleted.
                     </p>
                     <div [class]="d.footer">
-                        <button [class]="cn(b.base, b.outline, b.size.sm)" rdxAlertDialogClose>Cancel</button>
-                        <button [class]="cn(b.base, b.destructive, b.size.sm)" rdxAlertDialogClose>Delete</button>
+                        <button rdxAlertDialogClose [class]="cn(b.base, b.outline, b.size.sm)">Cancel</button>
+                        <button rdxAlertDialogClose [class]="cn(b.base, b.destructive, b.size.sm)">Delete</button>
                     </div>
                 </div>
             </ng-template>

@@ -1,6 +1,6 @@
-import { afterNextRender, DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 import { injectScrollAreaRootContext } from './scroll-area-root';
 import { injectScrollAreaViewportContext } from './scroll-area-viewport';
+import { afterNextRender, DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 
 /**
  * A container for the content of the scroll area.

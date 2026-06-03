@@ -1,5 +1,5 @@
-import { computed, Directive } from '@angular/core';
 import { injectPopperContentWrapperContext } from './popper-content-wrapper';
+import { computed, Directive } from '@angular/core';
 
 @Directive({
     selector: '[rdxPopperContent]',

@@ -1,6 +1,6 @@
+import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports, RdxDrawerSwipeDirection } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 type DrawerSide = 'top' | 'right' | 'bottom' | 'left';
 
@@ -18,23 +18,23 @@ const SIDES: { side: DrawerSide; swipeDirection: RdxDrawerSwipeDirection }[] = [
     template: `
         <div class="flex flex-wrap gap-3">
             @for (item of sides; track item.side) {
-                <div [swipeDirection]="item.swipeDirection" rdxDrawerRoot>
-                    <button [class]="cn(b.base, b.outline, b.size.md, 'capitalize')" rdxDrawerTrigger>
+                <div rdxDrawerRoot [swipeDirection]="item.swipeDirection">
+                    <button rdxDrawerTrigger [class]="cn(b.base, b.outline, b.size.md, 'capitalize')">
                         {{ item.side }}
                     </button>
 
                     <ng-template rdxDrawerPortal>
-                        <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
+                        <div rdxDrawerBackdrop [class]="cn(d.backdrop, d.overlayAnimated)"></div>
 
-                        <div [class]="cn(d.popup, d.side[item.side])" rdxDrawerPopup>
-                            <div [class]="d.body" rdxDrawerContent>
-                                <h2 [class]="cn(d.title, 'capitalize')" rdxDrawerTitle>{{ item.side }} drawer</h2>
-                                <p [class]="d.description" rdxDrawerDescription>
+                        <div rdxDrawerPopup [class]="cn(d.popup, d.side[item.side])">
+                            <div rdxDrawerContent [class]="d.body">
+                                <h2 rdxDrawerTitle [class]="cn(d.title, 'capitalize')">{{ item.side }} drawer</h2>
+                                <p rdxDrawerDescription [class]="d.description">
                                     Swipe {{ item.swipeDirection }} to dismiss.
                                 </p>
 
                                 <div [class]="d.footer">
-                                    <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Done</button>
+                                    <button rdxDrawerClose [class]="cn(b.base, b.primary, b.size.sm)">Done</button>
                                 </div>
                             </div>
                         </div>

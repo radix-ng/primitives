@@ -1,7 +1,7 @@
+import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { drawerImports } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -9,17 +9,17 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
     imports: [...drawerImports, LucideX],
     template: `
         <div rdxDrawerRoot>
-            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Open drawer</button>
+            <button rdxDrawerTrigger [class]="cn(b.base, b.primary, b.size.md)">Open drawer</button>
 
             <ng-template rdxDrawerPortal>
-                <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
+                <div rdxDrawerBackdrop [class]="cn(d.backdrop, d.overlayAnimated)"></div>
 
-                <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
-                    <div [class]="d.grip" aria-hidden="true"></div>
+                <div rdxDrawerPopup [class]="cn(d.popup, d.side.bottom)">
+                    <div aria-hidden="true" [class]="d.grip"></div>
 
-                    <div [class]="d.body" rdxDrawerContent>
-                        <h2 [class]="d.title" rdxDrawerTitle>Drag me down</h2>
-                        <p [class]="d.description" rdxDrawerDescription>
+                    <div rdxDrawerContent [class]="d.body">
+                        <h2 rdxDrawerTitle [class]="d.title">Drag me down</h2>
+                        <p rdxDrawerDescription [class]="d.description">
                             Swipe the sheet downwards or press Escape to dismiss it. Releasing before the halfway point
                             snaps it back.
                         </p>
@@ -30,12 +30,12 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                         </p>
 
                         <div [class]="d.footer">
-                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>Cancel</button>
-                            <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Confirm</button>
+                            <button rdxDrawerClose [class]="cn(b.base, b.outline, b.size.sm)">Cancel</button>
+                            <button rdxDrawerClose [class]="cn(b.base, b.primary, b.size.sm)">Confirm</button>
                         </div>
                     </div>
 
-                    <button [class]="d.close" aria-label="Close" rdxDrawerClose>
+                    <button aria-label="Close" rdxDrawerClose [class]="d.close">
                         <svg aria-hidden="true" lucideX size="16"></svg>
                     </button>
                 </div>

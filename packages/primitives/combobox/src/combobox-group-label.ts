@@ -1,6 +1,6 @@
+import { injectComboboxGroupContext } from './combobox-group';
 import { DestroyRef, Directive, inject } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
-import { injectComboboxGroupContext } from './combobox-group';
 
 /**
  * Accessible label for a {@link RdxComboboxGroup}. Wires itself up via `aria-labelledby`.

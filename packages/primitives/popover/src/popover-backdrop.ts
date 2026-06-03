@@ -1,6 +1,6 @@
+import { injectRdxPopoverRootContext } from './popover-root';
 import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 import { RDX_FLOATING_ROOT_CONTEXT } from '@radix-ng/primitives/core';
-import { injectRdxPopoverRootContext } from './popover-root';
 
 /**
  * An optional backdrop rendered behind the popup.

@@ -1,22 +1,22 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { RdxToolbarButton } from '../src/toolbar-button';
 import { RdxToolbarGroup } from '../src/toolbar-group';
 import { RdxToolbarInput } from '../src/toolbar-input';
 import { RdxToolbarLink } from '../src/toolbar-link';
 import { RdxToolbarRoot } from '../src/toolbar-root';
 import { RdxToolbarSeparator } from '../src/toolbar-separator';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { RdxMenuModule } from '@radix-ng/primitives/menu';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxToolbarRoot, RdxToolbarButton, RdxToolbarLink, RdxToolbarSeparator, RdxToolbarGroup],
     template: `
-        <div [orientation]="orientation()" [disabled]="rootDisabled()" rdxToolbarRoot aria-label="Formatting">
-            <div [disabled]="groupDisabled()" rdxToolbarGroup>
+        <div rdxToolbarRoot aria-label="Formatting" [orientation]="orientation()" [disabled]="rootDisabled()">
+            <div rdxToolbarGroup [disabled]="groupDisabled()">
                 <button rdxToolbarButton>Bold</button>
-                <button [disabled]="boldDisabled()" rdxToolbarButton>Italic</button>
+                <button rdxToolbarButton [disabled]="boldDisabled()">Italic</button>
             </div>
             <div rdxToolbarSeparator></div>
             <a href="#" rdxToolbarLink>Link</a>

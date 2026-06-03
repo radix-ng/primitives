@@ -1,6 +1,6 @@
+import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 /**
  * A self-recursive drawer: each level's content hosts the trigger for the next level, so drawers
@@ -13,19 +13,19 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
     imports: [...drawerImports],
     template: `
         <div rdxDrawerRoot>
-            <button [class]="cn(b.base, level() === 1 ? b.primary : b.outline, b.size.md)" rdxDrawerTrigger>
+            <button rdxDrawerTrigger [class]="cn(b.base, level() === 1 ? b.primary : b.outline, b.size.md)">
                 {{ level() === 1 ? 'Open drawer' : 'Open drawer ' + level() }}
             </button>
 
             <ng-template rdxDrawerPortal>
-                <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
+                <div rdxDrawerBackdrop [class]="cn(d.backdrop, d.overlayAnimated)"></div>
 
-                <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
-                    <div [class]="d.grip" aria-hidden="true"></div>
+                <div rdxDrawerPopup [class]="cn(d.popup, d.side.bottom)">
+                    <div aria-hidden="true" [class]="d.grip"></div>
 
-                    <div [class]="d.body" rdxDrawerContent>
-                        <h2 [class]="d.title" rdxDrawerTitle>Drawer level {{ level() }}</h2>
-                        <p [class]="d.description" rdxDrawerDescription>
+                    <div rdxDrawerContent [class]="d.body">
+                        <h2 rdxDrawerTitle [class]="d.title">Drawer level {{ level() }}</h2>
+                        <p rdxDrawerDescription [class]="d.description">
                             @if (level() < max()) {
                                 Open another to stack it on top — this one scales back and peeks behind it.
                             } @else {
@@ -37,7 +37,7 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                             @if (level() < max()) {
                                 <rdx-drawer-nested [level]="level() + 1" [max]="max()" />
                             }
-                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>Close</button>
+                            <button rdxDrawerClose [class]="cn(b.base, b.outline, b.size.sm)">Close</button>
                         </div>
                     </div>
                 </div>

@@ -1,8 +1,8 @@
+import { _importsAutocomplete } from '../index';
+import { AutocompleteValueChangeDetails } from '../src/autocomplete-root';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsAutocomplete } from '../index';
-import { AutocompleteValueChangeDetails } from '../src/autocomplete-root';
 
 /**
  * Regression (ADR 0014 review, Finding 1): autocomplete's value IS the input string, so its single
@@ -15,11 +15,11 @@ import { AutocompleteValueChangeDetails } from '../src/autocomplete-root';
     imports: [_importsAutocomplete],
     template: `
         <div
-            [(value)]="value"
+            rdxAutocompleteRoot
             [readOnly]="readOnly()"
             [disabled]="disabled()"
+            [(value)]="value"
             (onValueChange)="changes.push($event)"
-            rdxAutocompleteRoot
         >
             <input rdxAutocompleteInput aria-label="Fruit" />
             <button rdxAutocompleteClear>clear</button>
@@ -27,7 +27,7 @@ import { AutocompleteValueChangeDetails } from '../src/autocomplete-root';
                 <div rdxAutocompletePopup>
                     <div rdxAutocompleteList aria-label="Fruits">
                         @for (fruit of fruits; track fruit) {
-                            <div [value]="fruit" rdxAutocompleteItem>{{ fruit }}</div>
+                            <div rdxAutocompleteItem [value]="fruit">{{ fruit }}</div>
                         }
                     </div>
                 </div>

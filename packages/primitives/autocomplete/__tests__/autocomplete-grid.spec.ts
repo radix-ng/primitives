@@ -1,13 +1,13 @@
+import { _importsAutocomplete } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsAutocomplete } from '../index';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsAutocomplete],
     template: `
-        <div [(value)]="value" [(open)]="open" grid rdxAutocompleteRoot>
+        <div grid rdxAutocompleteRoot [(value)]="value" [(open)]="open">
             <input rdxAutocompleteInput aria-label="Color" />
             <div *rdxAutocompletePortal rdxAutocompletePositioner>
                 <div rdxAutocompletePopup>
@@ -146,7 +146,7 @@ describe('Autocomplete grid', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsAutocomplete],
     template: `
-        <div [(open)]="open" grid rdxAutocompleteRoot>
+        <div grid rdxAutocompleteRoot [(open)]="open">
             <input rdxAutocompleteInput aria-label="X" />
             <div *rdxAutocompletePortal rdxAutocompletePositioner>
                 <div rdxAutocompletePopup>

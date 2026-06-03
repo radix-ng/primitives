@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown, LucideX } from '@lucide/angular';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown, LucideX } from '@lucide/angular';
 
 interface DirectoryUser {
     id: string;
@@ -23,33 +23,33 @@ interface DirectoryUser {
     imports: [_importsCombobox, LucideChevronDown, LucideCheck, LucideX],
     template: `
         <div
-            [(value)]="value"
+            isItemEqualToValue="id"
+            rdxComboboxRoot
             [items]="items()"
             [itemToStringLabel]="labelOf"
             [filter]="null"
+            [(value)]="value"
             (onValueChange)="onValueChange()"
             (onInputValueChange)="search($event.value)"
             (onOpenChangeComplete)="onOpenChangeComplete($event)"
-            isItemEqualToValue="id"
-            rdxComboboxRoot
         >
             <div class="flex flex-col gap-1">
                 <label class="text-foreground text-sm font-medium" for="async-reviewer">Assign reviewer</label>
                 <div [class]="c.control">
-                    <input id="async-reviewer" [class]="input" rdxComboboxInput placeholder="e.g. Michael" />
+                    <input id="async-reviewer" rdxComboboxInput placeholder="e.g. Michael" [class]="input" />
                     @if (value()) {
-                        <button [class]="c.clear" rdxComboboxClear aria-label="Clear selection">
+                        <button rdxComboboxClear aria-label="Clear selection" [class]="c.clear">
                             <svg lucideX size="14"></svg>
                         </button>
                     }
-                    <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                    <button rdxComboboxTrigger aria-label="Open" [class]="c.trigger">
                         <svg lucideChevronDown size="16"></svg>
                     </button>
                 </div>
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" [attr.aria-busy]="loading() ? 'true' : null" rdxComboboxPopup>
+            <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                <div rdxComboboxPopup [class]="c.popup" [attr.aria-busy]="loading() ? 'true' : null">
                     <div rdxComboboxStatus>
                         @if (loading()) {
                             <div class="text-muted-foreground flex items-center gap-2 px-2 py-1.5 text-sm">
@@ -65,12 +65,12 @@ interface DirectoryUser {
                     </div>
 
                     @if (emptyMessage(); as message) {
-                        <div [class]="c.empty" rdxComboboxEmpty>{{ message }}</div>
+                        <div rdxComboboxEmpty [class]="c.empty">{{ message }}</div>
                     }
 
-                    <div [class]="c.list" rdxComboboxList aria-label="People">
+                    <div rdxComboboxList aria-label="People" [class]="c.list">
                         @for (user of items(); track user.id) {
-                            <div [class]="item" [value]="user" [textValue]="user.name" rdxComboboxItem>
+                            <div rdxComboboxItem [class]="item" [value]="user" [textValue]="user.name">
                                 <span
                                     class="col-start-1 mt-0.5 flex size-3.5 items-center justify-center"
                                     rdxComboboxItemIndicator

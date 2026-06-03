@@ -1,26 +1,26 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DataOrientation } from '@radix-ng/primitives/core';
 import { RdxTabsList } from '../src/tabs-list';
 import { RdxTabsPanel } from '../src/tabs-panel';
 import { RdxTabsPanelPresence } from '../src/tabs-panel-presence';
 import { RdxTabsRoot, RdxTabsValueChangeEvent } from '../src/tabs-root';
 import { RdxTabsTab } from '../src/tabs-tab';
 import { RdxTabsValue } from '../src/utils';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { DataOrientation } from '@radix-ng/primitives/core';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <div
-            [(value)]="value"
+            rdxTabsRoot
             [defaultValue]="defaultValue"
             [orientation]="orientation()"
+            [(value)]="value"
             (onValueChange)="onValueChange($event)"
-            rdxTabsRoot
         >
-            <div [activateOnFocus]="activateOnFocus()" [loopFocus]="loopFocus()" rdxTabsList>
+            <div rdxTabsList [activateOnFocus]="activateOnFocus()" [loopFocus]="loopFocus()">
                 <button rdxTabsTab value="one">One</button>
-                <button [disabled]="disabledTwo()" rdxTabsTab value="two">Two</button>
+                <button rdxTabsTab value="two" [disabled]="disabledTwo()">Two</button>
                 <button rdxTabsTab value="three">Three</button>
             </div>
             <div rdxTabsPanel value="one">Panel one</div>
@@ -283,13 +283,13 @@ describe('Tabs', () => {
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     template: `
-        <div (onValueChange)="onValueChange($event)" rdxTabsRoot>
+        <div rdxTabsRoot (onValueChange)="onValueChange($event)">
             <div rdxTabsList>
-                <button [disabled]="firstDisabled()" [value]="0" rdxTabsTab>Zero</button>
-                <button [value]="1" rdxTabsTab>One</button>
+                <button rdxTabsTab [disabled]="firstDisabled()" [value]="0">Zero</button>
+                <button rdxTabsTab [value]="1">One</button>
             </div>
-            <div [value]="0" rdxTabsPanel>Panel zero</div>
-            <div [value]="1" rdxTabsPanel>Panel one</div>
+            <div rdxTabsPanel [value]="0">Panel zero</div>
+            <div rdxTabsPanel [value]="1">Panel one</div>
         </div>
     `,
     imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel]
@@ -369,16 +369,16 @@ describe('Tabs implicit defaultValue', () => {
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     template: `
-        <div [(value)]="value" defaultValue="one" rdxTabsRoot>
+        <div defaultValue="one" rdxTabsRoot [(value)]="value">
             <div rdxTabsList>
                 <button rdxTabsTab value="one">One</button>
                 <button rdxTabsTab value="two">Two</button>
             </div>
-            <div [keepMounted]="keepMounted()" rdxTabsPanel value="one">
-                <p class="content-one" *rdxTabsPanelPresence>Panel one</p>
+            <div rdxTabsPanel value="one" [keepMounted]="keepMounted()">
+                <p *rdxTabsPanelPresence class="content-one">Panel one</p>
             </div>
-            <div [keepMounted]="keepMounted()" rdxTabsPanel value="two">
-                <p class="content-two" *rdxTabsPanelPresence>Panel two</p>
+            <div rdxTabsPanel value="two" [keepMounted]="keepMounted()">
+                <p *rdxTabsPanelPresence class="content-two">Panel two</p>
             </div>
         </div>
     `,

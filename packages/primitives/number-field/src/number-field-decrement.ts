@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { RdxNumberFieldButton } from './number-field-button';
+import { Directive } from '@angular/core';
 
 /**
  * A stepper button that decreases the field value when clicked or held.

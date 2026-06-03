@@ -21,17 +21,17 @@
  *      (core scans `directiveStart..directiveEnd`, not just the host component)
  *   3. native form element fallback
  */
+import { RdxInputDirective } from '../src/input.directive';
 import { Component, signal, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { form, FormField, required } from '@angular/forms/signals';
 import { RdxSwitchModule } from '@radix-ng/primitives/switch';
-import { RdxInputDirective } from '../src/input.directive';
 
 describe('Signal Forms spike (experimental API, Angular 21)', () => {
     describe('archetype A: native input + rdxInput (custom-control path expected)', () => {
         @Component({
             template: `
-                <input [formField]="loginForm.email" rdxInput />
+                <input rdxInput [formField]="loginForm.email" />
             `,
             imports: [FormField, RdxInputDirective]
         })
@@ -133,7 +133,7 @@ describe('Signal Forms spike (experimental API, Angular 21)', () => {
     describe('archetype B: composite CVA directive — switch (CVA path expected)', () => {
         @Component({
             template: `
-                <button [formField]="settingsForm.enabled" rdxSwitchRoot>
+                <button rdxSwitchRoot [formField]="settingsForm.enabled">
                     <span rdxSwitchThumb></span>
                 </button>
             `,

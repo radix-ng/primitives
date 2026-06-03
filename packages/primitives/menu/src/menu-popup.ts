@@ -1,3 +1,5 @@
+import { getCompositeMenuItems, getDomMenuItems, getFocusableMenuItems, RdxMenuCompositeItem } from './menu-focus';
+import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
 import { computed, DestroyRef, Directive, effect, ElementRef, inject, output } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
 import { RdxCompositeList } from '@radix-ng/primitives/composite';
@@ -14,8 +16,6 @@ import {
 } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
-import { getCompositeMenuItems, getDomMenuItems, getFocusableMenuItems, RdxMenuCompositeItem } from './menu-focus';
-import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
 
 /**
  * A container for the menu contents.

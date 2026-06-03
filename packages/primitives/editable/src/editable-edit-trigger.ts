@@ -1,5 +1,5 @@
-import { Directive, input } from '@angular/core';
 import { injectEditableRootContext } from './editable-root';
+import { Directive, input } from '@angular/core';
 
 @Directive({
     selector: 'button[rdxEditableEditTrigger]',

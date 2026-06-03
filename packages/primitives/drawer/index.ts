@@ -1,4 +1,3 @@
-import { NgModule } from '@angular/core';
 import { RdxDrawerBackdrop } from './src/drawer-backdrop';
 import { RdxDrawerClose } from './src/drawer-close';
 import { RdxDrawerContent } from './src/drawer-content';
@@ -14,6 +13,7 @@ import { RdxDrawerTitle } from './src/drawer-title';
 import { RdxDrawerTrigger } from './src/drawer-trigger';
 import { RdxDrawerViewport } from './src/drawer-viewport';
 import { RdxDrawerVirtualKeyboardProvider } from './src/drawer-virtual-keyboard-provider';
+import { NgModule } from '@angular/core';
 
 export * from './src/drawer-backdrop';
 export * from './src/drawer-close';

@@ -1,6 +1,6 @@
+import { injectNumberFieldRootContext } from './number-field-context';
 import { Directive, ElementRef, inject } from '@angular/core';
 import { getActiveElement } from '@radix-ng/primitives/core';
-import { injectNumberFieldRootContext } from './number-field-context';
 
 /**
  * The native text input that displays the formatted value and accepts typed input.

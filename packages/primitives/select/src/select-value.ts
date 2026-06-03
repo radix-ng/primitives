@@ -1,7 +1,7 @@
-import { afterNextRender, computed, Directive, ElementRef, inject, input } from '@angular/core';
-import { AcceptableValue } from '@radix-ng/primitives/core';
 import { injectSelectRootContext } from './select-root';
 import { valueComparator } from './utils';
+import { afterNextRender, computed, Directive, ElementRef, inject, input } from '@angular/core';
+import { AcceptableValue } from '@radix-ng/primitives/core';
 
 @Directive({
     selector: 'span[rdxSelectValue]',

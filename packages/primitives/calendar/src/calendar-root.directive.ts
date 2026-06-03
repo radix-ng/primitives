@@ -1,3 +1,5 @@
+import { calendar, calendarState } from './calendar';
+import { CALENDAR_ROOT_CONTEXT } from './calendar-context.token';
 import {
     booleanAttribute,
     computed,
@@ -21,8 +23,6 @@ import {
     watch
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
-import { calendar, calendarState } from './calendar';
-import { CALENDAR_ROOT_CONTEXT } from './calendar-context.token';
 
 @Directive({
     selector: '[rdxCalendarRoot]',

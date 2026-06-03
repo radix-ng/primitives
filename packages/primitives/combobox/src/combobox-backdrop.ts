@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { injectComboboxRootContext } from './combobox-root';
+import { Directive } from '@angular/core';
 
 /**
  * An overlay rendered beneath the popup in `modal` mode. Place it inside the portal/presence; style

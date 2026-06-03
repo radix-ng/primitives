@@ -13,30 +13,30 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
                 Office hours (09:00–17:00)
             </label>
             <div
-                class="border-border bg-background text-foreground focus-within:ring-ring data-[invalid]:border-destructive data-[invalid]:focus-within:ring-destructive inline-flex w-fit items-center rounded-md border px-3 py-2 text-sm shadow-sm select-none focus-within:ring-2"
                 #root="rdxTimeFieldRoot"
+                class="border-border bg-background text-foreground focus-within:ring-ring data-[invalid]:border-destructive data-[invalid]:focus-within:ring-destructive inline-flex w-fit items-center rounded-md border px-3 py-2 text-sm shadow-sm select-none focus-within:ring-2"
+                aria-labelledby="time-validation-label"
+                rdxTimeFieldRoot
                 [value]="value"
                 [minValue]="minValue"
                 [maxValue]="maxValue"
-                aria-labelledby="time-validation-label"
-                rdxTimeFieldRoot
             >
                 @for (item of root.segmentContents(); track $index) {
                     @if (item.part === 'literal') {
-                        <span class="text-muted-foreground px-px" [part]="item.part" rdxTimeFieldInput>
+                        <span class="text-muted-foreground px-px" rdxTimeFieldInput [part]="item.part">
                             {{ item.value }}
                         </span>
                     } @else {
                         <div
                             class="data-[placeholder]:text-muted-foreground data-[invalid]:text-destructive hover:bg-muted focus:bg-primary focus:text-primary-foreground rounded px-0.5 tabular-nums outline-none"
-                            [part]="item.part"
                             rdxTimeFieldInput
+                            [part]="item.part"
                         >
                             {{ item.value }}
                         </div>
                     }
                 }
-                <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
+                <input rdxVisuallyHiddenInput feature="focusable" [value]="root.value()" />
             </div>
             @if (root.isInvalid()) {
                 <p class="text-destructive text-xs">Please pick a time between 09:00 and 17:00.</p>

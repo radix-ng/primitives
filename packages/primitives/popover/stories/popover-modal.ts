@@ -1,7 +1,7 @@
+import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { popoverImports, RdxPopoverModal } from '@radix-ng/primitives/popover';
-import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -24,31 +24,31 @@ import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
                 {{ description() }}
             </p>
 
-            <ng-container [modal]="modal()" rdxPopoverRoot>
-                <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Open popover</button>
+            <ng-container rdxPopoverRoot [modal]="modal()">
+                <button rdxPopoverTrigger [class]="cn(b.base, b.outline, b.size.md)">Open popover</button>
 
                 <ng-template rdxPopoverPortal>
                     @if (modal() === true) {
-                        <div [class]="p.backdrop" rdxPopoverBackdrop></div>
+                        <div rdxPopoverBackdrop [class]="p.backdrop"></div>
                     }
-                    <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                        <div [class]="p.popup" rdxPopoverPopup>
-                            <span [class]="p.arrow" rdxPopoverArrow></span>
-                            <h2 [class]="p.title" rdxPopoverTitle>Modal behavior</h2>
-                            <p [class]="p.description" rdxPopoverDescription>
+                    <div sideOffset="8" rdxPopoverPositioner [class]="p.positioner">
+                        <div rdxPopoverPopup [class]="p.popup">
+                            <span rdxPopoverArrow [class]="p.arrow"></span>
+                            <h2 rdxPopoverTitle [class]="p.title">Modal behavior</h2>
+                            <p rdxPopoverDescription [class]="p.description">
                                 Switch modes, use Tab to move between controls, then try the outside button.
                             </p>
 
                             <label class="mt-4 grid gap-1 text-xs font-medium">
                                 Name
-                                <input [class]="input" placeholder="Focused when opened" />
+                                <input placeholder="Focused when opened" [class]="input" />
                             </label>
 
-                            <button [class]="cn(b.base, b.primary, b.size.sm, 'mt-3')" type="button">
+                            <button type="button" [class]="cn(b.base, b.primary, b.size.sm, 'mt-3')">
                                 Save changes
                             </button>
 
-                            <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                            <button aria-label="Close" rdxPopoverClose [class]="p.close">
                                 <svg aria-hidden="true" lucideX size="14" />
                             </button>
                         </div>

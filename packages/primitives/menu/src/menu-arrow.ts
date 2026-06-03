@@ -1,6 +1,6 @@
+import { injectRdxMenuRootContext } from './menu-root';
 import { computed, Directive, inject } from '@angular/core';
 import { RdxPopperArrow, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
-import { injectRdxMenuRootContext } from './menu-root';
 
 /**
  * An optional visual arrow connecting the popup to its trigger.

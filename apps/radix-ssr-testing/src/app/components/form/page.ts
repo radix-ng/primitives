@@ -7,7 +7,7 @@ import { RdxFormRoot } from '@radix-ng/primitives/form';
     selector: 'app-form',
     imports: [RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldError],
     template: `
-        <form [errors]="{ email: 'Email is already taken' }" rdxFormRoot>
+        <form rdxFormRoot [errors]="{ email: 'Email is already taken' }">
             <div name="email" rdxFieldRoot>
                 <label rdxFieldLabel>Email</label>
                 <input name="email" type="email" rdxFieldControl />

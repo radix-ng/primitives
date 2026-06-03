@@ -1,22 +1,22 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { _importsSelect } from '../index';
 import { RdxSelectItemAlignedPosition } from '../src/select-item-aligned-position';
 import { RdxSelectItemAlignedPositionContent } from '../src/select-item-aligned-position-content';
 import { RdxSelectOpenChangeEvent, RdxSelectRoot, RdxSelectValueChangeEvent } from '../src/select-root';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsSelect],
     template: `
         <div
+            rdxSelectRoot
             [(open)]="open"
             [(value)]="value"
             (onOpenChange)="handleOpenChange($event)"
             (onValueChange)="handleValueChange($event)"
-            rdxSelectRoot
         >
             <button rdxSelectTrigger>
                 <span rdxSelectValue placeholder="Select…"></span>
@@ -26,7 +26,7 @@ import { RdxSelectOpenChangeEvent, RdxSelectRoot, RdxSelectValueChangeEvent } fr
                 <div rdxSelectPopup>
                     <div rdxSelectList>
                         @for (fruit of fruits; track fruit) {
-                            <div [value]="fruit" rdxSelectItem>
+                            <div rdxSelectItem [value]="fruit">
                                 <span rdxSelectItemText>{{ fruit }}</span>
                             </div>
                         }
@@ -66,7 +66,7 @@ class OpenChangeHost {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsSelect, RdxSelectItemAlignedPosition, RdxSelectItemAlignedPositionContent],
     template: `
-        <div [(open)]="open" (onOpenChange)="events.push($event)" rdxSelectRoot>
+        <div rdxSelectRoot [(open)]="open" (onOpenChange)="events.push($event)">
             <button rdxSelectTrigger>
                 <span rdxSelectValue placeholder="Select…"></span>
             </button>
@@ -76,7 +76,7 @@ class OpenChangeHost {
                     <div rdxSelectItemAlignedPositionContent>
                         <div rdxSelectList>
                             @for (fruit of fruits; track fruit) {
-                                <div [value]="fruit" rdxSelectItem>
+                                <div rdxSelectItem [value]="fruit">
                                     <span rdxSelectItemText>{{ fruit }}</span>
                                 </div>
                             }

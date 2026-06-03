@@ -1,3 +1,6 @@
+import { MIN_THUMB_SIZE, SCROLL_END_TIMEOUT } from './constants';
+import { HiddenState, injectScrollAreaRootContext } from './scroll-area-root';
+import { getOffset, injectScrollbarHideStyles, normalizeScrollOffset } from './utils';
 import { isPlatformBrowser } from '@angular/common';
 import {
     afterNextRender,
@@ -10,9 +13,6 @@ import {
     PLATFORM_ID
 } from '@angular/core';
 import { clamp, createContext } from '@radix-ng/primitives/core';
-import { MIN_THUMB_SIZE, SCROLL_END_TIMEOUT } from './constants';
-import { HiddenState, injectScrollAreaRootContext } from './scroll-area-root';
-import { getOffset, injectScrollbarHideStyles, normalizeScrollOffset } from './utils';
 
 export interface ScrollAreaViewportContext {
     /** Re-measures the viewport and repositions the thumbs. Called by the content's ResizeObserver. */

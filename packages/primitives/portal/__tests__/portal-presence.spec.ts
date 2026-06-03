@@ -1,9 +1,9 @@
+import { RdxPortalPresence } from '../src/portal-presence';
+import { RdxPortalContainer } from '../src/resolve-container';
 import { ChangeDetectionStrategy, Component, Directive, ElementRef, inject, PLATFORM_ID, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
 import { type MockInstance, vi } from 'vitest';
-import { RdxPortalPresence } from '../src/portal-presence';
-import { RdxPortalContainer } from '../src/resolve-container';
 
 // Wrapper mirroring how a real primitive applies the structural portal: a selectored
 // `ng-template` directive composing RdxPortalPresence via hostDirectives.
@@ -22,7 +22,7 @@ class TestPortalWrapper {}
     providers: [provideRdxPresenceContext(() => ({ present: inject(PortalHostComponent).present }))],
     template: `
         <div id="origin">
-            <ng-template [container]="container()" testPortal>
+            <ng-template testPortal [container]="container()">
                 <div class="content" [attr.data-state]="present() ? 'open' : 'closed'">content</div>
             </ng-template>
         </div>

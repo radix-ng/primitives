@@ -1,3 +1,4 @@
+import { injectRdxPopoverRootContext } from './popover-root';
 import { Directive, effect, ElementRef, inject, signal } from '@angular/core';
 import { useGraceArea } from '@radix-ng/primitives/core';
 import {
@@ -6,7 +7,6 @@ import {
     provideRdxPopperContentWrapper,
     RdxPopperContentWrapper
 } from '@radix-ng/primitives/popper';
-import { injectRdxPopoverRootContext } from './popover-root';
 
 /**
  * Positions the popover against its trigger.

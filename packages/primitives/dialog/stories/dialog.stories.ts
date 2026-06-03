@@ -1,11 +1,10 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxDialogCloseConfirmationComponent } from './dialog-close-confirmation';
 import closeConfirmationSource from './dialog-close-confirmation?raw';
 import { RdxDialogControlledComponent } from './dialog-controlled';
+import controlledSource from './dialog-controlled?raw';
 import { RdxDialogControlledMultipleComponent } from './dialog-controlled-multiple';
 import controlledMultipleSource from './dialog-controlled-multiple?raw';
-import controlledSource from './dialog-controlled?raw';
 import { RdxDialogDefaultComponent } from './dialog-default';
 import defaultSource from './dialog-default?raw';
 import { RdxDialogDetachedComponent } from './dialog-detached';
@@ -28,6 +27,7 @@ import { RdxDialogUncontainedComponent } from './dialog-uncontained';
 import uncontainedSource from './dialog-uncontained?raw';
 import { RdxDialogWithoutDismissComponent } from './dialog-without-dismiss';
 import withoutDismissSource from './dialog-without-dismiss?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 

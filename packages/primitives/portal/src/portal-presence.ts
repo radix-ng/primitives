@@ -1,3 +1,4 @@
+import { RdxPortalContainer, resolvePortalContainer } from './resolve-container';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import {
     computed,
@@ -15,7 +16,6 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import { PresenceMachine, RDX_PRESENCE_CONTEXT } from '@radix-ng/primitives/presence';
-import { RdxPortalContainer, resolvePortalContainer } from './resolve-container';
 
 /**
  * Structural directive merging what `RdxPortal` + `RdxPresenceDirective` did as a pair: it mounts its

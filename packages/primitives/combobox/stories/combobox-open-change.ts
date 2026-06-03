@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox, RdxComboboxOpenChange } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 
 interface ComboboxOpenChangeLogEntry {
     label: string;
@@ -20,44 +20,44 @@ interface ComboboxOpenChangeLogEntry {
                 <div class="flex flex-col gap-3">
                     <div
                         #root="rdxComboboxRoot"
+                        rdxComboboxRoot
                         [(open)]="open"
                         [(value)]="value"
                         (onOpenChange)="handleOpenChange($event)"
-                        rdxComboboxRoot
                     >
                         <div [class]="c.control">
                             <input
-                                [class]="c.input"
                                 rdxComboboxInput
                                 placeholder="Search a framework…"
                                 aria-label="Framework"
+                                [class]="c.input"
                             />
-                            <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                            <button rdxComboboxTrigger aria-label="Open" [class]="c.trigger">
                                 <svg lucideChevronDown size="16"></svg>
                             </button>
                         </div>
 
-                        <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                            <div [class]="c.popup" rdxComboboxPopup>
-                                <div [class]="c.list" rdxComboboxList aria-label="Frameworks">
+                        <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                            <div rdxComboboxPopup [class]="c.popup">
+                                <div rdxComboboxList aria-label="Frameworks" [class]="c.list">
                                     @for (framework of frameworks; track framework) {
-                                        <div [class]="c.item" [value]="framework" rdxComboboxItem>
-                                            <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                        <div rdxComboboxItem [class]="c.item" [value]="framework">
+                                            <span rdxComboboxItemIndicator [class]="c.itemIndicator">
                                                 <svg lucideCheck size="14"></svg>
                                             </span>
                                             {{ framework }}
                                         </div>
                                     }
                                 </div>
-                                <div [class]="c.empty" rdxComboboxEmpty>No match found.</div>
+                                <div rdxComboboxEmpty [class]="c.empty">No match found.</div>
                             </div>
                         </div>
 
                         <div class="grid gap-2 pt-3">
                             <button
                                 class="border-border bg-background text-foreground hover:bg-muted inline-flex h-8 items-center justify-between rounded-md border px-3 text-xs"
-                                (click)="cancelClose.update((value) => !value)"
                                 type="button"
+                                (click)="cancelClose.update((value) => !value)"
                             >
                                 <span>Cancel close</span>
                                 <span class="text-muted-foreground">{{ cancelClose() ? 'on' : 'off' }}</span>
@@ -65,8 +65,8 @@ interface ComboboxOpenChangeLogEntry {
 
                             <button
                                 class="border-border bg-background text-foreground hover:bg-muted inline-flex h-8 items-center justify-between rounded-md border px-3 text-xs"
-                                (click)="keepMountedOnClose.update((value) => !value)"
                                 type="button"
+                                (click)="keepMountedOnClose.update((value) => !value)"
                             >
                                 <span>Keep mounted on close</span>
                                 <span class="text-muted-foreground">{{ keepMountedOnClose() ? 'on' : 'off' }}</span>
@@ -98,8 +98,8 @@ interface ComboboxOpenChangeLogEntry {
                         </div>
                         <button
                             class="text-muted-foreground hover:text-foreground inline-flex h-7 items-center rounded-md px-2 text-xs"
-                            (click)="logs.set([])"
                             type="button"
+                            (click)="logs.set([])"
                         >
                             Clear
                         </button>

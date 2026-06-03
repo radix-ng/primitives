@@ -1,3 +1,4 @@
+import { compare, valueComparator } from './utils';
 import {
     booleanAttribute,
     computed,
@@ -36,7 +37,6 @@ import {
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopper } from '@radix-ng/primitives/popper';
-import { compare, valueComparator } from './utils';
 
 export interface SelectOption {
     value: AcceptableValue | undefined;

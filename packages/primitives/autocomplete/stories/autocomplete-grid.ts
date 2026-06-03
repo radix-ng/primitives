@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
 import { cn, demoCombobox, demoFocusRing } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
+import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
 
 interface Emoji {
     emoji: string;
@@ -35,42 +35,42 @@ function chunk<T>(items: T[], size: number): T[][] {
     template: `
         <div class="relative flex w-64">
             <input
-                class="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring relative -mr-px h-9 flex-1 rounded-l-md border px-2 text-sm outline-none focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-inset"
                 #message
+                class="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring relative -mr-px h-9 flex-1 rounded-l-md border px-2 text-sm outline-none focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-inset"
                 placeholder="Message…"
                 aria-label="Message"
             />
 
             <div
-                [(open)]="open"
-                [value]="search()"
-                (onValueChange)="onSearch($event)"
-                (onOpenChangeComplete)="onOpenComplete($event)"
                 grid
                 rdxAutocompleteRoot
+                [value]="search()"
+                [(open)]="open"
+                (onValueChange)="onSearch($event)"
+                (onOpenChangeComplete)="onOpenComplete($event)"
             >
-                <button [class]="trigger" rdxAutocompleteTrigger rdxAutocompleteAnchor aria-label="Choose emoji">
+                <button rdxAutocompleteTrigger rdxAutocompleteAnchor aria-label="Choose emoji" [class]="trigger">
                     😀
                 </button>
 
-                <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner align="end">
-                    <div [class]="popup" rdxAutocompletePopup>
+                <div *rdxAutocompletePortal rdxAutocompletePositioner align="end" [class]="c.positioner">
+                    <div rdxAutocompletePopup [class]="popup">
                         <input
-                            [class]="input"
                             rdxAutocompleteInput
                             placeholder="Search emojis…"
                             aria-label="Search emojis"
+                            [class]="input"
                         />
                         <div class="max-h-64 overflow-auto p-1">
                             @for (group of groups; track group.label) {
                                 <div rdxAutocompleteGroup>
-                                    <div [class]="c.groupLabel" rdxAutocompleteGroupLabel>
+                                    <div rdxAutocompleteGroupLabel [class]="c.groupLabel">
                                         {{ group.label }}
                                     </div>
                                     @for (row of group.rows; track $index) {
                                         <div class="grid grid-cols-5" rdxAutocompleteRow>
                                             @for (item of row; track item.emoji) {
-                                                <div [class]="cell" [textValue]="item.name" rdxAutocompleteItem>
+                                                <div rdxAutocompleteItem [class]="cell" [textValue]="item.name">
                                                     {{ item.emoji }}
                                                 </div>
                                             }
@@ -79,7 +79,7 @@ function chunk<T>(items: T[], size: number): T[][] {
                                 </div>
                             }
                         </div>
-                        <div [class]="c.empty" rdxAutocompleteEmpty>No emoji found.</div>
+                        <div rdxAutocompleteEmpty [class]="c.empty">No emoji found.</div>
                     </div>
                 </div>
             </div>

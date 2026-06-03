@@ -1,3 +1,5 @@
+import { injectNavigationMenuRootContext, RdxNavigationMenuOpenChangeReason } from './navigation-menu-root-context';
+import { focusFirst, getTabbableCandidates } from './utils';
 import { computed, DestroyRef, Directive, ElementRef, inject, output } from '@angular/core';
 import {
     ARROW_DOWN,
@@ -12,8 +14,6 @@ import {
 } from '@radix-ng/primitives/core';
 import { RdxDismiss, RdxOutsidePressDomEvent } from '@radix-ng/primitives/dismissable-layer';
 import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
-import { injectNavigationMenuRootContext, RdxNavigationMenuOpenChangeReason } from './navigation-menu-root-context';
-import { focusFirst, getTabbableCandidates } from './utils';
 
 /**
  * The shared container for the active item's content.

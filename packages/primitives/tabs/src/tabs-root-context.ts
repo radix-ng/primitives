@@ -1,8 +1,8 @@
+import type { RdxTabsValueChangeReason } from './tabs-root';
+import { RdxTabsActivationDirection, RdxTabsTabMetadata, RdxTabsValue } from './utils';
 import { Signal } from '@angular/core';
 import { RdxCompositeMetadata } from '@radix-ng/primitives/composite';
 import { createContext, DataOrientation } from '@radix-ng/primitives/core';
-import type { RdxTabsValueChangeReason } from './tabs-root';
-import { RdxTabsActivationDirection, RdxTabsTabMetadata, RdxTabsValue } from './utils';
 
 export interface RdxTabsRootContext {
     /** Stable id used to derive tab / panel ids. */

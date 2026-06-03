@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { injectRdxToastRootContext } from './toast-root';
+import { Directive } from '@angular/core';
 
 /**
  * Wraps a toast's inner parts (title, description, actions) — the Angular counterpart of

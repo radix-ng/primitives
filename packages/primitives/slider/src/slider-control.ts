@@ -1,6 +1,3 @@
-import { DOCUMENT } from '@angular/common';
-import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
-import { injectSliderRootContext } from './slider-context';
 import {
     clamp,
     getControlOffset,
@@ -10,6 +7,9 @@ import {
     roundValueToStep,
     validateMinimumDistance
 } from './slider.utils';
+import { injectSliderRootContext } from './slider-context';
+import { DOCUMENT } from '@angular/common';
+import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 
 const INTENTIONAL_DRAG_COUNT_THRESHOLD = 2;
 

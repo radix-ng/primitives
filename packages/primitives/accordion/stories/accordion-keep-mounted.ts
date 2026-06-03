@@ -1,3 +1,4 @@
+import { cn, demoAccordion, demoInput } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
@@ -7,7 +8,6 @@ import {
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
-import { cn, demoAccordion, demoInput } from '../../storybook/styles';
 
 /**
  * With `keepMounted`, collapsed panels keep their element in the DOM while hidden.
@@ -25,23 +25,23 @@ import { cn, demoAccordion, demoInput } from '../../storybook/styles';
         RdxAccordionPanelDirective
     ],
     template: `
-        <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="'item-1'" keepMounted rdxAccordionRoot>
-            <div [class]="a.item" [value]="'item-1'" rdxAccordionItem>
-                <h3 [class]="a.header" rdxAccordionHeader>
-                    <button [class]="a.trigger" type="button" rdxAccordionTrigger>Shipping address</button>
+        <div keepMounted rdxAccordionRoot [class]="cn(a.root, 'w-[300px]')" [defaultValue]="'item-1'">
+            <div rdxAccordionItem [class]="a.item" [value]="'item-1'">
+                <h3 rdxAccordionHeader [class]="a.header">
+                    <button type="button" rdxAccordionTrigger [class]="a.trigger">Shipping address</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div rdxAccordionPanel [class]="a.content">
                     <div [class]="a.contentText">
-                        <input [(ngModel)]="address" [class]="input" placeholder="Type, then collapse & reopen" />
+                        <input placeholder="Type, then collapse & reopen" [class]="input" [(ngModel)]="address" />
                     </div>
                 </div>
             </div>
 
-            <div [class]="a.item" [value]="'item-2'" rdxAccordionItem>
-                <h3 [class]="a.header" rdxAccordionHeader>
-                    <button [class]="a.trigger" type="button" rdxAccordionTrigger>Billing address</button>
+            <div rdxAccordionItem [class]="a.item" [value]="'item-2'">
+                <h3 rdxAccordionHeader [class]="a.header">
+                    <button type="button" rdxAccordionTrigger [class]="a.trigger">Billing address</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div rdxAccordionPanel [class]="a.content">
                     <div [class]="a.contentText">Same as shipping.</div>
                 </div>
             </div>

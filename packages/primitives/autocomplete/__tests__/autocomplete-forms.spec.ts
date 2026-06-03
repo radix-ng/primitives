@@ -1,15 +1,15 @@
+import { _importsAutocomplete } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { form, FormField } from '@angular/forms/signals';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsAutocomplete } from '../index';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsAutocomplete, ReactiveFormsModule],
     template: `
-        <div [(open)]="open" [formControl]="control" rdxAutocompleteRoot>
+        <div rdxAutocompleteRoot [formControl]="control" [(open)]="open">
             <input rdxAutocompleteInput aria-label="Fruit" />
             <div *rdxAutocompletePortal rdxAutocompletePositioner>
                 <div rdxAutocompletePopup>
@@ -33,7 +33,7 @@ class ReactiveHost {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsAutocomplete, FormsModule],
     template: `
-        <div [(ngModel)]="value" [(open)]="open" rdxAutocompleteRoot>
+        <div rdxAutocompleteRoot [(ngModel)]="value" [(open)]="open">
             <input rdxAutocompleteInput aria-label="Fruit" />
             <div *rdxAutocompletePortal rdxAutocompletePositioner>
                 <div rdxAutocompletePopup>
@@ -140,7 +140,7 @@ describe('Autocomplete forms', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsAutocomplete],
     template: `
-        <div [(open)]="open" [invalid]="invalid()" [errors]="errors()" [dirty]="dirty()" rdxAutocompleteRoot>
+        <div rdxAutocompleteRoot [invalid]="invalid()" [errors]="errors()" [dirty]="dirty()" [(open)]="open">
             <input rdxAutocompleteInput aria-label="Fruit" />
             <div *rdxAutocompletePortal rdxAutocompletePositioner>
                 <div rdxAutocompletePopup>
@@ -166,7 +166,7 @@ class AutocompleteValidationHost {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsAutocomplete, FormField],
     template: `
-        <div [(open)]="open" [formField]="query" rdxAutocompleteRoot>
+        <div rdxAutocompleteRoot [formField]="query" [(open)]="open">
             <input rdxAutocompleteInput aria-label="Fruit" />
             <div *rdxAutocompletePortal rdxAutocompletePositioner>
                 <div rdxAutocompletePopup>

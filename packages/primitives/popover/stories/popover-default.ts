@@ -1,7 +1,7 @@
+import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucidePlus, LucideX } from '@lucide/angular';
 import { popoverImports } from '@radix-ng/primitives/popover';
-import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -9,29 +9,29 @@ import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
     imports: [...popoverImports, LucidePlus, LucideX],
     template: `
         <ng-container rdxPopoverRoot>
-            <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>
+            <button rdxPopoverTrigger [class]="cn(b.base, b.outline, b.size.md)">
                 <svg aria-hidden="true" lucidePlus size="16" />
                 Add details
             </button>
 
-            <div *rdxPopoverPortal [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                <div [class]="p.popup" rdxPopoverPopup>
-                    <span [class]="p.arrow" rdxPopoverArrow></span>
-                    <h2 [class]="p.title" rdxPopoverTitle>Dimensions</h2>
-                    <p [class]="p.description" rdxPopoverDescription>Set the width and height for the element.</p>
+            <div *rdxPopoverPortal sideOffset="8" rdxPopoverPositioner [class]="p.positioner">
+                <div rdxPopoverPopup [class]="p.popup">
+                    <span rdxPopoverArrow [class]="p.arrow"></span>
+                    <h2 rdxPopoverTitle [class]="p.title">Dimensions</h2>
+                    <p rdxPopoverDescription [class]="p.description">Set the width and height for the element.</p>
 
                     <div class="mt-4 grid gap-3">
                         <label class="grid gap-1 text-xs font-medium">
                             Width
-                            <input [class]="input" value="100%" />
+                            <input value="100%" [class]="input" />
                         </label>
                         <label class="grid gap-1 text-xs font-medium">
                             Max width
-                            <input [class]="input" value="300px" />
+                            <input value="300px" [class]="input" />
                         </label>
                     </div>
 
-                    <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                    <button aria-label="Close" rdxPopoverClose [class]="p.close">
                         <svg aria-hidden="true" lucideX size="14" />
                     </button>
                 </div>

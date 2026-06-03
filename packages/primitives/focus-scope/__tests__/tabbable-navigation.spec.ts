@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { getNextTabbable, getPreviousTabbable, getTabbableAfterElement, getTabbableBeforeElement } from '../src/utils';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 /**
  * The tab-order navigation helpers (Base UI `tabbable.ts`) walk the whole document `<body>`, so each

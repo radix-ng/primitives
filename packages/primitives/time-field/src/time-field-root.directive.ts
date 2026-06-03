@@ -1,3 +1,5 @@
+import { TIME_FIELDS_ROOT_CONTEXT } from './time-field-context.token';
+import { RdxTimeFieldInputDirective } from './time-field-input.directive';
 import {
     booleanAttribute,
     computed,
@@ -37,8 +39,6 @@ import {
     watch
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
-import { TIME_FIELDS_ROOT_CONTEXT } from './time-field-context.token';
-import { RdxTimeFieldInputDirective } from './time-field-input.directive';
 
 function convertValue(value: TimeValue, date: DateValue = today(getLocalTimeZone())) {
     if (value && 'day' in value) {

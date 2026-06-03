@@ -1,3 +1,4 @@
+import { injectAccordionRootContext, RdxAccordionValueChangeEventDetails } from './accordion-root.directive';
 import {
     booleanAttribute,
     computed,
@@ -7,14 +8,13 @@ import {
     inject,
     input,
     output,
-    signal,
     Signal,
+    signal,
     WritableSignal
 } from '@angular/core';
 import { injectCollapsibleRootContext, RdxCollapsibleRootDirective } from '@radix-ng/primitives/collapsible';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, createCancelableChangeEventDetails, createContext } from '@radix-ng/primitives/core';
-import { injectAccordionRootContext, RdxAccordionValueChangeEventDetails } from './accordion-root.directive';
 
 /** Payload of {@link RdxAccordionItemDirective.onOpenChange}, mirroring Base UI's `(open, eventDetails)`. */
 export interface RdxAccordionItemOpenChangeEvent {

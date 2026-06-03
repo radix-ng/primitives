@@ -1,7 +1,7 @@
+import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucidePlus } from '@lucide/angular';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
-import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -9,13 +9,13 @@ import { cn, demoButton, demoTooltip } from '../../storybook/styles';
     imports: [...tooltipImports, LucidePlus],
     template: `
         <ng-container rdxTooltip>
-            <button [class]="cn(b.base, b.outline, b.size.icon)" aria-label="Add to library" rdxTooltipTrigger>
+            <button aria-label="Add to library" rdxTooltipTrigger [class]="cn(b.base, b.outline, b.size.icon)">
                 <svg aria-hidden="true" lucidePlus size="16" />
             </button>
 
-            <div *rdxTooltipPortal [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
-                <div [class]="t.popup" rdxTooltipPopup>Add to library</div>
-                <span [class]="t.arrow" rdxTooltipArrow></span>
+            <div *rdxTooltipPortal sideOffset="8" rdxTooltipPositioner [class]="t.positioner">
+                <div rdxTooltipPopup [class]="t.popup">Add to library</div>
+                <span rdxTooltipArrow [class]="t.arrow"></span>
             </div>
         </ng-container>
     `

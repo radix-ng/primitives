@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RdxFieldsetLegend } from '../src/fieldset-legend';
 import { RdxFieldsetRoot } from '../src/fieldset-root';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     template: `
-        <fieldset [disabled]="disabled" rdxFieldsetRoot>
+        <fieldset rdxFieldsetRoot [disabled]="disabled">
             <legend rdxFieldsetLegend>Account details</legend>
             <input name="email" />
         </fieldset>

@@ -1,5 +1,5 @@
-import { createContext } from '@radix-ng/primitives/core';
 import type { RdxNumberFieldRoot } from './number-field-root';
+import { createContext } from '@radix-ng/primitives/core';
 
 /**
  * The Number Field context exposes the root directive instance to every child part.

@@ -1,5 +1,5 @@
-import { setCompodocJson } from '@storybook/addon-docs/angular';
 import docJson from '../documentation.json';
+import { setCompodocJson } from '@storybook/addon-docs/angular';
 
 // Inputs inherited from `RdxPopperContentWrapper` (ADR 0012 thin positioners) carry the base-class
 // default expression `this.config.<key> ?? <fallback>`, where `config` is the positioner's own

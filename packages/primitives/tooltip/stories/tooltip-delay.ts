@@ -1,6 +1,6 @@
+import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
-import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -10,12 +10,12 @@ import { cn, demoButton, demoTooltip } from '../../storybook/styles';
         <div class="flex items-center gap-3">
             @for (item of triggers; track item.delay) {
                 <ng-container rdxTooltip>
-                    <button [class]="cn(b.base, b.outline, b.size.md)" [delay]="item.delay" rdxTooltipTrigger>
+                    <button rdxTooltipTrigger [class]="cn(b.base, b.outline, b.size.md)" [delay]="item.delay">
                         {{ item.label }}
                     </button>
 
-                    <div *rdxTooltipPortal [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
-                        <div [class]="t.popup" rdxTooltipPopup>Opened after {{ item.delay }} ms</div>
+                    <div *rdxTooltipPortal sideOffset="8" rdxTooltipPositioner [class]="t.positioner">
+                        <div rdxTooltipPopup [class]="t.popup">Opened after {{ item.delay }} ms</div>
                     </div>
                 </ng-container>
             }

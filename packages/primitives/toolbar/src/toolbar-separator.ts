@@ -1,6 +1,6 @@
+import { injectToolbarRootContext } from './toolbar-context';
 import { Directive, effect, inject, input } from '@angular/core';
 import { Orientation, RdxSeparatorRootDirective } from '@radix-ng/primitives/separator';
-import { injectToolbarRootContext } from './toolbar-context';
 
 /**
  * A separator between toolbar items or groups.

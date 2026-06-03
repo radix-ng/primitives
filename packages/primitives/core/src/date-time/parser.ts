@@ -1,5 +1,3 @@
-import { InputSignal } from '@angular/core';
-import { DateFields, DateValue } from '@internationalized/date';
 import { Granularity, isZonedDateTime, TIME_GRANULARITIES, toDate } from './comparators';
 import { Formatter } from './formatter';
 import {
@@ -12,6 +10,8 @@ import {
 import { getPlaceholder } from './placeholders';
 import { DateSegmentPart, HourCycle, SegmentContentObj, SegmentPart, SegmentValueObj, TimeSegmentPart } from './types';
 import { getOptsByGranularity, normalizeHourCycle } from './utils';
+import { InputSignal } from '@angular/core';
+import { DateFields, DateValue } from '@internationalized/date';
 
 type SyncDateSegmentValuesProps = {
     value: DateValue;

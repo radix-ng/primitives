@@ -1,5 +1,12 @@
 // Based on https://github.com/origin-space/image-cropper/blob/main/src/Cropper.tsx
 
+import { CropperRootContext, provideCropperRootContext } from './cropper-context.token';
+import {
+    Area,
+    calculateCropData as computeCropData,
+    CropperGeometry,
+    restrictOffset as computeRestrictedOffset
+} from './cropper-math';
 import { isPlatformBrowser } from '@angular/common';
 import {
     afterNextRender,
@@ -18,13 +25,6 @@ import {
     untracked
 } from '@angular/core';
 import { BooleanInput, clamp, injectId, NumberInput, resizeEffect } from '@radix-ng/primitives/core';
-import { CropperRootContext, provideCropperRootContext } from './cropper-context.token';
-import {
-    Area,
-    calculateCropData as computeCropData,
-    restrictOffset as computeRestrictedOffset,
-    CropperGeometry
-} from './cropper-math';
 
 export type { Area };
 

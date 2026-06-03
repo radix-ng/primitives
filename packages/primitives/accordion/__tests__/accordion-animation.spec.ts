@@ -1,15 +1,15 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
 import { RdxAccordionItemDirective } from '../src/accordion-item.directive';
 import { RdxAccordionPanelDirective } from '../src/accordion-panel.directive';
 import { RdxAccordionRootDirective } from '../src/accordion-root.directive';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxAccordionRootDirective, RdxAccordionItemDirective, RdxAccordionPanelDirective],
     template: `
-        <div [defaultValue]="'one'" rdxAccordionRoot>
+        <div rdxAccordionRoot [defaultValue]="'one'">
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionPanel>Content one</div>
             </div>

@@ -1,3 +1,4 @@
+import { cn, demoButton, demoCard, demoPopover } from '../storybook/styles';
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { LucideBell, LucideCheckCheck } from '@lucide/angular';
 import { popoverImports } from '@radix-ng/primitives/popover';
@@ -8,7 +9,6 @@ import {
     RdxScrollAreaThumb,
     RdxScrollAreaViewport
 } from '@radix-ng/primitives/scroll-area';
-import { cn, demoButton, demoCard, demoPopover } from '../storybook/styles';
 
 interface Notification {
     id: number;
@@ -41,9 +41,9 @@ interface Notification {
     template: `
         <ng-container rdxPopoverRoot>
             <button
-                [class]="cn(b.base, b.outline, b.size.icon, 'relative')"
                 aria-label="Notifications"
                 rdxPopoverTrigger
+                [class]="cn(b.base, b.outline, b.size.icon, 'relative')"
             >
                 <svg aria-hidden="true" lucideBell size="18"></svg>
                 @if (unreadCount() > 0) {
@@ -55,10 +55,10 @@ interface Notification {
                 }
             </button>
 
-            <div *rdxPopoverPortal [class]="p.positioner" sideOffset="8" align="end" rdxPopoverPositioner>
-                <div [class]="popup" rdxPopoverPopup>
+            <div *rdxPopoverPortal sideOffset="8" align="end" rdxPopoverPositioner [class]="p.positioner">
+                <div rdxPopoverPopup [class]="popup">
                     <div class="border-border flex items-center justify-between border-b px-4 py-3">
-                        <h2 [class]="p.title" rdxPopoverTitle>Notifications</h2>
+                        <h2 rdxPopoverTitle [class]="p.title">Notifications</h2>
                         <button
                             [class]="cn(b.base, b.ghost, b.size.sm, 'gap-1.5 text-xs')"
                             [disabled]="unreadCount() === 0"
@@ -79,9 +79,9 @@ interface Notification {
                                     >
                                         <span
                                             class="mt-1.5 size-2 shrink-0 rounded-full"
+                                            aria-hidden="true"
                                             [class.bg-primary]="!n.read"
                                             [class.bg-transparent]="n.read"
-                                            aria-hidden="true"
                                         ></span>
                                         <span class="min-w-0 flex-1">
                                             <span class="text-foreground block text-sm font-medium">

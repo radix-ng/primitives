@@ -1,3 +1,6 @@
+import { numberOrUndefined, toValidatedNumber, useNumberFormatter, useNumberParser } from './number-field.utils';
+import { provideNumberFieldRootContext } from './number-field-context';
+import { Direction, InputMode, NumberFieldChangeReason, REASONS } from './types';
 import {
     booleanAttribute,
     computed,
@@ -23,9 +26,6 @@ import {
     RdxFormUiTouchTarget,
     RdxFormValueControl
 } from '@radix-ng/primitives/core';
-import { provideNumberFieldRootContext } from './number-field-context';
-import { numberOrUndefined, toValidatedNumber, useNumberFormatter, useNumberParser } from './number-field.utils';
-import { Direction, InputMode, NumberFieldChangeReason, REASONS } from './types';
 
 const INPUT_REASONS: NumberFieldChangeReason[] = [
     REASONS.inputChange,

@@ -1,25 +1,25 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-limit',
     imports: [_importsAutocomplete],
     template: `
-        <div #ac="rdxAutocompleteRoot" [(value)]="value" [limit]="8" rdxAutocompleteRoot>
-            <div [class]="c.control" rdxAutocompleteInputGroup>
-                <input [class]="c.input" rdxAutocompleteInput placeholder="e.g. component" aria-label="Search tags" />
+        <div #ac="rdxAutocompleteRoot" rdxAutocompleteRoot [limit]="8" [(value)]="value">
+            <div rdxAutocompleteInputGroup [class]="c.control">
+                <input rdxAutocompleteInput placeholder="e.g. component" aria-label="Search tags" [class]="c.input" />
             </div>
 
-            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
-                <div [class]="c.popup" rdxAutocompletePopup>
-                    <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
+            <div *rdxAutocompletePortal rdxAutocompletePositioner [class]="c.positioner">
+                <div rdxAutocompletePopup [class]="c.popup">
+                    <div rdxAutocompleteList aria-label="Tags" [class]="c.list">
                         @for (tag of tags; track tag) {
-                            <div [class]="c.item" rdxAutocompleteItem>{{ tag }}</div>
+                            <div rdxAutocompleteItem [class]="c.item">{{ tag }}</div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
+                    <div rdxAutocompleteEmpty [class]="c.empty">No tags found.</div>
                     @if (hiddenCount(ac.value()); as hidden) {
                         <div class="text-muted-foreground border-border mt-1 border-t px-2 py-1 text-xs">
                             {{ hidden }} more {{ hidden === 1 ? 'result' : 'results' }} not shown

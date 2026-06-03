@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 /**
  * The directive works on any host. Here it renders an `<a>` as a button while
@@ -11,7 +11,7 @@ import { RdxButtonDirective } from '../src/button.directive';
     selector: 'rdx-button-as-link',
     imports: [RdxButtonDirective],
     template: `
-        <a [class]="cn(b.base, b.secondary, b.size.md)" rdxButton href="https://base-ui.com" target="_blank">
+        <a rdxButton href="https://base-ui.com" target="_blank" [class]="cn(b.base, b.secondary, b.size.md)">
             Open Base UI
         </a>
     `

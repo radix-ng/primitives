@@ -1,6 +1,6 @@
+import { cn, demoButton, demoToast } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
-import { cn, demoButton, demoToast } from '../../storybook/styles';
 
 /**
  * An anchored toast is positioned against an element with `rdxToastPositioner` (powered by popper)
@@ -16,17 +16,17 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
         <button [class]="cn(b.base, b.primary, b.size.md)" (click)="show($event)">Anchored toast</button>
 
         <div rdxToastPortal>
-            <div [class]="t.viewport" rdxToastViewport>
+            <div rdxToastViewport [class]="t.viewport">
                 @for (toast of manager.toasts(); track toast.id) {
                     @if (toast.positionerProps; as positioner) {
-                        <div [anchor]="positioner.anchor" [side]="positioner.side ?? 'top'" rdxToastPositioner>
-                            <div [class]="t.anchored" [toast]="toast" rdxToastRoot>
-                                <div [class]="t.content" rdxToastContent>
+                        <div rdxToastPositioner [anchor]="positioner.anchor" [side]="positioner.side ?? 'top'">
+                            <div rdxToastRoot [class]="t.anchored" [toast]="toast">
+                                <div rdxToastContent [class]="t.content">
                                     <div class="min-w-0 flex-1">
-                                        <p [class]="t.title" rdxToastTitle>{{ toast.title }}</p>
-                                        <p [class]="t.description" rdxToastDescription>{{ toast.description }}</p>
+                                        <p rdxToastTitle [class]="t.title">{{ toast.title }}</p>
+                                        <p rdxToastDescription [class]="t.description">{{ toast.description }}</p>
                                     </div>
-                                    <button [class]="t.close" aria-label="Dismiss" rdxToastClose>✕</button>
+                                    <button aria-label="Dismiss" rdxToastClose [class]="t.close">✕</button>
                                 </div>
                             </div>
                         </div>

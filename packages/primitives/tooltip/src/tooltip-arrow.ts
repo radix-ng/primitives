@@ -1,7 +1,7 @@
+import { injectRdxTooltipContext } from './tooltip';
 import { computed, Directive, inject } from '@angular/core';
 import { RdxPopperArrow, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
 import { RdxVisuallyHiddenDirective } from '@radix-ng/primitives/visually-hidden';
-import { injectRdxTooltipContext } from './tooltip';
 
 @Directive({
     selector: '[rdxTooltipArrow]',

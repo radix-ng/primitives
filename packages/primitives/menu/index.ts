@@ -1,4 +1,3 @@
-import { NgModule } from '@angular/core';
 import { RdxMenuArrow } from './src/menu-arrow';
 import { RdxMenuBackdrop } from './src/menu-backdrop';
 import { RdxMenuCheckboxItem } from './src/menu-checkbox-item';
@@ -18,6 +17,7 @@ import { RdxMenuSeparator } from './src/menu-separator';
 import { RdxMenuSubTrigger } from './src/menu-sub-trigger';
 import { RdxMenuTrigger } from './src/menu-trigger';
 import { RdxMenuViewport } from './src/menu-viewport';
+import { NgModule } from '@angular/core';
 
 export * from './src/menu-arrow';
 export * from './src/menu-backdrop';

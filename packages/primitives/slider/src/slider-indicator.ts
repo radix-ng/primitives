@@ -1,6 +1,6 @@
-import { computed, Directive } from '@angular/core';
-import { injectSliderRootContext } from './slider-context';
 import { valueToPercent } from './slider.utils';
+import { injectSliderRootContext } from './slider-context';
+import { computed, Directive } from '@angular/core';
 
 function getInsetStyles(
     vertical: boolean,

@@ -1,6 +1,6 @@
+import { injectRdxDialogRootContext } from './dialog-root';
 import { booleanAttribute, DestroyRef, Directive, ElementRef, inject, input } from '@angular/core';
 import { BooleanInput, RDX_FLOATING_ROOT_CONTEXT } from '@radix-ng/primitives/core';
-import { injectRdxDialogRootContext } from './dialog-root';
 
 /**
  * An overlay displayed beneath the dialog popup.

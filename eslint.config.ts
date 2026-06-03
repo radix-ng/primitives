@@ -1,10 +1,13 @@
-import eslintComments from '@eslint-community/eslint-plugin-eslint-comments';
 import { includeIgnoreFile } from '@eslint/compat';
 import js from '@eslint/js';
+import eslintComments from '@eslint-community/eslint-plugin-eslint-comments';
 import angularEslint from 'angular-eslint';
-import prettierRecommended from 'eslint-plugin-prettier/recommended';
-import storybook from 'eslint-plugin-storybook';
 import { defineConfig } from 'eslint/config';
+import importPlugin from 'eslint-plugin-import';
+import prettierRecommended from 'eslint-plugin-prettier/recommended';
+import simpleImportSortPlugin from 'eslint-plugin-simple-import-sort';
+import storybook from 'eslint-plugin-storybook';
+import unusedImportsPlugin from 'eslint-plugin-unused-imports';
 import globals from 'globals';
 import { fileURLToPath } from 'node:url';
 import tseslint from 'typescript-eslint';
@@ -23,12 +26,32 @@ export default defineConfig([
             }
         },
         plugins: {
-            '@eslint-community/eslint-comments': eslintComments
+            '@eslint-community/eslint-comments': eslintComments,
+            'simple-import-sort': simpleImportSortPlugin,
+            import: importPlugin,
+            'unused-imports': unusedImportsPlugin
         },
         rules: {
             ...js.configs.recommended.rules,
             ...eslintComments.configs.recommended.rules,
-            '@eslint-community/eslint-comments/no-unused-disable': 'warn'
+
+            // plugin:js
+            'sort-imports': 'off',
+
+            // plugin:eslint-comments
+            '@eslint-community/eslint-comments/no-unused-disable': 'warn',
+
+            // plugin:simple-import-sort
+            'simple-import-sort/imports': ['warn', { groups: [] }],
+            'simple-import-sort/exports': 'warn',
+
+            // plugin:import
+            'import/first': 'warn',
+            'import/newline-after-import': 'warn',
+            'import/no-duplicates': 'warn',
+
+            // plugin:unused-imports
+            'unused-imports/no-unused-imports': 'warn'
         }
     },
     {
@@ -99,7 +122,8 @@ export default defineConfig([
             // plugin:@angular-eslint/template
             '@angular-eslint/template/label-has-associated-control': 'off',
             '@angular-eslint/template/prefer-self-closing-tags': 'warn',
-            '@angular-eslint/template/prefer-control-flow': 'off'
+            '@angular-eslint/template/prefer-control-flow': 'off',
+            '@angular-eslint/template/attributes-order': 'warn'
         }
     },
     ...storybook.configs['flat/recommended'],

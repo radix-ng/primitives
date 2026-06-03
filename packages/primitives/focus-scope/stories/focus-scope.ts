@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxFocusScope } from '../src/focus-scope';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
 const demoClasses = 'flex w-xl flex-col gap-4';
 const focusScopeClasses = 'border-border bg-card flex flex-col gap-3 rounded-xl border p-5 shadow-sm';
@@ -22,7 +22,7 @@ const primaryButtonClasses =
                 </p>
             </div>
             <div class="flex items-center gap-3">
-                <button class="${primaryButtonClasses}" (click)="open.set(true)" type="button">Open scope</button>
+                <button class="${primaryButtonClasses}" type="button" (click)="open.set(true)">Open scope</button>
                 <button class="${buttonClasses}" type="button">Outside action</button>
             </div>
             @if (open()) {
@@ -30,7 +30,7 @@ const primaryButtonClasses =
                     <p class="text-sm font-medium">Profile actions</p>
                     <button class="${buttonClasses}" type="button">Edit profile</button>
                     <button class="${buttonClasses}" type="button">Change password</button>
-                    <button class="${buttonClasses}" (click)="open.set(false)" type="button">Close scope</button>
+                    <button class="${buttonClasses}" type="button" (click)="open.set(false)">Close scope</button>
                 </div>
             }
         </section>
@@ -76,19 +76,19 @@ export class FocusScopeLoop {}
                 </p>
             </div>
             <div class="flex items-center gap-3">
-                <button class="${primaryButtonClasses}" (click)="open.set(true)" type="button">Open scope</button>
+                <button class="${primaryButtonClasses}" type="button" (click)="open.set(true)">Open scope</button>
                 <span class="text-muted-foreground text-sm">{{ status() }}</span>
             </div>
             @if (open()) {
                 <div
                     class="${focusScopeClasses}"
+                    rdxFocusScope
                     (mountAutoFocus)="handleAutoFocus('Mount', $event)"
                     (unmountAutoFocus)="handleAutoFocus('Unmount', $event)"
-                    rdxFocusScope
                 >
                     <button class="${buttonClasses}" type="button">Action 1</button>
                     <button class="${buttonClasses}" type="button">Action 2</button>
-                    <button class="${buttonClasses}" (click)="open.set(false)" type="button">Close scope</button>
+                    <button class="${buttonClasses}" type="button" (click)="open.set(false)">Close scope</button>
                 </div>
             }
         </section>

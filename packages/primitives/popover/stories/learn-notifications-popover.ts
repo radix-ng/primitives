@@ -21,8 +21,8 @@ import { popoverImports } from '@radix-ng/primitives/popover';
             </button>
 
             <div
-                class="data-[open]:animate-popover-in data-[closed]:animate-popover-out z-50"
                 *rdxPopoverPortal
+                class="data-[open]:animate-popover-in data-[closed]:animate-popover-out z-50"
                 sideOffset="8"
                 rdxPopoverPositioner
             >

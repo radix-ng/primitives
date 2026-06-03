@@ -1,3 +1,4 @@
+import { cn, demoButton, demoRadio } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
@@ -7,7 +8,6 @@ import {
     RdxRadioItemDirective,
     RdxRadioItemInputDirective
 } from '@radix-ng/primitives/radio';
-import { cn, demoButton, demoRadio } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -15,17 +15,17 @@ import { cn, demoButton, demoRadio } from '../../storybook/styles';
     template: `
         <form class="flex w-72 flex-col gap-4" (ngSubmit)="submit()">
             <div
-                [(ngModel)]="hotelRoom"
-                [class]="r.group"
                 name="hotelRoom"
                 rdxRadioRoot
                 required
                 aria-label="Hotel room"
+                [class]="r.group"
+                [(ngModel)]="hotelRoom"
             >
                 @for (room of rooms; track room) {
-                    <label [class]="r.row" rdxLabel>
-                        <span [class]="r.item" [value]="room" rdxRadioItem>
-                            <span [class]="r.indicator" rdxRadioIndicator></span>
+                    <label rdxLabel [class]="r.row">
+                        <span rdxRadioItem [class]="r.item" [value]="room">
+                            <span rdxRadioIndicator [class]="r.indicator"></span>
                             <input rdxRadioItemInput />
                         </span>
                         <span [class]="r.label">
@@ -35,7 +35,7 @@ import { cn, demoButton, demoRadio } from '../../storybook/styles';
                 }
             </div>
 
-            <button [class]="cn(b.base, b.primary, b.size.md)" type="submit">Submit</button>
+            <button type="submit" [class]="cn(b.base, b.primary, b.size.md)">Submit</button>
 
             @if (submittedRoom) {
                 <p class="text-muted-foreground text-sm">

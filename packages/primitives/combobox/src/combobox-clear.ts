@@ -1,6 +1,6 @@
+import { injectComboboxRootContext } from './combobox-root';
 import { booleanAttribute, computed, Directive, input } from '@angular/core';
 import { RdxFloatingInsideElement } from '@radix-ng/primitives/dismissable-layer';
-import { injectComboboxRootContext } from './combobox-root';
 
 /**
  * Clears the current selection and the input text. Hidden when there is nothing to clear.

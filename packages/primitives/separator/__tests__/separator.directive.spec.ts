@@ -1,6 +1,6 @@
+import { Orientation, RdxSeparatorRootDirective } from '../src/separator.directive';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Orientation, RdxSeparatorRootDirective } from '../src/separator.directive';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,

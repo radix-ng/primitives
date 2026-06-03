@@ -1,4 +1,3 @@
-import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxPopper } from '../src/popper';
 import { RdxPopperAnchor } from '../src/popper-anchor';
@@ -6,6 +5,7 @@ import { RdxPopperArrow } from '../src/popper-arrow';
 import { RdxPopperContent } from '../src/popper-content';
 import { RdxPopperContentWrapper } from '../src/popper-content-wrapper';
 import { PopperFollowPointer, PopperUpdPosition } from './popper';
+import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 

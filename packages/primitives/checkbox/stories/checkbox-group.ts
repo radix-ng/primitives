@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideCheck, LucideDynamicIcon } from '@lucide/angular';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { demoCheckbox } from '../../storybook/styles';
 import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
 import { RdxCheckboxGroupDirective } from '../src/checkbox-group';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideCheck, LucideDynamicIcon } from '@lucide/angular';
+import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 /**
  * `rdxCheckboxGroup` holds the array of checked names. Each child participates by its `name`, and
@@ -28,15 +28,15 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
         LucideCheck
     ],
     template: `
-        <div class="flex flex-col gap-3" #group="rdxCheckboxGroup" [(value)]="value" [allValues]="all" rdxCheckboxGroup>
+        <div #group="rdxCheckboxGroup" class="flex flex-col gap-3" rdxCheckboxGroup [allValues]="all" [(value)]="value">
             <div class="flex items-center gap-3">
                 <div parent rdxCheckboxRoot>
-                    <button id="all" [class]="c.button" rdxCheckboxButton>
+                    <button id="all" rdxCheckboxButton [class]="c.button">
                         <svg
-                            [class]="c.indicator"
-                            [lucideIcon]="group.parentState() === 'indeterminate' ? 'minus' : 'check'"
                             rdxCheckboxIndicator
                             size="16"
+                            [class]="c.indicator"
+                            [lucideIcon]="group.parentState() === 'indeterminate' ? 'minus' : 'check'"
                         />
                     </button>
                 </div>
@@ -46,12 +46,12 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
             <div class="ml-6 flex flex-col gap-3">
                 @for (item of items; track item.name) {
                     <div class="flex items-center gap-3">
-                        <div [name]="item.name" rdxCheckboxRoot>
-                            <button [class]="c.button" [id]="item.name" rdxCheckboxButton>
-                                <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
+                        <div rdxCheckboxRoot [name]="item.name">
+                            <button rdxCheckboxButton [class]="c.button" [id]="item.name">
+                                <svg rdxCheckboxIndicator size="16" lucideCheck [class]="c.indicator" />
                             </button>
                         </div>
-                        <label class="text-foreground text-sm font-medium" [htmlFor]="item.name" rdxLabel>
+                        <label class="text-foreground text-sm font-medium" rdxLabel [htmlFor]="item.name">
                             {{ item.label }}
                         </label>
                     </div>

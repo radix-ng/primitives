@@ -1,3 +1,4 @@
+import { STEPPER_ROOT_CONTEXT, StepperRootContext } from './stepper-root-context.token';
 import {
     booleanAttribute,
     computed,
@@ -20,7 +21,6 @@ import {
     RdxLiveAnnouncer
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
-import { STEPPER_ROOT_CONTEXT, StepperRootContext } from './stepper-root-context.token';
 
 export type RdxStepperValueChangeReason = 'trigger-press' | 'keyboard' | 'none';
 export type RdxStepperValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxStepperValueChangeReason>;

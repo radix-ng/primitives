@@ -1,8 +1,8 @@
+import { injectRdxTooltipContext } from './tooltip';
 import { Directive, isDevMode } from '@angular/core';
 import { rdxDevError } from '@radix-ng/primitives/core';
 import { RdxPortalPresence } from '@radix-ng/primitives/portal';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
-import { injectRdxTooltipContext } from './tooltip';
 
 /**
  * Structural directive that teleports the tooltip content into a container (default `document.body`)

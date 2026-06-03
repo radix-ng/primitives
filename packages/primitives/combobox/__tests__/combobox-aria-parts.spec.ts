@@ -1,7 +1,7 @@
+import { _importsCombobox } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsCombobox } from '../index';
 
 /**
  * ARIA / part-parity regressions (ADR 0014 review batch 2): list is a programmatic focus target that
@@ -12,7 +12,7 @@ import { _importsCombobox } from '../index';
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
-        <div [(value)]="value" [(open)]="open" [readOnly]="readOnly()" modal rdxComboboxRoot>
+        <div modal rdxComboboxRoot [readOnly]="readOnly()" [(value)]="value" [(open)]="open">
             <input rdxComboboxInput aria-label="Fruit" />
             <div *rdxComboboxPortal rdxComboboxPositioner>
                 <div rdxComboboxBackdrop></div>
@@ -23,8 +23,8 @@ import { _importsCombobox } from '../index';
                             @if (showLabel()) {
                                 <div rdxComboboxGroupLabel>Fruits</div>
                             }
-                            <div [value]="'apple'" rdxComboboxItem>apple</div>
-                            <div [value]="'banana'" rdxComboboxItem>banana</div>
+                            <div rdxComboboxItem [value]="'apple'">apple</div>
+                            <div rdxComboboxItem [value]="'banana'">banana</div>
                         </div>
                     </div>
                 </div>

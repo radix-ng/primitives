@@ -1,20 +1,20 @@
+import { RdxStepperItemDirective } from '../src/stepper-item.directive';
+import { RdxStepperRootDirective, RdxStepperValueChangeEvent } from '../src/stepper-root.directive';
+import { RdxStepperTriggerDirective } from '../src/stepper-trigger.directive';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
-import { RdxStepperItemDirective } from '../src/stepper-item.directive';
-import { RdxStepperRootDirective, RdxStepperValueChangeEvent } from '../src/stepper-root.directive';
-import { RdxStepperTriggerDirective } from '../src/stepper-trigger.directive';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxStepperRootDirective, RdxStepperItemDirective, RdxStepperTriggerDirective],
     template: `
-        <div [(value)]="value" (onValueChange)="onValueChange($event)" rdxStepperRoot>
-            <div [step]="1" rdxStepperItem>
+        <div rdxStepperRoot [(value)]="value" (onValueChange)="onValueChange($event)">
+            <div rdxStepperItem [step]="1">
                 <button rdxStepperTrigger>One</button>
             </div>
-            <div [step]="2" rdxStepperItem>
+            <div rdxStepperItem [step]="2">
                 <button rdxStepperTrigger>Two</button>
             </div>
         </div>

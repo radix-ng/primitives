@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 /**
  * Disabled handling. The first button uses the native `disabled` attribute
@@ -13,8 +13,8 @@ import { RdxButtonDirective } from '../src/button.directive';
     imports: [RdxButtonDirective],
     template: `
         <div class="flex flex-wrap items-center gap-3">
-            <button [class]="cn(b.base, b.primary, b.size.md)" rdxButton disabled>Disabled</button>
-            <button [class]="cn(b.base, b.outline, b.size.md)" rdxButton disabled focusableWhenDisabled>
+            <button rdxButton disabled [class]="cn(b.base, b.primary, b.size.md)">Disabled</button>
+            <button rdxButton disabled focusableWhenDisabled [class]="cn(b.base, b.outline, b.size.md)">
                 Disabled (focusable)
             </button>
         </div>

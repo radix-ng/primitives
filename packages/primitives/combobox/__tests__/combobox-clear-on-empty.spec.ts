@@ -1,7 +1,7 @@
+import { _importsCombobox } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsCombobox } from '../index';
 
 /**
  * Regression (ADR 0014, Finding 2 / P1c): emptying the input deselects a single value, and when
@@ -12,18 +12,18 @@ import { _importsCombobox } from '../index';
     imports: [_importsCombobox],
     template: `
         <div
-            [(value)]="value"
-            [(open)]="open"
+            rdxComboboxRoot
             [multiple]="multiple()"
             [openOnInputClick]="openOnInputClick()"
-            rdxComboboxRoot
+            [(value)]="value"
+            [(open)]="open"
         >
             <input rdxComboboxInput aria-label="Fruit" />
             <div *rdxComboboxPortal rdxComboboxPositioner>
                 <div rdxComboboxPopup>
                     <div rdxComboboxList aria-label="Fruits">
                         @for (fruit of fruits; track fruit) {
-                            <div [value]="fruit" rdxComboboxItem>{{ fruit }}</div>
+                            <div rdxComboboxItem [value]="fruit">{{ fruit }}</div>
                         }
                     </div>
                 </div>

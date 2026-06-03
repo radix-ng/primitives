@@ -1,5 +1,5 @@
-import { afterNextRender, computed, Directive, ElementRef, inject } from '@angular/core';
 import { injectEditableRootContext } from './editable-root';
+import { afterNextRender, computed, Directive, ElementRef, inject } from '@angular/core';
 
 @Directive({
     selector: 'span[rdxEditablePreview]',

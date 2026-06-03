@@ -1,5 +1,3 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import {
     RdxSelectItem,
     RdxSelectItemIndicator,
@@ -14,6 +12,8 @@ import {
     RdxSelectValue,
     RdxSelectValueChangeEvent
 } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 
 interface SelectEventLogEntry {
     label: string;
@@ -45,11 +45,11 @@ interface SelectEventLogEntry {
                 <div class="flex flex-col gap-2">
                     <ng-container
                         #root="rdxSelectRoot"
+                        rdxSelectRoot
                         [(open)]="open"
                         [(value)]="value"
                         (onOpenChange)="handleOpenChange($event)"
                         (onValueChange)="handleValueChange($event)"
-                        rdxSelectRoot
                     >
                         <button
                             class="border-border bg-background text-foreground data-[placeholder]:text-muted-foreground hover:bg-muted focus-visible:ring-ring focus-visible:ring-offset-background inline-flex h-9 w-full items-center justify-between gap-2 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
@@ -62,7 +62,7 @@ interface SelectEventLogEntry {
                             <svg lucideChevronDown size="16" />
                         </button>
 
-                        <div class="z-[100]" *rdxSelectPortal sideOffset="6" rdxSelectPositioner>
+                        <div *rdxSelectPortal class="z-[100]" sideOffset="6" rdxSelectPositioner>
                             <div
                                 class="border-border bg-popover text-popover-foreground min-w-48 rounded-lg border p-1 shadow-md"
                                 rdxSelectPopup
@@ -71,8 +71,8 @@ interface SelectEventLogEntry {
                                     @for (option of options; track option.value) {
                                         <div
                                             class="data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-8 cursor-default items-center rounded-sm pr-8 pl-7 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                                            [value]="option.value"
                                             rdxSelectItem
+                                            [value]="option.value"
                                         >
                                             <span
                                                 class="absolute left-2 inline-flex size-4 items-center justify-center"
@@ -90,8 +90,8 @@ interface SelectEventLogEntry {
                         <div class="grid gap-2 pt-1">
                             <button
                                 class="border-border bg-background text-foreground hover:bg-muted inline-flex h-7 items-center justify-between rounded-md border px-3 text-xs"
-                                (click)="cancelNextOpen.update((value) => !value)"
                                 type="button"
+                                (click)="cancelNextOpen.update((value) => !value)"
                             >
                                 <span>Cancel next open</span>
                                 <span class="text-muted-foreground">{{ cancelNextOpen() ? 'armed' : 'off' }}</span>
@@ -99,8 +99,8 @@ interface SelectEventLogEntry {
 
                             <button
                                 class="border-border bg-background text-foreground hover:bg-muted inline-flex h-7 items-center justify-between rounded-md border px-3 text-xs"
-                                (click)="cancelNextValue.update((value) => !value)"
                                 type="button"
+                                (click)="cancelNextValue.update((value) => !value)"
                             >
                                 <span>Cancel next value</span>
                                 <span class="text-muted-foreground">{{ cancelNextValue() ? 'armed' : 'off' }}</span>
@@ -130,8 +130,8 @@ interface SelectEventLogEntry {
                         </div>
                         <button
                             class="text-muted-foreground hover:text-foreground inline-flex h-7 items-center rounded-md px-2 text-xs"
-                            (click)="logs.set([])"
                             type="button"
+                            (click)="logs.set([])"
                         >
                             Clear
                         </button>

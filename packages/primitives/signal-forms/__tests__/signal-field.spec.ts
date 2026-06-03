@@ -1,9 +1,9 @@
+import { RdxSignalField } from '../src/signal-field';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { form, FormField, required } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { RdxFieldRoot } from '@radix-ng/primitives/field';
-import { RdxSignalField } from '../src/signal-field';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -11,7 +11,7 @@ import { RdxSignalField } from '../src/signal-field';
     // The field expression is bound exactly ONCE (on `[formField]`); `rdxSignalField` reads it from there.
     template: `
         <div rdxFieldRoot>
-            <input [formField]="name" rdxSignalField />
+            <input rdxSignalField [formField]="name" />
         </div>
     `
 })

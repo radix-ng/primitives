@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 
 /**
  * Modal combobox: while open, page scroll is locked and content outside the popup is inert. A
@@ -12,29 +12,29 @@ import { _importsCombobox } from '../index';
     selector: 'combobox-modal',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
-        <div [(value)]="value" modal rdxComboboxRoot>
+        <div modal rdxComboboxRoot [(value)]="value">
             <div [class]="c.control">
-                <input [class]="c.input" rdxComboboxInput placeholder="Search a fruit…" aria-label="Fruit" />
-                <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                <input rdxComboboxInput placeholder="Search a fruit…" aria-label="Fruit" [class]="c.input" />
+                <button rdxComboboxTrigger aria-label="Open" [class]="c.trigger">
                     <svg lucideChevronDown size="16"></svg>
                 </button>
             </div>
 
             <ng-template rdxComboboxPortal>
-                <div [class]="c.backdrop" rdxComboboxBackdrop></div>
-                <div [class]="c.positioner" rdxComboboxPositioner>
-                    <div [class]="c.popup" rdxComboboxPopup>
-                        <div [class]="c.list" rdxComboboxList aria-label="Fruits">
+                <div rdxComboboxBackdrop [class]="c.backdrop"></div>
+                <div rdxComboboxPositioner [class]="c.positioner">
+                    <div rdxComboboxPopup [class]="c.popup">
+                        <div rdxComboboxList aria-label="Fruits" [class]="c.list">
                             @for (fruit of fruits; track fruit) {
-                                <div [class]="c.item" [value]="fruit" rdxComboboxItem>
-                                    <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                <div rdxComboboxItem [class]="c.item" [value]="fruit">
+                                    <span rdxComboboxItemIndicator [class]="c.itemIndicator">
                                         <svg lucideCheck size="14"></svg>
                                     </span>
                                     {{ fruit }}
                                 </div>
                             }
                         </div>
-                        <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
+                        <div rdxComboboxEmpty [class]="c.empty">No fruit found.</div>
                     </div>
                 </div>
             </ng-template>

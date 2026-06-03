@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 
 /**
  * `RdxComboboxEmpty` renders only when no item matches the query — type something like "zzz" to see
@@ -12,27 +12,27 @@ import { _importsCombobox } from '../index';
     selector: 'combobox-empty',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
-        <div [(value)]="value" rdxComboboxRoot>
+        <div rdxComboboxRoot [(value)]="value">
             <div [class]="c.control">
-                <input [class]="c.input" rdxComboboxInput placeholder="Try typing 'zzz'…" aria-label="Fruit" />
-                <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                <input rdxComboboxInput placeholder="Try typing 'zzz'…" aria-label="Fruit" [class]="c.input" />
+                <button rdxComboboxTrigger aria-label="Open" [class]="c.trigger">
                     <svg lucideChevronDown size="16"></svg>
                 </button>
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" rdxComboboxPopup>
-                    <div [class]="c.list" rdxComboboxList aria-label="Fruits">
+            <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                <div rdxComboboxPopup [class]="c.popup">
+                    <div rdxComboboxList aria-label="Fruits" [class]="c.list">
                         @for (fruit of fruits; track fruit) {
-                            <div [class]="c.item" [value]="fruit" rdxComboboxItem>
-                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                            <div rdxComboboxItem [class]="c.item" [value]="fruit">
+                                <span rdxComboboxItemIndicator [class]="c.itemIndicator">
                                     <svg lucideCheck size="14"></svg>
                                 </span>
                                 {{ fruit }}
                             </div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxComboboxEmpty>No fruit matches your search.</div>
+                    <div rdxComboboxEmpty [class]="c.empty">No fruit matches your search.</div>
                 </div>
             </div>
         </div>

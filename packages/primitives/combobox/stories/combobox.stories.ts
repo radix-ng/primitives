@@ -1,9 +1,8 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { ComboboxAsync } from './combobox-async';
+import asyncSource from './combobox-async?raw';
 import { ComboboxAsyncMultiple } from './combobox-async-multiple';
 import asyncMultipleSource from './combobox-async-multiple?raw';
-import asyncSource from './combobox-async?raw';
 import { ComboboxCommand } from './combobox-command';
 import commandSource from './combobox-command?raw';
 import { ComboboxCreatable } from './combobox-creatable';
@@ -32,6 +31,7 @@ import { ComboboxValidation } from './combobox-validation';
 import validationSource from './combobox-validation?raw';
 import { ComboboxVirtualizedExample } from './combobox-virtualized';
 import virtualizedSource from './combobox-virtualized?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 

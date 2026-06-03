@@ -53,8 +53,8 @@ export class PresenceDemo {}
         <div class="flex flex-col items-center gap-4">
             <button
                 class="border-border bg-background text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-9 items-center rounded-md border px-4 text-sm font-medium shadow-sm outline-none focus-visible:ring-2"
-                (click)="open.set(!open())"
                 type="button"
+                (click)="open.set(!open())"
             >
                 {{ open() ? 'Unmount' : 'Mount' }}
             </button>

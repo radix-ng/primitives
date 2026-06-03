@@ -1,3 +1,6 @@
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
+import { RdxToggleGroup } from '../src/toggle-group';
+import { ToggleGroup } from './toggle-group';
 import {
     LucideAlignCenter,
     LucideAlignLeft,
@@ -8,9 +11,6 @@ import {
 } from '@lucide/angular';
 import { RdxToggle } from '@radix-ng/primitives/toggle';
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
-import { RdxToggleGroup } from '../src/toggle-group';
-import { ToggleGroup } from './toggle-group';
 
 const html = String.raw;
 

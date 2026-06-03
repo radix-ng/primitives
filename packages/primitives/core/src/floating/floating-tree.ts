@@ -1,7 +1,7 @@
-import { isDevMode } from '@angular/core';
 import { rdxDevError } from '../dev/diagnostics';
 import { createFloatingEvents, RdxFloatingEvents } from './floating-events';
 import { RdxFloatingRootContext } from './floating-root-context';
+import { isDevMode } from '@angular/core';
 
 /** Module-private mutable state for {@link RdxFloatingNode}, reachable only by {@link RdxFloatingTree}. */
 interface RdxFloatingNodeInternals {

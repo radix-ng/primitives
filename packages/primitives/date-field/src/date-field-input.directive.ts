@@ -1,6 +1,6 @@
+import { injectDateFieldsRootContext } from './date-field-context.token';
 import { computed, Directive, effect, ElementRef, inject, input, signal } from '@angular/core';
 import { isNullish, SegmentPart, useDateField } from '@radix-ng/primitives/core';
-import { injectDateFieldsRootContext } from './date-field-context.token';
 
 /**
  * Attribute keys produced by `useDateField().attributes()` that are instead owned by host

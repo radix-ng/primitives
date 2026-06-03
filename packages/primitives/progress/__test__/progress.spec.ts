@@ -1,22 +1,22 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
 import { RdxProgressLabelDirective } from '../src/progress-label.directive';
 import { ProgressValueFormatter, RdxProgressRootDirective } from '../src/progress-root.directive';
 import { RdxProgressTrackDirective } from '../src/progress-track.directive';
 import { RdxProgressValueDirective } from '../src/progress-value.directive';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <div
+            labelId="upload-label"
+            valueId="upload-value"
+            rdxProgressRoot
             [value]="value"
             [min]="min"
             [max]="max"
             [valueLabel]="valueLabel"
-            labelId="upload-label"
-            valueId="upload-value"
-            rdxProgressRoot
         >
             <span rdxProgressLabel>Upload</span>
             <span rdxProgressValue></span>

@@ -1,3 +1,5 @@
+import { injectRdxCompositeListContext } from './composite-list';
+import { RdxCompositeItemMetadata } from './types';
 import {
     afterNextRender,
     computed,
@@ -10,8 +12,6 @@ import {
     signal,
     untracked
 } from '@angular/core';
-import { injectRdxCompositeListContext } from './composite-list';
-import { RdxCompositeItemMetadata } from './types';
 
 /**
  * Registers the host with the nearest composite list without changing focus behavior.

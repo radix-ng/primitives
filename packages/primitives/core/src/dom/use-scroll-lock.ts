@@ -1,5 +1,5 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { computed, DestroyRef, effect, inject, PLATFORM_ID, signal, Signal } from '@angular/core';
+import { computed, DestroyRef, effect, inject, PLATFORM_ID, Signal, signal } from '@angular/core';
 
 /** Marker attribute set on `<html>` while scroll is locked (a strategy-independent test/CSS hook). */
 export const RDX_SCROLL_LOCKED_ATTR = 'data-rdx-scroll-locked';

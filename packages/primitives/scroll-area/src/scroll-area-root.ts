@@ -1,3 +1,5 @@
+import { SCROLL_TIMEOUT } from './constants';
+import { getOffset } from './utils';
 import {
     booleanAttribute,
     computed,
@@ -6,13 +8,11 @@ import {
     ElementRef,
     inject,
     input,
-    signal,
-    Signal
+    Signal,
+    signal
 } from '@angular/core';
 import { BooleanInput, createContext, Direction, injectId } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
-import { SCROLL_TIMEOUT } from './constants';
-import { getOffset } from './utils';
 
 export type Size = { width: number; height: number };
 export type Coords = { x: number; y: number };

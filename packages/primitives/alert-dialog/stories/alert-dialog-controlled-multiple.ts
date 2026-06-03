@@ -1,6 +1,6 @@
+import { cn, demoButton, demoDialog } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
-import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -10,23 +10,23 @@ import { cn, demoButton, demoDialog } from '../../storybook/styles';
         <div class="flex flex-col items-center gap-3">
             <p class="text-muted-foreground text-xs">open: {{ open() }} · triggerId: {{ triggerId() ?? '—' }}</p>
 
-            <div [(open)]="open" [(triggerId)]="triggerId" rdxAlertDialogRoot>
+            <div rdxAlertDialogRoot [(open)]="open" [(triggerId)]="triggerId">
                 <div class="flex gap-2">
-                    <button id="logout" [class]="cn(b.base, b.outline, b.size.md)" rdxAlertDialogTrigger>
+                    <button id="logout" rdxAlertDialogTrigger [class]="cn(b.base, b.outline, b.size.md)">
                         Log out
                     </button>
-                    <button id="delete" [class]="cn(b.base, b.outline, b.size.md)" rdxAlertDialogTrigger>
+                    <button id="delete" rdxAlertDialogTrigger [class]="cn(b.base, b.outline, b.size.md)">
                         Delete account
                     </button>
                 </div>
 
                 <ng-template rdxAlertDialogPortal>
-                    <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxAlertDialogBackdrop></div>
-                    <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
-                        <h2 [class]="d.title" rdxAlertDialogTitle>
+                    <div rdxAlertDialogBackdrop [class]="cn(d.backdrop, d.backdropAnimated)"></div>
+                    <div rdxAlertDialogPopup [class]="cn(d.popup, d.popupAnimated)">
+                        <h2 rdxAlertDialogTitle [class]="d.title">
                             {{ triggerId() === 'delete' ? 'Delete account?' : 'Log out?' }}
                         </h2>
-                        <p [class]="d.description" rdxAlertDialogDescription>
+                        <p rdxAlertDialogDescription [class]="d.description">
                             Both
                             <code>open</code>
                             and
@@ -34,10 +34,10 @@ import { cn, demoButton, demoDialog } from '../../storybook/styles';
                             are bound, so the active action is driven from component state.
                         </p>
                         <div [class]="d.footer">
-                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxAlertDialogClose>Cancel</button>
+                            <button rdxAlertDialogClose [class]="cn(b.base, b.outline, b.size.sm)">Cancel</button>
                             <button
-                                [class]="cn(b.base, triggerId() === 'delete' ? b.destructive : b.primary, b.size.sm)"
                                 rdxAlertDialogClose
+                                [class]="cn(b.base, triggerId() === 'delete' ? b.destructive : b.primary, b.size.sm)"
                             >
                                 {{ triggerId() === 'delete' ? 'Delete' : 'Log out' }}
                             </button>

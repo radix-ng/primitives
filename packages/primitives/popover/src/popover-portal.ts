@@ -1,8 +1,8 @@
+import { injectRdxPopoverRootContext } from './popover-root';
 import { Directive, isDevMode } from '@angular/core';
 import { rdxDevError } from '@radix-ng/primitives/core';
 import { RdxPortalPresence } from '@radix-ng/primitives/portal';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
-import { injectRdxPopoverRootContext } from './popover-root';
 
 /**
  * Structural directive that teleports the popover content into a container (default `document.body`)

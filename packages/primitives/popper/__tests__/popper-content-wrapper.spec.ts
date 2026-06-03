@@ -1,10 +1,10 @@
+import { popperImports } from '../index';
+import { RdxPopperContentWrapper } from '../src/popper-content-wrapper';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { autoUpdate, computePosition } from '@floating-ui/dom';
 import { vi } from 'vitest';
-import { popperImports } from '../index';
-import { RdxPopperContentWrapper } from '../src/popper-content-wrapper';
 
 vi.mock('@floating-ui/dom', async () => {
     const actual = await vi.importActual<typeof import('@floating-ui/dom')>('@floating-ui/dom');
@@ -58,7 +58,7 @@ class AlwaysPopperHostComponent {}
     template: `
         <div rdxPopperRoot>
             <button rdxPopperAnchor>Anchor</button>
-            <div [side]="side()" [updatePositionStrategy]="updatePositionStrategy()" rdxPopperContentWrapper>
+            <div rdxPopperContentWrapper [side]="side()" [updatePositionStrategy]="updatePositionStrategy()">
                 <div rdxPopperContent>Content</div>
             </div>
         </div>
@@ -75,7 +75,7 @@ class ReactivePopperHostComponent {
     template: `
         <div rdxPopperRoot>
             <button #customAnchor>Custom anchor</button>
-            <div [anchor]="customAnchor" rdxPopperContentWrapper>
+            <div rdxPopperContentWrapper [anchor]="customAnchor">
                 <div rdxPopperContent>Content</div>
             </div>
         </div>

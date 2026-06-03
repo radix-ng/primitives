@@ -1,8 +1,8 @@
+import { injectCalendarRootContext } from './calendar-context.token';
 import { computed, Directive, ElementRef, inject, input } from '@angular/core';
 import { DateValue, getLocalTimeZone, isSameDay, isSameMonth, isToday } from '@internationalized/date';
 import * as kbd from '@radix-ng/primitives/core';
 import { getDaysInMonth, toDate } from '@radix-ng/primitives/core';
-import { injectCalendarRootContext } from './calendar-context.token';
 
 @Directive({
     selector: '[rdxCalendarCellTrigger]',

@@ -1,5 +1,3 @@
-import { ReactiveFormsModule } from '@angular/forms';
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '../../field';
 import { RdxInputDirective } from '../../input';
 import { demoInput } from '../../storybook/styles';
@@ -8,6 +6,8 @@ import { RdxFieldsetLegend } from '../src/fieldset-legend';
 import { RdxFieldsetRoot } from '../src/fieldset-root';
 import { FieldsetSignupFormExample } from './fieldset-signup-form';
 import signupFormSource from './fieldset-signup-form?raw';
+import { ReactiveFormsModule } from '@angular/forms';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const source = (code: string) => ({ docs: { source: { code, language: 'typescript' } } });
 const html = String.raw;

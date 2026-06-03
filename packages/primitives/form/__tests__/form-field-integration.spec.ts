@@ -1,15 +1,15 @@
+import { _importsForm, RdxFormErrors } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RdxFieldControl, RdxFieldError, RdxFieldRoot, RdxFieldState } from '@radix-ng/primitives/field';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsForm, RdxFormErrors } from '../index';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsForm, RdxFieldRoot, RdxFieldControl, RdxFieldError],
     template: `
-        <form [errors]="errors()" rdxFormRoot>
+        <form rdxFormRoot [errors]="errors()">
             <div #emailField="rdxFieldRoot" name="email" rdxFieldRoot>
                 <input id="email-input" name="email" rdxFieldControl />
                 <p #emailErr="rdxFieldError" rdxFieldError>{{ emailErr.messages().join(' | ') }}</p>
@@ -18,7 +18,7 @@ import { _importsForm, RdxFormErrors } from '../index';
                 <input id="anon-input" rdxFieldControl />
             </div>
             @if (showOptional()) {
-                <div [invalid]="true" name="optional" rdxFieldRoot>
+                <div name="optional" rdxFieldRoot [invalid]="true">
                     <input id="optional-input" rdxFieldControl />
                 </div>
             }

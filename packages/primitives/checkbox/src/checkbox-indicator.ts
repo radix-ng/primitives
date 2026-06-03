@@ -1,6 +1,6 @@
+import { injectCheckboxRootContext } from './checkbox-root';
 import { booleanAttribute, computed, Directive, input } from '@angular/core';
 import { BooleanInput } from '@radix-ng/primitives/core';
-import { injectCheckboxRootContext } from './checkbox-root';
 
 @Directive({
     selector: '[rdxCheckboxIndicator]',

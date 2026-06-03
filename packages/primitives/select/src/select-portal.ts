@@ -1,8 +1,8 @@
+import { injectSelectRootContext } from './select-root';
 import { Directive, isDevMode } from '@angular/core';
 import { rdxDevError } from '@radix-ng/primitives/core';
 import { RdxPortalPresence } from '@radix-ng/primitives/portal';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
-import { injectSelectRootContext } from './select-root';
 
 /**
  * Structural directive that teleports the select popup into a container (default `document.body`)

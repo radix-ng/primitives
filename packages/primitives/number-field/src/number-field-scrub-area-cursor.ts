@@ -1,6 +1,6 @@
+import { injectNumberFieldScrubAreaContext } from './number-field-scrub-area-context';
 import { computed, DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 import { RdxPortal } from '@radix-ng/primitives/portal';
-import { injectNumberFieldScrubAreaContext } from './number-field-scrub-area-context';
 
 function isWebKitBrowser(): boolean {
     return (

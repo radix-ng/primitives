@@ -1,7 +1,7 @@
+import { injectTimeFieldsRootContext } from './time-field-context.token';
 import { computed, Directive, effect, ElementRef, inject, input, signal, WritableSignal } from '@angular/core';
 import { DateValue } from '@internationalized/date';
 import { SegmentPart, useDateField } from '@radix-ng/primitives/core';
-import { injectTimeFieldsRootContext } from './time-field-context.token';
 
 @Directive({
     selector: '[rdxTimeFieldInput]',

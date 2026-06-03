@@ -15,11 +15,11 @@
  * The hand-authored skill body (skills/radix-ng/SKILL.md + its reference *.md files) is
  * not touched.
  */
+import { generateApiContract } from './api-contract.mjs';
+import { getStorybookDocs } from './storybook-docs.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { generateApiContract } from './api-contract.mjs';
-import { getStorybookDocs } from './storybook-docs.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const workspaceRoot = path.resolve(__dirname, '../../..');

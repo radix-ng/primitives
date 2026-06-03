@@ -1,6 +1,6 @@
-import { Directive } from '@angular/core';
 import { injectComboboxChipContext } from './combobox-chip';
 import { injectComboboxRootContext } from './combobox-root';
+import { Directive } from '@angular/core';
 
 /**
  * Removes its chip's value from the selection, keeping focus in the input.

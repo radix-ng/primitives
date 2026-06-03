@@ -1,5 +1,5 @@
-import { effect } from '@angular/core';
 import { composedContains, getTabbableCandidates } from './utils';
+import { effect } from '@angular/core';
 
 /** Marks the leading / trailing focus-guard spans (Base UI `data-base-ui-focus-guard`). */
 export const FOCUS_GUARD_ATTR = 'data-rdx-focus-guard';

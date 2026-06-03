@@ -1,7 +1,7 @@
+import { _importsAutocomplete } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsAutocomplete } from '../index';
 
 /**
  * Command-palette / "inline list" composition: the `List` is rendered directly under the root with no
@@ -12,7 +12,7 @@ import { _importsAutocomplete } from '../index';
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsAutocomplete],
     template: `
-        <div [(open)]="open" autoHighlight="always" rdxAutocompleteRoot>
+        <div autoHighlight="always" rdxAutocompleteRoot [(open)]="open">
             <input rdxAutocompleteInput aria-label="Command" />
             <div rdxAutocompleteList aria-label="Commands">
                 @for (item of items(); track item) {

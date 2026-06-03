@@ -1,6 +1,6 @@
+import { getDaysBetween, getWeekNumber } from '../src/date-time/calendar';
 import { CalendarDate } from '@internationalized/date';
 import { describe, expect, it } from 'vitest';
-import { getDaysBetween, getWeekNumber } from '../src/date-time/calendar';
 
 describe('getDaysBetween', () => {
     it('returns the days strictly between start and end (both ends exclusive)', () => {

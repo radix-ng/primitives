@@ -1,5 +1,5 @@
-import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 import { injectScrollAreaRootContext } from './scroll-area-root';
+import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 
 /**
  * A small rectangular area that appears at the intersection of horizontal and vertical scrollbars.

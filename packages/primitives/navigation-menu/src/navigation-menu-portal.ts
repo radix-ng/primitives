@@ -1,8 +1,8 @@
+import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
 import { booleanAttribute, computed, Directive, inject, input, isDevMode } from '@angular/core';
 import { rdxDevError } from '@radix-ng/primitives/core';
 import { RdxPortalPresence } from '@radix-ng/primitives/portal';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
-import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
 
 /**
  * Structural directive that teleports the navigation menu popup into a container (default

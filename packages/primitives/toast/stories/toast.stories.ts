@@ -1,4 +1,3 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { ToastAnchoredExample } from './toast-anchored';
 import anchoredSource from './toast-anchored?raw';
@@ -22,6 +21,7 @@ import { ToastUndoActionExample } from './toast-undo-action';
 import undoActionSource from './toast-undo-action?raw';
 import { ToastVaryingHeightsExample } from './toast-varying-heights';
 import varyingHeightsSource from './toast-varying-heights?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 const source = (code: string) => ({ docs: { source: { code, language: 'typescript' } } });

@@ -1,7 +1,7 @@
-import { Directive, ElementRef, inject, input } from '@angular/core';
-import { AcceptableValue, createContext } from '@radix-ng/primitives/core';
 import { RdxComboboxChips } from './combobox-chips';
 import { injectComboboxRootContext } from './combobox-root';
+import { Directive, ElementRef, inject, input } from '@angular/core';
+import { AcceptableValue, createContext } from '@radix-ng/primitives/core';
 
 const chipContext = () => {
     const chip = inject(RdxComboboxChip);

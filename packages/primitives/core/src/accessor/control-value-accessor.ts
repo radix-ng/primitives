@@ -1,7 +1,7 @@
-import { Directive, booleanAttribute, inject, input, linkedSignal, output, untracked } from '@angular/core';
-import { ControlValueAccessor } from '@angular/forms';
 import { BooleanInput } from '../types';
 import { provideValueAccessor } from './provide-value-accessor';
+import { booleanAttribute, Directive, inject, input, linkedSignal, output, untracked } from '@angular/core';
+import { ControlValueAccessor } from '@angular/forms';
 
 /**
  * A reusable ControlValueAccessor implementation for form controls

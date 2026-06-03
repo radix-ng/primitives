@@ -1,7 +1,7 @@
+import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
 import { booleanAttribute, Directive, ElementRef, inject, input, output } from '@angular/core';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import { ENTER, SPACE } from '@radix-ng/primitives/core';
-import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
 
 /**
  * A navigation link. Can close the menu on selection when `closeOnClick` is enabled.

@@ -1,6 +1,6 @@
-import { DestroyRef, Directive, ElementRef, effect, inject, untracked } from '@angular/core';
-import { clamp } from '@radix-ng/primitives/core';
 import { injectRdxDrawerRootContext } from './drawer-root';
+import { DestroyRef, Directive, effect, ElementRef, inject, untracked } from '@angular/core';
+import { clamp } from '@radix-ng/primitives/core';
 
 const KEYBOARD_RESIZE_THRESHOLD = 60;
 const KEYBOARD_VISIBILITY_MARGIN = 16;

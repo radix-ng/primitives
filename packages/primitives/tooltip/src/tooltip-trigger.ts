@@ -1,3 +1,5 @@
+import { injectRdxTooltipContext } from './tooltip';
+import { RdxTooltipHandle } from './tooltip-handle';
 import {
     booleanAttribute,
     computed,
@@ -13,8 +15,6 @@ import {
 import { BooleanInput, injectId, NumberInput } from '@radix-ng/primitives/core';
 import { createRdxTriggerInteraction } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
-import { injectRdxTooltipContext } from './tooltip';
-import { RdxTooltipHandle } from './tooltip-handle';
 
 const TOOLTIP_TRIGGER_ATTR = 'data-rdx-tooltip-trigger';
 

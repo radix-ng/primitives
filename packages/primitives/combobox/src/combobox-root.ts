@@ -1,4 +1,13 @@
 import {
+    ComboboxEngine,
+    ComboboxFilter,
+    ComboboxHighlightReason,
+    ComboboxInputLayout,
+    ComboboxItemHighlightedDetails,
+    ComboboxItemRef,
+    useComboboxEngine
+} from './combobox-engine';
+import {
     booleanAttribute,
     computed,
     Directive,
@@ -21,10 +30,10 @@ import {
     createCancelableChangeEventDetails,
     createContext,
     createFloatingRootContext,
-    itemToStringLabel as defaultItemToStringLabel,
     Direction,
-    isNullish,
     isItemEqualToValue as itemsEqual,
+    isNullish,
+    itemToStringLabel as defaultItemToStringLabel,
     ItemValueComparator,
     provideFloatingRootContext,
     provideFloatingTree,
@@ -36,15 +45,6 @@ import {
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { RdxPopper } from '@radix-ng/primitives/popper';
-import {
-    ComboboxEngine,
-    ComboboxFilter,
-    ComboboxHighlightReason,
-    ComboboxInputLayout,
-    ComboboxItemHighlightedDetails,
-    ComboboxItemRef,
-    useComboboxEngine
-} from './combobox-engine';
 
 /** The value a combobox can hold: a single value, an array (multiple mode), or nothing. */
 export type ComboboxValue = AcceptableValue | AcceptableValue[];

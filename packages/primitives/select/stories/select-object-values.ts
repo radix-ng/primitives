@@ -1,5 +1,3 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { LucideCheck, LucideChevronsUpDown } from '@lucide/angular';
 import { RdxSelectItem } from '../src/select-item';
 import { RdxSelectItemIndicator } from '../src/select-item-indicator';
 import { RdxSelectItemText } from '../src/select-item-text';
@@ -10,6 +8,8 @@ import { RdxSelectPositioner } from '../src/select-positioner';
 import { RdxSelectRoot } from '../src/select-root';
 import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { LucideCheck, LucideChevronsUpDown } from '@lucide/angular';
 
 interface ShippingMethod {
     id: string;
@@ -46,7 +46,7 @@ interface ShippingMethod {
                 Shipping method
             </label>
 
-            <ng-container #root="rdxSelectRoot" [value]="shippingMethods[0]" [isItemEqualToValue]="'id'" rdxSelectRoot>
+            <ng-container #root="rdxSelectRoot" rdxSelectRoot [value]="shippingMethods[0]" [isItemEqualToValue]="'id'">
                 <button
                     class="border-border bg-background text-foreground hover:bg-muted focus-visible:ring-ring focus-visible:ring-offset-background inline-flex min-h-9 min-w-64 items-center justify-between gap-3 rounded-md border px-3 py-1.5 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2 data-[disabled]:opacity-50"
                     aria-labelledby="shipping-method-label"
@@ -67,7 +67,7 @@ interface ShippingMethod {
                     <svg class="text-muted-foreground shrink-0" lucideChevronsUpDown size="16" />
                 </button>
 
-                <div class="z-[100]" *rdxSelectPortal [sideOffset]="5" align="start" rdxSelectPositioner>
+                <div *rdxSelectPortal class="z-[100]" align="start" rdxSelectPositioner [sideOffset]="5">
                     <div
                         class="border-border bg-popover text-popover-foreground min-w-[var(--radix-select-trigger-width)] rounded-lg border shadow-md will-change-[opacity,transform]"
                         rdxSelectPopup
@@ -76,8 +76,8 @@ interface ShippingMethod {
                             @for (method of shippingMethods; track method.id) {
                                 <div
                                     class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground group relative grid cursor-default grid-cols-[1.25rem_1fr] items-start gap-2 rounded-sm py-1.5 pr-3 pl-2 outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                                    [value]="method"
                                     rdxSelectItem
+                                    [value]="method"
                                 >
                                     <span
                                         class="col-start-1 mt-0.5 inline-flex items-center justify-center"

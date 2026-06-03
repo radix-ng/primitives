@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { injectNumberFieldRootContext } from './number-field-context';
+import { Directive } from '@angular/core';
 
 /**
  * Groups the input with the increment and decrement buttons.

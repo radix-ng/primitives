@@ -1,6 +1,6 @@
-import { DestroyRef, Directive, inject } from '@angular/core';
 import { RdxPopoverPopup } from './popover-popup';
 import { injectRdxPopoverRootContext } from './popover-root';
+import { DestroyRef, Directive, inject } from '@angular/core';
 
 /**
  * A button that closes the popover.

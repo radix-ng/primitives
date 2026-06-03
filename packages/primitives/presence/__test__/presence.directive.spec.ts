@@ -1,7 +1,7 @@
+import { provideRdxPresenceContext, RdxPresenceDirective } from '../src/presence.directive';
 import { ChangeDetectionStrategy, Component, Directive, inject, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { vi, type MockInstance } from 'vitest';
-import { provideRdxPresenceContext, RdxPresenceDirective } from '../src/presence.directive';
+import { type MockInstance, vi } from 'vitest';
 
 // Wrapper that mirrors how real consumers apply the presence directive:
 // a selectored `ng-template` directive composing RdxPresenceDirective via hostDirectives.

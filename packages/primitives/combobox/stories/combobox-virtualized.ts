@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
-import { LucideCheck } from '@lucide/angular';
-import { injectVirtualizer } from '@tanstack/angular-virtual';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
 import { ComboboxItemHighlightedDetails, RdxComboboxRoot } from '../src/combobox-root';
+import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
+import { LucideCheck } from '@lucide/angular';
+import { injectVirtualizer } from '@tanstack/angular-virtual';
 
 /**
  * Externally virtualized list of 10,000 items. The combobox owns filtering and index navigation
@@ -18,32 +18,32 @@ import { ComboboxItemHighlightedDetails, RdxComboboxRoot } from '../src/combobox
     template: `
         <div
             #cmb="rdxComboboxRoot"
-            [(value)]="value"
-            [items]="items"
-            (onItemHighlighted)="onHighlight($event)"
             virtualized
             rdxComboboxRoot
+            [items]="items"
+            [(value)]="value"
+            (onItemHighlighted)="onHighlight($event)"
         >
             <div [class]="c.control">
-                <input [class]="c.input" rdxComboboxInput placeholder="Search 10,000 items…" aria-label="Item" />
+                <input rdxComboboxInput placeholder="Search 10,000 items…" aria-label="Item" [class]="c.input" />
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="popup" rdxComboboxPopup>
-                    <div [class]="c.empty" rdxComboboxEmpty>No items found.</div>
-                    <div [class]="c.list" rdxComboboxList aria-label="Items">
+            <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                <div rdxComboboxPopup [class]="popup">
+                    <div rdxComboboxEmpty [class]="c.empty">No items found.</div>
+                    <div rdxComboboxList aria-label="Items" [class]="c.list">
                         <div #scroll [class]="scroller">
                             <div [class]="spacer" [style.height.px]="virtualizer.getTotalSize()">
                                 @for (row of virtualizer.getVirtualItems(); track row.key) {
                                     <div
+                                        rdxComboboxItem
                                         [class]="item"
                                         [value]="cmb.filteredItems()[row.index]"
                                         [index]="row.index"
                                         [style.height.px]="row.size"
                                         [style.transform]="'translateY(' + row.start + 'px)'"
-                                        rdxComboboxItem
                                     >
-                                        <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                        <span rdxComboboxItemIndicator [class]="c.itemIndicator">
                                             <svg lucideCheck size="14"></svg>
                                         </span>
                                         {{ cmb.filteredItems()[row.index] }}

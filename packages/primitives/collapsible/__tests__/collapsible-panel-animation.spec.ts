@@ -1,16 +1,16 @@
+import { RdxCollapsiblePanelDirective } from '../src/collapsible-panel.directive';
+import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { afterEach, vi } from 'vitest';
-import { RdxCollapsiblePanelDirective } from '../src/collapsible-panel.directive';
-import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxCollapsibleRootDirective, RdxCollapsiblePanelDirective],
     template: `
-        <div [open]="open()" rdxCollapsibleRoot>
-            <div [hiddenUntilFound]="hiddenUntilFound()" [keepMounted]="keepMounted()" rdxCollapsiblePanel>Panel</div>
+        <div rdxCollapsibleRoot [open]="open()">
+            <div rdxCollapsiblePanel [hiddenUntilFound]="hiddenUntilFound()" [keepMounted]="keepMounted()">Panel</div>
         </div>
     `
 })

@@ -1,7 +1,7 @@
+import { cn, demoButton, demoDialog } from '../storybook/styles';
 import { ChangeDetectionStrategy, Component, inject, Injectable, signal } from '@angular/core';
 import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { RdxButtonDirective } from '@radix-ng/primitives/button';
-import { cn, demoButton, demoDialog } from '../storybook/styles';
 
 /**
  * Confirmation Dialog — an imperative `confirm()` built on the Alert Dialog primitive.
@@ -65,15 +65,15 @@ export class ConfirmService {
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [...alertDialogImports],
     template: `
-        <div [open]="confirm.open()" (openChange)="confirm.onOpenChange($event)" rdxAlertDialogRoot>
+        <div rdxAlertDialogRoot [open]="confirm.open()" (openChange)="confirm.onOpenChange($event)">
             <ng-template rdxAlertDialogPortal>
-                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxAlertDialogBackdrop></div>
+                <div rdxAlertDialogBackdrop [class]="cn(d.backdrop, d.backdropAnimated)"></div>
 
-                <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
+                <div rdxAlertDialogPopup [class]="cn(d.popup, d.popupAnimated)">
                     @if (confirm.options(); as o) {
-                        <h2 [class]="d.title" rdxAlertDialogTitle>{{ o.title }}</h2>
+                        <h2 rdxAlertDialogTitle [class]="d.title">{{ o.title }}</h2>
                         @if (o.description) {
-                            <p [class]="d.description" rdxAlertDialogDescription>{{ o.description }}</p>
+                            <p rdxAlertDialogDescription [class]="d.description">{{ o.description }}</p>
                         }
 
                         <div [class]="d.footer">
@@ -110,7 +110,7 @@ export class ConfirmDialogHost {
     imports: [RdxButtonDirective, ConfirmDialogHost],
     template: `
         <div class="flex flex-col items-center gap-4">
-            <button [class]="cn(b.base, b.destructive, b.size.md)" (click)="deleteAccount()" rdxButton>
+            <button rdxButton [class]="cn(b.base, b.destructive, b.size.md)" (click)="deleteAccount()">
                 Delete account
             </button>
 

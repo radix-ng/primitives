@@ -1,3 +1,4 @@
+import { markOthers } from './mark-others';
 import { isPlatformBrowser } from '@angular/common';
 import {
     booleanAttribute,
@@ -38,7 +39,6 @@ import {
     RdxFocusScopeConfigToken,
     useFocusGuardsTabbability
 } from '@radix-ng/primitives/focus-scope';
-import { markOthers } from './mark-others';
 
 /**
  * How a popup was opened / closed (Base UI `InteractionType`). `null` = a **programmatic** open (prefer

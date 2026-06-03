@@ -1,7 +1,7 @@
+import { injectRadioRootContext } from './radio-root.directive';
 import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input, Signal } from '@angular/core';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, createContext } from '@radix-ng/primitives/core';
-import { injectRadioRootContext } from './radio-root.directive';
 
 export interface RadioItemContext {
     value: Signal<string>;

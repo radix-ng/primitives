@@ -1,6 +1,6 @@
+import { injectRdxTooltipContext } from './tooltip';
 import { computed, Directive, inject } from '@angular/core';
 import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
-import { injectRdxTooltipContext } from './tooltip';
 
 /**
  * The tooltip popup. Renders the content with `role="tooltip"`.

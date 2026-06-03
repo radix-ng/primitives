@@ -1,5 +1,3 @@
-import { ChangeDetectionStrategy, Component, CSP_NONCE } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
 import { RdxScrollAreaContent } from '../src/scroll-area-content';
 import { RdxScrollAreaCorner } from '../src/scroll-area-corner';
 import { RdxScrollAreaRoot } from '../src/scroll-area-root';
@@ -7,11 +5,13 @@ import { RdxScrollAreaScrollbar } from '../src/scroll-area-scrollbar';
 import { RdxScrollAreaThumb } from '../src/scroll-area-thumb';
 import { RdxScrollAreaViewport } from '../src/scroll-area-viewport';
 import { injectScrollbarHideStyles } from '../src/utils';
+import { ChangeDetectionStrategy, Component, CSP_NONCE } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     template: `
-        <div [overflowEdgeThreshold]="threshold" rdxScrollAreaRoot>
+        <div rdxScrollAreaRoot [overflowEdgeThreshold]="threshold">
             <div rdxScrollAreaViewport style="width: 100px; height: 100px">
                 <div rdxScrollAreaContent style="width: 400px; height: 400px">content</div>
             </div>

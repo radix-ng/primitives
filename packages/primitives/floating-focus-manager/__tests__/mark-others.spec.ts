@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it } from 'vitest';
 import { markOthers, RDX_FLOATING_MARKER } from '../src/mark-others';
+import { afterEach, describe, expect, it } from 'vitest';
 
 describe('markOthers', () => {
     const undos: Array<() => void> = [];

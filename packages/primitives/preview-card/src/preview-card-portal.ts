@@ -1,8 +1,8 @@
+import { injectRdxPreviewCardRootContext } from './preview-card-root';
 import { Directive, isDevMode } from '@angular/core';
 import { rdxDevError } from '@radix-ng/primitives/core';
 import { RdxPortalPresence } from '@radix-ng/primitives/portal';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
-import { injectRdxPreviewCardRootContext } from './preview-card-root';
 
 /**
  * Structural directive that teleports the preview-card content into a container (default

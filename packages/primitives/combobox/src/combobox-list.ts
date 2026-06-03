@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { injectComboboxRootContext } from './combobox-root';
+import { Directive } from '@angular/core';
 
 /**
  * The listbox container for options. Carries the id referenced by the input's `aria-controls`, exposes

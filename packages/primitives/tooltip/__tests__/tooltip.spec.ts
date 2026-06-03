@@ -1,3 +1,4 @@
+import { defaultTooltipConfig, injectRdxTooltipConfig, provideRdxTooltipConfig } from '../src/tooltip.config';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
@@ -14,7 +15,6 @@ import {
     RdxTooltipTrigger
 } from '@radix-ng/primitives/tooltip';
 import { vi } from 'vitest';
-import { defaultTooltipConfig, injectRdxTooltipConfig, provideRdxTooltipConfig } from '../src/tooltip.config';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -22,15 +22,15 @@ import { defaultTooltipConfig, injectRdxTooltipConfig, provideRdxTooltipConfig }
     template: `
         <ng-container
             #root="rdxTooltip"
-            [(open)]="open"
+            rdxTooltip
             [disabled]="disabled"
             [delay]="delay"
             [closeDelay]="closeDelay"
             [disableHoverablePopup]="disableHoverablePopup"
+            [(open)]="open"
             (onOpenChange)="handleOpenChange($event)"
-            rdxTooltip
         >
-            <button [closeOnClick]="closeOnClick" rdxTooltipTrigger>Trigger</button>
+            <button rdxTooltipTrigger [closeOnClick]="closeOnClick">Trigger</button>
         </ng-container>
     `
 })
@@ -74,7 +74,7 @@ class ConfiguredHostComponent {}
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxTooltip, RdxTooltipProvider, RdxTooltipTrigger],
     template: `
-        <div [delay]="500" rdxTooltipProvider>
+        <div rdxTooltipProvider [delay]="500">
             <ng-container rdxTooltip>
                 <button rdxTooltipTrigger>Trigger</button>
             </ng-container>
@@ -87,7 +87,7 @@ class ProviderHostComponent {}
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxTooltip, RdxTooltipTrigger],
     template: `
-        <div [delay]="0" rdxTooltip>
+        <div rdxTooltip [delay]="0">
             <button id="trigger-a" rdxTooltipTrigger>A</button>
             <button id="trigger-b" rdxTooltipTrigger>B</button>
         </div>
@@ -99,8 +99,8 @@ class MultipleTriggersHostComponent {}
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxTooltip, RdxTooltipTrigger],
     template: `
-        <div [delay]="600" rdxTooltip>
-            <button [delay]="50" rdxTooltipTrigger>Trigger</button>
+        <div rdxTooltip [delay]="600">
+            <button rdxTooltipTrigger [delay]="50">Trigger</button>
         </div>
     `
 })
@@ -110,7 +110,7 @@ class TriggerDelayHostComponent {}
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxTooltip, RdxTooltipTrigger],
     template: `
-        <div [delay]="0" rdxTooltip>
+        <div rdxTooltip [delay]="0">
             <button disabled rdxTooltipTrigger>Trigger</button>
         </div>
     `
@@ -121,7 +121,7 @@ class DisabledTriggerHostComponent {}
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxTooltip, RdxTooltipTrigger, RdxTooltipPositioner, RdxTooltipPopup],
     template: `
-        <div [open]="true" rdxTooltip>
+        <div rdxTooltip [open]="true">
             <button rdxTooltipTrigger>Trigger</button>
             <div rdxTooltipPositioner>
                 <div rdxTooltipPopup>Popup</div>
@@ -135,9 +135,9 @@ class PositionerDefaultsHostComponent {}
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxTooltip, RdxTooltipTrigger, RdxTooltipPositioner, RdxTooltipPopup],
     template: `
-        <div [open]="true" rdxTooltip>
+        <div rdxTooltip [open]="true">
             <button rdxTooltipTrigger>Trigger</button>
-            <div [side]="'left'" [arrowPadding]="9" rdxTooltipPositioner>
+            <div rdxTooltipPositioner [side]="'left'" [arrowPadding]="9">
                 <div rdxTooltipPopup>Popup</div>
             </div>
         </div>
@@ -149,8 +149,8 @@ class PositionerOverrideHostComponent {}
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxTooltip, RdxTooltipTrigger],
     template: `
-        <button id="detached" [handle]="handle" payload="one" rdxTooltipTrigger>One</button>
-        <div [handle]="handle" rdxTooltip></div>
+        <button id="detached" payload="one" rdxTooltipTrigger [handle]="handle">One</button>
+        <div rdxTooltip [handle]="handle"></div>
     `
 })
 class DetachedHostComponent {
@@ -176,10 +176,10 @@ class RemovableTriggerHostComponent {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxTooltip, RdxTooltipPopup, RdxTooltipPositioner, RdxTooltipTrigger],
     template: `
-        <span id="outer-root" #outerRoot="rdxTooltip" [delay]="outerDelay" rdxTooltip>
+        <span #outerRoot="rdxTooltip" id="outer-root" rdxTooltip [delay]="outerDelay">
             <span id="outer-trigger" rdxTooltipTrigger>
                 <span id="outer-area">Outer</span>
-                <span id="inner-root" #innerRoot="rdxTooltip" [delay]="innerDelay" rdxTooltip>
+                <span #innerRoot="rdxTooltip" id="inner-root" rdxTooltip [delay]="innerDelay">
                     <span id="inner-trigger" rdxTooltipTrigger>Inner</span>
                     @if (innerRoot.open()) {
                         <span rdxTooltipPositioner>
@@ -205,7 +205,7 @@ class NestedTooltipHostComponent {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxTooltip, RdxTooltipPopup, RdxTooltipPortal, RdxTooltipPositioner, RdxTooltipTrigger],
     template: `
-        <div [(open)]="open" (onOpenChange)="handleOpenChange($event)" rdxTooltip>
+        <div rdxTooltip [(open)]="open" (onOpenChange)="handleOpenChange($event)">
             <button rdxTooltipTrigger>Trigger</button>
             <div *rdxTooltipPortal rdxTooltipPositioner>
                 <div rdxTooltipPopup>Popup</div>

@@ -1,3 +1,4 @@
+import { injectRdxPreviewCardRootContext } from './preview-card-root';
 import { Directive, effect, ElementRef, inject, signal } from '@angular/core';
 import { useGraceArea } from '@radix-ng/primitives/core';
 import {
@@ -6,7 +7,6 @@ import {
     provideRdxPopperContentWrapper,
     RdxPopperContentWrapper
 } from '@radix-ng/primitives/popper';
-import { injectRdxPreviewCardRootContext } from './preview-card-root';
 
 /**
  * Positions the preview-card against its trigger.

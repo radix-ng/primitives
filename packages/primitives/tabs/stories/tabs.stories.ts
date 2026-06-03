@@ -1,3 +1,10 @@
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
+import { TabsAnimatedExample } from './tabs-animated';
+import animatedSource from './tabs-animated?raw';
+import { TabsIndicatorExample } from './tabs-indicator';
+import indicatorSource from './tabs-indicator?raw';
+import { TabsKeyframesExample } from './tabs-keyframes';
+import keyframesSource from './tabs-keyframes?raw';
 import {
     RdxTabsIndicator,
     RdxTabsList,
@@ -7,13 +14,6 @@ import {
     RdxTabsTab
 } from '@radix-ng/primitives/tabs';
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
-import { TabsAnimatedExample } from './tabs-animated';
-import animatedSource from './tabs-animated?raw';
-import { TabsIndicatorExample } from './tabs-indicator';
-import indicatorSource from './tabs-indicator?raw';
-import { TabsKeyframesExample } from './tabs-keyframes';
-import keyframesSource from './tabs-keyframes?raw';
 
 const html = String.raw;
 

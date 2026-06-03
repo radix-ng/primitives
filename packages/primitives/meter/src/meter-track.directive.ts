@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { injectMeterRootContext } from './meter-root.directive';
+import { Directive } from '@angular/core';
 
 /**
  * Contains the visual meter indicator.

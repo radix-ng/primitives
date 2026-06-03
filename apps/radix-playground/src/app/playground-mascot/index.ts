@@ -1,12 +1,23 @@
+import { PRIMITIVES } from '../shared/primitives';
+import { PlaygroundMascotAvatar } from './playground-mascot-avatar';
+import type { InspectedElement, LiveStateChange, PinGeometry } from './playground-mascot-data';
+import {
+    DEFAULT_MASCOT_HINTS,
+    isStateAttribute,
+    MASCOT_HINTS,
+    RDX_ATTRIBUTE_LABELS,
+    searchMascotDocs
+} from './playground-mascot-data';
+import { PlaygroundMascotPin } from './playground-mascot-pin';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import {
     ChangeDetectionStrategy,
     Component,
+    computed,
     DestroyRef,
     ElementRef,
-    PLATFORM_ID,
-    computed,
     inject,
+    PLATFORM_ID,
     signal
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -21,17 +32,6 @@ import {
     LucideX
 } from '@lucide/angular';
 import { filter } from 'rxjs';
-import { PRIMITIVES } from '../shared/primitives';
-import { PlaygroundMascotAvatar } from './playground-mascot-avatar';
-import type { InspectedElement, LiveStateChange, PinGeometry } from './playground-mascot-data';
-import {
-    DEFAULT_MASCOT_HINTS,
-    MASCOT_HINTS,
-    RDX_ATTRIBUTE_LABELS,
-    isStateAttribute,
-    searchMascotDocs
-} from './playground-mascot-data';
-import { PlaygroundMascotPin } from './playground-mascot-pin';
 
 @Component({
     selector: 'app-playground-mascot',
@@ -75,9 +75,9 @@ import { PlaygroundMascotPin } from './playground-mascot-pin';
                         </div>
                         <button
                             class="text-muted-foreground hover:bg-muted hover:text-foreground inline-flex size-7 shrink-0 items-center justify-center rounded-md"
-                            (click)="hide()"
                             type="button"
                             aria-label="Hide mascot"
+                            (click)="hide()"
                         >
                             <svg class="size-3.5" lucideX aria-hidden="true"></svg>
                         </button>
@@ -125,10 +125,10 @@ import { PlaygroundMascotPin } from './playground-mascot-pin';
                                 <input
                                     class="placeholder:text-muted-foreground text-foreground min-w-0 flex-1 bg-transparent text-xs outline-none"
                                     id="mascot-docs-search"
-                                    [value]="docsQuery()"
-                                    (input)="updateDocsQuery($event)"
                                     placeholder="Ask about state, forms, keyboard..."
                                     type="search"
+                                    [value]="docsQuery()"
+                                    (input)="updateDocsQuery($event)"
                                 />
                             </div>
                             <p class="text-muted-foreground mt-1.5 text-[11px] leading-4">
@@ -153,8 +153,8 @@ import { PlaygroundMascotPin } from './playground-mascot-pin';
                                                     </div>
                                                     <a
                                                         class="text-muted-foreground hover:text-foreground inline-flex size-6 shrink-0 items-center justify-center rounded-md"
-                                                        [href]="result.href"
                                                         aria-label="Open docs"
+                                                        [href]="result.href"
                                                     >
                                                         <svg
                                                             class="size-3.5"
@@ -230,14 +230,15 @@ import { PlaygroundMascotPin } from './playground-mascot-pin';
                     <div class="mt-3 flex gap-2">
                         <button
                             class="border-border bg-background text-foreground hover:bg-muted inline-flex h-8 items-center gap-1.5 rounded-md border px-2.5 text-xs font-medium shadow-xs"
-                            (click)="nextHint()"
                             type="button"
+                            (click)="nextHint()"
                         >
                             <svg class="size-3.5" lucideLightbulb aria-hidden="true"></svg>
                             Hint
                         </button>
                         <button
                             class="border-border inline-flex h-8 items-center gap-1.5 rounded-md border px-2.5 text-xs font-medium shadow-xs"
+                            type="button"
                             [class.bg-[var(--mascot-accent)]]="docsMode()"
                             [class.text-[var(--mascot-accent-foreground)]]="docsMode()"
                             [class.bg-background]="!docsMode()"
@@ -245,13 +246,13 @@ import { PlaygroundMascotPin } from './playground-mascot-pin';
                             [class.hover:bg-muted]="!docsMode()"
                             [attr.aria-pressed]="docsMode()"
                             (click)="toggleDocs()"
-                            type="button"
                         >
                             <svg class="size-3.5" lucideBookOpen aria-hidden="true"></svg>
                             Docs
                         </button>
                         <button
                             class="border-border inline-flex h-8 items-center gap-1.5 rounded-md border px-2.5 text-xs font-medium shadow-xs"
+                            type="button"
                             [class.bg-[var(--mascot-accent)]]="inspectMode()"
                             [class.text-[var(--mascot-accent-foreground)]]="inspectMode()"
                             [class.bg-background]="!inspectMode()"
@@ -259,7 +260,6 @@ import { PlaygroundMascotPin } from './playground-mascot-pin';
                             [class.hover:bg-muted]="!inspectMode()"
                             [attr.aria-pressed]="inspectMode()"
                             (click)="toggleInspect()"
-                            type="button"
                         >
                             <svg class="size-3.5" lucideEye aria-hidden="true"></svg>
                             Inspect
@@ -269,9 +269,9 @@ import { PlaygroundMascotPin } from './playground-mascot-pin';
 
                 <button
                     class="group focus-visible:ring-ring focus-visible:ring-offset-background relative mb-1 inline-flex size-16 shrink-0 items-center justify-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-                    (click)="nextHint()"
                     type="button"
                     aria-label="Show next mascot hint"
+                    (click)="nextHint()"
                 >
                     <app-playground-mascot-avatar />
                     @if (inspectMode()) {
@@ -286,9 +286,9 @@ import { PlaygroundMascotPin } from './playground-mascot-pin';
         } @else {
             <button
                 class="pointer-events-auto fixed right-5 bottom-5 inline-flex size-12 items-center justify-center rounded-full bg-[var(--mascot-accent)] text-[var(--mascot-accent-foreground)] shadow-lg transition-transform hover:scale-105"
-                (click)="show()"
                 type="button"
                 aria-label="Show mascot"
+                (click)="show()"
             >
                 <svg class="size-5" lucideSparkles aria-hidden="true"></svg>
             </button>

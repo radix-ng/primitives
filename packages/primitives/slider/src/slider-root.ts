@@ -1,4 +1,15 @@
 import {
+    areValuesEqual,
+    asc,
+    clamp,
+    formatNumber,
+    getSliderValue,
+    SliderOrientation,
+    ThumbCollisionBehavior,
+    validateMinimumDistance
+} from './slider.utils';
+import { provideSliderRootContext } from './slider-context';
+import {
     booleanAttribute,
     computed,
     Directive,
@@ -7,8 +18,8 @@ import {
     model,
     numberAttribute,
     output,
-    signal,
-    Signal
+    Signal,
+    signal
 } from '@angular/core';
 import { RdxCompositeList } from '@radix-ng/primitives/composite';
 import {
@@ -26,17 +37,6 @@ import {
     RdxFormUiTouchTarget
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
-import { provideSliderRootContext } from './slider-context';
-import {
-    areValuesEqual,
-    asc,
-    clamp,
-    formatNumber,
-    getSliderValue,
-    SliderOrientation,
-    ThumbCollisionBehavior,
-    validateMinimumDistance
-} from './slider.utils';
 
 export type SliderValue = number | number[];
 export type RdxSliderThumbAlignment = 'center' | 'edge' | 'edge-client-only';

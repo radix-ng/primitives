@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { injectRdxPreviewCardRootContext } from './preview-card-root';
+import { Directive } from '@angular/core';
 
 /**
  * An optional backdrop rendered behind the popup.

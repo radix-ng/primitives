@@ -1,23 +1,23 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
 import { RdxFieldError } from '../src/field-error';
 import { RdxFieldLabel } from '../src/field-label';
 import { RdxFieldRoot } from '../src/field-root';
 import { fieldCustomTrigger, fieldDescription, fieldError, fieldLabel } from './field.shared';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'field-custom-control-example',
     imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
     template: `
-        <div class="flex w-80 flex-col gap-2" [filled]="selected()" [focused]="open()" rdxFieldRoot>
-            <label [class]="labelClass" rdxFieldLabel>Plan</label>
-            <button [class]="triggerClass" (click)="open.update((value) => !value)" type="button" rdxFieldControl>
+        <div class="flex w-80 flex-col gap-2" rdxFieldRoot [filled]="selected()" [focused]="open()">
+            <label rdxFieldLabel [class]="labelClass">Plan</label>
+            <button type="button" rdxFieldControl [class]="triggerClass" (click)="open.update((value) => !value)">
                 {{ selected() ? 'Pro' : 'Choose a plan' }}
             </button>
-            <p [class]="descriptionClass" rdxFieldDescription>Custom controls can pass state into the field root.</p>
-            <p [class]="errorClass" rdxFieldError>Choose a plan.</p>
+            <p rdxFieldDescription [class]="descriptionClass">Custom controls can pass state into the field root.</p>
+            <p rdxFieldError [class]="errorClass">Choose a plan.</p>
         </div>
     `
 })

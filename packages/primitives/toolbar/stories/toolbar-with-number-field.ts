@@ -27,11 +27,11 @@ const stepClass =
 
             <div
                 class="flex items-center gap-0.5"
-                [value]="16"
                 rdxNumberFieldRoot
                 min="8"
                 max="72"
                 aria-label="Font size"
+                [value]="16"
             >
                 <button class="${stepClass}" aria-label="Decrease" rdxToolbarButton rdxNumberFieldDecrement>
                     <svg lucideMinus size="16"></svg>

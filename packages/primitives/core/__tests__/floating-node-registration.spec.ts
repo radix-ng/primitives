@@ -1,7 +1,4 @@
 // @vitest-environment jsdom
-import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { RdxFloatingNodeRegistration } from '../src/floating/floating-node-registration';
 import { createFloatingRootContext, RdxFloatingRootContext } from '../src/floating/floating-root-context';
 import { RdxFloatingParentOverride, RdxFloatingTree } from '../src/floating/floating-tree';
@@ -10,6 +7,9 @@ import {
     provideFloatingTree,
     RDX_FLOATING_TREE
 } from '../src/floating/provide-floating-tree';
+import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('RdxFloatingNodeRegistration', () => {
     beforeEach(() => TestBed.resetTestingModule());
@@ -77,7 +77,7 @@ describe('RdxFloatingNodeRegistration', () => {
         providers: [provideFloatingTree()],
         template: `
             <div #parent rdxFloatingNode>
-                <div #child [parentOverride]="override()" rdxFloatingNode></div>
+                <div #child rdxFloatingNode [parentOverride]="override()"></div>
             </div>
         `
     })
@@ -105,7 +105,7 @@ describe('RdxFloatingNodeRegistration', () => {
         // deliberately NO provideFloatingTree → no ambient tree
         imports: [RdxFloatingNodeRegistration],
         template: `
-            <div #n [parentOverride]="override()" rdxFloatingNode></div>
+            <div #n rdxFloatingNode [parentOverride]="override()"></div>
         `
     })
     class NodeOverrideHost {

@@ -1,3 +1,4 @@
+import { injectRdxContextMenuRootContext } from './context-menu-root';
 import {
     booleanAttribute,
     DestroyRef,
@@ -10,7 +11,6 @@ import {
 } from '@angular/core';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
 import { RdxMenuRoot } from '@radix-ng/primitives/menu';
-import { injectRdxContextMenuRootContext } from './context-menu-root';
 
 /**
  * An area that opens the context menu on right click (or a touch long-press).

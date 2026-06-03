@@ -1,5 +1,5 @@
-import { createContext } from '@radix-ng/primitives/core';
 import type { RdxSliderRoot } from './slider-root';
+import { createContext } from '@radix-ng/primitives/core';
 
 /**
  * The Slider context exposes the root directive instance to every child part.

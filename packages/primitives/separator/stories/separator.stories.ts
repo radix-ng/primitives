@@ -1,7 +1,7 @@
-import { CommonModule } from '@angular/common';
-import { moduleMetadata } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxSeparatorRootDirective } from '../src/separator.directive';
+import { CommonModule } from '@angular/common';
+import { moduleMetadata } from '@storybook/angular';
 
 const html = String.raw;
 

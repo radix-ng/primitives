@@ -1,9 +1,3 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { form, FormField } from '@angular/forms/signals';
-import { By } from '@angular/platform-browser';
-import { axe } from 'jest-axe';
-import { vi } from 'vitest';
 import { RdxEditableArea } from '../src/editable-area';
 import { RdxEditableCancelTrigger } from '../src/editable-cancel-trigger';
 import { RdxEditableEditTrigger } from '../src/editable-edit-trigger';
@@ -16,6 +10,12 @@ import {
     RdxEditableValueChangeEvent
 } from '../src/editable-root';
 import { RdxEditableSubmitTrigger } from '../src/editable-submit-trigger';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { form, FormField } from '@angular/forms/signals';
+import { By } from '@angular/platform-browser';
+import { axe } from 'jest-axe';
+import { vi } from 'vitest';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -31,14 +31,14 @@ import { RdxEditableSubmitTrigger } from '../src/editable-submit-trigger';
     template: `
         <div
             #root="rdxEditableRoot"
-            [(value)]="value"
+            rdxEditableRoot
             [defaultValue]="defaultValue()"
             [submitMode]="submitMode()"
             [activationMode]="activationMode()"
             [disabled]="disabled()"
             [startWithEditMode]="startWithEditMode()"
+            [(value)]="value"
             (onValueChange)="onValueChange($event)"
-            rdxEditableRoot
         >
             <div rdxEditableArea>
                 <span rdxEditablePreview>{{ root.value() }}</span>
@@ -285,11 +285,11 @@ describe('RdxEditable', () => {
     template: `
         <div
             #root="rdxEditableRoot"
-            [(value)]="value"
+            rdxEditableRoot
             [invalid]="invalid()"
             [errors]="errors()"
             [dirty]="dirty()"
-            rdxEditableRoot
+            [(value)]="value"
         >
             <div rdxEditableArea>
                 <span rdxEditablePreview>{{ root.value() }}</span>
@@ -389,7 +389,7 @@ describe('RdxEditable validation state', () => {
         FormField
     ],
     template: `
-        <div #root="rdxEditableRoot" [formField]="name" rdxEditableRoot>
+        <div #root="rdxEditableRoot" rdxEditableRoot [formField]="name">
             <div rdxEditableArea>
                 <span rdxEditablePreview>{{ root.value() }}</span>
                 <input rdxEditableInput />

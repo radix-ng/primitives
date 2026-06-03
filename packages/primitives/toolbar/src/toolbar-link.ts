@@ -1,6 +1,6 @@
+import { injectToolbarRootContext } from './toolbar-context';
 import { Directive, inject } from '@angular/core';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
-import { injectToolbarRootContext } from './toolbar-context';
 
 const TOOLBAR_LINK_METADATA = {
     disabled: false,

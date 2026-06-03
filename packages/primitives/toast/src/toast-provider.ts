@@ -1,6 +1,6 @@
+import { RdxToastAddOptions, RdxToastObject, RdxToastPromiseOptions } from './toast.types';
 import { computed, Directive, effect, inject, Injectable, input, Provider, signal } from '@angular/core';
 import { RdxIdGenerator } from '@radix-ng/primitives/core';
-import { RdxToastAddOptions, RdxToastObject, RdxToastPromiseOptions } from './toast.types';
 
 /** Default auto-dismiss delay (ms) applied when a toast omits `timeout`. */
 const DEFAULT_TIMEOUT = 5000;

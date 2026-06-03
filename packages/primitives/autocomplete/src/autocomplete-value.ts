@@ -1,5 +1,5 @@
-import { computed, Directive, inject, input } from '@angular/core';
 import { RdxAutocompleteRoot } from './autocomplete-root';
+import { computed, Directive, inject, input } from '@angular/core';
 
 /**
  * Renders the current input value as text. Useful for a read-only display of the committed value.

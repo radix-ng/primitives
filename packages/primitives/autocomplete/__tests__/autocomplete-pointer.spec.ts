@@ -1,7 +1,7 @@
+import { _importsAutocomplete } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsAutocomplete } from '../index';
 
 /**
  * Autocomplete pointer/click selection (ADR 0014, Finding 6 — Base UI parity) — mirrors the combobox
@@ -12,7 +12,7 @@ import { _importsAutocomplete } from '../index';
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsAutocomplete],
     template: `
-        <div [(value)]="value" [(open)]="open" rdxAutocompleteRoot>
+        <div rdxAutocompleteRoot [(value)]="value" [(open)]="open">
             <input rdxAutocompleteInput aria-label="Fruit" />
             <div *rdxAutocompletePortal rdxAutocompletePositioner>
                 <div rdxAutocompletePopup>

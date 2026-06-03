@@ -1,9 +1,9 @@
-import { NgModule } from '@angular/core';
 import { RdxAccordionHeaderDirective } from './src/accordion-header.directive';
 import { RdxAccordionItemDirective } from './src/accordion-item.directive';
 import { RdxAccordionPanelDirective } from './src/accordion-panel.directive';
 import { RdxAccordionRootDirective } from './src/accordion-root.directive';
 import { RdxAccordionTriggerDirective } from './src/accordion-trigger.directive';
+import { NgModule } from '@angular/core';
 
 export * from './src/accordion-header.directive';
 export * from './src/accordion-item.directive';

@@ -40,7 +40,7 @@ import {
                 <div rdxComboboxPopup>
                     <div rdxComboboxList aria-label="Fruits">
                         @for (option of options; track option) {
-                            <div [value]="option" rdxComboboxItem>
+                            <div rdxComboboxItem [value]="option">
                                 <span rdxComboboxItemIndicator>✔</span>
                                 {{ option }}
                             </div>

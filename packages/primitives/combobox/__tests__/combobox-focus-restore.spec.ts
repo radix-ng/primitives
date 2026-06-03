@@ -1,7 +1,7 @@
+import { _importsCombobox } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, expect, it } from 'vitest';
-import { _importsCombobox } from '../index';
 
 /**
  * Focus restoration after a selection (ADR 0014 review): the primitive restores focus to the input
@@ -13,13 +13,13 @@ import { _importsCombobox } from '../index';
     imports: [_importsCombobox],
     template: `
         <button id="external" type="button">external</button>
-        <div [(value)]="value" [(open)]="open" (onValueChange)="onChange()" rdxComboboxRoot>
+        <div rdxComboboxRoot [(value)]="value" [(open)]="open" (onValueChange)="onChange()">
             <input rdxComboboxInput aria-label="Fruit" />
             <div *rdxComboboxPortal rdxComboboxPositioner>
                 <div rdxComboboxPopup>
                     <div rdxComboboxList aria-label="Fruits">
                         @for (fruit of fruits; track fruit) {
-                            <div [value]="fruit" rdxComboboxItem>{{ fruit }}</div>
+                            <div rdxComboboxItem [value]="fruit">{{ fruit }}</div>
                         }
                     </div>
                 </div>
@@ -43,14 +43,14 @@ class OutsideHost {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
-        <div [(value)]="value" [(open)]="open" rdxComboboxRoot>
+        <div rdxComboboxRoot [(value)]="value" [(open)]="open">
             <button rdxComboboxTrigger rdxComboboxAnchor>open</button>
             <div *rdxComboboxPortal rdxComboboxPositioner>
                 <div rdxComboboxPopup>
                     <input rdxComboboxInput aria-label="Search" />
                     <div rdxComboboxList aria-label="Fruits">
                         @for (fruit of fruits; track fruit) {
-                            <div [value]="fruit" rdxComboboxItem>{{ fruit }}</div>
+                            <div rdxComboboxItem [value]="fruit">{{ fruit }}</div>
                         }
                     </div>
                 </div>

@@ -1,3 +1,4 @@
+import { provideSwitchContext, RdxSwitchContext } from './switch-context';
 import { booleanAttribute, computed, Directive, effect, inject, input, model, output } from '@angular/core';
 import {
     BooleanInput,
@@ -10,7 +11,6 @@ import {
     RdxFormUiControlBase,
     RdxFormUiTouchTarget
 } from '@radix-ng/primitives/core';
-import { provideSwitchContext, RdxSwitchContext } from './switch-context';
 
 export type RdxSwitchCheckedChangeReason = 'none';
 export type RdxSwitchCheckedChangeEventDetails = RdxCancelableChangeEventDetails<RdxSwitchCheckedChangeReason>;

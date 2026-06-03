@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
+import { RDX_SCROLL_LOCKED_ATTR, useAnchoredScrollLock, useScrollLock } from '../src/dom/use-scroll-lock';
 import { DOCUMENT } from '@angular/common';
 import { PLATFORM_ID, signal, WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { RDX_SCROLL_LOCKED_ATTR, useAnchoredScrollLock, useScrollLock } from '../src/dom/use-scroll-lock';
 
 function resetScroller(doc: Document): void {
     const html = doc.documentElement;

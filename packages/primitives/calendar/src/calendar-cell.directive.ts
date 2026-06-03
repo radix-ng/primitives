@@ -1,6 +1,6 @@
+import { injectCalendarRootContext } from './calendar-context.token';
 import { Directive, input } from '@angular/core';
 import { DateValue } from '@internationalized/date';
-import { injectCalendarRootContext } from './calendar-context.token';
 
 @Directive({
     selector: 'td[rdxCalendarCell]',

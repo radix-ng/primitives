@@ -1,7 +1,7 @@
+import { _importsSelect } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsSelect } from '../index';
 
 interface Fruit {
     id: number;
@@ -12,7 +12,7 @@ interface Fruit {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsSelect],
     template: `
-        <div [(value)]="value" [(open)]="open" [isItemEqualToValue]="'id'" [itemToStringLabel]="label" rdxSelectRoot>
+        <div rdxSelectRoot [isItemEqualToValue]="'id'" [itemToStringLabel]="label" [(value)]="value" [(open)]="open">
             <button rdxSelectTrigger>
                 <span #v="rdxSelectedValue" rdxSelectValue placeholder="Select…">{{ v.slotText() }}</span>
             </button>
@@ -20,7 +20,7 @@ interface Fruit {
                 <div rdxSelectPopup>
                     <div rdxSelectList>
                         @for (fruit of fruits; track fruit.id) {
-                            <div [value]="fruit" rdxSelectItem>
+                            <div rdxSelectItem [value]="fruit">
                                 <span rdxSelectItemText>{{ fruit.name }}</span>
                             </div>
                         }

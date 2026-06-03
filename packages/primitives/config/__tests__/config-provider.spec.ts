@@ -1,7 +1,7 @@
-import { TestBed } from '@angular/core/testing';
-import { afterEach, describe, expect, it } from 'vitest';
 import { RadixNG } from '../src/config';
 import { provideRadixNG, RADIX_NG_CONFIG } from '../src/config.provider';
+import { TestBed } from '@angular/core/testing';
+import { afterEach, describe, expect, it } from 'vitest';
 
 describe('provideRadixNG', () => {
     afterEach(() => {

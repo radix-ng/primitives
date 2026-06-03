@@ -1,8 +1,10 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { form, FormField } from '@angular/forms/signals';
-import { By } from '@angular/platform-browser';
-import { vi } from 'vitest';
+import {
+    getPushedThumbValues,
+    getSliderValue,
+    resolveThumbCollision,
+    roundValueToStep,
+    valueToPercent
+} from '../src/slider.utils';
 import { RdxSliderControl } from '../src/slider-control';
 import { RdxSliderIndicator } from '../src/slider-indicator';
 import {
@@ -16,13 +18,11 @@ import { RdxSliderThumb } from '../src/slider-thumb';
 import { RdxSliderThumbInput } from '../src/slider-thumb-input';
 import { RdxSliderTrack } from '../src/slider-track';
 import { RdxSliderValue } from '../src/slider-value';
-import {
-    getPushedThumbValues,
-    getSliderValue,
-    resolveThumbCollision,
-    roundValueToStep,
-    valueToPercent
-} from '../src/slider.utils';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { form, FormField } from '@angular/forms/signals';
+import { By } from '@angular/platform-browser';
+import { vi } from 'vitest';
 
 describe('slider utils', () => {
     it('valueToPercent maps the range to 0–100', () => {
@@ -85,19 +85,19 @@ describe('slider utils', () => {
     ],
     template: `
         <div
-            [(value)]="value"
+            rdxSliderRoot
             [step]="step()"
             [disabled]="disabled()"
             [name]="name()"
+            [(value)]="value"
             (onValueChange)="onChange($event)"
-            rdxSliderRoot
         >
             <output rdxSliderValue></output>
             <div rdxSliderControl>
                 <div rdxSliderTrack>
                     <div rdxSliderIndicator></div>
                     @for (v of thumbs(); track $index) {
-                        <div [index]="$index" rdxSliderThumb>
+                        <div rdxSliderThumb [index]="$index">
                             <input rdxSliderThumbInput aria-label="value" />
                         </div>
                     }
@@ -121,11 +121,11 @@ class TestComponent {
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
         <div
-            [(value)]="value"
+            rdxSliderRoot
             [thumbAlignment]="thumbAlignment()"
+            [(value)]="value"
             (onValueChange)="onChange($event)"
             (onValueCommitted)="onCommit($event)"
-            rdxSliderRoot
         >
             <div rdxSliderControl>
                 <div rdxSliderTrack>
@@ -149,11 +149,11 @@ class EdgeComponent {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
-        <div [value]="value()" rdxSliderRoot>
+        <div rdxSliderRoot [value]="value()">
             <div rdxSliderControl>
                 <div rdxSliderTrack>
                     <div rdxSliderIndicator></div>
-                    <div [index]="1" rdxSliderThumb>
+                    <div rdxSliderThumb [index]="1">
                         <input rdxSliderThumbInput aria-label="value" />
                     </div>
                 </div>
@@ -406,7 +406,7 @@ describe('RdxSlider', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
-        <div [(value)]="value" [invalid]="invalid()" [errors]="errors()" [dirty]="dirty()" rdxSliderRoot>
+        <div rdxSliderRoot [invalid]="invalid()" [errors]="errors()" [dirty]="dirty()" [(value)]="value">
             <div rdxSliderControl>
                 <div rdxSliderTrack>
                     <div rdxSliderIndicator></div>
@@ -488,7 +488,7 @@ describe('RdxSlider validation state', () => {
         RdxSliderThumbInput
     ],
     template: `
-        <div [formField]="amount" rdxSliderRoot>
+        <div rdxSliderRoot [formField]="amount">
             <div rdxSliderControl>
                 <div rdxSliderTrack>
                     <div rdxSliderIndicator></div>

@@ -1,3 +1,5 @@
+import { getPackageVersionFromPackageJson } from './package-config';
+import { Schema } from './schema';
 import { Rule, SchematicContext, SchematicsException, Tree } from '@angular-devkit/schematics';
 import { NodePackageInstallTask } from '@angular-devkit/schematics/tasks';
 import {
@@ -6,8 +8,6 @@ import {
     NodeDependency,
     NodeDependencyType
 } from '@schematics/angular/utility/dependencies';
-import { getPackageVersionFromPackageJson } from './package-config';
-import { Schema } from './schema';
 
 const PACKAGE_NAME = '@radix-ng/primitives';
 const PEER_DEPENDENCIES: Record<string, string> = {

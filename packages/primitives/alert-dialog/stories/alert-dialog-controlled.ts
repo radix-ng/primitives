@@ -1,6 +1,6 @@
+import { cn, demoButton, demoDialog } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
-import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -12,15 +12,15 @@ import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
             <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="open.set(true)">Open from outside</button>
 
-            <div [(open)]="open" rdxAlertDialogRoot>
-                <button [class]="cn(b.base, b.destructive, b.size.md)" rdxAlertDialogTrigger>Discard changes</button>
+            <div rdxAlertDialogRoot [(open)]="open">
+                <button rdxAlertDialogTrigger [class]="cn(b.base, b.destructive, b.size.md)">Discard changes</button>
 
                 <ng-template rdxAlertDialogPortal>
-                    <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxAlertDialogBackdrop></div>
+                    <div rdxAlertDialogBackdrop [class]="cn(d.backdrop, d.backdropAnimated)"></div>
 
-                    <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
-                        <h2 [class]="d.title" rdxAlertDialogTitle>Discard unsaved changes?</h2>
-                        <p [class]="d.description" rdxAlertDialogDescription>
+                    <div rdxAlertDialogPopup [class]="cn(d.popup, d.popupAnimated)">
+                        <h2 rdxAlertDialogTitle [class]="d.title">Discard unsaved changes?</h2>
+                        <p rdxAlertDialogDescription [class]="d.description">
                             The open state is owned by the component and bound with
                             <code>[(open)]</code>
                             .

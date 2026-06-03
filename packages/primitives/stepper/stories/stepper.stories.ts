@@ -1,4 +1,3 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxStepperIndicatorDirective } from '../src/stepper-indicator.directive';
 import { RdxStepperItemDirective } from '../src/stepper-item.directive';
@@ -6,6 +5,7 @@ import { RdxStepperRootDirective } from '../src/stepper-root.directive';
 import { RdxStepperSeparatorDirective } from '../src/stepper-separator.directive';
 import { RdxStepperTriggerDirective } from '../src/stepper-trigger.directive';
 import { StepperNavigationComponent } from './stepper-navigation.component';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 export default {
     title: 'Primitives/Stepper',

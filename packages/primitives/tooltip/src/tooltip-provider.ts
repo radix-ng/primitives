@@ -1,7 +1,7 @@
-import { DestroyRef, Directive, inject, input, numberAttribute, Signal } from '@angular/core';
-import { createContext, NumberInput } from '@radix-ng/primitives/core';
 import { injectRdxTooltipConfig } from './tooltip.config';
 import { createTooltipInstantController } from './utils';
+import { DestroyRef, Directive, inject, input, numberAttribute, Signal } from '@angular/core';
+import { createContext, NumberInput } from '@radix-ng/primitives/core';
 
 export interface RdxTooltipProviderContext {
     /** Default open delay for tooltips in this group, in milliseconds. */

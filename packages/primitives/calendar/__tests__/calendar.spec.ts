@@ -1,8 +1,8 @@
+import { CalendarDefault } from '../stories/calendar-default';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CalendarDate, CalendarDateTime, DateValue, toZoned } from '@internationalized/date';
 import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
-import { CalendarDefault } from '../stories/calendar-default';
 
 type SetupConfig = {
     modelValue?: DateValue;

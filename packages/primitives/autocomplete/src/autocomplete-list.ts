@@ -1,5 +1,5 @@
-import { Directive, inject } from '@angular/core';
 import { RdxAutocompleteRoot } from './autocomplete-root';
+import { Directive, inject } from '@angular/core';
 
 /**
  * The listbox (or grid) container for suggestions. Carries the id referenced by the input's

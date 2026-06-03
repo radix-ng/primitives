@@ -1,6 +1,6 @@
+import { cn, demoButton, demoMenu } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoMenu } from '../../storybook/styles';
 
 @Component({
     selector: 'rdx-menu-default',
@@ -8,16 +8,16 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <ng-container #root="rdxMenuRoot" rdxMenuRoot>
-            <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>File</button>
+            <button rdxMenuTrigger [class]="cn(b.base, b.outline, b.size.md)">File</button>
 
-            <div *rdxMenuPortal [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-                <div [class]="m.popup" rdxMenuPopup>
-                    <button [class]="m.item" rdxMenuItem>New Tab</button>
-                    <button [class]="m.item" rdxMenuItem>New Window</button>
-                    <button [class]="m.item" [disabled]="true" rdxMenuItem>New Private Window</button>
-                    <div [class]="m.separator" rdxMenuSeparator></div>
-                    <button [class]="m.item" rdxMenuItem>Save Page As…</button>
-                    <button [class]="m.item" rdxMenuItem>Print…</button>
+            <div *rdxMenuPortal sideOffset="4" rdxMenuPositioner [class]="m.positioner">
+                <div rdxMenuPopup [class]="m.popup">
+                    <button rdxMenuItem [class]="m.item">New Tab</button>
+                    <button rdxMenuItem [class]="m.item">New Window</button>
+                    <button rdxMenuItem [class]="m.item" [disabled]="true">New Private Window</button>
+                    <div rdxMenuSeparator [class]="m.separator"></div>
+                    <button rdxMenuItem [class]="m.item">Save Page As…</button>
+                    <button rdxMenuItem [class]="m.item">Print…</button>
                 </div>
             </div>
         </ng-container>

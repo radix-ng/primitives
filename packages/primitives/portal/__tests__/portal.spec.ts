@@ -1,14 +1,14 @@
+import { RdxPortal, RdxPortalContainer } from '../src/portal';
 import { ChangeDetectionStrategy, Component, ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { RdxPortal, RdxPortalContainer } from '../src/portal';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPortal],
     template: `
         <div id="origin">
-            <div id="portaled" [container]="container" rdxPortal>content</div>
+            <div id="portaled" rdxPortal [container]="container">content</div>
         </div>
     `
 })

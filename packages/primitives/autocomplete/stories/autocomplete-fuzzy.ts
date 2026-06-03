@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { matchSorter, rankings } from 'match-sorter';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete, AutocompleteFilter } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { matchSorter, rankings } from 'match-sorter';
 
 interface DocItem {
     title: string;
@@ -33,17 +33,17 @@ const fuzzyFilter: AutocompleteFilter = (value, query) => {
     selector: 'autocomplete-fuzzy',
     imports: [_importsAutocomplete],
     template: `
-        <div #ac="rdxAutocompleteRoot" [(value)]="value" [filter]="fuzzy" rdxAutocompleteRoot>
-            <div [class]="control" rdxAutocompleteInputGroup>
-                <input [class]="c.input" rdxAutocompleteInput placeholder="e.g. React" aria-label="Documentation" />
+        <div #ac="rdxAutocompleteRoot" rdxAutocompleteRoot [filter]="fuzzy" [(value)]="value">
+            <div rdxAutocompleteInputGroup [class]="control">
+                <input rdxAutocompleteInput placeholder="e.g. React" aria-label="Documentation" [class]="c.input" />
             </div>
 
-            <div *rdxAutocompletePortal [class]="positioner" rdxAutocompletePositioner>
-                <div [class]="popup" rdxAutocompletePopup>
-                    <div [class]="c.empty" rdxAutocompleteEmpty>No results found for "{{ ac.value() }}".</div>
-                    <div [class]="c.list" rdxAutocompleteList aria-label="Documentation">
+            <div *rdxAutocompletePortal rdxAutocompletePositioner [class]="positioner">
+                <div rdxAutocompletePopup [class]="popup">
+                    <div rdxAutocompleteEmpty [class]="c.empty">No results found for "{{ ac.value() }}".</div>
+                    <div rdxAutocompleteList aria-label="Documentation" [class]="c.list">
                         @for (item of items; track item.title) {
-                            <div [class]="itemClass" [value]="item" [textValue]="item.title" rdxAutocompleteItem>
+                            <div rdxAutocompleteItem [class]="itemClass" [value]="item" [textValue]="item.title">
                                 <span class="flex flex-col gap-0.5">
                                     <span
                                         class="text-foreground leading-5 font-semibold"

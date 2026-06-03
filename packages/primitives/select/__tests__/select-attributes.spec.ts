@@ -1,17 +1,17 @@
+import { _importsSelect } from '../index';
+import { RdxSelectRoot } from '../src/select-root';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { RdxFieldRoot } from '@radix-ng/primitives/field';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsSelect } from '../index';
-import { RdxSelectRoot } from '../src/select-root';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsSelect],
     template: `
-        <div [(value)]="value" [(open)]="open" [modal]="modal()" rdxSelectRoot>
+        <div rdxSelectRoot [modal]="modal()" [(value)]="value" [(open)]="open">
             <button rdxSelectTrigger>
                 <span rdxSelectValue placeholder="Select…"></span>
             </button>
@@ -19,7 +19,7 @@ import { RdxSelectRoot } from '../src/select-root';
                 <div rdxSelectPopup>
                     <div rdxSelectList>
                         @for (fruit of fruits; track fruit) {
-                            <div [value]="fruit" rdxSelectItem>
+                            <div rdxSelectItem [value]="fruit">
                                 <span rdxSelectItemText>{{ fruit }}</span>
                             </div>
                         }
@@ -40,7 +40,7 @@ class Host {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsSelect, RdxFieldRoot],
     template: `
-        <div [invalid]="invalid()" [required]="required()" rdxFieldRoot>
+        <div rdxFieldRoot [invalid]="invalid()" [required]="required()">
             <button rdxSelectTrigger rdxSelectRoot>
                 <span rdxSelectValue placeholder="Select…"></span>
             </button>
@@ -161,12 +161,12 @@ describe('Select Field integration on the trigger', () => {
     imports: [_importsSelect],
     template: `
         <div
-            [(value)]="value"
-            [(open)]="open"
+            rdxSelectRoot
             [invalid]="invalid()"
             [errors]="errors()"
             [dirty]="dirty()"
-            rdxSelectRoot
+            [(value)]="value"
+            [(open)]="open"
         >
             <button rdxSelectTrigger>
                 <span rdxSelectValue placeholder="Select…"></span>
@@ -175,7 +175,7 @@ describe('Select Field integration on the trigger', () => {
                 <div rdxSelectPopup>
                     <div rdxSelectList>
                         @for (fruit of fruits; track fruit) {
-                            <div [value]="fruit" rdxSelectItem>
+                            <div rdxSelectItem [value]="fruit">
                                 <span rdxSelectItemText>{{ fruit }}</span>
                             </div>
                         }
@@ -259,7 +259,7 @@ describe('Select validation state', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [FormField, _importsSelect],
     template: `
-        <div [formField]="city" rdxSelectRoot>
+        <div rdxSelectRoot [formField]="city">
             <button rdxSelectTrigger>
                 <span rdxSelectValue placeholder="Select…"></span>
             </button>
@@ -267,7 +267,7 @@ describe('Select validation state', () => {
                 <div rdxSelectPopup>
                     <div rdxSelectList>
                         @for (fruit of fruits; track fruit) {
-                            <div [value]="fruit" rdxSelectItem>
+                            <div rdxSelectItem [value]="fruit">
                                 <span rdxSelectItemText>{{ fruit }}</span>
                             </div>
                         }

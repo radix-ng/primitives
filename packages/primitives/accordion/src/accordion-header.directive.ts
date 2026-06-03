@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { injectAccordionItemContext } from './accordion-item.directive';
+import { Directive } from '@angular/core';
 
 @Directive({
     selector: '[rdxAccordionHeader]',

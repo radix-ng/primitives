@@ -1,3 +1,7 @@
+import './rdx-directive-highlight.css';
+import { installRdxDirectiveHighlight } from './highlight-rdx-directives';
+import CompodocPlugin from './plugins/compodoc';
+import { light } from './themes';
 import { provideZonelessChangeDetection } from '@angular/core';
 import {
     LucideAlignCenter,
@@ -25,11 +29,6 @@ import {
     provideLucideIcons
 } from '@lucide/angular';
 import { applicationConfig, Preview } from '@storybook/angular';
-import CompodocPlugin from './plugins/compodoc';
-
-import { installRdxDirectiveHighlight } from './highlight-rdx-directives';
-import './rdx-directive-highlight.css';
-import { light } from './themes';
 
 installRdxDirectiveHighlight();
 

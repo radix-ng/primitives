@@ -1,6 +1,6 @@
+import { injectToolbarRootContext, provideToolbarGroupContext, RdxToolbarGroupContext } from './toolbar-context';
 import { booleanAttribute, computed, Directive, inject, input } from '@angular/core';
 import { BooleanInput } from '@radix-ng/primitives/core';
-import { injectToolbarRootContext, provideToolbarGroupContext, RdxToolbarGroupContext } from './toolbar-context';
 
 const groupContext = (): RdxToolbarGroupContext => {
     const group = inject(RdxToolbarGroup);

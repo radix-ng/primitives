@@ -1,5 +1,5 @@
-import { Directive, inject } from '@angular/core';
 import { RdxDrawerProvider } from './drawer-provider';
+import { Directive, inject } from '@angular/core';
 
 /**
  * The page background layer that scales/indents while any drawer is open.

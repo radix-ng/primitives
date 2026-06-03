@@ -1,3 +1,4 @@
+import { demoTooltip } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import {
     RdxSliderControl,
@@ -8,7 +9,6 @@ import {
     RdxSliderTrack
 } from '@radix-ng/primitives/slider';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
-import { demoTooltip } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -23,30 +23,30 @@ import { demoTooltip } from '../../storybook/styles';
         RdxSliderThumbInput
     ],
     template: `
-        <div class="relative w-52 select-none" [value]="45" [step]="5" rdxSliderRoot>
+        <div class="relative w-52 select-none" rdxSliderRoot [value]="45" [step]="5">
             <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>
                 <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
                     <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>
 
-                    <ng-container [open]="showTooltipState()" rdxTooltip disabled>
+                    <ng-container rdxTooltip disabled [open]="showTooltipState()">
                         <div
                             class="border-border bg-background focus-within:ring-ring focus-within:ring-offset-background block size-5 rounded-full border shadow-sm focus-within:ring-2 focus-within:ring-offset-2"
-                            [rdxOnPointerDown]="handlePointerDown"
                             rdxSliderThumb
                             rdxTooltipTrigger
+                            [rdxOnPointerDown]="handlePointerDown"
                         >
                             <input rdxSliderThumbInput aria-label="Volume" />
                         </div>
 
                         <div
                             *rdxTooltipPortal
-                            [class]="t.positioner"
                             sideOffset="8"
                             side="top"
                             updatePositionStrategy="always"
                             rdxTooltipPositioner
+                            [class]="t.positioner"
                         >
-                            <div [class]="t.popup" rdxTooltipPopup>Volume</div>
+                            <div rdxTooltipPopup [class]="t.popup">Volume</div>
                         </div>
                     </ng-container>
                 </div>

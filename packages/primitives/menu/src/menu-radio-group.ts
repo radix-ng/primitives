@@ -1,11 +1,11 @@
-import { booleanAttribute, Directive, effect, inject, input, model, output, signal, Signal } from '@angular/core';
+import { provideRdxMenuGroupContext, RdxMenuGroupContext } from './menu-group-context';
+import { booleanAttribute, Directive, effect, inject, input, model, output, Signal, signal } from '@angular/core';
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
     createContext,
     RdxCancelableChangeEventDetails
 } from '@radix-ng/primitives/core';
-import { provideRdxMenuGroupContext, RdxMenuGroupContext } from './menu-group-context';
 
 export interface RdxMenuRadioGroupContext<T = unknown> {
     value: Signal<T | undefined>;

@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { injectSwitchContext } from './switch-context';
+import { Directive } from '@angular/core';
 
 /**
  * The moving part of the switch that indicates whether it is on or off.

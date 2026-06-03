@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { injectCropperRootContext } from './cropper-context.token';
+import { Directive } from '@angular/core';
 
 @Directive({
     selector: '[rdxCropperDescription]',

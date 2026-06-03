@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormErrors, RdxFormRoot, RdxFormSubmitEvent } from '../index';
 import { formError, formField, formInput, formLabel, formSubmit } from './form.shared';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 
 /**
  * Server-error mapping with clear-on-edit. The submit handler simulates a backend that rejects a
@@ -15,18 +15,18 @@ import { formError, formField, formInput, formLabel, formSubmit } from './form.s
     template: `
         <form
             class="flex w-80 flex-col gap-4"
+            rdxFormRoot
             [errors]="errors()"
             (onFormSubmit)="onSubmit($event)"
             (onClearErrors)="errors.set($event)"
-            rdxFormRoot
         >
-            <div [class]="field" name="email" rdxFieldRoot>
-                <label [class]="label" rdxFieldLabel>Email</label>
-                <input [class]="input" name="email" type="email" rdxFieldControl placeholder="name@example.com" />
-                <p #emailError="rdxFieldError" [class]="error" rdxFieldError>{{ emailError.messages().join(' ') }}</p>
+            <div name="email" rdxFieldRoot [class]="field">
+                <label rdxFieldLabel [class]="label">Email</label>
+                <input name="email" type="email" rdxFieldControl placeholder="name@example.com" [class]="input" />
+                <p #emailError="rdxFieldError" rdxFieldError [class]="error">{{ emailError.messages().join(' ') }}</p>
             </div>
 
-            <button [class]="submit" type="submit">Create account</button>
+            <button type="submit" [class]="submit">Create account</button>
             @if (success()) {
                 <p class="text-muted-foreground text-sm">Account created for {{ success() }}.</p>
             }

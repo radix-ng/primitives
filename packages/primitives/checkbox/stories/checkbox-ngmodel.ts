@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { LucideCheck } from '@lucide/angular';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { demoCheckbox } from '../../storybook/styles';
 import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { LucideCheck } from '@lucide/angular';
+import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 /**
  * Template-driven forms: two-way bind the root with `[(ngModel)]`.
@@ -25,9 +25,9 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
     ],
     template: `
         <div class="flex items-center gap-3">
-            <div [(ngModel)]="subscribed" rdxCheckboxRoot>
-                <button id="sub" [class]="c.button" rdxCheckboxButton>
-                    <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
+            <div rdxCheckboxRoot [(ngModel)]="subscribed">
+                <button id="sub" rdxCheckboxButton [class]="c.button">
+                    <svg rdxCheckboxIndicator size="16" lucideCheck [class]="c.indicator" />
                 </button>
                 <input rdxCheckboxInput />
             </div>

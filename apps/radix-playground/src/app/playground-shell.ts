@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { LucideMoon, LucideSun } from '@lucide/angular';
 import { PlaygroundMascot } from './playground-mascot';
 import { PRIMITIVES } from './shared/primitives';
 import { ThemeStore } from './shared/theme';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { LucideMoon, LucideSun } from '@lucide/angular';
 
 @Component({
     selector: 'app-playground-shell',
@@ -22,9 +22,9 @@ import { ThemeStore } from './shared/theme';
                     </a>
                     <button
                         class="border-border text-muted-foreground hover:bg-muted inline-flex size-8 items-center justify-center rounded-md border text-xs"
+                        type="button"
                         [attr.aria-label]="'Switch to ' + (theme.theme() === 'light' ? 'dark' : 'light') + ' theme'"
                         (click)="theme.toggle()"
-                        type="button"
                     >
                         @if (theme.theme() === 'light') {
                             <svg class="size-4" lucideMoon></svg>
@@ -41,8 +41,8 @@ import { ThemeStore } from './shared/theme';
                     @for (item of primitives; track item.path) {
                         <a
                             class="text-muted-foreground hover:bg-muted hover:text-foreground rounded-md px-2 py-1.5 text-sm no-underline transition-colors"
-                            [routerLink]="['/playground', item.path]"
                             routerLinkActive="bg-muted !text-foreground font-medium"
+                            [routerLink]="['/playground', item.path]"
                         >
                             {{ item.label }}
                         </a>

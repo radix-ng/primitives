@@ -1,6 +1,6 @@
+import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
 import { computed, Directive, inject } from '@angular/core';
 import { RdxPopperArrow, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
-import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
 
 /**
  * An optional arrow element pointing toward the active trigger.

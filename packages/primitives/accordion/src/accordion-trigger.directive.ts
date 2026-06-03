@@ -1,8 +1,8 @@
+import { injectAccordionItemContext } from './accordion-item.directive';
+import { injectAccordionRootContext } from './accordion-root.directive';
 import { Directive } from '@angular/core';
 import { injectCollapsibleRootContext } from '@radix-ng/primitives/collapsible';
 import { injectId } from '@radix-ng/primitives/core';
-import { injectAccordionItemContext } from './accordion-item.directive';
-import { injectAccordionRootContext } from './accordion-root.directive';
 
 @Directive({
     selector: '[rdxAccordionTrigger]',

@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
 import { RdxFieldError } from '../src/field-error';
 import { RdxFieldLabel } from '../src/field-label';
 import { RdxFieldRoot } from '../src/field-root';
 import { fieldDescription, fieldError, fieldInputInvalid, fieldLabel, fieldSubmitButton } from './field.shared';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -15,17 +15,17 @@ import { fieldDescription, fieldError, fieldInputInvalid, fieldLabel, fieldSubmi
         <form class="flex w-80 flex-col gap-3" [formGroup]="form" (ngSubmit)="submit()">
             <div
                 class="flex flex-col gap-2"
+                rdxFieldRoot
+                required
                 [invalid]="email.invalid && (email.touched || submitted())"
                 [dirty]="email.dirty"
                 [touched]="email.touched"
                 [disabled]="email.disabled"
-                rdxFieldRoot
-                required
             >
-                <label [class]="labelClass" rdxFieldLabel>Email</label>
-                <input [class]="inputClass" rdxFieldControl type="email" formControlName="email" />
-                <p [class]="descriptionClass" rdxFieldDescription>Use the email connected to your account.</p>
-                <p [class]="errorClass" rdxFieldError>
+                <label rdxFieldLabel [class]="labelClass">Email</label>
+                <input rdxFieldControl type="email" formControlName="email" [class]="inputClass" />
+                <p rdxFieldDescription [class]="descriptionClass">Use the email connected to your account.</p>
+                <p rdxFieldError [class]="errorClass">
                     @if (email.hasError('required')) {
                         Email is required.
                     } @else {
@@ -34,7 +34,7 @@ import { fieldDescription, fieldError, fieldInputInvalid, fieldLabel, fieldSubmi
                 </p>
             </div>
 
-            <button [class]="buttonClass" type="submit">Submit</button>
+            <button type="submit" [class]="buttonClass">Submit</button>
         </form>
     `
 })

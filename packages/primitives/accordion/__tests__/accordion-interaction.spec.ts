@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { expect, vi } from 'vitest';
 import { RdxAccordionHeaderDirective } from '../src/accordion-header.directive';
 import { RdxAccordionItemDirective } from '../src/accordion-item.directive';
 import { RdxAccordionPanelDirective } from '../src/accordion-panel.directive';
 import { RdxAccordionRootDirective } from '../src/accordion-root.directive';
 import { RdxAccordionTriggerDirective } from '../src/accordion-trigger.directive';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { expect, vi } from 'vitest';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -18,7 +18,7 @@ import { RdxAccordionTriggerDirective } from '../src/accordion-trigger.directive
         RdxAccordionPanelDirective
     ],
     template: `
-        <div [disabled]="rootDisabled()" (onValueChange)="onValueChange($event)" keepMounted rdxAccordionRoot>
+        <div keepMounted rdxAccordionRoot [disabled]="rootDisabled()" (onValueChange)="onValueChange($event)">
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionHeader>
                     <button id="trigger-one" rdxAccordionTrigger>Trigger one</button>
@@ -106,7 +106,7 @@ describe('RdxAccordion — interaction', () => {
         RdxAccordionPanelDirective
     ],
     template: `
-        <div (onValueChange)="onValueChange($event)" keepMounted rdxAccordionRoot>
+        <div keepMounted rdxAccordionRoot (onValueChange)="onValueChange($event)">
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionHeader><button rdxAccordionTrigger>One</button></div>
                 <div rdxAccordionPanel>One</div>
@@ -156,7 +156,7 @@ describe('RdxAccordion — cancelable onValueChange', () => {
         RdxAccordionPanelDirective
     ],
     template: `
-        <div [disabled]="rootDisabled()" keepMounted rdxAccordionRoot>
+        <div keepMounted rdxAccordionRoot [disabled]="rootDisabled()">
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionHeader><button rdxAccordionTrigger>One</button></div>
                 <div rdxAccordionPanel>Content</div>
@@ -235,7 +235,7 @@ describe('RdxAccordion — disabled propagation', () => {
         RdxAccordionPanelDirective
     ],
     template: `
-        <div [multiple]="multipleEnabled()" keepMounted rdxAccordionRoot>
+        <div keepMounted rdxAccordionRoot [multiple]="multipleEnabled()">
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionHeader><button id="t1" rdxAccordionTrigger>One</button></div>
                 <div rdxAccordionPanel>One</div>
@@ -307,7 +307,7 @@ describe('RdxAccordion — multiple input', () => {
     ],
     template: `
         <div rdxAccordionRoot>
-            <div (onOpenChange)="onChange($event)" value="one" rdxAccordionItem>
+            <div value="one" rdxAccordionItem (onOpenChange)="onChange($event)">
                 <div rdxAccordionHeader><button rdxAccordionTrigger>One</button></div>
                 <div rdxAccordionPanel>One</div>
             </div>
@@ -432,7 +432,7 @@ describe('RdxAccordion — data-index', () => {
         RdxAccordionPanelDirective
     ],
     template: `
-        <div [loopFocus]="loop()" rdxAccordionRoot>
+        <div rdxAccordionRoot [loopFocus]="loop()">
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionHeader><button rdxAccordionTrigger>One</button></div>
                 <div rdxAccordionPanel>One</div>
@@ -502,7 +502,7 @@ describe('RdxAccordion — keyboard focus', () => {
         RdxAccordionPanelDirective
     ],
     template: `
-        <div [keepMounted]="keep()" [hiddenUntilFound]="findable()" rdxAccordionRoot>
+        <div rdxAccordionRoot [keepMounted]="keep()" [hiddenUntilFound]="findable()">
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionHeader><button rdxAccordionTrigger>One</button></div>
                 <div rdxAccordionPanel>Content one</div>
@@ -572,7 +572,7 @@ describe('RdxAccordion — mount behavior', () => {
         RdxAccordionPanelDirective
     ],
     template: `
-        <div [defaultValue]="'one'" (onValueChange)="onValueChange($event)" keepMounted rdxAccordionRoot>
+        <div keepMounted rdxAccordionRoot [defaultValue]="'one'" (onValueChange)="onValueChange($event)">
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionHeader><button id="t1" rdxAccordionTrigger>One</button></div>
                 <div rdxAccordionPanel>One</div>

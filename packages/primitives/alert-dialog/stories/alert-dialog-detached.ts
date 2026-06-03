@@ -1,6 +1,6 @@
+import { cn, demoButton, demoDialog } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { alertDialogImports, createRdxAlertDialogHandle } from '@radix-ng/primitives/alert-dialog';
-import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -9,7 +9,7 @@ import { cn, demoButton, demoDialog } from '../../storybook/styles';
     template: `
         <div class="flex flex-col items-center gap-3">
             <!-- Triggers live outside the root and are linked through a shared handle. -->
-            <button id="delete" [class]="cn(b.base, b.destructive, b.size.md)" [handle]="handle" rdxAlertDialogTrigger>
+            <button id="delete" rdxAlertDialogTrigger [class]="cn(b.base, b.destructive, b.size.md)" [handle]="handle">
                 Delete file
             </button>
 
@@ -17,19 +17,19 @@ import { cn, demoButton, demoDialog } from '../../storybook/styles';
                 Open imperatively
             </button>
 
-            <div [handle]="handle" rdxAlertDialogRoot>
+            <div rdxAlertDialogRoot [handle]="handle">
                 <ng-template rdxAlertDialogPortal>
-                    <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxAlertDialogBackdrop></div>
-                    <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
-                        <h2 [class]="d.title" rdxAlertDialogTitle>Delete this file?</h2>
-                        <p [class]="d.description" rdxAlertDialogDescription>
+                    <div rdxAlertDialogBackdrop [class]="cn(d.backdrop, d.backdropAnimated)"></div>
+                    <div rdxAlertDialogPopup [class]="cn(d.popup, d.popupAnimated)">
+                        <h2 rdxAlertDialogTitle [class]="d.title">Delete this file?</h2>
+                        <p rdxAlertDialogDescription [class]="d.description">
                             The trigger and this alert dialog are connected with
                             <code>createRdxAlertDialogHandle()</code>
                             .
                         </p>
                         <div [class]="d.footer">
-                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxAlertDialogClose>Cancel</button>
-                            <button [class]="cn(b.base, b.destructive, b.size.sm)" rdxAlertDialogClose>Delete</button>
+                            <button rdxAlertDialogClose [class]="cn(b.base, b.outline, b.size.sm)">Cancel</button>
+                            <button rdxAlertDialogClose [class]="cn(b.base, b.destructive, b.size.sm)">Delete</button>
                         </div>
                     </div>
                 </ng-template>

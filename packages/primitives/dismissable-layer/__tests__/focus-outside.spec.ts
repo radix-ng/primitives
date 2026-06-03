@@ -1,8 +1,8 @@
+import { RdxFocusOutside } from '../src/utils';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
-import { RdxFocusOutside } from '../src/utils';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -10,7 +10,7 @@ import { RdxFocusOutside } from '../src/utils';
     template: `
         <div>
             <button id="outside">Outside Button</button>
-            <div [enabled]="enabled" (focusOutside)="onFocusOutside($event)" rdxFocusOutside>
+            <div rdxFocusOutside [enabled]="enabled" (focusOutside)="onFocusOutside($event)">
                 <button id="inside">Inside Button</button>
             </div>
         </div>

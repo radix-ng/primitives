@@ -1,6 +1,6 @@
+import { PresenceDemo } from './presence';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
-import { PresenceDemo } from './presence';
 
 /**
  * ADR 0011 fixture: the exit `@keyframes` run on a **nested child**, not the watched root. The root
@@ -33,8 +33,8 @@ import { PresenceDemo } from './presence';
         <div class="flex flex-col items-center gap-4">
             <button
                 class="border-border bg-background text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-9 items-center rounded-md border px-4 text-sm font-medium shadow-sm outline-none focus-visible:ring-2"
-                (click)="open.set(!open())"
                 type="button"
+                (click)="open.set(!open())"
             >
                 {{ open() ? 'Unmount' : 'Mount' }}
             </button>

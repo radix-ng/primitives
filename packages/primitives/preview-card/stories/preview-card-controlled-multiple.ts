@@ -1,6 +1,6 @@
+import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { previewCardImports } from '@radix-ng/primitives/preview-card';
-import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -9,34 +9,34 @@ import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styl
     template: `
         <div class="grid gap-4">
             <div class="flex items-center gap-3">
-                <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="openFrom('design')" type="button">
+                <button type="button" [class]="cn(b.base, b.outline, b.size.sm)" (click)="openFrom('design')">
                     Open design
                 </button>
-                <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="open = false" type="button">Close</button>
+                <button type="button" [class]="cn(b.base, b.outline, b.size.sm)" (click)="open = false">Close</button>
             </div>
 
             <ng-container
                 #root="rdxPreviewCardRoot"
+                rdxPreviewCardRoot
                 [(open)]="open"
                 [(triggerId)]="triggerId"
                 (onOpenChange)="triggerId = $event.triggerId"
-                rdxPreviewCardRoot
             >
                 <p class="text-muted-foreground max-w-lg text-sm leading-6">
                     Discover
-                    <a id="typography" [class]="link" [payload]="cards.typography" href="#" rdxPreviewCardTrigger>
+                    <a id="typography" href="#" rdxPreviewCardTrigger [class]="link" [payload]="cards.typography">
                         typography
                     </a>
                     ,
-                    <a id="design" [class]="link" [payload]="cards.design" href="#" rdxPreviewCardTrigger>design</a>
+                    <a id="design" href="#" rdxPreviewCardTrigger [class]="link" [payload]="cards.design">design</a>
                     , or
-                    <a id="art" [class]="link" [payload]="cards.art" href="#" rdxPreviewCardTrigger>art</a>
+                    <a id="art" href="#" rdxPreviewCardTrigger [class]="link" [payload]="cards.art">art</a>
                     .
                 </p>
 
-                <div *rdxPreviewCardPortal [class]="p.positioner" sideOffset="8" rdxPreviewCardPositioner>
-                    <div [class]="p.popup" rdxPreviewCardPopup>
-                        <span [class]="p.arrow" rdxPreviewCardArrow></span>
+                <div *rdxPreviewCardPortal sideOffset="8" rdxPreviewCardPositioner [class]="p.positioner">
+                    <div rdxPreviewCardPopup [class]="p.popup">
+                        <span rdxPreviewCardArrow [class]="p.arrow"></span>
                         <div class="grid gap-2">
                             <div class="bg-muted h-24 rounded-md"></div>
                             <p class="text-muted-foreground text-sm">{{ root.payload() }}</p>

@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { injectSelectItemContext } from './select-item';
+import { Directive } from '@angular/core';
 
 @Directive({
     selector: '[rdxSelectItemIndicator]',

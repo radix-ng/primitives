@@ -1,3 +1,7 @@
+import { RdxPopper } from './popper';
+import { RdxPopperArrow } from './popper-arrow';
+import { RdxPopperContentConfigToken } from './popper-content.config';
+import { Align, isNotNull, Side, transformOrigin } from './utils';
 import {
     afterNextRender,
     afterRenderEffect,
@@ -20,10 +24,10 @@ import {
 } from '@angular/core';
 import type { ComputePositionReturn, ReferenceElement, VirtualElement } from '@floating-ui/dom';
 import {
+    arrow as floatingUIArrow,
     autoUpdate,
     computePosition,
     flip,
-    arrow as floatingUIArrow,
     hide,
     limitShift,
     offset,
@@ -32,10 +36,6 @@ import {
     size
 } from '@floating-ui/dom';
 import { BooleanInput, createContext, elementSize, NumberInput, watch } from '@radix-ng/primitives/core';
-import { RdxPopper } from './popper';
-import { RdxPopperArrow } from './popper-arrow';
-import { RdxPopperContentConfigToken } from './popper-content.config';
-import { Align, isNotNull, Side, transformOrigin } from './utils';
 
 export type RdxPopperAnchorElement =
     | Element

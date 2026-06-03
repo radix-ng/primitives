@@ -1,6 +1,6 @@
-import { computed, Directive, effect, ElementRef, inject } from '@angular/core';
 import { injectRadioItemContext } from './radio-item.directive';
 import { injectRadioRootContext } from './radio-root.directive';
+import { computed, Directive, effect, ElementRef, inject } from '@angular/core';
 
 /**
  * The hidden native radio input that mirrors the item state for form submission, native validation,

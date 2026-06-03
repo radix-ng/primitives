@@ -1,6 +1,6 @@
+import { provideFieldRootContext, RdxFieldRoot, RdxFieldRootContext } from './field-root';
 import { booleanAttribute, computed, Directive, inject, input, signal } from '@angular/core';
 import { BooleanInput, injectId } from '@radix-ng/primitives/core';
-import { provideFieldRootContext, RdxFieldRoot, RdxFieldRootContext } from './field-root';
 
 const attr = (value: boolean) => (value ? '' : undefined);
 const addId = (ids: string[], id: string) => (ids.includes(id) ? ids : [...ids, id]);

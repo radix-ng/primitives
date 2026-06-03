@@ -1,14 +1,14 @@
-import { LucideChevronLeft, LucideChevronRight, LucideChevronsLeft, LucideChevronsRight } from '@lucide/angular';
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxPaginationEllipsisDirective } from '../src/pagination-ellipsis.directive';
 import { RdxPaginationFirstDirective } from '../src/pagination-first.directive';
 import { RdxPaginationLastDirective } from '../src/pagination-last.directive';
-import { RdxPaginationListItemDirective } from '../src/pagination-list-item.directive';
 import { RdxPaginationListDirective } from '../src/pagination-list.directive';
+import { RdxPaginationListItemDirective } from '../src/pagination-list-item.directive';
 import { RdxPaginationNextDirective } from '../src/pagination-next.directive';
 import { RdxPaginationPrevDirective } from '../src/pagination-prev.directive';
 import { RdxPaginationRootDirective } from '../src/pagination-root.directive';
+import { LucideChevronLeft, LucideChevronRight, LucideChevronsLeft, LucideChevronsRight } from '@lucide/angular';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 export default {
     title: 'Primitives/Pagination',

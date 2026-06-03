@@ -1,3 +1,6 @@
+import { injectComboboxGroupContext } from './combobox-group';
+import { ComboboxItemRef, injectComboboxRootContext } from './combobox-root';
+import { RdxComboboxRow } from './combobox-row';
 import {
     afterNextRender,
     afterRenderEffect,
@@ -9,13 +12,10 @@ import {
     ElementRef,
     inject,
     input,
-    signal,
-    Signal
+    Signal,
+    signal
 } from '@angular/core';
 import { AcceptableValue, createContext, injectId } from '@radix-ng/primitives/core';
-import { injectComboboxGroupContext } from './combobox-group';
-import { ComboboxItemRef, injectComboboxRootContext } from './combobox-root';
-import { RdxComboboxRow } from './combobox-row';
 
 const itemContext = () => {
     const item = inject(RdxComboboxItem);

@@ -13,9 +13,9 @@ import {
     template: `
         <nav
             #root="rdxNavigationMenuRoot"
+            rdxNavigationMenuRoot
             [defaultValue]="defaultValue"
             (onOpenChange)="handleOpenChange($event)"
-            rdxNavigationMenuRoot
         >
             <ul rdxNavigationMenuList>
                 <li rdxNavigationMenuItem value="one">
@@ -79,7 +79,7 @@ class HostComponent {
                                 <li rdxNavigationMenuItem value="nested">
                                     <button rdxNavigationMenuTrigger>Nested</button>
                                     <ng-container *rdxNavigationMenuContent>
-                                        <a [closeOnClick]="true" data-test-nested-link rdxNavigationMenuLink href="#">
+                                        <a data-test-nested-link rdxNavigationMenuLink href="#" [closeOnClick]="true">
                                             Nested link
                                         </a>
                                     </ng-container>
@@ -105,13 +105,13 @@ class NestedHostComponent {}
             <ul rdxNavigationMenuList>
                 <li rdxNavigationMenuItem value="one">
                     <button rdxNavigationMenuTrigger>One</button>
-                    <ng-template [forceMount]="true" rdxNavigationMenuContent>
+                    <ng-template rdxNavigationMenuContent [forceMount]="true">
                         <div data-test-force-content>Forced content</div>
                     </ng-template>
                 </li>
             </ul>
 
-            <ng-template [keepMounted]="true" rdxNavigationMenuPortal>
+            <ng-template rdxNavigationMenuPortal [keepMounted]="true">
                 <div data-test-keep-positioner rdxNavigationMenuPositioner>
                     <div data-test-keep-popup rdxNavigationMenuPopup>
                         <div data-test-keep-viewport rdxNavigationMenuViewport></div>

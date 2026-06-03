@@ -1,3 +1,5 @@
+import primitivesPackage from '../../../../../packages/primitives/package.json';
+import { ThemeStore } from '../shared/theme';
 import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
@@ -31,8 +33,6 @@ import {
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
 import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
-import primitivesPackage from '../../../../../packages/primitives/package.json';
-import { ThemeStore } from '../shared/theme';
 
 const installCommand = 'ng add @radix-ng/primitives';
 const skillCommand = 'npx skills add radix-ng/primitives/skills';
@@ -76,9 +76,9 @@ type CopyTarget = 'install' | 'skill';
         <main class="bg-background text-foreground min-h-screen">
             <button
                 class="border-border bg-card hover:bg-muted fixed top-4 right-4 z-50 inline-flex size-10 items-center justify-center rounded-full border text-[var(--landing-accent-text)] shadow-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--landing-accent-text)]"
+                type="button"
                 [attr.aria-label]="'Switch to ' + (theme.theme() === 'light' ? 'dark' : 'light') + ' theme'"
                 (click)="theme.toggle()"
-                type="button"
             >
                 @if (theme.theme() === 'dark') {
                     <svg class="size-4" lucideSun></svg>
@@ -156,10 +156,10 @@ type CopyTarget = 'install' | 'skill';
                             </a>
                             <a
                                 class="inline-flex h-11 items-center gap-2 rounded-md border border-[color:var(--landing-accent-border)] px-3 text-sm font-medium no-underline transition-colors hover:bg-[color:var(--landing-accent-tint)]"
-                                [href]="npmPackageUrl"
                                 target="_blank"
                                 rel="noreferrer"
                                 aria-label="View @radix-ng/primitives on npm"
+                                [href]="npmPackageUrl"
                             >
                                 <svg class="size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                     <path d="M3 3h18v18H3V3Zm3.5 14h3V8.5H12V17h3V8.5h2.5V17h3V6H6.5v11Z" />
@@ -169,10 +169,10 @@ type CopyTarget = 'install' | 'skill';
                             </a>
                             <a
                                 class="inline-flex size-11 items-center justify-center rounded-md border border-[color:var(--landing-accent-border)] text-[var(--landing-accent-text)] no-underline transition-colors hover:bg-[color:var(--landing-accent-tint)]"
-                                [href]="telegramUrl"
                                 target="_blank"
                                 rel="noreferrer"
                                 aria-label="Open Radix NG Telegram channel"
+                                [href]="telegramUrl"
                             >
                                 <svg class="size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                     <path
@@ -189,9 +189,9 @@ type CopyTarget = 'install' | 'skill';
                             <span class="truncate">{{ installCommand }}</span>
                             <button
                                 class="hover:bg-background ml-auto inline-flex size-7 shrink-0 items-center justify-center rounded text-[var(--landing-accent-text)] transition-colors"
+                                type="button"
                                 [attr.aria-label]="copied() === 'install' ? 'Copied' : 'Copy install command'"
                                 (click)="copy('install', installCommand)"
-                                type="button"
                             >
                                 @if (copied() === 'install') {
                                     <svg class="size-3.5" lucideCheck></svg>
@@ -286,10 +286,10 @@ type CopyTarget = 'install' | 'skill';
                                     </span>
                                     <button
                                         class="bg-muted relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-0 p-0 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--landing-accent-text)] data-[checked]:bg-[color:var(--landing-accent-fill)]"
-                                        [checked]="emailEnabled()"
-                                        (onCheckedChange)="emailEnabled.set($event.checked)"
                                         aria-label="Email notifications"
                                         rdxSwitchRoot
+                                        [checked]="emailEnabled()"
+                                        (onCheckedChange)="emailEnabled.set($event.checked)"
                                     >
                                         <span
                                             class="bg-background pointer-events-none block size-5 translate-x-0.5 rounded-full shadow-sm transition-transform data-[checked]:translate-x-[22px]"
@@ -308,9 +308,9 @@ type CopyTarget = 'install' | 'skill';
                                         &quot;
                                     </span>
                                     <div
+                                        rdxCheckboxRoot
                                         [checked]="licenseAccepted()"
                                         (onCheckedChange)="licenseAccepted.set($event.checked)"
-                                        rdxCheckboxRoot
                                     >
                                         <button
                                             class="border-input inline-flex size-5 items-center justify-center rounded border bg-transparent text-white transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--landing-accent-text)] data-[state=checked]:border-[color:var(--landing-accent-fill)] data-[state=checked]:bg-[color:var(--landing-accent-fill)]"
@@ -338,10 +338,10 @@ type CopyTarget = 'install' | 'skill';
                                     </span>
                                     <button
                                         class="bg-muted relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-0 p-0 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--landing-accent-text)] data-[checked]:bg-[color:var(--landing-accent-fill)]"
-                                        [checked]="marketingEnabled()"
-                                        (onCheckedChange)="marketingEnabled.set($event.checked)"
                                         aria-label="Marketing emails"
                                         rdxSwitchRoot
+                                        [checked]="marketingEnabled()"
+                                        (onCheckedChange)="marketingEnabled.set($event.checked)"
                                     >
                                         <span
                                             class="bg-background pointer-events-none block size-5 translate-x-0.5 rounded-full shadow-sm transition-transform data-[checked]:translate-x-[22px]"
@@ -366,15 +366,15 @@ type CopyTarget = 'install' | 'skill';
 
                             <div
                                 class="border-border bg-background overflow-hidden rounded-md border"
-                                [defaultValue]="'accessibility'"
                                 keepMounted
                                 rdxAccordionRoot
+                                [defaultValue]="'accessibility'"
                             >
                                 @for (item of accordionItems; track item.value) {
                                     <div
                                         class="border-border border-t first:border-t-0 data-[open]:bg-[color:var(--landing-accent-tint)]"
-                                        [value]="item.value"
                                         rdxAccordionItem
+                                        [value]="item.value"
                                     >
                                         <h3 rdxAccordionHeader>
                                             <button
@@ -559,9 +559,9 @@ type CopyTarget = 'install' | 'skill';
                             <span class="truncate">{{ skillCommand }}</span>
                             <button
                                 class="hover:bg-background ml-auto inline-flex size-7 shrink-0 items-center justify-center rounded text-[var(--landing-accent-text)] transition-colors"
+                                type="button"
                                 [attr.aria-label]="copied() === 'skill' ? 'Copied' : 'Copy skill command'"
                                 (click)="copy('skill', skillCommand)"
-                                type="button"
                             >
                                 @if (copied() === 'skill') {
                                     <svg class="size-3.5" lucideCheck></svg>
@@ -643,17 +643,17 @@ type CopyTarget = 'install' | 'skill';
                         @for (person of coreTeam; track person.login) {
                             <a
                                 class="border-border bg-card hover:bg-background flex items-center gap-4 rounded-lg border px-5 py-4 no-underline shadow-sm transition-colors"
-                                [href]="person.url"
                                 target="_blank"
                                 rel="noreferrer"
+                                [href]="person.url"
                             >
                                 <img
                                     class="size-[52px] shrink-0 rounded-full"
-                                    [src]="person.avatarUrl"
-                                    [alt]="person.login + ' avatar'"
                                     width="52"
                                     height="52"
                                     loading="lazy"
+                                    [src]="person.avatarUrl"
+                                    [alt]="person.login + ' avatar'"
                                 />
                                 <div class="min-w-0">
                                     <div class="flex flex-wrap items-center gap-1.5 text-base font-semibold">
@@ -682,17 +682,17 @@ type CopyTarget = 'install' | 'skill';
                             @for (person of community; track person.login) {
                                 <a
                                     class="hover:bg-muted flex min-w-0 items-center gap-2.5 rounded-md p-2 no-underline transition-colors"
-                                    [href]="person.url"
                                     target="_blank"
                                     rel="noreferrer"
+                                    [href]="person.url"
                                 >
                                     <img
                                         class="size-[34px] shrink-0 rounded-full"
-                                        [src]="person.avatarUrl"
-                                        [alt]="person.login + ' avatar'"
                                         width="34"
                                         height="34"
                                         loading="lazy"
+                                        [src]="person.avatarUrl"
+                                        [alt]="person.login + ' avatar'"
                                     />
                                     <span class="min-w-0 leading-tight">
                                         <span class="block truncate text-sm font-medium">{{ person.login }}</span>
@@ -766,9 +766,9 @@ type CopyTarget = 'install' | 'skill';
                         </a>
                         <a
                             class="inline-flex items-center gap-3 no-underline transition-colors hover:text-[var(--landing-accent-text)]"
-                            [href]="npmPackageUrl"
                             target="_blank"
                             rel="noreferrer"
+                            [href]="npmPackageUrl"
                         >
                             <svg class="size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                 <path d="M3 3h18v18H3V3Zm3.5 14h3V8.5H12V17h3V8.5h2.5V17h3V6H6.5v11Z" />
@@ -796,9 +796,9 @@ type CopyTarget = 'install' | 'skill';
                         </a>
                         <a
                             class="no-underline hover:text-[var(--landing-accent-text)]"
-                            [href]="telegramUrl"
                             target="_blank"
                             rel="noreferrer"
+                            [href]="telegramUrl"
                         >
                             Telegram
                         </a>

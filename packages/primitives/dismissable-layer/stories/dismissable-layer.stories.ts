@@ -1,7 +1,7 @@
-import { moduleMetadata, type Meta, type StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxDismissableLayerDemo } from './dismissable-layer';
 import source from './dismissable-layer?raw';
+import { type Meta, moduleMetadata, type StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 

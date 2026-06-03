@@ -7,13 +7,13 @@ import { NumberInput } from '@radix-ng/primitives/core';
     template: `
         <ng-content>
             <svg
-                [style.width.px]="width()"
-                [style.height.px]="height()"
                 style="display: block"
                 viewBox="0 0 30 10"
                 preserveAspectRatio="none"
                 aria-hidden="true"
                 focusable="false"
+                [style.width.px]="width()"
+                [style.height.px]="height()"
             >
                 <polygon points="0,0 30,0 15,10" fill="currentColor" />
             </svg>

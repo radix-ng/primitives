@@ -1,3 +1,4 @@
+import { RdxAutocompleteRow } from './autocomplete-row';
 import {
     afterNextRender,
     afterRenderEffect,
@@ -18,7 +19,6 @@ import {
     provideComboboxItemContext
 } from '@radix-ng/primitives/combobox';
 import { AcceptableValue, injectId } from '@radix-ng/primitives/core';
-import { RdxAutocompleteRow } from './autocomplete-row';
 
 const itemContext = () => {
     const item = inject(RdxAutocompleteItem);

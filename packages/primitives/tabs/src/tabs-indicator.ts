@@ -1,6 +1,6 @@
-import { afterNextRender, DestroyRef, Directive, effect, inject, signal, untracked } from '@angular/core';
 import { injectTabsRootContext } from './tabs-root-context';
 import { makeTabId } from './utils';
+import { afterNextRender, DestroyRef, Directive, effect, inject, signal, untracked } from '@angular/core';
 
 interface TabGeometry {
     top: number;

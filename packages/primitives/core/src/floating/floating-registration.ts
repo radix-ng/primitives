@@ -1,6 +1,6 @@
-import { computed, InjectionToken, Provider, signal, Signal } from '@angular/core';
 import { rdxDevError } from '../dev/diagnostics';
 import type { RdxFloatingNode, RdxFloatingTree } from './floating-tree';
+import { computed, InjectionToken, Provider, Signal, signal } from '@angular/core';
 
 const DOCS = 'utils/floating-tree';
 

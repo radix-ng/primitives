@@ -1,3 +1,4 @@
+import { cn, demoButton, demoCard, demoDialog } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
@@ -8,7 +9,6 @@ import {
     RdxScrollAreaThumb,
     RdxScrollAreaViewport
 } from '@radix-ng/primitives/scroll-area';
-import { cn, demoButton, demoCard, demoDialog } from '../../storybook/styles';
 
 /**
  * Outside-scroll dialog — a 1-1 port of the Base UI example.
@@ -33,10 +33,10 @@ import { cn, demoButton, demoCard, demoDialog } from '../../storybook/styles';
     ],
     template: `
         <div rdxDialogRoot>
-            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open dialog</button>
+            <button rdxDialogTrigger [class]="cn(b.base, b.primary, b.size.md)">Open dialog</button>
 
             <ng-template rdxDialogPortal>
-                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
+                <div rdxDialogBackdrop [class]="cn(d.backdrop, d.backdropAnimated)"></div>
 
                 <!-- Full-screen viewport hosting a custom scroll area (not native overflow). -->
                 <div class="group/dialog fixed inset-0 z-50" rdxDialogViewport>
@@ -52,6 +52,7 @@ import { cn, demoButton, demoCard, demoDialog } from '../../storybook/styles';
                         <div class="h-full overscroll-contain" rdxScrollAreaViewport>
                             <div class="flex min-h-full items-center justify-center" rdxScrollAreaContent>
                                 <div
+                                    rdxDialogPopup
                                     [class]="
                                         cn(
                                             card,
@@ -59,15 +60,14 @@ import { cn, demoButton, demoCard, demoDialog } from '../../storybook/styles';
                                             d.popupAnimated
                                         )
                                     "
-                                    rdxDialogPopup
                                 >
                                     <div class="relative flex flex-col gap-1 pr-8">
-                                        <h2 [class]="d.title" rdxDialogTitle>Dialog</h2>
-                                        <p [class]="d.description" rdxDialogDescription>
+                                        <h2 rdxDialogTitle [class]="d.title">Dialog</h2>
+                                        <p rdxDialogDescription [class]="d.description">
                                             This layout keeps an outer container scrollable while the dialog can extend
                                             past the bottom edge.
                                         </p>
-                                        <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                                        <button aria-label="Close" rdxDialogClose [class]="d.close">
                                             <svg aria-hidden="true" lucideX size="16" />
                                         </button>
                                     </div>

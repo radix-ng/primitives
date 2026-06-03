@@ -1,6 +1,6 @@
-import { computed, Directive, effect, ElementRef, inject } from '@angular/core';
 import { injectCheckboxGroupContext } from './checkbox-group';
 import { injectCheckboxRootContext } from './checkbox-root';
+import { computed, Directive, effect, ElementRef, inject } from '@angular/core';
 
 /**
  * Directive: rdxCheckboxButton

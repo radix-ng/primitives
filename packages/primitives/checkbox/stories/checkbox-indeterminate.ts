@@ -1,12 +1,12 @@
+import { cn, demoButton, demoCheckbox } from '../../storybook/styles';
+import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
+import { RdxCheckboxInputDirective } from '../src/checkbox-input';
+import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, model } from '@angular/core';
 import { LucideDynamicIcon } from '@lucide/angular';
 import { RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { cn, demoButton, demoCheckbox } from '../../storybook/styles';
-import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
-import { RdxCheckboxInputDirective } from '../src/checkbox-input';
-import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -23,13 +23,13 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
     template: `
         <div class="flex items-center gap-3">
             <div
+                rdxCheckboxRoot
                 [checked]="checked()"
                 [indeterminate]="indeterminate()"
                 (onCheckedChange)="checked.set($event.checked); indeterminate.set(false)"
-                rdxCheckboxRoot
             >
-                <button id="r1" [class]="c.button" rdxCheckboxButton>
-                    <svg [class]="c.indicator" [lucideIcon]="iconName()" rdxCheckboxIndicator size="16" />
+                <button id="r1" rdxCheckboxButton [class]="c.button">
+                    <svg rdxCheckboxIndicator size="16" [class]="c.indicator" [lucideIcon]="iconName()" />
                 </button>
                 <input rdxCheckboxInput />
             </div>
@@ -43,7 +43,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
             <p>indeterminate:&nbsp;{{ indeterminate() | json }}</p>
         </section>
 
-        <button [class]="cn(b.base, b.primary, b.size.md, 'mt-3')" (click)="toggleIndeterminate()" type="button">
+        <button type="button" [class]="cn(b.base, b.primary, b.size.md, 'mt-3')" (click)="toggleIndeterminate()">
             Toggle Indeterminate state
         </button>
     `

@@ -1,3 +1,4 @@
+import { RadixNG, type RadixNGConfig } from './config';
 import {
     EnvironmentProviders,
     inject,
@@ -6,7 +7,6 @@ import {
     provideAppInitializer
 } from '@angular/core';
 import { RDX_DIRECTION } from '@radix-ng/primitives/direction-provider';
-import { RadixNG, type RadixNGConfig } from './config';
 
 export const RADIX_NG_CONFIG = new InjectionToken<readonly RadixNGConfig[]>('RADIX_NG_CONFIG', {
     providedIn: 'root',

@@ -1,3 +1,5 @@
+import { RdxAutocompletePositioner } from './autocomplete-positioner';
+import { RdxAutocompleteRoot } from './autocomplete-root';
 import {
     afterNextRender,
     afterRenderEffect,
@@ -13,8 +15,6 @@ import { BooleanInput, injectId } from '@radix-ng/primitives/core';
 import { RdxFloatingInsideElement } from '@radix-ng/primitives/dismissable-layer';
 import { injectFieldRootContext } from '@radix-ng/primitives/field';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
-import { RdxAutocompletePositioner } from './autocomplete-positioner';
-import { RdxAutocompleteRoot } from './autocomplete-root';
 
 const attr = (value: boolean) => (value ? '' : undefined);
 

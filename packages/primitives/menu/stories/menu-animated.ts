@@ -1,6 +1,6 @@
+import { cn, demoButton, demoMenu } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoMenu } from '../../storybook/styles';
 
 @Component({
     selector: 'rdx-menu-animated',
@@ -67,14 +67,14 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
     ],
     template: `
         <ng-container #root="rdxMenuRoot" rdxMenuRoot>
-            <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Animated</button>
+            <button rdxMenuTrigger [class]="cn(b.base, b.outline, b.size.md)">Animated</button>
 
-            <div *rdxMenuPortal [class]="cn(m.positioner, 'animated-positioner')" sideOffset="4" rdxMenuPositioner>
-                <div [class]="cn(m.popup, 'animated-popup')" rdxMenuPopup>
-                    <button [class]="m.item" rdxMenuItem>New Tab</button>
-                    <button [class]="m.item" rdxMenuItem>New Window</button>
-                    <div [class]="m.separator" rdxMenuSeparator></div>
-                    <button [class]="m.item" rdxMenuItem>Print…</button>
+            <div *rdxMenuPortal sideOffset="4" rdxMenuPositioner [class]="cn(m.positioner, 'animated-positioner')">
+                <div rdxMenuPopup [class]="cn(m.popup, 'animated-popup')">
+                    <button rdxMenuItem [class]="m.item">New Tab</button>
+                    <button rdxMenuItem [class]="m.item">New Window</button>
+                    <div rdxMenuSeparator [class]="m.separator"></div>
+                    <button rdxMenuItem [class]="m.item">Print…</button>
                 </div>
             </div>
         </ng-container>

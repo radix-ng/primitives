@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
 import { calculateCropData, CropperGeometry, restrictOffset } from '../src/cropper-math';
+import { describe, expect, it } from 'vitest';
 
 describe('restrictOffset', () => {
     // Wrapper 200x100 inside a 100x100 crop window: horizontal overflow only.

@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideChevronDown } from '@lucide/angular';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideChevronDown } from '@lucide/angular';
 
 /**
  * A 2D grid list (`grid`): `ArrowUp`/`ArrowDown` move between rows keeping the column, `ArrowLeft`/
@@ -13,26 +13,26 @@ import { _importsCombobox } from '../index';
     selector: 'combobox-grid',
     imports: [_importsCombobox, LucideChevronDown],
     template: `
-        <div [(value)]="value" grid rdxComboboxRoot>
+        <div grid rdxComboboxRoot [(value)]="value">
             <div [class]="c.control">
-                <input [class]="c.input" rdxComboboxInput placeholder="Pick a size…" aria-label="Size" />
-                <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                <input rdxComboboxInput placeholder="Pick a size…" aria-label="Size" [class]="c.input" />
+                <button rdxComboboxTrigger aria-label="Open" [class]="c.trigger">
                     <svg lucideChevronDown size="16"></svg>
                 </button>
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" rdxComboboxPopup>
-                    <div [class]="list" rdxComboboxList aria-label="Sizes">
+            <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                <div rdxComboboxPopup [class]="c.popup">
+                    <div rdxComboboxList aria-label="Sizes" [class]="list">
                         @for (row of rows; track $index) {
-                            <div [class]="rowClass" rdxComboboxRow>
+                            <div rdxComboboxRow [class]="rowClass">
                                 @for (size of row; track size) {
-                                    <div [class]="cell" [value]="size" rdxComboboxItem>{{ size }}</div>
+                                    <div rdxComboboxItem [class]="cell" [value]="size">{{ size }}</div>
                                 }
                             </div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxComboboxEmpty>No size found.</div>
+                    <div rdxComboboxEmpty [class]="c.empty">No size found.</div>
                 </div>
             </div>
         </div>

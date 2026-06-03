@@ -38,8 +38,8 @@ import { RdxSwitchInput, RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primiti
         <p class="mt-3">
             <button
                 class="border-border bg-background text-foreground focus-visible:ring-ring inline-flex h-9 items-center rounded-md border px-3 text-sm font-medium shadow-sm outline-none focus-visible:ring-2"
-                (click)="setValue()"
                 type="button"
+                (click)="setValue()"
             >
                 Set preset value
             </button>

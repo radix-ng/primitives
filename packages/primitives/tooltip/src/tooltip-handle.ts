@@ -1,5 +1,5 @@
-import { computed, signal } from '@angular/core';
 import type { RdxTooltipContext } from './tooltip';
+import { computed, signal } from '@angular/core';
 
 /**
  * Connects a tooltip root with trigger elements rendered elsewhere in the DOM.

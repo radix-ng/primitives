@@ -1,5 +1,5 @@
-import { computed, Directive, inject } from '@angular/core';
 import { RdxNavigationMenuItem } from './navigation-menu-item';
+import { computed, Directive, inject } from '@angular/core';
 
 /**
  * A visual indicator (e.g. a caret) rendered inside a trigger. Exposes the open state so the icon

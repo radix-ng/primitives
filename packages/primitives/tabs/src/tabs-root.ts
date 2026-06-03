@@ -1,3 +1,5 @@
+import { provideTabsRootContext, RdxTabsRootContext } from './tabs-root-context';
+import { RdxTabsActivationDirection, RdxTabsTabMetadata, RdxTabsValue } from './utils';
 import { Directive, effect, inject, input, model, output, signal, untracked } from '@angular/core';
 import { RdxCompositeList, RdxCompositeMetadata } from '@radix-ng/primitives/composite';
 import {
@@ -6,8 +8,6 @@ import {
     injectId,
     RdxCancelableChangeEventDetails
 } from '@radix-ng/primitives/core';
-import { provideTabsRootContext, RdxTabsRootContext } from './tabs-root-context';
-import { RdxTabsActivationDirection, RdxTabsTabMetadata, RdxTabsValue } from './utils';
 
 export type RdxTabsValueChangeReason = 'none' | 'disabled' | 'missing' | 'initial';
 export type RdxTabsValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxTabsValueChangeReason> & {

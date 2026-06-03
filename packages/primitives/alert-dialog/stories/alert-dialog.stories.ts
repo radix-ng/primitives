@@ -1,11 +1,10 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxAlertDialogCloseConfirmationComponent } from './alert-dialog-close-confirmation';
 import closeConfirmationSource from './alert-dialog-close-confirmation?raw';
 import { RdxAlertDialogControlledComponent } from './alert-dialog-controlled';
+import controlledSource from './alert-dialog-controlled?raw';
 import { RdxAlertDialogControlledMultipleComponent } from './alert-dialog-controlled-multiple';
 import controlledMultipleSource from './alert-dialog-controlled-multiple?raw';
-import controlledSource from './alert-dialog-controlled?raw';
 import { RdxAlertDialogDefaultComponent } from './alert-dialog-default';
 import defaultSource from './alert-dialog-default?raw';
 import { RdxAlertDialogDetachedComponent } from './alert-dialog-detached';
@@ -14,6 +13,7 @@ import { RdxAlertDialogFromMenuComponent } from './alert-dialog-from-menu';
 import fromMenuSource from './alert-dialog-from-menu?raw';
 import { RdxAlertDialogMultipleTriggersComponent } from './alert-dialog-multiple-triggers';
 import multipleTriggersSource from './alert-dialog-multiple-triggers?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 

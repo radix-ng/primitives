@@ -1,22 +1,22 @@
+import { _importsCombobox } from '../index';
+import { ComboboxItemHighlightedDetails, RdxComboboxRoot } from '../src/combobox-root';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { describe, expect, it } from 'vitest';
-import { _importsCombobox } from '../index';
-import { ComboboxItemHighlightedDetails, RdxComboboxRoot } from '../src/combobox-root';
 
 // --- #1: non-virtualized programmatic highlight reports reason 'none', not a stale 'keyboard' ---
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
-        <div [(open)]="open" (onItemHighlighted)="events.push($event)" autoHighlight="input-change" rdxComboboxRoot>
+        <div autoHighlight="input-change" rdxComboboxRoot [(open)]="open" (onItemHighlighted)="events.push($event)">
             <input rdxComboboxInput aria-label="Fruit" />
             <div *rdxComboboxPortal rdxComboboxPositioner>
                 <div rdxComboboxPopup>
                     <div rdxComboboxList aria-label="Fruits">
                         @for (fruit of fruits; track fruit) {
-                            <div [value]="fruit" rdxComboboxItem>{{ fruit }}</div>
+                            <div rdxComboboxItem [value]="fruit">{{ fruit }}</div>
                         }
                     </div>
                 </div>
@@ -37,19 +37,19 @@ class ReasonHost {
     template: `
         <div
             #cmb="rdxComboboxRoot"
-            [(open)]="open"
-            [items]="items"
-            [limit]="limit()"
             virtualized
             autoHighlight="always"
             rdxComboboxRoot
+            [items]="items"
+            [limit]="limit()"
+            [(open)]="open"
         >
             <input rdxComboboxInput aria-label="Item" />
             <div *rdxComboboxPortal rdxComboboxPositioner>
                 <div rdxComboboxPopup>
                     <div rdxComboboxList aria-label="Items">
                         @for (i of windowIndexes; track i) {
-                            <div [value]="cmb.filteredItems()[i]" [index]="i" rdxComboboxItem></div>
+                            <div rdxComboboxItem [value]="cmb.filteredItems()[i]" [index]="i"></div>
                         }
                     </div>
                 </div>
@@ -71,13 +71,13 @@ class VirtualAlwaysHost {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
-        <div [(open)]="open" (onItemHighlighted)="events.push($event)" rdxComboboxRoot>
+        <div rdxComboboxRoot [(open)]="open" (onItemHighlighted)="events.push($event)">
             <input rdxComboboxInput aria-label="Fruit" />
             <div *rdxComboboxPortal rdxComboboxPositioner>
                 <div rdxComboboxPopup>
                     <div rdxComboboxList aria-label="Fruits">
                         @for (fruit of fruits; track fruit) {
-                            <div [value]="fruit" rdxComboboxItem>{{ fruit }}</div>
+                            <div rdxComboboxItem [value]="fruit">{{ fruit }}</div>
                         }
                     </div>
                 </div>

@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
 import { injectComboboxRootContext } from './combobox-root';
+import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
 
 /**
  * A polite, atomic live region announcing the "no results" message. Mirrors Base UI: the element

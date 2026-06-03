@@ -49,14 +49,14 @@ import { RdxSliderModule } from '@radix-ng/primitives/slider';
     `,
     encapsulation: ViewEncapsulation.None,
     template: `
-        <div class="SliderRoot" [value]="[10, 50]" [step]="1" rdxSliderRoot>
+        <div class="SliderRoot" rdxSliderRoot [value]="[10, 50]" [step]="1">
             <div class="SliderControl" rdxSliderControl>
                 <div class="SliderTrack" rdxSliderTrack>
                     <div class="SliderIndicator" rdxSliderIndicator></div>
-                    <div class="SliderThumb" [index]="0" rdxSliderThumb>
+                    <div class="SliderThumb" rdxSliderThumb [index]="0">
                         <input rdxSliderThumbInput aria-label="Minimum" />
                     </div>
-                    <div class="SliderThumb" [index]="1" rdxSliderThumb>
+                    <div class="SliderThumb" rdxSliderThumb [index]="1">
                         <input rdxSliderThumbInput aria-label="Maximum" />
                     </div>
                 </div>

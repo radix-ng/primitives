@@ -1,7 +1,3 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { form, FormField, required } from '@angular/forms/signals';
-import { By } from '@angular/platform-browser';
 import {
     RdxRadioGroupDirective,
     RdxRadioIndicatorDirective,
@@ -9,6 +5,10 @@ import {
     RdxRadioItemInputDirective,
     RdxRadioValueChangeEvent
 } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { form, FormField, required } from '@angular/forms/signals';
+import { By } from '@angular/platform-browser';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -16,13 +16,13 @@ import {
     template: `
         <form>
             <div
+                rdxRadioRoot
+                name="density"
                 [value]="value"
                 [disabled]="disabled"
                 [required]="required"
                 [readOnly]="readonly"
                 (onValueChange)="onValueChange($event)"
-                rdxRadioRoot
-                name="density"
             >
                 <button id="default" rdxRadioItem value="default">
                     <span rdxRadioIndicator></span>
@@ -62,7 +62,7 @@ class RadioHost {
     imports: [RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioItemInputDirective, RdxRadioIndicatorDirective],
     template: `
         <form>
-            <div [value]="value" (onValueChange)="onValueChange($event)" rdxRadioRoot name="storage">
+            <div rdxRadioRoot name="storage" [value]="value" (onValueChange)="onValueChange($event)">
                 <label>
                     <span rdxRadioItem value="ssd">
                         <span rdxRadioIndicator></span>
@@ -289,7 +289,7 @@ describe('RdxRadio', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioItemInputDirective],
     template: `
-        <div [invalid]="invalid()" [errors]="errors()" rdxRadioRoot name="plan">
+        <div rdxRadioRoot name="plan" [invalid]="invalid()" [errors]="errors()">
             <button id="free" rdxRadioItem value="free"><input rdxRadioItemInput /></button>
             <button id="pro" rdxRadioItem value="pro"><input rdxRadioItemInput /></button>
         </div>
@@ -353,7 +353,7 @@ describe('RdxRadioGroup validation state (batch #4)', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [FormField, RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioItemInputDirective],
     template: `
-        <div [formField]="plan" rdxRadioRoot name="plan">
+        <div rdxRadioRoot name="plan" [formField]="plan">
             <button id="free" rdxRadioItem value="free"><input rdxRadioItemInput /></button>
             <button id="pro" rdxRadioItem value="pro"><input rdxRadioItemInput /></button>
         </div>

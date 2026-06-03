@@ -16,8 +16,8 @@ import { RdxSwitchInput, RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primiti
             <button
                 class="bg-muted data-[checked]:bg-primary focus-visible:ring-ring relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-0 p-0 shadow-sm transition-colors outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
                 id="airplane-mode-model"
-                [(checked)]="checked"
                 rdxSwitchRoot
+                [(checked)]="checked"
             >
                 <input rdxSwitchInput />
                 <span

@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
 import { RdxToastDescription } from '../src/toast-description';
 import { RdxToastManager } from '../src/toast-provider';
 import { RdxToastRoot } from '../src/toast-root';
 import { RdxToastTitle } from '../src/toast-title';
 import { RdxToastViewport } from '../src/toast-viewport';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -12,7 +12,7 @@ import { RdxToastViewport } from '../src/toast-viewport';
     template: `
         <div rdxToastViewport>
             @for (toast of toasts(); track toast.id) {
-                <div [toast]="toast" rdxToastRoot>
+                <div rdxToastRoot [toast]="toast">
                     @if (toast.title) {
                         <p rdxToastTitle>{{ toast.title }}</p>
                     }

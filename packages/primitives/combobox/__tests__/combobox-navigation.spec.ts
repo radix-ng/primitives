@@ -1,9 +1,9 @@
+import { _importsCombobox } from '../index';
+import { RdxComboboxRoot } from '../src/combobox-root';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsCombobox } from '../index';
-import { RdxComboboxRoot } from '../src/combobox-root';
 
 /**
  * Characterization tests (ADR 0014, Phase 0): pin the engine's keyboard-navigation edges before the
@@ -13,13 +13,13 @@ import { RdxComboboxRoot } from '../src/combobox-root';
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
-        <div [(value)]="value" [(open)]="open" [loopFocus]="loop()" rdxComboboxRoot>
+        <div rdxComboboxRoot [loopFocus]="loop()" [(value)]="value" [(open)]="open">
             <input rdxComboboxInput aria-label="Fruit" />
             <div *rdxComboboxPortal rdxComboboxPositioner>
                 <div rdxComboboxPopup>
                     <div rdxComboboxList aria-label="Fruits">
                         @for (fruit of fruits; track fruit) {
-                            <div [value]="fruit" rdxComboboxItem>{{ fruit }}</div>
+                            <div rdxComboboxItem [value]="fruit">{{ fruit }}</div>
                         }
                     </div>
                 </div>

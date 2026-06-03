@@ -1,7 +1,7 @@
+import { _importsAutocomplete } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsAutocomplete } from '../index';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -9,20 +9,20 @@ import { _importsAutocomplete } from '../index';
     template: `
         <div
             #ac="rdxAutocompleteRoot"
-            [(value)]="value"
-            [(open)]="open"
+            virtualized
+            rdxAutocompleteRoot
             [items]="items()"
             [mode]="mode()"
             [autoHighlight]="autoHighlight()"
-            virtualized
-            rdxAutocompleteRoot
+            [(value)]="value"
+            [(open)]="open"
         >
             <input rdxAutocompleteInput aria-label="Item" />
             <div *rdxAutocompletePortal rdxAutocompletePositioner>
                 <div rdxAutocompletePopup>
                     <div rdxAutocompleteList aria-label="Items">
                         @for (item of ac.filteredItems(); track item; let i = $index) {
-                            <div [value]="item" [index]="i" rdxAutocompleteItem>{{ item }}</div>
+                            <div rdxAutocompleteItem [value]="item" [index]="i">{{ item }}</div>
                         }
                     </div>
                 </div>

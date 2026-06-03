@@ -1,5 +1,5 @@
-import { computed, signal } from '@angular/core';
 import type { RdxPopoverRootContext } from './popover-root';
+import { computed, signal } from '@angular/core';
 
 /**
  * Connects a popover root with trigger elements rendered elsewhere in the DOM.

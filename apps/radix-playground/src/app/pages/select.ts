@@ -1,7 +1,7 @@
+import { DemoPage } from '../shared/demo-page';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { _importsSelect } from '@radix-ng/primitives/select';
-import { DemoPage } from '../shared/demo-page';
 
 @Component({
     selector: 'app-select',
@@ -24,7 +24,7 @@ import { DemoPage } from '../shared/demo-page';
                     <svg lucideChevronDown size="16"></svg>
                 </button>
 
-                <div class="z-[100]" *rdxSelectPortal sideOffset="8" rdxSelectPositioner>
+                <div *rdxSelectPortal class="z-[100]" sideOffset="8" rdxSelectPositioner>
                     <div
                         class="border-border bg-popover text-popover-foreground min-w-40 rounded-lg border shadow-md will-change-[opacity,transform]"
                         rdxSelectPopup
@@ -34,8 +34,8 @@ import { DemoPage } from '../shared/demo-page';
                                 @for (option of options; track option) {
                                     <div
                                         class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-8 cursor-default items-center rounded-sm pr-8 pl-6 text-sm leading-none outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                                        [value]="option"
                                         rdxSelectItem
+                                        [value]="option"
                                     >
                                         <span
                                             class="absolute left-0 inline-flex w-6 items-center justify-center"

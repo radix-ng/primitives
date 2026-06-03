@@ -1,6 +1,6 @@
+import { ComboboxItemRef, injectComboboxRootContext } from './combobox-root';
 import { computed, Directive, inject, signal } from '@angular/core';
 import { createContext } from '@radix-ng/primitives/core';
-import { ComboboxItemRef, injectComboboxRootContext } from './combobox-root';
 
 const groupContext = () => {
     const group = inject(RdxComboboxGroup);

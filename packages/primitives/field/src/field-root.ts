@@ -6,8 +6,8 @@ import {
     ElementRef,
     inject,
     input,
-    signal,
-    Signal
+    Signal,
+    signal
 } from '@angular/core';
 import { BooleanInput, createContext, injectId, RdxValidationError } from '@radix-ng/primitives/core';
 import { injectFormRootContext, RdxFormFieldRegistration } from '@radix-ng/primitives/form';

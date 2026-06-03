@@ -1,8 +1,8 @@
+import { cn, demoButton, demoCombobox, demoDialog } from '../../storybook/styles';
+import { _importsCombobox } from '../index';
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown, LucidePlus, LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
-import { cn, demoButton, demoCombobox, demoDialog } from '../../storybook/styles';
-import { _importsCombobox } from '../index';
 
 /** Sentinel value for the "create" row, intercepted in `onValueChange`. */
 const CREATE = '__rdx_create__';
@@ -18,20 +18,20 @@ const CREATE = '__rdx_create__';
     imports: [_importsCombobox, ...dialogImports, LucideChevronDown, LucideCheck, LucidePlus, LucideX],
     template: `
         <div
+            multiple
+            rdxComboboxRoot
             [(value)]="value"
             [(open)]="open"
             (onInputValueChange)="query.set($event.value)"
             (onValueChange)="onValueChange($event.value)"
-            multiple
-            rdxComboboxRoot
         >
-            <div [class]="control" rdxComboboxAnchor>
+            <div rdxComboboxAnchor [class]="control">
                 @if (value().length) {
-                    <div [class]="c.chips" rdxComboboxChips>
+                    <div rdxComboboxChips [class]="c.chips">
                         @for (label of value(); track label) {
-                            <span [class]="c.chip" [value]="label" rdxComboboxChip>
+                            <span rdxComboboxChip [class]="c.chip" [value]="label">
                                 {{ label }}
-                                <button [class]="c.chipRemove" rdxComboboxChipRemove aria-label="Remove">
+                                <button rdxComboboxChipRemove aria-label="Remove" [class]="c.chipRemove">
                                     <svg lucideX size="12"></svg>
                                 </button>
                             </span>
@@ -39,29 +39,29 @@ const CREATE = '__rdx_create__';
                     </div>
                 }
                 <input
-                    [class]="c.inputInline"
-                    [placeholder]="value().length ? '' : 'e.g. bug'"
                     rdxComboboxInput
                     aria-label="Labels"
+                    [class]="c.inputInline"
+                    [placeholder]="value().length ? '' : 'e.g. bug'"
                 />
-                <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                <button rdxComboboxTrigger aria-label="Open" [class]="c.trigger">
                     <svg lucideChevronDown size="16"></svg>
                 </button>
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" rdxComboboxPopup>
-                    <div [class]="c.list" rdxComboboxList aria-label="Labels">
+            <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                <div rdxComboboxPopup [class]="c.popup">
+                    <div rdxComboboxList aria-label="Labels" [class]="c.list">
                         @for (label of options(); track label) {
-                            <div [class]="c.item" [value]="label" rdxComboboxItem>
-                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                            <div rdxComboboxItem [class]="c.item" [value]="label">
+                                <span rdxComboboxItemIndicator [class]="c.itemIndicator">
                                     <svg lucideCheck size="14"></svg>
                                 </span>
                                 {{ label }}
                             </div>
                         }
                         @if (showCreate()) {
-                            <div [class]="c.item" [value]="CREATE" [textValue]="query()" rdxComboboxItem>
+                            <div rdxComboboxItem [class]="c.item" [value]="CREATE" [textValue]="query()">
                                 <span [class]="c.itemIndicator">
                                     <svg lucidePlus size="14"></svg>
                                 </span>
@@ -69,30 +69,30 @@ const CREATE = '__rdx_create__';
                             </div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxComboboxEmpty>No labels found.</div>
+                    <div rdxComboboxEmpty [class]="c.empty">No labels found.</div>
                 </div>
             </div>
         </div>
 
-        <div [(open)]="dialogOpen" rdxDialogRoot>
+        <div rdxDialogRoot [(open)]="dialogOpen">
             <ng-template rdxDialogPortal>
-                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
-                <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-                    <h2 [class]="d.title" rdxDialogTitle>Create new label</h2>
-                    <p [class]="d.description" rdxDialogDescription>Add a new label to select.</p>
+                <div rdxDialogBackdrop [class]="cn(d.backdrop, d.backdropAnimated)"></div>
+                <div rdxDialogPopup [class]="cn(d.popup, d.popupAnimated)">
+                    <h2 rdxDialogTitle [class]="d.title">Create new label</h2>
+                    <p rdxDialogDescription [class]="d.description">Add a new label to select.</p>
                     <form (submit)="confirmCreate($event)">
                         <input
+                            placeholder="Label name"
+                            aria-label="Label name"
                             [class]="dialogInput"
                             [value]="newLabel()"
                             (input)="newLabel.set($any($event.target).value)"
-                            placeholder="Label name"
-                            aria-label="Label name"
                         />
                         <div [class]="d.footer">
-                            <button [class]="cn(b.base, b.outline, b.size.sm)" type="button" rdxDialogClose>
+                            <button type="button" rdxDialogClose [class]="cn(b.base, b.outline, b.size.sm)">
                                 Cancel
                             </button>
-                            <button [class]="cn(b.base, b.primary, b.size.sm)" type="submit">Create</button>
+                            <button type="submit" [class]="cn(b.base, b.primary, b.size.sm)">Create</button>
                         </div>
                     </form>
                 </div>

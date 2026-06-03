@@ -1,4 +1,3 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { NumberFieldCurrencyExample } from './number-field-currency';
 import currencySource from './number-field-currency?raw';
@@ -12,6 +11,7 @@ import { NumberFieldPercentageExample } from './number-field-percentage';
 import percentageSource from './number-field-percentage?raw';
 import { NumberFieldScrubExample } from './number-field-scrub';
 import scrubSource from './number-field-scrub?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 

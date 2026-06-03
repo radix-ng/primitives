@@ -1,10 +1,10 @@
-import { NgModule } from '@angular/core';
 import { RdxTabsIndicator } from './src/tabs-indicator';
 import { RdxTabsList } from './src/tabs-list';
 import { RdxTabsPanel } from './src/tabs-panel';
 import { RdxTabsPanelPresence } from './src/tabs-panel-presence';
 import { RdxTabsRoot } from './src/tabs-root';
 import { RdxTabsTab } from './src/tabs-tab';
+import { NgModule } from '@angular/core';
 
 export * from './src/tabs-indicator';
 export * from './src/tabs-list';

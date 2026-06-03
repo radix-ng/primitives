@@ -1,3 +1,4 @@
+import { cn, demoAccordion } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxAccordionHeaderDirective,
@@ -6,7 +7,6 @@ import {
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
-import { cn, demoAccordion } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -20,42 +20,42 @@ import { cn, demoAccordion } from '../../storybook/styles';
     ],
     template: `
         <div
+            rdxAccordionRoot
             [class]="cn(a.root, 'flex h-[300px] flex-row')"
             [defaultValue]="'item-1'"
             [orientation]="'horizontal'"
-            rdxAccordionRoot
         >
-            <div [class]="cn(a.item, a.itemH)" [value]="'item-1'" rdxAccordionItem>
-                <div [class]="a.header" rdxAccordionHeader>
-                    <button [class]="cn(a.trigger, a.triggerH)" type="button" rdxAccordionTrigger>
+            <div rdxAccordionItem [class]="cn(a.item, a.itemH)" [value]="'item-1'">
+                <div rdxAccordionHeader [class]="a.header">
+                    <button type="button" rdxAccordionTrigger [class]="cn(a.trigger, a.triggerH)">
                         Is it accessible?
                     </button>
                 </div>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div rdxAccordionPanel [class]="a.content">
                     <div [class]="a.contentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
                 </div>
             </div>
 
-            <div [class]="cn(a.item, a.itemH)" [value]="'item-2'" [disabled]="true" rdxAccordionItem>
-                <div [class]="a.header" rdxAccordionHeader>
-                    <button [class]="cn(a.trigger, a.triggerH)" type="button" rdxAccordionTrigger>
+            <div rdxAccordionItem [class]="cn(a.item, a.itemH)" [value]="'item-2'" [disabled]="true">
+                <div rdxAccordionHeader [class]="a.header">
+                    <button type="button" rdxAccordionTrigger [class]="cn(a.trigger, a.triggerH)">
                         Is it unstyled?
                     </button>
                 </div>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div rdxAccordionPanel [class]="a.content">
                     <div [class]="a.contentText">
                         Yes. It's unstyled by default, giving you freedom over the look and feel.
                     </div>
                 </div>
             </div>
 
-            <div [class]="cn(a.item, a.itemH)" [value]="'item-3'" rdxAccordionItem>
-                <div [class]="a.header" rdxAccordionHeader>
-                    <button [class]="cn(a.trigger, a.triggerH)" type="button" rdxAccordionTrigger>
+            <div rdxAccordionItem [class]="cn(a.item, a.itemH)" [value]="'item-3'">
+                <div rdxAccordionHeader [class]="a.header">
+                    <button type="button" rdxAccordionTrigger [class]="cn(a.trigger, a.triggerH)">
                         Can it be animated?
                     </button>
                 </div>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div rdxAccordionPanel [class]="a.content">
                     <div [class]="a.contentText">Yes! You can animate the Accordion with CSS or JavaScript.</div>
                 </div>
             </div>

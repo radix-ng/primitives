@@ -1,7 +1,7 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { DirectionProviderSliderExample } from './direction-provider-slider';
 import sliderSource from './direction-provider-slider?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 const source = (code: string) => ({ docs: { source: { code, language: 'typescript' } } });

@@ -1,3 +1,6 @@
+import { RdxToggleGroup } from '../src/toggle-group';
+import { RdxToggleGroupValueChangeEvent } from '../src/toggle-group-base';
+import { RdxToggleGroupWithoutFocus } from '../src/toggle-group-without-focus';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -7,26 +10,23 @@ import { resetRdxDevWarnings } from '@radix-ng/primitives/core';
 import { RdxToggle, RdxTogglePressedChangeEvent } from '@radix-ng/primitives/toggle';
 import { RdxToolbarGroup, RdxToolbarRoot } from '@radix-ng/primitives/toolbar';
 import { vi } from 'vitest';
-import { RdxToggleGroup } from '../src/toggle-group';
-import { RdxToggleGroupValueChangeEvent } from '../src/toggle-group-base';
-import { RdxToggleGroupWithoutFocus } from '../src/toggle-group-without-focus';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxToggleGroup, RdxToggle],
     template: `
         <div
-            [(value)]="value"
+            rdxToggleGroup
+            aria-label="Text alignment"
             [multiple]="multiple()"
             [disabled]="disabled()"
             [orientation]="orientation()"
             [dir]="dir()"
             [loopFocus]="loopFocus()"
+            [(value)]="value"
             (onValueChange)="onGroupValueChange($event)"
-            rdxToggleGroup
-            aria-label="Text alignment"
         >
-            <button (onPressedChange)="onItemPressedChange($event)" rdxToggle value="left" aria-label="Left aligned">
+            <button rdxToggle value="left" aria-label="Left aligned" (onPressedChange)="onItemPressedChange($event)">
                 Left
             </button>
             <button rdxToggle value="center" aria-label="Center aligned">Center</button>
@@ -224,7 +224,7 @@ describe('RdxToggleGroup', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxToggleGroup, RdxToggle],
     template: `
-        <div [value]="['known']" rdxToggleGroup aria-label="Missing value">
+        <div rdxToggleGroup aria-label="Missing value" [value]="['known']">
             <button rdxToggle>Missing value</button>
         </div>
     `
@@ -254,9 +254,9 @@ describe('RdxToggleGroup diagnostics', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxToolbarRoot, RdxToolbarGroup, RdxToggleGroupWithoutFocus, RdxToggle],
     template: `
-        <div [disabled]="toolbarDisabled()" rdxToolbarRoot aria-label="Toolbar">
-            <div [disabled]="toolbarGroupDisabled()" rdxToolbarGroup>
-                <div [(value)]="value" rdxToggleGroupWithoutFocus aria-label="Alignment">
+        <div rdxToolbarRoot aria-label="Toolbar" [disabled]="toolbarDisabled()">
+            <div rdxToolbarGroup [disabled]="toolbarGroupDisabled()">
+                <div rdxToggleGroupWithoutFocus aria-label="Alignment" [(value)]="value">
                     <button rdxToggle value="left">Left</button>
                     <button rdxToggle value="right">Right</button>
                 </div>
@@ -381,7 +381,7 @@ describe('RdxToggleGroup with ReactiveFormsModule', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxToggleGroup, RdxToggle],
     template: `
-        <div [invalid]="invalid()" [errors]="errors()" [dirty]="dirty()" rdxToggleGroup aria-label="Alignment">
+        <div rdxToggleGroup aria-label="Alignment" [invalid]="invalid()" [errors]="errors()" [dirty]="dirty()">
             <button rdxToggle value="left" aria-label="Left">Left</button>
             <button rdxToggle value="right" aria-label="Right">Right</button>
         </div>
@@ -447,7 +447,7 @@ describe('RdxToggleGroup validation state', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [FormField, RdxToggleGroup, RdxToggle],
     template: `
-        <div [formField]="alignment" rdxToggleGroup aria-label="Alignment">
+        <div rdxToggleGroup aria-label="Alignment" [formField]="alignment">
             <button rdxToggle value="left" aria-label="Left">Left</button>
             <button rdxToggle value="right" aria-label="Right">Right</button>
         </div>

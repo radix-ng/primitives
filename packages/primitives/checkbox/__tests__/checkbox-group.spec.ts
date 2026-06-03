@@ -1,19 +1,19 @@
+import { RdxCheckboxModule } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
-import { RdxCheckboxModule } from '../index';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxCheckboxModule],
     template: `
         <div
-            [(value)]="value"
+            rdxCheckboxGroup
             [allValues]="all"
             [disabled]="disabled"
+            [(value)]="value"
             (onValueChange)="onValueChange($event)"
-            rdxCheckboxGroup
         >
             <div parent rdxCheckboxRoot>
                 <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
@@ -47,14 +47,14 @@ class GroupHost {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxCheckboxModule],
     template: `
-        <div [(value)]="value" [allValues]="all" rdxCheckboxGroup>
+        <div rdxCheckboxGroup [allValues]="all" [(value)]="value">
             <div parent rdxCheckboxRoot>
                 <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
             </div>
             <div name="a" rdxCheckboxRoot>
                 <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
             </div>
-            <div [disabled]="true" name="b" rdxCheckboxRoot>
+            <div name="b" rdxCheckboxRoot [disabled]="true">
                 <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
             </div>
         </div>
@@ -248,7 +248,7 @@ describe('RdxCheckboxGroup', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxCheckboxModule],
     template: `
-        <div [invalid]="invalid()" [errors]="errors()" [dirty]="dirty()" [allValues]="all" rdxCheckboxGroup>
+        <div rdxCheckboxGroup [invalid]="invalid()" [errors]="errors()" [dirty]="dirty()" [allValues]="all">
             <div name="a" rdxCheckboxRoot>
                 <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
             </div>
@@ -319,7 +319,7 @@ describe('RdxCheckboxGroup validation state', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxCheckboxModule, FormField],
     template: `
-        <div [formField]="picks" [allValues]="all" rdxCheckboxGroup>
+        <div rdxCheckboxGroup [formField]="picks" [allValues]="all">
             <div name="a" rdxCheckboxRoot>
                 <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
             </div>

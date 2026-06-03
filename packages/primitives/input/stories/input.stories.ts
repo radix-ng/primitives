@@ -1,5 +1,3 @@
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { demoInput } from '../../storybook/styles';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxInputDirective } from '../src/input.directive';
@@ -9,6 +7,8 @@ import { InputReactiveFormsExample } from './input-reactive-forms';
 import reactiveFormsSource from './input-reactive-forms?raw';
 import { InputSignupFormExample } from './input-signup-form';
 import signupFormSource from './input-signup-form?raw';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const source = (code: string) => ({ docs: { source: { code, language: 'typescript' } } });
 const html = String.raw;

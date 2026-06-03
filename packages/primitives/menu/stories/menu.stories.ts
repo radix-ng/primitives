@@ -1,4 +1,3 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { MenuCheckboxItemsStory } from './components/menu-checkbox-items';
 import { MenuRadioItemsStory } from './components/menu-radio-items';
@@ -12,11 +11,12 @@ import backdropSource from './menu-backdrop?raw';
 import { RdxMenuDefaultComponent } from './menu-default';
 import defaultSource from './menu-default?raw';
 import { RdxMenuNestedComponent } from './menu-nested';
+import nestedSource from './menu-nested?raw';
 import { RdxMenuNestedRtlComponent } from './menu-nested-rtl';
 import nestedRtlSource from './menu-nested-rtl?raw';
-import nestedSource from './menu-nested?raw';
 import { RdxMenuViewportExampleComponent } from './menu-viewport';
 import viewportSource from './menu-viewport?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 

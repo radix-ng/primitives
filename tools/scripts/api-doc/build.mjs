@@ -1,6 +1,3 @@
-import fs from 'fs';
-import path from 'path';
-import * as TypeDoc from 'typedoc';
 import { staticMessages } from './constants.mjs';
 import {
     processComponentEmits,
@@ -17,6 +14,9 @@ import {
     getTypesValue,
     isProcessable
 } from './utils.mjs';
+import fs from 'fs';
+import path from 'path';
+import * as TypeDoc from 'typedoc';
 
 export async function generateComponentsTypeDocs() {
     const app = await TypeDoc.Application.bootstrapWithPlugins({

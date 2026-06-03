@@ -1,3 +1,5 @@
+import { DemoPage } from '../shared/demo-page';
+import { demoCheckbox } from '../shared/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideCheck } from '@lucide/angular';
 import {
@@ -7,8 +9,6 @@ import {
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { DemoPage } from '../shared/demo-page';
-import { demoCheckbox } from '../shared/styles';
 
 @Component({
     selector: 'app-checkbox',
@@ -28,9 +28,9 @@ import { demoCheckbox } from '../shared/styles';
             description="A control that allows the user to toggle between checked and not checked."
         >
             <div class="flex items-center gap-3">
-                <div [checked]="true" rdxCheckboxRoot>
-                    <button id="checkbox-1" [class]="c.button" rdxCheckboxButton>
-                        <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck></svg>
+                <div rdxCheckboxRoot [checked]="true">
+                    <button id="checkbox-1" rdxCheckboxButton [class]="c.button">
+                        <svg rdxCheckboxIndicator size="16" lucideCheck [class]="c.indicator"></svg>
                     </button>
                     <input rdxCheckboxInput />
                 </div>

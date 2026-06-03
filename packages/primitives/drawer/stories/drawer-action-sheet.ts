@@ -1,6 +1,6 @@
+import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 /** A full-width action-sheet row. */
 const action = cn(
@@ -14,13 +14,13 @@ const action = cn(
     imports: [...drawerImports],
     template: `
         <div rdxDrawerRoot>
-            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Photo options</button>
+            <button rdxDrawerTrigger [class]="cn(b.base, b.primary, b.size.md)">Photo options</button>
 
             <ng-template rdxDrawerPortal>
-                <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
+                <div rdxDrawerBackdrop [class]="cn(d.backdrop, d.overlayAnimated)"></div>
 
-                <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
-                    <div [class]="d.grip" aria-hidden="true"></div>
+                <div rdxDrawerPopup [class]="cn(d.popup, d.side.bottom)">
+                    <div aria-hidden="true" [class]="d.grip"></div>
 
                     <div class="overflow-y-auto pb-2" rdxDrawerContent>
                         <h2 class="sr-only" rdxDrawerTitle>Photo options</h2>
@@ -30,22 +30,22 @@ const action = cn(
 
                         <!-- Primary group of actions. -->
                         <div class="divide-border border-border flex flex-col divide-y border-y">
-                            <button [class]="action" rdxDrawerClose>Save to Photos</button>
-                            <button [class]="action" rdxDrawerClose>Copy Link</button>
-                            <button [class]="action" rdxDrawerClose>Add to Album</button>
+                            <button rdxDrawerClose [class]="action">Save to Photos</button>
+                            <button rdxDrawerClose [class]="action">Copy Link</button>
+                            <button rdxDrawerClose [class]="action">Add to Album</button>
                         </div>
 
                         <!-- Destructive action, set apart by a full-bleed spacer. -->
                         <div class="bg-muted h-2" aria-hidden="true"></div>
                         <button
-                            [class]="cn(action, 'border-border text-destructive border-b font-medium')"
                             rdxDrawerClose
+                            [class]="cn(action, 'border-border text-destructive border-b font-medium')"
                         >
                             Delete Photo
                         </button>
 
                         <div class="bg-muted h-2" aria-hidden="true"></div>
-                        <button [class]="cn(action, 'font-semibold')" rdxDrawerClose>Cancel</button>
+                        <button rdxDrawerClose [class]="cn(action, 'font-semibold')">Cancel</button>
                     </div>
                 </div>
             </ng-template>

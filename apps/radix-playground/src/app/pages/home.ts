@@ -1,6 +1,6 @@
+import { PRIMITIVES } from '../shared/primitives';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { PRIMITIVES } from '../shared/primitives';
 
 @Component({
     selector: 'app-home',

@@ -1,13 +1,13 @@
+import { _importsCombobox } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsCombobox } from '../index';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
-        <div [(open)]="open" [modal]="modal()" rdxComboboxRoot>
+        <div rdxComboboxRoot [modal]="modal()" [(open)]="open">
             <input rdxComboboxInput aria-label="Fruit" />
             <ng-template rdxComboboxPortal>
                 <div data-testid="backdrop" rdxComboboxBackdrop></div>
@@ -15,7 +15,7 @@ import { _importsCombobox } from '../index';
                     <div rdxComboboxPopup>
                         <div rdxComboboxList aria-label="Fruits">
                             @for (fruit of fruits; track fruit) {
-                                <div [value]="fruit" rdxComboboxItem>{{ fruit }}</div>
+                                <div rdxComboboxItem [value]="fruit">{{ fruit }}</div>
                             }
                         </div>
                     </div>

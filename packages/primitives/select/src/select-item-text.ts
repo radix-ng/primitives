@@ -1,7 +1,7 @@
-import { afterNextRender, computed, DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 import { injectSelectItemContext } from './select-item';
 import { injectSelectPopupContext } from './select-popup';
 import { injectSelectRootContext } from './select-root';
+import { afterNextRender, computed, DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 
 @Directive({
     selector: '[rdxSelectItemText]',

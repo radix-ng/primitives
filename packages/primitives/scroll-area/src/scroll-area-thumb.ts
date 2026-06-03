@@ -1,6 +1,6 @@
-import { Directive, effect, ElementRef, inject } from '@angular/core';
 import { injectScrollAreaRootContext } from './scroll-area-root';
 import { injectScrollAreaScrollbarContext } from './scroll-area-scrollbar';
+import { Directive, effect, ElementRef, inject } from '@angular/core';
 
 /**
  * The draggable part of the scrollbar that indicates the current scroll position.

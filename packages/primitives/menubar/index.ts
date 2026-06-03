@@ -1,5 +1,5 @@
-import { NgModule } from '@angular/core';
 import { RdxMenubarRoot } from './src/menubar-root';
+import { NgModule } from '@angular/core';
 
 export * from './src/menubar-root';
 

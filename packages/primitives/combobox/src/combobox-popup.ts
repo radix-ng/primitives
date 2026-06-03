@@ -1,3 +1,4 @@
+import { injectComboboxRootContext } from './combobox-root';
 import { afterRenderEffect, computed, DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 import {
     RDX_FLOATING_REGISTRATION,
@@ -7,7 +8,6 @@ import {
 } from '@radix-ng/primitives/core';
 import { RdxDismiss } from '@radix-ng/primitives/dismissable-layer';
 import { injectPopperContentWrapperContext, RdxPopperContent } from '@radix-ng/primitives/popper';
-import { injectComboboxRootContext } from './combobox-root';
 
 /**
  * The popup surface. Composes the popper content (for `data-side` / `data-align`) and a dismissable

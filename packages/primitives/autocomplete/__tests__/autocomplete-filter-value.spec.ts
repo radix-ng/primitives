@@ -1,9 +1,9 @@
+import { _importsAutocomplete } from '../index';
+import { AutocompleteFilter } from '../src/autocomplete-root';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AcceptableValue } from '@radix-ng/primitives/core';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsAutocomplete } from '../index';
-import { AutocompleteFilter } from '../src/autocomplete-root';
 
 /**
  * Regression (ADR 0014 review): the value-first filter contract must hand the custom filter the real
@@ -14,14 +14,14 @@ import { AutocompleteFilter } from '../src/autocomplete-root';
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsAutocomplete],
     template: `
-        <div [(value)]="value" [(open)]="open" [filter]="filter()" rdxAutocompleteRoot>
+        <div rdxAutocompleteRoot [filter]="filter()" [(value)]="value" [(open)]="open">
             <input rdxAutocompleteInput aria-label="Item" />
             <div *rdxAutocompletePortal rdxAutocompletePositioner>
                 <div rdxAutocompletePopup>
                     <div rdxAutocompleteList aria-label="Items">
                         <div rdxAutocompleteItem>Plain</div>
-                        <div [value]="''" rdxAutocompleteItem>Empty</div>
-                        <div [value]="null" rdxAutocompleteItem>Null</div>
+                        <div rdxAutocompleteItem [value]="''">Empty</div>
+                        <div rdxAutocompleteItem [value]="null">Null</div>
                     </div>
                 </div>
             </div>

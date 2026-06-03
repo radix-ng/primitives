@@ -1,3 +1,6 @@
+import { getFocusableMenuItems } from './menu-focus';
+import { injectRdxMenuRootContext } from './menu-root';
+import { applyPointerTunnel, createSafePolygonHandler, hasOpenChildSubmenu, MenuSide } from './menu-safe-polygon';
 import { isPlatformBrowser } from '@angular/common';
 import {
     booleanAttribute,
@@ -15,9 +18,6 @@ import {
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
 import { createRdxTriggerInteraction, useTriggerFocusGuards } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
-import { getFocusableMenuItems } from './menu-focus';
-import { injectRdxMenuRootContext } from './menu-root';
-import { applyPointerTunnel, createSafePolygonHandler, hasOpenChildSubmenu, MenuSide } from './menu-safe-polygon';
 
 const numberOrUndefined = (value: NumberInput | undefined) => (value == null ? undefined : numberAttribute(value));
 

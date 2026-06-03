@@ -1,6 +1,3 @@
-import { booleanAttribute, computed, Directive, input } from '@angular/core';
-import { BooleanInput } from '@radix-ng/primitives/core';
-import { injectNumberFieldRootContext } from './number-field-context';
 import {
     CHANGE_VALUE_TICK_DELAY,
     createPressAndHold,
@@ -8,7 +5,10 @@ import {
     SCROLLING_POINTER_MOVE_DISTANCE,
     START_AUTO_CHANGE_DELAY
 } from './number-field.utils';
+import { injectNumberFieldRootContext } from './number-field-context';
 import { Direction, NumberFieldChangeReason } from './types';
+import { booleanAttribute, computed, Directive, input } from '@angular/core';
+import { BooleanInput } from '@radix-ng/primitives/core';
 
 // Treat pen as touch-like to avoid forcing the software keyboard on stylus taps.
 function isTouchLikePointerType(pointerType: string): boolean {

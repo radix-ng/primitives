@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { RdxDismiss, RdxDismissProps, RdxDismissReason } from '../src/dismiss';
 import {
     createEnvironmentInjector,
     EnvironmentInjector,
@@ -15,7 +16,6 @@ import {
 } from '@radix-ng/primitives/core';
 import { RDX_FLOATING_MARKER } from '@radix-ng/primitives/floating-focus-manager';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { RdxDismiss, RdxDismissProps, RdxDismissReason } from '../src/dismiss';
 
 /** Drain microtasks (focus-out defers two) and the deferred `pointerdown` attach (a `setTimeout(0)`). */
 const flush = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 0));

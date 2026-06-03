@@ -1,6 +1,6 @@
+import { injectRdxPreviewCardRootContext } from './preview-card-root';
 import { computed, Directive, inject } from '@angular/core';
 import { RdxPopperArrow, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
-import { injectRdxPreviewCardRootContext } from './preview-card-root';
 
 /**
  * An optional arrow element rendered alongside the preview-card.

@@ -1,8 +1,8 @@
-import { NgModule } from '@angular/core';
 import { RdxCompositeItem } from './src/composite-item';
 import { RdxCompositeList } from './src/composite-list';
 import { RdxCompositeListItem } from './src/composite-list-item';
 import { RdxCompositeRoot } from './src/composite-root';
+import { NgModule } from '@angular/core';
 
 export * from './src/composite-item';
 export * from './src/composite-list';

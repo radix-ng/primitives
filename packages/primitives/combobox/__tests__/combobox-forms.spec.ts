@@ -1,3 +1,4 @@
+import { _importsCombobox } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -5,7 +6,6 @@ import { form, FormField } from '@angular/forms/signals';
 import { RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsCombobox } from '../index';
 
 interface Fruit {
     label: string;
@@ -21,13 +21,13 @@ const FRUITS: Fruit[] = [
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox, ReactiveFormsModule],
     template: `
-        <div [(open)]="open" [formControl]="control" rdxComboboxRoot>
+        <div rdxComboboxRoot [formControl]="control" [(open)]="open">
             <input rdxComboboxInput aria-label="Fruit" />
             <div *rdxComboboxPortal rdxComboboxPositioner>
                 <div rdxComboboxPopup>
                     <div rdxComboboxList aria-label="Fruits">
                         @for (fruit of fruits; track fruit.value) {
-                            <div [value]="fruit.value" rdxComboboxItem>{{ fruit.label }}</div>
+                            <div rdxComboboxItem [value]="fruit.value">{{ fruit.label }}</div>
                         }
                     </div>
                 </div>
@@ -45,7 +45,7 @@ class ReactiveHost {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox, RdxFieldRoot, RdxLabelDirective],
     template: `
-        <div [invalid]="invalid()" [required]="required()" rdxFieldRoot>
+        <div rdxFieldRoot [invalid]="invalid()" [required]="required()">
             <label rdxLabel>Fruit</label>
             <div rdxComboboxRoot>
                 <input rdxComboboxInput />
@@ -146,13 +146,13 @@ describe('Combobox forms integration', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
-        <div [(open)]="open" [invalid]="invalid()" [errors]="errors()" [dirty]="dirty()" rdxComboboxRoot>
+        <div rdxComboboxRoot [invalid]="invalid()" [errors]="errors()" [dirty]="dirty()" [(open)]="open">
             <input rdxComboboxInput aria-label="Fruit" />
             <div *rdxComboboxPortal rdxComboboxPositioner>
                 <div rdxComboboxPopup>
                     <div rdxComboboxList aria-label="Fruits">
                         @for (fruit of fruits; track fruit.value) {
-                            <div [value]="fruit.value" rdxComboboxItem>{{ fruit.label }}</div>
+                            <div rdxComboboxItem [value]="fruit.value">{{ fruit.label }}</div>
                         }
                     </div>
                 </div>
@@ -172,13 +172,13 @@ class ComboboxValidationHost {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox, FormField],
     template: `
-        <div [(open)]="open" [formField]="fruit" rdxComboboxRoot>
+        <div rdxComboboxRoot [formField]="fruit" [(open)]="open">
             <input rdxComboboxInput aria-label="Fruit" />
             <div *rdxComboboxPortal rdxComboboxPositioner>
                 <div rdxComboboxPopup>
                     <div rdxComboboxList aria-label="Fruits">
                         @for (fruit of fruits; track fruit.value) {
-                            <div [value]="fruit.value" rdxComboboxItem>{{ fruit.label }}</div>
+                            <div rdxComboboxItem [value]="fruit.value">{{ fruit.label }}</div>
                         }
                     </div>
                 </div>

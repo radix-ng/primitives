@@ -1,3 +1,5 @@
+import { injectRdxMenuRadioGroupContext } from './menu-radio-group';
+import { injectRdxMenuRootContext } from './menu-root';
 import {
     booleanAttribute,
     computed,
@@ -7,13 +9,11 @@ import {
     inject,
     input,
     output,
-    signal,
-    Signal
+    Signal,
+    signal
 } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, createContext } from '@radix-ng/primitives/core';
-import { injectRdxMenuRadioGroupContext } from './menu-radio-group';
-import { injectRdxMenuRootContext } from './menu-root';
 
 export interface RdxMenuRadioItemContext {
     checked: Signal<boolean>;

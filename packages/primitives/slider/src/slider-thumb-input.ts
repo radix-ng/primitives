@@ -1,8 +1,8 @@
-import { computed, DestroyRef, Directive, effect, ElementRef, inject, input } from '@angular/core';
-import { injectId } from '@radix-ng/primitives/core';
+import { ALL_KEYS, COMPOSITE_KEYS, getDefaultAriaValueText, getNewValue, roundValueToStep } from './slider.utils';
 import { injectSliderRootContext } from './slider-context';
 import { RdxSliderThumb } from './slider-thumb';
-import { ALL_KEYS, COMPOSITE_KEYS, getDefaultAriaValueText, getNewValue, roundValueToStep } from './slider.utils';
+import { computed, DestroyRef, Directive, effect, ElementRef, inject, input } from '@angular/core';
+import { injectId } from '@radix-ng/primitives/core';
 
 /**
  * The native `input[type=range]` nested inside a thumb. It is visually hidden but

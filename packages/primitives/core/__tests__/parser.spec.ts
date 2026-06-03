@@ -1,6 +1,3 @@
-import { InputSignal } from '@angular/core';
-import { CalendarDate, CalendarDateTime } from '@internationalized/date';
-import { describe, expect, it } from 'vitest';
 import { createFormatter } from '../src/date-time/formatter';
 import {
     createContent,
@@ -8,6 +5,9 @@ import {
     syncSegmentValues,
     syncTimeSegmentValues
 } from '../src/date-time/parser';
+import { InputSignal } from '@angular/core';
+import { CalendarDate, CalendarDateTime } from '@internationalized/date';
+import { describe, expect, it } from 'vitest';
 
 // `locale` is typed as an InputSignal in the parser API; a plain getter is enough for these tests.
 const localeSignal = (value: string) => (() => value) as unknown as InputSignal<string>;

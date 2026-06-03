@@ -1,5 +1,5 @@
-import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ARROW_UP, Direction, END, HOME } from '@radix-ng/primitives/core';
 import { RdxCompositeModifierKey, RdxCompositeOrientation } from './types';
+import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ARROW_UP, Direction, END, HOME } from '@radix-ng/primitives/core';
 
 export const ACTIVE_COMPOSITE_ITEM = 'data-composite-item-active';
 

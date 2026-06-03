@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
 import { useFilter } from '../src/composables/use-filter';
+import { describe, expect, it } from 'vitest';
 
 describe('useFilter', () => {
     it('matches case-insensitively', () => {

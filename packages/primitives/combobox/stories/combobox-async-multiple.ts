@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
-import { LucideCheck, LucideX } from '@lucide/angular';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { LucideCheck, LucideX } from '@lucide/angular';
 
 interface DirectoryUser {
     id: string;
@@ -23,25 +23,25 @@ interface DirectoryUser {
     imports: [_importsCombobox, LucideCheck, LucideX],
     template: `
         <div
-            [(value)]="value"
+            multiple
+            rdxComboboxRoot
             [items]="items()"
             [itemToStringLabel]="labelOf"
             [filter]="null"
+            [(value)]="value"
             (onValueChange)="onValueChange($event.value)"
             (onInputValueChange)="search($event.value)"
             (onOpenChangeComplete)="onOpenChangeComplete($event)"
-            multiple
-            rdxComboboxRoot
         >
             <div class="flex flex-col gap-1">
                 <label class="text-foreground text-sm font-medium" for="async-reviewers">Assign reviewers</label>
-                <div [class]="control" rdxComboboxAnchor>
+                <div rdxComboboxAnchor [class]="control">
                     @if (value().length) {
-                        <div [class]="c.chips" rdxComboboxChips>
+                        <div rdxComboboxChips [class]="c.chips">
                             @for (user of value(); track user.id) {
-                                <span [class]="c.chip" [value]="user" rdxComboboxChip>
+                                <span rdxComboboxChip [class]="c.chip" [value]="user">
                                     {{ user.name }}
-                                    <button [class]="c.chipRemove" rdxComboboxChipRemove aria-label="Remove">
+                                    <button rdxComboboxChipRemove aria-label="Remove" [class]="c.chipRemove">
                                         <svg lucideX size="12"></svg>
                                     </button>
                                 </span>
@@ -50,15 +50,15 @@ interface DirectoryUser {
                     }
                     <input
                         id="async-reviewers"
+                        rdxComboboxInput
                         [class]="c.inputInline"
                         [placeholder]="value().length ? '' : 'e.g. Michael'"
-                        rdxComboboxInput
                     />
                 </div>
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" [attr.aria-busy]="loading() ? 'true' : null" rdxComboboxPopup>
+            <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                <div rdxComboboxPopup [class]="c.popup" [attr.aria-busy]="loading() ? 'true' : null">
                     <div rdxComboboxStatus>
                         @if (loading()) {
                             <div class="text-muted-foreground flex items-center gap-2 px-2 py-1.5 text-sm">
@@ -74,12 +74,12 @@ interface DirectoryUser {
                     </div>
 
                     @if (emptyMessage(); as message) {
-                        <div [class]="c.empty" rdxComboboxEmpty>{{ message }}</div>
+                        <div rdxComboboxEmpty [class]="c.empty">{{ message }}</div>
                     }
 
-                    <div [class]="c.list" rdxComboboxList aria-label="People">
+                    <div rdxComboboxList aria-label="People" [class]="c.list">
                         @for (user of items(); track user.id) {
-                            <div [class]="item" [value]="user" [textValue]="user.name" rdxComboboxItem>
+                            <div rdxComboboxItem [class]="item" [value]="user" [textValue]="user.name">
                                 <span
                                     class="col-start-1 mt-0.5 flex size-3.5 items-center justify-center"
                                     rdxComboboxItemIndicator

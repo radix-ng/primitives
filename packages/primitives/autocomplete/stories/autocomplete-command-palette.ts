@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoCard, demoDialog } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { dialogImports } from '@radix-ng/primitives/dialog';
 
 interface Item {
     value: string;
@@ -23,33 +23,33 @@ interface Group {
     selector: 'autocomplete-command-palette',
     imports: [...dialogImports, _importsAutocomplete],
     template: `
-        <div [(open)]="open" rdxDialogRoot>
-            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open command palette</button>
+        <div rdxDialogRoot [(open)]="open">
+            <button rdxDialogTrigger [class]="cn(b.base, b.primary, b.size.md)">Open command palette</button>
 
             <ng-template rdxDialogPortal>
-                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
+                <div rdxDialogBackdrop [class]="cn(d.backdrop, d.backdropAnimated)"></div>
 
                 <div class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 pt-[12vh]">
-                    <div [class]="popup" rdxDialogPopup aria-label="Command palette">
-                        <div [(open)]="open" autoHighlight="always" rdxAutocompleteRoot>
+                    <div rdxDialogPopup aria-label="Command palette" [class]="popup">
+                        <div autoHighlight="always" rdxAutocompleteRoot [(open)]="open">
                             <input
                                 #cmdInput
-                                [class]="input"
                                 rdxAutocompleteInput
                                 placeholder="Search for apps and commands…"
                                 aria-label="Command"
+                                [class]="input"
                             />
 
-                            <div [class]="list" rdxAutocompleteList aria-label="Commands">
+                            <div rdxAutocompleteList aria-label="Commands" [class]="list">
                                 @for (group of groups; track group.value) {
                                     <div class="mb-1" rdxAutocompleteGroup>
-                                        <div [class]="groupLabel" rdxAutocompleteGroupLabel>{{ group.value }}</div>
+                                        <div rdxAutocompleteGroupLabel [class]="groupLabel">{{ group.value }}</div>
                                         @for (item of group.items; track item.value) {
                                             <div
+                                                rdxAutocompleteItem
                                                 [class]="itemClass"
                                                 [value]="item"
                                                 [textValue]="item.label"
-                                                rdxAutocompleteItem
                                             >
                                                 <span class="truncate">{{ item.label }}</span>
                                                 <span [class]="badge">
@@ -59,7 +59,7 @@ interface Group {
                                         }
                                     </div>
                                 }
-                                <div [class]="empty" rdxAutocompleteEmpty>No results found.</div>
+                                <div rdxAutocompleteEmpty [class]="empty">No results found.</div>
                             </div>
 
                             <div [class]="footer">

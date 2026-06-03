@@ -1,3 +1,7 @@
+import { RdxSelectItemAlignedPositionContent } from './select-item-aligned-position-content';
+import { RDX_SELECT_POSITIONER_TOKEN, RdxPositionerImpl, RdxSelectPopup } from './select-popup';
+import { injectSelectRootContext } from './select-root';
+import { CONTENT_MARGIN } from './utils';
 import {
     afterNextRender,
     computed,
@@ -11,10 +15,6 @@ import {
     signal
 } from '@angular/core';
 import { clamp, resizeEffect } from '@radix-ng/primitives/core';
-import { RdxSelectItemAlignedPositionContent } from './select-item-aligned-position-content';
-import { RDX_SELECT_POSITIONER_TOKEN, RdxPositionerImpl, RdxSelectPopup } from './select-popup';
-import { injectSelectRootContext } from './select-root';
-import { CONTENT_MARGIN } from './utils';
 
 @Directive({
     selector: '[rdxSelectItemAlignedPosition]',

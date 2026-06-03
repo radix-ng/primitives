@@ -1,6 +1,6 @@
+import { injectFieldRootContext } from './field-root';
 import { afterNextRender, computed, Directive, effect, ElementRef, inject, input } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
-import { injectFieldRootContext } from './field-root';
 
 const attr = (value: boolean) => (value ? '' : undefined);
 

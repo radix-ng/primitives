@@ -1,5 +1,5 @@
-import { Directive, ElementRef, inject } from '@angular/core';
 import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
+import { Directive, ElementRef, inject } from '@angular/core';
 
 /**
  * An optional backdrop rendered behind the popup.

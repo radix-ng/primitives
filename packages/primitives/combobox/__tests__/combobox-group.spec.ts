@@ -1,25 +1,25 @@
+import { _importsCombobox } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsCombobox } from '../index';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
-        <div [(open)]="open" rdxComboboxRoot>
+        <div rdxComboboxRoot [(open)]="open">
             <input rdxComboboxInput aria-label="Produce" />
             <div *rdxComboboxPortal rdxComboboxPositioner>
                 <div rdxComboboxPopup>
                     <div rdxComboboxList aria-label="Produce">
                         <div data-group="fruits" rdxComboboxGroup>
                             <div rdxComboboxGroupLabel>Fruits</div>
-                            <div [value]="'apple'" rdxComboboxItem>Apple</div>
-                            <div [value]="'grape'" rdxComboboxItem>Grape</div>
+                            <div rdxComboboxItem [value]="'apple'">Apple</div>
+                            <div rdxComboboxItem [value]="'grape'">Grape</div>
                         </div>
                         <div data-group="veg" rdxComboboxGroup>
                             <div rdxComboboxGroupLabel>Vegetables</div>
-                            <div [value]="'carrot'" rdxComboboxItem>Carrot</div>
+                            <div rdxComboboxItem [value]="'carrot'">Carrot</div>
                         </div>
                     </div>
                 </div>

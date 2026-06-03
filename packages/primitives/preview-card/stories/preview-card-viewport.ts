@@ -1,6 +1,6 @@
+import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { previewCardImports } from '@radix-ng/primitives/preview-card';
-import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -11,21 +11,21 @@ import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
             <p class="text-muted-foreground max-w-lg text-sm leading-6">
                 Compare
                 <a
-                    [class]="link"
                     href="#"
                     payload="Typography arranges type for readable language."
                     rdxPreviewCardTrigger
+                    [class]="link"
                 >
                     typography
                 </a>
                 ,
-                <a [class]="link" href="#" payload="Design shapes objects and systems." rdxPreviewCardTrigger>design</a>
+                <a href="#" payload="Design shapes objects and systems." rdxPreviewCardTrigger [class]="link">design</a>
                 , and
                 <a
-                    [class]="link"
                     href="#"
                     payload="Art communicates ideas through creative work."
                     rdxPreviewCardTrigger
+                    [class]="link"
                 >
                     art
                 </a>
@@ -34,15 +34,15 @@ import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
 
             <div
                 *rdxPreviewCardPortal
-                [class]="cn(p.positioner, 'transition-[left,right,top,bottom] duration-200')"
                 sideOffset="8"
                 rdxPreviewCardPositioner
+                [class]="cn(p.positioner, 'transition-[left,right,top,bottom] duration-200')"
             >
                 <div
-                    [class]="cn(p.popup, 'overflow-hidden transition-[width,height] duration-200')"
                     rdxPreviewCardPopup
+                    [class]="cn(p.popup, 'overflow-hidden transition-[width,height] duration-200')"
                 >
-                    <span [class]="p.arrow" rdxPreviewCardArrow></span>
+                    <span rdxPreviewCardArrow [class]="p.arrow"></span>
                     <div rdxPreviewCardViewport>
                         <div class="grid gap-2">
                             <div class="bg-muted h-24 rounded-md"></div>

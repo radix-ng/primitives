@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { injectRdxMenuRootContext } from './menu-root';
+import { Directive } from '@angular/core';
 
 /**
  * An optional overlay rendered behind the menu popup.

@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { injectNumberFieldRootContext } from './number-field-context';
+import { Directive } from '@angular/core';
 
 /**
  * The hidden native `input[type=number]` that mirrors the field value for native form submission

@@ -1,6 +1,6 @@
+import { injectRdxDialogRootContext } from './dialog-root';
 import { DestroyRef, Directive, inject } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
-import { injectRdxDialogRootContext } from './dialog-root';
 
 /**
  * An accessible description for the dialog.

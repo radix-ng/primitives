@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideDynamicIcon, LucidePlus } from '@lucide/angular';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideDynamicIcon, LucidePlus } from '@lucide/angular';
 
 /**
  * Loading state. Following Base UI's guidance, the button becomes `disabled`
@@ -14,18 +14,18 @@ import { RdxButtonDirective } from '../src/button.directive';
     imports: [RdxButtonDirective, LucideDynamicIcon, LucidePlus],
     template: `
         <button
+            rdxButton
+            focusableWhenDisabled
             [disabled]="loading()"
             [attr.aria-busy]="loading() ? 'true' : null"
             [class]="cn(b.base, b.primary, b.size.md)"
             (click)="run()"
-            rdxButton
-            focusableWhenDisabled
         >
             <svg
                 class="flex"
+                size="16"
                 [lucideIcon]="loading() ? 'loader-circle' : 'save'"
                 [class.animate-spin]="loading()"
-                size="16"
             />
             {{ loading() ? 'Saving…' : 'Save' }}
         </button>

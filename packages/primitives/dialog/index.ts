@@ -1,4 +1,3 @@
-import { NgModule } from '@angular/core';
 import { RdxDialogBackdrop } from './src/dialog-backdrop';
 import { RdxDialogClose } from './src/dialog-close';
 import { RdxDialogDescription } from './src/dialog-description';
@@ -8,6 +7,7 @@ import { RdxDialogRoot } from './src/dialog-root';
 import { RdxDialogTitle } from './src/dialog-title';
 import { RdxDialogTrigger } from './src/dialog-trigger';
 import { RdxDialogViewport } from './src/dialog-viewport';
+import { NgModule } from '@angular/core';
 
 export * from './src/dialog-backdrop';
 export * from './src/dialog-close';

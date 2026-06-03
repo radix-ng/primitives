@@ -1,7 +1,7 @@
+import { _importsCombobox } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsCombobox } from '../index';
 
 /**
  * P2 (ADR 0014): grid navigation is a Combobox engine feature. ArrowUp/Down move between rows keeping
@@ -11,7 +11,7 @@ import { _importsCombobox } from '../index';
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
-        <div [(value)]="value" [(open)]="open" grid rdxComboboxRoot>
+        <div grid rdxComboboxRoot [(value)]="value" [(open)]="open">
             <input rdxComboboxInput aria-label="Color" />
             <div *rdxComboboxPortal rdxComboboxPositioner>
                 <div rdxComboboxPopup>
@@ -19,7 +19,7 @@ import { _importsCombobox } from '../index';
                         @for (row of rows(); track $index) {
                             <div rdxComboboxRow>
                                 @for (cell of row; track cell) {
-                                    <div [value]="cell" rdxComboboxItem>{{ cell }}</div>
+                                    <div rdxComboboxItem [value]="cell">{{ cell }}</div>
                                 }
                             </div>
                         }
@@ -168,7 +168,7 @@ describe('Combobox grid', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
-        <div [(open)]="open" grid rdxComboboxRoot>
+        <div grid rdxComboboxRoot [(open)]="open">
             <input rdxComboboxInput aria-label="X" />
             <div *rdxComboboxPortal rdxComboboxPositioner>
                 <div rdxComboboxPopup>

@@ -1,8 +1,8 @@
+import { cn, demoButton, demoCombobox } from '../../storybook/styles';
+import { _importsCombobox } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
-import { cn, demoButton, demoCombobox } from '../../storybook/styles';
-import { _importsCombobox } from '../index';
 
 /**
  * Reactive forms with validation. The control's validity is bound to the combobox `[invalid]` input,
@@ -15,27 +15,27 @@ import { _importsCombobox } from '../index';
     imports: [_importsCombobox, ReactiveFormsModule, LucideChevronDown, LucideCheck],
     template: `
         <form class="flex flex-col gap-3" (ngSubmit)="onSubmit()">
-            <div [formControl]="fruit" [invalid]="showError()" rdxComboboxRoot>
+            <div rdxComboboxRoot [formControl]="fruit" [invalid]="showError()">
                 <div [class]="cn(c.control, showError() && 'border-destructive focus-within:ring-destructive')">
-                    <input [class]="c.input" rdxComboboxInput placeholder="Pick a fruit…" aria-label="Fruit" />
-                    <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                    <input rdxComboboxInput placeholder="Pick a fruit…" aria-label="Fruit" [class]="c.input" />
+                    <button rdxComboboxTrigger aria-label="Open" [class]="c.trigger">
                         <svg lucideChevronDown size="16"></svg>
                     </button>
                 </div>
 
-                <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                    <div [class]="c.popup" rdxComboboxPopup>
-                        <div [class]="c.list" rdxComboboxList aria-label="Fruits">
+                <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                    <div rdxComboboxPopup [class]="c.popup">
+                        <div rdxComboboxList aria-label="Fruits" [class]="c.list">
                             @for (f of fruits; track f) {
-                                <div [class]="c.item" [value]="f" rdxComboboxItem>
-                                    <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                <div rdxComboboxItem [class]="c.item" [value]="f">
+                                    <span rdxComboboxItemIndicator [class]="c.itemIndicator">
                                         <svg lucideCheck size="14"></svg>
                                     </span>
                                     {{ f }}
                                 </div>
                             }
                         </div>
-                        <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
+                        <div rdxComboboxEmpty [class]="c.empty">No fruit found.</div>
                     </div>
                 </div>
             </div>
@@ -44,7 +44,7 @@ import { _importsCombobox } from '../index';
                 <p class="text-destructive text-sm">Please pick a fruit.</p>
             }
 
-            <button [class]="cn(b.base, b.primary, b.size.md, 'self-start')" type="submit">Submit</button>
+            <button type="submit" [class]="cn(b.base, b.primary, b.size.md, 'self-start')">Submit</button>
 
             @if (submitted()) {
                 <p class="text-muted-foreground text-sm">Submitted ✓</p>

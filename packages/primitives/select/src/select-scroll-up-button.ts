@@ -1,6 +1,6 @@
-import { Directive, effect, inject, signal } from '@angular/core';
 import { injectSelectPopupContext } from './select-popup';
 import { RdxSelectScrollButtonBase } from './select-scroll-button-base';
+import { Directive, effect, inject, signal } from '@angular/core';
 
 @Directive({
     selector: '[rdxSelectScrollUpButton]',

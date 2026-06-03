@@ -1,3 +1,4 @@
+import { cn, demoAccordion } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxAccordionHeaderDirective,
@@ -6,7 +7,6 @@ import {
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
-import { cn, demoAccordion } from '../../storybook/styles';
 
 @Component({
     selector: 'accordion-collapsible-array-example',
@@ -19,13 +19,13 @@ import { cn, demoAccordion } from '../../storybook/styles';
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-        <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="'item-1'" rdxAccordionRoot>
+        <div rdxAccordionRoot [class]="cn(a.root, 'w-[300px]')" [defaultValue]="'item-1'">
             @for (item of items; track item.id) {
-                <div [class]="a.item" [value]="item.id" rdxAccordionItem>
-                    <h3 [class]="a.header" rdxAccordionHeader>
-                        <button [class]="a.trigger" type="button" rdxAccordionTrigger>{{ item.title }}</button>
+                <div rdxAccordionItem [class]="a.item" [value]="item.id">
+                    <h3 rdxAccordionHeader [class]="a.header">
+                        <button type="button" rdxAccordionTrigger [class]="a.trigger">{{ item.title }}</button>
                     </h3>
-                    <div [class]="a.content" rdxAccordionPanel>
+                    <div rdxAccordionPanel [class]="a.content">
                         <div [class]="a.contentText">{{ item.content }}</div>
                     </div>
                 </div>

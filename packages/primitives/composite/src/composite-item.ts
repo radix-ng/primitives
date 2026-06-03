@@ -1,7 +1,7 @@
-import { computed, Directive, ElementRef, inject } from '@angular/core';
 import { RdxCompositeListItem } from './composite-list-item';
 import { injectRdxCompositeRootContext } from './composite-root';
 import { RdxCompositeItemMetadata } from './types';
+import { computed, Directive, ElementRef, inject } from '@angular/core';
 
 /**
  * Internal Base UI-style composite item. Registers itself with the nearest composite root and

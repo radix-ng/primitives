@@ -1,6 +1,6 @@
+import { injectRadioItemContext } from './radio-item.directive';
 import { booleanAttribute, computed, Directive, input } from '@angular/core';
 import { BooleanInput } from '@radix-ng/primitives/core';
-import { injectRadioItemContext } from './radio-item.directive';
 
 @Directive({
     selector: '[rdxRadioIndicator]',

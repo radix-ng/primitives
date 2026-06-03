@@ -1,6 +1,6 @@
+import { cn, demoButton, demoCard } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxCompositeList, RdxCompositeListItem, RdxCompositeMetadata } from '@radix-ng/primitives/composite';
-import { cn, demoButton, demoCard } from '../../storybook/styles';
 
 @Component({
     selector: 'rdx-composite-list-only',
@@ -8,14 +8,14 @@ import { cn, demoButton, demoCard } from '../../storybook/styles';
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <div class="flex w-full max-w-xl flex-col gap-4">
-            <div class="flex flex-wrap items-center gap-2" (onMapChange)="onMapChange($event)" rdxCompositeList>
-                <button [class]="itemClass" [metadata]="{ id: 'overview', label: 'Overview' }" rdxCompositeListItem>
+            <div class="flex flex-wrap items-center gap-2" rdxCompositeList (onMapChange)="onMapChange($event)">
+                <button rdxCompositeListItem [class]="itemClass" [metadata]="{ id: 'overview', label: 'Overview' }">
                     Overview
                 </button>
-                <button [class]="itemClass" [metadata]="{ id: 'metrics', label: 'Metrics' }" rdxCompositeListItem>
+                <button rdxCompositeListItem [class]="itemClass" [metadata]="{ id: 'metrics', label: 'Metrics' }">
                     Metrics
                 </button>
-                <button [class]="itemClass" [metadata]="{ id: 'reports', label: 'Reports' }" rdxCompositeListItem>
+                <button rdxCompositeListItem [class]="itemClass" [metadata]="{ id: 'reports', label: 'Reports' }">
                     Reports
                 </button>
             </div>

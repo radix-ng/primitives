@@ -1,3 +1,4 @@
+import { DemoPage } from '../shared/demo-page';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxSliderControl,
@@ -7,7 +8,6 @@ import {
     RdxSliderThumbInput,
     RdxSliderTrack
 } from '@radix-ng/primitives/slider';
-import { DemoPage } from '../shared/demo-page';
 
 @Component({
     selector: 'app-slider',
@@ -23,7 +23,7 @@ import { DemoPage } from '../shared/demo-page';
     ],
     template: `
         <demo-page title="Slider" description="An input where the user selects a value from within a given range.">
-            <div class="relative w-64 select-none" [value]="45" [step]="5" rdxSliderRoot>
+            <div class="relative w-64 select-none" rdxSliderRoot [value]="45" [step]="5">
                 <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>
                     <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
                         <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>

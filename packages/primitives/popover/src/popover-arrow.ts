@@ -1,6 +1,6 @@
+import { injectRdxPopoverRootContext } from './popover-root';
 import { computed, Directive, inject } from '@angular/core';
 import { RdxPopperArrow, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
-import { injectRdxPopoverRootContext } from './popover-root';
 
 /**
  * An optional arrow element rendered alongside the popover.

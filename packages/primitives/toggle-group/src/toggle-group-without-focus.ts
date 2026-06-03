@@ -1,8 +1,8 @@
+import { RdxToggleGroupBase, toggleGroupContext } from './toggle-group-base';
+import { provideToggleGroupContext } from './toggle-group-context';
 import { Directive, inject } from '@angular/core';
 import { provideFormUiState, provideValueAccessor, RdxFormUiStateHost } from '@radix-ng/primitives/core';
 import { injectToolbarGroupContext, injectToolbarRootContext } from '@radix-ng/primitives/toolbar';
-import { RdxToggleGroupBase, toggleGroupContext } from './toggle-group-base';
-import { provideToggleGroupContext } from './toggle-group-context';
 
 /**
  * A toggle group that does NOT create its own composite root, for use inside a container that

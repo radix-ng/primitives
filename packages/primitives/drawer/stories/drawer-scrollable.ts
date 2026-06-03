@@ -1,3 +1,4 @@
+import { cn, demoButton, demoCard, demoDrawer, demoFocusRing } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import {
@@ -7,7 +8,6 @@ import {
     RdxScrollAreaThumb,
     RdxScrollAreaViewport
 } from '@radix-ng/primitives/scroll-area';
-import { cn, demoButton, demoCard, demoDrawer, demoFocusRing } from '../../storybook/styles';
 
 const ITEMS = [
     { href: '/react/overview', label: 'Overview' },
@@ -69,14 +69,14 @@ const LONG_LIST = [
     ],
     template: `
         <div rdxDrawerRoot>
-            <button [class]="cn(b.base, b.primary, 'h-8 px-3 text-sm leading-none font-normal')" rdxDrawerTrigger>
+            <button rdxDrawerTrigger [class]="cn(b.base, b.primary, 'h-8 px-3 text-sm leading-none font-normal')">
                 Open mobile menu
             </button>
 
             <ng-template rdxDrawerPortal>
                 <div
-                    [class]="cn(d.backdrop, d.overlayAnimated, 'opacity-[calc(1-var(--drawer-swipe-progress))]')"
                     rdxDrawerBackdrop
+                    [class]="cn(d.backdrop, d.overlayAnimated, 'opacity-[calc(1-var(--drawer-swipe-progress))]')"
                 ></div>
 
                 <div class="group fixed inset-0 z-50" rdxDrawerViewport>
@@ -87,6 +87,7 @@ const LONG_LIST = [
                                 rdxScrollAreaContent
                             >
                                 <div
+                                    rdxDrawerPopup
                                     [class]="
                                         cn(
                                             card,
@@ -98,16 +99,15 @@ const LONG_LIST = [
                                             'min-[42rem]:rounded-2xl min-[42rem]:border'
                                         )
                                     "
-                                    rdxDrawerPopup
                                 >
                                     <nav class="relative flex flex-col px-6 pt-4 pb-6" aria-label="Navigation">
                                         <div class="grid grid-cols-[1fr_auto_1fr] items-start">
                                             <svg class="h-9 w-9" aria-hidden="true" />
                                             <div class="bg-muted h-1.5 w-12 justify-self-center rounded-full"></div>
                                             <button
-                                                [class]="cn(b.base, b.ghost, 'h-8 w-8 justify-self-end p-0')"
                                                 aria-label="Close menu"
                                                 rdxDrawerClose
+                                                [class]="cn(b.base, b.ghost, 'h-8 w-8 justify-self-end p-0')"
                                             >
                                                 <svg
                                                     class="block"
@@ -126,8 +126,8 @@ const LONG_LIST = [
                                         </div>
 
                                         <div class="w-full" rdxDrawerContent>
-                                            <h2 [class]="cn(d.title, 'm-0 mb-1')" rdxDrawerTitle>Menu</h2>
-                                            <p [class]="cn(d.description, 'm-0 mb-5')" rdxDrawerDescription>
+                                            <h2 rdxDrawerTitle [class]="cn(d.title, 'm-0 mb-1')">Menu</h2>
+                                            <p rdxDrawerDescription [class]="cn(d.description, 'm-0 mb-5')">
                                                 Scroll the long list. Flick down from the top to dismiss.
                                             </p>
 

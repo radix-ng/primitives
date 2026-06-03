@@ -1,13 +1,13 @@
+import { RdxVisuallyHiddenDirective, VisuallyHidden } from '../src/visually-hidden.directive';
 import { ChangeDetectionStrategy, Component, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { RdxVisuallyHiddenDirective, VisuallyHidden } from '../src/visually-hidden.directive';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxVisuallyHiddenDirective],
     template: `
-        <span [feature]="feature" rdxVisuallyHidden>Screen reader text</span>
+        <span rdxVisuallyHidden [feature]="feature">Screen reader text</span>
     `
 })
 class TestComponent {

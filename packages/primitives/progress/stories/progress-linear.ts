@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { cn } from '../../storybook/styles';
 import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
 import { RdxProgressLabelDirective } from '../src/progress-label.directive';
 import { RdxProgressRootDirective } from '../src/progress-root.directive';
 import { RdxProgressTrackDirective } from '../src/progress-track.directive';
 import { RdxProgressValueDirective } from '../src/progress-value.directive';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 
 const progressSteps = [12, 28, 44, 60, 76, 92, 100] as const;
 
@@ -19,14 +19,14 @@ const progressSteps = [12, 28, 44, 60, 76, 92, 100] as const;
         RdxProgressIndicatorDirective
     ],
     template: `
-        <div class="flex w-80 flex-col gap-2" [value]="progress()" rdxProgressRoot>
+        <div class="flex w-80 flex-col gap-2" rdxProgressRoot [value]="progress()">
             <div class="flex items-center justify-between gap-4">
                 <span class="text-foreground text-sm font-medium" rdxProgressLabel>Upload progress</span>
                 <span class="text-muted-foreground text-sm tabular-nums" rdxProgressValue></span>
             </div>
 
             <div class="bg-muted h-3 overflow-hidden rounded-full" rdxProgressTrack>
-                <div [class]="indicatorClass()" rdxProgressIndicator></div>
+                <div rdxProgressIndicator [class]="indicatorClass()"></div>
             </div>
         </div>
     `

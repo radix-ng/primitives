@@ -1,9 +1,9 @@
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
+import { RdxVisuallyHiddenDirective, VisuallyHidden } from '../src/visually-hidden.directive';
+import { RdxVisuallyHiddenInputDirective } from '../src/visually-hidden-input.directive';
+import { RdxVisuallyHiddenInputBubbleDirective } from '../src/visually-hidden-input-bubble.directive';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
-import { RdxVisuallyHiddenInputBubbleDirective } from '../src/visually-hidden-input-bubble.directive';
-import { RdxVisuallyHiddenInputDirective } from '../src/visually-hidden-input.directive';
-import { RdxVisuallyHiddenDirective, VisuallyHidden } from '../src/visually-hidden.directive';
 
 const html = String.raw;
 

@@ -1,4 +1,3 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { CalendarCustomNavigation } from './calendar-custom-navigation';
 import customNavigationSource from './calendar-custom-navigation?raw';
@@ -16,6 +15,7 @@ import { CalendarWeek } from './calendar-week';
 import weekSource from './calendar-week?raw';
 import { CalendarWithLocale } from './calendar-with-locale';
 import withLocaleSource from './calendar-with-locale?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const source = (code: string) => ({ docs: { source: { code, language: 'typescript' } } });
 const html = String.raw;

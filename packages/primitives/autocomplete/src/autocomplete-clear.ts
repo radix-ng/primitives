@@ -1,6 +1,6 @@
+import { RdxAutocompleteRoot } from './autocomplete-root';
 import { computed, Directive, inject } from '@angular/core';
 import { RdxFloatingInsideElement } from '@radix-ng/primitives/dismissable-layer';
-import { RdxAutocompleteRoot } from './autocomplete-root';
 
 /**
  * Clears the input value. Hidden when there is nothing to clear.

@@ -1,4 +1,3 @@
-import { NgModule } from '@angular/core';
 import { RdxAutocompleteAnchor } from './src/autocomplete-anchor';
 import { RdxAutocompleteArrow } from './src/autocomplete-arrow';
 import { RdxAutocompleteBackdrop } from './src/autocomplete-backdrop';
@@ -22,6 +21,7 @@ import { RdxAutocompleteSeparator } from './src/autocomplete-separator';
 import { RdxAutocompleteStatus } from './src/autocomplete-status';
 import { RdxAutocompleteTrigger } from './src/autocomplete-trigger';
 import { RdxAutocompleteValue } from './src/autocomplete-value';
+import { NgModule } from '@angular/core';
 
 export * from './src/autocomplete-anchor';
 export * from './src/autocomplete-arrow';

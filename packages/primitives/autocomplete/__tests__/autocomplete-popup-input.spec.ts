@@ -1,13 +1,13 @@
+import { _importsAutocomplete } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsAutocomplete } from '../index';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsAutocomplete],
     template: `
-        <div [(value)]="value" rdxAutocompleteRoot>
+        <div rdxAutocompleteRoot [(value)]="value">
             <button rdxAutocompleteTrigger rdxAutocompleteAnchor>Choose</button>
 
             <div *rdxAutocompletePortal rdxAutocompletePositioner>

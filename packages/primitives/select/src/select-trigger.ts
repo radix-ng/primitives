@@ -1,10 +1,10 @@
+import { injectSelectRootContext } from './select-root';
+import { OPEN_KEYS } from './utils';
 import { afterNextRender, booleanAttribute, computed, Directive, ElementRef, inject, input } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
 import { injectFieldRootContext } from '@radix-ng/primitives/field';
 import { createRdxTriggerInteraction } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
-import { injectSelectRootContext } from './select-root';
-import { OPEN_KEYS } from './utils';
 
 const attr = (value: boolean) => (value ? '' : undefined);
 

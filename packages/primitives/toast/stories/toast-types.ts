@@ -1,7 +1,7 @@
+import { cn, demoButton, demoToast } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { LucideCircleCheck, LucideCircleX, LucideInfo } from '@lucide/angular';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
-import { cn, demoButton, demoToast } from '../../storybook/styles';
 
 /**
  * `type` is a free-form category surfaced back on the toast object — branch on it in the template
@@ -21,26 +21,26 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
         </div>
 
         <div rdxToastPortal>
-            <div [class]="t.viewport" rdxToastViewport>
+            <div rdxToastViewport [class]="t.viewport">
                 @for (toast of manager.toasts(); track toast.id) {
-                    <div [class]="t.root" [toast]="toast" rdxToastRoot>
-                        <div [class]="t.content" rdxToastContent>
+                    <div rdxToastRoot [class]="t.root" [toast]="toast">
+                        <div rdxToastContent [class]="t.content">
                             @switch (toast.type) {
                                 @case ('success') {
-                                    <svg [class]="cn(t.icon, 'text-foreground')" lucideCircleCheck></svg>
+                                    <svg lucideCircleCheck [class]="cn(t.icon, 'text-foreground')"></svg>
                                 }
                                 @case ('error') {
-                                    <svg [class]="cn(t.icon, 'text-destructive')" lucideCircleX></svg>
+                                    <svg lucideCircleX [class]="cn(t.icon, 'text-destructive')"></svg>
                                 }
                                 @default {
-                                    <svg [class]="cn(t.icon, 'text-muted-foreground')" lucideInfo></svg>
+                                    <svg lucideInfo [class]="cn(t.icon, 'text-muted-foreground')"></svg>
                                 }
                             }
                             <div class="min-w-0 flex-1">
-                                <p [class]="t.title" rdxToastTitle>{{ toast.title }}</p>
-                                <p [class]="t.description" rdxToastDescription>{{ toast.description }}</p>
+                                <p rdxToastTitle [class]="t.title">{{ toast.title }}</p>
+                                <p rdxToastDescription [class]="t.description">{{ toast.description }}</p>
                             </div>
-                            <button [class]="t.close" aria-label="Dismiss" rdxToastClose>✕</button>
+                            <button aria-label="Dismiss" rdxToastClose [class]="t.close">✕</button>
                         </div>
                     </div>
                 }

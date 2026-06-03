@@ -1,3 +1,4 @@
+import { injectRdxMenuRootContext } from './menu-root';
 import {
     booleanAttribute,
     computed,
@@ -11,7 +12,6 @@ import {
 } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { BooleanInput } from '@radix-ng/primitives/core';
-import { injectRdxMenuRootContext } from './menu-root';
 
 /**
  * An individual menu item.

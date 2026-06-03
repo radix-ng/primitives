@@ -1,3 +1,4 @@
+import { cn, demoButton, demoEditable } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxEditableArea,
@@ -8,7 +9,6 @@ import {
     RdxEditableRoot,
     RdxEditableSubmitTrigger
 } from '@radix-ng/primitives/editable';
-import { cn, demoButton, demoEditable } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -25,25 +25,25 @@ import { cn, demoButton, demoEditable } from '../../storybook/styles';
     template: `
         <div
             #root="rdxEditableRoot"
-            [class]="e.root"
             rdxEditableRoot
             value="Click to edit"
             placeholder="Enter text…"
             submitMode="both"
+            [class]="e.root"
         >
             <div rdxEditableArea>
-                <span #preview="rdxEditablePreview" [class]="e.preview" rdxEditablePreview>
+                <span #preview="rdxEditablePreview" rdxEditablePreview [class]="e.preview">
                     {{ root.value() || preview.placeholder() }}
                 </span>
-                <input [class]="e.input" rdxEditableInput aria-label="Inline value" />
+                <input rdxEditableInput aria-label="Inline value" [class]="e.input" />
             </div>
 
             @if (!root.isEditing()) {
-                <button [class]="cn(b.base, b.outline, b.size.sm)" rdxEditableEditTrigger>Edit</button>
+                <button rdxEditableEditTrigger [class]="cn(b.base, b.outline, b.size.sm)">Edit</button>
             } @else {
                 <div [class]="e.controls">
-                    <button [class]="cn(b.base, b.primary, b.size.sm)" rdxEditableSubmitTrigger>Save</button>
-                    <button [class]="cn(b.base, b.ghost, b.size.sm)" rdxEditableCancelTrigger>Cancel</button>
+                    <button rdxEditableSubmitTrigger [class]="cn(b.base, b.primary, b.size.sm)">Save</button>
+                    <button rdxEditableCancelTrigger [class]="cn(b.base, b.ghost, b.size.sm)">Cancel</button>
                 </div>
             }
         </div>

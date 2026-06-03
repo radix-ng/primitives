@@ -1,6 +1,6 @@
+import { injectRdxPopoverRootContext } from './popover-root';
 import { computed, DestroyRef, Directive, effect, inject, input } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
-import { injectRdxPopoverRootContext } from './popover-root';
 
 /**
  * An accessible title for the popover.

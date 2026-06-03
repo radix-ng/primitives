@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { cn, demoButton, demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 
 /**
  * Reactive forms with validation. The form value **is** the input string; its validity is bound to the
@@ -14,22 +14,22 @@ import { _importsAutocomplete } from '../index';
     imports: [_importsAutocomplete, ReactiveFormsModule],
     template: `
         <form class="flex flex-col gap-3" (ngSubmit)="onSubmit()">
-            <div [formControl]="fruit" [invalid]="showError()" rdxAutocompleteRoot>
+            <div rdxAutocompleteRoot [formControl]="fruit" [invalid]="showError()">
                 <div
-                    [class]="cn(c.control, showError() && 'border-destructive focus-within:ring-destructive')"
                     rdxAutocompleteInputGroup
+                    [class]="cn(c.control, showError() && 'border-destructive focus-within:ring-destructive')"
                 >
-                    <input [class]="c.input" rdxAutocompleteInput placeholder="Search a fruit…" aria-label="Fruit" />
+                    <input rdxAutocompleteInput placeholder="Search a fruit…" aria-label="Fruit" [class]="c.input" />
                 </div>
 
-                <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
-                    <div [class]="c.popup" rdxAutocompletePopup>
-                        <div [class]="c.list" rdxAutocompleteList aria-label="Fruits">
+                <div *rdxAutocompletePortal rdxAutocompletePositioner [class]="c.positioner">
+                    <div rdxAutocompletePopup [class]="c.popup">
+                        <div rdxAutocompleteList aria-label="Fruits" [class]="c.list">
                             @for (item of fruits; track item) {
-                                <div [class]="c.item" rdxAutocompleteItem>{{ item }}</div>
+                                <div rdxAutocompleteItem [class]="c.item">{{ item }}</div>
                             }
                         </div>
-                        <div [class]="c.empty" rdxAutocompleteEmpty>No fruit found.</div>
+                        <div rdxAutocompleteEmpty [class]="c.empty">No fruit found.</div>
                     </div>
                 </div>
             </div>
@@ -38,7 +38,7 @@ import { _importsAutocomplete } from '../index';
                 <p class="text-destructive text-sm">Please enter a fruit.</p>
             }
 
-            <button [class]="cn(b.base, b.primary, b.size.md, 'self-start')" type="submit">Submit</button>
+            <button type="submit" [class]="cn(b.base, b.primary, b.size.md, 'self-start')">Submit</button>
 
             @if (submitted()) {
                 <p class="text-muted-foreground text-sm">Submitted ✓</p>

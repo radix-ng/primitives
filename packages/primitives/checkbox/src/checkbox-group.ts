@@ -1,3 +1,4 @@
+import type { CheckedState } from './checkbox-root';
 import {
     booleanAttribute,
     computed,
@@ -7,8 +8,8 @@ import {
     input,
     model,
     output,
-    signal,
-    Signal
+    Signal,
+    signal
 } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 import {
@@ -23,7 +24,6 @@ import {
     RdxFormUiTouchTarget,
     RdxFormValueControl
 } from '@radix-ng/primitives/core';
-import type { CheckedState } from './checkbox-root';
 
 export type RdxCheckboxGroupValueChangeReason = 'none';
 export type RdxCheckboxGroupValueChangeEventDetails =

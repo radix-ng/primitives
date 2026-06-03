@@ -1,10 +1,10 @@
 // @vitest-environment jsdom
-import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { RdxFocusScope } from '../src/focus-scope';
 import { createFocusScopesStack, FocusScopeAPI, removeLinks } from '../src/stack';
 import { getTabbableCandidates, getTabbableEdges } from '../src/utils';
+import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 /**
  * Characterization of the CURRENT `RdxFocusScope` behavior (ADR 0017 Phase 0 / 1a). These lock the
@@ -22,7 +22,7 @@ const flush = (): Promise<void> => new Promise((resolve) => requestAnimationFram
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxFocusScope],
     template: `
-        <div #scope [loop]="loop()" rdxFocusScope>
+        <div #scope rdxFocusScope [loop]="loop()">
             <button #a>A</button>
             <button #b>B</button>
             <button #c>C</button>
@@ -227,7 +227,7 @@ describe('RdxFocusScope characterization', () => {
                 changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxFocusScope],
                 template: `
-                    <div (mountAutoFocus)="$event.preventDefault()" rdxFocusScope>
+                    <div rdxFocusScope (mountAutoFocus)="$event.preventDefault()">
                         <button #a>A</button>
                     </div>
                 `

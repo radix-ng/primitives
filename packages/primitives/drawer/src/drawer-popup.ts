@@ -1,9 +1,9 @@
-import { computed, Directive, effect, ElementRef, inject, Injector } from '@angular/core';
-import { elementSize } from '@radix-ng/primitives/core';
-import { injectRdxDialogRootContext, RdxDialogPopup } from '@radix-ng/primitives/dialog';
 import { injectRdxDrawerRootContext } from './drawer-root';
 import { buildSnapEntries, dismissUnitVector, resolveSnapTarget } from './drawer-snap';
 import { RdxDrawerRelease, useDrawerSwipe } from './drawer-swipe';
+import { computed, Directive, effect, ElementRef, inject, Injector } from '@angular/core';
+import { elementSize } from '@radix-ng/primitives/core';
+import { injectRdxDialogRootContext, RdxDialogPopup } from '@radix-ng/primitives/dialog';
 
 /** Fraction of the drawer size a plain (no-snap) release must pass to dismiss. */
 const DISMISS_FRACTION = 0.5;

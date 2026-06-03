@@ -1,7 +1,7 @@
+import { cn, demoButton, demoDialog } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
-import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -11,19 +11,19 @@ import { cn, demoButton, demoDialog } from '../../storybook/styles';
         <div class="flex flex-col items-center gap-3">
             <p class="text-muted-foreground text-xs">open: {{ open() }} · triggerId: {{ triggerId() ?? '—' }}</p>
 
-            <div #root="rdxDialogRoot" [(open)]="open" [(triggerId)]="triggerId" rdxDialogRoot>
+            <div #root="rdxDialogRoot" rdxDialogRoot [(open)]="open" [(triggerId)]="triggerId">
                 <div class="flex gap-2">
-                    <button id="account" [class]="cn(b.base, b.outline, b.size.md)" rdxDialogTrigger>Account</button>
-                    <button id="billing" [class]="cn(b.base, b.outline, b.size.md)" rdxDialogTrigger>Billing</button>
+                    <button id="account" rdxDialogTrigger [class]="cn(b.base, b.outline, b.size.md)">Account</button>
+                    <button id="billing" rdxDialogTrigger [class]="cn(b.base, b.outline, b.size.md)">Billing</button>
                 </div>
 
                 <ng-template rdxDialogPortal>
-                    <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
-                    <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-                        <h2 [class]="d.title" rdxDialogTitle>
+                    <div rdxDialogBackdrop [class]="cn(d.backdrop, d.backdropAnimated)"></div>
+                    <div rdxDialogPopup [class]="cn(d.popup, d.popupAnimated)">
+                        <h2 rdxDialogTitle [class]="d.title">
                             {{ triggerId() === 'billing' ? 'Billing' : 'Account' }}
                         </h2>
-                        <p [class]="d.description" rdxDialogDescription>
+                        <p rdxDialogDescription [class]="d.description">
                             Both
                             <code>open</code>
                             and
@@ -31,9 +31,9 @@ import { cn, demoButton, demoDialog } from '../../storybook/styles';
                             are bound, so the active panel is driven from component state.
                         </p>
                         <div [class]="d.footer">
-                            <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Close</button>
+                            <button rdxDialogClose [class]="cn(b.base, b.primary, b.size.sm)">Close</button>
                         </div>
-                        <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                        <button aria-label="Close" rdxDialogClose [class]="d.close">
                             <svg aria-hidden="true" lucideX size="16" />
                         </button>
                     </div>

@@ -1,3 +1,6 @@
+import { RdxNavigationMenuItem } from './navigation-menu-item';
+import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
+import { focusFirst, getTabbableCandidates } from './utils';
 import {
     booleanAttribute,
     computed,
@@ -11,9 +14,6 @@ import {
 } from '@angular/core';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ENTER, injectDocument, SPACE } from '@radix-ng/primitives/core';
-import { RdxNavigationMenuItem } from './navigation-menu-item';
-import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
-import { focusFirst, getTabbableCandidates } from './utils';
 
 /**
  * A button that opens its item's content in the shared popup.

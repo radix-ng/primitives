@@ -10,7 +10,7 @@ import {
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective, RdxCheckboxIndicatorDirective],
     template: `
-        <div [checked]="true" rdxCheckboxRoot>
+        <div rdxCheckboxRoot [checked]="true">
             <button rdxCheckboxButton>
                 [
                 <span keepMounted rdxCheckboxIndicator>✔</span>

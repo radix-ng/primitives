@@ -1,7 +1,7 @@
-import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input } from '@angular/core';
-import { BooleanInput, createContext } from '@radix-ng/primitives/core';
 import { injectScrollAreaRootContext } from './scroll-area-root';
 import { getOffset } from './utils';
+import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input } from '@angular/core';
+import { BooleanInput, createContext } from '@radix-ng/primitives/core';
 
 export type ScrollbarOrientation = 'vertical' | 'horizontal';
 

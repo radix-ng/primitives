@@ -1,5 +1,3 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectGroupLabel } from '../src/select-group-label';
 import { RdxSelectIcon } from '../src/select-icon';
@@ -14,6 +12,8 @@ import { RdxSelectRoot } from '../src/select-root';
 import { RdxSelectSeparator } from '../src/select-separator';
 import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 
 /**
  * Multiple selection: picks accumulate in the value array, `RdxSelectValue` joins their labels, and
@@ -42,7 +42,7 @@ import { RdxSelectValue } from '../src/select-value';
         RdxSelectItemIndicator
     ],
     template: `
-        <div [(value)]="value" multiple rdxSelectRoot>
+        <div multiple rdxSelectRoot [(value)]="value">
             <button
                 class="border-border bg-background text-foreground data-[placeholder]:text-muted-foreground hover:bg-muted focus-visible:ring-ring focus-visible:ring-offset-background inline-flex h-9 min-w-52 items-center justify-between gap-2 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 aria-label="Pick fruits"
@@ -54,7 +54,7 @@ import { RdxSelectValue } from '../src/select-value';
                 <svg lucideChevronDown size="16" rdxSelectIcon></svg>
             </button>
 
-            <div class="z-[100]" *rdxSelectPortal [sideOffset]="5" rdxSelectPositioner>
+            <div *rdxSelectPortal class="z-[100]" rdxSelectPositioner [sideOffset]="5">
                 <div
                     class="border-border bg-popover text-popover-foreground min-w-52 rounded-lg border p-1 shadow-md"
                     rdxSelectPopup
@@ -63,8 +63,8 @@ import { RdxSelectValue } from '../src/select-value';
                         <div class="text-muted-foreground px-6 text-xs leading-6" rdxSelectGroupLabel>Fruits</div>
                         <div rdxSelectGroup>
                             @for (fruit of fruits; track fruit) {
-                                <div [class]="itemClass" [value]="fruit" rdxSelectItem>
-                                    <span [class]="indicatorClass" rdxSelectItemIndicator>
+                                <div rdxSelectItem [class]="itemClass" [value]="fruit">
+                                    <span rdxSelectItemIndicator [class]="indicatorClass">
                                         <svg lucideCheck size="16"></svg>
                                     </span>
                                     <span rdxSelectItemText>{{ fruit }}</span>
@@ -75,8 +75,8 @@ import { RdxSelectValue } from '../src/select-value';
                         <div class="text-muted-foreground px-6 text-xs leading-6" rdxSelectGroupLabel>Berries</div>
                         <div rdxSelectGroup>
                             @for (berry of berries; track berry) {
-                                <div [class]="itemClass" [value]="berry" rdxSelectItem>
-                                    <span [class]="indicatorClass" rdxSelectItemIndicator>
+                                <div rdxSelectItem [class]="itemClass" [value]="berry">
+                                    <span rdxSelectItemIndicator [class]="indicatorClass">
                                         <svg lucideCheck size="16"></svg>
                                     </span>
                                     <span rdxSelectItemText>{{ berry }}</span>

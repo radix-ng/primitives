@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { injectRdxToastRootContext } from './toast-root';
+import { Directive } from '@angular/core';
 
 /** Button that dismisses its toast. Put it on a native `<button>` for built-in semantics. */
 @Directive({

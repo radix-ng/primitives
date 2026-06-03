@@ -1,3 +1,6 @@
+import { injectSelectRootContext } from './select-root';
+import { getNextMatch } from './useTypeahead';
+import { RdxSelectItemMetadata, SELECTION_KEYS, valueComparator } from './utils';
 import {
     afterNextRender,
     computed,
@@ -10,8 +13,8 @@ import {
     Injector,
     output,
     OutputRef,
-    signal,
-    Signal
+    Signal,
+    signal
 } from '@angular/core';
 import { RdxCompositeItemRegistration, RdxCompositeList } from '@radix-ng/primitives/composite';
 import {
@@ -29,9 +32,6 @@ import {
     RdxFloatingFocusManager
 } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperContent } from '@radix-ng/primitives/popper';
-import { injectSelectRootContext } from './select-root';
-import { getNextMatch } from './useTypeahead';
-import { RdxSelectItemMetadata, SELECTION_KEYS, valueComparator } from './utils';
 
 type RdxSelectCompositeItem = RdxCompositeItemRegistration<RdxSelectItemMetadata>;
 

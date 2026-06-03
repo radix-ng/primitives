@@ -1,3 +1,5 @@
+import { setupMenuInternalBackdrop } from './menu-internal-backdrop';
+import { injectRdxMenuRootContext } from './menu-root';
 import { afterNextRender, Directive, ElementRef, inject, Injector } from '@angular/core';
 import {
     legacyPopperVars,
@@ -5,8 +7,6 @@ import {
     provideRdxPopperContentWrapper,
     RdxPopperContentWrapper
 } from '@radix-ng/primitives/popper';
-import { setupMenuInternalBackdrop } from './menu-internal-backdrop';
-import { injectRdxMenuRootContext } from './menu-root';
 
 /**
  * Positions the menu against its trigger.

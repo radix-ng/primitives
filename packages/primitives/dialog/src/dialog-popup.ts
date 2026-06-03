@@ -1,3 +1,4 @@
+import { injectRdxDialogRootContext } from './dialog-root';
 import { afterNextRender, computed, DestroyRef, Directive, ElementRef, inject, Injector, output } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
 import {
@@ -13,7 +14,6 @@ import {
     RdxFloatingFocusManager
 } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
-import { injectRdxDialogRootContext } from './dialog-root';
 
 /** Composite navigation keys a Dialog popup keeps to itself, so they never reach an enclosing Menu / Composite. */
 const COMPOSITE_KEYS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End']);

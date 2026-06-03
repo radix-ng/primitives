@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { injectSliderRootContext } from './slider-context';
+import { Directive } from '@angular/core';
 
 /**
  * The track of the slider — the positioning context for the indicator and thumbs.

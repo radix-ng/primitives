@@ -1,8 +1,8 @@
+import { RdxFormRoot } from '../index';
+import { formError, formField, formInput, formLabel, formSubmit } from './form.shared';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
-import { RdxFormRoot } from '../index';
-import { formError, formField, formInput, formLabel, formSubmit } from './form.shared';
 
 /**
  * Reactive Forms owns validity; `RdxFormRoot` adds the aggregate `data-*` attributes and submit/reset
@@ -14,19 +14,19 @@ import { formError, formField, formInput, formLabel, formSubmit } from './form.s
     selector: 'form-reactive-forms-example',
     imports: [ReactiveFormsModule, RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldError],
     template: `
-        <form class="flex w-80 flex-col gap-4" [formGroup]="form" (ngSubmit)="submit()" rdxFormRoot>
+        <form class="flex w-80 flex-col gap-4" rdxFormRoot [formGroup]="form" (ngSubmit)="submit()">
             <div
+                name="email"
+                rdxFieldRoot
+                required
                 [class]="field"
                 [invalid]="email.invalid && (email.touched || submitted())"
                 [touched]="email.touched"
                 [dirty]="email.dirty"
-                name="email"
-                rdxFieldRoot
-                required
             >
-                <label [class]="label" rdxFieldLabel>Email</label>
-                <input [class]="input" type="email" formControlName="email" rdxFieldControl />
-                <p [class]="error" rdxFieldError>
+                <label rdxFieldLabel [class]="label">Email</label>
+                <input type="email" formControlName="email" rdxFieldControl [class]="input" />
+                <p rdxFieldError [class]="error">
                     @if (email.hasError('required')) {
                         Email is required.
                     } @else {
@@ -35,7 +35,7 @@ import { formError, formField, formInput, formLabel, formSubmit } from './form.s
                 </p>
             </div>
 
-            <button [class]="submitButton" type="submit">Submit</button>
+            <button type="submit" [class]="submitButton">Submit</button>
         </form>
     `
 })

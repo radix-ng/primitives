@@ -8,8 +8,8 @@ import {
     model,
     ModelSignal,
     output,
-    signal,
     Signal,
+    signal,
     untracked,
     WritableSignal
 } from '@angular/core';

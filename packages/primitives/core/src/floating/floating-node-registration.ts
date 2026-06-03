@@ -1,4 +1,3 @@
-import { Directive, effect, inject, input, Signal } from '@angular/core';
 import { injectId } from '../id-generator';
 import {
     provideFloatingRegistration,
@@ -7,6 +6,7 @@ import {
 } from './floating-registration';
 import { RdxFloatingNode, RdxFloatingParentOverride, RdxFloatingTree } from './floating-tree';
 import { RDX_FLOATING_ROOT_CONTEXT, RDX_FLOATING_TREE } from './provide-floating-tree';
+import { Directive, effect, inject, input, Signal } from '@angular/core';
 
 /**
  * Registers a {@link RdxFloatingNode} into the shared {@link RdxFloatingTree} for its DI subtree and

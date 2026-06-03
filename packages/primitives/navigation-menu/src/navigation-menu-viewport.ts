@@ -1,3 +1,5 @@
+import { injectNavigationMenuRootContext, RdxNavigationMenuContentEntry } from './navigation-menu-root-context';
+import { getActivationDirection, removeIds } from './utils';
 import {
     booleanAttribute,
     computed,
@@ -14,8 +16,6 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import { getMaxTransitionDuration } from '@radix-ng/primitives/core';
-import { injectNavigationMenuRootContext, RdxNavigationMenuContentEntry } from './navigation-menu-root-context';
-import { getActivationDirection, removeIds } from './utils';
 
 interface RenderedContent {
     value: string;

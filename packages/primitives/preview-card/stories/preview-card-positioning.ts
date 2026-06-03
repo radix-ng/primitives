@@ -1,7 +1,7 @@
+import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { Side } from '@radix-ng/primitives/popper';
 import { previewCardImports } from '@radix-ng/primitives/preview-card';
-import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -12,9 +12,9 @@ import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styl
             <div class="flex flex-wrap gap-2">
                 @for (option of sides; track option) {
                     <button
+                        type="button"
                         [class]="cn(b.base, side() === option ? b.primary : b.outline, b.size.sm)"
                         (click)="side.set(option)"
-                        type="button"
                     >
                         {{ option }}
                     </button>
@@ -22,17 +22,17 @@ import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styl
             </div>
 
             <ng-container rdxPreviewCardRoot>
-                <a [class]="link" href="#" rdxPreviewCardTrigger>Hover the positioned preview card</a>
+                <a href="#" rdxPreviewCardTrigger [class]="link">Hover the positioned preview card</a>
 
                 <div
                     *rdxPreviewCardPortal
-                    [class]="p.positioner"
-                    [side]="side()"
                     sideOffset="8"
                     rdxPreviewCardPositioner
+                    [class]="p.positioner"
+                    [side]="side()"
                 >
-                    <div [class]="p.popup" rdxPreviewCardPopup>
-                        <span [class]="p.arrow" rdxPreviewCardArrow></span>
+                    <div rdxPreviewCardPopup [class]="p.popup">
+                        <span rdxPreviewCardArrow [class]="p.arrow"></span>
                         <p class="text-muted-foreground text-sm">
                             The positioner exposes placement attributes and CSS variables for styling.
                         </p>

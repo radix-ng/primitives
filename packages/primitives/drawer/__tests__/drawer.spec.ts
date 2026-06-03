@@ -40,11 +40,11 @@ import { vi } from 'vitest';
     ],
     template: `
         <div
-            [(open)]="open"
+            rdxDrawerRoot
             [modal]="modal"
             [swipeDirection]="swipeDirection"
+            [(open)]="open"
             (onOpenChange)="changes.push($event.reason)"
-            rdxDrawerRoot
         >
             <button rdxDrawerTrigger>Open</button>
             <div rdxDrawerSwipeArea></div>
@@ -72,8 +72,8 @@ class TestHostComponent {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxDrawerTrigger, RdxDrawerRoot, RdxDrawerPortal, RdxDrawerPopup],
     template: `
-        <button id="detached" [handle]="handle" rdxDrawerTrigger>Open</button>
-        <div [handle]="handle" rdxDrawerRoot>
+        <button id="detached" rdxDrawerTrigger [handle]="handle">Open</button>
+        <div rdxDrawerRoot [handle]="handle">
             <ng-template rdxDrawerPortal>
                 <div rdxDrawerPopup>Popup</div>
             </ng-template>
@@ -89,12 +89,12 @@ class DetachedHostComponent {
     imports: [RdxDrawerRoot, RdxDrawerTrigger, RdxDrawerPortal, RdxDrawerPopup],
     template: `
         <div
-            [(open)]="open"
-            [(snapPoint)]="snapPoint"
+            rdxDrawerRoot
             [snapPoints]="snapPoints"
             [defaultSnapPoint]="defaultSnapPoint"
+            [(open)]="open"
+            [(snapPoint)]="snapPoint"
             (onSnapPointChange)="changed.push($event)"
-            rdxDrawerRoot
         >
             <button rdxDrawerTrigger>Open</button>
             <ng-template rdxDrawerPortal>
@@ -118,13 +118,13 @@ class SnapHostComponent {
         <div rdxDrawerProvider>
             <div id="indent" rdxDrawerIndentBackground></div>
 
-            <div [(open)]="outer" rdxDrawerRoot>
+            <div rdxDrawerRoot [(open)]="outer">
                 <ng-template rdxDrawerPortal>
                     <div data-testid="outer" rdxDrawerPopup>
-                        <div [(open)]="inner" rdxDrawerRoot>
+                        <div rdxDrawerRoot [(open)]="inner">
                             <ng-template rdxDrawerPortal>
                                 <div data-testid="inner" rdxDrawerPopup>
-                                    <div [(open)]="deep" rdxDrawerRoot>
+                                    <div rdxDrawerRoot [(open)]="deep">
                                         <ng-template rdxDrawerPortal>
                                             <div data-testid="deep" rdxDrawerPopup>Deep</div>
                                         </ng-template>
@@ -149,10 +149,10 @@ class NestedHostComponent {
     imports: [RdxDrawerRoot, RdxDrawerSwipeArea, RdxDrawerPortal, RdxDrawerBackdrop, RdxDrawerViewport, RdxDrawerPopup],
     template: `
         <div #portalContainer data-testid="portal-container">
-            <div [modal]="false" swipeDirection="right" rdxDrawerRoot>
+            <div swipeDirection="right" rdxDrawerRoot [modal]="false">
                 <div data-testid="swipe-area" rdxDrawerSwipeArea></div>
 
-                <ng-template [container]="portalContainer" rdxDrawerPortal>
+                <ng-template rdxDrawerPortal [container]="portalContainer">
                     <div rdxDrawerBackdrop></div>
                     <div rdxDrawerViewport>
                         <div rdxDrawerPopup>Body</div>
@@ -168,7 +168,7 @@ class LocalSwipeAreaHostComponent {}
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxDrawerRoot, RdxDrawerPortal, RdxDrawerViewport, RdxDrawerVirtualKeyboardProvider, RdxDrawerPopup],
     template: `
-        <div [(open)]="open" rdxDrawerRoot>
+        <div rdxDrawerRoot [(open)]="open">
             <ng-template rdxDrawerPortal>
                 <div data-testid="viewport" rdxDrawerViewport rdxDrawerVirtualKeyboardProvider>
                     <div rdxDrawerPopup>
@@ -177,7 +177,7 @@ class LocalSwipeAreaHostComponent {}
                             <button data-testid="button">Button</button>
                         </div>
 
-                        <div [(open)]="nested" rdxDrawerRoot>
+                        <div rdxDrawerRoot [(open)]="nested">
                             <ng-template rdxDrawerPortal>
                                 <div rdxDrawerPopup>Nested</div>
                             </ng-template>

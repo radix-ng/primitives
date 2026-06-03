@@ -1,5 +1,5 @@
-import { computed, signal } from '@angular/core';
 import type { RdxDialogRootContext } from './dialog-root';
+import { computed, signal } from '@angular/core';
 
 interface RdxDialogHandleTrigger<Payload> {
     element: HTMLElement;

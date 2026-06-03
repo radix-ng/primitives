@@ -1,6 +1,6 @@
+import { RdxTabsPanel } from './tabs-panel';
 import { Directive, inject } from '@angular/core';
 import { RdxPresenceDirective } from '@radix-ng/primitives/presence';
-import { RdxTabsPanel } from './tabs-panel';
 
 /**
  * Structural directive that mounts the tab panel contents only while the panel is active,

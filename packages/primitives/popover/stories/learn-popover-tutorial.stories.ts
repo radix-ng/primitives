@@ -1,7 +1,7 @@
-import { popoverImports } from '@radix-ng/primitives/popover';
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { LearnNotificationsPopover } from './learn-notifications-popover';
+import { popoverImports } from '@radix-ng/primitives/popover';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 

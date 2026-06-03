@@ -1,6 +1,6 @@
+import { RdxVisuallyHiddenDirective, VisuallyHidden } from './visually-hidden.directive';
 import { computed, Directive, effect, ElementRef, inject, input, linkedSignal } from '@angular/core';
 import { watch } from '@radix-ng/primitives/core';
-import { RdxVisuallyHiddenDirective, VisuallyHidden } from './visually-hidden.directive';
 
 /**
  *

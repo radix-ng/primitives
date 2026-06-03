@@ -1,5 +1,5 @@
-import { afterNextRender, DestroyRef, Directive, ElementRef, inject, signal } from '@angular/core';
 import { injectRdxPreviewCardRootContext } from './preview-card-root';
+import { afterNextRender, DestroyRef, Directive, ElementRef, inject, signal } from '@angular/core';
 
 /**
  * A viewport for animating content changes when a preview-card moves between triggers.

@@ -1,6 +1,6 @@
+import { cn, demoButton, demoToast } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
-import { cn, demoButton, demoToast } from '../../storybook/styles';
 
 /**
  * Placement is entirely the consumer's CSS — the primitive only positions nothing. Here the viewport
@@ -16,15 +16,15 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
         <button [class]="cn(b.base, b.primary, b.size.md)" (click)="add()">Show toast (top)</button>
 
         <div rdxToastPortal>
-            <div [class]="t.viewportTop" rdxToastViewport>
+            <div rdxToastViewport [class]="t.viewportTop">
                 @for (toast of manager.toasts(); track toast.id) {
-                    <div [class]="t.rootTop" [toast]="toast" [swipeDirection]="['up']" rdxToastRoot>
-                        <div [class]="t.content" rdxToastContent>
+                    <div rdxToastRoot [class]="t.rootTop" [toast]="toast" [swipeDirection]="['up']">
+                        <div rdxToastContent [class]="t.content">
                             <div class="min-w-0 flex-1">
-                                <p [class]="t.title" rdxToastTitle>{{ toast.title }}</p>
-                                <p [class]="t.description" rdxToastDescription>{{ toast.description }}</p>
+                                <p rdxToastTitle [class]="t.title">{{ toast.title }}</p>
+                                <p rdxToastDescription [class]="t.description">{{ toast.description }}</p>
                             </div>
-                            <button [class]="t.close" aria-label="Dismiss" rdxToastClose>✕</button>
+                            <button aria-label="Dismiss" rdxToastClose [class]="t.close">✕</button>
                         </div>
                     </div>
                 }

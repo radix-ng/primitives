@@ -1,3 +1,5 @@
+import { RdxToggleGroupBase, toggleGroupContext } from './toggle-group-base';
+import { provideToggleGroupContext } from './toggle-group-context';
 import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input } from '@angular/core';
 import { RdxCompositeMetadata, RdxCompositeRoot } from '@radix-ng/primitives/composite';
 import {
@@ -8,8 +10,6 @@ import {
     RdxFormUiStateHost
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
-import { RdxToggleGroupBase, toggleGroupContext } from './toggle-group-base';
-import { provideToggleGroupContext } from './toggle-group-context';
 
 /**
  * A set of two-state buttons that can be toggled on or off. Owns composite keyboard focus over its

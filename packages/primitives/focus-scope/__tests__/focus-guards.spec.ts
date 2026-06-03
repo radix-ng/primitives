@@ -1,7 +1,4 @@
 // @vitest-environment jsdom
-import { ChangeDetectionStrategy, Component, ElementRef, viewChild } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
-import { afterEach, describe, expect, it } from 'vitest';
 import {
     createAriaOwnsAnchor,
     createFocusGuard,
@@ -11,6 +8,9 @@ import {
     isOutsideEvent,
     useFocusGuardsTabbability
 } from '../src/focus-guards';
+import { ChangeDetectionStrategy, Component, ElementRef, viewChild } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { afterEach, describe, expect, it } from 'vitest';
 
 describe('focus guards', () => {
     const appended: Element[] = [];

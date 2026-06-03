@@ -1,7 +1,7 @@
+import { cn, demoButton, demoDialog } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
-import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -10,24 +10,24 @@ import { cn, demoButton, demoDialog } from '../../storybook/styles';
     template: `
         <div #root="rdxDialogRoot" rdxDialogRoot>
             <div class="flex gap-2">
-                <button [class]="cn(b.base, b.outline, b.size.md)" payload="Lemon" rdxDialogTrigger>Lemon</button>
-                <button [class]="cn(b.base, b.outline, b.size.md)" payload="Lime" rdxDialogTrigger>Lime</button>
-                <button [class]="cn(b.base, b.outline, b.size.md)" payload="Orange" rdxDialogTrigger>Orange</button>
+                <button payload="Lemon" rdxDialogTrigger [class]="cn(b.base, b.outline, b.size.md)">Lemon</button>
+                <button payload="Lime" rdxDialogTrigger [class]="cn(b.base, b.outline, b.size.md)">Lime</button>
+                <button payload="Orange" rdxDialogTrigger [class]="cn(b.base, b.outline, b.size.md)">Orange</button>
             </div>
 
             <ng-template rdxDialogPortal>
-                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
-                <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-                    <h2 [class]="d.title" rdxDialogTitle>{{ root.payload() || 'Fruit' }}</h2>
-                    <p [class]="d.description" rdxDialogDescription>
+                <div rdxDialogBackdrop [class]="cn(d.backdrop, d.backdropAnimated)"></div>
+                <div rdxDialogPopup [class]="cn(d.popup, d.popupAnimated)">
+                    <h2 rdxDialogTitle [class]="d.title">{{ root.payload() || 'Fruit' }}</h2>
+                    <p rdxDialogDescription [class]="d.description">
                         Every trigger opens the same dialog; the active trigger's
                         <code>payload</code>
                         is shown here.
                     </p>
                     <div [class]="d.footer">
-                        <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Close</button>
+                        <button rdxDialogClose [class]="cn(b.base, b.primary, b.size.sm)">Close</button>
                     </div>
-                    <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                    <button aria-label="Close" rdxDialogClose [class]="d.close">
                         <svg aria-hidden="true" lucideX size="16" />
                     </button>
                 </div>

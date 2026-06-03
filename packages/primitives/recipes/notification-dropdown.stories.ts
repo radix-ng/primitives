@@ -1,7 +1,7 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../storybook/tailwind-demo';
 import { NotificationDropdownExample } from './notification-dropdown';
 import notificationDropdownSource from './notification-dropdown?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 

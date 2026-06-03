@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { injectSwitchContext } from './switch-context';
+import { Directive } from '@angular/core';
 
 /**
  * The hidden native checkbox that mirrors the switch state for form submission and screen readers.

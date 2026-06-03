@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { injectRdxDialogRootContext } from './dialog-root';
+import { Directive } from '@angular/core';
 
 /**
  * A positioning container for the dialog popup that can be made scrollable.

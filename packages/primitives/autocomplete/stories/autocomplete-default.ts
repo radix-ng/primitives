@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
 const TAGS = [
     'feature',
@@ -51,24 +51,24 @@ const TAGS = [
     selector: 'autocomplete-default',
     imports: [_importsAutocomplete],
     template: `
-        <div [(value)]="value" rdxAutocompleteRoot>
-            <div [class]="c.control" rdxAutocompleteInputGroup>
+        <div rdxAutocompleteRoot [(value)]="value">
+            <div rdxAutocompleteInputGroup [class]="c.control">
                 <input
-                    [class]="cn(c.input, 'pr-3')"
                     rdxAutocompleteInput
                     placeholder="e.g. fix"
                     aria-label="Search tags"
+                    [class]="cn(c.input, 'pr-3')"
                 />
             </div>
 
-            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
-                <div [class]="c.popup" rdxAutocompletePopup>
-                    <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
+            <div *rdxAutocompletePortal rdxAutocompletePositioner [class]="c.positioner">
+                <div rdxAutocompletePopup [class]="c.popup">
+                    <div rdxAutocompleteList aria-label="Tags" [class]="c.list">
                         @for (tag of tags; track tag) {
-                            <div [class]="c.item" rdxAutocompleteItem>{{ tag }}</div>
+                            <div rdxAutocompleteItem [class]="c.item">{{ tag }}</div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
+                    <div rdxAutocompleteEmpty [class]="c.empty">No tags found.</div>
                 </div>
             </div>
         </div>

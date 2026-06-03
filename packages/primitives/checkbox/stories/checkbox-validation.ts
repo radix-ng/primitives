@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { LucideCheck } from '@lucide/angular';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { cn, demoButton, demoCheckbox } from '../../storybook/styles';
 import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { LucideCheck } from '@lucide/angular';
+import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 /**
  * Reactive forms with validation: `Validators.requiredTrue` forces the box to be
@@ -28,8 +28,8 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
         <form class="flex flex-col gap-3" [formGroup]="form" (ngSubmit)="onSubmit()">
             <div class="flex items-center gap-3">
                 <div rdxCheckboxRoot formControlName="terms">
-                    <button id="terms" [class]="c.button" rdxCheckboxButton>
-                        <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
+                    <button id="terms" rdxCheckboxButton [class]="c.button">
+                        <svg rdxCheckboxIndicator size="16" lucideCheck [class]="c.indicator" />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -42,7 +42,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
                 <p class="text-destructive text-sm">You must accept the terms to continue.</p>
             }
 
-            <button [class]="cn(b.base, b.primary, b.size.md, 'self-start')" type="submit">Submit</button>
+            <button type="submit" [class]="cn(b.base, b.primary, b.size.md, 'self-start')">Submit</button>
 
             @if (submitted()) {
                 <p class="text-muted-foreground text-sm">Submitted ✓</p>

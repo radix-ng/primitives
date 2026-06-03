@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
-import { injectVirtualizer } from '@tanstack/angular-virtual';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete, AutocompleteItemHighlightedDetails, RdxAutocompleteRoot } from '../index';
+import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
+import { injectVirtualizer } from '@tanstack/angular-virtual';
 
 /**
  * Externally virtualized list of 10,000 items. The autocomplete owns filtering and index navigation
@@ -16,30 +16,30 @@ import { _importsAutocomplete, AutocompleteItemHighlightedDetails, RdxAutocomple
     template: `
         <div
             #ac="rdxAutocompleteRoot"
-            [(value)]="value"
-            [items]="items"
-            (onItemHighlighted)="onHighlight($event)"
             virtualized
             rdxAutocompleteRoot
+            [items]="items"
+            [(value)]="value"
+            (onItemHighlighted)="onHighlight($event)"
         >
-            <div [class]="c.control" rdxAutocompleteInputGroup>
-                <input [class]="c.input" rdxAutocompleteInput placeholder="Search 10,000 items…" aria-label="Item" />
+            <div rdxAutocompleteInputGroup [class]="c.control">
+                <input rdxAutocompleteInput placeholder="Search 10,000 items…" aria-label="Item" [class]="c.input" />
             </div>
 
-            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
-                <div [class]="popup" rdxAutocompletePopup>
-                    <div [class]="c.empty" rdxAutocompleteEmpty>No items found.</div>
-                    <div [class]="c.list" rdxAutocompleteList aria-label="Items">
+            <div *rdxAutocompletePortal rdxAutocompletePositioner [class]="c.positioner">
+                <div rdxAutocompletePopup [class]="popup">
+                    <div rdxAutocompleteEmpty [class]="c.empty">No items found.</div>
+                    <div rdxAutocompleteList aria-label="Items" [class]="c.list">
                         <div #scroll [class]="scroller">
                             <div [class]="spacer" [style.height.px]="virtualizer.getTotalSize()">
                                 @for (row of virtualizer.getVirtualItems(); track row.key) {
                                     <div
+                                        rdxAutocompleteItem
                                         [class]="item"
                                         [value]="ac.filteredItems()[row.index]"
                                         [index]="row.index"
                                         [style.height.px]="row.size"
                                         [style.transform]="'translateY(' + row.start + 'px)'"
-                                        rdxAutocompleteItem
                                     >
                                         {{ ac.filteredItems()[row.index] }}
                                     </div>

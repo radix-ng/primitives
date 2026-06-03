@@ -1,3 +1,5 @@
+import { RDX_SELECT_POSITIONER_TOKEN, RdxPositionerImpl } from './select-popup';
+import { injectSelectRootContext } from './select-root';
 import { afterNextRender, Directive, ElementRef, forwardRef, inject, Injector } from '@angular/core';
 import { setupInternalBackdrop } from '@radix-ng/primitives/core';
 import {
@@ -6,8 +8,6 @@ import {
     provideRdxPopperContentWrapper,
     RdxPopperContentWrapper
 } from '@radix-ng/primitives/popper';
-import { RDX_SELECT_POSITIONER_TOKEN, RdxPositionerImpl } from './select-popup';
-import { injectSelectRootContext } from './select-root';
 
 /**
  * Positions the select popup against the trigger using the popper engine.

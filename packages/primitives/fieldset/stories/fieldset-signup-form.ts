@@ -1,9 +1,9 @@
+import { cn, demoButton, demoInput } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFieldsetLegend, RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
 import { RdxInputDirective } from '@radix-ng/primitives/input';
-import { cn, demoButton, demoInput } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -20,21 +20,21 @@ import { cn, demoButton, demoInput } from '../../storybook/styles';
     ],
     template: `
         <form class="w-96 space-y-5" [formGroup]="form" (ngSubmit)="submit()">
-            <fieldset class="border-border space-y-4 rounded-md border p-4" [disabled]="submitting" rdxFieldsetRoot>
+            <fieldset class="border-border space-y-4 rounded-md border p-4" rdxFieldsetRoot [disabled]="submitting">
                 <legend class="text-foreground px-1 text-sm font-semibold data-[disabled]:opacity-50" rdxFieldsetLegend>
                     Account details
                 </legend>
 
-                <div class="space-y-2" [invalid]="isInvalid('firstName')" [disabled]="submitting" rdxFieldRoot required>
+                <div class="space-y-2" rdxFieldRoot required [invalid]="isInvalid('firstName')" [disabled]="submitting">
                     <label class="text-foreground text-sm font-medium" rdxFieldLabel>First name</label>
-                    <input [class]="inputClass" rdxInput autocomplete="given-name" formControlName="firstName" />
+                    <input rdxInput autocomplete="given-name" formControlName="firstName" [class]="inputClass" />
                     <p class="text-muted-foreground text-sm" rdxFieldDescription>Used in your workspace profile.</p>
                     <p class="text-destructive text-sm" rdxFieldError>First name is required.</p>
                 </div>
 
-                <div class="space-y-2" [invalid]="isInvalid('email')" [disabled]="submitting" rdxFieldRoot required>
+                <div class="space-y-2" rdxFieldRoot required [invalid]="isInvalid('email')" [disabled]="submitting">
                     <label class="text-foreground text-sm font-medium" rdxFieldLabel>Email</label>
-                    <input [class]="inputClass" rdxInput autocomplete="email" formControlName="email" type="email" />
+                    <input rdxInput autocomplete="email" formControlName="email" type="email" [class]="inputClass" />
                     <p class="text-muted-foreground text-sm" rdxFieldDescription>
                         We'll send the invite confirmation here.
                     </p>
@@ -57,7 +57,7 @@ import { cn, demoButton, demoInput } from '../../storybook/styles';
                 </div>
             </fieldset>
 
-            <button [class]="cn(button.base, button.primary, button.size.md)" type="submit">
+            <button type="submit" [class]="cn(button.base, button.primary, button.size.md)">
                 {{ submitting ? 'Submitting...' : 'Create account' }}
             </button>
 

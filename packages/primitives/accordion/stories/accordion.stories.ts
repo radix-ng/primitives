@@ -1,4 +1,3 @@
-import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { cn, demoAccordion } from '../../storybook/styles';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxAccordionHeaderDirective } from '../src/accordion-header.directive';
@@ -7,20 +6,20 @@ import { RdxAccordionPanelDirective } from '../src/accordion-panel.directive';
 import { RdxAccordionRootDirective } from '../src/accordion-root.directive';
 import { RdxAccordionTriggerDirective } from '../src/accordion-trigger.directive';
 import { AccordionCollapsibleExample } from './accordion-collapsible';
-import { AccordionCollapsibleArrayExample } from './accordion-collapsible-array';
-import { AccordionDisabledExample } from './accordion-disabled';
-import { AccordionEventsExample } from './accordion-events';
-import { AccordionHorizontalExample } from './accordion-horizontal';
-import { AccordionKeepMountedExample } from './accordion-keep-mounted';
-import { AccordionMultipleExample } from './accordion-multiple';
-
-import collapsibleArraySource from './accordion-collapsible-array?raw';
 import collapsibleSource from './accordion-collapsible?raw';
+import { AccordionCollapsibleArrayExample } from './accordion-collapsible-array';
+import collapsibleArraySource from './accordion-collapsible-array?raw';
+import { AccordionDisabledExample } from './accordion-disabled';
 import disabledSource from './accordion-disabled?raw';
+import { AccordionEventsExample } from './accordion-events';
 import eventsSource from './accordion-events?raw';
+import { AccordionHorizontalExample } from './accordion-horizontal';
 import horizontalSource from './accordion-horizontal?raw';
+import { AccordionKeepMountedExample } from './accordion-keep-mounted';
 import keepMountedSource from './accordion-keep-mounted?raw';
+import { AccordionMultipleExample } from './accordion-multiple';
 import multipleSource from './accordion-multiple?raw';
+import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const source = (code: string) => ({
     docs: { source: { code: code.trim(), language: 'typescript', type: 'code' } }

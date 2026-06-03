@@ -1,6 +1,6 @@
+import { RdxPopperAnchor } from './popper-anchor';
 import { contentChild, Directive, signal } from '@angular/core';
 import type { ReferenceElement } from '@floating-ui/dom';
-import { RdxPopperAnchor } from './popper-anchor';
 
 @Directive({
     selector: '[rdxPopperRoot]'

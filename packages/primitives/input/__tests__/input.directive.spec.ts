@@ -1,13 +1,14 @@
+import { RdxInputDirective, RdxInputValueChangeEvent } from '../src/input.directive';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RdxValidationError } from '@radix-ng/primitives/core';
 import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
-import { RdxInputDirective, RdxInputValueChangeEvent } from '../src/input.directive';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <input
+            rdxInput
             [value]="value"
             [defaultValue]="defaultValue"
             [disabled]="disabled"
@@ -24,7 +25,6 @@ import { RdxInputDirective, RdxInputValueChangeEvent } from '../src/input.direct
             (onValueChange)="onValueChange($event)"
             (touchedChange)="touches = touches + 1"
             (touch)="touchEmits = touchEmits + 1"
-            rdxInput
         />
     `,
     imports: [RdxInputDirective]

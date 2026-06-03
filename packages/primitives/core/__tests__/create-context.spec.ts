@@ -1,7 +1,7 @@
+import { createContext } from '../src/create-context';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createContext } from '../src/create-context';
 
 interface FooContext {
     value: number;

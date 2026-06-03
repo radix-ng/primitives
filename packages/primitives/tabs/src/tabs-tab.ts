@@ -1,8 +1,8 @@
+import { injectTabsRootContext } from './tabs-root-context';
+import { makePanelId, makeTabId, RdxTabsValue } from './utils';
 import { booleanAttribute, computed, Directive, effect, inject, input } from '@angular/core';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import { BooleanInput } from '@radix-ng/primitives/core';
-import { injectTabsRootContext } from './tabs-root-context';
-import { makePanelId, makeTabId, RdxTabsValue } from './utils';
 
 /**
  * An individual interactive tab button that activates its corresponding panel.

@@ -1,8 +1,8 @@
+import { DemoPage } from '../shared/demo-page';
+import { cn, demoButton, demoDialog, demoInput } from '../shared/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
-import { DemoPage } from '../shared/demo-page';
-import { cn, demoButton, demoDialog, demoInput } from '../shared/styles';
 
 @Component({
     selector: 'app-dialog',
@@ -14,32 +14,32 @@ import { cn, demoButton, demoDialog, demoInput } from '../shared/styles';
             description="A modal window overlaid on the page, rendered in a portal, that traps focus until dismissed."
         >
             <div rdxDialogRoot>
-                <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Edit profile</button>
+                <button rdxDialogTrigger [class]="cn(b.base, b.primary, b.size.md)">Edit profile</button>
 
                 <ng-template rdxDialogPortal>
-                    <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
+                    <div rdxDialogBackdrop [class]="cn(d.backdrop, d.backdropAnimated)"></div>
 
-                    <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-                        <h2 [class]="d.title" rdxDialogTitle>Edit profile</h2>
-                        <p [class]="d.description" rdxDialogDescription>
+                    <div rdxDialogPopup [class]="cn(d.popup, d.popupAnimated)">
+                        <h2 rdxDialogTitle [class]="d.title">Edit profile</h2>
+                        <p rdxDialogDescription [class]="d.description">
                             Make changes to your profile here. Click save when you're done.
                         </p>
 
                         <label [class]="d.field">
                             Name
-                            <input [class]="input" value="Pedro Duarte" />
+                            <input value="Pedro Duarte" [class]="input" />
                         </label>
                         <label [class]="d.field">
                             Username
-                            <input [class]="input" value="@peduarte" />
+                            <input value="@peduarte" [class]="input" />
                         </label>
 
                         <div [class]="d.footer">
-                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDialogClose>Cancel</button>
-                            <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Save changes</button>
+                            <button rdxDialogClose [class]="cn(b.base, b.outline, b.size.sm)">Cancel</button>
+                            <button rdxDialogClose [class]="cn(b.base, b.primary, b.size.sm)">Save changes</button>
                         </div>
 
-                        <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                        <button aria-label="Close" rdxDialogClose [class]="d.close">
                             <svg aria-hidden="true" lucideX size="16"></svg>
                         </button>
                     </div>

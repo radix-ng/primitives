@@ -1,8 +1,8 @@
+import { injectRdxMenuRootContext } from './menu-root';
 import { Directive, isDevMode } from '@angular/core';
 import { rdxDevError } from '@radix-ng/primitives/core';
 import { RdxPortalPresence } from '@radix-ng/primitives/portal';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
-import { injectRdxMenuRootContext } from './menu-root';
 
 /**
  * Structural directive that teleports the menu popup into a container (default `document.body`) while

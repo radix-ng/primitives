@@ -1,7 +1,7 @@
+import { cn, demoNavigationMenu } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
-import { cn, demoNavigationMenu } from '../../storybook/styles';
 
 /**
  * Large menus: when the content exceeds the available space, constrain the content with a
@@ -13,12 +13,12 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
     selector: 'rdx-navigation-menu-large',
     imports: [...navigationMenuImports, LucideChevronDown],
     template: `
-        <nav [class]="m.root" rdxNavigationMenuRoot>
-            <ul [class]="m.list" rdxNavigationMenuList>
+        <nav rdxNavigationMenuRoot [class]="m.root">
+            <ul rdxNavigationMenuList [class]="m.list">
                 <li rdxNavigationMenuItem value="components">
-                    <button [class]="m.trigger" rdxNavigationMenuTrigger>
+                    <button rdxNavigationMenuTrigger [class]="m.trigger">
                         Components
-                        <svg [class]="m.icon" rdxNavigationMenuIcon lucideChevronDown></svg>
+                        <svg rdxNavigationMenuIcon lucideChevronDown [class]="m.icon"></svg>
                     </button>
 
                     <ng-container *rdxNavigationMenuContent>
@@ -26,7 +26,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                             <ul class="grid max-h-[320px] gap-1 overflow-y-auto p-2">
                                 @for (item of components; track item.title) {
                                     <li>
-                                        <a [class]="cn(m.cardLink, 'p-2.5')" rdxNavigationMenuLink href="#">
+                                        <a rdxNavigationMenuLink href="#" [class]="cn(m.cardLink, 'p-2.5')">
                                             <div [class]="m.cardHeading">{{ item.title }}</div>
                                             <p [class]="m.cardText">{{ item.text }}</p>
                                         </a>
@@ -38,9 +38,9 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 </li>
             </ul>
 
-            <div *rdxNavigationMenuPortal [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
-                <div [class]="m.popup" rdxNavigationMenuPopup>
-                    <div [class]="m.viewport" rdxNavigationMenuViewport></div>
+            <div *rdxNavigationMenuPortal sideOffset="8" rdxNavigationMenuPositioner [class]="m.positioner">
+                <div rdxNavigationMenuPopup [class]="m.popup">
+                    <div rdxNavigationMenuViewport [class]="m.viewport"></div>
                 </div>
             </div>
         </nav>

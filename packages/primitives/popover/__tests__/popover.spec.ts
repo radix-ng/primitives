@@ -34,7 +34,7 @@ import { vi } from 'vitest';
         RdxPopoverTrigger
     ],
     template: `
-        <div #root="rdxPopoverRoot" [(open)]="open" [defaultOpen]="defaultOpen" rdxPopoverRoot>
+        <div #root="rdxPopoverRoot" rdxPopoverRoot [defaultOpen]="defaultOpen" [(open)]="open">
             <button rdxPopoverTrigger>Open</button>
 
             @if (root.open()) {
@@ -59,7 +59,7 @@ class TestHostComponent {
     imports: [RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
     template: `
         <button data-testid="previous">Previous</button>
-        <div #root="rdxPopoverRoot" [(open)]="open" rdxPopoverRoot>
+        <div #root="rdxPopoverRoot" rdxPopoverRoot [(open)]="open">
             <button rdxPopoverTrigger>Open</button>
 
             @if (root.open()) {
@@ -81,7 +81,7 @@ class FocusGuardHostComponent {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPopoverRoot, RdxPopoverTrigger],
     template: `
-        <div [defaultOpen]="true" rdxPopoverRoot>
+        <div rdxPopoverRoot [defaultOpen]="true">
             <button rdxPopoverTrigger>Open</button>
         </div>
     `
@@ -105,7 +105,7 @@ class PortalHostComponent {}
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPopoverPopup, RdxPopoverPortal, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
     template: `
-        <div #root="rdxPopoverRoot" (onOpenChangeComplete)="complete.push($event)" rdxPopoverRoot>
+        <div #root="rdxPopoverRoot" rdxPopoverRoot (onOpenChangeComplete)="complete.push($event)">
             <button rdxPopoverTrigger>Open</button>
 
             <div *rdxPopoverPortal data-test-lifecycle-portal rdxPopoverPositioner>
@@ -123,13 +123,13 @@ class LifecycleHostComponent {
     imports: [RdxPopoverPopup, RdxPopoverPortal, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
     template: `
         <div #parent="rdxPopoverRoot" rdxPopoverRoot>
-            <button [delay]="0" openOnHover rdxPopoverTrigger>Parent trigger</button>
+            <button openOnHover rdxPopoverTrigger [delay]="0">Parent trigger</button>
 
             @if (parent.open()) {
                 <div rdxPopoverPositioner>
                     <div rdxPopoverPopup>
                         <div #child="rdxPopoverRoot" rdxPopoverRoot>
-                            <button [delay]="0" openOnHover rdxPopoverTrigger>Child trigger</button>
+                            <button openOnHover rdxPopoverTrigger [delay]="0">Child trigger</button>
 
                             <div *rdxPopoverPortal data-test-child-portal rdxPopoverPositioner>
                                 <div rdxPopoverPopup>Child popup</div>
@@ -167,7 +167,7 @@ class PositionerDefaultsHostComponent {}
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPopoverClose, RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
     template: `
-        <div #root="rdxPopoverRoot" [modal]="modal" rdxPopoverRoot>
+        <div #root="rdxPopoverRoot" rdxPopoverRoot [modal]="modal">
             <button rdxPopoverTrigger>Open</button>
 
             @if (root.open()) {
@@ -209,10 +209,10 @@ class MultipleTriggersHostComponent {}
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
     template: `
-        <button id="detached-one" [handle]="handle" payload="one" rdxPopoverTrigger>One</button>
-        <button id="detached-two" [handle]="handle" payload="two" rdxPopoverTrigger>Two</button>
+        <button id="detached-one" payload="one" rdxPopoverTrigger [handle]="handle">One</button>
+        <button id="detached-two" payload="two" rdxPopoverTrigger [handle]="handle">Two</button>
 
-        <div #root="rdxPopoverRoot" [handle]="handle" rdxPopoverRoot>
+        <div #root="rdxPopoverRoot" rdxPopoverRoot [handle]="handle">
             @if (root.open()) {
                 <div rdxPopoverPositioner>
                     <div rdxPopoverPopup>Popup</div>
@@ -245,7 +245,7 @@ class RemovableTriggerHostComponent {
     imports: [RdxPopoverClose, RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
     template: `
         <div #root="rdxPopoverRoot" rdxPopoverRoot>
-            <button [closeDelay]="closeDelay" [delay]="delay" openOnHover rdxPopoverTrigger>Open</button>
+            <button openOnHover rdxPopoverTrigger [closeDelay]="closeDelay" [delay]="delay">Open</button>
 
             @if (root.open()) {
                 <div rdxPopoverPositioner>
@@ -291,12 +291,12 @@ class ViewportHostComponent {}
     template: `
         <div
             #root="rdxPopoverRoot"
-            [(open)]="open"
-            [(triggerId)]="triggerId"
+            rdxPopoverRoot
             [defaultOpen]="defaultOpen"
             [defaultTriggerId]="defaultTriggerId"
+            [(open)]="open"
+            [(triggerId)]="triggerId"
             (onOpenChange)="changes.push($event)"
-            rdxPopoverRoot
         >
             <button id="controlled-one" payload="one" rdxPopoverTrigger>One</button>
             <button id="controlled-two" payload="two" rdxPopoverTrigger>Two</button>
@@ -324,12 +324,12 @@ class ControlledMultipleTriggersHostComponent {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
     template: `
-        <div #root="rdxPopoverRoot" [open]="true" rdxPopoverRoot>
+        <div #root="rdxPopoverRoot" rdxPopoverRoot [open]="true">
             <button rdxPopoverTrigger>Open</button>
 
             @if (root.open()) {
                 <div rdxPopoverPositioner>
-                    <div [finalFocus]="finalFocus" [initialFocus]="initialFocus" rdxPopoverPopup>
+                    <div rdxPopoverPopup [finalFocus]="finalFocus" [initialFocus]="initialFocus">
                         <button>Inside</button>
                     </div>
                 </div>
@@ -354,7 +354,7 @@ class PopupFocusPolicyHostComponent {
         RdxPopoverTrigger
     ],
     template: `
-        <div #root="rdxPopoverRoot" [open]="true" rdxPopoverRoot>
+        <div #root="rdxPopoverRoot" rdxPopoverRoot [open]="true">
             <button rdxPopoverTrigger>Open</button>
 
             @if (root.open()) {
@@ -376,7 +376,7 @@ class CustomLabelIdsHostComponent {}
     imports: [RdxPopoverBackdrop, RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
     template: `
         <div #root="rdxPopoverRoot" rdxPopoverRoot>
-            <button [delay]="0" openOnHover rdxPopoverTrigger>Open</button>
+            <button openOnHover rdxPopoverTrigger [delay]="0">Open</button>
 
             @if (root.open()) {
                 <div rdxPopoverBackdrop></div>
@@ -409,7 +409,7 @@ class TriggerWithoutRootHostComponent {}
         RdxPopoverTrigger
     ],
     template: `
-        <div [(open)]="open" (onOpenChange)="handleOpenChange($event)" rdxPopoverRoot>
+        <div rdxPopoverRoot [(open)]="open" (onOpenChange)="handleOpenChange($event)">
             <button rdxPopoverTrigger>Open</button>
 
             <div *rdxPopoverPortal rdxPopoverPositioner>
@@ -860,7 +860,7 @@ describe('Popover', () => {
                     <button #customAnchor>Custom anchor</button>
 
                     @if (root.open()) {
-                        <div [anchor]="customAnchor" rdxPopoverPositioner>
+                        <div rdxPopoverPositioner [anchor]="customAnchor">
                             <div rdxPopoverPopup>Popup</div>
                         </div>
                     }

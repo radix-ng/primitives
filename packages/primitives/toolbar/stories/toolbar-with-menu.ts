@@ -1,8 +1,8 @@
+import { demoMenu } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { toolbarImports } from '@radix-ng/primitives/toolbar';
-import { demoMenu } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -40,12 +40,12 @@ import { demoMenu } from '../../storybook/styles';
                 </button>
 
                 @if (menu.open()) {
-                    <div [class]="m.positioner" sideOffset="6" rdxMenuPositioner>
-                        <div [class]="m.popup" rdxMenuPopup>
-                            <button [class]="m.item" rdxMenuItem>Undo</button>
-                            <button [class]="m.item" rdxMenuItem>Redo</button>
-                            <div [class]="m.separator" rdxMenuSeparator></div>
-                            <button [class]="m.item" rdxMenuItem>Clear formatting</button>
+                    <div sideOffset="6" rdxMenuPositioner [class]="m.positioner">
+                        <div rdxMenuPopup [class]="m.popup">
+                            <button rdxMenuItem [class]="m.item">Undo</button>
+                            <button rdxMenuItem [class]="m.item">Redo</button>
+                            <div rdxMenuSeparator [class]="m.separator"></div>
+                            <button rdxMenuItem [class]="m.item">Clear formatting</button>
                         </div>
                     </div>
                 }

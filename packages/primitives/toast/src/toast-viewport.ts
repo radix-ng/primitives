@@ -1,5 +1,5 @@
-import { DestroyRef, Directive, effect, inject, signal } from '@angular/core';
 import { RdxToastManager } from './toast-provider';
+import { DestroyRef, Directive, effect, inject, signal } from '@angular/core';
 
 /**
  * The positioned region that holds the visible toasts — the Angular counterpart of

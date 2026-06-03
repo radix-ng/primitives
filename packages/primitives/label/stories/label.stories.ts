@@ -1,7 +1,7 @@
-import { CommonModule } from '@angular/common';
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxLabelDirective } from '../src/label.directive';
+import { CommonModule } from '@angular/common';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 export default {
     component: RdxLabelDirective,

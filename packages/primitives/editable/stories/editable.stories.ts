@@ -1,4 +1,3 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { EditableAutoResizeExample } from './editable-auto-resize';
 import autoResizeSource from './editable-auto-resize?raw';
@@ -6,6 +5,7 @@ import { EditableDefaultExample } from './editable-default';
 import defaultSource from './editable-default?raw';
 import { EditableDoubleClickExample } from './editable-double-click';
 import doubleClickSource from './editable-double-click?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 

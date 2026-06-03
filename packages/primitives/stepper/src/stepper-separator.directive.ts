@@ -1,7 +1,7 @@
-import { Directive, effect, inject } from '@angular/core';
-import { RdxSeparatorRootDirective } from '@radix-ng/primitives/separator';
 import { injectStepperItemContext } from './stepper-item-context.token';
 import { injectStepperRootContext } from './stepper-root-context.token';
+import { Directive, effect, inject } from '@angular/core';
+import { RdxSeparatorRootDirective } from '@radix-ng/primitives/separator';
 
 @Directive({
     selector: '[rdxStepperSeparator]',

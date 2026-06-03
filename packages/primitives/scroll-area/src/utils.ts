@@ -1,5 +1,5 @@
-import { clamp } from '@radix-ng/primitives/core';
 import { SCROLL_EDGE_TOLERANCE_PX } from './constants';
+import { clamp } from '@radix-ng/primitives/core';
 
 /**
  * Returns the combined start/end `margin` or `padding` of an element along an axis,

@@ -1,9 +1,9 @@
+import { _importsAutocomplete } from '../index';
+import { AutocompleteItemHighlightedDetails, RdxAutocompleteRoot } from '../src/autocomplete-root';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsAutocomplete } from '../index';
-import { AutocompleteItemHighlightedDetails, RdxAutocompleteRoot } from '../src/autocomplete-root';
 
 /**
  * Characterization tests (ADR 0014, Phase 0): pin engine behaviors that autocomplete shares with
@@ -15,18 +15,18 @@ import { AutocompleteItemHighlightedDetails, RdxAutocompleteRoot } from '../src/
     imports: [_importsAutocomplete],
     template: `
         <div
+            rdxAutocompleteRoot
+            [limit]="limit()"
             [(value)]="value"
             [(open)]="open"
-            [limit]="limit()"
             (onItemHighlighted)="lastHighlight = $event"
-            rdxAutocompleteRoot
         >
             <input rdxAutocompleteInput aria-label="Item" />
             <div *rdxAutocompletePortal rdxAutocompletePositioner>
                 <div rdxAutocompletePopup>
                     <div rdxAutocompleteList aria-label="Items">
                         @for (item of items; track item) {
-                            <div [value]="item" rdxAutocompleteItem>{{ item }}</div>
+                            <div rdxAutocompleteItem [value]="item">{{ item }}</div>
                         }
                     </div>
                 </div>

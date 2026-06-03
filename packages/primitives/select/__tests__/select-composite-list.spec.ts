@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { RdxCompositeList, RdxCompositeMetadata } from '@radix-ng/primitives/composite';
 import { _importsSelect } from '../index';
 import { RdxSelectPopup } from '../src/select-popup';
 import { RdxSelectRoot } from '../src/select-root';
 import { RdxSelectItemMetadata } from '../src/utils';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { RdxCompositeList, RdxCompositeMetadata } from '@radix-ng/primitives/composite';
 
 interface Fruit {
     label: string;
@@ -17,7 +17,7 @@ interface Fruit {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsSelect],
     template: `
-        <div [(value)]="value" rdxSelectRoot>
+        <div rdxSelectRoot [(value)]="value">
             <button rdxSelectTrigger>
                 <span rdxSelectValue placeholder="Select…"></span>
             </button>
@@ -26,7 +26,7 @@ interface Fruit {
                 <div rdxSelectPopup>
                     <div rdxSelectList>
                         @for (fruit of fruits(); track fruit.value) {
-                            <div [value]="fruit.value" [disabled]="fruit.disabled" rdxSelectItem>
+                            <div rdxSelectItem [value]="fruit.value" [disabled]="fruit.disabled">
                                 <span rdxSelectItemText>{{ fruit.label }}</span>
                             </div>
                         }

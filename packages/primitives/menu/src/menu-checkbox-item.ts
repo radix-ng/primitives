@@ -1,3 +1,5 @@
+import { injectRdxMenuRootContext } from './menu-root';
+import { CheckedState, isIndeterminate } from './menu-utils';
 import {
     booleanAttribute,
     computed,
@@ -8,8 +10,8 @@ import {
     input,
     model,
     output,
-    signal,
-    Signal
+    Signal,
+    signal
 } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import {
@@ -18,8 +20,6 @@ import {
     createContext,
     RdxCancelableChangeEventDetails
 } from '@radix-ng/primitives/core';
-import { injectRdxMenuRootContext } from './menu-root';
-import { CheckedState, isIndeterminate } from './menu-utils';
 
 export interface RdxMenuCheckboxItemContext {
     checked: Signal<CheckedState>;

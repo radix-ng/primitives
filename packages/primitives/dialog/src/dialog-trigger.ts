@@ -1,8 +1,8 @@
+import { RdxDialogHandle } from './dialog-handle';
+import { injectRdxDialogRootContext } from './dialog-root';
 import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input, untracked } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
 import { createRdxTriggerInteraction, useTriggerFocusGuardAnchor } from '@radix-ng/primitives/floating-focus-manager';
-import { RdxDialogHandle } from './dialog-handle';
-import { injectRdxDialogRootContext } from './dialog-root';
 
 /**
  * A button that opens the dialog.

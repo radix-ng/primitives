@@ -1,6 +1,6 @@
+import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports, RdxDrawerSnapPoint } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 const TOP_MARGIN_REM = 1;
 const VISIBLE_SNAP_POINTS_REM = [30];
@@ -14,11 +14,12 @@ function toViewportSnapPoint(heightRem: number): RdxDrawerSnapPoint {
     selector: 'rdx-drawer-snap-points',
     imports: [...drawerImports],
     template: `
-        <div [snapPoints]="snapPoints" rdxDrawerRoot>
-            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerTrigger>Open snap drawer</button>
+        <div rdxDrawerRoot [snapPoints]="snapPoints">
+            <button rdxDrawerTrigger [class]="cn(b.base, b.outline, b.size.sm)">Open snap drawer</button>
 
             <ng-template rdxDrawerPortal>
                 <div
+                    rdxDrawerBackdrop
                     [class]="
                         cn(
                             'bg-foreground/20 fixed inset-0 min-h-dvh opacity-[calc(1-var(--drawer-swipe-progress))]',
@@ -28,7 +29,6 @@ function toViewportSnapPoint(heightRem: number): RdxDrawerSnapPoint {
                             'data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0'
                         )
                     "
-                    rdxDrawerBackdrop
                 ></div>
 
                 <div class="fixed inset-0 flex touch-none items-end justify-center" rdxDrawerViewport>
@@ -57,7 +57,7 @@ function toViewportSnapPoint(heightRem: number): RdxDrawerSnapPoint {
                                 </div>
 
                                 <div class="flex items-center justify-end gap-3">
-                                    <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>Close</button>
+                                    <button rdxDrawerClose [class]="cn(b.base, b.outline, b.size.sm)">Close</button>
                                 </div>
                             </div>
                         </div>

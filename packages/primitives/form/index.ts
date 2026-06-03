@@ -1,5 +1,5 @@
-import { NgModule } from '@angular/core';
 import { RdxFormRoot } from './src/form-root';
+import { NgModule } from '@angular/core';
 
 export * from './src/form-root';
 

@@ -1,6 +1,6 @@
-import { Type } from '@angular/core';
 import { appendSentinel, computeStats, mode, nextPaint, observePaint, Stats } from './metrics';
 import { createMount } from './mount';
+import { Type } from '@angular/core';
 
 export interface BenchmarkOptions {
     /** Measured iterations (default 20). */

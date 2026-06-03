@@ -1,25 +1,25 @@
+import { RdxTimeFieldInputDirective } from '../src/time-field-input.directive';
+import { RdxTimeFieldRootDirective } from '../src/time-field-root.directive';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { Time } from '@internationalized/date';
 import { Granularity, HourCycle, TimeValue } from '@radix-ng/primitives/core';
-import { RdxTimeFieldInputDirective } from '../src/time-field-input.directive';
-import { RdxTimeFieldRootDirective } from '../src/time-field-root.directive';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <div
             #root="rdxTimeFieldRoot"
-            [(value)]="value"
+            rdxTimeFieldRoot
             [granularity]="granularity()"
             [hourCycle]="hourCycle()"
             [placeholder]="placeholder()"
-            rdxTimeFieldRoot
+            [(value)]="value"
         >
             @for (item of root.segmentContents(); track $index) {
-                <div [part]="item.part" rdxTimeFieldInput>{{ item.value }}</div>
+                <div rdxTimeFieldInput [part]="item.part">{{ item.value }}</div>
             }
         </div>
     `,
@@ -216,14 +216,14 @@ describe('Time Field', () => {
     template: `
         <div
             #root="rdxTimeFieldRoot"
+            rdxTimeFieldRoot
             [value]="value()"
             [invalid]="invalid()"
             [errors]="errors()"
             [dirty]="dirty()"
-            rdxTimeFieldRoot
         >
             @for (item of root.segmentContents(); track $index) {
-                <div [part]="item.part" rdxTimeFieldInput>{{ item.value }}</div>
+                <div rdxTimeFieldInput [part]="item.part">{{ item.value }}</div>
             }
         </div>
     `,
@@ -287,9 +287,9 @@ describe('RdxTimeField validation state', () => {
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     template: `
-        <div #root="rdxTimeFieldRoot" [formField]="time" rdxTimeFieldRoot>
+        <div #root="rdxTimeFieldRoot" rdxTimeFieldRoot [formField]="time">
             @for (item of root.segmentContents(); track $index) {
-                <div [part]="item.part" rdxTimeFieldInput>{{ item.value }}</div>
+                <div rdxTimeFieldInput [part]="item.part">{{ item.value }}</div>
             }
         </div>
     `,

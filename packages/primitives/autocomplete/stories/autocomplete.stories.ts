@@ -1,4 +1,3 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { AutocompleteAsync } from './autocomplete-async';
 import asyncSource from './autocomplete-async?raw';
@@ -28,6 +27,7 @@ import { AutocompleteValidation } from './autocomplete-validation';
 import validationSource from './autocomplete-validation?raw';
 import { AutocompleteVirtualizedExample } from './autocomplete-virtualized';
 import virtualizedSource from './autocomplete-virtualized?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 

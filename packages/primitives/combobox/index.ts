@@ -1,4 +1,3 @@
-import { NgModule } from '@angular/core';
 import { RdxComboboxAnchor } from './src/combobox-anchor';
 import { RdxComboboxArrow } from './src/combobox-arrow';
 import { RdxComboboxBackdrop } from './src/combobox-backdrop';
@@ -25,6 +24,7 @@ import { RdxComboboxSeparator } from './src/combobox-separator';
 import { RdxComboboxStatus } from './src/combobox-status';
 import { RdxComboboxTrigger } from './src/combobox-trigger';
 import { RdxComboboxValue } from './src/combobox-value';
+import { NgModule } from '@angular/core';
 
 export * from './src/combobox-anchor';
 export * from './src/combobox-arrow';

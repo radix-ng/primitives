@@ -1,6 +1,6 @@
+import { RdxMenuRootContext } from './menu-root';
 import { Injector } from '@angular/core';
 import { setupInternalBackdrop } from '@radix-ng/primitives/core';
-import { RdxMenuRootContext } from './menu-root';
 
 /** Marker attribute on the menu's internal backdrop element. */
 export const MENU_INTERNAL_BACKDROP_ATTR = 'data-rdx-menu-internal-backdrop';

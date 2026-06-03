@@ -1,6 +1,6 @@
+import { RdxImageLoadingStatus } from './types';
 import { WritableSignal } from '@angular/core';
 import { createContext } from '@radix-ng/primitives/core';
-import { RdxImageLoadingStatus } from './types';
 
 export interface AvatarRootContext {
     imageLoadingStatus: WritableSignal<RdxImageLoadingStatus>;

@@ -1,3 +1,4 @@
+import { cn, demoAccordion } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import {
     RdxAccordionHeaderDirective,
@@ -6,7 +7,6 @@ import {
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
-import { cn, demoAccordion } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -20,21 +20,21 @@ import { cn, demoAccordion } from '../../storybook/styles';
     ],
     template: `
         <div class="flex w-[300px] flex-col gap-3">
-            <div [class]="a.root" [defaultValue]="'item-1'" rdxAccordionRoot>
-                <div [class]="a.item" [value]="'item-1'" (onOpenChange)="log('Accessibility', $event)" rdxAccordionItem>
-                    <h3 [class]="a.header" rdxAccordionHeader>
-                        <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
+            <div rdxAccordionRoot [class]="a.root" [defaultValue]="'item-1'">
+                <div rdxAccordionItem [class]="a.item" [value]="'item-1'" (onOpenChange)="log('Accessibility', $event)">
+                    <h3 rdxAccordionHeader [class]="a.header">
+                        <button type="button" rdxAccordionTrigger [class]="a.trigger">Is it accessible?</button>
                     </h3>
-                    <div [class]="a.content" rdxAccordionPanel>
+                    <div rdxAccordionPanel [class]="a.content">
                         <div [class]="a.contentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
                     </div>
                 </div>
 
-                <div [class]="a.item" [value]="'item-2'" (onOpenChange)="log('Styling', $event)" rdxAccordionItem>
-                    <h3 [class]="a.header" rdxAccordionHeader>
-                        <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
+                <div rdxAccordionItem [class]="a.item" [value]="'item-2'" (onOpenChange)="log('Styling', $event)">
+                    <h3 rdxAccordionHeader [class]="a.header">
+                        <button type="button" rdxAccordionTrigger [class]="a.trigger">Is it unstyled?</button>
                     </h3>
-                    <div [class]="a.content" rdxAccordionPanel>
+                    <div rdxAccordionPanel [class]="a.content">
                         <div [class]="a.contentText">Yes. It's unstyled by default.</div>
                     </div>
                 </div>

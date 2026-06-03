@@ -1,6 +1,6 @@
+import { cn, demoButton, demoMenu } from '../../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoMenu } from '../../../storybook/styles';
 
 @Component({
     selector: 'menu-checkbox-items-story',
@@ -8,28 +8,28 @@ import { cn, demoButton, demoMenu } from '../../../storybook/styles';
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <ng-container #root="rdxMenuRoot" rdxMenuRoot>
-            <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Options</button>
+            <button rdxMenuTrigger [class]="cn(b.base, b.outline, b.size.md)">Options</button>
 
-            <div *rdxMenuPortal [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-                <div [class]="m.popup" rdxMenuPopup>
+            <div *rdxMenuPortal sideOffset="4" rdxMenuPositioner [class]="m.positioner">
+                <div rdxMenuPopup [class]="m.popup">
                     <label
+                        rdxMenuCheckboxItem
                         [class]="m.selectableItem"
                         [checked]="checkedState()"
                         (onCheckedChange)="handleSelectAll()"
-                        rdxMenuCheckboxItem
                     >
-                        <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>✓</span>
+                        <span rdxMenuCheckboxItemIndicator [class]="m.itemIndicator">✓</span>
                         Select All
                     </label>
-                    <div [class]="m.separator" rdxMenuSeparator></div>
+                    <div rdxMenuSeparator [class]="m.separator"></div>
                     @for (item of options(); track item) {
                         <label
+                            rdxMenuCheckboxItem
                             [class]="m.selectableItem"
                             [checked]="selectedItems().includes(item)"
                             (onCheckedChange)="handleSelection(item)"
-                            rdxMenuCheckboxItem
                         >
-                            <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>✓</span>
+                            <span rdxMenuCheckboxItemIndicator [class]="m.itemIndicator">✓</span>
                             {{ item }}
                         </label>
                     }

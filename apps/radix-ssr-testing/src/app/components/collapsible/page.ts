@@ -10,7 +10,7 @@ import {
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [RdxCollapsibleRootDirective, RdxCollapsibleTriggerDirective, RdxCollapsiblePanelDirective],
     template: `
-        <div [open]="true" rdxCollapsibleRoot>
+        <div rdxCollapsibleRoot [open]="true">
             <button rdxCollapsibleTrigger>Trigger</button>
             <div rdxCollapsiblePanel>Content</div>
         </div>

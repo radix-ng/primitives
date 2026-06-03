@@ -1,18 +1,18 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
 import { RdxFieldItem } from '../src/field-item';
 import { RdxFieldLabel } from '../src/field-label';
 import { RdxFieldRoot } from '../src/field-root';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxFieldRoot, RdxFieldItem, RdxFieldLabel, RdxFieldControl, RdxFieldDescription],
     template: `
-        <div [invalid]="invalid()" [disabled]="rootDisabled()" rdxFieldRoot>
-            <div [disabled]="itemADisabled()" rdxFieldItem>
+        <div rdxFieldRoot [invalid]="invalid()" [disabled]="rootDisabled()">
+            <div rdxFieldItem [disabled]="itemADisabled()">
                 <label rdxFieldLabel>Option A</label>
                 <input id="ctrl-a" rdxFieldControl />
                 <p rdxFieldDescription>A description</p>

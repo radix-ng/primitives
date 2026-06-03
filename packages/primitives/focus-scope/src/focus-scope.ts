@@ -1,3 +1,16 @@
+import { RdxFocusScopeConfigToken } from './focus-scope.config';
+import { createFocusScopesStack, FocusScopeAPI, removeLinks } from './stack';
+import {
+    AUTOFOCUS_ON_MOUNT,
+    AUTOFOCUS_ON_UNMOUNT,
+    composedContains,
+    EVENT_OPTIONS,
+    focus,
+    focusFirst,
+    getEventTarget,
+    getTabbableCandidates,
+    getTabbableEdges
+} from './utils';
 import {
     afterNextRender,
     booleanAttribute,
@@ -14,19 +27,6 @@ import {
     signal
 } from '@angular/core';
 import { BooleanInput, createContext, getActiveElement } from '@radix-ng/primitives/core';
-import { RdxFocusScopeConfigToken } from './focus-scope.config';
-import { createFocusScopesStack, FocusScopeAPI, removeLinks } from './stack';
-import {
-    AUTOFOCUS_ON_MOUNT,
-    AUTOFOCUS_ON_UNMOUNT,
-    composedContains,
-    EVENT_OPTIONS,
-    focus,
-    focusFirst,
-    getEventTarget,
-    getTabbableCandidates,
-    getTabbableEdges
-} from './utils';
 
 export interface FocusScopeContext {
     loop?: Signal<boolean>;

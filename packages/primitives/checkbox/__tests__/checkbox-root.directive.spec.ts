@@ -1,7 +1,3 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { form, FormField } from '@angular/forms/signals';
-import { By } from '@angular/platform-browser';
 import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input';
@@ -11,19 +7,23 @@ import {
     RdxCheckboxCheckedChangeEvent,
     RdxCheckboxRootDirective
 } from '../src/checkbox-root';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { form, FormField } from '@angular/forms/signals';
+import { By } from '@angular/platform-browser';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective, RdxCheckboxIndicatorDirective],
     template: `
         <div
+            rdxCheckboxRoot
             [checked]="checked"
             [indeterminate]="indeterminate"
             [disabled]="disabled"
             [readOnly]="readonly"
             [required]="required"
             (onCheckedChange)="onChange($event)"
-            rdxCheckboxRoot
         >
             <button rdxCheckboxButton>
                 <span rdxCheckboxIndicator></span>
@@ -60,12 +60,12 @@ class CheckboxHost {
     template: `
         <form>
             <div
-                [checked]="checked"
-                (onCheckedChange)="checked = $event.checked"
                 name="terms"
                 value="yes"
                 uncheckedValue="no"
                 rdxCheckboxRoot
+                [checked]="checked"
+                (onCheckedChange)="checked = $event.checked"
             >
                 <button rdxCheckboxButton>
                     <span rdxCheckboxIndicator></span>
@@ -297,10 +297,10 @@ describe('RdxCheckbox', () => {
     imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective, RdxCheckboxInputDirective],
     template: `
         <div
+            rdxCheckboxRoot
             [checked]="checked"
             [indeterminate]="indeterminate"
             (onCheckedChange)="checked = $event.checked; indeterminate = false"
-            rdxCheckboxRoot
         >
             <button rdxCheckboxButton><span>x</span></button>
             <input rdxCheckboxInput />
@@ -398,7 +398,7 @@ describe('RdxCheckboxRoot uncheckedValue', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective, RdxCheckboxIndicatorDirective],
     template: `
-        <div [invalid]="invalid()" [errors]="errors()" rdxCheckboxRoot>
+        <div rdxCheckboxRoot [invalid]="invalid()" [errors]="errors()">
             <button rdxCheckboxButton>
                 <span rdxCheckboxIndicator></span>
             </button>
@@ -461,7 +461,7 @@ describe('RdxCheckboxRoot validation state (batch #4)', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [FormField, RdxCheckboxRootDirective, RdxCheckboxButtonDirective, RdxCheckboxIndicatorDirective],
     template: `
-        <div [formField]="terms" rdxCheckboxRoot>
+        <div rdxCheckboxRoot [formField]="terms">
             <button rdxCheckboxButton>
                 <span rdxCheckboxIndicator></span>
             </button>

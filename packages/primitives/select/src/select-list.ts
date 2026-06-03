@@ -1,5 +1,5 @@
-import { afterNextRender, Directive, ElementRef, inject, signal } from '@angular/core';
 import { injectSelectPopupContext } from './select-popup';
+import { afterNextRender, Directive, ElementRef, inject, signal } from '@angular/core';
 
 @Directive({
     selector: '[rdxSelectList]',

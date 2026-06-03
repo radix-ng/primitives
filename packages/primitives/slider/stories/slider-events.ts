@@ -18,12 +18,12 @@ import {
         <div class="grid w-80 gap-4">
             <div
                 class="relative w-full select-none"
+                rdxSliderRoot
+                name="volume"
                 [value]="value()"
                 [step]="5"
                 (onValueChange)="onValueChange($event)"
                 (onValueCommitted)="onValueCommitted($event)"
-                rdxSliderRoot
-                name="volume"
             >
                 <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>
                     <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
@@ -41,9 +41,9 @@ import {
             <label class="text-foreground flex items-center gap-2 text-sm">
                 <input
                     class="accent-primary size-4"
+                    type="checkbox"
                     [checked]="locked()"
                     (change)="locked.set($any($event.target).checked)"
-                    type="checkbox"
                 />
                 Cancel value changes
             </label>

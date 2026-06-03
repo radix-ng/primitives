@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
+import { RdxReturnFocus } from '../../floating-focus-manager';
+import { _importsSelect } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { RdxReturnFocus } from '../../floating-focus-manager';
-import { _importsSelect } from '../index';
 
 const flush = (): Promise<void> => new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
 
@@ -12,10 +12,10 @@ const flush = (): Promise<void> => new Promise((resolve) => requestAnimationFram
     imports: [_importsSelect],
     template: `
         <input data-testid="before" />
-        <div [(value)]="value" [(open)]="open" rdxSelectRoot>
+        <div rdxSelectRoot [(value)]="value" [(open)]="open">
             <button rdxSelectTrigger>Open</button>
             <div *rdxSelectPortal rdxSelectPositioner>
-                <div [finalFocus]="finalFocus()" rdxSelectPopup>
+                <div rdxSelectPopup [finalFocus]="finalFocus()">
                     <div rdxSelectList>
                         <div value="apple" rdxSelectItem>
                             <span rdxSelectItemText>Apple</span>

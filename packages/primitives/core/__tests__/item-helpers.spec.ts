@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
 import { isItemEqualToValue, itemToStringLabel, itemToStringValue } from '../src/item-helpers';
+import { describe, expect, it } from 'vitest';
 
 describe('itemToStringLabel', () => {
     it('passes strings through unchanged', () => {

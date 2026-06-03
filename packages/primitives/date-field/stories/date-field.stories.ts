@@ -1,11 +1,10 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { DateFieldComponent } from './date-field.component';
-import { DateFieldInvalid } from './date-field.invalid';
-
 // Full component source for the "Show code" panel (Vite `?raw` import).
 import demoSource from './date-field.component?raw';
+import { DateFieldInvalid } from './date-field.invalid';
 import invalidSource from './date-field.invalid?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const source = (code: string) => ({
     docs: {

@@ -1,6 +1,6 @@
+import { injectComboboxRootContext } from './combobox-root';
 import { DestroyRef, Directive, inject } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
-import { injectComboboxRootContext } from './combobox-root';
 
 /**
  * An accessible label for the combobox. Registers its id so the input (and trigger) reference it via

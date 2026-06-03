@@ -1,15 +1,18 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RdxMeterIndicatorDirective } from '../src/meter-indicator.directive';
 import { RdxMeterLabelDirective } from '../src/meter-label.directive';
 import { MeterValueFormatter, RdxMeterRootDirective } from '../src/meter-root.directive';
 import { RdxMeterTrackDirective } from '../src/meter-track.directive';
 import { RdxMeterValueDirective } from '../src/meter-value.directive';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <div
+            labelId="storage-label"
+            valueId="storage-value"
+            rdxMeterRoot
             [value]="value"
             [min]="min"
             [max]="max"
@@ -17,9 +20,6 @@ import { RdxMeterValueDirective } from '../src/meter-value.directive';
             [format]="format"
             [aria-valuetext]="ariaValueText"
             [getAriaValueText]="getAriaValueText"
-            labelId="storage-label"
-            valueId="storage-value"
-            rdxMeterRoot
         >
             <span rdxMeterLabel>Storage</span>
             <span rdxMeterValue></span>

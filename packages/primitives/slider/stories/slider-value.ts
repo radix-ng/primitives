@@ -22,7 +22,7 @@ import {
         RdxSliderValue
     ],
     template: `
-        <div class="relative w-56 select-none" [value]="42" [format]="format" rdxSliderRoot>
+        <div class="relative w-56 select-none" rdxSliderRoot [value]="42" [format]="format">
             <div class="text-foreground mb-2 flex items-center justify-between text-sm">
                 <span id="slider-value-label">Budget</span>
                 <output class="text-muted-foreground tabular-nums" rdxSliderValue></output>

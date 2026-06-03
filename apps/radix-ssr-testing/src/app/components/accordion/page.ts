@@ -19,7 +19,7 @@ import {
     ],
     template: `
         <div rdxAccordionRoot multiple>
-            <div [value]="'one'" rdxAccordionItem>
+            <div rdxAccordionItem [value]="'one'">
                 <h3 rdxAccordionHeader>
                     <button type="button" rdxAccordionTrigger>One</button>
                 </h3>
@@ -29,7 +29,7 @@ import {
                 </div>
             </div>
 
-            <div [value]="'two'" rdxAccordionItem>
+            <div rdxAccordionItem [value]="'two'">
                 <h3 rdxAccordionHeader>
                     <button type="button" rdxAccordionTrigger>Two</button>
                 </h3>
@@ -39,7 +39,7 @@ import {
                 </div>
             </div>
 
-            <div [value]="'three'" [disabled]="true" rdxAccordionItem>
+            <div rdxAccordionItem [value]="'three'" [disabled]="true">
                 <h3 rdxAccordionHeader>
                     <button type="button" rdxAccordionTrigger>Three</button>
                 </h3>
@@ -49,7 +49,7 @@ import {
                 </div>
             </div>
 
-            <div [value]="'four'" rdxAccordionItem>
+            <div rdxAccordionItem [value]="'four'">
                 <h3 rdxAccordionHeader>
                     <button type="button" rdxAccordionTrigger>Four</button>
                 </h3>

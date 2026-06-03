@@ -1,6 +1,6 @@
+import { injectRdxMenuGroupContext } from './menu-group-context';
 import { DestroyRef, Directive, inject } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
-import { injectRdxMenuGroupContext } from './menu-group-context';
 
 /**
  * A label for a menu group.

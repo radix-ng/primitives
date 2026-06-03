@@ -1,3 +1,5 @@
+import { benchmark, BenchmarkResult } from '../harness/benchmark';
+import { writeResults } from '../harness/reporter';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import {
     RdxSelectGroup,
@@ -12,8 +14,6 @@ import {
     RdxSelectValue
 } from '@radix-ng/primitives/select';
 import { afterAll, describe, expect, it } from 'vitest';
-import { benchmark, BenchmarkResult } from '../harness/benchmark';
-import { writeResults } from '../harness/reporter';
 
 const FILE = 'select.bench.ts';
 // 50 = typical real-world list (the common path); 1000 = non-virtualized worst case (stresses the
@@ -41,7 +41,7 @@ const COUNTS = [50, 1000];
         RdxSelectItemText
     ],
     template: `
-        <ng-container [open]="isOpen()" rdxSelectRoot>
+        <ng-container rdxSelectRoot [open]="isOpen()">
             <button rdxSelectTrigger type="button" aria-label="options">
                 <span rdxSelectValue placeholder="Pick…"></span>
             </button>
@@ -51,7 +51,7 @@ const COUNTS = [50, 1000];
                     <div rdxSelectList>
                         <div rdxSelectGroup>
                             @for (option of options(); track option) {
-                                <div [value]="option" rdxSelectItem>
+                                <div rdxSelectItem [value]="option">
                                     <span rdxSelectItemText>{{ option }}</span>
                                 </div>
                             }

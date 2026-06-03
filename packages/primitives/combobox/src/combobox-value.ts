@@ -1,6 +1,6 @@
+import { injectComboboxRootContext } from './combobox-root';
 import { computed, Directive, input } from '@angular/core';
 import { AcceptableValue, isNullish } from '@radix-ng/primitives/core';
-import { injectComboboxRootContext } from './combobox-root';
 
 /**
  * Renders the current selection's label(s) — typically inside a {@link RdxComboboxTrigger} for a

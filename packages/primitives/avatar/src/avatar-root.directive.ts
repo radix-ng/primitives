@@ -1,6 +1,6 @@
-import { Directive, inject, signal } from '@angular/core';
 import { AvatarRootContext, provideAvatarRootContext } from './avatar-context.token';
 import { RdxImageLoadingStatus } from './types';
+import { Directive, inject, signal } from '@angular/core';
 
 const rootContext = (): AvatarRootContext => {
     const root = inject(RdxAvatarRootDirective);

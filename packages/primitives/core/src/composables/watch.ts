@@ -1,6 +1,6 @@
 // https://ngxtension.netlify.app/utilities/signals/explicit-effect/
 
-import { CreateEffectOptions, EffectCleanupRegisterFn, EffectRef, effect, untracked } from '@angular/core';
+import { CreateEffectOptions, effect, EffectCleanupRegisterFn, EffectRef, untracked } from '@angular/core';
 
 /**
  * We want to have the Tuple in order to use the types in the function signature

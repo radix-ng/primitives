@@ -1,5 +1,3 @@
-import { ElementRef, HOST_TAG_NAME, Injector, runInInjectionContext } from '@angular/core';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
     docsUrl,
     rdxCheckLabelElement,
@@ -8,6 +6,8 @@ import {
     rdxDevWarning,
     resetRdxDevWarnings
 } from '../src/dev/diagnostics';
+import { ElementRef, HOST_TAG_NAME, Injector, runInInjectionContext } from '@angular/core';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 /**
  * Runs `fn` in an injection context that mimics a directive host element. Pass `tag = null`

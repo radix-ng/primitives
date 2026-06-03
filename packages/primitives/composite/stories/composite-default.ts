@@ -1,6 +1,6 @@
+import { cn, demoButton, demoInput } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxCompositeItem, RdxCompositeRoot } from '@radix-ng/primitives/composite';
-import { cn, demoButton, demoInput } from '../../storybook/styles';
 
 @Component({
     selector: 'rdx-composite-default',
@@ -15,22 +15,22 @@ import { cn, demoButton, demoInput } from '../../storybook/styles';
                 highlightItemOnHover
                 rdxCompositeRoot
             >
-                <button [class]="itemClass" data-composite-item-active rdxCompositeItem>Overview</button>
-                <button [class]="itemClass" rdxCompositeItem>Metrics</button>
-                <button [class]="itemClass" rdxCompositeItem>Reports</button>
+                <button data-composite-item-active rdxCompositeItem [class]="itemClass">Overview</button>
+                <button rdxCompositeItem [class]="itemClass">Metrics</button>
+                <button rdxCompositeItem [class]="itemClass">Reports</button>
             </div>
 
             <div
                 class="flex w-full flex-wrap items-center gap-2"
-                [disabledIndices]="[2]"
-                [loopFocus]="false"
                 orientation="horizontal"
                 rdxCompositeRoot
+                [disabledIndices]="[2]"
+                [loopFocus]="false"
             >
-                <button [class]="itemClass" rdxCompositeItem>Filter</button>
-                <input [class]="inputClass" rdxCompositeItem value="Search" />
-                <button [class]="itemClass" aria-disabled="true" rdxCompositeItem>Archive</button>
-                <button [class]="itemClass" rdxCompositeItem>Export</button>
+                <button rdxCompositeItem [class]="itemClass">Filter</button>
+                <input rdxCompositeItem value="Search" [class]="inputClass" />
+                <button aria-disabled="true" rdxCompositeItem [class]="itemClass">Archive</button>
+                <button rdxCompositeItem [class]="itemClass">Export</button>
             </div>
         </div>
     `

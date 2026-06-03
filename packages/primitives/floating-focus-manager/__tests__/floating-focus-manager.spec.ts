@@ -1,9 +1,4 @@
 // @vitest-environment jsdom
-import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
-import { createFloatingRootContext, provideFloatingRootContext } from '@radix-ng/primitives/core';
-import { FOCUS_GUARD_ATTR } from '@radix-ng/primitives/focus-scope';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
     provideFloatingFocusManagerConfig,
     RdxFloatingFocusManager,
@@ -15,6 +10,11 @@ import {
 } from '../src/floating-focus-manager';
 import { RDX_FLOATING_MARKER } from '../src/mark-others';
 import { createRdxTriggerInteraction, RdxTriggerInteraction } from '../src/trigger-interaction';
+import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { createFloatingRootContext, provideFloatingRootContext } from '@radix-ng/primitives/core';
+import { FOCUS_GUARD_ATTR } from '@radix-ng/primitives/focus-scope';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 const flush = (): Promise<void> => new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
 
@@ -24,12 +24,12 @@ const flush = (): Promise<void> => new Promise((resolve) => requestAnimationFram
     template: `
         <div
             #scope
+            rdxFloatingFocusManager
             [modal]="modal()"
             [enabled]="enabled()"
             [closeOnFocusOut]="closeOnFocusOut()"
             [initialFocus]="initialFocus()"
             [returnFocus]="returnFocus()"
-            rdxFloatingFocusManager
         >
             <button #a>A</button>
             <button #b>B</button>
@@ -55,11 +55,11 @@ class ManagerHost {
         <button #previous>Previous</button>
         <div
             #scope
+            rdxFloatingFocusManager
             [beforeContentFocusGuardRef]="setBeforeGuard"
             [getInsideElements]="getInsideElements"
             [nextFocusableElement]="next"
             [previousFocusableElement]="previous"
-            rdxFloatingFocusManager
         >
             <button #inside>Inside</button>
         </div>
@@ -304,7 +304,7 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
             imports: [RdxFloatingFocusManager],
             providers: [provideFloatingRootContext(() => context)],
             template: `
-                <div #scope [modal]="true" [enabled]="true" rdxFloatingFocusManager></div>
+                <div #scope rdxFloatingFocusManager [modal]="true" [enabled]="true"></div>
             `
         })
         class OpenHost {

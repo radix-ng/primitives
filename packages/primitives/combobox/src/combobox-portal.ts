@@ -1,8 +1,8 @@
+import { injectComboboxRootContext } from './combobox-root';
 import { Directive, input, isDevMode } from '@angular/core';
 import { rdxDevError } from '@radix-ng/primitives/core';
 import { RdxPortalContainer, RdxPortalPresence } from '@radix-ng/primitives/portal';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
-import { injectComboboxRootContext } from './combobox-root';
 
 /**
  * Structural directive that teleports the combobox popup into a container (default `document.body`)

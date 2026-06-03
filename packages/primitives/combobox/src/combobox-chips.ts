@@ -1,6 +1,6 @@
+import { injectComboboxRootContext } from './combobox-root';
 import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 import { RdxFloatingInsideElement } from '@radix-ng/primitives/dismissable-layer';
-import { injectComboboxRootContext } from './combobox-root';
 
 /**
  * Container for the selected-value chips in `multiple` mode. Sits before the input and coordinates

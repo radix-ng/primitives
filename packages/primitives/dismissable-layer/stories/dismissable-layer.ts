@@ -26,22 +26,22 @@ interface LogEntry {
             <div class="border-border bg-background rounded-lg border p-3 shadow-sm">
                 <div class="mb-3 flex flex-wrap items-center gap-2">
                     <button
-                        class="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring inline-flex h-8 items-center justify-center rounded-md px-3 text-sm font-medium shadow-sm transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                         #trigger
+                        class="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring inline-flex h-8 items-center justify-center rounded-md px-3 text-sm font-medium shadow-sm transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                        type="button"
                         [attr.aria-expanded]="open()"
                         (click)="toggleLayer()"
-                        type="button"
                     >
                         {{ open() ? 'Close layer' : 'Open layer' }}
                     </button>
 
                     <button
                         class="border-border bg-background text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-8 items-center justify-center rounded-md border px-3 text-sm font-medium shadow-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
+                        type="button"
                         (click)="
                             preventNextOutside.set(true);
                             record('veto armed', 'the next outside press will call preventDefault()')
                         "
-                        type="button"
                     >
                         Veto next
                     </button>
@@ -51,9 +51,9 @@ interface LogEntry {
                     >
                         <input
                             class="border-border text-primary focus:ring-ring h-4 w-4 rounded"
+                            type="checkbox"
                             [checked]="outsideMode() === 'intentional'"
                             (change)="toggleOutsideMode()"
-                            type="checkbox"
                         />
                         Intentional outside press
                     </label>
@@ -90,8 +90,8 @@ interface LogEntry {
                     <div class="bg-background relative flex min-h-52 items-center justify-center rounded-md p-3">
                         @if (open()) {
                             <article
-                                class="border-border bg-popover text-popover-foreground ring-border focus-visible:ring-ring w-full rounded-lg border p-3 shadow-lg ring-1 outline-none focus-visible:ring-2"
                                 #layer
+                                class="border-border bg-popover text-popover-foreground ring-border focus-visible:ring-ring w-full rounded-lg border p-3 shadow-lg ring-1 outline-none focus-visible:ring-2"
                                 tabindex="-1"
                             >
                                 <div class="mb-2 flex items-start justify-between gap-3">
@@ -114,8 +114,8 @@ interface LogEntry {
 
                                 <button
                                     class="border-border bg-background text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-8 items-center justify-center rounded-md border px-3 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none"
-                                    (click)="closeFromButton()"
                                     type="button"
+                                    (click)="closeFromButton()"
                                 >
                                     Close
                                 </button>

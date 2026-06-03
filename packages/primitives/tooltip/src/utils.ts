@@ -1,4 +1,4 @@
-import { DestroyRef, signal, Signal } from '@angular/core';
+import { DestroyRef, Signal, signal } from '@angular/core';
 
 export type TimeoutController = {
     start: () => void;

@@ -1,6 +1,6 @@
+import { injectFieldRootContext } from './field-root';
 import { Directive, input } from '@angular/core';
 import { injectId, rdxCheckLabelElement } from '@radix-ng/primitives/core';
-import { injectFieldRootContext } from './field-root';
 
 const attr = (value: boolean) => (value ? '' : undefined);
 

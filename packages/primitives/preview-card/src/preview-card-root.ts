@@ -1,3 +1,4 @@
+import { RdxPreviewCardHandle } from './preview-card-handle';
 import {
     booleanAttribute,
     computed,
@@ -26,7 +27,6 @@ import {
     useTransitionStatus
 } from '@radix-ng/primitives/core';
 import { RdxPopper } from '@radix-ng/primitives/popper';
-import { RdxPreviewCardHandle } from './preview-card-handle';
 
 /**
  * Why an open/close happened instantly (no transition). Mirrors Base UI's preview-card `data-instant`:

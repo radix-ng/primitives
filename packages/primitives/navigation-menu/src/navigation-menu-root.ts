@@ -1,4 +1,14 @@
 import {
+    NavigationMenuDirection,
+    NavigationMenuOrientation,
+    provideNavigationMenuRootContext,
+    RdxNavigationMenuContentEntry,
+    RdxNavigationMenuOpenChange,
+    RdxNavigationMenuOpenChangeEventDetails,
+    RdxNavigationMenuOpenChangeReason,
+    RdxNavigationMenuRootContext
+} from './navigation-menu-root-context';
+import {
     computed,
     DestroyRef,
     Directive,
@@ -26,16 +36,6 @@ import {
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { RdxPopper } from '@radix-ng/primitives/popper';
-import {
-    NavigationMenuDirection,
-    NavigationMenuOrientation,
-    provideNavigationMenuRootContext,
-    RdxNavigationMenuContentEntry,
-    RdxNavigationMenuOpenChange,
-    RdxNavigationMenuOpenChangeEventDetails,
-    RdxNavigationMenuOpenChangeReason,
-    RdxNavigationMenuRootContext
-} from './navigation-menu-root-context';
 
 const context = () => contextFor(inject(RdxNavigationMenuRoot));
 

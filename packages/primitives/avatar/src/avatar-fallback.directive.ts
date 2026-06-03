@@ -1,7 +1,7 @@
+import { injectAvatarConfig } from './avatar.config';
+import { injectAvatarRootContext } from './avatar-context.token';
 import { Directive, input, signal } from '@angular/core';
 import { watch } from '@radix-ng/primitives/core';
-import { injectAvatarRootContext } from './avatar-context.token';
-import { injectAvatarConfig } from './avatar.config';
 
 /**
  * @group Components

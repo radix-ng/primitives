@@ -1,4 +1,4 @@
-import { afterNextRender, DestroyRef, inject, Injector, signal, Signal } from '@angular/core';
+import { afterNextRender, DestroyRef, inject, Injector, Signal, signal } from '@angular/core';
 
 /**
  * Lifecycle phase of an open/close transition.

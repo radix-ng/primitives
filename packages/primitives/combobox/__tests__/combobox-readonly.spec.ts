@@ -1,7 +1,7 @@
+import { _importsCombobox } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsCombobox } from '../index';
 
 /**
  * Regression (ADR 0014, Finding 1): a read-only / disabled combobox must not be user-mutable — Clear,
@@ -12,11 +12,11 @@ import { _importsCombobox } from '../index';
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
-        <div [(value)]="value" [readOnly]="readOnly()" [disabled]="disabled()" multiple rdxComboboxRoot>
+        <div multiple rdxComboboxRoot [readOnly]="readOnly()" [disabled]="disabled()" [(value)]="value">
             <div rdxComboboxAnchor>
                 <div rdxComboboxChips>
                     @for (fruit of value(); track fruit) {
-                        <span [value]="fruit" rdxComboboxChip>
+                        <span rdxComboboxChip [value]="fruit">
                             {{ fruit }}
                             <button rdxComboboxChipRemove aria-label="Remove">×</button>
                         </span>
@@ -30,7 +30,7 @@ import { _importsCombobox } from '../index';
                 <div rdxComboboxPopup>
                     <div rdxComboboxList aria-label="Fruits">
                         @for (fruit of fruits; track fruit) {
-                            <div [value]="fruit" rdxComboboxItem>{{ fruit }}</div>
+                            <div rdxComboboxItem [value]="fruit">{{ fruit }}</div>
                         }
                     </div>
                 </div>

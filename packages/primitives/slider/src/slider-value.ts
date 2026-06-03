@@ -1,5 +1,5 @@
-import { computed, Directive, input } from '@angular/core';
 import { injectSliderRootContext } from './slider-context';
+import { computed, Directive, input } from '@angular/core';
 
 /**
  * Displays the slider's current value(s) as formatted text. Renders into an

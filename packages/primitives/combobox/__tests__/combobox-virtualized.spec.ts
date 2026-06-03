@@ -1,9 +1,9 @@
+import { _importsCombobox } from '../index';
+import { ComboboxItemHighlightedDetails, RdxComboboxRoot } from '../src/combobox-root';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsCombobox } from '../index';
-import { ComboboxItemHighlightedDetails, RdxComboboxRoot } from '../src/combobox-root';
 
 // Only a 5-item window is ever rendered, so any assertion about navigation past index 4 proves the
 // root drives highlight/selection from `items` data by index rather than from mounted DOM elements.
@@ -13,19 +13,19 @@ import { ComboboxItemHighlightedDetails, RdxComboboxRoot } from '../src/combobox
     template: `
         <div
             #cmb="rdxComboboxRoot"
-            [(value)]="value"
-            [(open)]="open"
-            [items]="items"
-            (onItemHighlighted)="events.push($event)"
             virtualized
             rdxComboboxRoot
+            [items]="items"
+            [(value)]="value"
+            [(open)]="open"
+            (onItemHighlighted)="events.push($event)"
         >
             <input rdxComboboxInput aria-label="Item" />
             <div *rdxComboboxPortal rdxComboboxPositioner>
                 <div rdxComboboxPopup>
                     <div rdxComboboxList aria-label="Items">
                         @for (i of windowIndexes; track i) {
-                            <div [value]="cmb.filteredItems()[i]" [index]="i" rdxComboboxItem>
+                            <div rdxComboboxItem [value]="cmb.filteredItems()[i]" [index]="i">
                                 {{ cmb.filteredItems()[i] }}
                             </div>
                         }

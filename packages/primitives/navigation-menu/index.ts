@@ -1,4 +1,3 @@
-import { NgModule } from '@angular/core';
 import { RdxNavigationMenuArrow } from './src/navigation-menu-arrow';
 import { RdxNavigationMenuBackdrop } from './src/navigation-menu-backdrop';
 import { RdxNavigationMenuContent } from './src/navigation-menu-content';
@@ -12,6 +11,7 @@ import { RdxNavigationMenuPositioner } from './src/navigation-menu-positioner';
 import { RdxNavigationMenuRoot } from './src/navigation-menu-root';
 import { RdxNavigationMenuTrigger } from './src/navigation-menu-trigger';
 import { RdxNavigationMenuViewport } from './src/navigation-menu-viewport';
+import { NgModule } from '@angular/core';
 
 export * from './src/navigation-menu-arrow';
 export * from './src/navigation-menu-backdrop';

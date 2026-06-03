@@ -1,6 +1,6 @@
-import { booleanAttribute, Directive, effect, inject, input, TemplateRef, untracked } from '@angular/core';
 import { RdxNavigationMenuItem } from './navigation-menu-item';
 import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
+import { booleanAttribute, Directive, effect, inject, input, TemplateRef, untracked } from '@angular/core';
 
 /**
  * The content shown when its item is open. Used as a structural directive; its template is rendered

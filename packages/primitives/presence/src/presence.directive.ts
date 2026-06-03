@@ -1,3 +1,4 @@
+import { PresenceMachine } from './presence-machine';
 import { isPlatformBrowser } from '@angular/common';
 import {
     DestroyRef,
@@ -12,7 +13,6 @@ import {
     TemplateRef,
     ViewContainerRef
 } from '@angular/core';
-import { PresenceMachine } from './presence-machine';
 
 /**
  * Context interface for RdxPresence directive

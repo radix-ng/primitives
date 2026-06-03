@@ -1,7 +1,7 @@
-import { LucideItalic } from '@lucide/angular';
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxToggle } from '../src/toggle';
+import { LucideItalic } from '@lucide/angular';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 

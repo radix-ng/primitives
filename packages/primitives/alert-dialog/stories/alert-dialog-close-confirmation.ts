@@ -1,8 +1,8 @@
+import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { dialogImports, RdxDialogOpenChange } from '@radix-ng/primitives/dialog';
-import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -10,20 +10,20 @@ import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
     imports: [...dialogImports, ...alertDialogImports, FormsModule],
     template: `
         <!-- The editor is a regular Dialog, controlled so a close request can be intercepted. -->
-        <div [(open)]="editorOpen" (onOpenChange)="onEditorOpenChange($event)" rdxDialogRoot>
-            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Edit note</button>
+        <div rdxDialogRoot [(open)]="editorOpen" (onOpenChange)="onEditorOpenChange($event)">
+            <button rdxDialogTrigger [class]="cn(b.base, b.primary, b.size.md)">Edit note</button>
 
             <ng-template rdxDialogPortal>
-                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
-                <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-                    <h2 [class]="d.title" rdxDialogTitle>Edit note</h2>
-                    <p [class]="d.description" rdxDialogDescription>
+                <div rdxDialogBackdrop [class]="cn(d.backdrop, d.backdropAnimated)"></div>
+                <div rdxDialogPopup [class]="cn(d.popup, d.popupAnimated)">
+                    <h2 rdxDialogTitle [class]="d.title">Edit note</h2>
+                    <p rdxDialogDescription [class]="d.description">
                         Closing with unsaved changes asks an alert dialog to confirm.
                     </p>
 
                     <label [class]="d.field">
                         Note
-                        <input [(ngModel)]="text" [class]="input" placeholder="Type to create changes" />
+                        <input placeholder="Type to create changes" [class]="input" [(ngModel)]="text" />
                     </label>
 
                     <div [class]="d.footer">
@@ -35,12 +35,12 @@ import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
         </div>
 
         <!-- The confirmation is an Alert Dialog (assertive, not outside-dismissable). -->
-        <div [(open)]="confirmOpen" rdxAlertDialogRoot>
+        <div rdxAlertDialogRoot [(open)]="confirmOpen">
             <ng-template rdxAlertDialogPortal>
-                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxAlertDialogBackdrop></div>
-                <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
-                    <h2 [class]="d.title" rdxAlertDialogTitle>Discard changes?</h2>
-                    <p [class]="d.description" rdxAlertDialogDescription>Your unsaved note will be lost.</p>
+                <div rdxAlertDialogBackdrop [class]="cn(d.backdrop, d.backdropAnimated)"></div>
+                <div rdxAlertDialogPopup [class]="cn(d.popup, d.popupAnimated)">
+                    <h2 rdxAlertDialogTitle [class]="d.title">Discard changes?</h2>
+                    <p rdxAlertDialogDescription [class]="d.description">Your unsaved note will be lost.</p>
                     <div [class]="d.footer">
                         <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="confirmOpen.set(false)">
                             Keep editing

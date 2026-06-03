@@ -1,5 +1,3 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxTooltipDefaultComponent } from './tooltip-default';
 import defaultSource from './tooltip-default?raw';
@@ -13,6 +11,7 @@ import { RdxTooltipSliderComponent } from './tooltip-slider';
 import sliderSource from './tooltip-slider?raw';
 import { RdxTooltipTrackCursorComponent } from './tooltip-track-cursor';
 import trackCursorSource from './tooltip-track-cursor?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 

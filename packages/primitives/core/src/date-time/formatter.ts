@@ -1,6 +1,6 @@
-import { DateFormatter, type DateValue, getLocalTimeZone, today } from '@internationalized/date';
 import { hasTime, isZonedDateTime, toDate } from './comparators';
 import { HourCycle } from './types';
+import { DateFormatter, type DateValue, getLocalTimeZone, today } from '@internationalized/date';
 
 const defaultPartOptions: Intl.DateTimeFormatOptions = {
     year: 'numeric',

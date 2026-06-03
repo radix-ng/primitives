@@ -1,3 +1,4 @@
+import { RdxPortalContainer, resolvePortalContainer } from './resolve-container';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import {
     computed,
@@ -10,7 +11,6 @@ import {
     linkedSignal,
     PLATFORM_ID
 } from '@angular/core';
-import { RdxPortalContainer, resolvePortalContainer } from './resolve-container';
 
 @Directive({
     selector: '[rdxPortal]',

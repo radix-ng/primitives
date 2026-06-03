@@ -1,6 +1,6 @@
+import { cn, demoButton, demoToast } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
-import { cn, demoButton, demoToast } from '../../storybook/styles';
 
 /**
  * Push several toasts to see the collapsed stack, then hover (or focus) the stack to expand it —
@@ -19,15 +19,15 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
         </div>
 
         <div rdxToastPortal>
-            <div [class]="t.viewport" rdxToastViewport>
+            <div rdxToastViewport [class]="t.viewport">
                 @for (toast of manager.toasts(); track toast.id) {
-                    <div [class]="t.root" [toast]="toast" rdxToastRoot>
-                        <div [class]="t.content" rdxToastContent>
+                    <div rdxToastRoot [class]="t.root" [toast]="toast">
+                        <div rdxToastContent [class]="t.content">
                             <div class="min-w-0 flex-1">
-                                <p [class]="t.title" rdxToastTitle>{{ toast.title }}</p>
-                                <p [class]="t.description" rdxToastDescription>{{ toast.description }}</p>
+                                <p rdxToastTitle [class]="t.title">{{ toast.title }}</p>
+                                <p rdxToastDescription [class]="t.description">{{ toast.description }}</p>
                             </div>
-                            <button [class]="t.close" aria-label="Dismiss" rdxToastClose>✕</button>
+                            <button aria-label="Dismiss" rdxToastClose [class]="t.close">✕</button>
                         </div>
                     </div>
                 }

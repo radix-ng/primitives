@@ -1,3 +1,12 @@
+import { getFocusableMenuItems } from './menu-focus';
+import { injectRdxMenuRootContext, RdxMenuRoot } from './menu-root';
+import {
+    applyPointerTunnel,
+    createSafePolygonHandler,
+    hasOpenChildSubmenu,
+    MenuSide,
+    registerOpenSubmenu
+} from './menu-safe-polygon';
 import { isPlatformBrowser } from '@angular/common';
 import {
     booleanAttribute,
@@ -15,15 +24,6 @@ import {
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
-import { getFocusableMenuItems } from './menu-focus';
-import { injectRdxMenuRootContext, RdxMenuRoot } from './menu-root';
-import {
-    applyPointerTunnel,
-    createSafePolygonHandler,
-    hasOpenChildSubmenu,
-    MenuSide,
-    registerOpenSubmenu
-} from './menu-safe-polygon';
 
 const numberOrUndefined = (value: NumberInput | undefined) => (value == null ? undefined : numberAttribute(value));
 const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();

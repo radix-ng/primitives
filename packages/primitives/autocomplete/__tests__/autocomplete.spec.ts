@@ -1,25 +1,25 @@
+import { _importsAutocomplete } from '../index';
+import { AutocompleteFilter, AutocompleteValueChangeDetails, RdxAutocompleteRoot } from '../src/autocomplete-root';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RdxComboboxOpenChange } from '@radix-ng/primitives/combobox';
 import { axe } from 'jest-axe';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsAutocomplete } from '../index';
-import { AutocompleteFilter, AutocompleteValueChangeDetails, RdxAutocompleteRoot } from '../src/autocomplete-root';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsAutocomplete],
     template: `
         <div
-            [(value)]="value"
-            [(open)]="open"
+            rdxAutocompleteRoot
             [filter]="filter()"
             [autoHighlight]="autoHighlight()"
             [openOnInputClick]="openOnInputClick()"
+            [(value)]="value"
+            [(open)]="open"
             (onValueChange)="changes.push($event)"
             (onOpenChange)="handleOpenChange($event)"
-            rdxAutocompleteRoot
         >
             <label rdxAutocompleteLabel>Fruit</label>
             <input rdxAutocompleteInput />

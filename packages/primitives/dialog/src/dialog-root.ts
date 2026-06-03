@@ -1,3 +1,5 @@
+import { RdxDialogHandle } from './dialog-handle';
+import { RDX_DIALOG_VARIANT, RdxDialogRole } from './dialog-variant';
 import {
     booleanAttribute,
     computed,
@@ -27,8 +29,6 @@ import {
     useTransitionStatus
 } from '@radix-ng/primitives/core';
 import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
-import { RdxDialogHandle } from './dialog-handle';
-import { RDX_DIALOG_VARIANT, RdxDialogRole } from './dialog-variant';
 
 export type RdxDialogModal = boolean | 'trap-focus';
 

@@ -1,5 +1,5 @@
-import { Directive, inject, signal } from '@angular/core';
 import { provideRdxMenuGroupContext, RdxMenuGroupContext } from './menu-group-context';
+import { Directive, inject, signal } from '@angular/core';
 
 const groupContextFactory = (): RdxMenuGroupContext => {
     const instance = inject(RdxMenuGroup);

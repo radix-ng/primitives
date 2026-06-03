@@ -27,9 +27,9 @@ import {
             @for (item of directions; track item.direction) {
                 <section
                     class="border-border bg-card text-card-foreground grid gap-4 rounded-md border p-4 shadow-sm"
+                    rdxDirectionProvider
                     [attr.dir]="item.direction"
                     [direction]="item.direction"
-                    rdxDirectionProvider
                 >
                     <div class="flex items-center justify-between gap-3">
                         <span class="text-sm font-medium">{{ item.label }}</span>
@@ -38,11 +38,11 @@ import {
 
                     <div
                         class="relative w-full select-none"
-                        [(value)]="item.value"
+                        rdxSliderRoot
                         [min]="0"
                         [max]="100"
                         [step]="5"
-                        rdxSliderRoot
+                        [(value)]="item.value"
                     >
                         <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>
                             <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
@@ -51,7 +51,7 @@ import {
                                     class="border-border bg-background focus-within:ring-ring block size-5 rounded-full border shadow-sm focus-within:ring-2"
                                     rdxSliderThumb
                                 >
-                                    <input [attr.aria-label]="item.label" rdxSliderThumbInput />
+                                    <input rdxSliderThumbInput [attr.aria-label]="item.label" />
                                 </div>
                             </div>
                         </div>

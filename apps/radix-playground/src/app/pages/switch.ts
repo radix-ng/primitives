@@ -1,7 +1,7 @@
+import { DemoPage } from '../shared/demo-page';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
-import { DemoPage } from '../shared/demo-page';
 
 @Component({
     selector: 'app-switch',

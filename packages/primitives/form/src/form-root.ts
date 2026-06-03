@@ -7,8 +7,8 @@ import {
     input,
     linkedSignal,
     output,
-    signal,
-    Signal
+    Signal,
+    signal
 } from '@angular/core';
 import { createContext } from '@radix-ng/primitives/core';
 

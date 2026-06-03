@@ -1,24 +1,24 @@
+import { RdxDateFieldInputDirective } from '../src/date-field-input.directive';
+import { RdxDateFieldRootDirective } from '../src/date-field-root.directive';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { CalendarDate, CalendarDateTime, DateValue } from '@internationalized/date';
 import { Granularity } from '@radix-ng/primitives/core';
-import { RdxDateFieldInputDirective } from '../src/date-field-input.directive';
-import { RdxDateFieldRootDirective } from '../src/date-field-root.directive';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <div
             #root="rdxDateFieldRoot"
+            rdxDateFieldRoot
             [granularity]="granularity()"
             [locale]="locale()"
             [value]="value()"
-            rdxDateFieldRoot
         >
             @for (item of root.segmentContents(); track $index) {
-                <div [part]="item.part" rdxDateFieldInput>{{ item.value }}</div>
+                <div rdxDateFieldInput [part]="item.part">{{ item.value }}</div>
             }
         </div>
     `,
@@ -118,15 +118,15 @@ describe('Date Field', () => {
     template: `
         <div
             #root="rdxDateFieldRoot"
+            rdxDateFieldRoot
             [value]="value()"
             [maxValue]="maxValue()"
             [invalid]="invalid()"
             [errors]="errors()"
             [dirty]="dirty()"
-            rdxDateFieldRoot
         >
             @for (item of root.segmentContents(); track $index) {
-                <div [part]="item.part" rdxDateFieldInput>{{ item.value }}</div>
+                <div rdxDateFieldInput [part]="item.part">{{ item.value }}</div>
             }
         </div>
     `,
@@ -198,9 +198,9 @@ describe('RdxDateField validation state', () => {
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     template: `
-        <div #root="rdxDateFieldRoot" [formField]="date" rdxDateFieldRoot>
+        <div #root="rdxDateFieldRoot" rdxDateFieldRoot [formField]="date">
             @for (item of root.segmentContents(); track $index) {
-                <div [part]="item.part" rdxDateFieldInput>{{ item.value }}</div>
+                <div rdxDateFieldInput [part]="item.part">{{ item.value }}</div>
             }
         </div>
     `,

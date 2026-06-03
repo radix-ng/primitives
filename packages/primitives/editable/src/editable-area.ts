@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
 import { injectEditableRootContext } from './editable-root';
+import { Directive } from '@angular/core';
 
 @Directive({
     selector: '[rdxEditableArea]',

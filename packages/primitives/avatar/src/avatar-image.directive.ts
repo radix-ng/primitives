@@ -1,8 +1,8 @@
+import { injectAvatarRootContext } from './avatar-context.token';
+import { HTMLAttributeReferrerPolicy, RdxImageLoadingStatus } from './types';
 import { isPlatformBrowser } from '@angular/common';
 import { Directive, inject, input, output, PLATFORM_ID, signal } from '@angular/core';
 import { watch } from '@radix-ng/primitives/core';
-import { injectAvatarRootContext } from './avatar-context.token';
-import { HTMLAttributeReferrerPolicy, RdxImageLoadingStatus } from './types';
 
 /**
  * @group Components

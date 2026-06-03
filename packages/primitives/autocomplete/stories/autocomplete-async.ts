@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 
 interface Movie {
     id: string;
@@ -123,18 +123,18 @@ const top100Movies: Movie[] = [
     selector: 'autocomplete-async',
     imports: [_importsAutocomplete],
     template: `
-        <div [(value)]="value" [filter]="null" (onValueChange)="search($event.value)" rdxAutocompleteRoot>
-            <div [class]="c.control" rdxAutocompleteInputGroup>
+        <div rdxAutocompleteRoot [filter]="null" [(value)]="value" (onValueChange)="search($event.value)">
+            <div rdxAutocompleteInputGroup [class]="c.control">
                 <input
-                    [class]="c.input"
                     rdxAutocompleteInput
                     placeholder="e.g. Pulp Fiction or 1994"
                     aria-label="Movie"
+                    [class]="c.input"
                 />
             </div>
 
-            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
-                <div [class]="c.popup" [hidden]="!status()" rdxAutocompletePopup>
+            <div *rdxAutocompletePortal rdxAutocompletePositioner [class]="c.positioner">
+                <div rdxAutocompletePopup [class]="c.popup" [hidden]="!status()">
                     <div class="text-muted-foreground flex items-center gap-2 px-2 py-1 text-xs" rdxAutocompleteStatus>
                         @if (loading()) {
                             <span
@@ -146,9 +146,9 @@ const top100Movies: Movie[] = [
                             {{ status() }}
                         }
                     </div>
-                    <div [class]="c.list" rdxAutocompleteList aria-label="Movies">
+                    <div rdxAutocompleteList aria-label="Movies" [class]="c.list">
                         @for (movie of results(); track movie.id) {
-                            <div [class]="c.item" [value]="movie.title" [textValue]="movie.title" rdxAutocompleteItem>
+                            <div rdxAutocompleteItem [class]="c.item" [value]="movie.title" [textValue]="movie.title">
                                 {{ movie.title }}
                                 <span class="text-muted-foreground ml-1 text-xs">{{ movie.year }}</span>
                             </div>

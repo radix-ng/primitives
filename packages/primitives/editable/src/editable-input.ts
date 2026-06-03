@@ -1,6 +1,6 @@
+import { injectEditableRootContext } from './editable-root';
 import { afterNextRender, afterRenderEffect, computed, Directive, ElementRef, inject, input } from '@angular/core';
 import { ENTER } from '@radix-ng/primitives/core';
-import { injectEditableRootContext } from './editable-root';
 
 @Directive({
     selector: 'input[rdxEditableInput]',

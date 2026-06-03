@@ -10,8 +10,8 @@ import {
     model,
     numberAttribute,
     output,
-    signal,
     Signal,
+    signal,
     WritableSignal
 } from '@angular/core';
 import {

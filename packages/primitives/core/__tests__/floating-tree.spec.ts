@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
-import { Injector } from '@angular/core';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { createFloatingRootContext, RdxFloatingRootContext } from '../src/floating/floating-root-context';
 import { RdxFloatingNode, RdxFloatingTree } from '../src/floating/floating-tree';
 import { provideFloatingTree, RDX_FLOATING_TREE } from '../src/floating/provide-floating-tree';
+import { Injector } from '@angular/core';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 // Test-only augmentation: add a synthetic tree-level event so we can exercise the tree's
 // event channel without landing a real capability event first.

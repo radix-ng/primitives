@@ -1,4 +1,4 @@
-import { computed, Directive, Injectable, Provider, signal, Signal } from '@angular/core';
+import { computed, Directive, Injectable, Provider, Signal, signal } from '@angular/core';
 
 /** A single open drawer's registration with the {@link RdxDrawerProvider}. */
 export interface RdxDrawerRegistration {

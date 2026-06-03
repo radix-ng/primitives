@@ -1,6 +1,6 @@
+import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -12,18 +12,18 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
             <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="open.set(true)">Open from outside</button>
 
-            <div [(open)]="open" rdxDrawerRoot>
-                <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Open drawer</button>
+            <div rdxDrawerRoot [(open)]="open">
+                <button rdxDrawerTrigger [class]="cn(b.base, b.primary, b.size.md)">Open drawer</button>
 
                 <ng-template rdxDrawerPortal>
-                    <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
+                    <div rdxDrawerBackdrop [class]="cn(d.backdrop, d.overlayAnimated)"></div>
 
-                    <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
-                        <div [class]="d.grip" aria-hidden="true"></div>
+                    <div rdxDrawerPopup [class]="cn(d.popup, d.side.bottom)">
+                        <div aria-hidden="true" [class]="d.grip"></div>
 
-                        <div [class]="d.body" rdxDrawerContent>
-                            <h2 [class]="d.title" rdxDrawerTitle>Controlled drawer</h2>
-                            <p [class]="d.description" rdxDrawerDescription>
+                        <div rdxDrawerContent [class]="d.body">
+                            <h2 rdxDrawerTitle [class]="d.title">Controlled drawer</h2>
+                            <p rdxDrawerDescription [class]="d.description">
                                 The open state is owned by the component and bound with
                                 <code>[(open)]</code>
                                 .

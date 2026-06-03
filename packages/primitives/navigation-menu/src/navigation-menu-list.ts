@@ -1,7 +1,7 @@
+import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
 import { DestroyRef, Directive, effect, ElementRef, inject } from '@angular/core';
 import { RdxCompositeRoot } from '@radix-ng/primitives/composite';
 import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ARROW_UP } from '@radix-ng/primitives/core';
-import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
 
 /**
  * Contains the navigation menu items and coordinates composite keyboard focus between triggers.

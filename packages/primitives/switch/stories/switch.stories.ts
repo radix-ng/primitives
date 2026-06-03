@@ -1,4 +1,3 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { SwitchDefaultExample } from './switch-default';
 import defaultSource from './switch-default?raw';
@@ -10,6 +9,7 @@ import { SwitchReactiveForms } from './switch-reactive-forms';
 import formsSource from './switch-reactive-forms?raw';
 import { SwitchReadonlyExample } from './switch-readonly';
 import readonlySource from './switch-readonly?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 

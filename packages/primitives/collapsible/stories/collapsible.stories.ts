@@ -1,11 +1,11 @@
-import { LucideUnfoldVertical, LucideX } from '@lucide/angular';
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxCollapsiblePanelDirective } from '../src/collapsible-panel.directive';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.directive';
 import { RdxCollapsibleAnimationComponent } from './collapsible-animation.component';
 import { RdxCollapsibleExternalTriggeringComponent } from './collapsible-external-triggering.component';
+import { LucideUnfoldVertical, LucideX } from '@lucide/angular';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 

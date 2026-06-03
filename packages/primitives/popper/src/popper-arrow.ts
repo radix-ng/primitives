@@ -1,3 +1,5 @@
+import { injectPopperContentWrapperContext } from './popper-content-wrapper';
+import { Side } from './utils';
 import {
     computed,
     createComponent,
@@ -11,8 +13,6 @@ import {
     numberAttribute
 } from '@angular/core';
 import { RdxArrow } from '@radix-ng/primitives/arrow';
-import { injectPopperContentWrapperContext } from './popper-content-wrapper';
-import { Side } from './utils';
 
 const OPPOSITE_SIDE: Record<Side, Side> = {
     top: 'bottom',

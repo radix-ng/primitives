@@ -1,23 +1,23 @@
+import { _importsCombobox } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsCombobox } from '../index';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
-        <div [(value)]="value" [(open)]="open" [disabled]="disabled()" rdxComboboxRoot>
+        <div rdxComboboxRoot [disabled]="disabled()" [(value)]="value" [(open)]="open">
             <div rdxComboboxInputGroup>
                 <input rdxComboboxInput aria-label="Fruit" />
-                <button [disabled]="clearDisabled()" rdxComboboxClear>clear</button>
+                <button rdxComboboxClear [disabled]="clearDisabled()">clear</button>
             </div>
             <div *rdxComboboxPortal rdxComboboxPositioner>
                 <div rdxComboboxPopup>
                     <div rdxComboboxList aria-label="Fruits">
-                        <div [value]="'apple'" rdxComboboxItem>Apple</div>
+                        <div rdxComboboxItem [value]="'apple'">Apple</div>
                         <div rdxComboboxSeparator></div>
-                        <div [value]="'banana'" rdxComboboxItem>Banana</div>
+                        <div rdxComboboxItem [value]="'banana'">Banana</div>
                     </div>
                     <div rdxComboboxEmpty>No results</div>
                     <div rdxComboboxStatus>1 result</div>

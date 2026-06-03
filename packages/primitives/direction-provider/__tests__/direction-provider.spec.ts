@@ -1,10 +1,10 @@
+import { provideRadixNG } from '../../config/src/config.provider';
+import { injectDirection, provideDirection, RdxDirectionProvider } from '../src/direction-provider';
 import { ChangeDetectionStrategy, Component, Directive, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Direction } from '@radix-ng/primitives/core';
 import { afterEach, describe, expect, it } from 'vitest';
-import { provideRadixNG } from '../../config/src/config.provider';
-import { injectDirection, provideDirection, RdxDirectionProvider } from '../src/direction-provider';
 
 @Directive({
     selector: '[directionProbe]',
@@ -29,7 +29,7 @@ class ProbeHost {}
     standalone: true,
     imports: [DirectionProbe, RdxDirectionProvider],
     template: `
-        <section [direction]="direction()" rdxDirectionProvider>
+        <section rdxDirectionProvider [direction]="direction()">
             <span directionProbe></span>
         </section>
     `

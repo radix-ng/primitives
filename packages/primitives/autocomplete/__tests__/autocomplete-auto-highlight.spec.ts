@@ -1,16 +1,16 @@
+import { _importsAutocomplete } from '../index';
+import { RdxAutocompleteRoot } from '../src/autocomplete-root';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsAutocomplete } from '../index';
-import { RdxAutocompleteRoot } from '../src/autocomplete-root';
 
 // Bare `autoHighlight` attribute (no value) — the common authoring form. Must coerce to `true`.
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsAutocomplete],
     template: `
-        <div [(value)]="value" autoHighlight rdxAutocompleteRoot>
+        <div autoHighlight rdxAutocompleteRoot [(value)]="value">
             <input rdxAutocompleteInput aria-label="Tag" />
             <div *rdxAutocompletePortal rdxAutocompletePositioner>
                 <div rdxAutocompletePopup>

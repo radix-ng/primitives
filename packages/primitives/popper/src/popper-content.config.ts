@@ -1,5 +1,5 @@
-import { InjectionToken, Provider } from '@angular/core';
 import { Align, Side } from './utils';
+import { InjectionToken, Provider } from '@angular/core';
 
 /**
  * Default positioning values for `RdxPopperContentWrapper`.

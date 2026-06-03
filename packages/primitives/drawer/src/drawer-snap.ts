@@ -1,5 +1,5 @@
-import { clamp } from '@radix-ng/primitives/core';
 import { RdxDrawerSwipeDirection } from './drawer-swipe';
+import { clamp } from '@radix-ng/primitives/core';
 
 /**
  * A resting position for the drawer along the dismiss axis.

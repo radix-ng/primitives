@@ -1,3 +1,4 @@
+import { RdxPopoverHandle } from './popover-handle';
 import {
     booleanAttribute,
     computed,
@@ -28,7 +29,6 @@ import {
 } from '@radix-ng/primitives/core';
 import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopper } from '@radix-ng/primitives/popper';
-import { RdxPopoverHandle } from './popover-handle';
 
 export type RdxPopoverModal = boolean | 'trap-focus';
 /**

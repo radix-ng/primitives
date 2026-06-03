@@ -1,3 +1,4 @@
+import type { DateMatcher } from './types';
 import {
     CalendarDate,
     CalendarDateTime,
@@ -11,7 +12,6 @@ import {
     toCalendar,
     ZonedDateTime
 } from '@internationalized/date';
-import type { DateMatcher } from './types';
 
 /**
  * Given a `DateValue` object, convert it to a native `Date` object.

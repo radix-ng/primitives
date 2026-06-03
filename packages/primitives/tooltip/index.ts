@@ -7,6 +7,7 @@ import { RdxTooltipProvider } from './src/tooltip-provider';
 import { RdxTooltipTrigger } from './src/tooltip-trigger';
 
 export * from './src/tooltip';
+export * from './src/tooltip.config';
 export * from './src/tooltip-arrow';
 export * from './src/tooltip-handle';
 export * from './src/tooltip-popup';
@@ -14,7 +15,6 @@ export * from './src/tooltip-portal';
 export * from './src/tooltip-positioner';
 export * from './src/tooltip-provider';
 export * from './src/tooltip-trigger';
-export * from './src/tooltip.config';
 
 export const tooltipImports = [
     RdxTooltip,

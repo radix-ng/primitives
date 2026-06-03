@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { injectCropperRootContext } from './cropper-context.token';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,

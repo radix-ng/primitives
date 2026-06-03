@@ -1,7 +1,7 @@
-import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input } from '@angular/core';
-import { RdxCompositeMetadata, RdxCompositeRoot } from '@radix-ng/primitives/composite';
 import { injectTabsRootContext } from './tabs-root-context';
 import { RdxTabsTabMetadata } from './utils';
+import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input } from '@angular/core';
+import { RdxCompositeMetadata, RdxCompositeRoot } from '@radix-ng/primitives/composite';
 
 /**
  * Groups the individual tab buttons and manages keyboard navigation.

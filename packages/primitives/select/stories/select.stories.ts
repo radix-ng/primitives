@@ -1,9 +1,8 @@
-import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { SelectAlignedPosition } from './select-aligned-position';
+import alignedPositionSource from './select-aligned-position?raw';
 import { SelectAlignedPositionWithScroll } from './select-aligned-position-with-scroll';
 import alignedPositionWithScrollSource from './select-aligned-position-with-scroll?raw';
-import alignedPositionSource from './select-aligned-position?raw';
 import { SelectDefault } from './select-default';
 import defaultSource from './select-default?raw';
 import { SelectEvents } from './select-events';
@@ -14,6 +13,7 @@ import { SelectObjectValues } from './select-object-values';
 import objectValuesSource from './select-object-values?raw';
 import { SelectWithScroll } from './select-with-scroll';
 import withScrollSource from './select-with-scroll?raw';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 
 const html = String.raw;
 
