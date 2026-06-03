@@ -1,5 +1,5 @@
 import { Component, signal } from '@angular/core';
-import { LucideAngularModule } from 'lucide-angular';
+import { LucideDynamicIcon, LucidePlus } from '@lucide/angular';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
 
@@ -30,14 +30,14 @@ export class RdxButtonVariantsComponent {
  */
 @Component({
     selector: 'rdx-button-sizes',
-    imports: [RdxButtonDirective, LucideAngularModule],
+    imports: [RdxButtonDirective, LucideDynamicIcon, LucidePlus],
     template: `
         <div class="flex flex-wrap items-center gap-3">
             <button [class]="cn(b.base, b.primary, b.size.sm)" rdxButton>Small</button>
             <button [class]="cn(b.base, b.primary, b.size.md)" rdxButton>Medium</button>
             <button [class]="cn(b.base, b.primary, b.size.lg)" rdxButton>Large</button>
             <button [class]="cn(b.base, b.primary, b.size.icon)" rdxButton aria-label="Add">
-                <lucide-angular class="flex" name="plus" size="16" />
+                <svg class="flex" lucidePlus size="16" />
             </button>
         </div>
     `
@@ -94,7 +94,7 @@ export class RdxButtonAsLinkComponent {
  */
 @Component({
     selector: 'rdx-button-loading',
-    imports: [RdxButtonDirective, LucideAngularModule],
+    imports: [RdxButtonDirective, LucideDynamicIcon, LucidePlus],
     template: `
         <button
             [disabled]="loading()"
@@ -104,9 +104,9 @@ export class RdxButtonAsLinkComponent {
             rdxButton
             focusableWhenDisabled
         >
-            <lucide-angular
+            <svg
                 class="flex"
-                [name]="loading() ? 'loader-circle' : 'save'"
+                [lucideIcon]="loading() ? 'loader-circle' : 'save'"
                 [class.animate-spin]="loading()"
                 size="16"
             />

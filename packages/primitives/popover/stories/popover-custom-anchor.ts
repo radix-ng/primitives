@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
+import { LucideX } from '@lucide/angular';
 import { popoverImports } from '@radix-ng/primitives/popover';
-import { LucideAngularModule } from 'lucide-angular';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
     selector: 'rdx-popover-custom-anchor',
-    imports: [...popoverImports, LucideAngularModule],
+    imports: [...popoverImports, LucideX],
     template: `
         <div class="flex w-[min(640px,80vw)] flex-col items-center gap-8">
             <ng-container rdxPopoverRoot>
@@ -28,7 +28,7 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
                                     The trigger controls open state, but the positioner is anchored to the dashed box.
                                 </p>
                                 <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                                    <lucide-angular aria-hidden="true" name="x" size="14" />
+                                    <svg aria-hidden="true" lucideX size="14" />
                                 </button>
                             </div>
                         </div>

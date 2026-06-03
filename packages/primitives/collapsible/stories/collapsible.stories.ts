@@ -1,5 +1,5 @@
+import { LucideUnfoldVertical, LucideX } from '@lucide/angular';
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { LucideAngularModule } from 'lucide-angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxCollapsibleContentPresenceDirective } from '../src/collapsible-content-presence.directive';
 import { RdxCollapsibleContentDirective } from '../src/collapsible-content.directive';
@@ -21,7 +21,8 @@ export default {
                 RdxCollapsibleContentPresenceDirective,
                 RdxCollapsibleExternalTriggeringComponent,
                 RdxCollapsibleAnimationComponent,
-                LucideAngularModule
+                LucideX,
+                LucideUnfoldVertical
             ]
         }),
         tailwindDemoDecorator()
@@ -42,9 +43,9 @@ export const Default: Story = {
                         rdxCollapsibleTrigger
                     >
                         @if (collapsibleRoot.open()) {
-                        <lucide-angular class="flex" size="16" name="x"></lucide-angular>
+                        <svg class="flex" size="16" lucideX></svg>
                         } @else {
-                        <lucide-angular class="flex" size="16" name="unfold-vertical"></lucide-angular>
+                        <svg class="flex" size="16" lucideUnfoldVertical></svg>
                         }
                     </button>
                 </div>

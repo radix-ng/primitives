@@ -1,5 +1,5 @@
+import { LucideItalic } from '@lucide/angular';
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { LucideAngularModule } from 'lucide-angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxToggleVisuallyHiddenInputDirective } from '../src/toggle-visually-hidden-input.directive';
 import { RdxToggleDirective } from '../src/toggle.directive';
@@ -15,7 +15,7 @@ export default {
                 RdxToggleDirective,
                 RdxToggleVisuallyHiddenInputDirective,
                 ToggleButtonReactiveForms,
-                LucideAngularModule
+                LucideItalic
             ]
         }),
         tailwindDemoDecorator()
@@ -33,7 +33,7 @@ export const Default: Story = {
                 aria-label="Toggle italic"
                 type="button"
             >
-                <lucide-angular class="flex" name="italic" size="12"></lucide-angular>
+                <svg class="flex" lucideItalic size="12"></svg>
             </button>
         `
     })
@@ -61,7 +61,7 @@ export const State: Story = {
                 aria-label="Toggle italic"
                 type="button"
             >
-                <lucide-angular class="flex" name="italic" size="12"></lucide-angular>
+                <svg class="flex" lucideItalic size="12"></svg>
             </button>
         `
     })
@@ -89,7 +89,7 @@ export const Controlled: Story = {
                     [value]="toggle.pressed()"
                     [required]="false"
                 />
-                <lucide-angular class="flex" name="italic" size="12"></lucide-angular>
+                <svg class="flex" lucideItalic size="12"></svg>
             </button>
 
             <h1>Controlled</h1>
@@ -109,7 +109,7 @@ export const Controlled: Story = {
                     [value]="toggle.pressed()"
                     [required]="false"
                 />
-                <lucide-angular class="flex" name="italic" size="12"></lucide-angular>
+                <svg class="flex" lucideItalic size="12"></svg>
             </button>
 
             <span class="">default off</span>
@@ -128,7 +128,7 @@ export const Controlled: Story = {
                     [value]="toggle.pressed()"
                     [required]="false"
                 />
-                <lucide-angular class="flex" name="italic" size="12"></lucide-angular>
+                <svg class="flex" lucideItalic size="12"></svg>
             </button>
 
             <h1>Events</h1>
@@ -147,7 +147,7 @@ export const Controlled: Story = {
                     [value]="toggle.pressed()"
                     [required]="false"
                 />
-                <lucide-angular class="flex" name="italic" size="12"></lucide-angular>
+                <svg class="flex" lucideItalic size="12"></svg>
             </button>
         `
     })
@@ -171,7 +171,7 @@ export const Disabled: Story = {
                     [required]="false"
                     [disabled]="toggle.disabled()"
                 />
-                <lucide-angular class="flex" name="italic" size="12"></lucide-angular>
+                <svg class="flex" lucideItalic size="12"></svg>
             </button>
         `
     })

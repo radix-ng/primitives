@@ -1,11 +1,11 @@
 import { Component, signal } from '@angular/core';
+import { LucideX } from '@lucide/angular';
 import { popoverImports } from '@radix-ng/primitives/popover';
-import { LucideAngularModule } from 'lucide-angular';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
     selector: 'rdx-popover-controlled',
-    imports: [...popoverImports, LucideAngularModule],
+    imports: [...popoverImports, LucideX],
     template: `
         <div class="flex flex-col items-center gap-4">
             <div class="flex items-center gap-2">
@@ -29,7 +29,7 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
                                     The root uses Angular two-way binding with a signal.
                                 </p>
                                 <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                                    <lucide-angular aria-hidden="true" name="x" size="14" />
+                                    <svg aria-hidden="true" lucideX size="14" />
                                 </button>
                             </div>
                         </div>

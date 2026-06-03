@@ -1,5 +1,5 @@
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { LucideAngularModule } from 'lucide-angular';
+
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxTooltipDefaultComponent } from './tooltip-default';
 import defaultSource from './tooltip-default?raw';
@@ -35,8 +35,7 @@ export default {
                 RdxTooltipDelayComponent,
                 RdxTooltipDisabledComponent,
                 RdxTooltipTrackCursorComponent,
-                RdxTooltipSliderComponent,
-                LucideAngularModule
+                RdxTooltipSliderComponent
             ]
         }),
         tailwindDemoDecorator()

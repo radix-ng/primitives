@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideDot as Dot, LucideDynamicIcon } from '@lucide/angular';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { Dot, LucideAngularModule } from 'lucide-angular';
 
 @Component({
     selector: 'menu-radio-items-story',
-    imports: [RdxMenuModule, LucideAngularModule],
+    imports: [RdxMenuModule, LucideDynamicIcon],
     styleUrl: 'styles.css',
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
@@ -39,9 +39,9 @@ import { Dot, LucideAngularModule } from 'lucide-angular';
                             RdxMenuItemRadio
                         >
                             {{ item }}
-                            <lucide-icon
+                            <svg
                                 class="MenuItemIndicator"
-                                [img]="Dot"
+                                [lucideIcon]="Dot"
                                 RdxMenuItemIndicator
                                 size="16"
                                 strokeWidth="5"

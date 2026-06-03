@@ -58,7 +58,7 @@ export default defineConfig({
                 '@internationalized/date',
                 '@stackblitz/sdk',
                 'classnames',
-                'lucide-angular'
+                '@lucide/angular'
             ]
         },
         ssr: {
@@ -70,7 +70,7 @@ export default defineConfig({
                 '@stackblitz/sdk',
                 'classnames',
                 '@internationalized/date',
-                'lucide-angular'
+                '@lucide/angular'
             ]
         },
         resolve: {

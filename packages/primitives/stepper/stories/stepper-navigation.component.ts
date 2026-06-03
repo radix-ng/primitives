@@ -1,10 +1,14 @@
 import { Component, computed, signal } from '@angular/core';
-import { ChevronLeft, ChevronRight, LucideAngularModule } from 'lucide-angular';
+import {
+    LucideChevronLeft as ChevronLeft,
+    LucideChevronRight as ChevronRight,
+    LucideDynamicIcon
+} from '@lucide/angular';
 import { RdxStepperModule } from '../index';
 
 @Component({
     selector: 'StepperNavigation',
-    imports: [RdxStepperModule, LucideAngularModule],
+    imports: [RdxStepperModule, LucideDynamicIcon],
     host: {
         class: 'block w-full max-w-2xl'
     },
@@ -17,7 +21,7 @@ import { RdxStepperModule } from '../index';
                     (click)="prevStep()"
                     aria-label="Prev step"
                 >
-                    <lucide-angular class="flex" [img]="ChevronLeft" size="16" strokeWidth="2" aria-hidden="true" />
+                    <svg class="flex" [lucideIcon]="ChevronLeft" size="16" strokeWidth="2" aria-hidden="true" />
                 </button>
 
                 <div class="flex min-w-0 flex-1 gap-1" [value]="currentStep()" rdxStepperRoot>
@@ -48,7 +52,7 @@ import { RdxStepperModule } from '../index';
                     (click)="nextStep()"
                     aria-label="Next step"
                 >
-                    <lucide-angular class="flex" [img]="ChevronRight" size="16" strokeWidth="2" aria-hidden="true" />
+                    <svg class="flex" [lucideIcon]="ChevronRight" size="16" strokeWidth="2" aria-hidden="true" />
                 </button>
             </div>
 

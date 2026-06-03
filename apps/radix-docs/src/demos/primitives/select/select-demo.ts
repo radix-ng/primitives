@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+import { LucideCheck as Check, LucideChevronDown as ChevronDown, LucideDynamicIcon } from '@lucide/angular';
 import {
     RdxSelectContent,
     RdxSelectGroup,
@@ -16,7 +17,6 @@ import {
     RdxSelectValue,
     RdxSelectViewport
 } from '@radix-ng/primitives/select';
-import { Check, ChevronDown, LucideAngularModule } from 'lucide-angular';
 
 @Component({
     selector: 'radix-select-demo',
@@ -36,7 +36,7 @@ import { Check, ChevronDown, LucideAngularModule } from 'lucide-angular';
         RdxSelectGroup,
         RdxSelectTrigger,
         RdxSelectValue,
-        LucideAngularModule
+        LucideDynamicIcon
     ],
     template: `
         <ng-container rdxSelectRoot>
@@ -44,7 +44,7 @@ import { Check, ChevronDown, LucideAngularModule } from 'lucide-angular';
                 <span #selectedValue="rdxSelectedValue" rdxSelectValue placeholder="Select a fruit…">
                     {{ selectedValue.slotText() }}
                 </span>
-                <lucide-icon class="SelectIcon" [img]="LucideChevronDownIcon" size="16" />
+                <svg class="SelectIcon" [lucideIcon]="LucideChevronDownIcon" size="16" />
             </button>
 
             <div rdxSelectPortal>
@@ -65,9 +65,9 @@ import { Check, ChevronDown, LucideAngularModule } from 'lucide-angular';
                                                     [disabled]="food.disabled"
                                                     rdxSelectItem
                                                 >
-                                                    <lucide-icon
+                                                    <svg
                                                         class="SelectItemIndicator"
-                                                        [img]="LucideCheckIcon"
+                                                        [lucideIcon]="LucideCheckIcon"
                                                         rdxSelectItemIndicator
                                                         size="16"
                                                     />

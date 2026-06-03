@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { LucideCheck } from '@lucide/angular';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { LucideAngularModule } from 'lucide-angular';
 import { cn, demoButton, demoCheckbox } from '../../storybook/styles';
 import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
@@ -21,14 +21,14 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
         RdxCheckboxInputDirective,
-        LucideAngularModule
+        LucideCheck
     ],
     template: `
         <form class="flex flex-col gap-3" [formGroup]="form" (ngSubmit)="onSubmit()">
             <div class="flex items-center gap-3">
                 <div rdxCheckboxRoot formControlName="terms">
                     <button id="terms" [class]="c.button" rdxCheckboxButton>
-                        <lucide-angular [class]="c.indicator" rdxCheckboxIndicator size="16" name="check" />
+                        <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
                     </button>
                     <input rdxCheckboxInput />
                 </div>

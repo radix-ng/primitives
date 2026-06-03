@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
+import { LucideDynamicIcon } from '@lucide/angular';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
-import { LucideAngularModule } from 'lucide-angular';
 import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 
 @Component({
     selector: 'rdx-tooltip-provider',
-    imports: [...tooltipImports, LucideAngularModule],
+    imports: [...tooltipImports, LucideDynamicIcon],
     template: `
         <div class="flex items-center gap-2" [delay]="600" [timeout]="400" rdxTooltipProvider>
             @for (action of actions; track action.name) {
@@ -15,7 +15,7 @@ import { cn, demoButton, demoTooltip } from '../../storybook/styles';
                         [attr.aria-label]="action.name"
                         rdxTooltipTrigger
                     >
-                        <lucide-angular [name]="action.icon" aria-hidden="true" size="16" />
+                        <svg [lucideIcon]="action.icon" aria-hidden="true" size="16" />
                     </button>
 
                     <div [container]="content" rdxTooltipPortal>

@@ -1,5 +1,5 @@
+import { LucideAlignCenter, LucideAlignLeft, LucideAlignRight, LucideBold, LucideItalic } from '@lucide/angular';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { LucideAngularModule } from 'lucide-angular';
 import { RdxToolbarButtonDirective } from '../src/toolbar-button.directive';
 import { RdxToolbarLinkDirective } from '../src/toolbar-link.directive';
 import { RdxToolbarRootDirective } from '../src/toolbar-root.directive';
@@ -20,7 +20,11 @@ export default {
                 RdxToolbarButtonDirective,
                 RdxToolbarToggleGroupDirective,
                 RdxToolbarToggleItemDirective,
-                LucideAngularModule
+                LucideBold,
+                LucideItalic,
+                LucideAlignLeft,
+                LucideAlignCenter,
+                LucideAlignRight
             ]
         }),
         componentWrapperDecorator(
@@ -139,10 +143,10 @@ export const Default: Story = {
                 <div class="ToolbarRoot" rdxToolbarRoot aria-label="Formatting options">
                     <div rdxToolbarToggleGroup orientation="horizontal" type="multiple" aria-label="Text formatting">
                         <button class="ToolbarToggleItem" rdxToolbarToggleItem value="bold" aria-label="Bold">
-                            <lucide-angular name="bold" size="16" strokeWidth="2" style="display: flex" />
+                            <svg lucideBold size="16" strokeWidth="2" style="display: flex" />
                         </button>
                         <button class="ToolbarToggleItem" rdxToolbarToggleItem value="italic" aria-label="Italic">
-                            <lucide-angular name="italic" size="16" strokeWidth="2" style="display: flex" />
+                            <svg lucideItalic size="16" strokeWidth="2" style="display: flex" />
                         </button>
                         <button
                             class="ToolbarToggleItem"
@@ -150,13 +154,13 @@ export const Default: Story = {
                             value="strikethrough"
                             aria-label="Strike through"
                         >
-                            <lucide-angular name="Strikethrough" size="16" strokeWidth="2" style="display: flex" />
+                            <svg name="Strikethrough" size="16" strokeWidth="2" style="display: flex" />
                         </button>
                     </div>
                     <div class="ToolbarSeparator" rdxToolbarSeparator></div>
                     <div rdxToolbarToggleGroup type="single" aria-label="Text alignment">
                         <button class="ToolbarToggleItem" rdxToolbarToggleItem value="left" aria-label="Left aligned">
-                            <lucide-angular name="align-left" size="16" strokeWidth="1" style="display: flex" />
+                            <svg lucideAlignLeft size="16" strokeWidth="1" style="display: flex" />
                         </button>
                         <button
                             class="ToolbarToggleItem"
@@ -164,10 +168,10 @@ export const Default: Story = {
                             value="center"
                             aria-label="Center aligned"
                         >
-                            <lucide-angular name="align-center" size="16" strokeWidth="1" style="display: flex" />
+                            <svg lucideAlignCenter size="16" strokeWidth="1" style="display: flex" />
                         </button>
                         <button class="ToolbarToggleItem" rdxToolbarToggleItem value="right" aria-label="Right aligned">
-                            <lucide-angular name="align-right" size="16" strokeWidth="1" style="display: flex" />
+                            <svg lucideAlignRight size="16" strokeWidth="1" style="display: flex" />
                         </button>
                     </div>
                     <div class="ToolbarSeparator" rdxToolbarSeparator orientation="vertical"></div>

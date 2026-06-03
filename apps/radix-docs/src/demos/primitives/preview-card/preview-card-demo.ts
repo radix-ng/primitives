@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
+import { LucideX as X } from '@lucide/angular';
 import { RdxPreviewCardModule } from '@radix-ng/primitives/preview-card';
-import { LucideAngularModule, X } from 'lucide-angular';
 
 @Component({
     selector: 'preview-card-demo',
     standalone: true,
-    imports: [LucideAngularModule, RdxPreviewCardModule],
+    imports: [RdxPreviewCardModule],
     styleUrl: 'preview-card-demo.css',
     template: `
         <ng-container rdxPreviewCardRoot>

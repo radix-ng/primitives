@@ -1,5 +1,5 @@
+import { LucideAlignCenter, LucideAlignLeft, LucideAlignRight } from '@lucide/angular';
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { LucideAngularModule } from 'lucide-angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxToggleGroupItemDirective } from '../src/toggle-group-item.directive';
 import { RdxToggleGroupDirective } from '../src/toggle-group.directive';
@@ -11,7 +11,14 @@ export default {
     title: 'Primitives/Toggle Group',
     decorators: [
         moduleMetadata({
-            imports: [RdxToggleGroupDirective, RdxToggleGroupItemDirective, LucideAngularModule, ToggleGroup]
+            imports: [
+                RdxToggleGroupDirective,
+                RdxToggleGroupItemDirective,
+                LucideAlignLeft,
+                LucideAlignCenter,
+                LucideAlignRight,
+                ToggleGroup
+            ]
         }),
         tailwindDemoDecorator()
     ]
@@ -35,7 +42,7 @@ export const Default: Story = {
                     aria-label="Left aligned"
                     type="button"
                 >
-                    <lucide-icon class="flex" name="align-left" size="12"></lucide-icon>
+                    <svg class="flex" lucideAlignLeft size="12"></svg>
                 </button>
                 <button
                     class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent transition-[color,box-shadow] outline-none first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
@@ -44,7 +51,7 @@ export const Default: Story = {
                     aria-label="Center aligned"
                     type="button"
                 >
-                    <lucide-icon class="flex" name="align-center" size="12"></lucide-icon>
+                    <svg class="flex" lucideAlignCenter size="12"></svg>
                 </button>
                 <button
                     class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent transition-[color,box-shadow] outline-none first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
@@ -53,7 +60,7 @@ export const Default: Story = {
                     aria-label="Right aligned"
                     type="button"
                 >
-                    <lucide-icon class="flex" name="align-right" size="12"></lucide-icon>
+                    <svg class="flex" lucideAlignRight size="12"></svg>
                 </button>
             </div>
         `
@@ -80,7 +87,7 @@ export const Multiple: Story = {
                     aria-label="Left aligned"
                     type="button"
                 >
-                    <lucide-icon class="flex" name="align-left" size="12"></lucide-icon>
+                    <svg class="flex" lucideAlignLeft size="12"></svg>
                 </button>
                 <button
                     class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent transition-[color,box-shadow] outline-none first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
@@ -89,7 +96,7 @@ export const Multiple: Story = {
                     aria-label="Center aligned"
                     type="button"
                 >
-                    <lucide-icon class="flex" name="align-center" size="12"></lucide-icon>
+                    <svg class="flex" lucideAlignCenter size="12"></svg>
                 </button>
                 <button
                     class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent transition-[color,box-shadow] outline-none first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
@@ -98,7 +105,7 @@ export const Multiple: Story = {
                     aria-label="Right aligned"
                     type="button"
                 >
-                    <lucide-icon class="flex" name="align-right" size="12"></lucide-icon>
+                    <svg class="flex" lucideAlignRight size="12"></svg>
                 </button>
             </div>
         `
@@ -126,7 +133,7 @@ export const Disable: Story = {
                     aria-label="Left aligned"
                     type="button"
                 >
-                    <lucide-icon class="flex" name="align-left" size="12"></lucide-icon>
+                    <svg class="flex" lucideAlignLeft size="12"></svg>
                 </button>
                 <button
                     class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent transition-[color,box-shadow] outline-none first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
@@ -135,7 +142,7 @@ export const Disable: Story = {
                     aria-label="Center aligned"
                     type="button"
                 >
-                    <lucide-icon class="flex" name="align-center" size="12"></lucide-icon>
+                    <svg class="flex" lucideAlignCenter size="12"></svg>
                 </button>
                 <button
                     class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent transition-[color,box-shadow] outline-none first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
@@ -145,7 +152,7 @@ export const Disable: Story = {
                     aria-label="Right aligned"
                     type="button"
                 >
-                    <lucide-icon class="flex" name="align-right" size="12"></lucide-icon>
+                    <svg class="flex" lucideAlignRight size="12"></svg>
                 </button>
             </div>
         `
@@ -168,7 +175,7 @@ export const DisableGroup: Story = {
                     aria-label="Left aligned"
                     type="button"
                 >
-                    <lucide-icon class="flex" name="align-left" size="12"></lucide-icon>
+                    <svg class="flex" lucideAlignLeft size="12"></svg>
                 </button>
                 <button
                     class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent transition-[color,box-shadow] outline-none first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
@@ -177,7 +184,7 @@ export const DisableGroup: Story = {
                     aria-label="Center aligned"
                     type="button"
                 >
-                    <lucide-icon class="flex" name="align-center" size="12"></lucide-icon>
+                    <svg class="flex" lucideAlignCenter size="12"></svg>
                 </button>
                 <button
                     class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent transition-[color,box-shadow] outline-none first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
@@ -186,7 +193,7 @@ export const DisableGroup: Story = {
                     aria-label="Right aligned"
                     type="button"
                 >
-                    <lucide-icon class="flex" name="align-right" size="12"></lucide-icon>
+                    <svg class="flex" lucideAlignRight size="12"></svg>
                 </button>
             </div>
         `

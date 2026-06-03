@@ -1,5 +1,5 @@
+import { LucideCheck, LucideDot } from '@lucide/angular';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { LucideAngularModule } from 'lucide-angular';
 import {
     RdxDropdownMenuContentDirective,
     RdxDropdownMenuItemDirective,
@@ -31,7 +31,8 @@ export default {
                 RdxContextMenuSeparatorDirective,
                 RdxContextMenuContentDirective,
                 RdxDropdownMenuContentDirective,
-                LucideAngularModule
+                LucideCheck,
+                LucideDot
             ]
         }),
         componentWrapperDecorator(
@@ -81,13 +82,13 @@ export const Default: Story = {
 
     <button class="ContextMenuItem" rdxContextMenuItemCheckbox [checked]="true">
         <div class="ContextMenuItemIndicator" rdxContextMenuItemIndicator>
-            <lucide-icon size="16" name="check"></lucide-icon>
+            <svg size="16" lucideCheck></svg>
         </div>
         Show Bookmarks <div class="RightSlot">⌘ + B</div>
     </button>
     <button class="ContextMenuItem" rdxContextMenuItemCheckbox>
         <div class="ContextMenuItemIndicator" rdxContextMenuItemIndicator>
-            <lucide-icon size="16" name="check"></lucide-icon>
+            <svg size="16" lucideCheck></svg>
         </div>
         Show Full URLs
     </button>
@@ -98,13 +99,13 @@ export const Default: Story = {
     <div class="ContextMenuItemRadioGroup" rdxContextMenuItemRadioGroup [value]="'1'">
         <button class="ContextMenuItem" rdxContextMenuItemRadio [value]="'1'">
             <div class="ContextMenuItemIndicator" rdxContextMenuItemIndicator>
-                <lucide-icon size="16" name="dot" strokeWidth="8"></lucide-icon>
+                <svg size="16" lucideDot strokeWidth="8"></svg>
             </div>
             Pedro Duarte
         </button>
         <button class="ContextMenuItem" rdxContextMenuItemRadio [value]="'2'">
             <div class="ContextMenuItemIndicator" rdxContextMenuItemIndicator>
-                <lucide-icon size="16" name="dot" strokeWidth="8"></lucide-icon>
+                <svg size="16" lucideDot strokeWidth="8"></svg>
             </div>
             Colm Tuite
         </button>

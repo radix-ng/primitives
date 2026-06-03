@@ -1,11 +1,11 @@
 import { Component, signal } from '@angular/core';
+import { LucideX } from '@lucide/angular';
 import { popoverImports, RdxPopoverOpenChange } from '@radix-ng/primitives/popover';
-import { LucideAngularModule } from 'lucide-angular';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
     selector: 'rdx-popover-controlled-multiple',
-    imports: [...popoverImports, LucideAngularModule],
+    imports: [...popoverImports, LucideX],
     template: `
         <div class="flex flex-col items-center gap-4">
             <ng-container
@@ -41,7 +41,7 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
                                     The externally controlled trigger id is {{ triggerId() }}.
                                 </p>
                                 <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                                    <lucide-angular aria-hidden="true" name="x" size="14" />
+                                    <svg aria-hidden="true" lucideX size="14" />
                                 </button>
                             </div>
                         </div>

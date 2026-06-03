@@ -1,9 +1,9 @@
 import { JsonPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { LucideCheck } from '@lucide/angular';
 import { RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { LucideAngularModule } from 'lucide-angular';
 import { cn, demoButton, demoCheckbox } from '../../storybook/styles';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input';
@@ -16,7 +16,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
             <div class="flex items-center gap-3 pb-3">
                 <div rdxCheckboxRoot formControlName="fun">
                     <button id="r1" [class]="c.button" rdxCheckboxButton>
-                        <lucide-angular [class]="c.indicator" rdxCheckboxIndicator size="16" name="check" />
+                        <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -26,7 +26,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
             <div class="flex items-center gap-3 pb-3">
                 <div rdxCheckboxRoot formControlName="serious">
                     <button id="r2" [class]="c.button" rdxCheckboxButton>
-                        <lucide-angular [class]="c.indicator" rdxCheckboxIndicator size="16" name="check" />
+                        <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -38,7 +38,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
             <div class="flex items-center gap-3 pb-3">
                 <div rdxCheckboxRoot formControlName="smart" form="smart">
                     <button id="r3" [class]="c.button" rdxCheckboxButton>
-                        <lucide-angular [class]="c.indicator" rdxCheckboxIndicator size="16" name="check" />
+                        <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -63,7 +63,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
-        LucideAngularModule,
+        LucideCheck,
         RdxCheckboxInputDirective
     ]
 })

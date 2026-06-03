@@ -1,5 +1,5 @@
+import { LucideMenu } from '@lucide/angular';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { LucideAngularModule } from 'lucide-angular';
 
 import { RdxDropdownMenuContentDirective } from '../src/dropdown-menu-content.directive';
 import { RdxDropdownMenuItemCheckboxDirective } from '../src/dropdown-menu-item-checkbox.directive';
@@ -21,7 +21,7 @@ export default {
                 RdxDropdownMenuItemIndicatorDirective,
                 RdxDropdownMenuSeparatorDirective,
                 RdxDropdownMenuContentDirective,
-                LucideAngularModule,
+                LucideMenu,
                 DropdownMenuItemCheckboxExampleComponent,
                 DropdownMenuItemRadioExampleComponent
             ]
@@ -48,7 +48,7 @@ export const Default: Story = {
         sideOffset="4"
         alignOffset="-5"
         class="IconButton" aria-label="Customise options">
-    <lucide-angular size="16" name="menu" />
+    <svg size="16" lucideMenu />
 </button>
 
 <ng-template #menu>

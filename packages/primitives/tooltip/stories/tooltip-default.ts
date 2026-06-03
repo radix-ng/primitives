@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
+import { LucidePlus } from '@lucide/angular';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
-import { LucideAngularModule } from 'lucide-angular';
 import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 
 @Component({
     selector: 'rdx-tooltip-default',
-    imports: [...tooltipImports, LucideAngularModule],
+    imports: [...tooltipImports, LucidePlus],
     template: `
         <ng-container rdxTooltip>
             <button [class]="cn(b.base, b.outline, b.size.icon)" aria-label="Add to library" rdxTooltipTrigger>
-                <lucide-angular aria-hidden="true" name="plus" size="16" />
+                <svg aria-hidden="true" lucidePlus size="16" />
             </button>
 
             <div [container]="content" rdxTooltipPortal>

@@ -1,5 +1,5 @@
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { LucideAngularModule } from 'lucide-angular';
+
 import { RdxMenuModule } from '../index';
 import { MenuCheckboxItemsStory } from './components/menu-checkbox-items';
 import { MenuRadioItemsStory } from './components/menu-radio-items';
@@ -14,7 +14,6 @@ export default {
         moduleMetadata({
             imports: [
                 RdxMenuModule,
-                LucideAngularModule,
                 MenuRadioItemsStory,
                 MenuCheckboxItemsStory,
                 MenuWithLabelsItemsStory,

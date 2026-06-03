@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { LucideChevronDown as ChevronDown, LucideDynamicIcon, LucideX as X } from '@lucide/angular';
 import {
     RdxAccordionContentDirective,
     RdxAccordionHeaderDirective,
@@ -6,7 +7,6 @@ import {
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
-import { ChevronDown, LucideAngularModule, X } from 'lucide-angular';
 
 @Component({
     selector: 'radix-accordion-demo',
@@ -17,7 +17,7 @@ import { ChevronDown, LucideAngularModule, X } from 'lucide-angular';
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
         RdxAccordionContentDirective,
-        LucideAngularModule
+        LucideDynamicIcon
     ],
     template: `
         <div class="AccordionRoot" [defaultValue]="'item-1'" rdxAccordionRoot>
@@ -25,7 +25,7 @@ import { ChevronDown, LucideAngularModule, X } from 'lucide-angular';
                 <div class="AccordionHeader" rdxAccordionHeader>
                     <button class="AccordionTrigger" type="button" rdxAccordionTrigger>
                         Is it accessible?
-                        <lucide-angular class="AccordionChevron" [img]="ChevronDownIcon" size="16" />
+                        <svg class="AccordionChevron" [lucideIcon]="ChevronDownIcon" size="16" />
                     </button>
                 </div>
                 <div class="AccordionContent" rdxAccordionContent>
@@ -37,7 +37,7 @@ import { ChevronDown, LucideAngularModule, X } from 'lucide-angular';
                 <div class="AccordionHeader" rdxAccordionHeader>
                     <button class="AccordionTrigger" type="button" rdxAccordionTrigger>
                         Is it unstyled?
-                        <lucide-angular class="AccordionChevron" [img]="ChevronDownIcon" size="16" />
+                        <svg class="AccordionChevron" [lucideIcon]="ChevronDownIcon" size="16" />
                     </button>
                 </div>
                 <div class="AccordionContent" rdxAccordionContent>
@@ -51,7 +51,7 @@ import { ChevronDown, LucideAngularModule, X } from 'lucide-angular';
                 <div class="AccordionHeader" rdxAccordionHeader>
                     <button class="AccordionTrigger" type="button" rdxAccordionTrigger>
                         Can it be animated?
-                        <lucide-angular class="AccordionChevron" [img]="ChevronDownIcon" size="16" />
+                        <svg class="AccordionChevron" [lucideIcon]="ChevronDownIcon" size="16" />
                     </button>
                 </div>
                 <div class="AccordionContent" rdxAccordionContent>

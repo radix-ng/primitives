@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { LucideDynamicIcon, LucideX as X } from '@lucide/angular';
 import {
     RdxDialogCloseDirective,
     RdxDialogContentDirective,
@@ -6,7 +7,6 @@ import {
     RdxDialogTitleDirective,
     RdxDialogTriggerDirective
 } from '@radix-ng/primitives/dialog';
-import { LucideAngularModule, X } from 'lucide-angular';
 
 @Component({
     selector: 'dialog-demo',
@@ -17,7 +17,7 @@ import { LucideAngularModule, X } from 'lucide-angular';
         RdxDialogTitleDirective,
         RdxDialogCloseDirective,
         RdxDialogDescriptionDirective,
-        LucideAngularModule
+        LucideDynamicIcon
     ],
     styleUrl: 'dialog-demo.css',
     template: `
@@ -41,7 +41,7 @@ import { LucideAngularModule, X } from 'lucide-angular';
                     <button class="Button green" rdxDialogClose>Save changes</button>
                 </div>
                 <button class="IconButton" rdxDialogClose aria-label="Close">
-                    <lucide-angular [img]="XIcon" size="16" strokeWidth="2" />
+                    <svg [lucideIcon]="XIcon" size="16" strokeWidth="2" />
                 </button>
             </div>
         </ng-template>

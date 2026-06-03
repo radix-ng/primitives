@@ -1,8 +1,8 @@
 import { JsonPipe } from '@angular/common';
 import { Component, model, signal } from '@angular/core';
+import { LucideDynamicIcon } from '@lucide/angular';
 import { CheckedState, RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { LucideAngularModule } from 'lucide-angular';
 import { cn, demoButton, demoCheckbox } from '../../storybook/styles';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input';
@@ -15,7 +15,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
-        LucideAngularModule,
+        LucideDynamicIcon,
         RdxCheckboxInputDirective,
         JsonPipe
     ],
@@ -23,7 +23,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
         <div class="flex items-center gap-3">
             <div [checked]="checked()" (onCheckedChange)="checked.set($event)" rdxCheckboxRoot>
                 <button id="r1" [class]="c.button" rdxCheckboxButton>
-                    <lucide-angular [class]="c.indicator" [name]="iconName()" rdxCheckboxIndicator size="16" />
+                    <svg [class]="c.indicator" [lucideIcon]="iconName()" rdxCheckboxIndicator size="16" />
                 </button>
                 <input rdxCheckboxInput />
             </div>

@@ -1,6 +1,6 @@
 import { Component, computed, signal } from '@angular/core';
+import { LucideCheck, LucideDynamicIcon } from '@lucide/angular';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { LucideAngularModule } from 'lucide-angular';
 import { demoCheckbox } from '../../storybook/styles';
 import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
@@ -25,16 +25,17 @@ interface Item {
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
         RdxCheckboxInputDirective,
-        LucideAngularModule
+        LucideDynamicIcon,
+        LucideCheck
     ],
     template: `
         <div class="flex flex-col gap-3">
             <div class="flex items-center gap-3">
                 <div [checked]="parentState()" (onCheckedChange)="toggleAll($event)" rdxCheckboxRoot>
                     <button id="all" [class]="c.button" rdxCheckboxButton>
-                        <lucide-angular
+                        <svg
                             [class]="c.indicator"
-                            [name]="parentState() === 'indeterminate' ? 'minus' : 'check'"
+                            [lucideIcon]="parentState() === 'indeterminate' ? 'minus' : 'check'"
                             rdxCheckboxIndicator
                             size="16"
                         />
@@ -49,7 +50,7 @@ interface Item {
                     <div class="flex items-center gap-3">
                         <div [checked]="item.checked" (onCheckedChange)="toggleItem(item.id, $event)" rdxCheckboxRoot>
                             <button [class]="c.button" [id]="item.id" rdxCheckboxButton>
-                                <lucide-angular [class]="c.indicator" rdxCheckboxIndicator size="16" name="check" />
+                                <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
                             </button>
                             <input rdxCheckboxInput />
                         </div>

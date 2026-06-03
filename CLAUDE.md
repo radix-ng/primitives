@@ -156,7 +156,7 @@ Prefer `hostDirectives` to re-use existing primitives (e.g., Accordion Item comp
 - Storybook Tailwind config is CSS-based at `apps/radix-storybook/.storybook/tailwind.css` (`@import 'tailwindcss/...'` + a `@theme {}` block); there is **no** `tailwind.config.js`.
 - Files: `stories/<name>.stories.ts` (CSF) + optional `stories/<name>.ts` (standalone story components) + optional `stories/<name>.docs.mdx`. In the mdx, `<Meta title="…">` matching the CSF `title` attaches it as that group's docs page; use `<Canvas of={Stories.X} />` to embed a story and `<ArgTypes of={Directive} />` for the props table.
 - Storybook theme switching is controlled from the toolbar, not OS color scheme. The preview decorator sets `document.documentElement[data-theme]`, so stories should use tokens that respond to that attribute instead of reading `prefers-color-scheme`.
-- **Lucide icons must be registered manually.** Any `<lucide-angular name="…">` used in a story needs its icon added to `LucideAngularModule.pick({...})` in `apps/radix-storybook/.storybook/preview.ts` (import the PascalCase export, e.g. `name="loader-circle"` → import `LoaderCircle` and add it to the `pick` map). An unregistered icon throws `The "…" icon has not been provided by any available icon providers.` at runtime — `build-storybook` does **not** catch it, so check the running story.
+- **Lucide icons use `@lucide/angular`.** Static icons should use standalone SVG directives such as `<svg lucideCheck />` with the matching `LucideCheck` import. Dynamic icons should use `<svg [lucideIcon]="icon" />` with `LucideDynamicIcon`; string-based dynamic names must be registered via `provideLucideIcons(...)` in `apps/radix-storybook/.storybook/preview.ts`.
 
 ### Storybook handbook index
 

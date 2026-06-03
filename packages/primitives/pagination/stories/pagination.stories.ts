@@ -1,5 +1,5 @@
+import { LucideChevronLeft, LucideChevronRight, LucideChevronsLeft, LucideChevronsRight } from '@lucide/angular';
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { LucideAngularModule } from 'lucide-angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxPaginationEllipsisDirective } from '../src/pagination-ellipsis.directive';
 import { RdxPaginationFirstDirective } from '../src/pagination-first.directive';
@@ -23,7 +23,10 @@ export default {
                 RdxPaginationNextDirective,
                 RdxPaginationListItemDirective,
                 RdxPaginationEllipsisDirective,
-                LucideAngularModule
+                LucideChevronsLeft,
+                LucideChevronLeft,
+                LucideChevronRight,
+                LucideChevronsRight
             ]
         }),
         tailwindDemoDecorator()
@@ -41,13 +44,13 @@ export const Default: Story = {
                         class="bg-background text-foreground border-border hover:bg-muted focus-visible:ring-ring flex size-9 items-center justify-center rounded-md border shadow-sm outline-none transition-colors focus-visible:ring-2 disabled:opacity-50"
                         rdxPaginationFirst
                     >
-                        <lucide-icon name="chevrons-left" size="16" strokeWidth="2" />
+                        <svg lucideChevronsLeft size="16" strokeWidth="2" />
                     </button>
                     <button
                         class="bg-background text-foreground border-border hover:bg-muted focus-visible:ring-ring mr-4 flex size-9 items-center justify-center rounded-md border shadow-sm outline-none transition-colors focus-visible:ring-2 disabled:opacity-50"
                         rdxPaginationPrev
                     >
-                        <lucide-icon name="chevron-left" size="16" strokeWidth="2" />
+                        <svg lucideChevronLeft size="16" strokeWidth="2" />
                     </button>
 
                     @for (item of list.transformedRange(); track item) {
@@ -64,13 +67,13 @@ export const Default: Story = {
                         class="bg-background text-foreground border-border hover:bg-muted focus-visible:ring-ring ml-4 flex size-9 items-center justify-center rounded-md border shadow-sm outline-none transition-colors focus-visible:ring-2 disabled:opacity-50"
                         rdxPaginationNext
                     >
-                        <lucide-icon name="chevron-right" size="16" strokeWidth="2" />
+                        <svg lucideChevronRight size="16" strokeWidth="2" />
                     </button>
                     <button
                         class="bg-background text-foreground border-border hover:bg-muted focus-visible:ring-ring flex size-9 items-center justify-center rounded-md border shadow-sm outline-none transition-colors focus-visible:ring-2 disabled:opacity-50"
                         rdxPaginationLast
                     >
-                        <lucide-icon name="chevrons-right" size="16" strokeWidth="2" />
+                        <svg lucideChevronsRight size="16" strokeWidth="2" />
                     </button>
                 </div>
             </div>
@@ -87,13 +90,13 @@ export const WithEllipsis: Story = {
                         class="bg-background text-foreground border-border hover:bg-muted focus-visible:ring-ring flex size-9 items-center justify-center rounded-md border shadow-sm outline-none transition-colors focus-visible:ring-2 disabled:opacity-50"
                         rdxPaginationFirst
                     >
-                        <lucide-icon name="chevrons-left" size="16" strokeWidth="2" />
+                        <svg lucideChevronsLeft size="16" strokeWidth="2" />
                     </button>
                     <button
                         class="bg-background text-foreground border-border hover:bg-muted focus-visible:ring-ring mr-4 flex size-9 items-center justify-center rounded-md border shadow-sm outline-none transition-colors focus-visible:ring-2 disabled:opacity-50"
                         rdxPaginationPrev
                     >
-                        <lucide-icon name="chevron-left" size="16" strokeWidth="2" />
+                        <svg lucideChevronLeft size="16" strokeWidth="2" />
                     </button>
 
                     @for (item of list.transformedRange(); track item) {
@@ -114,13 +117,13 @@ export const WithEllipsis: Story = {
                         class="bg-background text-foreground border-border hover:bg-muted focus-visible:ring-ring ml-4 flex size-9 items-center justify-center rounded-md border shadow-sm outline-none transition-colors focus-visible:ring-2 disabled:opacity-50"
                         rdxPaginationNext
                     >
-                        <lucide-icon name="chevron-right" size="16" strokeWidth="2" />
+                        <svg lucideChevronRight size="16" strokeWidth="2" />
                     </button>
                     <button
                         class="bg-background text-foreground border-border hover:bg-muted focus-visible:ring-ring flex size-9 items-center justify-center rounded-md border shadow-sm outline-none transition-colors focus-visible:ring-2 disabled:opacity-50"
                         rdxPaginationLast
                     >
-                        <lucide-icon name="chevrons-right" size="16" strokeWidth="2" />
+                        <svg lucideChevronsRight size="16" strokeWidth="2" />
                     </button>
                 </div>
             </div>

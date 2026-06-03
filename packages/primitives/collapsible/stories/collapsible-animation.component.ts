@@ -1,5 +1,5 @@
 import { Component, signal } from '@angular/core';
-import { LucideAngularModule } from 'lucide-angular';
+import { LucideUnfoldVertical, LucideX } from '@lucide/angular';
 import { RdxCollapsibleContentDirective } from '../src/collapsible-content.directive';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.directive';
@@ -10,7 +10,8 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
         RdxCollapsibleRootDirective,
         RdxCollapsibleTriggerDirective,
         RdxCollapsibleContentDirective,
-        LucideAngularModule
+        LucideX,
+        LucideUnfoldVertical
     ],
     styles: `
         .expanded {
@@ -39,9 +40,9 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
                     rdxCollapsibleTrigger
                 >
                     @if (open()) {
-                        <lucide-angular class="flex" size="16" name="x" />
+                        <svg class="flex" size="16" lucideX />
                     } @else {
-                        <lucide-angular class="flex" size="16" name="unfold-vertical" />
+                        <svg class="flex" size="16" lucideUnfoldVertical />
                     }
                 </button>
             </div>

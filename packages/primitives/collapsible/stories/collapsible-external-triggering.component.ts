@@ -1,17 +1,12 @@
 import { Component, signal } from '@angular/core';
-import { LucideAngularModule } from 'lucide-angular';
+
 import { RdxCollapsibleContentPresenceDirective } from '../src/collapsible-content-presence.directive';
 import { RdxCollapsibleContentDirective } from '../src/collapsible-content.directive';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 
 @Component({
     selector: 'rdx-collapsible-external-triggering',
-    imports: [
-        RdxCollapsibleRootDirective,
-        RdxCollapsibleContentDirective,
-        LucideAngularModule,
-        RdxCollapsibleContentPresenceDirective
-    ],
+    imports: [RdxCollapsibleRootDirective, RdxCollapsibleContentDirective, RdxCollapsibleContentPresenceDirective],
     styles: `
         .expanded {
             max-height: 12rem;

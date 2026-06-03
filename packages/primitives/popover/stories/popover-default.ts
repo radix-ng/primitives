@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
+import { LucidePlus, LucideX } from '@lucide/angular';
 import { popoverImports } from '@radix-ng/primitives/popover';
-import { LucideAngularModule } from 'lucide-angular';
 import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
 
 @Component({
     selector: 'rdx-popover-default',
-    imports: [...popoverImports, LucideAngularModule],
+    imports: [...popoverImports, LucidePlus, LucideX],
     template: `
         <ng-container rdxPopoverRoot>
             <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>
-                <lucide-angular aria-hidden="true" name="plus" size="16" />
+                <svg aria-hidden="true" lucidePlus size="16" />
                 Add details
             </button>
 
@@ -35,7 +35,7 @@ import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
                             </div>
 
                             <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                                <lucide-angular aria-hidden="true" name="x" size="14" />
+                                <svg aria-hidden="true" lucideX size="14" />
                             </button>
                         </div>
                     </div>

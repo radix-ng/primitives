@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { LucideChevronDown as ChevronDown, LucideDynamicIcon, LucideX as X } from '@lucide/angular';
 import {
     RdxAccordionContentDirective,
     RdxAccordionHeaderDirective,
@@ -6,7 +7,6 @@ import {
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
-import { ChevronDown, LucideAngularModule, X } from 'lucide-angular';
 
 @Component({
     selector: 'radix-accordion-tailwind-demo',
@@ -17,21 +17,21 @@ import { ChevronDown, LucideAngularModule, X } from 'lucide-angular';
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
         RdxAccordionContentDirective,
-        LucideAngularModule
+        LucideDynamicIcon
     ],
     template: `
         <div class="block w-[220px] sm:w-[280px] lg:w-[350px]" [defaultValue]="'item-1'" rdxAccordionRoot>
             <div class="block border-b" [value]="'item-1'" rdxAccordionItem>
                 <h3 class="flex" rdxAccordionHeader>
                     <button
-                        class="flex flex-1 items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>lucide-angular]:rotate-180"
+                        class="flex flex-1 items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>svg]:rotate-180"
                         type="button"
                         rdxAccordionTrigger
                     >
                         Is it accessible?
-                        <lucide-angular
+                        <svg
                             class="group h-4 shrink-0 transition-transform duration-200"
-                            [img]="ChevronDownIcon"
+                            [lucideIcon]="ChevronDownIcon"
                             size="16"
                         />
                     </button>
@@ -47,14 +47,14 @@ import { ChevronDown, LucideAngularModule, X } from 'lucide-angular';
             <div class="block border-b" [value]="'item-2'" rdxAccordionItem>
                 <h3 class="flex" rdxAccordionHeader>
                     <button
-                        class="flex flex-1 items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>lucide-angular]:rotate-180"
+                        class="flex flex-1 items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>svg]:rotate-180"
                         type="button"
                         rdxAccordionTrigger
                     >
                         Is it unstyled?
-                        <lucide-angular
+                        <svg
                             class="group h-4 shrink-0 transition-transform duration-200"
-                            [img]="ChevronDownIcon"
+                            [lucideIcon]="ChevronDownIcon"
                             size="16"
                         />
                     </button>
@@ -72,14 +72,14 @@ import { ChevronDown, LucideAngularModule, X } from 'lucide-angular';
             <div class="block border-b" [value]="'item-3'" rdxAccordionItem>
                 <h3 class="flex" rdxAccordionHeader>
                     <button
-                        class="flex flex-1 items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>lucide-angular]:rotate-180"
+                        class="flex flex-1 items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>svg]:rotate-180"
                         type="button"
                         rdxAccordionTrigger
                     >
                         Can it be animated?
-                        <lucide-angular
+                        <svg
                             class="group h-4 shrink-0 transition-transform duration-200"
-                            [img]="ChevronDownIcon"
+                            [lucideIcon]="ChevronDownIcon"
                             size="16"
                         />
                     </button>

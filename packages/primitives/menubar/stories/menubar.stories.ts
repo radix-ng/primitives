@@ -1,5 +1,5 @@
+import { LucideCheck, LucideDot } from '@lucide/angular';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { LucideAngularModule } from 'lucide-angular';
 import { MenubarModule } from '../index';
 
 const html = String.raw;
@@ -8,7 +8,7 @@ export default {
     title: 'Primitives/Menubar',
     decorators: [
         moduleMetadata({
-            imports: [MenubarModule, LucideAngularModule]
+            imports: [MenubarModule, LucideDot, LucideCheck]
         }),
         componentWrapperDecorator(
             (story) => html`
@@ -105,22 +105,22 @@ export const Default: Story = {
                 <div class="MenubarContent" RdxMenuBarContent>
                     <div RdxMenuBarRadioGroup>
                         <div class="MenubarRadioItem inset" RdxMenuBarItemRadio>
-                            <lucide-icon
+                            <svg
                                 class="MenubarItemIndicator"
                                 size="16"
                                 strokeWidth="5"
                                 RdxMenuBarItemIndicator
-                                name="dot"
+                                lucideDot
                             />
                             Andy
                         </div>
                         <div class="MenubarRadioItem inset" RdxMenuBarItemRadio checked>
-                            <lucide-icon
+                            <svg
                                 class="MenubarItemIndicator"
                                 size="16"
                                 strokeWidth="5"
                                 RdxMenuBarItemIndicator
-                                name="dot"
+                                lucideDot
                             />
                             Luis
                         </div>
@@ -133,11 +133,11 @@ export const Default: Story = {
             <ng-template #view>
                 <div class="MenubarContent" RdxMenuBarContent>
                     <div class="MenubarCheckboxItem inset" RdxMenuBarCheckboxItem>
-                        <lucide-icon class="MenubarItemIndicator" RdxMenuBarItemIndicator size="16" name="check" />
+                        <svg class="MenubarItemIndicator" RdxMenuBarItemIndicator size="16" lucideCheck />
                         Always Show Bookmarks Bar
                     </div>
                     <div class="MenubarCheckboxItem inset" RdxMenuBarCheckboxItem [checked]="true">
-                        <lucide-icon class="MenubarItemIndicator" RdxMenuBarItemIndicator size="16" name="check" />
+                        <svg class="MenubarItemIndicator" RdxMenuBarItemIndicator size="16" lucideCheck />
                         Always Show Full URLs
                     </div>
                     <div class="MenubarSeparator" RdxMenuBarSeparator></div>

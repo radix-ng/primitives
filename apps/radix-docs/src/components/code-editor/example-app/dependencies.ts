@@ -15,7 +15,7 @@ export const dependencies = {
     '@internationalized/date': '^3.7.0',
     '@internationalized/number': '^3.6.1',
     '@floating-ui/dom': '^1.7.4',
-    'lucide-angular': '~0.542.0',
+    '@lucide/angular': '^1.17.0',
     rxjs: '~7.8.1',
     tslib: '^2.5.0',
     'zone.js': '~0.15.0'

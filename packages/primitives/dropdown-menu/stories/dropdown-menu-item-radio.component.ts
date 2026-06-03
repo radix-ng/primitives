@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { LucideAngularModule } from 'lucide-angular';
+import { LucideDot, LucideMenu } from '@lucide/angular';
 import { RdxDropdownMenuContentDirective } from '../src/dropdown-menu-content.directive';
 import { RdxDropdownMenuItemIndicatorDirective } from '../src/dropdown-menu-item-indicator.directive';
 import { RdxDropdownMenuItemRadioGroupDirective } from '../src/dropdown-menu-item-radio-group.directive';
@@ -20,28 +20,28 @@ import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.di
             alignOffset="-5"
             aria-label="Customise options"
         >
-            <lucide-angular size="16" name="menu" />
+            <svg size="16" lucideMenu />
         </button>
         <ng-template #menu>
             <div class="DropdownMenuContent" [closeOnEscape]="false" rdxDropdownMenuContent>
                 <div [(value)]="selectedValue" (valueChange)="onValueChange($event)" rdxDropdownMenuItemRadioGroup>
                     <div class="DropdownMenuItem" [value]="'1'" rdxDropdownMenuItemRadio>
                         <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
-                            <lucide-icon size="16" name="dot" strokeWidth="8" />
+                            <svg size="16" lucideDot strokeWidth="8" />
                         </div>
                         New Tab
                         <div class="RightSlot">⌘ T</div>
                     </div>
                     <div class="DropdownMenuItem" [value]="'2'" disabled rdxDropdownMenuItemRadio>
                         <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
-                            <lucide-icon size="16" name="dot" strokeWidth="8" />
+                            <svg size="16" lucideDot strokeWidth="8" />
                         </div>
                         New Window
                         <div class="RightSlot">⌘ N</div>
                     </div>
                     <div class="DropdownMenuItem" [value]="'3'" rdxDropdownMenuItemRadio>
                         <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
-                            <lucide-icon size="16" name="dot" strokeWidth="8" />
+                            <svg size="16" lucideDot strokeWidth="8" />
                         </div>
                         New Incognito Window
                     </div>
@@ -80,7 +80,8 @@ import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.di
         RdxDropdownMenuSeparatorDirective,
         RdxDropdownMenuContentDirective,
         RdxDropdownMenuLabelDirective,
-        LucideAngularModule
+        LucideMenu,
+        LucideDot
     ]
 })
 export class DropdownMenuItemRadioExampleComponent {

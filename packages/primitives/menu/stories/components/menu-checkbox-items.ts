@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideDynamicIcon, LucideX as X } from '@lucide/angular';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { LucideAngularModule, X } from 'lucide-angular';
 
 @Component({
     selector: 'menu-checkbox-items-story',
-    imports: [RdxMenuModule, LucideAngularModule],
+    imports: [RdxMenuModule, LucideDynamicIcon],
     styleUrl: 'styles.css',
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
@@ -31,7 +31,7 @@ import { LucideAngularModule, X } from 'lucide-angular';
                     RdxMenuItemCheckbox
                 >
                     Select All
-                    <lucide-icon class="MenuItemIndicator" [img]="X" RdxMenuItemIndicator size="16" strokeWidth="2" />
+                    <svg class="MenuItemIndicator" [lucideIcon]="X" RdxMenuItemIndicator size="16" strokeWidth="2" />
                 </div>
 
                 <div class="MenuSeparator" RdxMenuSeparator></div>
@@ -43,9 +43,9 @@ import { LucideAngularModule, X } from 'lucide-angular';
                         RdxMenuItemCheckbox
                     >
                         {{ item }}
-                        <lucide-icon
+                        <svg
                             class="MenuItemIndicator"
-                            [img]="X"
+                            [lucideIcon]="X"
                             RdxMenuItemIndicator
                             size="16"
                             strokeWidth="2"

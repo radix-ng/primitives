@@ -1,5 +1,5 @@
+import { LucideCheck } from '@lucide/angular';
 import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { LucideAngularModule } from 'lucide-angular';
 import { expect } from 'storybook/test';
 import { RdxLabelDirective } from '../../label';
 import { demoCheckbox } from '../../storybook/styles';
@@ -37,7 +37,7 @@ export default {
                 RdxCheckboxButtonDirective,
                 RdxCheckboxIndicatorDirective,
                 RdxCheckboxInputDirective,
-                LucideAngularModule,
+                LucideCheck,
                 CheckboxReactiveFormsExampleComponent,
                 CheckboxIndeterminate,
                 CheckboxPresence,
@@ -64,7 +64,7 @@ export const Default: Story = {
             <div class="flex items-center gap-3">
                 <div rdxCheckboxRoot ${argsToTemplate(args)} [checked]="true">
                     <button id="checkbox-1" [class]="c.button" rdxCheckboxButton>
-                        <lucide-angular [class]="c.indicator" rdxCheckboxIndicator size="16" name="check" />
+                        <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
                     </button>
                     <input rdxCheckboxInput />
                 </div>

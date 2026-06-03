@@ -7,8 +7,8 @@ import {
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
 
+import { LucideCheck as Check, LucideDynamicIcon } from '@lucide/angular';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { Check, LucideAngularModule } from 'lucide-angular';
 
 @Component({
     selector: 'radix-checkbox-demo',
@@ -18,13 +18,13 @@ import { Check, LucideAngularModule } from 'lucide-angular';
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
         RdxCheckboxInputDirective,
-        LucideAngularModule
+        LucideDynamicIcon
     ],
     template: `
         <div style="display: flex; align-items: center;">
             <div [checked]="true" rdxCheckboxRoot>
                 <button class="CheckboxButton" id="r1" rdxCheckboxButton>
-                    <lucide-angular class="CheckboxIndicator" [img]="CheckIcon" rdxCheckboxIndicator size="16" />
+                    <svg class="CheckboxIndicator" [lucideIcon]="CheckIcon" rdxCheckboxIndicator size="16" />
                 </button>
                 <input rdxCheckboxInput />
             </div>

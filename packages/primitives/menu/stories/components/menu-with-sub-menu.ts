@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { LucideArrowRight as ArrowRight, LucideDynamicIcon } from '@lucide/angular';
 import { RdxPositionAlign, RdxPositionSide } from '@radix-ng/primitives/core';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { ArrowRight, LucideAngularModule } from 'lucide-angular';
 
 @Component({
     selector: 'menu-with-sub-menu-story',
-    imports: [RdxMenuModule, LucideAngularModule],
+    imports: [RdxMenuModule, LucideDynamicIcon],
     styleUrl: 'styles.css',
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
@@ -39,7 +39,7 @@ import { ArrowRight, LucideAngularModule } from 'lucide-angular';
                     RdxMenuTrigger
                 >
                     Find
-                    <div class="RightSlot"><lucide-angular [img]="ArrowRight" size="16" strokeWidth="2" /></div>
+                    <div class="RightSlot"><svg [lucideIcon]="ArrowRight" size="16" strokeWidth="2" /></div>
                 </div>
 
                 <div class="MenuSeparator" RdxMenuSeparator></div>

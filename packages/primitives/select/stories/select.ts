@@ -1,6 +1,6 @@
 import { Component, input, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown, LucideChevronUp } from '@lucide/angular';
 import { Align } from '@radix-ng/primitives/popper';
-import { LucideAngularModule } from 'lucide-angular';
 import { RdxSelectContent } from '../src/select-content';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectItem } from '../src/select-item';
@@ -30,7 +30,9 @@ import { RdxSelectViewport } from '../src/select-viewport';
         RdxSelectPortalPresence,
         RdxSelectContent,
         RdxSelectViewport,
-        LucideAngularModule,
+        LucideChevronDown,
+        LucideCheck,
+        LucideChevronUp,
         RdxSelectItem,
         RdxSelectLabel,
         RdxSelectGroup,
@@ -50,7 +52,7 @@ import { RdxSelectViewport } from '../src/select-viewport';
                 <span #selectedValue="rdxSelectedValue" rdxSelectValue placeholder="Select a fruit...">
                     {{ selectedValue.slotText() }}
                 </span>
-                <lucide-angular name="chevron-down" size="16" />
+                <svg lucideChevronDown size="16" />
             </button>
 
             <div rdxSelectPortal>
@@ -78,7 +80,7 @@ import { RdxSelectViewport } from '../src/select-viewport';
                                                     class="absolute left-0 inline-flex w-6 items-center justify-center"
                                                     rdxSelectItemIndicator
                                                 >
-                                                    <lucide-angular name="check" size="16" />
+                                                    <svg lucideCheck size="16" />
                                                 </span>
                                                 <span rdxSelectItemText>
                                                     {{ option }}
@@ -101,7 +103,7 @@ import { RdxSelectViewport } from '../src/select-viewport';
                                                     class="absolute left-0 inline-flex w-6 items-center justify-center"
                                                     rdxSelectItemIndicator
                                                 >
-                                                    <lucide-angular name="check" size="16" />
+                                                    <svg lucideCheck size="16" />
                                                 </span>
                                                 <span rdxSelectItemText>
                                                     {{ vegetable }}
@@ -136,7 +138,9 @@ export class SelectDefault {
         RdxSelectPortalPresence,
         RdxSelectContent,
         RdxSelectViewport,
-        LucideAngularModule,
+        LucideChevronDown,
+        LucideCheck,
+        LucideChevronUp,
         RdxSelectItem,
         RdxSelectLabel,
         RdxSelectGroup,
@@ -158,7 +162,7 @@ export class SelectDefault {
                 <span #selectedValue="rdxSelectedValue" rdxSelectValue placeholder="Select a fruit...">
                     {{ selectedValue.slotText() }}
                 </span>
-                <lucide-angular name="chevron-down" size="16" />
+                <svg lucideChevronDown size="16" />
             </button>
 
             <div rdxSelectPortal>
@@ -175,7 +179,7 @@ export class SelectDefault {
                                     class="text-muted-foreground hover:bg-muted bg-popover flex h-7 cursor-default items-center justify-center"
                                     rdxSelectScrollUpButton
                                 >
-                                    <lucide-angular name="chevron-up" size="16" />
+                                    <svg lucideChevronUp size="16" />
                                 </div>
                                 <div class="h-[230px] p-1" rdxSelectViewport>
                                     <div class="text-muted-foreground px-6 text-xs leading-6" rdxSelectLabel>
@@ -192,7 +196,7 @@ export class SelectDefault {
                                                     class="absolute left-0 inline-flex w-6 items-center justify-center"
                                                     rdxSelectItemIndicator
                                                 >
-                                                    <lucide-angular name="check" size="16" />
+                                                    <svg lucideCheck size="16" />
                                                 </span>
                                                 <span rdxSelectItemText>
                                                     {{ option }}
@@ -215,7 +219,7 @@ export class SelectDefault {
                                                     class="absolute left-0 inline-flex w-6 items-center justify-center"
                                                     rdxSelectItemIndicator
                                                 >
-                                                    <lucide-angular name="check" size="16" />
+                                                    <svg lucideCheck size="16" />
                                                 </span>
                                                 <span rdxSelectItemText>
                                                     {{ vegetable }}
@@ -228,7 +232,7 @@ export class SelectDefault {
                                     class="text-muted-foreground hover:bg-muted bg-popover flex h-7 cursor-default items-center justify-center"
                                     rdxSelectScrollDownButton
                                 >
-                                    <lucide-angular name="chevron-down" size="16" />
+                                    <svg lucideChevronDown size="16" />
                                 </div>
                             </div>
                         </div>
@@ -263,7 +267,9 @@ export class SelectDefaultWithScroll {
         RdxSelectValue,
         RdxSelectPortalPresence,
         RdxSelectViewport,
-        LucideAngularModule,
+        LucideChevronDown,
+        LucideCheck,
+        LucideChevronUp,
         RdxSelectItem,
         RdxSelectLabel,
         RdxSelectGroup,
@@ -283,7 +289,7 @@ export class SelectDefaultWithScroll {
                 <span #selectedValue="rdxSelectedValue" rdxSelectValue placeholder="Select a fruit...">
                     {{ selectedValue.slotText() }}
                 </span>
-                <lucide-angular name="chevron-down" size="16" />
+                <svg lucideChevronDown size="16" />
             </button>
 
             <div rdxSelectPortal>
@@ -309,7 +315,7 @@ export class SelectDefaultWithScroll {
                                                     class="absolute left-0 inline-flex w-6 items-center justify-center"
                                                     rdxSelectItemIndicator
                                                 >
-                                                    <lucide-angular name="check" size="16" />
+                                                    <svg lucideCheck size="16" />
                                                 </span>
                                                 <div rdxSelectItemText>{{ option }}</div>
                                             </div>
@@ -330,7 +336,7 @@ export class SelectDefaultWithScroll {
                                                     class="absolute left-0 inline-flex w-6 items-center justify-center"
                                                     rdxSelectItemIndicator
                                                 >
-                                                    <lucide-angular name="check" size="16" />
+                                                    <svg lucideCheck size="16" />
                                                 </span>
                                                 <div rdxSelectItemText>
                                                     {{ vegetable }}
@@ -363,7 +369,9 @@ export class SelectAlignedPosition {
         RdxSelectValue,
         RdxSelectPortalPresence,
         RdxSelectViewport,
-        LucideAngularModule,
+        LucideChevronDown,
+        LucideCheck,
+        LucideChevronUp,
         RdxSelectItem,
         RdxSelectLabel,
         RdxSelectGroup,
@@ -385,7 +393,7 @@ export class SelectAlignedPosition {
                 <span #selectedValue="rdxSelectedValue" rdxSelectValue placeholder="Select a fruit...">
                     {{ selectedValue.slotText() }}
                 </span>
-                <lucide-angular name="chevron-down" size="16" />
+                <svg lucideChevronDown size="16" />
             </button>
 
             <div rdxSelectPortal>
@@ -400,7 +408,7 @@ export class SelectAlignedPosition {
                                     class="text-muted-foreground hover:bg-muted bg-popover flex h-7 cursor-default items-center justify-center"
                                     rdxSelectScrollUpButton
                                 >
-                                    <lucide-angular name="chevron-up" size="16" />
+                                    <svg lucideChevronUp size="16" />
                                 </div>
                                 <div class="p-1" rdxSelectViewport>
                                     <div class="text-muted-foreground px-6 text-xs leading-6" rdxSelectLabel>
@@ -417,7 +425,7 @@ export class SelectAlignedPosition {
                                                     class="absolute left-0 inline-flex w-6 items-center justify-center"
                                                     rdxSelectItemIndicator
                                                 >
-                                                    <lucide-angular name="check" size="16" />
+                                                    <svg lucideCheck size="16" />
                                                 </span>
                                                 <div rdxSelectItemText>{{ option }}</div>
                                             </div>
@@ -438,7 +446,7 @@ export class SelectAlignedPosition {
                                                     class="absolute left-0 inline-flex w-6 items-center justify-center"
                                                     rdxSelectItemIndicator
                                                 >
-                                                    <lucide-angular name="check" size="16" />
+                                                    <svg lucideCheck size="16" />
                                                 </span>
                                                 <div rdxSelectItemText>
                                                     {{ vegetable }}
@@ -451,7 +459,7 @@ export class SelectAlignedPosition {
                                     class="text-muted-foreground hover:bg-muted bg-popover flex h-7 cursor-default items-center justify-center"
                                     rdxSelectScrollDownButton
                                 >
-                                    <lucide-angular name="chevron-down" size="16" />
+                                    <svg lucideChevronDown size="16" />
                                 </div>
                             </div>
                         </div>

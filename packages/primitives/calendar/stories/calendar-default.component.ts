@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
 import { CalendarDate, DateValue } from '@internationalized/date';
-import { ChevronLeft, ChevronRight, LucideAngularModule } from 'lucide-angular';
+import {
+    LucideChevronLeft as ChevronLeft,
+    LucideChevronRight as ChevronRight,
+    LucideDynamicIcon
+} from '@lucide/angular';
 import { RdxCalendarCellTriggerDirective } from '../src/calendar-cell-trigger.directive';
 import { RdxCalendarCellDirective } from '../src/calendar-cell.directive';
 import { RdxCalendarGridHeadDirective } from '../src/calendar-grid-head.directive';
@@ -24,7 +28,7 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
         RdxCalendarHeadingDirective,
         RdxCalendarNextDirective,
         RdxCalendarPrevDirective,
-        LucideAngularModule,
+        LucideDynamicIcon,
         RdxCalendarHeadCellDirective
     ],
     styleUrl: 'calendar-default.style.css',
@@ -40,13 +44,13 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
             >
                 <div class="calendar-header" rdxCalendarHeader>
                     <button class="icon-button" type="button" rdxCalendarPrev>
-                        <lucide-angular [img]="ChevronLeft" size="16" style="display: flex;" />
+                        <svg [lucideIcon]="ChevronLeft" size="16" style="display: flex;" />
                     </button>
                     <div class="calendar-heading" #head="rdxCalendarHeading" data-testid="heading" rdxCalendarHeading>
                         {{ head.headingValue() }}
                     </div>
                     <button class="icon-button" type="button" data-testid="next-button" rdxCalendarNext>
-                        <lucide-angular [img]="ChevronRight" size="16" style="display: flex;" />
+                        <svg [lucideIcon]="ChevronRight" size="16" style="display: flex;" />
                     </button>
                 </div>
 

@@ -1,30 +1,30 @@
-import { importProvidersFrom, provideZonelessChangeDetection } from '@angular/core';
-import { applicationConfig, Preview } from '@storybook/angular';
+import { provideZonelessChangeDetection } from '@angular/core';
 import {
-    AlignCenter,
-    AlignLeft,
-    AlignRight,
-    Bold,
-    Check,
-    ChevronDown,
-    ChevronLeft,
-    ChevronRight,
-    ChevronsLeft,
-    ChevronsRight,
-    ChevronUp,
-    Dot,
-    Italic,
-    LoaderCircle,
-    LucideAngularModule,
-    Menu,
-    Minus,
-    MountainSnow,
-    Plus,
-    Save,
-    Strikethrough,
-    UnfoldVertical,
-    X
-} from 'lucide-angular';
+    LucideAlignCenter,
+    LucideAlignLeft,
+    LucideAlignRight,
+    LucideBold,
+    LucideCheck,
+    LucideChevronDown,
+    LucideChevronLeft,
+    LucideChevronRight,
+    LucideChevronsLeft,
+    LucideChevronsRight,
+    LucideChevronUp,
+    LucideDot,
+    LucideItalic,
+    LucideLoaderCircle,
+    LucideMenu,
+    LucideMinus,
+    LucideMountainSnow,
+    LucidePlus,
+    LucideSave,
+    LucideStrikethrough,
+    LucideUnfoldVertical,
+    LucideX,
+    provideLucideIcons
+} from '@lucide/angular';
+import { applicationConfig, Preview } from '@storybook/angular';
 import CompodocPlugin from './plugins/compodoc';
 
 CompodocPlugin.init();
@@ -49,31 +49,29 @@ const preview: Preview = {
         applicationConfig({
             providers: [
                 provideZonelessChangeDetection(),
-                importProvidersFrom(
-                    LucideAngularModule.pick({
-                        Check,
-                        Menu,
-                        Minus,
-                        Italic,
-                        Dot,
-                        ChevronLeft,
-                        ChevronRight,
-                        ChevronsRight,
-                        ChevronsLeft,
-                        ChevronDown,
-                        ChevronUp,
-                        Bold,
-                        Strikethrough,
-                        AlignLeft,
-                        AlignCenter,
-                        AlignRight,
-                        MountainSnow,
-                        X,
-                        Plus,
-                        Save,
-                        LoaderCircle,
-                        UnfoldVertical
-                    })
+                provideLucideIcons(
+                    LucideAlignCenter,
+                    LucideAlignLeft,
+                    LucideAlignRight,
+                    LucideBold,
+                    LucideCheck,
+                    LucideChevronDown,
+                    LucideChevronLeft,
+                    LucideChevronRight,
+                    LucideChevronUp,
+                    LucideChevronsLeft,
+                    LucideChevronsRight,
+                    LucideDot,
+                    LucideItalic,
+                    LucideLoaderCircle,
+                    LucideMenu,
+                    LucideMinus,
+                    LucideMountainSnow,
+                    LucidePlus,
+                    LucideSave,
+                    LucideStrikethrough,
+                    LucideUnfoldVertical,
+                    LucideX
                 )
             ]
         }),

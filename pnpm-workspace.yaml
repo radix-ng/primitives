@@ -1,4 +1,26 @@
 packages:
-    - "apps/radix-docs/**"
-    - "packages/**"
-    - "!**/dist/**"
+  - "apps/radix-docs/**"
+  - "packages/**"
+  - "!**/dist/**"
+allowBuilds:
+  '@compodoc/compodoc': true
+  '@parcel/watcher': true
+  '@swc/core': true
+  esbuild: true
+  less: true
+  lmdb: true
+  msgpackr-extract: true
+  nx: true
+  sharp: true
+  unrs-resolver: true
+minimumReleaseAgeExclude:
+  - '@shikijs/core@4.2.0'
+  - '@shikijs/engine-javascript@4.2.0'
+  - '@shikijs/engine-oniguruma@4.2.0'
+  - '@shikijs/langs@4.2.0'
+  - '@shikijs/primitive@4.2.0'
+  - '@shikijs/themes@4.2.0'
+  - '@shikijs/transformers@4.2.0'
+  - '@shikijs/types@4.2.0'
+  - astro@6.4.3
+  - shiki@4.2.0

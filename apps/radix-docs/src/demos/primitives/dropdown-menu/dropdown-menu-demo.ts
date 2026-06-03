@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+import { LucideCheck as Check, LucideDot as Dot, LucideDynamicIcon, LucideMenu as Menu } from '@lucide/angular';
 import {
     DropdownSide,
     RdxDropdownMenuContentDirective,
@@ -11,7 +12,6 @@ import {
     RdxDropdownMenuSeparatorDirective,
     RdxDropdownMenuTriggerDirective
 } from '@radix-ng/primitives/dropdown-menu';
-import { Check, Dot, LucideAngularModule, Menu } from 'lucide-angular';
 
 @Component({
     selector: 'dropdown-menu-demo',
@@ -24,7 +24,7 @@ import { Check, Dot, LucideAngularModule, Menu } from 'lucide-angular';
         RdxDropdownMenuItemIndicatorDirective,
         RdxDropdownMenuSeparatorDirective,
         RdxDropdownMenuContentDirective,
-        LucideAngularModule,
+        LucideDynamicIcon,
         RdxDropdownMenuItemRadioGroupDirective,
         RdxDropdownMenuItemRadioDirective
     ],
@@ -36,7 +36,7 @@ import { Check, Dot, LucideAngularModule, Menu } from 'lucide-angular';
             alignOffset="-5"
             aria-label="Customise options"
         >
-            <lucide-angular [img]="MenuIcon" size="16" style="display: flex;" />
+            <svg [lucideIcon]="MenuIcon" size="16" style="display: flex;" />
         </button>
 
         <ng-template #menu>
@@ -65,14 +65,14 @@ import { Check, Dot, LucideAngularModule, Menu } from 'lucide-angular';
                 <div class="DropdownMenuSeparator" rdxDropdownMenuSeparator></div>
                 <button class="DropdownMenuItem" [(checked)]="itemChecked1" rdxDropdownMenuItemCheckbox>
                     <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
-                        <lucide-icon [img]="CheckIcon" size="13" />
+                        <svg [lucideIcon]="CheckIcon" size="13" />
                     </div>
                     Show Bookmarks
                     <div class="RightSlot">⌘+B</div>
                 </button>
                 <button class="DropdownMenuItem" [(checked)]="itemChecked2" rdxDropdownMenuItemCheckbox>
                     <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
-                        <lucide-icon [img]="CheckIcon" size="13" />
+                        <svg [lucideIcon]="CheckIcon" size="13" />
                     </div>
                     Show Full URLs
                 </button>
@@ -81,13 +81,13 @@ import { Check, Dot, LucideAngularModule, Menu } from 'lucide-angular';
                 <div [(value)]="selectedValue" (valueChange)="onValueChange($event)" rdxDropdownMenuItemRadioGroup>
                     <div class="DropdownMenuRadioItem" [value]="'1'" rdxDropdownMenuItemRadio>
                         <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
-                            <lucide-icon [img]="DotIcon" size="13" strokeWidth="6" />
+                            <svg [lucideIcon]="DotIcon" size="13" strokeWidth="6" />
                         </div>
                         Pedro Duarte
                     </div>
                     <div class="DropdownMenuRadioItem" [value]="'2'" rdxDropdownMenuItemRadio>
                         <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
-                            <lucide-icon [img]="DotIcon" size="13" strokeWidth="6" />
+                            <svg [lucideIcon]="DotIcon" size="13" strokeWidth="6" />
                         </div>
                         Colm Tuite
                     </div>

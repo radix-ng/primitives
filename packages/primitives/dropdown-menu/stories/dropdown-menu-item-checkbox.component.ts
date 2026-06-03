@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { LucideAngularModule } from 'lucide-angular';
+import { LucideCheck, LucideMenu } from '@lucide/angular';
 import { RdxDropdownMenuContentDirective } from '../src/dropdown-menu-content.directive';
 import { RdxDropdownMenuItemCheckboxDirective } from '../src/dropdown-menu-item-checkbox.directive';
 import { RdxDropdownMenuItemIndicatorDirective } from '../src/dropdown-menu-item-indicator.directive';
@@ -19,7 +19,7 @@ import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.di
             alignOffset="-5"
             aria-label="Customise options"
         >
-            <lucide-angular size="16" name="menu" />
+            <svg size="16" lucideMenu />
         </button>
 
         <ng-template #menu>
@@ -31,7 +31,7 @@ import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.di
                     rdxDropdownMenuItemCheckbox
                 >
                     <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
-                        <lucide-icon size="16" name="check" />
+                        <svg size="16" lucideCheck />
                     </div>
                     New Tab
                     <div class="RightSlot">⌘ T</div>
@@ -47,7 +47,7 @@ import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.di
                     rdxDropdownMenuItemCheckbox
                 >
                     <div class="DropdownMenuItemIndicator" rdxDropdownMenuItemIndicator>
-                        <lucide-icon size="16" name="check" />
+                        <svg size="16" lucideCheck />
                     </div>
                     New Incognito Window
                 </button>
@@ -84,7 +84,8 @@ import { RdxDropdownMenuTriggerDirective } from '../src/dropdown-menu-trigger.di
         RdxDropdownMenuSeparatorDirective,
         RdxDropdownMenuContentDirective,
         RdxDropdownMenuLabelDirective,
-        LucideAngularModule
+        LucideMenu,
+        LucideCheck
     ]
 })
 export class DropdownMenuItemCheckboxExampleComponent {

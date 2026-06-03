@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { LucideAngularModule, Minus, Plus } from 'lucide-angular';
+import { LucideDynamicIcon, LucideMinus as Minus, LucidePlus as Plus } from '@lucide/angular';
 import { RdxNumberFieldDecrementDirective } from '../src/number-field-decrement.directive';
 import { RdxNumberFieldIncrementDirective } from '../src/number-field-increment.directive';
 import { RdxNumberFieldInputDirective } from '../src/number-field-input.directive';
@@ -12,18 +12,18 @@ import { RdxNumberFieldRootDirective } from '../src/number-field-root.directive'
         RdxNumberFieldInputDirective,
         RdxNumberFieldIncrementDirective,
         RdxNumberFieldDecrementDirective,
-        LucideAngularModule
+        LucideDynamicIcon
     ],
     template: `
         <div [value]="10" rdxNumberFieldRoot min="0">
             <label class="text-foreground" for="age">Age</label>
             <div class="NumberFieldWrapper">
                 <button class="ButtonField" rdxNumberFieldDecrement>
-                    <lucide-angular class="flex" [img]="Minus" strokeWidth="1" size="16" />
+                    <svg class="flex" [lucideIcon]="Minus" strokeWidth="1" size="16" />
                 </button>
                 <input class="NumberFieldNumber" id="age" rdxNumberFieldInput />
                 <button class="ButtonField" rdxNumberFieldIncrement>
-                    <lucide-angular class="flex" [img]="Plus" strokeWidth="1" size="16" />
+                    <svg class="flex" [lucideIcon]="Plus" strokeWidth="1" size="16" />
                 </button>
             </div>
         </div>
@@ -42,18 +42,18 @@ export class NumberField {
         RdxNumberFieldInputDirective,
         RdxNumberFieldIncrementDirective,
         RdxNumberFieldDecrementDirective,
-        LucideAngularModule
+        LucideDynamicIcon
     ],
     template: `
         <div [value]="0" [formatOptions]="formatOptions" rdxNumberFieldRoot>
             <label class="text-foreground" for="decimal">Decimal</label>
             <div class="NumberFieldWrapper">
                 <button class="ButtonField" rdxNumberFieldDecrement>
-                    <lucide-angular class="flex" [img]="Minus" strokeWidth="1" size="16" />
+                    <svg class="flex" [lucideIcon]="Minus" strokeWidth="1" size="16" />
                 </button>
                 <input class="NumberFieldNumber" id="decimal" rdxNumberFieldInput />
                 <button class="ButtonField" rdxNumberFieldIncrement>
-                    <lucide-angular class="flex" [img]="Plus" strokeWidth="1" size="16" />
+                    <svg class="flex" [lucideIcon]="Plus" strokeWidth="1" size="16" />
                 </button>
             </div>
         </div>
@@ -78,18 +78,18 @@ export class NumberFieldDecimal {
         RdxNumberFieldInputDirective,
         RdxNumberFieldIncrementDirective,
         RdxNumberFieldDecrementDirective,
-        LucideAngularModule
+        LucideDynamicIcon
     ],
     template: `
         <div [value]="0.05" [formatOptions]="formatOptions" step="0.01" rdxNumberFieldRoot>
             <label class="text-foreground" for="percentage">Percentage</label>
             <div class="NumberFieldWrapper">
                 <button class="ButtonField" rdxNumberFieldDecrement>
-                    <lucide-angular class="flex" [img]="Minus" strokeWidth="1" size="16" />
+                    <svg class="flex" [lucideIcon]="Minus" strokeWidth="1" size="16" />
                 </button>
                 <input class="NumberFieldNumber" id="percentage" rdxNumberFieldInput />
                 <button class="ButtonField" rdxNumberFieldIncrement>
-                    <lucide-angular class="flex" [img]="Plus" strokeWidth="1" size="16" />
+                    <svg class="flex" [lucideIcon]="Plus" strokeWidth="1" size="16" />
                 </button>
             </div>
         </div>
@@ -112,18 +112,18 @@ export class NumberFieldPercentage {
         RdxNumberFieldInputDirective,
         RdxNumberFieldIncrementDirective,
         RdxNumberFieldDecrementDirective,
-        LucideAngularModule
+        LucideDynamicIcon
     ],
     template: `
         <div [value]="5" [formatOptions]="formatOptions" rdxNumberFieldRoot>
             <label class="text-foreground" for="currency">Currency</label>
             <div class="NumberFieldWrapper">
                 <button class="ButtonField" rdxNumberFieldDecrement>
-                    <lucide-angular class="flex" [img]="Minus" strokeWidth="1" size="16" />
+                    <svg class="flex" [lucideIcon]="Minus" strokeWidth="1" size="16" />
                 </button>
                 <input class="NumberFieldNumber" id="currency" rdxNumberFieldInput />
                 <button class="ButtonField" rdxNumberFieldIncrement>
-                    <lucide-angular class="flex" [img]="Plus" strokeWidth="1" size="16" />
+                    <svg class="flex" [lucideIcon]="Plus" strokeWidth="1" size="16" />
                 </button>
             </div>
         </div>
@@ -149,18 +149,18 @@ export class NumberFieldCurrency {
         RdxNumberFieldInputDirective,
         RdxNumberFieldIncrementDirective,
         RdxNumberFieldDecrementDirective,
-        LucideAngularModule
+        LucideDynamicIcon
     ],
     template: `
         <div [value]="5" [formatOptions]="formatOptions" rdxNumberFieldRoot>
             <label class="text-foreground" for="units">Units</label>
             <div class="NumberFieldWrapper">
                 <button class="ButtonField" rdxNumberFieldDecrement>
-                    <lucide-angular class="flex" [img]="Minus" strokeWidth="1" size="16" />
+                    <svg class="flex" [lucideIcon]="Minus" strokeWidth="1" size="16" />
                 </button>
                 <input class="NumberFieldNumber" id="units" rdxNumberFieldInput />
                 <button class="ButtonField" rdxNumberFieldIncrement>
-                    <lucide-angular class="flex" [img]="Plus" strokeWidth="1" size="16" />
+                    <svg class="flex" [lucideIcon]="Plus" strokeWidth="1" size="16" />
                 </button>
             </div>
         </div>

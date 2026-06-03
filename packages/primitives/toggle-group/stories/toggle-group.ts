@@ -1,10 +1,16 @@
 import { Component, model } from '@angular/core';
+import { LucideAlignCenter, LucideAlignLeft, LucideAlignRight } from '@lucide/angular';
 import { RdxToggleGroupDirective, RdxToggleGroupItemDirective } from '@radix-ng/primitives/toggle-group';
-import { LucideAngularModule } from 'lucide-angular';
 
 @Component({
     selector: 'toggle-group',
-    imports: [RdxToggleGroupDirective, RdxToggleGroupItemDirective, LucideAngularModule],
+    imports: [
+        RdxToggleGroupDirective,
+        RdxToggleGroupItemDirective,
+        LucideAlignLeft,
+        LucideAlignCenter,
+        LucideAlignRight
+    ],
     template: `
         <div
             class="border-border bg-muted inline-flex rounded-md border shadow-sm"
@@ -19,7 +25,7 @@ import { LucideAngularModule } from 'lucide-angular';
                 value="left"
                 aria-label="Left aligned"
             >
-                <lucide-icon name="align-left" size="12" />
+                <svg lucideAlignLeft size="12" />
             </button>
             <button
                 class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 cursor-pointer items-center justify-center border border-transparent transition-[color,box-shadow] outline-none focus-visible:z-10 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
@@ -27,7 +33,7 @@ import { LucideAngularModule } from 'lucide-angular';
                 value="center"
                 aria-label="Center aligned"
             >
-                <lucide-icon name="align-center" size="12" />
+                <svg lucideAlignCenter size="12" />
             </button>
             <button
                 class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-r-md border border-transparent transition-[color,box-shadow] outline-none focus-visible:z-10 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
@@ -35,7 +41,7 @@ import { LucideAngularModule } from 'lucide-angular';
                 value="right"
                 aria-label="Right aligned"
             >
-                <lucide-icon name="align-right" size="12" />
+                <svg lucideAlignRight size="12" />
             </button>
         </div>
 

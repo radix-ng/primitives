@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
+import { LucideX } from '@lucide/angular';
 import { popoverImports } from '@radix-ng/primitives/popover';
-import { LucideAngularModule } from 'lucide-angular';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
     selector: 'rdx-popover-animated',
-    imports: [...popoverImports, LucideAngularModule],
+    imports: [...popoverImports, LucideX],
     template: `
         <ng-container rdxPopoverRoot>
             <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Animated popover</button>
@@ -20,7 +20,7 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
                                 Presence keeps this portal mounted until the exit animation finishes.
                             </p>
                             <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                                <lucide-angular aria-hidden="true" name="x" size="14" />
+                                <svg aria-hidden="true" lucideX size="14" />
                             </button>
                         </div>
                     </div>
