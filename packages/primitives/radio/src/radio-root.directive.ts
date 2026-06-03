@@ -1,5 +1,5 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { booleanAttribute, computed, Directive, input, Input, model, output, signal } from '@angular/core';
+import { booleanAttribute, computed, Directive, effect, input, model, output, signal } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 import { provideValueAccessor } from '@radix-ng/primitives/core';
 import { Orientation, RdxRovingFocusGroupDirective } from '@radix-ng/primitives/roving-focus';
@@ -16,17 +16,25 @@ import { RadioGroupDirective, RadioGroupProps, RDX_RADIO_GROUP } from './radio-t
     host: {
         role: 'radiogroup',
         '[attr.aria-orientation]': 'orientation()',
-        '[attr.aria-required]': 'required()',
-        '[attr.data-disabled]': 'disableState() ? "" : null',
+        '[attr.aria-required]': 'required() ? "true" : undefined',
+        '[attr.data-disabled]': 'disabledState() ? "" : undefined',
+        '[attr.data-readonly]': 'readonly() ? "" : undefined',
+        '[attr.data-required]': 'required() ? "" : undefined',
         '(keydown)': 'onKeydown()'
     }
 })
 export class RdxRadioGroupDirective implements RadioGroupProps, RadioGroupDirective, ControlValueAccessor {
     readonly value = model<string | null>(null);
 
+    readonly defaultValue = input<string>();
+
+    readonly name = input<string>();
+
+    readonly form = input<string>();
+
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    @Input() defaultValue?: string;
+    readonly readonly = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     readonly required = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
@@ -38,12 +46,13 @@ export class RdxRadioGroupDirective implements RadioGroupProps, RadioGroupDirect
     readonly onValueChange = output<string>();
 
     private readonly disable = signal<boolean>(this.disabled());
-    readonly disableState = computed(() => this.disable() || this.disabled());
+    readonly disabledState = computed(() => this.disable() || this.disabled());
+    private readonly arrowNavigation = signal(false);
 
     /**
      * The callback function to call when the value of the radio group changes.
      */
-    private onChange: (value: string) => void = () => {
+    private onChange: (value: string | null) => void = () => {
         /* Empty */
     };
 
@@ -55,14 +64,28 @@ export class RdxRadioGroupDirective implements RadioGroupProps, RadioGroupDirect
         /* Empty */
     };
 
+    constructor() {
+        effect(() => {
+            if (this.value() === null && this.defaultValue() !== undefined) {
+                this.value.set(this.defaultValue()!);
+            }
+        });
+    }
+
     /**
      * Select a radio item.
      * @param value The value of the radio item to select.
      * @ignore
      */
-    select(value: string): void {
+    select(value: string | null): void {
+        if (this.disabledState() || this.readonly() || this.value() === value) {
+            return;
+        }
+
         this.value.set(value);
-        this.onValueChange.emit(value);
+        if (value !== null) {
+            this.onValueChange.emit(value);
+        }
         this.onChange?.(value);
         this.onTouched();
     }
@@ -72,7 +95,7 @@ export class RdxRadioGroupDirective implements RadioGroupProps, RadioGroupDirect
      * @param value The new value of the radio group.
      * @ignore
      */
-    writeValue(value: string): void {
+    writeValue(value: string | null): void {
         this.value.set(value);
     }
 
@@ -81,7 +104,7 @@ export class RdxRadioGroupDirective implements RadioGroupProps, RadioGroupDirect
      * @param fn The callback function to call when the value of the radio group changes.
      * @ignore
      */
-    registerOnChange(fn: (value: string) => void): void {
+    registerOnChange(fn: (value: string | null) => void): void {
         this.onChange = fn;
     }
 
@@ -99,7 +122,15 @@ export class RdxRadioGroupDirective implements RadioGroupProps, RadioGroupDirect
         this.disable.set(isDisabled);
     }
 
+    setArrowNavigation(value: boolean): void {
+        this.arrowNavigation.set(value);
+    }
+
+    isArrowNavigation(): boolean {
+        return this.arrowNavigation();
+    }
+
     protected onKeydown(): void {
-        if (this.disableState()) return;
+        if (this.disabledState()) return;
     }
 }

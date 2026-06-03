@@ -1,0 +1,179 @@
+import { Component } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { RdxRadioGroupDirective, RdxRadioIndicatorDirective, RdxRadioItemDirective } from '../index';
+
+@Component({
+    imports: [RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioIndicatorDirective],
+    template: `
+        <form>
+            <div
+                [value]="value"
+                [disabled]="disabled"
+                [required]="required"
+                [readonly]="readonly"
+                (onValueChange)="onValueChange($event)"
+                rdxRadioRoot
+                name="density"
+                orientation="vertical"
+            >
+                <button id="default" rdxRadioItem value="default">
+                    <span rdxRadioIndicator></span>
+                </button>
+                <button id="comfortable" rdxRadioItem value="comfortable">
+                    <span rdxRadioIndicator></span>
+                </button>
+            </div>
+        </form>
+    `
+})
+class RadioHost {
+    value: string | null = 'default';
+    disabled = false;
+    required = false;
+    readonly = false;
+    changes: string[] = [];
+
+    onValueChange(value: string): void {
+        this.changes.push(value);
+        this.value = value;
+    }
+}
+
+@Component({
+    imports: [RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioIndicatorDirective],
+    template: `
+        <form>
+            <div [value]="value" (onValueChange)="onValueChange($event)" rdxRadioRoot name="storage">
+                <label>
+                    <span rdxRadioItem value="ssd">
+                        <span rdxRadioIndicator></span>
+                    </span>
+                    SSD
+                </label>
+                <label>
+                    <span rdxRadioItem value="hdd">
+                        <span rdxRadioIndicator></span>
+                    </span>
+                    HDD
+                </label>
+            </div>
+        </form>
+    `
+})
+class LabelWrappedRadioHost {
+    value: string | null = 'ssd';
+    changes: string[] = [];
+
+    onValueChange(value: string): void {
+        this.changes.push(value);
+        this.value = value;
+    }
+}
+
+describe('RdxRadio', () => {
+    let fixture: ComponentFixture<RadioHost>;
+    let host: RadioHost;
+
+    const group = () => fixture.debugElement.query(By.css('[rdxRadioRoot]')).nativeElement as HTMLElement;
+    const buttons = () =>
+        fixture.debugElement
+            .queryAll(By.css('button[rdxRadioItem]'))
+            .map((el) => el.nativeElement as HTMLButtonElement);
+    const inputs = () =>
+        Array.from(fixture.nativeElement.querySelectorAll('input[type="radio"]')) as HTMLInputElement[];
+    const indicators = () =>
+        fixture.debugElement.queryAll(By.css('[rdxRadioIndicator]')).map((el) => el.nativeElement as HTMLElement);
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [RadioHost] });
+        fixture = TestBed.createComponent(RadioHost);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+    });
+
+    it('creates hidden radio inputs beside items for form integration', () => {
+        expect(inputs()).toHaveLength(2);
+        expect(inputs()[0].name).toBe('density');
+        expect(inputs()[0].value).toBe('default');
+        expect(inputs()[0].checked).toBe(true);
+        expect(inputs()[1].checked).toBe(false);
+
+        const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+        expect(new FormData(form).get('density')).toBe('default');
+    });
+
+    it('does not change value when an unchecked item receives focus', () => {
+        buttons()[1].focus();
+        fixture.detectChanges();
+
+        expect(host.value).toBe('default');
+        expect(host.changes).toEqual([]);
+    });
+
+    it('selects an item on click and emits once', () => {
+        buttons()[1].click();
+        fixture.detectChanges();
+
+        expect(host.value).toBe('comfortable');
+        expect(host.changes).toEqual(['comfortable']);
+        expect(inputs()[1].checked).toBe(true);
+    });
+
+    it('selects the newly focused item during arrow navigation', async () => {
+        buttons()[0].focus();
+        buttons()[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+        await Promise.resolve();
+        fixture.detectChanges();
+
+        expect(host.value).toBe('comfortable');
+        expect(host.changes).toEqual(['comfortable']);
+    });
+
+    it('propagates group disabled and required state to items, indicators, and hidden inputs', () => {
+        host.disabled = true;
+        host.required = true;
+        fixture.detectChanges();
+
+        expect(group().getAttribute('data-disabled')).toBe('');
+        expect(group().getAttribute('data-required')).toBe('');
+        expect(buttons()[0].hasAttribute('disabled')).toBe(true);
+        expect(buttons()[0].getAttribute('data-required')).toBe('');
+        expect(indicators()[0].getAttribute('data-disabled')).toBe('');
+        expect(inputs()[0].disabled).toBe(true);
+        expect(inputs()[0].required).toBe(true);
+    });
+
+    it('does not select a different item when readonly', () => {
+        host.readonly = true;
+        fixture.detectChanges();
+
+        buttons()[1].click();
+        fixture.detectChanges();
+
+        expect(host.value).toBe('default');
+        expect(host.changes).toEqual([]);
+        expect(buttons()[0].getAttribute('data-readonly')).toBe('');
+    });
+
+    it('supports label-wrapped non-button radio items', () => {
+        const labelFixture = TestBed.createComponent(LabelWrappedRadioHost);
+        labelFixture.detectChanges();
+        const labelHost = labelFixture.componentInstance;
+
+        const item = labelFixture.nativeElement.querySelector('[rdxRadioItem]') as HTMLElement;
+        const labels = Array.from(labelFixture.nativeElement.querySelectorAll('label')) as HTMLLabelElement[];
+        const input = labelFixture.nativeElement.querySelector('input[type="radio"]') as HTMLInputElement;
+
+        expect(item.tagName).toBe('SPAN');
+        expect(item.hasAttribute('type')).toBe(false);
+        expect(input.name).toBe('storage');
+        expect(input.value).toBe('ssd');
+
+        labels[1].click();
+        labelFixture.detectChanges();
+
+        expect(labelHost.value).toBe('hdd');
+        expect(labelHost.changes).toEqual(['hdd']);
+    });
+});

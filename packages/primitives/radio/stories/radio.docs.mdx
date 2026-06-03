@@ -1,4 +1,4 @@
-import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/addon-docs/blocks';
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as RadioDirectiveStories from './radio.stories';
 import { RdxRadioGroupDirective } from '../src/radio-root.directive';
 import { RdxRadioItemDirective } from '../src/radio-item.directive';
@@ -22,18 +22,51 @@ import { RdxRadioItemDirective } from '../src/radio-item.directive';
 Get started with importing the directives:
 
 ```typescript
-import { RdxRadioIndicatorDirective, RadioItemDirective } from '@radix-ng/primitives/radio';
+import {
+    RdxRadioGroupDirective,
+    RdxRadioIndicatorDirective,
+    RdxRadioItemDirective
+} from '@radix-ng/primitives/radio';
 ```
 
 ## Anatomy
 
 ```html
-<div rdxRadioRoot>
-  <button rdxRadioItem value="default">
-    <div rdxRadioIndicator></div>
-  </button>
+<div rdxRadioRoot name="density">
+  <label>
+    <span rdxRadioItem value="default">
+      <span rdxRadioIndicator></span>
+    </span>
+    Default
+  </label>
 </div>
 ```
+
+`RdxRadioItemDirective` creates the hidden native radio input next to the item, so form
+submission, native validation, and labels work without rendering an `<input>` inside the button.
+
+Use `nativeButton` only when you render the item as a standalone `<button>` and handle the label
+outside of native label activation.
+
+## Examples
+
+### Default
+
+A vertical radio group with sibling labels and native button items.
+
+<Canvas of={RadioDirectiveStories.Default} />
+
+### Disabled
+
+A disabled radio group ignores user interaction and exposes disabled state attributes to all items.
+
+<Canvas of={RadioDirectiveStories.Disabled} />
+
+### Template-driven forms
+
+Radio group works with `ngModel`, native form submission, and a submit button while still creating native inputs.
+
+<Canvas of={RadioDirectiveStories.TemplateDrivenForms} />
 
 ## API Reference
 
@@ -41,17 +74,22 @@ import { RdxRadioIndicatorDirective, RadioItemDirective } from '@radix-ng/primit
 
 `RdxRadioGroupDirective`
 
+Owns the shared radio state and form metadata (`name`, `form`, `required`, `disabled`, and
+`readonly`).
+
 <ArgTypes of={RdxRadioGroupDirective} />
 
 ### RadioGroupItem
 
-`RdxRadioGroupItemDirective`
+`RdxRadioItemDirective`
 
 <ArgTypes of={RdxRadioItemDirective} />
 
 ### RadioIndicator
 
 `RdxRadioIndicatorDirective`
+
+Renders only when its radio item is checked and exposes the same state attributes for styling. It has no public inputs.
 
 ## Accessibility
 

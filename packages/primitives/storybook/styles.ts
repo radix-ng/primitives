@@ -105,6 +105,28 @@ export const demoCheckbox = {
 } as const;
 
 /**
+ * Radio parts: a small circular item with a centered dot indicator.
+ *
+ * The indicator keeps `data-[state=unchecked]:hidden` because its `flex`
+ * display would otherwise override the native `[hidden]` attribute set by the
+ * directive.
+ */
+export const demoRadio = {
+    item: cn(
+        'flex size-6 items-center justify-center rounded-full border border-border bg-background shadow-sm',
+        'hover:bg-muted',
+        'disabled:cursor-not-allowed disabled:opacity-50',
+        'data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',
+        demoFocusRing
+    ),
+    indicator:
+        'flex size-full items-center justify-center after:block after:size-2.5 after:rounded-full after:bg-primary data-[state=unchecked]:hidden',
+    row: 'flex items-center gap-3',
+    label: 'text-foreground text-sm font-medium',
+    group: 'flex flex-col gap-2.5'
+} as const;
+
+/**
  * Avatar parts: a circular image with a text/initials fallback.
  *
  * Compose `root` with one `size`; the font size set by `size` is inherited by

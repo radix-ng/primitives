@@ -144,7 +144,15 @@ Prefer `hostDirectives` to re-use existing primitives (e.g., Accordion Item comp
    ```json
    "@radix-ng/primitives/<name>": ["packages/primitives/<name>/index.ts"]
    ```
-3. Run `pnpm primitives:build` to verify build.
+3. If production code imports a new external runtime package, add it to `packages/primitives/package.json` `peerDependencies`, keep the matching dev dependency for local builds, and update `packages/primitives/schematics/ng-add/index.ts` so `ng add @radix-ng/primitives` installs it.
+4. Run `pnpm primitives:build` to verify build.
+
+## Installation & dependencies
+
+- Consumers should install the package with `ng add @radix-ng/primitives`. In Nx Angular workspaces, document/use `npx ng add @radix-ng/primitives` from the workspace root; if the package is already installed, `nx g @radix-ng/primitives:ng-add` can run the schematic directly.
+- Runtime packages imported by published primitives must be declared as peer dependencies in `packages/primitives/package.json` and installed by the `ng-add` schematic.
+- Current runtime peers installed by `ng-add`: `@angular/common` (matched to the app's `@angular/core` version), `@angular/cdk`, `@floating-ui/dom`, `@internationalized/date`, and `@internationalized/number`.
+- Keep `apps/radix-storybook/docs/overview/installation.docs.mdx` in sync whenever the install command, peer dependency list, or schematic behavior changes.
 
 ## Stories & Storybook
 
@@ -157,6 +165,18 @@ Prefer `hostDirectives` to re-use existing primitives (e.g., Accordion Item comp
 - Files: `stories/<name>.stories.ts` (CSF) + optional `stories/<name>.ts` (standalone story components) + optional `stories/<name>.docs.mdx`. In the mdx, `<Meta title="…">` matching the CSF `title` attaches it as that group's docs page; use `<Canvas of={Stories.X} />` to embed a story and `<ArgTypes of={Directive} />` for the props table.
 - Storybook theme switching is controlled from the toolbar, not OS color scheme. The preview decorator sets `document.documentElement[data-theme]`, so stories should use tokens that respond to that attribute instead of reading `prefers-color-scheme`.
 - **Lucide icons use `@lucide/angular`.** Static icons should use standalone SVG directives such as `<svg lucideCheck />` with the matching `LucideCheck` import. Dynamic icons should use `<svg [lucideIcon]="icon" />` with `LucideDynamicIcon`; string-based dynamic names must be registered via `provideLucideIcons(...)` in `apps/radix-storybook/.storybook/preview.ts`.
+
+### Story CSF template contract (`stories/<name>.stories.ts`)
+
+When creating or rewriting primitive stories, follow this format by default:
+
+- Imports: Storybook APIs → primitive dependencies → `../../storybook/styles` helpers → `tailwindDemoDecorator` → primitive directives/components → standalone demo components → raw `?raw` sources for standalone demos.
+- Define `const source = (code: string) => ({ docs: { source: { code, language: 'typescript' } } });` when a story renders only a standalone component tag.
+- Define `const html = String.raw;`, `export default { title, decorators: [moduleMetadata({ imports: [...] }), tailwindDemoDecorator()] } as Meta;`, then `type Story = StoryObj;`.
+- Story order: `Default` first, then state variants (`Disabled`, `Readonly`, `Required`, etc.), then form/value examples (`ReactiveForms`, `TemplateDrivenForms`, `Validation`) and advanced examples.
+- `Default` should be a small inline template using shared style constants from `packages/primitives/storybook/styles.ts`; standalone component stories must set `parameters: source(rawSource)` so "Show code" displays the full source.
+- For form controls, include form integration and controlled/template-driven examples when the primitive supports them. Prefer Checkbox/Radio/Switch stories as references.
+- Story export names should describe the behavior, not implementation details (`TemplateDrivenForms`, not `RadioGroupComponent`).
 
 ### Storybook handbook index
 
