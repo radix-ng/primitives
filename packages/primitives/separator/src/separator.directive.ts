@@ -1,39 +1,29 @@
-import { BooleanInput } from '@angular/cdk/coercion';
-import { booleanAttribute, computed, Directive, input, linkedSignal } from '@angular/core';
+import { computed, Directive, input, linkedSignal } from '@angular/core';
 
 const DEFAULT_ORIENTATION = 'horizontal';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const ORIENTATIONS = ['horizontal', 'vertical'] as const;
-
-export type Orientation = (typeof ORIENTATIONS)[number];
+export type Orientation = 'horizontal' | 'vertical';
 
 export interface SeparatorProps {
     /**
      * Either `vertical` or `horizontal`. Defaults to `horizontal`.
      */
     orientation?: Orientation;
-    /**
-     * Whether the component is purely decorative. When true, accessibility-related attributes
-     * are updated so that the rendered element is removed from the accessibility tree.
-     */
-    decorative?: boolean;
 }
 
 /**
  * Directive that adds accessible and configurable separator element to the DOM.
- * This can be either horizontal or vertical and optionally decorative (which removes
- * it from the accessibility tree).
+ * This can be either horizontal or vertical.
  *
  * @group Components
  */
 @Directive({
-    selector: 'div[rdxSeparatorRoot]',
+    selector: '[rdxSeparatorRoot]',
     host: {
-        '[attr.role]': 'decorativeEffect() ? "none" : "separator"',
+        role: 'separator',
         '[attr.aria-orientation]': 'computedAriaOrientation()',
 
-        '[attr.data-orientation]': 'orientationEffect()'
+        '[attr.data-orientation]': 'orientationState()'
     }
 })
 export class RdxSeparatorRootDirective {
@@ -45,47 +35,22 @@ export class RdxSeparatorRootDirective {
      */
     readonly orientation = input<Orientation>(DEFAULT_ORIENTATION);
 
-    /**
-     * If true, the separator will be considered decorative and removed from
-     * the accessibility tree. Defaults to false.
-     *
-     * @defaultValue false
-     * @group Props
-     */
-    readonly decorative = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
-
-    /**
-     * Computes the `role` attribute for the separator. If `decorative` is true,
-     * the role is set to "none", otherwise it is "separator".
-     *
-     * @ignore
-     */
-    protected readonly decorativeEffect = linkedSignal({
-        source: this.decorative,
-        computation: (value) => value
-    });
-
-    protected readonly orientationEffect = linkedSignal({
+    protected readonly orientationState = linkedSignal({
         source: this.orientation,
         computation: (value) => value
     });
 
     /**
-     * Computes the `aria-orientation` attribute. It is set to "vertical" only if
-     * the separator is not decorative and the orientation is set to "vertical".
-     * For horizontal orientation, the attribute is omitted.
+     * Computes the `aria-orientation` attribute. It is set to "vertical" only when
+     * the separator orientation is vertical. Horizontal is the implicit ARIA default.
      *
      * @ignore
      */
     protected readonly computedAriaOrientation = computed(() =>
-        !this.decorativeEffect() && this.orientationEffect() === 'vertical' ? 'vertical' : undefined
+        this.orientationState() === 'vertical' ? 'vertical' : undefined
     );
 
     updateOrientation(value: Orientation) {
-        this.orientationEffect.set(value);
-    }
-
-    updateDecorative(value: boolean) {
-        this.decorativeEffect.set(value);
+        this.orientationState.set(value);
     }
 }

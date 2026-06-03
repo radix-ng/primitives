@@ -6,32 +6,44 @@ import * as SeparatorDirectiveStories from './separator.stories';
 
 # Separator
 
-#### Visually or semantically separates content.
+#### A separator element accessible to screen readers.
 
 <Canvas sourceState="hidden" of={SeparatorDirectiveStories.Default} />
 
 ## Features
 
 - ✅ Supports horizontal and vertical orientations.
+- ✅ Exposes orientation state via the `data-orientation` attribute.
+- ✅ Uses the `separator` role and sets `aria-orientation` for vertical separators.
 
-## Usage
-
-Get started with importing the directive:
+## Import
 
 ```typescript
 import { RdxSeparatorRootDirective } from '@radix-ng/primitives/separator';
 ```
 
-## Examples
+## Anatomy
+
+Separator is a single directive. Apply `rdxSeparatorRoot` to the element that separates content.
 
 ```html
-<div rdxSeparatorRoot decorative="decorative" orientation="vertical"></div>
+<div rdxSeparatorRoot></div>
 ```
+
+## Examples
+
+### Vertical
+
+Use `orientation="vertical"` when separating inline content groups.
+
+<Canvas of={SeparatorDirectiveStories.Default} />
+
+### Horizontal
+
+The default orientation is horizontal.
+
+<Canvas of={SeparatorDirectiveStories.Horizontal} />
 
 ## API Reference
 
 <ArgTypes of={RdxSeparatorRootDirective} />
-
-## Accessibility
-
-Adheres to the [`separator` role requirements](https://www.w3.org/TR/wai-aria-1.2/#separator).

@@ -3,13 +3,24 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Orientation, RdxSeparatorRootDirective } from '../src/separator.directive';
 
 @Component({
-    template: '<div rdxSeparatorRoot [orientation]="orientation" [decorative]="decorative"></div>',
+    template: '<div rdxSeparatorRoot [orientation]="orientation"></div>',
     imports: [RdxSeparatorRootDirective]
 })
 class TestHostComponent {
     orientation: Orientation = 'horizontal';
-    decorative = false;
 }
+
+@Component({
+    template: '<span rdxSeparatorRoot></span>',
+    imports: [RdxSeparatorRootDirective]
+})
+class SpanHostComponent {}
+
+@Component({
+    template: '<div rdxSeparatorRoot></div>',
+    imports: [RdxSeparatorRootDirective]
+})
+class DefaultHostComponent {}
 
 describe('SeparatorDirective', () => {
     let fixture: ComponentFixture<TestHostComponent>;
@@ -28,29 +39,16 @@ describe('SeparatorDirective', () => {
         expect(element.getAttribute('role')).toBe('separator');
     });
 
-    it('should set role to "none" if decorative is true', () => {
-        fixture.componentInstance.decorative = true;
-        fixture.detectChanges();
-        expect(element.getAttribute('role')).toBe('none');
-    });
-
     it('should not set aria-orientation if orientation is horizontal', () => {
         fixture.componentInstance.orientation = 'horizontal';
         fixture.detectChanges();
         expect(element.getAttribute('aria-orientation')).toBeNull();
     });
 
-    it('should set aria-orientation to "vertical" if orientation is vertical and decorative is false', () => {
+    it('should set aria-orientation to "vertical" if orientation is vertical', () => {
         fixture.componentInstance.orientation = 'vertical';
         fixture.detectChanges();
         expect(element.getAttribute('aria-orientation')).toBe('vertical');
-    });
-
-    it('should not set aria-orientation if decorative is true', () => {
-        fixture.componentInstance.orientation = 'vertical';
-        fixture.componentInstance.decorative = true;
-        fixture.detectChanges();
-        expect(element.getAttribute('aria-orientation')).toBeNull();
     });
 
     it('should set data-orientation based on the orientation input', () => {
@@ -61,5 +59,24 @@ describe('SeparatorDirective', () => {
         fixture.componentInstance.orientation = 'horizontal';
         fixture.detectChanges();
         expect(element.getAttribute('data-orientation')).toBe('horizontal');
+    });
+
+    it('should default data-orientation to horizontal', () => {
+        const defaultFixture = TestBed.createComponent(DefaultHostComponent);
+        const defaultElement: HTMLElement = defaultFixture.nativeElement.querySelector('div');
+
+        defaultFixture.detectChanges();
+
+        expect(defaultElement.getAttribute('data-orientation')).toBe('horizontal');
+    });
+
+    it('should support non-div host elements', () => {
+        const spanFixture = TestBed.createComponent(SpanHostComponent);
+        const spanElement: HTMLElement = spanFixture.nativeElement.querySelector('span');
+
+        spanFixture.detectChanges();
+
+        expect(spanElement.getAttribute('role')).toBe('separator');
+        expect(spanElement.getAttribute('data-orientation')).toBe('horizontal');
     });
 });

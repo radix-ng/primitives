@@ -5,7 +5,7 @@ import { injectStepperRootContext } from './stepper-root-context.token';
 
 @Directive({
     selector: '[rdxStepperSeparator]',
-    hostDirectives: [{ directive: RdxSeparatorRootDirective, inputs: ['orientation', 'decorative'] }],
+    hostDirectives: [{ directive: RdxSeparatorRootDirective, inputs: ['orientation'] }],
     host: {
         '[attr.data-state]': 'itemContext.itemState()'
     }
@@ -18,7 +18,6 @@ export class RdxStepperSeparatorDirective {
 
     constructor() {
         effect(() => {
-            this.rdxSeparator.updateDecorative(true);
             this.rdxSeparator.updateOrientation(this.rootContext.orientation());
         });
     }
