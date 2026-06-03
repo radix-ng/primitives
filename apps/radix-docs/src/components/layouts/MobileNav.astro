@@ -9,7 +9,7 @@ function isActive(segment: string) {
 }
 ---
 
-<div x-data="{ slideOverOpen: false }">
+<div class="md:hidden" x-data="{ slideOverOpen: false }">
     <button
         @click="slideOverOpen=true"
         class="focus-visible:ring-ring hover:text-accent-foreground mr-2 inline-flex h-9 items-center justify-center gap-2 whitespace-nowrap rounded-md px-0 py-2 text-base font-medium transition-colors hover:bg-transparent focus-visible:bg-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:pointer-events-none disabled:opacity-50 md:hidden [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
@@ -25,7 +25,7 @@ function isActive(segment: string) {
         <span class="sr-only">Toggle Menu</span>
     </button>
     <template x-teleport="body">
-        <div x-show="slideOverOpen" @keydown.window.escape="slideOverOpen=false" class="relative z-[99]">
+        <div x-show="slideOverOpen" @keydown.window.escape="slideOverOpen=false" class="relative z-[99] md:hidden">
             <div
                 x-show="slideOverOpen"
                 :data-state="slideOverOpen ? 'open' : 'closed'"

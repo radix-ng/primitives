@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry, render } from 'astro:content';
 import DocumentationLayout from '@/layouts/DocumentationLayout.astro';
 import { generateToc } from '@/utils';
 import Toc from '@/components/layouts/Toc.astro';
@@ -10,20 +10,23 @@ export async function getStaticPaths() {
     const docEntries = await getCollection('primitives');
     return docEntries.map((page: any) => {
         return {
-            params: { section: page.data.section, slug: page.slug },
-            props: { page }
+            params: { section: page.data.section, slug: page.data.slug },
+            props: { id: page.id }
         };
     });
 }
 
 export interface Props {
-    page: CollectionEntry<'primitives'>;
-    section: string;
+    id: CollectionEntry<'primitives'>['id'];
 }
 
-const { page } = Astro.props;
-const { data, collection, render } = page;
-const { Content, headings } = await render();
+const page = await getEntry('primitives', Astro.props.id);
+if (!page) {
+    return Astro.redirect('/404');
+}
+
+const { data, collection } = page;
+const { Content, headings } = await render(page);
 const tocItems = generateToc(headings);
 
 const sourceFilePath = `${page.collection}/${page.id}`;

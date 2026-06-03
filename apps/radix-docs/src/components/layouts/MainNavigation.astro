@@ -1,7 +1,4 @@
 ---
-import Sidebar from './Sidebar.astro';
-import docsConfig from '@/config/docs-config';
-
 const firstSegment = Astro.url.pathname.split('/')[1];
 
 function isActive(segment: string) {
@@ -9,15 +6,9 @@ function isActive(segment: string) {
 }
 ---
 
-<div>
-    <div
-        class="h-max-[calc(100vh-3.5rem)] bg-background md:data-[state=open]:translate-none fixed -left-full top-14 z-50 h-[calc(100vh-3.5rem)] w-full overflow-y-auto p-6 transition data-[state=open]:translate-x-full data-[state=closed]:duration-300 data-[state=open]:duration-500 md:relative md:left-auto md:top-auto md:h-auto md:w-auto md:transform-none md:overflow-y-visible md:bg-inherit md:p-0 md:dark:bg-inherit"
-        id="sidebarNav"
-        data-state="closed"
-    >
-        <nav
-            class="mb-8 flex flex-col gap-2 pl-3 text-lg md:relative md:top-0.5 md:mb-0 md:flex-row md:items-center md:gap-4 md:p-0 md:text-sm lg:gap-6"
-        >
+<div class="hidden md:block">
+    <div>
+        <nav class="relative top-0.5 mb-0 flex items-center gap-4 p-0 text-sm lg:gap-6">
             <a
                 href="/primitives/overview/introduction"
                 class:list={[
@@ -31,8 +22,5 @@ function isActive(segment: string) {
                 Primitives
             </a>
         </nav>
-        <div class="md:hidden">
-            <Sidebar navigation={docsConfig.navigation} />
-        </div>
     </div>
 </div>

@@ -22,7 +22,7 @@
                             "name": "value",
                             "optional": false,
                             "readonly": true,
-                            "type": "InputSignal<undefined | string>",
+                            "type": "InputSignal<string | undefined>",
                             "default": "...",
                             "defaultValue": "...",
                             "description": "A string value for the accordion item. All items within an accordion should use a unique value."
@@ -79,7 +79,7 @@
                             "name": "defaultValue",
                             "optional": false,
                             "readonly": true,
-                            "type": "InputSignal<undefined | string | string[]>",
+                            "type": "InputSignal<string | string[] | undefined>",
                             "default": "...",
                             "defaultValue": "...",
                             "description": "The default active value of the item(s).\n\nUse when you do not need to control the state of the item(s)."
@@ -88,7 +88,7 @@
                             "name": "value",
                             "optional": false,
                             "readonly": true,
-                            "type": "ModelSignal<undefined | AcceptableValue | AcceptableValue[]>",
+                            "type": "ModelSignal<AcceptableValue | AcceptableValue[] | undefined>",
                             "default": "...",
                             "defaultValue": "...",
                             "description": "The controlled value of the item to expand."
@@ -121,7 +121,7 @@
                             "parameters": [
                                 {
                                     "name": "value",
-                                    "type": "undefined | AcceptableValue | AcceptableValue[]"
+                                    "type": "AcceptableValue | AcceptableValue[] | undefined"
                                 }
                             ],
                             "description": "Event handler called when the expanded state of an item changes."
@@ -220,7 +220,7 @@
                             "name": "src",
                             "optional": false,
                             "readonly": true,
-                            "type": "InputSignal<undefined | string>",
+                            "type": "InputSignal<string | undefined>",
                             "default": "...",
                             "defaultValue": "...",
                             "description": ""
@@ -409,7 +409,7 @@
                             "name": "name",
                             "optional": false,
                             "readonly": true,
-                            "type": "InputSignal<undefined | string>",
+                            "type": "InputSignal<string | undefined>",
                             "default": "...",
                             "defaultValue": "...",
                             "description": "Name of the form control. Submitted with the form as part of a name/value pair."
@@ -418,7 +418,7 @@
                             "name": "form",
                             "optional": false,
                             "readonly": true,
-                            "type": "InputSignal<undefined | string>",
+                            "type": "InputSignal<string | undefined>",
                             "default": "...",
                             "defaultValue": "...",
                             "description": "Associates the control with a form element."
@@ -1021,7 +1021,7 @@
                             "name": "filled",
                             "optional": false,
                             "readonly": true,
-                            "type": "InputSignal<undefined | boolean>",
+                            "type": "InputSignal<boolean | undefined>",
                             "default": "...",
                             "defaultValue": "...",
                             "description": "Overrides whether the control has a non-empty value."
@@ -1030,7 +1030,7 @@
                             "name": "focused",
                             "optional": false,
                             "readonly": true,
-                            "type": "InputSignal<undefined | boolean>",
+                            "type": "InputSignal<boolean | undefined>",
                             "default": "...",
                             "defaultValue": "...",
                             "description": "Overrides whether the control is focused."
@@ -1063,7 +1063,7 @@
                             "name": "trapped",
                             "optional": false,
                             "readonly": true,
-                            "type": "InputSignalWithTransform<undefined | boolean, BooleanInput>",
+                            "type": "InputSignalWithTransform<boolean | undefined, BooleanInput>",
                             "default": "false",
                             "defaultValue": "false",
                             "description": "When  `true` , focus cannot escape the focus scope via keyboard,\npointer, or a programmatic focus."
@@ -1118,7 +1118,7 @@
                             "name": "htmlFor",
                             "optional": false,
                             "readonly": true,
-                            "type": "InputSignal<undefined | string>",
+                            "type": "InputSignal<string | undefined>",
                             "default": "false",
                             "defaultValue": "false",
                             "description": "The id of the element the label is associated with."
@@ -1484,7 +1484,7 @@
                             "name": "defaultCurrentTabStopId",
                             "optional": false,
                             "readonly": true,
-                            "type": "InputSignal<undefined | string>",
+                            "type": "InputSignal<string | undefined>",
                             "default": "...",
                             "defaultValue": "...",
                             "description": "The value of the current stop item.\n\nUse when you do not need to control the state of the stop item."
@@ -1493,7 +1493,7 @@
                             "name": "currentTabStopId",
                             "optional": false,
                             "readonly": true,
-                            "type": "ModelSignal<undefined | string>",
+                            "type": "ModelSignal<string | undefined>",
                             "default": "...",
                             "defaultValue": "...",
                             "description": "The controlled value of the current stop item. Can be binded as  `model` ."
@@ -1547,7 +1547,7 @@
                             "name": "tabStopIdInput",
                             "optional": false,
                             "readonly": true,
-                            "type": "InputSignal<undefined | string>",
+                            "type": "InputSignal<string | undefined>",
                             "default": "...",
                             "defaultValue": "...",
                             "description": ""
@@ -1751,7 +1751,7 @@
                             "name": "styleClass",
                             "optional": false,
                             "readonly": true,
-                            "type": "InputSignal<undefined | string>",
+                            "type": "InputSignal<string | undefined>",
                             "default": "...",
                             "defaultValue": "...",
                             "description": "Style class of the component."
@@ -1876,7 +1876,7 @@
                             "name": "ariaLabelledBy",
                             "optional": false,
                             "readonly": true,
-                            "type": "InputSignal<undefined | string>",
+                            "type": "InputSignal<string | undefined>",
                             "default": "...",
                             "defaultValue": "...",
                             "description": "Establishes relationships between the component and label(s) where its value should be one or more element IDs."
@@ -1885,7 +1885,7 @@
                             "name": "ariaLabel",
                             "optional": false,
                             "readonly": true,
-                            "type": "InputSignal<undefined | string>",
+                            "type": "InputSignal<string | undefined>",
                             "default": "...",
                             "defaultValue": "...",
                             "description": "Used to define a string that autocomplete attribute the current element."
@@ -1927,7 +1927,7 @@
                             "parameters": [
                                 {
                                     "name": "value",
-                                    "type": "undefined | boolean"
+                                    "type": "boolean | undefined"
                                 }
                             ],
                             "description": "Event handler called when the state of the switch changes."
@@ -2021,7 +2021,7 @@
                             "name": "value",
                             "optional": false,
                             "readonly": true,
-                            "type": "ModelSignal<undefined | AcceptableValue | AcceptableValue[]>",
+                            "type": "ModelSignal<AcceptableValue | AcceptableValue[] | undefined>",
                             "default": "...",
                             "defaultValue": "...",
                             "description": ""
@@ -2054,7 +2054,7 @@
                             "parameters": [
                                 {
                                     "name": "value",
-                                    "type": "undefined | AcceptableValue | AcceptableValue[]"
+                                    "type": "AcceptableValue | AcceptableValue[] | undefined"
                                 }
                             ],
                             "description": "Event emitted when the selected toggle button changes."

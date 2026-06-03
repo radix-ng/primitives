@@ -1,5 +1,6 @@
 import angular from '@analogjs/astro-angular';
 import alpinejs from '@astrojs/alpinejs';
+import { unified } from '@astrojs/markdown-remark';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { getHighlighter } from '@shikijs/compat';
@@ -109,24 +110,26 @@ export default defineConfig({
     ],
     markdown: {
         syntaxHighlight: false,
-        remarkPlugins: [codeImport],
-        rehypePlugins: [
-            rehypeSlug,
-            rehypeComponent,
-            rehypeCodeMetaProcessor,
-            [rehypePrettyCode, prettyCodeOptions],
-            rehypeFigureProcessor,
-            rehypeNpmCommand,
-            [
-                rehypeAutolinkHeadings,
-                {
-                    properties: {
-                        className: ['subheading-anchor'],
-                        ariaLabel: 'Link to section'
+        processor: unified({
+            remarkPlugins: [codeImport],
+            rehypePlugins: [
+                rehypeSlug,
+                rehypeComponent,
+                rehypeCodeMetaProcessor,
+                [rehypePrettyCode, prettyCodeOptions],
+                rehypeFigureProcessor,
+                rehypeNpmCommand,
+                [
+                    rehypeAutolinkHeadings,
+                    {
+                        properties: {
+                            className: ['subheading-anchor'],
+                            ariaLabel: 'Link to section'
+                        }
                     }
-                }
+                ]
             ]
-        ]
+        })
     },
     redirects: {}
 });
