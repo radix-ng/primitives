@@ -9,11 +9,11 @@ import { popperImports } from '../index';
             class="border-border bg-muted relative h-60 w-[min(600px,80vw)] overflow-hidden rounded-2xl border-2 border-dashed"
             rdxPopperRoot
         >
-            <span class="text-muted-foreground absolute left-4 top-4 text-xs">
+            <span class="text-muted-foreground absolute top-4 left-4 text-xs">
                 Always updates: the anchor changes position every 700 ms
             </span>
             <button
-                class="bg-primary text-primary-foreground absolute left-14 top-[132px] h-10 w-10 rounded-full transition-transform duration-300 ease-out [transform:translateX(var(--offset))]"
+                class="bg-primary text-primary-foreground absolute top-[132px] left-14 h-10 w-10 [transform:translateX(var(--offset))] rounded-full transition-transform duration-300 ease-out"
                 [style.--offset]="left() + 'px'"
                 type="button"
                 aria-label="Moving anchor"
@@ -58,7 +58,7 @@ export class PopperUpdPosition {
             (pointermove)="onPointerMove($event)"
             rdxPopperRoot
         >
-            <span class="text-muted-foreground absolute left-3 top-3 text-xs">Move the pointer inside this area</span>
+            <span class="text-muted-foreground absolute top-3 left-3 text-xs">Move the pointer inside this area</span>
             <span
                 class="bg-primary absolute h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full"
                 [style.left.px]="pointer().x"

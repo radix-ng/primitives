@@ -16,7 +16,7 @@ const buttonClasses =
             rdxDismissableLayer
         >
             <div>
-                <p class="text-muted-foreground text-xs font-medium uppercase tracking-wide">Layer {{ level() }}</p>
+                <p class="text-muted-foreground text-xs font-medium tracking-wide uppercase">Layer {{ level() }}</p>
                 <p class="mt-1 text-sm font-medium">Only the topmost layer handles Escape.</p>
             </div>
             <button class="${buttonClasses}" #buttonRef (click)="open.set(!open())">

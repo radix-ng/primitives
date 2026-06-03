@@ -59,14 +59,14 @@ export class Option {
 
             <div class="flex gap-2">
                 <button
-                    class="bg-background text-foreground border-border focus-visible:ring-ring hover:bg-muted cursor-pointer rounded-md border px-2.5 py-1 text-sm shadow-sm outline-none transition-colors focus-visible:ring-2"
+                    class="bg-background text-foreground border-border focus-visible:ring-ring hover:bg-muted cursor-pointer rounded-md border px-2.5 py-1 text-sm shadow-sm transition-colors outline-none focus-visible:ring-2"
                     (click)="addOption()"
                     type="button"
                 >
                     Add
                 </button>
                 <button
-                    class="bg-background text-foreground border-border focus-visible:ring-ring hover:bg-muted cursor-pointer rounded-md border px-2.5 py-1 text-sm shadow-sm outline-none transition-colors focus-visible:ring-2"
+                    class="bg-background text-foreground border-border focus-visible:ring-ring hover:bg-muted cursor-pointer rounded-md border px-2.5 py-1 text-sm shadow-sm transition-colors outline-none focus-visible:ring-2"
                     (click)="removeLast()"
                     type="button"
                 >

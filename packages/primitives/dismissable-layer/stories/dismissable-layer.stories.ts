@@ -49,7 +49,7 @@ export const Default: Story = {
 export const Nested: Story = {
     render: () => ({
         template: html`
-            <section class="w-2xl flex flex-col gap-4">
+            <section class="flex w-2xl flex-col gap-4">
                 <div>
                     <h3 class="text-base font-semibold">Nested layers</h3>
                     <p class="text-muted-foreground mt-1 text-sm leading-6">

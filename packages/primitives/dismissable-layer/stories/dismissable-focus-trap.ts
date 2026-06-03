@@ -13,7 +13,7 @@ const inputClasses =
     selector: 'dismissable-focus-trap',
     imports: [RdxDismissableLayer, RdxFocusScope],
     template: `
-        <div class="w-md flex flex-col items-start gap-4">
+        <div class="flex w-md flex-col items-start gap-4">
             <div>
                 <h3 class="text-base font-semibold">Focus trap</h3>
                 <p class="text-muted-foreground mt-1 text-sm leading-6">
@@ -31,7 +31,7 @@ const inputClasses =
                     rdxDismissableLayer
                 >
                     <div
-                        class="border-border bg-card w-sm flex flex-col gap-3 rounded-xl border p-5 shadow-sm"
+                        class="border-border bg-card flex w-sm flex-col gap-3 rounded-xl border p-5 shadow-sm"
                         rdxFocusScope
                         trapped
                         loop

@@ -31,7 +31,7 @@ import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
     `,
     template: `
         <button
-            class="bg-muted text-primary hover:bg-muted/80 focus-visible:ring-ring border-border mb-3 inline-flex h-8 items-center rounded-md border px-3 text-sm font-medium shadow-sm outline-none transition-colors focus-visible:ring-2"
+            class="bg-muted text-primary hover:bg-muted/80 focus-visible:ring-ring border-border mb-3 inline-flex h-8 items-center rounded-md border px-3 text-sm font-medium shadow-sm transition-colors outline-none focus-visible:ring-2"
             (click)="open.set(!open())"
             type="button"
         >

@@ -37,7 +37,7 @@ export const Default: Story = {
                 <div class="flex items-center justify-between gap-3">
                     <span class="text-foreground text-sm font-medium">&#64;peduarte starred 3 repositories</span>
                     <button
-                        class="bg-muted text-primary hover:bg-muted/80 focus-visible:ring-ring border-border inline-flex size-6 items-center justify-center rounded-full border shadow-sm outline-none transition-colors focus-visible:ring-2"
+                        class="bg-muted text-primary hover:bg-muted/80 focus-visible:ring-ring border-border inline-flex size-6 items-center justify-center rounded-full border shadow-sm transition-colors outline-none focus-visible:ring-2"
                         type="button"
                         rdxCollapsibleTrigger
                     >

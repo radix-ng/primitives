@@ -134,7 +134,7 @@ export const FormInput: Story = {
                 <div class="flex items-center gap-2">
                     <label class="text-foreground text-sm font-medium" for="visibleInput">Visible field</label>
                     <input
-                        class="border-border bg-background text-foreground focus:ring-ring h-9 w-52 rounded-md border px-2.5 text-sm focus:outline-none focus:ring-2"
+                        class="border-border bg-background text-foreground focus:ring-ring h-9 w-52 rounded-md border px-2.5 text-sm focus:ring-2 focus:outline-none"
                         id="visibleInput"
                         type="text"
                         name="visibleInput"

@@ -78,29 +78,29 @@ const { class: className, commands } = Astro.props;
         x-transition:enter="ease-out duration-200"
         x-transition:enter-start="-translate-y-2"
         x-transition:enter-end="translate-y-0"
-        class="bg-popover text-popover-foreground absolute right-0 top-0 z-50 mt-12 min-w-[8rem] -translate-x-4 overflow-hidden rounded-md border p-1 shadow-md"
+        class="bg-popover text-popover-foreground absolute top-0 right-0 z-50 mt-12 min-w-[8rem] -translate-x-4 overflow-hidden rounded-md border p-1 shadow-md"
         x-cloak
     >
         <div
-            class="focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors"
+            class="focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none"
             @click="copyToClipboard(commands.__npmCommand__)"
         >
             npm
         </div>
         <div
-            class="focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors"
+            class="focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none"
             @click="copyToClipboard(commands.__yarnCommand__)"
         >
             yarn
         </div>
         <div
-            class="focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors"
+            class="focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none"
             @click="copyToClipboard(commands.__pnpmCommand__)"
         >
             pnpm
         </div>
         <div
-            class="focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors"
+            class="focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none"
             @click="copyToClipboard(commands.__bunCommand__)"
         >
             bun

@@ -30,7 +30,7 @@ export const Default: Story = {
             >
                 <div class="border-border bg-muted/30 border-b" rdxTabsList>
                     <button
-                        class="bg-background text-foreground data-[state=inactive]:text-muted-foreground focus-visible:ring-ring inline-flex h-10 items-center justify-center px-4 text-sm font-medium outline-none transition-colors first:rounded-tl-xl last:rounded-tr-xl focus-visible:ring-2 data-[state=inactive]:bg-transparent data-[state=active]:shadow-[inset_0_-2px_0_0_var(--primary)]"
+                        class="bg-background text-foreground data-[state=inactive]:text-muted-foreground focus-visible:ring-ring inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-colors outline-none first:rounded-tl-xl last:rounded-tr-xl focus-visible:ring-2 data-[state=active]:shadow-[inset_0_-2px_0_0_var(--primary)] data-[state=inactive]:bg-transparent"
                         rdxTabsTrigger
                         type="button"
                         value="tab1"
@@ -38,7 +38,7 @@ export const Default: Story = {
                         Account
                     </button>
                     <button
-                        class="bg-background text-foreground data-[state=inactive]:text-muted-foreground focus-visible:ring-ring inline-flex h-10 items-center justify-center px-4 text-sm font-medium outline-none transition-colors first:rounded-tl-xl last:rounded-tr-xl focus-visible:ring-2 data-[state=inactive]:bg-transparent data-[state=active]:shadow-[inset_0_-2px_0_0_var(--primary)]"
+                        class="bg-background text-foreground data-[state=inactive]:text-muted-foreground focus-visible:ring-ring inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-colors outline-none first:rounded-tl-xl last:rounded-tr-xl focus-visible:ring-2 data-[state=active]:shadow-[inset_0_-2px_0_0_var(--primary)] data-[state=inactive]:bg-transparent"
                         rdxTabsTrigger
                         type="button"
                         value="tab2"
@@ -133,7 +133,7 @@ export const ActivationMode: Story = {
             >
                 <div class="border-border bg-muted/30 border-b" rdxTabsList>
                     <button
-                        class="bg-background text-foreground data-[state=inactive]:text-muted-foreground focus-visible:ring-ring inline-flex h-10 items-center justify-center px-4 text-sm font-medium outline-none transition-colors first:rounded-tl-xl last:rounded-tr-xl focus-visible:ring-2 data-[state=inactive]:bg-transparent data-[state=active]:shadow-[inset_0_-2px_0_0_var(--primary)]"
+                        class="bg-background text-foreground data-[state=inactive]:text-muted-foreground focus-visible:ring-ring inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-colors outline-none first:rounded-tl-xl last:rounded-tr-xl focus-visible:ring-2 data-[state=active]:shadow-[inset_0_-2px_0_0_var(--primary)] data-[state=inactive]:bg-transparent"
                         rdxTabsTrigger
                         type="button"
                         value="tab1"
@@ -141,7 +141,7 @@ export const ActivationMode: Story = {
                         Account
                     </button>
                     <button
-                        class="bg-background text-foreground data-[state=inactive]:text-muted-foreground focus-visible:ring-ring inline-flex h-10 items-center justify-center px-4 text-sm font-medium outline-none transition-colors first:rounded-tl-xl last:rounded-tr-xl focus-visible:ring-2 data-[state=inactive]:bg-transparent data-[state=active]:shadow-[inset_0_-2px_0_0_var(--primary)]"
+                        class="bg-background text-foreground data-[state=inactive]:text-muted-foreground focus-visible:ring-ring inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-colors outline-none first:rounded-tl-xl last:rounded-tr-xl focus-visible:ring-2 data-[state=active]:shadow-[inset_0_-2px_0_0_var(--primary)] data-[state=inactive]:bg-transparent"
                         rdxTabsTrigger
                         type="button"
                         value="tab2"
@@ -239,7 +239,7 @@ export const Disabled: Story = {
                 >
                     <div class="border-border bg-muted/30 border-b" rdxTabsList>
                         <button
-                            class="bg-background text-foreground data-[state=inactive]:text-muted-foreground focus-visible:ring-ring inline-flex h-10 items-center justify-center px-4 text-sm font-medium outline-none transition-colors first:rounded-tl-xl last:rounded-tr-xl focus-visible:ring-2 data-[state=inactive]:bg-transparent data-[state=active]:shadow-[inset_0_-2px_0_0_var(--primary)]"
+                            class="bg-background text-foreground data-[state=inactive]:text-muted-foreground focus-visible:ring-ring inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-colors outline-none first:rounded-tl-xl last:rounded-tr-xl focus-visible:ring-2 data-[state=active]:shadow-[inset_0_-2px_0_0_var(--primary)] data-[state=inactive]:bg-transparent"
                             rdxTabsTrigger
                             type="button"
                             value="tab1"
@@ -247,7 +247,7 @@ export const Disabled: Story = {
                             Account
                         </button>
                         <button
-                            class="bg-background text-foreground data-[state=inactive]:text-muted-foreground focus-visible:ring-ring inline-flex h-10 items-center justify-center px-4 text-sm font-medium outline-none transition-colors first:rounded-tl-xl last:rounded-tr-xl focus-visible:ring-2 data-[state=inactive]:bg-transparent data-[state=active]:shadow-[inset_0_-2px_0_0_var(--primary)]"
+                            class="bg-background text-foreground data-[state=inactive]:text-muted-foreground focus-visible:ring-ring inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-colors outline-none first:rounded-tl-xl last:rounded-tr-xl focus-visible:ring-2 data-[state=active]:shadow-[inset_0_-2px_0_0_var(--primary)] data-[state=inactive]:bg-transparent"
                             rdxTabsTrigger
                             disabled
                             type="button"

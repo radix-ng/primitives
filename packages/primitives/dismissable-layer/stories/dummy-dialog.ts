@@ -24,7 +24,7 @@ const inputClasses =
                 <div rdxPortal>
                     <div (dismiss)="handleDismiss()" rdxDismissableLayer disableOutsidePointerEvents>
                         <div
-                            class="border-border bg-card text-card-foreground fixed left-1/2 top-1/2 flex min-h-48 min-w-80 -translate-x-1/2 -translate-y-1/2 flex-col gap-4 rounded-xl border p-6 shadow-xl"
+                            class="border-border bg-card text-card-foreground fixed top-1/2 left-1/2 flex min-h-48 min-w-80 -translate-x-1/2 -translate-y-1/2 flex-col gap-4 rounded-xl border p-6 shadow-xl"
                             rdxFocusScope
                             trapped
                         >

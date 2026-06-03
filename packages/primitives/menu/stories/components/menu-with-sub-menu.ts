@@ -25,8 +25,8 @@ import { ArrowRight, LucideAngularModule } from 'lucide-angular';
 
         <ng-template #menuGroup>
             <div class="MenuContent" RdxMenuContent>
-                <div class="MenuItem " RdxMenuItem>Undo</div>
-                <div class="MenuItem " RdxMenuItem>Redo</div>
+                <div class="MenuItem" RdxMenuItem>Undo</div>
+                <div class="MenuItem" RdxMenuItem>Redo</div>
                 <div class="MenuSeparator" RdxMenuSeparator></div>
 
                 <div
@@ -44,9 +44,9 @@ import { ArrowRight, LucideAngularModule } from 'lucide-angular';
 
                 <div class="MenuSeparator" RdxMenuSeparator></div>
 
-                <div class="MenuItem " RdxMenuItem>Cut</div>
-                <div class="MenuItem " RdxMenuItem>Copy</div>
-                <div class="MenuItem " RdxMenuItem>Paste</div>
+                <div class="MenuItem" RdxMenuItem>Cut</div>
+                <div class="MenuItem" RdxMenuItem>Copy</div>
+                <div class="MenuItem" RdxMenuItem>Paste</div>
             </div>
         </ng-template>
 
