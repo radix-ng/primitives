@@ -46,21 +46,21 @@ import { Check, Dot, LucideAngularModule, Menu } from 'lucide-angular';
                 <div class="px-2 py-1.5 text-sm font-semibold">My Account</div>
                 <div class="bg-muted -mx-1 my-1 h-px" role="separator" aria-orientation="horizontal"></div>
                 <div
-                    class="focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&>lucide-angular]:size-4 [&>lucide-angular]:shrink-0"
+                    class="focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&>lucide-angular]:size-4 [&>lucide-angular]:shrink-0"
                     rdxDropdownMenuItem
                 >
                     New Tab
                     <span class="ml-auto text-xs tracking-widest opacity-60">⌘ T</span>
                 </div>
                 <div
-                    class="focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    class="focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                     rdxDropdownMenuItem
                 >
                     New Window
                     <div class="ml-auto text-xs tracking-widest opacity-60">⌘ N</div>
                 </div>
                 <div
-                    class="focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    class="focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                     rdxDropdownMenuItem
                     disabled
                 >
@@ -68,7 +68,7 @@ import { Check, Dot, LucideAngularModule, Menu } from 'lucide-angular';
                     <div class="ml-auto text-xs tracking-widest opacity-60">⇧+⌘+N</div>
                 </div>
                 <div
-                    class="focus:bg-accent data-[state=open]:bg-accent flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
+                    class="focus:bg-accent data-[state=open]:bg-accent flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
                     [rdxDropdownMenuTrigger]="share"
                     [side]="DropdownSide.Right"
                     rdxDropdownMenuItem
@@ -78,7 +78,7 @@ import { Check, Dot, LucideAngularModule, Menu } from 'lucide-angular';
                 </div>
                 <div class="bg-muted -mx-1 my-1 flex h-px" rdxDropdownMenuSeparator></div>
                 <div
-                    class="focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    class="focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm py-1.5 pr-2 pl-8 text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                     [(checked)]="itemChecked1"
                     rdxDropdownMenuItemCheckbox
                 >
@@ -92,7 +92,7 @@ import { Check, Dot, LucideAngularModule, Menu } from 'lucide-angular';
                     <div class="ml-auto text-xs tracking-widest opacity-60">⌘+B</div>
                 </div>
                 <div
-                    class="focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    class="focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm py-1.5 pr-2 pl-8 text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                     [(checked)]="itemChecked2"
                     rdxDropdownMenuItemCheckbox
                 >
@@ -108,7 +108,7 @@ import { Check, Dot, LucideAngularModule, Menu } from 'lucide-angular';
                 <div class="px-2 py-1.5 text-sm font-semibold" rdxDropdownMenuLabel>People</div>
                 <div [(value)]="selectedValue" (valueChange)="onValueChange($event)" rdxDropdownMenuItemRadioGroup>
                     <div
-                        class="focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                        class="focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm py-1.5 pr-2 pl-8 text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                         [value]="'1'"
                         rdxDropdownMenuItemRadio
                     >
@@ -121,7 +121,7 @@ import { Check, Dot, LucideAngularModule, Menu } from 'lucide-angular';
                         Pedro Duarte
                     </div>
                     <div
-                        class="focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                        class="focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm py-1.5 pr-2 pl-8 text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                         [value]="'2'"
                         rdxDropdownMenuItemRadio
                     >
@@ -145,27 +145,27 @@ import { Check, Dot, LucideAngularModule, Menu } from 'lucide-angular';
                 rdxDropdownMenuContent
             >
                 <div
-                    class="focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    class="focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                     rdxDropdownMenuItem
                 >
                     Save Page As...
                     <div class="ml-auto text-xs tracking-widest opacity-60">⌘+S</div>
                 </div>
                 <div
-                    class="focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    class="focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                     rdxDropdownMenuItem
                 >
                     Create Shortcut...
                 </div>
                 <div
-                    class="focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    class="focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                     rdxDropdownMenuItem
                 >
                     Name Windows...
                 </div>
                 <div class="bg-muted -mx-1 my-1 flex h-px" rdxDropdownMenuSeparator></div>
                 <div
-                    class="focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    class="focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                     rdxDropdownMenuItem
                 >
                     Developer Tools

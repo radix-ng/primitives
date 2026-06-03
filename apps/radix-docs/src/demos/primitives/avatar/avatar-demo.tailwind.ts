@@ -13,7 +13,7 @@ import {
     template: `
         <div class="flex gap-5">
             <span
-                class="bg-blackA3 inline-flex h-[45px] w-[45px] select-none items-center justify-center overflow-hidden rounded-full align-middle"
+                class="bg-blackA3 inline-flex h-[45px] w-[45px] items-center justify-center overflow-hidden rounded-full align-middle select-none"
                 rdxAvatarRoot
             >
                 <img
@@ -23,7 +23,7 @@ import {
                     alt="Colm Tuite"
                 />
                 <span
-                    class="text-grass11 leading-1 flex h-full w-full items-center justify-center bg-white text-sm font-medium dark:bg-stone-800 dark:text-stone-300"
+                    class="text-grass11 flex h-full w-full items-center justify-center bg-white text-sm leading-1 font-medium dark:bg-stone-800 dark:text-stone-300"
                     rdxAvatarFallback
                     rdxDelayMs="600"
                 >
@@ -31,7 +31,7 @@ import {
                 </span>
             </span>
             <span
-                class="bg-blackA3 inline-flex h-[45px] w-[45px] select-none items-center justify-center overflow-hidden rounded-full align-middle"
+                class="bg-blackA3 inline-flex h-[45px] w-[45px] items-center justify-center overflow-hidden rounded-full align-middle select-none"
                 rdxAvatarRoot
             >
                 <img
@@ -41,7 +41,7 @@ import {
                     alt="Pedro Duarte"
                 />
                 <span
-                    class="text-grass11 leading-1 flex h-full w-full items-center justify-center bg-white text-sm font-medium dark:bg-stone-800 dark:text-stone-300"
+                    class="text-grass11 flex h-full w-full items-center justify-center bg-white text-sm leading-1 font-medium dark:bg-stone-800 dark:text-stone-300"
                     rdxAvatarFallback
                     rdxDelayMs="600"
                 >
@@ -49,11 +49,11 @@ import {
                 </span>
             </span>
             <span
-                class="bg-blackA3 inline-flex h-[45px] w-[45px] select-none items-center justify-center overflow-hidden rounded-full border align-middle dark:border-stone-700"
+                class="bg-blackA3 inline-flex h-[45px] w-[45px] items-center justify-center overflow-hidden rounded-full border align-middle select-none dark:border-stone-700"
                 rdxAvatarRoot
             >
                 <span
-                    class=" text-grass11 leading-1 flex h-full w-full items-center justify-center bg-white text-sm font-medium dark:bg-stone-800 dark:text-stone-300"
+                    class="text-grass11 flex h-full w-full items-center justify-center bg-white text-sm leading-1 font-medium dark:bg-stone-800 dark:text-stone-300"
                     rdxAvatarFallback
                 >
                     PD

@@ -70,7 +70,7 @@ import { RdxSelectViewport } from '../src/select-viewport';
                                     <div rdxSelectGroup>
                                         @for (option of options; track $index) {
                                             <div
-                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 select-none items-center rounded-sm pl-6 pr-8 text-sm leading-none outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 items-center rounded-sm pr-8 pl-6 text-sm leading-none outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                                                 [value]="option"
                                                 rdxSelectItem
                                             >
@@ -93,7 +93,7 @@ import { RdxSelectViewport } from '../src/select-viewport';
                                     <div rdxSelectGroup>
                                         @for (vegetable of vegetables; track $index) {
                                             <div
-                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 select-none items-center rounded-sm pl-6 pr-8 text-sm leading-none outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 items-center rounded-sm pr-8 pl-6 text-sm leading-none outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                                                 [value]="vegetable"
                                                 rdxSelectItem
                                             >
@@ -184,7 +184,7 @@ export class SelectDefault {
                                     <div rdxSelectGroup>
                                         @for (option of options; track $index) {
                                             <div
-                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 select-none items-center rounded-sm pl-6 pr-8 text-sm leading-none outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 items-center rounded-sm pr-8 pl-6 text-sm leading-none outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                                                 [value]="option"
                                                 rdxSelectItem
                                             >
@@ -207,7 +207,7 @@ export class SelectDefault {
                                     <div rdxSelectGroup>
                                         @for (vegetable of vegetables; track $index) {
                                             <div
-                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 select-none items-center rounded-sm pl-6 pr-8 text-sm leading-none outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 items-center rounded-sm pr-8 pl-6 text-sm leading-none outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                                                 [value]="vegetable"
                                                 rdxSelectItem
                                             >
@@ -301,7 +301,7 @@ export class SelectDefaultWithScroll {
                                     <div rdxSelectGroup>
                                         @for (option of options; track $index) {
                                             <div
-                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 select-none items-center rounded-sm pl-6 pr-8 text-sm leading-none outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 items-center rounded-sm pr-8 pl-6 text-sm leading-none outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                                                 [value]="option"
                                                 rdxSelectItem
                                             >
@@ -322,7 +322,7 @@ export class SelectDefaultWithScroll {
                                     <div rdxSelectGroup>
                                         @for (vegetable of vegetables; track $index) {
                                             <div
-                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 select-none items-center rounded-sm pl-6 pr-8 text-sm leading-none outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 items-center rounded-sm pr-8 pl-6 text-sm leading-none outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                                                 [value]="vegetable"
                                                 rdxSelectItem
                                             >
@@ -409,7 +409,7 @@ export class SelectAlignedPosition {
                                     <div rdxSelectGroup>
                                         @for (option of options; track $index) {
                                             <div
-                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 select-none items-center rounded-sm pl-6 pr-8 text-sm leading-none outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 items-center rounded-sm pr-8 pl-6 text-sm leading-none outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                                                 [value]="option"
                                                 rdxSelectItem
                                             >
@@ -430,7 +430,7 @@ export class SelectAlignedPosition {
                                     <div rdxSelectGroup>
                                         @for (vegetable of vegetables; track $index) {
                                             <div
-                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 select-none items-center rounded-sm pl-6 pr-8 text-sm leading-none outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                                class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 items-center rounded-sm pr-8 pl-6 text-sm leading-none outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                                                 [value]="vegetable"
                                                 rdxSelectItem
                                             >

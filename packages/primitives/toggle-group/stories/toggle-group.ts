@@ -14,7 +14,7 @@ import { LucideAngularModule } from 'lucide-angular';
             aria-label="Text alignment"
         >
             <button
-                class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-l-md border border-transparent outline-none transition-[color,box-shadow] focus-visible:z-10 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-l-md border border-transparent transition-[color,box-shadow] outline-none focus-visible:z-10 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
                 rdxToggleGroupItem
                 value="left"
                 aria-label="Left aligned"
@@ -22,7 +22,7 @@ import { LucideAngularModule } from 'lucide-angular';
                 <lucide-icon name="align-left" size="12" />
             </button>
             <button
-                class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 cursor-pointer items-center justify-center border border-transparent outline-none transition-[color,box-shadow] focus-visible:z-10 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 cursor-pointer items-center justify-center border border-transparent transition-[color,box-shadow] outline-none focus-visible:z-10 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
                 rdxToggleGroupItem
                 value="center"
                 aria-label="Center aligned"
@@ -30,7 +30,7 @@ import { LucideAngularModule } from 'lucide-angular';
                 <lucide-icon name="align-center" size="12" />
             </button>
             <button
-                class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-r-md border border-transparent outline-none transition-[color,box-shadow] focus-visible:z-10 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-r-md border border-transparent transition-[color,box-shadow] outline-none focus-visible:z-10 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
                 rdxToggleGroupItem
                 value="right"
                 aria-label="Right aligned"

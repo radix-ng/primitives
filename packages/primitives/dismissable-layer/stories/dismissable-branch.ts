@@ -10,12 +10,12 @@ const primaryButtonClasses =
     selector: 'dismissable-branch',
     imports: [RdxDismissableLayer, RdxDismissableLayerBranch],
     template: `
-        <div class="w-2xl grid grid-cols-2 gap-4">
+        <div class="grid w-2xl grid-cols-2 gap-4">
             <section
                 class="border-border bg-card text-card-foreground flex flex-col gap-4 rounded-xl border p-5 shadow-sm"
             >
                 <div>
-                    <p class="text-muted-foreground text-xs font-medium uppercase tracking-wide">Main layer</p>
+                    <p class="text-muted-foreground text-xs font-medium tracking-wide uppercase">Main layer</p>
                     <h3 class="mt-1 text-base font-semibold">Editor panel</h3>
                     <p class="text-muted-foreground mt-1 text-sm leading-6">
                         The layer closes on regular outside interactions.
@@ -46,7 +46,7 @@ const primaryButtonClasses =
                 rdxDismissableLayerBranch
             >
                 <div>
-                    <p class="text-primary text-xs font-medium uppercase tracking-wide">Registered branch</p>
+                    <p class="text-primary text-xs font-medium tracking-wide uppercase">Registered branch</p>
                     <h3 class="mt-1 text-base font-semibold">Detached toolbar</h3>
                     <p class="text-muted-foreground mt-1 text-sm leading-6">
                         Interacting here does not dismiss the layer, even though this block is outside its DOM subtree.

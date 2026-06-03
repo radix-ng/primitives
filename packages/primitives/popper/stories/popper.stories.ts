@@ -64,7 +64,7 @@ export const Default: Story = {
                 </button>
                 <div ${argsToTemplate(args)} rdxPopperContentWrapper>
                     <div
-                        class="border-border bg-popover text-popover-foreground max-w-56 rounded-lg border px-3.5 py-3 text-sm leading-5 shadow-md [transform-origin:var(--radix-popper-transform-origin)]"
+                        class="border-border bg-popover text-popover-foreground max-w-56 [transform-origin:var(--radix-popper-transform-origin)] rounded-lg border px-3.5 py-3 text-sm leading-5 shadow-md"
                         rdxPopperContent
                     >
                         Positioned relative to the anchor
@@ -92,7 +92,7 @@ export const CustomArrow: Story = {
                 </button>
                 <div side="top" sideOffset="8" rdxPopperContentWrapper>
                     <div
-                        class="border-border bg-popover text-popover-foreground max-w-56 rounded-lg border px-3.5 py-3 text-sm leading-5 shadow-md [transform-origin:var(--radix-popper-transform-origin)]"
+                        class="border-border bg-popover text-popover-foreground max-w-56 [transform-origin:var(--radix-popper-transform-origin)] rounded-lg border px-3.5 py-3 text-sm leading-5 shadow-md"
                         rdxPopperContent
                     >
                         The arrow can project custom content

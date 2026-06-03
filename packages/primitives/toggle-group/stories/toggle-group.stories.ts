@@ -29,7 +29,7 @@ export const Default: Story = {
                 aria-label="Text alignment"
             >
                 <button
-                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent transition-[color,box-shadow] outline-none first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
                     rdxToggleGroupItem
                     value="left"
                     aria-label="Left aligned"
@@ -38,7 +38,7 @@ export const Default: Story = {
                     <lucide-icon class="flex" name="align-left" size="12"></lucide-icon>
                 </button>
                 <button
-                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent transition-[color,box-shadow] outline-none first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
                     rdxToggleGroupItem
                     value="center"
                     aria-label="Center aligned"
@@ -47,7 +47,7 @@ export const Default: Story = {
                     <lucide-icon class="flex" name="align-center" size="12"></lucide-icon>
                 </button>
                 <button
-                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent transition-[color,box-shadow] outline-none first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
                     rdxToggleGroupItem
                     value="right"
                     aria-label="Right aligned"
@@ -74,7 +74,7 @@ export const Multiple: Story = {
                 aria-label="Text alignment"
             >
                 <button
-                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent transition-[color,box-shadow] outline-none first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
                     rdxToggleGroupItem
                     value="left"
                     aria-label="Left aligned"
@@ -83,7 +83,7 @@ export const Multiple: Story = {
                     <lucide-icon class="flex" name="align-left" size="12"></lucide-icon>
                 </button>
                 <button
-                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent transition-[color,box-shadow] outline-none first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
                     rdxToggleGroupItem
                     value="center"
                     aria-label="Center aligned"
@@ -92,7 +92,7 @@ export const Multiple: Story = {
                     <lucide-icon class="flex" name="align-center" size="12"></lucide-icon>
                 </button>
                 <button
-                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent transition-[color,box-shadow] outline-none first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
                     rdxToggleGroupItem
                     value="right"
                     aria-label="Right aligned"
@@ -119,7 +119,7 @@ export const Disable: Story = {
                 aria-label="Text alignment"
             >
                 <button
-                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent transition-[color,box-shadow] outline-none first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
                     disabled
                     rdxToggleGroupItem
                     value="left"
@@ -129,7 +129,7 @@ export const Disable: Story = {
                     <lucide-icon class="flex" name="align-left" size="12"></lucide-icon>
                 </button>
                 <button
-                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent transition-[color,box-shadow] outline-none first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
                     rdxToggleGroupItem
                     value="center"
                     aria-label="Center aligned"
@@ -138,7 +138,7 @@ export const Disable: Story = {
                     <lucide-icon class="flex" name="align-center" size="12"></lucide-icon>
                 </button>
                 <button
-                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent transition-[color,box-shadow] outline-none first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
                     disabled
                     rdxToggleGroupItem
                     value="right"
@@ -162,7 +162,7 @@ export const DisableGroup: Story = {
                 disabled
             >
                 <button
-                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent transition-[color,box-shadow] outline-none first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
                     rdxToggleGroupItem
                     value="left"
                     aria-label="Left aligned"
@@ -171,7 +171,7 @@ export const DisableGroup: Story = {
                     <lucide-icon class="flex" name="align-left" size="12"></lucide-icon>
                 </button>
                 <button
-                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent transition-[color,box-shadow] outline-none first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
                     rdxToggleGroupItem
                     value="center"
                     aria-label="Center aligned"
@@ -180,7 +180,7 @@ export const DisableGroup: Story = {
                     <lucide-icon class="flex" name="align-center" size="12"></lucide-icon>
                 </button>
                 <button
-                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent outline-none transition-[color,box-shadow] first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
+                    class="bg-background text-foreground hover:bg-muted data-[state=on]:bg-primary data-[state=on]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative inline-flex h-9 w-9 items-center justify-center border border-transparent transition-[color,box-shadow] outline-none first:rounded-l-md last:rounded-r-md focus-visible:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50"
                     rdxToggleGroupItem
                     value="right"
                     aria-label="Right aligned"

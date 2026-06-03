@@ -5,7 +5,7 @@ import { Component, input } from '@angular/core';
     imports: [],
     template: `
         <a
-            class="flex cursor-default items-center gap-2  py-2 text-sm hover:underline"
+            class="flex cursor-default items-center gap-2 py-2 text-sm hover:underline"
             [href]="llmsUrl()"
             target="_blank"
             rel="noopener noreferrer"

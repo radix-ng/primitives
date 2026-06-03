@@ -12,7 +12,7 @@ function isActive(segment: string) {
 <div class="md:hidden" x-data="{ slideOverOpen: false }">
     <button
         @click="slideOverOpen=true"
-        class="focus-visible:ring-ring hover:text-accent-foreground mr-2 inline-flex h-9 items-center justify-center gap-2 whitespace-nowrap rounded-md px-0 py-2 text-base font-medium transition-colors hover:bg-transparent focus-visible:bg-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:pointer-events-none disabled:opacity-50 md:hidden [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
+        class="focus-visible:ring-ring hover:text-accent-foreground mr-2 inline-flex h-9 items-center justify-center gap-2 rounded-md px-0 py-2 text-base font-medium whitespace-nowrap transition-colors hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 md:hidden [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
     >
         <svg stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5">
             <path d="M3 5H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -42,7 +42,7 @@ function isActive(segment: string) {
                 <button
                     @click="slideOverOpen=false"
                     type="button"
-                    class="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none"
+                    class="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-4 right-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none"
                 >
                     <svg
                         width="15"
@@ -86,7 +86,7 @@ function isActive(segment: string) {
                                 <a
                                     href="/primitives/overview/introduction"
                                     class:list={[
-                                        'text-foreground transition-colors ',
+                                        'text-foreground transition-colors',
                                         {
                                             'text-foreground/60 hover:text-foreground/80': !isActive('primitives'),
                                             'text-foreground/100 hover:text-foreground font-medium':

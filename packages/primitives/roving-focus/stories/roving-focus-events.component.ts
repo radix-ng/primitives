@@ -13,21 +13,21 @@ import { RdxRovingFocusGroupDirective, RdxRovingFocusItemDirective } from '@radi
             rdxRovingFocusGroup
         >
             <button
-                class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
                 rdxRovingFocusItem
                 tabStopId="item1"
             >
                 Item 1
             </button>
             <button
-                class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
                 rdxRovingFocusItem
                 tabStopId="item2"
             >
                 Item 2
             </button>
             <button
-                class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
                 rdxRovingFocusItem
                 tabStopId="item3"
             >

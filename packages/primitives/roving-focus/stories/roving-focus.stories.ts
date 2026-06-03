@@ -29,19 +29,19 @@ export const Default: Story = {
                 </p>
                 <div class="flex gap-2" rdxRovingFocusGroup [orientation]="'horizontal'" [loop]="true">
                     <button
-                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
                         rdxRovingFocusItem
                     >
                         Item 1
                     </button>
                     <button
-                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
                         rdxRovingFocusItem
                     >
                         Item 2
                     </button>
                     <button
-                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
                         rdxRovingFocusItem
                     >
                         Item 3
@@ -63,19 +63,19 @@ export const HorizontalRTL: Story = {
                 </p>
                 <div class="flex gap-2" rdxRovingFocusGroup [orientation]="'horizontal'" [dir]="'rtl'" [loop]="true">
                     <button
-                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
                         rdxRovingFocusItem
                     >
                         Left
                     </button>
                     <button
-                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
                         rdxRovingFocusItem
                     >
                         Center
                     </button>
                     <button
-                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
                         rdxRovingFocusItem
                     >
                         Right
@@ -97,19 +97,19 @@ export const WithHomeAndEnd: Story = {
                 </p>
                 <div class="flex gap-2" rdxRovingFocusGroup [orientation]="'horizontal'" [loop]="false">
                     <button
-                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
                         rdxRovingFocusItem
                     >
                         Left
                     </button>
                     <button
-                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
                         rdxRovingFocusItem
                     >
                         Center
                     </button>
                     <button
-                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
                         rdxRovingFocusItem
                     >
                         Right
@@ -130,21 +130,21 @@ export const MixedActiveAndInactive: Story = {
                 </p>
                 <div class="flex gap-2" rdxRovingFocusGroup [orientation]="'horizontal'" [loop]="true">
                     <button
-                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 data-[disabled]:bg-muted inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px] data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 data-[disabled]:bg-muted inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px] data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
                         rdxRovingFocusItem
                         [focusable]="true"
                     >
                         Left
                     </button>
                     <button
-                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 data-[disabled]:bg-muted inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px] data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 data-[disabled]:bg-muted inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px] data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
                         rdxRovingFocusItem
                         [focusable]="false"
                     >
                         Center
                     </button>
                     <button
-                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 data-[disabled]:bg-muted inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px] data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 data-[disabled]:bg-muted inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px] data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
                         rdxRovingFocusItem
                         [focusable]="true"
                     >
@@ -167,19 +167,19 @@ export const VerticalWithoutLooping: Story = {
                 </p>
                 <div class="flex w-fit flex-col gap-2" rdxRovingFocusGroup [orientation]="'vertical'" [loop]="false">
                     <button
-                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
                         rdxRovingFocusItem
                     >
                         Item 1
                     </button>
                     <button
-                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
                         rdxRovingFocusItem
                     >
                         Item 2
                     </button>
                     <button
-                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
                         rdxRovingFocusItem
                     >
                         Item 3
@@ -202,20 +202,20 @@ export const IgnoreShiftKey: Story = {
                 </p>
                 <div class="flex gap-2" rdxRovingFocusGroup [orientation]="'horizontal'" [loop]="true">
                     <button
-                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
                         rdxRovingFocusItem
                         allowShiftKey="true"
                     >
                         Item 1 (Shift Allowed)
                     </button>
                     <button
-                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
                         rdxRovingFocusItem
                     >
                         Item 2 (Default)
                     </button>
                     <button
-                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                        class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
                         rdxRovingFocusItem
                         allowShiftKey="true"
                     >

@@ -10,12 +10,12 @@ const primaryButtonClasses =
     selector: 'dismissable-layer',
     imports: [RdxDismissableLayer],
     template: `
-        <div class="w-2xl grid grid-cols-[minmax(0,1fr)_15rem] gap-4">
+        <div class="grid w-2xl grid-cols-[minmax(0,1fr)_15rem] gap-4">
             <section
                 class="border-border bg-card text-card-foreground flex min-h-80 flex-col gap-4 rounded-xl border p-5 shadow-sm"
             >
                 <div>
-                    <p class="text-muted-foreground text-xs font-medium uppercase tracking-wide">Interactive surface</p>
+                    <p class="text-muted-foreground text-xs font-medium tracking-wide uppercase">Interactive surface</p>
                     <h3 class="mt-1 text-base font-semibold">Dismissable layer</h3>
                     <p class="text-muted-foreground mt-1 text-sm leading-6">
                         Open the layer, then click outside, move focus outside, or press Escape.
@@ -46,7 +46,7 @@ const primaryButtonClasses =
                             </span>
                         </div>
                         <input
-                            class="border-input bg-background text-foreground focus-visible:border-ring focus-visible:ring-ring/50 h-10 rounded-md border px-3 text-sm outline-none transition-[color,box-shadow] focus-visible:ring-[3px]"
+                            class="border-input bg-background text-foreground focus-visible:border-ring focus-visible:ring-ring/50 h-10 rounded-md border px-3 text-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
                             placeholder="Focus here, then tab outside"
                             type="text"
                         />

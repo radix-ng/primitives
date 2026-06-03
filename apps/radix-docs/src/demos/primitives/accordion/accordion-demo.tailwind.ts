@@ -40,7 +40,7 @@ import { ChevronDown, LucideAngularModule, X } from 'lucide-angular';
                     class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm transition-all"
                     rdxAccordionContent
                 >
-                    <div class="pb-4 pt-0">Yes. It adheres to the WAI-ARIA design pattern.</div>
+                    <div class="pt-0 pb-4">Yes. It adheres to the WAI-ARIA design pattern.</div>
                 </div>
             </div>
 
@@ -63,7 +63,7 @@ import { ChevronDown, LucideAngularModule, X } from 'lucide-angular';
                     class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm transition-all"
                     rdxAccordionContent
                 >
-                    <div class="pb-4 pt-0">
+                    <div class="pt-0 pb-4">
                         Yes. It's unstyled by default, giving you freedom over the look and feel.
                     </div>
                 </div>
@@ -88,7 +88,7 @@ import { ChevronDown, LucideAngularModule, X } from 'lucide-angular';
                     class="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm transition-all"
                     rdxAccordionContent
                 >
-                    <div class="pb-4 pt-0">Yes! You can animate the Accordion with CSS or JavaScript.</div>
+                    <div class="pt-0 pb-4">Yes! You can animate the Accordion with CSS or JavaScript.</div>
                 </div>
             </div>
         </div>
