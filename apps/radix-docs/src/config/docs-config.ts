@@ -94,7 +94,7 @@ const docsConfig = {
                             url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-editable--docs',
                             label: 'Storybook'
                         },
-                        { name: 'Hover Card', url: '/primitives/components/hover-card' },
+                        { name: 'Preview Card', url: '/primitives/components/preview-card' },
                         { name: 'Label', url: '/primitives/components/label' },
                         {
                             name: 'Menubar',
