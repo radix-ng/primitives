@@ -1,7 +1,8 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { booleanAttribute, computed, Directive, inject, input, model } from '@angular/core';
+import { booleanAttribute, computed, Directive, effect, inject, input, model } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
 import { createContext, RdxControlValueAccessor } from '@radix-ng/primitives/core';
+import { injectCheckboxGroupContext } from './checkbox-group';
 
 export type CheckedState = boolean | 'indeterminate';
 
@@ -15,14 +16,16 @@ export function getState(checked: CheckedState) {
 
 const rootContext = () => {
     const checkbox = inject(RdxCheckboxRootDirective);
-    const controlValueAccessor = inject<RdxControlValueAccessor<CheckedState>>(RdxControlValueAccessor);
 
+    // `checked`/`disabled` come from the directive so they reflect group membership when the
+    // checkbox is inside a `rdxCheckboxGroup`; otherwise they fall back to the CVA.
     return {
-        checked: controlValueAccessor.value,
-        disabled: controlValueAccessor.disabled,
+        checked: checkbox.checkedState,
+        disabled: checkbox.disabledState,
         required: checkbox.required,
         value: checkbox.value,
         name: checkbox.name,
+        parent: checkbox.parent,
         form: checkbox.form,
         readonly: checkbox.readonly,
         state: checkbox.state,
@@ -59,12 +62,15 @@ export const [injectCheckboxRootContext, provideCheckboxRootContext] =
 export class RdxCheckboxRootDirective {
     private readonly controlValueAccessor = inject(RdxControlValueAccessor);
 
+    /** The group this checkbox belongs to, if it is rendered inside a `rdxCheckboxGroup`. */
+    private readonly group = injectCheckboxGroupContext(true);
+
     /**
      * @ignore
-     * Reflects the CVA disabled state (covers reactive-forms `.disable()`),
-     * used for the `data-disabled` host attribute.
+     * Reflects the effective disabled state (CVA, covering reactive-forms `.disable()`, plus the
+     * group's disabled state), used for the `data-disabled` host attribute.
      */
-    protected readonly isDisabled = computed(() => this.controlValueAccessor.disabled());
+    protected readonly isDisabled = computed(() => this.disabledState());
 
     /**
      * The controlled checked state of the checkbox. Must be used in conjunction with onCheckedChange.
@@ -97,10 +103,18 @@ export class RdxCheckboxRootDirective {
     readonly required = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
-     * Name of the form control. Submitted with the form as part of a name/value pair.
+     * Name of the form control. Submitted with the form as part of a name/value pair. Inside a
+     * `rdxCheckboxGroup` this also identifies the checkbox in the group's value array.
      * @group Props
      */
     readonly name = input<string>();
+
+    /**
+     * When inside a `rdxCheckboxGroup`, marks this as the "select all" checkbox: its state is
+     * derived from the group's `allValues`, and toggling it checks or unchecks every child.
+     * @group Props
+     */
+    readonly parent = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
      * Associates the control with a form element.
@@ -114,9 +128,60 @@ export class RdxCheckboxRootDirective {
      */
     readonly onCheckedChange = outputFromObservable(outputToObservable(this.controlValueAccessor.valueChange));
 
-    readonly state = computed(() => getState(this.controlValueAccessor.value()));
+    /**
+     * @ignore
+     * The effective checked state. Inside a `rdxCheckboxGroup` it is derived from the group (the
+     * parent checkbox from `allValues`, a child from whether its `name` is in the group value);
+     * standalone it reads the CVA value.
+     */
+    readonly checkedState = computed<CheckedState>(() => {
+        const group = this.group;
+        if (group) {
+            if (this.parent()) {
+                return group.parentState();
+            }
+
+            const name = this.name();
+            if (name !== undefined) {
+                return group.value().includes(name);
+            }
+        }
+
+        return this.controlValueAccessor.value();
+    });
+
+    /** @ignore The effective disabled state, including the group. */
+    readonly disabledState = computed(() => this.controlValueAccessor.disabled() || (this.group?.disabled() ?? false));
+
+    readonly state = computed(() => getState(this.checkedState()));
+
+    constructor() {
+        // Inside a group, register this child's name and its own disabled state so a `parent`
+        // checkbox can preserve disabled-but-checked children when selecting/deselecting all.
+        effect((onCleanup) => {
+            const group = this.group;
+            const name = this.name();
+            if (group && !this.parent() && name !== undefined) {
+                onCleanup(group.registerChild(name, this.controlValueAccessor.disabled));
+            }
+        });
+    }
 
     toggle() {
+        const group = this.group;
+        if (group) {
+            if (this.parent()) {
+                group.toggleAll();
+                return;
+            }
+
+            const name = this.name();
+            if (name !== undefined) {
+                group.toggleValue(name);
+                return;
+            }
+        }
+
         const checked = this.controlValueAccessor.value();
 
         // From the indeterminate state a click resolves to checked (matching

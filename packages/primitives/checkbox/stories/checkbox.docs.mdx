@@ -1,5 +1,6 @@
 import { ArgTypes, Canvas, Controls, Meta, Primary } from '@storybook/addon-docs/blocks';
 import * as CheckboxStories from './checkbox.stories';
+import { RdxCheckboxGroupDirective } from '../src/checkbox-group';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 <Meta title="Primitives/Checkbox" of={CheckboxStories} />
@@ -74,11 +75,36 @@ Bind the root with `formControlName`; `disabled` reacts to the control's enable/
 
 <Canvas of={CheckboxStories.Validation} />
 
+There are two ways to build a "select all" parent. Pick by how much you want to own:
+
+| | **Select all** (below) | **Checkbox group** |
+| --- | --- | --- |
+| Source of truth | your own model (one boolean per item) | the group's `string[]` value (the checked `name`s) |
+| Parent / indeterminate logic | written by hand in the component | built in (`parent` + `allValues`) |
+| Parent click | flat toggle: all ↔ none | remembers the partial selection: partial → all → none → partial |
+| Disabled child during select-all | you handle it | preserved automatically |
+| Forms integration | wire each control yourself | the group is one control (`[(value)]` / `ngModel` / reactive forms) |
+
+Reach for **Select all** when you already manage the items yourself and just need the derived parent
+state. Reach for the **Checkbox group** when you want the array value and the Base UI parent behavior
+for free.
+
 ### Select all
 
-A parent checkbox derived from its children — `indeterminate` when only some are checked.
+A parent checkbox derived from its children — `indeterminate` when only some are checked. Here the
+parent/child logic (and the flat all ↔ none toggle) is wired **by hand** in the component.
 
 <Canvas of={CheckboxStories.SelectAll} />
+
+### Checkbox group
+
+The same UI, but `rdxCheckboxGroup` owns it. It manages a single array value — the `name`s of the
+checked checkboxes — and a child marked `parent` becomes the "select all", with its state derived
+from `allValues`. Clicking the parent **remembers the partial selection** (partial → all → none →
+back to the partial), disabled-but-checked children are preserved, and the group is itself a form
+control, so `[(value)]`, `ngModel`, and reactive forms bind to the `string[]` value.
+
+<Canvas of={CheckboxStories.Group} />
 
 ## API Reference
 
@@ -88,6 +114,13 @@ the checkbox state from the root context. All configuration lives on the root.
 ### Root
 
 <ArgTypes of={RdxCheckboxRootDirective} />
+
+### Checkbox Group
+
+`rdxCheckboxGroup` — a `role="group"` container holding the array of checked `name`s. Mark a child
+checkbox `parent` to make it select/deselect every name in `allValues`.
+
+<ArgTypes of={RdxCheckboxGroupDirective} />
 
 ## Accessibility
 

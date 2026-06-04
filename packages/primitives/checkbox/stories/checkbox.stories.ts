@@ -9,6 +9,7 @@ import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 import { CheckboxReactiveFormsExampleComponent } from './checkbox-forms';
+import { CheckboxGroupExample } from './checkbox-group';
 import { CheckboxIndeterminate } from './checkbox-indeterminate';
 import { CheckboxNgModelExample } from './checkbox-ngmodel';
 import { CheckboxPresence } from './checkbox-presence';
@@ -17,13 +18,22 @@ import { CheckboxValidationExample } from './checkbox-validation';
 
 // Full component source for the "Show code" panel (Vite `?raw` import).
 import formsSource from './checkbox-forms?raw';
+import groupSource from './checkbox-group?raw';
 import indeterminateSource from './checkbox-indeterminate?raw';
 import ngModelSource from './checkbox-ngmodel?raw';
 import presenceSource from './checkbox-presence?raw';
 import selectAllSource from './checkbox-select-all?raw';
 import validationSource from './checkbox-validation?raw';
 
-const source = (code: string) => ({ docs: { source: { code, language: 'typescript' } } });
+const source = (code: string) => ({
+    docs: {
+        source: {
+            code: code.trim(),
+            language: 'typescript',
+            type: 'code'
+        }
+    }
+});
 
 const html = String.raw;
 
@@ -43,7 +53,8 @@ export default {
                 CheckboxPresence,
                 CheckboxNgModelExample,
                 CheckboxValidationExample,
-                CheckboxSelectAllExample
+                CheckboxSelectAllExample,
+                CheckboxGroupExample
             ]
         }),
         tailwindDemoDecorator()
@@ -129,6 +140,15 @@ export const SelectAll: Story = {
     render: () => ({
         template: html`
             <checkbox-select-all-example />
+        `
+    })
+};
+
+export const Group: Story = {
+    parameters: source(groupSource),
+    render: () => ({
+        template: html`
+            <checkbox-group-example />
         `
     })
 };

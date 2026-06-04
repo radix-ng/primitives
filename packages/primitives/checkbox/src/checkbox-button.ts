@@ -1,4 +1,5 @@
-import { Directive, ElementRef, inject } from '@angular/core';
+import { computed, Directive, effect, ElementRef, inject } from '@angular/core';
+import { injectCheckboxGroupContext } from './checkbox-group';
 import { injectCheckboxRootContext } from './checkbox-root';
 
 /**
@@ -13,6 +14,7 @@ import { injectCheckboxRootContext } from './checkbox-root';
         type: 'button',
         role: 'checkbox',
         '[attr.aria-checked]': 'rootContext.checked() === "indeterminate" ? "mixed" : rootContext.checked()',
+        '[attr.aria-controls]': 'ariaControls()',
         '[attr.aria-required]': 'rootContext.required() || undefined',
         '[attr.aria-readonly]': 'rootContext.readonly() || undefined',
         '[attr.data-state]': 'rootContext.state()',
@@ -27,8 +29,32 @@ import { injectCheckboxRootContext } from './checkbox-root';
 })
 export class RdxCheckboxButtonDirective {
     protected readonly rootContext = injectCheckboxRootContext()!;
+    private readonly group = injectCheckboxGroupContext(true);
 
     private readonly elementRef = inject<ElementRef<HTMLButtonElement>>(ElementRef);
+
+    /** A `parent` checkbox lists the ids of the children it controls. */
+    protected readonly ariaControls = computed(() =>
+        this.group && this.rootContext.parent() ? this.group.controlledIds() : undefined
+    );
+
+    constructor() {
+        // A child checkbox in a group exposes its control id so the parent can reference it via
+        // `aria-controls`. Use the consumer's id when present, otherwise derive a stable one.
+        effect((onCleanup) => {
+            const group = this.group;
+            const name = this.rootContext.name();
+            if (!group || this.rootContext.parent() || name === undefined) {
+                return;
+            }
+
+            const el = this.elementRef.nativeElement;
+            if (!el.id) {
+                el.id = group.controlId(name);
+            }
+            onCleanup(group.registerControl(name, el.id));
+        });
+    }
 
     protected clicked(event: MouseEvent) {
         if (event.defaultPrevented || this.rootContext.readonly()) {

@@ -1,11 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RdxCheckboxButtonDirective } from './src/checkbox-button';
+import { RdxCheckboxGroupDirective } from './src/checkbox-group';
 import { RdxCheckboxIndicatorDirective } from './src/checkbox-indicator';
 import { RdxCheckboxIndicatorPresenceDirective } from './src/checkbox-indicator-presence';
 import { RdxCheckboxInputDirective } from './src/checkbox-input';
 import { RdxCheckboxRootDirective } from './src/checkbox-root';
 
 export * from './src/checkbox-button';
+export * from './src/checkbox-group';
 export * from './src/checkbox-indicator';
 export * from './src/checkbox-indicator-presence';
 export * from './src/checkbox-input';
@@ -17,7 +19,8 @@ export const checkboxImports = [
     RdxCheckboxRootDirective,
     RdxCheckboxButtonDirective,
     RdxCheckboxIndicatorDirective,
-    RdxCheckboxIndicatorPresenceDirective
+    RdxCheckboxIndicatorPresenceDirective,
+    RdxCheckboxGroupDirective
 ];
 
 @NgModule({
