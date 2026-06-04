@@ -2,7 +2,7 @@
 import { DemoLoaderComponent } from '../demo-primitive-preview/demo-loader.component';
 export interface Props {
     title: string;
-    componentName?: 'accordion' | 'avatar' | 'alert-dialog' | 'checkbox' | 'collapsible' | 'dropdown-menu' | 'default';
+    componentName?: 'accordion' | 'avatar' | 'alert-dialog' | 'checkbox' | 'collapsible' | 'default';
     componentFile?: string;
     overflow?: boolean;
 }
@@ -15,7 +15,6 @@ const gradientClassesMap: Record<Props['componentName'], string> = {
     'alert-dialog': '',
     collapsible: 'from-indigo5 to-crimson5 dark:from-purple10 dark:to-cyan12',
     checkbox: 'from-indigo7 to-cyan3',
-    'dropdown-menu': 'from-indigo7 to-cyan3 dark:from-cyan10 dark:to-slate12',
     default: 'from-gray-500 to-gray-700'
 };
 
