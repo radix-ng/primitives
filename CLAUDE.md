@@ -221,6 +221,15 @@ Follow this section order (modeled on Base UI): **`# Name` + one-line `####` sum
 - **Examples**: each example gets `### Title` + a one-line description, then its `<Canvas of={Stories.X} />` — never a bare Canvas without a caption.
 - **API Reference**: only render `<ArgTypes of={Directive} />` for parts that actually have inputs/outputs. Skip parts that read everything from context (a one-line note is enough) — an empty ArgTypes table is noise.
 
+### LLM documentation (`llms.txt` and `.md` routes)
+
+- The public docs app (`apps/radix-docs`) exposes `/llms.txt` and `/primitives/<section>/<slug>.md` as static Astro routes for LLM consumption.
+- Overview pages (`/primitives/overview/*.md`) come from `apps/radix-docs/src/content/primitives`.
+- Primitive, utility, guide, and example markdown pages come from Storybook docs MDX in `packages/primitives/**/stories/*.docs.mdx`, via `apps/radix-docs/src/utils/storybook-docs.ts`.
+- Keep Storybook `*.docs.mdx` files as the source of truth for component API/examples; the docs app markdown endpoint strips Storybook-only imports and docs blocks (`Meta`, `Canvas`, `ArgTypes`, etc.) at build time.
+- When adding or renaming a Storybook docs page, verify `getStorybookDocs()` still maps it to the intended URL. Normal components use `/primitives/components/<package-name>.md`; utilities use `/primitives/utils/<slug>.md`; guides use `/primitives/guides/<slug>.md`; examples use `/primitives/examples/<slug>.md`.
+- Verify with `pnpm exec nx run radix-docs:build --skip-nx-cache`, then check `dist/radix-docs/llms.txt` and a generated page such as `dist/radix-docs/primitives/components/input.md`.
+
 ### "Show code" / full source in stories
 
 - The demo wrapper is already stripped from the snippet globally via `parameters.docs.source.excludeDecorators` in `apps/radix-storybook/.storybook/preview.ts`.

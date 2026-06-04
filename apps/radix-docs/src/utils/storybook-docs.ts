@@ -84,6 +84,238 @@ const findDocs = (dir: string): string[] =>
         return entry.isFile() && entry.name.endsWith('.docs.mdx') ? [fullPath] : [];
     });
 
+const resolveImportPath = (fromFilePath: string, importPath: string): string => {
+    const cleanImportPath = importPath.replace(/\?raw$/, '');
+    const absolutePath = path.resolve(path.dirname(fromFilePath), cleanImportPath);
+
+    if (existsSync(absolutePath)) {
+        return absolutePath;
+    }
+
+    if (existsSync(`${absolutePath}.ts`)) {
+        return `${absolutePath}.ts`;
+    }
+
+    if (existsSync(`${absolutePath}.tsx`)) {
+        return `${absolutePath}.tsx`;
+    }
+
+    if (existsSync(`${absolutePath}.html`)) {
+        return `${absolutePath}.html`;
+    }
+
+    return absolutePath;
+};
+
+const getCodeFenceLanguage = (filePath?: string): string => {
+    switch (path.extname(filePath ?? '')) {
+        case '.html':
+            return 'html';
+        case '.css':
+            return 'css';
+        case '.json':
+            return 'json';
+        default:
+            return 'typescript';
+    }
+};
+
+const dedent = (code: string): string => {
+    const lines = code.replace(/^\n+|\n+$/g, '').split('\n');
+    const minIndent = lines
+        .filter((line) => line.trim())
+        .reduce((indent, line) => {
+            const currentIndent = line.match(/^\s*/)?.[0].length ?? 0;
+            return Math.min(indent, currentIndent);
+        }, Number.POSITIVE_INFINITY);
+
+    if (!Number.isFinite(minIndent) || minIndent === 0) {
+        return lines.join('\n').trim();
+    }
+
+    return lines
+        .map((line) => line.slice(minIndent))
+        .join('\n')
+        .trim();
+};
+
+const extractBalancedBlock = (content: string, openBraceIndex: number): string | undefined => {
+    let depth = 0;
+    let quote: "'" | '"' | '`' | null = null;
+    let escaped = false;
+
+    for (let index = openBraceIndex; index < content.length; index++) {
+        const char = content[index]!;
+
+        if (quote) {
+            if (escaped) {
+                escaped = false;
+                continue;
+            }
+
+            if (char === '\\') {
+                escaped = true;
+                continue;
+            }
+
+            if (char === quote) {
+                quote = null;
+            }
+
+            continue;
+        }
+
+        if (char === "'" || char === '"' || char === '`') {
+            quote = char;
+            continue;
+        }
+
+        if (char === '{') {
+            depth++;
+        }
+
+        if (char === '}') {
+            depth--;
+
+            if (depth === 0) {
+                return content.slice(openBraceIndex, index + 1);
+            }
+        }
+    }
+
+    return undefined;
+};
+
+const extractStoryObject = (content: string, storyName: string): string | undefined => {
+    const exportMatch = new RegExp(`export\\s+const\\s+${storyName}\\b`).exec(content);
+
+    if (!exportMatch) {
+        return undefined;
+    }
+
+    const openBraceIndex = content.indexOf('{', exportMatch.index);
+
+    if (openBraceIndex === -1) {
+        return undefined;
+    }
+
+    return extractBalancedBlock(content, openBraceIndex);
+};
+
+const extractTemplateCode = (storyObject: string): string | undefined => {
+    const templateStart = storyObject.search(/\btemplate\s*:\s*(?:html)?`/);
+
+    if (templateStart === -1) {
+        return undefined;
+    }
+
+    const openTickIndex = storyObject.indexOf('`', templateStart);
+    let escaped = false;
+
+    for (let index = openTickIndex + 1; index < storyObject.length; index++) {
+        const char = storyObject[index]!;
+
+        if (escaped) {
+            escaped = false;
+            continue;
+        }
+
+        if (char === '\\') {
+            escaped = true;
+            continue;
+        }
+
+        if (char === '`') {
+            return dedent(storyObject.slice(openTickIndex + 1, index));
+        }
+    }
+
+    return undefined;
+};
+
+const getStorybookImports = (mdxContent: string, filePath: string): Map<string, string> => {
+    const storybookImports = new Map<string, string>();
+    const importPattern = /import\s+\*\s+as\s+(\w+)\s+from\s+['"]([^'"]+\.stories)['"];?/g;
+
+    for (const match of mdxContent.matchAll(importPattern)) {
+        storybookImports.set(match[1]!, resolveImportPath(filePath, match[2]!));
+    }
+
+    return storybookImports;
+};
+
+const getRawImports = (
+    storyFilePath: string,
+    storyContent: string
+): Map<string, { code: string; language: string }> => {
+    const rawImports = new Map<string, { code: string; language: string }>();
+    const rawImportPattern = /import\s+(\w+)\s+from\s+['"]([^'"]+\?raw)['"];?/g;
+
+    for (const match of storyContent.matchAll(rawImportPattern)) {
+        const sourcePath = resolveImportPath(storyFilePath, match[2]!);
+
+        if (existsSync(sourcePath)) {
+            rawImports.set(match[1]!, {
+                code: readFileSync(sourcePath, 'utf8').trim(),
+                language: getCodeFenceLanguage(sourcePath)
+            });
+        }
+    }
+
+    return rawImports;
+};
+
+const getStoryCode = (storyFilePath: string, storyName: string): { code: string; language: string } | undefined => {
+    if (!existsSync(storyFilePath)) {
+        return undefined;
+    }
+
+    const storyContent = readFileSync(storyFilePath, 'utf8');
+    const storyObject = extractStoryObject(storyContent, storyName);
+
+    if (!storyObject) {
+        return undefined;
+    }
+
+    const rawImports = getRawImports(storyFilePath, storyContent);
+    const sourceMatch = storyObject.match(/\bparameters\s*:\s*source\((\w+)\)/);
+    const sourceCode = sourceMatch ? rawImports.get(sourceMatch[1]!) : undefined;
+
+    if (sourceCode) {
+        return sourceCode;
+    }
+
+    const templateCode = extractTemplateCode(storyObject);
+
+    if (templateCode) {
+        return { code: templateCode, language: 'html' };
+    }
+
+    return undefined;
+};
+
+const codeFence = ({ code, language }: { code: string; language: string }): string =>
+    `\n\`\`\`${language}\n${code}\n\`\`\`\n`;
+
+const replaceStorybookBlocks = (content: string, filePath: string): string => {
+    const storybookImports = getStorybookImports(content, filePath);
+    const metaAlias = content.match(/<Meta\b[^>]*\bof=\{(\w+)\}[^>]*\/>/)?.[1];
+    const defaultAlias = metaAlias ?? storybookImports.keys().next().value;
+    const resolveStoryCode = (alias: string, storyName: string): string => {
+        const storyFilePath = storybookImports.get(alias);
+        const storyCode = storyFilePath ? getStoryCode(storyFilePath, storyName) : undefined;
+
+        return storyCode ? codeFence(storyCode) : '';
+    };
+
+    return content
+        .replace(/<Primary\b[^>]*\/>/g, () => (defaultAlias ? resolveStoryCode(defaultAlias, 'Default') : ''))
+        .replace(/<Canvas\b[^>]*\bof=\{(\w+)\.(\w+)\}[^>]*\/>/g, (_match, alias: string, storyName: string) =>
+            resolveStoryCode(alias, storyName)
+        )
+        .replace(/<(Canvas|Controls|ArgTypes)\b[^>]*\/>\n*/g, '');
+};
+
 const stripImports = (content: string): string => {
     const lines = content.split('\n');
     const nextLines: string[] = [];
@@ -119,10 +351,9 @@ const stripImports = (content: string): string => {
     return nextLines.join('\n');
 };
 
-const cleanStorybookMdx = (content: string): string =>
-    stripImports(content)
+const cleanStorybookMdx = (content: string, filePath: string): string =>
+    stripImports(replaceStorybookBlocks(content, filePath))
         .replace(/<Meta\b[^>]*\/>\n*/g, '')
-        .replace(/<(Canvas|Primary|Controls|ArgTypes)\b[^>]*\/>\n*/g, '')
         .replace(/\n{3,}/g, '\n\n')
         .trim();
 
@@ -148,7 +379,7 @@ const parseDoc = (filePath: string): StorybookDoc | null => {
         slug,
         title,
         description,
-        body: cleanStorybookMdx(content)
+        body: cleanStorybookMdx(content, filePath)
     };
 };
 
