@@ -126,12 +126,18 @@ export class RdxMenuPopup {
             this.rootContext.close();
         });
 
-        // Focus first item when menu opens — unless the opener suppressed it
+        // Move focus into the popup when the menu opens — unless the opener suppressed it
         // (e.g. menubar hover-switching, where focus stays on the trigger).
         effect(() => {
             const autoFocus = this.rootContext.autoFocus();
             if (this.rootContext.isOpen() && autoFocus) {
                 requestAnimationFrame(() => {
+                    // `'popup'` focuses the container without highlighting an item (pointer opening).
+                    if (autoFocus === 'popup') {
+                        this.elementRef.nativeElement.focus({ preventScroll: true });
+                        return;
+                    }
+
                     const items = getFocusableItems(this.elementRef.nativeElement);
                     const item = autoFocus === 'last' ? items[items.length - 1] : items[0];
                     item?.focus({ preventScroll: true });

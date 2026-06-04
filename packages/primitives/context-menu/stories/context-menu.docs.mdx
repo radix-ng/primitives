@@ -1,23 +1,113 @@
-import { Canvas, Meta } from '@storybook/addon-docs/blocks';
-import * as ContextMenuStories from './context-menu.stories';
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './context-menu.stories';
+import { RdxContextMenuTrigger } from '../src/context-menu-trigger';
 
 <Meta title="Primitives/Context Menu" />
 
 # Context Menu
 
-#### Displays a menu to the user—such as a set of actions or functions—triggered by a button.
+#### A menu that appears at the pointer on right click (or touch long-press), built on the Menu primitive.
 
-<Canvas sourceState="hidden" of={ContextMenuStories.Default} height="300px" />
+Context Menu reuses the full [Menu](?path=/docs/primitives-menu--docs) primitive for its popup,
+items, submenus, checkbox/radio items, and separators. The only difference is the trigger: instead
+of a button that anchors the popup to itself, `rdxContextMenuTrigger` opens the menu at the pointer
+position on a right click or long-press.
+
+<Canvas sourceState="hidden" of={Stories.Default} />
 
 ## Features
 
-- ✅ Supports submenus with configurable reading direction.
-- ✅ Supports items, labels, groups of items.
-- ✅ Supports checkable items (single or multiple) with optional indeterminate state.
-- ✅ Supports modal and non-modal modes.
-- ✅ Customize side, alignment, offsets, collision handling.
-- ✅ Focus is fully managed.
-- ✅ Full keyboard navigation.
-- ✅ Typeahead support.
-- ✅ Dismissing and layering behavior is highly customizable.
-- ✅ Triggers with a long press on touch devices
+- ✅ Opens at the pointer on right click; on touch, opens after a long-press.
+- ✅ Suppresses the native browser context menu.
+- ✅ Reuses every Menu popup part — items, submenus, checkbox/radio items, groups, separators.
+- ✅ Opened by pointer, the popup is focused with no item highlighted; opened by keyboard, the first item is highlighted.
+- ✅ Full keyboard navigation once open (ArrowDown / ArrowUp / Home / End / typeahead).
+- ✅ Closes on Escape, outside pointer interaction, and item selection — restoring focus.
+- ✅ Headless — state is exposed via `data-state`; styling is up to the consumer.
+
+## Import
+
+```typescript
+import { RdxContextMenuRoot, RdxContextMenuTrigger } from '@radix-ng/primitives/context-menu';
+import { RdxMenuModule } from '@radix-ng/primitives/menu';
+```
+
+Or import the context-menu parts through the module:
+
+```typescript
+import { RdxContextMenuModule } from '@radix-ng/primitives/context-menu';
+```
+
+## Anatomy
+
+Wrap the trigger area and the Menu popup in a `rdxContextMenuRoot`. The popup is assembled from the
+standard Menu parts and positioned at the pointer, so `rdxMenuPositioner` needs no `anchor`.
+
+```html
+<ng-container #root="rdxContextMenuRoot" rdxContextMenuRoot>
+    <div rdxContextMenuTrigger>Right click here</div>
+
+    @if (root.menuRoot.open()) {
+        <div rdxMenuPositioner>
+            <div rdxMenuPopup>
+                <button rdxMenuItem>Back</button>
+                <button rdxMenuItem>Reload</button>
+
+                <div rdxMenuSeparator></div>
+
+                <!-- submenu -->
+                <ng-container #sub="rdxMenuRoot" rdxMenuRoot>
+                    <button rdxMenuSubTrigger>More Tools ›</button>
+                    @if (sub.open()) {
+                        <div side="right" align="start" rdxMenuPositioner>
+                            <div rdxMenuPopup>
+                                <button rdxMenuItem>Save Page As…</button>
+                            </div>
+                        </div>
+                    }
+                </ng-container>
+            </div>
+        </div>
+    }
+</ng-container>
+```
+
+## Examples
+
+### Default
+
+A right-click area with shortcuts, a disabled item, a submenu, checkbox items, and a radio group.
+Right-click the dashed area to open the menu at the pointer.
+
+<Canvas of={Stories.Default} />
+
+## Keyboard interactions
+
+When opened with a pointer (right click / long-press) the popup itself receives focus and no item
+is highlighted; pressing ArrowDown / ArrowUp then moves into the items. When opened from the
+keyboard (the Menu key / <kbd>Shift</kbd> + <kbd>F10</kbd>) the first item is highlighted right
+away. Otherwise the popup behaves exactly like a [Menu](?path=/docs/primitives-menu--docs):
+ArrowDown / ArrowUp move between items, Home / End jump to the first / last item, typeahead matches
+item text, and Escape closes the menu.
+
+## API Reference
+
+### RdxContextMenuRoot
+
+Groups all parts of the context menu and provides the Menu context consumed by the popup. Composes
+the Menu primitive, so it forwards the `open` (two-way), `modal`, `loopFocus`, and
+`highlightItemOnHover` inputs and the `onOpenChange` / `onOpenChangeComplete` outputs from
+`rdxMenuRoot`.
+
+### RdxContextMenuTrigger
+
+The area that opens the menu on right click or touch long-press. Exposes `data-state`
+(`"open"` / `"closed"`) and `data-disabled`.
+
+<ArgTypes of={RdxContextMenuTrigger} />
+
+### Menu parts
+
+All other parts — `rdxMenuPositioner`, `rdxMenuPopup`, `rdxMenuItem`, `rdxMenuCheckboxItem`,
+`rdxMenuRadioGroup`, `rdxMenuSubTrigger`, `rdxMenuSeparator`, … — come from the
+[Menu](?path=/docs/primitives-menu--docs) primitive and behave identically here.

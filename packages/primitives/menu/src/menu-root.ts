@@ -19,7 +19,14 @@ import { createContext } from '@radix-ng/primitives/core';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 
 export type RdxMenuTransitionStatus = 'starting' | 'ending' | undefined;
-export type RdxMenuAutoFocus = 'first' | 'last' | false;
+/**
+ * How focus moves into the popup when it opens.
+ * - `'first'` / `'last'` — focus and highlight the first / last item (keyboard opening).
+ * - `'popup'` — focus the popup container without highlighting any item (pointer opening, e.g. a
+ *   context menu opened by right click).
+ * - `false` — leave focus on the trigger.
+ */
+export type RdxMenuAutoFocus = 'first' | 'last' | 'popup' | false;
 export type RdxMenuAutoFocusInput = boolean | RdxMenuAutoFocus;
 export type RdxMenuOrientation = 'horizontal' | 'vertical';
 

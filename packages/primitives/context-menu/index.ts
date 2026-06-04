@@ -1,41 +1,18 @@
 import { NgModule } from '@angular/core';
-import { RdxContextMenuContentDirective } from './src/context-menu-content.directive';
-import { RdxContextMenuItemCheckboxDirective } from './src/context-menu-item-checkbox.directive';
-import { RdxContextMenuItemIndicatorDirective } from './src/context-menu-item-indicator.directive';
-import { RdxContextMenuItemRadioGroupDirective } from './src/context-menu-item-radio-group.directive';
-import { RdxContextMenuItemRadioDirective } from './src/context-menu-item-radio.directive';
-import { RdxContextMenuSelectable } from './src/context-menu-item-selectable';
-import { RdxContextMenuItemDirective } from './src/context-menu-item.directive';
-import { RdxContextMenuLabelDirective } from './src/context-menu-label.directive';
-import { RdxContextMenuSeparatorDirective } from './src/context-menu-separator.directive';
-import { RdxContextMenuTriggerDirective } from './src/context-menu-trigger.directive';
+import { RdxContextMenuRoot } from './src/context-menu-root';
+import { RdxContextMenuTrigger } from './src/context-menu-trigger';
 
-export * from './src/context-menu-content.directive';
-export * from './src/context-menu-item-checkbox.directive';
-export * from './src/context-menu-item-indicator.directive';
-export * from './src/context-menu-item-radio-group.directive';
-export * from './src/context-menu-item-radio.directive';
-export * from './src/context-menu-item-selectable';
-export * from './src/context-menu-item.directive';
-export * from './src/context-menu-label.directive';
-export * from './src/context-menu-separator.directive';
-export * from './src/context-menu-trigger.directive';
+export * from './src/context-menu-root';
+export * from './src/context-menu-trigger';
 
-const _imports = [
-    RdxContextMenuContentDirective,
-    RdxContextMenuSelectable,
-    RdxContextMenuItemCheckboxDirective,
-    RdxContextMenuItemDirective,
-    RdxContextMenuItemRadioGroupDirective,
-    RdxContextMenuItemIndicatorDirective,
-    RdxContextMenuItemRadioDirective,
-    RdxContextMenuLabelDirective,
-    RdxContextMenuSeparatorDirective,
-    RdxContextMenuTriggerDirective
-];
+/**
+ * Context-menu-specific parts. The popup, items, checkbox/radio, submenus, separators, etc. come
+ * from `@radix-ng/primitives/menu` (`RdxMenuModule`) and behave identically inside a context menu.
+ */
+const contextMenuImports = [RdxContextMenuRoot, RdxContextMenuTrigger];
 
 @NgModule({
-    imports: [..._imports],
-    exports: [..._imports]
+    imports: [...contextMenuImports],
+    exports: [...contextMenuImports]
 })
 export class RdxContextMenuModule {}
