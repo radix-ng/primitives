@@ -540,7 +540,6 @@ describe('Menu', () => {
             trigger = fixture.nativeElement.querySelector('[rdxMenuTrigger]');
             trigger.click();
             fixture.detectChanges();
-            popup = fixture.nativeElement.querySelector('[rdxMenuPopup]');
             items = Array.from(fixture.nativeElement.querySelectorAll('[rdxMenuItem]'));
         });
 

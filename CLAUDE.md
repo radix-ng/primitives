@@ -268,7 +268,9 @@ Complex components compose these headless building blocks — good entry points 
 - `collection` — `RdxCollectionProvider` + `RdxCollectionItem`: collects item directives in **DOM order** via `contentChildren` (matches `hostDirectives` too). Read items off the instance (`item.element`, `item.value()`, `item.disabled()`); `useCollection()` = `inject(RdxCollectionProvider)`. Only consumer: `select`.
 - `portal` — `RdxPortal`: teleports its host element into a container (default `document.body`), reactively; non-element containers fall back to body.
 - `presence` — conditional mount/unmount with enter/leave animation support.
-- `roving-focus`, `focus-scope`, `dismissable-layer`, `popper` — focus roving, focus trapping, outside-dismiss, positioning.
+- `roving-focus`, `focus-scope`, `popper` — focus roving, focus trapping, positioning.
+- `dismissable-layer` — outside-dismiss (Escape / pointer-down-outside / focus-outside). **Gotcha:** the focus-outside check is **async** (defers two microtasks before deciding), so an element that takes focus _outside_ a layer and then opens it can be dismissed a tick later. Register such elements as **branches** (`rdxDismissableLayerBranch`, or push the element into `RdxDismissableLayersContextToken.branches`) so focus/pointer on them counts as "inside" and won't dismiss. Example: a menu trigger the menubar focuses before opening a sibling popup.
+- `menu` / `menubar` — Menubar is a **coordinator over `rdxMenuRoot` + the standard `rdxMenuTrigger`** (no dedicated menubar-trigger directive, mirroring Base UI). The trigger reports interactions up via `registerTriggerInteractionHandler`; the menubar owns roving focus, arrow-key nav, and hover-to-switch.
 
 ## Useful commands
 
