@@ -4,25 +4,24 @@ import { injectProgressRootContext } from './progress-root.directive';
 const attr = (value: boolean) => (value ? '' : undefined);
 
 /**
- * Displays the visual progress fill.
+ * Contains the visual progress indicator.
  *
  * @group Components
  */
 @Directive({
-    selector: '[rdxProgressIndicator]',
-    exportAs: 'rdxProgressIndicator',
+    selector: '[rdxProgressTrack]',
+    exportAs: 'rdxProgressTrack',
     host: {
         '[attr.data-state]': 'progress.progressState()',
         '[attr.data-value]': 'progress.valueState() ?? undefined',
         '[attr.data-min]': 'progress.minState()',
         '[attr.data-max]': 'progress.maxState()',
-        '[attr.data-percent]': 'progress.percentageState() ?? undefined',
         '[attr.data-complete]': 'dataAttr(progress.completeState())',
         '[attr.data-progressing]': 'dataAttr(progress.progressingState())',
         '[attr.data-indeterminate]': 'dataAttr(progress.indeterminateState())'
     }
 })
-export class RdxProgressIndicatorDirective {
+export class RdxProgressTrackDirective {
     protected readonly progress = injectProgressRootContext()!;
     protected readonly dataAttr = attr;
 }

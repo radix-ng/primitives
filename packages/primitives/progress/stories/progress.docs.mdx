@@ -1,64 +1,106 @@
-import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/addon-docs/blocks';
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as ProgressStories from './progress.stories';
 import { RdxProgressRootDirective } from '../src/progress-root.directive';
-import * as ProgressDirectiveStories from './progress.stories';
 
-<Meta title="Primitives/Progress" />
+<Meta title="Primitives/Progress" of={ProgressStories} />
 
 # Progress
 
-#### Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.
+#### Displays task completion with accessible label, value, track, and indicator parts.
 
-<Canvas sourceState="hidden" of={ProgressDirectiveStories.Default} />
+<Canvas sourceState="hidden" of={ProgressStories.Default} />
 
 ## Features
 
-- ✅ Provides context for assistive technology to read the progress of a task.
+- ✅ Supports determinate and indeterminate progress.
+- ✅ Supports custom `min` and `max` ranges.
+- ✅ Provides Label and Value parts for accessible naming and value text.
+- ✅ Exposes state through `data-state`, `data-complete`, `data-progressing`, and `data-indeterminate`.
 
-## Usage
-
-Get started with importing the directive:
+## Import
 
 ```typescript
-import { RdxProgressRootDirective, RdxProgressIndicatorDirective } from '@radix-ng/primitives/progress';
+import {
+  RdxProgressRootDirective,
+  RdxProgressLabelDirective,
+  RdxProgressValueDirective,
+  RdxProgressTrackDirective,
+  RdxProgressIndicatorDirective
+} from '@radix-ng/primitives/progress';
 ```
 
-## Example
+## Anatomy
 
 ```html
-<div class="ProgressRoot" rdxProgressRoot [value]="progress">
-  <div class="ProgressIndicator" rdxProgressIndicator [style.transform]="'translateX(-' + (100 - progress) +'%)'"></div>
+<div rdxProgressRoot [value]="70">
+  <span rdxProgressLabel>Upload progress</span>
+  <span rdxProgressValue></span>
+  <div rdxProgressTrack>
+    <div rdxProgressIndicator></div>
+  </div>
 </div>
 ```
 
+## Examples
+
+### Default
+
+An animated labelled progress bar with formatted value text.
+
+<Canvas of={ProgressStories.Default} />
+
+### Indeterminate
+
+Use `null` when progress is active but the current value is unknown.
+
+<Canvas of={ProgressStories.Indeterminate} />
+
+### Custom range
+
+Use `min`, `max`, and `valueLabel` when progress is not a simple 0-100 percentage.
+
+<Canvas of={ProgressStories.CustomRange} />
+
+### Circular
+
+The same primitive state can drive an SVG circular progress indicator.
+
+<Canvas of={ProgressStories.Circular} />
+
 ## API Reference
 
-### RdxProgressRootDirective
+### Root
+
+`RdxProgressRootDirective`
 
 <ArgTypes of={RdxProgressRootDirective} />
 
-| Data Attribute | Value                                      |
-|----------------|--------------------------------------------|
-| [data-state]   | `complete` or `indeterminate` or `loading` |
-| [data-value]   | The current value                          |
-| [data-max]     | The max value                              |
+### Label
 
-### RdxProgressIndicatorDirective
+`RdxProgressLabelDirective`
 
-Used to show the progress visually. It also makes progress accessible to assistive technologies.
+Gives the progressbar its accessible name through `aria-labelledby`.
 
-| Data Attribute | Value                                      |
-|----------------|--------------------------------------------|
-| [data-state]   | "complete" or "indeterminate" or "loading" |
-| [data-value]   | The current value                          |
-| [data-max]     | The max value                              |
+### Value
+
+`RdxProgressValueDirective`
+
+Displays the formatted value text and provides `aria-describedby` text for the progressbar.
+
+### Track
+
+`RdxProgressTrackDirective`
+
+Contains the visual indicator and mirrors root state attributes.
+
+### Indicator
+
+`RdxProgressIndicatorDirective`
+
+Displays the visual progress fill and exposes `data-percent` for styling determinate progress.
 
 ## Accessibility
 
-Adheres to the [`progressbar` role requirements](https://www.w3.org/WAI/ARIA/apg/patterns/meter).
-
-
-## Examples
-
-### Progress Circular
-
-<Canvas sourceState="hidden" of={ProgressDirectiveStories.ProgressCircular} />
+The root uses `role="progressbar"`, is labelled by `rdxProgressLabel`, and is described by
+`rdxProgressValue`. In indeterminate state, `aria-valuemin`, `aria-valuemax`, `aria-valuenow`, and
+`aria-valuetext` are omitted because the current value is unknown.

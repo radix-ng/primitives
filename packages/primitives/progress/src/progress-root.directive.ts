@@ -1,137 +1,178 @@
-import { computed, Directive, effect, inject, InjectionToken, input, model } from '@angular/core';
-import { isNullish, isNumber, provideToken } from '@radix-ng/primitives/core';
+import { computed, Directive, inject, input, numberAttribute } from '@angular/core';
+import { createContext } from '@radix-ng/primitives/core';
 
-export const RdxProgressToken = new InjectionToken<RdxProgressRootDirective>('RdxProgressDirective');
+let progressId = 0;
 
-/**
- * Injects the current instance of RdxProgressRootDirective.
- * @returns The instance of RdxProgressRootDirective.
- */
-export function injectProgress(): RdxProgressRootDirective {
-    return inject(RdxProgressToken);
-}
+const attr = (value: boolean) => (value ? '' : undefined);
 
-export type ProgressState = 'indeterminate' | 'complete' | 'loading';
+export type ProgressState = 'indeterminate' | 'complete' | 'progressing';
+
+export type ProgressValueFormatter = (value: number, min: number, max: number) => string;
 
 export interface ProgressProps {
     value?: number | null;
+    min?: number;
     max?: number;
-    /**
-     * A function to get the accessible label text representing the current value in a human-readable format.
-     *
-     *  If not provided, the value label will be read as the numeric value as a percentage of the max value.
-     */
-    getValueLabel?: (value: number, max: number) => string;
+    valueLabel?: ProgressValueFormatter;
 }
 
-const MIN_PERCENT = 0;
+const DEFAULT_MIN = 0;
 const DEFAULT_MAX = 100;
 
+const isValidNumber = (value: unknown): value is number => typeof value === 'number' && !Number.isNaN(value);
+
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
+
+const progressRootContext = () => {
+    const root = injectProgressRoot();
+
+    return {
+        labelId: root.labelId,
+        valueId: root.valueId,
+        minState: root.minState,
+        maxState: root.maxState,
+        valueState: root.valueState,
+        percentageState: root.percentageState,
+        valueLabelState: root.valueLabelState,
+        progressState: root.progressState,
+        completeState: root.completeState,
+        progressingState: root.progressingState,
+        indeterminateState: root.indeterminateState
+    };
+};
+
+export type RdxProgressRootContext = ReturnType<typeof progressRootContext>;
+
+export const [injectProgressRootContext, provideProgressRootContext] =
+    createContext<RdxProgressRootContext>('RdxProgressRoot');
+
 /**
- * Directive to manage progress bar state and attributes.
- *
- * This directive provides a way to create a progress bar with customizable value and max attributes.
- * It handles aria attributes for accessibility and provides different states like 'indeterminate', 'complete', and 'loading'.
+ * Provides progress state and accessibility attributes.
  *
  * @group Components
  */
 @Directive({
     selector: '[rdxProgressRoot]',
     exportAs: 'rdxProgressRoot',
-    providers: [provideToken(RdxProgressToken, RdxProgressRootDirective)],
+    providers: [provideProgressRootContext(progressRootContext)],
     host: {
         role: 'progressbar',
-        '[attr.aria-valuemax]': 'max()',
-        '[attr.aria-valuemin]': '0',
-        '[attr.aria-valuenow]': 'value()',
-        '[attr.aria-valuetext]': 'label()',
-        '[attr.aria-label]': 'label()',
+        '[attr.aria-labelledby]': 'labelId()',
+        '[attr.aria-describedby]': 'valueId()',
+        '[attr.aria-valuemin]': 'indeterminateState() ? undefined : minState()',
+        '[attr.aria-valuemax]': 'indeterminateState() ? undefined : maxState()',
+        '[attr.aria-valuenow]': 'valueState() ?? undefined',
+        '[attr.aria-valuetext]': 'valueLabelState()',
         '[attr.data-state]': 'progressState()',
-        '[attr.data-value]': 'value() ?? undefined',
-        '[attr.data-max]': 'max()',
-        // set tab index to -1 so screen readers will read the aria-label
-        // Note: there is a known issue with JAWS that does not read progressbar aria labels on FireFox
-        tabindex: '-1'
+        '[attr.data-value]': 'valueState() ?? undefined',
+        '[attr.data-min]': 'minState()',
+        '[attr.data-max]': 'maxState()',
+        '[attr.data-complete]': 'dataAttr(completeState())',
+        '[attr.data-progressing]': 'dataAttr(progressingState())',
+        '[attr.data-indeterminate]': 'dataAttr(indeterminateState())'
     }
 })
 export class RdxProgressRootDirective {
     /**
-     * The current value of the progress bar.
+     * Current progress value. Set to `null` for indeterminate progress.
+     *
+     * @group Props
+     * @defaultValue null
+     */
+    readonly value = input<number | null, number | null>(null, { transform: (value) => this.valueTransform(value) });
+
+    /**
+     * Minimum progress value.
+     *
      * @group Props
      * @defaultValue 0
      */
-    readonly value = model<number>(MIN_PERCENT);
+    readonly min = input(DEFAULT_MIN, { transform: numberAttribute });
 
     /**
-     * The maximum value of the progress bar.
+     * Maximum progress value.
+     *
+     * @group Props
      * @defaultValue 100
-     * @group Props
      */
-    readonly max = model<number>(DEFAULT_MAX);
+    readonly max = input(DEFAULT_MAX, { transform: numberAttribute });
 
     /**
-     * Function to generate the value label.
+     * Formats the current value for assistive technologies and `rdxProgressValue`.
+     *
      * @group Props
      */
-    readonly valueLabel = input<(value: number, max: number) => string>((value, max) =>
-        this.defaultGetValueLabel(value, max)
-    );
+    readonly valueLabel = input<ProgressValueFormatter>((value, min, max) => this.defaultValueLabel(value, min, max));
 
-    protected readonly label = computed(() => this.valueLabel()(this.value(), this.max()));
+    readonly labelId = input(`rdx-progress-label-${progressId++}`);
+    readonly valueId = input(`rdx-progress-value-${progressId++}`);
 
-    readonly progressState = computed<ProgressState>(() => {
-        if (isNullish(this.value())) {
-            return 'indeterminate';
-        }
-        if (this.value() === this.max()) {
-            return 'complete';
-        }
-        return 'loading';
+    readonly minState = computed(() => (isValidNumber(this.min()) ? this.min() : DEFAULT_MIN));
+    readonly maxState = computed(() => {
+        const min = this.minState();
+        const max = this.max();
+
+        return isValidNumber(max) && max > min ? max : min + DEFAULT_MAX;
     });
 
-    constructor() {
-        effect(() => {
-            const correctedValue = this.validateValue(this.value(), this.max());
-            if (correctedValue != null && correctedValue !== this.value()) {
-                this.value.set(correctedValue);
-            }
-        });
+    readonly valueState = computed(() => {
+        const value = this.value();
 
-        effect(() => {
-            const correctedMax = this.validateMax(this.max());
-            if (correctedMax !== this.max()) {
-                this.max.set(correctedMax);
-            }
-        });
+        if (value === null || !isValidNumber(value)) {
+            return null;
+        }
+
+        return clamp(value, this.minState(), this.maxState());
+    });
+
+    readonly percentageState = computed(() => {
+        const value = this.valueState();
+
+        if (value === null) {
+            return null;
+        }
+
+        const min = this.minState();
+        const max = this.maxState();
+
+        return ((value - min) / (max - min)) * 100;
+    });
+
+    readonly valueLabelState = computed(() => {
+        const value = this.valueState();
+
+        return value === null ? undefined : this.valueLabel()(value, this.minState(), this.maxState());
+    });
+
+    readonly progressState = computed<ProgressState>(() => {
+        const value = this.valueState();
+
+        if (value === null) {
+            return 'indeterminate';
+        }
+
+        if (value === this.maxState()) {
+            return 'complete';
+        }
+
+        return 'progressing';
+    });
+
+    readonly completeState = computed(() => this.progressState() === 'complete');
+    readonly progressingState = computed(() => this.progressState() === 'progressing');
+    readonly indeterminateState = computed(() => this.progressState() === 'indeterminate');
+
+    protected readonly dataAttr = attr;
+
+    private valueTransform(value: number | null): number | null {
+        return value === null ? null : numberAttribute(value);
     }
 
-    private validateValue(value: any, max: number): number | null {
-        const isValidValueError =
-            isNullish(value) || (isNumber(value) && !Number.isNaN(value) && value <= max && value >= 0);
-
-        if (isValidValueError) return value as null;
-
-        console.error(`Invalid prop \`value\` of value \`${value}\` supplied to \`ProgressRoot\`. The \`value\` prop must be:
-  - a positive number
-  - less than the value passed to \`max\` (or ${DEFAULT_MAX} if no \`max\` prop is set)
-  - \`null\`  or \`undefined\` if the progress is indeterminate.
-
-Defaulting to \`null\`.`);
-        return null;
+    private defaultValueLabel(value: number, min: number, max: number) {
+        return `${Math.round(((value - min) / (max - min)) * 100)}%`;
     }
+}
 
-    private validateMax(max: number): number {
-        const isValidMaxError = isNumber(max) && !Number.isNaN(max) && max > 0;
-
-        if (isValidMaxError) return max;
-
-        console.error(
-            `Invalid prop \`max\` of value \`${max}\` supplied to \`ProgressRoot\`. Only numbers greater than 0 are valid max values. Defaulting to \`${DEFAULT_MAX}\`.`
-        );
-        return DEFAULT_MAX;
-    }
-
-    private defaultGetValueLabel(value: number, max: number) {
-        return `${Math.round((value / max) * 100)}%`;
-    }
+function injectProgressRoot(): RdxProgressRootDirective {
+    return inject(RdxProgressRootDirective);
 }
