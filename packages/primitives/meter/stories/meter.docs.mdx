@@ -1,0 +1,95 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as MeterStories from './meter.stories';
+import { RdxMeterRootDirective } from '../src/meter-root.directive';
+
+<Meta title="Primitives/Meter" of={MeterStories} />
+
+# Meter
+
+#### A graphical display of a numeric value within a range.
+
+<Canvas sourceState="hidden" of={MeterStories.Default} />
+
+## Features
+
+- ✅ Exposes native meter semantics with `role="meter"` and `aria-valuenow`.
+- ✅ Supports custom `min` and `max` ranges.
+- ✅ Formats display text with `Intl.NumberFormat`.
+- ✅ Provides Label and Value parts for accessible naming and value text.
+- ✅ Mirrors value metadata through `data-value`, `data-min`, `data-max`, and `data-percent`.
+
+## Import
+
+```typescript
+import {
+  RdxMeterRootDirective,
+  RdxMeterLabelDirective,
+  RdxMeterValueDirective,
+  RdxMeterTrackDirective,
+  RdxMeterIndicatorDirective
+} from '@radix-ng/primitives/meter';
+```
+
+## Anatomy
+
+```html
+<div rdxMeterRoot [value]="24">
+  <span rdxMeterLabel>Storage used</span>
+  <div rdxMeterTrack>
+    <div rdxMeterIndicator></div>
+  </div>
+  <span rdxMeterValue></span>
+</div>
+```
+
+## Examples
+
+### Default
+
+An animated labelled meter with formatted value text.
+
+<Canvas of={MeterStories.Default} />
+
+### Custom range
+
+Use `min`, `max`, and `format` when the measured value is not a simple 0-100 range.
+
+<Canvas of={MeterStories.CustomRange} />
+
+### Aria value text
+
+Use `aria-valuetext` when the numeric value needs a more descriptive text alternative.
+
+<Canvas of={MeterStories.AriaValueText} />
+
+## API Reference
+
+### Root
+
+`RdxMeterRootDirective`
+
+<ArgTypes of={RdxMeterRootDirective} />
+
+### Label
+
+`RdxMeterLabelDirective`
+
+Gives the meter its accessible name through `aria-labelledby`.
+
+### Value
+
+`RdxMeterValueDirective`
+
+Displays the formatted value text and provides `aria-describedby` text for the meter.
+
+### Track
+
+`RdxMeterTrackDirective`
+
+Contains the visual indicator and mirrors root value attributes.
+
+### Indicator
+
+`RdxMeterIndicatorDirective`
+
+Displays the visual meter fill and exposes `data-percent` for styling.
