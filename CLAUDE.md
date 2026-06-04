@@ -176,7 +176,15 @@ When creating or rewriting primitive stories, follow this format by default:
 - Story order: `Default` first, then state variants (`Disabled`, `Readonly`, `Required`, etc.), then form/value examples (`ReactiveForms`, `TemplateDrivenForms`, `Validation`) and advanced examples.
 - `Default` should be a small inline template using shared style constants from `packages/primitives/storybook/styles.ts`; standalone component stories must set `parameters: source(rawSource)` so "Show code" displays the full source.
 - For form controls, include form integration and controlled/template-driven examples when the primitive supports them. Prefer Checkbox/Radio/Switch stories as references.
+- In form stories and demos, every visible `<label>` for an interactive control must be explicitly associated with the control: use `for`/`id` for native controls, `htmlFor` when using `RdxLabelDirective`, or `rdxFieldLabel` when the control is inside `rdxFieldRoot`. Do not leave a visual label next to an input, checkbox, radio, or switch without a programmatic association.
 - Story export names should describe the behavior, not implementation details (`TemplateDrivenForms`, not `RadioGroupComponent`).
+
+### Form primitives
+
+- `Input` is the headless native text input primitive (`input[rdxInput]`). It can be used standalone, but should be wrapped in `Field` when it needs a label, description, error text, or inherited invalid/disabled/required state.
+- `Field` groups one control with its label, description, error message, and state. Use `rdxFieldRoot`, `rdxFieldLabel`, `rdxFieldDescription`, `rdxFieldError`, and either `rdxFieldControl` or a compatible control such as `rdxInput`.
+- `Fieldset` groups related fields with native `fieldset`/`legend` semantics. Use `fieldset[rdxFieldsetRoot]` and `legend[rdxFieldsetLegend]`; disabled state belongs on the root and is exposed to the legend with `data-disabled`.
+- For larger form demos, prefer composing `Fieldset` → `Field` → `Input` so Storybook and `/primitives/components/*.md` examples show real accessible form structure.
 
 ### Storybook handbook index
 
@@ -283,6 +291,7 @@ nx run primitives:test --testFile packages/primitives/<name>/__tests__/<file>.sp
 ## Accessibility
 
 - Follow WAI-ARIA authoring practices for the component pattern.
+- Every visible label for a form control must be programmatically connected to that control. Prefer native `for`/`id`; use `htmlFor` on `RdxLabelDirective` or `rdxFieldLabel` inside `rdxFieldRoot` when using project primitives.
 - Use `role`, `aria-*` attributes in `host` bindings.
 - Support keyboard navigation (`arrowDown`, `arrowUp`, `home`, `end`, `enter`, `space`) via `(keydown.*)` host listeners.
 - Use `useArrowNavigation` from `@radix-ng/primitives/core` for list navigation.

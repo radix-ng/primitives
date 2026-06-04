@@ -1,0 +1,72 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as FieldsetStories from './fieldset.stories';
+import { RdxFieldsetRoot } from '../src/fieldset-root';
+
+<Meta title="Primitives/Fieldset" of={FieldsetStories} />
+
+# Fieldset
+
+#### Groups related form controls with a legend and shared disabled state.
+
+<Canvas sourceState="hidden" of={FieldsetStories.Default} />
+
+## Features
+
+- ✅ Uses native `fieldset` and `legend` semantics.
+- ✅ Disables all form controls in the group with one prop.
+- ✅ Exposes disabled state with `data-disabled`.
+- ✅ Composes with Field and Input.
+
+## Import
+
+```typescript
+import { RdxFieldsetRoot, RdxFieldsetLegend } from '@radix-ng/primitives/fieldset';
+```
+
+## Anatomy
+
+```html
+<fieldset rdxFieldsetRoot>
+  <legend rdxFieldsetLegend>Shipping address</legend>
+  <!-- fields -->
+</fieldset>
+```
+
+## Examples
+
+### Default
+
+A fieldset groups related Field and Input primitives under one native legend.
+
+<Canvas of={FieldsetStories.Default} />
+
+### Disabled
+
+Disabled state is applied to the native fieldset and exposed to the legend for styling.
+
+<Canvas of={FieldsetStories.Disabled} />
+
+### Signup form
+
+A larger form groups account details and submits values from fields inside the fieldset.
+
+<Canvas of={FieldsetStories.SignupForm} />
+
+## API Reference
+
+### Root
+
+`RdxFieldsetRoot`
+
+<ArgTypes of={RdxFieldsetRoot} />
+
+### Legend
+
+`RdxFieldsetLegend`
+
+Reads disabled state from the root context and exposes it via `data-disabled`.
+
+## Accessibility
+
+Use Fieldset when a label applies to a group of related controls. The native `legend` gives the
+group an accessible name, and the native `disabled` attribute disables descendant form controls.
