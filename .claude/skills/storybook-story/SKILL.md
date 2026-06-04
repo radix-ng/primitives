@@ -12,13 +12,34 @@ description: |
 
 ## Checklist — run through this before writing any story file
 
-1. **One component → one file.** Every standalone story component gets its own file:
+1. **All stories are standalone Angular components — no inline templates with `props`.**
+   Using `props` in a `render()` function (e.g. `props: { r: demoRadio }`) fails when a story
+   is embedded via `<Canvas>` in an MDX docs page. Every story must render via its own
+   standalone component:
+
+   ```ts
+   // ✅ correct
+   export const Default: Story = {
+     parameters: source(defaultSource),
+     render: () => ({ template: `<radio-default-example />` })
+   };
+
+   // ❌ wrong — props are not available in MDX Canvas embeds
+   export const Default: Story = {
+     render: () => ({
+       props: { r: demoRadio },
+       template: `<div [class]="r.group">...`
+     })
+   };
+   ```
+
+2. **One component → one file.** Every standalone story component gets its own file:
    `stories/select-default.ts`, `stories/select-with-scroll.ts`, etc.
    Never put multiple story components in a single `stories/<name>.ts`.
 
    > Reason: `?raw` imports the entire file, so a shared file shows all source for every story.
 
-2. **`?raw` import per story file.** In `<name>.stories.ts`:
+3. **`?raw` import per story file.** In `<name>.stories.ts`:
 
    ```ts
    import defaultSource from './select-default?raw';
@@ -34,15 +55,15 @@ description: |
 
    Each story export gets `parameters: source(itsOwnFile?raw)`.
 
-3. **`tailwindDemoDecorator()`** is required in `decorators`. No `styleUrl`, no inline `<style>`.
+4. **`tailwindDemoDecorator()`** is required in `decorators`. No `styleUrl`, no inline `<style>`.
 
-4. **Semantic tokens only** in templates: `bg-background`, `text-foreground`, `bg-muted`, `bg-popover`, `border-border`, `text-muted-foreground`, `text-primary-foreground`. No raw colors (`violet`, `mauve`, `white`, `black`).
+5. **Semantic tokens only** in templates: `bg-background`, `text-foreground`, `bg-muted`, `bg-popover`, `border-border`, `text-muted-foreground`, `text-primary-foreground`. No raw colors (`violet`, `mauve`, `white`, `black`).
 
-5. **Shared style constants** from `packages/primitives/storybook/styles.ts` (`cn`, `demoButton`, `demoMenu`, etc.). Extend `styles.ts` when a pattern recurs — don't inline long class strings.
+6. **Shared style constants** from `packages/primitives/storybook/styles.ts` (`cn`, `demoButton`, `demoMenu`, etc.). Extend `styles.ts` when a pattern recurs — don't inline long class strings.
 
-6. **Story order:** `Default` first, then state variants, then advanced examples.
+7. **Story order:** `Default` first, then state variants, then advanced examples.
 
-7. **Wrapper component** from `packages/primitives/storybook/tailwind-demo.ts`. It marks the root with `data-demo="tailwind"`.
+8. **Wrapper component** from `packages/primitives/storybook/tailwind-demo.ts`. It marks the root with `data-demo="tailwind"`.
 
 ## Docs MDX template
 
