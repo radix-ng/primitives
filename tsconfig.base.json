@@ -30,6 +30,7 @@
             "@radix-ng/primitives/dropdown-menu": ["packages/primitives/dropdown-menu/index.ts"],
             "@radix-ng/primitives/editable": ["packages/primitives/editable/index.ts"],
             "@radix-ng/primitives/field": ["packages/primitives/field/index.ts"],
+            "@radix-ng/primitives/input": ["packages/primitives/input/index.ts"],
             "@radix-ng/primitives/label": ["packages/primitives/label/index.ts"],
             "@radix-ng/primitives/focus-scope": ["packages/primitives/focus-scope/index.ts"],
             "@radix-ng/primitives/focus-guards": ["packages/primitives/focus-guards/index.ts"],

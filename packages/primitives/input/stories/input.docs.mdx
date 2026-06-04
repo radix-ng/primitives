@@ -1,0 +1,67 @@
+import {Canvas, Meta, ArgTypes} from '@storybook/addon-docs/blocks';
+import * as Stories from './input.stories';
+import {RdxInputDirective} from '../src/input.directive';
+
+<Meta title="Primitives/Input" />
+
+# Input
+
+#### A native text input with headless state attributes and Field integration.
+
+<Canvas sourceState="hidden" of={Stories.Default} />
+
+## Features
+
+- ✅ Works as a standalone native input.
+- ✅ Integrates with Field labels, descriptions, errors, and state.
+- ✅ Supports controlled value, default value, disabled, required, and invalid states.
+- ✅ Exposes state through data attributes for styling.
+
+## Import
+
+```ts
+import { RdxInputDirective } from '@radix-ng/primitives/input';
+```
+
+## Anatomy
+
+Use `rdxInput` directly on a native input. Wrap it in Field when you need label, description, and error relationships.
+
+```html
+<div rdxFieldRoot>
+    <label rdxFieldLabel>Email</label>
+    <input rdxInput />
+    <p rdxFieldDescription>Used for account notifications.</p>
+    <p rdxFieldError>Enter a valid email address.</p>
+</div>
+```
+
+## Examples
+
+### Disabled
+
+Disables the native input and exposes `data-disabled`.
+
+<Canvas of={Stories.Disabled} />
+
+### With Field
+
+Connects the input to Field label, description, and validation state.
+
+<Canvas of={Stories.WithField} />
+
+### Reactive Forms
+
+Uses Angular reactive forms while Field reflects validation state.
+
+<Canvas of={Stories.ReactiveForms} />
+
+### Signup Form
+
+Combines multiple inputs, Field state, a checkbox, and a submit button in a larger form.
+
+<Canvas of={Stories.SignupForm} />
+
+## API Reference
+
+<ArgTypes of={RdxInputDirective} />

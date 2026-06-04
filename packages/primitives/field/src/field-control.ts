@@ -36,6 +36,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
 export class RdxFieldControl {
     protected readonly rootContext = injectFieldRootContext()!;
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    private initialValue = '';
 
     /**
      * Control id. Labels and descriptions use this value for accessible relationships.
@@ -59,6 +60,7 @@ export class RdxFieldControl {
         });
 
         afterNextRender(() => {
+            this.initialValue = this.currentValue();
             this.syncFilled();
         });
     }
@@ -69,13 +71,14 @@ export class RdxFieldControl {
 
     onBlur(): void {
         this.rootContext.setFocused(false);
+        this.rootContext.setTouched(true);
     }
 
     syncFilled(): void {
-        const element = this.elementRef.nativeElement as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
-        const value = element.value;
+        const value = this.currentValue();
 
         this.rootContext.setFilled(Array.isArray(value) ? value.length > 0 : value != null && value !== '');
+        this.rootContext.setDirty(value !== this.initialValue);
     }
 
     protected isNativeFormControl(): boolean {
@@ -83,4 +86,9 @@ export class RdxFieldControl {
     }
 
     protected readonly dataAttr = attr;
+
+    private currentValue(): string {
+        const element = this.elementRef.nativeElement as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+        return element.value ?? '';
+    }
 }

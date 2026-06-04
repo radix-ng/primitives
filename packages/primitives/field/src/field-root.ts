@@ -29,7 +29,9 @@ const fieldRootContext = () => {
         addErrorId: (id: string) => root.errorIds.update((ids) => addId(ids, id)),
         removeErrorId: (id: string) => root.errorIds.update((ids) => removeId(ids, id)),
         setFocused: (value: boolean) => root.focusedValue.set(value),
-        setFilled: (value: boolean) => root.filledValue.set(value)
+        setFilled: (value: boolean) => root.filledValue.set(value),
+        setDirty: (value: boolean) => root.dirtyValue.set(value),
+        setTouched: (value: boolean) => root.touchedValue.set(value)
     };
 };
 
@@ -118,12 +120,14 @@ export class RdxFieldRoot {
 
     readonly focusedValue = signal(false);
     readonly filledValue = signal(false);
+    readonly dirtyValue = signal(false);
+    readonly touchedValue = signal(false);
 
     readonly invalidState = computed(() => this.invalid());
     readonly disabledState = computed(() => this.disabled());
     readonly requiredState = computed(() => this.required());
-    readonly dirtyState = computed(() => this.dirty());
-    readonly touchedState = computed(() => this.touched());
+    readonly dirtyState = computed(() => this.dirty() || this.dirtyValue());
+    readonly touchedState = computed(() => this.touched() || this.touchedValue());
     readonly filledState = computed(() => this.filled() ?? this.filledValue());
     readonly focusedState = computed(() => this.focused() ?? this.focusedValue());
 
