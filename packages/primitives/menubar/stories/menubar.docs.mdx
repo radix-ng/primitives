@@ -1,118 +1,140 @@
-import {ArgTypes, Canvas, Markdown, Meta} from "@storybook/addon-docs/blocks";
-import * as MenubarStories from "./menubar.stories";
-import {RdxMenuTriggerDirective} from "../../menu";
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './menubar.stories';
+import { RdxMenubarRoot } from '../src/menubar-root';
 
 <Meta title="Primitives/Menubar" />
 
-# Menu Bar
+# Menubar
 
 #### A visually persistent menu common in desktop applications that provides quick access to a consistent set of commands.
 
-<Canvas sourceState="hidden" of={MenubarStories.Default} />
+Menubar coordinates a row of [Menu](?path=/docs/primitives-menu--docs) primitives. Each top-level
+menu is a `rdxMenuRoot` with a standard `rdxMenuTrigger`; the menubar manages which one is open and wires
+up arrow-key navigation and hover-to-switch behavior between them.
+
+<Canvas sourceState="hidden" of={Stories.Default} />
 
 ## Features
 
-- ✅ Can be controlled or uncontrolled.
-- ✅ Supports submenus.
-- ✅ Supports items, labels, groups of items.
-- ✅ Supports checkable items (single or multiple).
-- ✅ Customize side, alignment, offsets.
-- ✅ Focus is fully managed.
-- ✅ Full keyboard navigation.
+- ✅ Horizontal row of menus with a single open menu at a time.
+- ✅ Open a menu by click or keyboard; once one is open, hovering a sibling trigger switches to it.
+- ✅ ArrowLeft / ArrowRight move between triggers; ArrowDown / ArrowUp open the focused menu.
+- ✅ Each menu reuses the full Menu primitive — items, checkbox/radio, submenus, separators.
+- ✅ Escape closes the open menu and returns focus to its trigger.
+- ✅ Headless — state is exposed via `data-state` and menu item state attributes; styling is up to the consumer.
+
+## Import
+
+```typescript
+import { RdxMenubarRoot } from '@radix-ng/primitives/menubar';
+import { RdxMenuModule } from '@radix-ng/primitives/menu';
+```
+
+Or import the menubar parts through the module:
+
+```typescript
+import { RdxMenubarModule } from '@radix-ng/primitives/menubar';
+```
 
 ## Anatomy
 
+The menubar is a `rdxMenubarRoot` containing one `ng-container rdxMenuRoot` per menu. Inside each,
+a standard `rdxMenuTrigger` opens a Menu popup. Keep the top-level popup mounted and hide it with
+`data-closed` styles.
+
 ```html
-<div rdxMenuBarRoot>
-    <div
-        rdxMenuBarItem
-        rdxMenuBarTrigger
-        [menuTriggerFor]="file"
-    >
-        File
-    </div>
-</div>
+<div rdxMenubarRoot>
+    <!-- File -->
+    <ng-container #fileMenu="rdxMenuRoot" rdxMenuRoot>
+        <button rdxMenuTrigger>File</button>
 
-<ng-template #file>
-    <div rdxMenuBarContent>
-        <div rdxMenuBarItem>New Tab</div>
-        <div rdxMenubarSeparator></div>
-        <div rdxMenuBarItem rdxMenuBarTrigger [menuTriggerFor]="share">
-            Share
+        <div class="data-[closed]:hidden" align="start" sideOffset="4" rdxMenuPositioner>
+            <div rdxMenuPopup>
+                <button rdxMenuItem>New Tab</button>
+                <div rdxMenuSeparator></div>
+
+                <!-- submenu -->
+                <ng-container #shareSub="rdxMenuRoot" rdxMenuRoot>
+                    <button rdxMenuSubTrigger>Share ›</button>
+                    @if (shareSub.open()) {
+                        <div side="right" align="start" rdxMenuPositioner>
+                            <div rdxMenuPopup>
+                                <button rdxMenuItem>Email Link</button>
+                            </div>
+                        </div>
+                    }
+                </ng-container>
+
+                <button rdxMenuItem>Print…</button>
+            </div>
         </div>
-        <div rdxMenubarSeparator></div>
-        <div rdxMenuBarItem>Print…</div>
-    </div>
-</ng-template>
+    </ng-container>
 
-<ng-template #share>
-    <div rdxMenuBarContent>
-        <div rdxMenuBarItem>Undo</div>
-        <div rdxMenuBarItem>Redo</div>
-        <div rdxMenubarSeparator></div>
-        <div rdxMenuBarItem>Cut</div>
-        <div rdxMenuBarItem>Copy</div>
-        <div rdxMenuBarItem>Paste</div>
-    </div>
-</ng-template>
+    <!-- Edit -->
+    <ng-container #editMenu="rdxMenuRoot" rdxMenuRoot>
+        <button rdxMenuTrigger>Edit</button>
+
+        <div class="data-[closed]:hidden" align="start" sideOffset="4" rdxMenuPositioner>
+            <div rdxMenuPopup>
+                <button rdxMenuItem>Undo</button>
+                <button rdxMenuItem>Redo</button>
+            </div>
+        </div>
+    </ng-container>
+</div>
 ```
+
+## Examples
+
+### Default
+
+A four-menu bar (File, Edit, View, Profiles) with a submenu, checkbox items, and a radio group.
+Click a trigger to open it, then hover the other triggers to switch, or use the arrow keys.
+
+<Canvas of={Stories.Default} />
+
+## Keyboard interactions
+
+| Key                                 | Behavior                                                            |
+| ----------------------------------- | ------------------------------------------------------------------ |
+| <kbd>ArrowDown</kbd>                | Opens the focused trigger's menu and moves focus to the first item. |
+| <kbd>ArrowUp</kbd>                  | Opens the focused trigger's menu and moves focus to the last item.  |
+| <kbd>ArrowRight</kbd>              | Moves to the next trigger. Opens it if a menu was already open.     |
+| <kbd>ArrowLeft</kbd>               | Moves to the previous trigger. Opens it if a menu was already open. |
+| <kbd>Home</kbd>                     | Moves to the first trigger.                                         |
+| <kbd>End</kbd>                      | Moves to the last trigger.                                          |
+| <kbd>Escape</kbd>                   | Closes the open menu and returns focus to its trigger.             |
+| <kbd>Enter</kbd> / <kbd>Space</kbd> | Activates the focused item (handled by the Menu primitive).        |
+
+Triggers move with a roving tabindex: only one trigger is in the tab order at a time, and
+arrow keys move focus between them without leaving the menubar. Disabled triggers are skipped.
 
 ## API Reference
 
-### Root
-Contains all the parts of a menubar and extend `CdkMenuBar`.
+### RdxMenubarRoot
 
+The horizontal container. Provides the coordination context consumed by each `rdxMenuTrigger`.
+Exposes `data-orientation`, `data-has-submenu-open`, and `role="menubar"`.
 
-### Trigger
-The button that toggles the content. By default, the `Content` will position itself against the trigger.
+<ArgTypes of={RdxMenubarRoot} />
 
-<ArgTypes of={RdxMenuTriggerDirective}/>
+### Menu Trigger
 
+Use the standard `rdxMenuTrigger` inside each top-level `rdxMenuRoot`. When it is a direct child
+menu of `rdxMenubarRoot`, the menubar wires it for roving focus, hover switching, and ArrowLeft /
+ArrowRight navigation. There is no separate menubar trigger directive — the menu trigger reports its
+interactions to the menubar through context, mirroring [Base UI](https://base-ui.com/react/components/menubar).
 
-| Data attribute     | Value                           |
-|--------------------|---------------------------------|
-| [data-state]       | <code>`closed` or `open`</code> |
-| [data-highlighted] | Present when highlighted        |
-| [data-disabled]    | Present when disabled           |
+During hover-switching the trigger keeps focus (the popup opens without grabbing it), so the bar
+stays keyboard-navigable. It also reports `role="menuitem"` and is taken out of the tab order
+(`tabindex="-1"`) so the whole bar acts as a single tab stop.
 
-### Content
-The component that pops out when a menu is open.
+| Data attribute | Value                  |
+| -------------- | ---------------------- |
+| `[data-state]` | `"open"` or `"closed"` |
 
-### Item
-The component that contains the menubar items.
+### Menu parts
 
-### Group
-Used to group multiple `Items`.
-
-### Label
-Used to render a label. It won't be focusable using arrow keys.
-
-### CheckboxItem
-An item that can be controlled and rendered like a checkbox.
-
-| Data attribute     | Value                           |
-|--------------------|---------------------------------|
-| [data-state]       | <code>`closed` or `open`</code> |
-| [data-highlighted] | Present when highlighted        |
-| [data-disabled]    | Present when disabled           |
-
-
-### RadioGroup
-Used to group multiple `RadioItems`.
-
-### ItemIndicator
-Renders when the parent `CheckboxItem` or `RadioItem` is checked.
-You can style this element directly, or you can use it as a wrapper to put an icon into, or both.
-
-| Data attribute | Value                                 |
-|----------------|---------------------------------------|
-| [data-state]   | <code>`checked` or `unchecked`</code> |
-
-### Separator
-Used to visually separate items in a menubar menu.
-
-
-## Accessibility
-Adheres to the [Menu Button WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/) and uses [roving tabindex](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_roving_tabindex)
-to manage focus movement among menu items.
-
+All other parts — `rdxMenuPositioner`, `rdxMenuPopup`, `rdxMenuItem`, `rdxMenuCheckboxItem`,
+`rdxMenuRadioGroup`, `rdxMenuSubTrigger`, `rdxMenuSeparator`, … — come from the
+[Menu](?path=/docs/primitives-menu--docs) primitive and behave identically here.

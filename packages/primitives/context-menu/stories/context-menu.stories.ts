@@ -1,10 +1,5 @@
 import { LucideCheck, LucideDot } from '@lucide/angular';
 import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import {
-    RdxDropdownMenuContentDirective,
-    RdxDropdownMenuItemDirective,
-    RdxDropdownMenuTriggerDirective
-} from '../../dropdown-menu';
 
 import { RdxContextMenuContentDirective } from '../src/context-menu-content.directive';
 import { RdxContextMenuItemCheckboxDirective } from '../src/context-menu-item-checkbox.directive';
@@ -21,16 +16,13 @@ export default {
         moduleMetadata({
             imports: [
                 RdxContextMenuTriggerDirective,
-                RdxDropdownMenuTriggerDirective,
                 RdxContextMenuItemDirective,
-                RdxDropdownMenuItemDirective,
                 RdxContextMenuItemCheckboxDirective,
                 RdxContextMenuItemRadioDirective,
                 RdxContextMenuItemRadioGroupDirective,
                 RdxContextMenuItemIndicatorDirective,
                 RdxContextMenuSeparatorDirective,
                 RdxContextMenuContentDirective,
-                RdxDropdownMenuContentDirective,
                 LucideCheck,
                 LucideDot
             ]
@@ -69,14 +61,6 @@ export const Default: Story = {
     <button class="ContextMenuItem" rdxContextMenuItem>
         Reload <div class="RightSlot">⌘ + R</div>
     </button>
-    <button
-        class="ContextMenuItem"
-        rdxContextMenuItem
-        [rdxDropdownMenuTrigger]="share"
-        [side]="'right'"
-    >
-        More Tools <div class="RightSlot">></div>
-    </button>
 
     <div rdxContextMenuSeparator class="ContextMenuSeparator"></div>
 
@@ -113,17 +97,6 @@ export const Default: Story = {
   </div>
 </ng-template>
 
-<ng-template #share>
-  <div class="DropdownMenuContent" rdxDropdownMenuContent>
-    <button class="DropdownMenuItem" rdxDropdownMenuItem>Undo</button>
-    <button class="DropdownMenuItem" rdxDropdownMenuItem>Redo</button>
-    <div rdxDropdownMenuSeparator class="DropdownMenuSeparator"></div>
-    <button class="DropdownMenuItem" rdxDropdownMenuItem>Cut</button>
-    <button class="DropdownMenuItem" rdxDropdownMenuItem>Copy</button>
-    <button class="DropdownMenuItem" rdxDropdownMenuItem>Paste</button>
-  </div>
-</ng-template>
-
 <style>
 .context-menu-trigger {
     display: block;
@@ -150,8 +123,7 @@ button {
   all: unset;
 }
 
-.ContextMenuContent,
-.DropdownMenuContent {
+.ContextMenuContent {
   flex-direction: column;
   display: inline-flex;
   min-width: 220px;
@@ -163,7 +135,6 @@ button {
 }
 
 .ContextMenuItem,
-.DropdownMenuItem,
 .ContextMenuCheckboxItem,
 .ContextMenuRadioItem {
   font-size: 13px;
@@ -180,21 +151,18 @@ button {
 }
 
 .ContextMenuItem[data-disabled],
-.DropdownMenuItem[data-disabled],
 .ContextMenuCheckboxItem[data-disabled],
 .ContextMenuRadioItem[data-disabled] {
   color: var(--mauve-8);
   pointer-events: none;
 }
 .ContextMenuItem[data-highlighted],
-.DropdownMenuItem[data-highlighted],
 .ContextMenuCheckboxItem[data-highlighted],
 .ContextMenuRadioItem[data-highlighted] {
   background-color: var(--violet-9);
   color: var(--violet-1);
 }
 
-.DropdownMenuSeparator,
 .ContextMenuSeparator {
   height: 1px;
   background-color: var(--violet-6);

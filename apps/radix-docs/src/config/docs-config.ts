@@ -88,7 +88,6 @@ const docsConfig = {
                             label: 'Storybook'
                         },
                         { name: 'Dialog', url: '/primitives/components/dialog' },
-                        { name: 'Dropdown Menu', url: '/primitives/components/dropdown-menu' },
                         {
                             name: 'Editable',
                             url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-editable--docs',

@@ -1,86 +1,66 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideDynamicIcon, LucideX as X } from '@lucide/angular';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
+import { cn, demoButton, demoMenu } from '../../../storybook/styles';
 
 @Component({
     selector: 'menu-checkbox-items-story',
-    imports: [RdxMenuModule, LucideDynamicIcon],
-    styleUrl: 'styles.css',
+    imports: [RdxMenuModule],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-        <div class="MenuRoot" RdxMenuRoot>
-            <div
-                class="MenuTrigger"
-                [menuTriggerFor]="menuGroup"
-                align="start"
-                sideOffset="5"
-                alignOffset="-3"
-                RdxMenuItem
-                RdxMenuTrigger
-            >
-                File
-            </div>
-        </div>
+        <ng-container #root="rdxMenuRoot" rdxMenuRoot>
+            <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Options</button>
 
-        <ng-template #menuGroup>
-            <div class="MenuContent" RdxMenuContent>
-                <div
-                    class="MenuCheckboxItem inset"
-                    [checked]="checkedState()"
-                    (menuItemTriggered)="handleSelectAll()"
-                    RdxMenuItemCheckbox
-                >
-                    Select All
-                    <svg class="MenuItemIndicator" [lucideIcon]="X" RdxMenuItemIndicator size="16" strokeWidth="2" />
-                </div>
-
-                <div class="MenuSeparator" RdxMenuSeparator></div>
-                @for (item of options(); track $index) {
-                    <div
-                        class="MenuCheckboxItem inset"
-                        [checked]="selectedItems.includes(item)"
-                        (menuItemTriggered)="handleSelection(item)"
-                        RdxMenuItemCheckbox
-                    >
-                        {{ item }}
-                        <svg
-                            class="MenuItemIndicator"
-                            [lucideIcon]="X"
-                            RdxMenuItemIndicator
-                            size="16"
-                            strokeWidth="2"
-                        />
+            @if (root.open()) {
+                <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
+                    <div [class]="m.popup" rdxMenuPopup>
+                        <label
+                            [class]="m.selectableItem"
+                            [checked]="checkedState()"
+                            (onCheckedChange)="handleSelectAll()"
+                            rdxMenuCheckboxItem
+                        >
+                            <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>✓</span>
+                            Select All
+                        </label>
+                        <div [class]="m.separator" rdxMenuSeparator></div>
+                        @for (item of options(); track item) {
+                            <label
+                                [class]="m.selectableItem"
+                                [checked]="selectedItems().includes(item)"
+                                (onCheckedChange)="handleSelection(item)"
+                                rdxMenuCheckboxItem
+                            >
+                                <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>✓</span>
+                                {{ item }}
+                            </label>
+                        }
                     </div>
-                }
-            </div>
-        </ng-template>
+                </div>
+            }
+        </ng-container>
     `
 })
 export class MenuCheckboxItemsStory {
-    options = signal<string[]>(['Crows', 'Ravens', 'Magpies', 'Jackdaws']);
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly m = demoMenu;
 
-    selectedItems = this.options();
+    readonly options = signal<string[]>(['Crows', 'Ravens', 'Magpies', 'Jackdaws']);
+    readonly selectedItems = signal<string[]>(this.options());
 
-    handleSelection(option: string) {
-        if (this.selectedItems.includes(option)) {
-            this.selectedItems = this.selectedItems.filter((el) => el !== option);
-        } else {
-            this.selectedItems = this.selectedItems.concat(option);
-        }
+    handleSelection(option: string): void {
+        this.selectedItems.update((items) =>
+            items.includes(option) ? items.filter((el) => el !== option) : [...items, option]
+        );
     }
 
-    handleSelectAll() {
-        if (this.selectedItems.length === this.options().length) this.selectedItems = [];
-        else this.selectedItems = this.options();
+    handleSelectAll(): void {
+        this.selectedItems.update((items) => (items.length === this.options().length ? [] : this.options()));
     }
 
-    checkedState() {
-        return this.selectedItems.length === this.options().length
-            ? true
-            : this.selectedItems.length > 0
-              ? 'indeterminate'
-              : false;
+    checkedState(): boolean | 'indeterminate' {
+        const selected = this.selectedItems().length;
+        const total = this.options().length;
+        return selected === total ? true : selected > 0 ? 'indeterminate' : false;
     }
-
-    protected readonly X = X;
 }

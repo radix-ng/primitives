@@ -1,47 +1,50 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
+import { cn, demoButton, demoMenu } from '../../../storybook/styles';
 
 @Component({
     selector: 'menu-with-labels-items-story',
     imports: [RdxMenuModule],
-    styleUrl: 'styles.css',
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-        <div class="MenuRoot" RdxMenuRoot>
-            <div
-                class="MenuTrigger"
-                [menuTriggerFor]="menuGroup"
-                align="center"
-                sideOffset="8"
-                RdxMenuItem
-                RdxMenuTrigger
-            >
-                File
-            </div>
-        </div>
+        <ng-container #root="rdxMenuRoot" rdxMenuRoot>
+            <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Foods</button>
 
-        <ng-template #menuGroup>
-            <div class="MenuContent" RdxMenuContent>
-                <div RdxMenuGroup>
-                    @for (foodGroup of foodGroups; track $index) {
-                        <div class="MenuLabel" RdxMenuLabel>{{ foodGroup.label }}</div>
-
-                        @for (food of foodGroup.foods; track $index) {
-                            <div class="MenuItem" (onSelect)="handleSelect(food.value)" RdxMenuItem>
-                                {{ food.label }}
+            @if (root.open()) {
+                <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
+                    <div [class]="m.popup" rdxMenuPopup>
+                        @for (group of foodGroups; track $index) {
+                            <div rdxMenuGroup>
+                                @if (group.label) {
+                                    <span [class]="m.groupLabel" rdxMenuGroupLabel>{{ group.label }}</span>
+                                }
+                                @for (food of group.foods; track food.value) {
+                                    <button
+                                        [class]="m.item"
+                                        [disabled]="food.disabled ?? false"
+                                        (onSelect)="handleSelect(food.value)"
+                                        rdxMenuItem
+                                    >
+                                        {{ food.label }}
+                                    </button>
+                                }
                             </div>
+                            @if ($index < foodGroups.length - 1) {
+                                <div [class]="m.separator" rdxMenuSeparator></div>
+                            }
                         }
-                        @if ($index < foodGroups.length - 1) {
-                            <div class="MenuSeparator" RdxMenuSeparator></div>
-                        }
-                    }
+                    </div>
                 </div>
-            </div>
-        </ng-template>
+            }
+        </ng-container>
     `
 })
 export class MenuWithLabelsItemsStory {
-    handleSelect(food: string) {
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly m = demoMenu;
+
+    handleSelect(food: string): void {
         console.log(food);
     }
 
@@ -55,8 +58,7 @@ export class MenuWithLabelsItemsStory {
                 { value: 'apple', label: 'Apple' },
                 { value: 'banana', label: 'Banana' },
                 { value: 'blueberry', label: 'Blueberry' },
-                { value: 'grapes', label: 'Grapes' },
-                { value: 'pineapple', label: 'Pineapple' }
+                { value: 'grapes', label: 'Grapes' }
             ]
         },
         {
@@ -65,24 +67,15 @@ export class MenuWithLabelsItemsStory {
                 { value: 'aubergine', label: 'Aubergine' },
                 { value: 'broccoli', label: 'Broccoli' },
                 { value: 'carrot', label: 'Carrot', disabled: true },
-                { value: 'courgette', label: 'Courgette' },
-                { value: 'leek', label: 'Leek' }
+                { value: 'courgette', label: 'Courgette' }
             ]
         },
         {
             label: 'Meat',
             foods: [
                 { value: 'beef', label: 'Beef' },
-                { value: 'beef-with-sauce', label: 'Beef with sauce' },
                 { value: 'chicken', label: 'Chicken' },
-                { value: 'lamb', label: 'Lamb' },
-                { value: 'pork', label: 'Pork' }
-            ]
-        },
-        {
-            foods: [
-                { value: 'candies', label: 'Candies' },
-                { value: 'chocolates', label: 'Chocolates' }
+                { value: 'lamb', label: 'Lamb' }
             ]
         }
     ];

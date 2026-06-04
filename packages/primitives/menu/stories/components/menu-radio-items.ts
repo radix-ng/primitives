@@ -1,62 +1,40 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideDot as Dot, LucideDynamicIcon } from '@lucide/angular';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
+import { cn, demoButton, demoMenu } from '../../../storybook/styles';
 
 @Component({
     selector: 'menu-radio-items-story',
-    imports: [RdxMenuModule, LucideDynamicIcon],
-    styleUrl: 'styles.css',
+    imports: [RdxMenuModule],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-        <div class="MenuRoot" RdxMenuRoot>
-            <div
-                class="MenuTrigger"
-                [menuTriggerFor]="menuGroup"
-                side="bottom"
-                align="start"
-                sideOffset="5"
-                alignOffset="-3"
-                RdxMenuItem
-                RdxMenuTrigger
-            >
-                File
-            </div>
-        </div>
+        <ng-container #root="rdxMenuRoot" rdxMenuRoot>
+            <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>View</button>
 
-        <ng-template #menuGroup>
-            <div class="MenuContent" RdxMenuContent>
-                <div class="MenuItem inset" RdxMenuItem>Minimize window</div>
-                <div class="MenuItem inset" RdxMenuItem>Zoom</div>
-                <div class="MenuItem inset" RdxMenuItem>Smaller</div>
-
-                <div class="MenuSeparator" RdxMenuSeparator></div>
-                <div RdxMenuRadioGroup>
-                    @for (item of items(); track $index) {
-                        <div
-                            class="MenuRadioItem inset"
-                            [checked]="item === selectedItem"
-                            (menuItemTriggered)="selectedItem = item"
-                            RdxMenuItemRadio
-                        >
-                            {{ item }}
-                            <svg
-                                class="MenuItemIndicator"
-                                [lucideIcon]="Dot"
-                                RdxMenuItemIndicator
-                                size="16"
-                                strokeWidth="5"
-                            />
+            @if (root.open()) {
+                <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
+                    <div [class]="m.popup" rdxMenuPopup>
+                        <button [class]="m.item" rdxMenuItem>Minimize window</button>
+                        <button [class]="m.item" rdxMenuItem>Zoom</button>
+                        <div [class]="m.separator" rdxMenuSeparator></div>
+                        <div [(value)]="selectedItem" rdxMenuRadioGroup>
+                            @for (item of items(); track item) {
+                                <label [class]="m.selectableItem" [value]="item" rdxMenuRadioItem>
+                                    <span [class]="m.itemIndicator" rdxMenuRadioItemIndicator>●</span>
+                                    {{ item }}
+                                </label>
+                            }
                         </div>
-                    }
+                    </div>
                 </div>
-            </div>
-        </ng-template>
+            }
+        </ng-container>
     `
 })
 export class MenuRadioItemsStory {
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly m = demoMenu;
+
     readonly items = signal(['README.md', 'index.js', 'page.css']);
-
-    selectedItem: string | undefined;
-
-    protected readonly Dot = Dot;
+    selectedItem: string | undefined = undefined;
 }

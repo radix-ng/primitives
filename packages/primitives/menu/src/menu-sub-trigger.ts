@@ -1,0 +1,192 @@
+import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
+import {
+    booleanAttribute,
+    computed,
+    DestroyRef,
+    Directive,
+    effect,
+    ElementRef,
+    inject,
+    input,
+    numberAttribute,
+    signal
+} from '@angular/core';
+import { RdxDismissableLayerBranch } from '@radix-ng/primitives/dismissable-layer';
+import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
+import { injectRdxMenuRootContext, RdxMenuRoot } from './menu-root';
+
+const numberOrUndefined = (value: NumberInput | undefined) => (value == null ? undefined : numberAttribute(value));
+const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();
+
+/**
+ * An item inside a parent menu that opens a nested submenu.
+ *
+ * Place this inside `ng-container rdxMenuRoot` that wraps both the trigger
+ * and the submenu positioner. The inner root provides the submenu context;
+ * the outer popup discovers this element via `[rdxMenuSubTrigger]` in its
+ * ITEM_SELECTOR and includes it in keyboard navigation.
+ */
+@Directive({
+    selector: '[rdxMenuSubTrigger]',
+    exportAs: 'rdxMenuSubTrigger',
+    hostDirectives: [RdxPopperAnchor, RdxDismissableLayerBranch],
+    host: {
+        '[attr.type]': 'nativeButtonState() ? "button" : undefined',
+        role: 'menuitem',
+        tabindex: '-1',
+        '[attr.aria-haspopup]': '"menu"',
+        '[attr.aria-expanded]': 'submenuContext.isOpen()',
+        '[attr.aria-disabled]': 'disabled() ? true : undefined',
+        '[attr.disabled]': 'nativeButtonState() && disabled() ? "" : undefined',
+        '[attr.data-state]': 'submenuContext.isOpen() ? "open" : "closed"',
+        '[attr.data-popup-open]': 'submenuContext.isOpen() ? "" : undefined',
+        '[attr.data-highlighted]': 'highlighted() ? "" : undefined',
+        '[attr.data-disabled]': 'disabled() ? "" : undefined',
+        '[attr.data-label]': 'label() ?? undefined',
+        '(focus)': 'onFocus()',
+        '(blur)': 'onBlur()',
+        '(click)': 'onClick()',
+        '(keydown.arrowright)': 'onArrowRight($event)',
+        '(pointermove)': 'onPointerMove($event)',
+        '(pointerleave)': 'onPointerLeave()',
+        '(rdx-menu-subtrigger-clear-highlight)': 'clearHighlight()'
+    }
+})
+export class RdxMenuSubTrigger {
+    protected readonly submenuContext = injectRdxMenuRootContext()!;
+    private readonly submenuRoot = inject(RdxMenuRoot);
+    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    private readonly destroyRef = inject(DestroyRef);
+    private readonly isFocused = signal(false);
+    private openTimer: ReturnType<typeof setTimeout> | undefined;
+
+    /** Whether this trigger (and therefore the submenu) is disabled. */
+    readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /** Whether this trigger should be treated as a native button. Auto-detected for `<button>`. */
+    readonly nativeButton = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /** Whether hovering the trigger opens the submenu. */
+    readonly openOnHover = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
+
+    /** Delay before hover opens the submenu, in milliseconds. */
+    readonly delay = input<number | undefined, NumberInput | undefined>(100, { transform: numberOrUndefined });
+
+    /** Delay before a pending hover close runs, in milliseconds. */
+    readonly closeDelay = input<number | undefined, NumberInput | undefined>(0, { transform: numberOrUndefined });
+
+    /** Explicit typeahead label. When set, overrides textContent for character search. */
+    readonly label = input<string | undefined>(undefined);
+
+    /** Highlighted when focused OR while the submenu is open. */
+    protected readonly highlighted = computed(() => this.isFocused() || this.submenuContext.isOpen());
+    protected readonly nativeButtonState = computed(
+        () => this.nativeButton() || this.elementRef.nativeElement.tagName === 'BUTTON'
+    );
+
+    constructor() {
+        this.submenuContext.markAsSubmenu();
+
+        effect((onCleanup) => {
+            const el = this.elementRef.nativeElement;
+            const unregister = this.submenuContext.registerTrigger(el);
+            submenuRootsByTrigger.set(el, this.submenuRoot);
+
+            onCleanup(() => {
+                unregister();
+                submenuRootsByTrigger.delete(el);
+            });
+        });
+
+        this.destroyRef.onDestroy(() => {
+            clearTimeout(this.openTimer);
+        });
+    }
+
+    protected onFocus(): void {
+        if (!this.disabled()) {
+            this.clearSiblingHighlights();
+            this.isFocused.set(true);
+        }
+    }
+
+    protected onBlur(): void {
+        this.isFocused.set(false);
+    }
+
+    protected onClick(): void {
+        if (this.disabled()) return;
+        this.clearSiblingHighlights();
+        if (!this.submenuContext.isOpen()) {
+            this.closeSiblingSubmenus();
+        }
+        this.submenuContext.toggle();
+    }
+
+    protected onArrowRight(event: Event): void {
+        if (this.disabled()) return;
+        event.preventDefault();
+        event.stopPropagation();
+        this.clearSiblingHighlights();
+        if (!this.submenuContext.isOpen()) {
+            this.closeSiblingSubmenus();
+            this.submenuContext.show();
+        }
+    }
+
+    protected onPointerMove(event: PointerEvent): void {
+        if (event.pointerType !== 'mouse' || this.disabled() || !this.openOnHover()) return;
+
+        this.clearSiblingHighlights();
+        if (this.submenuContext.highlightItemOnHover() && document.activeElement !== this.elementRef.nativeElement) {
+            this.elementRef.nativeElement.focus({ preventScroll: true });
+        }
+
+        if (!this.submenuContext.isOpen()) {
+            clearTimeout(this.openTimer);
+            this.closeSiblingSubmenus();
+            this.openTimer = setTimeout(() => {
+                this.submenuContext.show(false);
+            }, this.delay() ?? 100);
+        }
+    }
+
+    protected onPointerLeave(): void {
+        clearTimeout(this.openTimer);
+    }
+
+    protected clearHighlight(): void {
+        this.isFocused.set(false);
+    }
+
+    private closeSiblingSubmenus(): void {
+        const currentTrigger = this.elementRef.nativeElement;
+        const parentPopup = currentTrigger.closest<HTMLElement>('[rdxMenuPopup]');
+
+        if (!parentPopup) return;
+
+        parentPopup.querySelectorAll<HTMLElement>('[rdxMenuSubTrigger]').forEach((trigger) => {
+            if (trigger === currentTrigger || trigger.closest('[rdxMenuPopup]') !== parentPopup) {
+                return;
+            }
+
+            submenuRootsByTrigger.get(trigger)?.close();
+            trigger.dispatchEvent(new CustomEvent('rdx-menu-subtrigger-clear-highlight'));
+        });
+    }
+
+    private clearSiblingHighlights(): void {
+        const currentTrigger = this.elementRef.nativeElement;
+        const parentPopup = currentTrigger.closest<HTMLElement>('[rdxMenuPopup]');
+
+        if (!parentPopup) return;
+
+        parentPopup.querySelectorAll<HTMLElement>('[rdxMenuSubTrigger]').forEach((trigger) => {
+            if (trigger === currentTrigger || trigger.closest('[rdxMenuPopup]') !== parentPopup) {
+                return;
+            }
+
+            trigger.dispatchEvent(new CustomEvent('rdx-menu-subtrigger-clear-highlight'));
+        });
+    }
+}

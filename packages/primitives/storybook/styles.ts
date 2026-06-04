@@ -149,3 +149,54 @@ export const demoTooltip = {
     popup: 'border-border bg-popover text-popover-foreground select-none rounded-md border px-3 py-2 text-sm leading-none shadow-md',
     arrow: 'fill-popover'
 } as const;
+
+/**
+ * Menubar parts: horizontal application menu bar.
+ *
+ * `root` is the horizontal container. `trigger` styles each top-level button.
+ * Content popup and items reuse `demoMenu.*`.
+ */
+export const demoMenubar = {
+    root: 'inline-flex items-center rounded-md border border-border bg-background p-1 shadow-sm',
+    trigger: cn(
+        'flex h-8 cursor-default select-none items-center rounded-sm px-3 text-sm font-medium outline-none',
+        'hover:bg-muted focus-visible:bg-muted',
+        'data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
+    ),
+    shortcut: 'ml-auto pl-4 text-xs text-muted-foreground data-[highlighted]:text-foreground'
+} as const;
+
+/**
+ * Menu parts: dropdown / context menus.
+ *
+ * Popup uses `bg-popover` so it lifts off the page. Items highlight via
+ * `data-[highlighted]` which the directives set on focus.
+ */
+export const demoMenu = {
+    positioner: 'z-50 data-[closed]:pointer-events-none',
+    popup: cn(
+        'bg-popover text-popover-foreground',
+        'min-w-[8rem] rounded-md border border-border p-1 shadow-md',
+        'data-[closed]:hidden data-[closed]:pointer-events-none'
+    ),
+    item: cn(
+        'relative flex w-full cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none',
+        'data-[highlighted]:bg-muted',
+        'data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
+    ),
+    /** Checkbox / radio items need left padding for the indicator. */
+    selectableItem: cn(
+        'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none',
+        'data-[highlighted]:bg-muted',
+        'data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
+    ),
+    /** Absolute-positioned span wrapping the check/dot icon. */
+    itemIndicator: 'absolute left-2 flex size-3.5 items-center justify-center',
+    separator: '-mx-1 my-1 h-px bg-border',
+    groupLabel: 'px-2 py-1.5 text-xs font-semibold text-muted-foreground',
+    /**
+     * Arrow span: SVG uses fill="currentColor" so set CSS `color` to match the popup surface.
+     * drop-shadow outlines the triangle in the border color so it's visible on light backgrounds.
+     */
+    arrow: cn('text-popover', '[filter:drop-shadow(0_0_1px_var(--color-border))]')
+} as const;
