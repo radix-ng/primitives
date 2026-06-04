@@ -29,6 +29,7 @@ import CompodocPlugin from './plugins/compodoc';
 
 import { installRdxDirectiveHighlight } from './highlight-rdx-directives';
 import './rdx-directive-highlight.css';
+import { light } from './themes';
 
 installRdxDirectiveHighlight();
 
@@ -103,6 +104,7 @@ const preview: Preview = {
 
     parameters: {
         docs: {
+            theme: light,
             toc: {
                 contentsSelector: '.sbdocs-content',
                 headingSelector: 'h2, h3',

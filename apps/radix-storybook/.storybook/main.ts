@@ -91,6 +91,8 @@ const config: StorybookConfig = {
         });
     },
 
+    staticDirs: ['../public'],
+
     docs: {}
 };
 
