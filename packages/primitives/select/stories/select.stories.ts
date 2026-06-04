@@ -1,61 +1,53 @@
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
-import {
-    SelectAlignedPosition,
-    SelectAlignedPositionWithScroll,
-    SelectDefault,
-    SelectDefaultWithScroll
-} from './select';
+import { SelectAlignedPosition } from './select-aligned-position';
+import { SelectAlignedPositionWithScroll } from './select-aligned-position-with-scroll';
+import alignedPositionWithScrollSource from './select-aligned-position-with-scroll?raw';
+import alignedPositionSource from './select-aligned-position?raw';
+import { SelectDefault } from './select-default';
+import defaultSource from './select-default?raw';
+import { SelectWithScroll } from './select-with-scroll';
+import withScrollSource from './select-with-scroll?raw';
 
 const html = String.raw;
+
+const source = (code: string) => ({
+    docs: { source: { code, language: 'typescript' } }
+});
 
 export default {
     title: 'Primitives/Select',
     decorators: [
         moduleMetadata({
-            imports: [SelectDefault, SelectDefaultWithScroll, SelectAlignedPosition, SelectAlignedPositionWithScroll]
+            imports: [SelectDefault, SelectWithScroll, SelectAlignedPosition, SelectAlignedPositionWithScroll]
         }),
         tailwindDemoDecorator()
-    ],
-    argTypes: {
-        align: {
-            options: ['start', 'center', 'end'],
-            control: { type: 'select' }
-        },
-        sideOffset: {
-            control: { type: 'number' }
-        }
-    }
+    ]
 } as Meta;
 
 type Story = StoryObj;
 
 export const Default: Story = {
-    args: {
-        disabled: false,
-        sideOffset: 5,
-        align: 'start'
-    },
-    render: (args) => ({
-        props: args,
+    parameters: source(defaultSource),
+    render: () => ({
         template: html`
-            <select-default [align]="align" [sideOffset]="sideOffset" />
+            <select-default />
         `
     })
 };
 
-export const DefaultWithScroll: Story = {
-    render: (args) => ({
-        props: args,
+export const WithScroll: Story = {
+    parameters: source(withScrollSource),
+    render: () => ({
         template: html`
-            <select-default-with-scroll />
+            <select-with-scroll />
         `
     })
 };
 
 export const AlignedPosition: Story = {
-    render: (args) => ({
-        props: args,
+    parameters: source(alignedPositionSource),
+    render: () => ({
         template: html`
             <select-aligned-position />
         `
@@ -63,8 +55,8 @@ export const AlignedPosition: Story = {
 };
 
 export const AlignedPositionWithScroll: Story = {
-    render: (args) => ({
-        props: args,
+    parameters: source(alignedPositionWithScrollSource),
+    render: () => ({
         template: html`
             <select-aligned-position-with-scroll />
         `

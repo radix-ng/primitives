@@ -241,7 +241,8 @@ Follow this section order (modeled on Base UI): **`# Name` + one-line `####` sum
 ### "Show code" / full source in stories
 
 - The demo wrapper is already stripped from the snippet globally via `parameters.docs.source.excludeDecorators` in `apps/radix-storybook/.storybook/preview.ts`.
-- For a story that just renders a standalone component tag (e.g. `<checkbox-validation-example />`), the "Show code" panel would only show that tag. To show the **full component source**, import it raw and feed it to `source.code`:
+- **Each standalone story component must live in its own file.** Never put multiple story components in a single `stories/<name>.ts` — `?raw` imports the entire file, so a shared file would show all components' source for every story. One component = one file: `stories/checkbox-validation.ts`, `stories/checkbox-indeterminate.ts`, etc.
+- For a story that renders a standalone component tag (e.g. `<checkbox-validation-example />`), the "Show code" panel would only show that tag. To show the **full component source**, import the file raw and feed it to `source.code`:
 
   ```ts
   import validationSource from './checkbox-validation?raw';
@@ -257,8 +258,8 @@ Follow this section order (modeled on Base UI): **`# Name` + one-line `####` sum
   };
   ```
 
-- `*.ts?raw` is wired by the `rawTsPlugin` in `.storybook/main.ts` (the AnalogJS Angular plugin shadows Vite's built-in `?raw`); types come from `packages/primitives/storybook/raw.d.ts`. Inline-template stories (source lives in the `.stories.ts`) don't need this.
-- When a story has a separate component file for `show code`, keep the `parameters: source(...)` import pointed at that story's own raw file. Do not point multiple story exports at one combined raw source if the storybook docs should show only the corresponding example.
+- `*.ts?raw` is wired by the `rawTsPlugin` in `.storybook/main.ts` (the AnalogJS Angular plugin shadows Vite's built-in `?raw`); types come from `packages/primitives/storybook/raw.d.ts`. Inline-template stories (source lives in `.stories.ts`) don't need this.
+- Each story export gets `parameters: source(itsOwnRawFile)` — never point two story exports at one combined source file.
 
 ## Shared composition primitives
 

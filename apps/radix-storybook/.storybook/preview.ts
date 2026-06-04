@@ -120,6 +120,23 @@ const preview: Preview = {
             // Drop the demo wrapper decorator from the "Show code" snippet.
             source: { excludeDecorators: true }
         },
+        viewport: {
+            defaultViewport: 'desktop',
+            viewports: {
+                mobile: {
+                    name: 'Mobile',
+                    styles: { width: '390px', height: '844px' }
+                },
+                tablet: {
+                    name: 'Tablet',
+                    styles: { width: '768px', height: '1024px' }
+                },
+                desktop: {
+                    name: 'Desktop',
+                    styles: { width: '1280px', height: '900px' }
+                }
+            }
+        },
         options: {
             storySort: {
                 method: 'alphabetical',
