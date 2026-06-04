@@ -4,65 +4,59 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 # Introduction
 
-> Radix-NG is an unofficial Angular port of [Radix UI](https://www.radix-ui.com/), thus we share the same principal and vision when building primitives.
+**Headless, signals-first UI primitives for Angular.**
 
-Radix Primitives is a low-level UI component library with a focus on accessibility, customization and developer experience. You can use these components either as the base layer of your design system, or adopt them incrementally.
+Radix NG is a low-level UI primitive library for Angular with a focus on accessibility,
+customization, and developer experience. Primitives are **headless** — they ship no styles and
+expose state via `data-*` attributes, so you can use them as the base layer of your design system
+or adopt them incrementally.
 
-## Vision
+The library grew out of an Angular port of [Radix UI](https://www.radix-ui.com/); its API and
+behavior now align primarily with [Base UI](https://base-ui.com/).
 
-The common understanding among us regarding UI elements such as accordions, checkboxes, comboboxes, dialogs, dropdowns, selects, sliders, and tooltips is well-established, guided by standards like those [documented by WAI-ARIA](https://www.w3.org/TR/wai-aria-practices/#aria_ex). These elements are foundational to our shared language in web development.
+## Features
 
-Yet, the reality we face with the current web platform offerings falls short. These essential elements are often missing, underdeveloped, or rigid in customization options.
+- **Headless** — no styles, full control. State is exposed through `data-*` attributes and CSS
+  custom properties so any styling approach works.
+- **Accessible** — built to the [WAI-ARIA authoring practices](https://www.w3.org/WAI/ARIA/apg/),
+  with keyboard navigation, focus management, and correct `role` / `aria-*` attributes.
+- **Signals-first** — modern Angular API throughout: `input()`, `model()`, `computed()`,
+  `signal()`, `effect()`.
+- **Composable** — primitives compose via Angular's
+  [Directive Composition API](https://angular.dev/guide/directives/directive-composition-api)
+  (`hostDirectives`) and shared building blocks (Popper, Dismissable Layer, Focus Scope, …).
+- **Uncontrolled by default** — all internal behavior is wired up out of the box; pass a
+  controlled value only when you need to.
+- **Tree-shakeable** — granular secondary entry points (`@radix-ng/primitives/<name>`); you pay
+  only for what you import.
 
-This forces developers into the challenging position of creating custom components from scratch, a task fraught with complexity. Consequently, the web is littered with components that fail to be accessible, perform poorly, and miss critical functionality.
+## Styling
 
-We aim to spearhead the development of an open-source, comprehensively funded library of components. This initiative seeks to empower the creation of design systems that are both accessible and rich in features, serving the needs of the community at large.
+Components ship with zero styles. Apply your own via the `data-*` state attributes that each
+primitive exposes — for example `[data-state="open"]`, `[data-disabled]`, `[data-highlighted]` —
+using vanilla CSS, Tailwind, CSS Modules, or any other tooling.
 
-## Angular Design Principles
+## Ecosystem
 
-- Standalone Directives
-- [Directive composition API](https://angular.dev/guide/directives/directive-composition-api)
-  Angular directives offer a great way to encapsulate reusable behaviors— directives can apply attributes, CSS classes, and event listeners to an element.
-
-### Dependency from
-
-- Angular CDK
-
-## Key Features
-
-Components adhere to the [WAI-ARIA design patterns](https://www.w3.org/TR/wai-aria-practices-1.2) where possible. We handle many of the difficult implementation details related to accessibility, including aria and role attributes, focus management, and keyboard navigation. Learn more in our [accessibility](./accessibility) overview.
-
-### Unstyled
-
-Components ship with zero styles, giving you complete control over styling. Components can be styled with any styling solution (vanilla CSS, CSS preprocessors & etc).
-
-### Opened
-
-Radix Primitives are designed to be customized to suit your needs. Our open component architecture provides you granular access to each component part, so you can wrap them and add your own event listeners, props, or refs.
-
-### Uncontrolled
-
-Where applicable, components are uncontrolled by default but can also be controlled, alternatively. All of the behavior wiring is handled internally, so you can get up and running as smoothly as possible, without needing to create any local states.
+- [OriginUI for Angular](https://originui-ng.com/) — production-ready styled components built on
+  these primitives
+- [shadcn/ui for Angular](https://ui.adrianub.dev/) — shadcn-style components
+- [DataGrid](https://originui-ng.com/table) — built with TanStack Table
 
 ## Community
 
-### Telegram
-
-To get involved to community, ask questions, and share tips.
-
-[Join our Telegram](https://t.me/radixng)
-
-### GitHub
-
-To file issues, request features, and contribute, check out our GitHub.
-
-[GitHub repo](https://github.com/radix-ng/primitives)
+- [Discord](https://discord.gg/NaJb2XRWX9) — questions, feedback, showcase
+- [Telegram](https://t.me/radixng) — community chat
+- [GitHub Discussions](https://github.com/radix-ng/primitives/discussions) — longer-form
+  questions and proposals
+- [GitHub Issues](https://github.com/radix-ng/primitives) — bug reports and feature requests
 
 ## Credits
 
-All credits go to these open-source works and resources, on which this solution is based:
+Built on the shoulders of:
 
 - [Radix UI](https://radix-ui.com) (MIT License)
+- [Base UI](https://base-ui.com) (MIT License)
 - [Radix Vue](https://radix-vue.com) (MIT License)
 - [Radix Svelte](https://radix-svelte.com) (MIT License)
 - [Spartan UI](https://www.spartan.ng/) (MIT License)
