@@ -27,6 +27,11 @@ import {
 import { applicationConfig, Preview } from '@storybook/angular';
 import CompodocPlugin from './plugins/compodoc';
 
+import { installRdxDirectiveHighlight } from './highlight-rdx-directives';
+import './rdx-directive-highlight.css';
+
+installRdxDirectiveHighlight();
+
 CompodocPlugin.init();
 
 const preview: Preview = {

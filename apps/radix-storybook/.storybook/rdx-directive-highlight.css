@@ -1,0 +1,20 @@
+pre mark[data-rdx-directive] {
+    color: inherit !important;
+    background: rgba(56, 189, 248, 0.12) !important;
+    border-radius: 3px;
+    padding: 0 3px;
+    margin: 0 1px;
+
+    font: inherit;
+    font-weight: 700;
+    font-style: normal;
+    text-shadow: none;
+
+    text-decoration: underline;
+    text-decoration-color: rgba(14, 165, 233, 0.9);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+}
