@@ -1,5 +1,17 @@
 # Radix NG Primitives — Claude Guide
 
+## Project knowledge
+
+Detailed documentation lives in `.claude/skills/project-knowledge/references/`:
+
+- **`project.md`** — what the library is, audience, available primitives
+- **`architecture.md`** — tech stack, monorepo layout, composition primitives, DI context, CDK migration
+- **`patterns.md`** — naming, new primitive checklist, signals conventions, testing, story patterns
+- **`deployment.md`** — CI/CD, release process, Storybook/docs builds
+- **`ux-guidelines.md`** — demo styling system, semantic tokens, animation patterns
+
+Read the relevant file before starting any non-trivial task. The sections below in this file are a quick-reference summary; the `references/` files are the authoritative source.
+
 ## Project overview
 
 Angular port of headless UI primitives. This is a **signals-first, headless** component library — directives carry no styles; state is exposed via `data-*` attributes for consumers to style.
@@ -152,6 +164,7 @@ Prefer `hostDirectives` to re-use existing primitives (e.g., Accordion Item comp
 - Consumers should install the package with `ng add @radix-ng/primitives`. In Nx Angular workspaces, document/use `npx ng add @radix-ng/primitives` from the workspace root; if the package is already installed, `nx g @radix-ng/primitives:ng-add` can run the schematic directly.
 - Runtime packages imported by published primitives must be declared as peer dependencies in `packages/primitives/package.json` and installed by the `ng-add` schematic.
 - Current runtime peers installed by `ng-add`: `@angular/common` (matched to the app's `@angular/core` version), `@angular/cdk`, `@floating-ui/dom`, `@internationalized/date`, and `@internationalized/number`.
+- **`@angular/cdk` is being phased out.** Do not add new CDK imports. Existing runtime usage (`_IdGenerator`, `FocusKeyManager`, `CdkTrapFocus`, CDK Dialog/Overlay) must be replaced with own implementations over time. Type-only imports (`BooleanInput`, `NumberInput`, `Direction`) are low priority. See the full breakdown in `.claude/skills/project-knowledge/references/architecture.md`.
 - Keep `apps/radix-storybook/docs/overview/installation.docs.mdx` in sync whenever the install command, peer dependency list, or schematic behavior changes.
 
 ## Stories & Storybook
@@ -198,7 +211,7 @@ of rediscovering the project conventions from individual stories:
 | Customization    | `apps/radix-storybook/docs/guides/customization.docs.mdx` (`Guides/Customization`)           | Working with inputs, outputs, controlled state, two-way binding, DOM events, or primitive-specific hooks                                       |
 | Animation        | `apps/radix-storybook/docs/guides/animation.docs.mdx` (`Guides/Animation`)                   | Adding transitions, CSS `@keyframes`, `RdxPresenceDirective`, Angular 21+ `animate.enter` / `animate.leave`, or JavaScript animation libraries |
 | Naming           | `apps/radix-storybook/docs/guides/naming-conventions.docs.mdx` (`Guides/Naming Conventions`) | Naming selectors and directive classes                                                                                                         |
-| Consumer theming | `apps/radix-storybook/docs/overview/theming.docs.mdx` (`Overview/Theming`)                   | Documenting `data-*` state styling, design tokens, dark mode, or CDK overlay styles                                                            |
+| Consumer theming | `apps/radix-storybook/docs/overview/theming.docs.mdx` (`Overview/Theming`)                   | Documenting `data-*` state styling, design tokens, or dark mode                                                                                |
 | Accessibility    | `apps/radix-storybook/docs/overview/accessibility.docs.mdx` (`Overview/Accessibility`)       | Reviewing semantics, labels, keyboard navigation, or focus management                                                                          |
 
 For animation work, distinguish the lifecycle owner before choosing an API:

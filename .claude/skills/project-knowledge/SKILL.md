@@ -32,8 +32,7 @@ All documentation is in the `references/` folder:
 
 ## Optional references
 
-- **[ux-guidelines.md](references/ux-guidelines.md)** - Interface language, tone of voice, domain glossary, text patterns, design system (only for projects with significant UI)
-- **{custom}.md** - Domain-specific files added per project (e.g., vault.md, bot.md, mcp.md)
+- **[ux-guidelines.md](references/ux-guidelines.md)** - Demo styling system, semantic tokens, animation patterns, accessibility conventions for Storybook stories
 
 ## How to use
 
