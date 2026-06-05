@@ -18,102 +18,87 @@ description: .
     'Esc closes the component automatically.'
 ]} />
 
+## Anatomy
 
-## Installation
+Import all parts and assemble them together.
 
-### Provider
+```html
+<div rdxDialogRoot>
+    <button rdxDialogTrigger>Open</button>
 
-The initial configuration is defined by the `provideRdxDialogConfig` provider during application startup.
-
-```typescript
-import { ApplicationConfig } from '@angular/core';
-import { provideRdxDialogConfig } from '@radix-ng/primitives/dialog';
-
-export const appConfig: ApplicationConfig = {
-    providers: [
-        provideRdxDialogConfig()
-    ]
-};
+    <ng-template rdxDialogPortalPresence>
+        <div rdxDialogPortal>
+            <div rdxDialogBackdrop></div>
+            <div rdxDialogPopup>
+                <h2 rdxDialogTitle></h2>
+                <p rdxDialogDescription></p>
+                <button rdxDialogClose></button>
+            </div>
+        </div>
+    </ng-template>
+</div>
 ```
 
-In the component that will open the dialog, call `provideRdxDialog` in the providers:
-```typescript
+Import the directives via the `dialogImports` array (or the individual `Rdx*` classes).
 
-import { provideRdxDialog } from '@radix-ng/primitives/dialog';
+```typescript
+import { dialogImports } from '@radix-ng/primitives/dialog';
 
 @Component({
-  selector: 'app-dialog-component',
-  providers: [provideRdxDialog()]
+    imports: [...dialogImports]
 })
 export class AppDialogComponent {}
-
 ```
 
 ## API Reference
 
+### Root
+
+Groups all parts of the dialog. Owns the open state and provides the dialog context.
+
+<PropsTable name="RdxDialogRoot" />
+
 ### Trigger
 
-<PropsTable name="RdxDialogTriggerDirective" />
+A button that opens the dialog.
+
+<PropsTable name="RdxDialogTrigger" />
 
 <DataAttributesTable attributes={[
     { name: '[data-state]', value: '"open" | "closed"' }
 ]} />
 
-### Content
+### Portal
+
+Moves the dialog to a different part of the DOM. By default, the portal element is appended to `document.body`.
+
+<PropsTable name="RdxDialogPortal" />
+
+### Backdrop
+
+An overlay displayed beneath the dialog popup.
 
 <DataAttributesTable attributes={[
-    { name: '[data-state]', value: '"open" | "closed"' }
+    { name: '[data-state]', value: '"open" | "closed"' },
+    { name: '[data-starting-style]', value: 'Present while the dialog is animating in.' },
+    { name: '[data-ending-style]', value: 'Present while the dialog is animating out.' }
 ]} />
+
+### Popup
+
+A container for the dialog contents.
+
+<PropsTable name="RdxDialogPopup" />
+
+<DataAttributesTable attributes={[
+    { name: '[data-state]', value: '"open" | "closed"' },
+    { name: '[data-starting-style]', value: 'Present while the dialog is animating in.' },
+    { name: '[data-ending-style]', value: 'Present while the dialog is animating out.' }
+]} />
+
+### Close
+
+A button that closes the dialog.
 
 ## Accessibility
 Adheres to the [Dialog WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal).
-
-## Usage
-
-### Service
-
-To open a dialog via the service, simply call the `RdxDialogService.open()`
-
-```typescript
-@Component({...})
-export class AppComponent {
-    #dialog = inject(RdxDialogService);
-
-    openDialog() {
-        const dialogRef = this.#dialog.open({
-            content: MyDialogContentComponent,
-        });
-    }
-}
-```
-
-### Inject Data to the Dialog
-
-```typescript
-this.#dialog.open({
-  content: MyDialogContentComponent,
-  data: { name: 'Pedro Duarte' }
-});
-```
-
-This ensures all type definitions are centralized in the component.
-
-- Use `injectDialogData` to retrieve data and let the service infer the expected data type.
-- Use `injectDialogRef` to declare the return type for better typing in `DialogRef`.
-
-
-```typescript
-@Component({
-  selector: 'app-custom-dialog'
-})
-export class AppCustomDialogComponent {
-
-  readonly data = injectDialogData<{ name: string; username?: string }>();
-
-  readonly ref = injectDialogRef<boolean>();
-
-  close(): void {
-    this.ref.close(true);
-  }
-}
-```

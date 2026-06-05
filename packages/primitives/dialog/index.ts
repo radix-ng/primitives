@@ -1,34 +1,38 @@
 import { NgModule } from '@angular/core';
-import { RdxDialogCloseDirective } from './src/dialog-close.directive';
-import { RdxDialogContentDirective } from './src/dialog-content.directive';
-import { RdxDialogDescriptionDirective } from './src/dialog-description.directive';
-import { RdxDialogDismissDirective } from './src/dialog-dismiss.directive';
-import { RdxDialogTitleDirective } from './src/dialog-title.directive';
-import { RdxDialogTriggerDirective } from './src/dialog-trigger.directive';
+import { RdxDialogBackdrop } from './src/dialog-backdrop';
+import { RdxDialogClose } from './src/dialog-close';
+import { RdxDialogDescription } from './src/dialog-description';
+import { RdxDialogPopup } from './src/dialog-popup';
+import { RdxDialogPortal } from './src/dialog-portal';
+import { RdxDialogPortalPresence } from './src/dialog-portal-presence';
+import { RdxDialogRoot } from './src/dialog-root';
+import { RdxDialogTitle } from './src/dialog-title';
+import { RdxDialogTrigger } from './src/dialog-trigger';
 
-export * from './src/dialog-close.directive';
-export * from './src/dialog-content.directive';
-export * from './src/dialog-description.directive';
-export * from './src/dialog-dismiss.directive';
-export * from './src/dialog-ref';
-export * from './src/dialog-title.directive';
-export * from './src/dialog-trigger.directive';
-export * from './src/dialog.config';
-export * from './src/dialog.injectors';
-export * from './src/dialog.providers';
-export * from './src/dialog.service';
+export * from './src/dialog-backdrop';
+export * from './src/dialog-close';
+export * from './src/dialog-description';
+export * from './src/dialog-popup';
+export * from './src/dialog-portal';
+export * from './src/dialog-portal-presence';
+export * from './src/dialog-root';
+export * from './src/dialog-title';
+export * from './src/dialog-trigger';
 
-const _imports = [
-    RdxDialogTriggerDirective,
-    RdxDialogContentDirective,
-    RdxDialogTitleDirective,
-    RdxDialogCloseDirective,
-    RdxDialogDescriptionDirective,
-    RdxDialogDismissDirective
+export const dialogImports = [
+    RdxDialogRoot,
+    RdxDialogTrigger,
+    RdxDialogPortalPresence,
+    RdxDialogPortal,
+    RdxDialogBackdrop,
+    RdxDialogPopup,
+    RdxDialogTitle,
+    RdxDialogDescription,
+    RdxDialogClose
 ];
 
 @NgModule({
-    imports: [..._imports],
-    exports: [..._imports]
+    imports: [...dialogImports],
+    exports: [...dialogImports]
 })
 export class RdxDialogModule {}

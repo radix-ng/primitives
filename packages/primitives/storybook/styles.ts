@@ -76,6 +76,30 @@ export const demoInput = cn(
     demoFocusRing
 );
 
+/**
+ * Dialog surfaces and parts: a centered modal popup over a dimmed backdrop.
+ *
+ * `portalAnimated` goes on the `rdxDialogPortal` element because the portal is the
+ * presence root — its exit keyframes are what `RdxPresenceDirective` waits for before
+ * unmounting. `popupAnimated` drives the popup's own zoom; the centering
+ * `-translate-x-1/2 -translate-y-1/2` is preserved inside the `dialog-popup-*` keyframes.
+ */
+export const demoDialog = {
+    portalAnimated: 'data-[state=open]:animate-dialog-overlay-in data-[state=closed]:animate-dialog-overlay-out',
+    backdrop: 'fixed inset-0 z-50 bg-foreground/50',
+    popup: cn(
+        demoCard,
+        'fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 p-6',
+        'focus:outline-none'
+    ),
+    popupAnimated: 'data-[state=open]:animate-dialog-popup-in data-[state=closed]:animate-dialog-popup-out',
+    title: 'text-base font-semibold text-card-foreground',
+    description: 'mt-1.5 text-sm text-muted-foreground',
+    close: cn(demoButton.base, demoButton.ghost, 'absolute top-3 right-3 size-7 p-0'),
+    field: 'mt-4 grid gap-1.5 text-sm font-medium text-foreground',
+    footer: 'mt-6 flex justify-end gap-2'
+} as const;
+
 /** Popover surfaces and parts. */
 export const demoPopover = {
     positioner: 'z-50',

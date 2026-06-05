@@ -127,6 +127,11 @@
     --animate-popover-viewport-in: popover-viewport-in 200ms ease-out;
     --animate-popover-viewport-out: popover-viewport-out 200ms ease-in;
 
+    --animate-dialog-overlay-in: dialog-overlay-in 150ms ease-out;
+    --animate-dialog-overlay-out: dialog-overlay-out 150ms ease-in;
+    --animate-dialog-popup-in: dialog-popup-in 150ms ease-out;
+    --animate-dialog-popup-out: dialog-popup-out 120ms ease-in;
+
     --animate-accordion-down: accordion-down 200ms ease-out;
     --animate-accordion-up: accordion-up 200ms ease-out;
     --animate-accordion-right: accordion-right 200ms ease-out;
@@ -238,6 +243,56 @@
     to {
         opacity: 0;
         transform: translateX(-0.5rem);
+    }
+}
+
+@keyframes dialog-overlay-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes dialog-overlay-out {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+/*
+ * Centering is handled by the popup's `-translate-x-1/2 -translate-y-1/2` utilities, which Tailwind v4
+ * compiles to the standalone `translate` property. These keyframes must therefore animate only
+ * `transform: scale()` — re-applying `translate(-50%, -50%)` here would compose with the `translate`
+ * property and shift the popup by an extra -50%/-50% for the duration of the animation.
+ */
+@keyframes dialog-popup-in {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes dialog-popup-out {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: scale(0.96);
     }
 }
 

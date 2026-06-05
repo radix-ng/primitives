@@ -3,61 +3,51 @@ import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-int
 import { useScrollLock } from '@radix-ng/primitives/core';
 import { provideRdxDismissableLayerConfig, RdxDismissableLayer } from '@radix-ng/primitives/dismissable-layer';
 import { provideRdxFocusScopeConfig, RdxFocusScope } from '@radix-ng/primitives/focus-scope';
-import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
-import { injectRdxPopoverRootContext, RdxPopoverOpenChangeReason } from './popover-root';
+import { injectRdxDialogRootContext, RdxDialogOpenChangeReason } from './dialog-root';
 
 /**
- * A container for the popover contents.
+ * A container for the dialog contents.
  */
 @Directive({
-    selector: '[rdxPopoverPopup]',
-    hostDirectives: [RdxPopperContent, RdxDismissableLayer, RdxFocusScope],
+    selector: '[rdxDialogPopup]',
+    exportAs: 'rdxDialogPopup',
+    hostDirectives: [RdxDismissableLayer, RdxFocusScope],
     providers: [
         provideRdxDismissableLayerConfig(() => {
-            const rootContext = injectRdxPopoverRootContext()!;
+            const rootContext = injectRdxDialogRootContext()!;
 
             return {
                 disableOutsidePointerEvents: computed(() => rootContext.modal() === true)
             };
         }),
         provideRdxFocusScopeConfig(() => {
-            const rootContext = injectRdxPopoverRootContext()!;
+            const rootContext = injectRdxDialogRootContext()!;
 
             return {
-                trapped: computed(
-                    () =>
-                        rootContext.modal() === 'trap-focus' ||
-                        (rootContext.modal() === true && rootContext.hasPopupClose())
-                )
+                trapped: computed(() => rootContext.modal() === 'trap-focus' || rootContext.modal() === true)
             };
         })
     ],
     host: {
         role: 'dialog',
+        '[attr.aria-modal]': 'rootContext.modal() === true ? "true" : undefined',
         '[attr.aria-describedby]': 'rootContext.descriptionId()',
         '[attr.aria-labelledby]': 'rootContext.titleId()',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
         '[attr.data-ending-style]': 'rootContext.transitionStatus() === "ending" ? "" : undefined',
-        '[attr.data-instant]': 'rootContext.instant() ? "" : undefined',
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
         '[attr.data-starting-style]': 'rootContext.transitionStatus() === "starting" ? "" : undefined',
         '[attr.data-state]': 'rootContext.isOpen() ? "open" : "closed"',
-        '[attr.data-align]': 'align()',
-        '[attr.data-side]': 'side()',
-        '[id]': 'rootContext.contentId',
-        '(pointerenter)': 'rootContext.cancelHoverClose()'
+        '[id]': 'rootContext.contentId'
     }
 })
-export class RdxPopoverPopup {
-    protected readonly rootContext = injectRdxPopoverRootContext()!;
+export class RdxDialogPopup {
+    protected readonly rootContext = injectRdxDialogRootContext()!;
     private readonly dismissableLayer = inject(RdxDismissableLayer);
     private readonly focusScope = inject(RdxFocusScope);
-    private readonly wrapper = inject(RdxPopperContentWrapper, { optional: true });
-    protected readonly align = computed(() => this.wrapper?.placedAlign());
-    protected readonly side = computed(() => this.wrapper?.placedSide());
-    private dismissDetails: { reason: RdxPopoverOpenChangeReason; event: Event } = {
+    private dismissDetails: { reason: RdxDialogOpenChangeReason; event: Event } = {
         reason: 'none',
-        event: new Event('popover.dismiss')
+        event: new Event('dialog.dismiss')
     };
 
     /**
@@ -91,7 +81,7 @@ export class RdxPopoverPopup {
     readonly closeAutoFocus = outputFromObservable(outputToObservable(this.focusScope.unmountAutoFocus));
 
     constructor() {
-        useScrollLock(computed(() => this.rootContext.modal() === true));
+        useScrollLock(computed(() => this.rootContext.modal() === true && this.rootContext.isOpen()));
 
         const unregisterTransitionElement = this.rootContext.registerTransitionElement(
             inject<ElementRef<HTMLElement>>(ElementRef).nativeElement
@@ -102,7 +92,10 @@ export class RdxPopoverPopup {
         this.dismissableLayer.pointerDownOutside.subscribe((event) => {
             this.dismissDetails = { reason: 'outside-press', event };
 
-            if (this.rootContext.triggers().some((trigger) => trigger.contains(event.target as Node))) {
+            // A pointerdown on the trigger is an "outside" press relative to the portaled popup.
+            // Let the trigger's own click toggle the dialog instead of dismissing here (which would
+            // close and then immediately reopen).
+            if (this.isEventOnTrigger(event)) {
                 event.preventDefault();
             }
         });
@@ -110,7 +103,7 @@ export class RdxPopoverPopup {
         this.dismissableLayer.focusOutside.subscribe((event) => {
             this.dismissDetails = { reason: 'focus-out', event };
 
-            if (this.rootContext.isPointerDownOnTrigger()) {
+            if (this.isEventOnTrigger(event)) {
                 event.preventDefault();
             }
         });
@@ -119,15 +112,22 @@ export class RdxPopoverPopup {
             this.dismissDetails = { reason: 'escape-key', event };
         });
 
-        this.focusScope.mountAutoFocus.subscribe((event) => {
-            if (this.rootContext.isHoverActive()) {
-                event.preventDefault();
-            }
-        });
-
         this.dismissableLayer.dismiss.subscribe(() => {
-            this.rootContext.close(this.dismissDetails.reason, this.dismissDetails.event);
-            this.dismissDetails = { reason: 'none', event: new Event('popover.dismiss') };
+            const { reason, event } = this.dismissDetails;
+            this.dismissDetails = { reason: 'none', event: new Event('dialog.dismiss') };
+
+            // When pointer dismissal is disabled, keep the dialog open on outside interactions.
+            // Escape always closes (standard a11y behavior).
+            if ((reason === 'outside-press' || reason === 'focus-out') && this.rootContext.disablePointerDismissal()) {
+                return;
+            }
+
+            this.rootContext.close(reason, event);
         });
+    }
+
+    private isEventOnTrigger(event: Event): boolean {
+        const trigger = this.rootContext.triggerElement();
+        return !!trigger && trigger.contains(event.target as Node);
     }
 }

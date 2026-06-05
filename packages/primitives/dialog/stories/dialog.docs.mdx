@@ -1,40 +1,139 @@
-import { Canvas, Meta } from '@storybook/addon-docs/blocks';
-import * as DialogStories from './dialog.stories';
-import * as SheetStories from './sheet.stories';
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './dialog.stories';
+import { RdxDialogPopup, RdxDialogPortal, RdxDialogRoot, RdxDialogTrigger } from '../index';
 
 <Meta title="Primitives/Dialog" />
 
 # Dialog
 
-#### A window overlaid on either the primary window or another dialog window, rendering the content underneath inert.
+#### A window overlaid on the page, rendering the content underneath inert.
 
-<Canvas sourceState="hidden" of={DialogStories.Default} />
+Dialog composes the shared Portal, Presence, Dismissable Layer, and Focus Scope primitives.
+It stays headless: styles and native CSS animations belong to the consumer.
+
+<Canvas sourceState="hidden" of={Stories.Default} />
 
 ## Features
-- ✅ Supports modal and non-modal modes.
-- ✅ Focus is automatically trapped when modal.
-- ✅ Can be controlled or uncontrolled.
-- ✅ Esc closes the component automatically.
 
-### Anatomy
-Import all parts and piece them together.
+- ✅ Opens and closes from a native button trigger.
+- ✅ Supports uncontrolled state, `defaultOpen`, and Angular two-way binding with `[(open)]`.
+- ✅ Supports modal, non-modal, and focus-trapping-only behavior.
+- ✅ Locks document scrolling and disables outside pointer events while modal.
+- ✅ Closes on Escape, outside pointer interaction, or an explicit close button.
+- ✅ Keeps the dialog open on outside clicks with `disablePointerDismissal`.
+- ✅ Traps and restores focus through the shared Focus Scope behavior.
+- ✅ Exposes state and transition attributes (`data-state`, `data-starting-style`, `data-ending-style`) for styling.
+- ✅ Keeps portal content mounted while CSS exit keyframes finish.
+- ✅ Links the popup to optional title and description parts for accessible labeling.
+
+## Import
+
+```typescript
+import {
+    RdxDialogBackdrop,
+    RdxDialogClose,
+    RdxDialogDescription,
+    RdxDialogPopup,
+    RdxDialogPortal,
+    RdxDialogPortalPresence,
+    RdxDialogRoot,
+    RdxDialogTitle,
+    RdxDialogTrigger
+} from '@radix-ng/primitives/dialog';
+```
+
+Or import all parts through the module:
+
+```typescript
+import { RdxDialogModule } from '@radix-ng/primitives/dialog';
+```
+
+The `dialogImports` array re-exports every part for standalone `imports`.
+
+## Anatomy
+
+Apply the parts to your own markup. `rdxDialogPortalPresence` manages mounting and waits for exit
+keyframes on the first DOM element inside its template.
 
 ```html
+<div rdxDialogRoot>
+    <button rdxDialogTrigger>Open</button>
 
-<button [rdxDialogTrigger]="dialog">Open Dialog</button>
-
-<ng-template #dialog>
-    <div rdxDialogContent>
-        <h2 rdxDialogTitle></h2>
-        <p rdxDialogDescription></p>
-        <button rdxDialogClose></button>
-        <button rdxDialogDismiss>X</button>
-    </div>
-</ng-template>
+    <ng-template rdxDialogPortalPresence>
+        <div rdxDialogPortal>
+            <div rdxDialogBackdrop></div>
+            <div rdxDialogPopup>
+                <h2 rdxDialogTitle>Edit profile</h2>
+                <p rdxDialogDescription>Make changes to your profile.</p>
+                <button rdxDialogClose>Close</button>
+            </div>
+        </div>
+    </ng-template>
+</div>
 ```
 
 ## Examples
 
-### Sheet
+### Default
 
-<Canvas sourceState="hidden" of={SheetStories.Default} />
+A modal dialog with an accessible title and description, form fields, and close buttons.
+
+<Canvas of={Stories.Default} />
+
+### Controlled
+
+Bind `[(open)]` when application state should open or close the dialog programmatically.
+
+<Canvas of={Stories.Controlled} />
+
+### Non-modal
+
+Set `[modal]="false"` to keep document scrolling and outside pointer interactions available. There is
+no backdrop in this mode.
+
+<Canvas of={Stories.NonModal} />
+
+### Trap focus only
+
+Use `modal="trap-focus"` to keep keyboard focus inside the dialog while leaving document scrolling and
+outside pointer interactions enabled.
+
+<Canvas of={Stories.TrapFocus} />
+
+### Without pointer dismissal
+
+Set `disablePointerDismissal` so clicking the backdrop no longer closes the dialog. Escape and explicit
+close buttons still close it.
+
+<Canvas of={Stories.WithoutDismiss} />
+
+## API Reference
+
+### Root
+
+`RdxDialogRoot` owns the open state and modal behavior, and exposes `onOpenChange` /
+`onOpenChangeComplete`.
+
+<ArgTypes of={RdxDialogRoot} />
+
+### Trigger
+
+`RdxDialogTrigger` toggles the dialog and exposes ARIA attributes.
+
+<ArgTypes of={RdxDialogTrigger} />
+
+### Portal
+
+`RdxDialogPortal` moves content to `document.body` by default or to a configured container.
+
+<ArgTypes of={RdxDialogPortal} />
+
+### Popup
+
+`RdxDialogPopup` owns dialog semantics, dismissal events, scroll locking, and focus lifecycle events.
+
+<ArgTypes of={RdxDialogPopup} />
+
+### Backdrop, Title, Description, and Close
+
+These parts read their behavior and state from context and do not expose additional inputs or outputs.
