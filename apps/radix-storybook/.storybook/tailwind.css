@@ -127,6 +127,13 @@
     --animate-popover-viewport-in: popover-viewport-in 200ms ease-out;
     --animate-popover-viewport-out: popover-viewport-out 200ms ease-in;
 
+    --animate-navigation-menu-in: popover-in 150ms ease-out;
+    --animate-navigation-menu-out: popover-out 120ms ease-in;
+    --animate-navigation-menu-popup-in: navigation-menu-popup-in 200ms ease;
+    --animate-navigation-menu-popup-out: navigation-menu-popup-out 200ms ease;
+    --animate-navigation-menu-content-in: navigation-menu-content-in 250ms ease;
+    --animate-navigation-menu-content-out: navigation-menu-content-out 250ms ease;
+
     --animate-dialog-overlay-in: dialog-overlay-in 150ms ease-out;
     --animate-dialog-overlay-out: dialog-overlay-out 150ms ease-in;
     --animate-dialog-popup-in: dialog-popup-in 150ms ease-out;
@@ -252,6 +259,58 @@
     to {
         opacity: 0;
         transform: translateX(-0.5rem);
+    }
+}
+
+@keyframes navigation-menu-popup-in {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes navigation-menu-popup-out {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+}
+
+/*
+ * Content morph between items. The viewport sets `data-activation-direction` so the entering and
+ * leaving content slide toward the newly active trigger.
+ */
+@keyframes navigation-menu-content-in {
+    from {
+        opacity: 0;
+        transform: translateX(var(--navigation-menu-content-in-x, 0));
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes navigation-menu-content-out {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(var(--navigation-menu-content-out-x, 0));
     }
 }
 

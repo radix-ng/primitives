@@ -1,246 +1,214 @@
-import {ArgTypes, Canvas, Markdown, Meta, Source} from '@storybook/addon-docs/blocks';
-import * as NavigationMenuStories from "./navigation-menu.stories";
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './navigation-menu.stories';
+import {
+    RdxNavigationMenuContent,
+    RdxNavigationMenuLink,
+    RdxNavigationMenuPortal,
+    RdxNavigationMenuPositioner,
+    RdxNavigationMenuRoot,
+    RdxNavigationMenuTrigger,
+    RdxNavigationMenuViewport
+} from '../index';
 
 <Meta title="Primitives/Navigation Menu" />
 
 # Navigation Menu
 
-A navigation component that provides structured menu navigation with support for submenus and content display.
+#### A collection of links and menus for website navigation.
 
-## Overview
+Navigation Menu is a menubar of triggers and links whose content is rendered into one shared popup.
+It composes the shared Popper, Portal, Presence, Dismissable Layer, and Roving Focus primitives and
+remains headless: styles and native CSS animations belong to the consumer.
 
-The Navigation Menu component provides:
+<Canvas sourceState="hidden" of={Stories.Default} />
 
-- ✅ Support for different item types including links, buttons, and custom components
-- ✅ Submenu navigation capabilities
-- ✅ Keyboard navigation support
-- ✅ LTR and RTL layout compatibility
-- ✅ Focus management for accessibility compliance
+## Features
 
-## Examples
-### Default
+- ✅ A single shared popup, anchored to the active trigger with the Floating UI-based Popper primitive.
+- ✅ Content morphs between items, exposing `data-activation-direction` and a `data-previous` snapshot for slide animations.
+- ✅ Opens on hover with configurable `delay` / `closeDelay`, and a polygon grace area that keeps the popup reachable.
+- ✅ `value` / `defaultValue` model with `onValueChange`, `onOpenChange`, and `onOpenChangeComplete` outputs.
+- ✅ Menubar keyboard navigation (arrow keys) via the shared Roving Focus primitive.
+- ✅ Enter / Space / arrow keys move focus from a trigger into its open content.
+- ✅ Horizontal and vertical orientations and LTR / RTL layouts.
+- ✅ Nested navigation menus.
+- ✅ Closes on Escape and outside pointer interaction, restoring focus to the trigger.
+- ✅ Keeps the popup mounted while CSS exit keyframes finish.
+- ✅ Exposes state, transition, placement, and size attributes and CSS variables for styling.
 
-<Canvas sourceState="hidden" of={NavigationMenuStories.Default} />
+## Import
 
-## Component Structure
+```typescript
+import {
+    RdxNavigationMenuArrow,
+    RdxNavigationMenuBackdrop,
+    RdxNavigationMenuContent,
+    RdxNavigationMenuIcon,
+    RdxNavigationMenuItem,
+    RdxNavigationMenuLink,
+    RdxNavigationMenuList,
+    RdxNavigationMenuPopup,
+    RdxNavigationMenuPortal,
+    RdxNavigationMenuPortalPresence,
+    RdxNavigationMenuPositioner,
+    RdxNavigationMenuRoot,
+    RdxNavigationMenuTrigger,
+    RdxNavigationMenuViewport
+} from '@radix-ng/primitives/navigation-menu';
+```
+
+Or import all parts through the module:
+
+```typescript
+import { RdxNavigationMenuModule } from '@radix-ng/primitives/navigation-menu';
+```
+
+## Anatomy
+
+Apply the parts to your own markup. Each item's `*rdxNavigationMenuContent` template is rendered into
+the shared `rdxNavigationMenuViewport`. `rdxNavigationMenuPortalPresence` manages mounting and waits
+for exit keyframes on the first DOM element inside its template.
 
 ```html
-<nav rdxNavigationMenu>
-  <ul rdxNavigationMenuList>
-    <li rdxNavigationMenuItem value="item1">
-      <button rdxNavigationMenuTrigger>Item 1</button>
+<nav rdxNavigationMenuRoot>
+    <ul rdxNavigationMenuList>
+        <li rdxNavigationMenuItem value="products">
+            <button rdxNavigationMenuTrigger>
+                Products
+                <svg rdxNavigationMenuIcon></svg>
+            </button>
 
-      <!-- Content as structural directive -->
-      <div *rdxNavigationMenuContent class="NavigationMenuContent">
-        <!-- Content for Item 1 -->
-      </div>
-    </li>
+            <ng-container *rdxNavigationMenuContent>
+                <a rdxNavigationMenuLink href="#">Analytics</a>
+            </ng-container>
+        </li>
 
-    <li rdxNavigationMenuItem value="item2">
-      <a rdxNavigationMenuLink href="#">Item 2</a>
-    </li>
+        <li rdxNavigationMenuItem>
+            <a rdxNavigationMenuLink href="#">Pricing</a>
+        </li>
+    </ul>
 
-    <!-- Indicator for highlighting active item -->
-    <div rdxNavigationMenuIndicator></div>
-  </ul>
-
-  <!-- Viewport for content display -->
-  <div rdxNavigationMenuViewport></div>
+    <ng-template rdxNavigationMenuPortalPresence>
+        <div rdxNavigationMenuPortal>
+            <div rdxNavigationMenuBackdrop></div>
+            <div sideOffset="8" rdxNavigationMenuPositioner>
+                <div rdxNavigationMenuPopup>
+                    <svg rdxNavigationMenuArrow></svg>
+                    <div rdxNavigationMenuViewport></div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
 </nav>
 ```
+
+## Examples
+
+### Default
+
+A horizontal menubar with two content panels and a standalone link. Content slides and resizes as
+the active item changes.
+
+<Canvas of={Stories.Default} />
+
+### Vertical
+
+Set `orientation="vertical"` on the root and position the popup to the side with `side="right"`.
+
+<Canvas of={Stories.Vertical} />
+
+### Right to left
+
+Set `dir="rtl"` on the root. Placement, alignment, and arrow-key direction follow the reading
+direction.
+
+<Canvas of={Stories.Rtl} />
+
+### Links only
+
+A menubar of links without any popup. Links are plain tabbable anchors and expose `data-active`.
+
+<Canvas of={Stories.Links} />
+
+### Custom links
+
+`rdxNavigationMenuLink` composes onto your own anchor markup — rich rows with icons, external links,
+and an "action" link that runs a handler via `(onSelect)` without closing the menu
+(`[closeOnClick]="false"`). The same directive sits on a router link.
+
+<Canvas of={Stories.CustomLinks} />
+
+### Large menus
+
+When the content exceeds the available space, constrain it with a `max-height` and let it scroll. The
+viewport measures the capped height, so the popup stays a fixed size and the list scrolls inside it.
+
+<Canvas of={Stories.LargeMenu} />
+
+### Nested submenus
+
+Render a `rdxNavigationMenuRoot` inside content for a nested menu. The nested root detects its parent
+and positions its own popup inline; arrow keys navigate the nested menu independently.
+
+<Canvas of={Stories.Nested} />
+
+### Nested inline submenus
+
+A second level that stays in the same panel: inside the outer content, render another
+`rdxNavigationMenuRoot` with only a `List` and a `Viewport` (no Portal). A controlled, non-null value
+keeps the inline panel persistent.
+
+<Canvas of={Stories.NestedInline} />
 
 ## API Reference
 
 ### Root
-`rdxNavigationMenu`
 
-The root directive that contains all parts of a navigation menu.
+`RdxNavigationMenuRoot` owns the open state. The menu is open whenever `value` is non-null.
 
-| Property | Type | Default | Description |
-| -------- | ---- | ------- | ----------- |
-| orientation | 'horizontal' \| 'vertical' | 'horizontal' | Determines the orientation of the navigation menu |
-| dir | 'ltr' \| 'rtl' | 'ltr' | Sets the reading direction of the navigation menu |
-| delayDuration | number | 200 | Duration (ms) from mouse enter until content opens |
-| skipDelayDuration | number | 300 | Duration (ms) after leaving a submenu before it closes |
-| loop | boolean | false | When true, keyboard navigation loops from last item to first and vice versa |
-
-### List
-`rdxNavigationMenuList`
-
-Container for navigation menu items. Must be rendered inside `rdxNavigationMenu` or `rdxNavigationMenuSub`. Has the `menubar` ARIA role.
-
-### Item
-`rdxNavigationMenuItem`
-
-A navigation item container that can hold a trigger and content.
+<ArgTypes of={RdxNavigationMenuRoot} />
 
 ### Trigger
-`rdxNavigationMenuTrigger`
 
-Button that opens submenu content. Must be rendered inside `rdxNavigationMenuItem`.
+`RdxNavigationMenuTrigger` opens its item's content and exposes ARIA and state attributes.
 
-| Data attribute | Value |
-|----------------|-------|
-| [data-state] | 'open' \| 'closed' |
-| [data-disabled] | Present when disabled |
-
-### Link
-`rdxNavigationMenuLink`
-
-A navigation link. Must be rendered inside `rdxNavigationMenuItem`.
-
-| Property | Type | Default | Description |
-| -------- | ---- | ------- | ----------- |
-| active | boolean | false | Indicates if the link is active |
-
-| Data attribute | Value |
-|----------------|-------|
-| [data-active] | Present when active |
+<ArgTypes of={RdxNavigationMenuTrigger} />
 
 ### Content
-`*rdxNavigationMenuContent`
 
-Content displayed when a trigger is activated. Must be rendered inside `rdxNavigationMenuItem`. Used as a structural directive with asterisk syntax. Content renders within the `rdxNavigationMenuViewport`.
+`RdxNavigationMenuContent` is a structural directive; its template is rendered into the shared
+viewport when its item is active.
 
-| Property | Type | Default | Description |
-| -------- | ---- | ------- | ----------- |
-| forceMount | boolean | false | Keeps content in the DOM even when closed |
+<ArgTypes of={RdxNavigationMenuContent} />
 
-Data attributes can be manually controlled:
+### Link
 
-```html
-<div *rdxNavigationMenuContent
-     class="NavigationMenuContent"
-     [attr.data-state]="'open'"
-     [attr.data-motion]="'from-start'">
-  <!-- Content -->
-</div>
-```
+`RdxNavigationMenuLink` is a navigation link that closes the menu on selection unless prevented.
 
-### Indicator
-`rdxNavigationMenuIndicator`
+<ArgTypes of={RdxNavigationMenuLink} />
 
-Visual indicator for active menu items. Must be rendered inside `rdxNavigationMenuList`.
+### Portal
 
-| Property | Type | Default | Description |
-| -------- | ---- | ------- | ----------- |
-| forceMount | boolean | false | Keeps indicator in the DOM even when hidden |
+`RdxNavigationMenuPortal` moves the popup to `document.body` by default or to a configured container.
 
-| Data attribute | Value |
-|----------------|-------|
-| [data-state] | 'visible' \| 'hidden' |
+<ArgTypes of={RdxNavigationMenuPortal} />
+
+### Positioner
+
+`RdxNavigationMenuPositioner` delegates placement and collision handling to the shared Popper
+primitive and exposes anchor / positioner CSS variables.
+
+<ArgTypes of={RdxNavigationMenuPositioner} />
 
 ### Viewport
-`rdxNavigationMenuViewport`
 
-Component that displays active content. Must be rendered inside `rdxNavigationMenu`.
+`RdxNavigationMenuViewport` renders the active item's content, animates the transition between items,
+and exposes `--popup-width` / `--popup-height` for the size morph.
 
-| Property | Type | Default | Description |
-| -------- | ---- | ------- | ----------- |
-| forceMount | boolean | false | Keeps viewport in the DOM even when closed |
+<ArgTypes of={RdxNavigationMenuViewport} />
 
-| Data attribute | Value |
-|----------------|-------|
-| [data-state] | 'open' \| 'closed' |
+### List, Item, Icon, Popup, Arrow, and Backdrop
 
-### Sub
-`rdxNavigationMenuSub`
-
-Container for nested submenus. Contains its own `rdxNavigationMenuList` and items. Must be rendered inside `rdxNavigationMenuItem`.
-
-| Property | Type | Default | Description |
-| -------- | ---- | ------- | ----------- |
-| orientation | 'horizontal' \| 'vertical' | 'horizontal' | Orientation of submenu list |
-| defaultValue | string | '' | Value of item that should be open by default |
-
-## Accessibility
-
-This component implements the [WAI-ARIA Menu Button Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menubutton/):
-
-- Arrow key navigation between items
-- Enter/Space to open menus
-- Escape to close open menus
-- Tab navigation to move focus between focusable elements
-- Automatic ARIA attribute management
-
-## Styling Reference
-
-The component provides data attributes for styling:
-
-```css
-/* Basic styling example */
-.NavigationMenuRoot {
-  position: relative;
-}
-
-.NavigationMenuList {
-  display: flex;
-  list-style: none;
-}
-
-.NavigationMenuTrigger,
-.NavigationMenuLink {
-  padding: 8px 12px;
-  color: var(--primary);
-  text-decoration: none;
-}
-
-.NavigationMenuTrigger[data-state="open"] {
-  background-color: var(--primary-light);
-}
-
-.NavigationMenuContent {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  animation-duration: 250ms;
-  animation-timing-function: ease;
-}
-
-.NavigationMenuIndicator {
-  transition: transform 250ms ease;
-}
-
-.NavigationMenuViewport {
-  position: relative;
-  transform-origin: top center;
-}
-```
-
-## Animation
-
-Content transitions can be animated using data attributes:
-
-```css
-@keyframes enterFromRight {
-  from {
-    opacity: 0;
-    transform: translateX(200px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes exitToRight {
-  from {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateX(200px);
-  }
-}
-
-/* Apply animations based on motion direction */
-.NavigationMenuContent[data-motion="from-end"] {
-  animation-name: enterFromRight;
-}
-
-.NavigationMenuContent[data-motion="to-end"] {
-  animation-name: exitToRight;
-}
-```
+These parts read their behavior and state from context. `List` is the `menubar` container with roving
+focus, `Item` carries the `value`, `Icon` exposes the open state for a caret, and `Popup`, `Arrow`,
+and `Backdrop` reflect open / placement / transition state for styling.

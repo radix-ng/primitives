@@ -265,6 +265,56 @@ export const demoAccordion = {
     contentText: 'px-5 py-4'
 } as const;
 
+/**
+ * Navigation menu parts: a horizontal menubar of triggers/links sharing one popup.
+ *
+ * The popup wraps the {@link demoNavigationMenu.viewport}, which is sized from the active content via
+ * the `--popup-width` / `--popup-height` variables set by the viewport and transitioned for the
+ * morph effect. Content morphs between items via the `data-current` / `data-previous` attributes.
+ */
+export const demoNavigationMenu = {
+    root: 'relative flex justify-center',
+    list: cn(demoCard, 'flex list-none items-center gap-1 p-1'),
+    trigger: cn(
+        'flex h-9 items-center gap-1 rounded-md px-3 text-sm font-medium text-foreground outline-none',
+        'hover:bg-muted focus-visible:bg-muted data-[popup-open]:bg-muted',
+        'data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+        demoFocusRing
+    ),
+    link: cn(
+        'flex h-9 items-center rounded-md px-3 text-sm font-medium text-foreground no-underline outline-none',
+        'hover:bg-muted focus-visible:bg-muted',
+        demoFocusRing
+    ),
+    icon: 'size-3.5 transition-transform duration-200 data-[state=open]:rotate-180',
+    positioner: 'z-50 data-[closed]:pointer-events-none',
+    portalAnimated: 'data-[state=open]:animate-navigation-menu-in data-[state=closed]:animate-navigation-menu-out',
+    popup: cn(
+        demoCard,
+        'relative overflow-hidden p-0 origin-[var(--transform-origin)]',
+        'data-[starting-style]:animate-navigation-menu-popup-in data-[ending-style]:animate-navigation-menu-popup-out'
+    ),
+    arrow: 'fill-popover',
+    viewport: cn(
+        // Size to the active content via the variables the viewport measures; fall back to
+        // `max-content`/`auto` so the popup hugs its content before the first measurement instead of
+        // a bare `var(--popup-width)` (which is invalid until set and would let the block fill the page).
+        'relative block h-[var(--popup-height,auto)] w-[var(--popup-width,max-content)] overflow-hidden',
+        'transition-[width,height] duration-200',
+        '[&>[data-current]]:animate-navigation-menu-content-in',
+        '[&>[data-previous]]:absolute [&>[data-previous]]:inset-0 [&>[data-previous]]:animate-navigation-menu-content-out'
+    ),
+    content: 'p-4',
+    contentGrid: 'grid gap-2',
+    cardLink: cn(
+        'block select-none rounded-md p-3 no-underline outline-none transition-colors',
+        'hover:bg-muted focus-visible:bg-muted',
+        demoFocusRing
+    ),
+    cardHeading: 'mb-1 text-sm font-medium text-foreground',
+    cardText: 'text-sm leading-snug text-muted-foreground'
+} as const;
+
 /** Tooltip parts: a small popup anchored to a trigger. */
 export const demoTooltip = {
     positioner: 'z-50',

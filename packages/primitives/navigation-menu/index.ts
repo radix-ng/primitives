@@ -1,47 +1,54 @@
 import { NgModule } from '@angular/core';
-import {
-    RdxNavigationMenuAriaOwnsComponent,
-    RdxNavigationMenuFocusProxyComponent
-} from './src/navigation-menu-a11y.component';
-import { RdxNavigationMenuContentDirective } from './src/navigation-menu-content.directive';
-import { RdxNavigationMenuIndicatorDirective } from './src/navigation-menu-indicator.directive';
-import { RdxNavigationMenuItemDirective } from './src/navigation-menu-item.directive';
-import { RdxNavigationMenuLinkDirective } from './src/navigation-menu-link.directive';
-import { RdxNavigationMenuListDirective } from './src/navigation-menu-list.directive';
-import { RdxNavigationMenuSubDirective } from './src/navigation-menu-sub.directive';
-import { RdxNavigationMenuTriggerDirective } from './src/navigation-menu-trigger.directive';
-import { RdxNavigationMenuViewportDirective } from './src/navigation-menu-viewport.directive';
-import { RdxNavigationMenuDirective } from './src/navigation-menu.directive';
+import { RdxNavigationMenuArrow } from './src/navigation-menu-arrow';
+import { RdxNavigationMenuBackdrop } from './src/navigation-menu-backdrop';
+import { RdxNavigationMenuContent } from './src/navigation-menu-content';
+import { RdxNavigationMenuIcon } from './src/navigation-menu-icon';
+import { RdxNavigationMenuItem } from './src/navigation-menu-item';
+import { RdxNavigationMenuLink } from './src/navigation-menu-link';
+import { RdxNavigationMenuList } from './src/navigation-menu-list';
+import { RdxNavigationMenuPopup } from './src/navigation-menu-popup';
+import { RdxNavigationMenuPortal } from './src/navigation-menu-portal';
+import { RdxNavigationMenuPortalPresence } from './src/navigation-menu-portal-presence';
+import { RdxNavigationMenuPositioner } from './src/navigation-menu-positioner';
+import { RdxNavigationMenuRoot } from './src/navigation-menu-root';
+import { RdxNavigationMenuTrigger } from './src/navigation-menu-trigger';
+import { RdxNavigationMenuViewport } from './src/navigation-menu-viewport';
 
-export * from './src/navigation-menu-a11y.component';
-export * from './src/navigation-menu-content.directive';
-export * from './src/navigation-menu-indicator.directive';
-export * from './src/navigation-menu-item.directive';
-export * from './src/navigation-menu-link.directive';
-export * from './src/navigation-menu-list.directive';
-export * from './src/navigation-menu-sub.directive';
-export * from './src/navigation-menu-trigger.directive';
-export * from './src/navigation-menu-viewport.directive';
-export * from './src/navigation-menu.directive';
-export * from './src/navigation-menu.token';
-export * from './src/navigation-menu.types';
+export * from './src/navigation-menu-arrow';
+export * from './src/navigation-menu-backdrop';
+export * from './src/navigation-menu-content';
+export * from './src/navigation-menu-icon';
+export * from './src/navigation-menu-item';
+export * from './src/navigation-menu-link';
+export * from './src/navigation-menu-list';
+export * from './src/navigation-menu-popup';
+export * from './src/navigation-menu-portal';
+export * from './src/navigation-menu-portal-presence';
+export * from './src/navigation-menu-positioner';
+export * from './src/navigation-menu-root';
+export * from './src/navigation-menu-root-context';
+export * from './src/navigation-menu-trigger';
+export * from './src/navigation-menu-viewport';
 
-const _imports = [
-    RdxNavigationMenuDirective,
-    RdxNavigationMenuSubDirective,
-    RdxNavigationMenuListDirective,
-    RdxNavigationMenuItemDirective,
-    RdxNavigationMenuTriggerDirective,
-    RdxNavigationMenuLinkDirective,
-    RdxNavigationMenuIndicatorDirective,
-    RdxNavigationMenuContentDirective,
-    RdxNavigationMenuViewportDirective,
-    RdxNavigationMenuFocusProxyComponent,
-    RdxNavigationMenuAriaOwnsComponent
+export const navigationMenuImports = [
+    RdxNavigationMenuRoot,
+    RdxNavigationMenuList,
+    RdxNavigationMenuItem,
+    RdxNavigationMenuTrigger,
+    RdxNavigationMenuIcon,
+    RdxNavigationMenuContent,
+    RdxNavigationMenuLink,
+    RdxNavigationMenuPortal,
+    RdxNavigationMenuPortalPresence,
+    RdxNavigationMenuBackdrop,
+    RdxNavigationMenuPositioner,
+    RdxNavigationMenuPopup,
+    RdxNavigationMenuArrow,
+    RdxNavigationMenuViewport
 ];
 
 @NgModule({
-    imports: [..._imports],
-    exports: [..._imports]
+    imports: [...navigationMenuImports],
+    exports: [...navigationMenuImports]
 })
 export class RdxNavigationMenuModule {}

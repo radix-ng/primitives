@@ -1,0 +1,400 @@
+import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
+import {
+    booleanAttribute,
+    computed,
+    DestroyRef,
+    Directive,
+    effect,
+    inject,
+    input,
+    model,
+    numberAttribute,
+    output,
+    signal,
+    untracked
+} from '@angular/core';
+import { useTransitionStatus } from '@radix-ng/primitives/core';
+import { RdxPopper } from '@radix-ng/primitives/popper';
+import {
+    NavigationMenuDirection,
+    NavigationMenuOrientation,
+    provideNavigationMenuRootContext,
+    RdxNavigationMenuContentEntry,
+    RdxNavigationMenuOpenChange,
+    RdxNavigationMenuOpenChangeReason,
+    RdxNavigationMenuRootContext
+} from './navigation-menu-root-context';
+import { generateId } from './utils';
+
+const context = () => contextFor(inject(RdxNavigationMenuRoot));
+
+/**
+ * Groups all parts of the navigation menu.
+ *
+ * Holds the shared open state: `value` identifies the currently open item, and the menu is open
+ * whenever `value` is non-null. A single popup (Portal → Positioner → Popup → Viewport) is shared
+ * between every item and anchored to the active trigger.
+ */
+@Directive({
+    selector: '[rdxNavigationMenuRoot]',
+    exportAs: 'rdxNavigationMenuRoot',
+    providers: [provideNavigationMenuRootContext(context)],
+    hostDirectives: [RdxPopper],
+    host: {
+        role: 'navigation',
+        'aria-label': 'Main',
+        '[attr.data-orientation]': 'orientation()',
+        '[attr.dir]': 'dir()'
+    }
+})
+export class RdxNavigationMenuRoot {
+    private readonly popper = inject(RdxPopper);
+    private readonly destroyRef = inject(DestroyRef);
+    private readonly parentRoot = inject(RdxNavigationMenuRoot, { optional: true, skipSelf: true });
+
+    /** Whether this root is nested inside another navigation menu's content. */
+    readonly nested = !!this.parentRoot;
+    readonly baseId = `rdx-nav-menu-${generateId()}`;
+
+    /**
+     * The value of the navigation menu item that should be currently open.
+     */
+    readonly value = model<string | null>(null);
+
+    /**
+     * The uncontrolled value of the item that should be initially open.
+     */
+    readonly defaultValue = input<string | null>(null);
+
+    /**
+     * The orientation of the navigation menu.
+     */
+    readonly orientation = input<NavigationMenuOrientation>('horizontal');
+
+    /**
+     * The reading direction of the navigation menu.
+     */
+    readonly dir = input<NavigationMenuDirection>('ltr');
+
+    /**
+     * Whether keyboard navigation loops from the last item back to the first and vice versa.
+     */
+    readonly loop = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /**
+     * How long to wait before opening the menu on hover, in milliseconds.
+     */
+    readonly delay = input<number, NumberInput>(50, { transform: numberAttribute });
+
+    /**
+     * How long to wait before closing the menu after the pointer leaves, in milliseconds.
+     */
+    readonly closeDelay = input<number, NumberInput>(50, { transform: numberAttribute });
+
+    /**
+     * Emits when the open item changes.
+     */
+    readonly onValueChange = output<string | null>();
+
+    /**
+     * Emits whenever the menu opens or closes.
+     */
+    readonly onOpenChange = output<RdxNavigationMenuOpenChange>();
+
+    /**
+     * Emits after any enter/exit transition completes.
+     */
+    readonly onOpenChangeComplete = output<boolean>();
+
+    private hasAppliedDefaultValue = false;
+    private openTimer: ReturnType<typeof setTimeout> | undefined;
+    private closeTimer: ReturnType<typeof setTimeout> | undefined;
+    private instantFrame: number | undefined;
+
+    private readonly transition = useTransitionStatus((open) => {
+        this.instant.set(false);
+        this.onOpenChangeComplete.emit(open);
+    });
+
+    readonly instant = signal(false);
+    readonly transitionStatus = this.transition.status;
+    readonly previousValue = signal<string | null>(null);
+    readonly isOpen = computed(() => this.value() !== null);
+    readonly trigger = signal<HTMLElement | undefined>(undefined);
+    readonly triggers = signal<HTMLElement[]>([]);
+    readonly contents = signal<Map<string, RdxNavigationMenuContentEntry>>(new Map());
+
+    readonly activeContent = computed(() => {
+        const value = this.value() ?? this.previousValue();
+        return value ? this.contents().get(value) : undefined;
+    });
+
+    private readonly registeredTriggers = new Map<string, HTMLElement>();
+    private readonly viewportTriggerChange = new Set<(previous: HTMLElement, next: HTMLElement) => void>();
+
+    constructor() {
+        let previousOpen = this.isOpen();
+
+        effect(() => {
+            const defaultValue = this.defaultValue();
+
+            if (!this.hasAppliedDefaultValue && defaultValue !== null) {
+                this.hasAppliedDefaultValue = true;
+                this.value.set(defaultValue);
+            }
+        });
+
+        effect(() => {
+            const open = this.isOpen();
+
+            if (open !== previousOpen) {
+                previousOpen = open;
+                untracked(() => this.transition.start(open));
+            }
+        });
+
+        // Anchor the shared popper to the active trigger.
+        effect(() => this.popper.anchorOverride.set(this.trigger()));
+
+        this.destroyRef.onDestroy(() => {
+            this.clearHoverTimers();
+
+            if (this.instantFrame !== undefined) {
+                cancelAnimationFrame(this.instantFrame);
+            }
+        });
+    }
+
+    contentId(value: string) {
+        return `${this.baseId}-content-${value}`;
+    }
+
+    triggerId(value: string) {
+        return `${this.baseId}-trigger-${value}`;
+    }
+
+    setValue(
+        value: string | null,
+        reason: RdxNavigationMenuOpenChangeReason = 'none',
+        event = new Event('navigation-menu.value-change')
+    ) {
+        const previous = this.value();
+
+        if (previous === value) {
+            return;
+        }
+
+        const previousTrigger = this.trigger();
+        const nextTrigger = value ? this.registeredTriggers.get(value) : undefined;
+        const changedTriggerWhileOpen = previous !== null && value !== null && previousTrigger !== nextTrigger;
+
+        this.instant.set(changedTriggerWhileOpen || reason === 'trigger-focus');
+
+        if (changedTriggerWhileOpen) {
+            this.scheduleInstantReset();
+
+            if (previousTrigger && nextTrigger) {
+                this.viewportTriggerChange.forEach((notify) => notify(previousTrigger, nextTrigger));
+            }
+        }
+
+        if (nextTrigger) {
+            this.trigger.set(nextTrigger);
+        }
+
+        this.previousValue.set(previous);
+        this.value.set(value);
+        this.onValueChange.emit(value);
+        this.onOpenChange.emit({ value, open: value !== null, reason, event });
+    }
+
+    open(value: string, trigger: HTMLElement, reason: RdxNavigationMenuOpenChangeReason = 'none', event?: Event) {
+        this.clearHoverTimers();
+        // Register the anchor in case this value hasn't been seen yet, but DON'T set `this.trigger`
+        // here: setValue must still read the *previous* trigger to detect a trigger switch and drive
+        // the viewport morph. It sets `this.trigger` from the registry after that comparison.
+        if (!this.registeredTriggers.has(value)) {
+            this.registeredTriggers.set(value, trigger);
+        }
+
+        this.setValue(value, reason, event);
+    }
+
+    close(reason: RdxNavigationMenuOpenChangeReason = 'none', event?: Event) {
+        this.clearHoverTimers();
+
+        if (!this.isOpen()) {
+            return;
+        }
+
+        this.instant.set(reason !== 'none' && reason !== 'trigger-hover' && reason !== 'list-leave');
+        this.setValue(null, reason, event);
+    }
+
+    toggle(value: string, trigger: HTMLElement, event?: Event) {
+        this.clearHoverTimers();
+
+        if (this.value() === value) {
+            this.close('trigger-press', event);
+            return;
+        }
+
+        this.open(value, trigger, 'trigger-press', event);
+    }
+
+    openOnHover(value: string, trigger: HTMLElement, event: PointerEvent) {
+        this.clearHoverTimers();
+
+        // Switching between already-open items happens instantly.
+        if (this.isOpen()) {
+            this.open(value, trigger, 'trigger-hover', event);
+            return;
+        }
+
+        this.openTimer = setTimeout(() => this.open(value, trigger, 'trigger-hover', event), this.delay());
+    }
+
+    closeOnHover() {
+        this.clearOpenTimer();
+        this.clearCloseTimer();
+        this.closeTimer = setTimeout(
+            () => this.close('list-leave', new Event('navigation-menu.hover-close')),
+            this.closeDelay()
+        );
+    }
+
+    cancelHoverOpen() {
+        this.clearOpenTimer();
+    }
+
+    cancelHoverClose() {
+        this.clearCloseTimer();
+    }
+
+    registerTrigger(value: string, trigger: HTMLElement) {
+        this.registeredTriggers.set(value, trigger);
+        this.triggers.update((triggers) => (triggers.includes(trigger) ? triggers : [...triggers, trigger]));
+
+        if (this.value() === value) {
+            this.trigger.set(trigger);
+        }
+
+        return () => {
+            if (this.registeredTriggers.get(value) === trigger) {
+                this.registeredTriggers.delete(value);
+            }
+
+            this.triggers.update((triggers) => triggers.filter((candidate) => candidate !== trigger));
+
+            if (this.destroyRef.destroyed || this.value() !== value) {
+                return;
+            }
+
+            // Defer the close: when an item's `value` changes, the trigger's registration effect
+            // unregisters the old value and synchronously re-registers the same element under the new
+            // value. Closing immediately would collapse the menu mid-rename, so only close if the
+            // element is truly gone (not re-registered under any value) on the next microtask.
+            queueMicrotask(() => {
+                if (this.destroyRef.destroyed || this.value() !== value) {
+                    return;
+                }
+
+                const stillRegistered = [...this.registeredTriggers.values()].includes(trigger);
+
+                if (!stillRegistered) {
+                    this.close();
+                }
+            });
+        };
+    }
+
+    registerContent(entry: RdxNavigationMenuContentEntry) {
+        this.contents.update((contents) => new Map(contents).set(entry.value, entry));
+
+        return () => {
+            this.contents.update((contents) => {
+                if (contents.get(entry.value) !== entry) {
+                    return contents;
+                }
+
+                const next = new Map(contents);
+                next.delete(entry.value);
+                return next;
+            });
+        };
+    }
+
+    registerTransitionElement(element: HTMLElement) {
+        return this.transition.registerElement(element);
+    }
+
+    registerViewport(onTriggerChange: (previous: HTMLElement, next: HTMLElement) => void) {
+        this.viewportTriggerChange.add(onTriggerChange);
+        return () => this.viewportTriggerChange.delete(onTriggerChange);
+    }
+
+    private scheduleInstantReset() {
+        if (this.instantFrame !== undefined) {
+            cancelAnimationFrame(this.instantFrame);
+        }
+
+        this.instantFrame = requestAnimationFrame(() => {
+            this.instantFrame = undefined;
+
+            if (!this.destroyRef.destroyed && this.isOpen()) {
+                this.instant.set(false);
+            }
+        });
+    }
+
+    private clearHoverTimers() {
+        this.clearOpenTimer();
+        this.clearCloseTimer();
+    }
+
+    private clearOpenTimer() {
+        if (this.openTimer !== undefined) {
+            clearTimeout(this.openTimer);
+            this.openTimer = undefined;
+        }
+    }
+
+    private clearCloseTimer() {
+        if (this.closeTimer !== undefined) {
+            clearTimeout(this.closeTimer);
+            this.closeTimer = undefined;
+        }
+    }
+}
+
+function contextFor(root: RdxNavigationMenuRoot): RdxNavigationMenuRootContext {
+    return {
+        nested: root.nested,
+        baseId: root.baseId,
+        orientation: root.orientation,
+        dir: root.dir,
+        loop: root.loop,
+        value: root.value,
+        previousValue: root.previousValue.asReadonly(),
+        isOpen: root.isOpen,
+        instant: root.instant.asReadonly(),
+        transitionStatus: root.transitionStatus,
+        trigger: root.trigger.asReadonly(),
+        triggers: root.triggers.asReadonly(),
+        activeContent: root.activeContent,
+        contentId: (value) => root.contentId(value),
+        triggerId: (value) => root.triggerId(value),
+        setValue: (value, reason, event) => root.setValue(value, reason, event),
+        open: (value, trigger, reason, event) => root.open(value, trigger, reason, event),
+        close: (reason, event) => root.close(reason, event),
+        toggle: (value, trigger, event) => root.toggle(value, trigger, event),
+        openOnHover: (value, trigger, event) => root.openOnHover(value, trigger, event),
+        closeOnHover: () => root.closeOnHover(),
+        cancelHoverOpen: () => root.cancelHoverOpen(),
+        cancelHoverClose: () => root.cancelHoverClose(),
+        registerTrigger: (value, trigger) => root.registerTrigger(value, trigger),
+        registerContent: (entry) => root.registerContent(entry),
+        registerTransitionElement: (element) => root.registerTransitionElement(element),
+        registerViewport: (onTriggerChange) => root.registerViewport(onTriggerChange)
+    };
+}

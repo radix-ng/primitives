@@ -70,6 +70,7 @@ Every primitive family exposes state via `createContext` from `@radix-ng/primiti
 - **`defaultValue` via `effect()`** — uncontrolled initialization is done in `constructor()` with an `effect()`
 - **Dialog is a declarative compound** — `dialog` was rewritten off `cdk/dialog` into a Base UI-style compound (Root/Trigger/Portal/Backdrop/Popup/Title/Description/Close, plus Viewport and a detached-trigger handle) built on the shared `dismissable-layer` + `focus-scope` + `presence` + `portal` layers. It mirrors `popover` (the reference for this pattern)
 - **Alert Dialog is a thin layer over Dialog** — every `alert-dialog` part is a thin `hostDirectives` wrapper around the matching dialog part (its own `rdxAlertDialog*` selector), so the dialog primitive stays headless and knows nothing about its consumers. Alert semantics come from an injected **dialog variant** (`RDX_DIALOG_VARIANT` / `provideRdxDialogVariant`), a small behavioral profile with three independent flags — `role`, `forceModal`, `forcePointerDismissalDisabled` — that the dialog root folds into its effective `modal` / `disablePointerDismissal` / popup `role`. Keeping the flags independent (rather than deriving dismissal from role) lets future variants like Drawer reuse the same hook. Alert dialogs set all three: `role="alertdialog"`, always modal, outside-press/focus-out dismissal off (Escape still closes). This removed the last `cdk/overlay`, `cdk/portal`, and `CdkTrapFocus` usage from the codebase. Same composition pattern as `context-menu` over `menu`
+- **Navigation Menu is a Base UI-style compound** — `navigation-menu` was rewritten off its Radix port into the Base UI part set (Root/List/Item/Trigger/Icon/Content/Link/Portal/Backdrop/Positioner/Popup/Arrow/Viewport, `navigationMenuImports` array). A menubar `List` of triggers/links shares **one** popup, anchored to the active trigger via the `popper` primitive (`RdxPopper` on the Root, like `popover`) and mounted through `presence`/`portal`. The Root owns a `value`/`defaultValue` model (`open = value != null`) with `delay`/`closeDelay` (default 50) and a `useTransitionStatus` state machine; each `Item`'s `*rdxNavigationMenuContent` template is rendered into the shared `Viewport`, which morphs size and slides via `data-activation-direction`/`data-previous`. Menubar arrow-key nav uses `roving-focus`; in-content links are plain tabbable anchors (no roving). Nested menus are a `Root` inside a `Content` (detected with `inject(RdxNavigationMenuRoot, { skipSelf })`). This removed CDK `FocusKeyManager` and `FocusableOption` from the codebase
 
 ## External peer dependencies (installed by ng-add)
 
@@ -81,18 +82,16 @@ Every primitive family exposes state via `createContext` from `@radix-ng/primiti
 
 Current state of CDK usage — what still needs to be replaced:
 
-| CDK import                     | Used for                  | Where                                                     |
-| ------------------------------ | ------------------------- | --------------------------------------------------------- |
-| `_IdGenerator` (`cdk/a11y`)    | Unique ID generation      | accordion, tooltip, popover, switch, preview-card, dialog |
-| `FocusKeyManager` (`cdk/a11y`) | Keyboard focus management | navigation-menu                                           |
-| `LiveAnnouncer` (`cdk/a11y`)   | ARIA live region          | stepper                                                   |
-| `Platform` (`cdk/platform`)    | SSR/browser detection     | `core/is-client`                                          |
+| CDK import                   | Used for              | Where                                                     |
+| ---------------------------- | --------------------- | --------------------------------------------------------- |
+| `_IdGenerator` (`cdk/a11y`)  | Unique ID generation  | accordion, tooltip, popover, switch, preview-card, dialog |
+| `LiveAnnouncer` (`cdk/a11y`) | ARIA live region      | stepper                                                   |
+| `Platform` (`cdk/platform`)  | SSR/browser detection | `core/is-client`                                          |
 
 Type-only imports that are low-priority (zero runtime cost, but ideally replaced with own types):
 
 - `BooleanInput`, `NumberInput` (`cdk/coercion`) — used as TypeScript type parameters in 67 files
 - `Direction` (`cdk/bidi`) — type alias for `'ltr' | 'rtl'`; can be replaced with a local type in `core`
-- `FocusableOption` (`cdk/a11y`) — TypeScript interface in navigation-menu
 
 ## tsconfig paths
 
