@@ -29,7 +29,7 @@ import { injectRdxDialogRootContext, RdxDialogOpenChangeReason } from './dialog-
         })
     ],
     host: {
-        role: 'dialog',
+        '[attr.role]': 'rootContext.role',
         '[attr.aria-modal]': 'rootContext.modal() === true ? "true" : undefined',
         '[attr.aria-describedby]': 'rootContext.descriptionId()',
         '[attr.aria-labelledby]': 'rootContext.titleId()',
@@ -38,7 +38,7 @@ import { injectRdxDialogRootContext, RdxDialogOpenChangeReason } from './dialog-
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
         '[attr.data-starting-style]': 'rootContext.transitionStatus() === "starting" ? "" : undefined',
         '[attr.data-state]': 'rootContext.isOpen() ? "open" : "closed"',
-        '[attr.data-nested]': 'rootContext.nested() ? "" : undefined',
+        '[attr.data-nested]': 'rootContext.nested ? "" : undefined',
         '[attr.data-nested-dialog-open]': 'rootContext.nestedDialogOpen() ? "" : undefined',
         '[id]': 'rootContext.contentId'
     }

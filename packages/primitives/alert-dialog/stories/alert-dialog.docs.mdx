@@ -1,0 +1,110 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './alert-dialog.stories';
+import { RdxAlertDialogRoot, RdxAlertDialogTrigger } from '../index';
+
+<Meta title="Primitives/Alert Dialog" />
+
+# Alert Dialog
+
+#### A modal dialog that interrupts the user with important content and expects a response.
+
+Alert Dialog is the Dialog primitive with three fixed invariants: it is always modal, it does **not**
+dismiss on outside clicks or focus leaving the popup (only an explicit action or Escape closes it), and
+its popup uses `role="alertdialog"`. Each `rdxAlertDialog*` part is a thin wrapper around the matching
+dialog part.
+
+<Canvas sourceState="hidden" of={Stories.Default} />
+
+## Features
+
+- ✅ Always modal: document scrolling is locked and outside pointer events are disabled.
+- ✅ Does not close on outside interaction — requires an explicit choice; Escape still closes.
+- ✅ Renders the popup with `role="alertdialog"` for assertive screen-reader semantics.
+- ✅ Supports uncontrolled state, `defaultOpen`, and Angular two-way binding with `[(open)]`.
+- ✅ Supports detached triggers through a shared handle.
+- ✅ Traps and restores focus; links the popup to title and description for accessible labeling.
+
+## Import
+
+```typescript
+import {
+    alertDialogImports,
+    createRdxAlertDialogHandle,
+    RdxAlertDialogBackdrop,
+    RdxAlertDialogClose,
+    RdxAlertDialogDescription,
+    RdxAlertDialogPopup,
+    RdxAlertDialogPortal,
+    RdxAlertDialogPortalPresence,
+    RdxAlertDialogRoot,
+    RdxAlertDialogTitle,
+    RdxAlertDialogTrigger
+} from '@radix-ng/primitives/alert-dialog';
+```
+
+Or import all parts through the module:
+
+```typescript
+import { RdxAlertDialogModule } from '@radix-ng/primitives/alert-dialog';
+```
+
+## Anatomy
+
+```html
+<div rdxAlertDialogRoot>
+    <button rdxAlertDialogTrigger>Delete</button>
+
+    <ng-template rdxAlertDialogPortalPresence>
+        <div rdxAlertDialogPortal>
+            <div rdxAlertDialogBackdrop></div>
+            <div rdxAlertDialogPopup>
+                <h2 rdxAlertDialogTitle>Are you sure?</h2>
+                <p rdxAlertDialogDescription>This action cannot be undone.</p>
+                <button rdxAlertDialogClose>Cancel</button>
+                <button rdxAlertDialogClose>Confirm</button>
+            </div>
+        </div>
+    </ng-template>
+</div>
+```
+
+## Examples
+
+### Default
+
+A destructive confirmation with Cancel and an action button. Clicking the backdrop keeps it open.
+
+<Canvas of={Stories.Default} />
+
+### Controlled
+
+Bind `[(open)]` to open or close the alert dialog from component state.
+
+<Canvas of={Stories.Controlled} />
+
+### Detached triggers
+
+Connect a trigger rendered outside the root with `createRdxAlertDialogHandle()`; the handle also exposes
+imperative `open(id)` / `close()`.
+
+<Canvas of={Stories.Detached} />
+
+## API Reference
+
+### Root
+
+`RdxAlertDialogRoot` composes the Dialog root and forces alert semantics (always modal, no pointer
+dismissal, `role="alertdialog"`).
+
+<ArgTypes of={RdxAlertDialogRoot} />
+
+### Trigger
+
+`RdxAlertDialogTrigger` opens the alert dialog; it behaves like the dialog trigger.
+
+<ArgTypes of={RdxAlertDialogTrigger} />
+
+### Portal, Backdrop, Popup, Title, Description, Close, Viewport
+
+These are thin wrappers around the matching dialog parts and read their behavior from context. See the
+Dialog docs for their full reference.

@@ -20,6 +20,7 @@ export * from './src/dialog-portal-presence';
 export * from './src/dialog-root';
 export * from './src/dialog-title';
 export * from './src/dialog-trigger';
+export * from './src/dialog-variant';
 export * from './src/dialog-viewport';
 
 export const dialogImports = [

@@ -1,28 +1,42 @@
 import { NgModule } from '@angular/core';
-import { RdxAlertDialogCancelDirective } from './src/alert-dialog-cancel.directive';
-import { RdxAlertDialogContentDirective } from './src/alert-dialog-content.directive';
-import { RdxAlertDialogRootDirective } from './src/alert-dialog-root.directive';
-import { RdxAlertDialogTitleDirective } from './src/alert-dialog-title.directive';
-import { RdxAlertDialogTriggerDirective } from './src/alert-dialog-trigger.directive';
+import { RdxAlertDialogBackdrop } from './src/alert-dialog-backdrop';
+import { RdxAlertDialogClose } from './src/alert-dialog-close';
+import { RdxAlertDialogDescription } from './src/alert-dialog-description';
+import { RdxAlertDialogPopup } from './src/alert-dialog-popup';
+import { RdxAlertDialogPortal } from './src/alert-dialog-portal';
+import { RdxAlertDialogPortalPresence } from './src/alert-dialog-portal-presence';
+import { RdxAlertDialogRoot } from './src/alert-dialog-root';
+import { RdxAlertDialogTitle } from './src/alert-dialog-title';
+import { RdxAlertDialogTrigger } from './src/alert-dialog-trigger';
+import { RdxAlertDialogViewport } from './src/alert-dialog-viewport';
 
-export * from './src/alert-dialog-cancel.directive';
-export * from './src/alert-dialog-content.directive';
-export * from './src/alert-dialog-root.directive';
-export * from './src/alert-dialog-title.directive';
-export * from './src/alert-dialog-trigger.directive';
+export * from './src/alert-dialog-backdrop';
+export * from './src/alert-dialog-close';
+export * from './src/alert-dialog-description';
+export * from './src/alert-dialog-handle';
+export * from './src/alert-dialog-popup';
+export * from './src/alert-dialog-portal';
+export * from './src/alert-dialog-portal-presence';
+export * from './src/alert-dialog-root';
+export * from './src/alert-dialog-title';
+export * from './src/alert-dialog-trigger';
+export * from './src/alert-dialog-viewport';
 
-export * from './src/alert-dialog.service';
-
-const _imports = [
-    RdxAlertDialogRootDirective,
-    RdxAlertDialogContentDirective,
-    RdxAlertDialogCancelDirective,
-    RdxAlertDialogTriggerDirective,
-    RdxAlertDialogTitleDirective
+export const alertDialogImports = [
+    RdxAlertDialogRoot,
+    RdxAlertDialogTrigger,
+    RdxAlertDialogPortalPresence,
+    RdxAlertDialogPortal,
+    RdxAlertDialogBackdrop,
+    RdxAlertDialogViewport,
+    RdxAlertDialogPopup,
+    RdxAlertDialogTitle,
+    RdxAlertDialogDescription,
+    RdxAlertDialogClose
 ];
 
 @NgModule({
-    imports: [..._imports],
-    exports: [..._imports]
+    imports: [...alertDialogImports],
+    exports: [...alertDialogImports]
 })
 export class RdxAlertDialogModule {}

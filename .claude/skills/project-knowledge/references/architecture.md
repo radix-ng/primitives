@@ -47,7 +47,7 @@ tools/scripts/         ← build helpers (typedoc, api-docs)
 
 These are the headless infrastructure layers that complex primitives compose:
 
-- **`core`** — `createContext`, `useArrowNavigation`, id generators, shared types (`DataOrientation`, `AcceptableValue`, `isNullish`)
+- **`core`** — `createContext`, `useArrowNavigation`, id generators, shared types (`DataOrientation`, `AcceptableValue`, `isNullish`), plus overlay infrastructure shared across primitives: `useTransitionStatus` (open/close transition state machine + `getMaxTransitionDuration`) and `useScrollLock` (body scroll lock with one process-wide counter, so concurrent overlays compose correctly). Used by dialog and popover
 - **`collection`** — `RdxCollectionProvider` + `RdxCollectionItem`: collects child items in DOM order via `contentChildren`; only used by `select` currently
 - **`portal`** — `RdxPortal`: teleports host element into a container (default `document.body`)
 - **`presence`** — conditional mount/unmount with enter/leave animation hooks (waits for `animationend`, not `transitionend`)
@@ -68,6 +68,8 @@ Every primitive family exposes state via `createContext` from `@radix-ng/primiti
 - **`data-*` state only** — inline styles are never used for state; CSS custom properties are the only exception (for animation dimensions)
 - **`undefined` removes attributes** — `host` bindings use `undefined` (not `null` or `false`) to remove attributes
 - **`defaultValue` via `effect()`** — uncontrolled initialization is done in `constructor()` with an `effect()`
+- **Dialog is a declarative compound** — `dialog` was rewritten off `cdk/dialog` into a Base UI-style compound (Root/Trigger/Portal/Backdrop/Popup/Title/Description/Close, plus Viewport and a detached-trigger handle) built on the shared `dismissable-layer` + `focus-scope` + `presence` + `portal` layers. It mirrors `popover` (the reference for this pattern)
+- **Alert Dialog is a thin layer over Dialog** — every `alert-dialog` part is a thin `hostDirectives` wrapper around the matching dialog part (its own `rdxAlertDialog*` selector), so the dialog primitive stays headless and knows nothing about its consumers. Alert semantics come from an injected **dialog variant** (`RDX_DIALOG_VARIANT` / `provideRdxDialogVariant`), a small behavioral profile with three independent flags — `role`, `forceModal`, `forcePointerDismissalDisabled` — that the dialog root folds into its effective `modal` / `disablePointerDismissal` / popup `role`. Keeping the flags independent (rather than deriving dismissal from role) lets future variants like Drawer reuse the same hook. Alert dialogs set all three: `role="alertdialog"`, always modal, outside-press/focus-out dismissal off (Escape still closes). This removed the last `cdk/overlay`, `cdk/portal`, and `CdkTrapFocus` usage from the codebase. Same composition pattern as `context-menu` over `menu`
 
 ## External peer dependencies (installed by ng-add)
 
@@ -79,15 +81,12 @@ Every primitive family exposes state via `createContext` from `@radix-ng/primiti
 
 Current state of CDK usage — what still needs to be replaced:
 
-| CDK import                                                              | Used for                  | Where                                                      |
-| ----------------------------------------------------------------------- | ------------------------- | ---------------------------------------------------------- |
-| `_IdGenerator` (`cdk/a11y`)                                             | Unique ID generation      | accordion, tooltip, popover, switch, preview-card, popover |
-| `FocusKeyManager` (`cdk/a11y`)                                          | Keyboard focus management | navigation-menu                                            |
-| `CdkTrapFocus` (`cdk/a11y`)                                             | Focus trap directive      | alert-dialog                                               |
-| `LiveAnnouncer` (`cdk/a11y`)                                            | ARIA live region          | stepper                                                    |
-| `Platform` (`cdk/platform`)                                             | SSR/browser detection     | `core/is-client`                                           |
-| `Dialog`, `DialogModule`, `DialogRef`, `DIALOG_DATA` (`cdk/dialog`)     | Full dialog service       | dialog primitive                                           |
-| `Overlay`, `OverlayRef`, `TemplatePortal` (`cdk/overlay`, `cdk/portal`) | Overlay mechanism         | alert-dialog                                               |
+| CDK import                     | Used for                  | Where                                                     |
+| ------------------------------ | ------------------------- | --------------------------------------------------------- |
+| `_IdGenerator` (`cdk/a11y`)    | Unique ID generation      | accordion, tooltip, popover, switch, preview-card, dialog |
+| `FocusKeyManager` (`cdk/a11y`) | Keyboard focus management | navigation-menu                                           |
+| `LiveAnnouncer` (`cdk/a11y`)   | ARIA live region          | stepper                                                   |
+| `Platform` (`cdk/platform`)    | SSR/browser detection     | `core/is-client`                                          |
 
 Type-only imports that are low-priority (zero runtime cost, but ideally replaced with own types):
 

@@ -16,6 +16,7 @@ import {
 } from '@angular/core';
 import { createContext, RdxTransitionStatus, useTransitionStatus } from '@radix-ng/primitives/core';
 import { RdxDialogHandle } from './dialog-handle';
+import { RDX_DIALOG_VARIANT, RdxDialogRole } from './dialog-variant';
 
 export type RdxDialogModal = boolean | 'trap-focus';
 
@@ -51,13 +52,18 @@ export interface RdxDialogRootContext {
     titleId: Signal<string | undefined>;
     descriptionId: Signal<string | undefined>;
     isOpen: Signal<boolean>;
+    /** Effective modality (the variant can pin this to `true`). */
     modal: Signal<RdxDialogModal>;
+    /** Effective outside-press / focus-out dismissal flag (the variant can force it on). */
     disablePointerDismissal: Signal<boolean>;
+    /** ARIA role for the popup; constant, fixed by the variant at construction. */
+    role: RdxDialogRole;
     transitionStatus: Signal<RdxTransitionStatus>;
     trigger: Signal<HTMLElement | undefined>;
     triggers: Signal<HTMLElement[]>;
     payload: Signal<unknown>;
-    nested: Signal<boolean>;
+    /** Whether this dialog is nested in another; constant, fixed at construction. */
+    nested: boolean;
     nestedDialogOpen: Signal<boolean>;
     setTitleId: (id: string | undefined) => void;
     setDescriptionId: (id: string | undefined) => void;
@@ -89,6 +95,7 @@ export class RdxDialogRoot {
     private readonly idGenerator = inject(_IdGenerator);
     private readonly destroyRef = inject(DestroyRef);
     private readonly parentRoot = inject(RdxDialogRoot, { optional: true, skipSelf: true });
+    private readonly variant = inject(RDX_DIALOG_VARIANT);
     private hasAppliedDefaultOpen = false;
     private hasAppliedDefaultTriggerId = false;
     private readonly registeredTriggers = new Map<string, RdxDialogRegisteredTrigger>();
@@ -155,8 +162,17 @@ export class RdxDialogRoot {
 
     /** Whether this dialog is rendered inside another dialog. Fixed at construction. */
     readonly nested = !!this.parentRoot;
-    readonly nestedSignal = signal(this.nested).asReadonly();
     readonly nestedDialogOpen = computed(() => this.nestedOpenCount() > 0);
+
+    /** ARIA role, fixed at construction by the dialog variant (`alertdialog` for alert dialogs). */
+    readonly role = this.variant.role;
+
+    /** Effective modality: the variant can pin it to `true` regardless of the `modal` input. */
+    readonly effectiveModal = computed<RdxDialogModal>(() => (this.variant.forceModal ? true : this.modal()));
+    /** Effective dismissal flag: disabled when the input asks, or when the variant forces it (alerts). */
+    readonly effectiveDisablePointerDismissal = computed(
+        () => this.disablePointerDismissal() || this.variant.forcePointerDismissalDisabled
+    );
 
     constructor() {
         let previousOpen = this.open();
@@ -337,13 +353,14 @@ function contextFor(root: RdxDialogRoot): RdxDialogRootContext {
         titleId: root.titleId.asReadonly(),
         descriptionId: root.descriptionId.asReadonly(),
         isOpen: root.open,
-        modal: root.modal,
-        disablePointerDismissal: root.disablePointerDismissal,
+        modal: root.effectiveModal,
+        disablePointerDismissal: root.effectiveDisablePointerDismissal,
+        role: root.role,
         transitionStatus: root.transitionStatus,
         trigger: root.trigger.asReadonly(),
         triggers: root.triggers.asReadonly(),
         payload: root.payload.asReadonly(),
-        nested: root.nestedSignal,
+        nested: root.nested,
         nestedDialogOpen: root.nestedDialogOpen,
         setTitleId: (id: string | undefined) => root.titleId.set(id),
         setDescriptionId: (id: string | undefined) => root.descriptionId.set(id),
