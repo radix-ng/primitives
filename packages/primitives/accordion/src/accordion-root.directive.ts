@@ -25,6 +25,7 @@ export type AccordionRootContext = {
     value: ModelSignal<AcceptableValue | AcceptableValue[] | undefined>;
     collapsible: Signal<boolean>;
     isSingle: Signal<boolean>;
+    loopFocus: InputSignalWithTransform<boolean, BooleanInput>;
     elementRef: ElementRef<HTMLElement>;
     changeModelValue: (value: string) => void;
 };
@@ -43,6 +44,7 @@ const rootContext = (): AccordionRootContext => {
         elementRef: instance.elementRef,
         value: instance.value,
         isSingle: instance.isSingle,
+        loopFocus: instance.loopFocus,
         changeModelValue: instance.changeModelValue
     };
 };
@@ -55,7 +57,8 @@ const rootContext = (): AccordionRootContext => {
     exportAs: 'rdxAccordionRoot',
     providers: [provideAccordionRootContext(rootContext)],
     host: {
-        '[attr.data-orientation]': 'orientation()'
+        '[attr.data-orientation]': 'orientation()',
+        '[attr.data-disabled]': 'disabled() ? "" : undefined'
     }
 })
 export class RdxAccordionRootDirective {
@@ -117,12 +120,29 @@ export class RdxAccordionRootDirective {
     readonly type = input<'multiple' | 'single'>('single');
 
     /**
+     * Allow multiple panels to be open simultaneously.
+     * Takes precedence over `type` when `true`.
+     *
+     * @defaultValue false
+     * @group Props
+     */
+    readonly multiple = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /**
+     * Whether keyboard focus wraps from the last item to the first and vice versa.
+     *
+     * @defaultValue true
+     * @group Props
+     */
+    readonly loopFocus = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
+
+    /**
      * Event handler called when the expanded state of an item changes.
      * @group Emits
      */
     readonly onValueChange = output<AcceptableValue | AcceptableValue[] | undefined>();
 
-    readonly isSingle = computed(() => this.type() === 'single');
+    readonly isSingle = computed(() => !this.multiple() && this.type() !== 'multiple');
 
     constructor() {
         effect(() => {

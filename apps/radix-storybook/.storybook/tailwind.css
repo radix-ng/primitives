@@ -126,6 +126,51 @@
     --animate-popover-popup-out: popover-popup-out 120ms ease-in;
     --animate-popover-viewport-in: popover-viewport-in 200ms ease-out;
     --animate-popover-viewport-out: popover-viewport-out 200ms ease-in;
+
+    --animate-accordion-down: accordion-down 200ms ease-out;
+    --animate-accordion-up: accordion-up 200ms ease-out;
+    --animate-accordion-right: accordion-right 200ms ease-out;
+    --animate-accordion-left: accordion-left 200ms ease-out;
+}
+
+@keyframes accordion-down {
+    from {
+        height: 0;
+    }
+
+    to {
+        height: var(--radix-accordion-content-height);
+    }
+}
+
+@keyframes accordion-up {
+    from {
+        height: var(--radix-accordion-content-height);
+    }
+
+    to {
+        height: 0;
+    }
+}
+
+@keyframes accordion-right {
+    from {
+        width: 0;
+    }
+
+    to {
+        width: var(--radix-accordion-content-width);
+    }
+}
+
+@keyframes accordion-left {
+    from {
+        width: var(--radix-accordion-content-width);
+    }
+
+    to {
+        width: 0;
+    }
 }
 
 @keyframes popover-in {

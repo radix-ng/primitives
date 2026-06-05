@@ -6,8 +6,9 @@ import { injectAccordionRootContext } from './accordion-root.directive';
     selector: '[rdxAccordionHeader]',
     host: {
         '[attr.data-state]': 'itemContext.dataState()',
-        '[attr.data-disabled]': 'itemContext.dataDisabled()',
-        '[attr.data-orientation]': 'rootContext.orientation()'
+        '[attr.data-disabled]': 'itemContext.dataDisabled() ? "" : undefined',
+        '[attr.data-orientation]': 'rootContext.orientation()',
+        '[attr.data-index]': 'itemContext.index()'
     }
 })
 export class RdxAccordionHeaderDirective {

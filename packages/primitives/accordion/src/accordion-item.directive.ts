@@ -7,6 +7,7 @@ import {
     ElementRef,
     inject,
     input,
+    output,
     signal,
     Signal,
     WritableSignal
@@ -26,6 +27,7 @@ export type AccordionItemContext = {
     currentElement: ElementRef<HTMLElement>;
     value: Signal<string | undefined>;
     updateOpen: () => void;
+    index: Signal<number>;
 };
 
 export const [injectAccordionItemContext, provideAccordionItemContext] =
@@ -42,7 +44,8 @@ const itemContext = (): AccordionItemContext => {
         triggerId: instance.triggerId,
         currentElement: instance.elementRef,
         value: computed(() => instance.value()),
-        updateOpen: instance.updateOpen
+        updateOpen: instance.updateOpen,
+        index: instance.index
     };
 };
 
@@ -61,8 +64,9 @@ const itemContext = (): AccordionItemContext => {
     ],
     host: {
         '[attr.data-orientation]': 'rootContext.orientation()',
-        '[attr.data-disabled]': 'disabled() ? "" : undefined',
+        '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
         '[attr.data-state]': 'dataState()',
+        '[attr.data-index]': 'index()',
 
         '(keydown.arrowDown)': 'handleArrowKey($event)',
         '(keydown.arrowUp)': 'handleArrowKey($event)',
@@ -92,6 +96,12 @@ export class RdxAccordionItemDirective {
      */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /**
+     * Event handler called when the panel open state changes.
+     * @group Emits
+     */
+    readonly onOpenChange = output<boolean>();
+
     readonly isDisabled = computed(() => {
         return this.rootContext.disabled() || this.disabled();
     });
@@ -109,9 +119,24 @@ export class RdxAccordionItemDirective {
     /** Set by the trigger; links the content's `aria-labelledby` to the trigger `id`. */
     readonly triggerId = signal('');
 
+    readonly index = computed(() => {
+        const allItems = Array.from(this.rootContext.elementRef.nativeElement.querySelectorAll('[rdxAccordionItem]'));
+        return allItems.indexOf(this.elementRef.nativeElement);
+    });
+
     constructor() {
         effect(() => {
             this.updateOpen();
+        });
+
+        let initialized = false;
+        effect(() => {
+            const isOpen = this.open();
+            if (!initialized) {
+                initialized = true;
+                return;
+            }
+            this.onOpenChange.emit(isOpen);
         });
     }
 
@@ -136,6 +161,7 @@ export class RdxAccordionItemDirective {
             {
                 arrowKeyOptions: this.rootContext.orientation(),
                 dir: this.rootContext.direction(),
+                loop: this.rootContext.loopFocus(),
                 focus: true
             }
         );

@@ -143,6 +143,37 @@ export const demoAvatar = {
     }
 } as const;
 
+/**
+ * Accordion parts: vertical (default) and horizontal layouts.
+ *
+ * Vertical root: add `w-[300px]`. Horizontal root: add `flex flex-row h-[300px]`.
+ * Horizontal items: compose `item` + `itemH`. Horizontal trigger: compose `trigger` + `triggerH`.
+ * Animations require `--animate-accordion-*` defined in `tailwind.css`.
+ */
+export const demoAccordion = {
+    root: 'rounded-xl border border-border bg-card shadow-xs',
+    item: cn(
+        'overflow-hidden border-b border-border last:border-b-0',
+        'focus-within:relative focus-within:z-[1] focus-within:outline-none focus-within:ring-2 focus-within:ring-ring'
+    ),
+    itemH: 'flex border-b-0 border-r border-border last:border-r-0',
+    header: 'flex',
+    trigger: cn(
+        'flex h-12 w-full flex-1 cursor-default items-center justify-between px-5 text-[15px]',
+        'bg-background text-foreground transition-colors hover:bg-muted',
+        'data-[disabled=true]:text-muted-foreground'
+    ),
+    triggerH: '[writing-mode:vertical-rl] h-full px-0 py-5',
+    content: cn(
+        'overflow-hidden text-[15px] text-muted-foreground bg-muted',
+        '[&[data-state=open][data-orientation=vertical]]:animate-accordion-down',
+        '[&[data-state=closed][data-orientation=vertical]]:animate-accordion-up',
+        '[&[data-state=open][data-orientation=horizontal]]:animate-accordion-right',
+        '[&[data-state=closed][data-orientation=horizontal]]:animate-accordion-left'
+    ),
+    contentText: 'px-5 py-4'
+} as const;
+
 /** Tooltip parts: a small popup anchored to a trigger. */
 export const demoTooltip = {
     positioner: 'z-50',

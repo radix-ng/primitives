@@ -14,6 +14,8 @@ import { injectAccordionRootContext } from './accordion-root.directive';
         '[attr.aria-disabled]': 'itemContext.open() && !rootContext.collapsible() ? "true" : undefined',
         '[attr.data-orientation]': 'rootContext.orientation()',
         '[attr.disabled]': 'itemContext.dataDisabled() ? "" : undefined',
+        '[attr.data-panel-open]': 'itemContext.open() ? "" : undefined',
+        '[attr.data-index]': 'itemContext.index()',
 
         '(click)': 'changeItem()'
     }
