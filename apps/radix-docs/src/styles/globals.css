@@ -4,7 +4,6 @@
 
 @import 'tailwindcss';
 @import '@radix-ui/themes/styles.css';
-@import '@angular/cdk/overlay-prebuilt.css';
 @import '@docsearch/css';
 
 @plugin 'tailwindcss-animate';

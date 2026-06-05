@@ -126,18 +126,3 @@ Map your design tokens to Tailwind theme colors (Tailwind v4 uses a CSS-first `@
 so utilities like `bg-background` and `border-border` resolve to the variables above. This is
 exactly how the demos in this Storybook are themed; the theme toggle in the toolbar simply sets
 `data-theme` on the document root.
-
-## Overlay styles
-
-Components that use the CDK overlay (e.g. for portalled content) need the CDK overlay
-stylesheet:
-
-```bash
-npm install @angular/cdk
-```
-
-```json
-"styles": [
-    "@angular/cdk/overlay-prebuilt.css"
-]
-```

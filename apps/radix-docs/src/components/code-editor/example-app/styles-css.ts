@@ -3,8 +3,6 @@ export const stylesCss = `
 @import '@radix-ui/colors/mauve.css';
 @import '@radix-ui/colors/violet.css';
 
-@import '@angular/cdk/overlay-prebuilt.css';
-
 html,
 body {
   height: 100%;

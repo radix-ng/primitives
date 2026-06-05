@@ -77,20 +77,3 @@ bootstrapApplication(App);
 
 The primitives are headless — they carry no styles. See **Theming** for how to style the parts
 via their `data-*` attributes.
-
-## Overlay styles
-
-Components that render content in a CDK overlay (Popover, Tooltip, Menu, Select, …) need the CDK
-overlay stylesheet. Add it once at the root of your app:
-
-```json
-"styles": [
-    "@angular/cdk/overlay-prebuilt.css"
-]
-```
-
-Or import it from your global stylesheet:
-
-```css
-@import '@angular/cdk/overlay-prebuilt.css';
-```
