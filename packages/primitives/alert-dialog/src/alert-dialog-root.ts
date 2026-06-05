@@ -1,4 +1,4 @@
-import { Directive } from '@angular/core';
+import { Directive, inject } from '@angular/core';
 import { provideRdxDialogVariant, RdxDialogRoot } from '@radix-ng/primitives/dialog';
 
 /**
@@ -27,4 +27,13 @@ import { provideRdxDialogVariant, RdxDialogRoot } from '@radix-ng/primitives/dia
         })
     ]
 })
-export class RdxAlertDialogRoot {}
+export class RdxAlertDialogRoot {
+    private readonly dialog = inject(RdxDialogRoot);
+
+    /** Whether the alert dialog is open (read-only mirror of the composed dialog state). */
+    readonly open = this.dialog.open;
+    /** The active trigger's id. */
+    readonly triggerId = this.dialog.triggerId;
+    /** Payload of the active trigger. */
+    readonly payload = this.dialog.payload;
+}

@@ -21,7 +21,7 @@ dialog part.
 - ✅ Does not close on outside interaction — requires an explicit choice; Escape still closes.
 - ✅ Renders the popup with `role="alertdialog"` for assertive screen-reader semantics.
 - ✅ Supports uncontrolled state, `defaultOpen`, and Angular two-way binding with `[(open)]`.
-- ✅ Supports detached triggers through a shared handle.
+- ✅ Supports multiple triggers, controlled `triggerId`, and detached triggers through a shared handle.
 - ✅ Traps and restores focus; links the popup to title and description for accessible labeling.
 
 ## Import
@@ -82,12 +82,38 @@ Bind `[(open)]` to open or close the alert dialog from component state.
 
 <Canvas of={Stories.Controlled} />
 
+### Multiple triggers
+
+Several triggers can open the same alert dialog. The active trigger's `payload` is exposed on the root
+so the content can adapt to what is being confirmed.
+
+<Canvas of={Stories.MultipleTriggers} />
+
+### Controlled mode with multiple triggers
+
+Bind both `[(open)]` and `[(triggerId)]` to choose which trigger is active from component state.
+
+<Canvas of={Stories.ControlledMultiple} />
+
 ### Detached triggers
 
 Connect a trigger rendered outside the root with `createRdxAlertDialogHandle()`; the handle also exposes
 imperative `open(id)` / `close()`.
 
 <Canvas of={Stories.Detached} />
+
+### Close confirmation
+
+A regular Dialog editor asks an Alert Dialog to confirm before discarding unsaved changes — the classic
+reason to reach for an alert dialog.
+
+<Canvas of={Stories.CloseConfirmation} />
+
+### Open from a menu
+
+Control the alert dialog's `open` state from a menu item to launch a destructive confirmation from a `Menu`.
+
+<Canvas of={Stories.FromMenu} />
 
 ## API Reference
 
