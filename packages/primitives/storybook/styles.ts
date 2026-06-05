@@ -151,10 +151,12 @@ export const demoAvatar = {
  * Animations require `--animate-accordion-*` defined in `tailwind.css`.
  */
 export const demoAccordion = {
-    root: 'rounded-xl border border-border bg-card shadow-xs',
+    // `overflow-hidden` clips the square item/trigger backgrounds to the rounded corners.
+    root: 'overflow-hidden rounded-xl border border-border bg-card shadow-xs',
     item: cn(
         'overflow-hidden border-b border-border last:border-b-0',
-        'focus-within:relative focus-within:z-[1] focus-within:outline-none focus-within:ring-2 focus-within:ring-ring'
+        // `ring-inset` keeps the focus ring inside the item so `overflow-hidden` on the root doesn't clip it.
+        'focus-within:relative focus-within:z-[1] focus-within:outline-none focus-within:ring-2 focus-within:ring-inset focus-within:ring-ring'
     ),
     itemH: 'flex border-b-0 border-r border-border last:border-r-0',
     header: 'flex',

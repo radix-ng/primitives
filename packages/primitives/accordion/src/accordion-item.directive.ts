@@ -129,6 +129,10 @@ export class RdxAccordionItemDirective {
             this.updateOpen();
         });
 
+        effect(() => {
+            this.collapsibleContext.keepMounted.set(this.rootContext.keepMounted());
+        });
+
         let initialized = false;
         effect(() => {
             const isOpen = this.open();

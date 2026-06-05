@@ -1,18 +1,18 @@
 import { _IdGenerator } from '@angular/cdk/a11y';
 import { Directive, inject } from '@angular/core';
-import { RdxCollapsibleTriggerDirective } from '@radix-ng/primitives/collapsible';
 import { injectAccordionItemContext } from './accordion-item.directive';
 import { injectAccordionRootContext } from './accordion-root.directive';
 
 @Directive({
     selector: '[rdxAccordionTrigger]',
-    hostDirectives: [RdxCollapsibleTriggerDirective],
     host: {
         '[id]': 'itemContext.triggerId()',
         '[attr.data-rdx-collection-item]': '""',
         '[attr.role]': '"button"',
+        '[attr.aria-expanded]': 'itemContext.open()',
         '[attr.aria-disabled]': 'itemContext.open() && !rootContext.collapsible() ? "true" : undefined',
         '[attr.data-orientation]': 'rootContext.orientation()',
+        '[attr.data-state]': 'itemContext.dataState()',
         '[attr.disabled]': 'itemContext.dataDisabled() ? "" : undefined',
         '[attr.data-panel-open]': 'itemContext.open() ? "" : undefined',
         '[attr.data-index]': 'itemContext.index()',
@@ -29,12 +29,11 @@ export class RdxAccordionTriggerDirective {
     }
 
     changeItem() {
-        const triggerDisabled =
-            this.rootContext.isSingle() && this.itemContext.open() && !this.rootContext.collapsible();
+        // In single mode an open item stays open (unless `collapsible`), so a click on it is a no-op.
+        const lockedOpen = this.rootContext.isSingle() && this.itemContext.open() && !this.rootContext.collapsible();
 
         // `dataDisabled` is the effective disabled state (accordion-root OR item level).
-        if (this.itemContext.dataDisabled() || triggerDisabled) {
-            this.itemContext.updateOpen();
+        if (this.itemContext.dataDisabled() || lockedOpen) {
             return;
         }
 

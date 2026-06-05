@@ -108,7 +108,10 @@ const preview: Preview = {
             toc: {
                 contentsSelector: '.sbdocs-content',
                 headingSelector: 'h2, h3',
-                ignoreSelector: '#primary',
+                // `.docs-story *` is Storybook's default — it keeps headings rendered *inside* a
+                // story preview (e.g. Accordion demos use real <h3> headers) out of the TOC.
+                // Keep it (plus the Primary block) so only MDX prose headings appear.
+                ignoreSelector: '#primary, .docs-story *',
                 title: 'On this page',
                 disable: false,
                 unsafeTocbotOptions: {

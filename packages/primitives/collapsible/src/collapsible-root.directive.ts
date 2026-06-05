@@ -20,6 +20,7 @@ export interface CollapsibleRootContext {
     open: ModelSignal<boolean>;
     toggle: () => void;
     disabled: Signal<boolean>;
+    keepMounted: ModelSignal<boolean>;
 }
 
 export const [injectCollapsibleRootContext, provideCollapsibleRootContext] =
@@ -32,6 +33,7 @@ const rootContext = (): CollapsibleRootContext => {
         contentId: instance.contentId,
         disabled: instance.isDisabled,
         open: instance.open,
+        keepMounted: instance.keepMounted,
         toggle: () => {
             if (instance.isDisabled()) {
                 return;
@@ -69,6 +71,17 @@ export class RdxCollapsibleRootDirective {
     readonly open = model<boolean>(false);
 
     readonly contentId = input<string>('');
+
+    /**
+     * Whether to keep the content mounted in the DOM when collapsed.
+     * When `true`, the closed content keeps its element in the DOM (no `hidden`
+     * attribute) so it stays available; the consumer's `data-state` CSS is
+     * responsible for visually collapsing it.
+     *
+     * @group Props
+     * @defaultValue false
+     */
+    readonly keepMounted = model<boolean>(false);
 
     /**
      * Determines whether a directive is available for interaction.

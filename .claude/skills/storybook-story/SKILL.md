@@ -12,26 +12,41 @@ description: |
 
 ## Checklist — run through this before writing any story file
 
-1. **All stories are standalone Angular components — no inline templates with `props`.**
-   Using `props` in a `render()` function (e.g. `props: { r: demoRadio }`) fails when a story
-   is embedded via `<Canvas>` in an MDX docs page. Every story must render via its own
-   standalone component:
+1. **Any story embedded via `<Canvas of={X}>` must be a standalone component — `props` do not survive a Canvas embed.**
+   The exception is the **primary `Default` story**, which may be a small inline template using
+   `props` + `args`, _provided_ it is surfaced in the MDX via `<Primary />` / `<Controls />` (never
+   `<Canvas of={Default}>`). This matches the `button` and `checkbox` references.
 
    ```ts
-   // ✅ correct
+   // ✅ Default — small inline template with props/args, shown via <Primary/> in MDX
    export const Default: Story = {
-     parameters: source(defaultSource),
-     render: () => ({ template: `<radio-default-example />` })
-   };
-
-   // ❌ wrong — props are not available in MDX Canvas embeds
-   export const Default: Story = {
-     render: () => ({
-       props: { r: demoRadio },
-       template: `<div [class]="r.group">...`
+     args: { disabled: false },
+     render: (args) => ({
+       props: { ...args, b: demoButton },
+       template: html`
+         <button rdxButton ${argsToTemplate(args)} [class]="b.base">Button</button>
+       `
      })
    };
+
+   // ✅ Named example — standalone component, safe to embed via <Canvas of={X}>
+   export const Variants: Story = {
+     parameters: source(variantsSource),
+     render: () => ({
+       template: html`
+         <button-variants-example />
+       `
+     })
+   };
+
+   // ❌ wrong — a props-based story embedded via <Canvas of={WithScroll}> renders blank
+   export const WithScroll: Story = {
+     render: () => ({ props: { r: demoRadio }, template: `<div [class]="r.group">...` })
+   };
    ```
+
+   In the MDX: surface `Default` with `<Primary />` (+ `<Controls />`) and add `of={Stories}` to
+   `<Meta>`; embed every other example with `<Canvas of={Stories.X} />`.
 
 2. **One component → one file.** Every standalone story component gets its own file:
    `stories/select-default.ts`, `stories/select-with-scroll.ts`, etc.
@@ -68,20 +83,34 @@ description: |
 ## Docs MDX template
 
 ```
+<Meta title="Primitives/Name" of={Stories} />   {/* `of=` is required for <Primary>/<Controls> */}
 # Name
 #### One-line summary.
-<Canvas sourceState="hidden" of={Stories.Default} />
+<Primary />    {/* renders the inline Default story; do NOT use <Canvas of={Default}> */}
+<Controls />   {/* args table for the Default story */}
 ## Features  (✅ bullets)
 ## Import     (code block)
 ## Anatomy    (HTML block showing all parts)
 ## Examples   (### Title + one-line desc + <Canvas of={Stories.X} /> per example)
 ## Keyboard interactions  (table, if applicable)
-## API Reference  (<ArgTypes of={Directive} /> only for parts with inputs/outputs)
+## Data attributes  (table, if the primitive exposes data-* state)
+## API Reference  (### per part → <ArgTypes of={Directive} /> only for parts with inputs/outputs)
 ```
 
+- **Surface `Default` with `<Primary />` (+ `<Controls />`)**, not `<Canvas of={Default}>` — see checklist item 1. A simple primitive may instead use `<Canvas sourceState="hidden" of={Stories.SomeStandaloneStory} />` as the hero (e.g. Button uses `Variants`).
 - **No bare `<Canvas>` without a preceding `### Title`** description.
+- **API Reference parts are `###` subheadings** under the `## API Reference` `##` — never repeat `##` for each directive (that makes them siblings of API Reference, not children).
 - **No empty `<ArgTypes>` tables.** Parts with no inputs → one-line prose note instead.
-- Imports at the top: Storybook blocks → `* as Stories` → individual directive classes for ArgTypes.
+- Imports at the top: Storybook blocks (incl. `Primary`, `Controls`) → `* as Stories` → individual directive classes for ArgTypes.
+
+### TOC gotcha — real headings in demos
+
+The docs "On this page" TOC is built by tocbot from `h2, h3` in `.sbdocs-content`. Storybook's default
+`toc.ignoreSelector` is `.docs-story *`, which keeps headings **rendered inside story previews** out of
+the TOC. This repo sets it in `apps/radix-storybook/.storybook/preview.ts` as `'#primary, .docs-story *'`
+— **keep `.docs-story *`**. Dropping it makes demos that render real heading elements (e.g. Accordion's
+`<h3 rdxAccordionHeader>`) leak their text into the TOC. Prefer real semantic headings in demos where the
+ARIA pattern calls for them; rely on the ignore selector rather than downgrading to `<div>`.
 
 ## Files to create/update
 

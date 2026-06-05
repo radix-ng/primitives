@@ -26,6 +26,7 @@ export type AccordionRootContext = {
     collapsible: Signal<boolean>;
     isSingle: Signal<boolean>;
     loopFocus: InputSignalWithTransform<boolean, BooleanInput>;
+    keepMounted: InputSignalWithTransform<boolean, BooleanInput>;
     elementRef: ElementRef<HTMLElement>;
     changeModelValue: (value: string) => void;
 };
@@ -45,6 +46,7 @@ const rootContext = (): AccordionRootContext => {
         value: instance.value,
         isSingle: instance.isSingle,
         loopFocus: instance.loopFocus,
+        keepMounted: instance.keepMounted,
         changeModelValue: instance.changeModelValue
     };
 };
@@ -137,6 +139,18 @@ export class RdxAccordionRootDirective {
     readonly loopFocus = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
 
     /**
+     * Whether to keep the content of collapsed items mounted in the DOM.
+     * When `true`, closed panels keep their element in the DOM instead of
+     * receiving a `hidden` attribute. Applies to the always-mounted
+     * `rdxAccordionContent`; the `rdxAccordionContentPresence` variant always
+     * unmounts.
+     *
+     * @defaultValue false
+     * @group Props
+     */
+    readonly keepMounted = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /**
      * Event handler called when the expanded state of an item changes.
      * @group Emits
      */
@@ -153,7 +167,7 @@ export class RdxAccordionRootDirective {
     }
 
     changeModelValue = (newValue: string) => {
-        if (this.type() === 'single') {
+        if (this.isSingle()) {
             this.value.set(this.isEqual(newValue, this.value()) ? undefined : newValue);
         } else {
             const currentValue = this.value();

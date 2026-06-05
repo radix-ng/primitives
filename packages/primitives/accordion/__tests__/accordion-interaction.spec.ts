@@ -448,3 +448,132 @@ describe('RdxAccordion — loopFocus', () => {
         expect(document.activeElement).toBe(last);
     });
 });
+
+// ─── keepMounted ─────────────────────────────────────────────────────────────
+
+@Component({
+    imports: [
+        RdxAccordionRootDirective,
+        RdxAccordionItemDirective,
+        RdxAccordionHeaderDirective,
+        RdxAccordionTriggerDirective,
+        RdxAccordionContentDirective
+    ],
+    template: `
+        <div [keepMounted]="keep()" rdxAccordionRoot collapsible>
+            <div value="one" rdxAccordionItem>
+                <div rdxAccordionHeader><button rdxAccordionTrigger>One</button></div>
+                <div rdxAccordionContent>Content one</div>
+            </div>
+        </div>
+    `
+})
+class KeepMountedHost {
+    readonly keep = signal(false);
+}
+
+describe('RdxAccordion — keepMounted', () => {
+    let fixture: ComponentFixture<KeepMountedHost>;
+
+    const trigger = () => fixture.debugElement.query(By.css('[rdxAccordionTrigger]')).nativeElement as HTMLElement;
+    const content = () => fixture.debugElement.query(By.css('[rdxAccordionContent]')).nativeElement as HTMLElement;
+
+    beforeEach(() => {
+        fixture = TestBed.createComponent(KeepMountedHost);
+        fixture.detectChanges();
+    });
+
+    it('hides closed content with hidden="until-found" by default', () => {
+        expect(content().getAttribute('hidden')).toBe('until-found');
+    });
+
+    it('does not set hidden on closed content when keepMounted=true', () => {
+        fixture.componentInstance.keep.set(true);
+        fixture.detectChanges();
+
+        expect(content().getAttribute('hidden')).toBeNull();
+        // still reports closed state so consumer CSS can collapse it
+        expect(content().getAttribute('data-state')).toBe('closed');
+    });
+
+    it('keeps content unhidden when open regardless of keepMounted', () => {
+        trigger().click();
+        fixture.detectChanges();
+
+        expect(content().getAttribute('hidden')).toBeNull();
+        expect(content().getAttribute('data-state')).toBe('open');
+    });
+});
+
+// ─── single mode lock (no flicker on re-click) ───────────────────────────────
+
+@Component({
+    imports: [
+        RdxAccordionRootDirective,
+        RdxAccordionItemDirective,
+        RdxAccordionHeaderDirective,
+        RdxAccordionTriggerDirective,
+        RdxAccordionContentDirective
+    ],
+    template: `
+        <div [defaultValue]="'one'" (onValueChange)="onValueChange($event)" type="single" rdxAccordionRoot>
+            <div value="one" rdxAccordionItem>
+                <div rdxAccordionHeader><button id="t1" rdxAccordionTrigger>One</button></div>
+                <div rdxAccordionContent>One</div>
+            </div>
+            <div value="two" rdxAccordionItem>
+                <div rdxAccordionHeader><button id="t2" rdxAccordionTrigger>Two</button></div>
+                <div rdxAccordionContent>Two</div>
+            </div>
+        </div>
+    `
+})
+class SingleLockHost {
+    readonly onValueChange = vi.fn();
+}
+
+describe('RdxAccordion — single mode lock', () => {
+    let fixture: ComponentFixture<SingleLockHost>;
+
+    const triggers = () =>
+        fixture.debugElement.queryAll(By.css('[rdxAccordionTrigger]')).map((d) => d.nativeElement as HTMLElement);
+    const contents = () =>
+        fixture.debugElement.queryAll(By.css('[rdxAccordionContent]')).map((d) => d.nativeElement as HTMLElement);
+
+    beforeEach(() => {
+        fixture = TestBed.createComponent(SingleLockHost);
+        fixture.detectChanges();
+    });
+
+    it('re-clicking the open item keeps it open without emitting (no flicker)', () => {
+        // item-1 is open by default
+        expect(contents()[0].getAttribute('data-state')).toBe('open');
+
+        triggers()[0].click();
+        fixture.detectChanges();
+
+        // stays open, and no value churn was emitted
+        expect(contents()[0].getAttribute('data-state')).toBe('open');
+        expect(fixture.componentInstance.onValueChange).not.toHaveBeenCalled();
+    });
+
+    it('does not unmount/hide the open content when re-clicked', () => {
+        triggers()[0].click();
+        fixture.detectChanges();
+
+        expect(contents()[0].getAttribute('hidden')).toBeNull();
+    });
+
+    it('reflects open state via aria-expanded', () => {
+        expect(triggers()[0].getAttribute('aria-expanded')).toBe('true');
+        expect(triggers()[1].getAttribute('aria-expanded')).toBe('false');
+    });
+
+    it('switching to another item updates aria-expanded on both', () => {
+        triggers()[1].click();
+        fixture.detectChanges();
+
+        expect(triggers()[0].getAttribute('aria-expanded')).toBe('false');
+        expect(triggers()[1].getAttribute('aria-expanded')).toBe('true');
+    });
+});

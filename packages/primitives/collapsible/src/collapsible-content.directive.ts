@@ -7,7 +7,7 @@ import { injectCollapsibleRootContext } from './collapsible-root.directive';
         '[id]': 'rootContext.contentId()',
         '[attr.data-state]': 'rootContext.open() ? "open" : "closed"',
         '[attr.data-disabled]': 'rootContext.disabled() ? "true" : undefined',
-        '[attr.hidden]': 'shouldHide() ? "until-found" : undefined',
+        '[attr.hidden]': '!rootContext.keepMounted() && shouldHide() ? "until-found" : undefined',
         '[style.--radix-collapsible-content-width.px]': 'width()',
         '[style.--radix-collapsible-content-height.px]': 'height()',
         '(animationend)': 'onExitComplete($event)',
