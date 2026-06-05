@@ -25,11 +25,15 @@ It stays headless: styles and native CSS animations belong to the consumer.
 - ✅ Exposes state and transition attributes (`data-state`, `data-starting-style`, `data-ending-style`) for styling.
 - ✅ Keeps portal content mounted while CSS exit keyframes finish.
 - ✅ Links the popup to optional title and description parts for accessible labeling.
+- ✅ Supports multiple triggers, controlled `triggerId`, and detached triggers through a shared handle.
+- ✅ Supports nested dialogs with `data-nested` / `data-nested-dialog-open` styling hooks.
+- ✅ Provides an optional scrollable `Viewport` for outside-scroll dialogs.
 
 ## Import
 
 ```typescript
 import {
+    createRdxDialogHandle,
     RdxDialogBackdrop,
     RdxDialogClose,
     RdxDialogDescription,
@@ -38,7 +42,8 @@ import {
     RdxDialogPortalPresence,
     RdxDialogRoot,
     RdxDialogTitle,
-    RdxDialogTrigger
+    RdxDialogTrigger,
+    RdxDialogViewport
 } from '@radix-ng/primitives/dialog';
 ```
 
@@ -107,6 +112,58 @@ close buttons still close it.
 
 <Canvas of={Stories.WithoutDismiss} />
 
+### Multiple triggers
+
+Several `rdxDialogTrigger` buttons can open the same dialog. The active trigger and its `payload` are
+exposed on the root so the content can adapt.
+
+<Canvas of={Stories.MultipleTriggers} />
+
+### Controlled mode with multiple triggers
+
+Bind both `[(open)]` and `[(triggerId)]` to choose which trigger is active from component state.
+
+<Canvas of={Stories.ControlledMultiple} />
+
+### Detached triggers
+
+Create a shared handle with `createRdxDialogHandle()` when triggers live outside `rdxDialogRoot`. The
+handle also supports imperative `open(id)`, `toggle(id)`, and `close()`.
+
+<Canvas of={Stories.Detached} />
+
+### Nested dialogs
+
+Dialogs can be nested. The parent popup gains `data-nested-dialog-open` and the child popup gains
+`data-nested`, which the demo uses to scale the parent back.
+
+<Canvas of={Stories.Nested} />
+
+### Close confirmation
+
+Drive the dialog with `[(open)]` and listen to `onOpenChange` to intercept a close request and show a
+confirmation dialog when there are unsaved changes.
+
+<Canvas of={Stories.CloseConfirmation} />
+
+### Outside scroll
+
+Wrap the popup in `rdxDialogViewport` to make the whole dialog scroll when it is taller than the screen.
+
+<Canvas of={Stories.OutsideScroll} />
+
+### Inside scroll
+
+Keep the popup fixed on screen and scroll an inner region instead.
+
+<Canvas of={Stories.InsideScroll} />
+
+### Open from a menu
+
+Control the dialog's `open` state from a menu item to launch it from a `Menu`.
+
+<Canvas of={Stories.FromMenu} />
+
 ## API Reference
 
 ### Root
@@ -127,6 +184,11 @@ close buttons still close it.
 `RdxDialogPortal` moves content to `document.body` by default or to a configured container.
 
 <ArgTypes of={RdxDialogPortal} />
+
+### Viewport
+
+`RdxDialogViewport` is an optional scrollable container placed inside the portal, around the popup.
+It reads everything from context and exposes no inputs.
 
 ### Popup
 

@@ -81,8 +81,13 @@ export const demoInput = cn(
  *
  * `portalAnimated` goes on the `rdxDialogPortal` element because the portal is the
  * presence root — its exit keyframes are what `RdxPresenceDirective` waits for before
- * unmounting. `popupAnimated` drives the popup's own zoom; the centering
- * `-translate-x-1/2 -translate-y-1/2` is preserved inside the `dialog-popup-*` keyframes.
+ * unmounting. `popupAnimated` drives the popup's own zoom; centering is handled by the
+ * `translate` property (Tailwind utilities), so the `dialog-popup-*` keyframes animate scale only.
+ *
+ * For scrollable dialogs, use `viewport` (a fixed full-screen scroll container) with `popupStatic`
+ * (a non-fixed popup centered by the viewport's flex layout). `scrollBody` makes an inner region
+ * scroll while the popup stays fixed on screen (inside scroll). `data-nested-dialog-open` /
+ * `data-nested` hooks let a parent popup react when a nested dialog opens.
  */
 export const demoDialog = {
     portalAnimated: 'data-[state=open]:animate-dialog-overlay-in data-[state=closed]:animate-dialog-overlay-out',
@@ -90,9 +95,16 @@ export const demoDialog = {
     popup: cn(
         demoCard,
         'fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 p-6',
+        'transition-[transform,scale] data-[nested-dialog-open]:scale-[0.96]',
         'focus:outline-none'
     ),
     popupAnimated: 'data-[state=open]:animate-dialog-popup-in data-[state=closed]:animate-dialog-popup-out',
+    /** Fixed full-screen scroll container; place the popup inside for outside-scroll dialogs. */
+    viewport: 'fixed inset-0 z-50 flex justify-center overflow-y-auto p-6',
+    /** Popup centered by the viewport's flex layout (not fixed-positioned). */
+    popupStatic: cn(demoCard, 'relative my-auto w-[90vw] max-w-md p-6 focus:outline-none'),
+    /** Inner scrollable region for inside-scroll dialogs. */
+    scrollBody: 'mt-4 max-h-[50vh] overflow-y-auto pr-2 text-sm text-muted-foreground',
     title: 'text-base font-semibold text-card-foreground',
     description: 'mt-1.5 text-sm text-muted-foreground',
     close: cn(demoButton.base, demoButton.ghost, 'absolute top-3 right-3 size-7 p-0'),

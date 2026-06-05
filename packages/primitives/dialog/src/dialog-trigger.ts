@@ -1,4 +1,6 @@
-import { booleanAttribute, DestroyRef, Directive, ElementRef, inject, input } from '@angular/core';
+import { _IdGenerator } from '@angular/cdk/a11y';
+import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input, untracked } from '@angular/core';
+import { RdxDialogHandle } from './dialog-handle';
 import { injectRdxDialogRootContext } from './dialog-root';
 
 /**
@@ -10,29 +12,66 @@ import { injectRdxDialogRootContext } from './dialog-root';
     host: {
         type: 'button',
         '[attr.aria-haspopup]': '"dialog"',
-        '[attr.aria-controls]': 'rootContext.contentId',
-        '[attr.aria-expanded]': 'rootContext.isOpen()',
-        '[attr.data-state]': 'rootContext.isOpen() ? "open" : "closed"',
-        '[attr.data-popup-open]': 'rootContext.isOpen() ? "" : undefined',
+        '[attr.aria-controls]': 'rootContext()?.contentId',
+        '[attr.aria-expanded]': 'isOpen()',
+        '[attr.data-state]': 'isOpen() ? "open" : "closed"',
+        '[attr.data-popup-open]': 'isOpen() ? "" : undefined',
         '[attr.disabled]': 'disabled() ? "" : undefined',
+        '[id]': 'triggerId()',
         '(click)': 'handleClick($event)'
     }
 })
 export class RdxDialogTrigger {
-    protected readonly rootContext = injectRdxDialogRootContext()!;
+    private readonly parentRootContext = injectRdxDialogRootContext(true);
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+
+    /**
+     * Associates this trigger with a detached dialog root.
+     */
+    readonly handle = input<RdxDialogHandle<any>>();
+
+    /**
+     * Data associated with this trigger while it is active.
+     */
+    readonly payload = input<unknown>();
+
+    /**
+     * ID used to identify this trigger when opening a detached or controlled dialog.
+     */
+    readonly id = input<string>();
 
     /**
      * Whether the trigger should ignore user interaction.
      */
     readonly disabled = input(false, { transform: booleanAttribute });
 
+    private readonly generatedId = inject(_IdGenerator).getId('rdx-dialog-trigger-');
+    protected readonly triggerId = computed(() => this.id() ?? this.generatedId);
+    protected readonly rootContext = computed(() => this.handle()?.context() ?? this.parentRootContext);
+    protected readonly isOpen = computed(
+        () => this.rootContext()?.isOpen() === true && this.rootContext()?.trigger() === this.elementRef.nativeElement
+    );
+
     constructor() {
-        // Register the trigger so the popup can keep it from double-dismissing:
-        // a pointerdown on the trigger reaches the dismissable layer as an outside press,
-        // which would close the dialog right before this trigger's own click reopens it.
-        this.rootContext.setTriggerElement(this.elementRef.nativeElement);
-        inject(DestroyRef).onDestroy(() => this.rootContext.setTriggerElement(undefined));
+        effect((onCleanup) => {
+            const handle = this.handle();
+
+            if (handle) {
+                onCleanup(
+                    untracked(() =>
+                        handle.registerTrigger(this.triggerId(), this.elementRef.nativeElement, () => this.payload())
+                    )
+                );
+            } else if (this.parentRootContext) {
+                onCleanup(
+                    untracked(() =>
+                        this.parentRootContext!.registerTrigger(this.triggerId(), this.elementRef.nativeElement, () =>
+                            this.payload()
+                        )
+                    )
+                );
+            }
+        });
     }
 
     protected handleClick(event: MouseEvent) {
@@ -40,6 +79,10 @@ export class RdxDialogTrigger {
             return;
         }
 
-        this.rootContext.toggle(event);
+        if (this.handle()) {
+            this.handle()!.toggle(this.triggerId(), event);
+        } else {
+            this.parentRootContext?.toggle(this.triggerId(), this.elementRef.nativeElement, this.payload(), event);
+        }
     }
 }

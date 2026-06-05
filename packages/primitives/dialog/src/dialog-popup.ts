@@ -38,6 +38,8 @@ import { injectRdxDialogRootContext, RdxDialogOpenChangeReason } from './dialog-
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
         '[attr.data-starting-style]': 'rootContext.transitionStatus() === "starting" ? "" : undefined',
         '[attr.data-state]': 'rootContext.isOpen() ? "open" : "closed"',
+        '[attr.data-nested]': 'rootContext.nested() ? "" : undefined',
+        '[attr.data-nested-dialog-open]': 'rootContext.nestedDialogOpen() ? "" : undefined',
         '[id]': 'rootContext.contentId'
     }
 })
@@ -127,7 +129,7 @@ export class RdxDialogPopup {
     }
 
     private isEventOnTrigger(event: Event): boolean {
-        const trigger = this.rootContext.triggerElement();
-        return !!trigger && trigger.contains(event.target as Node);
+        const target = event.target as Node | null;
+        return !!target && this.rootContext.triggers().some((trigger) => trigger.contains(target));
     }
 }

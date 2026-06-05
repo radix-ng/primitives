@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
+    createRdxDialogHandle,
     dialogImports,
     RdxDialogBackdrop,
     RdxDialogClose,
@@ -76,6 +77,67 @@ class TestHostComponent {
     `
 })
 class DefaultOpenHostComponent {}
+
+@Component({
+    imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPortalPresence, RdxDialogPopup],
+    template: `
+        <div #root="rdxDialogRoot" [(open)]="open" [(triggerId)]="triggerId" rdxDialogRoot>
+            <button id="trigger-one" rdxDialogTrigger>One</button>
+            <button id="trigger-two" rdxDialogTrigger>Two</button>
+            <ng-template rdxDialogPortalPresence>
+                <div rdxDialogPortal>
+                    <div rdxDialogPopup>Popup</div>
+                </div>
+            </ng-template>
+        </div>
+    `
+})
+class MultipleTriggersHostComponent {
+    open = false;
+    triggerId: string | null = null;
+}
+
+@Component({
+    imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPortalPresence, RdxDialogPopup],
+    template: `
+        <button id="detached-one" [handle]="handle" rdxDialogTrigger>One</button>
+        <button id="detached-two" [handle]="handle" rdxDialogTrigger>Two</button>
+        <div [handle]="handle" rdxDialogRoot>
+            <ng-template rdxDialogPortalPresence>
+                <div rdxDialogPortal>
+                    <div rdxDialogPopup>Popup</div>
+                </div>
+            </ng-template>
+        </div>
+    `
+})
+class DetachedTriggersHostComponent {
+    readonly handle = createRdxDialogHandle();
+}
+
+@Component({
+    imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPortalPresence, RdxDialogPopup],
+    template: `
+        <div rdxDialogRoot>
+            <button id="outer-trigger" rdxDialogTrigger>Open outer</button>
+            <ng-template rdxDialogPortalPresence>
+                <div rdxDialogPortal>
+                    <div data-test-outer rdxDialogPopup>
+                        <div rdxDialogRoot>
+                            <button id="inner-trigger" rdxDialogTrigger>Open inner</button>
+                            <ng-template rdxDialogPortalPresence>
+                                <div rdxDialogPortal>
+                                    <div data-test-inner rdxDialogPopup>Inner</div>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </div>
+    `
+})
+class NestedDialogHostComponent {}
 
 function popup(): HTMLElement | null {
     return document.body.querySelector('[rdxDialogPopup]');
@@ -289,5 +351,81 @@ describe('Dialog', () => {
         await fixture.whenStable();
 
         expect(await axe(popup()!)).toHaveNoViolations();
+    });
+
+    it('opens a single dialog from multiple triggers and tracks the active triggerId', () => {
+        const multiFixture = TestBed.createComponent(MultipleTriggersHostComponent);
+        multiFixture.detectChanges();
+
+        const one: HTMLButtonElement = multiFixture.nativeElement.querySelector('#trigger-one');
+        const two: HTMLButtonElement = multiFixture.nativeElement.querySelector('#trigger-two');
+
+        two.click();
+        multiFixture.detectChanges();
+
+        expect(multiFixture.componentInstance.open).toBe(true);
+        expect(multiFixture.componentInstance.triggerId).toBe('trigger-two');
+        expect(two.getAttribute('aria-expanded')).toBe('true');
+        expect(one.getAttribute('aria-expanded')).toBe('false');
+        multiFixture.destroy();
+    });
+
+    it('clears the active trigger when a controlled triggerId is reset to null', () => {
+        const multiFixture = TestBed.createComponent(MultipleTriggersHostComponent);
+        multiFixture.detectChanges();
+
+        const two: HTMLButtonElement = multiFixture.nativeElement.querySelector('#trigger-two');
+        two.click();
+        multiFixture.detectChanges();
+        expect(two.getAttribute('aria-expanded')).toBe('true');
+
+        multiFixture.componentInstance.triggerId = null;
+        multiFixture.detectChanges();
+
+        // No trigger is active anymore, so neither button reports itself as expanded.
+        expect(two.getAttribute('aria-expanded')).toBe('false');
+        multiFixture.destroy();
+    });
+
+    it('controls a dialog from detached triggers through a handle', () => {
+        const detachedFixture = TestBed.createComponent(DetachedTriggersHostComponent);
+        detachedFixture.detectChanges();
+
+        const handle = detachedFixture.componentInstance.handle;
+        expect(handle.isOpen()).toBe(false);
+
+        const one: HTMLButtonElement = detachedFixture.nativeElement.querySelector('#detached-one');
+        one.click();
+        detachedFixture.detectChanges();
+
+        expect(handle.isOpen()).toBe(true);
+        expect(document.body.querySelector('[rdxDialogPopup]')).not.toBeNull();
+
+        handle.close();
+        detachedFixture.detectChanges();
+        expect(handle.isOpen()).toBe(false);
+        detachedFixture.destroy();
+    });
+
+    it('marks nested dialogs with data-nested and data-nested-dialog-open', () => {
+        const nestedFixture = TestBed.createComponent(NestedDialogHostComponent);
+        nestedFixture.detectChanges();
+
+        const outerTrigger: HTMLButtonElement = nestedFixture.nativeElement.querySelector('#outer-trigger');
+        outerTrigger.click();
+        nestedFixture.detectChanges();
+
+        const outer: HTMLElement = document.body.querySelector('[data-test-outer]')!;
+        expect(outer.hasAttribute('data-nested')).toBe(false);
+        expect(outer.hasAttribute('data-nested-dialog-open')).toBe(false);
+
+        const innerTrigger: HTMLButtonElement = document.body.querySelector('#inner-trigger')!;
+        innerTrigger.click();
+        nestedFixture.detectChanges();
+
+        const inner: HTMLElement = document.body.querySelector('[data-test-inner]')!;
+        expect(inner.hasAttribute('data-nested')).toBe(true);
+        expect(outer.hasAttribute('data-nested-dialog-open')).toBe(true);
+        nestedFixture.destroy();
     });
 });
