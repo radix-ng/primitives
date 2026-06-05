@@ -127,8 +127,6 @@ export function usePointerDrag(handlers: RdxPointerDragHandlers): void {
         window.addEventListener('pointercancel', onPointerUp);
     };
 
-    // Listeners are attached directly (no NgZone): the project runs zoneless, and only signal writes
-    // inside the handlers schedule change detection.
     host.addEventListener('pointerdown', onPointerDown);
     host.addEventListener('lostpointercapture', onLostCapture as EventListener);
 

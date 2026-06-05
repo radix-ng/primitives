@@ -37,6 +37,14 @@ All state is exposed via `host` bindings using `data-*` attributes. Never use in
 - Boolean inputs: `input<boolean, BooleanInput>(false, { transform: booleanAttribute })`
 - Outputs: `output<T>()` — name with `on` prefix (`onValueChange`)
 
+## Zoneless — no `NgZone`
+
+The library is signals-first and **zoneless** (the Storybook app runs with `provideZonelessChangeDetection`). Do **not** use `NgZone`, `runOutsideAngular`, or `zone.run` — change detection is scheduled by the signal scheduler when a signal changes, not by the zone, so the zone wrappers are unnecessary noise.
+
+- Attach DOM event listeners directly; update signals directly inside the handlers. The scheduler reacts to the signal write.
+- This holds even for high-frequency events. `dismissable-layer` attaches its global pointer/key listeners with no `NgZone`; the drawer gesture engine (`usePointerDrag` / `useDrawerSwipe`) does the same.
+- Guard browser-only work for SSR with `isPlatformBrowser` / `afterNextRender` (not the zone) — see the drawer gesture helpers and `presence`.
+
 ## Composition via `hostDirectives`
 
 Prefer `hostDirectives` over inheritance to reuse primitives. Map inputs/outputs explicitly in the decorator. This is the preferred reuse pattern throughout the library.

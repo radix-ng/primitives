@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, NgZone, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, signal, viewChild } from '@angular/core';
 import {
     RdxSliderRangeComponent,
     RdxSliderRootComponent,
@@ -53,8 +53,6 @@ import { demoTooltip } from '../../storybook/styles';
     `
 })
 export class RdxTooltipSliderComponent {
-    private readonly ngZone = inject(NgZone);
-
     protected readonly t = demoTooltip;
 
     readonly tooltipContentRef = viewChild.required<ElementRef<HTMLElement>>('tooltipContent');
@@ -70,9 +68,7 @@ export class RdxTooltipSliderComponent {
             document.removeEventListener('pointerup', handlePointerUp);
         };
 
-        this.ngZone.runOutsideAngular(() => {
-            document.addEventListener('pointerup', handlePointerUp);
-        });
+        document.addEventListener('pointerup', handlePointerUp);
 
         return;
     };
