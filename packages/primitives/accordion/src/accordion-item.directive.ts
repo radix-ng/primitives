@@ -125,6 +125,10 @@ export class RdxAccordionItemDirective {
     });
 
     constructor() {
+        // Collapsed accordion panels stay findable by the browser's in-page search; opening one
+        // via find-in-page expands the item. (The standalone Collapsible defaults to plain `hidden`.)
+        this.collapsibleContext.hiddenUntilFound.set(true);
+
         effect(() => {
             this.updateOpen();
         });

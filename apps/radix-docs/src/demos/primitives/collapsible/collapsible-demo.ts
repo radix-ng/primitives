@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { LucideDynamicIcon, LucideUnfoldVertical as UnfoldVertical, LucideX as X } from '@lucide/angular';
 import {
-    RdxCollapsibleContentDirective,
-    RdxCollapsibleContentPresenceDirective,
+    RdxCollapsiblePanelDirective,
+    RdxCollapsiblePanelPresenceDirective,
     RdxCollapsibleRootDirective,
     RdxCollapsibleTriggerDirective
 } from '@radix-ng/primitives/collapsible';
@@ -13,8 +13,8 @@ import {
     imports: [
         RdxCollapsibleRootDirective,
         RdxCollapsibleTriggerDirective,
-        RdxCollapsibleContentDirective,
-        RdxCollapsibleContentPresenceDirective,
+        RdxCollapsiblePanelDirective,
+        RdxCollapsiblePanelPresenceDirective,
         LucideDynamicIcon
     ],
     template: `
@@ -34,8 +34,8 @@ import {
                 <span class="Text">&#64;radix-ui/primitives</span>
             </div>
 
-            <div rdxCollapsibleContent>
-                <div *rdxCollapsibleContentPresence>
+            <div rdxCollapsiblePanel>
+                <div *rdxCollapsiblePanelPresence>
                     <div class="Repository">
                         <span class="Text">&#64;radix-ui/colors</span>
                     </div>

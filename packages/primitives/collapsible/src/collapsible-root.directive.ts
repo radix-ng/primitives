@@ -1,26 +1,43 @@
+import { _IdGenerator } from '@angular/cdk/a11y';
 import { BooleanInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
+    computed,
     Directive,
+    effect,
     inject,
     input,
-    InputSignal,
     model,
     ModelSignal,
     output,
+    signal,
     Signal,
-    untracked
+    untracked,
+    WritableSignal
 } from '@angular/core';
-import { createContext } from '@radix-ng/primitives/core';
+import { createContext, RdxTransitionStatus, useTransitionStatus } from '@radix-ng/primitives/core';
 
 export type RdxCollapsibleState = 'open' | 'closed';
 
 export interface CollapsibleRootContext {
-    contentId: InputSignal<string>;
+    /** Stable id linking the trigger's `aria-controls` to the panel. */
+    panelId: Signal<string>;
+    /** Writable so composing primitives (Accordion) can drive the state. */
     open: ModelSignal<boolean>;
-    toggle: () => void;
     disabled: Signal<boolean>;
-    keepMounted: ModelSignal<boolean>;
+    /** Open/close transition phase, for `data-starting-style` / `data-ending-style`. */
+    transitionStatus: Signal<RdxTransitionStatus>;
+    /** `true` while the panel should stay rendered: open, or running its exit transition. */
+    mounted: Signal<boolean>;
+    /**
+     * Composition fallbacks. The standalone Panel inputs write here, and Accordion writes here
+     * directly; the Panel reads these so both wiring paths converge on a single source of truth.
+     */
+    keepMounted: WritableSignal<boolean>;
+    hiddenUntilFound: WritableSignal<boolean>;
+    toggle: () => void;
+    /** Registers the panel element whose transition duration gates the close completion. */
+    registerTransitionElement: (element: HTMLElement) => () => void;
 }
 
 export const [injectCollapsibleRootContext, provideCollapsibleRootContext] =
@@ -30,12 +47,16 @@ const rootContext = (): CollapsibleRootContext => {
     const instance = inject(RdxCollapsibleRootDirective);
 
     return {
-        contentId: instance.contentId,
-        disabled: instance.isDisabled,
+        panelId: instance.panelId,
         open: instance.open,
-        keepMounted: instance.keepMounted,
+        disabled: instance.disabled,
+        transitionStatus: instance.transitionStatus,
+        mounted: instance.mounted,
+        keepMounted: instance.keepMountedContext,
+        hiddenUntilFound: instance.hiddenUntilFoundContext,
+        registerTransitionElement: (element) => instance.registerTransitionElement(element),
         toggle: () => {
-            if (instance.isDisabled()) {
+            if (instance.disabled()) {
                 return;
             }
 
@@ -49,6 +70,8 @@ const rootContext = (): CollapsibleRootContext => {
 };
 
 /**
+ * Groups all parts of the collapsible.
+ *
  * @group Components
  */
 @Directive({
@@ -56,48 +79,95 @@ const rootContext = (): CollapsibleRootContext => {
     exportAs: 'rdxCollapsibleRoot',
     providers: [provideCollapsibleRootContext(rootContext)],
     host: {
-        '[attr.data-state]': 'open() ? "open" : "closed"',
+        '[attr.data-open]': 'open() ? "" : undefined',
+        '[attr.data-closed]': 'open() ? undefined : ""',
         '[attr.data-disabled]': 'disabled() ? "" : undefined'
     }
 })
 export class RdxCollapsibleRootDirective {
+    private readonly transition = useTransitionStatus((open) => this.onOpenChangeComplete.emit(open));
+
+    /** Reactive open/close transition phase (`'starting'` | `'ending'` | `undefined`). */
+    readonly transitionStatus = this.transition.status;
+
+    /** Registers the panel element whose transition duration gates the close completion. */
+    readonly registerTransitionElement = this.transition.registerElement;
+
     /**
      * The controlled open state of the collapsible.
-     * Sets the state of the directive. `true` - expanded, `false` - collapsed
+     * `true` - expanded, `false` - collapsed.
      *
      * @group Props
      * @defaultValue false
      */
     readonly open = model<boolean>(false);
 
-    readonly contentId = input<string>('');
-
     /**
-     * Whether to keep the content mounted in the DOM when collapsed.
-     * When `true`, the closed content keeps its element in the DOM (no `hidden`
-     * attribute) so it stays available; the consumer's `data-state` CSS is
-     * responsible for visually collapsing it.
+     * The open state of the collapsible when it is initially rendered.
+     * Use when you do not need to control its open state.
      *
      * @group Props
      * @defaultValue false
      */
-    readonly keepMounted = model<boolean>(false);
+    readonly defaultOpen = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
-     * Determines whether a directive is available for interaction.
-     * When true, prevents the user from interacting with the collapsible.
+     * Whether the component should ignore user interaction.
      *
      * @group Props
+     * @defaultValue false
      */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    readonly isDisabled = this.disabled;
+    /** Stable id linking the trigger's `aria-controls` to the panel. */
+    readonly panelId = input<string>(inject(_IdGenerator).getId('rdx-collapsible-panel-'));
+
+    /** Composition fallbacks (see {@link CollapsibleRootContext}). Default `false`. */
+    readonly keepMountedContext = signal(false);
+    readonly hiddenUntilFoundContext = signal(false);
+
+    /** `true` while the panel must stay rendered: open, or mid exit transition. */
+    readonly mounted = computed(() => this.open() || this.transitionStatus() === 'ending');
 
     /**
-     * Emitted with new value when directive state changed.
      * Event handler called when the open state of the collapsible changes.
      *
      * @group Emits
      */
     readonly onOpenChange = output<boolean>();
+
+    /**
+     * Event handler called after the open/close transition has finished.
+     *
+     * @group Emits
+     */
+    readonly onOpenChangeComplete = output<boolean>();
+
+    private hasAppliedDefaultOpen = false;
+    private previousOpen = this.open();
+
+    constructor() {
+        effect(() => {
+            const defaultOpen = this.defaultOpen();
+
+            if (!this.hasAppliedDefaultOpen && defaultOpen) {
+                this.hasAppliedDefaultOpen = true;
+                untracked(() => {
+                    this.open.set(true);
+                    // Treat an initially-open collapsible as settled so it doesn't play an
+                    // enter transition on first render.
+                    this.previousOpen = true;
+                });
+            }
+        });
+
+        effect(() => {
+            const open = this.open();
+
+            if (open !== this.previousOpen) {
+                this.previousOpen = open;
+                untracked(() => this.transition.start(open));
+            }
+        });
+    }
 }

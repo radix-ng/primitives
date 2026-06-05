@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
-    RdxCollapsibleContentDirective,
-    RdxCollapsibleContentPresenceDirective,
+    RdxCollapsiblePanelDirective,
+    RdxCollapsiblePanelPresenceDirective,
     RdxCollapsibleRootDirective,
     RdxCollapsibleTriggerDirective
 } from '@radix-ng/primitives/collapsible';
@@ -12,14 +12,14 @@ import {
     imports: [
         RdxCollapsibleRootDirective,
         RdxCollapsibleTriggerDirective,
-        RdxCollapsibleContentDirective,
-        RdxCollapsibleContentPresenceDirective
+        RdxCollapsiblePanelDirective,
+        RdxCollapsiblePanelPresenceDirective
     ],
     template: `
         <div [open]="true" rdxCollapsibleRoot>
             <button rdxCollapsibleTrigger>Trigger</button>
-            <ng-template rdxCollapsibleContentPresence>
-                <div rdxCollapsibleContent>Content</div>
+            <ng-template rdxCollapsiblePanelPresence>
+                <div rdxCollapsiblePanel>Content</div>
             </ng-template>
         </div>
     `

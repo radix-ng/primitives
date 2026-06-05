@@ -1,11 +1,11 @@
 import { Directive } from '@angular/core';
-import { RdxCollapsibleContentDirective } from '@radix-ng/primitives/collapsible';
+import { RdxCollapsiblePanelDirective } from '@radix-ng/primitives/collapsible';
 import { injectAccordionItemContext } from './accordion-item.directive';
 import { injectAccordionRootContext } from './accordion-root.directive';
 
 @Directive({
     selector: '[rdxAccordionContent]',
-    hostDirectives: [RdxCollapsibleContentDirective],
+    hostDirectives: [RdxCollapsiblePanelDirective],
     host: {
         role: 'region',
         '[attr.aria-labelledby]': 'itemContext.triggerId()',
@@ -14,8 +14,8 @@ import { injectAccordionRootContext } from './accordion-root.directive';
         '[attr.data-orientation]': 'rootContext.orientation()',
         '[attr.data-index]': 'itemContext.index()',
         '[style]': `{
-            '--radix-accordion-content-height': 'var(--radix-collapsible-content-height)',
-            '--radix-accordion-content-width': 'var(--radix-collapsible-content-width)',
+            '--radix-accordion-content-height': 'var(--collapsible-panel-height)',
+            '--radix-accordion-content-width': 'var(--collapsible-panel-width)',
           }`
     }
 })

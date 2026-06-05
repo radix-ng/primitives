@@ -1,8 +1,8 @@
 import { Directive } from '@angular/core';
-import { RdxCollapsibleContentPresenceDirective } from '@radix-ng/primitives/collapsible';
+import { RdxCollapsiblePanelPresenceDirective } from '@radix-ng/primitives/collapsible';
 
 @Directive({
     selector: 'ng-template[rdxAccordionContentPresence]',
-    hostDirectives: [RdxCollapsibleContentPresenceDirective]
+    hostDirectives: [RdxCollapsiblePanelPresenceDirective]
 })
 export class RdxAccordionContentPresenceDirective {}

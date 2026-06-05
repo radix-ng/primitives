@@ -21,11 +21,11 @@
     box-shadow: 0 2px 10px var(--black-a7);
 }
 
-.IconButton[data-state='closed'] {
+.IconButton:not([data-panel-open]) {
     background-color: white;
 }
 
-.IconButton[data-state='open'] {
+.IconButton[data-panel-open] {
     background-color: var(--violet-3);
 }
 

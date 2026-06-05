@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { LucideUnfoldVertical, LucideX } from '@lucide/angular';
-import { RdxCollapsibleContentDirective } from '../src/collapsible-content.directive';
+import { RdxCollapsiblePanelDirective } from '../src/collapsible-panel.directive';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.directive';
 
@@ -9,27 +9,10 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
     imports: [
         RdxCollapsibleRootDirective,
         RdxCollapsibleTriggerDirective,
-        RdxCollapsibleContentDirective,
+        RdxCollapsiblePanelDirective,
         LucideX,
         LucideUnfoldVertical
     ],
-    styles: `
-        .expanded {
-            max-height: 12rem;
-            opacity: 1;
-            transition:
-                max-height 600ms cubic-bezier(0.37, 1.04, 0.68, 0.98),
-                opacity 600ms cubic-bezier(0.37, 1.04, 0.68, 0.98);
-        }
-
-        .collapsed {
-            max-height: 0;
-            opacity: 0;
-            transition:
-                max-height 600ms cubic-bezier(0.37, 1.04, 0.68, 0.98),
-                opacity 600ms cubic-bezier(0.37, 1.04, 0.68, 0.98);
-        }
-    `,
     template: `
         <div class="w-full max-w-sm" [open]="open()" (onOpenChange)="open.set($event)" rdxCollapsibleRoot>
             <div class="flex items-center justify-between gap-3">
@@ -51,7 +34,16 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
                 <span class="text-sm">&#64;radix-ui/primitives</span>
             </div>
 
-            <div class="overflow-hidden" [class]="open() ? 'expanded' : 'collapsed'" rdxCollapsibleContent>
+            <!--
+                The panel animates between 0 and its measured size using the
+                \`--collapsible-panel-height\` variable. \`keepMounted\` leaves it in the DOM while
+                collapsed; \`data-closed\` / \`data-starting-style\` drive the open and close transitions.
+            -->
+            <div
+                class="h-[var(--collapsible-panel-height)] overflow-hidden opacity-100 transition-[height,opacity] duration-300 ease-out data-[closed]:h-0 data-[closed]:opacity-0 data-[starting-style]:h-0 data-[starting-style]:opacity-0"
+                [keepMounted]="true"
+                rdxCollapsiblePanel
+            >
                 <div class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm">
                     <span class="text-sm">&#64;radix-ui/colors</span>
                 </div>

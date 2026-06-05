@@ -31,45 +31,46 @@ Use the lifecycle owner to choose the animation API:
 Use transitions for elements that remain mounted while their state changes. Transitions can reverse
 smoothly if the user changes state before an animation completes.
 
-For example, `rdxCollapsibleContent` remains available while its close transition finishes:
+For example, `rdxCollapsiblePanel` remains available while its close transition finishes:
 
 ```html
 <div [open]="open()" rdxCollapsibleRoot>
     <button rdxCollapsibleTrigger>Toggle</button>
-    <div class="CollapsibleContent" rdxCollapsibleContent>...</div>
+    <div class="CollapsiblePanel" rdxCollapsiblePanel [keepMounted]="true">...</div>
 </div>
 ```
 
 ```css
-.CollapsibleContent {
+.CollapsiblePanel {
     overflow: hidden;
     transition:
         height 200ms ease-out,
         opacity 200ms ease-out;
 }
 
-.CollapsibleContent[data-state='open'] {
-    height: var(--radix-collapsible-content-height);
+.CollapsiblePanel[data-open] {
+    height: var(--collapsible-panel-height);
     opacity: 1;
 }
 
-.CollapsibleContent[data-state='closed'] {
+.CollapsiblePanel[data-closed] {
     height: 0;
     opacity: 0;
 }
 ```
 
-`rdxCollapsibleContent` exposes measured width and height as CSS custom properties and handles both
-`transitionend` and `animationend` for its exit lifecycle.
+`rdxCollapsiblePanel` exposes the measured width and height as CSS custom properties
+(`--collapsible-panel-width` / `--collapsible-panel-height`) and stays mounted for the duration of
+its exit transition before hiding (`data-ending-style` is present while it runs).
 
 ## CSS keyframe animations
 
 Use `@keyframes` when a primitive part is conditionally mounted through a Radix NG presence
-directive, such as `rdxCollapsibleContentPresence` or `rdxTooltipPortalPresence`.
+directive, such as `rdxCollapsiblePanelPresence` or `rdxTooltipPortalPresence`.
 
 ```html
-<ng-template rdxCollapsibleContentPresence>
-    <div class="CollapsibleContent" rdxCollapsibleContent>...</div>
+<ng-template rdxCollapsiblePanelPresence>
+    <div class="CollapsiblePanel" rdxCollapsiblePanel>...</div>
 </ng-template>
 ```
 
@@ -80,14 +81,14 @@ directive, such as `rdxCollapsibleContentPresence` or `rdxTooltipPortalPresence`
         opacity: 0;
     }
     to {
-        height: var(--radix-collapsible-content-height);
+        height: var(--collapsible-panel-height);
         opacity: 1;
     }
 }
 
 @keyframes collapsible-close {
     from {
-        height: var(--radix-collapsible-content-height);
+        height: var(--collapsible-panel-height);
         opacity: 1;
     }
     to {
@@ -96,11 +97,11 @@ directive, such as `rdxCollapsibleContentPresence` or `rdxTooltipPortalPresence`
     }
 }
 
-.CollapsibleContent[data-state='open'] {
+.CollapsiblePanel[data-open] {
     animation: collapsible-open 200ms ease-out;
 }
 
-.CollapsibleContent[data-state='closed'] {
+.CollapsiblePanel[data-closed] {
     animation: collapsible-close 200ms ease-in;
 }
 ```
@@ -165,12 +166,14 @@ managed by `RdxPresenceDirective`; both APIs would try to control the same unmou
 
 ## Animating with Tailwind
 
-Tailwind utilities work well for simple transitions because primitives expose `data-state`:
+Tailwind utilities work well for simple transitions because primitives expose `data-open` /
+`data-closed`:
 
 ```html
 <div
-    class="transition-opacity duration-200 data-[state=closed]:opacity-0 data-[state=open]:opacity-100"
-    rdxCollapsibleContent
+    class="transition-opacity duration-200 data-[closed]:opacity-0 data-[open]:opacity-100"
+    rdxCollapsiblePanel
+    [keepMounted]="true"
 >
     ...
 </div>

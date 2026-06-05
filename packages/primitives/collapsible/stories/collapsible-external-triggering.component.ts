@@ -1,29 +1,11 @@
 import { Component, signal } from '@angular/core';
 
-import { RdxCollapsibleContentPresenceDirective } from '../src/collapsible-content-presence.directive';
-import { RdxCollapsibleContentDirective } from '../src/collapsible-content.directive';
+import { RdxCollapsiblePanelDirective } from '../src/collapsible-panel.directive';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 
 @Component({
     selector: 'rdx-collapsible-external-triggering',
-    imports: [RdxCollapsibleRootDirective, RdxCollapsibleContentDirective, RdxCollapsibleContentPresenceDirective],
-    styles: `
-        .expanded {
-            max-height: 12rem;
-            opacity: 1;
-            transition:
-                max-height 600ms cubic-bezier(0.37, 1.04, 0.68, 0.98),
-                opacity 600ms cubic-bezier(0.37, 1.04, 0.68, 0.98);
-        }
-
-        .collapsed {
-            max-height: 0;
-            opacity: 0;
-            transition:
-                max-height 600ms cubic-bezier(0.37, 1.04, 0.68, 0.98),
-                opacity 600ms cubic-bezier(0.37, 1.04, 0.68, 0.98);
-        }
-    `,
+    imports: [RdxCollapsibleRootDirective, RdxCollapsiblePanelDirective],
     template: `
         <button
             class="bg-muted text-primary hover:bg-muted/80 focus-visible:ring-ring border-border mb-3 inline-flex h-8 items-center rounded-md border px-3 text-sm font-medium shadow-sm transition-colors outline-none focus-visible:ring-2"
@@ -42,14 +24,16 @@ import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
                 <span class="text-sm">&#64;radix-ui/primitives</span>
             </div>
 
-            <div class="overflow-hidden" [class]="open() ? 'expanded' : 'collapsed'" rdxCollapsibleContent>
-                <div *rdxCollapsibleContentPresence>
-                    <div class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm">
-                        <span class="text-sm">&#64;radix-ui/colors</span>
-                    </div>
-                    <div class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm">
-                        <span class="text-sm">&#64;stitches/react</span>
-                    </div>
+            <div
+                class="h-[var(--collapsible-panel-height)] overflow-hidden opacity-100 transition-[height,opacity] duration-300 ease-out data-[closed]:h-0 data-[closed]:opacity-0 data-[starting-style]:h-0 data-[starting-style]:opacity-0"
+                [keepMounted]="true"
+                rdxCollapsiblePanel
+            >
+                <div class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm">
+                    <span class="text-sm">&#64;radix-ui/colors</span>
+                </div>
+                <div class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm">
+                    <span class="text-sm">&#64;stitches/react</span>
                 </div>
             </div>
         </div>

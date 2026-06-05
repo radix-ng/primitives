@@ -1,28 +1,24 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as CollapsibleStories from './collapsible.stories';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
+import { RdxCollapsiblePanelDirective } from '../src/collapsible-panel.directive';
 
 <Meta title="Primitives/Collapsible" />
 
 # Collapsible
 
-#### An interactive component which expands/collapses a panel.
+#### A panel that expands and collapses, revealing or hiding its contents.
 
 <Canvas sourceState="hidden" of={CollapsibleStories.Default} />
 
 ## Features
 
-- ✅ Full keyboard navigation.
 - ✅ Can be controlled or uncontrolled.
-
-## Anatomy
-
-```html
-<div rdxCollapsibleRoot>
-  <button rdxCollapsibleTrigger>Trigger</button>
-  <div rdxCollapsibleContent>Content</div>
-</div>
-```
+- ✅ Full keyboard support.
+- ✅ Exposes open/close state via `data-open` / `data-closed` for styling.
+- ✅ Enter and exit transitions via `data-starting-style` / `data-ending-style`.
+- ✅ Exposes the panel size as `--collapsible-panel-height` / `--collapsible-panel-width` for height/width animations.
+- ✅ Optional `hiddenUntilFound` so the browser's find-in-page can reveal collapsed content.
 
 ## Import
 
@@ -32,9 +28,54 @@ Get started with importing the directives:
 import {
   RdxCollapsibleRootDirective,
   RdxCollapsibleTriggerDirective,
-  RdxCollapsibleContentDirective
+  RdxCollapsiblePanelDirective,
+  RdxCollapsiblePanelPresenceDirective
 } from '@radix-ng/primitives/collapsible';
 ```
+
+## Anatomy
+
+Assemble the collapsible from its parts.
+
+```html
+<div rdxCollapsibleRoot>
+  <button rdxCollapsibleTrigger>Trigger</button>
+  <div rdxCollapsiblePanel>Panel</div>
+</div>
+```
+
+To unmount the panel contents while collapsed (instead of keeping them hidden in the DOM), wrap
+them in the presence directive:
+
+```html
+<div rdxCollapsibleRoot>
+  <button rdxCollapsibleTrigger>Trigger</button>
+  <div rdxCollapsiblePanel>
+    <div *rdxCollapsiblePanelPresence>Panel</div>
+  </div>
+</div>
+```
+
+## Examples
+
+### Keep mounted
+
+With `keepMounted`, the closed panel stays in the DOM without a `hidden` attribute, so it can be
+collapsed with CSS using the `data-open` / `data-closed` attributes.
+
+<Canvas of={CollapsibleStories.KeepMounted} />
+
+### Animation
+
+The panel exposes `--collapsible-panel-height` so its contents can animate open and closed.
+
+<Canvas sourceState="hidden" of={CollapsibleStories.Animation} />
+
+### External trigger
+
+The open state can be controlled from outside the collapsible via the `open` model.
+
+<Canvas sourceState="hidden" of={CollapsibleStories.ExternalTrigger} />
 
 ## API Reference
 
@@ -48,17 +89,11 @@ import {
 
 `RdxCollapsibleTriggerDirective`
 
+A button that toggles the panel. Reads everything from the root context; it exposes
+`aria-expanded`, `aria-controls`, and a `data-panel-open` attribute while open.
 
-### Content
+### Panel
 
-`RdxCollapsibleContentDirective`
+`RdxCollapsiblePanelDirective`
 
-## Examples
-
-### Animation
-
-<Canvas sourceState="hidden" of={CollapsibleStories.Animation} />
-
-### External Trigger
-
-<Canvas sourceState="hidden" of={CollapsibleStories.ExternalTrigger} />
+<ArgTypes of={RdxCollapsiblePanelDirective} />

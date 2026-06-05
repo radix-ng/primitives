@@ -1,21 +1,21 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RdxCollapsibleContentDirective } from '../src/collapsible-content.directive';
+import { RdxCollapsiblePanelDirective } from '../src/collapsible-panel.directive';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 
 @Component({
-    selector: 'rdx-collapsible-mock-trigger',
+    selector: 'rdx-collapsible-mock-panel',
     standalone: true,
-    imports: [RdxCollapsibleRootDirective, RdxCollapsibleContentDirective],
+    imports: [RdxCollapsibleRootDirective, RdxCollapsiblePanelDirective],
     template: `
-        <div CollapsibleRoot>
-            <div CollapsibleContent>Content</div>
+        <div rdxCollapsibleRoot>
+            <div rdxCollapsiblePanel>Panel</div>
         </div>
     `
 })
 class RdxCollapsibleMockComponent {}
 
-describe('RdxCollapsibleContentDirective', () => {
+describe('RdxCollapsiblePanelDirective', () => {
     let component: RdxCollapsibleMockComponent;
     let fixture: ComponentFixture<RdxCollapsibleMockComponent>;
 
