@@ -29,9 +29,10 @@ remains headless: styles and native CSS animations belong to the consumer.
 - ✅ Opens on hover with configurable `delay` / `closeDelay`, and a polygon grace area that keeps the popup reachable.
 - ✅ `value` / `defaultValue` model with `onValueChange`, `onOpenChange`, and `onOpenChangeComplete` outputs.
 - ✅ Menubar keyboard navigation (arrow keys) via the shared Roving Focus primitive.
-- ✅ Enter / Space / arrow keys move focus from a trigger into its open content.
+- ✅ Enter / Space / arrow keys open a trigger and move focus into its content; arrows / Home / End navigate the open panel.
+- ✅ Open-follows-focus: while open, moving keyboard focus to another trigger switches the active item.
 - ✅ Horizontal and vertical orientations and LTR / RTL layouts.
-- ✅ Nested navigation menus.
+- ✅ Nested navigation menus, each owning its own keyboard navigation.
 - ✅ Closes on Escape and outside pointer interaction, restoring focus to the trigger.
 - ✅ Keeps the popup mounted while CSS exit keyframes finish.
 - ✅ Exposes state, transition, placement, and size attributes and CSS variables for styling.
