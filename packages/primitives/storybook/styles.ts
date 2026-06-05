@@ -112,6 +112,59 @@ export const demoDialog = {
     footer: 'mt-6 flex justify-end gap-2'
 } as const;
 
+/**
+ * Drawer parts: an edge-anchored sheet with swipe-to-dismiss.
+ *
+ * The popup's resting transform reads the swipe variables the engine writes
+ * (`--drawer-swipe-movement-*`), initialised to `0px` here, with a snap-back transition that is
+ * disabled while `[data-swiping]`. Compose `popup` with exactly one `side`.
+ */
+export const demoDrawer = {
+    backdrop: cn(
+        'fixed inset-0 z-50 bg-foreground/50',
+        'data-[state=open]:animate-dialog-overlay-in data-[state=closed]:animate-dialog-overlay-out'
+    ),
+    popup: cn(
+        'fixed z-50 flex flex-col bg-card text-card-foreground shadow-lg focus:outline-none',
+        '[--drawer-swipe-movement-x:0px] [--drawer-swipe-movement-y:0px]',
+        '[transform:translate3d(var(--drawer-swipe-movement-x),var(--drawer-swipe-movement-y),0)]',
+        '[transition:transform_300ms_ease,scale_300ms_ease,translate_300ms_ease] data-[swiping]:[transition:none]',
+        // A parent drawer recedes behind the nested one: top-anchored so the scaled-down parent
+        // lifts a few px above the child and peeks out (stacked-cards look).
+        'origin-top data-[nested-drawer-open]:scale-[0.965] data-[nested-drawer-open]:-translate-y-3'
+    ),
+    side: {
+        bottom: cn(
+            'inset-x-0 bottom-0 max-h-[90vh] rounded-t-2xl border-t border-border',
+            'data-[state=open]:animate-drawer-in-bottom data-[state=closed]:animate-drawer-out-bottom'
+        ),
+        top: cn(
+            'inset-x-0 top-0 max-h-[90vh] rounded-b-2xl border-b border-border',
+            'data-[state=open]:animate-drawer-in-top data-[state=closed]:animate-drawer-out-top'
+        ),
+        left: cn(
+            'inset-y-0 left-0 w-80 max-w-[90vw] rounded-r-2xl border-r border-border',
+            'data-[state=open]:animate-drawer-in-left data-[state=closed]:animate-drawer-out-left'
+        ),
+        right: cn(
+            'inset-y-0 right-0 w-80 max-w-[90vw] rounded-l-2xl border-l border-border',
+            'data-[state=open]:animate-drawer-in-right data-[state=closed]:animate-drawer-out-right'
+        )
+    },
+    /** Visual grab handle hinting the swipe gesture. */
+    grip: 'mx-auto mt-3 h-1.5 w-12 shrink-0 rounded-full bg-muted',
+    body: 'overflow-y-auto p-6',
+    title: 'text-base font-semibold text-card-foreground',
+    description: 'mt-1.5 text-sm text-muted-foreground',
+    footer: 'mt-6 flex justify-end gap-2',
+    close: cn(demoButton.base, demoButton.ghost, 'absolute top-3 right-3 size-7 p-0'),
+    /** Background content that scales back while any drawer is open (`rdxDrawerIndent*`). */
+    indent: cn(
+        'origin-top transition-[scale,border-radius] duration-300',
+        'data-[active]:scale-[0.95] data-[active]:rounded-2xl data-[active]:overflow-hidden'
+    )
+} as const;
+
 /** Popover surfaces and parts. */
 export const demoPopover = {
     positioner: 'z-50',

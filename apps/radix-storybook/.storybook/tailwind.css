@@ -132,6 +132,15 @@
     --animate-dialog-popup-in: dialog-popup-in 150ms ease-out;
     --animate-dialog-popup-out: dialog-popup-out 120ms ease-in;
 
+    --animate-drawer-in-bottom: drawer-in-bottom 250ms ease-out;
+    --animate-drawer-out-bottom: drawer-out-bottom 200ms ease-in;
+    --animate-drawer-in-top: drawer-in-top 250ms ease-out;
+    --animate-drawer-out-top: drawer-out-top 200ms ease-in;
+    --animate-drawer-in-left: drawer-in-left 250ms ease-out;
+    --animate-drawer-out-left: drawer-out-left 200ms ease-in;
+    --animate-drawer-in-right: drawer-in-right 250ms ease-out;
+    --animate-drawer-out-right: drawer-out-right 200ms ease-in;
+
     --animate-accordion-down: accordion-down 200ms ease-out;
     --animate-accordion-up: accordion-up 200ms ease-out;
     --animate-accordion-right: accordion-right 200ms ease-out;
@@ -293,6 +302,59 @@
     to {
         opacity: 0;
         transform: scale(0.96);
+    }
+}
+
+/*
+ * Drawer slide keyframes. The popup's resting transform is driven by the swipe variables
+ * (--drawer-swipe-movement-*), so these animate the full `transform` to slide the panel on/off the
+ * matching edge; when the animation ends the resting swipe transform (0 by default) takes over.
+ */
+@keyframes drawer-in-bottom {
+    from {
+        transform: translateY(100%);
+    }
+}
+
+@keyframes drawer-out-bottom {
+    to {
+        transform: translateY(100%);
+    }
+}
+
+@keyframes drawer-in-top {
+    from {
+        transform: translateY(-100%);
+    }
+}
+
+@keyframes drawer-out-top {
+    to {
+        transform: translateY(-100%);
+    }
+}
+
+@keyframes drawer-in-left {
+    from {
+        transform: translateX(-100%);
+    }
+}
+
+@keyframes drawer-out-left {
+    to {
+        transform: translateX(-100%);
+    }
+}
+
+@keyframes drawer-in-right {
+    from {
+        transform: translateX(100%);
+    }
+}
+
+@keyframes drawer-out-right {
+    to {
+        transform: translateX(100%);
     }
 }
 

@@ -1,0 +1,216 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './drawer.stories';
+import { RdxDrawerRoot, RdxDrawerPopup, RdxDrawerSwipeArea } from '../index';
+
+<Meta title="Primitives/Drawer" />
+
+# Drawer
+
+#### An edge-anchored sheet that opens over the page and dismisses with a swipe.
+
+Drawer builds on the declarative Dialog: it composes the same Portal, Presence, Dismissable Layer,
+Focus Scope, and scroll-lock behavior, then layers a headless swipe-to-dismiss gesture on top. It is
+modal by default but, unlike Alert Dialog, leaves modality and dismissal fully configurable. Styling
+and native CSS animations belong to the consumer.
+
+<Canvas sourceState="hidden" of={Stories.Default} />
+
+## Features
+
+- ✅ Reuses the Dialog primitive: trigger, portal, presence, backdrop, viewport, title, description, close.
+- ✅ Modal by default, but `[modal]` (`true | false | 'trap-focus'`) and `disablePointerDismissal` stay user-overridable.
+- ✅ Swipe-to-dismiss in any direction via `[swipeDirection]` (`'up' | 'down' | 'left' | 'right'`).
+- ✅ Headless gesture contract: `--drawer-swipe-movement-x/y`, `--drawer-swipe-strength`, `[data-swiping]`, `[data-swipe-direction]`, `[data-swipe-dismiss]`.
+- ✅ Rubber-band resistance when dragging against the dismiss direction; velocity- or distance-based release.
+- ✅ Yields to scrollable regions inside `rdxDrawerContent` until they reach their edge; opt out with `data-base-ui-swipe-ignore`.
+- ✅ Swipe-to-open from an off-canvas `rdxDrawerSwipeArea` strip.
+- ✅ Snap points (`[snapPoints]`, `[(snapPoint)]`, `[defaultSnapPoint]`, `[snapToSequentialPoints]`) with velocity skipping and `data-expanded`.
+- ✅ Nested drawers (detected through the dialog hierarchy): the parent gains `data-nested-drawer-open` / `--nested-drawers`.
+- ✅ Optional `rdxDrawerProvider` + `rdxDrawerIndent` / `rdxDrawerIndentBackground` for an app-wide page-scale effect.
+- ✅ Exposes swipe progress on the backdrop with `--drawer-swipe-progress` for a gesture-linked fade.
+- ✅ Supports two-way `[(open)]`, `defaultOpen`, multiple triggers, controlled `triggerId`, and detached triggers via a shared handle.
+- ✅ Closes on Escape, swipe, outside pointer interaction, or an explicit close button, and reports the reason on `onOpenChange`.
+
+## Import
+
+```typescript
+import {
+    createRdxDrawerHandle,
+    provideRdxDrawerProvider,
+    RdxDrawerBackdrop,
+    RdxDrawerClose,
+    RdxDrawerContent,
+    RdxDrawerDescription,
+    RdxDrawerIndent,
+    RdxDrawerIndentBackground,
+    RdxDrawerPopup,
+    RdxDrawerPortal,
+    RdxDrawerPortalPresence,
+    RdxDrawerProviderDirective,
+    RdxDrawerRoot,
+    RdxDrawerSwipeArea,
+    RdxDrawerTitle,
+    RdxDrawerTrigger,
+    RdxDrawerViewport
+} from '@radix-ng/primitives/drawer';
+```
+
+Or import all parts through the module:
+
+```typescript
+import { RdxDrawerModule } from '@radix-ng/primitives/drawer';
+```
+
+The `drawerImports` array re-exports every part for standalone `imports`.
+
+## Anatomy
+
+Apply the parts to your own markup. `rdxDrawerPortalPresence` manages mounting and waits for exit
+keyframes on the first DOM element inside its template. The popup's resting transform should read the
+swipe variables so the gesture and snap-back are visible:
+
+```css
+[rdxDrawerPopup] {
+    transform: translate3d(var(--drawer-swipe-movement-x, 0), var(--drawer-swipe-movement-y, 0), 0);
+    transition: transform 0.3s ease;
+}
+[rdxDrawerPopup][data-swiping] {
+    transition: none;
+}
+```
+
+```html
+<div rdxDrawerRoot>
+    <button rdxDrawerTrigger>Open</button>
+
+    <ng-template rdxDrawerPortalPresence>
+        <div rdxDrawerPortal>
+            <div rdxDrawerBackdrop></div>
+            <div rdxDrawerPopup>
+                <h2 rdxDrawerTitle>Title</h2>
+                <p rdxDrawerDescription>Description</p>
+                <div rdxDrawerContent>…scrollable body…</div>
+                <button rdxDrawerClose>Close</button>
+            </div>
+        </div>
+    </ng-template>
+</div>
+```
+
+## Examples
+
+### Default
+
+A bottom sheet you can swipe down to dismiss, with an accessible title, description, and close buttons.
+
+<Canvas of={Stories.Default} />
+
+### State
+
+Own the open state with `[(open)]` and drive it from anywhere — buttons outside the drawer open and
+close it alongside the trigger.
+
+<Canvas of={Stories.Controlled} />
+
+### Position
+
+Set `[swipeDirection]` and position the popup with CSS to anchor the drawer to any edge. The direction
+controls the dismiss gesture; the visual side is consumer CSS.
+
+<Canvas of={Stories.Sides} />
+
+### Snap points
+
+Pass `[snapPoints]` (fractions `0–1`, pixel numbers, or strings like `'160px'`, `'30rem'`, `'40%'`,
+ordered ascending by openness) to let the drawer rest at intermediate heights. Bind `[(snapPoint)]` to
+read or drive the active point; a fast flick skips points and dragging past the lowest one dismisses.
+The popup gains `data-expanded` at the most open point and exposes `--drawer-snap-point-offset` /
+`--drawer-height`. Add `[snapToSequentialPoints]` to step one point per release instead of skipping.
+
+<Canvas of={Stories.SnapPoints} />
+
+### Swipe to open
+
+An off-canvas `rdxDrawerSwipeArea` strip opens the drawer when swiped inward.
+
+<Canvas of={Stories.SwipeToOpen} />
+
+### Mobile navigation
+
+A taller sheet whose body scrolls. The swipe gesture yields to scrolling inside `rdxDrawerContent`
+until the scroll reaches its edge, so the drawer only swipes away from the top of the list.
+
+<Canvas of={Stories.Scrollable} />
+
+### Non-modal
+
+Set `[modal]="false"` to keep page scrolling and outside pointer interactions available while the
+drawer is open; there is no backdrop in this mode.
+
+<Canvas of={Stories.NonModal} />
+
+### Action sheet with separate destructive action
+
+An iOS-style action sheet: grouped actions with a separated destructive action and a cancel button,
+each closing the drawer.
+
+<Canvas of={Stories.ActionSheet} />
+
+### Nested drawers
+
+Drawers stack on top of each other — each level's content hosts the trigger for the next. Nesting is
+detected through the dialog hierarchy, so every parent gains `data-nested-drawer-open` (and
+`--nested-drawers`) and recedes behind the one in front.
+
+<Canvas of={Stories.Nested} />
+
+### Indent effect
+
+Wrap content in `rdxDrawerProvider` (or call `provideRdxDrawerProvider()` at the app root) and mark a
+region with `rdxDrawerIndentBackground` / `rdxDrawerIndent`. It gains `[data-active]`,
+`--nested-drawers`, and `--drawer-frontmost-height` while any drawer is open, for an iOS-style
+page-scale effect.
+
+<Canvas of={Stories.PageScale} />
+
+### Detached triggers
+
+Create a shared handle with `createRdxDrawerHandle()` when triggers live outside `rdxDrawerRoot`. The
+handle also supports imperative `open(id)`, `toggle(id)`, and `close()`.
+
+<Canvas of={Stories.Detached} />
+
+## API Reference
+
+### Root
+
+`RdxDrawerRoot` composes `RdxDialogRoot` (proxying `[open]`, `[defaultOpen]`, `[modal]`,
+`[disablePointerDismissal]`, `[handle]`, `[triggerId]`) and adds `[swipeDirection]`. Open-state outputs
+`onOpenChange` / `onOpenChangeComplete` come from the dialog.
+
+<ArgTypes of={RdxDrawerRoot} />
+
+### Popup
+
+`RdxDrawerPopup` composes the dialog popup (focus trap, dismissal, scroll lock, a11y) and owns the
+swipe gesture. It exposes the dialog popup's dismissal and focus events and reads everything else from
+context.
+
+<ArgTypes of={RdxDrawerPopup} />
+
+### SwipeArea
+
+`RdxDrawerSwipeArea` opens the drawer when swiped inward from a screen edge.
+
+<ArgTypes of={RdxDrawerSwipeArea} />
+
+### Provider, Indent, and IndentBackground
+
+`rdxDrawerProvider` hosts the optional app-level coordinator (also available as
+`provideRdxDrawerProvider()`). `rdxDrawerIndent` and `rdxDrawerIndentBackground` read it and expose
+`[data-active]`, `--nested-drawers`, and `--drawer-frontmost-height`; they take no inputs.
+
+### Trigger, Portal, Viewport, Backdrop, Content, Title, Description, and Close
+
+These parts wrap their Dialog counterparts (or, for `Content`, mark the scrollable body) and read state
+from context. See the Dialog docs for the trigger and portal inputs.

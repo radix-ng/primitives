@@ -26,6 +26,7 @@ export type RdxDialogOpenChangeReason =
     | 'outside-press'
     | 'focus-out'
     | 'escape-key'
+    | 'swipe'
     | 'imperative-action'
     | 'none';
 
