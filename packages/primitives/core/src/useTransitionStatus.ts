@@ -9,6 +9,14 @@ import { afterNextRender, DestroyRef, inject, Injector, signal, Signal } from '@
  */
 export type RdxTransitionStatus = 'starting' | 'ending' | undefined;
 
+/**
+ * Grace period (ms) added to an element's declared transition duration before the
+ * safety-net timer force-completes a transition. Only matters when the real
+ * `animationend`/`transitionend` never arrives (interrupted, replaced without a
+ * cancel event, reduced motion, …).
+ */
+const TRANSITION_FALLBACK_BUFFER = 50;
+
 export interface RdxTransitionStatusRef {
     /** Reactive transition phase, intended for `data-starting-style` / `data-ending-style` bindings. */
     readonly status: Signal<RdxTransitionStatus>;
@@ -25,9 +33,11 @@ export interface RdxTransitionStatusRef {
  * Shared open/close transition state machine used by overlay primitives (dialog, popover, …).
  *
  * On `start(open)` it flips `status` to `'starting'`/`'ending'`, then — after the next render and
- * (for opening) one animation frame — clears it and waits for the registered element's longest CSS
- * transition/animation to finish before invoking `onComplete(open)`. If no element is registered or
- * it has no animation, completion is synchronous on the next render.
+ * (for opening) one animation frame — clears it and waits for the registered element's running CSS
+ * animations/transitions to finish (via the Web Animations API) before invoking `onComplete(open)`.
+ * Completing on the real `animationend` rather than a duration timer keeps it from firing a frame
+ * late. A duration-based timer remains as a safety net, and if no element is registered or it has no
+ * animation (also SSR / jsdom, where computed durations are `0`) completion is synchronous.
  *
  * Must be called in an injection context (uses {@link Injector} and {@link DestroyRef}).
  */
@@ -67,14 +77,36 @@ export function useTransitionStatus(onComplete: (open: boolean) => void): RdxTra
     };
 
     const waitForTransition = (open: boolean, currentVersion: number) => {
-        const duration = element ? getMaxTransitionDuration(element) : 0;
+        const node = element;
+        const duration = node ? getMaxTransitionDuration(node) : 0;
 
-        if (duration === 0) {
+        // Nothing animating (also the SSR / jsdom path, where computed durations are
+        // 0): settle synchronously, exactly as before.
+        if (!node || duration === 0) {
             complete(open, currentVersion);
             return;
         }
 
-        timer = setTimeout(() => complete(open, currentVersion), duration);
+        // Prefer the Web Animations API so completion lands on the real
+        // `animationend` / `transitionend` instead of a timer that can fire a frame
+        // late — that lateness is what let a closing collapsible flash back to its
+        // natural size before `hidden` was applied.
+        const animations = typeof node.getAnimations === 'function' ? node.getAnimations() : [];
+
+        // Safety net: if an animation never settles (interrupted, replaced without a
+        // cancel event, reduced motion, or simply not exposed by the engine yet)
+        // still complete shortly after the declared duration.
+        timer = setTimeout(() => complete(open, currentVersion), duration + TRANSITION_FALLBACK_BUFFER);
+
+        if (animations.length === 0) {
+            return;
+        }
+
+        // A cancelled animation rejects `finished`; swallow it so reopening (which
+        // cancels the in-flight animation) still resolves and settles.
+        void Promise.all(animations.map((animation) => animation.finished.catch(() => undefined))).then(() =>
+            complete(open, currentVersion)
+        );
     };
 
     destroyRef.onDestroy(clearTimers);
