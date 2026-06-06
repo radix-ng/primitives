@@ -257,7 +257,9 @@ export const demoAccordion = {
     trigger: cn(
         'flex h-12 w-full flex-1 cursor-default items-center justify-between px-5 text-[15px]',
         'bg-background text-foreground transition-colors hover:bg-muted',
-        'data-[disabled=true]:text-muted-foreground'
+        // The trigger is a real <button>, so a disabled item gives it the native `disabled`
+        // attribute — style it with the `disabled:` variant, not `data-disabled`.
+        'disabled:cursor-not-allowed disabled:text-muted-foreground disabled:opacity-60 disabled:hover:bg-background'
     ),
     triggerH: '[writing-mode:vertical-rl] h-full px-0 py-5',
     content: cn(
@@ -265,7 +267,14 @@ export const demoAccordion = {
         '[&[data-state=open][data-orientation=vertical]]:animate-accordion-down',
         '[&[data-state=closed][data-orientation=vertical]]:animate-accordion-up',
         '[&[data-state=open][data-orientation=horizontal]]:animate-accordion-right',
-        '[&[data-state=closed][data-orientation=horizontal]]:animate-accordion-left'
+        '[&[data-state=closed][data-orientation=horizontal]]:animate-accordion-left',
+        // Pin the *resting* closed size to 0. Without this, the moment the close
+        // keyframe ends (it has no `forwards` fill) the height reverts to `auto`
+        // for the frame before `hidden` is applied, making a switching accordion
+        // jump. The running animation still wins while it plays, so the collapse
+        // animation itself is unchanged.
+        '[&[data-state=closed][data-orientation=vertical]]:h-0',
+        '[&[data-state=closed][data-orientation=horizontal]]:w-0'
     ),
     contentText: 'px-5 py-4'
 } as const;
