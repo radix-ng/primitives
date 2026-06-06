@@ -120,10 +120,15 @@ export const demoDialog = {
  * disabled while `[data-swiping]`. Compose `popup` with exactly one `side`.
  */
 export const demoDrawer = {
-    backdrop: cn(
-        'fixed inset-0 z-50 bg-foreground/50',
-        'data-[state=open]:animate-dialog-overlay-in data-[state=closed]:animate-dialog-overlay-out'
-    ),
+    /**
+     * The portal is the presence root, so it must carry an exit animation for the close to be
+     * awaited before unmount; without it `RdxPresenceDirective` sees `animation-name: none` on the
+     * root node and removes the drawer instantly, skipping the slide-out. Its fade also dims the
+     * backdrop (mirroring the dialog), so the backdrop element itself stays unanimated. Sized to the
+     * 200ms slide-out so the slide is not cut short.
+     */
+    portalAnimated: 'data-[state=open]:animate-drawer-overlay-in data-[state=closed]:animate-drawer-overlay-out',
+    backdrop: 'fixed inset-0 z-50 bg-foreground/50',
     popup: cn(
         'fixed z-50 flex flex-col bg-card text-card-foreground shadow-lg focus:outline-none',
         '[--drawer-swipe-movement-x:0px] [--drawer-swipe-movement-y:0px]',

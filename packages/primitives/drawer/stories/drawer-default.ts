@@ -11,7 +11,7 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
             <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Open drawer</button>
 
             <ng-template rdxDrawerPortalPresence>
-                <div rdxDrawerPortal>
+                <div [class]="d.portalAnimated" rdxDrawerPortal>
                     <div [class]="d.backdrop" rdxDrawerBackdrop></div>
 
                     <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>

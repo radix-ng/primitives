@@ -121,11 +121,11 @@
     --header-height: 3rem;
 
     --animate-popover-in: popover-in 150ms ease-out;
-    --animate-popover-out: popover-out 120ms ease-in;
+    --animate-popover-out: popover-out 120ms ease-in forwards;
     --animate-popover-popup-in: popover-popup-in 150ms ease-out;
-    --animate-popover-popup-out: popover-popup-out 120ms ease-in;
+    --animate-popover-popup-out: popover-popup-out 120ms ease-in forwards;
     --animate-popover-viewport-in: popover-viewport-in 200ms ease-out;
-    --animate-popover-viewport-out: popover-viewport-out 200ms ease-in;
+    --animate-popover-viewport-out: popover-viewport-out 200ms ease-in forwards;
 
     --animate-navigation-menu-in: popover-in 150ms ease-out;
     --animate-navigation-menu-out: popover-out 120ms ease-in;
@@ -135,18 +135,20 @@
     --animate-navigation-menu-content-out: navigation-menu-content-out 250ms ease;
 
     --animate-dialog-overlay-in: dialog-overlay-in 150ms ease-out;
-    --animate-dialog-overlay-out: dialog-overlay-out 150ms ease-in;
+    --animate-dialog-overlay-out: dialog-overlay-out 150ms ease-in forwards;
     --animate-dialog-popup-in: dialog-popup-in 150ms ease-out;
-    --animate-dialog-popup-out: dialog-popup-out 120ms ease-in;
+    --animate-dialog-popup-out: dialog-popup-out 150ms ease-in forwards;
 
+    --animate-drawer-overlay-in: dialog-overlay-in 250ms ease-out;
+    --animate-drawer-overlay-out: dialog-overlay-out 200ms ease-in forwards;
     --animate-drawer-in-bottom: drawer-in-bottom 250ms ease-out;
-    --animate-drawer-out-bottom: drawer-out-bottom 200ms ease-in;
+    --animate-drawer-out-bottom: drawer-out-bottom 200ms ease-in forwards;
     --animate-drawer-in-top: drawer-in-top 250ms ease-out;
-    --animate-drawer-out-top: drawer-out-top 200ms ease-in;
+    --animate-drawer-out-top: drawer-out-top 200ms ease-in forwards;
     --animate-drawer-in-left: drawer-in-left 250ms ease-out;
-    --animate-drawer-out-left: drawer-out-left 200ms ease-in;
+    --animate-drawer-out-left: drawer-out-left 200ms ease-in forwards;
     --animate-drawer-in-right: drawer-in-right 250ms ease-out;
-    --animate-drawer-out-right: drawer-out-right 200ms ease-in;
+    --animate-drawer-out-right: drawer-out-right 200ms ease-in forwards;
 
     --animate-accordion-down: accordion-down 200ms ease-out;
     --animate-accordion-up: accordion-up 200ms ease-out;

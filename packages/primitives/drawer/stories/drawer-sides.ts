@@ -16,7 +16,7 @@ const SIDES: RdxDrawerSwipeDirection[] = ['top', 'right', 'bottom', 'left'];
                     </button>
 
                     <ng-template rdxDrawerPortalPresence>
-                        <div rdxDrawerPortal>
+                        <div [class]="d.portalAnimated" rdxDrawerPortal>
                             <div [class]="d.backdrop" rdxDrawerBackdrop></div>
 
                             <div [class]="cn(d.popup, d.side[side])" rdxDrawerPopup>

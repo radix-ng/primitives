@@ -66,8 +66,22 @@ The `drawerImports` array re-exports every part for standalone `imports`.
 ## Anatomy
 
 Apply the parts to your own markup. `rdxDrawerPortalPresence` manages mounting and waits for exit
-keyframes on the first DOM element inside its template. The popup's resting transform should read the
-swipe variables so the gesture and snap-back are visible:
+keyframes on the first DOM element inside its template — the `rdxDrawerPortal`. That element **must**
+have a `data-[state=closed]` exit animation, otherwise presence sees no animation on the root node and
+unmounts the drawer instantly, skipping the slide-out. Give the portal an overlay fade (it also dims
+the backdrop) sized to at least the popup's slide duration:
+
+```css
+[rdxDrawerPortal][data-state='open'] {
+    animation: overlay-in 250ms ease-out;
+}
+[rdxDrawerPortal][data-state='closed'] {
+    animation: overlay-out 200ms ease-in forwards;
+}
+```
+
+The popup's resting transform should read the swipe variables so the gesture and snap-back are visible,
+and its slide-out keyframe should hold the closed position with `forwards`:
 
 ```css
 [rdxDrawerPopup] {
@@ -76,6 +90,9 @@ swipe variables so the gesture and snap-back are visible:
 }
 [rdxDrawerPopup][data-swiping] {
     transition: none;
+}
+[rdxDrawerPopup][data-state='closed'] {
+    animation: slide-out-bottom 200ms ease-in forwards;
 }
 ```
 

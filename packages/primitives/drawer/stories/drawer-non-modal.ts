@@ -16,7 +16,7 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                 <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Open non-modal drawer</button>
 
                 <ng-template rdxDrawerPortalPresence>
-                    <div rdxDrawerPortal>
+                    <div [class]="d.portalAnimated" rdxDrawerPortal>
                         <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
                             <div [class]="d.grip" aria-hidden="true"></div>
 
