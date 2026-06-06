@@ -1,0 +1,97 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as DialogStories from '../../../../packages/primitives/dialog/stories/dialog.stories';
+
+<Meta title="Learn/Controlled & uncontrolled" />
+
+# Controlled & uncontrolled
+
+#### Why primitives just work out of the box, and when to take the wheel.
+
+Every stateful primitive can run in two modes. Knowing which one you're in — and that
+**uncontrolled is the default** — saves a lot of "why isn't this opening?" confusion.
+
+## Uncontrolled: the primitive owns the state
+
+By default you place the parts and the primitive manages everything itself. No signal, no handler,
+no binding:
+
+```html
+<div rdxDialogRoot>
+  <button rdxDialogTrigger>Open</button>
+
+  <ng-template rdxDialogPortalPresence>
+    <div rdxDialogPortal>
+      <div rdxDialogBackdrop></div>
+      <div rdxDialogPopup>
+        <h2 rdxDialogTitle>Edit profile</h2>
+        <button rdxDialogClose>Close</button>
+      </div>
+    </div>
+  </ng-template>
+</div>
+```
+
+The trigger opens it, the close button and Escape close it, focus is trapped and restored — all
+handled. Try it:
+
+<Canvas sourceState="shown" of={DialogStories.Default} />
+
+Need it to start open? Seed the **initial** state with the `default*` input and still stay
+uncontrolled:
+
+```html
+<div rdxDialogRoot defaultOpen>…</div>
+```
+
+`defaultOpen` is read once to set the starting value; after that the primitive owns it.
+
+## Controlled: your application owns the state
+
+Reach for controlled mode only when the app needs to **drive or observe** the state — open a dialog
+from elsewhere, persist it, or veto a change. Stateful primitives expose the value as an Angular
+`model()`, so you bind your own signal and listen to the change output:
+
+```ts
+@Component({
+  template: `
+    <button (click)="open.set(true)">Edit from anywhere</button>
+
+    <div [open]="open()" (onOpenChange)="onOpenChange($event)" rdxDialogRoot>
+      …
+    </div>
+  `
+})
+export class Profile {
+  protected readonly open = signal(false);
+
+  protected onOpenChange(event: { open: boolean }) {
+    this.open.set(event.open);
+  }
+}
+```
+
+<Canvas sourceState="shown" of={DialogStories.Controlled} />
+
+Because it's a `model()`, two-way binding works too when every change should be accepted as-is:
+
+```html
+<div [(open)]="open" rdxDialogRoot>…</div>
+```
+
+Use the long form (`[open]` + `(onOpenChange)`) when you want to **inspect or reject** a change
+before applying it; use `[(open)]` when you simply want your signal kept in sync.
+
+## The mental rule
+
+> Bind state **only** when something outside the primitive needs to read or change it. Otherwise
+> leave it uncontrolled — you get the full accessible behavior for free, and there's less of your own
+> code to keep correct.
+
+A common mistake is binding `[open]="open()"` but forgetting `(onOpenChange)`. Now the primitive
+asks to open, your signal never updates, and it snaps shut — a half-controlled component. If you
+bind the value, you must also handle its change (or use `[(open)]`).
+
+## Next
+
+→ **Composition** — you've used primitives as-is. Next: building your own components _on top_ of
+them with `hostDirectives` and the Root context.

@@ -143,7 +143,22 @@ const preview: Preview = {
         options: {
             storySort: {
                 method: 'alphabetical',
-                order: ['Overview', ['Introduction', 'Installation'], 'Guides', 'Primitives', 'Utilities']
+                order: [
+                    'Overview',
+                    ['Introduction', 'Installation'],
+                    'Learn',
+                    [
+                        'Introduction',
+                        'Anatomy & parts',
+                        'State & data attributes',
+                        'Controlled & uncontrolled',
+                        'Composition',
+                        'Build a styled component'
+                    ],
+                    'Guides',
+                    'Primitives',
+                    'Utilities'
+                ]
             }
         }
     },

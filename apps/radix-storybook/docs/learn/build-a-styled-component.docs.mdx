@@ -1,0 +1,164 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Tutorial from '../../../../packages/primitives/popover/stories/learn-popover-tutorial.stories';
+
+<Meta title="Learn/Build a styled component" />
+
+# Build a styled component
+
+#### The end-to-end tutorial: a bare Popover becomes a polished, reusable component.
+
+This pulls together everything from the previous pages. We'll start with a primitive that works but
+looks like nothing, then add appearance, motion, and finally wrap it into a component your app can
+drop in anywhere. Each step only adds — the behavior never changes, because the primitive already
+handled it.
+
+## Step 1 — assemble the parts (zero styling)
+
+Place the Popover parts on your markup. It's fully functional right now: the trigger opens it, it's
+positioned, focus and dismissal work, Escape closes it. It just has no look.
+
+```html
+<ng-container rdxPopoverRoot>
+  <button rdxPopoverTrigger>Notifications</button>
+
+  <ng-template rdxPopoverPortalPresence>
+    <div rdxPopoverPortal>
+      <div sideOffset="8" rdxPopoverPositioner>
+        <div rdxPopoverPopup>
+          <h2 rdxPopoverTitle>Notifications</h2>
+          <p rdxPopoverDescription>You are all caught up.</p>
+          <button rdxPopoverClose>Close</button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</ng-container>
+```
+
+It already works — open it and notice it's just unstyled, not broken:
+
+<Canvas sourceState="hidden" of={Tutorial.Step1Functional} />
+
+## Step 2 — style the trigger from its state
+
+The trigger publishes `data-open` while the popover is open (and `data-disabled` if disabled). Style
+the base look, then react to the state — exactly the pattern from **State & data attributes**. We'll
+use Tailwind with semantic tokens:
+
+```html
+<button
+  rdxPopoverTrigger
+  class="rounded-md border border-border bg-background px-3 py-2 text-sm
+         transition-colors hover:bg-muted data-[open]:bg-muted"
+>
+  Notifications
+</button>
+```
+
+<Canvas sourceState="hidden" of={Tutorial.Step2Trigger} />
+
+## Step 3 — style the popup
+
+The popup is just an element you own, so style it like any card. The positioner also exposes
+`data-side` (`top` / `bottom` / `left` / `right`) if you want side-aware tweaks:
+
+```html
+<div
+  rdxPopoverPopup
+  class="w-64 rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-md"
+>
+  <h2 rdxPopoverTitle class="text-sm font-medium">Notifications</h2>
+  <p rdxPopoverDescription class="mt-1 text-sm text-muted-foreground">You are all caught up.</p>
+</div>
+```
+
+<Canvas sourceState="hidden" of={Tutorial.Step3Popup} />
+
+## Step 4 — animate enter and exit
+
+The popup mounts and unmounts through a presence directive, and that directive waits for a CSS
+**`@keyframes` animation** to finish before removing the element — not a `transition` (see
+**Guides/Animation**). So drive the motion with keyframe animations keyed off the same
+`data-open` / `data-closed` you already know:
+
+```html
+<div
+  rdxPopoverPopup
+  class="… data-[open]:animate-popover-popup-in data-[closed]:animate-popover-popup-out"
+>
+  …
+</div>
+```
+
+`animate-popover-popup-in` / `-out` are keyframe animations defined in this repo's
+`tailwind.css` (a scale-and-fade in, the reverse out with `forwards`). The enter animation plays
+while `data-open` is set; on close the element keeps `data-closed` and stays mounted until the exit
+keyframes finish, so it animates out instead of vanishing. Open and close it a few times:
+
+<Canvas sourceState="hidden" of={Tutorial.Step4Animated} />
+
+## Step 5 — make it reusable
+
+Right now this is a block of markup you'd copy around. Turn it into one component. Project the
+trigger label and the body with `<ng-content>`, and keep the structure in one place:
+
+```ts
+@Component({
+  selector: 'app-notifications-popover',
+  imports: [popoverImports],
+  template: `
+    <ng-container rdxPopoverRoot>
+      <button rdxPopoverTrigger class="…trigger classes…">
+        <ng-content select="[trigger]" />
+      </button>
+
+      <ng-template rdxPopoverPortalPresence>
+        <div rdxPopoverPortal>
+          <div sideOffset="8" rdxPopoverPositioner>
+            <div rdxPopoverPopup class="…popup + animation classes…">
+              <ng-content />
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </ng-container>
+  `
+})
+export class NotificationsPopover {}
+```
+
+Now any feature uses it without knowing the primitive exists — same behavior, same look, none of
+the wiring:
+
+```html
+<app-notifications-popover>
+  <span trigger>Notifications</span>
+  <p>You are all caught up.</p>
+</app-notifications-popover>
+```
+
+<Canvas sourceState="hidden" of={Tutorial.Step5Reusable} />
+
+If you'd rather expose the primitive's own inputs (like `open`) on your component, compose with
+`hostDirectives` instead of wrapping — see **Composition**.
+
+## What you just did
+
+- Used a primitive that was **accessible and interactive before you wrote a line of CSS**.
+- Added appearance purely by **styling `data-*` attributes** — never touching the primitive's logic.
+- Animated it with CSS keyed off presence state.
+- Wrapped it into a **reusable component** with a small, intentional API.
+
+That's the whole workflow for every primitive in the library. From here, each primitive's own page
+gives you its **Anatomy**, **Examples**, and the **API Reference** (its inputs, outputs, and the
+`data-*` attributes you style against).
+
+## Tips for real projects
+
+- Keep repeated class strings in one place. This repo centralizes demo styles in
+  `packages/primitives/storybook/styles.ts` (`cn`, `demoButton`, `demoCard`, …) — do the same with
+  your own design tokens.
+- Lead with **semantic tokens** (`bg-popover`, `border-border`, `text-muted-foreground`) so light
+  and dark themes follow automatically.
+- Always associate labels with controls (`for`/`id`, or `rdxFieldLabel` inside `rdxFieldRoot`) — see
+  **Overview/Accessibility**.

@@ -1,0 +1,52 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Learn/Introduction" />
+
+# Learn Radix NG
+
+#### A guided path from "what is a headless primitive" to your own styled component.
+
+The **Overview** tells you what the library is and how to install it. The **Guides** answer
+"how do I do X". This **Learn** section sits between them: it builds the mental model first, so the
+rest of the docs read as confirmation instead of surprises.
+
+Each page is one idea, one runnable demo, and a short "try it yourself". Read them in order the
+first time — later they work fine as standalone references.
+
+## The mental model in one minute
+
+A Radix NG primitive is **behavior without a look**. It handles state, keyboard interaction, focus,
+and accessibility, then exposes everything it knows as `data-*` attributes on the DOM. You provide
+the visual design by styling those attributes. Nothing is hidden in TypeScript you have to fight.
+
+```html
+<!-- The primitive gives you this — already accessible, already interactive -->
+<button rdxSwitchRoot role="switch" aria-checked="true" data-checked>On</button>
+
+<!-- You give it this — plain CSS targeting the state the primitive published -->
+<style>
+  [rdxSwitchRoot][data-checked] {
+    background: var(--accent);
+  }
+</style>
+```
+
+That single contract — **behavior in, `data-*` out, styling is yours** — is what every page below
+unpacks.
+
+## Learning path
+
+1. **Anatomy & parts** — how a primitive splits into Root / Trigger / Content, and why.
+2. **State & data attributes** — where state lives and how you style it. _(start here — it's the
+   foundation everything else builds on)_
+3. **Controlled & uncontrolled** — why it just works by default, and when to take the wheel.
+4. **Composition** — `hostDirectives` and DI context, so you can build on top instead of around.
+5. **Build a styled component** — the end-to-end tutorial: a bare directive becomes a polished,
+   reusable component, one small step at a time.
+
+## How this differs from the Guides
+
+The Guides are task-oriented and assume you already know the model. If a Guide ever feels like it
+skipped a step, the explanation is almost always here. When you're comfortable with these five
+pages, the per-primitive pages (their **Anatomy**, **Examples**, and **API Reference**) will feel
+like filling in a shape you already recognize.
