@@ -1,4 +1,4 @@
-import { Directive, ElementRef, inject, OnInit } from '@angular/core';
+import { Directive, ElementRef, inject } from '@angular/core';
 import { getActiveElement } from '@radix-ng/primitives/core';
 import { injectNumberFieldRootContext } from './number-field-context';
 
@@ -35,14 +35,14 @@ import { injectNumberFieldRootContext } from './number-field-context';
         '(wheel)': 'onWheel($event)'
     }
 })
-export class RdxNumberFieldInput implements OnInit {
+export class RdxNumberFieldInput {
     private readonly elementRef = inject<ElementRef<HTMLInputElement>>(ElementRef);
     protected readonly rootContext = injectNumberFieldRootContext()!;
 
     /** Browsers place the caret at the start; we move it to the end on the first focus. */
     private hasTouchedInput = false;
 
-    ngOnInit(): void {
+    constructor() {
         this.rootContext.registerInput(this.elementRef.nativeElement);
     }
 

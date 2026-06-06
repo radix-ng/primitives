@@ -1,4 +1,4 @@
-import { computed, Directive, ElementRef, inject, OnDestroy, OnInit } from '@angular/core';
+import { computed, DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 import { RdxPortal } from '@radix-ng/primitives/portal';
 import { injectNumberFieldScrubAreaContext } from './number-field-scrub-area-context';
 
@@ -30,7 +30,7 @@ function isWebKitBrowser(): boolean {
         '[style.opacity]': 'shouldRender() ? "1" : "0"'
     }
 })
-export class RdxNumberFieldScrubAreaCursor implements OnInit, OnDestroy {
+export class RdxNumberFieldScrubAreaCursor {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly scrubContext = injectNumberFieldScrubAreaContext()!;
 
@@ -42,11 +42,8 @@ export class RdxNumberFieldScrubAreaCursor implements OnInit, OnDestroy {
             !this.scrubContext.isPointerLockDenied()
     );
 
-    ngOnInit(): void {
+    constructor() {
         this.scrubContext.registerCursor(this.elementRef.nativeElement);
-    }
-
-    ngOnDestroy(): void {
-        this.scrubContext.registerCursor(null);
+        inject(DestroyRef).onDestroy(() => this.scrubContext.registerCursor(null));
     }
 }

@@ -37,6 +37,31 @@ All state is exposed via `host` bindings using `data-*` attributes. Never use in
 - Boolean inputs: `input<boolean, BooleanInput>(false, { transform: booleanAttribute })`
 - Outputs: `output<T>()` — name with `on` prefix (`onValueChange`)
 
+## Lifecycle — prefer signals over `ngOn*` hooks
+
+Signals-first: **avoid `OnInit` / `OnChanges` / `OnDestroy`** in primitive source
+(`packages/primitives/*/src/**`). An ESLint `no-restricted-syntax` rule (scoped to that path,
+severity `warn`) flags `ngOnInit` / `ngOnChanges` / `ngOnDestroy`. Replace by intent — this is **not**
+a blanket "move it to the constructor":
+
+| Need                                                                          | Replacement                                                                                       |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| DI / host-element work (store or register `inject(ElementRef).nativeElement`) | the **`constructor`** — the host element already exists there; `input()` values do not yet        |
+| Logic reading `input()` values (and reacting to changes)                      | **`effect()` / `computed()` / `linkedSignal()`** — covers both `ngOnInit` reads and `ngOnChanges` |
+| Rendered DOM / view-or-content children / measurements                        | **`afterNextRender()` / `afterRenderEffect()`**, signal `viewChild()` / `contentChild()`          |
+| Cleanup                                                                       | **`inject(DestroyRef).onDestroy(() => …)`** instead of `ngOnDestroy`                              |
+
+Rationale: a directive's host element is created **before** its constructor runs, so
+`ElementRef.nativeElement` is valid there; `ngOnInit` differs only in that bound `input()` values are
+set by then. So `ngOnInit` is wrong both when you read no inputs (use the constructor) and when you do
+(use `effect()`, since the input can change later). `number-field` registers its input/cursor elements in
+the constructor and cleans up via `DestroyRef` — no lifecycle interfaces.
+
+**Out of scope of the rule:** `AfterViewInit` (needs `afterNextRender()` / `afterRenderEffect()`, migrate
+case by case — ~12 existing usages), and story/demo + test files (reactive-forms demos may build a
+`FormGroup` in `ngOnInit`). Existing `ngOnInit`/`ngOnDestroy` in primitive source surface as warnings to
+migrate over time; flip the rule to `error` once they are cleared.
+
 ## Zoneless — no `NgZone`
 
 The library is signals-first and **zoneless** (the Storybook app runs with `provideZonelessChangeDetection`). Do **not** use `NgZone`, `runOutsideAngular`, or `zone.run` — change detection is scheduled by the signal scheduler when a signal changes, not by the zone, so the zone wrappers are unnecessary noise.

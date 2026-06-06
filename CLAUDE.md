@@ -130,6 +130,29 @@ constructor() {
 }
 ```
 
+## Lifecycle — prefer signals over `ngOn*` hooks
+
+This is a signals-first library: **avoid `OnInit` / `OnChanges` / `OnDestroy`** in primitive source
+(`packages/primitives/*/src/**`). An ESLint rule warns on `ngOnInit` / `ngOnChanges` / `ngOnDestroy`
+there. Note this is **not** "always move it to the constructor" — pick the replacement by what the code
+actually needs:
+
+| Need                                                                         | Use instead of a lifecycle hook                                                                     |
+| ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| DI and host-element work (store/register `inject(ElementRef).nativeElement`) | the **`constructor`** — the host element already exists there; `input()` values do **not** yet      |
+| Logic that depends on `input()` values (and reacts to changes)               | **`effect()` / `computed()` / `linkedSignal()`** (replaces both `ngOnInit` reads and `ngOnChanges`) |
+| Rendered DOM / view or content children / measurements                       | **`afterNextRender()` / `afterRenderEffect()`**, signal `viewChild()` / `contentChild()`            |
+| Cleanup                                                                      | **`inject(DestroyRef).onDestroy(() => …)`**                                                         |
+
+Key fact behind the constructor row: the directive's host element is created **before** its constructor
+runs, so `ElementRef.nativeElement` is a valid reference there. `ngOnInit` differs only in that bound
+`input()` values are set by then — so it's the wrong tool when you read no inputs (use the constructor),
+and also the wrong tool when you do (use `effect()`, since the input can change later).
+
+`AfterViewInit` is intentionally **not** covered by the lint rule: replacing it needs `afterNextRender()` /
+`afterRenderEffect()`, not `effect()`, and must be migrated case by case. Story/demo and test files are
+exempt (reactive-forms demos may legitimately build a `FormGroup` in `ngOnInit`).
+
 ## hostDirectives composition
 
 Prefer `hostDirectives` to re-use existing primitives (e.g., Accordion Item composes CollapsibleRoot):

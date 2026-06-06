@@ -60,6 +60,33 @@ export default defineConfig([
         }
     },
     {
+        // Signals-first: discourage lifecycle hooks in primitive source. Use the constructor for
+        // DI/host-element setup, effect()/computed()/linkedSignal() for input-driven logic, and
+        // inject(DestroyRef).onDestroy() for cleanup. AfterViewInit is intentionally excluded —
+        // it needs afterNextRender()/afterRenderEffect(), migrated case by case. Story/demo and
+        // test files are not covered (they live outside src/). See CLAUDE.md / patterns.md.
+        files: ['packages/primitives/**/src/**/*.ts'],
+        rules: {
+            'no-restricted-syntax': [
+                'warn',
+                {
+                    selector: "MethodDefinition[key.name='ngOnInit']",
+                    message:
+                        'Avoid ngOnInit in signals-first code: use the constructor for DI/host-element setup and effect()/computed() for input()-driven logic. See CLAUDE.md.'
+                },
+                {
+                    selector: "MethodDefinition[key.name='ngOnChanges']",
+                    message:
+                        'Avoid ngOnChanges: react to input() signals with effect()/computed()/linkedSignal(). See CLAUDE.md.'
+                },
+                {
+                    selector: "MethodDefinition[key.name='ngOnDestroy']",
+                    message: 'Avoid ngOnDestroy: use inject(DestroyRef).onDestroy(() => …) for cleanup. See CLAUDE.md.'
+                }
+            ]
+        }
+    },
+    {
         files: ['**/*.html'],
         extends: [...angularEslint.configs.templateRecommended, ...angularEslint.configs.templateAccessibility],
         rules: {
