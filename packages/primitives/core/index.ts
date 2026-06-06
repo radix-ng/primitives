@@ -15,6 +15,7 @@ export * from './src/is-number';
 export * from './src/isValueEqualOrExist';
 export * from './src/kbd-constants';
 export * from './src/provide-token';
+export * from './src/signal-forms/form-control';
 export * from './src/window';
 
 export * from './src/create-context';

@@ -13,7 +13,7 @@ import { injectCheckboxRootContext } from './checkbox-root';
     host: {
         type: 'button',
         role: 'checkbox',
-        '[attr.aria-checked]': 'rootContext.checked() === "indeterminate" ? "mixed" : rootContext.checked()',
+        '[attr.aria-checked]': 'rootContext.indeterminate() ? "mixed" : rootContext.checked()',
         '[attr.aria-controls]': 'ariaControls()',
         '[attr.aria-required]': 'rootContext.required() || undefined',
         '[attr.aria-readonly]': 'rootContext.readonly() || undefined',

@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
 import { RdxFieldError } from '../src/field-error';
@@ -103,5 +104,74 @@ describe('Field', () => {
         input.dispatchEvent(new FocusEvent('blur'));
         fixture.detectChanges();
         expect(root.hasAttribute('data-focused')).toBe(false);
+    });
+
+    describe('external state provider', () => {
+        let fieldRoot: RdxFieldRoot;
+
+        beforeEach(() => {
+            fieldRoot = fixture.debugElement.query(By.directive(RdxFieldRoot)).injector.get(RdxFieldRoot);
+        });
+
+        it('lets a provider override the root inputs', () => {
+            const invalid = signal(true);
+            fieldRoot.setStateProvider({ invalid: () => invalid() });
+            fixture.detectChanges();
+
+            // provider wins even though the `invalid` input is still false
+            expect(root.getAttribute('data-invalid')).toBe('');
+            expect(root.hasAttribute('data-valid')).toBe(false);
+
+            invalid.set(false);
+            fixture.detectChanges();
+            expect(root.hasAttribute('data-invalid')).toBe(false);
+            expect(root.getAttribute('data-valid')).toBe('');
+        });
+
+        it('owns provided states while leaving the rest to the DOM heuristic', () => {
+            const touched = signal(true);
+            fieldRoot.setStateProvider({ touched: () => touched() });
+            fixture.detectChanges();
+
+            // `touched` is provider-owned…
+            expect(root.getAttribute('data-touched')).toBe('');
+
+            // …but `filled` still comes from the control's value
+            input.value = 'x';
+            input.dispatchEvent(new Event('input'));
+            fixture.detectChanges();
+            expect(root.getAttribute('data-filled')).toBe('');
+        });
+
+        it('suppresses the DOM-derived value for an owned state', () => {
+            // DOM says blurred → touched=true
+            input.dispatchEvent(new FocusEvent('blur'));
+            fixture.detectChanges();
+            expect(root.getAttribute('data-touched')).toBe('');
+
+            // provider asserts not-touched and must win over the DOM value
+            fieldRoot.setStateProvider({ touched: () => false });
+            fixture.detectChanges();
+            expect(root.hasAttribute('data-touched')).toBe(false);
+        });
+
+        it('restores self-computation when the provider is cleared', () => {
+            fieldRoot.setStateProvider({ invalid: () => true });
+            fixture.detectChanges();
+            expect(root.getAttribute('data-invalid')).toBe('');
+            expect(fieldRoot.hasStateProvider()).toBe(true);
+
+            fieldRoot.setStateProvider(null);
+            fixture.detectChanges();
+            expect(fieldRoot.hasStateProvider()).toBe(false);
+            // back to the `invalid` input (false)
+            expect(root.hasAttribute('data-invalid')).toBe(false);
+        });
+
+        it('returns the previous provider when replaced', () => {
+            const first = { invalid: () => true };
+            expect(fieldRoot.setStateProvider(first)).toBeNull();
+            expect(fieldRoot.setStateProvider(null)).toBe(first);
+        });
     });
 });

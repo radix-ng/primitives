@@ -9,7 +9,7 @@ import { injectCheckboxRootContext } from './checkbox-root';
             const rootContext = injectCheckboxRootContext()!;
 
             return {
-                present: computed(() => !!rootContext.checked())
+                present: computed(() => rootContext.checked() || rootContext.indeterminate())
             };
         })
     ],

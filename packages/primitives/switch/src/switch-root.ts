@@ -1,6 +1,11 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, computed, Directive, inject, input, model, output } from '@angular/core';
-import { _IdGenerator, injectControlValueAccessor, RdxControlValueAccessor } from '@radix-ng/primitives/core';
+import {
+    _IdGenerator,
+    injectControlValueAccessor,
+    RdxControlValueAccessor,
+    RdxFormCheckboxControl
+} from '@radix-ng/primitives/core';
 import { provideSwitchContext, RdxSwitchContext } from './switch-context';
 
 const context = (): RdxSwitchContext => {
@@ -13,7 +18,7 @@ const context = (): RdxSwitchContext => {
         readonly: root.readonly,
         required: root.required,
         name: root.name,
-        value: root.value,
+        value: root.submitValue,
         ariaLabel: root.ariaLabel,
         ariaLabelledBy: root.ariaLabelledBy,
         markAsTouched: () => cva.markAsTouched()
@@ -52,7 +57,7 @@ const context = (): RdxSwitchContext => {
         '(keydown.enter)': '$event.preventDefault()'
     }
 })
-export class RdxSwitchRoot {
+export class RdxSwitchRoot implements RdxFormCheckboxControl {
     /** @ignore */
     protected readonly cva = injectControlValueAccessor<boolean | undefined>();
 
@@ -97,9 +102,14 @@ export class RdxSwitchRoot {
     /**
      * Value submitted with the form when the switch is on.
      *
+     * Bound publicly as `[value]`; the TS member is named `submitValue` so the
+     * directive can satisfy `RdxFormCheckboxControl`, whose contract reserves a
+     * `value` member for `RdxFormValueControl` and forbids it on checkbox-style
+     * controls.
+     *
      * @default 'on'
      */
-    readonly value = input<string>('on');
+    readonly submitValue = input<string>('on', { alias: 'value' });
 
     readonly ariaLabelledBy = input<string | undefined>(undefined, { alias: 'aria-labelledby' });
     readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });

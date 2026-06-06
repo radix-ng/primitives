@@ -1,9 +1,15 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, computed, Directive, effect, inject, input, model } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
-import { createContext, RdxControlValueAccessor } from '@radix-ng/primitives/core';
+import { createContext, RdxControlValueAccessor, RdxFormCheckboxControl } from '@radix-ng/primitives/core';
 import { injectCheckboxGroupContext } from './checkbox-group';
 
+/**
+ * Internal tri-state used only for the derived `parent` (select-all) state in
+ * `rdxCheckboxGroup` and the `data-state` string. The public `checked` member is
+ * a plain `boolean`; mixed state is exposed via the separate `indeterminate`
+ * member (Base UI shape).
+ */
 export type CheckedState = boolean | 'indeterminate';
 
 export function isIndeterminate(checked?: CheckedState): checked is 'indeterminate' {
@@ -21,9 +27,10 @@ const rootContext = () => {
     // checkbox is inside a `rdxCheckboxGroup`; otherwise they fall back to the CVA.
     return {
         checked: checkbox.checkedState,
+        indeterminate: checkbox.indeterminateState,
         disabled: checkbox.disabledState,
         required: checkbox.required,
-        value: checkbox.value,
+        value: checkbox.submitValue,
         name: checkbox.name,
         parent: checkbox.parent,
         form: checkbox.form,
@@ -59,7 +66,7 @@ export const [injectCheckboxRootContext, provideCheckboxRootContext] =
         '[attr.data-required]': 'required() ? "" : undefined'
     }
 })
-export class RdxCheckboxRootDirective {
+export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
     private readonly controlValueAccessor = inject(RdxControlValueAccessor);
 
     /** The group this checkbox belongs to, if it is rendered inside a `rdxCheckboxGroup`. */
@@ -74,15 +81,33 @@ export class RdxCheckboxRootDirective {
 
     /**
      * The controlled checked state of the checkbox. Must be used in conjunction with onCheckedChange.
+     *
+     * Mixed state is no longer expressed through `checked` — use the separate
+     * `indeterminate` input (Base UI shape). This `boolean` model is what
+     * `RdxFormCheckboxControl` / Angular Signal Forms bind to.
      * @group Props
      */
-    readonly checked = model<CheckedState>(false);
+    readonly checked = model<boolean>(false);
+
+    /**
+     * Whether the checkbox is in a mixed state: neither ticked nor unticked.
+     * Orthogonal to `checked` and not part of the submitted form value. A user
+     * click resolves the checkbox to `checked` and clears `indeterminate`.
+     * @group Props
+     */
+    readonly indeterminate = model<boolean>(false);
 
     /**
      * The value of the checkbox. This is what is submitted with the form when the checkbox is checked.
+     *
+     * Bound publicly as `[value]`; the TS member is named `submitValue` so the
+     * directive can satisfy `RdxFormCheckboxControl`, whose contract reserves a
+     * `value` member for `RdxFormValueControl` and forbids it on checkbox-style
+     * controls. (Checkbox is not yet marked `implements` — its `checked` is still
+     * `CheckedState`; see the `indeterminate` half of collision #1.)
      * @group Props
      */
-    readonly value = input<string>('on');
+    readonly submitValue = input<string>('on', { alias: 'value' });
 
     /**
      * Whether or not the checkbox button is disabled. This prevents the user from interacting with it.
@@ -130,15 +155,15 @@ export class RdxCheckboxRootDirective {
 
     /**
      * @ignore
-     * The effective checked state. Inside a `rdxCheckboxGroup` it is derived from the group (the
-     * parent checkbox from `allValues`, a child from whether its `name` is in the group value);
-     * standalone it reads the CVA value.
+     * The effective checked state as a `boolean`. Inside a `rdxCheckboxGroup` it is derived from the
+     * group (a `parent` checkbox is checked only when every child is; a child from whether its `name`
+     * is in the group value); standalone it reads the CVA value.
      */
-    readonly checkedState = computed<CheckedState>(() => {
+    readonly checkedState = computed<boolean>(() => {
         const group = this.group;
         if (group) {
             if (this.parent()) {
-                return group.parentState();
+                return group.parentState() === true;
             }
 
             const name = this.name();
@@ -147,13 +172,29 @@ export class RdxCheckboxRootDirective {
             }
         }
 
-        return this.controlValueAccessor.value();
+        return !!this.controlValueAccessor.value();
+    });
+
+    /**
+     * @ignore
+     * The effective mixed state. A `parent` checkbox is indeterminate when some — but not all —
+     * children are checked; otherwise it follows the `indeterminate` input.
+     */
+    readonly indeterminateState = computed<boolean>(() => {
+        const group = this.group;
+        if (group && this.parent()) {
+            return group.parentState() === 'indeterminate';
+        }
+
+        return this.indeterminate();
     });
 
     /** @ignore The effective disabled state, including the group. */
     readonly disabledState = computed(() => this.controlValueAccessor.disabled() || (this.group?.disabled() ?? false));
 
-    readonly state = computed(() => getState(this.checkedState()));
+    readonly state = computed(() =>
+        this.indeterminateState() ? 'indeterminate' : this.checkedState() ? 'checked' : 'unchecked'
+    );
 
     constructor() {
         // Inside a group, register this child's name and its own disabled state so a `parent`
@@ -182,11 +223,14 @@ export class RdxCheckboxRootDirective {
             }
         }
 
-        const checked = this.controlValueAccessor.value();
-
         // From the indeterminate state a click resolves to checked (matching
-        // Radix/Base UI), otherwise it flips the boolean. A single setValue so
-        // onCheckedChange fires once.
-        this.controlValueAccessor.setValue(isIndeterminate(checked) ? true : !checked);
+        // native + Base UI), otherwise it flips the boolean. A single setValue so
+        // onCheckedChange fires once; the `checked`/`indeterminate` models are
+        // kept in sync so `[(checked)]` / `[(indeterminate)]` reflect the change.
+        const next = this.indeterminateState() ? true : !this.checkedState();
+
+        this.indeterminate.set(false);
+        this.checked.set(next);
+        this.controlValueAccessor.setValue(next);
     }
 }

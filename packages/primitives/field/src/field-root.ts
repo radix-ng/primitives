@@ -6,6 +6,28 @@ let fieldId = 0;
 
 const attr = (value: boolean) => (value ? '' : undefined);
 
+/**
+ * External owner of field state. An adapter (e.g. a future Signal Forms
+ * `[rdxSignalField]` directive, or a Reactive Forms bridge) registers one via
+ * `setStateProvider` so Field reads authoritative form state instead of
+ * self-computing it from the DOM. Each member is an optional signal-like
+ * accessor; only the states the adapter owns need to be provided — the rest
+ * fall back to the root's inputs / DOM heuristic. Keeping these as plain
+ * `() => boolean` accessors keeps Field framework-agnostic (no dependency on
+ * `@angular/forms/signals`).
+ *
+ * See ADR 0004 and `signal-forms-readiness.md` (prep #4).
+ */
+export interface RdxFieldState {
+    invalid?: () => boolean;
+    disabled?: () => boolean;
+    required?: () => boolean;
+    dirty?: () => boolean;
+    touched?: () => boolean;
+    filled?: () => boolean;
+    focused?: () => boolean;
+}
+
 const addId = (ids: string[], id: string) => (ids.includes(id) ? ids : [...ids, id]);
 const removeId = (ids: string[], id: string) => ids.filter((item) => item !== id);
 
@@ -31,7 +53,15 @@ const fieldRootContext = () => {
         setFocused: (value: boolean) => root.focusedValue.set(value),
         setFilled: (value: boolean) => root.filledValue.set(value),
         setDirty: (value: boolean) => root.dirtyValue.set(value),
-        setTouched: (value: boolean) => root.touchedValue.set(value)
+        setTouched: (value: boolean) => root.touchedValue.set(value),
+        /**
+         * Register (or clear with `null`) an external owner of field state.
+         * While a provider is registered, any state it exposes takes precedence
+         * over the root inputs and the DOM-derived values. Returns the previous
+         * provider so adapters can restore it on teardown.
+         */
+        setStateProvider: (provider: RdxFieldState | null) => root.setStateProvider(provider),
+        hasStateProvider: root.hasStateProvider
     };
 };
 
@@ -123,15 +153,40 @@ export class RdxFieldRoot {
     readonly dirtyValue = signal(false);
     readonly touchedValue = signal(false);
 
-    readonly invalidState = computed(() => this.invalid());
-    readonly disabledState = computed(() => this.disabled());
-    readonly requiredState = computed(() => this.required());
-    readonly dirtyState = computed(() => this.dirty() || this.dirtyValue());
-    readonly touchedState = computed(() => this.touched() || this.touchedValue());
-    readonly filledState = computed(() => this.filled() ?? this.filledValue());
-    readonly focusedState = computed(() => this.focused() ?? this.focusedValue());
+    /** External state owner registered through the context; `null` when Field self-computes. */
+    private readonly stateProvider = signal<RdxFieldState | null>(null);
+
+    /** Whether an external adapter currently owns field state. */
+    readonly hasStateProvider = computed(() => this.stateProvider() !== null);
+
+    readonly invalidState = computed(() => this.resolve('invalid', () => this.invalid()));
+    readonly disabledState = computed(() => this.resolve('disabled', () => this.disabled()));
+    readonly requiredState = computed(() => this.resolve('required', () => this.required()));
+    readonly dirtyState = computed(() => this.resolve('dirty', () => this.dirty() || this.dirtyValue()));
+    readonly touchedState = computed(() => this.resolve('touched', () => this.touched() || this.touchedValue()));
+    readonly filledState = computed(() => this.resolve('filled', () => this.filled() ?? this.filledValue()));
+    readonly focusedState = computed(() => this.resolve('focused', () => this.focused() ?? this.focusedValue()));
 
     protected readonly dataAttr = attr;
+
+    /**
+     * Register an external owner of field state, returning the previous one.
+     * @ignore
+     */
+    setStateProvider(provider: RdxFieldState | null): RdxFieldState | null {
+        const previous = this.stateProvider();
+        this.stateProvider.set(provider);
+        return previous;
+    }
+
+    /**
+     * Prefer the registered provider's value for `key` when it exposes one,
+     * otherwise fall back to the root inputs / DOM-derived signals.
+     */
+    private resolve(key: keyof RdxFieldState, fallback: () => boolean): boolean {
+        const accessor = this.stateProvider()?.[key];
+        return accessor ? accessor() : fallback();
+    }
 }
 
 function injectFieldRoot(): RdxFieldRoot {

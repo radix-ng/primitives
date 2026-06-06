@@ -31,7 +31,12 @@ interface Item {
     template: `
         <div class="flex flex-col gap-3">
             <div class="flex items-center gap-3">
-                <div [checked]="parentState()" (onCheckedChange)="toggleAll($event)" rdxCheckboxRoot>
+                <div
+                    [checked]="parentState() === true"
+                    [indeterminate]="parentState() === 'indeterminate'"
+                    (onCheckedChange)="toggleAll($event)"
+                    rdxCheckboxRoot
+                >
                     <button id="all" [class]="c.button" rdxCheckboxButton>
                         <svg
                             [class]="c.indicator"
@@ -80,15 +85,13 @@ export class CheckboxSelectAllExample {
         return items.some((item) => item.checked) ? 'indeterminate' : false;
     });
 
-    protected toggleAll(state: CheckedState): void {
-        // Clicking the parent resolves indeterminate -> checked (tick all), or
-        // checked -> unchecked (clear all).
-        const checked = state === true;
+    protected toggleAll(checked: boolean): void {
+        // `onCheckedChange` emits a boolean: clicking the parent resolves
+        // indeterminate -> checked (tick all), or checked -> unchecked (clear all).
         this.items.update((items) => items.map((item) => ({ ...item, checked })));
     }
 
-    protected toggleItem(id: string, state: CheckedState): void {
-        const checked = state === true;
+    protected toggleItem(id: string, checked: boolean): void {
         this.items.update((items) => items.map((item) => (item.id === id ? { ...item, checked } : item)));
     }
 }

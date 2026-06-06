@@ -186,3 +186,36 @@ describe('RdxSwitch with ReactiveForms', () => {
         expect(component.form.valid).toBe(true);
     });
 });
+
+@Component({
+    imports: [RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
+    template: `
+        <button [value]="'enabled'" name="airplane" rdxSwitchRoot>
+            <input rdxSwitchInput />
+            <span rdxSwitchThumb></span>
+        </button>
+    `
+})
+class SubmitValueSwitch {}
+
+describe('RdxSwitch submit value (`value` alias)', () => {
+    it('defaults the hidden input value to "on" when [value] is not bound', () => {
+        TestBed.configureTestingModule({ imports: [TestComponent] });
+        const fixture = TestBed.createComponent(TestComponent);
+        fixture.detectChanges();
+        const input = fixture.debugElement.query(By.css('[rdxSwitchInput]')).nativeElement as HTMLInputElement;
+
+        expect(input.getAttribute('value')).toBe('on');
+    });
+
+    it('forwards a custom [value] to the hidden input via the alias', () => {
+        // The TS member is `submitValue`, but the public binding is still `[value]`,
+        // and the hidden input must carry it for native form submission.
+        TestBed.configureTestingModule({ imports: [SubmitValueSwitch] });
+        const fixture = TestBed.createComponent(SubmitValueSwitch);
+        fixture.detectChanges();
+        const input = fixture.debugElement.query(By.css('[rdxSwitchInput]')).nativeElement as HTMLInputElement;
+
+        expect(input.getAttribute('value')).toBe('enabled');
+    });
+});

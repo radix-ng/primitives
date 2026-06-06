@@ -1,6 +1,6 @@
 import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import { booleanAttribute, computed, Directive, input, model, numberAttribute, OnInit, signal } from '@angular/core';
-import { clamp, isNullish, provideToken, snapValueToStep } from '@radix-ng/primitives/core';
+import { clamp, isNullish, provideToken, RdxFormValueControl, snapValueToStep } from '@radix-ng/primitives/core';
 import { NUMBER_FIELD_ROOT_CONTEXT, NumberFieldContextToken } from './number-field-context.token';
 import { InputMode } from './types';
 import { handleDecimalOperation, useNumberFormatter, useNumberParser } from './utils';
@@ -15,7 +15,9 @@ import { handleDecimalOperation, useNumberFormatter, useNumberParser } from './u
         '[attr.data-readonly]': 'readonly() ? "" : undefined'
     }
 })
-export class RdxNumberFieldRootDirective implements OnInit, NumberFieldContextToken {
+export class RdxNumberFieldRootDirective
+    implements OnInit, NumberFieldContextToken, RdxFormValueControl<number | undefined>
+{
     readonly value = model<number>();
 
     readonly min = input<number | undefined, NumberInput>(undefined, { transform: numberAttribute });

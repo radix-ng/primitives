@@ -1,7 +1,7 @@
 import { JsonPipe } from '@angular/common';
 import { Component, model } from '@angular/core';
 import { LucideCheck as Check, LucideDynamicIcon } from '@lucide/angular';
-import { CheckedState, RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
+import { RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { demoCheckbox } from '../../storybook/styles';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
@@ -42,7 +42,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
     `
 })
 export class CheckboxPresence {
-    readonly checked = model<CheckedState>(false);
+    readonly checked = model<boolean>(false);
     protected readonly Check = Check;
     protected readonly c = demoCheckbox;
 }

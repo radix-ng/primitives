@@ -12,6 +12,7 @@ import {
     output,
     signal
 } from '@angular/core';
+import { RdxFormValueControl } from '@radix-ng/primitives/core';
 import { injectFieldRootContext } from '@radix-ng/primitives/field';
 
 let inputId = 0;
@@ -60,7 +61,7 @@ export interface RdxInputValueChangeEvent {
         '(change)': 'syncFieldState()'
     }
 })
-export class RdxInputDirective {
+export class RdxInputDirective implements RdxFormValueControl<RdxInputValue | undefined> {
     private readonly element = inject<ElementRef<HTMLInputElement>>(ElementRef).nativeElement;
     private readonly fieldRootContext = injectFieldRootContext(true);
     private initialValue = '';

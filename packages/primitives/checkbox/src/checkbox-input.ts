@@ -1,5 +1,5 @@
 import { Directive, effect, ElementRef, inject } from '@angular/core';
-import { injectCheckboxRootContext, isIndeterminate } from './checkbox-root';
+import { injectCheckboxRootContext } from './checkbox-root';
 
 @Directive({
     selector: 'input[rdxCheckboxInput]',
@@ -45,9 +45,10 @@ export class RdxCheckboxInputDirective {
          *   behavior and would desync the input from the bound state.
          */
         effect(() => {
-            const checked = this.rootContext.checked();
-
-            this.input.indeterminate = isIndeterminate(checked);
+            // Track both so the native input mirrors the checkbox and emits change
+            // events when either the checked or indeterminate state moves.
+            this.rootContext.checked();
+            this.input.indeterminate = this.rootContext.indeterminate();
 
             if (isInitial) {
                 isInitial = false;

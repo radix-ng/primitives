@@ -6,7 +6,7 @@ import { injectCheckboxRootContext } from './checkbox-root';
     host: {
         '[attr.data-state]': 'rootContext.state()',
         '[attr.data-disabled]': 'rootContext.disabled() ? "" : undefined',
-        '[hidden]': '!rootContext.checked()',
+        '[hidden]': '!rootContext.checked() && !rootContext.indeterminate()',
         '[style.pointer-events]': '"none"'
     }
 })

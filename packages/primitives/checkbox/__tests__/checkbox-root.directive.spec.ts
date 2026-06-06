@@ -4,13 +4,14 @@ import { By } from '@angular/platform-browser';
 import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input';
-import { CheckedState, getState, isIndeterminate, RdxCheckboxRootDirective } from '../src/checkbox-root';
+import { getState, isIndeterminate, RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 @Component({
     imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective, RdxCheckboxIndicatorDirective],
     template: `
         <div
             [checked]="checked"
+            [indeterminate]="indeterminate"
             [disabled]="disabled"
             [readonly]="readonly"
             [required]="required"
@@ -24,17 +25,20 @@ import { CheckedState, getState, isIndeterminate, RdxCheckboxRootDirective } fro
     `
 })
 class CheckboxHost {
-    checked: CheckedState = false;
+    checked = false;
+    indeterminate = false;
     disabled = false;
     readonly = false;
     required = false;
 
-    changes: CheckedState[] = [];
+    changes: boolean[] = [];
 
-    // Controlled: reflect the change back into the bound value.
-    onChange(value: CheckedState): void {
+    // Controlled: reflect the change back into the bound value and clear the
+    // mixed state, mirroring the recommended consumer pattern.
+    onChange(value: boolean): void {
         this.changes.push(value);
         this.checked = value;
+        this.indeterminate = false;
     }
 }
 
@@ -45,7 +49,9 @@ describe('RdxCheckbox', () => {
     const button = () => fixture.debugElement.query(By.css('button')).nativeElement as HTMLButtonElement;
     const indicator = () => fixture.debugElement.query(By.css('[rdxCheckboxIndicator]')).nativeElement as HTMLElement;
 
-    function setup(initial: Partial<Pick<CheckboxHost, 'checked' | 'disabled' | 'readonly' | 'required'>> = {}) {
+    function setup(
+        initial: Partial<Pick<CheckboxHost, 'checked' | 'indeterminate' | 'disabled' | 'readonly' | 'required'>> = {}
+    ) {
         fixture = TestBed.createComponent(CheckboxHost);
         host = fixture.componentInstance;
         Object.assign(host, initial);
@@ -82,7 +88,7 @@ describe('RdxCheckbox', () => {
         });
 
         it('exposes Base UI parity attributes on the root', () => {
-            setup({ checked: 'indeterminate', disabled: true, readonly: true });
+            setup({ indeterminate: true, disabled: true, readonly: true });
             expect(root().getAttribute('data-state')).toBe('indeterminate');
             expect(root().getAttribute('data-disabled')).toBe('');
             expect(root().getAttribute('data-readonly')).toBe('');
@@ -110,9 +116,18 @@ describe('RdxCheckbox', () => {
         });
 
         it('reflects the indeterminate state as aria-checked="mixed"', () => {
-            setup({ checked: 'indeterminate' });
+            setup({ indeterminate: true });
             expect(button().getAttribute('aria-checked')).toBe('mixed');
             expect(button().getAttribute('data-state')).toBe('indeterminate');
+            expect(indicator().hasAttribute('hidden')).toBe(false);
+        });
+
+        it('treats indeterminate as orthogonal to checked, with the mixed state taking priority', () => {
+            // Base UI shape: `checked` and `indeterminate` are independent booleans.
+            setup({ checked: true, indeterminate: true });
+            expect(button().getAttribute('aria-checked')).toBe('mixed');
+            expect(button().getAttribute('data-state')).toBe('indeterminate');
+            // Indicator is visible for either checked or indeterminate.
             expect(indicator().hasAttribute('hidden')).toBe(false);
         });
 
@@ -143,7 +158,7 @@ describe('RdxCheckbox', () => {
         });
 
         it('indeterminate -> checked (single emit)', () => {
-            setup({ checked: 'indeterminate' });
+            setup({ indeterminate: true });
             button().click();
             fixture.detectChanges();
             // The fix: indeterminate resolves to `true`, not `false`,
@@ -182,14 +197,20 @@ describe('RdxCheckbox', () => {
 @Component({
     imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective, RdxCheckboxInputDirective],
     template: `
-        <div [checked]="checked" (onCheckedChange)="checked = $event" rdxCheckboxRoot>
+        <div
+            [checked]="checked"
+            [indeterminate]="indeterminate"
+            (onCheckedChange)="checked = $event; indeterminate = false"
+            rdxCheckboxRoot
+        >
             <button rdxCheckboxButton><span>x</span></button>
             <input rdxCheckboxInput />
         </div>
     `
 })
 class CheckboxInputHost {
-    checked: CheckedState = false;
+    checked = false;
+    indeterminate = false;
 }
 
 describe('RdxCheckboxInput (hidden native input)', () => {
@@ -199,10 +220,10 @@ describe('RdxCheckboxInput (hidden native input)', () => {
     const input = () => fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
     const button = () => fixture.debugElement.query(By.css('button')).nativeElement as HTMLButtonElement;
 
-    function setup(checked: CheckedState = false) {
+    function setup(initial: Partial<Pick<CheckboxInputHost, 'checked' | 'indeterminate'>> = {}) {
         fixture = TestBed.createComponent(CheckboxInputHost);
         host = fixture.componentInstance;
-        host.checked = checked;
+        Object.assign(host, initial);
         fixture.detectChanges();
     }
 
@@ -211,7 +232,7 @@ describe('RdxCheckboxInput (hidden native input)', () => {
     });
 
     it('reflects the checked state and stays in sync', () => {
-        setup(false);
+        setup();
         expect(input().hasAttribute('checked')).toBe(false);
         expect(input().checked).toBe(false);
         expect(input().indeterminate).toBe(false);
@@ -224,14 +245,14 @@ describe('RdxCheckboxInput (hidden native input)', () => {
     });
 
     it('does not submit indeterminate as checked, sets the native property', () => {
-        setup('indeterminate');
+        setup({ indeterminate: true });
         expect(input().hasAttribute('checked')).toBe(false);
         expect(input().checked).toBe(false);
         expect(input().indeterminate).toBe(true);
     });
 
     it('emits a bubbling change event on toggle but not on initial render', () => {
-        setup(false);
+        setup();
 
         let changeCount = 0;
         input().addEventListener('change', () => changeCount++);
