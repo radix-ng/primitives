@@ -1,15 +1,14 @@
 import { Direction } from '@angular/cdk/bidi';
 import { BooleanInput } from '@angular/cdk/coercion';
 import {
-    AfterViewInit,
     booleanAttribute,
     computed,
+    contentChildren,
     Directive,
-    ElementRef,
-    inject,
     input,
+    linkedSignal,
     model,
-    OnInit,
+    Signal,
     signal
 } from '@angular/core';
 import { DateValue } from '@internationalized/date';
@@ -22,7 +21,6 @@ import {
     DateStep,
     Formatter,
     getDefaultDate,
-    getSegmentElements,
     Granularity,
     hasTime,
     HourCycle,
@@ -38,6 +36,7 @@ import {
     watch
 } from '@radix-ng/primitives/core';
 import { DATE_FIELDS_ROOT_CONTEXT } from './date-field-context.token';
+import { RdxDateFieldInputDirective } from './date-field-input.directive';
 
 @Directive({
     selector: '[rdxDateFieldRoot]',
@@ -54,9 +53,7 @@ import { DATE_FIELDS_ROOT_CONTEXT } from './date-field-context.token';
         '(keydown)': 'onKeydown($event)'
     }
 })
-export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
-    private readonly elementRef = inject(ElementRef<HTMLElement>);
-
+export class RdxDateFieldRootDirective {
     /**
      * The controlled checked state of the calendar.
      */
@@ -115,6 +112,17 @@ export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
     readonly step$ = computed(() => normalizeDateStep(this.step()));
 
     /**
+     * Locale- and hour-cycle-aware formatter. Recomputed whenever `locale` or
+     * `hourCycle` change so segments always render with the current settings.
+     * @ignore
+     */
+    readonly formatter: Signal<Formatter> = computed(() =>
+        createFormatter(this.locale(), {
+            hourCycle: normalizeHourCycle(this.hourCycle())
+        })
+    );
+
+    /**
      * @ignore
      */
     readonly defaultDate = computed(() =>
@@ -134,32 +142,27 @@ export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
     // Internal state
 
     /**
+     * Segment input parts, collected from the projected content in DOM order. This
+     * stays in sync with `segmentContents()` (granularity / locale / value changes
+     * add or remove segments) instead of being captured once after view init.
      * @ignore
      */
-    readonly segmentElements = signal<Set<HTMLElement>>(new Set());
+    private readonly segmentInputs = contentChildren(RdxDateFieldInputDirective);
+
+    /**
+     * The focusable (non-literal) segment elements, in DOM order.
+     * @ignore
+     */
+    readonly segmentElements = computed(() =>
+        this.segmentInputs()
+            .filter((seg) => seg.part() !== 'literal')
+            .map((seg) => seg.element)
+    );
 
     /**
      * @ignore
      */
     readonly currentFocusedElement = signal<HTMLElement | null>(null);
-
-    /**
-     * @ignore
-     */
-    formatter: Formatter;
-
-    /**
-     * @ignore
-     */
-    readonly segmentValues = signal<SegmentValueObj>({
-        year: null,
-        month: null,
-        day: null,
-        hour: null,
-        minute: null,
-        second: null,
-        dayPeriod: null
-    } as SegmentValueObj);
 
     /**
      * @ignore
@@ -170,6 +173,26 @@ export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
         if (this.granularity()) return placeholder && !hasTime(placeholder) ? 'day' : this.granularity();
 
         return placeholder && hasTime(placeholder) ? 'minute' : 'day';
+    });
+
+    /**
+     * The per-segment values. Writable so segment editing (via `useDateField`) can
+     * update individual parts, but re-synced from the model whenever the value,
+     * granularity or formatter change — so a controlled `value` set after init is
+     * reflected, and an empty field re-initializes when granularity changes.
+     * @ignore
+     */
+    readonly segmentValues = linkedSignal<
+        { value: DateValue | undefined; granularity: Granularity; formatter: Formatter },
+        SegmentValueObj
+    >({
+        source: () => ({
+            value: this.value(),
+            granularity: <Granularity>this.inferredGranularity(),
+            formatter: this.formatter()
+        }),
+        computation: ({ value, granularity, formatter }) =>
+            value ? { ...syncSegmentValues({ value, formatter }) } : { ...initializeSegmentValues(granularity) }
     });
 
     /**
@@ -194,7 +217,7 @@ export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
         createContent({
             granularity: <Granularity>this.inferredGranularity(),
             dateRef: <DateValue>this.placeholder(),
-            formatter: this.formatter,
+            formatter: this.formatter(),
             hideTimeZone: this.hideTimeZone(),
             hourCycle: this.hourCycle(),
             segmentValues: this.segmentValues(),
@@ -211,11 +234,7 @@ export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
      * @ignore
      */
     readonly currentSegmentIndex = computed(() =>
-        Array.from(this.segmentElements()).findIndex(
-            (el) =>
-                el.getAttribute('data-rdx-date-field-segment') ===
-                this.currentFocusedElement()?.getAttribute('data-rdx-date-field-segment')
-        )
+        this.segmentElements().findIndex((el) => el === this.currentFocusedElement())
     );
 
     /**
@@ -223,12 +242,12 @@ export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
      */
     readonly prevFocusableSegment = computed(() => {
         const sign = this.dir() === 'rtl' ? -1 : 1;
-        const prevCondition =
-            sign > 0 ? this.currentSegmentIndex() < 0 : this.currentSegmentIndex() > this.segmentElements().size - 1;
+        const elements = this.segmentElements();
+        const index = this.currentSegmentIndex();
+        const prevCondition = sign > 0 ? index < 0 : index > elements.length - 1;
         if (prevCondition) return null;
 
-        const segmentToFocus = Array.from(this.segmentElements())[this.currentSegmentIndex() - sign];
-        return segmentToFocus;
+        return elements[index - sign];
     });
 
     /**
@@ -236,11 +255,12 @@ export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
      */
     readonly nextFocusableSegment = computed(() => {
         const sign = this.dir() === 'rtl' ? -1 : 1;
-        const nextCondition =
-            sign < 0 ? this.currentSegmentIndex() < 0 : this.currentSegmentIndex() > this.segmentElements().size - 1;
+        const elements = this.segmentElements();
+        const index = this.currentSegmentIndex();
+        const nextCondition = sign < 0 ? index < 0 : index > elements.length - 1;
         if (nextCondition) return null;
-        const segmentToFocus = Array.from(this.segmentElements())[this.currentSegmentIndex() + sign];
-        return segmentToFocus;
+
+        return elements[index + sign];
     });
 
     /**
@@ -256,35 +276,6 @@ export class RdxDateFieldRootDirective implements OnInit, AfterViewInit {
                 this.placeholder.set(modelValue.copy());
             }
         });
-    }
-
-    ngOnInit() {
-        const defDate = getDefaultDate({
-            defaultPlaceholder: undefined,
-            granularity: this.granularity(),
-            defaultValue: this.value(),
-            locale: this.locale()
-        });
-
-        this.placeholder.set(defDate.copy());
-
-        this.formatter = createFormatter(this.locale(), {
-            hourCycle: normalizeHourCycle(this.hourCycle())
-        });
-
-        const initialSegments = initializeSegmentValues(this.inferredGranularity()!);
-
-        this.segmentValues.set(
-            this.value()
-                ? { ...syncSegmentValues({ value: <DateValue>this.value(), formatter: this.formatter }) }
-                : { ...initialSegments }
-        );
-    }
-
-    ngAfterViewInit() {
-        getSegmentElements(this.elementRef.nativeElement).forEach((item) =>
-            this.segmentElements().add(item as HTMLElement)
-        );
     }
 
     /**

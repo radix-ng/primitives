@@ -21,6 +21,13 @@ import { injectDateFieldsRootContext } from './date-field-context.token';
 export class RdxDateFieldInputDirective {
     private readonly elementRef = inject(ElementRef);
 
+    /**
+     * The host element of this segment. Consumed by the root to collect focusable
+     * segments in DOM order.
+     * @ignore
+     */
+    readonly element: HTMLElement = this.elementRef.nativeElement;
+
     private readonly rootContext = injectDateFieldsRootContext();
 
     /**
@@ -61,7 +68,7 @@ export class RdxDateFieldInputDirective {
             placeholder: this.rootContext.placeholder,
             hourCycle: this.rootContext.hourCycle(),
             segmentValues: this.rootContext.segmentValues,
-            formatter: this.rootContext.formatter,
+            formatter: this.rootContext.formatter(),
             part: <SegmentPart>this.part(),
             disabled: this.rootContext.disabled,
             readonly: this.rootContext.readonly,

@@ -8,7 +8,7 @@ export interface TimeFieldContextToken {
     isInvalid: Signal<boolean>;
     disabled: InputSignal<boolean>;
     readonly: InputSignal<boolean>;
-    formatter: Formatter;
+    formatter: Signal<Formatter>;
     hourCycle: InputSignal<HourCycle>;
     segmentValues: WritableSignal<SegmentValueObj>;
     focusNext: () => void;

@@ -1,32 +1,36 @@
-import {ArgTypes, Canvas, Meta} from "@storybook/addon-docs/blocks";
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as Stories from './time-field.stories';
-import {RdxTimeFieldInputDirective} from "../src/time-field-input.directive";
-import {RdxTimeFieldRootDirective} from "../src/time-field-root.directive";
+import { RdxTimeFieldRootDirective } from '../src/time-field-root.directive';
+import { RdxTimeFieldInputDirective } from '../src/time-field-input.directive';
 
 <Meta title="Primitives/Time Field" />
 
 # Time Field
 
-#### Enables users to input specific times within a designated field.
+#### A segmented time input that lets users enter a time hour-by-hour with full keyboard control and localization.
 
 <Canvas sourceState="hidden" of={Stories.Default} />
 
 ## Features
 
-- ✅ Full keyboard navigation
-- ✅ Can be controlled or uncontrolled
-- ✅ Focus is fully managed
-- ✅ Localization support
-- ✅ Highly composable
-- ✅ Accessible by default
+- ✅ Editable, individually focusable segments (hour, minute, second, day period).
+- ✅ Full keyboard navigation — arrow keys move between and increment/decrement segments.
+- ✅ Controlled or uncontrolled value via the `value` model.
+- ✅ 12- and 24-hour cycles with an automatic day-period segment.
+- ✅ Configurable `granularity` (`hour` / `minute` / `second`).
+- ✅ `minValue` / `maxValue` range validation exposed through `data-invalid`.
+- ✅ Locale-aware formatting (segment order, separators, numbering system).
+- ✅ Headless and accessible — state is published via `data-*` attributes for you to style.
+
+> Time Field is a Radix NG addition — it has no Base UI counterpart — but it follows the same
+> headless, signals-first, `data-*`-driven conventions as the rest of the library.
 
 ## Preface
 
-The component depends on the [@internationalized/date package](https://react-spectrum.adobe.com/internationalized/date/index.html),
-which solves a lot of the problems that come with working with dates and times in JavaScript.
-
-We highly recommend reading through the documentation for the package to get a solid feel
-for how it works, and you'll need to install it in your project to use the date-related components.
+The component builds on the [@internationalized/date](https://react-spectrum.adobe.com/internationalized/date/index.html)
+package, which solves a lot of the problems that come with working with dates and times in
+JavaScript. Values are represented as `Time` / `CalendarDateTime` objects from that package, so
+you'll need to install it to use the time-related primitives.
 
 ## Installation
 
@@ -42,33 +46,98 @@ Install the component from your command line.
 npm install @radix-ng/primitives
 ```
 
+## Import
+
+```ts
+import { RdxTimeFieldRootDirective, RdxTimeFieldInputDirective } from '@radix-ng/primitives/time-field';
+import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
+```
+
 ## Anatomy
 
-Import all parts and piece them together.
+Assemble the field from the root, an input segment rendered per `segmentContents()` entry, and an
+optional visually-hidden input for native form participation.
 
 ```html
 <div rdxTimeFieldRoot>
-    <div rdxTimeFieldInput></div>
-    <input rdxVisuallyHiddenInput />
+    @for (item of root.segmentContents(); track $index) {
+        <div rdxTimeFieldInput [part]="item.part">{{ item.value }}</div>
+    }
+    <input rdxVisuallyHiddenInput feature="focusable" />
 </div>
 ```
+
+## Examples
+
+### Default
+
+A basic field rendering hour and minute segments.
+
+<Canvas of={Stories.Default} />
+
+### Hour cycle
+
+`hourCycle` forces a 12-hour (with a day-period segment) or 24-hour clock regardless of the locale default.
+
+<Canvas of={Stories.HourCycle} />
+
+### Granularity
+
+`granularity` controls the smallest editable segment — `hour`, `minute`, or `second`.
+
+<Canvas of={Stories.Granularity} />
+
+### Disabled
+
+A disabled field is inert and exposes `data-disabled` for styling.
+
+<Canvas of={Stories.Disabled} />
+
+### Readonly
+
+A readonly field can be focused and navigated but not edited.
+
+<Canvas of={Stories.Readonly} />
+
+### Validation
+
+`minValue` / `maxValue` mark out-of-range values with `data-invalid` on the root and each segment.
+
+<Canvas of={Stories.Validation} />
+
+### Localization
+
+`locale` drives segment order, separators, and the numbering system.
+
+<Canvas of={Stories.Localization} />
+
+## Accessibility
+
+Adheres to the WAI-ARIA practices for composite time entry. The root is a `role="group"`; give it an
+accessible name with `aria-labelledby` (or `aria-label`). Each editable segment is a focusable
+`contenteditable` element exposing `aria-valuetext` so screen readers announce the current value.
+
+### Keyboard Interactions
+
+| Key                | Description                                       |
+| ------------------ | ------------------------------------------------- |
+| Arrow Left / Right | Move focus to the previous / next segment         |
+| Arrow Up / Down    | Increment / decrement the focused segment         |
+| 0–9                | Type a value directly into the focused segment    |
+| Backspace          | Clear the focused segment                         |
 
 ## API Reference
 
 ### Root
 
-`RdxTimeFieldRootDirective` Contains all the parts of a Time field
+`RdxTimeFieldRootDirective` contains all the parts of a time field and owns the value, placeholder,
+granularity, and validation state. Exposes `data-disabled`, `data-readonly`, and `data-invalid`.
 
 <ArgTypes of={RdxTimeFieldRootDirective} />
 
 ### Input
 
-`RdxTimeFieldInputDirective` Contains the Time field segments
+`RdxTimeFieldInputDirective` renders a single segment from `segmentContents()`. Pass the segment
+`part`; everything else is read from the root context.
 
 <ArgTypes of={RdxTimeFieldInputDirective} />
-
-## Examples
-
-### With locale
-
-<Canvas sourceState="hidden" of={Stories.Locale} />

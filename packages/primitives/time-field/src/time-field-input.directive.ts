@@ -22,6 +22,13 @@ import { injectTimeFieldsRootContext } from './time-field-context.token';
 export class RdxTimeFieldInputDirective {
     private readonly el = inject(ElementRef);
 
+    /**
+     * The host element of this segment. Consumed by the root to collect focusable
+     * segments in DOM order.
+     * @ignore
+     */
+    readonly element: HTMLElement = this.el.nativeElement;
+
     private readonly rootContext = injectTimeFieldsRootContext();
 
     /**
@@ -62,7 +69,7 @@ export class RdxTimeFieldInputDirective {
             placeholder: this.rootContext.convertedPlaceholder as unknown as WritableSignal<DateValue>,
             hourCycle: this.rootContext.hourCycle(),
             segmentValues: this.rootContext.segmentValues,
-            formatter: this.rootContext.formatter,
+            formatter: this.rootContext.formatter(),
             part: <SegmentPart>this.part(),
             disabled: this.rootContext.disabled,
             readonly: this.rootContext.readonly,

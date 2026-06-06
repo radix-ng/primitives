@@ -11,7 +11,7 @@ export interface DateFieldContextToken {
     placeholder: ModelSignal<DateValue>;
     hourCycle: InputSignal<HourCycle>;
     step$: Signal<DateStep>;
-    formatter: Formatter;
+    formatter: Signal<Formatter>;
     segmentValues: WritableSignal<SegmentValueObj>;
     focusNext: () => void;
     setFocusedElement: (el: HTMLElement) => void;

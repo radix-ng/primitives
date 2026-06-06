@@ -1,0 +1,89 @@
+import { Component, signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { CalendarDate, CalendarDateTime, DateValue } from '@internationalized/date';
+import { Granularity } from '@radix-ng/primitives/core';
+import { RdxDateFieldInputDirective } from '../src/date-field-input.directive';
+import { RdxDateFieldRootDirective } from '../src/date-field-root.directive';
+
+@Component({
+    template: `
+        <div #root="rdxDateFieldRoot" [granularity]="granularity()" [value]="value()" rdxDateFieldRoot>
+            @for (item of root.segmentContents(); track $index) {
+                <div [part]="item.part" rdxDateFieldInput>{{ item.value }}</div>
+            }
+        </div>
+    `,
+    imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective]
+})
+class DateFieldHost {
+    readonly granularity = signal<Granularity | undefined>(undefined);
+    readonly value = signal<DateValue | undefined>(undefined);
+}
+
+function arrowKey(code: 'ArrowLeft' | 'ArrowRight'): KeyboardEvent {
+    return new KeyboardEvent('keydown', { key: code, code, bubbles: true });
+}
+
+function segments(fixture: ComponentFixture<DateFieldHost>): HTMLElement[] {
+    return Array.from(fixture.nativeElement.querySelectorAll<HTMLElement>('[data-rdx-date-field-segment]')).filter(
+        (el) => el.getAttribute('data-rdx-date-field-segment') !== 'literal'
+    );
+}
+
+function parts(fixture: ComponentFixture<DateFieldHost>): (string | null)[] {
+    return segments(fixture).map((el) => el.getAttribute('data-rdx-date-field-segment'));
+}
+
+describe('Date Field', () => {
+    let fixture: ComponentFixture<DateFieldHost>;
+    let host: DateFieldHost;
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [DateFieldHost] });
+        fixture = TestBed.createComponent(DateFieldHost);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+    });
+
+    it('renders day, month and year segments by default', () => {
+        expect(parts(fixture).sort()).toEqual(['day', 'month', 'year']);
+    });
+
+    it('moves focus between segments with arrow keys', () => {
+        const [first, second] = segments(fixture);
+
+        first.focus();
+        first.dispatchEvent(arrowKey('ArrowRight'));
+        expect(document.activeElement).toBe(second);
+
+        second.dispatchEvent(arrowKey('ArrowLeft'));
+        expect(document.activeElement).toBe(first);
+    });
+
+    it('reflects a controlled value set after initialization', () => {
+        const yearBefore = segments(fixture).find((el) => el.getAttribute('data-rdx-date-field-segment') === 'year')!;
+        expect(yearBefore.getAttribute('aria-valuetext')).toBe('Empty');
+
+        host.value.set(new CalendarDate(2026, 6, 6));
+        fixture.detectChanges();
+
+        const yearAfter = segments(fixture).find((el) => el.getAttribute('data-rdx-date-field-segment') === 'year')!;
+        expect(yearAfter.getAttribute('aria-valuenow')).toBe('2026');
+    });
+
+    it('adds time segments — reachable by keyboard — for a date-time value', () => {
+        host.value.set(new CalendarDateTime(2025, 1, 15, 10, 30));
+        fixture.detectChanges();
+
+        expect(parts(fixture)).toContain('hour');
+        expect(parts(fixture)).toContain('minute');
+
+        // a segment that only appears once the value carries time must join navigation
+        const all = segments(fixture);
+        const hour = all.find((el) => el.getAttribute('data-rdx-date-field-segment') === 'hour')!;
+        const minute = all.find((el) => el.getAttribute('data-rdx-date-field-segment') === 'minute')!;
+        hour.focus();
+        hour.dispatchEvent(arrowKey('ArrowRight'));
+        expect(document.activeElement).toBe(minute);
+    });
+});

@@ -1,79 +1,103 @@
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import {
-    TimeField,
-    TimeFieldGranularHour,
-    TimeFieldGranularMinute,
-    TimeFieldGranularSecond,
-    TimeFieldLocaleGregorian,
-    TimeFieldLocaleJapanese,
-    TimeFieldLocalePersian,
-    TimeFieldLocaleTaiwan
-} from './time-field';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
+import { TimeFieldDefaultExample } from './time-field-default';
+import defaultSource from './time-field-default?raw';
+import { TimeFieldDisabledExample } from './time-field-disabled';
+import disabledSource from './time-field-disabled?raw';
+import { TimeFieldGranularityExample } from './time-field-granularity';
+import granularitySource from './time-field-granularity?raw';
+import { TimeFieldHourCycleExample } from './time-field-hour-cycle';
+import hourCycleSource from './time-field-hour-cycle?raw';
+import { TimeFieldLocalizationExample } from './time-field-localization';
+import localizationSource from './time-field-localization?raw';
+import { TimeFieldReadonlyExample } from './time-field-readonly';
+import readonlySource from './time-field-readonly?raw';
+import { TimeFieldValidationExample } from './time-field-validation';
+import validationSource from './time-field-validation?raw';
 
 const html = String.raw;
+
+const source = (code: string) => ({ docs: { source: { code, language: 'typescript' } } });
 
 export default {
     title: 'Primitives/Time Field',
     decorators: [
         moduleMetadata({
             imports: [
-                TimeField,
-                TimeFieldGranularSecond,
-                TimeFieldGranularMinute,
-                TimeFieldGranularHour,
-                TimeFieldLocaleGregorian,
-                TimeFieldLocaleJapanese,
-                TimeFieldLocalePersian,
-                TimeFieldLocaleTaiwan
+                TimeFieldDefaultExample,
+                TimeFieldHourCycleExample,
+                TimeFieldGranularityExample,
+                TimeFieldDisabledExample,
+                TimeFieldReadonlyExample,
+                TimeFieldValidationExample,
+                TimeFieldLocalizationExample
             ]
         }),
-        componentWrapperDecorator(
-            (story) => html`
-                <div
-                    class="radix-themes light light-theme radix-themes-default-fonts"
-                    data-accent-color="indigo"
-                    data-radius="medium"
-                    data-scaling="100%"
-                >
-                    ${story}
-                </div>
-            `
-        )
+        tailwindDemoDecorator()
     ]
 } as Meta;
 
 type Story = StoryObj;
 
 export const Default: Story = {
+    parameters: source(defaultSource),
     render: () => ({
         template: html`
-            <app-time-field style="display: flex;" />
+            <time-field-default-example />
         `
     })
 };
 
-export const Granular: Story = {
+export const HourCycle: Story = {
+    parameters: source(hourCycleSource),
     render: () => ({
         template: html`
-            <app-time-field-granular-second style="display: flex; padding-bottom: 16px;" />
-
-            <app-time-field-granular-minute style="display: flex; padding-bottom: 16px;" />
-
-            <app-time-field-granular-hour style="display: flex;" />
+            <time-field-hour-cycle-example />
         `
     })
 };
 
-export const Locale: Story = {
+export const Granularity: Story = {
+    parameters: source(granularitySource),
     render: () => ({
         template: html`
-            <app-time-field-locale-gregorian style="display: flex; padding-bottom: 16px;" />
+            <time-field-granularity-example />
+        `
+    })
+};
 
-            <app-time-field-locale-japanese style="display: flex; padding-bottom: 16px;" />
+export const Disabled: Story = {
+    parameters: source(disabledSource),
+    render: () => ({
+        template: html`
+            <time-field-disabled-example />
+        `
+    })
+};
 
-            <app-time-field-locale-persian style="display: flex; padding-bottom: 16px;" />
+export const Readonly: Story = {
+    parameters: source(readonlySource),
+    render: () => ({
+        template: html`
+            <time-field-readonly-example />
+        `
+    })
+};
 
-            <app-time-field-locale-taiwan style="display: flex; padding-bottom: 16px;" />
+export const Validation: Story = {
+    parameters: source(validationSource),
+    render: () => ({
+        template: html`
+            <time-field-validation-example />
+        `
+    })
+};
+
+export const Localization: Story = {
+    parameters: source(localizationSource),
+    render: () => ({
+        template: html`
+            <time-field-localization-example />
         `
     })
 };
