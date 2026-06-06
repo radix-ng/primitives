@@ -7,22 +7,25 @@ import { RdxSliderModule } from '@radix-ng/primitives/slider';
     styles: `
         .SliderRoot {
             position: relative;
+            width: 200px;
+        }
+
+        .SliderControl {
             display: flex;
             align-items: center;
-            width: 200px;
+            width: 100%;
             height: 20px;
         }
 
         .SliderTrack {
-            background-color: gray;
             position: relative;
-            flex-grow: 1;
+            background-color: gray;
+            width: 100%;
             height: 3px;
         }
 
-        .SliderRange {
+        .SliderIndicator {
             background-color: blue;
-            position: absolute;
             height: 100%;
         }
 
@@ -31,17 +34,33 @@ import { RdxSliderModule } from '@radix-ng/primitives/slider';
             width: 20px;
             height: 20px;
             background-color: blue;
+            border-radius: 50%;
+        }
+
+        .SliderThumb input {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            opacity: 0;
         }
     `,
     encapsulation: ViewEncapsulation.None,
     template: `
-        <rdx-slider [modelValue]="[10, 50]" [step]="1" className="SliderRoot" style="display: flex; width: 200px;">
-            <rdx-slider-track class="SliderTrack">
-                <rdx-slider-range class="SliderRange" />
-            </rdx-slider-track>
-            <rdx-slider-thumb class="SliderThumb" />
-            <rdx-slider-thumb class="SliderThumb" />
-        </rdx-slider>
+        <div class="SliderRoot" [value]="[10, 50]" [step]="1" rdxSliderRoot>
+            <div class="SliderControl" rdxSliderControl>
+                <div class="SliderTrack" rdxSliderTrack>
+                    <div class="SliderIndicator" rdxSliderIndicator></div>
+                    <div class="SliderThumb" [index]="0" rdxSliderThumb>
+                        <input rdxSliderThumbInput aria-label="Minimum" />
+                    </div>
+                    <div class="SliderThumb" [index]="1" rdxSliderThumb>
+                        <input rdxSliderThumbInput aria-label="Maximum" />
+                    </div>
+                </div>
+            </div>
+        </div>
     `
 })
 export default class Page {}

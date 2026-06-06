@@ -1,19 +1,31 @@
 import { NgModule } from '@angular/core';
-import { RdxSliderRangeComponent } from './src/slider-range.component';
-import { RdxSliderRootComponent } from './src/slider-root.component';
-import { RdxSliderThumbComponent } from './src/slider-thumb.component';
-import { RdxSliderTrackComponent } from './src/slider-track.component';
+import { RdxSliderControl } from './src/slider-control';
+import { RdxSliderIndicator } from './src/slider-indicator';
+import { RdxSliderRoot } from './src/slider-root';
+import { RdxSliderThumb } from './src/slider-thumb';
+import { RdxSliderThumbInput } from './src/slider-thumb-input';
+import { RdxSliderTrack } from './src/slider-track';
+import { RdxSliderValue } from './src/slider-value';
 
-export * from './src/slider-horizontal.component';
-export * from './src/slider-impl.directive';
-export * from './src/slider-range.component';
-export * from './src/slider-root.component';
-export * from './src/slider-thumb-impl.directive';
-export * from './src/slider-thumb.component';
-export * from './src/slider-track.component';
-export * from './src/slider-vertical.component';
+export * from './src/slider-context';
+export * from './src/slider-control';
+export * from './src/slider-indicator';
+export * from './src/slider-root';
+export * from './src/slider-thumb';
+export * from './src/slider-thumb-input';
+export * from './src/slider-track';
+export * from './src/slider-value';
+export * from './src/slider.utils';
 
-const _imports = [RdxSliderRootComponent, RdxSliderTrackComponent, RdxSliderRangeComponent, RdxSliderThumbComponent];
+const _imports = [
+    RdxSliderRoot,
+    RdxSliderControl,
+    RdxSliderTrack,
+    RdxSliderIndicator,
+    RdxSliderThumb,
+    RdxSliderThumbInput,
+    RdxSliderValue
+];
 
 @NgModule({
     imports: [..._imports],
