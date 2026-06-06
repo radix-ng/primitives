@@ -1,0 +1,7 @@
+# Playwright run artifacts — never commit these.
+playwright-report/
+test-results/
+blob-report/
+.playwright/
+
+# Commit everything under *-snapshots/ (the baselines) — do NOT ignore them.
