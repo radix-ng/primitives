@@ -11,6 +11,9 @@
 
 CHANGELOG.md
 
+# Vendored Angular skill references (github.com/angular/skills) — kept unmodified upstream
+.claude/skills/angular-developer/references/
+
 apps/radix-docs/src/styles/*.css
 
 *.d.ts
