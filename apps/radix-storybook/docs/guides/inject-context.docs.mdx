@@ -1,0 +1,149 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Guides/Inject Context" />
+
+# Inject Context
+
+## Introduction
+
+When building compound components, you often need to share **reactive state** between a root and its
+descendants without threading data through many `input()` bindings. Radix NG is signals-first, so a context
+exposes Angular **signals** that children read directly — updates propagate automatically.
+
+Every primitive family uses the `createContext` helper from `@radix-ng/primitives/core`: the root
+directive provides the context, children inject it.
+
+## createContext
+
+`createContext<T>(description)` returns a typed tuple:
+
+```typescript
+import { createContext } from '@radix-ng/primitives/core';
+
+const [injectContext, provideContext] = createContext<T>('Description');
+```
+
+- `provideContext(factory)` — returns a `Provider` for the root directive. `factory` runs in the
+  root's injection context and returns the context value.
+- `injectContext()` — returns the context, or **throws** if there is no providing ancestor.
+- `injectContext(true)` — returns `null` instead of throwing when the context is absent (optional).
+
+The `description` is only used to label the underlying `InjectionToken` for debugging.
+
+## Basic Usage
+
+1. Define the context type and the inject/provide pair.
+
+Expose state as **`Signal`s** (not plain fields) and actions as methods:
+
+```typescript
+import { Signal } from '@angular/core';
+import { createContext } from '@radix-ng/primitives/core';
+
+export interface RdxFooContext {
+    readonly value: Signal<number>;
+    readonly disabled: Signal<boolean>;
+    increment(): void;
+}
+
+export const [injectFooContext, provideFooContext] = createContext<RdxFooContext>('RdxFooContext');
+```
+
+2. Create the root directive.
+
+Hold state with `signal()` / `input()` / `model()` / `computed()`, and provide the context with a
+factory that maps the directive's signals onto the context shape:
+
+```typescript
+import { booleanAttribute, Directive, inject, input, signal } from '@angular/core';
+import { provideFooContext, RdxFooContext } from './foo-context';
+
+const fooContext = (): RdxFooContext => {
+    const root = inject(RdxFooRoot);
+
+    return {
+        value: root.value,
+        disabled: root.disabled,
+        increment: () => root.increment()
+    };
+};
+
+@Directive({
+    selector: '[rdxFooRoot]',
+    providers: [provideFooContext(fooContext)]
+})
+export class RdxFooRoot {
+    readonly disabled = input(false, { transform: booleanAttribute });
+
+    readonly value = signal(0);
+
+    increment(): void {
+        if (!this.disabled()) {
+            this.value.update((current) => current + 1);
+        }
+    }
+}
+```
+
+Exposing the directive's signals (rather than the instance) keeps the public context surface small and
+read-only, while mutations stay funnelled through the root's methods.
+
+3. Inject the context in child directives.
+
+Children read the signals reactively — in host bindings, computed signals, or the template:
+
+```typescript
+import { Directive } from '@angular/core';
+import { injectFooContext } from './foo-context';
+
+@Directive({
+    selector: '[rdxFooItem]',
+    host: {
+        '[attr.data-disabled]': 'context.disabled() ? "" : undefined',
+        '(click)': 'context.increment()'
+    }
+})
+export class RdxFooItem {
+    protected readonly context = injectFooContext();
+}
+```
+
+4. Use it in a template.
+
+```html
+<div rdxFooRoot>
+    <button rdxFooItem>Increment</button>
+    <button rdxFooItem>Increment</button>
+</div>
+```
+
+Both `rdxFooItem` buttons share the same root context, so clicking either updates the same `value`
+signal and every consumer re-renders automatically.
+
+## Optional context
+
+When a part can be used outside its root, inject the context optionally and guard for `null`:
+
+```typescript
+protected readonly context = injectFooContext(true); // null when there is no [rdxFooRoot] ancestor
+```
+
+## Under the hood
+
+`createContext` wraps an Angular `InjectionToken`. The root's `providers` register that token to
+return the factory result, and `injectContext()` is `inject(TOKEN)` with a clearer error when no
+provider is found. You rarely need the token directly — prefer `createContext` so the type, the
+provider and the (optional) injector stay in one place.
+
+## Best Practices
+
+- **Expose signals, not the instance.** Map the root's signals onto a small, read-only context type
+  so consumers can't mutate internal state directly.
+- **Derive with `computed()`.** Put derived state (e.g. `data-state`) in `computed` signals on the
+  context instead of recomputing in each child.
+- **Keep mutations as methods** on the root (`toggle()`, `increment()`) and expose them through the
+  context — children call them, the root owns the logic.
+- **Name the context type** `Rdx<Name>Context` and the pair `inject<Name>Context` /
+  `provide<Name>Context`, matching the rest of the library.
+- **Use `injectContext(true)`** for parts that may render without their root, and handle the `null`
+  case explicitly.

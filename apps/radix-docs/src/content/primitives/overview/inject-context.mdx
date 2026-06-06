@@ -9,122 +9,129 @@ description: .
 
 ## Introduction
 
-When building Angular applications, you often need to pass a shared context to child components without having to propagate data through multiple `@Input()` properties.
+When building compound components, you often need to share **reactive state** between a root and its descendants without threading data through many `input()` bindings. Radix NG is signals-first, so a context exposes Angular **signals** that children read directly — updates propagate automatically.
 
-One convenient way to achieve this is by using a directive as the "context root" and an `InjectionToken` for dependency injection (DI).
-This allows child components within a single DOM tree to directly access the data and signals provided by the directive.
+Every primitive family uses the `createContext` helper from `@radix-ng/primitives/core`: the root directive provides the context, children inject it.
 
-## What is InjectionToken?
+## createContext
 
-`InjectionToken<T>` is a special Angular class that creates a unique token for the DI container.
-You use it when you want to inject something other than a class, such as an interface or configuration object.
+`createContext<T>(description)` returns a typed tuple:
 
 ```typescript
-export const MY_TOKEN = new InjectionToken<string>('MyToken');
+import { createContext } from '@radix-ng/primitives/core';
+
+const [injectContext, provideContext] = createContext<T>('Description');
 ```
 
-Here, `MyToken` is a label for debugging, and `<string>` specifies the type of data the token will provide.
+- `provideContext(factory)` — returns a `Provider` for the root directive. `factory` runs in the root's injection context and returns the context value.
+- `injectContext()` — returns the context, or **throws** if there is no providing ancestor.
+- `injectContext(true)` — returns `null` instead of throwing when the context is absent (optional).
+
+The `description` is only used to label the underlying `InjectionToken` for debugging.
 
 ## Basic Usage
 
-1. Define the interface and token
+1. Define the context type and the inject/provide pair.
 
-Create an interface describing the desired "context" and an injection token that will provide it:
+Expose state as **`Signal`s** (not plain fields) and actions as methods:
 
 ```typescript
-import { InjectionToken } from '@angular/core';
+import { Signal } from '@angular/core';
+import { createContext } from '@radix-ng/primitives/core';
 
-export interface MyContext {
-  value: number;
-  message: string;
-  increment: void;
-  // ... etc
+export interface RdxFooContext {
+  readonly value: Signal<number>;
+  readonly disabled: Signal<boolean>;
+  increment(): void;
 }
 
-export const MY_CONTEXT_TOKEN = new InjectionToken<MyContext>('MyContextToken');
+export const [injectFooContext, provideFooContext] = createContext<RdxFooContext>('RdxFooContext');
 ```
 
-2. Create a directive as the "context root"
+2. Create the root directive.
 
-Have the directive implement `MyContext`.
-In `providers`, register the token using `useExisting`.
-This means that when `MY_CONTEXT_TOKEN` is requested, the directive instance itself will be returned.
+Hold state with `signal()` / `input()` / `model()` / `computed()`, and provide the context with a factory that maps the directive's signals onto the context shape:
 
 ```typescript
-import {
-  Directive,
-  forwardRef
-} from '@angular/core';
-import { MyContext, MY_CONTEXT_TOKEN } from './my-context';
+import { booleanAttribute, Directive, inject, input, signal } from '@angular/core';
+import { provideFooContext, RdxFooContext } from './foo-context';
+
+const fooContext = (): RdxFooContext => {
+  const root = inject(RdxFooRoot);
+
+  return {
+    value: root.value,
+    disabled: root.disabled,
+    increment: () => root.increment()
+  };
+};
 
 @Directive({
-  selector: '[myContext]',
-  providers: [
-    {
-      provide: MY_CONTEXT_TOKEN,
-      useExisting: forwardRef(() => MyContextDirective)
-    }
-  ]
+  selector: '[rdxFooRoot]',
+  providers: [provideFooContext(fooContext)]
 })
-export class MyContextDirective implements MyContext {
-  value = 0;
-  message = 'Hello from directive';
+export class RdxFooRoot {
+  readonly disabled = input(false, { transform: booleanAttribute });
 
-  increment() {
-    this.value++;
+  readonly value = signal(0);
+
+  increment(): void {
+    if (!this.disabled()) {
+      this.value.update((current) => current + 1);
+    }
   }
 }
 ```
-`forwardRef` is needed to reference the directive class before it is declared.
-Without it, Angular might throw an error related to declaration order during compilation.
 
-3. Inject the context in child components
+Exposing the directive's signals (rather than the instance) keeps the public context surface small and read-only, while mutations stay funnelled through the root's methods.
 
-Any component or directive placed within the element hosting `myContext` can get the directive via `MY_CONTEXT_TOKEN`:
+3. Inject the context in child directives.
+
+Children read the signals reactively — in host bindings, computed signals, or the template:
 
 ```typescript
-import { Component, inject } from '@angular/core';
-import { MY_CONTEXT_TOKEN } from './my-context';
+import { Directive } from '@angular/core';
+import { injectFooContext } from './foo-context';
 
-@Component({
-  selector: 'child-component',
-  template: `
-    <p>Value: {{ context.value }}</p>
-    <button (click)="increment()">Increment</button>
-  `
-})
-export class ChildComponent {
-  readonly context = inject(MY_CONTEXT_TOKEN);
-
-  increment() {
-    this.context.increment();
+@Directive({
+  selector: '[rdxFooItem]',
+  host: {
+    '[attr.data-disabled]': 'context.disabled() ? "" : undefined',
+    '(click)': 'context.increment()'
   }
+})
+export class RdxFooItem {
+  protected readonly context = injectFooContext();
 }
 ```
 
-4. Use it in a template
-
-Attach the directive to the parent element that contains the child components:
+4. Use it in a template.
 
 ```html
-<div myContext>
-  <child-component />
-  <child-component />
+<div rdxFooRoot>
+  <button rdxFooItem>Increment</button>
+  <button rdxFooItem>Increment</button>
 </div>
 ```
-Both `<child-component>` instances will now share the same context, enabling them to jointly access and modify the shared data.
 
-## Common Use Cases
+Both `rdxFooItem` buttons share the same root context, so clicking either updates the same `value` signal and every consumer re-renders automatically.
 
-- Custom Styling: Access internal state to apply dynamic styles based on component state.
-- Extended Functionality: Build upon existing component logic to add new features.
-- Complex Layouts: Create intricate UI patterns by composing multiple components and sharing state between them.
-- Accessibility Enhancements: Utilize internal methods and state to improve keyboard navigation or screen reader support.
+## Optional context
+
+When a part can be used outside its root, inject the context optionally and guard for `null`:
+
+```typescript
+protected readonly context = injectFooContext(true); // null when there is no [rdxFooRoot] ancestor
+```
+
+## Under the hood
+
+`createContext` wraps an Angular `InjectionToken`. The root's `providers` register that token to return the factory result, and `injectContext()` is `inject(TOKEN)` with a clearer error when no provider is found. You rarely need the token directly — prefer `createContext` so the type, the provider and the (optional) injector stay in one place.
 
 ## Best Practices
 
-- Use clear names: For both the `InjectionToken` and the directive itself.
-- Explicitly specify the type in the `InjectionToken` so that IDEs and TypeScript can provide better checks.
-- Don’t create unnecessary tokens: If the data is only needed in one place, a simple `@Input()` might suffice.
-- Keep logic in the directive: Implement not just fields but also methods for managing those fields, making it easier for child components to interact with them.
-- Use `useExisting` carefully: Only when you really need to return the same directive instance. If you need a different strategy (e.g., factory pattern), use `useFactory` instead.
+- **Expose signals, not the instance.** Map the root's signals onto a small, read-only context type so consumers can't mutate internal state directly.
+- **Derive with `computed()`.** Put derived state (e.g. `data-state`) in `computed` signals on the context instead of recomputing in each child.
+- **Keep mutations as methods** on the root (`toggle()`, `increment()`) and expose them through the context — children call them, the root owns the logic.
+- **Name the context type** `Rdx<Name>Context` and the pair `inject<Name>Context` / `provide<Name>Context`, matching the rest of the library.
+- **Use `injectContext(true)`** for parts that may render without their root, and handle the `null` case explicitly.

@@ -86,11 +86,11 @@ Every primitive family exposes state via `createContext` from `@radix-ng/primiti
 
 Current state of CDK usage — what still needs to be replaced:
 
-| CDK import                   | Used for              | Where                                                     |
-| ---------------------------- | --------------------- | --------------------------------------------------------- |
-| `_IdGenerator` (`cdk/a11y`)  | Unique ID generation  | accordion, tooltip, popover, switch, preview-card, dialog |
-| `LiveAnnouncer` (`cdk/a11y`) | ARIA live region      | stepper                                                   |
-| `Platform` (`cdk/platform`)  | SSR/browser detection | `core/is-client`                                          |
+| CDK import                   | Used for              | Where                                             |
+| ---------------------------- | --------------------- | ------------------------------------------------- |
+| `_IdGenerator` (`cdk/a11y`)  | Unique ID generation  | accordion, tooltip, popover, preview-card, dialog |
+| `LiveAnnouncer` (`cdk/a11y`) | ARIA live region      | stepper                                           |
+| `Platform` (`cdk/platform`)  | SSR/browser detection | `core/is-client`                                  |
 
 Type-only imports that are low-priority (zero runtime cost, but ideally replaced with own types):
 
