@@ -8,12 +8,16 @@ import { RdxSliderModule } from '@radix-ng/primitives/slider';
     imports: [RdxSliderModule],
     styleUrl: 'slider-demo.css',
     template: `
-        <rdx-slider [modelValue]="[45]" [step]="5" className="SliderRoot" style="display: flex; width: 200px;">
-            <rdx-slider-track class="SliderTrack">
-                <rdx-slider-range class="SliderRange" />
-            </rdx-slider-track>
-            <rdx-slider-thumb class="SliderThumb" />
-        </rdx-slider>
+        <div class="SliderRoot" [value]="45" [step]="5" rdxSliderRoot>
+            <div class="SliderControl" rdxSliderControl>
+                <div class="SliderTrack" rdxSliderTrack>
+                    <div class="SliderIndicator" rdxSliderIndicator></div>
+                    <div class="SliderThumb" rdxSliderThumb>
+                        <input rdxSliderThumbInput aria-label="Value" />
+                    </div>
+                </div>
+            </div>
+        </div>
     `
 })
 export class SliderDemoComponent {}

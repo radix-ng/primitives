@@ -1,42 +1,182 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as SliderStories from './slider.stories';
-import { RdxSliderRootComponent } from '../src/slider-root.component';
+import { RdxSliderRoot } from '../src/slider-root';
+import { RdxSliderThumb } from '../src/slider-thumb';
+import { RdxSliderThumbInput } from '../src/slider-thumb-input';
+import { RdxSliderValue } from '../src/slider-value';
 
 <Meta title="Primitives/Slider" />
 
 # Slider
 
-#### An input where the user selects a value from within a given range.
+#### An input where the user selects a value, or a range of values, from within a given range.
 
 <Canvas sourceState="hidden" of={SliderStories.Default} />
 
 ## Features
 
 - ✅ Can be controlled or uncontrolled.
-- ✅ Supports multiple thumbs.
-- ✅ Supports a minimum value between thumbs.
-- ✅ Supports touch or click on track to update value.
-- ✅ Supports Right to Left direction.
-- ✅ Full keyboard navigation.
+- ✅ Single value or multiple thumbs for a range.
+- ✅ Configurable thumb collision behavior (`push`, `swap`, `none`).
+- ✅ Minimum distance between thumbs.
+- ✅ Press or drag anywhere on the control to update the value.
+- ✅ Horizontal and vertical orientation, with RTL support.
+- ✅ Value formatting with `Intl.NumberFormat`.
+- ✅ Full keyboard navigation, including large steps.
+- ✅ Works with Angular forms via a hidden native range input per thumb.
+
+## Import
+
+```ts
+import {
+    RdxSliderRoot,
+    RdxSliderControl,
+    RdxSliderTrack,
+    RdxSliderIndicator,
+    RdxSliderThumb,
+    RdxSliderThumbInput,
+    RdxSliderValue
+} from '@radix-ng/primitives/slider';
+```
+
+Or import the whole module:
+
+```ts
+import { RdxSliderModule } from '@radix-ng/primitives/slider';
+```
 
 ## Anatomy
 
-Import all parts and piece them together.
-
+The slider is assembled from directive-based parts — there are no separate
+horizontal/vertical components. The same parts drive both orientations, switched
+through the `orientation` input on the root.
 
 ```html
-<rdx-slider>
-    <rdx-slider-track >
-        <rdx-slider-range />
-    </rdx-slider-track>
-    <rdx-slider-thumb />
-</rdx-slider>
+<div rdxSliderRoot>
+    <output rdxSliderValue></output>
+    <div rdxSliderControl>
+        <div rdxSliderTrack>
+            <div rdxSliderIndicator></div>
+            <div rdxSliderThumb>
+                <input rdxSliderThumbInput />
+            </div>
+        </div>
+    </div>
+</div>
 ```
+
+Each thumb owns a nested `input[rdxSliderThumbInput]`. It is visually hidden but
+remains the focusable element that powers keyboard interaction, accessibility and
+form submission.
+
+## Examples
+
+### Range
+
+Pass an array value and render one `rdxSliderThumb` per value, each with an explicit
+`index`. Use `minStepsBetweenValues` to keep the thumbs apart, and
+`thumbCollisionBehavior` to control what happens when they meet.
+
+<Canvas of={SliderStories.Range} />
+
+### Vertical
+
+Set `orientation="vertical"` on the root. The control and track lay out along the
+vertical axis; no other changes are required.
+
+<Canvas of={SliderStories.Vertical} />
+
+### Value
+
+Display the formatted value with `rdxSliderValue`. Formatting honours the root's
+`format` (`Intl.NumberFormatOptions`) and `locale`.
+
+<Canvas of={SliderStories.Value} />
+
+### Disabled
+
+<Canvas of={SliderStories.Disabled} />
+
+### Reactive forms
+
+The root composes a `ControlValueAccessor`, so it binds directly to
+`formControl` / `formControlName` and `[(ngModel)]`.
+
+<Canvas of={SliderStories.ReactiveForms} />
 
 ## API Reference
 
-<ArgTypes of={RdxSliderRootComponent} />
+### Root
+
+`RdxSliderRoot` — groups the parts and owns the value, state and thumb registration.
+
+<ArgTypes of={RdxSliderRoot} />
+
+| Data attribute       | Value                          |
+| -------------------- | ------------------------------ |
+| `[data-orientation]` | `"horizontal" \| "vertical"`   |
+| `[data-disabled]`    | Present when disabled.         |
+| `[data-dragging]`    | Present while a thumb is dragged. |
+
+### Control
+
+`RdxSliderControl` — the interactive area; reads everything from context, no inputs.
+
+| Data attribute       | Value                          |
+| -------------------- | ------------------------------ |
+| `[data-orientation]` | `"horizontal" \| "vertical"`   |
+| `[data-disabled]`    | Present when disabled.         |
+| `[data-dragging]`    | Present while a thumb is dragged. |
+
+### Track
+
+`RdxSliderTrack` — the rail; reads everything from context, no inputs.
+
+| Data attribute       | Value                          |
+| -------------------- | ------------------------------ |
+| `[data-orientation]` | `"horizontal" \| "vertical"`   |
+| `[data-disabled]`    | Present when disabled.         |
+| `[data-dragging]`    | Present while a thumb is dragged. |
+
+### Indicator
+
+`RdxSliderIndicator` — the filled range; reads everything from context, no inputs.
+
+| Data attribute       | Value                          |
+| -------------------- | ------------------------------ |
+| `[data-orientation]` | `"horizontal" \| "vertical"`   |
+| `[data-disabled]`    | Present when disabled.         |
+| `[data-dragging]`    | Present while a thumb is dragged. |
+
+### Thumb
+
+`RdxSliderThumb` — a draggable handle; wrap an `input[rdxSliderThumbInput]` inside it.
+
+<ArgTypes of={RdxSliderThumb} />
+
+| Data attribute       | Value                          |
+| -------------------- | ------------------------------ |
+| `[data-index]`       | Numeric index of the thumb.    |
+| `[data-orientation]` | `"horizontal" \| "vertical"`   |
+| `[data-disabled]`    | Present when the thumb is disabled. |
+| `[data-dragging]`    | Present while a thumb is dragged. |
+
+### Thumb Input
+
+`RdxSliderThumbInput` — the nested native `input[type=range]` that drives keyboard, a11y and forms.
+
+<ArgTypes of={RdxSliderThumbInput} />
+
+| Data attribute | Value                       |
+| -------------- | --------------------------- |
+| `[data-index]` | Numeric index of the thumb. |
+
+### Value
+
+`RdxSliderValue` — displays the formatted value(s).
+
+<ArgTypes of={RdxSliderValue} />
 
 ## Accessibility
-Adheres to the [Slider WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/slider-multithumb).
 
+Adheres to the [Slider WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/slider-multithumb).

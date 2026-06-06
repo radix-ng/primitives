@@ -7,59 +7,77 @@ description: .
 
 # Slider
 
-<Description>An input where the user selects a value from within a given range.</Description>
+<Description>An input where the user selects a value, or a range of values, from within a given range.</Description>
 
 <ComponentPreview name="slider" file="slider-demo" />
 
 <FeatureList items={[
     'Can be controlled or uncontrolled.',
-    'Supports multiple thumbs.',
-    'Supports a minimum value between thumbs.',
-    'Supports touch or click on track to update value.',
-    'Supports Right to Left direction.',
+    'Single value or multiple thumbs for a range.',
+    'Configurable thumb collision behavior (push, swap, none).',
+    'Supports a minimum distance between thumbs.',
+    'Press or drag anywhere on the control to update the value.',
+    'Horizontal and vertical orientation, with RTL support.',
+    'Value formatting with Intl.NumberFormat.',
     'Full keyboard navigation.'
 ]} />
 
 ## Anatomy
 
 ```html
-<rdx-slider>
-    <rdx-slider-track>
-        <rdx-slider-range />
-    </rdx-slider-track>
-    <rdx-slider-thumb />
-</rdx-slider>
+<div rdxSliderRoot>
+    <output rdxSliderValue></output>
+    <div rdxSliderControl>
+        <div rdxSliderTrack>
+            <div rdxSliderIndicator></div>
+            <div rdxSliderThumb>
+                <input rdxSliderThumbInput />
+            </div>
+        </div>
+    </div>
+</div>
 ```
 
 ## API Reference
 
 ### Root
-`RdxSliderRootComponent`
+`RdxSliderRoot`
 
-<PropsTable name="RdxSliderRootComponent" />
+<PropsTable name="RdxSliderRoot" />
 
-<EmitsTable name="RdxSliderRootComponent" />
+<EmitsTable name="RdxSliderRoot" />
 
 <DataAttributesTable attributes={[
     { name: '[data-disabled]', value: 'Present when disabled' },
+    { name: '[data-dragging]', value: 'Present while dragging' },
+    { name: '[data-orientation]', value: '"vertical" | "horizontal"' }
+]} />
+
+### Control
+`RdxSliderControl`
+
+The interactive area. Handles pointer presses and drags.
+
+<DataAttributesTable attributes={[
+    { name: '[data-disabled]', value: 'Present when disabled' },
+    { name: '[data-dragging]', value: 'Present while dragging' },
     { name: '[data-orientation]', value: '"vertical" | "horizontal"' }
 ]} />
 
 ### Track
-`RdxSliderTrackComponent`
+`RdxSliderTrack`
 
-The track that contains the `SliderRange`.
+The track that contains the `Indicator` and `Thumb`s.
 
 <DataAttributesTable attributes={[
     { name: '[data-disabled]', value: 'Present when disabled' },
     { name: '[data-orientation]', value: '"vertical" | "horizontal"' }
 ]} />
 
-### Range
-`RdxSliderRangeComponent`
+### Indicator
+`RdxSliderIndicator`
 
-The range part. Must live inside `SliderTrack`.
-
+Visualises the filled portion of the track. Must live inside `Track`.
 
 <DataAttributesTable attributes={[
     { name: '[data-disabled]', value: 'Present when disabled' },
@@ -67,15 +85,32 @@ The range part. Must live inside `SliderTrack`.
 ]} />
 
 ### Thumb
-`RdxSliderThumbComponent`
+`RdxSliderThumb`
 
-A draggable thumb. You can render multiple thumbs.
+A draggable thumb. Render one per value and wrap an `input[rdxSliderThumbInput]`.
 
+<PropsTable name="RdxSliderThumb" />
 
 <DataAttributesTable attributes={[
+    { name: '[data-index]', value: 'The index of the thumb' },
     { name: '[data-disabled]', value: 'Present when disabled' },
     { name: '[data-orientation]', value: '"vertical" | "horizontal"' }
 ]} />
+
+### Thumb Input
+`RdxSliderThumbInput`
+
+The nested native `input[type=range]`. Visually hidden but drives keyboard,
+accessibility and form submission.
+
+<PropsTable name="RdxSliderThumbInput" />
+
+### Value
+`RdxSliderValue`
+
+Displays the formatted value(s).
+
+<PropsTable name="RdxSliderValue" />
 
 ## Accessibility
 Adheres to the [Slider WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/slider-multithumb).
@@ -84,7 +119,7 @@ Adheres to the [Slider WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/
 
 <KeyboardTable attributes={[
     {
-        key: 'List',
+        key: 'Home',
         description: 'Sets the value to its minimum.',
     },
     {
@@ -93,34 +128,34 @@ Adheres to the [Slider WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/
     },
     {
         key: 'PageDown',
-        description: ' Decreases the value by a larger step.',
+        description: 'Decreases the value by a larger step.',
     },
     {
-        key: 'PageUP',
-        description: ' Increases the value by a larger step.',
+        key: 'PageUp',
+        description: 'Increases the value by a larger step.',
     },
     {
         key: 'ArrowDown',
-        description: ' Decreases the value by the step amount.',
-    },
-    {
-        key: 'ArrowRight',
-        description: 'Increments/decrements by the step value depending on orientation.',
+        description: 'Decreases the value by the step amount.',
     },
     {
         key: 'ArrowUp',
-        description: ' Increases the value by the step amount.',
+        description: 'Increases the value by the step amount.',
+    },
+    {
+        key: 'ArrowRight',
+        description: 'Increments/decrements by the step value depending on direction.',
     },
     {
         key: 'ArrowLeft',
-        description: ' Increments/decrements by the step value depending on orientation. ',
+        description: 'Increments/decrements by the step value depending on direction.',
     },
     {
         key: 'Shift + ArrowUp',
-        description: ' Increases the value by a larger step.',
+        description: 'Increases the value by a larger step.',
     },
     {
         key: 'Shift + ArrowDown',
-        description: '  Decreases the value by a larger step.',
+        description: 'Decreases the value by a larger step.',
     }
 ]} />
