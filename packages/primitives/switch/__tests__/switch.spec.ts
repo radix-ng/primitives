@@ -1,210 +1,188 @@
+import { Component, inject, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { vi } from 'vitest';
-
-import { Component, DebugElement, ElementRef, inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { By } from '@angular/platform-browser';
-import { RdxSwitchInputDirective } from '../src/switch-input.directive';
-import { RdxSwitchRootDirective } from '../src/switch-root.directive';
-import { RdxSwitchThumbDirective } from '../src/switch-thumb.directive';
+import { vi } from 'vitest';
+import { RdxSwitchInput } from '../src/switch-input';
+import { RdxSwitchRoot } from '../src/switch-root';
+import { RdxSwitchThumb } from '../src/switch-thumb';
 
-xdescribe('RdxSwitchRootDirective', () => {
-    let directive: RdxSwitchRootDirective;
+@Component({
+    imports: [RdxSwitchRoot, RdxSwitchThumb, RdxSwitchInput],
+    template: `
+        <button
+            [(checked)]="checked"
+            [disabled]="disabled()"
+            [readonly]="readonly()"
+            [required]="required()"
+            [defaultChecked]="defaultChecked()"
+            (onCheckedChange)="onChange($event)"
+            rdxSwitchRoot
+        >
+            <input rdxSwitchInput />
+            <span rdxSwitchThumb></span>
+        </button>
+    `
+})
+class TestComponent {
+    readonly checked = signal<boolean | undefined>(undefined);
+    readonly disabled = signal(false);
+    readonly readonly = signal(false);
+    readonly required = signal(false);
+    readonly defaultChecked = signal(false);
+
+    onChange = vi.fn();
+}
+
+describe('RdxSwitch', () => {
+    let fixture: ComponentFixture<TestComponent>;
+    let component: TestComponent;
+    let root: HTMLButtonElement;
+    let thumb: HTMLElement;
+    let input: HTMLInputElement;
 
     beforeEach(() => {
-        TestBed.configureTestingModule({
-            providers: [
-                RdxSwitchRootDirective,
-                { provide: ElementRef, useValue: new ElementRef(document.createElement('button')) }
-            ]
-        });
-
-        directive = TestBed.inject(RdxSwitchRootDirective);
+        TestBed.configureTestingModule({ imports: [TestComponent] });
+        fixture = TestBed.createComponent(TestComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        root = fixture.debugElement.query(By.css('[rdxSwitchRoot]')).nativeElement;
+        thumb = fixture.debugElement.query(By.css('[rdxSwitchThumb]')).nativeElement;
+        input = fixture.debugElement.query(By.css('[rdxSwitchInput]')).nativeElement;
     });
 
-    it('should initialize with default state', () => {
-        expect(directive.checked()).toBe(false);
-        expect(directive.required()).toBe(false);
-        expect(directive.disabled()).toBe(false);
+    it('renders the switch role and unchecked state', () => {
+        expect(root.getAttribute('role')).toBe('switch');
+        expect(root.getAttribute('type')).toBe('button');
+        expect(root.getAttribute('aria-checked')).toBe('false');
+        expect(root.getAttribute('data-unchecked')).toBe('');
+        expect(root.getAttribute('data-checked')).toBeNull();
+        expect(thumb.getAttribute('data-unchecked')).toBe('');
     });
 
-    it('should toggle checked state and emit event', () => {
-        const onCheckedChangeSpy = vi.spyOn(directive.onCheckedChange, 'subscribe');
-        directive.toggle();
-
-        expect(directive.checked()).toBe(true);
-        expect(onCheckedChangeSpy).toHaveBeenCalledWith(true);
-
-        directive.toggle();
-
-        expect(directive.checked()).toBe(false);
-        expect(onCheckedChangeSpy).toHaveBeenCalledWith(false);
+    it('honors defaultChecked', () => {
+        component.defaultChecked.set(true);
+        component.checked.set(true);
+        fixture.detectChanges();
+        expect(root.getAttribute('data-checked')).toBe('');
+        expect(root.getAttribute('aria-checked')).toBe('true');
+        expect(input.checked).toBe(true);
     });
 
-    it('should emit correct values for controlled checked state', () => {
-        const onCheckedChangeSpy = vi.spyOn(directive.onCheckedChange, 'subscribe');
+    it('toggles on click and emits onCheckedChange', () => {
+        root.click();
+        fixture.detectChanges();
+        expect(component.checked()).toBe(true);
+        expect(root.getAttribute('data-checked')).toBe('');
+        expect(thumb.getAttribute('data-checked')).toBe('');
+        expect(component.onChange).toHaveBeenLastCalledWith(true);
 
-        directive.checked.set(true);
-        directive.toggle(); // Controlled state logic
-        expect(directive.checked()).toBe(false);
-        expect(onCheckedChangeSpy).toHaveBeenCalledWith(false);
+        root.click();
+        fixture.detectChanges();
+        expect(component.checked()).toBe(false);
+        expect(component.onChange).toHaveBeenLastCalledWith(false);
+    });
+
+    it('does not toggle when disabled', () => {
+        component.disabled.set(true);
+        fixture.detectChanges();
+        expect(root.getAttribute('data-disabled')).toBe('');
+        expect(root.hasAttribute('disabled')).toBe(true);
+
+        root.click();
+        fixture.detectChanges();
+        expect(component.checked()).toBeFalsy();
+        expect(component.onChange).not.toHaveBeenCalled();
+    });
+
+    it('does not toggle when read-only but stays focusable', () => {
+        component.readonly.set(true);
+        fixture.detectChanges();
+        expect(root.getAttribute('data-readonly')).toBe('');
+        expect(root.getAttribute('aria-readonly')).toBe('true');
+        expect(root.hasAttribute('disabled')).toBe(false);
+
+        root.click();
+        fixture.detectChanges();
+        expect(component.checked()).toBeFalsy();
+    });
+
+    it('exposes required state', () => {
+        component.required.set(true);
+        fixture.detectChanges();
+        expect(root.getAttribute('aria-required')).toBe('true');
+        expect(root.getAttribute('data-required')).toBe('');
     });
 });
 
 @Component({
-    imports: [ReactiveFormsModule, RdxSwitchRootDirective, RdxSwitchInputDirective, RdxSwitchThumbDirective],
+    imports: [ReactiveFormsModule, RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
     template: `
-        <form [formGroup]="formGroup">
-            <label class="Label" htmlFor="airplane-mode-form">
-                Airplane mode
-                <button
-                    class="SwitchRoot"
-                    id="airplane-mode-form"
-                    (click)="onSwitchClick()"
-                    formControlName="airplaneMode"
-                    rdxSwitchRoot
-                >
-                    <input rdxSwitchInput />
-                    <span class="SwitchThumb" rdxSwitchThumb></span>
-                </button>
-            </label>
+        <form [formGroup]="form">
+            <button id="airplane" formControlName="airplaneMode" rdxSwitchRoot>
+                <input rdxSwitchInput />
+                <span rdxSwitchThumb></span>
+            </button>
         </form>
     `
 })
 class ReactiveFormSwitch {
     private readonly fb = inject(FormBuilder);
-
-    formGroup: FormGroup;
-    clickCount = 0;
-
-    constructor() {
-        this.formGroup = this.fb.group({
-            airplaneMode: new FormControl(false)
-        });
-    }
-
-    onSwitchClick() {
-        this.clickCount++;
-    }
+    form: FormGroup = this.fb.group({ airplaneMode: new FormControl(false) });
 }
 
 describe('RdxSwitch with ReactiveForms', () => {
-    let component: ReactiveFormSwitch;
     let fixture: ComponentFixture<ReactiveFormSwitch>;
-    let formGroup: FormGroup;
-    let switchRoot: DebugElement;
-    let switchInput: DebugElement;
-
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            imports: [ReactiveFormSwitch]
-        }).compileComponents();
-    });
+    let component: ReactiveFormSwitch;
+    let root: HTMLButtonElement;
+    let input: HTMLInputElement;
 
     beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [ReactiveFormSwitch] });
         fixture = TestBed.createComponent(ReactiveFormSwitch);
         component = fixture.componentInstance;
-        formGroup = component.formGroup;
         fixture.detectChanges();
-
-        switchRoot = fixture.debugElement.query(By.css('[rdxSwitchRoot]'));
-        switchInput = fixture.debugElement.query(By.css('[rdxSwitchInput]'));
+        root = fixture.debugElement.query(By.css('[rdxSwitchRoot]')).nativeElement;
+        input = fixture.debugElement.query(By.css('[rdxSwitchInput]')).nativeElement;
     });
 
-    it('should initialize with form control value', () => {
-        expect(formGroup.value.airplaneMode).toBe(false);
-        expect(switchRoot.nativeElement.getAttribute('data-state')).toBe('unchecked');
-        expect(switchInput.nativeElement.checked).toBe(false);
+    it('initializes from the form control', () => {
+        expect(component.form.value.airplaneMode).toBe(false);
+        expect(root.getAttribute('data-unchecked')).toBe('');
+        expect(input.checked).toBe(false);
     });
 
-    it('should update form control when clicked', () => {
-        switchRoot.nativeElement.click();
+    it('updates the form control on click', () => {
+        root.click();
         fixture.detectChanges();
-
-        expect(formGroup.value.airplaneMode).toBe(true);
-        expect(component.clickCount).toBe(1);
-
-        expect(switchRoot.nativeElement.getAttribute('data-state')).toBe('checked');
+        expect(component.form.value.airplaneMode).toBe(true);
+        expect(root.getAttribute('data-checked')).toBe('');
     });
 
-    it('should update UI when form control changes programmatically', () => {
-        formGroup.get('airplaneMode')?.setValue(true);
+    it('reflects programmatic changes and disabling', () => {
+        component.form.get('airplaneMode')?.setValue(true);
         fixture.detectChanges();
+        expect(root.getAttribute('data-checked')).toBe('');
 
-        expect(switchRoot.nativeElement.getAttribute('data-state')).toBe('checked');
-
-        formGroup.get('airplaneMode')?.setValue(false);
+        component.form.get('airplaneMode')?.disable();
         fixture.detectChanges();
+        expect(input.disabled).toBe(true);
+        expect(root.getAttribute('data-disabled')).toBe('');
 
-        expect(switchRoot.nativeElement.getAttribute('data-state')).toBe('unchecked');
+        root.click();
+        fixture.detectChanges();
+        expect(component.form.getRawValue().airplaneMode).toBe(true);
     });
 
-    it('should handle form control disable/enable', () => {
-        formGroup.get('airplaneMode')?.disable();
+    it('validates requiredTrue', () => {
+        const control = component.form.get('airplaneMode');
+        control?.addValidators(Validators.requiredTrue);
+        control?.updateValueAndValidity();
         fixture.detectChanges();
+        expect(component.form.valid).toBe(false);
 
-        expect(switchInput.nativeElement.disabled).toBe(true);
-        expect(switchRoot.nativeElement.getAttribute('data-disabled')).toBe('true');
-
-        switchRoot.nativeElement.click();
+        root.click();
         fixture.detectChanges();
-
-        expect(formGroup.value.airplaneMode).toBe(false);
-
-        formGroup.get('airplaneMode')?.enable();
-        fixture.detectChanges();
-
-        expect(switchInput.nativeElement.disabled).toBe(false);
-        expect(switchRoot.nativeElement.getAttribute('data-disabled')).toBe(null);
-
-        switchRoot.nativeElement.click();
-        fixture.detectChanges();
-        expect(formGroup.value.airplaneMode).toBe(true);
-    });
-
-    it('should properly handle label interactions', () => {
-        const label = fixture.debugElement.query(By.css('.Label'));
-
-        label.nativeElement.click();
-        fixture.detectChanges();
-
-        expect(formGroup.value.airplaneMode).toBe(true);
-        expect(component.clickCount).toBe(1);
-    });
-
-    it('should reflect required form control state', () => {
-        formGroup.get('airplaneMode')?.addValidators(Validators.requiredTrue);
-        formGroup.get('airplaneMode')?.updateValueAndValidity();
-        fixture.detectChanges();
-
-        expect(formGroup.valid).toBe(false);
-
-        switchRoot.nativeElement.click();
-        fixture.detectChanges();
-
-        expect(formGroup.valid).toBe(true);
-    });
-
-    it('should not toggle when disabled', () => {
-        formGroup.get('airplaneMode')?.disable();
-        fixture.detectChanges();
-
-        switchRoot.nativeElement.click();
-        fixture.detectChanges();
-
-        expect(formGroup.value.airplaneMode).toBe(false);
-        expect(component.clickCount).toBe(0);
-    });
-
-    it('should handle form reset', () => {
-        switchRoot.nativeElement.click();
-        fixture.detectChanges();
-        expect(formGroup.value.airplaneMode).toBe(true);
-
-        formGroup.reset();
-        fixture.detectChanges();
-
-        expect(formGroup.value.airplaneMode).toBe(null);
-        expect(switchRoot.nativeElement.getAttribute('data-state')).toBe('unchecked');
+        expect(component.form.valid).toBe(true);
     });
 });

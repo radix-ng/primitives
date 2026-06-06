@@ -1,13 +1,14 @@
 import { NgModule } from '@angular/core';
-import { RdxSwitchInputDirective } from './src/switch-input.directive';
-import { RdxSwitchRootDirective } from './src/switch-root.directive';
-import { RdxSwitchThumbDirective } from './src/switch-thumb.directive';
+import { RdxSwitchInput } from './src/switch-input';
+import { RdxSwitchRoot } from './src/switch-root';
+import { RdxSwitchThumb } from './src/switch-thumb';
 
-export * from './src/switch-input.directive';
-export * from './src/switch-root.directive';
-export * from './src/switch-thumb.directive';
+export * from './src/switch-context';
+export * from './src/switch-input';
+export * from './src/switch-root';
+export * from './src/switch-thumb';
 
-const switchImports = [RdxSwitchRootDirective, RdxSwitchInputDirective, RdxSwitchThumbDirective];
+export const switchImports = [RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb];
 
 @NgModule({
     imports: [...switchImports],

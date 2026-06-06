@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { RdxSwitchInputDirective, RdxSwitchRootDirective, RdxSwitchThumbDirective } from '@radix-ng/primitives/switch';
+import { RdxSwitchInput, RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
     selector: 'primitive-switch-demo',
     standalone: true,
-    imports: [RdxLabelDirective, RdxSwitchRootDirective, RdxSwitchInputDirective, RdxSwitchThumbDirective],
+    imports: [RdxLabelDirective, RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
     template: `
         <label class="Label" rdxLabel htmlFor="airplane-mode-model">
             Airplane mode

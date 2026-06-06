@@ -1,19 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { RdxSwitchInputDirective } from '../src/switch-input.directive';
-import { RdxSwitchRootDirective } from '../src/switch-root.directive';
-import { RdxSwitchThumbDirective } from '../src/switch-thumb.directive';
+import { RdxSwitchInput, RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
     selector: 'switch-reactive-forms',
-    imports: [
-        ReactiveFormsModule,
-        RdxLabelDirective,
-        RdxSwitchRootDirective,
-        RdxSwitchInputDirective,
-        RdxSwitchThumbDirective
-    ],
+    imports: [ReactiveFormsModule, RdxLabelDirective, RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
     template: `
         <form class="space-y-3" [formGroup]="formGroup" (ngSubmit)="onSubmit()">
             <label
@@ -23,14 +15,14 @@ import { RdxSwitchThumbDirective } from '../src/switch-thumb.directive';
             >
                 Airplane mode
                 <button
-                    class="bg-muted data-[state=checked]:bg-primary focus-visible:ring-ring relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-0 p-0 shadow-sm transition-colors outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    class="bg-muted data-[checked]:bg-primary focus-visible:ring-ring relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-0 p-0 shadow-sm transition-colors outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
                     id="airplane-mode-form"
                     formControlName="policy"
                     rdxSwitchRoot
                 >
                     <input rdxSwitchInput />
                     <span
-                        class="bg-background pointer-events-none block size-5 translate-x-0.5 rounded-full shadow-sm transition-transform data-[state=checked]:translate-x-[22px]"
+                        class="bg-background pointer-events-none block size-5 translate-x-0.5 rounded-full shadow-sm transition-transform data-[checked]:translate-x-[22px]"
                         rdxSwitchThumb
                     ></span>
                 </button>

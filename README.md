@@ -156,7 +156,6 @@ Contributions are welcome! The repository is an Nx monorepo:
 │   ├── radix-ssr-testing  SSR tests for unstyled primitives
 │   └── radix-storybook    Storybook for primitives
 └── packages
-    ├── components         styled components built on primitives
     └── primitives         headless primitives (no styling)
 ```
 

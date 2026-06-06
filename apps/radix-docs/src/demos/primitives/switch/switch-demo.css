@@ -19,7 +19,7 @@
     box-shadow: 0 0 0 2px black;
 }
 
-.SwitchRoot[data-state='checked'] {
+.SwitchRoot[data-checked] {
     background-color: black;
 }
 
@@ -41,7 +41,7 @@
     will-change: transform;
 }
 
-.SwitchThumb[data-state='checked'] {
+.SwitchThumb[data-checked] {
     transform: translateX(19px);
 }
 

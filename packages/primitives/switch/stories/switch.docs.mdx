@@ -1,6 +1,6 @@
-import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/addon-docs/blocks';
-import { RdxSwitchRootDirective } from '../src/switch-root.directive';
-import * as SwitchDirectiveStories from './switch.stories';
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import { RdxSwitchRoot } from '../src/switch-root';
+import * as SwitchStories from './switch.stories';
 
 <Meta title="Primitives/Switch" />
 
@@ -8,58 +8,86 @@ import * as SwitchDirectiveStories from './switch.stories';
 
 #### A control that allows the user to toggle between checked and not checked.
 
-<Canvas sourceState="hidden" of={SwitchDirectiveStories.Default} />
+<Canvas sourceState="hidden" of={SwitchStories.Default} />
 
 ## Features
 
-- ✅ Full keyboard navigation.
 - ✅ Can be controlled or uncontrolled.
+- ✅ Full keyboard navigation.
+- ✅ Supports disabled, read-only and required states.
+- ✅ Hidden native input for form submission and screen readers.
 
 ## Import
 
-Get started with importing the directives:
-
 ```typescript
-import { RdxSwitchRootDirective, RdxSwitchThumbDirective, RdxSwitchInputDirective } from '@radix-ng/primitives/switch';
+import { RdxSwitchRoot, RdxSwitchThumb, RdxSwitchInput } from '@radix-ng/primitives/switch';
 ```
+
+The API follows [Base UI Switch](https://base-ui.com/react/components/switch): a `Root` with a
+`Thumb`, plus an optional hidden `Input` for native form submission.
+
+## Anatomy
+
+```html
+<button rdxSwitchRoot [(checked)]="checked">
+    <input rdxSwitchInput />
+    <span rdxSwitchThumb></span>
+</button>
+```
+
+The `[rdxSwitchInput]` is optional — include it when the switch must submit a value with a native form.
 
 ## Examples
 
-```html
-<label rdxLabel htmlFor="airplane-mode">Airplane mode</label>
-<button id="airplane-mode" rdxSwitchRoot [(checked)]="checked">
-  <span rdxSwitchThumb></span>
-</button>
-```
+### Preselection
 
-```html
-<label rdxLabel htmlFor="airplane-mode">Airplane mode</label>
-<button id="airplane-mode" rdxSwitchRoot [(checked)]="checked">
-  <input rdxSwitchInput />
-  <span rdxSwitchThumb></span>
-</button>
-```
+Set `defaultChecked` (uncontrolled) or `[checked]` (controlled) to start in the on state.
+
+<Canvas of={SwitchStories.Preselection} />
+
+### Disabled
+
+When `disabled` is present the switch cannot be focused or toggled.
+
+<Canvas of={SwitchStories.Disabled} />
+
+### Read-only
+
+A `readonly` switch is focusable and announced, but cannot be toggled.
+
+<Canvas of={SwitchStories.Readonly} />
+
+### Reactive Forms
+
+Bind the switch to a form control via `formControlName`.
+
+<Canvas of={SwitchStories.ReactiveForm} />
 
 ## API Reference
 
 ### Root
 
-`RdxSwitchRootDirective`
-<ArgTypes of={RdxSwitchRootDirective} />
+`RdxSwitchRoot`
 
-| Data Attribute  | Value                    |
-|-----------------|--------------------------|
-| [data-state]    | "checked" or "unchecked" |
-| [data-disabled] | Present when disabled    |
+<ArgTypes of={RdxSwitchRoot} />
+
+| Data attribute     | Value                          |
+| ------------------ | ------------------------------ |
+| `[data-checked]`   | Present when the switch is on. |
+| `[data-unchecked]` | Present when the switch is off.|
+| `[data-disabled]`  | Present when disabled.         |
+| `[data-readonly]`  | Present when read-only.        |
+| `[data-required]`  | Present when required.         |
 
 ### Thumb
 
-`RdxThumbDirective`
+`RdxSwitchThumb` — reads everything from context; no inputs. Exposes `[data-checked]`,
+`[data-unchecked]`, `[data-disabled]`, `[data-readonly]`.
 
-| Data Attribute  | Value                    |
-|-----------------|--------------------------|
-| [data-state]    | "checked" or "unchecked" |
-| [data-disabled] | Present when disabled    |
+### Input
+
+`RdxSwitchInput` — the hidden native checkbox; reads everything from context. Carries `name`/`value`
+for form submission.
 
 ## Accessibility
 
@@ -67,43 +95,7 @@ Adheres to the [`switch` role requirements](https://www.w3.org/WAI/ARIA/apg/patt
 
 ### Keyboard Interactions
 
-| Key   | Description                    |
-|-------|--------------------------------|
-| Space | Toggles the component's state. |
-| Enter | Toggles the component's state. |
-
-### Screen Reader
-
-Switch component uses a hidden native checkbox element with `switch` role internally that is only visible to screen readers.
-Value to describe the component can either be provided via `label` tag using `ariaLabelledBy`, `ariaLabel` props.
-
-```html
-<label for="switch1">Remember Me</label>
-<button rdxSwitchRoot id="switch1" ></button>
-
-<span id="switch2">Remember Me</span>
-<button rdxSwitchRoot ariaLabelledBy="switch2"></button>
-
-<button rdxSwitchRoot ariaLabel="Remember Me"></button>
-```
-
-
-## Examples
-
-### Reactive Forms
-
-Switch can also be used with reactive forms. In this case, the `formControlName` property is used to bind the component to a form control.
-
-<Canvas sourceState="hidden" of={SwitchDirectiveStories.ReactiveForm} />
-
-### Disabled
-
-When `disabled` is present, the element cannot be edited and focused.
-
-<Canvas sourceState="hidden" of={SwitchDirectiveStories.Disabled} />
-
-### Preselection
-
-Enabling `checked` property displays the component as active initially.
-
-<Canvas sourceState="hidden" of={SwitchDirectiveStories.Preselection} />
+| Key     | Description                    |
+| ------- | ------------------------------ |
+| `Space` | Toggles the component's state. |
+| `Enter` | Toggles the component's state. |

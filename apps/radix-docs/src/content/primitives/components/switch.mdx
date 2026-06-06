@@ -28,27 +28,34 @@ description: .
 ## API Reference
 
 ### Root
-`RdxSwitchRootDirective`
+`RdxSwitchRoot`
 
-Contains all the parts of a switch. An `input` will also render when used within a `form` to ensure events propagate correctly.
-<PropsTable name="RdxSwitchRootDirective" />
+Contains all the parts of a switch. An optional `input` renders when used within a `form` to submit a value.
+<PropsTable name="RdxSwitchRoot" />
 
-<EmitsTable name="RdxSwitchRootDirective" />
+<EmitsTable name="RdxSwitchRoot" />
 
-### Input
-`RdxSwitchInputDirective`
 <DataAttributesTable attributes={[
-    { name: '[data-state]', value: '"open" | "closed"' },
-    { name: '[data-disabled]', value: 'Present when disabled' }
+    { name: '[data-checked]', value: 'Present when the switch is on.' },
+    { name: '[data-unchecked]', value: 'Present when the switch is off.' },
+    { name: '[data-disabled]', value: 'Present when disabled.' },
+    { name: '[data-readonly]', value: 'Present when read-only.' },
+    { name: '[data-required]', value: 'Present when required.' }
 ]} />
 
+### Input
+`RdxSwitchInput`
+
+The hidden native checkbox used for form submission and screen readers.
+
 ### Thumb
-`RdxSwitchThumbDirective`
+`RdxSwitchThumb`
 
 The thumb that is used to visually indicate whether the switch is on or off.
 <DataAttributesTable attributes={[
-    { name: '[data-state]', value: '"open" | "closed"' },
-    { name: '[data-disabled]', value: 'Present when disabled' }
+    { name: '[data-checked]', value: 'Present when the switch is on.' },
+    { name: '[data-unchecked]', value: 'Present when the switch is off.' },
+    { name: '[data-disabled]', value: 'Present when disabled.' }
 ]} />
 
 ## Accessibility
