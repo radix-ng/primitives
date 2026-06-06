@@ -1,10 +1,161 @@
-import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/addon-docs/blocks';
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as ToolbarStories from './toolbar.stories';
+import { RdxToolbarRoot } from '../src/toolbar-root';
+import { RdxToolbarButton } from '../src/toolbar-button';
+import { RdxToolbarInput } from '../src/toolbar-input';
+import { RdxToolbarGroup } from '../src/toolbar-group';
 
 <Meta title="Primitives/Toolbar" />
 
 # Toolbar
 
-####  A container for grouping a set of controls, such as buttons, Toolbar groups or dropdown menus.
+#### A container for grouping a set of controls, such as buttons, toggle groups or menus.
 
 <Canvas sourceState="hidden" of={ToolbarStories.Default} />
+
+## Features
+
+- ✅ Full keyboard navigation with roving focus.
+- ✅ Horizontal and vertical orientation.
+- ✅ Disabling the toolbar or a group cascades to its items.
+- ✅ Composes with Toggle Group, Menu, Tooltip, NumberField and more.
+
+## Import
+
+```typescript
+import {
+    RdxToolbarRoot,
+    RdxToolbarButton,
+    RdxToolbarLink,
+    RdxToolbarInput,
+    RdxToolbarGroup,
+    RdxToolbarSeparator
+} from '@radix-ng/primitives/toolbar';
+```
+
+The API follows [Base UI Toolbar](https://base-ui.com/react/components/toolbar): a `Root` owning
+roving focus over `Button`, `Link`, `Input`, `Group` and `Separator` parts.
+
+## Anatomy
+
+```html
+<div rdxToolbarRoot>
+    <div rdxToolbarGroup>
+        <button rdxToolbarButton></button>
+        <button rdxToolbarButton></button>
+    </div>
+    <div rdxToolbarSeparator></div>
+    <input rdxToolbarInput />
+    <a rdxToolbarLink></a>
+</div>
+```
+
+Stack a toolbar part on another primitive's trigger/input to compose it — e.g.
+`<button rdxToolbarButton rdxMenuTrigger>` or `<input rdxToolbarInput rdxNumberFieldInput>`.
+
+## Examples
+
+### Vertical
+
+Set `orientation="vertical"` to lay the toolbar out vertically (arrow navigation switches to Up/Down).
+
+<Canvas of={ToolbarStories.Vertical} />
+
+### Disabled
+
+A disabled `[rdxToolbarButton]` stays focusable by default (`focusableWhenDisabled`) so keyboard and
+screen-reader users can still reach it.
+
+<Canvas of={ToolbarStories.Disabled} />
+
+### Using with Menu
+
+Render a `[rdxMenuTrigger]` on a toolbar button to open a menu from the toolbar.
+
+<Canvas of={ToolbarStories.WithMenu} />
+
+### Using with Tooltip
+
+Wrap toolbar buttons with a tooltip by stacking `[rdxTooltipTrigger]`.
+
+<Canvas of={ToolbarStories.WithTooltip} />
+
+### Using with NumberField
+
+Stack `[rdxToolbarInput]` on a `[rdxNumberFieldInput]` to embed a number field. The input keeps native
+text editing — the arrow keys move the caret and only move toolbar focus once the caret reaches the
+matching edge.
+
+<Canvas of={ToolbarStories.WithNumberField} />
+
+## API Reference
+
+### ToolbarRoot
+
+`RdxToolbarRoot`
+
+<ArgTypes of={RdxToolbarRoot} />
+
+| Data attribute       | Value                        |
+| -------------------- | ---------------------------- |
+| `[data-orientation]` | `"horizontal" \| "vertical"` |
+| `[data-disabled]`    | Present when disabled.       |
+
+### ToolbarButton
+
+`RdxToolbarButton`
+
+<ArgTypes of={RdxToolbarButton} />
+
+| Data attribute       | Value                                       |
+| -------------------- | ------------------------------------------- |
+| `[data-orientation]` | `"horizontal" \| "vertical"`                |
+| `[data-disabled]`    | Present when disabled.                      |
+| `[data-focusable]`   | Present when focusable while disabled.      |
+
+### ToolbarInput
+
+`RdxToolbarInput`
+
+<ArgTypes of={RdxToolbarInput} />
+
+| Data attribute       | Value                                       |
+| -------------------- | ------------------------------------------- |
+| `[data-orientation]` | `"horizontal" \| "vertical"`                |
+| `[data-disabled]`    | Present when disabled.                      |
+| `[data-focusable]`   | Present when focusable while disabled.      |
+
+### ToolbarGroup
+
+`RdxToolbarGroup`
+
+<ArgTypes of={RdxToolbarGroup} />
+
+| Data attribute       | Value                        |
+| -------------------- | ---------------------------- |
+| `[data-orientation]` | `"horizontal" \| "vertical"` |
+| `[data-disabled]`    | Present when disabled.       |
+
+### ToolbarLink
+
+`RdxToolbarLink` — an `<a>` toolbar item; reads everything from context. Exposes `[data-orientation]`.
+
+### ToolbarSeparator
+
+`RdxToolbarSeparator` — composes the Separator primitive; accepts `orientation`.
+
+## Accessibility
+
+Adheres to the [Toolbar WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/).
+
+### Keyboard Interactions
+
+| Key          | Description                                        |
+| ------------ | -------------------------------------------------- |
+| `Tab`        | Moves focus into/out of the toolbar (single stop). |
+| `ArrowRight` | (Horizontal) Moves focus to the next item.         |
+| `ArrowLeft`  | (Horizontal) Moves focus to the previous item.     |
+| `ArrowDown`  | (Vertical) Moves focus to the next item.           |
+| `ArrowUp`    | (Vertical) Moves focus to the previous item.       |
+| `Home`       | Moves focus to the first item.                     |
+| `End`        | Moves focus to the last item.                      |

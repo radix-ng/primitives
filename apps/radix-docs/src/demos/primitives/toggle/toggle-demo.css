@@ -27,7 +27,7 @@
     opacity: 0.5;
 }
 
-.Toggle[data-state='on'] {
+.Toggle[data-pressed] {
     background-color: var(--violet-6);
     color: var(--violet-12);
 }

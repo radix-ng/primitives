@@ -44,7 +44,7 @@
     background-color: var(--violet-3);
 }
 
-.ToggleGroupItem[data-state='on'] {
+.ToggleGroupItem[data-pressed] {
     background-color: var(--violet-5);
     color: var(--violet-11);
 }

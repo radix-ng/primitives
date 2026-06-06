@@ -1,30 +1,30 @@
 import { NgModule } from '@angular/core';
-import { RdxToolbarButtonDirective } from './src/toolbar-button.directive';
-import { RdxToolbarLinkDirective } from './src/toolbar-link.directive';
-import { RdxToolbarRootDirective } from './src/toolbar-root.directive';
-import { RdxToolbarSeparatorDirective } from './src/toolbar-separator.directive';
-import { RdxToolbarToggleGroupDirective } from './src/toolbar-toggle-group.directive';
-import { RdxToolbarToggleItemDirective } from './src/toolbar-toggle-item.directive';
+import { RdxToolbarButton } from './src/toolbar-button';
+import { RdxToolbarGroup } from './src/toolbar-group';
+import { RdxToolbarInput } from './src/toolbar-input';
+import { RdxToolbarLink } from './src/toolbar-link';
+import { RdxToolbarRoot } from './src/toolbar-root';
+import { RdxToolbarSeparator } from './src/toolbar-separator';
 
-export * from './src/toolbar-button.directive';
-export * from './src/toolbar-link.directive';
-export * from './src/toolbar-root.directive';
-export * from './src/toolbar-root.token';
-export * from './src/toolbar-separator.directive';
-export * from './src/toolbar-toggle-group.directive';
-export * from './src/toolbar-toggle-item.directive';
+export * from './src/toolbar-button';
+export * from './src/toolbar-context';
+export * from './src/toolbar-group';
+export * from './src/toolbar-input';
+export * from './src/toolbar-link';
+export * from './src/toolbar-root';
+export * from './src/toolbar-separator';
 
-const _imports = [
-    RdxToolbarRootDirective,
-    RdxToolbarButtonDirective,
-    RdxToolbarLinkDirective,
-    RdxToolbarToggleGroupDirective,
-    RdxToolbarToggleItemDirective,
-    RdxToolbarSeparatorDirective
+export const toolbarImports = [
+    RdxToolbarRoot,
+    RdxToolbarButton,
+    RdxToolbarLink,
+    RdxToolbarInput,
+    RdxToolbarGroup,
+    RdxToolbarSeparator
 ];
 
 @NgModule({
-    imports: [..._imports],
-    exports: [..._imports]
+    imports: [...toolbarImports],
+    exports: [...toolbarImports]
 })
 export class RdxToolbarModule {}

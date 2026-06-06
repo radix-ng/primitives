@@ -33,6 +33,7 @@ All documentation is in the `references/` folder:
 ## Optional references
 
 - **[ux-guidelines.md](references/ux-guidelines.md)** - Demo styling system, semantic tokens, animation patterns, accessibility conventions for Storybook stories
+- **[signal-forms-readiness.md](references/signal-forms-readiness.md)** - Angular Signal Forms conformance matrix per form control, collisions, and Angular-21 prep backlog
 
 ## How to use
 
@@ -45,5 +46,6 @@ Read specific guides as needed for your task:
 - Creating branches or PRs - read [patterns.md](references/patterns.md) (Git Workflow section)
 - Investigating logs or errors - read [deployment.md](references/deployment.md) (Monitoring section)
 - Working with domain logic - read [patterns.md](references/patterns.md) (Business Rules section)
+- Adopting Angular Signal Forms or touching form controls - read [signal-forms-readiness.md](references/signal-forms-readiness.md)
 
 All guides are maintained as single source of truth for project knowledge.

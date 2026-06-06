@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
-import { RdxToggleGroupDirective, RdxToggleGroupItemDirective } from '@radix-ng/primitives/toggle-group';
+import { RdxToggle } from '@radix-ng/primitives/toggle';
+import { RdxToggleGroup } from '@radix-ng/primitives/toggle-group';
 
 @Component({
     selector: 'app-toggle-group',
-    imports: [RdxToggleGroupDirective, RdxToggleGroupItemDirective],
+    imports: [RdxToggleGroup, RdxToggle],
     template: `
-        <div rdxToggleGroup value="1" type="single">
-            <button rdxToggleGroupItem value="1">Item 1</button>
-            <button rdxToggleGroupItem value="2">Item 2</button>
+        <div [value]="['1']" rdxToggleGroup>
+            <button rdxToggle value="1">Item 1</button>
+            <button rdxToggle value="2">Item 2</button>
         </div>
     `
 })

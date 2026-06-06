@@ -1,136 +1,59 @@
-import { LucideAlignCenter, LucideAlignLeft, LucideAlignRight, LucideBold, LucideItalic } from '@lucide/angular';
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { RdxToolbarButtonDirective } from '../src/toolbar-button.directive';
-import { RdxToolbarLinkDirective } from '../src/toolbar-link.directive';
-import { RdxToolbarRootDirective } from '../src/toolbar-root.directive';
-import { RdxToolbarSeparatorDirective } from '../src/toolbar-separator.directive';
-import { RdxToolbarToggleGroupDirective } from '../src/toolbar-toggle-group.directive';
-import { RdxToolbarToggleItemDirective } from '../src/toolbar-toggle-item.directive';
+import {
+    LucideAlignCenter,
+    LucideAlignLeft,
+    LucideAlignRight,
+    LucideBold,
+    LucideItalic,
+    LucideUnderline
+} from '@lucide/angular';
+import { RdxToggle } from '@radix-ng/primitives/toggle';
+import { RdxToggleGroupWithoutFocus } from '@radix-ng/primitives/toggle-group';
+import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator } from '@radix-ng/primitives/toolbar';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
+import { ToolbarWithMenuExample } from './toolbar-with-menu';
+import menuSource from './toolbar-with-menu?raw';
+import { ToolbarWithNumberFieldExample } from './toolbar-with-number-field';
+import numberFieldSource from './toolbar-with-number-field?raw';
+import { ToolbarWithTooltipExample } from './toolbar-with-tooltip';
+import tooltipSource from './toolbar-with-tooltip?raw';
 
 const html = String.raw;
+
+const source = (code: string) => ({ docs: { source: { code, language: 'typescript' } } });
+
+const rootClass = 'border-border bg-background flex w-fit items-center gap-1 rounded-lg border p-1 shadow-sm';
+const buttonClass =
+    'text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-8 items-center justify-center rounded-md px-2.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2 data-[disabled]:pointer-events-none data-[disabled]:opacity-50';
+const toggleClass =
+    'text-muted-foreground hover:bg-muted data-[pressed]:bg-primary data-[pressed]:text-primary-foreground focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center rounded-md outline-none transition-colors focus-visible:ring-2';
+const separatorClass = 'bg-border mx-1 h-5 w-px';
+const linkClass =
+    'text-muted-foreground hover:text-foreground focus-visible:ring-ring rounded-md px-1 text-sm outline-none focus-visible:ring-2';
 
 export default {
     title: 'Primitives/Toolbar',
     decorators: [
         moduleMetadata({
             imports: [
-                RdxToolbarRootDirective,
-                RdxToolbarSeparatorDirective,
-                RdxToolbarLinkDirective,
-                RdxToolbarButtonDirective,
-                RdxToolbarToggleGroupDirective,
-                RdxToolbarToggleItemDirective,
+                RdxToolbarRoot,
+                RdxToolbarButton,
+                RdxToolbarLink,
+                RdxToolbarSeparator,
+                RdxToggleGroupWithoutFocus,
+                RdxToggle,
+                ToolbarWithMenuExample,
+                ToolbarWithTooltipExample,
+                ToolbarWithNumberFieldExample,
                 LucideBold,
                 LucideItalic,
+                LucideUnderline,
                 LucideAlignLeft,
                 LucideAlignCenter,
                 LucideAlignRight
             ]
         }),
-        componentWrapperDecorator(
-            (story) => html`
-                <div class="radix-themes light light-theme" data-radius="medium" data-scaling="100%">
-                    ${story}
-
-                    <style>
-                        a,
-                        button {
-                            all: unset;
-                        }
-
-                        .ToolbarRoot {
-                            display: flex;
-                            padding: 10px;
-                            width: 100%;
-                            min-width: max-content;
-                            border-radius: 6px;
-                            background-color: white;
-                            box-shadow: 0 2px 10px var(--black-a7);
-                        }
-
-                        .ToolbarToggleItem,
-                        .ToolbarLink,
-                        .ToolbarButton {
-                            flex: 0 0 auto;
-                            color: var(--mauve-11);
-                            height: 25px;
-                            padding: 0 5px;
-                            border-radius: 4px;
-                            display: inline-flex;
-                            font-size: 13px;
-                            line-height: 1;
-                            align-items: center;
-                            justify-content: center;
-                        }
-
-                        .ToolbarToggleItem:hover,
-                        .ToolbarLink:hover,
-                        .ToolbarButton:hover {
-                            background-color: var(--violet-3);
-                            color: var(--violet-11);
-                        }
-
-                        .ToolbarToggleItem:focus,
-                        .ToolbarLink:focus,
-                        .ToolbarButton:focus {
-                            position: relative;
-                            box-shadow: 0 0 0 2px var(--violet-7);
-                        }
-
-                        .ToolbarToggleItem {
-                            background-color: white;
-                            margin-left: 2px;
-                        }
-
-                        .ToolbarToggleItem:first-child {
-                            margin-left: 0;
-                        }
-
-                        .ToolbarToggleItem[data-state='on'] {
-                            background-color: var(--violet-5);
-                            color: var(--violet-11);
-                        }
-
-                        .ToolbarSeparator {
-                            width: 1px;
-                            background-color: var(--mauve-6);
-                            margin: 0 10px;
-                        }
-
-                        .ToolbarLink {
-                            background-color: transparent;
-                            color: var(--mauve-11);
-                            display: none;
-                            justify-content: center;
-                            align-items: center;
-                        }
-
-                        .ToolbarLink:hover {
-                            background-color: transparent;
-                            cursor: pointer;
-                        }
-
-                        @media (min-width: 520px) {
-                            .ToolbarLink {
-                                display: inline-flex;
-                            }
-                        }
-
-                        .ToolbarButton {
-                            padding-left: 10px;
-                            padding-right: 10px;
-                            color: white;
-                            background-color: var(--violet-9);
-                        }
-
-                        .ToolbarButton:hover {
-                            background-color: var(--violet-10);
-                            color: white;
-                        }
-                    </style>
-                </div>
-            `
-        )
+        tailwindDemoDecorator()
     ]
 } as Meta;
 
@@ -138,49 +61,118 @@ type Story = StoryObj;
 
 export const Default: Story = {
     render: () => ({
+        props: { alignment: ['left'] },
         template: html`
-            <div style="display: flex; flex:1;max-width:600px">
-                <div class="ToolbarRoot" rdxToolbarRoot aria-label="Formatting options">
-                    <div rdxToolbarToggleGroup orientation="horizontal" type="multiple" aria-label="Text formatting">
-                        <button class="ToolbarToggleItem" rdxToolbarToggleItem value="bold" aria-label="Bold">
-                            <svg lucideBold size="16" strokeWidth="2" style="display: flex" />
-                        </button>
-                        <button class="ToolbarToggleItem" rdxToolbarToggleItem value="italic" aria-label="Italic">
-                            <svg lucideItalic size="16" strokeWidth="2" style="display: flex" />
-                        </button>
-                        <button
-                            class="ToolbarToggleItem"
-                            rdxToolbarToggleItem
-                            value="strikethrough"
-                            aria-label="Strike through"
-                        >
-                            <svg name="Strikethrough" size="16" strokeWidth="2" style="display: flex" />
-                        </button>
-                    </div>
-                    <div class="ToolbarSeparator" rdxToolbarSeparator></div>
-                    <div rdxToolbarToggleGroup type="single" aria-label="Text alignment">
-                        <button class="ToolbarToggleItem" rdxToolbarToggleItem value="left" aria-label="Left aligned">
-                            <svg lucideAlignLeft size="16" strokeWidth="1" style="display: flex" />
-                        </button>
-                        <button
-                            class="ToolbarToggleItem"
-                            rdxToolbarToggleItem
-                            value="center"
-                            aria-label="Center aligned"
-                        >
-                            <svg lucideAlignCenter size="16" strokeWidth="1" style="display: flex" />
-                        </button>
-                        <button class="ToolbarToggleItem" rdxToolbarToggleItem value="right" aria-label="Right aligned">
-                            <svg lucideAlignRight size="16" strokeWidth="1" style="display: flex" />
-                        </button>
-                    </div>
-                    <div class="ToolbarSeparator" rdxToolbarSeparator orientation="vertical"></div>
-                    <a class="ToolbarLink" href="#" rdxToolbarLink target="_blank" style="margin-right: 10px;">
-                        Edited 2 hours ago
-                    </a>
-                    <button class="ToolbarButton" rdxToolbarButton style="margin-left: auto;">Share</button>
+            <div class="${rootClass}" rdxToolbarRoot aria-label="Formatting options">
+                <div class="flex gap-1" rdxToggleGroupWithoutFocus multiple aria-label="Text formatting">
+                    <button class="${toggleClass}" rdxToggle value="bold" aria-label="Bold">
+                        <svg lucideBold size="16"></svg>
+                    </button>
+                    <button class="${toggleClass}" rdxToggle value="italic" aria-label="Italic">
+                        <svg lucideItalic size="16"></svg>
+                    </button>
+                    <button class="${toggleClass}" rdxToggle value="underline" aria-label="Underline">
+                        <svg lucideUnderline size="16"></svg>
+                    </button>
                 </div>
+
+                <div class="${separatorClass}" rdxToolbarSeparator orientation="vertical"></div>
+
+                <div class="flex gap-1" rdxToggleGroupWithoutFocus [value]="alignment" aria-label="Text alignment">
+                    <button class="${toggleClass}" rdxToggle value="left" aria-label="Align left">
+                        <svg lucideAlignLeft size="16"></svg>
+                    </button>
+                    <button class="${toggleClass}" rdxToggle value="center" aria-label="Align center">
+                        <svg lucideAlignCenter size="16"></svg>
+                    </button>
+                    <button class="${toggleClass}" rdxToggle value="right" aria-label="Align right">
+                        <svg lucideAlignRight size="16"></svg>
+                    </button>
+                </div>
+
+                <div class="${separatorClass}" rdxToolbarSeparator orientation="vertical"></div>
+
+                <a class="${linkClass}" href="#" rdxToolbarLink>Edited 2h ago</a>
+                <button
+                    class="${buttonClass} bg-primary text-primary-foreground hover:bg-primary/90 ml-2"
+                    rdxToolbarButton
+                >
+                    Share
+                </button>
             </div>
+        `
+    })
+};
+
+export const Vertical: Story = {
+    render: () => ({
+        props: { alignment: ['left'] },
+        template: html`
+            <div
+                class="${rootClass} flex-col items-stretch"
+                rdxToolbarRoot
+                orientation="vertical"
+                aria-label="Formatting options"
+            >
+                <div
+                    class="flex flex-col gap-1"
+                    rdxToggleGroupWithoutFocus
+                    [value]="alignment"
+                    aria-label="Text alignment"
+                >
+                    <button class="${toggleClass}" rdxToggle value="left" aria-label="Align left">
+                        <svg lucideAlignLeft size="16"></svg>
+                    </button>
+                    <button class="${toggleClass}" rdxToggle value="center" aria-label="Align center">
+                        <svg lucideAlignCenter size="16"></svg>
+                    </button>
+                    <button class="${toggleClass}" rdxToggle value="right" aria-label="Align right">
+                        <svg lucideAlignRight size="16"></svg>
+                    </button>
+                </div>
+                <div class="bg-border mx-1 my-1 h-px" rdxToolbarSeparator orientation="horizontal"></div>
+                <button class="${buttonClass}" rdxToolbarButton>Share</button>
+            </div>
+        `
+    })
+};
+
+export const Disabled: Story = {
+    render: () => ({
+        template: html`
+            <div class="${rootClass}" rdxToolbarRoot aria-label="Formatting options">
+                <button class="${buttonClass}" rdxToolbarButton>Bold</button>
+                <button class="${buttonClass}" rdxToolbarButton disabled>Italic</button>
+                <div class="${separatorClass}" rdxToolbarSeparator orientation="vertical"></div>
+                <button class="${buttonClass}" rdxToolbarButton>Underline</button>
+            </div>
+        `
+    })
+};
+
+export const WithMenu: Story = {
+    parameters: source(menuSource),
+    render: () => ({
+        template: html`
+            <toolbar-with-menu />
+        `
+    })
+};
+
+export const WithTooltip: Story = {
+    parameters: source(tooltipSource),
+    render: () => ({
+        template: html`
+            <toolbar-with-tooltip />
+        `
+    })
+};
+
+export const WithNumberField: Story = {
+    parameters: source(numberFieldSource),
+    render: () => ({
+        template: html`
+            <toolbar-with-number-field />
         `
     })
 };

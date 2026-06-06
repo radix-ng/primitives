@@ -1,293 +1,151 @@
-import { Component, DebugElement, inject, Input, model } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
-import { vi } from 'vitest';
-import { RdxToggleGroupItemDirective } from '../src/toggle-group-item.directive';
-import { RdxToggleGroupDirective } from '../src/toggle-group.directive';
+import { RdxToggle } from '@radix-ng/primitives/toggle';
+import { RdxToggleGroup } from '../src/toggle-group';
 
 @Component({
-    imports: [RdxToggleGroupDirective, RdxToggleGroupItemDirective],
+    imports: [RdxToggleGroup, RdxToggle],
     template: `
         <div
-            class="ToggleGroup"
-            [value]="value()"
-            [type]="multiple"
-            (valueChange)="onValueChange($event)"
+            [(value)]="value"
+            [multiple]="multiple()"
+            [disabled]="disabled()"
+            [orientation]="orientation()"
             rdxToggleGroup
             aria-label="Text alignment"
         >
-            <button class="ToggleGroupItem" rdxToggleGroupItem value="left" aria-label="Left aligned">Left</button>
-            <button class="ToggleGroupItem" rdxToggleGroupItem value="center" aria-label="Center aligned">
-                Center
-            </button>
-            <button class="ToggleGroupItem" rdxToggleGroupItem value="right" aria-label="Right aligned">Right</button>
+            <button rdxToggle value="left" aria-label="Left aligned">Left</button>
+            <button rdxToggle value="center" aria-label="Center aligned">Center</button>
+            <button rdxToggle value="right" aria-label="Right aligned">Right</button>
         </div>
     `
 })
 class ToggleGroupTestComponent {
-    readonly value = model<string | string[]>('center');
-
-    @Input() multiple: 'single' | 'multiple' = 'single';
-
-    onValueChange(value: string | string[]): void {
-        this.value.set(value);
-    }
+    readonly value = signal<string[] | undefined>(['center']);
+    readonly multiple = signal(false);
+    readonly disabled = signal(false);
+    readonly orientation = signal<'horizontal' | 'vertical'>('horizontal');
 }
 
+describe('RdxToggleGroup', () => {
+    let fixture: ComponentFixture<ToggleGroupTestComponent>;
+    let component: ToggleGroupTestComponent;
+    let group: HTMLElement;
+    let items: HTMLButtonElement[];
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [ToggleGroupTestComponent] });
+        fixture = TestBed.createComponent(ToggleGroupTestComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        group = fixture.debugElement.query(By.css('[rdxToggleGroup]')).nativeElement;
+        items = fixture.debugElement.queryAll(By.css('button')).map((d) => d.nativeElement);
+    });
+
+    it('exposes role, orientation and pressed state', () => {
+        expect(group.getAttribute('role')).toBe('group');
+        expect(group.getAttribute('data-orientation')).toBe('horizontal');
+        expect(items[1].getAttribute('aria-pressed')).toBe('true');
+        expect(items[1].getAttribute('data-pressed')).toBe('');
+        expect(items[0].getAttribute('data-pressed')).toBeNull();
+    });
+
+    it('changes the value on item click (single)', () => {
+        items[0].click();
+        fixture.detectChanges();
+        expect(component.value()).toEqual(['left']);
+        expect(items[0].getAttribute('data-pressed')).toBe('');
+        expect(items[1].getAttribute('data-pressed')).toBeNull();
+    });
+
+    it('reflects programmatic value changes', () => {
+        component.value.set(['right']);
+        fixture.detectChanges();
+        expect(items[2].getAttribute('aria-pressed')).toBe('true');
+    });
+
+    it('supports multiple selection and exposes data-multiple', () => {
+        component.multiple.set(true);
+        component.value.set(['center']);
+        fixture.detectChanges();
+        expect(group.getAttribute('data-multiple')).toBe('');
+
+        items[0].click();
+        items[2].click();
+        fixture.detectChanges();
+        expect(component.value()).toEqual(['center', 'left', 'right']);
+    });
+
+    it('disables the whole group', () => {
+        component.disabled.set(true);
+        fixture.detectChanges();
+        expect(group.getAttribute('data-disabled')).toBe('');
+        expect(items[0].getAttribute('data-disabled')).toBe('');
+
+        items[0].click();
+        fixture.detectChanges();
+        expect(component.value()).toEqual(['center']);
+    });
+
+    it('exposes vertical orientation', () => {
+        component.orientation.set('vertical');
+        fixture.detectChanges();
+        expect(group.getAttribute('data-orientation')).toBe('vertical');
+    });
+});
+
 @Component({
-    imports: [RdxToggleGroupDirective, RdxToggleGroupItemDirective, ReactiveFormsModule],
+    imports: [RdxToggleGroup, RdxToggle, ReactiveFormsModule],
     template: `
-        <form [formGroup]="formGroup">
-            <div
-                class="ToggleGroup"
-                [type]="multiple"
-                rdxToggleGroup
-                formControlName="alignment"
-                aria-label="Text alignment"
-            >
-                <button class="ToggleGroupItem" rdxToggleGroupItem value="left" aria-label="Left aligned">Left</button>
-                <button class="ToggleGroupItem" rdxToggleGroupItem value="center" aria-label="Center aligned">
-                    Center
-                </button>
-                <button class="ToggleGroupItem" rdxToggleGroupItem value="right" aria-label="Right aligned">
-                    Right
-                </button>
+        <form [formGroup]="form">
+            <div rdxToggleGroup formControlName="alignment" aria-label="Text alignment">
+                <button rdxToggle value="left">Left</button>
+                <button rdxToggle value="center">Center</button>
+                <button rdxToggle value="right">Right</button>
             </div>
         </form>
     `
 })
 class ReactiveFormToggleGroup {
     private readonly fb = inject(FormBuilder);
-
-    formGroup: FormGroup;
-
-    @Input() multiple: 'single' | 'multiple' = 'single';
-
-    constructor() {
-        this.formGroup = this.fb.group({
-            alignment: new FormControl('center', Validators.required)
-        });
-    }
+    form: FormGroup = this.fb.group({ alignment: [['center']] });
 }
 
-describe('RdxToggleGroupDirective', () => {
-    let component: ToggleGroupTestComponent;
-    let fixture: ComponentFixture<ToggleGroupTestComponent>;
-    let items: DebugElement[];
-
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            imports: [ToggleGroupTestComponent]
-        }).compileComponents();
-    });
-
-    beforeEach(() => {
-        fixture = TestBed.createComponent(ToggleGroupTestComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-
-        items = fixture.debugElement.queryAll(By.css('.ToggleGroupItem'));
-    });
-
-    it('should initialize with correct value', () => {
-        expect(component.value()).toBe('center');
-
-        expect(items[0].nativeElement.getAttribute('aria-pressed')).toBe('false');
-        expect(items[1].nativeElement.getAttribute('aria-pressed')).toBe('true');
-        expect(items[2].nativeElement.getAttribute('aria-pressed')).toBe('false');
-
-        expect(items[0].nativeElement.getAttribute('data-state')).toBe('off');
-        expect(items[1].nativeElement.getAttribute('data-state')).toBe('on');
-        expect(items[2].nativeElement.getAttribute('data-state')).toBe('off');
-    });
-
-    it('should change value on item click', () => {
-        items[0].nativeElement.click();
-        fixture.detectChanges();
-
-        expect(component.value()).toBe('left');
-
-        expect(items[0].nativeElement.getAttribute('aria-pressed')).toBe('true');
-        expect(items[1].nativeElement.getAttribute('aria-pressed')).toBe('false');
-        expect(items[2].nativeElement.getAttribute('aria-pressed')).toBe('false');
-
-        expect(items[0].nativeElement.getAttribute('data-state')).toBe('on');
-        expect(items[1].nativeElement.getAttribute('data-state')).toBe('off');
-        expect(items[2].nativeElement.getAttribute('data-state')).toBe('off');
-    });
-
-    it('should emit valueChange event', () => {
-        const spy = vi.spyOn(component, 'onValueChange');
-
-        items[2].nativeElement.click();
-        fixture.detectChanges();
-
-        expect(spy).toHaveBeenCalledWith('right');
-    });
-
-    it('should update UI when value changes programmatically', () => {
-        component.value.set('right');
-        fixture.detectChanges();
-
-        expect(items[0].nativeElement.getAttribute('aria-pressed')).toBe('false');
-        expect(items[1].nativeElement.getAttribute('aria-pressed')).toBe('false');
-        expect(items[2].nativeElement.getAttribute('aria-pressed')).toBe('true');
-
-        expect(items[0].nativeElement.getAttribute('data-state')).toBe('off');
-        expect(items[1].nativeElement.getAttribute('data-state')).toBe('off');
-        expect(items[2].nativeElement.getAttribute('data-state')).toBe('on');
-    });
-
-    it('should handle multiple selections when enabled', () => {
-        component.multiple = 'multiple';
-        component.value.set(['center']);
-        fixture.detectChanges();
-
-        items[0].nativeElement.click();
-        items[2].nativeElement.click();
-        fixture.detectChanges();
-
-        expect(component.value()).toEqual(['center', 'left', 'right']);
-
-        expect(items[0].nativeElement.getAttribute('data-state')).toBe('on');
-        expect(items[1].nativeElement.getAttribute('data-state')).toBe('on');
-        expect(items[2].nativeElement.getAttribute('data-state')).toBe('on');
-    });
-
-    it('should respect disabled state', () => {
-        items[1].nativeElement.disabled = true;
-        fixture.detectChanges();
-
-        items[1].nativeElement.click();
-        fixture.detectChanges();
-
-        expect(component.value()).toBe('center');
-
-        expect(items[1].nativeElement.getAttribute('data-disabled')).toBe(null);
-    });
-});
-
-describe('RdxToggleGroupDirective with ReactiveFormsModule', () => {
-    let component: ReactiveFormToggleGroup;
+describe('RdxToggleGroup with ReactiveFormsModule', () => {
     let fixture: ComponentFixture<ReactiveFormToggleGroup>;
-    let formGroup: FormGroup;
-    let items: DebugElement[];
-
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            imports: [ReactiveFormToggleGroup]
-        }).compileComponents();
-    });
+    let component: ReactiveFormToggleGroup;
+    let items: HTMLButtonElement[];
 
     beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [ReactiveFormToggleGroup] });
         fixture = TestBed.createComponent(ReactiveFormToggleGroup);
         component = fixture.componentInstance;
-        formGroup = component.formGroup;
         fixture.detectChanges();
-
-        items = fixture.debugElement.queryAll(By.css('.ToggleGroupItem'));
+        items = fixture.debugElement.queryAll(By.css('button')).map((d) => d.nativeElement);
     });
 
-    it('should initialize with form control value', () => {
-        expect(formGroup.value.alignment).toBe('center');
-
-        expect(items[0].nativeElement.getAttribute('aria-pressed')).toBe('false');
-        expect(items[1].nativeElement.getAttribute('aria-pressed')).toBe('true');
-        expect(items[2].nativeElement.getAttribute('aria-pressed')).toBe('false');
+    it('initializes pressed state from the form control', () => {
+        expect(items[1].getAttribute('aria-pressed')).toBe('true');
     });
 
-    it('should update form control value on item click', () => {
-        items[0].nativeElement.click();
+    it('updates the form control value on click', () => {
+        items[0].click();
         fixture.detectChanges();
-
-        expect(formGroup.value.alignment).toBe('left');
-
-        items[2].nativeElement.click();
-        fixture.detectChanges();
-
-        expect(formGroup.value.alignment).toBe('right');
+        expect(component.form.value.alignment).toEqual(['left']);
     });
 
-    it('should reflect form control programmatic changes', () => {
-        formGroup.get('alignment')?.setValue('left');
+    it('reflects programmatic form changes and disabling', () => {
+        component.form.get('alignment')?.setValue(['right']);
         fixture.detectChanges();
+        expect(items[2].getAttribute('aria-pressed')).toBe('true');
 
-        expect(items[0].nativeElement.getAttribute('aria-pressed')).toBe('true');
-        expect(items[1].nativeElement.getAttribute('aria-pressed')).toBe('false');
-
-        formGroup.get('alignment')?.setValue('right');
+        component.form.get('alignment')?.disable();
         fixture.detectChanges();
-
-        expect(items[0].nativeElement.getAttribute('aria-pressed')).toBe('false');
-        expect(items[2].nativeElement.getAttribute('aria-pressed')).toBe('true');
-    });
-
-    it('should handle form control disable/enable', () => {
-        formGroup.get('alignment')?.disable();
+        items[0].click();
         fixture.detectChanges();
-
-        expect(items[0].nativeElement.disabled).toBe(true);
-        expect(items[1].nativeElement.disabled).toBe(true);
-        expect(items[2].nativeElement.disabled).toBe(true);
-
-        items[0].nativeElement.click();
-        fixture.detectChanges();
-
-        expect(formGroup.value.alignment).toBe('center');
-
-        formGroup.get('alignment')?.enable();
-        fixture.detectChanges();
-
-        items[0].nativeElement.click();
-        fixture.detectChanges();
-
-        expect(formGroup.value.alignment).toBe('left');
-    });
-
-    it('should validate required form control', () => {
-        expect(formGroup.valid).toBe(true);
-
-        formGroup.get('alignment')?.reset();
-        fixture.detectChanges();
-
-        expect(formGroup.invalid).toBe(true);
-        expect(formGroup.hasError('required', 'alignment')).toBe(true);
-
-        items[1].nativeElement.click();
-        fixture.detectChanges();
-
-        expect(formGroup.valid).toBe(true);
-    });
-
-    it('should handle multiple selection with form array', () => {
-        component.multiple = 'multiple';
-        fixture.detectChanges();
-
-        items[0].nativeElement.click(); // left
-        items[2].nativeElement.click(); // right
-        fixture.detectChanges();
-
-        expect(formGroup.value.alignment).toEqual(['center', 'left', 'right']);
-
-        items[1].nativeElement.click(); // center
-        fixture.detectChanges();
-
-        expect(formGroup.value.alignment).toEqual(['left', 'right']);
-    });
-
-    it('should handle form reset', () => {
-        items[0].nativeElement.click();
-        fixture.detectChanges();
-        expect(formGroup.value.alignment).toBe('left');
-
-        formGroup.reset();
-        fixture.detectChanges();
-
-        expect(formGroup.value.alignment).toBe(null);
-
-        expect(items[0].nativeElement.getAttribute('aria-pressed')).toBe('false');
-        expect(items[1].nativeElement.getAttribute('aria-pressed')).toBe('false');
-        expect(items[2].nativeElement.getAttribute('aria-pressed')).toBe('false');
+        // Disabled group ignores interaction — the value is unchanged.
+        expect(component.form.getRawValue().alignment).toEqual(['right']);
     });
 });

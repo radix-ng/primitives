@@ -6,21 +6,22 @@ import {
     LucideAlignRight as AlignRight,
     LucideDynamicIcon
 } from '@lucide/angular';
-import { RdxToggleGroupDirective, RdxToggleGroupItemDirective } from '@radix-ng/primitives/toggle-group';
+import { RdxToggle } from '@radix-ng/primitives/toggle';
+import { RdxToggleGroup } from '@radix-ng/primitives/toggle-group';
 
 @Component({
     selector: 'primitive-toggle-group-demo',
     standalone: true,
-    imports: [RdxToggleGroupDirective, RdxToggleGroupItemDirective, LucideDynamicIcon],
+    imports: [RdxToggleGroup, RdxToggle, LucideDynamicIcon],
     template: `
-        <div class="ToggleGroup" rdxToggleGroup value="center" aria-label="Text alignment">
-            <button class="ToggleGroupItem" rdxToggleGroupItem value="left" aria-label="Left aligned">
+        <div class="ToggleGroup" [value]="['center']" rdxToggleGroup aria-label="Text alignment">
+            <button class="ToggleGroupItem" rdxToggle value="left" aria-label="Left aligned">
                 <svg [lucideIcon]="AlignLeft" size="16" />
             </button>
-            <button class="ToggleGroupItem" rdxToggleGroupItem value="center" aria-label="Center aligned">
+            <button class="ToggleGroupItem" rdxToggle value="center" aria-label="Center aligned">
                 <svg [lucideIcon]="AlignCenter" size="16" />
             </button>
-            <button class="ToggleGroupItem" rdxToggleGroupItem value="right" aria-label="Right aligned">
+            <button class="ToggleGroupItem" rdxToggle value="right" aria-label="Right aligned">
                 <svg [lucideIcon]="AlignRight" size="16" />
             </button>
         </div>

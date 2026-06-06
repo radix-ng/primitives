@@ -14,11 +14,11 @@ import { forwardRef, InjectionToken, Provider, Type } from '@angular/core';
  *
  * @Directive({
  *   providers: [
- *     provideToken(RdxToggleGroupToken, RdxToggleGroupDirective),
- *     provideValueAccessor(RdxToggleGroupDirective)
+ *     provideToken(RdxFooToken, RdxFooDirective),
+ *     provideValueAccessor(RdxFooDirective)
  *   ]
  * })
- * export class RdxToggleGroupDirective {}
+ * export class RdxFooDirective {}
  */
 export function provideToken<T>(token: InjectionToken<T>, type: Type<unknown>): Provider {
     return {

@@ -21,20 +21,24 @@ import { focusFirst, generateId, getFocusIntent, wrapArray } from './utils';
 @Directive({
     selector: '[rdxRovingFocusItem]',
     host: {
-        '[attr.tabindex]': 'focusable() && isCurrentTabStop() ? 0 : -1',
-        '[attr.data-orientation]': 'rootContext.orientation()',
+        '[attr.tabindex]': 'tabindex()',
+        '[attr.data-orientation]': 'rootContext?.orientation()',
         '[attr.data-active]': 'active() ? "true" : undefined',
         '[attr.data-disabled]': '!focusable() ? "" : undefined',
         '(mousedown)': 'handleMouseDown($event)',
         '(keydown)': 'handleKeydown($event)',
-        '(focus)': 'rootContext.onItemFocus(id())'
+        '(focus)': 'onFocus()'
     }
 })
 export class RdxRovingFocusItemDirective {
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
     private readonly elementRef = inject(ElementRef);
 
-    protected readonly rootContext = injectRovingFocusGroupContext()!;
+    /**
+     * The enclosing roving-focus group. Optional: when the item is used outside a group
+     * (e.g. a standalone Toggle), it degrades to a plain element and does not manage focus.
+     */
+    protected readonly rootContext = injectRovingFocusGroupContext(true);
 
     /**
      * When false, item will not be focusable.
@@ -62,26 +66,38 @@ export class RdxRovingFocusItemDirective {
     // Stable fallback id, generated once so it never changes across recomputations of `id`.
     private readonly generatedId = generateId();
     protected readonly id = computed(() => this.tabStopId() || this.generatedId);
-    protected readonly isCurrentTabStop = computed(() => this.rootContext.currentTabStopId() === this.id());
+    protected readonly isCurrentTabStop = computed(() => this.rootContext?.currentTabStopId() === this.id());
 
     protected readonly focusable = linkedSignal(() => this.focusableInput());
     protected readonly active = linkedSignal(() => this.activeInput());
     private readonly tabStopId = linkedSignal(() => this.tabStopIdInput());
+
+    /**
+     * The roving tabindex. Without a group the item keeps its natural tab order (`null`); inside a
+     * group exactly one focusable item is a tab stop (`0`), the rest are reachable only via arrows (`-1`).
+     */
+    protected readonly tabindex = computed(() => {
+        if (!this.rootContext) {
+            return null;
+        }
+        return this.focusable() && this.isCurrentTabStop() ? 0 : -1;
+    });
 
     constructor() {
         // Keep the group's registry in sync with `focusable`, which can change after creation
         // (e.g. toolbar/navigation-menu toggle it via `setFocusable`). The cleanup also runs on
         // destroy, so a single effect covers register/unregister for the whole lifecycle.
         effect((onCleanup) => {
-            if (!this.focusable()) return;
+            const rootContext = this.rootContext;
+            if (!rootContext || !this.focusable()) return;
 
             const element = this.elementRef.nativeElement;
             // `registerItem` reads and writes the group's `focusableItems` signal; calling it
             // untracked prevents the effect from depending on its own write and looping.
             const tabStopId = this.id();
-            untracked(() => this.rootContext.registerItem(element, tabStopId));
+            untracked(() => rootContext.registerItem(element, tabStopId));
 
-            onCleanup(() => this.rootContext.unregisterItem(element, tabStopId));
+            onCleanup(() => rootContext.unregisterItem(element, tabStopId));
         });
     }
 
@@ -98,6 +114,11 @@ export class RdxRovingFocusItemDirective {
     }
 
     /** @ignore */
+    onFocus() {
+        this.rootContext?.onItemFocus(this.id());
+    }
+
+    /** @ignore */
     handleMouseDown(event: Event) {
         if (!this.focusable()) {
             // We prevent focusing non-focusable items on `mousedown`.
@@ -105,7 +126,7 @@ export class RdxRovingFocusItemDirective {
             event.preventDefault();
         } else {
             // Safari doesn't focus a button when clicked so we run our logic on mousedown also
-            this.rootContext.onItemFocus(this.id());
+            this.rootContext?.onItemFocus(this.id());
         }
     }
 
@@ -117,15 +138,18 @@ export class RdxRovingFocusItemDirective {
      * @ignore
      */
     handleKeydown(event: Event) {
+        const rootContext = this.rootContext;
+        if (!rootContext) return;
+
         const keyEvent = event as KeyboardEvent;
         if (keyEvent.key === 'Tab' && keyEvent.shiftKey) {
-            this.rootContext.onItemShiftTab();
+            rootContext.onItemShiftTab();
             return;
         }
 
         if (event.target !== this.elementRef.nativeElement) return;
 
-        const focusIntent = getFocusIntent(keyEvent, this.rootContext.orientation(), this.rootContext.dir());
+        const focusIntent = getFocusIntent(keyEvent, rootContext.orientation(), rootContext.dir());
 
         if (focusIntent !== undefined) {
             if (
@@ -139,7 +163,7 @@ export class RdxRovingFocusItemDirective {
 
             event.preventDefault();
 
-            let candidateNodes = this.rootContext.focusableItems().filter((item) => item.dataset['disabled'] !== '');
+            let candidateNodes = rootContext.focusableItems().filter((item) => item.dataset['disabled'] !== '');
 
             if (focusIntent === 'last') {
                 candidateNodes.reverse();
@@ -147,7 +171,7 @@ export class RdxRovingFocusItemDirective {
                 if (focusIntent === 'prev') candidateNodes.reverse();
                 const currentIndex = candidateNodes.indexOf(this.elementRef.nativeElement);
 
-                candidateNodes = this.rootContext.loop()
+                candidateNodes = rootContext.loop()
                     ? wrapArray(candidateNodes, currentIndex + 1)
                     : candidateNodes.slice(currentIndex + 1);
             }

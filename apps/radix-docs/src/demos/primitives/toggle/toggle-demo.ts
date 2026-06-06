@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 
 import { LucideItalic as Italic, LucideDynamicIcon } from '@lucide/angular';
-import { RdxToggleDirective } from '@radix-ng/primitives/toggle';
+import { RdxToggle } from '@radix-ng/primitives/toggle';
 
 @Component({
     selector: 'primitive-toggle-demo',
     standalone: true,
-    imports: [RdxToggleDirective, LucideDynamicIcon],
+    imports: [RdxToggle, LucideDynamicIcon],
     template: `
         <button class="Toggle" rdxToggle aria-label="Toggle italic">
             <svg [lucideIcon]="Italic" size="16" />

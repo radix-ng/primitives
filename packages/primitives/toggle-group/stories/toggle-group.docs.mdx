@@ -1,82 +1,95 @@
-import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/addon-docs/blocks';
-import * as ToggleGroupDirectiveStories from './toggle-group.stories';
-import { RdxToggleGroupDirective } from '../src/toggle-group.directive';
-import { RdxToggleGroupItemDirective } from '../src/toggle-group-item.directive';
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as ToggleGroupStories from './toggle-group.stories';
+import { RdxToggleGroup } from '../src/toggle-group';
 
 <Meta title="Primitives/Toggle Group" />
 
 # Toggle Group
 
-#### A set of two-\_state buttons that can be toggled on or off.
+#### A set of two-state buttons that can be toggled on or off.
 
-<Canvas sourceState="hidden" of={ToggleGroupDirectiveStories.Default} />
+<Canvas sourceState="hidden" of={ToggleGroupStories.Default} />
 
 ## Features
 
-- ✅ Full keyboard navigation.
-- ✅ Supports horizontal/vertical orientation.
-- ✅ Support single and multiple pressed buttons.
+- ✅ Full keyboard navigation with roving focus.
+- ✅ Supports horizontal and vertical orientation.
+- ✅ Single or multiple pressed items.
 - ✅ Can be controlled or uncontrolled.
 
 ## Import
 
-Get started with importing the directives:
-
 ```typescript
-import {
-  RdxToggleGroupDirective,
-  RdxToggleGroupItemDirective
-} from '@radix-ng/primitives/toggle-group';
+import { RdxToggleGroup } from '@radix-ng/primitives/toggle-group';
+import { RdxToggle } from '@radix-ng/primitives/toggle';
+```
+
+The API follows [Base UI Toggle Group](https://base-ui.com/react/components/toggle-group): a
+`ToggleGroup` whose children are plain `Toggle` items. The group `value` is always an array.
+
+## Anatomy
+
+```html
+<div rdxToggleGroup [value]="['center']" aria-label="Text alignment">
+    <button rdxToggle value="left"></button>
+    <button rdxToggle value="center"></button>
+    <button rdxToggle value="right"></button>
+</div>
 ```
 
 ## Examples
 
-```html
-<div class="ToggleGroup" rdxToggleGroup value="center" aria-label="Text alignment">
-  <button class="ToggleGroupItem" rdxToggleGroupItem value="left" aria-label="Left aligned">
-    <svg lucideAlignLeft size="16"></svg>
-  </button>
-  <button class="ToggleGroupItem" rdxToggleGroupItem value="center" aria-label="Center aligned">
-    <svg lucideAlignCenter size="16"></svg>
-  </button>
-  <button class="ToggleGroupItem" rdxToggleGroupItem value="right" aria-label="Right aligned">
-    <svg lucideAlignRight size="16"></svg>
-  </button>
-</div>
-```
+### Multiple
+
+Set `multiple` to allow more than one item to be pressed at the same time.
+
+<Canvas of={ToggleGroupStories.Multiple} />
+
+### Disabled
+
+Disable a single `[rdxToggle]` with `disabled`, or the whole group with `disabled` on the root.
+
+<Canvas of={ToggleGroupStories.DisabledItem} />
+<Canvas of={ToggleGroupStories.DisabledGroup} />
+
+### Two-way binding
+
+Bind `[(value)]` to read and write the pressed values.
+
+<Canvas of={ToggleGroupStories.TwoWayBinding} />
 
 ## API Reference
 
 ### Root
 
-`RdxToggleGroupDirective`
+`RdxToggleGroup`
 
-<ArgTypes of={RdxToggleGroupDirective} />
+<ArgTypes of={RdxToggleGroup} />
 
-| Data Attribute     | Value                      |
-|--------------------|----------------------------|
-| [data-orientation] | "vertical" or "horizontal" |
+| Data attribute       | Value                          |
+| -------------------- | ------------------------------ |
+| `[data-orientation]` | `"horizontal" \| "vertical"`   |
+| `[data-disabled]`    | Present when the group is disabled. |
+| `[data-multiple]`    | Present when multiple selection is enabled. |
 
 ### Item
 
-`RdxToggleGroupItemDirective`
-
-<ArgTypes of={RdxToggleGroupItemDirective} />
+`RdxToggle` — see the [Toggle](?path=/docs/primitives-toggle--docs) page. Each item needs a `value`.
 
 ## Accessibility
 
-Uses [roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.2/examples/radio/radio.html) to manage focus movement among items.
+Uses [roving tabindex](https://www.w3.org/WAI/ARIA/apg/patterns/) to manage focus among items.
 
 ### Keyboard Interactions
 
-| Key          | Description                                                            |
-|--------------|------------------------------------------------------------------------|
-| `Tab`        | Moves focus to either the pressed item or the first item in the group. |
-| `Space`      | Activates/deactivates the item.                                        |
-| `Enter`      | Activates/deactivates the item.                                        |
-| `ArrowDown`  | Moves focus to the next item in the group.                             |
-| `ArrowRight` | Moves focus to the next item in the group.                             |
-| `ArrowUp`    | Moves focus to the previous item in the group.                         |
-| `ArrowLeft`  | Moves focus to the previous item in the group.                         |
-| `Home`       | Moves focus to the first item.                                         |
-| `End`        | Moves focus to the last item.                                          |
+| Key          | Description                                        |
+| ------------ | -------------------------------------------------- |
+| `Tab`        | Moves focus to the pressed item or the first item. |
+| `Space`      | Activates/deactivates the focused item.            |
+| `Enter`      | Activates/deactivates the focused item.            |
+| `ArrowDown`  | Moves focus to the next item.                      |
+| `ArrowRight` | Moves focus to the next item.                      |
+| `ArrowUp`    | Moves focus to the previous item.                  |
+| `ArrowLeft`  | Moves focus to the previous item.                  |
+| `Home`       | Moves focus to the first item.                     |
+| `End`        | Moves focus to the last item.                      |

@@ -21,19 +21,17 @@ description: A set of two-state buttons that can be toggled on or off.
 Get started with importing the directives:
 
 ```typescript
-import {
-  RdxToggleGroupDirective,
-  RdxToggleGroupItemDirective
-} from '@radix-ng/primitives/toggle-group';
+import { RdxToggleGroup } from '@radix-ng/primitives/toggle-group';
+import { RdxToggle } from '@radix-ng/primitives/toggle';
 ```
 
 ## Anatomy
 
 ```html
-<div rdxToggleGroup>
-  <button rdxToggleGroupItem></button>
-  <button rdxToggleGroupItem></button>
-  <button rdxToggleGroupItem></button>
+<div rdxToggleGroup [value]="['center']">
+  <button rdxToggle value="left"></button>
+  <button rdxToggle value="center"></button>
+  <button rdxToggle value="right"></button>
 </div>
 ```
 
@@ -41,31 +39,39 @@ import {
 
 ### Root
 
-`RdxToggleGroupDirective`
+`RdxToggleGroup`
 
-Contains all the parts of a toggle group.
+Contains all the parts of a toggle group. The `value` is always an array.
 
-<PropsTable name="RdxToggleGroupDirective" />
+<PropsTable name="RdxToggleGroup" />
 
 <DataAttributesTable attributes={[
     {
         name: '[data-orientation]',
         value: '"vertical" | "horizontal"'
     },
+    {
+        name: '[data-disabled]',
+        value: 'Present when the group is disabled.'
+    },
+    {
+        name: '[data-multiple]',
+        value: 'Present when multiple selection is enabled.'
+    },
 ]} />
 
 ### Item
 
-`RdxToggleGroupItemDirective`
+`RdxToggle`
 
-An item in the group.
+An item in the group — see the Toggle page. Each item needs a `value`.
 
-<PropsTable name="RdxToggleGroupItemDirective" />
+<PropsTable name="RdxToggle" />
 
 <DataAttributesTable attributes={[
     {
-        name: '[data-state]',
-        value: '"on" | "off"'
+        name: '[data-pressed]',
+        value: 'Present when the item is on.'
     },
     {
         name: '[data-disabled]',
