@@ -1,17 +1,45 @@
+import {
+    RdxTabsIndicator,
+    RdxTabsList,
+    RdxTabsPanel,
+    RdxTabsPanelPresence,
+    RdxTabsRoot,
+    RdxTabsTab
+} from '@radix-ng/primitives/tabs';
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
-import { RdxTabsContentDirective } from '../src/tabs-content.directive';
-import { RdxTabsListDirective } from '../src/tabs-list.directive';
-import { RdxTabsRootDirective } from '../src/tabs-root.directive';
-import { RdxTabsTriggerDirective } from '../src/tabs-trigger.directive';
+import { TabsAnimatedExample } from './tabs-animated';
+import animatedSource from './tabs-animated?raw';
+import { TabsIndicatorExample } from './tabs-indicator';
+import indicatorSource from './tabs-indicator?raw';
+import { TabsKeyframesExample } from './tabs-keyframes';
+import keyframesSource from './tabs-keyframes?raw';
 
 const html = String.raw;
+
+const source = (code: string) => ({ docs: { source: { code, language: 'typescript' } } });
+
+const rootClass = 'border-border bg-background text-foreground w-[420px] overflow-hidden rounded-xl border shadow-sm';
+const listClass = 'border-border bg-muted/30 flex border-b';
+const tabClass =
+    'text-muted-foreground hover:text-foreground data-[active]:text-foreground data-[active]:bg-background focus-visible:ring-ring relative inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-colors outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 data-[active]:shadow-[inset_0_-2px_0_0_var(--primary)]';
+const panelClass = 'bg-background text-foreground p-6 text-sm leading-6 outline-none';
 
 export default {
     title: 'Primitives/Tabs',
     decorators: [
         moduleMetadata({
-            imports: [RdxTabsRootDirective, RdxTabsListDirective, RdxTabsTriggerDirective, RdxTabsContentDirective]
+            imports: [
+                RdxTabsRoot,
+                RdxTabsList,
+                RdxTabsTab,
+                RdxTabsPanel,
+                RdxTabsPanelPresence,
+                RdxTabsIndicator,
+                TabsIndicatorExample,
+                TabsAnimatedExample,
+                TabsKeyframesExample
+            ]
         }),
         tailwindDemoDecorator()
     ]
@@ -20,204 +48,62 @@ export default {
 type Story = StoryObj;
 
 export const Default: Story = {
-    render: (args) => ({
-        props: args,
+    render: () => ({
         template: html`
-            <div
-                class="border-border bg-background text-foreground overflow-hidden rounded-xl border shadow-sm"
-                rdxTabsRoot
-                defaultValue="tab1"
-            >
-                <div class="border-border bg-muted/30 border-b" rdxTabsList>
-                    <button
-                        class="bg-background text-foreground data-[state=inactive]:text-muted-foreground focus-visible:ring-ring inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-colors outline-none first:rounded-tl-xl last:rounded-tr-xl focus-visible:ring-2 data-[state=active]:shadow-[inset_0_-2px_0_0_var(--primary)] data-[state=inactive]:bg-transparent"
-                        rdxTabsTrigger
-                        type="button"
-                        value="tab1"
-                    >
-                        Account
-                    </button>
-                    <button
-                        class="bg-background text-foreground data-[state=inactive]:text-muted-foreground focus-visible:ring-ring inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-colors outline-none first:rounded-tl-xl last:rounded-tr-xl focus-visible:ring-2 data-[state=active]:shadow-[inset_0_-2px_0_0_var(--primary)] data-[state=inactive]:bg-transparent"
-                        rdxTabsTrigger
-                        type="button"
-                        value="tab2"
-                    >
-                        Password
-                    </button>
+            <div class="${rootClass}" rdxTabsRoot defaultValue="account">
+                <div class="${listClass}" rdxTabsList>
+                    <button class="${tabClass}" rdxTabsTab value="account">Account</button>
+                    <button class="${tabClass}" rdxTabsTab value="password">Password</button>
                 </div>
-                <div class="bg-background p-6 outline-none" rdxTabsContent value="tab1">
-                    <p class="text-foreground text-sm leading-6">
-                        Make changes to your account here. Click save when you're done.
-                    </p>
-                    <fieldset class="mt-5 flex flex-col gap-2">
-                        <label class="text-foreground text-sm font-medium" for="name">Name</label>
-                        <input
-                            class="bg-background text-foreground border-border focus-visible:ring-ring h-9 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2"
-                            id="name"
-                            value="Pedro Duarte"
-                        />
-                    </fieldset>
-                    <fieldset class="mt-5 flex flex-col gap-2">
-                        <label class="text-foreground text-sm font-medium" for="username">Username</label>
-                        <input
-                            class="bg-background text-foreground border-border focus-visible:ring-ring h-9 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2"
-                            id="username"
-                            value="@peduarte"
-                        />
-                    </fieldset>
-                    <div class="mt-5 flex justify-end">
-                        <button
-                            class="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-9 items-center justify-center rounded-md px-4 text-sm font-medium shadow-sm transition-colors"
-                            type="button"
-                        >
-                            Save changes
-                        </button>
-                    </div>
+                <div class="${panelClass}" rdxTabsPanel value="account">
+                    Make changes to your account here. Click save when you're done.
                 </div>
-                <div class="bg-background p-6 outline-none" rdxTabsContent value="tab2">
-                    <p class="text-foreground text-sm leading-6">
-                        Change your password here. After saving, you'll be logged out.
-                    </p>
-                    <fieldset class="mt-5 flex flex-col gap-2">
-                        <label class="text-foreground text-sm font-medium" for="currentPassword">
-                            Current password
-                        </label>
-                        <input
-                            class="bg-background text-foreground border-border focus-visible:ring-ring h-9 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2"
-                            id="currentPassword"
-                            type="password"
-                        />
-                    </fieldset>
-                    <fieldset class="mt-5 flex flex-col gap-2">
-                        <label class="text-foreground text-sm font-medium" for="newPassword">New password</label>
-                        <input
-                            class="bg-background text-foreground border-border focus-visible:ring-ring h-9 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2"
-                            id="newPassword"
-                            type="password"
-                        />
-                    </fieldset>
-                    <fieldset class="mt-5 flex flex-col gap-2">
-                        <label class="text-foreground text-sm font-medium" for="confirmPassword">
-                            Confirm password
-                        </label>
-                        <input
-                            class="bg-background text-foreground border-border focus-visible:ring-ring h-9 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2"
-                            id="confirmPassword"
-                            type="password"
-                        />
-                    </fieldset>
-                    <div class="mt-5 flex justify-end">
-                        <button
-                            class="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-9 items-center justify-center rounded-md px-4 text-sm font-medium shadow-sm transition-colors"
-                            type="button"
-                        >
-                            Change password
-                        </button>
-                    </div>
+                <div class="${panelClass}" rdxTabsPanel value="password">
+                    Change your password here. After saving, you'll be logged out.
                 </div>
             </div>
         `
     })
 };
 
-export const ActivationMode: Story = {
-    render: (args) => ({
-        props: args,
+export const ActivateOnFocus: Story = {
+    render: () => ({
         template: html`
-            <div
-                class="border-border bg-background text-foreground overflow-hidden rounded-xl border shadow-sm"
-                rdxTabsRoot
-                activationMode="manual"
-                defaultValue="tab1"
-            >
-                <div class="border-border bg-muted/30 border-b" rdxTabsList>
-                    <button
-                        class="bg-background text-foreground data-[state=inactive]:text-muted-foreground focus-visible:ring-ring inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-colors outline-none first:rounded-tl-xl last:rounded-tr-xl focus-visible:ring-2 data-[state=active]:shadow-[inset_0_-2px_0_0_var(--primary)] data-[state=inactive]:bg-transparent"
-                        rdxTabsTrigger
-                        type="button"
-                        value="tab1"
-                    >
-                        Account
-                    </button>
-                    <button
-                        class="bg-background text-foreground data-[state=inactive]:text-muted-foreground focus-visible:ring-ring inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-colors outline-none first:rounded-tl-xl last:rounded-tr-xl focus-visible:ring-2 data-[state=active]:shadow-[inset_0_-2px_0_0_var(--primary)] data-[state=inactive]:bg-transparent"
-                        rdxTabsTrigger
-                        type="button"
-                        value="tab2"
-                    >
-                        Password
-                    </button>
+            <div class="${rootClass}" rdxTabsRoot defaultValue="account">
+                <div class="${listClass}" rdxTabsList activateOnFocus>
+                    <button class="${tabClass}" rdxTabsTab value="account">Account</button>
+                    <button class="${tabClass}" rdxTabsTab value="password">Password</button>
+                    <button class="${tabClass}" rdxTabsTab value="team">Team</button>
                 </div>
-                <div class="bg-background p-6 outline-none" rdxTabsContent value="tab1">
-                    <p class="text-foreground text-sm leading-6">
-                        Make changes to your account here. Click save when you're done.
-                    </p>
-                    <fieldset class="mt-5 flex flex-col gap-2">
-                        <label class="text-foreground text-sm font-medium" for="name">Name</label>
-                        <input
-                            class="bg-background text-foreground border-border focus-visible:ring-ring h-9 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2"
-                            id="name"
-                            value="Pedro Duarte"
-                        />
-                    </fieldset>
-                    <fieldset class="mt-5 flex flex-col gap-2">
-                        <label class="text-foreground text-sm font-medium" for="username">Username</label>
-                        <input
-                            class="bg-background text-foreground border-border focus-visible:ring-ring h-9 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2"
-                            id="username"
-                            value="@peduarte"
-                        />
-                    </fieldset>
-                    <div class="mt-5 flex justify-end">
-                        <button
-                            class="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-9 items-center justify-center rounded-md px-4 text-sm font-medium shadow-sm transition-colors"
-                            type="button"
-                        >
-                            Save changes
-                        </button>
-                    </div>
+                <div class="${panelClass}" rdxTabsPanel value="account">
+                    Tabs activate as soon as they receive keyboard focus.
                 </div>
-                <div class="bg-background p-6 outline-none" rdxTabsContent value="tab2">
-                    <p class="text-foreground text-sm leading-6">
-                        Change your password here. After saving, you'll be logged out.
-                    </p>
-                    <fieldset class="mt-5 flex flex-col gap-2">
-                        <label class="text-foreground text-sm font-medium" for="currentPassword">
-                            Current password
-                        </label>
-                        <input
-                            class="bg-background text-foreground border-border focus-visible:ring-ring h-9 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2"
-                            id="currentPassword"
-                            type="password"
-                        />
-                    </fieldset>
-                    <fieldset class="mt-5 flex flex-col gap-2">
-                        <label class="text-foreground text-sm font-medium" for="newPassword">New password</label>
-                        <input
-                            class="bg-background text-foreground border-border focus-visible:ring-ring h-9 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2"
-                            id="newPassword"
-                            type="password"
-                        />
-                    </fieldset>
-                    <fieldset class="mt-5 flex flex-col gap-2">
-                        <label class="text-foreground text-sm font-medium" for="confirmPassword">
-                            Confirm password
-                        </label>
-                        <input
-                            class="bg-background text-foreground border-border focus-visible:ring-ring h-9 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2"
-                            id="confirmPassword"
-                            type="password"
-                        />
-                    </fieldset>
-                    <div class="mt-5 flex justify-end">
-                        <button
-                            class="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-9 items-center justify-center rounded-md px-4 text-sm font-medium shadow-sm transition-colors"
-                            type="button"
-                        >
-                            Change password
-                        </button>
-                    </div>
+                <div class="${panelClass}" rdxTabsPanel value="password">
+                    Change your password here. After saving, you'll be logged out.
+                </div>
+                <div class="${panelClass}" rdxTabsPanel value="team">Invite teammates and manage their roles.</div>
+            </div>
+        `
+    })
+};
+
+export const Vertical: Story = {
+    render: () => ({
+        template: html`
+            <div class="${rootClass} flex w-[520px]" rdxTabsRoot defaultValue="account" orientation="vertical">
+                <div class="border-border bg-muted/30 flex w-40 shrink-0 flex-col border-r" rdxTabsList>
+                    <button class="${tabClass} justify-start" rdxTabsTab value="account">Account</button>
+                    <button class="${tabClass} justify-start" rdxTabsTab value="password">Password</button>
+                    <button class="${tabClass} justify-start" rdxTabsTab value="team">Team</button>
+                </div>
+                <div class="${panelClass} flex-1" rdxTabsPanel value="account">
+                    Make changes to your account here. Click save when you're done.
+                </div>
+                <div class="${panelClass} flex-1" rdxTabsPanel value="password">
+                    Change your password here. After saving, you'll be logged out.
+                </div>
+                <div class="${panelClass} flex-1" rdxTabsPanel value="team">
+                    Invite teammates and manage their roles.
                 </div>
             </div>
         `
@@ -225,109 +111,49 @@ export const ActivationMode: Story = {
 };
 
 export const Disabled: Story = {
-    render: (args) => ({
-        props: args,
+    render: () => ({
         template: html`
-            <section>
-                <h2>Disabled</h2>
-                <p>Enabling disabled property of a Tab prevents user interaction.</p>
-                <div
-                    class="border-border bg-background text-foreground overflow-hidden rounded-xl border shadow-sm"
-                    rdxTabsRoot
-                    activationMode="manual"
-                    defaultValue="tab1"
-                >
-                    <div class="border-border bg-muted/30 border-b" rdxTabsList>
-                        <button
-                            class="bg-background text-foreground data-[state=inactive]:text-muted-foreground focus-visible:ring-ring inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-colors outline-none first:rounded-tl-xl last:rounded-tr-xl focus-visible:ring-2 data-[state=active]:shadow-[inset_0_-2px_0_0_var(--primary)] data-[state=inactive]:bg-transparent"
-                            rdxTabsTrigger
-                            type="button"
-                            value="tab1"
-                        >
-                            Account
-                        </button>
-                        <button
-                            class="bg-background text-foreground data-[state=inactive]:text-muted-foreground focus-visible:ring-ring inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-colors outline-none first:rounded-tl-xl last:rounded-tr-xl focus-visible:ring-2 data-[state=active]:shadow-[inset_0_-2px_0_0_var(--primary)] data-[state=inactive]:bg-transparent"
-                            rdxTabsTrigger
-                            disabled
-                            type="button"
-                            value="tab2"
-                        >
-                            Password
-                        </button>
-                    </div>
-                    <div class="bg-background p-6 outline-none" rdxTabsContent value="tab1">
-                        <p class="text-foreground text-sm leading-6">
-                            Make changes to your account here. Click save when you're done.
-                        </p>
-                        <fieldset class="mt-5 flex flex-col gap-2">
-                            <label class="text-foreground text-sm font-medium" for="name">Name</label>
-                            <input
-                                class="bg-background text-foreground border-border focus-visible:ring-ring h-9 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2"
-                                id="name"
-                                value="Pedro Duarte"
-                            />
-                        </fieldset>
-                        <fieldset class="mt-5 flex flex-col gap-2">
-                            <label class="text-foreground text-sm font-medium" for="username">Username</label>
-                            <input
-                                class="bg-background text-foreground border-border focus-visible:ring-ring h-9 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2"
-                                id="username"
-                                value="@peduarte"
-                            />
-                        </fieldset>
-                        <div class="mt-5 flex justify-end">
-                            <button
-                                class="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-9 items-center justify-center rounded-md px-4 text-sm font-medium shadow-sm transition-colors"
-                                type="button"
-                            >
-                                Save changes
-                            </button>
-                        </div>
-                    </div>
-                    <div class="bg-background p-6 outline-none" rdxTabsContent value="tab2">
-                        <p class="text-foreground text-sm leading-6">
-                            Change your password here. After saving, you'll be logged out.
-                        </p>
-                        <fieldset class="mt-5 flex flex-col gap-2">
-                            <label class="text-foreground text-sm font-medium" for="currentPassword">
-                                Current password
-                            </label>
-                            <input
-                                class="bg-background text-foreground border-border focus-visible:ring-ring h-9 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2"
-                                id="currentPassword"
-                                type="password"
-                            />
-                        </fieldset>
-                        <fieldset class="mt-5 flex flex-col gap-2">
-                            <label class="text-foreground text-sm font-medium" for="newPassword">New password</label>
-                            <input
-                                class="bg-background text-foreground border-border focus-visible:ring-ring h-9 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2"
-                                id="newPassword"
-                                type="password"
-                            />
-                        </fieldset>
-                        <fieldset class="mt-5 flex flex-col gap-2">
-                            <label class="text-foreground text-sm font-medium" for="confirmPassword">
-                                Confirm password
-                            </label>
-                            <input
-                                class="bg-background text-foreground border-border focus-visible:ring-ring h-9 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2"
-                                id="confirmPassword"
-                                type="password"
-                            />
-                        </fieldset>
-                        <div class="mt-5 flex justify-end">
-                            <button
-                                class="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-9 items-center justify-center rounded-md px-4 text-sm font-medium shadow-sm transition-colors"
-                                type="button"
-                            >
-                                Change password
-                            </button>
-                        </div>
-                    </div>
+            <div class="${rootClass}" rdxTabsRoot defaultValue="account">
+                <div class="${listClass}" rdxTabsList>
+                    <button class="${tabClass}" rdxTabsTab value="account">Account</button>
+                    <button class="${tabClass}" rdxTabsTab value="password" disabled>Password</button>
+                    <button class="${tabClass}" rdxTabsTab value="team">Team</button>
                 </div>
-            </section>
+                <div class="${panelClass}" rdxTabsPanel value="account">
+                    The Password tab is disabled and cannot be focused or activated.
+                </div>
+                <div class="${panelClass}" rdxTabsPanel value="password">
+                    Change your password here. After saving, you'll be logged out.
+                </div>
+                <div class="${panelClass}" rdxTabsPanel value="team">Invite teammates and manage their roles.</div>
+            </div>
+        `
+    })
+};
+
+export const Indicator: Story = {
+    parameters: source(indicatorSource),
+    render: () => ({
+        template: html`
+            <tabs-indicator-example />
+        `
+    })
+};
+
+export const Animated: Story = {
+    parameters: source(animatedSource),
+    render: () => ({
+        template: html`
+            <tabs-animated-example />
+        `
+    })
+};
+
+export const KeyframeUnmount: Story = {
+    parameters: source(keyframesSource),
+    render: () => ({
+        template: html`
+            <tabs-keyframes-example />
         `
     })
 };

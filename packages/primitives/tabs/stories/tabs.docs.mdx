@@ -1,8 +1,9 @@
-import { ArgTypes, Canvas, Markdown, Meta } from '@storybook/addon-docs/blocks';
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as TabsStories from './tabs.stories';
-import { RdxTabsRootDirective } from '../src/tabs-root.directive';
-import { RdxTabsTriggerDirective } from '../src/tabs-trigger.directive';
-import { RdxTabsContentDirective } from '../src/tabs-content.directive';
+import { RdxTabsRoot } from '../src/tabs-root';
+import { RdxTabsList } from '../src/tabs-list';
+import { RdxTabsTab } from '../src/tabs-tab';
+import { RdxTabsPanel } from '../src/tabs-panel';
 
 <Meta title="Primitives/Tabs" />
 
@@ -15,63 +16,179 @@ import { RdxTabsContentDirective } from '../src/tabs-content.directive';
 ## Features
 
 - ✅ Can be controlled or uncontrolled.
-- ✅ Supports horizontal/vertical orientation.
-- ✅ Full keyboard navigation.
+- ✅ Supports horizontal and vertical orientation.
+- ✅ Supports automatic (on focus) and manual activation.
+- ✅ Full keyboard navigation with roving focus.
+- ✅ Optional active-tab indicator driven by CSS variables.
+- ✅ Panels can stay mounted (and animate) or unmount when inactive.
 
 ## Import
 
-Get started with importing the directives:
-
 ```typescript
 import {
-    RdxTabsRootDirective,
-    RdxTabsListDirective,
-    RdxTabsTriggerDirective,
-    RdxTabsContentDirective } from '@radix-ng/primitives/tabs';
+    RdxTabsRoot,
+    RdxTabsList,
+    RdxTabsTab,
+    RdxTabsPanel,
+    RdxTabsPanelPresence,
+    RdxTabsIndicator
+} from '@radix-ng/primitives/tabs';
 ```
+
+The aligned API follows [Base UI Tabs](https://base-ui.com/react/components/tabs): `Root` → `List` → `Tab`,
+plus a `Panel` per value and an optional `Indicator`.
 
 ## Anatomy
 
 ```html
 <div rdxTabsRoot>
     <div rdxTabsList>
-        <button rdxTabsTrigger></button>
-        <button rdxTabsTrigger></button>
-        <button rdxTabsTrigger></button>
+        <button rdxTabsTab value="1"></button>
+        <button rdxTabsTab value="2"></button>
+        <span rdxTabsIndicator></span>
     </div>
-    <div rdxTabsContent></div>
-    <div rdxTabsContent></div>
-    <div rdxTabsContent></div>
+    <div rdxTabsPanel value="1"></div>
+    <div rdxTabsPanel value="2"></div>
 </div>
 ```
+
+## Examples
+
+### Activate on focus
+
+Set `activateOnFocus` on the list to activate a tab as soon as it receives keyboard focus (automatic
+activation). By default activation is manual — tabs activate on click or `Enter` / `Space`.
+
+<Canvas of={TabsStories.ActivateOnFocus} />
+
+### Vertical
+
+Set `orientation="vertical"` on the root to lay the tabs out vertically and switch arrow-key navigation
+to `ArrowUp` / `ArrowDown`.
+
+<Canvas of={TabsStories.Vertical} />
+
+### Disabled
+
+A tab with the `disabled` attribute cannot be focused or activated.
+
+<Canvas of={TabsStories.Disabled} />
+
+### Indicator
+
+`RdxTabsIndicator` exposes the active tab's geometry as CSS variables, so a single element can animate to
+follow the selected tab.
+
+<Canvas of={TabsStories.Indicator} />
+
+### Animated panels
+
+Panels stay mounted by default, so you can cross-fade them with the `data-starting-style`,
+`data-ending-style` and `data-hidden` attributes — the panel keeps itself visible until the transition
+finishes.
+
+<Canvas of={TabsStories.Animated} />
+
+### Mounting & unmounting
+
+By default an inactive `rdxTabsPanel` stays in the DOM and is toggled with the `hidden` attribute. To
+unmount the contents while inactive (Base UI's default `keepMounted: false`), nest a
+`*rdxTabsPanelPresence` inside the panel — it mounts the contents only while the tab is active and waits
+for any exit `@keyframes` to finish before removing them. Set `keepMounted` on the panel to keep the
+contents mounted regardless.
+
+```html
+<!-- Unmount when inactive -->
+<div rdxTabsPanel value="1">
+    <div *rdxTabsPanelPresence>Panel 1</div>
+</div>
+
+<!-- Keep mounted (hidden) when inactive -->
+<div rdxTabsPanel value="2" keepMounted>
+    <div *rdxTabsPanelPresence>Panel 2</div>
+</div>
+```
+
+### Unmount with `@keyframes`
+
+With `*rdxTabsPanelPresence`, the presence directive waits for the contents' exit **animation**
+(`@keyframes`, detected via `animationend`) before removing them. Mark the panel as a `group` so the
+inner element can react to the parent's `data-hidden` and run the exit keyframes — the contents leave
+the DOM once the animation finishes.
+
+<Canvas of={TabsStories.KeyframeUnmount} />
 
 ## API Reference
 
 ### TabsRoot
 
-`RdxTabsRootDirective`
+`RdxTabsRoot` — groups the tabs and their panels.
 
-<ArgTypes of={RdxTabsRootDirective} />
+<ArgTypes of={RdxTabsRoot} />
+
+| Data attribute              | Value                                           |
+| --------------------------- | ----------------------------------------------- |
+| `[data-orientation]`        | `"horizontal" \| "vertical"`                    |
+| `[data-activation-direction]` | `"left" \| "right" \| "up" \| "down" \| "none"` |
 
 ### TabsList
 
-`RdxTabsListDirective`
+`RdxTabsList` — groups the tab buttons and owns roving keyboard focus.
 
-| Data attribute     | Value                                   |
-|--------------------|-----------------------------------------|
-| [data-orientation] | <code>"vertical" or "horizontal"</code> |
+<ArgTypes of={RdxTabsList} />
 
-### TabsTrigger
+| Data attribute                | Value                                           |
+| ----------------------------- | ----------------------------------------------- |
+| `[data-orientation]`          | `"horizontal" \| "vertical"`                    |
+| `[data-activation-direction]` | `"left" \| "right" \| "up" \| "down" \| "none"` |
 
-`RdxTabsTriggerDirective`
+### TabsTab
 
-<ArgTypes of={RdxTabsTriggerDirective} />
+`RdxTabsTab` — an interactive button that activates its panel.
 
-### TabsContent
+<ArgTypes of={RdxTabsTab} />
 
-`RdxTabsContentDirective`
+| Data attribute                | Value                                           |
+| ----------------------------- | ----------------------------------------------- |
+| `[data-active]`               | Present when the tab is active.                 |
+| `[data-disabled]`             | Present when the tab is disabled.               |
+| `[data-orientation]`          | `"horizontal" \| "vertical"`                    |
+| `[data-activation-direction]` | `"left" \| "right" \| "up" \| "down" \| "none"` |
 
-<ArgTypes of={RdxTabsContentDirective} />
+### TabsPanel
+
+`RdxTabsPanel` — content shown when its tab is active.
+
+<ArgTypes of={RdxTabsPanel} />
+
+| Data attribute                | Value                                           |
+| ----------------------------- | ----------------------------------------------- |
+| `[data-hidden]`               | Present when the panel is inactive.             |
+| `[data-index]`                | Numeric index of the panel.                     |
+| `[data-starting-style]`       | Present while the enter transition runs.        |
+| `[data-ending-style]`         | Present while the exit transition runs.         |
+| `[data-orientation]`          | `"horizontal" \| "vertical"`                    |
+| `[data-activation-direction]` | `"left" \| "right" \| "up" \| "down" \| "none"` |
+
+### TabsPanelPresence
+
+`*rdxTabsPanelPresence` — a structural directive placed inside an `rdxTabsPanel` that mounts the panel
+contents only while active and unmounts them after the exit animation. It has no inputs; mount state is
+read from the parent panel.
+
+### TabsIndicator
+
+`RdxTabsIndicator` — reads everything from context; it has no inputs. It exposes the following CSS
+variables on its host element:
+
+| CSS variable           | Description                          |
+| ---------------------- | ------------------------------------ |
+| `--active-tab-top`     | Distance from the top of the list.   |
+| `--active-tab-right`   | Distance from the right of the list. |
+| `--active-tab-bottom`  | Distance from the bottom of the list.|
+| `--active-tab-left`    | Distance from the left of the list.  |
+| `--active-tab-width`   | Width of the active tab.             |
+| `--active-tab-height`  | Height of the active tab.            |
 
 ## Accessibility
 
@@ -79,21 +196,13 @@ Adheres to the [Tabs WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/pa
 
 ### Keyboard Interactions
 
-**Screen Reader**
-
-Tabs container is defined with the **tablist** role, as any attribute is passed to the container element **aria-labelledby** can be
-optionally used to specify an element to describe the Tabs. Each tab header has a **tab** role along with **aria-selected**
-state attribute and **aria-controls** to refer to the corresponding tab content element.
-
-The content element of each tab has **tabpanel** role, an id to match the **aria-controls** of the header and **aria-labelledby**
-reference to the header as the accessible name.
-
-| Key          | Description                                                                                                               |
-|--------------|---------------------------------------------------------------------------------------------------------------------------|
-| `Tab`        | When focus moves onto the tabs, focuses the active trigger. When a trigger is focused, moves focus to the active content. |
-| `ArrowDown`  | Moves focus to the next trigger depending on **orientation** and activates its associated content.                        |
-| `ArrowRight` | Moves focus to the next trigger depending on **orientation** and activates its associated content.                        |
-| `ArrowUp`    | Moves focus to the previous trigger depending on **orientation** and activates its associated content.                    |
-| `ArrowLeft`  | Moves focus to the previous trigger depending on **orientation** and activates its associated content.                    |
-| `Home`       | Moves focus to the first trigger and activates its associated content.                                                    |
-| `End`        | Moves focus to the last trigger and activates its associated content.                                                     |
+| Key          | Description                                                                                          |
+| ------------ | --------------------------------------------------------------------------------------------------- |
+| `Tab`        | Moves focus onto the active tab. From a tab, moves focus to the active panel.                        |
+| `ArrowDown`  | (Vertical) Moves focus to the next tab.                                                              |
+| `ArrowRight` | (Horizontal) Moves focus to the next tab.                                                            |
+| `ArrowUp`    | (Vertical) Moves focus to the previous tab.                                                          |
+| `ArrowLeft`  | (Horizontal) Moves focus to the previous tab.                                                        |
+| `Home`       | Moves focus to the first tab.                                                                        |
+| `End`        | Moves focus to the last tab.                                                                         |
+| `Enter` / `Space` | Activates the focused tab (always, and the only way to activate when `activateOnFocus` is off). |

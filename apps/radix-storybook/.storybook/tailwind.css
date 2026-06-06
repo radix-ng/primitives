@@ -152,6 +152,33 @@
     --animate-accordion-up: accordion-up 200ms ease-out;
     --animate-accordion-right: accordion-right 200ms ease-out;
     --animate-accordion-left: accordion-left 200ms ease-out;
+
+    --animate-tabs-panel-in: tabs-panel-in 250ms ease;
+    --animate-tabs-panel-out: tabs-panel-out 200ms ease;
+}
+
+@keyframes tabs-panel-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes tabs-panel-out {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(6px);
+    }
 }
 
 @keyframes accordion-down {
