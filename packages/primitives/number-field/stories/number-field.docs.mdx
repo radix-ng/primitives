@@ -1,83 +1,144 @@
-import {ArgTypes, Canvas, Meta} from "@storybook/addon-docs/blocks";
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as Stories from './number-field.stories';
-import {RdxNumberFieldRootDirective} from "../src/number-field-root.directive";
-import {RdxNumberFieldInputDirective} from "../src/number-field-input.directive";
-import {RdxNumberFieldDecrementDirective} from "../src/number-field-decrement.directive";
-import {RdxNumberFieldIncrementDirective} from "../src/number-field-increment.directive";
+import { RdxNumberFieldRoot } from '../src/number-field-root';
+import { RdxNumberFieldScrubArea } from '../src/number-field-scrub-area';
 
 <Meta title="Primitives/Number Field" />
 
 # Number Field
 
-#### A number field allows a user to enter a number and increment or decrement the value using stepper buttons.
+#### A numeric input with stepper buttons, drag-to-scrub, locale-aware formatting and keyboard control.
 
 <Canvas sourceState="hidden" of={Stories.Default} />
 
 ## Features
 
-- ✅ Full keyboard navigation.
-- ✅ Can be controlled or uncontrolled.
-- ✅ Support button hold and wheel event.
-- ✅ Support numbering systems in different locale.
-- ✅ Customizable formatting.
+- ✅ Controlled or uncontrolled value, with `(onValueChange)` and `(onValueCommitted)`.
+- ✅ Stepper buttons with press-and-hold auto-repeat.
+- ✅ Keyboard control — arrow keys, `Home`/`End`, plus `Alt` (small) and `Shift` (large) steps.
+- ✅ Drag-to-scrub via the Scrub Area (Pointer Lock with an optional virtual cursor).
+- ✅ Optional mouse-wheel scrubbing while focused.
+- ✅ Locale-aware parsing and formatting (decimal, percent, currency, unit) via `Intl.NumberFormat`.
+- ✅ `min`/`max` clamping with optional `allowOutOfRange` for direct text entry, and `snapOnStep`.
+- ✅ Works with Angular reactive and template-driven forms.
 
 ## Preface
 
-The component depends on the [@internationalized/number](https://react-spectrum.adobe.com/internationalized/number/index.html).
+Formatting and parsing build on [@internationalized/number](https://react-spectrum.adobe.com/internationalized/number/index.html),
+so numbers are read and displayed according to the chosen `locale` and `format` options.
 
-Numbers are represented in many different ways by cultures around the world. This includes differences in currency symbols, units,
-decimal points, grouping separators, and even digits themselves.
-When building applications that support users around the world, it is important to handle these aspects correctly for each locale.
-The `@internationalized/number` package provides a utilities to format and parse numbers according to locale expectations.
+## Import
 
-## Installation
-
-Install the date package.
-
-```bash
-npm install @internationalized/number
-```
-
-Install the component from your command line.
-
-```bash
-npm install @radix-ng/primitives
+```ts
+import {
+    RdxNumberFieldRoot,
+    RdxNumberFieldGroup,
+    RdxNumberFieldInput,
+    RdxNumberFieldHiddenInput,
+    RdxNumberFieldIncrement,
+    RdxNumberFieldDecrement,
+    RdxNumberFieldScrubArea,
+    RdxNumberFieldScrubAreaCursor
+} from '@radix-ng/primitives/number-field';
 ```
 
 ## Anatomy
+
 Import all parts and piece them together.
 
 ```html
 <div rdxNumberFieldRoot>
-    <button rdxNumberFieldDecrement></button>
-    <input rdxNumberFieldInput />
-    <button rdxNumberFieldIncrement></button>
+    <input rdxNumberFieldHiddenInput />
+    <span rdxNumberFieldScrubArea>
+        <label>Label</label>
+        <span rdxNumberFieldScrubAreaCursor></span>
+    </span>
+    <div rdxNumberFieldGroup>
+        <button rdxNumberFieldDecrement></button>
+        <input rdxNumberFieldInput />
+        <button rdxNumberFieldIncrement></button>
+    </div>
 </div>
 ```
+
+## Examples
+
+### Default
+
+A basic field with a label, stepper buttons and a `min` of `0`.
+
+<Canvas of={Stories.Default} />
+
+### Decimal
+
+Fractional steps with `signDisplay` and fraction-digit formatting.
+
+<Canvas of={Stories.Decimal} />
+
+### Percentage
+
+`format: { style: 'percent' }` displays and parses the value as a percentage.
+
+<Canvas of={Stories.Percentage} />
+
+### Currency
+
+`format: { style: 'currency', currency: 'EUR' }` renders a currency value.
+
+<Canvas of={Stories.Currency} />
+
+### Scrub Area
+
+Drag the label horizontally to change the value; a virtual cursor follows the pointer.
+
+<Canvas of={Stories.Scrub} />
+
+### Reactive Forms
+
+The control integrates with `formControlName`, exposing the numeric value to the form.
+
+<Canvas of={Stories.ReactiveForms} />
 
 ## API Reference
 
 ### Root
 
-`RdxNumberFieldRootDirective` Contains all the parts of a number field. An input will also render when used within a form to ensure events propagate correctly.
+`RdxNumberFieldRoot` groups all parts and owns the value, parsing/formatting and stepping logic.
+Exposes `data-disabled`, `data-readonly`, `data-required` and `data-scrubbing`.
 
-<ArgTypes of={RdxNumberFieldRootDirective} />
+<ArgTypes of={RdxNumberFieldRoot} />
+
+### Group
+
+`RdxNumberFieldGroup` groups the input with the stepper buttons (`role="group"`). It reads its
+state from the root context and has no inputs.
 
 ### Input
 
-`RdxNumberFieldInputDirective` The input component that renders the text value based on value and format options.
+`RdxNumberFieldInput` the native text input that displays the formatted value and accepts typed
+input. It reads everything from the root context and has no inputs.
 
-### Increment
+### Hidden Input
 
-`RdxNumberFieldIncrementDirective` The button that increases the value.
+`RdxNumberFieldHiddenInput` an optional hidden `input[type=number]` that mirrors the value for
+native form submission and browser constraint validation. Set `name` (and optionally `form`) on the
+root. Not needed when using Angular reactive or template-driven forms.
 
-<ArgTypes of={RdxNumberFieldIncrementDirective} />
+### Increment / Decrement
 
-### Decrement
+`RdxNumberFieldIncrement` and `RdxNumberFieldDecrement` step the value up and down. Each accepts an
+optional `disabled` input and is automatically disabled when the value reaches `max`/`min`.
 
-`RdxNumberFieldDecrementDirective` The button that decreases the value.
+### Scrub Area
 
-<ArgTypes of={RdxNumberFieldDecrementDirective} />
+`RdxNumberFieldScrubArea` an interactive area where the user clicks and drags to change the value.
+
+<ArgTypes of={RdxNumberFieldScrubArea} />
+
+### Scrub Area Cursor
+
+`RdxNumberFieldScrubAreaCursor` an optional custom cursor shown while scrubbing, portaled to the
+document body. Hidden on Safari and for touch input. It has no inputs.
 
 ## Accessibility
 
@@ -85,12 +146,11 @@ Adheres to the [Spinbutton WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/
 
 ### Keyboard Interactions
 
-| Key      | Description                    |
-|----------|--------------------------------|
-| Arrow Up | Increase the value |
-| Arrow Down    | Decrease the value |
-| Page Up    | Increase the value by scale of 10 |
-| Page Down    | Decrease the value by scale of 10 |
-| Home    | Set value to minimum (if `min` is provided) |
-| End    | Set value to maximum (if `max` is provided) |
-
+| Key          | Description                                  |
+| ------------ | -------------------------------------------- |
+| Arrow Up     | Increase the value by `step`                 |
+| Arrow Down   | Decrease the value by `step`                 |
+| Shift + Arrow | Increase/decrease by `largeStep`            |
+| Alt + Arrow  | Increase/decrease by `smallStep`             |
+| Home         | Set the value to `min` (if provided)         |
+| End          | Set the value to `max` (if provided)         |
