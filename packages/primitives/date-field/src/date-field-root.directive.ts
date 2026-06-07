@@ -44,7 +44,7 @@ import { RdxDateFieldInputDirective } from './date-field-input.directive';
     providers: [provideToken(DATE_FIELDS_ROOT_CONTEXT, RdxDateFieldRootDirective)],
     host: {
         role: 'group',
-        '[attr.aria-disabled]': 'disabled() ? "" : undefined',
+        '[attr.aria-disabled]': 'disabled() ? "true" : undefined',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
         '[attr.data-readonly]': 'readonly() ? "" : undefined',
         '[attr.data-invalid]': 'isInvalid() ? "" : undefined',
@@ -55,12 +55,12 @@ import { RdxDateFieldInputDirective } from './date-field-input.directive';
 })
 export class RdxDateFieldRootDirective {
     /**
-     * The controlled checked state of the calendar.
+     * The controlled value of the date field.
      */
     readonly value = model<DateValue | undefined>();
 
     /**
-     * A callback fired when the date field's value is invalid.
+     * A matcher that marks specific dates as unavailable; a matched value makes the field invalid.
      */
     readonly isDateUnavailable = input<DateMatcher | undefined>(undefined);
 

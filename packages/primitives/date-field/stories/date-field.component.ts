@@ -1,5 +1,6 @@
-import { Component, model } from '@angular/core';
-import { CalendarDate, DateValue } from '@internationalized/date';
+import { Component, input, model } from '@angular/core';
+import { DateValue } from '@internationalized/date';
+import { Granularity } from '@radix-ng/primitives/core';
 import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 import { RdxDateFieldInputDirective } from '../src/date-field-input.directive';
 import { RdxDateFieldRootDirective } from '../src/date-field-root.directive';
@@ -8,27 +9,39 @@ import { RdxDateFieldRootDirective } from '../src/date-field-root.directive';
     selector: 'app-date-field',
     imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective, RdxVisuallyHiddenInputDirective],
     template: `
-        <div class="DateFieldWrapper">
-            <div class="DateField" #root="rdxDateFieldRoot" rdxDateFieldRoot>
-                @for (item of root.segmentContents(); track $index) {
-                    @if (item.part === 'literal') {
-                        <div class="DateFieldLiteral" [part]="item.part" rdxDateFieldInput>
-                            {{ item.value }}
-                        </div>
-                    } @else {
-                        <div class="DateFieldSegment" [part]="item.part" rdxDateFieldInput>
-                            {{ item.value }}
-                        </div>
-                    }
+        <div
+            class="border-input bg-background text-foreground data-[invalid]:border-destructive inline-flex items-center rounded-md border px-3 py-2 text-sm shadow-xs select-none"
+            #root="rdxDateFieldRoot"
+            [(value)]="value"
+            [locale]="locale()"
+            [granularity]="granularity()"
+            rdxDateFieldRoot
+        >
+            @for (item of root.segmentContents(); track $index) {
+                @if (item.part === 'literal') {
+                    <div class="text-muted-foreground px-0.5" [part]="item.part" rdxDateFieldInput>
+                        {{ item.value }}
+                    </div>
+                } @else {
+                    <div
+                        class="hover:bg-muted focus:bg-accent focus:text-accent-foreground data-[placeholder]:text-muted-foreground rounded px-1 tabular-nums focus:outline-none"
+                        [part]="item.part"
+                        rdxDateFieldInput
+                    >
+                        {{ item.value }}
+                    </div>
                 }
-                <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
-            </div>
+            }
+            <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
         </div>
-    `,
-    styleUrl: 'date-field.styles.css'
+    `
 })
 export class DateFieldComponent {
-    readonly value = model<DateValue>();
+    /** Locale used to format and order the segments. */
+    readonly locale = input<string>('en');
 
-    readonly defaultValue = new CalendarDate(2024, 2, 28);
+    /** How much of the date/time to render — `'day'` shows date only, `'second'` adds the time. */
+    readonly granularity = input<Granularity>('day');
+
+    readonly value = model<DateValue | undefined>();
 }

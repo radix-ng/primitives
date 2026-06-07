@@ -2,13 +2,28 @@ import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { cn, demoButton } from '../../storybook/styles';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxButtonDirective } from '../src/button.directive';
-import {
-    RdxButtonAsLinkComponent,
-    RdxButtonDisabledComponent,
-    RdxButtonLoadingComponent,
-    RdxButtonSizesComponent,
-    RdxButtonVariantsComponent
-} from './button';
+import { RdxButtonAsLinkComponent } from './button-as-link';
+import { RdxButtonDisabledComponent } from './button-disabled';
+import { RdxButtonLoadingComponent } from './button-loading';
+import { RdxButtonSizesComponent } from './button-sizes';
+import { RdxButtonVariantsComponent } from './button-variants';
+
+// Full component source for the "Show code" panel (Vite `?raw` import).
+import asLinkSource from './button-as-link?raw';
+import disabledSource from './button-disabled?raw';
+import loadingSource from './button-loading?raw';
+import sizesSource from './button-sizes?raw';
+import variantsSource from './button-variants?raw';
+
+const source = (code: string) => ({
+    docs: {
+        source: {
+            code: code.trim(),
+            language: 'typescript',
+            type: 'code'
+        }
+    }
+});
 
 const html = String.raw;
 
@@ -41,6 +56,7 @@ export const Default: Story = {
 };
 
 export const Variants: Story = {
+    parameters: source(variantsSource),
     render: () => ({
         template: html`
             <rdx-button-variants />
@@ -49,6 +65,7 @@ export const Variants: Story = {
 };
 
 export const Sizes: Story = {
+    parameters: source(sizesSource),
     render: () => ({
         template: html`
             <rdx-button-sizes />
@@ -57,6 +74,7 @@ export const Sizes: Story = {
 };
 
 export const Disabled: Story = {
+    parameters: source(disabledSource),
     render: () => ({
         template: html`
             <rdx-button-disabled />
@@ -65,6 +83,7 @@ export const Disabled: Story = {
 };
 
 export const AsLink: Story = {
+    parameters: source(asLinkSource),
     render: () => ({
         template: html`
             <rdx-button-as-link />
@@ -73,6 +92,7 @@ export const AsLink: Story = {
 };
 
 export const Loading: Story = {
+    parameters: source(loadingSource),
     render: () => ({
         template: html`
             <rdx-button-loading />

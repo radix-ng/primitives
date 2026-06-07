@@ -1,13 +1,21 @@
 import { computed, Directive, effect, ElementRef, inject, input, signal } from '@angular/core';
-import { SegmentPart, useDateField } from '@radix-ng/primitives/core';
+import { isNullish, SegmentPart, useDateField } from '@radix-ng/primitives/core';
 import { injectDateFieldsRootContext } from './date-field-context.token';
+
+/**
+ * Attribute keys produced by `useDateField().attributes()` that are instead owned by host
+ * bindings. Writing them imperatively would clobber the host value — re-enabling a disabled
+ * segment via `contenteditable`, or overwriting a consumer's inline `style`.
+ */
+const hostManagedAttrs = new Set(['contenteditable', 'style']);
 
 @Directive({
     selector: '[rdxDateFieldInput]',
     host: {
         '[attr.contenteditable]': 'disabled() || readonly() ? false : part() !== "literal"',
+        '[style.caret-color]': 'part() !== "literal" ? "transparent" : undefined',
         '[attr.data-rdx-date-field-segment]': 'part()',
-        '[attr.aria-disabled]': 'disabled() ? "" : undefined',
+        '[attr.aria-disabled]': 'disabled() ? "true" : undefined',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
         '[attr.data-invalid]': 'isInvalid() ? "" : undefined',
         '[attr.aria-invalid]': 'isInvalid() ? true : undefined',
@@ -81,28 +89,56 @@ export class RdxDateFieldInputDirective {
     private readonly attributes = computed(() => this.fieldData().attributes());
 
     /**
+     * Attribute keys applied imperatively on the previous effect run, so keys that
+     * disappear from `attributes()` are removed instead of lingering as stale state.
      * @ignore
      */
-    handleSegmentClick: (e: Event) => void;
+    private appliedAttrs = new Set<string>();
+
+    constructor() {
+        effect(() => {
+            const element = this.elementRef.nativeElement as HTMLElement;
+            const attrs = this.attributes();
+            const next = new Set<string>();
+
+            for (const [attr, value] of Object.entries(attrs)) {
+                // Skip keys a host binding already owns, so this effect never fights it.
+                if (hostManagedAttrs.has(attr)) {
+                    continue;
+                }
+
+                // A nullish value means the attribute should be absent (e.g. `data-placeholder`
+                // once a segment is filled); removing it avoids a literal `"undefined"` string.
+                if (isNullish(value)) {
+                    element.removeAttribute(attr);
+                } else {
+                    element.setAttribute(attr, String(value));
+                    next.add(attr);
+                }
+            }
+
+            for (const attr of this.appliedAttrs) {
+                if (!next.has(attr)) {
+                    element.removeAttribute(attr);
+                }
+            }
+
+            this.appliedAttrs = next;
+        });
+    }
 
     /**
      * @ignore
      */
-    handleSegmentKeydown: (e: Event) => void;
+    handleSegmentClick(event: Event) {
+        this.fieldData().handleSegmentClick(event as MouseEvent);
+    }
 
-    constructor() {
-        effect(() => {
-            const { handleSegmentClick, handleSegmentKeydown } = this.fieldData();
-            this.handleSegmentKeydown = handleSegmentKeydown as (e: Event) => void;
-            this.handleSegmentClick = handleSegmentClick as (e: Event) => void;
-        });
-
-        effect(() => {
-            const attrs = this.attributes();
-            Object.entries(attrs).forEach(([attr, value]) => {
-                this.elementRef.nativeElement.setAttribute(attr, String(value));
-            });
-        });
+    /**
+     * @ignore
+     */
+    handleSegmentKeydown(event: Event) {
+        this.fieldData().handleSegmentKeydown(event as KeyboardEvent);
     }
 
     /**

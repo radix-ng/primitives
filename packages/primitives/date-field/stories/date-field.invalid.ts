@@ -8,11 +8,13 @@ import { RdxDateFieldRootDirective } from '../src/date-field-root.directive';
     selector: 'app-date-field-invalid',
     imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective, RdxVisuallyHiddenInputDirective],
     template: `
-        <div class="DateFieldWrapper">
-            <label style="color: white;" for="date-field">Appointment (unavailable on 19th)</label>
+        <div class="flex flex-col gap-2">
+            <label class="text-foreground text-sm font-medium" for="date-field-invalid">
+                Appointment (unavailable on 19th)
+            </label>
             <div
-                class="DateField"
-                id="date-field"
+                class="border-input bg-background text-foreground data-[invalid]:border-destructive inline-flex items-center rounded-md border px-3 py-2 text-sm shadow-xs select-none"
+                id="date-field-invalid"
                 #root="rdxDateFieldRoot"
                 [isDateUnavailable]="isDateUnavailable"
                 granularity="day"
@@ -20,11 +22,15 @@ import { RdxDateFieldRootDirective } from '../src/date-field-root.directive';
             >
                 @for (item of root.segmentContents(); track $index) {
                     @if (item.part === 'literal') {
-                        <div class="DateFieldLiteral" [part]="item.part" rdxDateFieldInput>
+                        <div class="text-muted-foreground px-0.5" [part]="item.part" rdxDateFieldInput>
                             {{ item.value }}
                         </div>
                     } @else {
-                        <div class="DateFieldSegment" [part]="item.part" rdxDateFieldInput>
+                        <div
+                            class="hover:bg-muted focus:bg-accent focus:text-accent-foreground data-[placeholder]:text-muted-foreground rounded px-1 tabular-nums focus:outline-none"
+                            [part]="item.part"
+                            rdxDateFieldInput
+                        >
                             {{ item.value }}
                         </div>
                     }
@@ -32,12 +38,11 @@ import { RdxDateFieldRootDirective } from '../src/date-field-root.directive';
                 <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
 
                 @if (root.isInvalid()) {
-                    <span style="color: red; padding-left: 8px;">Invalid Day</span>
+                    <span class="text-destructive pl-2">Invalid Day</span>
                 }
             </div>
         </div>
-    `,
-    styleUrl: 'date-field.styles.css'
+    `
 })
 export class DateFieldInvalid {
     isDateUnavailable(date: DateValue): boolean {

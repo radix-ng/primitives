@@ -1,14 +1,21 @@
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { DateFieldComponent } from './date-field.component';
 import { DateFieldInvalid } from './date-field.invalid';
-import {
-    DateFieldLocalesGregorian,
-    DateFieldLocalesHebrew,
-    DateFieldLocalesJapanese,
-    DateFieldLocalesPersian,
-    DateFieldLocalesRussian,
-    DateFieldLocalesTaiwan
-} from './date-field.locales';
+
+// Full component source for the "Show code" panel (Vite `?raw` import).
+import demoSource from './date-field.component?raw';
+import invalidSource from './date-field.invalid?raw';
+
+const source = (code: string) => ({
+    docs: {
+        source: {
+            code: code.trim(),
+            language: 'typescript',
+            type: 'code'
+        }
+    }
+});
 
 const html = String.raw;
 
@@ -16,38 +23,19 @@ export default {
     title: 'Primitives/Date Field',
     decorators: [
         moduleMetadata({
-            imports: [
-                DateFieldComponent,
-                DateFieldLocalesGregorian,
-                DateFieldLocalesJapanese,
-                DateFieldLocalesPersian,
-                DateFieldLocalesTaiwan,
-                DateFieldLocalesHebrew,
-                DateFieldLocalesRussian,
-                DateFieldInvalid
-            ]
+            imports: [DateFieldComponent, DateFieldInvalid]
         }),
-        componentWrapperDecorator(
-            (story) => html`
-                <div
-                    class="radix-themes light light-theme radix-themes-default-fonts"
-                    data-accent-color="indigo"
-                    data-radius="medium"
-                    data-scaling="100%"
-                >
-                    ${story}
-                </div>
-            `
-        )
+        tailwindDemoDecorator()
     ]
 } as Meta;
 
 type Story = StoryObj;
 
 export const Default: Story = {
+    parameters: source(demoSource),
     render: () => ({
         template: html`
-            <app-date-field style="display: flex;" />
+            <app-date-field />
         `
     })
 };
@@ -55,7 +43,7 @@ export const Default: Story = {
 export const LocalesGregorian: Story = {
     render: () => ({
         template: html`
-            <app-date-field-gregorian style="display: flex;" />
+            <app-date-field granularity="second" />
         `
     })
 };
@@ -63,7 +51,7 @@ export const LocalesGregorian: Story = {
 export const LocalesJapanese: Story = {
     render: () => ({
         template: html`
-            <app-date-field-japanese style="display: flex;" />
+            <app-date-field locale="ja" granularity="second" />
         `
     })
 };
@@ -71,7 +59,7 @@ export const LocalesJapanese: Story = {
 export const LocalesPersian: Story = {
     render: () => ({
         template: html`
-            <app-date-field-persian style="display: flex;" />
+            <app-date-field locale="fa-IR" granularity="second" />
         `
     })
 };
@@ -79,7 +67,7 @@ export const LocalesPersian: Story = {
 export const LocalesTaiwan: Story = {
     render: () => ({
         template: html`
-            <app-date-field-taiwan style="display: flex;" />
+            <app-date-field locale="zh-TW" granularity="second" />
         `
     })
 };
@@ -87,7 +75,7 @@ export const LocalesTaiwan: Story = {
 export const LocalesHebrew: Story = {
     render: () => ({
         template: html`
-            <app-date-field-hebrew style="display: flex;" />
+            <app-date-field locale="he" granularity="second" />
         `
     })
 };
@@ -95,15 +83,16 @@ export const LocalesHebrew: Story = {
 export const LocalesRussian: Story = {
     render: () => ({
         template: html`
-            <app-date-field-russian style="display: flex;" />
+            <app-date-field locale="ru" granularity="second" />
         `
     })
 };
 
 export const Invalid: Story = {
+    parameters: source(invalidSource),
     render: () => ({
         template: html`
-            <app-date-field-invalid style="display: flex;" />
+            <app-date-field-invalid />
         `
     })
 };
