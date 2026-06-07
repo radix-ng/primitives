@@ -1,0 +1,55 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './live-announcer.stories';
+
+<Meta title="Utilities/RdxLiveAnnouncer" />
+
+# RdxLiveAnnouncer
+
+#### Announces messages to screen readers through an `aria-live` region, without moving focus.
+
+The buttons below send messages to the live region. It is visually hidden, so the on-screen log
+mirrors what assistive technology reads aloud.
+
+<Canvas sourceState="hidden" of={Stories.Default} />
+
+## Features
+
+- ✅ Lazily appends a single visually hidden `aria-live` region to `document.body`.
+- ✅ Polite or assertive announcements via the `politeness` argument.
+- ✅ Optional auto-clear after a given duration.
+- ✅ SSR safe — a no-op on the server.
+- ✅ Cleans up its region on destroy.
+
+## Import
+
+```typescript
+import { RdxLiveAnnouncer } from '@radix-ng/primitives/core';
+```
+
+## Usage
+
+Inject the service and call `announce(message, politeness?, duration?)`. `politeness` defaults to
+`'polite'`; pass a `duration` (ms) to clear the message automatically.
+
+```typescript
+import { Component, inject } from '@angular/core';
+import { RdxLiveAnnouncer } from '@radix-ng/primitives/core';
+
+@Component({ /* … */ })
+export class StepperComponent {
+    private readonly announcer = inject(RdxLiveAnnouncer);
+
+    goToStep(step: number, total: number): void {
+        this.announcer.announce(`Step ${step} of ${total}`);
+    }
+}
+```
+
+## API
+
+### RdxLiveAnnouncer
+
+- `announce(message: string, politeness?: 'off' | 'polite' | 'assertive', duration?: number): void` —
+  writes `message` into the live region. `politeness` sets `aria-live` (default `'polite'`); when
+  `duration` is provided, the message is cleared after that many milliseconds.
+- `clear(): void` — empties the live region.

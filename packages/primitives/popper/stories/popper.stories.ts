@@ -10,7 +10,7 @@ import { PopperFollowPointer, PopperUpdPosition } from './popper';
 const html = String.raw;
 
 export default {
-    title: 'Primitives/Popper',
+    title: 'Utilities/Popper',
     decorators: [
         moduleMetadata({
             imports: [

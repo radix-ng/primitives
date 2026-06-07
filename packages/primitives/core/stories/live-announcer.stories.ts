@@ -1,14 +1,16 @@
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
-import { List } from './collection';
+import { LiveAnnouncerExample } from './live-announcer';
+import liveAnnouncerSource from './live-announcer?raw';
 
+const source = (code: string) => ({ docs: { source: { code, language: 'typescript' } } });
 const html = String.raw;
 
 export default {
-    title: 'Utilities/Collection',
+    title: 'Utilities/RdxLiveAnnouncer',
     decorators: [
         moduleMetadata({
-            imports: [List]
+            imports: [LiveAnnouncerExample]
         }),
         tailwindDemoDecorator()
     ]
@@ -17,9 +19,10 @@ export default {
 type Story = StoryObj;
 
 export const Default: Story = {
+    parameters: source(liveAnnouncerSource),
     render: () => ({
         template: html`
-            <collection-list />
+            <live-announcer-example />
         `
     })
 };

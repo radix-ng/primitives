@@ -3,7 +3,7 @@ import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { PresenceExample } from './presence';
 
 export default {
-    title: 'Primitives/Presence',
+    title: 'Utilities/Presence',
     decorators: [
         moduleMetadata({
             imports: [PresenceExample]

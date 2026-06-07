@@ -10,7 +10,7 @@ import { DummyPopover } from './dummy-popover';
 const html = String.raw;
 
 export default {
-    title: 'Primitives/Dismissable Layer',
+    title: 'Utilities/Dismissable Layer',
     decorators: [
         moduleMetadata({
             imports: [

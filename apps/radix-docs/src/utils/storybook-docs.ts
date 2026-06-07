@@ -66,7 +66,9 @@ const getSlug = (filePath: string): string => {
     const fileName = path.basename(filePath, '.docs.mdx');
     const packageName = path.basename(path.dirname(path.dirname(filePath)));
 
-    if (packageName === 'primitives' || fileName === 'sheet') {
+    // `core` hosts several headless utilities, so each doc needs a filename-based slug
+    // instead of the package name (which would collide on `/utils/core`).
+    if (packageName === 'primitives' || packageName === 'core' || fileName === 'sheet') {
         return titleToSlug(fileName);
     }
 

@@ -1,0 +1,67 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './inject-id.stories';
+
+<Meta title="Utilities/injectId" />
+
+# injectId
+
+#### Generates unique, SSR-stable element IDs — the Angular counterpart of React's `useId`.
+
+Each field below calls `injectId('rdx-field-')` in its own injection context, wiring its `<label for>`
+to the matching `<input id>` without hardcoding an id or risking a collision.
+
+<Canvas sourceState="hidden" of={Stories.Default} />
+
+## Features
+
+- ✅ Unique per call — a monotonic per-prefix counter guarantees no two ids collide.
+- ✅ SSR/hydration safe — deterministic sequences keep server and client renders in sync.
+- ✅ Multi-app safe — the application's `APP_ID` is folded into the prefix (omitted for the default `ng` app to keep ids short).
+- ✅ Tiny call-site API; no manual cleanup.
+
+## Import
+
+```typescript
+import { injectId, RdxIdGenerator } from '@radix-ng/primitives/core';
+```
+
+## Usage
+
+Call `injectId(prefix)` in an injection context (a field initializer or constructor). It returns a
+string id you can bind to `id` / `for` / `aria-*`.
+
+```typescript
+import { Component, input } from '@angular/core';
+import { injectId } from '@radix-ng/primitives/core';
+
+@Component({
+    selector: 'app-field',
+    template: `
+        <label [attr.for]="id">{{ label() }}</label>
+        <input [id]="id" type="text" />
+    `
+})
+export class FieldComponent {
+    readonly label = input.required<string>();
+    readonly id = injectId('rdx-field-');
+}
+```
+
+## Generating ids outside an injection context
+
+When you need an id lazily (outside a field initializer/constructor), inject `RdxIdGenerator` and call
+`getId(prefix)` directly:
+
+```typescript
+import { Component, inject } from '@angular/core';
+import { RdxIdGenerator } from '@radix-ng/primitives/core';
+
+@Component({ /* … */ })
+export class ExampleComponent {
+    private readonly idGenerator = inject(RdxIdGenerator);
+
+    createRow(): string {
+        return this.idGenerator.getId('rdx-row-');
+    }
+}
+```

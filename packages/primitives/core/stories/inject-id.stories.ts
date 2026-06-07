@@ -1,14 +1,16 @@
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
-import { List } from './collection';
+import { InjectIdExample } from './inject-id';
+import injectIdSource from './inject-id?raw';
 
+const source = (code: string) => ({ docs: { source: { code, language: 'typescript' } } });
 const html = String.raw;
 
 export default {
-    title: 'Utilities/Collection',
+    title: 'Utilities/injectId',
     decorators: [
         moduleMetadata({
-            imports: [List]
+            imports: [InjectIdExample]
         }),
         tailwindDemoDecorator()
     ]
@@ -17,9 +19,10 @@ export default {
 type Story = StoryObj;
 
 export const Default: Story = {
+    parameters: source(injectIdSource),
     render: () => ({
         template: html`
-            <collection-list />
+            <inject-id-example />
         `
     })
 };
