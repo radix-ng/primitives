@@ -1,6 +1,6 @@
 // made by https://reka-ui.com/
 
-import { Direction } from './types';
+import { Direction } from '../types';
 
 type ArrowKeyOptions = 'horizontal' | 'vertical' | 'both';
 
