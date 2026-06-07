@@ -1,14 +1,12 @@
 import { _IdGenerator } from '@angular/cdk/a11y';
 import { BooleanInput } from '@angular/cdk/coercion';
 import {
-    afterNextRender,
     booleanAttribute,
     computed,
     DestroyRef,
     Directive,
     effect,
     inject,
-    Injector,
     input,
     model,
     output,
@@ -16,7 +14,7 @@ import {
     signal,
     untracked
 } from '@angular/core';
-import { createContext } from '@radix-ng/primitives/core';
+import { createContext, useTransitionStatus } from '@radix-ng/primitives/core';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 import { RdxPreviewCardHandle } from './preview-card-handle';
 
@@ -99,22 +97,24 @@ export class RdxPreviewCardRoot {
     private readonly idGenerator = inject(_IdGenerator);
     private readonly popper = inject(RdxPopper);
     private readonly destroyRef = inject(DestroyRef);
-    private readonly injector = inject(Injector);
+
+    /** Shared open/close transition state machine (completes on the real animationend). */
+    private readonly transition = useTransitionStatus((open) => {
+        this.instant.set(false);
+        this.onOpenChangeComplete.emit(open);
+    });
+
     private hasAppliedDefaultOpen = false;
     private hasAppliedDefaultTriggerId = false;
     private openTimer: ReturnType<typeof setTimeout> | undefined;
     private closeTimer: ReturnType<typeof setTimeout> | undefined;
     private hoverDelay = 600;
     private hoverCloseDelay = 300;
-    private transitionTimer: ReturnType<typeof setTimeout> | undefined;
-    private transitionFrame: number | undefined;
-    private transitionVersion = 0;
     private instantFrame: number | undefined;
-    private transitionElement: HTMLElement | undefined;
     readonly isHoverActive = signal(false);
     readonly instant = signal(false);
     readonly openChangeReason = signal<RdxPreviewCardOpenChangeReason>('none');
-    readonly transitionStatus = signal<RdxPreviewCardTransitionStatus>(undefined);
+    readonly transitionStatus = this.transition.status;
 
     /**
      * Whether the preview-card is currently open.
@@ -184,7 +184,7 @@ export class RdxPreviewCardRoot {
 
             if (open !== previousOpen) {
                 previousOpen = open;
-                untracked(() => this.beginTransition(open));
+                untracked(() => this.transition.start(open));
             }
         });
 
@@ -200,7 +200,6 @@ export class RdxPreviewCardRoot {
 
         this.destroyRef.onDestroy(() => {
             this.clearHoverTimers();
-            this.clearTransitionTimer();
 
             if (this.instantFrame !== undefined) {
                 cancelAnimationFrame(this.instantFrame);
@@ -365,13 +364,7 @@ export class RdxPreviewCardRoot {
     }
 
     registerTransitionElement(element: HTMLElement) {
-        this.transitionElement = element;
-
-        return () => {
-            if (this.transitionElement === element) {
-                this.transitionElement = undefined;
-            }
-        };
+        return this.transition.registerElement(element);
     }
 
     private syncTriggerId(triggerId: string | null) {
@@ -413,61 +406,6 @@ export class RdxPreviewCardRoot {
         });
     }
 
-    private beginTransition(open: boolean) {
-        const version = ++this.transitionVersion;
-        this.clearTransitionTimer();
-        this.transitionStatus.set(open ? 'starting' : 'ending');
-
-        afterNextRender(
-            () => {
-                if (this.destroyRef.destroyed || version !== this.transitionVersion) {
-                    return;
-                }
-
-                if (open) {
-                    this.transitionFrame = requestAnimationFrame(() => {
-                        this.transitionFrame = undefined;
-
-                        if (this.destroyRef.destroyed || version !== this.transitionVersion) {
-                            return;
-                        }
-
-                        this.transitionStatus.set(undefined);
-                        this.waitForTransition(open, version);
-                    });
-                } else {
-                    this.waitForTransition(open, version);
-                }
-            },
-            { injector: this.injector }
-        );
-    }
-
-    private waitForTransition(open: boolean, version: number) {
-        const duration = this.transitionElement ? getMaxTransitionDuration(this.transitionElement) : 0;
-
-        if (duration === 0) {
-            this.completeTransition(open, version);
-            return;
-        }
-
-        this.transitionTimer = setTimeout(() => this.completeTransition(open, version), duration);
-    }
-
-    private completeTransition(open: boolean, version: number) {
-        if (version !== this.transitionVersion) {
-            return;
-        }
-
-        this.clearTransitionTimer();
-        this.transitionStatus.set(undefined);
-        this.instant.set(false);
-
-        if (!this.destroyRef.destroyed) {
-            this.onOpenChangeComplete.emit(open);
-        }
-    }
-
     private clearHoverTimers() {
         this.clearOpenTimer();
         this.clearCloseTimer();
@@ -484,18 +422,6 @@ export class RdxPreviewCardRoot {
         if (this.closeTimer !== undefined) {
             clearTimeout(this.closeTimer);
             this.closeTimer = undefined;
-        }
-    }
-
-    private clearTransitionTimer() {
-        if (this.transitionFrame !== undefined) {
-            cancelAnimationFrame(this.transitionFrame);
-            this.transitionFrame = undefined;
-        }
-
-        if (this.transitionTimer !== undefined) {
-            clearTimeout(this.transitionTimer);
-            this.transitionTimer = undefined;
         }
     }
 
@@ -536,38 +462,8 @@ function contextFor(root: RdxPreviewCardRoot): RdxPreviewCardRootContext {
         setPointerDownOnTrigger: (pointerDown: boolean) => root.isPointerDownOnTrigger.set(pointerDown),
         setHoverDelays: (delay: number, closeDelay: number) => root.setHoverDelays(delay, closeDelay),
         registerTransitionElement: (element) => root.registerTransitionElement(element),
-        transitionStatus: root.transitionStatus.asReadonly(),
+        transitionStatus: root.transitionStatus,
         registerViewport: (onTriggerChange) => root.registerViewport(onTriggerChange),
         toggle: (triggerId, trigger, payload, event) => root.toggle(triggerId, trigger, payload, event)
     };
-}
-
-function getMaxTransitionDuration(element: HTMLElement) {
-    const styles = getComputedStyle(element);
-
-    return Math.max(
-        getMaxCssDuration(styles.transitionDuration, styles.transitionDelay),
-        getMaxCssDuration(styles.animationDuration, styles.animationDelay)
-    );
-}
-
-function getMaxCssDuration(durations: string, delays: string) {
-    const parsedDurations = durations.split(',').map(parseCssTime);
-    const parsedDelays = delays.split(',').map(parseCssTime);
-
-    return parsedDurations.reduce(
-        (max, duration, index) => Math.max(max, duration + parsedDelays[index % parsedDelays.length]),
-        0
-    );
-}
-
-function parseCssTime(value: string) {
-    const trimmed = value.trim();
-    const number = Number.parseFloat(trimmed);
-
-    if (!Number.isFinite(number)) {
-        return 0;
-    }
-
-    return trimmed.endsWith('ms') ? number : number * 1000;
 }

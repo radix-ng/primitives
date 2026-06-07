@@ -1,13 +1,10 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import {
-    afterNextRender,
     booleanAttribute,
     computed,
-    DestroyRef,
     Directive,
     effect,
     inject,
-    Injector,
     input,
     model,
     output,
@@ -15,7 +12,7 @@ import {
     Signal,
     untracked
 } from '@angular/core';
-import { createContext } from '@radix-ng/primitives/core';
+import { createContext, useTransitionStatus } from '@radix-ng/primitives/core';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 
 export type RdxMenuTransitionStatus = 'starting' | 'ending' | undefined;
@@ -88,7 +85,7 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         isSubmenu: instance.isSubmenu.asReadonly(),
         hasTriggerInteractionHandler: instance.hasTriggerInteractionHandler.asReadonly(),
         trigger: instance.trigger.asReadonly(),
-        transitionStatus: instance.transitionStatus.asReadonly(),
+        transitionStatus: instance.transitionStatus,
         close: () => instance.close(),
         toggle: () => instance.toggle(),
         show: (autoFocus) => instance.show(autoFocus),
@@ -117,17 +114,14 @@ const contextFactory = () => buildContext(inject(RdxMenuRoot));
 })
 export class RdxMenuRoot {
     private readonly popper = inject(RdxPopper);
-    private readonly destroyRef = inject(DestroyRef);
-    private readonly injector = inject(Injector);
+
+    /** Shared open/close transition state machine (completes on the real animationend). */
+    private readonly transition = useTransitionStatus((open) => this.onOpenChangeComplete.emit(open));
 
     private registeredTrigger: HTMLElement | undefined;
-    private transitionElement: HTMLElement | undefined;
     private popupArrowNavigationHandler: ((offset: 1 | -1) => boolean) | undefined;
     private triggerInteractionHandler: RdxMenuTriggerInteractionHandler | undefined;
     private hasAppliedDefaultOpen = false;
-    private transitionVersion = 0;
-    private transitionTimer: ReturnType<typeof setTimeout> | undefined;
-    private transitionFrame: number | undefined;
 
     /** Whether the menu is currently open. */
     readonly open = model(false);
@@ -160,7 +154,7 @@ export class RdxMenuRoot {
     readonly onOpenChangeComplete = output<boolean>();
 
     readonly trigger = signal<HTMLElement | undefined>(undefined);
-    readonly transitionStatus = signal<RdxMenuTransitionStatus>(undefined);
+    readonly transitionStatus = this.transition.status;
     /** Whether the popup grabs focus when it opens. Set false for menubar hover-switching. */
     readonly autoFocus = signal<RdxMenuAutoFocus>('first');
     readonly isSubmenu = signal(false);
@@ -184,13 +178,8 @@ export class RdxMenuRoot {
             const open = this.open();
             if (open !== previousOpen) {
                 previousOpen = open;
-                untracked(() => this.beginTransition(open));
+                untracked(() => this.transition.start(open));
             }
-        });
-
-        this.destroyRef.onDestroy(() => {
-            clearTimeout(this.transitionTimer);
-            if (this.transitionFrame !== undefined) cancelAnimationFrame(this.transitionFrame);
         });
     }
 
@@ -237,12 +226,7 @@ export class RdxMenuRoot {
     }
 
     registerTransitionElement(element: HTMLElement): () => void {
-        this.transitionElement = element;
-        return () => {
-            if (this.transitionElement === element) {
-                this.transitionElement = undefined;
-            }
-        };
+        return this.transition.registerElement(element);
     }
 
     registerPopupArrowNavigationHandler(handler: (offset: 1 | -1) => boolean): () => void {
@@ -282,71 +266,4 @@ export class RdxMenuRoot {
     closeParent(): void {
         this.trigger()?.dispatchEvent(new CustomEvent('rdx-menu-close-parent', { bubbles: true }));
     }
-
-    private beginTransition(open: boolean) {
-        const version = ++this.transitionVersion;
-        clearTimeout(this.transitionTimer);
-        if (this.transitionFrame !== undefined) {
-            cancelAnimationFrame(this.transitionFrame);
-            this.transitionFrame = undefined;
-        }
-        this.transitionStatus.set(open ? 'starting' : 'ending');
-
-        afterNextRender(
-            () => {
-                if (this.destroyRef.destroyed || version !== this.transitionVersion) return;
-
-                if (open) {
-                    this.transitionFrame = requestAnimationFrame(() => {
-                        this.transitionFrame = undefined;
-                        if (this.destroyRef.destroyed || version !== this.transitionVersion) return;
-                        this.transitionStatus.set(undefined);
-                        this.waitForTransition(open, version);
-                    });
-                } else {
-                    this.waitForTransition(open, version);
-                }
-            },
-            { injector: this.injector }
-        );
-    }
-
-    private waitForTransition(open: boolean, version: number) {
-        const duration = this.transitionElement ? getMaxTransitionDuration(this.transitionElement) : 0;
-        if (duration === 0) {
-            this.completeTransition(open, version);
-            return;
-        }
-        this.transitionTimer = setTimeout(() => this.completeTransition(open, version), duration);
-    }
-
-    private completeTransition(open: boolean, version: number) {
-        if (version !== this.transitionVersion) return;
-        clearTimeout(this.transitionTimer);
-        this.transitionStatus.set(undefined);
-        if (!this.destroyRef.destroyed) {
-            this.onOpenChangeComplete.emit(open);
-        }
-    }
-}
-
-function getMaxTransitionDuration(element: HTMLElement): number {
-    const s = getComputedStyle(element);
-    return Math.max(
-        getMaxCssDuration(s.transitionDuration, s.transitionDelay),
-        getMaxCssDuration(s.animationDuration, s.animationDelay)
-    );
-}
-
-function getMaxCssDuration(durations: string, delays: string): number {
-    const d = durations.split(',').map(parseCssTime);
-    const dl = delays.split(',').map(parseCssTime);
-    return d.reduce((max, dur, i) => Math.max(max, dur + dl[i % dl.length]), 0);
-}
-
-function parseCssTime(value: string): number {
-    const t = value.trim();
-    const n = Number.parseFloat(t);
-    if (!Number.isFinite(n)) return 0;
-    return t.endsWith('ms') ? n : n * 1000;
 }

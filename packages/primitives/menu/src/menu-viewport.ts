@@ -1,4 +1,5 @@
 import { afterNextRender, DestroyRef, Directive, ElementRef, inject, signal } from '@angular/core';
+import { getMaxTransitionDuration } from '@radix-ng/primitives/core';
 
 /**
  * A viewport that smoothly animates the popup size when its content changes
@@ -83,26 +84,4 @@ export class RdxMenuViewport {
         const duration = getMaxTransitionDuration(this.elementRef.nativeElement);
         this.transitionTimer = setTimeout(() => this.transitioning.set(false), duration > 0 ? duration + 50 : 0);
     }
-}
-
-function getMaxTransitionDuration(element: HTMLElement): number {
-    const style = getComputedStyle(element);
-    return Math.max(
-        getMaxDuration(style.transitionDuration, style.transitionDelay),
-        getMaxDuration(style.animationDuration, style.animationDelay)
-    );
-}
-
-function getMaxDuration(durations: string, delays: string): number {
-    const d = durations.split(',').map(parseDuration);
-    const dl = delays.split(',').map(parseDuration);
-    return d.reduce((max, dur, i) => Math.max(max, dur + (dl[i % dl.length] ?? 0)), 0);
-}
-
-function parseDuration(value: string): number {
-    const n = Number.parseFloat(value);
-    if (Number.isNaN(n)) {
-        return 0;
-    }
-    return value.trim().endsWith('ms') ? n : n * 1000;
 }

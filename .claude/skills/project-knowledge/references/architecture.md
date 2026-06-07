@@ -47,7 +47,7 @@ tools/scripts/         ← build helpers (typedoc, api-docs)
 
 These are the headless infrastructure layers that complex primitives compose:
 
-- **`core`** — `createContext`, `useArrowNavigation`, id generators, shared types (`DataOrientation`, `AcceptableValue`, `isNullish`), plus overlay infrastructure shared across primitives: `useTransitionStatus` (open/close transition state machine + `getMaxTransitionDuration`) and `useScrollLock` (body scroll lock with one process-wide counter, so concurrent overlays compose correctly). Used by dialog and popover
+- **`core`** — `createContext`, `useArrowNavigation`, id generators, shared types (`DataOrientation`, `AcceptableValue`, `isNullish`), plus overlay infrastructure shared across primitives: `useTransitionStatus` (open/close transition state machine; completes on the real `animationend`/`transitionend` via the Web Animations API, with `getMaxTransitionDuration` now only feeding a safety-net timer for transitions that never settle — used by dialog, popover, collapsible, tabs, navigation-menu) and `useScrollLock` (body scroll lock with one process-wide counter, so concurrent overlays compose correctly)
 - **`collection`** — `RdxCollectionProvider` + `RdxCollectionItem`: collects child items in DOM order via `contentChildren`; only used by `select` currently
 - **`portal`** — `RdxPortal`: teleports host element into a container (default `document.body`)
 - **`presence`** — conditional mount/unmount with enter/leave animation hooks (waits for `animationend`, not `transitionend`)
