@@ -128,7 +128,6 @@ const docsConfig = {
                         },
                         { name: 'Select', url: '/primitives/components/select' },
                         { name: 'Separator', url: '/primitives/components/separator' },
-                        { name: 'Slider', url: '/primitives/components/slider' },
                         {
                             name: 'Stepper',
                             url: 'https://sb-primitives.radix-ng.com/?path=/docs/primitives-stepper--docs',

@@ -1,4 +1,4 @@
-import { computed, Directive, ElementRef, inject, OnDestroy, OnInit } from '@angular/core';
+import { computed, DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 import * as kbd from '@radix-ng/primitives/core';
 import { getActiveElement, useArrowNavigation } from '@radix-ng/primitives/core';
 import { injectStepperItemContext } from './stepper-item-context.token';
@@ -27,7 +27,7 @@ import { injectStepperRootContext } from './stepper-root-context.token';
         '(keydown.ArrowDown)': 'handleKeyDown($event)'
     }
 })
-export class RdxStepperTriggerDirective implements OnInit, OnDestroy {
+export class RdxStepperTriggerDirective {
     protected readonly rootContext = injectStepperRootContext();
     protected readonly itemContext = injectStepperItemContext();
 
@@ -35,16 +35,16 @@ export class RdxStepperTriggerDirective implements OnInit, OnDestroy {
 
     readonly stepperItems = computed(() => Array.from(this.rootContext.totalStepperItems()));
 
-    ngOnInit() {
-        const current = this.rootContext.totalStepperItems();
-        this.rootContext.totalStepperItems.set([...current, this.elementRef.nativeElement]);
-    }
+    constructor() {
+        // Register/deregister this trigger's host element with the root, in DOM order.
+        const element = this.elementRef.nativeElement;
+        this.rootContext.totalStepperItems.set([...this.rootContext.totalStepperItems(), element]);
 
-    ngOnDestroy() {
-        const current = this.rootContext.totalStepperItems();
-        const updated = current.filter((el: HTMLElement) => el !== this.elementRef.nativeElement);
+        inject(DestroyRef).onDestroy(() => {
+            const updated = this.rootContext.totalStepperItems().filter((el: HTMLElement) => el !== element);
 
-        this.rootContext.totalStepperItems.set(updated);
+            this.rootContext.totalStepperItems.set(updated);
+        });
     }
 
     handleMouseDown(event: Event) {

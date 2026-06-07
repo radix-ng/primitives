@@ -1,4 +1,4 @@
-import { computed, Directive, ElementRef, inject, input, OnDestroy, OnInit } from '@angular/core';
+import { computed, DestroyRef, Directive, ElementRef, inject, input } from '@angular/core';
 import { injectSliderRootContext } from './slider-context';
 import { RdxSliderThumb } from './slider-thumb';
 import { ALL_KEYS, COMPOSITE_KEYS, getDefaultAriaValueText, getNewValue, roundValueToStep } from './slider.utils';
@@ -36,7 +36,7 @@ import { ALL_KEYS, COMPOSITE_KEYS, getDefaultAriaValueText, getNewValue, roundVa
         '(blur)': 'onBlur()'
     }
 })
-export class RdxSliderThumbInput implements OnInit, OnDestroy {
+export class RdxSliderThumbInput {
     protected readonly root = injectSliderRootContext()!;
     protected readonly thumb = inject(RdxSliderThumb);
     private readonly element = inject<ElementRef<HTMLInputElement>>(ElementRef).nativeElement;
@@ -58,14 +58,15 @@ export class RdxSliderThumbInput implements OnInit, OnDestroy {
             getDefaultAriaValueText(this.root.values(), this.thumb.index(), this.root.format(), this.root.locale())
     );
 
-    ngOnInit(): void {
+    constructor() {
+        // Host element exists in the constructor and the registration has no input dependency.
         this.thumb.inputElement = this.element;
-    }
 
-    ngOnDestroy(): void {
-        if (this.thumb.inputElement === this.element) {
-            this.thumb.inputElement = null;
-        }
+        inject(DestroyRef).onDestroy(() => {
+            if (this.thumb.inputElement === this.element) {
+                this.thumb.inputElement = null;
+            }
+        });
     }
 
     protected onChange(event: Event): void {

@@ -1,14 +1,4 @@
-import {
-    booleanAttribute,
-    computed,
-    Directive,
-    effect,
-    ElementRef,
-    inject,
-    input,
-    OnInit,
-    untracked
-} from '@angular/core';
+import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input, untracked } from '@angular/core';
 import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ENTER, injectDocument, SPACE } from '@radix-ng/primitives/core';
 import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 import { RdxNavigationMenuItem } from './navigation-menu-item';
@@ -38,7 +28,7 @@ import { focusFirst, getTabbableCandidates } from './utils';
         '(focus)': 'onFocus()'
     }
 })
-export class RdxNavigationMenuTrigger implements OnInit {
+export class RdxNavigationMenuTrigger {
     protected readonly item = inject(RdxNavigationMenuItem);
     private readonly rootContext = injectNavigationMenuRootContext()!;
     private readonly rovingFocusItem = inject(RdxRovingFocusItemDirective, { self: true });
@@ -58,7 +48,13 @@ export class RdxNavigationMenuTrigger implements OnInit {
     protected readonly open = computed(() => this.item.isOpen());
 
     constructor() {
+        // Host element is available in the constructor; the trigger ref does not depend on inputs.
+        this.item.triggerRef.set(this.elementRef.nativeElement);
+
         effect(() => this.rovingFocusItem.setFocusable(!this.disabled()));
+
+        // `value` is an input on the item, so read it in an effect (kept in sync if it ever changes).
+        effect(() => this.rovingFocusItem.setTabStopId(this.item.value()));
 
         effect((onCleanup) => {
             const value = this.item.value();
@@ -67,11 +63,6 @@ export class RdxNavigationMenuTrigger implements OnInit {
             // this effect re-run (and tear down the registration) when the open value changes.
             onCleanup(untracked(() => this.rootContext.registerTrigger(value, element)));
         });
-    }
-
-    ngOnInit() {
-        this.item.triggerRef.set(this.elementRef.nativeElement);
-        this.rovingFocusItem.setTabStopId(this.item.value());
     }
 
     protected onClick(event: MouseEvent) {

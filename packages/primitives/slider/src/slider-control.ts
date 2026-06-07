@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Directive, ElementRef, inject, OnDestroy } from '@angular/core';
+import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 import { injectSliderRootContext } from './slider-context';
 import {
     clamp,
@@ -29,7 +29,7 @@ const INTENTIONAL_DRAG_COUNT_THRESHOLD = 2;
         '(pointerdown)': 'onPointerDown($event)'
     }
 })
-export class RdxSliderControl implements OnDestroy {
+export class RdxSliderControl {
     protected readonly root = injectSliderRootContext()!;
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly document = inject(DOCUMENT);
@@ -44,10 +44,7 @@ export class RdxSliderControl implements OnDestroy {
 
     constructor() {
         this.root.controlRef.set(this.elementRef.nativeElement);
-    }
-
-    ngOnDestroy(): void {
-        this.stopListening();
+        inject(DestroyRef).onDestroy(() => this.stopListening());
     }
 
     protected onPointerDown(event: PointerEvent): void {
