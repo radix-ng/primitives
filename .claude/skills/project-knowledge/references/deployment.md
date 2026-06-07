@@ -21,11 +21,23 @@ All workflows are in `.github/workflows/`.
 
 **`chromatic.yml`** — visual regression on push to `main` via Chromaui action. `exitZeroOnChanges: true` — changes are flagged but don't fail the build; review happens in Chromatic dashboard.
 
+**`publish.yml`** — triggered by a GitHub **Release** being created (`release: created`) or manual `workflow_dispatch`. Builds the library + schematics, then runs `nx release publish`. The publish step derives the npm **dist-tag from the version**: a prerelease (version containing `-`, e.g. `1.0.0-beta.0`) publishes under its prerelease identifier (`beta`/`rc`/`alpha`), a stable version publishes under `latest`. This keeps `npm i @radix-ng/primitives` resolving the stable release while a beta is in flight. Provenance is enabled (`NPM_CONFIG_PROVENANCE: true`).
+
 **Algolia crawler** — manual dispatch only; re-crawls `https://radix-ng.com` for search index.
 
 ## Release process
 
-Managed by `nx release` (Nx release tooling). Run `pnpm release:dry-run` to preview version bumps and release notes; `pnpm release:primitives` to cut a library release without publishing. Published to npm as `@radix-ng/primitives` with secondary entries. Current version: `0.51.0`.
+Managed by `nx release` (Nx release tooling). The config lives in `nx.json` under `release` (independent versioning, project `primitives`, `conventionalCommits: false` so the version is passed explicitly, `changelog.createRelease: github`). Published to npm as `@radix-ng/primitives` with secondary entries.
+
+**Publishing is CI-driven, not local.** The canonical flow is to run the combined command locally with an explicit version and `--skip-publish`, e.g. `npx nx release 1.0.0-beta.0 --skip-publish`. That one command builds primitives, bumps the version + CHANGELOG, commits, tags (`primitives@<version>`), **pushes to origin**, and **creates the GitHub Release** — all before any publish. Creating the Release fires `publish.yml`, which performs the actual npm publish (with the version-derived dist-tag). `--skip-publish` is required so the library is published only by CI, never twice.
+
+Notes:
+
+- The standalone `nx release version` / `nx release changelog` subcommands fail in this repo because `nx.json` sets the top-level `release.git`; only the combined `nx release` command works.
+- Creating the GitHub Release needs local GitHub auth (`GITHUB_TOKEN`/`GH_TOKEN` env or `gh auth`); without it the Release step fails and CI is never triggered.
+- For prereleases, mark the GitHub Release as **Pre-release** (not "Latest") so the repo's latest-release pointer stays on the stable version. Install a prerelease explicitly: `npm i @radix-ng/primitives@beta`.
+- `pnpm release:dry-run` previews version bumps and release notes; `pnpm release:primitives` cuts version + changelog without publishing.
+- Current version: `1.0.0-beta.0` (first `1.0.0` prerelease; previous stable line was `0.51.0`).
 
 ## Storybook
 
