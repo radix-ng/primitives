@@ -1,5 +1,3 @@
-import { _IdGenerator } from '@angular/cdk/a11y';
-import { BooleanInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -14,7 +12,7 @@ import {
     signal,
     untracked
 } from '@angular/core';
-import { createContext, useTransitionStatus } from '@radix-ng/primitives/core';
+import { BooleanInput, createContext, injectId, useTransitionStatus } from '@radix-ng/primitives/core';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 import { RdxPreviewCardHandle } from './preview-card-handle';
 
@@ -94,7 +92,6 @@ export type RdxPreviewCardTransitionStatus = 'starting' | 'ending' | undefined;
     hostDirectives: [RdxPopper]
 })
 export class RdxPreviewCardRoot {
-    private readonly idGenerator = inject(_IdGenerator);
     private readonly popper = inject(RdxPopper);
     private readonly destroyRef = inject(DestroyRef);
 
@@ -141,7 +138,7 @@ export class RdxPreviewCardRoot {
      */
     readonly handle = input<RdxPreviewCardHandle<any>>();
 
-    readonly contentId = this.idGenerator.getId('rdx-preview-card-content-');
+    readonly contentId = injectId('rdx-preview-card-content-');
     readonly trigger = signal<HTMLElement | undefined>(undefined);
     readonly triggers = signal<HTMLElement[]>([]);
     readonly payload = signal<unknown>(undefined);

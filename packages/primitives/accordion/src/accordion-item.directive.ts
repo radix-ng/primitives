@@ -1,4 +1,3 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -13,7 +12,7 @@ import {
     WritableSignal
 } from '@angular/core';
 import { injectCollapsibleRootContext, RdxCollapsibleRootDirective } from '@radix-ng/primitives/collapsible';
-import { createContext, useArrowNavigation } from '@radix-ng/primitives/core';
+import { BooleanInput, createContext, useArrowNavigation } from '@radix-ng/primitives/core';
 import { injectAccordionRootContext } from './accordion-root.directive';
 
 export type RdxAccordionItemState = 'open' | 'closed';

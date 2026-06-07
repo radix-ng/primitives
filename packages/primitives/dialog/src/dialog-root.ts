@@ -1,5 +1,3 @@
-import { _IdGenerator } from '@angular/cdk/a11y';
-import { BooleanInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -14,7 +12,13 @@ import {
     signal,
     untracked
 } from '@angular/core';
-import { createContext, RdxTransitionStatus, useTransitionStatus } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    createContext,
+    injectId,
+    RdxTransitionStatus,
+    useTransitionStatus
+} from '@radix-ng/primitives/core';
 import { RdxDialogHandle } from './dialog-handle';
 import { RDX_DIALOG_VARIANT, RdxDialogRole } from './dialog-variant';
 
@@ -93,7 +97,6 @@ export const [injectRdxDialogRootContext, provideRdxDialogRootContext] =
     providers: [provideRdxDialogRootContext(context)]
 })
 export class RdxDialogRoot {
-    private readonly idGenerator = inject(_IdGenerator);
     private readonly destroyRef = inject(DestroyRef);
     private readonly parentRoot = inject(RdxDialogRoot, { optional: true, skipSelf: true });
     private readonly variant = inject(RDX_DIALOG_VARIANT);
@@ -153,7 +156,7 @@ export class RdxDialogRoot {
      */
     readonly onOpenChangeComplete = output<boolean>();
 
-    readonly contentId = this.idGenerator.getId('rdx-dialog-content-');
+    readonly contentId = injectId('rdx-dialog-content-');
     readonly titleId = signal<string | undefined>(undefined);
     readonly descriptionId = signal<string | undefined>(undefined);
     readonly trigger = signal<HTMLElement | undefined>(undefined);

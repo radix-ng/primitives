@@ -1,5 +1,5 @@
-import { NumberInput } from '@angular/cdk/coercion';
 import { computed, Directive, effect, ElementRef, inject, input, numberAttribute, signal } from '@angular/core';
+import { NumberInput } from '@radix-ng/primitives/core';
 import { injectNumberFieldRootContext } from './number-field-context';
 import { provideNumberFieldScrubAreaContext, RdxNumberFieldScrubAreaContext } from './number-field-scrub-area-context';
 import { numberOrUndefined } from './number-field.utils';

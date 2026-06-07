@@ -1,4 +1,3 @@
-import { NumberInput } from '@angular/cdk/coercion';
 import {
     AfterViewInit,
     computed,
@@ -9,6 +8,7 @@ import {
     numberAttribute,
     Renderer2
 } from '@angular/core';
+import { NumberInput } from '@radix-ng/primitives/core';
 
 /**
  * Directive to maintain an aspect ratio for an element.

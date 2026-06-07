@@ -1,4 +1,3 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -12,7 +11,7 @@ import {
     Signal,
     untracked
 } from '@angular/core';
-import { createContext } from '@radix-ng/primitives/core';
+import { BooleanInput, createContext } from '@radix-ng/primitives/core';
 import { RdxDialogRoot } from '@radix-ng/primitives/dialog';
 import { RdxDrawerProvider } from './drawer-provider';
 import { RdxDrawerSnapPoint } from './drawer-snap';

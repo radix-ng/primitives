@@ -26,3 +26,9 @@ export type Nullable<Type> = null | Type | undefined;
 export type SafeFunction = (...args: unknown[]) => unknown;
 
 export type AcceptableValue = string | number | bigint | Record<string, any> | null;
+
+/** Type describing the allowed values for a boolean `input()` using `booleanAttribute` coercion. */
+export type BooleanInput = string | boolean | null | undefined;
+
+/** Type describing the allowed values for a number `input()` using `numberAttribute` coercion. */
+export type NumberInput = string | number | null | undefined;

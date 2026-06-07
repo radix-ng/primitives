@@ -1,5 +1,3 @@
-import { _IdGenerator } from '@angular/cdk/a11y';
-import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -12,6 +10,7 @@ import {
     signal,
     untracked
 } from '@angular/core';
+import { BooleanInput, injectId, NumberInput } from '@radix-ng/primitives/core';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { injectRdxTooltipContext } from './tooltip';
 import { RdxTooltipHandle } from './tooltip-handle';
@@ -37,7 +36,7 @@ import { RdxTooltipHandle } from './tooltip-handle';
 export class RdxTooltipTrigger {
     private readonly parentRootContext = injectRdxTooltipContext(true);
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
-    private readonly generatedId = inject(_IdGenerator).getId('rdx-tooltip-trigger-');
+    private readonly generatedId = injectId('rdx-tooltip-trigger-');
 
     /**
      * Associates this trigger with a detached tooltip root.

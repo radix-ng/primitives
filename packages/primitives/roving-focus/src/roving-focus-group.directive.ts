@@ -1,4 +1,3 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import { isPlatformBrowser } from '@angular/common';
 import {
     booleanAttribute,
@@ -14,7 +13,7 @@ import {
     PLATFORM_ID,
     signal
 } from '@angular/core';
-import { createContext } from '@radix-ng/primitives/core';
+import { BooleanInput, createContext } from '@radix-ng/primitives/core';
 import { Direction, ENTRY_FOCUS, EVENT_OPTIONS, focusFirst, Orientation, sortByDocumentPosition } from './utils';
 
 const rootContext = () => {

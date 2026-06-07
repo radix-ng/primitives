@@ -1,6 +1,5 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, Directive, effect, inject, input } from '@angular/core';
-import { provideValueAccessor } from '@radix-ng/primitives/core';
+import { BooleanInput, provideValueAccessor } from '@radix-ng/primitives/core';
 import { Direction, RdxRovingFocusGroupDirective } from '@radix-ng/primitives/roving-focus';
 import { RdxToggleGroupBase, toggleGroupContext } from './toggle-group-base';
 import { provideToggleGroupContext } from './toggle-group-context';

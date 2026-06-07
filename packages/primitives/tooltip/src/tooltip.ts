@@ -1,5 +1,3 @@
-import { _IdGenerator } from '@angular/cdk/a11y';
-import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -16,7 +14,7 @@ import {
     untracked
 } from '@angular/core';
 import type { ReferenceElement } from '@floating-ui/dom';
-import { createContext, watch } from '@radix-ng/primitives/core';
+import { BooleanInput, createContext, injectId, NumberInput, watch } from '@radix-ng/primitives/core';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 import { RdxTooltipHandle } from './tooltip-handle';
 import { injectRdxTooltipProviderContext } from './tooltip-provider';
@@ -60,7 +58,6 @@ const context = () => contextFor(inject(RdxTooltip));
     hostDirectives: [RdxPopper]
 })
 export class RdxTooltip {
-    private readonly idGenerator = inject(_IdGenerator);
     private readonly defaultConfig = injectRdxTooltipConfig();
     private readonly provider = injectRdxTooltipProviderContext(true);
     private readonly popper = inject(RdxPopper);
@@ -120,7 +117,7 @@ export class RdxTooltip {
      */
     readonly onOpenChange = output<boolean>();
 
-    readonly contentId = this.idGenerator.getId('rdx-tooltip-content-');
+    readonly contentId = injectId('rdx-tooltip-content-');
     readonly trigger = signal<HTMLElement | undefined>(undefined);
     readonly triggers = signal<HTMLElement[]>([]);
     readonly payload = signal<unknown>(undefined);

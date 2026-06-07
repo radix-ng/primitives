@@ -1,7 +1,6 @@
-import { NumberInput } from '@angular/cdk/coercion';
 import { computed, DestroyRef, inject, numberAttribute, signal, Signal } from '@angular/core';
 import { NumberFormatter, NumberParser } from '@internationalized/number';
-import { clamp } from '@radix-ng/primitives/core';
+import { clamp, NumberInput } from '@radix-ng/primitives/core';
 
 /**
  * Coerces an optional numeric input, returning `undefined` for nullish/empty/non-numeric values.

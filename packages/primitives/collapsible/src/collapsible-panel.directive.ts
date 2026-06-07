@@ -1,4 +1,3 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import {
     afterRenderEffect,
     booleanAttribute,
@@ -12,6 +11,7 @@ import {
     signal,
     untracked
 } from '@angular/core';
+import { BooleanInput } from '@radix-ng/primitives/core';
 import { injectCollapsibleRootContext } from './collapsible-root.directive';
 
 /**

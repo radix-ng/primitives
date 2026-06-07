@@ -1,4 +1,3 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -12,7 +11,7 @@ import {
     Signal
 } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
-import { createContext, provideValueAccessor } from '@radix-ng/primitives/core';
+import { BooleanInput, createContext, provideValueAccessor } from '@radix-ng/primitives/core';
 import type { CheckedState } from './checkbox-root';
 
 export interface RdxCheckboxGroupContext {

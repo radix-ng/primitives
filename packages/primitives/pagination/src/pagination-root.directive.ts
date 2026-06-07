@@ -1,4 +1,3 @@
-import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -9,6 +8,7 @@ import {
     numberAttribute,
     output
 } from '@angular/core';
+import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
 import { PAGINATION_ROOT_CONTEXT } from './pagination-context.token';
 
 @Directive({

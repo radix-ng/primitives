@@ -1,40 +1,43 @@
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.dev/license
- */
-
 import { APP_ID, inject, Injectable } from '@angular/core';
 
 /**
- * Keeps track of the ID count per prefix. This helps us make the IDs a bit more deterministic
- * like they were before the service was introduced. Note that ideally we wouldn't have to do
- * this, but there are some internal tests that rely on the IDs.
+ * Per-prefix counters, kept module-global so generated IDs stay deterministic within a run.
+ * Determinism keeps server and client renders in sync, which matters for hydration.
  */
-const counters: Record<string, number> = {};
+const counters = new Map<string, number>();
 
-/** Service that generates unique IDs for DOM nodes. */
+/**
+ * Generates unique, SSR-stable IDs for DOM nodes.
+ *
+ * IDs are deterministic per prefix (a monotonic counter) so the server and the client produce the
+ * same sequence and hydration does not mismatch. The application's `APP_ID` is folded into the
+ * prefix so multiple Angular apps on one page don't collide; the default `ng` app id is omitted to
+ * keep IDs short for the common single-app case.
+ *
+ * Prefer the {@link injectId} hook at call sites; inject this service directly only when you need to
+ * generate IDs lazily outside an injection context.
+ */
 @Injectable({ providedIn: 'root' })
-export class _IdGenerator {
-    private readonly _appId = inject(APP_ID);
+export class RdxIdGenerator {
+    private readonly appId = inject(APP_ID);
 
-    /**
-     * Generates a unique ID with a specific prefix.
-     * @param prefix Prefix to add to the ID.
-     */
+    /** Generates a unique ID with the given prefix. */
     getId(prefix: string): string {
-        // Omit the app ID if it's the default `ng`. Since the vast majority of pages have one
-        // Angular app on them, we can reduce the amount of breakages by not adding it.
-        if (this._appId !== 'ng') {
-            prefix += this._appId;
-        }
+        const key = this.appId === 'ng' ? prefix : prefix + this.appId;
+        const next = counters.get(key) ?? 0;
+        counters.set(key, next + 1);
 
-        if (!Object.prototype.hasOwnProperty.call(counters, prefix)) {
-            counters[prefix] = 0;
-        }
-
-        return `${prefix}${counters[prefix]++}`;
+        return `${key}${next}`;
     }
+}
+
+/**
+ * Returns a unique, SSR-stable ID for the given prefix — the Angular counterpart of React's
+ * `useId`. Must be called in an injection context (e.g. a field initializer or constructor).
+ *
+ * @example
+ * readonly contentId = injectId('rdx-dialog-content-');
+ */
+export function injectId(prefix: string): string {
+    return inject(RdxIdGenerator).getId(prefix);
 }

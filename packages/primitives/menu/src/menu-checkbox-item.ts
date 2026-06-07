@@ -1,4 +1,3 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -11,7 +10,7 @@ import {
     signal,
     Signal
 } from '@angular/core';
-import { createContext } from '@radix-ng/primitives/core';
+import { BooleanInput, createContext } from '@radix-ng/primitives/core';
 import { injectRdxMenuRootContext } from './menu-root';
 import { CheckedState, getCheckedState, isIndeterminate } from './menu-utils';
 

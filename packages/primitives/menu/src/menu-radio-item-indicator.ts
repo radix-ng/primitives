@@ -1,5 +1,5 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, computed, Directive, input } from '@angular/core';
+import { BooleanInput } from '@radix-ng/primitives/core';
 import { injectRdxMenuRadioItemContext } from './menu-radio-item';
 import { getCheckedState } from './menu-utils';
 

@@ -1,6 +1,4 @@
-import { _IdGenerator } from '@angular/cdk/a11y';
 import { Direction } from '@angular/cdk/bidi';
-import { BooleanInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -16,7 +14,7 @@ import {
     output,
     Signal
 } from '@angular/core';
-import { AcceptableValue, createContext, DataOrientation } from '@radix-ng/primitives/core';
+import { AcceptableValue, BooleanInput, createContext, DataOrientation, injectId } from '@radix-ng/primitives/core';
 
 export type AccordionRootContext = {
     disabled: InputSignalWithTransform<boolean, BooleanInput>;
@@ -66,7 +64,7 @@ const rootContext = (): AccordionRootContext => {
 export class RdxAccordionRootDirective {
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
-    readonly id = input<string>(inject(_IdGenerator).getId('rdx-accordion-'));
+    readonly id = input<string>(injectId('rdx-accordion-'));
 
     /**
      * The reading direction of the accordion when applicable. If omitted, assumes LTR (left-to-right) reading mode.

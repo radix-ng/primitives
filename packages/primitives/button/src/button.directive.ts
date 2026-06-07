@@ -1,5 +1,5 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, computed, DestroyRef, Directive, ElementRef, inject, input } from '@angular/core';
+import { BooleanInput } from '@radix-ng/primitives/core';
 
 export type RdxButtonType = 'button' | 'submit' | 'reset';
 

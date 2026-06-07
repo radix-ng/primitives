@@ -1,5 +1,3 @@
-import { _IdGenerator } from '@angular/cdk/a11y';
-import { NumberInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -11,6 +9,7 @@ import {
     numberAttribute,
     untracked
 } from '@angular/core';
+import { injectId, NumberInput } from '@radix-ng/primitives/core';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { RdxPreviewCardHandle } from './preview-card-handle';
 import { injectRdxPreviewCardRootContext } from './preview-card-root';
@@ -83,7 +82,7 @@ export class RdxPreviewCardTrigger {
     protected readonly isPressed = computed(
         () => this.isOpen() && this.rootContext()?.openChangeReason() === 'trigger-press'
     );
-    private readonly generatedId = inject(_IdGenerator).getId('rdx-preview-card-trigger-');
+    private readonly generatedId = injectId('rdx-preview-card-trigger-');
 
     constructor() {
         effect((onCleanup) => {

@@ -1,6 +1,6 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import { Directive, booleanAttribute, inject, input, linkedSignal, output, untracked } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
+import { BooleanInput } from '../types';
 import { provideValueAccessor } from './provide-value-accessor';
 
 /**

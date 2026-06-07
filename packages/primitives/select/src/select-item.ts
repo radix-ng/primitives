@@ -10,7 +10,7 @@ import {
     signal
 } from '@angular/core';
 import { RdxCollectionItem } from '@radix-ng/primitives/collection';
-import { _IdGenerator, createContext, getActiveElement, handleAndDispatchCustomEvent } from '@radix-ng/primitives/core';
+import { createContext, getActiveElement, handleAndDispatchCustomEvent, injectId } from '@radix-ng/primitives/core';
 import { injectSelectContentContext } from './select-content';
 import { injectSelectRootContext } from './select-root';
 import { SELECTION_KEYS, valueComparator } from './utils';
@@ -80,7 +80,7 @@ export class RdxSelectItem {
 
     readonly isFocused = signal(false);
 
-    readonly textId = inject(_IdGenerator).getId('rdx-select-item-text-');
+    readonly textId = injectId('rdx-select-item-text-');
 
     private readonly afterNextRender = afterNextRender(() => {
         this.contentContext.itemRefCallback(this.currentElement.nativeElement, this.value(), this.disabled());

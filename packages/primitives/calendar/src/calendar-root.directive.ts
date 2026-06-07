@@ -1,4 +1,3 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import {
     AfterViewInit,
     booleanAttribute,
@@ -14,7 +13,7 @@ import {
     signal
 } from '@angular/core';
 import { DateValue, isEqualDay, isSameDay, startOfWeek, startOfYear } from '@internationalized/date';
-import { DateMatcher, Formatter, getDefaultDate, Month, watch } from '@radix-ng/primitives/core';
+import { BooleanInput, DateMatcher, Formatter, getDefaultDate, Month, watch } from '@radix-ng/primitives/core';
 import { calendar, calendarState } from './calendar';
 import { CALENDAR_ROOT_CONTEXT } from './сalendar-сontext.token';
 

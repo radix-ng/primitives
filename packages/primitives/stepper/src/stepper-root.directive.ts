@@ -1,6 +1,5 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { Direction } from '@angular/cdk/bidi';
-import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -14,6 +13,7 @@ import {
     output,
     signal
 } from '@angular/core';
+import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
 import { STEPPER_ROOT_CONTEXT, StepperRootContext } from './stepper-root-context.token';
 
 @Directive({

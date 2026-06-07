@@ -1,5 +1,5 @@
-import { Directive, inject } from '@angular/core';
-import { _IdGenerator } from '@radix-ng/primitives/core';
+import { Directive } from '@angular/core';
+import { injectId } from '@radix-ng/primitives/core';
 
 @Directive({
     selector: '[rdxSelectGroup]',
@@ -10,5 +10,5 @@ import { _IdGenerator } from '@radix-ng/primitives/core';
     }
 })
 export class RdxSelectGroup {
-    readonly id = inject(_IdGenerator).getId('rdx-select-group-');
+    readonly id = injectId('rdx-select-group-');
 }

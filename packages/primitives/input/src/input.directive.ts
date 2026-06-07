@@ -1,4 +1,3 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import {
     afterNextRender,
     booleanAttribute,
@@ -12,7 +11,7 @@ import {
     output,
     signal
 } from '@angular/core';
-import { RdxFormValueControl } from '@radix-ng/primitives/core';
+import { BooleanInput, RdxFormValueControl } from '@radix-ng/primitives/core';
 import { injectFieldRootContext } from '@radix-ng/primitives/field';
 
 let inputId = 0;

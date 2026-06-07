@@ -1,4 +1,3 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -11,7 +10,7 @@ import {
     input,
     Renderer2
 } from '@angular/core';
-import { provideToken } from '@radix-ng/primitives/core';
+import { BooleanInput, provideToken } from '@radix-ng/primitives/core';
 import { Orientation, RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 import { RDX_RADIO_GROUP } from './radio-tokens';
 

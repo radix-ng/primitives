@@ -1,4 +1,3 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -12,7 +11,7 @@ import {
     Signal,
     untracked
 } from '@angular/core';
-import { createContext, useTransitionStatus } from '@radix-ng/primitives/core';
+import { BooleanInput, createContext, useTransitionStatus } from '@radix-ng/primitives/core';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 
 export type RdxMenuTransitionStatus = 'starting' | 'ending' | undefined;

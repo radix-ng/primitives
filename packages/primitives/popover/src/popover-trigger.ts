@@ -1,5 +1,3 @@
-import { _IdGenerator } from '@angular/cdk/a11y';
-import { NumberInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -11,6 +9,7 @@ import {
     numberAttribute,
     untracked
 } from '@angular/core';
+import { injectId, NumberInput } from '@radix-ng/primitives/core';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { RdxPopoverHandle } from './popover-handle';
 import { injectRdxPopoverRootContext } from './popover-root';
@@ -86,7 +85,7 @@ export class RdxPopoverTrigger {
     protected readonly isPressed = computed(
         () => this.isOpen() && this.rootContext()?.openChangeReason() === 'trigger-press'
     );
-    private readonly generatedId = inject(_IdGenerator).getId('rdx-popover-trigger-');
+    private readonly generatedId = injectId('rdx-popover-trigger-');
 
     constructor() {
         effect((onCleanup) => {

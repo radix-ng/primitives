@@ -1,4 +1,3 @@
-import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import { isPlatformBrowser } from '@angular/common';
 import {
     afterNextRender,
@@ -30,7 +29,7 @@ import {
     shift,
     size
 } from '@floating-ui/dom';
-import { createContext, elementSize, watch } from '@radix-ng/primitives/core';
+import { BooleanInput, createContext, elementSize, NumberInput, watch } from '@radix-ng/primitives/core';
 import { RdxPopper } from './popper';
 import { RdxPopperArrow } from './popper-arrow';
 import { RdxPopperContent } from './popper-content';

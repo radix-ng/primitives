@@ -1,5 +1,5 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, computed, Directive, ElementRef, inject, input, output, signal } from '@angular/core';
+import { BooleanInput } from '@radix-ng/primitives/core';
 import { injectRdxMenuRootContext } from './menu-root';
 
 /**

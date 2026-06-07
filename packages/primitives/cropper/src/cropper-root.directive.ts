@@ -1,6 +1,5 @@
 // Based on https://github.com/origin-space/image-cropper/blob/main/src/Cropper.tsx
 
-import { NumberInput } from '@angular/cdk/coercion';
 import {
     afterNextRender,
     computed,
@@ -13,7 +12,7 @@ import {
     output,
     signal
 } from '@angular/core';
-import { clamp, provideToken } from '@radix-ng/primitives/core';
+import { clamp, NumberInput, provideToken } from '@radix-ng/primitives/core';
 import { CROPPER_ROOT_CONTEXT, CropperContextToken } from './cropper-context.token';
 
 export type Area = { x: number; y: number; width: number; height: number };

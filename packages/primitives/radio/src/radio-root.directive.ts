@@ -1,7 +1,6 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, computed, Directive, effect, input, model, output, signal } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
-import { provideValueAccessor, RdxFormValueControl } from '@radix-ng/primitives/core';
+import { BooleanInput, provideValueAccessor, RdxFormValueControl } from '@radix-ng/primitives/core';
 import { Orientation, RdxRovingFocusGroupDirective } from '@radix-ng/primitives/roving-focus';
 import { RadioGroupDirective, RadioGroupProps, RDX_RADIO_GROUP } from './radio-tokens';
 

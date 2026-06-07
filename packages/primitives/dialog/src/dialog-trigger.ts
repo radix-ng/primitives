@@ -1,5 +1,5 @@
-import { _IdGenerator } from '@angular/cdk/a11y';
 import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input, untracked } from '@angular/core';
+import { injectId } from '@radix-ng/primitives/core';
 import { RdxDialogHandle } from './dialog-handle';
 import { injectRdxDialogRootContext } from './dialog-root';
 
@@ -45,7 +45,7 @@ export class RdxDialogTrigger {
      */
     readonly disabled = input(false, { transform: booleanAttribute });
 
-    private readonly generatedId = inject(_IdGenerator).getId('rdx-dialog-trigger-');
+    private readonly generatedId = injectId('rdx-dialog-trigger-');
     protected readonly triggerId = computed(() => this.id() ?? this.generatedId);
     protected readonly rootContext = computed(() => this.handle()?.context() ?? this.parentRootContext);
     protected readonly isOpen = computed(

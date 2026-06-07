@@ -1,7 +1,11 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, computed, Directive, effect, inject, input, model } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
-import { createContext, RdxControlValueAccessor, RdxFormCheckboxControl } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    createContext,
+    RdxControlValueAccessor,
+    RdxFormCheckboxControl
+} from '@radix-ng/primitives/core';
 import { injectCheckboxGroupContext } from './checkbox-group';
 
 /**

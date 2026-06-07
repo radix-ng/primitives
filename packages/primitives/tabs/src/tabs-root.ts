@@ -1,5 +1,5 @@
 import { Directive, effect, inject, input, model, output, signal, untracked } from '@angular/core';
-import { _IdGenerator, DataOrientation } from '@radix-ng/primitives/core';
+import { DataOrientation, injectId } from '@radix-ng/primitives/core';
 import { provideTabsRootContext, RdxTabsRootContext } from './tabs-root-context';
 import { makeTabId, RdxTabsActivationDirection, RdxTabsValue } from './utils';
 
@@ -35,7 +35,7 @@ const rootContext = (): RdxTabsRootContext => {
 })
 export class RdxTabsRoot {
     /** @ignore */
-    readonly baseId = inject(_IdGenerator).getId('rdx-tabs-');
+    readonly baseId = injectId('rdx-tabs-');
 
     /**
      * The value of the currently selected tab. Use together with `(onValueChange)` for controlled state.

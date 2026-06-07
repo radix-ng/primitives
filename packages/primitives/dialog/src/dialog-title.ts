@@ -1,5 +1,5 @@
-import { _IdGenerator } from '@angular/cdk/a11y';
 import { DestroyRef, Directive, inject } from '@angular/core';
+import { injectId } from '@radix-ng/primitives/core';
 import { injectRdxDialogRootContext } from './dialog-root';
 
 /**
@@ -14,7 +14,7 @@ import { injectRdxDialogRootContext } from './dialog-root';
 })
 export class RdxDialogTitle {
     private readonly rootContext = injectRdxDialogRootContext()!;
-    readonly id = inject(_IdGenerator).getId('rdx-dialog-title-');
+    readonly id = injectId('rdx-dialog-title-');
 
     constructor() {
         this.rootContext.setTitleId(this.id);

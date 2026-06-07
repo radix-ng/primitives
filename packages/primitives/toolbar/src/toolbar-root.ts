@@ -1,6 +1,5 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, Directive, effect, inject, input } from '@angular/core';
-import { DataOrientation } from '@radix-ng/primitives/core';
+import { BooleanInput, DataOrientation } from '@radix-ng/primitives/core';
 import { Direction, RdxRovingFocusGroupDirective } from '@radix-ng/primitives/roving-focus';
 import { provideToolbarRootContext, RdxToolbarRootContext } from './toolbar-context';
 

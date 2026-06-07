@@ -1,6 +1,5 @@
-import { NumberInput } from '@angular/cdk/coercion';
 import { DestroyRef, Directive, inject, input, numberAttribute, Signal } from '@angular/core';
-import { createContext } from '@radix-ng/primitives/core';
+import { createContext, NumberInput } from '@radix-ng/primitives/core';
 import { injectRdxTooltipConfig } from './tooltip.config';
 import { createTooltipInstantController } from './utils';
 

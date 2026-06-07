@@ -87,16 +87,19 @@ Every primitive family exposes state via `createContext` from `@radix-ng/primiti
 
 Current state of CDK usage — what still needs to be replaced:
 
-| CDK import                   | Used for              | Where                                             |
-| ---------------------------- | --------------------- | ------------------------------------------------- |
-| `_IdGenerator` (`cdk/a11y`)  | Unique ID generation  | accordion, tooltip, popover, preview-card, dialog |
-| `LiveAnnouncer` (`cdk/a11y`) | ARIA live region      | stepper                                           |
-| `Platform` (`cdk/platform`)  | SSR/browser detection | `core/is-client`                                  |
+| CDK import                   | Used for              | Where            |
+| ---------------------------- | --------------------- | ---------------- |
+| `LiveAnnouncer` (`cdk/a11y`) | ARIA live region      | stepper          |
+| `Platform` (`cdk/platform`)  | SSR/browser detection | `core/is-client` |
 
 Type-only imports that are low-priority (zero runtime cost, but ideally replaced with own types):
 
-- `BooleanInput`, `NumberInput` (`cdk/coercion`) — used as TypeScript type parameters in 67 files
 - `Direction` (`cdk/bidi`) — type alias for `'ltr' | 'rtl'`; can be replaced with a local type in `core`
+
+Already replaced with own implementations:
+
+- `_IdGenerator` (`cdk/a11y`) — replaced by `RdxIdGenerator` + the `injectId(prefix)` hook in `core/src/id-generator.ts` (re-exported from `@radix-ng/primitives/core`). `injectId('rdx-…-')` is the call-site API (Angular counterpart of React's `useId`); it generates deterministic, SSR/hydration-stable IDs via a per-prefix counter folded with `APP_ID`. Inject `RdxIdGenerator` directly only when generating IDs lazily outside an injection context.
+- `BooleanInput`, `NumberInput` — now defined in `core/src/types.ts` (re-exported from `@radix-ng/primitives/core`) and used everywhere the `cdk/coercion` aliases were. The transforms themselves are Angular's `booleanAttribute` / `numberAttribute`; CDK only ever supplied the input-value type aliases.
 
 ## tsconfig paths
 

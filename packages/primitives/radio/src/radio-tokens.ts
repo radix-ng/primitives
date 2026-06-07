@@ -1,5 +1,5 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import { InjectionToken, InputSignal, InputSignalWithTransform, ModelSignal, Signal } from '@angular/core';
+import { BooleanInput } from '@radix-ng/primitives/core';
 import { Orientation } from '@radix-ng/primitives/roving-focus';
 
 export interface RadioGroupProps {

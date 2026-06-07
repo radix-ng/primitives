@@ -1,5 +1,5 @@
-import { _IdGenerator } from '@angular/cdk/a11y';
 import { DestroyRef, Directive, inject } from '@angular/core';
+import { injectId } from '@radix-ng/primitives/core';
 import { injectRdxPopoverRootContext } from './popover-root';
 
 /**
@@ -13,7 +13,7 @@ import { injectRdxPopoverRootContext } from './popover-root';
 })
 export class RdxPopoverDescription {
     private readonly rootContext = injectRdxPopoverRootContext()!;
-    readonly id = inject(_IdGenerator).getId('rdx-popover-description-');
+    readonly id = injectId('rdx-popover-description-');
 
     constructor() {
         this.rootContext.setDescriptionId(this.id);

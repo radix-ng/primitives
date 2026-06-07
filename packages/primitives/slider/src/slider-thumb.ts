@@ -1,15 +1,14 @@
-import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
+    DestroyRef,
     Directive,
     ElementRef,
     inject,
     input,
-    numberAttribute,
-    OnDestroy,
-    OnInit
+    numberAttribute
 } from '@angular/core';
+import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
 import { injectSliderRootContext } from './slider-context';
 import { RdxSliderThumbRef } from './slider-root';
 import { valueToPercent } from './slider.utils';
@@ -32,7 +31,7 @@ import { valueToPercent } from './slider.utils';
         '(pointerdown)': 'onPointerDown($event)'
     }
 })
-export class RdxSliderThumb implements RdxSliderThumbRef, OnInit, OnDestroy {
+export class RdxSliderThumb implements RdxSliderThumbRef {
     protected readonly root = injectSliderRootContext()!;
     readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
@@ -97,12 +96,11 @@ export class RdxSliderThumb implements RdxSliderThumbRef, OnInit, OnDestroy {
         return style;
     });
 
-    ngOnInit(): void {
+    constructor() {
+        // Registration is DOM-order sorted on the root and reads no inputs, so the constructor
+        // (where the host element already exists) is the right place; cleanup goes via DestroyRef.
         this.root.registerThumb(this);
-    }
-
-    ngOnDestroy(): void {
-        this.root.unregisterThumb(this);
+        inject(DestroyRef).onDestroy(() => this.root.unregisterThumb(this));
     }
 
     protected onPointerDown(event: PointerEvent): void {

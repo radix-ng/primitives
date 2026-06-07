@@ -1,4 +1,3 @@
-import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -13,7 +12,7 @@ import {
     signal,
     untracked
 } from '@angular/core';
-import { useTransitionStatus } from '@radix-ng/primitives/core';
+import { BooleanInput, NumberInput, useTransitionStatus } from '@radix-ng/primitives/core';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 import {
     NavigationMenuDirection,

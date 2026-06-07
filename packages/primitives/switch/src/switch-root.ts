@@ -1,8 +1,8 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, computed, Directive, inject, input, model, output } from '@angular/core';
 import {
-    _IdGenerator,
+    BooleanInput,
     injectControlValueAccessor,
+    injectId,
     RdxControlValueAccessor,
     RdxFormCheckboxControl
 } from '@radix-ng/primitives/core';
@@ -61,7 +61,7 @@ export class RdxSwitchRoot implements RdxFormCheckboxControl {
     /** @ignore */
     protected readonly cva = injectControlValueAccessor<boolean | undefined>();
 
-    readonly id = input<string>(inject(_IdGenerator).getId('rdx-switch-'));
+    readonly id = input<string>(injectId('rdx-switch-'));
 
     /**
      * The state of the switch when it is initially rendered. Use when you do not need to control its state.

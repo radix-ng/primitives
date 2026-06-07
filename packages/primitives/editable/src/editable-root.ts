@@ -1,4 +1,3 @@
-import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import {
     afterNextRender,
     booleanAttribute,
@@ -12,7 +11,7 @@ import {
     signal,
     WritableSignal
 } from '@angular/core';
-import { createContext, watch } from '@radix-ng/primitives/core';
+import { BooleanInput, createContext, NumberInput, watch } from '@radix-ng/primitives/core';
 import { RdxFocusOutside, RdxPointerDownOutside } from '@radix-ng/primitives/dismissable-layer';
 
 type EditableRootContext = {

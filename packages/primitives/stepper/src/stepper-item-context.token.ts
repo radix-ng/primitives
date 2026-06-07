@@ -1,5 +1,5 @@
-import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import { inject, InjectionToken, InputSignalWithTransform, Signal } from '@angular/core';
+import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
 import { StepperState } from './types';
 
 export interface StepperItemContext {

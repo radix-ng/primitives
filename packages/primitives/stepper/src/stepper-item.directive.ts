@@ -1,6 +1,5 @@
-import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
-import { booleanAttribute, computed, Directive, forwardRef, inject, input, numberAttribute } from '@angular/core';
-import { _IdGenerator } from '@radix-ng/primitives/core';
+import { booleanAttribute, computed, Directive, forwardRef, input, numberAttribute } from '@angular/core';
+import { BooleanInput, injectId, NumberInput } from '@radix-ng/primitives/core';
 import { STEPPER_ITEM_CONTEXT, StepperItemContext } from './stepper-item-context.token';
 import { injectStepperRootContext } from './stepper-root-context.token';
 import { StepperState } from './types';
@@ -26,10 +25,10 @@ export class RdxStepperItemDirective implements StepperItemContext {
     protected readonly rootContext = injectStepperRootContext();
 
     /** @ignore */
-    readonly titleId = inject(_IdGenerator).getId('rdx-stepper-item-title');
+    readonly titleId = injectId('rdx-stepper-item-title');
 
     /** @ignore */
-    readonly descriptionId = inject(_IdGenerator).getId('rdx-stepper-item-description');
+    readonly descriptionId = injectId('rdx-stepper-item-description');
 
     readonly step = input<number, NumberInput>(NaN, { transform: numberAttribute });
 

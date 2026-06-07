@@ -1,5 +1,5 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, computed, Directive, inject, input } from '@angular/core';
+import { BooleanInput } from '@radix-ng/primitives/core';
 import { injectToolbarRootContext, provideToolbarGroupContext, RdxToolbarGroupContext } from './toolbar-context';
 
 const groupContext = (): RdxToolbarGroupContext => {

@@ -1,6 +1,5 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, computed, Directive, inject, input } from '@angular/core';
-import { createContext } from '@radix-ng/primitives/core';
+import { BooleanInput, createContext } from '@radix-ng/primitives/core';
 
 const attr = (value: boolean) => (value ? '' : undefined);
 

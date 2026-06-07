@@ -1,5 +1,5 @@
-import { _IdGenerator } from '@angular/cdk/a11y';
-import { Directive, inject } from '@angular/core';
+import { Directive } from '@angular/core';
+import { injectId } from '@radix-ng/primitives/core';
 import { injectAccordionItemContext } from './accordion-item.directive';
 import { injectAccordionRootContext } from './accordion-root.directive';
 
@@ -25,7 +25,7 @@ export class RdxAccordionTriggerDirective {
     protected readonly itemContext = injectAccordionItemContext()!;
 
     constructor() {
-        this.itemContext.triggerId.set(inject(_IdGenerator).getId('rdx-accordion-trigger-'));
+        this.itemContext.triggerId.set(injectId('rdx-accordion-trigger-'));
     }
 
     changeItem() {

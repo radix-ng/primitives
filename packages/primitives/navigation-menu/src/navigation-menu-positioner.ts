@@ -1,6 +1,5 @@
-import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import { booleanAttribute, Directive, effect, ElementRef, inject, input, numberAttribute, signal } from '@angular/core';
-import { useGraceArea } from '@radix-ng/primitives/core';
+import { BooleanInput, NumberInput, useGraceArea } from '@radix-ng/primitives/core';
 import {
     Align,
     provideRdxPopperContentConfig,

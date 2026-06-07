@@ -1,4 +1,3 @@
-import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import {
     afterNextRender,
     booleanAttribute,
@@ -11,7 +10,7 @@ import {
     signal
 } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
-import { useGraceArea } from '@radix-ng/primitives/core';
+import { BooleanInput, NumberInput, useGraceArea } from '@radix-ng/primitives/core';
 import { RdxDismissableLayer } from '@radix-ng/primitives/dismissable-layer';
 import {
     Align,

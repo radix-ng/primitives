@@ -1,4 +1,3 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import {
     afterNextRender,
     booleanAttribute,
@@ -13,6 +12,7 @@ import {
     output,
     untracked
 } from '@angular/core';
+import { BooleanInput } from '@radix-ng/primitives/core';
 import { RdxDismissableLayerConfigToken, RdxDismissableLayersContextToken } from './dismissable-layer.config';
 import { RdxEscapeKeyDown, RdxFocusOutside, RdxPointerDownOutside } from './utils';
 

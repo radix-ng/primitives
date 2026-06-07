@@ -1,4 +1,3 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import {
     afterNextRender,
     booleanAttribute,
@@ -12,6 +11,7 @@ import {
     output,
     signal
 } from '@angular/core';
+import { BooleanInput } from '@radix-ng/primitives/core';
 
 function isLayerExist(layerElement: HTMLElement, targetElement: HTMLElement) {
     const targetLayer = targetElement.closest('[data-dismissable-layer]');

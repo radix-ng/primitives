@@ -1,5 +1,4 @@
 import { Direction } from '@angular/cdk/bidi';
-import { BooleanInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -15,6 +14,7 @@ import { DateValue } from '@internationalized/date';
 import {
     ARROW_LEFT,
     ARROW_RIGHT,
+    BooleanInput,
     createContent,
     createFormatter,
     DateMatcher,

@@ -1,4 +1,3 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import { isPlatformBrowser } from '@angular/common';
 import {
     booleanAttribute,
@@ -11,6 +10,7 @@ import {
     input,
     PLATFORM_ID
 } from '@angular/core';
+import { BooleanInput } from '@radix-ng/primitives/core';
 import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 import { injectToolbarGroupContext, injectToolbarRootContext } from './toolbar-context';
 

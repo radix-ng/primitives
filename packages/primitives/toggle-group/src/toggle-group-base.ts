@@ -1,7 +1,6 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, computed, Directive, effect, input, model, output, signal, untracked } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
-import { DataOrientation } from '@radix-ng/primitives/core';
+import { BooleanInput, DataOrientation } from '@radix-ng/primitives/core';
 import { RdxToggleGroupContext } from './toggle-group-context';
 
 /** Builds the shared context a {@link RdxToggle} reads when it belongs to this group. */

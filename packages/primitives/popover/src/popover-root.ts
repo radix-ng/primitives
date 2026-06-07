@@ -1,5 +1,3 @@
-import { _IdGenerator } from '@angular/cdk/a11y';
-import { BooleanInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -14,7 +12,13 @@ import {
     signal,
     untracked
 } from '@angular/core';
-import { createContext, RdxTransitionStatus, useTransitionStatus } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    createContext,
+    injectId,
+    RdxTransitionStatus,
+    useTransitionStatus
+} from '@radix-ng/primitives/core';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 import { RdxPopoverHandle } from './popover-handle';
 
@@ -101,7 +105,6 @@ export type RdxPopoverTransitionStatus = RdxTransitionStatus;
     hostDirectives: [RdxPopper]
 })
 export class RdxPopoverRoot {
-    private readonly idGenerator = inject(_IdGenerator);
     private readonly popper = inject(RdxPopper);
     private readonly destroyRef = inject(DestroyRef);
     private hasAppliedDefaultOpen = false;
@@ -150,7 +153,7 @@ export class RdxPopoverRoot {
      */
     readonly handle = input<RdxPopoverHandle<any>>();
 
-    readonly contentId = this.idGenerator.getId('rdx-popover-content-');
+    readonly contentId = injectId('rdx-popover-content-');
     readonly descriptionId = signal<string | undefined>(undefined);
     readonly titleId = signal<string | undefined>(undefined);
     readonly trigger = signal<HTMLElement | undefined>(undefined);

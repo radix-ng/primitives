@@ -1,4 +1,3 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import { isPlatformBrowser } from '@angular/common';
 import {
     booleanAttribute,
@@ -12,6 +11,7 @@ import {
     PLATFORM_ID,
     untracked
 } from '@angular/core';
+import { BooleanInput } from '@radix-ng/primitives/core';
 import { injectRovingFocusGroupContext } from './roving-focus-group.directive';
 import { focusFirst, generateId, getFocusIntent, wrapArray } from './utils';
 

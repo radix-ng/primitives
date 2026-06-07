@@ -1,4 +1,3 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import {
     afterNextRender,
     booleanAttribute,
@@ -14,7 +13,7 @@ import {
     Signal,
     signal
 } from '@angular/core';
-import { createContext, getActiveElement } from '@radix-ng/primitives/core';
+import { BooleanInput, createContext, getActiveElement } from '@radix-ng/primitives/core';
 import { RdxFocusScopeConfigToken } from './focus-scope.config';
 import { createFocusScopesStack, FocusScopeAPI, removeLinks } from './stack';
 import {

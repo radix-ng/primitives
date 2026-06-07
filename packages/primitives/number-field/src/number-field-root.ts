@@ -1,4 +1,3 @@
-import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -13,8 +12,10 @@ import {
     untracked
 } from '@angular/core';
 import {
-    _IdGenerator,
+    BooleanInput,
     injectControlValueAccessor,
+    injectId,
+    NumberInput,
     RdxControlValueAccessor,
     RdxFormValueControl
 } from '@radix-ng/primitives/core';
@@ -60,7 +61,7 @@ export class RdxNumberFieldRoot implements RdxFormValueControl<number | null> {
     protected readonly cva = injectControlValueAccessor<number | null>();
 
     /** The id of the input element. */
-    readonly id = input<string>(inject(_IdGenerator).getId('rdx-number-field-'));
+    readonly id = input<string>(injectId('rdx-number-field-'));
 
     /** The minimum value of the field. */
     readonly min = input<number | undefined, NumberInput>(undefined, { transform: numberOrUndefined });

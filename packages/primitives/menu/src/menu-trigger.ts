@@ -1,4 +1,3 @@
-import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -10,6 +9,7 @@ import {
     input,
     numberAttribute
 } from '@angular/core';
+import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
 import { RdxDismissableLayersContextToken } from '@radix-ng/primitives/dismissable-layer';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { injectRdxMenuRootContext } from './menu-root';

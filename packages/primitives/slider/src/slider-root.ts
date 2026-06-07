@@ -1,4 +1,3 @@
-import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -11,7 +10,13 @@ import {
     signal,
     Signal
 } from '@angular/core';
-import { _IdGenerator, injectControlValueAccessor, RdxControlValueAccessor } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    injectControlValueAccessor,
+    injectId,
+    NumberInput,
+    RdxControlValueAccessor
+} from '@radix-ng/primitives/core';
 import { provideSliderRootContext } from './slider-context';
 import {
     areValuesEqual,
@@ -82,7 +87,7 @@ export class RdxSliderRoot {
     /** @ignore */
     protected readonly cva = injectControlValueAccessor<SliderValue>();
 
-    readonly id = input<string>(inject(_IdGenerator).getId('rdx-slider-'));
+    readonly id = input<string>(injectId('rdx-slider-'));
 
     /**
      * The minimum value of the slider.

@@ -1,5 +1,5 @@
-import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, computed, Directive, input, signal } from '@angular/core';
+import { BooleanInput } from '@radix-ng/primitives/core';
 import { injectRdxDialogRootContext } from '@radix-ng/primitives/dialog';
 import { usePointerDrag } from './drawer-pointer';
 import { injectRdxDrawerRootContext } from './drawer-root';

@@ -1,5 +1,5 @@
-import { NumberInput } from '@angular/cdk/coercion';
 import { ChangeDetectionStrategy, Component, input, numberAttribute } from '@angular/core';
+import { NumberInput } from '@radix-ng/primitives/core';
 
 @Component({
     selector: 'rdx-arrow',

@@ -1,6 +1,6 @@
-import { BooleanInput, NumberInput } from '@angular/cdk/coercion';
 import { booleanAttribute, Directive, ElementRef, inject, input, numberAttribute } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
+import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
 import {
     Align,
     provideRdxPopperContentConfig,

@@ -1,5 +1,3 @@
-import { _IdGenerator } from '@angular/cdk/a11y';
-import { BooleanInput } from '@angular/cdk/coercion';
 import {
     booleanAttribute,
     computed,
@@ -15,7 +13,13 @@ import {
     untracked,
     WritableSignal
 } from '@angular/core';
-import { createContext, RdxTransitionStatus, useTransitionStatus } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    createContext,
+    injectId,
+    RdxTransitionStatus,
+    useTransitionStatus
+} from '@radix-ng/primitives/core';
 
 export type RdxCollapsibleState = 'open' | 'closed';
 
@@ -120,7 +124,7 @@ export class RdxCollapsibleRootDirective {
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /** Stable id linking the trigger's `aria-controls` to the panel. */
-    readonly panelId = input<string>(inject(_IdGenerator).getId('rdx-collapsible-panel-'));
+    readonly panelId = input<string>(injectId('rdx-collapsible-panel-'));
 
     /** Composition fallbacks (see {@link CollapsibleRootContext}). Default `false`. */
     readonly keepMountedContext = signal(false);
