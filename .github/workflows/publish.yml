@@ -31,7 +31,17 @@ jobs:
         run: pnpm primitives:build:schematics
 
       - name: Publish package 📦
-        run: npx nx release publish
+        run: |
+          VERSION="$(node -p "require('./packages/primitives/package.json').version")"
+          if [[ "$VERSION" == *-* ]]; then
+            # Prerelease (e.g. 1.0.0-beta.0) -> publish under its identifier dist-tag (beta/rc/alpha),
+            # never "latest", so `npm i @radix-ng/primitives` keeps resolving the stable release.
+            TAG="$(printf '%s' "$VERSION" | sed -E 's/^[0-9.]+-([0-9A-Za-z]+).*/\1/')"
+          else
+            TAG="latest"
+          fi
+          echo "Publishing $VERSION under dist-tag: $TAG"
+          npx nx release publish --tag "$TAG"
         shell: bash
         env:
           NPM_CONFIG_PROVENANCE: true
