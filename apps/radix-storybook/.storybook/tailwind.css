@@ -44,6 +44,9 @@
     --color-destructive-foreground: var(--destructive-foreground);
     --color-border: var(--border);
     --color-ring: var(--ring);
+    --color-input: var(--border);
+    --color-accent: var(--muted);
+    --color-accent-foreground: var(--foreground);
 
     /* Functional colors for the docs */
     --color-content: white;

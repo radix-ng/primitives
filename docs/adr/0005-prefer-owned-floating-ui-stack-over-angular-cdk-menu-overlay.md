@@ -1,10 +1,28 @@
 # ADR 0005: Prefer the Owned Floating UI Stack over Angular CDK Menu and Overlay
 
-- Status: Proposed
+- Status: Accepted — implemented (2026-06-07)
 - Date: 2026-06-03
 - Decision owners: Radix NG maintainers
 - Related packages: `packages/primitives/menu`, `packages/primitives/dropdown-menu`, `packages/primitives/popper`,
   `packages/primitives/dismissable-layer`, `packages/primitives/portal`, `packages/primitives/focus-scope`
+
+## Outcome (2026-06-07)
+
+This direction has shipped, in full and slightly beyond:
+
+- No `@angular/cdk` imports remain in `packages/primitives/**/src` — not even `@angular/cdk/coercion`.
+  The ADR had allowed coercion to stay; in practice **all** CDK was removed and `BooleanInput` /
+  `NumberInput` now live in `packages/primitives/core/src/types.ts`. This is a deliberate deviation
+  beyond the ADR, recorded here.
+- `@angular/cdk` is absent from `package.json`, the lockfile, and `tsconfig.base.json` paths.
+- `@radix-ng/primitives/dropdown-menu` was **removed outright** (the breaking-release option), not
+  kept as a deprecated compatibility layer.
+- `menu`, `context-menu`, and `menubar` exist as the Base UI-aligned primitives and compose
+  `RdxPopper`, `RdxDismissableLayer`, and `RdxFocusScope` from the owned floating stack.
+
+The "Open Questions" below were resolved by implementation: `dropdown-menu` deleted immediately;
+`context-menu` and `menubar` became coordinators over the shared `menu` foundation (see CLAUDE.md).
+Status moved Proposed → Accepted; this ADR is now a historical record, not active work.
 
 ## Context
 
