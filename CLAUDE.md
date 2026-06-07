@@ -322,6 +322,22 @@ pnpm prettier:fix                 # format
 nx run primitives:test --testFile packages/primitives/<name>/__tests__/<file>.spec.ts
 ```
 
+### Shell conventions (fewer permission prompts)
+
+Prefer the package.json scripts above over ad-hoc shell, and keep commands matchable against the
+`.claude/settings.json` allow list:
+
+- **Prefer the scripts**: `pnpm primitives:test`, `pnpm primitives:build`, `pnpm eslint:fix`,
+  `pnpm prettier:fix`, `pnpm storybook:primitives`. For a single spec, `nx run primitives:test --testFile <path>`.
+- **Don't prefix `cd /abs/path &&`** — the working directory persists between commands, and the
+  Read/Grep/Glob tools take absolute paths directly. The permission matcher splits compound commands
+  on `&&` / `;` / `|` and requires every segment to be allowed, so a stray `cd` forces a prompt.
+- **Prefer the Read / Grep / Glob tools** over `cat` / `grep` / `find` / `sed -n` in Bash.
+- **Keep commands simple** — `$(…)`, `while`/`for` loops, and `mapfile` defeat the matcher and always prompt.
+- The allow list covers safe read-only commands (`cd`, `echo`, `head`, `tail`, `wc`, `sort`, `uniq`,
+  `grep`, `ls`, `cat`, `git status/diff/log/show`) plus `pnpm`/`nx`/`npx`/`node`. Writing commands
+  (`sed -i`, `git checkout/add/commit`) intentionally stay out and still prompt.
+
 ## Tests
 
 - `packages/primitives` uses `@nx/vitest:test` with `packages/primitives/vite.config.ts`.

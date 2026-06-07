@@ -5,13 +5,22 @@
             "Bash(nx *)",
             "Bash(npx *)",
             "Bash(node *)",
-            "Bash(find packages/*)",
-            "Bash(grep -r * packages/*)",
+            "Bash(cd *)",
+            "Bash(echo *)",
             "Bash(ls *)",
             "Bash(cat *)",
+            "Bash(head *)",
+            "Bash(tail *)",
+            "Bash(wc *)",
+            "Bash(sort *)",
+            "Bash(uniq *)",
+            "Bash(grep *)",
+            "Bash(find packages/*)",
             "Bash(git status)",
+            "Bash(git status *)",
             "Bash(git diff *)",
-            "Bash(git log *)"
+            "Bash(git log *)",
+            "Bash(git show *)"
         ]
     },
     "enabledPlugins": {
