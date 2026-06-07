@@ -115,26 +115,26 @@ export const Vertical: Story = {
                     <div
                         rdxStepperItem
                         [step]="item.step"
-                        class="group relative block data-[disabled]:pointer-events-none data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50"
+                        class="group relative flex items-start gap-3 data-[disabled]:pointer-events-none data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50"
                     >
                         @if (item.step !== steps[steps.length - 1].step) {
                             <div
                                 rdxStepperSeparator
-                                class="bg-border absolute top-8 left-[1.125rem] h-[calc(100%-2rem)] w-px"
+                                class="bg-border absolute top-10 -bottom-5 left-5 w-px -translate-x-1/2"
                             ></div>
                         }
                         <button
                             rdxStepperTrigger
-                            class="flex h-10 w-10 cursor-pointer items-center justify-center gap-2 rounded-full focus-visible:[box-shadow:inset_0_0_0_2px_var(--ring)]"
+                            class="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-full focus-visible:[box-shadow:inset_0_0_0_2px_var(--ring)]"
                         >
                             <div
                                 rdxStepperIndicator
-                                class="bg-background text-foreground group-data-[state=inactive]:bg-muted group-data-[state=inactive]:text-muted-foreground group-data-[state=active]:bg-foreground group-data-[state=active]:text-background group-data-[state=completed]:bg-primary group-data-[state=completed]:text-primary-foreground mb-2 inline-flex h-6 w-6 items-center justify-center rounded-full [box-shadow:0_0_0_2px_var(--border)] group-data-[state=active]:[box-shadow:0_0_0_2px_var(--foreground)] group-data-[state=completed]:[box-shadow:0_0_0_2px_var(--primary)]"
+                                class="bg-background text-foreground group-data-[state=inactive]:bg-muted group-data-[state=inactive]:text-muted-foreground group-data-[state=active]:bg-foreground group-data-[state=active]:text-background group-data-[state=completed]:bg-primary group-data-[state=completed]:text-primary-foreground inline-flex h-6 w-6 items-center justify-center rounded-full [box-shadow:0_0_0_2px_var(--border)] group-data-[state=active]:[box-shadow:0_0_0_2px_var(--foreground)] group-data-[state=completed]:[box-shadow:0_0_0_2px_var(--primary)]"
                             >
                                 {{$index+1}}
                             </div>
                         </button>
-                        <div class="text-muted-foreground mt-3 ml-11 text-left">
+                        <div class="text-muted-foreground mt-1 text-left">
                             <h4 class="text-foreground text-sm font-medium">
                                {{ item.title }}
                             </h4>
