@@ -1,5 +1,5 @@
-import { Component, signal } from '@angular/core';
-import { CalendarDate } from '@internationalized/date';
+import { Component } from '@angular/core';
+import { CalendarDate, DateValue, isWeekend } from '@internationalized/date';
 import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar } from '../../storybook/styles';
 import { RdxCalendarCellTriggerDirective } from '../src/calendar-cell-trigger.directive';
@@ -15,7 +15,7 @@ import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
 
 @Component({
-    selector: 'app-calendar-multiple',
+    selector: 'app-calendar-disabled-dates',
     imports: [
         RdxCalendarRootDirective,
         RdxCalendarHeaderDirective,
@@ -32,7 +32,14 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
         LucideChevronRight
     ],
     template: `
-        <div #root="rdxCalendarRoot" [class]="c.root" [value]="value()" rdxCalendarRoot multiple fixedWeeks>
+        <div
+            #root="rdxCalendarRoot"
+            [class]="c.root"
+            [value]="date"
+            [isDateDisabled]="isDateDisabled"
+            rdxCalendarRoot
+            fixedWeeks
+        >
             <div [class]="c.header" rdxCalendarHeader>
                 <button [class]="c.nav" type="button" rdxCalendarPrev>
                     <svg lucideChevronLeft size="16" />
@@ -76,8 +83,11 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
         </div>
     `
 })
-export class CalendarMultiple {
-    readonly value = signal([new CalendarDate(2025, 1, 15), new CalendarDate(2025, 1, 20)]);
+export class CalendarDisabledDates {
+    date: DateValue = new CalendarDate(2024, 10, 3);
+
+    /** Disable weekends — the matcher runs for every rendered date. */
+    readonly isDateDisabled = (date: DateValue): boolean => isWeekend(date, 'en-US');
 
     protected readonly cn = cn;
     protected readonly c = demoCalendar;

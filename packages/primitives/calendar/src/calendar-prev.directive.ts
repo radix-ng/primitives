@@ -1,6 +1,6 @@
 import { computed, Directive, input } from '@angular/core';
 import { DateValue } from '@internationalized/date';
-import { injectCalendarRootContext } from './сalendar-сontext.token';
+import { injectCalendarRootContext } from './calendar-context.token';
 
 @Directive({
     selector: 'button[rdxCalendarPrev]',
@@ -25,7 +25,7 @@ export class RdxCalendarPrevDirective {
      * @ignore
      */
     readonly disabled = computed(
-        () => this.rootContext.disabled() || this.rootContext.isNextButtonDisabled(this.prevPage())
+        () => this.rootContext.disabled() || this.rootContext.isPrevButtonDisabled(this.prevPage())
     );
 
     protected onClick() {

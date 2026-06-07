@@ -1,4 +1,4 @@
-import { inject, InjectionToken, InputSignal, ModelSignal, Signal, WritableSignal } from '@angular/core';
+import { inject, InjectionToken, InputSignal, ModelSignal, Signal } from '@angular/core';
 import { DateValue } from '@internationalized/date';
 import { DateMatcher, Formatter } from '@radix-ng/primitives/core';
 
@@ -6,17 +6,20 @@ export interface CalendarRootContextToken {
     nextPage?: (nextPageFunc?: (date: DateValue) => DateValue) => void;
     prevPage?: (nextPageFunc?: (date: DateValue) => DateValue) => void;
     isNextButtonDisabled: (nextPageFunc?: (date: DateValue) => DateValue) => boolean;
-    isPrevButtonDisabled: (nextPageFunc?: (date: DateValue) => DateValue) => boolean;
-    headingValue: WritableSignal<string>;
+    isPrevButtonDisabled: (prevPageFunc?: (date: DateValue) => DateValue) => boolean;
+    headingValue: Signal<string>;
     dir: InputSignal<'ltr' | 'rtl'>;
-    readonly: boolean;
+    readonly: Signal<boolean>;
     numberOfMonths: InputSignal<number>;
     placeholder: ModelSignal<DateValue>;
-    pagedNavigation: boolean;
-    disabled: InputSignal<boolean>;
-    isDateSelected?: DateMatcher;
-    isDateDisabled?: DateMatcher;
-    isDateUnavailable: DateMatcher;
+    pagedNavigation: Signal<boolean>;
+    disabled: Signal<boolean>;
+    /** Resolved matcher: whether the given date is currently selected. */
+    isDateSelected: DateMatcher;
+    /** Resolved matcher: disabled = root `disabled` OR `isDateDisabled` input OR outside min/max. */
+    dateDisabled: DateMatcher;
+    /** Resolved matcher: unavailable = `isDateUnavailable` input. */
+    dateUnavailable: DateMatcher;
     formatter: Formatter;
     onDateChange: (date: DateValue) => void;
     currentElement: HTMLElement;

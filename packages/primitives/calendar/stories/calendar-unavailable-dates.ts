@@ -1,5 +1,5 @@
-import { Component, signal } from '@angular/core';
-import { CalendarDate } from '@internationalized/date';
+import { Component } from '@angular/core';
+import { CalendarDate, DateValue } from '@internationalized/date';
 import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar } from '../../storybook/styles';
 import { RdxCalendarCellTriggerDirective } from '../src/calendar-cell-trigger.directive';
@@ -15,7 +15,7 @@ import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
 
 @Component({
-    selector: 'app-calendar-multiple',
+    selector: 'app-calendar-unavailable-dates',
     imports: [
         RdxCalendarRootDirective,
         RdxCalendarHeaderDirective,
@@ -32,7 +32,14 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
         LucideChevronRight
     ],
     template: `
-        <div #root="rdxCalendarRoot" [class]="c.root" [value]="value()" rdxCalendarRoot multiple fixedWeeks>
+        <div
+            #root="rdxCalendarRoot"
+            [class]="c.root"
+            [value]="date"
+            [isDateUnavailable]="isDateUnavailable"
+            rdxCalendarRoot
+            fixedWeeks
+        >
             <div [class]="c.header" rdxCalendarHeader>
                 <button [class]="c.nav" type="button" rdxCalendarPrev>
                     <svg lucideChevronLeft size="16" />
@@ -76,8 +83,11 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
         </div>
     `
 })
-export class CalendarMultiple {
-    readonly value = signal([new CalendarDate(2025, 1, 15), new CalendarDate(2025, 1, 20)]);
+export class CalendarUnavailableDates {
+    date: DateValue = new CalendarDate(2024, 10, 3);
+
+    /** Mark the 10th–14th as unavailable: rendered struck-through and not selectable. */
+    readonly isDateUnavailable = (date: DateValue): boolean => date.day >= 10 && date.day <= 14;
 
     protected readonly cn = cn;
     protected readonly c = demoCalendar;

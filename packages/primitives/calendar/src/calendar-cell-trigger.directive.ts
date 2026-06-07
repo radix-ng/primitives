@@ -1,8 +1,8 @@
-import { AfterViewInit, computed, Directive, ElementRef, inject, input } from '@angular/core';
+import { computed, Directive, ElementRef, inject, input } from '@angular/core';
 import { DateValue, getLocalTimeZone, isSameDay, isSameMonth, isToday } from '@internationalized/date';
 import * as kbd from '@radix-ng/primitives/core';
 import { getDaysInMonth, toDate } from '@radix-ng/primitives/core';
-import { injectCalendarRootContext } from './сalendar-сontext.token';
+import { injectCalendarRootContext } from './calendar-context.token';
 
 @Directive({
     selector: '[rdxCalendarCellTrigger]',
@@ -26,9 +26,14 @@ import { injectCalendarRootContext } from './сalendar-сontext.token';
         '(keydown)': 'onArrowKey($event)'
     }
 })
-export class RdxCalendarCellTriggerDirective implements AfterViewInit {
+export class RdxCalendarCellTriggerDirective {
     private readonly rootContext = injectCalendarRootContext();
     private readonly elementRef = inject(ElementRef<HTMLElement>);
+
+    constructor() {
+        // Host element is available in the constructor; no AfterViewInit needed.
+        this.currentElement = this.elementRef.nativeElement;
+    }
 
     /**
      * The date value provided to the cell trigger
@@ -57,7 +62,7 @@ export class RdxCalendarCellTriggerDirective implements AfterViewInit {
      */
     readonly isSelectedDate = computed(() => this.rootContext.isDateSelected!(<DateValue>this.day()));
 
-    readonly isDisabled = computed(() => this.rootContext.isDateDisabled!(<DateValue>this.day()));
+    readonly isDisabled = computed(() => this.rootContext.dateDisabled(<DateValue>this.day()));
 
     readonly isOutsideView = computed(() => {
         return !isSameMonth(<DateValue>this.day(), <DateValue>this.month());
@@ -67,7 +72,7 @@ export class RdxCalendarCellTriggerDirective implements AfterViewInit {
         return !this.rootContext.disabled() && isSameDay(<DateValue>this.day(), this.rootContext.placeholder());
     });
 
-    readonly isUnavailable = computed(() => this.rootContext.isDateUnavailable?.(<DateValue>this.day()) ?? false);
+    readonly isUnavailable = computed(() => this.rootContext.dateUnavailable(<DateValue>this.day()));
 
     readonly labelText = computed(() => {
         return this.rootContext.formatter.custom(toDate(<DateValue>this.day()), {
@@ -83,12 +88,20 @@ export class RdxCalendarCellTriggerDirective implements AfterViewInit {
      */
     currentElement!: HTMLElement;
 
-    ngAfterViewInit() {
-        this.currentElement = this.elementRef.nativeElement;
+    protected onClick() {
+        this.select();
     }
 
-    protected onClick() {
-        this.changeDate(this.day()!);
+    /** Select the date unless the cell is disabled/unavailable or the calendar is readonly. */
+    private select() {
+        if (this.isDisabled() || this.isUnavailable() || this.rootContext.readonly()) {
+            return;
+        }
+
+        const day = this.day();
+        if (day) {
+            this.changeDate(day);
+        }
     }
 
     protected onArrowKey(event: Event) {
@@ -121,7 +134,7 @@ export class RdxCalendarCellTriggerDirective implements AfterViewInit {
                 break;
             case kbd.ENTER:
             case kbd.SPACE_CODE:
-                this.changeDate(<DateValue>this.day());
+                this.select();
         }
     }
 
@@ -135,10 +148,7 @@ export class RdxCalendarCellTriggerDirective implements AfterViewInit {
         const newIndex = index + add;
 
         if (newIndex >= 0 && newIndex < allCollectionItems.length) {
-            if (allCollectionItems[newIndex].hasAttribute('data-disabled')) {
-                this.shiftFocus(allCollectionItems[newIndex], add);
-            }
-            allCollectionItems[newIndex].focus();
+            this.focusCell(allCollectionItems, newIndex, add);
             return;
         }
 
@@ -148,60 +158,54 @@ export class RdxCalendarCellTriggerDirective implements AfterViewInit {
             this.rootContext.prevPage();
 
             setTimeout(() => {
-                const newCollectionItems = this.getSelectableCells(parentElement);
-                if (!newCollectionItems.length) return;
+                const cells = this.getSelectableCells(parentElement);
+                if (!cells.length) return;
 
-                if (!this.rootContext.pagedNavigation && this.rootContext.numberOfMonths() > 1) {
-                    // Placeholder is set to the first month of the new page
-                    const numberOfDays = getDaysInMonth(this.rootContext.placeholder());
-                    const computedIndex = numberOfDays - Math.abs(newIndex);
-                    if (newCollectionItems[computedIndex].hasAttribute('data-disabled')) {
-                        this.shiftFocus(newCollectionItems[computedIndex], add);
-                    }
-                    newCollectionItems[computedIndex].focus();
-                    return;
-                }
+                const computedIndex =
+                    !this.rootContext.pagedNavigation() && this.rootContext.numberOfMonths() > 1
+                        ? // placeholder is the first month of the new page
+                          getDaysInMonth(this.rootContext.placeholder()) - Math.abs(newIndex)
+                        : cells.length - Math.abs(newIndex);
 
-                const computedIndex = newCollectionItems.length - Math.abs(newIndex);
-                if (newCollectionItems[computedIndex].hasAttribute('data-disabled')) {
-                    this.shiftFocus(newCollectionItems[computedIndex], add);
-                }
-                newCollectionItems[computedIndex].focus();
+                this.focusCell(cells, computedIndex, add);
             });
+            return;
         }
 
-        if (newIndex >= allCollectionItems.length) {
-            if (!this.rootContext.nextPage) return;
+        // newIndex >= allCollectionItems.length
+        if (!this.rootContext.nextPage) return;
 
-            this.rootContext.nextPage();
+        this.rootContext.nextPage();
 
-            setTimeout(() => {
-                const newCollectionItems = this.getSelectableCells(parentElement);
-                if (!newCollectionItems.length) return;
+        setTimeout(() => {
+            const cells = this.getSelectableCells(parentElement);
+            if (!cells.length) return;
 
-                if (!this.rootContext.pagedNavigation && this.rootContext.numberOfMonths() > 1) {
-                    const numberOfDays = getDaysInMonth(
-                        this.rootContext.placeholder().add({ months: this.rootContext.numberOfMonths() - 1 })
-                    );
+            let computedIndex: number;
+            if (!this.rootContext.pagedNavigation() && this.rootContext.numberOfMonths() > 1) {
+                const numberOfDays = getDaysInMonth(
+                    this.rootContext.placeholder().add({ months: this.rootContext.numberOfMonths() - 1 })
+                );
+                computedIndex = newIndex - allCollectionItems.length + (cells.length - numberOfDays);
+            } else {
+                computedIndex = newIndex - allCollectionItems.length;
+            }
 
-                    const computedIndex =
-                        newIndex - allCollectionItems.length + (newCollectionItems.length - numberOfDays);
+            this.focusCell(cells, computedIndex, add);
+        });
+    }
 
-                    if (newCollectionItems[computedIndex].hasAttribute('data-disabled')) {
-                        this.shiftFocus(newCollectionItems[computedIndex], add);
-                    }
-                    newCollectionItems[computedIndex].focus();
-                    return;
-                }
+    /** Focus the cell at `index`, skipping over a disabled cell in the same direction. */
+    private focusCell(cells: HTMLElement[], index: number, add: number) {
+        const cell = cells[index];
+        if (!cell) return;
 
-                const computedIndex = newIndex - allCollectionItems.length;
-                if (newCollectionItems[computedIndex].hasAttribute('data-disabled')) {
-                    this.shiftFocus(newCollectionItems[computedIndex], add);
-                }
-
-                newCollectionItems[computedIndex].focus();
-            });
+        if (cell.hasAttribute('data-disabled')) {
+            this.shiftFocus(cell, add);
+            return;
         }
+
+        cell.focus();
     }
 
     /**

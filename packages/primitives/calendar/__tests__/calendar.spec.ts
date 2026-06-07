@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CalendarDate, CalendarDateTime, DateValue, toZoned } from '@internationalized/date';
 import { userEvent } from '@testing-library/user-event';
 import { axe } from 'jest-axe';
-import { CalendarDefaultComponent } from '../stories/calendar-default.component';
+import { CalendarDefault } from '../stories/calendar-default';
 
 type SetupConfig = {
     modelValue?: DateValue;
@@ -13,8 +13,12 @@ function getSelectedDay(calendar: HTMLElement) {
     return calendar.querySelector<HTMLElement>('[data-selected]') as HTMLElement;
 }
 
-function getByTestId(id: string, hostEl: HTMLElement) {
-    return hostEl.querySelector<HTMLElement>(`[data-testId=${id}]`)!;
+function getHeading(hostEl: HTMLElement) {
+    return hostEl.querySelector<HTMLElement>('[rdxCalendarHeading]')!;
+}
+
+function getNextButton(hostEl: HTMLElement) {
+    return hostEl.querySelector<HTMLElement>('[rdxCalendarNext]')!;
 }
 
 const calendarDate = new CalendarDate(1980, 1, 20);
@@ -37,16 +41,16 @@ const months = [
 ];
 
 describe('Calendar', () => {
-    let fixture: ComponentFixture<CalendarDefaultComponent>;
-    let component: CalendarDefaultComponent;
+    let fixture: ComponentFixture<CalendarDefault>;
+    let component: CalendarDefault;
     let hostEl: HTMLElement;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [CalendarDefaultComponent]
+            imports: [CalendarDefault]
         }).compileComponents();
 
-        fixture = TestBed.createComponent(CalendarDefaultComponent);
+        fixture = TestBed.createComponent(CalendarDefault);
         component = fixture.componentInstance;
         hostEl = fixture.nativeElement;
     });
@@ -60,7 +64,7 @@ describe('Calendar', () => {
 
         const user = userEvent.setup();
 
-        const calendar = hostEl.querySelector<HTMLElement>('[data-testId="calendar"]')!;
+        const calendar = hostEl.querySelector<HTMLElement>('[rdxCalendarRoot]')!;
         expect(calendar).toBeTruthy();
 
         return { fixture, component, hostEl, calendar, user };
@@ -75,28 +79,28 @@ describe('Calendar', () => {
     it('respects a default value if provided - `CalendarDate`', async () => {
         const { calendar } = await setup({ modelValue: calendarDate });
         expect(getSelectedDay(calendar)).toHaveTextContent(String(calendarDate.day));
-        expect(getByTestId('heading', hostEl)).toHaveTextContent('January 1980');
+        expect(getHeading(hostEl)).toHaveTextContent('January 1980');
     });
 
     it('respects a default value if provided - `CalendarDateTime`', async () => {
         const { calendar } = await setup({ modelValue: calendarDateTime });
 
         expect(getSelectedDay(calendar)).toHaveTextContent(String(calendarDateTime.day));
-        expect(getByTestId('heading', hostEl)).toHaveTextContent('January 1980');
+        expect(getHeading(hostEl)).toHaveTextContent('January 1980');
     });
 
     it('respects a default value if provided - `ZonedDateTime`', async () => {
         const { calendar } = await setup({ modelValue: zonedDateTime });
 
         expect(getSelectedDay(calendar)).toHaveTextContent(String(zonedDateTime.day));
-        expect(getByTestId('heading', hostEl)).toHaveTextContent('January 1980');
+        expect(getHeading(hostEl)).toHaveTextContent('January 1980');
     });
 
     it('navigates the months forward using the next button', async () => {
         const { user } = await setup({ modelValue: calendarDate });
 
-        const heading = getByTestId('heading', hostEl);
-        const nextBtn = getByTestId('next-button', hostEl);
+        const heading = getHeading(hostEl);
+        const nextBtn = getNextButton(hostEl);
 
         for (const month of months) {
             expect(heading).toHaveTextContent(`${month} 1980`);

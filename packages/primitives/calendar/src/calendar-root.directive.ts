@@ -1,5 +1,4 @@
 import {
-    AfterViewInit,
     booleanAttribute,
     computed,
     Directive,
@@ -9,13 +8,12 @@ import {
     inject,
     input,
     linkedSignal,
-    model,
-    signal
+    model
 } from '@angular/core';
 import { DateValue, isEqualDay, isSameDay, startOfWeek, startOfYear } from '@internationalized/date';
 import { BooleanInput, DateMatcher, Formatter, getDefaultDate, Month, watch } from '@radix-ng/primitives/core';
 import { calendar, calendarState } from './calendar';
-import { CALENDAR_ROOT_CONTEXT } from './сalendar-сontext.token';
+import { CALENDAR_ROOT_CONTEXT } from './calendar-context.token';
 
 @Directive({
     selector: '[rdxCalendarRoot]',
@@ -26,11 +24,11 @@ import { CALENDAR_ROOT_CONTEXT } from './сalendar-сontext.token';
         '[attr.aria-label]': 'fullCalendarLabel()',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
         '[attr.data-readonly]': 'readonly() ? "" : undefined',
-        '[attr.data-invalid]': 'isInvalid ? "" : undefined',
+        '[attr.data-invalid]': 'isInvalid() ? "" : undefined',
         '[attr.dir]': 'dir()'
     }
 })
-export class RdxCalendarRootDirective implements AfterViewInit {
+export class RdxCalendarRootDirective {
     private readonly elementRef = inject(ElementRef<HTMLElement>);
 
     /**
@@ -45,17 +43,19 @@ export class RdxCalendarRootDirective implements AfterViewInit {
 
     readonly locale = input<string>('en');
 
-    readonly defaultDate = getDefaultDate({
-        defaultPlaceholder: this.defaultPlaceholder(),
-        defaultValue: this.value(),
-        locale: this.locale()
-    });
+    readonly defaultDate = computed(() =>
+        getDefaultDate({
+            defaultPlaceholder: this.defaultPlaceholder(),
+            defaultValue: this.value(),
+            locale: this.locale()
+        })
+    );
 
     /**
      * The placeholder date, which is used to determine what month to display when no date is selected.
      * This updates as the user navigates the calendar and can be used to programmatically control the calendar view
      */
-    readonly placeholder = model<DateValue>(this.defaultPlaceholder() ?? this.defaultDate.copy());
+    readonly placeholder = model<DateValue>(this.defaultPlaceholder() ?? this.defaultDate().copy());
 
     readonly multiple = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
@@ -149,34 +149,32 @@ export class RdxCalendarRootDirective implements AfterViewInit {
     protected readonly _pagedNavigation = linkedSignal(this.pagedNavigation);
 
     readonly startingWeekNumber = computed(() => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        const firstDayOfGrid = startOfWeek(this.months()[0].weeks[0][0], this.locale());
+        const months = this.months();
+        const firstWeek = months?.[0]?.weeks;
+        if (!firstWeek?.length) {
+            return [];
+        }
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        return Array.from({ length: this.months()[0].weeks.length })
-            .fill(null)
-            .map((_, idx) => {
-                const firstDayOfWeek = firstDayOfGrid.add({ weeks: idx });
+        const firstDayOfGrid = startOfWeek(firstWeek[0][0], this.locale());
 
-                const thursday = firstDayOfWeek.add({ days: 3 });
+        return Array.from({ length: firstWeek.length }).map((_, idx) => {
+            const firstDayOfWeek = firstDayOfGrid.add({ weeks: idx });
+            const thursday = firstDayOfWeek.add({ days: 3 });
+            const firstDayOfYear = startOfYear(thursday);
 
-                const firstDayOfYear = startOfYear(thursday);
-
-                return ((thursday.compare(firstDayOfYear) / 7) | 0) + 1;
-            });
+            return ((thursday.compare(firstDayOfYear) / 7) | 0) + 1;
+        });
     });
 
     /**
      * @ignore
      */
-    readonly headingValue = signal<string>('');
+    readonly headingValue = computed(() => this.calendar.headingValue());
 
     /**
      * @ignore
      */
-    readonly fullCalendarLabel = signal<string>('');
+    readonly fullCalendarLabel = computed(() => this.calendar.fullCalendarLabel());
 
     /**
      * @ignore
@@ -199,14 +197,37 @@ export class RdxCalendarRootDirective implements AfterViewInit {
     isPrevButtonDisabled: (nextPageFunc?: (date: DateValue) => DateValue) => boolean;
 
     /**
+     * Resolved matchers from the composable, exposed to child parts via context.
      * @ignore
      */
-    isDateSelected: DateMatcher;
+    dateDisabled!: DateMatcher;
 
     /**
      * @ignore
      */
-    isInvalid: boolean;
+    dateUnavailable!: DateMatcher;
+
+    /**
+     * Selection + validity state, recomputed when the value or the matchers change.
+     * @ignore
+     */
+    private readonly _state = computed(() =>
+        calendarState({
+            date: this.value,
+            isDateDisabled: this.isDateDisabled(),
+            isDateUnavailable: this.isDateUnavailable()
+        })
+    );
+
+    /**
+     * @ignore
+     */
+    readonly isDateSelected: DateMatcher = (date: DateValue) => this._state().isDateSelected(date);
+
+    /**
+     * @ignore
+     */
+    readonly isInvalid = computed(() => this._state().isInvalid());
 
     /**
      * @ignore
@@ -242,30 +263,23 @@ export class RdxCalendarRootDirective implements AfterViewInit {
     });
 
     constructor() {
+        // Host element exists in the constructor; no need for AfterViewInit.
+        this.currentElement = this.elementRef.nativeElement;
+
         this.nextPage = this.calendar.nextPage;
         this.prevPage = this.calendar.prevPage;
         this.isOutsideVisibleView = this.calendar.isOutsideVisibleView;
         this.isNextButtonDisabled = this.calendar.isNextButtonDisabled;
         this.isPrevButtonDisabled = this.calendar.isPrevButtonDisabled;
         this.formatter = this.calendar.formatter;
+        // Resolved matchers (fold in `disabled`, min/max and the input matchers).
+        this.dateDisabled = this.calendar.isDateDisabled;
+        this.dateUnavailable = this.calendar.isDateUnavailable;
 
+        // Bridge the composable's grid output into the exposed models.
         effect(() => {
             this.months.set(this.calendar.month());
-
             this.weekDays.set(this.calendar.weekdays());
-
-            this.fullCalendarLabel.set(this.calendar.fullCalendarLabel());
-
-            this.headingValue.set(this.calendar.headingValue());
-
-            const { isInvalid, isDateSelected } = calendarState({
-                date: this.value,
-                isDateDisabled: this.isDateDisabled(),
-                isDateUnavailable: this.isDateUnavailable()
-            });
-
-            this.isDateSelected = isDateSelected;
-            this.isInvalid = isInvalid();
         });
 
         watch([this.value], ([_modelValue]) => {
@@ -278,10 +292,6 @@ export class RdxCalendarRootDirective implements AfterViewInit {
                 this.onPlaceholderChange(_modelValue);
             }
         });
-    }
-
-    ngAfterViewInit() {
-        this.currentElement = this.elementRef.nativeElement;
     }
 
     /**

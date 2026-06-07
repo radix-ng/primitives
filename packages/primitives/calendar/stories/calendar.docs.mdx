@@ -1,4 +1,4 @@
-import { ArgTypes, Canvas, Markdown, Meta } from "@storybook/addon-docs/blocks";
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
 import * as Stories from './calendar.stories';
 import { RdxCalendarRootDirective } from "../src/calendar-root.directive";
 import {RdxCalendarPrevDirective} from "../src/calendar-prev.directive";
@@ -179,6 +179,46 @@ Import all parts and piece them together.
 This example showcases some of the available locales and how the calendar systems are displayed.
 
 <Canvas sourceState="hidden" of={Stories.WithLocale} />
+
+### Multiple selection
+
+Set `multiple` to let the calendar hold an array of selected dates; clicking a selected date deselects it.
+
+<Canvas sourceState="hidden" of={Stories.Multiple} />
+
+### Week numbers
+
+Render an extra leading column with the ISO week number via `getWeekNumber`.
+
+<Canvas sourceState="hidden" of={Stories.Week} />
+
+### Disabled dates
+
+Pass an `isDateDisabled` matcher — a `(date) => boolean` callback run for every rendered date. Disabled
+dates are not focusable or selectable. This example disables weekends.
+
+<Canvas sourceState="hidden" of={Stories.DisabledDates} />
+
+### Unavailable dates
+
+`isDateUnavailable` is a `(date) => boolean` callback that marks dates as present-but-not-selectable
+(e.g. already booked). They render struck-through and ignore pointer interaction.
+
+<Canvas sourceState="hidden" of={Stories.UnavailableDates} />
+
+### Custom navigation
+
+Override how the previous/next buttons move the view with `propsPrevPage` / `propsNextPage` — each a
+`(placeholder) => DateValue` callback. This example jumps a whole year per click.
+
+<Canvas sourceState="hidden" of={Stories.CustomNavigation} />
+
+### Multiple months
+
+Set `numberOfMonths` to render several months at once. Arrow-key navigation flows across the page
+boundary between months, and (without `pagedNavigation`) the prev/next buttons shift the view by one month.
+
+<Canvas sourceState="hidden" of={Stories.NumberOfMonths} />
 
 
 ## Accessibility

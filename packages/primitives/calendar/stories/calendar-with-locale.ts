@@ -1,13 +1,13 @@
 import { Component, computed, signal } from '@angular/core';
 import { CalendarIdentifier, createCalendar, getLocalTimeZone, toCalendar, today } from '@internationalized/date';
-import {
-    LucideChevronLeft as ChevronLeft,
-    LucideChevronRight as ChevronRight,
-    LucideDynamicIcon
-} from '@lucide/angular';
+import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
+import { cn, demoCalendar, demoInput } from '../../storybook/styles';
 import { RdxCalendarCellTriggerDirective } from '../src/calendar-cell-trigger.directive';
+import { RdxCalendarCellDirective } from '../src/calendar-cell.directive';
+import { RdxCalendarGridBodyDirective } from '../src/calendar-grid-body.directive';
 import { RdxCalendarGridHeadDirective } from '../src/calendar-grid-head.directive';
 import { RdxCalendarGridDirective } from '../src/calendar-grid.directive';
+import { RdxCalendarHeadCellDirective } from '../src/calendar-head-cell.directive';
 import { RdxCalendarHeaderDirective } from '../src/calendar-header.directive';
 import { RdxCalendarHeadingDirective } from '../src/calendar-heading.directive';
 import { RdxCalendarNextDirective } from '../src/calendar-next.directive';
@@ -21,86 +21,91 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
         RdxCalendarHeaderDirective,
         RdxCalendarGridDirective,
         RdxCalendarGridHeadDirective,
+        RdxCalendarGridBodyDirective,
         RdxCalendarCellTriggerDirective,
+        RdxCalendarCellDirective,
+        RdxCalendarHeadCellDirective,
         RdxCalendarHeadingDirective,
         RdxCalendarNextDirective,
         RdxCalendarPrevDirective,
-        LucideDynamicIcon
+        LucideChevronLeft,
+        LucideChevronRight
     ],
-    styleUrl: 'calendar-default.style.css',
     template: `
-        <div class="wrapper" style="display: flex; flex-direction: column; gap: 1rem;">
-            <label style="color: white;">Locale</label>
-            <select [value]="locale()" (change)="updateLocale($event)">
-                @for (option of preferences; track $index) {
-                    <option [value]="option.locale">{{ option.label }}</option>
-                }
-            </select>
+        <div class="flex w-[300px] flex-col gap-3">
+            <label class="text-foreground flex flex-col gap-1 text-sm font-medium">
+                Locale
+                <select [class]="input" [value]="locale()" (change)="updateLocale($event)">
+                    @for (option of preferences; track option.locale) {
+                        <option [value]="option.locale">{{ option.label }}</option>
+                    }
+                </select>
+            </label>
 
-            <label style="color: white;">Calendar</label>
-            <select [value]="calendar()">
-                @for (option of preferredCalendars(); track $index) {
-                    <option [value]="option!.key">{{ option!.name }}</option>
-                }
-            </select>
+            <label class="text-foreground flex flex-col gap-1 text-sm font-medium">
+                Calendar
+                <select [class]="input" [value]="calendar()" (change)="updateCalendar($event)">
+                    @for (option of preferredCalendars(); track option!.key) {
+                        <option [value]="option!.key">{{ option!.name }}</option>
+                    }
+                </select>
+            </label>
 
             <div
-                class="calendar-root"
                 #root="rdxCalendarRoot"
+                [class]="c.root"
                 [value]="value()"
                 [locale]="locale()"
                 rdxCalendarRoot
                 fixedWeeks
             >
-                <div class="calendar-header" rdxCalendarHeader>
-                    <button class="icon-button" type="button" rdxCalendarPrev>
-                        <svg [lucideIcon]="ChevronLeft" size="16" style="display: flex;" />
+                <div [class]="c.header" rdxCalendarHeader>
+                    <button [class]="c.nav" type="button" rdxCalendarPrev>
+                        <svg lucideChevronLeft size="16" />
                     </button>
-                    <div class="calendar-heading" #head="rdxCalendarHeading" rdxCalendarHeading>
+                    <div #head="rdxCalendarHeading" [class]="c.heading" rdxCalendarHeading>
                         {{ head.headingValue() }}
                     </div>
-                    <button class="icon-button" type="button" rdxCalendarNext>
-                        <svg [lucideIcon]="ChevronRight" size="16" style="display: flex;" />
+                    <button [class]="c.nav" type="button" rdxCalendarNext>
+                        <svg lucideChevronRight size="16" />
                     </button>
                 </div>
 
-                <div class="calendar-container">
-                    <table class="calendar-grid" rdxCalendarGrid>
-                        @for (month of root.months(); track $index) {
-                            <thead rdxCalendarGridHead>
-                                <tr class="calendar-grid-head-row">
-                                    @for (day of root.weekDays(); track $index) {
-                                        <th class="calendar-head-cell">{{ day }}</th>
+                <table [class]="c.grid" rdxCalendarGrid>
+                    @for (month of root.months(); track $index) {
+                        <thead rdxCalendarGridHead>
+                            <tr [class]="c.headRow">
+                                @for (day of root.weekDays(); track $index) {
+                                    <th [class]="c.headCell" rdxCalendarHeadCell>{{ day }}</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody [class]="c.body" rdxCalendarGridBody>
+                            @for (weekDates of month.weeks; track $index) {
+                                <tr [class]="c.weekRow">
+                                    @for (weekDate of weekDates; track $index) {
+                                        <td [class]="c.cell" [date]="weekDate" rdxCalendarCell>
+                                            <div
+                                                #cell="rdxCalendarCellTrigger"
+                                                [class]="c.day"
+                                                [day]="weekDate"
+                                                [month]="month.value"
+                                                rdxCalendarCellTrigger
+                                            >
+                                                {{ cell.dayValue() }}
+                                            </div>
+                                        </td>
                                     }
                                 </tr>
-                            </thead>
-                            <tbody class="calendar-grid-body" rdxCalendarGridBody>
-                                @for (weekDates of month.weeks; track $index) {
-                                    <tr class="calendar-week-row">
-                                        @for (weekDate of weekDates; track $index) {
-                                            <td class="calendar-cell-wrapper">
-                                                <div
-                                                    class="calendar-day"
-                                                    #cell="rdxCalendarCellTrigger"
-                                                    [day]="weekDate"
-                                                    [month]="month.value"
-                                                    rdxCalendarCellTrigger
-                                                >
-                                                    {{ cell.dayValue() }}
-                                                </div>
-                                            </td>
-                                        }
-                                    </tr>
-                                }
-                            </tbody>
-                        }
-                    </table>
-                </div>
+                            }
+                        </tbody>
+                    }
+                </table>
             </div>
         </div>
     `
 })
-export class CalendarWithLocaleComponent {
+export class CalendarWithLocale {
     readonly preferences = [
         { locale: 'en-US', label: 'Default', ordering: 'gregory' },
         {
@@ -183,13 +188,13 @@ export class CalendarWithLocaleComponent {
             : [this.calendars[0]];
     });
 
-    readonly otherCalendars = computed(() =>
-        this.calendars.filter((c) => !this.preferredCalendars().some((p) => p!.key === c.key))
-    );
-
     readonly value = computed(() =>
         toCalendar(today(getLocalTimeZone()), createCalendar(this.calendar() as CalendarIdentifier))
     );
+
+    protected readonly cn = cn;
+    protected readonly c = demoCalendar;
+    protected readonly input = demoInput;
 
     updateLocale(event: Event) {
         const newLocale = (event.target as HTMLSelectElement).value;
@@ -198,6 +203,7 @@ export class CalendarWithLocaleComponent {
         this.calendar.set(this.pref()!.ordering.split(' ')[0]);
     }
 
-    protected readonly ChevronLeft = ChevronLeft;
-    protected readonly ChevronRight = ChevronRight;
+    updateCalendar(event: Event) {
+        this.calendar.set((event.target as HTMLSelectElement).value);
+    }
 }

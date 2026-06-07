@@ -76,6 +76,36 @@ export const demoInput = cn(
     demoFocusRing
 );
 
+/** Calendar parts: card-framed month grid with circular day cells driven by `data-*` state. */
+export const demoCalendar = {
+    root: 'w-[300px] rounded-xl border border-border bg-background p-4 shadow-sm',
+    header: 'flex items-center justify-between',
+    heading: 'text-sm font-medium text-foreground',
+    nav: cn(
+        'inline-flex size-7 items-center justify-center rounded-md text-foreground',
+        'hover:bg-muted cursor-pointer',
+        demoFocusRing
+    ),
+    grid: 'mt-4 w-full border-collapse select-none',
+    headRow: 'grid w-full grid-cols-7',
+    headCell: 'rounded-md text-center text-xs text-muted-foreground',
+    body: 'grid',
+    weekRow: 'grid grid-cols-7',
+    cell: 'relative text-center text-sm',
+    day: cn(
+        'relative mx-auto flex size-8 items-center justify-center rounded-full text-sm text-foreground outline-none',
+        'hover:bg-muted cursor-pointer',
+        'data-[selected]:bg-primary data-[selected]:text-primary-foreground data-[selected]:hover:bg-primary',
+        'data-[highlighted]:bg-muted',
+        'data-[outside-view]:text-muted-foreground/60',
+        'data-[unavailable]:pointer-events-none data-[unavailable]:text-muted-foreground/60 data-[unavailable]:line-through',
+        'data-[disabled]:pointer-events-none data-[disabled]:opacity-40',
+        // today marker: a small dot above the number
+        "data-[today]:before:bg-primary data-[today]:before:absolute data-[today]:before:top-1 data-[today]:before:size-1 data-[today]:before:rounded-full data-[today]:before:content-['']",
+        demoFocusRing
+    )
+} as const;
+
 /**
  * Dialog surfaces and parts: a centered modal popup over a dimmed backdrop.
  *

@@ -1,5 +1,5 @@
 import { computed, Directive } from '@angular/core';
-import { injectCalendarRootContext } from './сalendar-сontext.token';
+import { injectCalendarRootContext } from './calendar-context.token';
 
 @Directive({
     selector: 'table[rdxCalendarGrid]',
@@ -16,5 +16,5 @@ export class RdxCalendarGridDirective {
     private readonly rootContext = injectCalendarRootContext();
 
     readonly disabled = computed(() => (this.rootContext.disabled() ? true : undefined));
-    readonly readonly = computed(() => (this.rootContext.readonly ? true : undefined));
+    readonly readonly = computed(() => (this.rootContext.readonly() ? true : undefined));
 }
