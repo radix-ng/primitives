@@ -1,6 +1,5 @@
 export const dependencies = {
     '@angular/animations': '^20.0.0',
-    '@angular/cdk': '^20.0.0',
     '@angular/cli': '^20.0.0',
     '@angular/common': '^20.0.0',
     '@angular/compiler': '^20.0.0',

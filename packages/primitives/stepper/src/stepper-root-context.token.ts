@@ -1,4 +1,3 @@
-import { Direction } from '@angular/cdk/bidi';
 import {
     inject,
     InjectionToken,
@@ -7,7 +6,7 @@ import {
     ModelSignal,
     WritableSignal
 } from '@angular/core';
-import { BooleanInput } from '@radix-ng/primitives/core';
+import { BooleanInput, Direction } from '@radix-ng/primitives/core';
 
 export interface StepperRootContext {
     value: ModelSignal<number | undefined>;

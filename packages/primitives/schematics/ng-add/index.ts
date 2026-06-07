@@ -11,7 +11,6 @@ import { Schema } from './schema';
 
 const PACKAGE_NAME = '@radix-ng/primitives';
 const PEER_DEPENDENCIES: Record<string, string> = {
-    '@angular/cdk': '^19.2.0 || ^20.0.0 || ^21.0.0',
     '@floating-ui/dom': '^1.7.4',
     '@internationalized/date': '^3.12.2',
     '@internationalized/number': '^3.6.7'
@@ -55,12 +54,6 @@ export function ngAdd(options: Schema = {}): Rule {
 
         const dependencies: NodeDependency[] = [
             { name: '@angular/common', type: NodeDependencyType.Default, version: ngCoreVersionTag, overwrite: false },
-            {
-                name: '@angular/cdk',
-                type: NodeDependencyType.Default,
-                version: getPeerVersion('@angular/cdk'),
-                overwrite: false
-            },
             {
                 name: '@floating-ui/dom',
                 type: NodeDependencyType.Default,

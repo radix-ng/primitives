@@ -14,6 +14,7 @@ export * from './src/is-nullish';
 export * from './src/is-number';
 export * from './src/isValueEqualOrExist';
 export * from './src/kbd-constants';
+export * from './src/live-announcer';
 export * from './src/provide-token';
 export * from './src/signal-forms/form-control';
 export * from './src/window';

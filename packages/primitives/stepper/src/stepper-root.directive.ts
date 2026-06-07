@@ -1,5 +1,3 @@
-import { LiveAnnouncer } from '@angular/cdk/a11y';
-import { Direction } from '@angular/cdk/bidi';
 import {
     booleanAttribute,
     computed,
@@ -13,7 +11,7 @@ import {
     output,
     signal
 } from '@angular/core';
-import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
+import { BooleanInput, Direction, NumberInput, RdxLiveAnnouncer } from '@radix-ng/primitives/core';
 import { STEPPER_ROOT_CONTEXT, StepperRootContext } from './stepper-root-context.token';
 
 @Directive({
@@ -33,7 +31,7 @@ import { STEPPER_ROOT_CONTEXT, StepperRootContext } from './stepper-root-context
     }
 })
 export class RdxStepperRootDirective implements StepperRootContext {
-    private readonly liveAnnouncer = inject(LiveAnnouncer);
+    private readonly liveAnnouncer = inject(RdxLiveAnnouncer);
 
     readonly defaultValue = input<number, NumberInput>(undefined, { transform: numberAttribute });
 

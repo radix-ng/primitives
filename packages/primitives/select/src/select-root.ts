@@ -1,6 +1,5 @@
-import { Direction } from '@angular/cdk/bidi';
 import { booleanAttribute, computed, Directive, inject, input, model, signal } from '@angular/core';
-import { AcceptableValue, createContext, isNullish } from '@radix-ng/primitives/core';
+import { AcceptableValue, createContext, Direction, isNullish } from '@radix-ng/primitives/core';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 import { compare, valueComparator } from './utils';
 

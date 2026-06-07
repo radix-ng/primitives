@@ -1,4 +1,3 @@
-import { Direction } from '@angular/cdk/bidi';
 import {
     booleanAttribute,
     computed,
@@ -18,6 +17,7 @@ import {
     createContent,
     createFormatter,
     DateStep,
+    Direction,
     Formatter,
     getDefaultTime,
     Granularity,

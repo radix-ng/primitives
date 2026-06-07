@@ -1,5 +1,8 @@
 export type DataOrientation = 'vertical' | 'horizontal';
 
+/** Layout direction for bidirectional text. */
+export type Direction = 'ltr' | 'rtl';
+
 /**
  * Nullable from `Type` adds `null` and `undefined`
  *

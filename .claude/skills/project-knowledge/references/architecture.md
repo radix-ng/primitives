@@ -79,27 +79,20 @@ Every primitive family exposes state via `createContext` from `@radix-ng/primiti
 
 ## External peer dependencies (installed by ng-add)
 
-`@angular/common` (matched to app version), `@angular/cdk`, `@floating-ui/dom`, `@internationalized/date`, `@internationalized/number`
+`@angular/common` (matched to app version), `@floating-ui/dom`, `@internationalized/date`, `@internationalized/number`
 
-## @angular/cdk — migration direction
+## @angular/cdk — fully removed
 
-**Goal: remove `@angular/cdk` as a peer dependency entirely.** New code must not add new CDK imports.
+**`@angular/cdk` is no longer a dependency** (not a peer, not installed by `ng-add`, not in the root lockfile). New code must not reintroduce CDK imports.
 
-Current state of CDK usage — what still needs to be replaced:
+Own replacements for what CDK used to provide:
 
-| CDK import                   | Used for              | Where            |
-| ---------------------------- | --------------------- | ---------------- |
-| `LiveAnnouncer` (`cdk/a11y`) | ARIA live region      | stepper          |
-| `Platform` (`cdk/platform`)  | SSR/browser detection | `core/is-client` |
-
-Type-only imports that are low-priority (zero runtime cost, but ideally replaced with own types):
-
-- `Direction` (`cdk/bidi`) — type alias for `'ltr' | 'rtl'`; can be replaced with a local type in `core`
-
-Already replaced with own implementations:
-
-- `_IdGenerator` (`cdk/a11y`) — replaced by `RdxIdGenerator` + the `injectId(prefix)` hook in `core/src/id-generator.ts` (re-exported from `@radix-ng/primitives/core`). `injectId('rdx-…-')` is the call-site API (Angular counterpart of React's `useId`); it generates deterministic, SSR/hydration-stable IDs via a per-prefix counter folded with `APP_ID`. Inject `RdxIdGenerator` directly only when generating IDs lazily outside an injection context.
-- `BooleanInput`, `NumberInput` — now defined in `core/src/types.ts` (re-exported from `@radix-ng/primitives/core`) and used everywhere the `cdk/coercion` aliases were. The transforms themselves are Angular's `booleanAttribute` / `numberAttribute`; CDK only ever supplied the input-value type aliases.
+- `_IdGenerator` (`cdk/a11y`) → `RdxIdGenerator` + the `injectId(prefix)` hook in `core/src/id-generator.ts` (re-exported from `@radix-ng/primitives/core`). `injectId('rdx-…-')` is the call-site API (Angular counterpart of React's `useId`); it generates deterministic, SSR/hydration-stable IDs via a per-prefix counter folded with `APP_ID`. Inject `RdxIdGenerator` directly only when generating IDs lazily outside an injection context.
+- `LiveAnnouncer` (`cdk/a11y`) → `RdxLiveAnnouncer` in `core/src/live-announcer.ts`: lazily appends a visually-hidden `aria-live` region to `document.body`, no-op on the server. Only consumer: stepper.
+- `Platform` (`cdk/platform`) → `core/is-client` now uses `isPlatformBrowser(inject(PLATFORM_ID))` from `@angular/common`.
+- `Direction` (`cdk/bidi`) → `core/src/types.ts` `export type Direction = 'ltr' | 'rtl'` (re-exported from `@radix-ng/primitives/core`).
+- `BooleanInput`, `NumberInput` (`cdk/coercion`) → defined in `core/src/types.ts` (re-exported from `@radix-ng/primitives/core`). The transforms themselves are Angular's `booleanAttribute` / `numberAttribute`; CDK only ever supplied the input-value type aliases.
+- CDK Dialog/Overlay, `cdk/portal`, and `CdkTrapFocus` were previously replaced with own implementations (so consumers no longer need `@angular/cdk/overlay-prebuilt.css`).
 
 ## tsconfig paths
 

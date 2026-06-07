@@ -203,18 +203,21 @@ filled/focused`) and the context gains `setStateProvider(provider | null)`
    Covered by 5 new specs in `field.directive.spec.ts`. Version-independent.
 5. **Learning spike (not for merge)** — Signal Forms exists as experimental in 21. Build a throwaway sandbox to confirm `[field]` discovery against a
    directive-based control. Experimental API may differ from stable 22.
-6. **Remove CDK from the form path** — `BooleanInput` from `@angular/cdk/coercion`
-   (`control-value-accessor.ts:1`, `field-control`, etc.). `switch-root` already
-   moved off CDK `_IdGenerator` to the `core` generator during its Base UI rewrite.
-   Pure prep, aligns with the documented CDK phase-out, shrinks the upgrade surface.
+6. ✅ **Remove CDK from the form path** — done as part of removing `@angular/cdk`
+   from the whole library. `BooleanInput`/`NumberInput` now come from
+   `@radix-ng/primitives/core` (`core/src/types.ts`), id generation uses the `core`
+   `injectId`/`RdxIdGenerator`, and the remaining non-form usages were replaced too
+   (`RdxLiveAnnouncer`, `isPlatformBrowser`, the `Direction` type). `@angular/cdk` is
+   no longer a peer dependency. See `architecture.md` for the full breakdown.
 
 Progress: **1 ✅ → 2 ✅ → 3 ✅ → 4 ✅** done, **plus** both structural collisions
 resolved — the `value` split (switch + checkbox) and the checkbox `indeterminate`
 split. All five clean controls (radio, input, number-field, switch, checkbox)
-now `implements` and compile. Remaining: the shared **`invalid`/`errors`/`touched`/
-`dirty` batch** (collisions #4) across the 🟡 controls; **6** (CDK removal from the
-form path) as an isolated side PR; **5** (spike) optional before the Angular 22
-bump. Note: `implements` is a **compile-time** guarantee — runtime binding of
+now `implements` and compile. **6** (CDK removal from the form path) is done — CDK
+is fully removed from the library. Remaining: the shared **`invalid`/`errors`/
+`touched`/`dirty` batch** (collisions #4) across the 🟡 controls; **5** (spike)
+optional before the Angular 22 bump. Note: `implements` is a **compile-time**
+guarantee — runtime binding of
 `[control]` to these directives stays unverified until the spike / Angular 22.
 
 ## Related
@@ -222,4 +225,4 @@ bump. Note: `implements` is a **compile-time** guarantee — runtime binding of
 - Angular docs: [Custom controls](https://angular.dev/guide/forms/signals/custom-controls),
   [`FormValueControl`](https://angular.dev/api/forms/signals/FormValueControl),
   [`FormField`](https://angular.dev/api/forms/signals/FormField)
-- See `architecture.md` for the CDK phase-out plan referenced in prep #6.
+- See `architecture.md` for the completed CDK removal referenced in prep #6.

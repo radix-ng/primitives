@@ -1,5 +1,5 @@
-import { Direction } from '@angular/cdk/bidi';
 import { Injectable, signal } from '@angular/core';
+import { Direction } from '@radix-ng/primitives/core';
 
 export type RadixNGConfig = {
     /**

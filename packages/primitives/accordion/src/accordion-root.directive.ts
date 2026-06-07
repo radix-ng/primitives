@@ -1,4 +1,3 @@
-import { Direction } from '@angular/cdk/bidi';
 import {
     booleanAttribute,
     computed,
@@ -14,7 +13,14 @@ import {
     output,
     Signal
 } from '@angular/core';
-import { AcceptableValue, BooleanInput, createContext, DataOrientation, injectId } from '@radix-ng/primitives/core';
+import {
+    AcceptableValue,
+    BooleanInput,
+    createContext,
+    DataOrientation,
+    Direction,
+    injectId
+} from '@radix-ng/primitives/core';
 
 export type AccordionRootContext = {
     disabled: InputSignalWithTransform<boolean, BooleanInput>;
