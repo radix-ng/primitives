@@ -15,8 +15,7 @@ and developer experience. The primitives are **headless** — they ship no style
 incrementally.
 
 The library grew out of an Angular port of [Radix UI](https://www.radix-ui.com/); its API and behavior
-now align primarily with [Base UI](https://base-ui.com/). Some primitives build on
-[@angular/cdk](https://material.angular.io/cdk/categories).
+now align primarily with [Base UI](https://base-ui.com/).
 
 ## Features
 
