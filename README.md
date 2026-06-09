@@ -79,7 +79,7 @@ Codex, Cline, Windsurf, GitHub Copilot, Gemini, and other agents via the open
 [Agent Skills ecosystem](https://skills.sh).
 
 ```bash
-npx skills add radix-ng/primitives
+npx skills add radix-ng/primitives/skills
 ```
 
 ## Components

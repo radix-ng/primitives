@@ -17,7 +17,7 @@ Skills ecosystem ([skills.sh](https://skills.sh)).
 ## Install (consumers)
 
 ```bash
-npx skills add radix-ng/primitives
+npx skills add radix-ng/primitives/skills
 ```
 
 ## Generated vs hand-authored
