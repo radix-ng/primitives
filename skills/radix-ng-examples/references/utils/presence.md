@@ -21,21 +21,21 @@ Provide the context and compose the directive on an `ng-template`:
 
 ```ts
 @Directive({
-  selector: 'ng-template[myContentPresence]',
-  hostDirectives: [RdxPresenceDirective],
-  providers: [
-    provideRdxPresenceContext(() => {
-      const rootContext = injectMyRootContext()!;
-      return { present: rootContext.open };
-    })
-  ]
+    selector: 'ng-template[myContentPresence]',
+    hostDirectives: [RdxPresenceDirective],
+    providers: [
+        provideRdxPresenceContext(() => {
+            const rootContext = injectMyRootContext()!;
+            return { present: rootContext.open };
+        })
+    ]
 })
 export class MyContentPresence {}
 ```
 
 ```html
 <ng-template myContentPresence>
-  <div [attr.data-state]="open() ? 'open' : 'closed'">Content</div>
+    <div [attr.data-state]="open() ? 'open' : 'closed'">Content</div>
 </ng-template>
 ```
 
@@ -45,10 +45,10 @@ animation finishes:
 
 ```css
 .content[data-state='open'] {
-  animation: fade-in 150ms ease-out;
+    animation: fade-in 150ms ease-out;
 }
 .content[data-state='closed'] {
-  animation: fade-out 150ms ease-in;
+    animation: fade-out 150ms ease-in;
 }
 ```
 
@@ -58,7 +58,7 @@ animation finishes:
 
 ```ts
 type RdxPresenceContext = {
-  present: Signal<boolean>;
+    present: Signal<boolean>;
 };
 ```
 

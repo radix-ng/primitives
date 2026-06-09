@@ -13,37 +13,39 @@ import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-alert-dialog-default',
-  imports: [...alertDialogImports],
-  template: `
-    <div rdxAlertDialogRoot>
-      <button [class]="cn(b.base, b.destructive, b.size.md)" rdxAlertDialogTrigger>Delete account</button>
+    selector: 'rdx-alert-dialog-default',
+    imports: [...alertDialogImports],
+    template: `
+        <div rdxAlertDialogRoot>
+            <button [class]="cn(b.base, b.destructive, b.size.md)" rdxAlertDialogTrigger>Delete account</button>
 
-      <ng-template rdxAlertDialogPortalPresence>
-        <div [class]="d.portalAnimated" rdxAlertDialogPortal>
-          <div [class]="d.backdrop" rdxAlertDialogBackdrop></div>
+            <ng-template rdxAlertDialogPortalPresence>
+                <div [class]="d.portalAnimated" rdxAlertDialogPortal>
+                    <div [class]="d.backdrop" rdxAlertDialogBackdrop></div>
 
-          <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
-            <h2 [class]="d.title" rdxAlertDialogTitle>Are you absolutely sure?</h2>
-            <p [class]="d.description" rdxAlertDialogDescription>
-              This action cannot be undone. This will permanently delete your account and remove your data from our
-              servers.
-            </p>
+                    <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
+                        <h2 [class]="d.title" rdxAlertDialogTitle>Are you absolutely sure?</h2>
+                        <p [class]="d.description" rdxAlertDialogDescription>
+                            This action cannot be undone. This will permanently delete your account and remove your data
+                            from our servers.
+                        </p>
 
-            <div [class]="d.footer">
-              <button [class]="cn(b.base, b.outline, b.size.sm)" rdxAlertDialogClose>Cancel</button>
-              <button [class]="cn(b.base, b.destructive, b.size.sm)" rdxAlertDialogClose>Yes, delete account</button>
-            </div>
-          </div>
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxAlertDialogClose>Cancel</button>
+                            <button [class]="cn(b.base, b.destructive, b.size.sm)" rdxAlertDialogClose>
+                                Yes, delete account
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
         </div>
-      </ng-template>
-    </div>
-  `
+    `
 })
 export class RdxAlertDialogDefaultComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly d = demoDialog;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly d = demoDialog;
 }
 ```
 
@@ -60,17 +62,17 @@ export class RdxAlertDialogDefaultComponent {
 
 ```typescript
 import {
-  alertDialogImports,
-  createRdxAlertDialogHandle,
-  RdxAlertDialogBackdrop,
-  RdxAlertDialogClose,
-  RdxAlertDialogDescription,
-  RdxAlertDialogPopup,
-  RdxAlertDialogPortal,
-  RdxAlertDialogPortalPresence,
-  RdxAlertDialogRoot,
-  RdxAlertDialogTitle,
-  RdxAlertDialogTrigger
+    alertDialogImports,
+    createRdxAlertDialogHandle,
+    RdxAlertDialogBackdrop,
+    RdxAlertDialogClose,
+    RdxAlertDialogDescription,
+    RdxAlertDialogPopup,
+    RdxAlertDialogPortal,
+    RdxAlertDialogPortalPresence,
+    RdxAlertDialogRoot,
+    RdxAlertDialogTitle,
+    RdxAlertDialogTrigger
 } from '@radix-ng/primitives/alert-dialog';
 ```
 
@@ -84,19 +86,19 @@ import { RdxAlertDialogModule } from '@radix-ng/primitives/alert-dialog';
 
 ```html
 <div rdxAlertDialogRoot>
-  <button rdxAlertDialogTrigger>Delete</button>
+    <button rdxAlertDialogTrigger>Delete</button>
 
-  <ng-template rdxAlertDialogPortalPresence>
-    <div rdxAlertDialogPortal>
-      <div rdxAlertDialogBackdrop></div>
-      <div rdxAlertDialogPopup>
-        <h2 rdxAlertDialogTitle>Are you sure?</h2>
-        <p rdxAlertDialogDescription>This action cannot be undone.</p>
-        <button rdxAlertDialogClose>Cancel</button>
-        <button rdxAlertDialogClose>Confirm</button>
-      </div>
-    </div>
-  </ng-template>
+    <ng-template rdxAlertDialogPortalPresence>
+        <div rdxAlertDialogPortal>
+            <div rdxAlertDialogBackdrop></div>
+            <div rdxAlertDialogPopup>
+                <h2 rdxAlertDialogTitle>Are you sure?</h2>
+                <p rdxAlertDialogDescription>This action cannot be undone.</p>
+                <button rdxAlertDialogClose>Cancel</button>
+                <button rdxAlertDialogClose>Confirm</button>
+            </div>
+        </div>
+    </ng-template>
 </div>
 ```
 
@@ -112,37 +114,39 @@ import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-alert-dialog-default',
-  imports: [...alertDialogImports],
-  template: `
-    <div rdxAlertDialogRoot>
-      <button [class]="cn(b.base, b.destructive, b.size.md)" rdxAlertDialogTrigger>Delete account</button>
+    selector: 'rdx-alert-dialog-default',
+    imports: [...alertDialogImports],
+    template: `
+        <div rdxAlertDialogRoot>
+            <button [class]="cn(b.base, b.destructive, b.size.md)" rdxAlertDialogTrigger>Delete account</button>
 
-      <ng-template rdxAlertDialogPortalPresence>
-        <div [class]="d.portalAnimated" rdxAlertDialogPortal>
-          <div [class]="d.backdrop" rdxAlertDialogBackdrop></div>
+            <ng-template rdxAlertDialogPortalPresence>
+                <div [class]="d.portalAnimated" rdxAlertDialogPortal>
+                    <div [class]="d.backdrop" rdxAlertDialogBackdrop></div>
 
-          <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
-            <h2 [class]="d.title" rdxAlertDialogTitle>Are you absolutely sure?</h2>
-            <p [class]="d.description" rdxAlertDialogDescription>
-              This action cannot be undone. This will permanently delete your account and remove your data from our
-              servers.
-            </p>
+                    <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
+                        <h2 [class]="d.title" rdxAlertDialogTitle>Are you absolutely sure?</h2>
+                        <p [class]="d.description" rdxAlertDialogDescription>
+                            This action cannot be undone. This will permanently delete your account and remove your data
+                            from our servers.
+                        </p>
 
-            <div [class]="d.footer">
-              <button [class]="cn(b.base, b.outline, b.size.sm)" rdxAlertDialogClose>Cancel</button>
-              <button [class]="cn(b.base, b.destructive, b.size.sm)" rdxAlertDialogClose>Yes, delete account</button>
-            </div>
-          </div>
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxAlertDialogClose>Cancel</button>
+                            <button [class]="cn(b.base, b.destructive, b.size.sm)" rdxAlertDialogClose>
+                                Yes, delete account
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
         </div>
-      </ng-template>
-    </div>
-  `
+    `
 })
 export class RdxAlertDialogDefaultComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly d = demoDialog;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly d = demoDialog;
 }
 ```
 
@@ -156,45 +160,49 @@ import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-alert-dialog-controlled',
-  imports: [...alertDialogImports],
-  template: `
-    <div class="flex flex-col items-center gap-4">
-      <p class="text-muted-foreground text-xs">Alert dialog is {{ open() ? 'open' : 'closed' }}</p>
+    selector: 'rdx-alert-dialog-controlled',
+    imports: [...alertDialogImports],
+    template: `
+        <div class="flex flex-col items-center gap-4">
+            <p class="text-muted-foreground text-xs">Alert dialog is {{ open() ? 'open' : 'closed' }}</p>
 
-      <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="open.set(true)">Open from outside</button>
+            <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="open.set(true)">Open from outside</button>
 
-      <div [(open)]="open" rdxAlertDialogRoot>
-        <button [class]="cn(b.base, b.destructive, b.size.md)" rdxAlertDialogTrigger>Discard changes</button>
+            <div [(open)]="open" rdxAlertDialogRoot>
+                <button [class]="cn(b.base, b.destructive, b.size.md)" rdxAlertDialogTrigger>Discard changes</button>
 
-        <ng-template rdxAlertDialogPortalPresence>
-          <div [class]="d.portalAnimated" rdxAlertDialogPortal>
-            <div [class]="d.backdrop" rdxAlertDialogBackdrop></div>
+                <ng-template rdxAlertDialogPortalPresence>
+                    <div [class]="d.portalAnimated" rdxAlertDialogPortal>
+                        <div [class]="d.backdrop" rdxAlertDialogBackdrop></div>
 
-            <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
-              <h2 [class]="d.title" rdxAlertDialogTitle>Discard unsaved changes?</h2>
-              <p [class]="d.description" rdxAlertDialogDescription>
-                The open state is owned by the component and bound with
-                <code>[(open)]</code>
-                .
-              </p>
+                        <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
+                            <h2 [class]="d.title" rdxAlertDialogTitle>Discard unsaved changes?</h2>
+                            <p [class]="d.description" rdxAlertDialogDescription>
+                                The open state is owned by the component and bound with
+                                <code>[(open)]</code>
+                                .
+                            </p>
 
-              <div [class]="d.footer">
-                <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="open.set(false)">Keep editing</button>
-                <button [class]="cn(b.base, b.destructive, b.size.sm)" (click)="open.set(false)">Discard</button>
-              </div>
+                            <div [class]="d.footer">
+                                <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="open.set(false)">
+                                    Keep editing
+                                </button>
+                                <button [class]="cn(b.base, b.destructive, b.size.sm)" (click)="open.set(false)">
+                                    Discard
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
             </div>
-          </div>
-        </ng-template>
-      </div>
-    </div>
-  `
+        </div>
+    `
 })
 export class RdxAlertDialogControlledComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly d = demoDialog;
-  protected readonly open = signal(false);
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly d = demoDialog;
+    protected readonly open = signal(false);
 }
 ```
 
@@ -209,40 +217,46 @@ import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-alert-dialog-multiple-triggers',
-  imports: [...alertDialogImports],
-  template: `
-    <div #root="rdxAlertDialogRoot" rdxAlertDialogRoot>
-      <div class="flex gap-2">
-        <button [class]="cn(b.base, b.outline, b.size.md)" payload="photo" rdxAlertDialogTrigger>Delete photo</button>
-        <button [class]="cn(b.base, b.outline, b.size.md)" payload="video" rdxAlertDialogTrigger>Delete video</button>
-        <button [class]="cn(b.base, b.outline, b.size.md)" payload="album" rdxAlertDialogTrigger>Delete album</button>
-      </div>
-
-      <ng-template rdxAlertDialogPortalPresence>
-        <div [class]="d.portalAnimated" rdxAlertDialogPortal>
-          <div [class]="d.backdrop" rdxAlertDialogBackdrop></div>
-          <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
-            <h2 [class]="d.title" rdxAlertDialogTitle>Delete this {{ root.payload() || 'item' }}?</h2>
-            <p [class]="d.description" rdxAlertDialogDescription>
-              Every trigger opens the same alert dialog; the active trigger's
-              <code>payload</code>
-              decides what is being deleted.
-            </p>
-            <div [class]="d.footer">
-              <button [class]="cn(b.base, b.outline, b.size.sm)" rdxAlertDialogClose>Cancel</button>
-              <button [class]="cn(b.base, b.destructive, b.size.sm)" rdxAlertDialogClose>Delete</button>
+    selector: 'rdx-alert-dialog-multiple-triggers',
+    imports: [...alertDialogImports],
+    template: `
+        <div #root="rdxAlertDialogRoot" rdxAlertDialogRoot>
+            <div class="flex gap-2">
+                <button [class]="cn(b.base, b.outline, b.size.md)" payload="photo" rdxAlertDialogTrigger>
+                    Delete photo
+                </button>
+                <button [class]="cn(b.base, b.outline, b.size.md)" payload="video" rdxAlertDialogTrigger>
+                    Delete video
+                </button>
+                <button [class]="cn(b.base, b.outline, b.size.md)" payload="album" rdxAlertDialogTrigger>
+                    Delete album
+                </button>
             </div>
-          </div>
+
+            <ng-template rdxAlertDialogPortalPresence>
+                <div [class]="d.portalAnimated" rdxAlertDialogPortal>
+                    <div [class]="d.backdrop" rdxAlertDialogBackdrop></div>
+                    <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
+                        <h2 [class]="d.title" rdxAlertDialogTitle>Delete this {{ root.payload() || 'item' }}?</h2>
+                        <p [class]="d.description" rdxAlertDialogDescription>
+                            Every trigger opens the same alert dialog; the active trigger's
+                            <code>payload</code>
+                            decides what is being deleted.
+                        </p>
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxAlertDialogClose>Cancel</button>
+                            <button [class]="cn(b.base, b.destructive, b.size.sm)" rdxAlertDialogClose>Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
         </div>
-      </ng-template>
-    </div>
-  `
+    `
 })
 export class RdxAlertDialogMultipleTriggersComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly d = demoDialog;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly d = demoDialog;
 }
 ```
 
@@ -256,61 +270,67 @@ import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-alert-dialog-controlled-multiple',
-  imports: [...alertDialogImports],
-  template: `
-    <div class="flex flex-col items-center gap-3">
-      <p class="text-muted-foreground text-xs">open: {{ open() }} · triggerId: {{ triggerId() ?? '—' }}</p>
+    selector: 'rdx-alert-dialog-controlled-multiple',
+    imports: [...alertDialogImports],
+    template: `
+        <div class="flex flex-col items-center gap-3">
+            <p class="text-muted-foreground text-xs">open: {{ open() }} · triggerId: {{ triggerId() ?? '—' }}</p>
 
-      <div [(open)]="open" [(triggerId)]="triggerId" rdxAlertDialogRoot>
-        <div class="flex gap-2">
-          <button id="logout" [class]="cn(b.base, b.outline, b.size.md)" rdxAlertDialogTrigger>Log out</button>
-          <button id="delete" [class]="cn(b.base, b.outline, b.size.md)" rdxAlertDialogTrigger>Delete account</button>
-        </div>
+            <div [(open)]="open" [(triggerId)]="triggerId" rdxAlertDialogRoot>
+                <div class="flex gap-2">
+                    <button id="logout" [class]="cn(b.base, b.outline, b.size.md)" rdxAlertDialogTrigger>
+                        Log out
+                    </button>
+                    <button id="delete" [class]="cn(b.base, b.outline, b.size.md)" rdxAlertDialogTrigger>
+                        Delete account
+                    </button>
+                </div>
 
-        <ng-template rdxAlertDialogPortalPresence>
-          <div [class]="d.portalAnimated" rdxAlertDialogPortal>
-            <div [class]="d.backdrop" rdxAlertDialogBackdrop></div>
-            <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
-              <h2 [class]="d.title" rdxAlertDialogTitle>
-                {{ triggerId() === 'delete' ? 'Delete account?' : 'Log out?' }}
-              </h2>
-              <p [class]="d.description" rdxAlertDialogDescription>
-                Both
-                <code>open</code>
-                and
-                <code>triggerId</code>
-                are bound, so the active action is driven from component state.
-              </p>
-              <div [class]="d.footer">
-                <button [class]="cn(b.base, b.outline, b.size.sm)" rdxAlertDialogClose>Cancel</button>
-                <button
-                  [class]="cn(b.base, triggerId() === 'delete' ? b.destructive : b.primary, b.size.sm)"
-                  rdxAlertDialogClose
-                >
-                  {{ triggerId() === 'delete' ? 'Delete' : 'Log out' }}
-                </button>
-              </div>
+                <ng-template rdxAlertDialogPortalPresence>
+                    <div [class]="d.portalAnimated" rdxAlertDialogPortal>
+                        <div [class]="d.backdrop" rdxAlertDialogBackdrop></div>
+                        <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
+                            <h2 [class]="d.title" rdxAlertDialogTitle>
+                                {{ triggerId() === 'delete' ? 'Delete account?' : 'Log out?' }}
+                            </h2>
+                            <p [class]="d.description" rdxAlertDialogDescription>
+                                Both
+                                <code>open</code>
+                                and
+                                <code>triggerId</code>
+                                are bound, so the active action is driven from component state.
+                            </p>
+                            <div [class]="d.footer">
+                                <button [class]="cn(b.base, b.outline, b.size.sm)" rdxAlertDialogClose>Cancel</button>
+                                <button
+                                    [class]="
+                                        cn(b.base, triggerId() === 'delete' ? b.destructive : b.primary, b.size.sm)
+                                    "
+                                    rdxAlertDialogClose
+                                >
+                                    {{ triggerId() === 'delete' ? 'Delete' : 'Log out' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
             </div>
-          </div>
-        </ng-template>
-      </div>
 
-      <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="confirmDelete()">Delete externally</button>
-    </div>
-  `
+            <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="confirmDelete()">Delete externally</button>
+        </div>
+    `
 })
 export class RdxAlertDialogControlledMultipleComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly d = demoDialog;
-  protected readonly open = signal(false);
-  protected readonly triggerId = signal<string | null>(null);
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly d = demoDialog;
+    protected readonly open = signal(false);
+    protected readonly triggerId = signal<string | null>(null);
 
-  protected confirmDelete() {
-    this.triggerId.set('delete');
-    this.open.set(true);
-  }
+    protected confirmDelete() {
+        this.triggerId.set('delete');
+        this.open.set(true);
+    }
 }
 ```
 
@@ -325,44 +345,48 @@ import { alertDialogImports, createRdxAlertDialogHandle } from '@radix-ng/primit
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-alert-dialog-detached',
-  imports: [...alertDialogImports],
-  template: `
-    <div class="flex flex-col items-center gap-3">
-      <!-- Triggers live outside the root and are linked through a shared handle. -->
-      <button id="delete" [class]="cn(b.base, b.destructive, b.size.md)" [handle]="handle" rdxAlertDialogTrigger>
-        Delete file
-      </button>
+    selector: 'rdx-alert-dialog-detached',
+    imports: [...alertDialogImports],
+    template: `
+        <div class="flex flex-col items-center gap-3">
+            <!-- Triggers live outside the root and are linked through a shared handle. -->
+            <button id="delete" [class]="cn(b.base, b.destructive, b.size.md)" [handle]="handle" rdxAlertDialogTrigger>
+                Delete file
+            </button>
 
-      <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="handle.open('delete')">Open imperatively</button>
+            <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="handle.open('delete')">
+                Open imperatively
+            </button>
 
-      <div [handle]="handle" rdxAlertDialogRoot>
-        <ng-template rdxAlertDialogPortalPresence>
-          <div [class]="d.portalAnimated" rdxAlertDialogPortal>
-            <div [class]="d.backdrop" rdxAlertDialogBackdrop></div>
-            <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
-              <h2 [class]="d.title" rdxAlertDialogTitle>Delete this file?</h2>
-              <p [class]="d.description" rdxAlertDialogDescription>
-                The trigger and this alert dialog are connected with
-                <code>createRdxAlertDialogHandle()</code>
-                .
-              </p>
-              <div [class]="d.footer">
-                <button [class]="cn(b.base, b.outline, b.size.sm)" rdxAlertDialogClose>Cancel</button>
-                <button [class]="cn(b.base, b.destructive, b.size.sm)" rdxAlertDialogClose>Delete</button>
-              </div>
+            <div [handle]="handle" rdxAlertDialogRoot>
+                <ng-template rdxAlertDialogPortalPresence>
+                    <div [class]="d.portalAnimated" rdxAlertDialogPortal>
+                        <div [class]="d.backdrop" rdxAlertDialogBackdrop></div>
+                        <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
+                            <h2 [class]="d.title" rdxAlertDialogTitle>Delete this file?</h2>
+                            <p [class]="d.description" rdxAlertDialogDescription>
+                                The trigger and this alert dialog are connected with
+                                <code>createRdxAlertDialogHandle()</code>
+                                .
+                            </p>
+                            <div [class]="d.footer">
+                                <button [class]="cn(b.base, b.outline, b.size.sm)" rdxAlertDialogClose>Cancel</button>
+                                <button [class]="cn(b.base, b.destructive, b.size.sm)" rdxAlertDialogClose>
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
             </div>
-          </div>
-        </ng-template>
-      </div>
-    </div>
-  `
+        </div>
+    `
 })
 export class RdxAlertDialogDetachedComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly d = demoDialog;
-  protected readonly handle = createRdxAlertDialogHandle();
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly d = demoDialog;
+    protected readonly handle = createRdxAlertDialogHandle();
 }
 ```
 
@@ -379,94 +403,96 @@ import { dialogImports, RdxDialogOpenChange } from '@radix-ng/primitives/dialog'
 import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-alert-dialog-close-confirmation',
-  imports: [...dialogImports, ...alertDialogImports, FormsModule],
-  template: `
-    <!-- The editor is a regular Dialog, controlled so a close request can be intercepted. -->
-    <div [(open)]="editorOpen" (onOpenChange)="onEditorOpenChange($event)" rdxDialogRoot>
-      <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Edit note</button>
+    selector: 'rdx-alert-dialog-close-confirmation',
+    imports: [...dialogImports, ...alertDialogImports, FormsModule],
+    template: `
+        <!-- The editor is a regular Dialog, controlled so a close request can be intercepted. -->
+        <div [(open)]="editorOpen" (onOpenChange)="onEditorOpenChange($event)" rdxDialogRoot>
+            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Edit note</button>
 
-      <ng-template rdxDialogPortalPresence>
-        <div [class]="d.portalAnimated" rdxDialogPortal>
-          <div [class]="d.backdrop" rdxDialogBackdrop></div>
-          <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-            <h2 [class]="d.title" rdxDialogTitle>Edit note</h2>
-            <p [class]="d.description" rdxDialogDescription>
-              Closing with unsaved changes asks an alert dialog to confirm.
-            </p>
+            <ng-template rdxDialogPortalPresence>
+                <div [class]="d.portalAnimated" rdxDialogPortal>
+                    <div [class]="d.backdrop" rdxDialogBackdrop></div>
+                    <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
+                        <h2 [class]="d.title" rdxDialogTitle>Edit note</h2>
+                        <p [class]="d.description" rdxDialogDescription>
+                            Closing with unsaved changes asks an alert dialog to confirm.
+                        </p>
 
-            <label [class]="d.field">
-              Note
-              <input [(ngModel)]="text" [class]="input" placeholder="Type to create changes" />
-            </label>
+                        <label [class]="d.field">
+                            Note
+                            <input [(ngModel)]="text" [class]="input" placeholder="Type to create changes" />
+                        </label>
 
-            <div [class]="d.footer">
-              <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="requestClose()">Cancel</button>
-              <button [class]="cn(b.base, b.primary, b.size.sm)" (click)="save()">Save</button>
-            </div>
-          </div>
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="requestClose()">Cancel</button>
+                            <button [class]="cn(b.base, b.primary, b.size.sm)" (click)="save()">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
         </div>
-      </ng-template>
-    </div>
 
-    <!-- The confirmation is an Alert Dialog (assertive, not outside-dismissable). -->
-    <div [(open)]="confirmOpen" rdxAlertDialogRoot>
-      <ng-template rdxAlertDialogPortalPresence>
-        <div [class]="d.portalAnimated" rdxAlertDialogPortal>
-          <div [class]="d.backdrop" rdxAlertDialogBackdrop></div>
-          <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
-            <h2 [class]="d.title" rdxAlertDialogTitle>Discard changes?</h2>
-            <p [class]="d.description" rdxAlertDialogDescription>Your unsaved note will be lost.</p>
-            <div [class]="d.footer">
-              <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="confirmOpen.set(false)">Keep editing</button>
-              <button [class]="cn(b.base, b.destructive, b.size.sm)" (click)="discard()">Discard</button>
-            </div>
-          </div>
+        <!-- The confirmation is an Alert Dialog (assertive, not outside-dismissable). -->
+        <div [(open)]="confirmOpen" rdxAlertDialogRoot>
+            <ng-template rdxAlertDialogPortalPresence>
+                <div [class]="d.portalAnimated" rdxAlertDialogPortal>
+                    <div [class]="d.backdrop" rdxAlertDialogBackdrop></div>
+                    <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
+                        <h2 [class]="d.title" rdxAlertDialogTitle>Discard changes?</h2>
+                        <p [class]="d.description" rdxAlertDialogDescription>Your unsaved note will be lost.</p>
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="confirmOpen.set(false)">
+                                Keep editing
+                            </button>
+                            <button [class]="cn(b.base, b.destructive, b.size.sm)" (click)="discard()">Discard</button>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
         </div>
-      </ng-template>
-    </div>
-  `
+    `
 })
 export class RdxAlertDialogCloseConfirmationComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly d = demoDialog;
-  protected readonly input = demoInput;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly d = demoDialog;
+    protected readonly input = demoInput;
 
-  protected readonly editorOpen = signal(false);
-  protected readonly confirmOpen = signal(false);
-  protected text = '';
+    protected readonly editorOpen = signal(false);
+    protected readonly confirmOpen = signal(false);
+    protected text = '';
 
-  private get hasChanges() {
-    return this.text.trim().length > 0;
-  }
-
-  protected onEditorOpenChange(change: RdxDialogOpenChange) {
-    // Re-open the editor and ask for confirmation when there are unsaved changes.
-    if (!change.open && this.hasChanges) {
-      this.editorOpen.set(true);
-      this.confirmOpen.set(true);
+    private get hasChanges() {
+        return this.text.trim().length > 0;
     }
-  }
 
-  protected requestClose() {
-    if (this.hasChanges) {
-      this.confirmOpen.set(true);
-    } else {
-      this.editorOpen.set(false);
+    protected onEditorOpenChange(change: RdxDialogOpenChange) {
+        // Re-open the editor and ask for confirmation when there are unsaved changes.
+        if (!change.open && this.hasChanges) {
+            this.editorOpen.set(true);
+            this.confirmOpen.set(true);
+        }
     }
-  }
 
-  protected save() {
-    this.text = '';
-    this.editorOpen.set(false);
-  }
+    protected requestClose() {
+        if (this.hasChanges) {
+            this.confirmOpen.set(true);
+        } else {
+            this.editorOpen.set(false);
+        }
+    }
 
-  protected discard() {
-    this.text = '';
-    this.confirmOpen.set(false);
-    this.editorOpen.set(false);
-  }
+    protected save() {
+        this.text = '';
+        this.editorOpen.set(false);
+    }
+
+    protected discard() {
+        this.text = '';
+        this.confirmOpen.set(false);
+        this.editorOpen.set(false);
+    }
 }
 ```
 
@@ -481,50 +507,51 @@ import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { cn, demoButton, demoDialog, demoMenu } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-alert-dialog-from-menu',
-  imports: [...alertDialogImports, RdxMenuModule],
-  template: `
-    <ng-container #menu="rdxMenuRoot" rdxMenuRoot>
-      <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Project</button>
+    selector: 'rdx-alert-dialog-from-menu',
+    imports: [...alertDialogImports, RdxMenuModule],
+    template: `
+        <ng-container #menu="rdxMenuRoot" rdxMenuRoot>
+            <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Project</button>
 
-      @if (menu.open()) {
-        <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-          <div [class]="m.popup" rdxMenuPopup>
-            <button [class]="m.item" rdxMenuItem>Rename</button>
-            <button [class]="m.item" rdxMenuItem>Duplicate</button>
-            <div [class]="m.separator" rdxMenuSeparator></div>
-            <button [class]="m.item" (click)="deleteOpen.set(true)" rdxMenuItem>Delete…</button>
-          </div>
-        </div>
-      }
-    </ng-container>
+            @if (menu.open()) {
+                <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
+                    <div [class]="m.popup" rdxMenuPopup>
+                        <button [class]="m.item" rdxMenuItem>Rename</button>
+                        <button [class]="m.item" rdxMenuItem>Duplicate</button>
+                        <div [class]="m.separator" rdxMenuSeparator></div>
+                        <button [class]="m.item" (click)="deleteOpen.set(true)" rdxMenuItem>Delete…</button>
+                    </div>
+                </div>
+            }
+        </ng-container>
 
-    <!-- Controlled alert dialog opened from the menu item. -->
-    <div [(open)]="deleteOpen" rdxAlertDialogRoot>
-      <ng-template rdxAlertDialogPortalPresence>
-        <div [class]="d.portalAnimated" rdxAlertDialogPortal>
-          <div [class]="d.backdrop" rdxAlertDialogBackdrop></div>
-          <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
-            <h2 [class]="d.title" rdxAlertDialogTitle>Delete project?</h2>
-            <p [class]="d.description" rdxAlertDialogDescription>
-              This permanently deletes the project. Opened by controlling the alert dialog from a menu item.
-            </p>
-            <div [class]="d.footer">
-              <button [class]="cn(b.base, b.outline, b.size.sm)" rdxAlertDialogClose>Cancel</button>
-              <button [class]="cn(b.base, b.destructive, b.size.sm)" rdxAlertDialogClose>Delete</button>
-            </div>
-          </div>
+        <!-- Controlled alert dialog opened from the menu item. -->
+        <div [(open)]="deleteOpen" rdxAlertDialogRoot>
+            <ng-template rdxAlertDialogPortalPresence>
+                <div [class]="d.portalAnimated" rdxAlertDialogPortal>
+                    <div [class]="d.backdrop" rdxAlertDialogBackdrop></div>
+                    <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
+                        <h2 [class]="d.title" rdxAlertDialogTitle>Delete project?</h2>
+                        <p [class]="d.description" rdxAlertDialogDescription>
+                            This permanently deletes the project. Opened by controlling the alert dialog from a menu
+                            item.
+                        </p>
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxAlertDialogClose>Cancel</button>
+                            <button [class]="cn(b.base, b.destructive, b.size.sm)" rdxAlertDialogClose>Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
         </div>
-      </ng-template>
-    </div>
-  `
+    `
 })
 export class RdxAlertDialogFromMenuComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly d = demoDialog;
-  protected readonly m = demoMenu;
-  protected readonly deleteOpen = signal(false);
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly d = demoDialog;
+    protected readonly m = demoMenu;
+    protected readonly deleteOpen = signal(false);
 }
 ```
 

@@ -4,7 +4,7 @@
 
 ```html
 <button class="${toggleClass}" rdxToggle aria-label="Toggle italic">
-  <svg class="flex" lucideItalic size="12"></svg>
+    <svg class="flex" lucideItalic size="12"></svg>
 </button>
 ```
 
@@ -27,7 +27,7 @@ part used either on its own or inside a `[rdxToggleGroup]`.
 
 ```html
 <button rdxToggle aria-label="Toggle italic">
-  <icon />
+    <icon />
 </button>
 ```
 
@@ -42,7 +42,7 @@ Use `defaultPressed` for an uncontrolled toggle that starts pressed.
 
 ```html
 <button class="${toggleClass}" rdxToggle defaultPressed aria-label="Toggle italic">
-  <svg class="flex" lucideItalic size="12"></svg>
+    <svg class="flex" lucideItalic size="12"></svg>
 </button>
 ```
 
@@ -52,10 +52,10 @@ Bind `[(pressed)]` (or `[pressed]` + `(onPressedChange)`) to control the state.
 
 ```html
 <div class="flex flex-col items-center gap-3">
-  <button class="${toggleClass}" [(pressed)]="pressed" rdxToggle aria-label="Toggle italic">
-    <svg class="flex" lucideItalic size="12"></svg>
-  </button>
-  <span class="text-muted-foreground text-sm">pressed: {{ pressed }}</span>
+    <button class="${toggleClass}" [(pressed)]="pressed" rdxToggle aria-label="Toggle italic">
+        <svg class="flex" lucideItalic size="12"></svg>
+    </button>
+    <span class="text-muted-foreground text-sm">pressed: {{ pressed }}</span>
 </div>
 ```
 
@@ -65,7 +65,7 @@ When `disabled` is present the toggle cannot be activated.
 
 ```html
 <button class="${toggleClass}" rdxToggle disabled aria-label="Toggle italic">
-  <svg class="flex" lucideItalic size="12"></svg>
+    <svg class="flex" lucideItalic size="12"></svg>
 </button>
 ```
 

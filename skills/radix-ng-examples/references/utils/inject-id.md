@@ -15,35 +15,35 @@ import { cn, demoInput } from '../../storybook/styles';
  * label/input pair is wired with a unique, SSR-stable id without hardcoding one.
  */
 @Component({
-  selector: 'inject-id-field',
-  imports: [],
-  template: `
-    <div class="flex flex-col gap-1.5">
-      <label class="text-foreground text-sm font-medium" [attr.for]="id">{{ label() }}</label>
-      <input [id]="id" [class]="inputClass" [placeholder]="label()" type="text" />
-      <code class="text-muted-foreground text-xs">id="{{ id }}"</code>
-    </div>
-  `
+    selector: 'inject-id-field',
+    imports: [],
+    template: `
+        <div class="flex flex-col gap-1.5">
+            <label class="text-foreground text-sm font-medium" [attr.for]="id">{{ label() }}</label>
+            <input [id]="id" [class]="inputClass" [placeholder]="label()" type="text" />
+            <code class="text-muted-foreground text-xs">id="{{ id }}"</code>
+        </div>
+    `
 })
 export class InjectIdField {
-  readonly label = input.required<string>();
+    readonly label = input.required<string>();
 
-  /** Generated once per instance; the shared per-prefix counter keeps ids unique and ordered. */
-  readonly id = injectId('rdx-field-');
+    /** Generated once per instance; the shared per-prefix counter keeps ids unique and ordered. */
+    readonly id = injectId('rdx-field-');
 
-  protected readonly inputClass = cn(demoInput);
+    protected readonly inputClass = cn(demoInput);
 }
 
 @Component({
-  selector: 'inject-id-example',
-  imports: [InjectIdField],
-  template: `
-    <div class="flex w-72 flex-col gap-5">
-      <inject-id-field label="First name" />
-      <inject-id-field label="Last name" />
-      <inject-id-field label="Email" />
-    </div>
-  `
+    selector: 'inject-id-example',
+    imports: [InjectIdField],
+    template: `
+        <div class="flex w-72 flex-col gap-5">
+            <inject-id-field label="First name" />
+            <inject-id-field label="Last name" />
+            <inject-id-field label="Email" />
+        </div>
+    `
 })
 export class InjectIdExample {}
 ```
@@ -71,15 +71,15 @@ import { Component, input } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
 
 @Component({
-  selector: 'app-field',
-  template: `
-    <label [attr.for]="id">{{ label() }}</label>
-    <input [id]="id" type="text" />
-  `
+    selector: 'app-field',
+    template: `
+        <label [attr.for]="id">{{ label() }}</label>
+        <input [id]="id" type="text" />
+    `
 })
 export class FieldComponent {
-  readonly label = input.required<string>();
-  readonly id = injectId('rdx-field-');
+    readonly label = input.required<string>();
+    readonly id = injectId('rdx-field-');
 }
 ```
 
@@ -92,14 +92,12 @@ When you need an id lazily (outside a field initializer/constructor), inject `Rd
 import { Component, inject } from '@angular/core';
 import { RdxIdGenerator } from '@radix-ng/primitives/core';
 
-@Component({
-  /* … */
-})
+@Component({ /* … */ })
 export class ExampleComponent {
-  private readonly idGenerator = inject(RdxIdGenerator);
+    private readonly idGenerator = inject(RdxIdGenerator);
 
-  createRow(): string {
-    return this.idGenerator.getId('rdx-row-');
-  }
+    createRow(): string {
+        return this.idGenerator.getId('rdx-row-');
+    }
 }
 ```

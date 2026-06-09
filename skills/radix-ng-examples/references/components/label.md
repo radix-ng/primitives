@@ -4,12 +4,12 @@
 
 ```html
 <div class="flex items-center gap-3">
-  <label class="text-foreground text-sm leading-9 font-medium" rdxLabel htmlFor="uniqId">First Name</label>
-  <input
-    class="bg-background text-foreground border-border focus-visible:ring-ring h-9 w-52 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2"
-    id="uniqId"
-    type="text"
-  />
+    <label class="text-foreground text-sm font-medium leading-9" rdxLabel htmlFor="uniqId">First Name</label>
+    <input
+        id="uniqId"
+        type="text"
+        class="bg-background text-foreground border-border focus-visible:ring-ring h-9 w-52 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2"
+    />
 </div>
 ```
 

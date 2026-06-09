@@ -1,6 +1,6 @@
 # Date Field
 
-#### Enables users to input specific dates within a designated field.
+####  Enables users to input specific dates within a designated field.
 
 ```typescript
 import { Component, input, model } from '@angular/core';
@@ -11,44 +11,44 @@ import { RdxDateFieldInputDirective } from '../src/date-field-input.directive';
 import { RdxDateFieldRootDirective } from '../src/date-field-root.directive';
 
 @Component({
-  selector: 'app-date-field',
-  imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective, RdxVisuallyHiddenInputDirective],
-  template: `
-    <div
-      class="border-input bg-background text-foreground data-[invalid]:border-destructive inline-flex items-center rounded-md border px-3 py-2 text-sm shadow-xs select-none"
-      #root="rdxDateFieldRoot"
-      [(value)]="value"
-      [locale]="locale()"
-      [granularity]="granularity()"
-      rdxDateFieldRoot
-    >
-      @for (item of root.segmentContents(); track $index) {
-        @if (item.part === 'literal') {
-          <div class="text-muted-foreground px-0.5" [part]="item.part" rdxDateFieldInput>
-            {{ item.value }}
-          </div>
-        } @else {
-          <div
-            class="hover:bg-muted focus:bg-accent focus:text-accent-foreground data-[placeholder]:text-muted-foreground rounded px-1 tabular-nums focus:outline-none"
-            [part]="item.part"
-            rdxDateFieldInput
-          >
-            {{ item.value }}
-          </div>
-        }
-      }
-      <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
-    </div>
-  `
+    selector: 'app-date-field',
+    imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective, RdxVisuallyHiddenInputDirective],
+    template: `
+        <div
+            class="border-input bg-background text-foreground data-[invalid]:border-destructive inline-flex items-center rounded-md border px-3 py-2 text-sm shadow-xs select-none"
+            #root="rdxDateFieldRoot"
+            [(value)]="value"
+            [locale]="locale()"
+            [granularity]="granularity()"
+            rdxDateFieldRoot
+        >
+            @for (item of root.segmentContents(); track $index) {
+                @if (item.part === 'literal') {
+                    <div class="text-muted-foreground px-0.5" [part]="item.part" rdxDateFieldInput>
+                        {{ item.value }}
+                    </div>
+                } @else {
+                    <div
+                        class="hover:bg-muted focus:bg-accent focus:text-accent-foreground data-[placeholder]:text-muted-foreground rounded px-1 tabular-nums focus:outline-none"
+                        [part]="item.part"
+                        rdxDateFieldInput
+                    >
+                        {{ item.value }}
+                    </div>
+                }
+            }
+            <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
+        </div>
+    `
 })
 export class DateFieldComponent {
-  /** Locale used to format and order the segments. */
-  readonly locale = input<string>('en');
+    /** Locale used to format and order the segments. */
+    readonly locale = input<string>('en');
 
-  /** How much of the date/time to render — `'day'` shows date only, `'second'` adds the time. */
-  readonly granularity = input<Granularity>('day');
+    /** How much of the date/time to render — `'day'` shows date only, `'second'` adds the time. */
+    readonly granularity = input<Granularity>('day');
 
-  readonly value = model<DateValue | undefined>();
+    readonly value = model<DateValue | undefined>();
 }
 ```
 
@@ -90,8 +90,8 @@ Import all parts and piece them together.
 
 ```html
 <div rdxDateFieldRoot>
-  <div rdxDateFieldInput></div>
-  <input rdxVisuallyHiddenInput />
+    <div rdxDateFieldInput></div>
+    <input rdxVisuallyHiddenInput />
 </div>
 ```
 
@@ -155,48 +155,48 @@ import { RdxDateFieldInputDirective } from '../src/date-field-input.directive';
 import { RdxDateFieldRootDirective } from '../src/date-field-root.directive';
 
 @Component({
-  selector: 'app-date-field-invalid',
-  imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective, RdxVisuallyHiddenInputDirective],
-  template: `
-    <div class="flex flex-col gap-2">
-      <label class="text-foreground text-sm font-medium" for="date-field-invalid">
-        Appointment (unavailable on 19th)
-      </label>
-      <div
-        class="border-input bg-background text-foreground data-[invalid]:border-destructive inline-flex items-center rounded-md border px-3 py-2 text-sm shadow-xs select-none"
-        id="date-field-invalid"
-        #root="rdxDateFieldRoot"
-        [isDateUnavailable]="isDateUnavailable"
-        granularity="day"
-        rdxDateFieldRoot
-      >
-        @for (item of root.segmentContents(); track $index) {
-          @if (item.part === 'literal') {
-            <div class="text-muted-foreground px-0.5" [part]="item.part" rdxDateFieldInput>
-              {{ item.value }}
-            </div>
-          } @else {
+    selector: 'app-date-field-invalid',
+    imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective, RdxVisuallyHiddenInputDirective],
+    template: `
+        <div class="flex flex-col gap-2">
+            <label class="text-foreground text-sm font-medium" for="date-field-invalid">
+                Appointment (unavailable on 19th)
+            </label>
             <div
-              class="hover:bg-muted focus:bg-accent focus:text-accent-foreground data-[placeholder]:text-muted-foreground rounded px-1 tabular-nums focus:outline-none"
-              [part]="item.part"
-              rdxDateFieldInput
+                class="border-input bg-background text-foreground data-[invalid]:border-destructive inline-flex items-center rounded-md border px-3 py-2 text-sm shadow-xs select-none"
+                id="date-field-invalid"
+                #root="rdxDateFieldRoot"
+                [isDateUnavailable]="isDateUnavailable"
+                granularity="day"
+                rdxDateFieldRoot
             >
-              {{ item.value }}
-            </div>
-          }
-        }
-        <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
+                @for (item of root.segmentContents(); track $index) {
+                    @if (item.part === 'literal') {
+                        <div class="text-muted-foreground px-0.5" [part]="item.part" rdxDateFieldInput>
+                            {{ item.value }}
+                        </div>
+                    } @else {
+                        <div
+                            class="hover:bg-muted focus:bg-accent focus:text-accent-foreground data-[placeholder]:text-muted-foreground rounded px-1 tabular-nums focus:outline-none"
+                            [part]="item.part"
+                            rdxDateFieldInput
+                        >
+                            {{ item.value }}
+                        </div>
+                    }
+                }
+                <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
 
-        @if (root.isInvalid()) {
-          <span class="text-destructive pl-2">Invalid Day</span>
-        }
-      </div>
-    </div>
-  `
+                @if (root.isInvalid()) {
+                    <span class="text-destructive pl-2">Invalid Day</span>
+                }
+            </div>
+        </div>
+    `
 })
 export class DateFieldInvalid {
-  isDateUnavailable(date: DateValue): boolean {
-    return date.day === 19;
-  }
+    isDateUnavailable(date: DateValue): boolean {
+        return date.day === 19;
+    }
 }
 ```

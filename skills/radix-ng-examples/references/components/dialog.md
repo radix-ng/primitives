@@ -12,50 +12,50 @@ import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-dialog-default',
-  imports: [...dialogImports, LucideX],
-  template: `
-    <div rdxDialogRoot>
-      <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Edit profile</button>
+    selector: 'rdx-dialog-default',
+    imports: [...dialogImports, LucideX],
+    template: `
+        <div rdxDialogRoot>
+            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Edit profile</button>
 
-      <ng-template rdxDialogPortalPresence>
-        <div [class]="d.portalAnimated" rdxDialogPortal>
-          <div [class]="d.backdrop" rdxDialogBackdrop></div>
+            <ng-template rdxDialogPortalPresence>
+                <div [class]="d.portalAnimated" rdxDialogPortal>
+                    <div [class]="d.backdrop" rdxDialogBackdrop></div>
 
-          <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-            <h2 [class]="d.title" rdxDialogTitle>Edit profile</h2>
-            <p [class]="d.description" rdxDialogDescription>
-              Make changes to your profile here. Click save when you're done.
-            </p>
+                    <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
+                        <h2 [class]="d.title" rdxDialogTitle>Edit profile</h2>
+                        <p [class]="d.description" rdxDialogDescription>
+                            Make changes to your profile here. Click save when you're done.
+                        </p>
 
-            <label [class]="d.field">
-              Name
-              <input [class]="input" value="Pedro Duarte" />
-            </label>
-            <label [class]="d.field">
-              Username
-              <input [class]="input" value="@peduarte" />
-            </label>
+                        <label [class]="d.field">
+                            Name
+                            <input [class]="input" value="Pedro Duarte" />
+                        </label>
+                        <label [class]="d.field">
+                            Username
+                            <input [class]="input" value="@peduarte" />
+                        </label>
 
-            <div [class]="d.footer">
-              <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDialogClose>Cancel</button>
-              <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Save changes</button>
-            </div>
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDialogClose>Cancel</button>
+                            <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Save changes</button>
+                        </div>
 
-            <button [class]="d.close" aria-label="Close" rdxDialogClose>
-              <svg aria-hidden="true" lucideX size="16" />
-            </button>
-          </div>
+                        <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                            <svg aria-hidden="true" lucideX size="16" />
+                        </button>
+                    </div>
+                </div>
+            </ng-template>
         </div>
-      </ng-template>
-    </div>
-  `
+    `
 })
 export class RdxDialogDefaultComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly d = demoDialog;
-  protected readonly input = demoInput;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly d = demoDialog;
+    protected readonly input = demoInput;
 }
 ```
 
@@ -79,17 +79,17 @@ export class RdxDialogDefaultComponent {
 
 ```typescript
 import {
-  createRdxDialogHandle,
-  RdxDialogBackdrop,
-  RdxDialogClose,
-  RdxDialogDescription,
-  RdxDialogPopup,
-  RdxDialogPortal,
-  RdxDialogPortalPresence,
-  RdxDialogRoot,
-  RdxDialogTitle,
-  RdxDialogTrigger,
-  RdxDialogViewport
+    createRdxDialogHandle,
+    RdxDialogBackdrop,
+    RdxDialogClose,
+    RdxDialogDescription,
+    RdxDialogPopup,
+    RdxDialogPortal,
+    RdxDialogPortalPresence,
+    RdxDialogRoot,
+    RdxDialogTitle,
+    RdxDialogTrigger,
+    RdxDialogViewport
 } from '@radix-ng/primitives/dialog';
 ```
 
@@ -108,18 +108,18 @@ keyframes on the first DOM element inside its template.
 
 ```html
 <div rdxDialogRoot>
-  <button rdxDialogTrigger>Open</button>
+    <button rdxDialogTrigger>Open</button>
 
-  <ng-template rdxDialogPortalPresence>
-    <div rdxDialogPortal>
-      <div rdxDialogBackdrop></div>
-      <div rdxDialogPopup>
-        <h2 rdxDialogTitle>Edit profile</h2>
-        <p rdxDialogDescription>Make changes to your profile.</p>
-        <button rdxDialogClose>Close</button>
-      </div>
-    </div>
-  </ng-template>
+    <ng-template rdxDialogPortalPresence>
+        <div rdxDialogPortal>
+            <div rdxDialogBackdrop></div>
+            <div rdxDialogPopup>
+                <h2 rdxDialogTitle>Edit profile</h2>
+                <p rdxDialogDescription>Make changes to your profile.</p>
+                <button rdxDialogClose>Close</button>
+            </div>
+        </div>
+    </ng-template>
 </div>
 ```
 
@@ -136,50 +136,50 @@ import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-dialog-default',
-  imports: [...dialogImports, LucideX],
-  template: `
-    <div rdxDialogRoot>
-      <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Edit profile</button>
+    selector: 'rdx-dialog-default',
+    imports: [...dialogImports, LucideX],
+    template: `
+        <div rdxDialogRoot>
+            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Edit profile</button>
 
-      <ng-template rdxDialogPortalPresence>
-        <div [class]="d.portalAnimated" rdxDialogPortal>
-          <div [class]="d.backdrop" rdxDialogBackdrop></div>
+            <ng-template rdxDialogPortalPresence>
+                <div [class]="d.portalAnimated" rdxDialogPortal>
+                    <div [class]="d.backdrop" rdxDialogBackdrop></div>
 
-          <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-            <h2 [class]="d.title" rdxDialogTitle>Edit profile</h2>
-            <p [class]="d.description" rdxDialogDescription>
-              Make changes to your profile here. Click save when you're done.
-            </p>
+                    <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
+                        <h2 [class]="d.title" rdxDialogTitle>Edit profile</h2>
+                        <p [class]="d.description" rdxDialogDescription>
+                            Make changes to your profile here. Click save when you're done.
+                        </p>
 
-            <label [class]="d.field">
-              Name
-              <input [class]="input" value="Pedro Duarte" />
-            </label>
-            <label [class]="d.field">
-              Username
-              <input [class]="input" value="@peduarte" />
-            </label>
+                        <label [class]="d.field">
+                            Name
+                            <input [class]="input" value="Pedro Duarte" />
+                        </label>
+                        <label [class]="d.field">
+                            Username
+                            <input [class]="input" value="@peduarte" />
+                        </label>
 
-            <div [class]="d.footer">
-              <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDialogClose>Cancel</button>
-              <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Save changes</button>
-            </div>
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDialogClose>Cancel</button>
+                            <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Save changes</button>
+                        </div>
 
-            <button [class]="d.close" aria-label="Close" rdxDialogClose>
-              <svg aria-hidden="true" lucideX size="16" />
-            </button>
-          </div>
+                        <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                            <svg aria-hidden="true" lucideX size="16" />
+                        </button>
+                    </div>
+                </div>
+            </ng-template>
         </div>
-      </ng-template>
-    </div>
-  `
+    `
 })
 export class RdxDialogDefaultComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly d = demoDialog;
-  protected readonly input = demoInput;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly d = demoDialog;
+    protected readonly input = demoInput;
 }
 ```
 
@@ -194,50 +194,52 @@ import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-dialog-controlled',
-  imports: [...dialogImports, LucideX],
-  template: `
-    <div class="flex flex-col items-center gap-4">
-      <p class="text-muted-foreground text-xs">Dialog is {{ open() ? 'open' : 'closed' }}</p>
+    selector: 'rdx-dialog-controlled',
+    imports: [...dialogImports, LucideX],
+    template: `
+        <div class="flex flex-col items-center gap-4">
+            <p class="text-muted-foreground text-xs">Dialog is {{ open() ? 'open' : 'closed' }}</p>
 
-      <div class="flex gap-2">
-        <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="open.set(true)">Open from outside</button>
-      </div>
-
-      <div [(open)]="open" rdxDialogRoot>
-        <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open dialog</button>
-
-        <ng-template rdxDialogPortalPresence>
-          <div [class]="d.portalAnimated" rdxDialogPortal>
-            <div [class]="d.backdrop" rdxDialogBackdrop></div>
-
-            <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-              <h2 [class]="d.title" rdxDialogTitle>Controlled dialog</h2>
-              <p [class]="d.description" rdxDialogDescription>
-                The open state is owned by the component and bound with
-                <code>[(open)]</code>
-                .
-              </p>
-
-              <div [class]="d.footer">
-                <button [class]="cn(b.base, b.primary, b.size.sm)" (click)="open.set(false)">Close from outside</button>
-              </div>
-
-              <button [class]="d.close" aria-label="Close" rdxDialogClose>
-                <svg aria-hidden="true" lucideX size="16" />
-              </button>
+            <div class="flex gap-2">
+                <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="open.set(true)">Open from outside</button>
             </div>
-          </div>
-        </ng-template>
-      </div>
-    </div>
-  `
+
+            <div [(open)]="open" rdxDialogRoot>
+                <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open dialog</button>
+
+                <ng-template rdxDialogPortalPresence>
+                    <div [class]="d.portalAnimated" rdxDialogPortal>
+                        <div [class]="d.backdrop" rdxDialogBackdrop></div>
+
+                        <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
+                            <h2 [class]="d.title" rdxDialogTitle>Controlled dialog</h2>
+                            <p [class]="d.description" rdxDialogDescription>
+                                The open state is owned by the component and bound with
+                                <code>[(open)]</code>
+                                .
+                            </p>
+
+                            <div [class]="d.footer">
+                                <button [class]="cn(b.base, b.primary, b.size.sm)" (click)="open.set(false)">
+                                    Close from outside
+                                </button>
+                            </div>
+
+                            <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                                <svg aria-hidden="true" lucideX size="16" />
+                            </button>
+                        </div>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    `
 })
 export class RdxDialogControlledComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly d = demoDialog;
-  protected readonly open = signal(false);
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly d = demoDialog;
+    protected readonly open = signal(false);
 }
 ```
 
@@ -253,44 +255,44 @@ import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-dialog-non-modal',
-  imports: [...dialogImports, LucideX],
-  template: `
-    <div class="flex flex-col items-center gap-4">
-      <p class="text-muted-foreground max-w-96 text-center text-xs leading-5">
-        Non-modal: page scrolling and outside pointer interactions stay enabled while the dialog is open.
-      </p>
+    selector: 'rdx-dialog-non-modal',
+    imports: [...dialogImports, LucideX],
+    template: `
+        <div class="flex flex-col items-center gap-4">
+            <p class="text-muted-foreground max-w-96 text-center text-xs leading-5">
+                Non-modal: page scrolling and outside pointer interactions stay enabled while the dialog is open.
+            </p>
 
-      <div [modal]="false" rdxDialogRoot>
-        <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open non-modal dialog</button>
+            <div [modal]="false" rdxDialogRoot>
+                <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open non-modal dialog</button>
 
-        <ng-template rdxDialogPortalPresence>
-          <div [class]="d.portalAnimated" rdxDialogPortal>
-            <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-              <h2 [class]="d.title" rdxDialogTitle>Non-modal dialog</h2>
-              <p [class]="d.description" rdxDialogDescription>
-                There is no backdrop, so you can keep interacting with the rest of the page.
-              </p>
+                <ng-template rdxDialogPortalPresence>
+                    <div [class]="d.portalAnimated" rdxDialogPortal>
+                        <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
+                            <h2 [class]="d.title" rdxDialogTitle>Non-modal dialog</h2>
+                            <p [class]="d.description" rdxDialogDescription>
+                                There is no backdrop, so you can keep interacting with the rest of the page.
+                            </p>
 
-              <button [class]="d.close" aria-label="Close" rdxDialogClose>
-                <svg aria-hidden="true" lucideX size="16" />
-              </button>
+                            <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                                <svg aria-hidden="true" lucideX size="16" />
+                            </button>
+                        </div>
+                    </div>
+                </ng-template>
             </div>
-          </div>
-        </ng-template>
-      </div>
 
-      <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="outsideClicks.update((count) => count + 1)">
-        Outside interaction target: {{ outsideClicks() }}
-      </button>
-    </div>
-  `
+            <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="outsideClicks.update((count) => count + 1)">
+                Outside interaction target: {{ outsideClicks() }}
+            </button>
+        </div>
+    `
 })
 export class RdxDialogNonModalComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly d = demoDialog;
-  protected readonly outsideClicks = signal(0);
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly d = demoDialog;
+    protected readonly outsideClicks = signal(0);
 }
 ```
 
@@ -306,57 +308,59 @@ import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-dialog-trap-focus',
-  imports: [...dialogImports, LucideX],
-  template: `
-    <div class="flex flex-col items-center gap-4">
-      <p class="text-muted-foreground max-w-96 text-center text-xs leading-5">
-        Trap focus: keyboard focus stays inside the dialog (Tab cycles its controls), while page scrolling and outside
-        pointer interactions remain available.
-      </p>
+    selector: 'rdx-dialog-trap-focus',
+    imports: [...dialogImports, LucideX],
+    template: `
+        <div class="flex flex-col items-center gap-4">
+            <p class="text-muted-foreground max-w-96 text-center text-xs leading-5">
+                Trap focus: keyboard focus stays inside the dialog (Tab cycles its controls), while page scrolling and
+                outside pointer interactions remain available.
+            </p>
 
-      <div modal="trap-focus" rdxDialogRoot>
-        <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open dialog</button>
+            <div modal="trap-focus" rdxDialogRoot>
+                <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open dialog</button>
 
-        <ng-template rdxDialogPortalPresence>
-          <div [class]="d.portalAnimated" rdxDialogPortal>
-            <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-              <h2 [class]="d.title" rdxDialogTitle>Focus is trapped</h2>
-              <p [class]="d.description" rdxDialogDescription>Press Tab and notice focus never leaves the dialog.</p>
+                <ng-template rdxDialogPortalPresence>
+                    <div [class]="d.portalAnimated" rdxDialogPortal>
+                        <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
+                            <h2 [class]="d.title" rdxDialogTitle>Focus is trapped</h2>
+                            <p [class]="d.description" rdxDialogDescription>
+                                Press Tab and notice focus never leaves the dialog.
+                            </p>
 
-              <label [class]="d.field">
-                First field
-                <input [class]="input" placeholder="Focused when opened" />
-              </label>
-              <label [class]="d.field">
-                Second field
-                <input [class]="input" placeholder="Tab to reach me" />
-              </label>
+                            <label [class]="d.field">
+                                First field
+                                <input [class]="input" placeholder="Focused when opened" />
+                            </label>
+                            <label [class]="d.field">
+                                Second field
+                                <input [class]="input" placeholder="Tab to reach me" />
+                            </label>
 
-              <div [class]="d.footer">
-                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Done</button>
-              </div>
+                            <div [class]="d.footer">
+                                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Done</button>
+                            </div>
 
-              <button [class]="d.close" aria-label="Close" rdxDialogClose>
-                <svg aria-hidden="true" lucideX size="16" />
-              </button>
+                            <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                                <svg aria-hidden="true" lucideX size="16" />
+                            </button>
+                        </div>
+                    </div>
+                </ng-template>
             </div>
-          </div>
-        </ng-template>
-      </div>
 
-      <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="outsideClicks.update((count) => count + 1)">
-        Outside interaction target: {{ outsideClicks() }}
-      </button>
-    </div>
-  `
+            <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="outsideClicks.update((count) => count + 1)">
+                Outside interaction target: {{ outsideClicks() }}
+            </button>
+        </div>
+    `
 })
 export class RdxDialogTrapFocusComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly d = demoDialog;
-  protected readonly input = demoInput;
-  protected readonly outsideClicks = signal(0);
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly d = demoDialog;
+    protected readonly input = demoInput;
+    protected readonly outsideClicks = signal(0);
 }
 ```
 
@@ -372,40 +376,40 @@ import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-dialog-without-dismiss',
-  imports: [...dialogImports, LucideX],
-  template: `
-    <div [disablePointerDismissal]="true" rdxDialogRoot>
-      <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open dialog</button>
+    selector: 'rdx-dialog-without-dismiss',
+    imports: [...dialogImports, LucideX],
+    template: `
+        <div [disablePointerDismissal]="true" rdxDialogRoot>
+            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open dialog</button>
 
-      <ng-template rdxDialogPortalPresence>
-        <div [class]="d.portalAnimated" rdxDialogPortal>
-          <div [class]="d.backdrop" rdxDialogBackdrop></div>
+            <ng-template rdxDialogPortalPresence>
+                <div [class]="d.portalAnimated" rdxDialogPortal>
+                    <div [class]="d.backdrop" rdxDialogBackdrop></div>
 
-          <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-            <h2 [class]="d.title" rdxDialogTitle>Confirm your choice</h2>
-            <p [class]="d.description" rdxDialogDescription>
-              Clicking the backdrop will not close this dialog. Use a button or press Escape instead.
-            </p>
+                    <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
+                        <h2 [class]="d.title" rdxDialogTitle>Confirm your choice</h2>
+                        <p [class]="d.description" rdxDialogDescription>
+                            Clicking the backdrop will not close this dialog. Use a button or press Escape instead.
+                        </p>
 
-            <div [class]="d.footer">
-              <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDialogClose>Cancel</button>
-              <button [class]="cn(b.base, b.destructive, b.size.sm)" rdxDialogClose>Delete</button>
-            </div>
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDialogClose>Cancel</button>
+                            <button [class]="cn(b.base, b.destructive, b.size.sm)" rdxDialogClose>Delete</button>
+                        </div>
 
-            <button [class]="d.close" aria-label="Close" rdxDialogClose>
-              <svg aria-hidden="true" lucideX size="16" />
-            </button>
-          </div>
+                        <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                            <svg aria-hidden="true" lucideX size="16" />
+                        </button>
+                    </div>
+                </div>
+            </ng-template>
         </div>
-      </ng-template>
-    </div>
-  `
+    `
 })
 export class RdxDialogWithoutDismissComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly d = demoDialog;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly d = demoDialog;
 }
 ```
 
@@ -421,42 +425,42 @@ import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-dialog-multiple-triggers',
-  imports: [...dialogImports, LucideX],
-  template: `
-    <div #root="rdxDialogRoot" rdxDialogRoot>
-      <div class="flex gap-2">
-        <button [class]="cn(b.base, b.outline, b.size.md)" payload="Lemon" rdxDialogTrigger>Lemon</button>
-        <button [class]="cn(b.base, b.outline, b.size.md)" payload="Lime" rdxDialogTrigger>Lime</button>
-        <button [class]="cn(b.base, b.outline, b.size.md)" payload="Orange" rdxDialogTrigger>Orange</button>
-      </div>
-
-      <ng-template rdxDialogPortalPresence>
-        <div [class]="d.portalAnimated" rdxDialogPortal>
-          <div [class]="d.backdrop" rdxDialogBackdrop></div>
-          <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-            <h2 [class]="d.title" rdxDialogTitle>{{ root.payload() || 'Fruit' }}</h2>
-            <p [class]="d.description" rdxDialogDescription>
-              Every trigger opens the same dialog; the active trigger's
-              <code>payload</code>
-              is shown here.
-            </p>
-            <div [class]="d.footer">
-              <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Close</button>
+    selector: 'rdx-dialog-multiple-triggers',
+    imports: [...dialogImports, LucideX],
+    template: `
+        <div #root="rdxDialogRoot" rdxDialogRoot>
+            <div class="flex gap-2">
+                <button [class]="cn(b.base, b.outline, b.size.md)" payload="Lemon" rdxDialogTrigger>Lemon</button>
+                <button [class]="cn(b.base, b.outline, b.size.md)" payload="Lime" rdxDialogTrigger>Lime</button>
+                <button [class]="cn(b.base, b.outline, b.size.md)" payload="Orange" rdxDialogTrigger>Orange</button>
             </div>
-            <button [class]="d.close" aria-label="Close" rdxDialogClose>
-              <svg aria-hidden="true" lucideX size="16" />
-            </button>
-          </div>
+
+            <ng-template rdxDialogPortalPresence>
+                <div [class]="d.portalAnimated" rdxDialogPortal>
+                    <div [class]="d.backdrop" rdxDialogBackdrop></div>
+                    <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
+                        <h2 [class]="d.title" rdxDialogTitle>{{ root.payload() || 'Fruit' }}</h2>
+                        <p [class]="d.description" rdxDialogDescription>
+                            Every trigger opens the same dialog; the active trigger's
+                            <code>payload</code>
+                            is shown here.
+                        </p>
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Close</button>
+                        </div>
+                        <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                            <svg aria-hidden="true" lucideX size="16" />
+                        </button>
+                    </div>
+                </div>
+            </ng-template>
         </div>
-      </ng-template>
-    </div>
-  `
+    `
 })
 export class RdxDialogMultipleTriggersComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly d = demoDialog;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly d = demoDialog;
 }
 ```
 
@@ -471,58 +475,60 @@ import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-dialog-controlled-multiple',
-  imports: [...dialogImports, LucideX],
-  template: `
-    <div class="flex flex-col items-center gap-3">
-      <p class="text-muted-foreground text-xs">open: {{ open() }} · triggerId: {{ triggerId() ?? '—' }}</p>
+    selector: 'rdx-dialog-controlled-multiple',
+    imports: [...dialogImports, LucideX],
+    template: `
+        <div class="flex flex-col items-center gap-3">
+            <p class="text-muted-foreground text-xs">open: {{ open() }} · triggerId: {{ triggerId() ?? '—' }}</p>
 
-      <div #root="rdxDialogRoot" [(open)]="open" [(triggerId)]="triggerId" rdxDialogRoot>
-        <div class="flex gap-2">
-          <button id="account" [class]="cn(b.base, b.outline, b.size.md)" rdxDialogTrigger>Account</button>
-          <button id="billing" [class]="cn(b.base, b.outline, b.size.md)" rdxDialogTrigger>Billing</button>
-        </div>
+            <div #root="rdxDialogRoot" [(open)]="open" [(triggerId)]="triggerId" rdxDialogRoot>
+                <div class="flex gap-2">
+                    <button id="account" [class]="cn(b.base, b.outline, b.size.md)" rdxDialogTrigger>Account</button>
+                    <button id="billing" [class]="cn(b.base, b.outline, b.size.md)" rdxDialogTrigger>Billing</button>
+                </div>
 
-        <ng-template rdxDialogPortalPresence>
-          <div [class]="d.portalAnimated" rdxDialogPortal>
-            <div [class]="d.backdrop" rdxDialogBackdrop></div>
-            <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-              <h2 [class]="d.title" rdxDialogTitle>
-                {{ triggerId() === 'billing' ? 'Billing' : 'Account' }}
-              </h2>
-              <p [class]="d.description" rdxDialogDescription>
-                Both
-                <code>open</code>
-                and
-                <code>triggerId</code>
-                are bound, so the active panel is driven from component state.
-              </p>
-              <div [class]="d.footer">
-                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Close</button>
-              </div>
-              <button [class]="d.close" aria-label="Close" rdxDialogClose>
-                <svg aria-hidden="true" lucideX size="16" />
-              </button>
+                <ng-template rdxDialogPortalPresence>
+                    <div [class]="d.portalAnimated" rdxDialogPortal>
+                        <div [class]="d.backdrop" rdxDialogBackdrop></div>
+                        <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
+                            <h2 [class]="d.title" rdxDialogTitle>
+                                {{ triggerId() === 'billing' ? 'Billing' : 'Account' }}
+                            </h2>
+                            <p [class]="d.description" rdxDialogDescription>
+                                Both
+                                <code>open</code>
+                                and
+                                <code>triggerId</code>
+                                are bound, so the active panel is driven from component state.
+                            </p>
+                            <div [class]="d.footer">
+                                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Close</button>
+                            </div>
+                            <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                                <svg aria-hidden="true" lucideX size="16" />
+                            </button>
+                        </div>
+                    </div>
+                </ng-template>
             </div>
-          </div>
-        </ng-template>
-      </div>
 
-      <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="openBilling()">Open billing externally</button>
-    </div>
-  `
+            <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="openBilling()">
+                Open billing externally
+            </button>
+        </div>
+    `
 })
 export class RdxDialogControlledMultipleComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly d = demoDialog;
-  protected readonly open = signal(false);
-  protected readonly triggerId = signal<string | null>(null);
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly d = demoDialog;
+    protected readonly open = signal(false);
+    protected readonly triggerId = signal<string | null>(null);
 
-  protected openBilling() {
-    this.triggerId.set('billing');
-    this.open.set(true);
-  }
+    protected openBilling() {
+        this.triggerId.set('billing');
+        this.open.set(true);
+    }
 }
 ```
 
@@ -538,53 +544,53 @@ import { createRdxDialogHandle, dialogImports } from '@radix-ng/primitives/dialo
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-dialog-detached',
-  imports: [...dialogImports, LucideX],
-  template: `
-    <div class="flex flex-col items-center gap-3">
-      <!-- Triggers live outside the root and are linked through a shared handle. -->
-      <div class="flex gap-2">
-        <button id="settings" [class]="cn(b.base, b.outline, b.size.md)" [handle]="handle" rdxDialogTrigger>
-          Settings
-        </button>
-        <button id="profile" [class]="cn(b.base, b.outline, b.size.md)" [handle]="handle" rdxDialogTrigger>
-          Profile
-        </button>
-      </div>
-
-      <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="handle.open('profile')">
-        Open profile imperatively
-      </button>
-
-      <div [handle]="handle" rdxDialogRoot>
-        <ng-template rdxDialogPortalPresence>
-          <div [class]="d.portalAnimated" rdxDialogPortal>
-            <div [class]="d.backdrop" rdxDialogBackdrop></div>
-            <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-              <h2 [class]="d.title" rdxDialogTitle>Detached triggers</h2>
-              <p [class]="d.description" rdxDialogDescription>
-                The triggers and this dialog are connected with
-                <code>createRdxDialogHandle()</code>
-                rather than DOM nesting.
-              </p>
-              <div [class]="d.footer">
-                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Close</button>
-              </div>
-              <button [class]="d.close" aria-label="Close" rdxDialogClose>
-                <svg aria-hidden="true" lucideX size="16" />
-              </button>
+    selector: 'rdx-dialog-detached',
+    imports: [...dialogImports, LucideX],
+    template: `
+        <div class="flex flex-col items-center gap-3">
+            <!-- Triggers live outside the root and are linked through a shared handle. -->
+            <div class="flex gap-2">
+                <button id="settings" [class]="cn(b.base, b.outline, b.size.md)" [handle]="handle" rdxDialogTrigger>
+                    Settings
+                </button>
+                <button id="profile" [class]="cn(b.base, b.outline, b.size.md)" [handle]="handle" rdxDialogTrigger>
+                    Profile
+                </button>
             </div>
-          </div>
-        </ng-template>
-      </div>
-    </div>
-  `
+
+            <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="handle.open('profile')">
+                Open profile imperatively
+            </button>
+
+            <div [handle]="handle" rdxDialogRoot>
+                <ng-template rdxDialogPortalPresence>
+                    <div [class]="d.portalAnimated" rdxDialogPortal>
+                        <div [class]="d.backdrop" rdxDialogBackdrop></div>
+                        <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
+                            <h2 [class]="d.title" rdxDialogTitle>Detached triggers</h2>
+                            <p [class]="d.description" rdxDialogDescription>
+                                The triggers and this dialog are connected with
+                                <code>createRdxDialogHandle()</code>
+                                rather than DOM nesting.
+                            </p>
+                            <div [class]="d.footer">
+                                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Close</button>
+                            </div>
+                            <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                                <svg aria-hidden="true" lucideX size="16" />
+                            </button>
+                        </div>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    `
 })
 export class RdxDialogDetachedComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly d = demoDialog;
-  protected readonly handle = createRdxDialogHandle();
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly d = demoDialog;
+    protected readonly handle = createRdxDialogHandle();
 }
 ```
 
@@ -600,63 +606,65 @@ import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-dialog-nested',
-  imports: [...dialogImports, LucideX],
-  template: `
-    <div rdxDialogRoot>
-      <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open dialog</button>
+    selector: 'rdx-dialog-nested',
+    imports: [...dialogImports, LucideX],
+    template: `
+        <div rdxDialogRoot>
+            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open dialog</button>
 
-      <ng-template rdxDialogPortalPresence>
-        <div [class]="d.portalAnimated" rdxDialogPortal>
-          <div [class]="d.backdrop" rdxDialogBackdrop></div>
-
-          <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-            <h2 [class]="d.title" rdxDialogTitle>Parent dialog</h2>
-            <p [class]="d.description" rdxDialogDescription>
-              Opening the nested dialog scales this popup back via
-              <code>[data-nested-dialog-open]</code>
-              .
-            </p>
-
-            <div [class]="d.footer">
-              <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDialogClose>Close</button>
-
-              <div rdxDialogRoot>
-                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogTrigger>Open nested</button>
-
-                <ng-template rdxDialogPortalPresence>
-                  <div [class]="d.portalAnimated" rdxDialogPortal>
+            <ng-template rdxDialogPortalPresence>
+                <div [class]="d.portalAnimated" rdxDialogPortal>
                     <div [class]="d.backdrop" rdxDialogBackdrop></div>
-                    <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-                      <h2 [class]="d.title" rdxDialogTitle>Nested dialog</h2>
-                      <p [class]="d.description" rdxDialogDescription>
-                        Escape or the backdrop closes this one first, then the parent.
-                      </p>
-                      <div [class]="d.footer">
-                        <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Done</button>
-                      </div>
-                      <button [class]="d.close" aria-label="Close" rdxDialogClose>
-                        <svg aria-hidden="true" lucideX size="16" />
-                      </button>
-                    </div>
-                  </div>
-                </ng-template>
-              </div>
-            </div>
 
-            <button [class]="d.close" aria-label="Close" rdxDialogClose>
-              <svg aria-hidden="true" lucideX size="16" />
-            </button>
-          </div>
+                    <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
+                        <h2 [class]="d.title" rdxDialogTitle>Parent dialog</h2>
+                        <p [class]="d.description" rdxDialogDescription>
+                            Opening the nested dialog scales this popup back via
+                            <code>[data-nested-dialog-open]</code>
+                            .
+                        </p>
+
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDialogClose>Close</button>
+
+                            <div rdxDialogRoot>
+                                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogTrigger>Open nested</button>
+
+                                <ng-template rdxDialogPortalPresence>
+                                    <div [class]="d.portalAnimated" rdxDialogPortal>
+                                        <div [class]="d.backdrop" rdxDialogBackdrop></div>
+                                        <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
+                                            <h2 [class]="d.title" rdxDialogTitle>Nested dialog</h2>
+                                            <p [class]="d.description" rdxDialogDescription>
+                                                Escape or the backdrop closes this one first, then the parent.
+                                            </p>
+                                            <div [class]="d.footer">
+                                                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>
+                                                    Done
+                                                </button>
+                                            </div>
+                                            <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                                                <svg aria-hidden="true" lucideX size="16" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </div>
+                        </div>
+
+                        <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                            <svg aria-hidden="true" lucideX size="16" />
+                        </button>
+                    </div>
+                </div>
+            </ng-template>
         </div>
-      </ng-template>
-    </div>
-  `
+    `
 })
 export class RdxDialogNestedComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly d = demoDialog;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly d = demoDialog;
 }
 ```
 
@@ -673,97 +681,101 @@ import { dialogImports, RdxDialogOpenChange } from '@radix-ng/primitives/dialog'
 import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-dialog-close-confirmation',
-  imports: [...dialogImports, FormsModule, LucideX],
-  template: `
-    <!-- The editor dialog is controlled so a close request can be intercepted. -->
-    <div [(open)]="editorOpen" (onOpenChange)="onEditorOpenChange($event)" rdxDialogRoot>
-      <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Edit description</button>
+    selector: 'rdx-dialog-close-confirmation',
+    imports: [...dialogImports, FormsModule, LucideX],
+    template: `
+        <!-- The editor dialog is controlled so a close request can be intercepted. -->
+        <div [(open)]="editorOpen" (onOpenChange)="onEditorOpenChange($event)" rdxDialogRoot>
+            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Edit description</button>
 
-      <ng-template rdxDialogPortalPresence>
-        <div [class]="d.portalAnimated" rdxDialogPortal>
-          <div [class]="d.backdrop" rdxDialogBackdrop></div>
+            <ng-template rdxDialogPortalPresence>
+                <div [class]="d.portalAnimated" rdxDialogPortal>
+                    <div [class]="d.backdrop" rdxDialogBackdrop></div>
 
-          <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-            <h2 [class]="d.title" rdxDialogTitle>Edit description</h2>
-            <p [class]="d.description" rdxDialogDescription>Closing with unsaved changes asks for confirmation.</p>
+                    <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
+                        <h2 [class]="d.title" rdxDialogTitle>Edit description</h2>
+                        <p [class]="d.description" rdxDialogDescription>
+                            Closing with unsaved changes asks for confirmation.
+                        </p>
 
-            <label [class]="d.field">
-              Description
-              <input [(ngModel)]="text" [class]="input" placeholder="Type to create changes" />
-            </label>
+                        <label [class]="d.field">
+                            Description
+                            <input [(ngModel)]="text" [class]="input" placeholder="Type to create changes" />
+                        </label>
 
-            <div [class]="d.footer">
-              <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="requestClose()">Cancel</button>
-              <button [class]="cn(b.base, b.primary, b.size.sm)" (click)="save()">Save</button>
-            </div>
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="requestClose()">Cancel</button>
+                            <button [class]="cn(b.base, b.primary, b.size.sm)" (click)="save()">Save</button>
+                        </div>
 
-            <button [class]="d.close" (click)="requestClose()" aria-label="Close">
-              <svg aria-hidden="true" lucideX size="16" />
-            </button>
-          </div>
+                        <button [class]="d.close" (click)="requestClose()" aria-label="Close">
+                            <svg aria-hidden="true" lucideX size="16" />
+                        </button>
+                    </div>
+                </div>
+            </ng-template>
         </div>
-      </ng-template>
-    </div>
 
-    <!-- Confirmation dialog, controlled separately. -->
-    <div [(open)]="confirmOpen" rdxDialogRoot>
-      <ng-template rdxDialogPortalPresence>
-        <div [class]="d.portalAnimated" rdxDialogPortal>
-          <div [class]="d.backdrop" rdxDialogBackdrop></div>
-          <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-            <h2 [class]="d.title" rdxDialogTitle>Discard changes?</h2>
-            <p [class]="d.description" rdxDialogDescription>Your edits will be lost.</p>
-            <div [class]="d.footer">
-              <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="confirmOpen.set(false)">Keep editing</button>
-              <button [class]="cn(b.base, b.destructive, b.size.sm)" (click)="discard()">Discard</button>
-            </div>
-          </div>
+        <!-- Confirmation dialog, controlled separately. -->
+        <div [(open)]="confirmOpen" rdxDialogRoot>
+            <ng-template rdxDialogPortalPresence>
+                <div [class]="d.portalAnimated" rdxDialogPortal>
+                    <div [class]="d.backdrop" rdxDialogBackdrop></div>
+                    <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
+                        <h2 [class]="d.title" rdxDialogTitle>Discard changes?</h2>
+                        <p [class]="d.description" rdxDialogDescription>Your edits will be lost.</p>
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="confirmOpen.set(false)">
+                                Keep editing
+                            </button>
+                            <button [class]="cn(b.base, b.destructive, b.size.sm)" (click)="discard()">Discard</button>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
         </div>
-      </ng-template>
-    </div>
-  `
+    `
 })
 export class RdxDialogCloseConfirmationComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly d = demoDialog;
-  protected readonly input = demoInput;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly d = demoDialog;
+    protected readonly input = demoInput;
 
-  protected readonly editorOpen = signal(false);
-  protected readonly confirmOpen = signal(false);
-  protected text = '';
+    protected readonly editorOpen = signal(false);
+    protected readonly confirmOpen = signal(false);
+    protected text = '';
 
-  private get hasChanges() {
-    return this.text.trim().length > 0;
-  }
-
-  protected onEditorOpenChange(change: RdxDialogOpenChange) {
-    // Re-open the editor and ask for confirmation when there are unsaved changes.
-    if (!change.open && this.hasChanges) {
-      this.editorOpen.set(true);
-      this.confirmOpen.set(true);
+    private get hasChanges() {
+        return this.text.trim().length > 0;
     }
-  }
 
-  protected requestClose() {
-    if (this.hasChanges) {
-      this.confirmOpen.set(true);
-    } else {
-      this.editorOpen.set(false);
+    protected onEditorOpenChange(change: RdxDialogOpenChange) {
+        // Re-open the editor and ask for confirmation when there are unsaved changes.
+        if (!change.open && this.hasChanges) {
+            this.editorOpen.set(true);
+            this.confirmOpen.set(true);
+        }
     }
-  }
 
-  protected save() {
-    this.text = '';
-    this.editorOpen.set(false);
-  }
+    protected requestClose() {
+        if (this.hasChanges) {
+            this.confirmOpen.set(true);
+        } else {
+            this.editorOpen.set(false);
+        }
+    }
 
-  protected discard() {
-    this.text = '';
-    this.confirmOpen.set(false);
-    this.editorOpen.set(false);
-  }
+    protected save() {
+        this.text = '';
+        this.editorOpen.set(false);
+    }
+
+    protected discard() {
+        this.text = '';
+        this.confirmOpen.set(false);
+        this.editorOpen.set(false);
+    }
 }
 ```
 
@@ -778,49 +790,51 @@ import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-dialog-outside-scroll',
-  imports: [...dialogImports, LucideX],
-  template: `
-    <div rdxDialogRoot>
-      <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open long dialog</button>
+    selector: 'rdx-dialog-outside-scroll',
+    imports: [...dialogImports, LucideX],
+    template: `
+        <div rdxDialogRoot>
+            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open long dialog</button>
 
-      <ng-template rdxDialogPortalPresence>
-        <div [class]="d.portalAnimated" rdxDialogPortal>
-          <div [class]="d.backdrop" rdxDialogBackdrop></div>
+            <ng-template rdxDialogPortalPresence>
+                <div [class]="d.portalAnimated" rdxDialogPortal>
+                    <div [class]="d.backdrop" rdxDialogBackdrop></div>
 
-          <!-- The viewport is the scrollable container; the popup grows past the screen. -->
-          <div [class]="d.viewport" rdxDialogViewport>
-            <div [class]="cn(d.popupStatic, d.popupAnimated)" rdxDialogPopup>
-              <h2 [class]="d.title" rdxDialogTitle>Terms of service</h2>
-              <p [class]="d.description" rdxDialogDescription>The whole dialog scrolls within the viewport.</p>
+                    <!-- The viewport is the scrollable container; the popup grows past the screen. -->
+                    <div [class]="d.viewport" rdxDialogViewport>
+                        <div [class]="cn(d.popupStatic, d.popupAnimated)" rdxDialogPopup>
+                            <h2 [class]="d.title" rdxDialogTitle>Terms of service</h2>
+                            <p [class]="d.description" rdxDialogDescription>
+                                The whole dialog scrolls within the viewport.
+                            </p>
 
-              @for (paragraph of paragraphs; track $index) {
-                <p class="text-muted-foreground mt-4 text-sm">{{ paragraph }}</p>
-              }
+                            @for (paragraph of paragraphs; track $index) {
+                                <p class="text-muted-foreground mt-4 text-sm">{{ paragraph }}</p>
+                            }
 
-              <div [class]="d.footer">
-                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Accept</button>
-              </div>
+                            <div [class]="d.footer">
+                                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Accept</button>
+                            </div>
 
-              <button [class]="d.close" aria-label="Close" rdxDialogClose>
-                <svg aria-hidden="true" lucideX size="16" />
-              </button>
-            </div>
-          </div>
+                            <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                                <svg aria-hidden="true" lucideX size="16" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
         </div>
-      </ng-template>
-    </div>
-  `
+    `
 })
 export class RdxDialogOutsideScrollComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly d = demoDialog;
-  protected readonly paragraphs = Array.from(
-    { length: 12 },
-    (_, i) =>
-      `Section ${i + 1}. This is filler content that makes the dialog taller than the viewport so the outer container scrolls.`
-  );
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly d = demoDialog;
+    protected readonly paragraphs = Array.from(
+        { length: 12 },
+        (_, i) =>
+            `Section ${i + 1}. This is filler content that makes the dialog taller than the viewport so the outer container scrolls.`
+    );
 }
 ```
 
@@ -835,48 +849,50 @@ import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-dialog-inside-scroll',
-  imports: [...dialogImports, LucideX],
-  template: `
-    <div rdxDialogRoot>
-      <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open dialog</button>
+    selector: 'rdx-dialog-inside-scroll',
+    imports: [...dialogImports, LucideX],
+    template: `
+        <div rdxDialogRoot>
+            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open dialog</button>
 
-      <ng-template rdxDialogPortalPresence>
-        <div [class]="d.portalAnimated" rdxDialogPortal>
-          <div [class]="d.backdrop" rdxDialogBackdrop></div>
+            <ng-template rdxDialogPortalPresence>
+                <div [class]="d.portalAnimated" rdxDialogPortal>
+                    <div [class]="d.backdrop" rdxDialogBackdrop></div>
 
-          <!-- The popup stays fixed on screen; only its body scrolls. -->
-          <div [class]="cn(d.popup, d.popupAnimated, 'flex max-h-[85vh] flex-col')" rdxDialogPopup>
-            <h2 [class]="d.title" rdxDialogTitle>Release notes</h2>
-            <p [class]="d.description" rdxDialogDescription>Header and footer stay put while the body scrolls.</p>
+                    <!-- The popup stays fixed on screen; only its body scrolls. -->
+                    <div [class]="cn(d.popup, d.popupAnimated, 'flex max-h-[85vh] flex-col')" rdxDialogPopup>
+                        <h2 [class]="d.title" rdxDialogTitle>Release notes</h2>
+                        <p [class]="d.description" rdxDialogDescription>
+                            Header and footer stay put while the body scrolls.
+                        </p>
 
-            <div [class]="d.scrollBody">
-              @for (paragraph of paragraphs; track $index) {
-                <p class="mt-3 first:mt-0">{{ paragraph }}</p>
-              }
-            </div>
+                        <div [class]="d.scrollBody">
+                            @for (paragraph of paragraphs; track $index) {
+                                <p class="mt-3 first:mt-0">{{ paragraph }}</p>
+                            }
+                        </div>
 
-            <div [class]="d.footer">
-              <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Got it</button>
-            </div>
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Got it</button>
+                        </div>
 
-            <button [class]="d.close" aria-label="Close" rdxDialogClose>
-              <svg aria-hidden="true" lucideX size="16" />
-            </button>
-          </div>
+                        <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                            <svg aria-hidden="true" lucideX size="16" />
+                        </button>
+                    </div>
+                </div>
+            </ng-template>
         </div>
-      </ng-template>
-    </div>
-  `
+    `
 })
 export class RdxDialogInsideScrollComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly d = demoDialog;
-  protected readonly paragraphs = Array.from(
-    { length: 14 },
-    (_, i) => `Change ${i + 1}. Lots of details that overflow the fixed-height popup and scroll inside it.`
-  );
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly d = demoDialog;
+    protected readonly paragraphs = Array.from(
+        { length: 14 },
+        (_, i) => `Change ${i + 1}. Lots of details that overflow the fixed-height popup and scroll inside it.`
+    );
 }
 ```
 
@@ -892,51 +908,53 @@ import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { cn, demoButton, demoDialog, demoMenu } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-dialog-from-menu',
-  imports: [...dialogImports, RdxMenuModule, LucideX],
-  template: `
-    <ng-container #menu="rdxMenuRoot" rdxMenuRoot>
-      <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Actions</button>
+    selector: 'rdx-dialog-from-menu',
+    imports: [...dialogImports, RdxMenuModule, LucideX],
+    template: `
+        <ng-container #menu="rdxMenuRoot" rdxMenuRoot>
+            <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Actions</button>
 
-      @if (menu.open()) {
-        <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-          <div [class]="m.popup" rdxMenuPopup>
-            <button [class]="m.item" rdxMenuItem>Duplicate</button>
-            <button [class]="m.item" (click)="renameOpen.set(true)" rdxMenuItem>Rename…</button>
-            <div [class]="m.separator" rdxMenuSeparator></div>
-            <button [class]="m.item" rdxMenuItem>Archive</button>
-          </div>
-        </div>
-      }
-    </ng-container>
+            @if (menu.open()) {
+                <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
+                    <div [class]="m.popup" rdxMenuPopup>
+                        <button [class]="m.item" rdxMenuItem>Duplicate</button>
+                        <button [class]="m.item" (click)="renameOpen.set(true)" rdxMenuItem>Rename…</button>
+                        <div [class]="m.separator" rdxMenuSeparator></div>
+                        <button [class]="m.item" rdxMenuItem>Archive</button>
+                    </div>
+                </div>
+            }
+        </ng-container>
 
-    <!-- Controlled dialog opened from the menu item. -->
-    <div [(open)]="renameOpen" rdxDialogRoot>
-      <ng-template rdxDialogPortalPresence>
-        <div [class]="d.portalAnimated" rdxDialogPortal>
-          <div [class]="d.backdrop" rdxDialogBackdrop></div>
-          <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-            <h2 [class]="d.title" rdxDialogTitle>Rename item</h2>
-            <p [class]="d.description" rdxDialogDescription>Opened by controlling the dialog from a menu item.</p>
-            <div [class]="d.footer">
-              <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDialogClose>Cancel</button>
-              <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Rename</button>
-            </div>
-            <button [class]="d.close" aria-label="Close" rdxDialogClose>
-              <svg aria-hidden="true" lucideX size="16" />
-            </button>
-          </div>
+        <!-- Controlled dialog opened from the menu item. -->
+        <div [(open)]="renameOpen" rdxDialogRoot>
+            <ng-template rdxDialogPortalPresence>
+                <div [class]="d.portalAnimated" rdxDialogPortal>
+                    <div [class]="d.backdrop" rdxDialogBackdrop></div>
+                    <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
+                        <h2 [class]="d.title" rdxDialogTitle>Rename item</h2>
+                        <p [class]="d.description" rdxDialogDescription>
+                            Opened by controlling the dialog from a menu item.
+                        </p>
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDialogClose>Cancel</button>
+                            <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Rename</button>
+                        </div>
+                        <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                            <svg aria-hidden="true" lucideX size="16" />
+                        </button>
+                    </div>
+                </div>
+            </ng-template>
         </div>
-      </ng-template>
-    </div>
-  `
+    `
 })
 export class RdxDialogFromMenuComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly d = demoDialog;
-  protected readonly m = demoMenu;
-  protected readonly renameOpen = signal(false);
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly d = demoDialog;
+    protected readonly m = demoMenu;
+    protected readonly renameOpen = signal(false);
 }
 ```
 

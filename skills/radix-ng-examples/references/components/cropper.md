@@ -6,7 +6,7 @@ Based on React version [image-cropper](https://github.com/origin-space/image-cro
 
 ```html
 <div>
-  <app-cropper-default />
+    <app-cropper-default />
 </div>
 ```
 
@@ -25,9 +25,9 @@ Import all parts and piece them together.
 
 ```html
 <div rdxCropperRoot>
-  <div rdxCropperDescription></div>
-  <div rdxCropperImage></div>
-  <div rdxCropperCropArea></div>
+    <div rdxCropperDescription></div>
+    <div rdxCropperImage></div>
+    <div rdxCropperCropArea></div>
 </div>
 ```
 
@@ -40,7 +40,7 @@ Import all parts and piece them together.
 ### Description
 
 `RdxCropperDescriptionDirective` The description element for screen reader users.
-Renders a `<div>` intended for accessibility instructions. Its id is automatically linked via `aria-describedby` on the _Root_ element.
+Renders a `<div>` intended for accessibility instructions. Its id is automatically linked via `aria-describedby` on the *Root* element.
 
 ### Image
 
@@ -63,6 +63,6 @@ You can visually hide the description using standard CSS techniques (e.g., an `s
 
 ```html
 <div>
-  <app-cropper-with-data />
+    <app-cropper-with-data />
 </div>
 ```

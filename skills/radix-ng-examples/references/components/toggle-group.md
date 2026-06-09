@@ -4,15 +4,15 @@
 
 ```html
 <div class="${groupClass}" [value]="value" rdxToggleGroup aria-label="Text alignment">
-  <button class="${itemClass}" rdxToggle value="left" aria-label="Left aligned">
-    <svg class="flex" lucideAlignLeft size="12"></svg>
-  </button>
-  <button class="${itemClass}" rdxToggle value="center" aria-label="Center aligned">
-    <svg class="flex" lucideAlignCenter size="12"></svg>
-  </button>
-  <button class="${itemClass}" rdxToggle value="right" aria-label="Right aligned">
-    <svg class="flex" lucideAlignRight size="12"></svg>
-  </button>
+    <button class="${itemClass}" rdxToggle value="left" aria-label="Left aligned">
+        <svg class="flex" lucideAlignLeft size="12"></svg>
+    </button>
+    <button class="${itemClass}" rdxToggle value="center" aria-label="Center aligned">
+        <svg class="flex" lucideAlignCenter size="12"></svg>
+    </button>
+    <button class="${itemClass}" rdxToggle value="right" aria-label="Right aligned">
+        <svg class="flex" lucideAlignRight size="12"></svg>
+    </button>
 </div>
 ```
 
@@ -37,9 +37,9 @@ The API follows [Base UI Toggle Group](https://base-ui.com/react/components/togg
 
 ```html
 <div rdxToggleGroup [value]="['center']" aria-label="Text alignment">
-  <button rdxToggle value="left"></button>
-  <button rdxToggle value="center"></button>
-  <button rdxToggle value="right"></button>
+    <button rdxToggle value="left"></button>
+    <button rdxToggle value="center"></button>
+    <button rdxToggle value="right"></button>
 </div>
 ```
 
@@ -51,15 +51,15 @@ Set `multiple` to allow more than one item to be pressed at the same time.
 
 ```html
 <div class="${groupClass}" [value]="value" rdxToggleGroup multiple aria-label="Text formatting">
-  <button class="${itemClass}" rdxToggle value="bold" aria-label="Bold">
-    <svg class="flex" lucideBold size="12"></svg>
-  </button>
-  <button class="${itemClass}" rdxToggle value="italic" aria-label="Italic">
-    <svg class="flex" lucideItalic size="12"></svg>
-  </button>
-  <button class="${itemClass}" rdxToggle value="underline" aria-label="Underline">
-    <svg class="flex" lucideUnderline size="12"></svg>
-  </button>
+    <button class="${itemClass}" rdxToggle value="bold" aria-label="Bold">
+        <svg class="flex" lucideBold size="12"></svg>
+    </button>
+    <button class="${itemClass}" rdxToggle value="italic" aria-label="Italic">
+        <svg class="flex" lucideItalic size="12"></svg>
+    </button>
+    <button class="${itemClass}" rdxToggle value="underline" aria-label="Underline">
+        <svg class="flex" lucideUnderline size="12"></svg>
+    </button>
 </div>
 ```
 
@@ -69,29 +69,29 @@ Disable a single `[rdxToggle]` with `disabled`, or the whole group with `disable
 
 ```html
 <div class="${groupClass}" [value]="value" rdxToggleGroup aria-label="Text alignment">
-  <button class="${itemClass}" rdxToggle value="left" disabled aria-label="Left aligned">
-    <svg class="flex" lucideAlignLeft size="12"></svg>
-  </button>
-  <button class="${itemClass}" rdxToggle value="center" aria-label="Center aligned">
-    <svg class="flex" lucideAlignCenter size="12"></svg>
-  </button>
-  <button class="${itemClass}" rdxToggle value="right" aria-label="Right aligned">
-    <svg class="flex" lucideAlignRight size="12"></svg>
-  </button>
+    <button class="${itemClass}" rdxToggle value="left" disabled aria-label="Left aligned">
+        <svg class="flex" lucideAlignLeft size="12"></svg>
+    </button>
+    <button class="${itemClass}" rdxToggle value="center" aria-label="Center aligned">
+        <svg class="flex" lucideAlignCenter size="12"></svg>
+    </button>
+    <button class="${itemClass}" rdxToggle value="right" aria-label="Right aligned">
+        <svg class="flex" lucideAlignRight size="12"></svg>
+    </button>
 </div>
 ```
 
 ```html
 <div class="${groupClass}" [value]="value" rdxToggleGroup disabled aria-label="Text alignment">
-  <button class="${itemClass}" rdxToggle value="left" aria-label="Left aligned">
-    <svg class="flex" lucideAlignLeft size="12"></svg>
-  </button>
-  <button class="${itemClass}" rdxToggle value="center" aria-label="Center aligned">
-    <svg class="flex" lucideAlignCenter size="12"></svg>
-  </button>
-  <button class="${itemClass}" rdxToggle value="right" aria-label="Right aligned">
-    <svg class="flex" lucideAlignRight size="12"></svg>
-  </button>
+    <button class="${itemClass}" rdxToggle value="left" aria-label="Left aligned">
+        <svg class="flex" lucideAlignLeft size="12"></svg>
+    </button>
+    <button class="${itemClass}" rdxToggle value="center" aria-label="Center aligned">
+        <svg class="flex" lucideAlignCenter size="12"></svg>
+    </button>
+    <button class="${itemClass}" rdxToggle value="right" aria-label="Right aligned">
+        <svg class="flex" lucideAlignRight size="12"></svg>
+    </button>
 </div>
 ```
 
@@ -109,10 +109,10 @@ Bind `[(value)]` to read and write the pressed values.
 
 `RdxToggleGroup`
 
-| Data attribute       | Value                                       |
-| -------------------- | ------------------------------------------- |
-| `[data-orientation]` | `"horizontal" \| "vertical"`                |
-| `[data-disabled]`    | Present when the group is disabled.         |
+| Data attribute       | Value                          |
+| -------------------- | ------------------------------ |
+| `[data-orientation]` | `"horizontal" \| "vertical"`   |
+| `[data-disabled]`    | Present when the group is disabled. |
 | `[data-multiple]`    | Present when multiple selection is enabled. |
 
 ### Item

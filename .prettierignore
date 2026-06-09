@@ -14,6 +14,11 @@ CHANGELOG.md
 # Vendored Angular skill references (github.com/angular/skills) — kept unmodified upstream
 .claude/skills/angular-developer/references/
 
+# Generated LLM skill bundle (tools/scripts/skills/generate.mjs) — emitted verbatim from the
+# Storybook docs, so it must not be reformatted (would drift from the generator output).
+skills/radix-ng-examples/
+skills/radix-ng/references/styling-contract.json
+
 apps/radix-docs/src/styles/*.css
 
 *.d.ts

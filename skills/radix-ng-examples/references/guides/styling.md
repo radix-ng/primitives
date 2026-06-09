@@ -27,12 +27,12 @@ Visual reference: [coss.com](https://coss.com/ui) (Base UI + Tailwind). The Stor
 `packages/primitives/storybook/styles.ts` exports documented constants:
 
 | Export          | Purpose                                                    |
-| --------------- | ---------------------------------------------------------- |
-| `cn(...)`       | Join conditional class strings, dropping falsy values.     |
-| `demoFocusRing` | Shared `focus-visible` ring matching the `--ring` token.   |
-| `demoButton`    | `base` + a `variant` + a `size` for buttons.               |
-| `demoCard`      | Card / panel surface (popovers, list rows, content boxes). |
-| `demoInput`     | Text input surface.                                        |
+| --------------- | --------------------------------------------------------- |
+| `cn(...)`       | Join conditional class strings, dropping falsy values.    |
+| `demoFocusRing` | Shared `focus-visible` ring matching the `--ring` token.  |
+| `demoButton`    | `base` + a `variant` + a `size` for buttons.              |
+| `demoCard`      | Card / panel surface (popovers, list rows, content boxes).|
+| `demoInput`     | Text input surface.                                       |
 
 ### Buttons
 

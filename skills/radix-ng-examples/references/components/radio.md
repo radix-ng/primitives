@@ -9,35 +9,35 @@ import { RdxRadioGroupDirective, RdxRadioIndicatorDirective, RdxRadioItemDirecti
 import { demoRadio } from '../../storybook/styles';
 
 @Component({
-  selector: 'radio-default-example',
-  template: `
-    <form>
-      <div [class]="r.group" rdxRadioRoot name="density" orientation="vertical" aria-label="View density">
-        <label [class]="r.row" rdxLabel>
-          <span [class]="r.item" rdxRadioItem value="default">
-            <span [class]="r.indicator" rdxRadioIndicator></span>
-          </span>
-          <span [class]="r.label">Default</span>
-        </label>
-        <label [class]="r.row" rdxLabel>
-          <span [class]="r.item" rdxRadioItem value="comfortable">
-            <span [class]="r.indicator" rdxRadioIndicator></span>
-          </span>
-          <span [class]="r.label">Comfortable</span>
-        </label>
-        <label [class]="r.row" rdxLabel>
-          <span [class]="r.item" rdxRadioItem value="compact">
-            <span [class]="r.indicator" rdxRadioIndicator></span>
-          </span>
-          <span [class]="r.label">Compact</span>
-        </label>
-      </div>
-    </form>
-  `,
-  imports: [RdxLabelDirective, RdxRadioItemDirective, RdxRadioIndicatorDirective, RdxRadioGroupDirective]
+    selector: 'radio-default-example',
+    template: `
+        <form>
+            <div [class]="r.group" rdxRadioRoot name="density" orientation="vertical" aria-label="View density">
+                <label [class]="r.row" rdxLabel>
+                    <span [class]="r.item" rdxRadioItem value="default">
+                        <span [class]="r.indicator" rdxRadioIndicator></span>
+                    </span>
+                    <span [class]="r.label">Default</span>
+                </label>
+                <label [class]="r.row" rdxLabel>
+                    <span [class]="r.item" rdxRadioItem value="comfortable">
+                        <span [class]="r.indicator" rdxRadioIndicator></span>
+                    </span>
+                    <span [class]="r.label">Comfortable</span>
+                </label>
+                <label [class]="r.row" rdxLabel>
+                    <span [class]="r.item" rdxRadioItem value="compact">
+                        <span [class]="r.indicator" rdxRadioIndicator></span>
+                    </span>
+                    <span [class]="r.label">Compact</span>
+                </label>
+            </div>
+        </form>
+    `,
+    imports: [RdxLabelDirective, RdxRadioItemDirective, RdxRadioIndicatorDirective, RdxRadioGroupDirective]
 })
 export class RadioDefaultComponent {
-  protected readonly r = demoRadio;
+    protected readonly r = demoRadio;
 }
 ```
 
@@ -52,7 +52,11 @@ export class RadioDefaultComponent {
 Get started with importing the directives:
 
 ```typescript
-import { RdxRadioGroupDirective, RdxRadioIndicatorDirective, RdxRadioItemDirective } from '@radix-ng/primitives/radio';
+import {
+    RdxRadioGroupDirective,
+    RdxRadioIndicatorDirective,
+    RdxRadioItemDirective
+} from '@radix-ng/primitives/radio';
 ```
 
 ## Anatomy
@@ -87,35 +91,35 @@ import { RdxRadioGroupDirective, RdxRadioIndicatorDirective, RdxRadioItemDirecti
 import { demoRadio } from '../../storybook/styles';
 
 @Component({
-  selector: 'radio-default-example',
-  template: `
-    <form>
-      <div [class]="r.group" rdxRadioRoot name="density" orientation="vertical" aria-label="View density">
-        <label [class]="r.row" rdxLabel>
-          <span [class]="r.item" rdxRadioItem value="default">
-            <span [class]="r.indicator" rdxRadioIndicator></span>
-          </span>
-          <span [class]="r.label">Default</span>
-        </label>
-        <label [class]="r.row" rdxLabel>
-          <span [class]="r.item" rdxRadioItem value="comfortable">
-            <span [class]="r.indicator" rdxRadioIndicator></span>
-          </span>
-          <span [class]="r.label">Comfortable</span>
-        </label>
-        <label [class]="r.row" rdxLabel>
-          <span [class]="r.item" rdxRadioItem value="compact">
-            <span [class]="r.indicator" rdxRadioIndicator></span>
-          </span>
-          <span [class]="r.label">Compact</span>
-        </label>
-      </div>
-    </form>
-  `,
-  imports: [RdxLabelDirective, RdxRadioItemDirective, RdxRadioIndicatorDirective, RdxRadioGroupDirective]
+    selector: 'radio-default-example',
+    template: `
+        <form>
+            <div [class]="r.group" rdxRadioRoot name="density" orientation="vertical" aria-label="View density">
+                <label [class]="r.row" rdxLabel>
+                    <span [class]="r.item" rdxRadioItem value="default">
+                        <span [class]="r.indicator" rdxRadioIndicator></span>
+                    </span>
+                    <span [class]="r.label">Default</span>
+                </label>
+                <label [class]="r.row" rdxLabel>
+                    <span [class]="r.item" rdxRadioItem value="comfortable">
+                        <span [class]="r.indicator" rdxRadioIndicator></span>
+                    </span>
+                    <span [class]="r.label">Comfortable</span>
+                </label>
+                <label [class]="r.row" rdxLabel>
+                    <span [class]="r.item" rdxRadioItem value="compact">
+                        <span [class]="r.indicator" rdxRadioIndicator></span>
+                    </span>
+                    <span [class]="r.label">Compact</span>
+                </label>
+            </div>
+        </form>
+    `,
+    imports: [RdxLabelDirective, RdxRadioItemDirective, RdxRadioIndicatorDirective, RdxRadioGroupDirective]
 })
 export class RadioDefaultComponent {
-  protected readonly r = demoRadio;
+    protected readonly r = demoRadio;
 }
 ```
 
@@ -130,41 +134,41 @@ import { RdxRadioGroupDirective, RdxRadioIndicatorDirective, RdxRadioItemDirecti
 import { demoRadio } from '../../storybook/styles';
 
 @Component({
-  selector: 'radio-disabled-example',
-  template: `
-    <div
-      [class]="r.group"
-      [value]="'comfortable'"
-      rdxRadioRoot
-      name="density-disabled"
-      disabled
-      orientation="vertical"
-      aria-label="View density"
-    >
-      <label [class]="r.row" rdxLabel>
-        <span [class]="r.item" rdxRadioItem value="default">
-          <span [class]="r.indicator" rdxRadioIndicator></span>
-        </span>
-        <span [class]="r.label">Default</span>
-      </label>
-      <label [class]="r.row" rdxLabel>
-        <span [class]="r.item" rdxRadioItem value="comfortable">
-          <span [class]="r.indicator" rdxRadioIndicator></span>
-        </span>
-        <span [class]="r.label">Comfortable</span>
-      </label>
-      <label [class]="r.row" rdxLabel>
-        <span [class]="r.item" rdxRadioItem value="compact">
-          <span [class]="r.indicator" rdxRadioIndicator></span>
-        </span>
-        <span [class]="r.label">Compact</span>
-      </label>
-    </div>
-  `,
-  imports: [RdxLabelDirective, RdxRadioItemDirective, RdxRadioIndicatorDirective, RdxRadioGroupDirective]
+    selector: 'radio-disabled-example',
+    template: `
+        <div
+            [class]="r.group"
+            [value]="'comfortable'"
+            rdxRadioRoot
+            name="density-disabled"
+            disabled
+            orientation="vertical"
+            aria-label="View density"
+        >
+            <label [class]="r.row" rdxLabel>
+                <span [class]="r.item" rdxRadioItem value="default">
+                    <span [class]="r.indicator" rdxRadioIndicator></span>
+                </span>
+                <span [class]="r.label">Default</span>
+            </label>
+            <label [class]="r.row" rdxLabel>
+                <span [class]="r.item" rdxRadioItem value="comfortable">
+                    <span [class]="r.indicator" rdxRadioIndicator></span>
+                </span>
+                <span [class]="r.label">Comfortable</span>
+            </label>
+            <label [class]="r.row" rdxLabel>
+                <span [class]="r.item" rdxRadioItem value="compact">
+                    <span [class]="r.indicator" rdxRadioIndicator></span>
+                </span>
+                <span [class]="r.label">Compact</span>
+            </label>
+        </div>
+    `,
+    imports: [RdxLabelDirective, RdxRadioItemDirective, RdxRadioIndicatorDirective, RdxRadioGroupDirective]
 })
 export class RadioDisabledComponent {
-  protected readonly r = demoRadio;
+    protected readonly r = demoRadio;
 }
 ```
 
@@ -180,56 +184,56 @@ import { RdxRadioGroupDirective, RdxRadioIndicatorDirective, RdxRadioItemDirecti
 import { cn, demoButton, demoRadio } from '../../storybook/styles';
 
 @Component({
-  selector: 'radio-groups-forms-example',
-  template: `
-    <form class="flex w-72 flex-col gap-4" (ngSubmit)="submit()">
-      <div
-        [(ngModel)]="hotelRoom"
-        [class]="r.group"
-        name="hotelRoom"
-        orientation="vertical"
-        rdxRadioRoot
-        required
-        aria-label="Hotel room"
-      >
-        @for (room of rooms; track room) {
-          <label [class]="r.row" rdxLabel>
-            <span [class]="r.item" [value]="room" rdxRadioItem>
-              <span [class]="r.indicator" rdxRadioIndicator></span>
-            </span>
-            <span [class]="r.label">
-              {{ room }}
-            </span>
-          </label>
-        }
-      </div>
+    selector: 'radio-groups-forms-example',
+    template: `
+        <form class="flex w-72 flex-col gap-4" (ngSubmit)="submit()">
+            <div
+                [(ngModel)]="hotelRoom"
+                [class]="r.group"
+                name="hotelRoom"
+                orientation="vertical"
+                rdxRadioRoot
+                required
+                aria-label="Hotel room"
+            >
+                @for (room of rooms; track room) {
+                    <label [class]="r.row" rdxLabel>
+                        <span [class]="r.item" [value]="room" rdxRadioItem>
+                            <span [class]="r.indicator" rdxRadioIndicator></span>
+                        </span>
+                        <span [class]="r.label">
+                            {{ room }}
+                        </span>
+                    </label>
+                }
+            </div>
 
-      <button [class]="cn(b.base, b.primary, b.size.md)" type="submit">Submit</button>
+            <button [class]="cn(b.base, b.primary, b.size.md)" type="submit">Submit</button>
 
-      @if (submittedRoom) {
-        <p class="text-muted-foreground text-sm">
-          <span>
-            Submitted room:
-            {{ submittedRoom }}
-          </span>
-        </p>
-      }
-    </form>
-  `,
-  imports: [FormsModule, RdxLabelDirective, RdxRadioItemDirective, RdxRadioIndicatorDirective, RdxRadioGroupDirective]
+            @if (submittedRoom) {
+                <p class="text-muted-foreground text-sm">
+                    <span>
+                        Submitted room:
+                        {{ submittedRoom }}
+                    </span>
+                </p>
+            }
+        </form>
+    `,
+    imports: [FormsModule, RdxLabelDirective, RdxRadioItemDirective, RdxRadioIndicatorDirective, RdxRadioGroupDirective]
 })
 export class RadioGroupComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly r = demoRadio;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly r = demoRadio;
 
-  hotelRoom: string | undefined;
-  submittedRoom: string | undefined;
-  rooms = ['Default', 'Comfortable'];
+    hotelRoom: string | undefined;
+    submittedRoom: string | undefined;
+    rooms = ['Default', 'Comfortable'];
 
-  submit(): void {
-    this.submittedRoom = this.hotelRoom;
-  }
+    submit(): void {
+        this.submittedRoom = this.hotelRoom;
+    }
 }
 ```
 
@@ -260,7 +264,7 @@ and uses [roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.2/examples
 ### Keyboard Interactions
 
 | Key          | Description                                                                        |
-| ------------ | ---------------------------------------------------------------------------------- |
+|--------------|------------------------------------------------------------------------------------|
 | `Tab`        | Moves focus to either the checked radio item or the first radio item in the group. |
 | `Space`      | When focus is on an unchecked radio item, checks it.                               |
 | `ArrowDown`  | Moves focus and checks the next radio item in the group.                           |

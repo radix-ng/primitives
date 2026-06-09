@@ -16,21 +16,21 @@ import { RdxButtonDirective } from '../src/button.directive';
  * style layer applied on top of the headless `rdxButton` directive.
  */
 @Component({
-  selector: 'rdx-button-variants',
-  imports: [RdxButtonDirective],
-  template: `
-    <div class="flex flex-wrap items-center gap-3">
-      <button [class]="cn(b.base, b.primary, b.size.md)" rdxButton>Primary</button>
-      <button [class]="cn(b.base, b.secondary, b.size.md)" rdxButton>Secondary</button>
-      <button [class]="cn(b.base, b.outline, b.size.md)" rdxButton>Outline</button>
-      <button [class]="cn(b.base, b.ghost, b.size.md)" rdxButton>Ghost</button>
-      <button [class]="cn(b.base, b.destructive, b.size.md)" rdxButton>Destructive</button>
-    </div>
-  `
+    selector: 'rdx-button-variants',
+    imports: [RdxButtonDirective],
+    template: `
+        <div class="flex flex-wrap items-center gap-3">
+            <button [class]="cn(b.base, b.primary, b.size.md)" rdxButton>Primary</button>
+            <button [class]="cn(b.base, b.secondary, b.size.md)" rdxButton>Secondary</button>
+            <button [class]="cn(b.base, b.outline, b.size.md)" rdxButton>Outline</button>
+            <button [class]="cn(b.base, b.ghost, b.size.md)" rdxButton>Ghost</button>
+            <button [class]="cn(b.base, b.destructive, b.size.md)" rdxButton>Destructive</button>
+        </div>
+    `
 })
 export class RdxButtonVariantsComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
 }
 ```
 
@@ -76,21 +76,21 @@ import { RdxButtonDirective } from '../src/button.directive';
  * style layer applied on top of the headless `rdxButton` directive.
  */
 @Component({
-  selector: 'rdx-button-variants',
-  imports: [RdxButtonDirective],
-  template: `
-    <div class="flex flex-wrap items-center gap-3">
-      <button [class]="cn(b.base, b.primary, b.size.md)" rdxButton>Primary</button>
-      <button [class]="cn(b.base, b.secondary, b.size.md)" rdxButton>Secondary</button>
-      <button [class]="cn(b.base, b.outline, b.size.md)" rdxButton>Outline</button>
-      <button [class]="cn(b.base, b.ghost, b.size.md)" rdxButton>Ghost</button>
-      <button [class]="cn(b.base, b.destructive, b.size.md)" rdxButton>Destructive</button>
-    </div>
-  `
+    selector: 'rdx-button-variants',
+    imports: [RdxButtonDirective],
+    template: `
+        <div class="flex flex-wrap items-center gap-3">
+            <button [class]="cn(b.base, b.primary, b.size.md)" rdxButton>Primary</button>
+            <button [class]="cn(b.base, b.secondary, b.size.md)" rdxButton>Secondary</button>
+            <button [class]="cn(b.base, b.outline, b.size.md)" rdxButton>Outline</button>
+            <button [class]="cn(b.base, b.ghost, b.size.md)" rdxButton>Ghost</button>
+            <button [class]="cn(b.base, b.destructive, b.size.md)" rdxButton>Destructive</button>
+        </div>
+    `
 })
 export class RdxButtonVariantsComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
 }
 ```
 
@@ -108,22 +108,22 @@ import { RdxButtonDirective } from '../src/button.directive';
  * Sizes, including a square icon button.
  */
 @Component({
-  selector: 'rdx-button-sizes',
-  imports: [RdxButtonDirective, LucideDynamicIcon, LucidePlus],
-  template: `
-    <div class="flex flex-wrap items-center gap-3">
-      <button [class]="cn(b.base, b.primary, b.size.sm)" rdxButton>Small</button>
-      <button [class]="cn(b.base, b.primary, b.size.md)" rdxButton>Medium</button>
-      <button [class]="cn(b.base, b.primary, b.size.lg)" rdxButton>Large</button>
-      <button [class]="cn(b.base, b.primary, b.size.icon)" rdxButton aria-label="Add">
-        <svg class="flex" lucidePlus size="16" />
-      </button>
-    </div>
-  `
+    selector: 'rdx-button-sizes',
+    imports: [RdxButtonDirective, LucideDynamicIcon, LucidePlus],
+    template: `
+        <div class="flex flex-wrap items-center gap-3">
+            <button [class]="cn(b.base, b.primary, b.size.sm)" rdxButton>Small</button>
+            <button [class]="cn(b.base, b.primary, b.size.md)" rdxButton>Medium</button>
+            <button [class]="cn(b.base, b.primary, b.size.lg)" rdxButton>Large</button>
+            <button [class]="cn(b.base, b.primary, b.size.icon)" rdxButton aria-label="Add">
+                <svg class="flex" lucidePlus size="16" />
+            </button>
+        </div>
+    `
 })
 export class RdxButtonSizesComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
 }
 ```
 
@@ -143,20 +143,20 @@ import { RdxButtonDirective } from '../src/button.directive';
  * stays focusable via `aria-disabled` while its activation is suppressed.
  */
 @Component({
-  selector: 'rdx-button-disabled',
-  imports: [RdxButtonDirective],
-  template: `
-    <div class="flex flex-wrap items-center gap-3">
-      <button [class]="cn(b.base, b.primary, b.size.md)" rdxButton disabled>Disabled</button>
-      <button [class]="cn(b.base, b.outline, b.size.md)" rdxButton disabled focusableWhenDisabled>
-        Disabled (focusable)
-      </button>
-    </div>
-  `
+    selector: 'rdx-button-disabled',
+    imports: [RdxButtonDirective],
+    template: `
+        <div class="flex flex-wrap items-center gap-3">
+            <button [class]="cn(b.base, b.primary, b.size.md)" rdxButton disabled>Disabled</button>
+            <button [class]="cn(b.base, b.outline, b.size.md)" rdxButton disabled focusableWhenDisabled>
+                Disabled (focusable)
+            </button>
+        </div>
+    `
 })
 export class RdxButtonDisabledComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
 }
 ```
 
@@ -175,17 +175,17 @@ import { RdxButtonDirective } from '../src/button.directive';
  * keeping native link behavior.
  */
 @Component({
-  selector: 'rdx-button-as-link',
-  imports: [RdxButtonDirective],
-  template: `
-    <a [class]="cn(b.base, b.secondary, b.size.md)" rdxButton href="https://base-ui.com" target="_blank">
-      Open Base UI
-    </a>
-  `
+    selector: 'rdx-button-as-link',
+    imports: [RdxButtonDirective],
+    template: `
+        <a [class]="cn(b.base, b.secondary, b.size.md)" rdxButton href="https://base-ui.com" target="_blank">
+            Open Base UI
+        </a>
+    `
 })
 export class RdxButtonAsLinkComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
 }
 ```
 
@@ -207,39 +207,39 @@ import { RdxButtonDirective } from '../src/button.directive';
  * announces the pending state, and a spinner is rendered in place of the icon.
  */
 @Component({
-  selector: 'rdx-button-loading',
-  imports: [RdxButtonDirective, LucideDynamicIcon, LucidePlus],
-  template: `
-    <button
-      [disabled]="loading()"
-      [attr.aria-busy]="loading() ? 'true' : null"
-      [class]="cn(b.base, b.primary, b.size.md)"
-      (click)="run()"
-      rdxButton
-      focusableWhenDisabled
-    >
-      <svg
-        class="flex"
-        [lucideIcon]="loading() ? 'loader-circle' : 'save'"
-        [class.animate-spin]="loading()"
-        size="16"
-      />
-      {{ loading() ? 'Saving…' : 'Save' }}
-    </button>
-  `
+    selector: 'rdx-button-loading',
+    imports: [RdxButtonDirective, LucideDynamicIcon, LucidePlus],
+    template: `
+        <button
+            [disabled]="loading()"
+            [attr.aria-busy]="loading() ? 'true' : null"
+            [class]="cn(b.base, b.primary, b.size.md)"
+            (click)="run()"
+            rdxButton
+            focusableWhenDisabled
+        >
+            <svg
+                class="flex"
+                [lucideIcon]="loading() ? 'loader-circle' : 'save'"
+                [class.animate-spin]="loading()"
+                size="16"
+            />
+            {{ loading() ? 'Saving…' : 'Save' }}
+        </button>
+    `
 })
 export class RdxButtonLoadingComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly loading = signal(false);
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly loading = signal(false);
 
-  protected run(): void {
-    if (this.loading()) {
-      return;
+    protected run(): void {
+        if (this.loading()) {
+            return;
+        }
+        this.loading.set(true);
+        setTimeout(() => this.loading.set(false), 2000);
     }
-    this.loading.set(true);
-    setTimeout(() => this.loading.set(false), 2000);
-  }
 }
 ```
 

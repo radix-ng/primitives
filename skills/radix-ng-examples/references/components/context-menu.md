@@ -15,103 +15,103 @@ import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { cn, demoMenu } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-context-menu-default',
-  imports: [RdxContextMenuModule, RdxMenuModule, LucideCheck, LucideDot],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <ng-container #root="rdxContextMenuRoot" rdxContextMenuRoot>
-      <div
-        [class]="
-          cn(
-            'border-border text-muted-foreground flex h-[150px] w-[300px] items-center justify-center rounded-md border-2 border-dashed text-sm select-none',
-            'data-[state=open]:bg-muted data-[state=open]:border-solid'
-          )
-        "
-        rdxContextMenuTrigger
-      >
-        Right click here
-      </div>
-
-      @if (root.menuRoot.open()) {
-        <div [class]="m.positioner" rdxMenuPositioner>
-          <div [class]="m.popup" rdxMenuPopup>
-            <button [class]="m.item" rdxMenuItem>
-              Back
-              <span [class]="shortcut">⌘ [</span>
-            </button>
-            <button [class]="m.item" [disabled]="true" rdxMenuItem>
-              Forward
-              <span [class]="shortcut">⌘ ]</span>
-            </button>
-            <button [class]="m.item" rdxMenuItem>
-              Reload
-              <span [class]="shortcut">⌘ R</span>
-            </button>
-
-            <!-- More Tools submenu -->
-            <ng-container #moreSub="rdxMenuRoot" rdxMenuRoot>
-              <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
-                More Tools
-                <span class="text-muted-foreground text-xs">›</span>
-              </button>
-              @if (moreSub.open()) {
-                <div [class]="m.positioner" side="right" align="start" sideOffset="4" rdxMenuPositioner>
-                  <div [class]="m.popup" rdxMenuPopup>
-                    <button [class]="m.item" rdxMenuItem>Save Page As…</button>
-                    <button [class]="m.item" rdxMenuItem>Create Shortcut…</button>
-                    <button [class]="m.item" rdxMenuItem>Name Window…</button>
-                  </div>
-                </div>
-              }
-            </ng-container>
-
-            <div [class]="m.separator" rdxMenuSeparator></div>
-
-            <label [(checked)]="showBookmarks" [class]="m.selectableItem" rdxMenuCheckboxItem>
-              <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>
-                <svg [size]="12" lucideCheck></svg>
-              </span>
-              Show Bookmarks
-              <span [class]="shortcut">⌘ B</span>
-            </label>
-            <label [(checked)]="showFullUrls" [class]="m.selectableItem" rdxMenuCheckboxItem>
-              <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>
-                <svg [size]="12" lucideCheck></svg>
-              </span>
-              Show Full URLs
-            </label>
-
-            <div [class]="m.separator" rdxMenuSeparator></div>
-
-            <div [class]="m.groupLabel" rdxMenuGroupLabel>People</div>
-            <div [(value)]="person" rdxMenuRadioGroup>
-              <label [class]="m.selectableItem" value="pedro" rdxMenuRadioItem>
-                <span [class]="m.itemIndicator" rdxMenuRadioItemIndicator>
-                  <svg [size]="10" strokeWidth="5" lucideDot></svg>
-                </span>
-                Pedro Duarte
-              </label>
-              <label [class]="m.selectableItem" value="colm" rdxMenuRadioItem>
-                <span [class]="m.itemIndicator" rdxMenuRadioItemIndicator>
-                  <svg [size]="10" strokeWidth="5" lucideDot></svg>
-                </span>
-                Colm Tuite
-              </label>
+    selector: 'rdx-context-menu-default',
+    imports: [RdxContextMenuModule, RdxMenuModule, LucideCheck, LucideDot],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
+        <ng-container #root="rdxContextMenuRoot" rdxContextMenuRoot>
+            <div
+                [class]="
+                    cn(
+                        'border-border text-muted-foreground flex h-[150px] w-[300px] items-center justify-center rounded-md border-2 border-dashed text-sm select-none',
+                        'data-[state=open]:bg-muted data-[state=open]:border-solid'
+                    )
+                "
+                rdxContextMenuTrigger
+            >
+                Right click here
             </div>
-          </div>
-        </div>
-      }
-    </ng-container>
-  `
+
+            @if (root.menuRoot.open()) {
+                <div [class]="m.positioner" rdxMenuPositioner>
+                    <div [class]="m.popup" rdxMenuPopup>
+                        <button [class]="m.item" rdxMenuItem>
+                            Back
+                            <span [class]="shortcut">⌘ [</span>
+                        </button>
+                        <button [class]="m.item" [disabled]="true" rdxMenuItem>
+                            Forward
+                            <span [class]="shortcut">⌘ ]</span>
+                        </button>
+                        <button [class]="m.item" rdxMenuItem>
+                            Reload
+                            <span [class]="shortcut">⌘ R</span>
+                        </button>
+
+                        <!-- More Tools submenu -->
+                        <ng-container #moreSub="rdxMenuRoot" rdxMenuRoot>
+                            <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
+                                More Tools
+                                <span class="text-muted-foreground text-xs">›</span>
+                            </button>
+                            @if (moreSub.open()) {
+                                <div [class]="m.positioner" side="right" align="start" sideOffset="4" rdxMenuPositioner>
+                                    <div [class]="m.popup" rdxMenuPopup>
+                                        <button [class]="m.item" rdxMenuItem>Save Page As…</button>
+                                        <button [class]="m.item" rdxMenuItem>Create Shortcut…</button>
+                                        <button [class]="m.item" rdxMenuItem>Name Window…</button>
+                                    </div>
+                                </div>
+                            }
+                        </ng-container>
+
+                        <div [class]="m.separator" rdxMenuSeparator></div>
+
+                        <label [(checked)]="showBookmarks" [class]="m.selectableItem" rdxMenuCheckboxItem>
+                            <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>
+                                <svg [size]="12" lucideCheck></svg>
+                            </span>
+                            Show Bookmarks
+                            <span [class]="shortcut">⌘ B</span>
+                        </label>
+                        <label [(checked)]="showFullUrls" [class]="m.selectableItem" rdxMenuCheckboxItem>
+                            <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>
+                                <svg [size]="12" lucideCheck></svg>
+                            </span>
+                            Show Full URLs
+                        </label>
+
+                        <div [class]="m.separator" rdxMenuSeparator></div>
+
+                        <div [class]="m.groupLabel" rdxMenuGroupLabel>People</div>
+                        <div [(value)]="person" rdxMenuRadioGroup>
+                            <label [class]="m.selectableItem" value="pedro" rdxMenuRadioItem>
+                                <span [class]="m.itemIndicator" rdxMenuRadioItemIndicator>
+                                    <svg [size]="10" strokeWidth="5" lucideDot></svg>
+                                </span>
+                                Pedro Duarte
+                            </label>
+                            <label [class]="m.selectableItem" value="colm" rdxMenuRadioItem>
+                                <span [class]="m.itemIndicator" rdxMenuRadioItemIndicator>
+                                    <svg [size]="10" strokeWidth="5" lucideDot></svg>
+                                </span>
+                                Colm Tuite
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            }
+        </ng-container>
+    `
 })
 export class RdxContextMenuDefaultComponent {
-  protected readonly cn = cn;
-  protected readonly m = demoMenu;
-  protected readonly shortcut = 'ml-auto pl-4 text-xs text-muted-foreground';
+    protected readonly cn = cn;
+    protected readonly m = demoMenu;
+    protected readonly shortcut = 'ml-auto pl-4 text-xs text-muted-foreground';
 
-  showBookmarks = signal(true);
-  showFullUrls = signal(false);
-  person = signal<string | undefined>('pedro');
+    showBookmarks = signal(true);
+    showFullUrls = signal(false);
+    person = signal<string | undefined>('pedro');
 }
 ```
 
@@ -145,30 +145,30 @@ standard Menu parts and positioned at the pointer, so `rdxMenuPositioner` needs 
 
 ```html
 <ng-container #root="rdxContextMenuRoot" rdxContextMenuRoot>
-  <div rdxContextMenuTrigger>Right click here</div>
+    <div rdxContextMenuTrigger>Right click here</div>
 
-  @if (root.menuRoot.open()) {
-  <div rdxMenuPositioner>
-    <div rdxMenuPopup>
-      <button rdxMenuItem>Back</button>
-      <button rdxMenuItem>Reload</button>
+    @if (root.menuRoot.open()) {
+        <div rdxMenuPositioner>
+            <div rdxMenuPopup>
+                <button rdxMenuItem>Back</button>
+                <button rdxMenuItem>Reload</button>
 
-      <div rdxMenuSeparator></div>
+                <div rdxMenuSeparator></div>
 
-      <!-- submenu -->
-      <ng-container #sub="rdxMenuRoot" rdxMenuRoot>
-        <button rdxMenuSubTrigger>More Tools ›</button>
-        @if (sub.open()) {
-        <div side="right" align="start" rdxMenuPositioner>
-          <div rdxMenuPopup>
-            <button rdxMenuItem>Save Page As…</button>
-          </div>
+                <!-- submenu -->
+                <ng-container #sub="rdxMenuRoot" rdxMenuRoot>
+                    <button rdxMenuSubTrigger>More Tools ›</button>
+                    @if (sub.open()) {
+                        <div side="right" align="start" rdxMenuPositioner>
+                            <div rdxMenuPopup>
+                                <button rdxMenuItem>Save Page As…</button>
+                            </div>
+                        </div>
+                    }
+                </ng-container>
+            </div>
         </div>
-        }
-      </ng-container>
-    </div>
-  </div>
-  }
+    }
 </ng-container>
 ```
 
@@ -187,103 +187,103 @@ import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { cn, demoMenu } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-context-menu-default',
-  imports: [RdxContextMenuModule, RdxMenuModule, LucideCheck, LucideDot],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <ng-container #root="rdxContextMenuRoot" rdxContextMenuRoot>
-      <div
-        [class]="
-          cn(
-            'border-border text-muted-foreground flex h-[150px] w-[300px] items-center justify-center rounded-md border-2 border-dashed text-sm select-none',
-            'data-[state=open]:bg-muted data-[state=open]:border-solid'
-          )
-        "
-        rdxContextMenuTrigger
-      >
-        Right click here
-      </div>
-
-      @if (root.menuRoot.open()) {
-        <div [class]="m.positioner" rdxMenuPositioner>
-          <div [class]="m.popup" rdxMenuPopup>
-            <button [class]="m.item" rdxMenuItem>
-              Back
-              <span [class]="shortcut">⌘ [</span>
-            </button>
-            <button [class]="m.item" [disabled]="true" rdxMenuItem>
-              Forward
-              <span [class]="shortcut">⌘ ]</span>
-            </button>
-            <button [class]="m.item" rdxMenuItem>
-              Reload
-              <span [class]="shortcut">⌘ R</span>
-            </button>
-
-            <!-- More Tools submenu -->
-            <ng-container #moreSub="rdxMenuRoot" rdxMenuRoot>
-              <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
-                More Tools
-                <span class="text-muted-foreground text-xs">›</span>
-              </button>
-              @if (moreSub.open()) {
-                <div [class]="m.positioner" side="right" align="start" sideOffset="4" rdxMenuPositioner>
-                  <div [class]="m.popup" rdxMenuPopup>
-                    <button [class]="m.item" rdxMenuItem>Save Page As…</button>
-                    <button [class]="m.item" rdxMenuItem>Create Shortcut…</button>
-                    <button [class]="m.item" rdxMenuItem>Name Window…</button>
-                  </div>
-                </div>
-              }
-            </ng-container>
-
-            <div [class]="m.separator" rdxMenuSeparator></div>
-
-            <label [(checked)]="showBookmarks" [class]="m.selectableItem" rdxMenuCheckboxItem>
-              <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>
-                <svg [size]="12" lucideCheck></svg>
-              </span>
-              Show Bookmarks
-              <span [class]="shortcut">⌘ B</span>
-            </label>
-            <label [(checked)]="showFullUrls" [class]="m.selectableItem" rdxMenuCheckboxItem>
-              <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>
-                <svg [size]="12" lucideCheck></svg>
-              </span>
-              Show Full URLs
-            </label>
-
-            <div [class]="m.separator" rdxMenuSeparator></div>
-
-            <div [class]="m.groupLabel" rdxMenuGroupLabel>People</div>
-            <div [(value)]="person" rdxMenuRadioGroup>
-              <label [class]="m.selectableItem" value="pedro" rdxMenuRadioItem>
-                <span [class]="m.itemIndicator" rdxMenuRadioItemIndicator>
-                  <svg [size]="10" strokeWidth="5" lucideDot></svg>
-                </span>
-                Pedro Duarte
-              </label>
-              <label [class]="m.selectableItem" value="colm" rdxMenuRadioItem>
-                <span [class]="m.itemIndicator" rdxMenuRadioItemIndicator>
-                  <svg [size]="10" strokeWidth="5" lucideDot></svg>
-                </span>
-                Colm Tuite
-              </label>
+    selector: 'rdx-context-menu-default',
+    imports: [RdxContextMenuModule, RdxMenuModule, LucideCheck, LucideDot],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
+        <ng-container #root="rdxContextMenuRoot" rdxContextMenuRoot>
+            <div
+                [class]="
+                    cn(
+                        'border-border text-muted-foreground flex h-[150px] w-[300px] items-center justify-center rounded-md border-2 border-dashed text-sm select-none',
+                        'data-[state=open]:bg-muted data-[state=open]:border-solid'
+                    )
+                "
+                rdxContextMenuTrigger
+            >
+                Right click here
             </div>
-          </div>
-        </div>
-      }
-    </ng-container>
-  `
+
+            @if (root.menuRoot.open()) {
+                <div [class]="m.positioner" rdxMenuPositioner>
+                    <div [class]="m.popup" rdxMenuPopup>
+                        <button [class]="m.item" rdxMenuItem>
+                            Back
+                            <span [class]="shortcut">⌘ [</span>
+                        </button>
+                        <button [class]="m.item" [disabled]="true" rdxMenuItem>
+                            Forward
+                            <span [class]="shortcut">⌘ ]</span>
+                        </button>
+                        <button [class]="m.item" rdxMenuItem>
+                            Reload
+                            <span [class]="shortcut">⌘ R</span>
+                        </button>
+
+                        <!-- More Tools submenu -->
+                        <ng-container #moreSub="rdxMenuRoot" rdxMenuRoot>
+                            <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
+                                More Tools
+                                <span class="text-muted-foreground text-xs">›</span>
+                            </button>
+                            @if (moreSub.open()) {
+                                <div [class]="m.positioner" side="right" align="start" sideOffset="4" rdxMenuPositioner>
+                                    <div [class]="m.popup" rdxMenuPopup>
+                                        <button [class]="m.item" rdxMenuItem>Save Page As…</button>
+                                        <button [class]="m.item" rdxMenuItem>Create Shortcut…</button>
+                                        <button [class]="m.item" rdxMenuItem>Name Window…</button>
+                                    </div>
+                                </div>
+                            }
+                        </ng-container>
+
+                        <div [class]="m.separator" rdxMenuSeparator></div>
+
+                        <label [(checked)]="showBookmarks" [class]="m.selectableItem" rdxMenuCheckboxItem>
+                            <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>
+                                <svg [size]="12" lucideCheck></svg>
+                            </span>
+                            Show Bookmarks
+                            <span [class]="shortcut">⌘ B</span>
+                        </label>
+                        <label [(checked)]="showFullUrls" [class]="m.selectableItem" rdxMenuCheckboxItem>
+                            <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>
+                                <svg [size]="12" lucideCheck></svg>
+                            </span>
+                            Show Full URLs
+                        </label>
+
+                        <div [class]="m.separator" rdxMenuSeparator></div>
+
+                        <div [class]="m.groupLabel" rdxMenuGroupLabel>People</div>
+                        <div [(value)]="person" rdxMenuRadioGroup>
+                            <label [class]="m.selectableItem" value="pedro" rdxMenuRadioItem>
+                                <span [class]="m.itemIndicator" rdxMenuRadioItemIndicator>
+                                    <svg [size]="10" strokeWidth="5" lucideDot></svg>
+                                </span>
+                                Pedro Duarte
+                            </label>
+                            <label [class]="m.selectableItem" value="colm" rdxMenuRadioItem>
+                                <span [class]="m.itemIndicator" rdxMenuRadioItemIndicator>
+                                    <svg [size]="10" strokeWidth="5" lucideDot></svg>
+                                </span>
+                                Colm Tuite
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            }
+        </ng-container>
+    `
 })
 export class RdxContextMenuDefaultComponent {
-  protected readonly cn = cn;
-  protected readonly m = demoMenu;
-  protected readonly shortcut = 'ml-auto pl-4 text-xs text-muted-foreground';
+    protected readonly cn = cn;
+    protected readonly m = demoMenu;
+    protected readonly shortcut = 'ml-auto pl-4 text-xs text-muted-foreground';
 
-  showBookmarks = signal(true);
-  showFullUrls = signal(false);
-  person = signal<string | undefined>('pedro');
+    showBookmarks = signal(true);
+    showFullUrls = signal(false);
+    person = signal<string | undefined>('pedro');
 }
 ```
 

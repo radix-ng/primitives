@@ -56,7 +56,13 @@ manage initial focus or focus restoration manually.
 ```
 
 ```html
-<div (mountAutoFocus)="$event.preventDefault()" (unmountAutoFocus)="$event.preventDefault()" rdxFocusScope>...</div>
+<div
+  (mountAutoFocus)="$event.preventDefault()"
+  (unmountAutoFocus)="$event.preventDefault()"
+  rdxFocusScope
+>
+  ...
+</div>
 ```
 
 ## Notes

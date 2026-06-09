@@ -11,32 +11,32 @@ import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { cn, demoButton, demoMenu } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-menu-default',
-  imports: [RdxMenuModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <ng-container #root="rdxMenuRoot" rdxMenuRoot>
-      <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>File</button>
+    selector: 'rdx-menu-default',
+    imports: [RdxMenuModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
+        <ng-container #root="rdxMenuRoot" rdxMenuRoot>
+            <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>File</button>
 
-      @if (root.open()) {
-        <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-          <div [class]="m.popup" rdxMenuPopup>
-            <button [class]="m.item" rdxMenuItem>New Tab</button>
-            <button [class]="m.item" rdxMenuItem>New Window</button>
-            <button [class]="m.item" [disabled]="true" rdxMenuItem>New Private Window</button>
-            <div [class]="m.separator" rdxMenuSeparator></div>
-            <button [class]="m.item" rdxMenuItem>Save Page As…</button>
-            <button [class]="m.item" rdxMenuItem>Print…</button>
-          </div>
-        </div>
-      }
-    </ng-container>
-  `
+            @if (root.open()) {
+                <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
+                    <div [class]="m.popup" rdxMenuPopup>
+                        <button [class]="m.item" rdxMenuItem>New Tab</button>
+                        <button [class]="m.item" rdxMenuItem>New Window</button>
+                        <button [class]="m.item" [disabled]="true" rdxMenuItem>New Private Window</button>
+                        <div [class]="m.separator" rdxMenuSeparator></div>
+                        <button [class]="m.item" rdxMenuItem>Save Page As…</button>
+                        <button [class]="m.item" rdxMenuItem>Print…</button>
+                    </div>
+                </div>
+            }
+        </ng-container>
+    `
 })
 export class RdxMenuDefaultComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly m = demoMenu;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly m = demoMenu;
 }
 ```
 
@@ -63,24 +63,24 @@ export class RdxMenuDefaultComponent {
 
 ```typescript
 import {
-  RdxMenuArrow,
-  RdxMenuBackdrop,
-  RdxMenuCheckboxItem,
-  RdxMenuCheckboxItemIndicator,
-  RdxMenuGroup,
-  RdxMenuGroupLabel,
-  RdxMenuItem,
-  RdxMenuLinkItem,
-  RdxMenuPopup,
-  RdxMenuPortal,
-  RdxMenuPositioner,
-  RdxMenuRadioGroup,
-  RdxMenuRadioItem,
-  RdxMenuRadioItemIndicator,
-  RdxMenuRoot,
-  RdxMenuSeparator,
-  RdxMenuSubTrigger,
-  RdxMenuTrigger
+    RdxMenuArrow,
+    RdxMenuBackdrop,
+    RdxMenuCheckboxItem,
+    RdxMenuCheckboxItemIndicator,
+    RdxMenuGroup,
+    RdxMenuGroupLabel,
+    RdxMenuItem,
+    RdxMenuLinkItem,
+    RdxMenuPopup,
+    RdxMenuPortal,
+    RdxMenuPositioner,
+    RdxMenuRadioGroup,
+    RdxMenuRadioItem,
+    RdxMenuRadioItemIndicator,
+    RdxMenuRoot,
+    RdxMenuSeparator,
+    RdxMenuSubTrigger,
+    RdxMenuTrigger
 } from '@radix-ng/primitives/menu';
 ```
 
@@ -97,68 +97,70 @@ so it is removed from the DOM when closed.
 
 ```html
 <ng-container #root="rdxMenuRoot" rdxMenuRoot>
-  <button rdxMenuTrigger>Open</button>
+    <button rdxMenuTrigger>Open</button>
 
-  <!-- optional backdrop — place before the positioner -->
-  @if (root.open()) {
-  <div rdxMenuBackdrop></div>
-  } @if (root.open()) {
-  <div sideOffset="4" rdxMenuPositioner>
-    <div rdxMenuPopup>
-      <span rdxMenuArrow></span>
+    <!-- optional backdrop — place before the positioner -->
+    @if (root.open()) {
+        <div rdxMenuBackdrop></div>
+    }
 
-      <!-- regular item -->
-      <button rdxMenuItem>New Tab</button>
+    @if (root.open()) {
+        <div sideOffset="4" rdxMenuPositioner>
+            <div rdxMenuPopup>
+                <span rdxMenuArrow></span>
 
-      <!-- link item — does not close by default -->
-      <a rdxMenuLinkItem href="/settings">Settings</a>
+                <!-- regular item -->
+                <button rdxMenuItem>New Tab</button>
 
-      <div rdxMenuSeparator></div>
+                <!-- link item — does not close by default -->
+                <a rdxMenuLinkItem href="/settings">Settings</a>
 
-      <!-- checkbox item — does not close the menu -->
-      <label rdxMenuCheckboxItem>
-        <span rdxMenuCheckboxItemIndicator></span>
-        Show Bookmarks
-      </label>
+                <div rdxMenuSeparator></div>
 
-      <!-- radio group — items do not close the menu by default -->
-      <div rdxMenuRadioGroup>
-        <label value="grid" rdxMenuRadioItem>
-          <span rdxMenuRadioItemIndicator></span>
-          Grid View
-        </label>
-        <label value="list" rdxMenuRadioItem>
-          <span rdxMenuRadioItemIndicator></span>
-          List View
-        </label>
-      </div>
+                <!-- checkbox item — does not close the menu -->
+                <label rdxMenuCheckboxItem>
+                    <span rdxMenuCheckboxItemIndicator></span>
+                    Show Bookmarks
+                </label>
 
-      <div rdxMenuSeparator></div>
+                <!-- radio group — items do not close the menu by default -->
+                <div rdxMenuRadioGroup>
+                    <label value="grid" rdxMenuRadioItem>
+                        <span rdxMenuRadioItemIndicator></span>
+                        Grid View
+                    </label>
+                    <label value="list" rdxMenuRadioItem>
+                        <span rdxMenuRadioItemIndicator></span>
+                        List View
+                    </label>
+                </div>
 
-      <!-- group with a label -->
-      <div rdxMenuGroup>
-        <span rdxMenuGroupLabel>Section</span>
-        <button rdxMenuItem>Item</button>
-      </div>
+                <div rdxMenuSeparator></div>
 
-      <div rdxMenuSeparator></div>
+                <!-- group with a label -->
+                <div rdxMenuGroup>
+                    <span rdxMenuGroupLabel>Section</span>
+                    <button rdxMenuItem>Item</button>
+                </div>
 
-      <!-- submenu: wrap trigger + popup in a nested rdxMenuRoot -->
-      <ng-container #sub="rdxMenuRoot" rdxMenuRoot>
-        <button rdxMenuSubTrigger>More options ›</button>
+                <div rdxMenuSeparator></div>
 
-        @if (sub.open()) {
-        <div side="right" align="start" sideOffset="4" rdxMenuPositioner>
-          <div rdxMenuPopup>
-            <button rdxMenuItem>Sub item A</button>
-            <button rdxMenuItem>Sub item B</button>
-          </div>
+                <!-- submenu: wrap trigger + popup in a nested rdxMenuRoot -->
+                <ng-container #sub="rdxMenuRoot" rdxMenuRoot>
+                    <button rdxMenuSubTrigger>More options ›</button>
+
+                    @if (sub.open()) {
+                        <div side="right" align="start" sideOffset="4" rdxMenuPositioner>
+                            <div rdxMenuPopup>
+                                <button rdxMenuItem>Sub item A</button>
+                                <button rdxMenuItem>Sub item B</button>
+                            </div>
+                        </div>
+                    }
+                </ng-container>
+            </div>
         </div>
-        }
-      </ng-container>
-    </div>
-  </div>
-  }
+    }
 </ng-container>
 ```
 
@@ -174,32 +176,32 @@ import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { cn, demoButton, demoMenu } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-menu-default',
-  imports: [RdxMenuModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <ng-container #root="rdxMenuRoot" rdxMenuRoot>
-      <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>File</button>
+    selector: 'rdx-menu-default',
+    imports: [RdxMenuModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
+        <ng-container #root="rdxMenuRoot" rdxMenuRoot>
+            <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>File</button>
 
-      @if (root.open()) {
-        <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-          <div [class]="m.popup" rdxMenuPopup>
-            <button [class]="m.item" rdxMenuItem>New Tab</button>
-            <button [class]="m.item" rdxMenuItem>New Window</button>
-            <button [class]="m.item" [disabled]="true" rdxMenuItem>New Private Window</button>
-            <div [class]="m.separator" rdxMenuSeparator></div>
-            <button [class]="m.item" rdxMenuItem>Save Page As…</button>
-            <button [class]="m.item" rdxMenuItem>Print…</button>
-          </div>
-        </div>
-      }
-    </ng-container>
-  `
+            @if (root.open()) {
+                <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
+                    <div [class]="m.popup" rdxMenuPopup>
+                        <button [class]="m.item" rdxMenuItem>New Tab</button>
+                        <button [class]="m.item" rdxMenuItem>New Window</button>
+                        <button [class]="m.item" [disabled]="true" rdxMenuItem>New Private Window</button>
+                        <div [class]="m.separator" rdxMenuSeparator></div>
+                        <button [class]="m.item" rdxMenuItem>Save Page As…</button>
+                        <button [class]="m.item" rdxMenuItem>Print…</button>
+                    </div>
+                </div>
+            }
+        </ng-container>
+    `
 })
 export class RdxMenuDefaultComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly m = demoMenu;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly m = demoMenu;
 }
 ```
 
@@ -242,73 +244,73 @@ import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { cn, demoButton, demoMenu } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-menu-nested',
-  imports: [RdxMenuModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <ng-container #root="rdxMenuRoot" rdxMenuRoot>
-      <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Edit</button>
+    selector: 'rdx-menu-nested',
+    imports: [RdxMenuModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
+        <ng-container #root="rdxMenuRoot" rdxMenuRoot>
+            <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Edit</button>
 
-      @if (root.open()) {
-        <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-          <div [class]="m.popup" rdxMenuPopup>
-            <button [class]="m.item" rdxMenuItem>Undo</button>
-            <button [class]="m.item" rdxMenuItem>Redo</button>
-            <div [class]="m.separator" rdxMenuSeparator></div>
+            @if (root.open()) {
+                <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
+                    <div [class]="m.popup" rdxMenuPopup>
+                        <button [class]="m.item" rdxMenuItem>Undo</button>
+                        <button [class]="m.item" rdxMenuItem>Redo</button>
+                        <div [class]="m.separator" rdxMenuSeparator></div>
 
-            <!-- Submenu: inner rdxMenuRoot provides submenu context -->
-            <ng-container #findSub="rdxMenuRoot" rdxMenuRoot>
-              <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
-                Find
-                <span class="text-muted-foreground text-xs">›</span>
-              </button>
+                        <!-- Submenu: inner rdxMenuRoot provides submenu context -->
+                        <ng-container #findSub="rdxMenuRoot" rdxMenuRoot>
+                            <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
+                                Find
+                                <span class="text-muted-foreground text-xs">›</span>
+                            </button>
 
-              @if (findSub.open()) {
-                <div [class]="m.positioner" side="right" align="start" sideOffset="4" rdxMenuPositioner>
-                  <div [class]="m.popup" rdxMenuPopup>
-                    <button [class]="m.item" rdxMenuItem>Search Web…</button>
-                    <button [class]="m.item" rdxMenuItem>Find…</button>
-                    <button [class]="m.item" rdxMenuItem>Find and Replace…</button>
-                    <button [class]="m.item" rdxMenuItem>Use Selection for Find</button>
-                  </div>
+                            @if (findSub.open()) {
+                                <div [class]="m.positioner" side="right" align="start" sideOffset="4" rdxMenuPositioner>
+                                    <div [class]="m.popup" rdxMenuPopup>
+                                        <button [class]="m.item" rdxMenuItem>Search Web…</button>
+                                        <button [class]="m.item" rdxMenuItem>Find…</button>
+                                        <button [class]="m.item" rdxMenuItem>Find and Replace…</button>
+                                        <button [class]="m.item" rdxMenuItem>Use Selection for Find</button>
+                                    </div>
+                                </div>
+                            }
+                        </ng-container>
+
+                        <!-- Second submenu -->
+                        <ng-container #spellSub="rdxMenuRoot" rdxMenuRoot>
+                            <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
+                                Spelling and Grammar
+                                <span class="text-muted-foreground text-xs">›</span>
+                            </button>
+
+                            @if (spellSub.open()) {
+                                <div [class]="m.positioner" side="right" align="start" sideOffset="4" rdxMenuPositioner>
+                                    <div [class]="m.popup" rdxMenuPopup>
+                                        <button [class]="m.item" rdxMenuItem>Show Spelling and Grammar</button>
+                                        <button [class]="m.item" rdxMenuItem>Check Document Now</button>
+                                        <div [class]="m.separator" rdxMenuSeparator></div>
+                                        <button [class]="m.item" rdxMenuItem>Check Spelling While Typing</button>
+                                        <button [class]="m.item" [disabled]="true" rdxMenuItem>Check Grammar</button>
+                                    </div>
+                                </div>
+                            }
+                        </ng-container>
+
+                        <div [class]="m.separator" rdxMenuSeparator></div>
+                        <button [class]="m.item" rdxMenuItem>Cut</button>
+                        <button [class]="m.item" rdxMenuItem>Copy</button>
+                        <button [class]="m.item" rdxMenuItem>Paste</button>
+                    </div>
                 </div>
-              }
-            </ng-container>
-
-            <!-- Second submenu -->
-            <ng-container #spellSub="rdxMenuRoot" rdxMenuRoot>
-              <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
-                Spelling and Grammar
-                <span class="text-muted-foreground text-xs">›</span>
-              </button>
-
-              @if (spellSub.open()) {
-                <div [class]="m.positioner" side="right" align="start" sideOffset="4" rdxMenuPositioner>
-                  <div [class]="m.popup" rdxMenuPopup>
-                    <button [class]="m.item" rdxMenuItem>Show Spelling and Grammar</button>
-                    <button [class]="m.item" rdxMenuItem>Check Document Now</button>
-                    <div [class]="m.separator" rdxMenuSeparator></div>
-                    <button [class]="m.item" rdxMenuItem>Check Spelling While Typing</button>
-                    <button [class]="m.item" [disabled]="true" rdxMenuItem>Check Grammar</button>
-                  </div>
-                </div>
-              }
-            </ng-container>
-
-            <div [class]="m.separator" rdxMenuSeparator></div>
-            <button [class]="m.item" rdxMenuItem>Cut</button>
-            <button [class]="m.item" rdxMenuItem>Copy</button>
-            <button [class]="m.item" rdxMenuItem>Paste</button>
-          </div>
-        </div>
-      }
-    </ng-container>
-  `
+            }
+        </ng-container>
+    `
 })
 export class RdxMenuNestedComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly m = demoMenu;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly m = demoMenu;
 }
 ```
 
@@ -323,31 +325,31 @@ import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { cn, demoButton, demoMenu } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-menu-arrow',
-  imports: [RdxMenuModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <ng-container #root="rdxMenuRoot" rdxMenuRoot>
-      <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>With Arrow</button>
+    selector: 'rdx-menu-arrow',
+    imports: [RdxMenuModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
+        <ng-container #root="rdxMenuRoot" rdxMenuRoot>
+            <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>With Arrow</button>
 
-      @if (root.open()) {
-        <div [class]="m.positioner" sideOffset="8" rdxMenuPositioner>
-          <div [class]="cn(m.popup, 'relative')" rdxMenuPopup>
-            <span [class]="m.arrow" rdxMenuArrow></span>
-            <button [class]="m.item" rdxMenuItem>New Tab</button>
-            <button [class]="m.item" rdxMenuItem>New Window</button>
-            <div [class]="m.separator" rdxMenuSeparator></div>
-            <button [class]="m.item" rdxMenuItem>Print…</button>
-          </div>
-        </div>
-      }
-    </ng-container>
-  `
+            @if (root.open()) {
+                <div [class]="m.positioner" sideOffset="8" rdxMenuPositioner>
+                    <div [class]="cn(m.popup, 'relative')" rdxMenuPopup>
+                        <span [class]="m.arrow" rdxMenuArrow></span>
+                        <button [class]="m.item" rdxMenuItem>New Tab</button>
+                        <button [class]="m.item" rdxMenuItem>New Window</button>
+                        <div [class]="m.separator" rdxMenuSeparator></div>
+                        <button [class]="m.item" rdxMenuItem>Print…</button>
+                    </div>
+                </div>
+            }
+        </ng-container>
+    `
 })
 export class RdxMenuArrowExampleComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly m = demoMenu;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly m = demoMenu;
 }
 ```
 
@@ -362,33 +364,33 @@ import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { cn, demoButton, demoMenu } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-menu-backdrop',
-  imports: [RdxMenuModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <ng-container #root="rdxMenuRoot" [modal]="true" rdxMenuRoot>
-      <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>With Backdrop</button>
+    selector: 'rdx-menu-backdrop',
+    imports: [RdxMenuModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
+        <ng-container #root="rdxMenuRoot" [modal]="true" rdxMenuRoot>
+            <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>With Backdrop</button>
 
-      @if (root.open()) {
-        <div class="bg-foreground/10 fixed inset-0" rdxMenuBackdrop></div>
-        <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-          <div [class]="m.popup" rdxMenuPopup>
-            <button [class]="m.item" rdxMenuItem>New Tab</button>
-            <button [class]="m.item" rdxMenuItem>New Window</button>
-            <div [class]="m.separator" rdxMenuSeparator></div>
-            <button [class]="m.item" [disabled]="true" rdxMenuItem>New Private Window</button>
-            <div [class]="m.separator" rdxMenuSeparator></div>
-            <button [class]="m.item" rdxMenuItem>Print…</button>
-          </div>
-        </div>
-      }
-    </ng-container>
-  `
+            @if (root.open()) {
+                <div class="bg-foreground/10 fixed inset-0" rdxMenuBackdrop></div>
+                <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
+                    <div [class]="m.popup" rdxMenuPopup>
+                        <button [class]="m.item" rdxMenuItem>New Tab</button>
+                        <button [class]="m.item" rdxMenuItem>New Window</button>
+                        <div [class]="m.separator" rdxMenuSeparator></div>
+                        <button [class]="m.item" [disabled]="true" rdxMenuItem>New Private Window</button>
+                        <div [class]="m.separator" rdxMenuSeparator></div>
+                        <button [class]="m.item" rdxMenuItem>Print…</button>
+                    </div>
+                </div>
+            }
+        </ng-container>
+    `
 })
 export class RdxMenuBackdropExampleComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly m = demoMenu;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly m = demoMenu;
 }
 ```
 
@@ -401,10 +403,10 @@ the popup with a CSS transition (here via Tailwind arbitrary utilities, so no st
 
 ```html
 <div
-  [class]="cn(m.popup, 'overflow-hidden [width:var(--popup-width)] [height:var(--popup-height)] transition-[width,height] duration-200')"
-  rdxMenuPopup
+    [class]="cn(m.popup, 'overflow-hidden [width:var(--popup-width)] [height:var(--popup-height)] transition-[width,height] duration-200')"
+    rdxMenuPopup
 >
-  <div rdxMenuViewport>…items…</div>
+    <div rdxMenuViewport>…items…</div>
 </div>
 ```
 
@@ -420,56 +422,56 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
  * with Tailwind arbitrary utilities, so no story-local CSS is needed).
  */
 @Component({
-  selector: 'rdx-menu-viewport',
-  imports: [RdxMenuModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <ng-container #root="rdxMenuRoot" rdxMenuRoot>
-      <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Settings</button>
+    selector: 'rdx-menu-viewport',
+    imports: [RdxMenuModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
+        <ng-container #root="rdxMenuRoot" rdxMenuRoot>
+            <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Settings</button>
 
-      @if (root.open()) {
-        <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-          <div
-            [class]="
-              cn(
-                m.popup,
-                '[height:var(--popup-height)] [width:var(--popup-width)] overflow-hidden transition-[width,height] duration-200 ease-out'
-              )
-            "
-            rdxMenuPopup
-          >
-            <div rdxMenuViewport>
-              <button [class]="m.item" [closeOnClick]="false" (onSelect)="toggle()" rdxMenuItem>
-                {{ expanded() ? 'Hide advanced' : 'Show advanced' }}
-              </button>
-              <div [class]="m.separator" rdxMenuSeparator></div>
-              <button [class]="m.item" rdxMenuItem>Profile</button>
-              <button [class]="m.item" rdxMenuItem>Billing</button>
+            @if (root.open()) {
+                <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
+                    <div
+                        [class]="
+                            cn(
+                                m.popup,
+                                '[height:var(--popup-height)] [width:var(--popup-width)] overflow-hidden transition-[width,height] duration-200 ease-out'
+                            )
+                        "
+                        rdxMenuPopup
+                    >
+                        <div rdxMenuViewport>
+                            <button [class]="m.item" [closeOnClick]="false" (onSelect)="toggle()" rdxMenuItem>
+                                {{ expanded() ? 'Hide advanced' : 'Show advanced' }}
+                            </button>
+                            <div [class]="m.separator" rdxMenuSeparator></div>
+                            <button [class]="m.item" rdxMenuItem>Profile</button>
+                            <button [class]="m.item" rdxMenuItem>Billing</button>
 
-              @if (expanded()) {
-                <div [class]="m.separator" rdxMenuSeparator></div>
-                <button [class]="m.item" rdxMenuItem>Keyboard shortcuts</button>
-                <button [class]="m.item" rdxMenuItem>Developer tools</button>
-                <button [class]="m.item" rdxMenuItem>Feature flags</button>
-                <button [class]="m.item" rdxMenuItem>API tokens</button>
-              }
-            </div>
-          </div>
-        </div>
-      }
-    </ng-container>
-  `
+                            @if (expanded()) {
+                                <div [class]="m.separator" rdxMenuSeparator></div>
+                                <button [class]="m.item" rdxMenuItem>Keyboard shortcuts</button>
+                                <button [class]="m.item" rdxMenuItem>Developer tools</button>
+                                <button [class]="m.item" rdxMenuItem>Feature flags</button>
+                                <button [class]="m.item" rdxMenuItem>API tokens</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </ng-container>
+    `
 })
 export class RdxMenuViewportExampleComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly m = demoMenu;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly m = demoMenu;
 
-  readonly expanded = signal(false);
+    readonly expanded = signal(false);
 
-  toggle(): void {
-    this.expanded.update((v) => !v);
-  }
+    toggle(): void {
+        this.expanded.update((v) => !v);
+    }
 }
 ```
 
@@ -485,60 +487,60 @@ import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { cn, demoButton, demoMenu } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-menu-animated',
-  imports: [RdxMenuModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  styles: [
-    `
-      @keyframes popup-in {
-        from {
-          opacity: 0;
-          transform: scale(0.95) translateY(-4px);
-        }
-        to {
-          opacity: 1;
-          transform: scale(1) translateY(0);
-        }
-      }
-      @keyframes popup-out {
-        from {
-          opacity: 1;
-          transform: scale(1) translateY(0);
-        }
-        to {
-          opacity: 0;
-          transform: scale(0.95) translateY(-4px);
-        }
-      }
-      .animated-popup {
-        animation: popup-in 150ms ease;
-      }
-      .animated-popup[data-ending-style] {
-        animation: popup-out 150ms ease;
-      }
-    `
-  ],
-  template: `
-    <ng-container #root="rdxMenuRoot" rdxMenuRoot>
-      <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Animated</button>
+    selector: 'rdx-menu-animated',
+    imports: [RdxMenuModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    styles: [
+        `
+            @keyframes popup-in {
+                from {
+                    opacity: 0;
+                    transform: scale(0.95) translateY(-4px);
+                }
+                to {
+                    opacity: 1;
+                    transform: scale(1) translateY(0);
+                }
+            }
+            @keyframes popup-out {
+                from {
+                    opacity: 1;
+                    transform: scale(1) translateY(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: scale(0.95) translateY(-4px);
+                }
+            }
+            .animated-popup {
+                animation: popup-in 150ms ease;
+            }
+            .animated-popup[data-ending-style] {
+                animation: popup-out 150ms ease;
+            }
+        `
+    ],
+    template: `
+        <ng-container #root="rdxMenuRoot" rdxMenuRoot>
+            <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Animated</button>
 
-      @if (root.open()) {
-        <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-          <div [class]="cn(m.popup, 'animated-popup')" rdxMenuPopup>
-            <button [class]="m.item" rdxMenuItem>New Tab</button>
-            <button [class]="m.item" rdxMenuItem>New Window</button>
-            <div [class]="m.separator" rdxMenuSeparator></div>
-            <button [class]="m.item" rdxMenuItem>Print…</button>
-          </div>
-        </div>
-      }
-    </ng-container>
-  `
+            @if (root.open()) {
+                <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
+                    <div [class]="cn(m.popup, 'animated-popup')" rdxMenuPopup>
+                        <button [class]="m.item" rdxMenuItem>New Tab</button>
+                        <button [class]="m.item" rdxMenuItem>New Window</button>
+                        <div [class]="m.separator" rdxMenuSeparator></div>
+                        <button [class]="m.item" rdxMenuItem>Print…</button>
+                    </div>
+                </div>
+            }
+        </ng-container>
+    `
 })
 export class RdxMenuAnimatedComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly m = demoMenu;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly m = demoMenu;
 }
 ```
 
@@ -546,32 +548,20 @@ export class RdxMenuAnimatedComponent {
 
 ```css
 @keyframes popup-in {
-  from {
-    opacity: 0;
-    transform: scale(0.95) translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+    from { opacity: 0; transform: scale(0.95) translateY(-4px); }
+    to   { opacity: 1; transform: scale(1)    translateY(0);    }
 }
 @keyframes popup-out {
-  from {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: scale(0.95) translateY(-4px);
-  }
+    from { opacity: 1; transform: scale(1)    translateY(0);    }
+    to   { opacity: 0; transform: scale(0.95) translateY(-4px); }
 }
 
 [rdxMenuPopup] {
-  animation: popup-in 150ms ease;
-  transform-origin: var(--transform-origin);
+    animation: popup-in 150ms ease;
+    transform-origin: var(--transform-origin);
 }
 [rdxMenuPopup][data-ending-style] {
-  animation: popup-out 150ms ease;
+    animation: popup-out 150ms ease;
 }
 ```
 
@@ -579,13 +569,13 @@ The optional backdrop uses the same attributes:
 
 ```css
 [rdxMenuBackdrop] {
-  position: fixed;
-  inset: 0;
-  background: rgb(0 0 0 / 0.3);
-  animation: fade-in 150ms ease;
+    position: fixed;
+    inset: 0;
+    background: rgb(0 0 0 / 0.3);
+    animation: fade-in 150ms ease;
 }
 [rdxMenuBackdrop][data-ending-style] {
-  animation: fade-out 150ms ease;
+    animation: fade-out 150ms ease;
 }
 ```
 
@@ -600,7 +590,7 @@ Bind `(onOpenChangeComplete)` on `rdxMenuRoot` to run logic after the popup has 
 disappeared:
 
 ```html
-<ng-container #root="rdxMenuRoot" (onOpenChangeComplete)="onDone($event)" rdxMenuRoot></ng-container>
+<ng-container #root="rdxMenuRoot" (onOpenChangeComplete)="onDone($event)" rdxMenuRoot>
 ```
 
 The event carries `true` when the open animation finishes and `false` when the close animation
@@ -642,11 +632,9 @@ different size opens). It measures content with a `ResizeObserver` and exposes t
 
 ```css
 [rdxMenuPopup] {
-  width: var(--popup-width);
-  height: var(--popup-height);
-  transition:
-    width 200ms,
-    height 200ms;
+    width: var(--popup-width);
+    height: var(--popup-height);
+    transition: width 200ms, height 200ms;
 }
 ```
 

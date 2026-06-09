@@ -19,12 +19,12 @@ compose it with `Presence` and `Portal` when those behaviors are needed.
 
 ```html
 <div rdxPopperRoot>
-  <button rdxPopperAnchor>Anchor</button>
+    <button rdxPopperAnchor>Anchor</button>
 
-  <div side="top" sideOffset="8" rdxPopperContentWrapper>
-    <div rdxPopperContent>Floating content</div>
-    <span rdxPopperArrow></span>
-  </div>
+    <div side="top" sideOffset="8" rdxPopperContentWrapper>
+        <div rdxPopperContent>Floating content</div>
+        <span rdxPopperArrow></span>
+    </div>
 </div>
 ```
 
@@ -40,25 +40,25 @@ The Default story exposes these values as controls.
 
 ```html
 <div
-  class="border-border bg-muted flex h-48 w-80 items-center justify-center rounded-xl border border-dashed"
-  rdxPopperRoot
+    class="border-border bg-muted flex h-48 w-80 items-center justify-center rounded-xl border border-dashed"
+    rdxPopperRoot
 >
-  <button
-    class="border-primary bg-primary text-primary-foreground focus-visible:ring-ring focus-visible:ring-offset-background inline-flex h-10 min-w-28 items-center justify-center rounded-lg border px-4 text-sm font-semibold shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-    type="button"
-    rdxPopperAnchor
-  >
-    Anchor
-  </button>
-  <div ${argsToTemplate(args)} rdxPopperContentWrapper>
-    <div
-      class="border-border bg-popover text-popover-foreground max-w-56 [transform-origin:var(--radix-popper-transform-origin)] rounded-lg border px-3.5 py-3 text-sm leading-5 shadow-md"
-      rdxPopperContent
+    <button
+        class="border-primary bg-primary text-primary-foreground focus-visible:ring-ring focus-visible:ring-offset-background inline-flex h-10 min-w-28 items-center justify-center rounded-lg border px-4 text-sm font-semibold shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+        type="button"
+        rdxPopperAnchor
     >
-      Positioned relative to the anchor
+        Anchor
+    </button>
+    <div ${argsToTemplate(args)} rdxPopperContentWrapper>
+        <div
+            class="border-border bg-popover text-popover-foreground max-w-56 [transform-origin:var(--radix-popper-transform-origin)] rounded-lg border px-3.5 py-3 text-sm leading-5 shadow-md"
+            rdxPopperContent
+        >
+            Positioned relative to the anchor
+        </div>
+        <span class="fill-popover" rdxPopperArrow></span>
     </div>
-    <span class="fill-popover" rdxPopperArrow></span>
-  </div>
 </div>
 ```
 
@@ -69,33 +69,33 @@ replace its visual shape.
 
 ```html
 <div
-  class="border-border bg-muted flex h-48 w-80 items-center justify-center rounded-xl border border-dashed"
-  rdxPopperRoot
+    class="border-border bg-muted flex h-48 w-80 items-center justify-center rounded-xl border border-dashed"
+    rdxPopperRoot
 >
-  <button
-    class="border-primary bg-primary text-primary-foreground focus-visible:ring-ring focus-visible:ring-offset-background inline-flex h-10 min-w-28 items-center justify-center rounded-lg border px-4 text-sm font-semibold shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-    type="button"
-    rdxPopperAnchor
-  >
-    Anchor
-  </button>
-  <div side="top" sideOffset="8" rdxPopperContentWrapper>
-    <div
-      class="border-border bg-popover text-popover-foreground max-w-56 [transform-origin:var(--radix-popper-transform-origin)] rounded-lg border px-3.5 py-3 text-sm leading-5 shadow-md"
-      rdxPopperContent
+    <button
+        class="border-primary bg-primary text-primary-foreground focus-visible:ring-ring focus-visible:ring-offset-background inline-flex h-10 min-w-28 items-center justify-center rounded-lg border px-4 text-sm font-semibold shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+        type="button"
+        rdxPopperAnchor
     >
-      The arrow can project custom content
+        Anchor
+    </button>
+    <div side="top" sideOffset="8" rdxPopperContentWrapper>
+        <div
+            class="border-border bg-popover text-popover-foreground max-w-56 [transform-origin:var(--radix-popper-transform-origin)] rounded-lg border px-3.5 py-3 text-sm leading-5 shadow-md"
+            rdxPopperContent
+        >
+            The arrow can project custom content
+        </div>
+        <span class="fill-popover" rdxPopperArrow>
+            <div class="bg-popover h-2.5 w-5 rounded-b-full"></div>
+        </span>
     </div>
-    <span class="fill-popover" rdxPopperArrow>
-      <div class="bg-popover h-2.5 w-5 rounded-b-full"></div>
-    </span>
-  </div>
 </div>
 ```
 
 ```html
 <span rdxPopperArrow>
-  <div class="custom-arrow"></div>
+    <div class="custom-arrow"></div>
 </span>
 ```
 
@@ -119,7 +119,7 @@ The next example moves the anchor with the pointer and uses the same `always` st
 
 ```html
 <div updatePositionStrategy="always" rdxPopperContentWrapper>
-  <div rdxPopperContent>Content that follows a moving anchor</div>
+    <div rdxPopperContent>Content that follows a moving anchor</div>
 </div>
 ```
 
@@ -127,13 +127,13 @@ The next example moves the anchor with the pointer and uses the same `always` st
 
 `rdxPopperContentWrapper` exposes the following CSS custom properties:
 
-| Variable                          | Description                                     |
-| --------------------------------- | ----------------------------------------------- |
-| `--radix-popper-transform-origin` | Origin for scale or reveal animations.          |
-| `--radix-popper-available-width`  | Available width inside the collision boundary.  |
-| `--radix-popper-available-height` | Available height inside the collision boundary. |
-| `--radix-popper-anchor-width`     | Current width of the anchor.                    |
-| `--radix-popper-anchor-height`    | Current height of the anchor.                   |
+| Variable                            | Description                                      |
+| ----------------------------------- | ------------------------------------------------ |
+| `--radix-popper-transform-origin`   | Origin for scale or reveal animations.           |
+| `--radix-popper-available-width`    | Available width inside the collision boundary.   |
+| `--radix-popper-available-height`   | Available height inside the collision boundary.  |
+| `--radix-popper-anchor-width`       | Current width of the anchor.                     |
+| `--radix-popper-anchor-height`      | Current height of the anchor.                    |
 
 ## API Reference
 

@@ -12,49 +12,51 @@ import { popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-popover-default',
-  imports: [...popoverImports, LucidePlus, LucideX],
-  template: `
-    <ng-container rdxPopoverRoot>
-      <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>
-        <svg aria-hidden="true" lucidePlus size="16" />
-        Add details
-      </button>
+    selector: 'rdx-popover-default',
+    imports: [...popoverImports, LucidePlus, LucideX],
+    template: `
+        <ng-container rdxPopoverRoot>
+            <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>
+                <svg aria-hidden="true" lucidePlus size="16" />
+                Add details
+            </button>
 
-      <ng-template rdxPopoverPortalPresence>
-        <div rdxPopoverPortal>
-          <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-            <div [class]="p.popup" rdxPopoverPopup>
-              <span [class]="p.arrow" rdxPopoverArrow></span>
-              <h2 [class]="p.title" rdxPopoverTitle>Dimensions</h2>
-              <p [class]="p.description" rdxPopoverDescription>Set the width and height for the element.</p>
+            <ng-template rdxPopoverPortalPresence>
+                <div rdxPopoverPortal>
+                    <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
+                        <div [class]="p.popup" rdxPopoverPopup>
+                            <span [class]="p.arrow" rdxPopoverArrow></span>
+                            <h2 [class]="p.title" rdxPopoverTitle>Dimensions</h2>
+                            <p [class]="p.description" rdxPopoverDescription>
+                                Set the width and height for the element.
+                            </p>
 
-              <div class="mt-4 grid gap-3">
-                <label class="grid gap-1 text-xs font-medium">
-                  Width
-                  <input [class]="input" value="100%" />
-                </label>
-                <label class="grid gap-1 text-xs font-medium">
-                  Max width
-                  <input [class]="input" value="300px" />
-                </label>
-              </div>
+                            <div class="mt-4 grid gap-3">
+                                <label class="grid gap-1 text-xs font-medium">
+                                    Width
+                                    <input [class]="input" value="100%" />
+                                </label>
+                                <label class="grid gap-1 text-xs font-medium">
+                                    Max width
+                                    <input [class]="input" value="300px" />
+                                </label>
+                            </div>
 
-              <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                <svg aria-hidden="true" lucideX size="14" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </ng-template>
-    </ng-container>
-  `
+                            <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                                <svg aria-hidden="true" lucideX size="14" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </ng-container>
+    `
 })
 export class RdxPopoverDefaultComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly input = demoInput;
-  protected readonly p = demoPopover;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly input = demoInput;
+    protected readonly p = demoPopover;
 }
 ```
 
@@ -82,19 +84,19 @@ export class RdxPopoverDefaultComponent {
 
 ```typescript
 import {
-  createRdxPopoverHandle,
-  RdxPopoverArrow,
-  RdxPopoverBackdrop,
-  RdxPopoverClose,
-  RdxPopoverDescription,
-  RdxPopoverPopup,
-  RdxPopoverPortal,
-  RdxPopoverPortalPresence,
-  RdxPopoverPositioner,
-  RdxPopoverRoot,
-  RdxPopoverTitle,
-  RdxPopoverTrigger,
-  RdxPopoverViewport
+    createRdxPopoverHandle,
+    RdxPopoverArrow,
+    RdxPopoverBackdrop,
+    RdxPopoverClose,
+    RdxPopoverDescription,
+    RdxPopoverPopup,
+    RdxPopoverPortal,
+    RdxPopoverPortalPresence,
+    RdxPopoverPositioner,
+    RdxPopoverRoot,
+    RdxPopoverTitle,
+    RdxPopoverTrigger,
+    RdxPopoverViewport
 } from '@radix-ng/primitives/popover';
 ```
 
@@ -111,25 +113,25 @@ keyframes on the first DOM element inside its template.
 
 ```html
 <ng-container rdxPopoverRoot>
-  <button rdxPopoverTrigger>Open</button>
+    <button rdxPopoverTrigger>Open</button>
 
-  <ng-template rdxPopoverPortalPresence>
-    <div rdxPopoverPortal>
-      <div rdxPopoverBackdrop></div>
-      <div sideOffset="8" rdxPopoverPositioner>
-        <div rdxPopoverPopup>
-          <span rdxPopoverArrow></span>
-          <div rdxPopoverViewport>
-            <div>
-              <h2 rdxPopoverTitle>Notifications</h2>
-              <p rdxPopoverDescription>You are all caught up.</p>
-              <button rdxPopoverClose>Close</button>
+    <ng-template rdxPopoverPortalPresence>
+        <div rdxPopoverPortal>
+            <div rdxPopoverBackdrop></div>
+            <div sideOffset="8" rdxPopoverPositioner>
+                <div rdxPopoverPopup>
+                    <span rdxPopoverArrow></span>
+                    <div rdxPopoverViewport>
+                        <div>
+                            <h2 rdxPopoverTitle>Notifications</h2>
+                            <p rdxPopoverDescription>You are all caught up.</p>
+                            <button rdxPopoverClose>Close</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-    </div>
-  </ng-template>
+    </ng-template>
 </ng-container>
 ```
 
@@ -146,49 +148,51 @@ import { popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-popover-default',
-  imports: [...popoverImports, LucidePlus, LucideX],
-  template: `
-    <ng-container rdxPopoverRoot>
-      <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>
-        <svg aria-hidden="true" lucidePlus size="16" />
-        Add details
-      </button>
+    selector: 'rdx-popover-default',
+    imports: [...popoverImports, LucidePlus, LucideX],
+    template: `
+        <ng-container rdxPopoverRoot>
+            <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>
+                <svg aria-hidden="true" lucidePlus size="16" />
+                Add details
+            </button>
 
-      <ng-template rdxPopoverPortalPresence>
-        <div rdxPopoverPortal>
-          <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-            <div [class]="p.popup" rdxPopoverPopup>
-              <span [class]="p.arrow" rdxPopoverArrow></span>
-              <h2 [class]="p.title" rdxPopoverTitle>Dimensions</h2>
-              <p [class]="p.description" rdxPopoverDescription>Set the width and height for the element.</p>
+            <ng-template rdxPopoverPortalPresence>
+                <div rdxPopoverPortal>
+                    <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
+                        <div [class]="p.popup" rdxPopoverPopup>
+                            <span [class]="p.arrow" rdxPopoverArrow></span>
+                            <h2 [class]="p.title" rdxPopoverTitle>Dimensions</h2>
+                            <p [class]="p.description" rdxPopoverDescription>
+                                Set the width and height for the element.
+                            </p>
 
-              <div class="mt-4 grid gap-3">
-                <label class="grid gap-1 text-xs font-medium">
-                  Width
-                  <input [class]="input" value="100%" />
-                </label>
-                <label class="grid gap-1 text-xs font-medium">
-                  Max width
-                  <input [class]="input" value="300px" />
-                </label>
-              </div>
+                            <div class="mt-4 grid gap-3">
+                                <label class="grid gap-1 text-xs font-medium">
+                                    Width
+                                    <input [class]="input" value="100%" />
+                                </label>
+                                <label class="grid gap-1 text-xs font-medium">
+                                    Max width
+                                    <input [class]="input" value="300px" />
+                                </label>
+                            </div>
 
-              <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                <svg aria-hidden="true" lucideX size="14" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </ng-template>
-    </ng-container>
-  `
+                            <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                                <svg aria-hidden="true" lucideX size="14" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </ng-container>
+    `
 })
 export class RdxPopoverDefaultComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly input = demoInput;
-  protected readonly p = demoPopover;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly input = demoInput;
+    protected readonly p = demoPopover;
 }
 ```
 
@@ -204,46 +208,46 @@ import { popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-popover-controlled',
-  imports: [...popoverImports, LucideX],
-  template: `
-    <div class="flex flex-col items-center gap-4">
-      <div class="flex items-center gap-2">
-        <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="open.set(true)">Open externally</button>
-        <button [class]="cn(b.base, b.ghost, b.size.sm)" (click)="open.set(false)">Close externally</button>
-      </div>
-
-      <p class="text-muted-foreground text-xs">State: {{ open() ? 'open' : 'closed' }}</p>
-
-      <ng-container [(open)]="open" rdxPopoverRoot>
-        <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Toggle popover</button>
-
-        <ng-template rdxPopoverPortalPresence>
-          <div rdxPopoverPortal>
-            <div [class]="p.backdrop" rdxPopoverBackdrop></div>
-            <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-              <div [class]="p.popup" rdxPopoverPopup>
-                <span [class]="p.arrow" rdxPopoverArrow></span>
-                <h2 [class]="p.title" rdxPopoverTitle>Controlled state</h2>
-                <p [class]="p.description" rdxPopoverDescription>
-                  The root uses Angular two-way binding with a signal.
-                </p>
-                <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                  <svg aria-hidden="true" lucideX size="14" />
-                </button>
-              </div>
+    selector: 'rdx-popover-controlled',
+    imports: [...popoverImports, LucideX],
+    template: `
+        <div class="flex flex-col items-center gap-4">
+            <div class="flex items-center gap-2">
+                <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="open.set(true)">Open externally</button>
+                <button [class]="cn(b.base, b.ghost, b.size.sm)" (click)="open.set(false)">Close externally</button>
             </div>
-          </div>
-        </ng-template>
-      </ng-container>
-    </div>
-  `
+
+            <p class="text-muted-foreground text-xs">State: {{ open() ? 'open' : 'closed' }}</p>
+
+            <ng-container [(open)]="open" rdxPopoverRoot>
+                <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Toggle popover</button>
+
+                <ng-template rdxPopoverPortalPresence>
+                    <div rdxPopoverPortal>
+                        <div [class]="p.backdrop" rdxPopoverBackdrop></div>
+                        <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
+                            <div [class]="p.popup" rdxPopoverPopup>
+                                <span [class]="p.arrow" rdxPopoverArrow></span>
+                                <h2 [class]="p.title" rdxPopoverTitle>Controlled state</h2>
+                                <p [class]="p.description" rdxPopoverDescription>
+                                    The root uses Angular two-way binding with a signal.
+                                </p>
+                                <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                                    <svg aria-hidden="true" lucideX size="14" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-container>
+        </div>
+    `
 })
 export class RdxPopoverControlledComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly p = demoPopover;
-  protected readonly open = signal(false);
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly p = demoPopover;
+    protected readonly open = signal(false);
 }
 ```
 
@@ -259,73 +263,83 @@ import { popoverImports, RdxPopoverOpenChange } from '@radix-ng/primitives/popov
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-popover-controlled-multiple',
-  imports: [...popoverImports, LucideX],
-  template: `
-    <div class="flex flex-col items-center gap-4">
-      <ng-container [(open)]="open" [(triggerId)]="triggerId" (onOpenChange)="handleOpenChange($event)" rdxPopoverRoot>
-        <div class="flex flex-wrap justify-center gap-2">
-          @for (item of items; track item.id) {
-            <button [class]="cn(b.base, b.outline, b.size.sm)" [id]="item.id" [payload]="item" rdxPopoverTrigger>
-              {{ item.label }}
-            </button>
-          }
+    selector: 'rdx-popover-controlled-multiple',
+    imports: [...popoverImports, LucideX],
+    template: `
+        <div class="flex flex-col items-center gap-4">
+            <ng-container
+                [(open)]="open"
+                [(triggerId)]="triggerId"
+                (onOpenChange)="handleOpenChange($event)"
+                rdxPopoverRoot
+            >
+                <div class="flex flex-wrap justify-center gap-2">
+                    @for (item of items; track item.id) {
+                        <button
+                            [class]="cn(b.base, b.outline, b.size.sm)"
+                            [id]="item.id"
+                            [payload]="item"
+                            rdxPopoverTrigger
+                        >
+                            {{ item.label }}
+                        </button>
+                    }
 
-          <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="openProgrammatically()">
-            Open programmatically
-          </button>
+                    <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="openProgrammatically()">
+                        Open programmatically
+                    </button>
+                </div>
+
+                <ng-template rdxPopoverPortalPresence>
+                    <div rdxPopoverPortal>
+                        <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
+                            <div [class]="p.popup" rdxPopoverPopup>
+                                <span [class]="p.arrow" rdxPopoverArrow></span>
+                                <h2 [class]="p.title" rdxPopoverTitle>{{ activeItem()?.label }}</h2>
+                                <p [class]="p.description" rdxPopoverDescription>
+                                    The externally controlled trigger id is {{ triggerId() }}.
+                                </p>
+                                <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                                    <svg aria-hidden="true" lucideX size="14" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-container>
+
+            <p class="text-muted-foreground text-center text-xs">
+                State: {{ open() ? 'open' : 'closed' }} · Trigger: {{ triggerId() ?? 'none' }} · Reason:
+                {{ lastReason() }}
+            </p>
         </div>
-
-        <ng-template rdxPopoverPortalPresence>
-          <div rdxPopoverPortal>
-            <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-              <div [class]="p.popup" rdxPopoverPopup>
-                <span [class]="p.arrow" rdxPopoverArrow></span>
-                <h2 [class]="p.title" rdxPopoverTitle>{{ activeItem()?.label }}</h2>
-                <p [class]="p.description" rdxPopoverDescription>
-                  The externally controlled trigger id is {{ triggerId() }}.
-                </p>
-                <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                  <svg aria-hidden="true" lucideX size="14" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </ng-template>
-      </ng-container>
-
-      <p class="text-muted-foreground text-center text-xs">
-        State: {{ open() ? 'open' : 'closed' }} · Trigger: {{ triggerId() ?? 'none' }} · Reason:
-        {{ lastReason() }}
-      </p>
-    </div>
-  `
+    `
 })
 export class RdxPopoverControlledMultipleComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly p = demoPopover;
-  protected readonly open = signal(false);
-  protected readonly triggerId = signal<string | null>(null);
-  protected readonly lastReason = signal('none');
-  protected readonly items = [
-    { id: 'notifications', label: 'Notifications' },
-    { id: 'activity', label: 'Activity' },
-    { id: 'profile', label: 'Profile' }
-  ];
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly p = demoPopover;
+    protected readonly open = signal(false);
+    protected readonly triggerId = signal<string | null>(null);
+    protected readonly lastReason = signal('none');
+    protected readonly items = [
+        { id: 'notifications', label: 'Notifications' },
+        { id: 'activity', label: 'Activity' },
+        { id: 'profile', label: 'Profile' }
+    ];
 
-  protected activeItem() {
-    return this.items.find((item) => item.id === this.triggerId());
-  }
+    protected activeItem() {
+        return this.items.find((item) => item.id === this.triggerId());
+    }
 
-  protected openProgrammatically() {
-    this.triggerId.set('activity');
-    this.open.set(true);
-  }
+    protected openProgrammatically() {
+        this.triggerId.set('activity');
+        this.open.set(true);
+    }
 
-  protected handleOpenChange(change: RdxPopoverOpenChange) {
-    this.lastReason.set(change.reason);
-  }
+    protected handleOpenChange(change: RdxPopoverOpenChange) {
+        this.lastReason.set(change.reason);
+    }
 }
 ```
 
@@ -342,50 +356,50 @@ import { Side } from '@radix-ng/primitives/popper';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-popover-positioning',
-  imports: [...popoverImports, LucideX],
-  template: `
-    <div class="flex flex-col items-center gap-4">
-      <div class="flex flex-wrap justify-center gap-2">
-        @for (side of sides; track side) {
-          <button
-            [class]="cn(b.base, selectedSide() === side ? b.primary : b.outline, b.size.sm)"
-            (click)="selectedSide.set(side)"
-          >
-            {{ side }}
-          </button>
-        }
-      </div>
-
-      <ng-container rdxPopoverRoot>
-        <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Open {{ selectedSide() }}</button>
-
-        <ng-template rdxPopoverPortalPresence>
-          <div rdxPopoverPortal>
-            <div [class]="p.positioner" [side]="selectedSide()" sideOffset="8" rdxPopoverPositioner>
-              <div [class]="p.popup" rdxPopoverPopup>
-                <span [class]="p.arrow" rdxPopoverArrow></span>
-                <h2 [class]="p.title" rdxPopoverTitle>Positioned popup</h2>
-                <p [class]="p.description" rdxPopoverDescription>
-                  The positioner delegates collision handling to the shared Popper primitive.
-                </p>
-                <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                  <svg aria-hidden="true" lucideX size="14" />
-                </button>
-              </div>
+    selector: 'rdx-popover-positioning',
+    imports: [...popoverImports, LucideX],
+    template: `
+        <div class="flex flex-col items-center gap-4">
+            <div class="flex flex-wrap justify-center gap-2">
+                @for (side of sides; track side) {
+                    <button
+                        [class]="cn(b.base, selectedSide() === side ? b.primary : b.outline, b.size.sm)"
+                        (click)="selectedSide.set(side)"
+                    >
+                        {{ side }}
+                    </button>
+                }
             </div>
-          </div>
-        </ng-template>
-      </ng-container>
-    </div>
-  `
+
+            <ng-container rdxPopoverRoot>
+                <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Open {{ selectedSide() }}</button>
+
+                <ng-template rdxPopoverPortalPresence>
+                    <div rdxPopoverPortal>
+                        <div [class]="p.positioner" [side]="selectedSide()" sideOffset="8" rdxPopoverPositioner>
+                            <div [class]="p.popup" rdxPopoverPopup>
+                                <span [class]="p.arrow" rdxPopoverArrow></span>
+                                <h2 [class]="p.title" rdxPopoverTitle>Positioned popup</h2>
+                                <p [class]="p.description" rdxPopoverDescription>
+                                    The positioner delegates collision handling to the shared Popper primitive.
+                                </p>
+                                <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                                    <svg aria-hidden="true" lucideX size="14" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-container>
+        </div>
+    `
 })
 export class RdxPopoverPositioningComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly p = demoPopover;
-  protected readonly sides: Side[] = ['top', 'right', 'bottom', 'left'];
-  protected readonly selectedSide = signal<Side>('bottom');
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly p = demoPopover;
+    protected readonly sides: Side[] = ['top', 'right', 'bottom', 'left'];
+    protected readonly selectedSide = signal<Side>('bottom');
 }
 ```
 
@@ -401,35 +415,35 @@ import { popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-popover-animated',
-  imports: [...popoverImports, LucideX],
-  template: `
-    <ng-container rdxPopoverRoot>
-      <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Animated popover</button>
+    selector: 'rdx-popover-animated',
+    imports: [...popoverImports, LucideX],
+    template: `
+        <ng-container rdxPopoverRoot>
+            <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Animated popover</button>
 
-      <ng-template rdxPopoverPortalPresence>
-        <div [class]="p.portalAnimated" rdxPopoverPortal>
-          <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-            <div [class]="cn(p.popup, p.popupAnimated)" rdxPopoverPopup>
-              <span [class]="p.arrow" rdxPopoverArrow></span>
-              <h2 [class]="p.title" rdxPopoverTitle>Native CSS keyframes</h2>
-              <p [class]="p.description" rdxPopoverDescription>
-                Presence keeps this portal mounted until the exit animation finishes.
-              </p>
-              <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                <svg aria-hidden="true" lucideX size="14" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </ng-template>
-    </ng-container>
-  `
+            <ng-template rdxPopoverPortalPresence>
+                <div [class]="p.portalAnimated" rdxPopoverPortal>
+                    <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
+                        <div [class]="cn(p.popup, p.popupAnimated)" rdxPopoverPopup>
+                            <span [class]="p.arrow" rdxPopoverArrow></span>
+                            <h2 [class]="p.title" rdxPopoverTitle>Native CSS keyframes</h2>
+                            <p [class]="p.description" rdxPopoverDescription>
+                                Presence keeps this portal mounted until the exit animation finishes.
+                            </p>
+                            <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                                <svg aria-hidden="true" lucideX size="14" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </ng-container>
+    `
 })
 export class RdxPopoverAnimatedComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly p = demoPopover;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly p = demoPopover;
 }
 ```
 
@@ -445,86 +459,88 @@ import { popoverImports, RdxPopoverModal } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-popover-modal',
-  imports: [...popoverImports, LucideX],
-  template: `
-    <div class="flex flex-col items-center gap-4">
-      <div class="flex flex-wrap justify-center gap-2">
-        @for (option of options; track option.label) {
-          <button
-            [class]="cn(b.base, modal() === option.value ? b.primary : b.outline, b.size.sm)"
-            (click)="modal.set(option.value)"
-          >
-            {{ option.label }}
-          </button>
-        }
-      </div>
-
-      <p class="text-muted-foreground max-w-96 text-center text-xs leading-5">
-        {{ description() }}
-      </p>
-
-      <ng-container [modal]="modal()" rdxPopoverRoot>
-        <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Open popover</button>
-
-        <ng-template rdxPopoverPortalPresence>
-          <div rdxPopoverPortal>
-            @if (modal() === true) {
-              <div [class]="p.backdrop" rdxPopoverBackdrop></div>
-            }
-            <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-              <div [class]="p.popup" rdxPopoverPopup>
-                <span [class]="p.arrow" rdxPopoverArrow></span>
-                <h2 [class]="p.title" rdxPopoverTitle>Modal behavior</h2>
-                <p [class]="p.description" rdxPopoverDescription>
-                  Switch modes, use Tab to move between controls, then try the outside button.
-                </p>
-
-                <label class="mt-4 grid gap-1 text-xs font-medium">
-                  Name
-                  <input [class]="input" placeholder="Focused when opened" />
-                </label>
-
-                <button [class]="cn(b.base, b.primary, b.size.sm, 'mt-3')" type="button">Save changes</button>
-
-                <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                  <svg aria-hidden="true" lucideX size="14" />
-                </button>
-              </div>
+    selector: 'rdx-popover-modal',
+    imports: [...popoverImports, LucideX],
+    template: `
+        <div class="flex flex-col items-center gap-4">
+            <div class="flex flex-wrap justify-center gap-2">
+                @for (option of options; track option.label) {
+                    <button
+                        [class]="cn(b.base, modal() === option.value ? b.primary : b.outline, b.size.sm)"
+                        (click)="modal.set(option.value)"
+                    >
+                        {{ option.label }}
+                    </button>
+                }
             </div>
-          </div>
-        </ng-template>
-      </ng-container>
 
-      <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="outsideClicks.update((count) => count + 1)">
-        Outside interaction target: {{ outsideClicks() }}
-      </button>
-    </div>
-  `
+            <p class="text-muted-foreground max-w-96 text-center text-xs leading-5">
+                {{ description() }}
+            </p>
+
+            <ng-container [modal]="modal()" rdxPopoverRoot>
+                <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Open popover</button>
+
+                <ng-template rdxPopoverPortalPresence>
+                    <div rdxPopoverPortal>
+                        @if (modal() === true) {
+                            <div [class]="p.backdrop" rdxPopoverBackdrop></div>
+                        }
+                        <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
+                            <div [class]="p.popup" rdxPopoverPopup>
+                                <span [class]="p.arrow" rdxPopoverArrow></span>
+                                <h2 [class]="p.title" rdxPopoverTitle>Modal behavior</h2>
+                                <p [class]="p.description" rdxPopoverDescription>
+                                    Switch modes, use Tab to move between controls, then try the outside button.
+                                </p>
+
+                                <label class="mt-4 grid gap-1 text-xs font-medium">
+                                    Name
+                                    <input [class]="input" placeholder="Focused when opened" />
+                                </label>
+
+                                <button [class]="cn(b.base, b.primary, b.size.sm, 'mt-3')" type="button">
+                                    Save changes
+                                </button>
+
+                                <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                                    <svg aria-hidden="true" lucideX size="14" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-container>
+
+            <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="outsideClicks.update((count) => count + 1)">
+                Outside interaction target: {{ outsideClicks() }}
+            </button>
+        </div>
+    `
 })
 export class RdxPopoverModalComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly input = demoInput;
-  protected readonly p = demoPopover;
-  protected readonly modal = signal<RdxPopoverModal>(true);
-  protected readonly outsideClicks = signal(0);
-  protected readonly options: Array<{ label: string; value: RdxPopoverModal }> = [
-    { label: 'Non-modal', value: false },
-    { label: 'Modal', value: true },
-    { label: 'Trap focus', value: 'trap-focus' }
-  ];
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly input = demoInput;
+    protected readonly p = demoPopover;
+    protected readonly modal = signal<RdxPopoverModal>(true);
+    protected readonly outsideClicks = signal(0);
+    protected readonly options: Array<{ label: string; value: RdxPopoverModal }> = [
+        { label: 'Non-modal', value: false },
+        { label: 'Modal', value: true },
+        { label: 'Trap focus', value: 'trap-focus' }
+    ];
 
-  protected description() {
-    switch (this.modal()) {
-      case true:
-        return 'Modal: outside pointer interactions and document scrolling are blocked. Focus is trapped because the popup contains a close button.';
-      case 'trap-focus':
-        return 'Trap focus: keyboard focus stays inside, while document scrolling and outside pointer interactions remain available.';
-      default:
-        return 'Non-modal: outside pointer interactions and document scrolling remain available.';
+    protected description() {
+        switch (this.modal()) {
+            case true:
+                return 'Modal: outside pointer interactions and document scrolling are blocked. Focus is trapped because the popup contains a close button.';
+            case 'trap-focus':
+                return 'Trap focus: keyboard focus stays inside, while document scrolling and outside pointer interactions remain available.';
+            default:
+                return 'Non-modal: outside pointer interactions and document scrolling remain available.';
+        }
     }
-  }
 }
 ```
 
@@ -540,44 +556,44 @@ import { popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-popover-custom-anchor',
-  imports: [...popoverImports, LucideX],
-  template: `
-    <div class="flex w-[min(640px,80vw)] flex-col items-center gap-8">
-      <ng-container rdxPopoverRoot>
-        <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Open from this button</button>
+    selector: 'rdx-popover-custom-anchor',
+    imports: [...popoverImports, LucideX],
+    template: `
+        <div class="flex w-[min(640px,80vw)] flex-col items-center gap-8">
+            <ng-container rdxPopoverRoot>
+                <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Open from this button</button>
 
-        <div
-          class="border-primary bg-primary/10 text-foreground flex h-24 w-56 items-center justify-center rounded-lg border border-dashed text-center text-sm font-medium"
-          #customAnchor
-        >
-          Popup anchor
+                <div
+                    class="border-primary bg-primary/10 text-foreground flex h-24 w-56 items-center justify-center rounded-lg border border-dashed text-center text-sm font-medium"
+                    #customAnchor
+                >
+                    Popup anchor
+                </div>
+
+                <ng-template rdxPopoverPortalPresence>
+                    <div rdxPopoverPortal>
+                        <div [class]="p.positioner" [anchor]="customAnchor" sideOffset="8" rdxPopoverPositioner>
+                            <div [class]="p.popup" rdxPopoverPopup>
+                                <span [class]="p.arrow" rdxPopoverArrow></span>
+                                <h2 [class]="p.title" rdxPopoverTitle>Custom anchor</h2>
+                                <p [class]="p.description" rdxPopoverDescription>
+                                    The trigger controls open state, but the positioner is anchored to the dashed box.
+                                </p>
+                                <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                                    <svg aria-hidden="true" lucideX size="14" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-container>
         </div>
-
-        <ng-template rdxPopoverPortalPresence>
-          <div rdxPopoverPortal>
-            <div [class]="p.positioner" [anchor]="customAnchor" sideOffset="8" rdxPopoverPositioner>
-              <div [class]="p.popup" rdxPopoverPopup>
-                <span [class]="p.arrow" rdxPopoverArrow></span>
-                <h2 [class]="p.title" rdxPopoverTitle>Custom anchor</h2>
-                <p [class]="p.description" rdxPopoverDescription>
-                  The trigger controls open state, but the positioner is anchored to the dashed box.
-                </p>
-                <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                  <svg aria-hidden="true" lucideX size="14" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </ng-template>
-      </ng-container>
-    </div>
-  `
+    `
 })
 export class RdxPopoverCustomAnchorComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly p = demoPopover;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly p = demoPopover;
 }
 ```
 
@@ -593,52 +609,57 @@ import { createRdxPopoverHandle, popoverImports } from '@radix-ng/primitives/pop
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-popover-detached',
-  imports: [...popoverImports, LucideX],
-  template: `
-    <div class="flex w-[min(640px,80vw)] flex-col items-center gap-8">
-      <div class="flex w-full justify-between gap-4">
-        <button id="account" [class]="cn(b.base, b.outline, b.size.md)" [handle]="popover" rdxPopoverTrigger>
-          Account trigger
-        </button>
-
-        <button id="billing" [class]="cn(b.base, b.outline, b.size.md)" [handle]="popover" rdxPopoverTrigger>
-          Billing trigger
-        </button>
-      </div>
-
-      <div class="flex flex-wrap justify-center gap-2">
-        <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="popover.open('account')">Open account</button>
-        <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="popover.open('billing')">Open billing</button>
-        <button [class]="cn(b.base, b.ghost, b.size.sm)" (click)="popover.close()">Close</button>
-      </div>
-
-      <ng-container [handle]="popover" rdxPopoverRoot>
-        <ng-template rdxPopoverPortalPresence>
-          <div rdxPopoverPortal>
-            <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-              <div [class]="p.popup" rdxPopoverPopup>
-                <span [class]="p.arrow" rdxPopoverArrow></span>
-                <h2 [class]="p.title" rdxPopoverTitle>Detached handles</h2>
-                <p [class]="p.description" rdxPopoverDescription>
-                  Both triggers live outside the root. Open another trigger to move this popup without closing it first.
-                </p>
-                <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                  <svg aria-hidden="true" lucideX size="14" />
+    selector: 'rdx-popover-detached',
+    imports: [...popoverImports, LucideX],
+    template: `
+        <div class="flex w-[min(640px,80vw)] flex-col items-center gap-8">
+            <div class="flex w-full justify-between gap-4">
+                <button id="account" [class]="cn(b.base, b.outline, b.size.md)" [handle]="popover" rdxPopoverTrigger>
+                    Account trigger
                 </button>
-              </div>
+
+                <button id="billing" [class]="cn(b.base, b.outline, b.size.md)" [handle]="popover" rdxPopoverTrigger>
+                    Billing trigger
+                </button>
             </div>
-          </div>
-        </ng-template>
-      </ng-container>
-    </div>
-  `
+
+            <div class="flex flex-wrap justify-center gap-2">
+                <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="popover.open('account')">
+                    Open account
+                </button>
+                <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="popover.open('billing')">
+                    Open billing
+                </button>
+                <button [class]="cn(b.base, b.ghost, b.size.sm)" (click)="popover.close()">Close</button>
+            </div>
+
+            <ng-container [handle]="popover" rdxPopoverRoot>
+                <ng-template rdxPopoverPortalPresence>
+                    <div rdxPopoverPortal>
+                        <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
+                            <div [class]="p.popup" rdxPopoverPopup>
+                                <span [class]="p.arrow" rdxPopoverArrow></span>
+                                <h2 [class]="p.title" rdxPopoverTitle>Detached handles</h2>
+                                <p [class]="p.description" rdxPopoverDescription>
+                                    Both triggers live outside the root. Open another trigger to move this popup without
+                                    closing it first.
+                                </p>
+                                <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                                    <svg aria-hidden="true" lucideX size="14" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-container>
+        </div>
+    `
 })
 export class RdxPopoverDetachedComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly p = demoPopover;
-  protected readonly popover = createRdxPopoverHandle();
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly p = demoPopover;
+    protected readonly popover = createRdxPopoverHandle();
 }
 ```
 
@@ -654,37 +675,37 @@ import { popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-popover-hover',
-  imports: [...popoverImports, LucideX],
-  template: `
-    <ng-container rdxPopoverRoot>
-      <button [class]="cn(b.base, b.outline, b.size.md)" [delay]="300" openOnHover rdxPopoverTrigger>
-        Hover for details
-      </button>
+    selector: 'rdx-popover-hover',
+    imports: [...popoverImports, LucideX],
+    template: `
+        <ng-container rdxPopoverRoot>
+            <button [class]="cn(b.base, b.outline, b.size.md)" [delay]="300" openOnHover rdxPopoverTrigger>
+                Hover for details
+            </button>
 
-      <ng-template rdxPopoverPortalPresence>
-        <div rdxPopoverPortal>
-          <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-            <div [class]="p.popup" rdxPopoverPopup>
-              <span [class]="p.arrow" rdxPopoverArrow></span>
-              <h2 [class]="p.title" rdxPopoverTitle>Hover popover</h2>
-              <p [class]="p.description" rdxPopoverDescription>
-                Move the pointer into this popup. It remains interactive after leaving the trigger.
-              </p>
-              <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                <svg aria-hidden="true" lucideX size="14" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </ng-template>
-    </ng-container>
-  `
+            <ng-template rdxPopoverPortalPresence>
+                <div rdxPopoverPortal>
+                    <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
+                        <div [class]="p.popup" rdxPopoverPopup>
+                            <span [class]="p.arrow" rdxPopoverArrow></span>
+                            <h2 [class]="p.title" rdxPopoverTitle>Hover popover</h2>
+                            <p [class]="p.description" rdxPopoverDescription>
+                                Move the pointer into this popup. It remains interactive after leaving the trigger.
+                            </p>
+                            <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                                <svg aria-hidden="true" lucideX size="14" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </ng-container>
+    `
 })
 export class RdxPopoverHoverComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly p = demoPopover;
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly p = demoPopover;
 }
 ```
 
@@ -700,48 +721,56 @@ import { popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
-  selector: 'rdx-popover-viewport',
-  imports: [...popoverImports],
-  template: `
-    <ng-container #root="rdxPopoverRoot" rdxPopoverRoot>
-      <div class="flex flex-wrap justify-center gap-2">
-        @for (item of items; track item.id) {
-          <button [class]="cn(b.base, b.outline, b.size.sm)" [payload]="item" [id]="item.id" rdxPopoverTrigger>
-            {{ item.label }}
-          </button>
-        }
-      </div>
-
-      <ng-template rdxPopoverPortalPresence>
-        <div rdxPopoverPortal>
-          <div class="transition-[left,right,top,bottom] duration-200" sideOffset="8" rdxPopoverPositioner>
-            <div [class]="cn(p.popup, 'overflow-hidden transition-[width,height] duration-200')" rdxPopoverPopup>
-              <div class="relative" rdxPopoverViewport>
-                <div
-                  class="data-[previous]:animate-popover-viewport-out data-[current]:animate-popover-viewport-in data-[previous]:absolute data-[previous]:inset-0"
-                >
-                  <h2 [class]="p.title" rdxPopoverTitle>{{ root.payload()?.label }}</h2>
-                  <p [class]="p.description" rdxPopoverDescription>
-                    {{ root.payload()?.description }}
-                  </p>
-                </div>
-              </div>
+    selector: 'rdx-popover-viewport',
+    imports: [...popoverImports],
+    template: `
+        <ng-container #root="rdxPopoverRoot" rdxPopoverRoot>
+            <div class="flex flex-wrap justify-center gap-2">
+                @for (item of items; track item.id) {
+                    <button
+                        [class]="cn(b.base, b.outline, b.size.sm)"
+                        [payload]="item"
+                        [id]="item.id"
+                        rdxPopoverTrigger
+                    >
+                        {{ item.label }}
+                    </button>
+                }
             </div>
-          </div>
-        </div>
-      </ng-template>
-    </ng-container>
-  `
+
+            <ng-template rdxPopoverPortalPresence>
+                <div rdxPopoverPortal>
+                    <div class="transition-[left,right,top,bottom] duration-200" sideOffset="8" rdxPopoverPositioner>
+                        <div
+                            [class]="cn(p.popup, 'overflow-hidden transition-[width,height] duration-200')"
+                            rdxPopoverPopup
+                        >
+                            <div class="relative" rdxPopoverViewport>
+                                <div
+                                    class="data-[previous]:animate-popover-viewport-out data-[current]:animate-popover-viewport-in data-[previous]:absolute data-[previous]:inset-0"
+                                >
+                                    <h2 [class]="p.title" rdxPopoverTitle>{{ root.payload()?.label }}</h2>
+                                    <p [class]="p.description" rdxPopoverDescription>
+                                        {{ root.payload()?.description }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </ng-container>
+    `
 })
 export class RdxPopoverViewportComponent {
-  protected readonly cn = cn;
-  protected readonly b = demoButton;
-  protected readonly p = demoPopover;
-  protected readonly items = [
-    { id: 'notifications', label: 'Notifications', description: 'You are all caught up.' },
-    { id: 'activity', label: 'Activity', description: 'Nothing interesting happened recently.' },
-    { id: 'profile', label: 'Profile', description: 'Manage your profile settings and account preferences.' }
-  ];
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly p = demoPopover;
+    protected readonly items = [
+        { id: 'notifications', label: 'Notifications', description: 'You are all caught up.' },
+        { id: 'activity', label: 'Activity', description: 'Nothing interesting happened recently.' },
+        { id: 'profile', label: 'Profile', description: 'Manage your profile settings and account preferences.' }
+    ];
 }
 ```
 

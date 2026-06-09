@@ -4,38 +4,41 @@
 
 ```html
 <div class="${rootClass}" rdxToolbarRoot aria-label="Formatting options">
-  <div class="flex gap-1" rdxToggleGroupWithoutFocus multiple aria-label="Text formatting">
-    <button class="${toggleClass}" rdxToggle value="bold" aria-label="Bold">
-      <svg lucideBold size="16"></svg>
-    </button>
-    <button class="${toggleClass}" rdxToggle value="italic" aria-label="Italic">
-      <svg lucideItalic size="16"></svg>
-    </button>
-    <button class="${toggleClass}" rdxToggle value="underline" aria-label="Underline">
-      <svg lucideUnderline size="16"></svg>
-    </button>
-  </div>
+    <div class="flex gap-1" rdxToggleGroupWithoutFocus multiple aria-label="Text formatting">
+        <button class="${toggleClass}" rdxToggle value="bold" aria-label="Bold">
+            <svg lucideBold size="16"></svg>
+        </button>
+        <button class="${toggleClass}" rdxToggle value="italic" aria-label="Italic">
+            <svg lucideItalic size="16"></svg>
+        </button>
+        <button class="${toggleClass}" rdxToggle value="underline" aria-label="Underline">
+            <svg lucideUnderline size="16"></svg>
+        </button>
+    </div>
 
-  <div class="${separatorClass}" rdxToolbarSeparator orientation="vertical"></div>
+    <div class="${separatorClass}" rdxToolbarSeparator orientation="vertical"></div>
 
-  <div class="flex gap-1" rdxToggleGroupWithoutFocus [value]="alignment" aria-label="Text alignment">
-    <button class="${toggleClass}" rdxToggle value="left" aria-label="Align left">
-      <svg lucideAlignLeft size="16"></svg>
-    </button>
-    <button class="${toggleClass}" rdxToggle value="center" aria-label="Align center">
-      <svg lucideAlignCenter size="16"></svg>
-    </button>
-    <button class="${toggleClass}" rdxToggle value="right" aria-label="Align right">
-      <svg lucideAlignRight size="16"></svg>
-    </button>
-  </div>
+    <div class="flex gap-1" rdxToggleGroupWithoutFocus [value]="alignment" aria-label="Text alignment">
+        <button class="${toggleClass}" rdxToggle value="left" aria-label="Align left">
+            <svg lucideAlignLeft size="16"></svg>
+        </button>
+        <button class="${toggleClass}" rdxToggle value="center" aria-label="Align center">
+            <svg lucideAlignCenter size="16"></svg>
+        </button>
+        <button class="${toggleClass}" rdxToggle value="right" aria-label="Align right">
+            <svg lucideAlignRight size="16"></svg>
+        </button>
+    </div>
 
-  <div class="${separatorClass}" rdxToolbarSeparator orientation="vertical"></div>
+    <div class="${separatorClass}" rdxToolbarSeparator orientation="vertical"></div>
 
-  <a class="${linkClass}" href="#" rdxToolbarLink>Edited 2h ago</a>
-  <button class="${buttonClass} bg-primary text-primary-foreground hover:bg-primary/90 ml-2" rdxToolbarButton>
-    Share
-  </button>
+    <a class="${linkClass}" href="#" rdxToolbarLink>Edited 2h ago</a>
+    <button
+        class="${buttonClass} bg-primary text-primary-foreground hover:bg-primary/90 ml-2"
+        rdxToolbarButton
+    >
+        Share
+    </button>
 </div>
 ```
 
@@ -50,12 +53,12 @@
 
 ```typescript
 import {
-  RdxToolbarRoot,
-  RdxToolbarButton,
-  RdxToolbarLink,
-  RdxToolbarInput,
-  RdxToolbarGroup,
-  RdxToolbarSeparator
+    RdxToolbarRoot,
+    RdxToolbarButton,
+    RdxToolbarLink,
+    RdxToolbarInput,
+    RdxToolbarGroup,
+    RdxToolbarSeparator
 } from '@radix-ng/primitives/toolbar';
 ```
 
@@ -66,13 +69,13 @@ roving focus over `Button`, `Link`, `Input`, `Group` and `Separator` parts.
 
 ```html
 <div rdxToolbarRoot>
-  <div rdxToolbarGroup>
-    <button rdxToolbarButton></button>
-    <button rdxToolbarButton></button>
-  </div>
-  <div rdxToolbarSeparator></div>
-  <input rdxToolbarInput />
-  <a rdxToolbarLink></a>
+    <div rdxToolbarGroup>
+        <button rdxToolbarButton></button>
+        <button rdxToolbarButton></button>
+    </div>
+    <div rdxToolbarSeparator></div>
+    <input rdxToolbarInput />
+    <a rdxToolbarLink></a>
 </div>
 ```
 
@@ -86,20 +89,30 @@ Stack a toolbar part on another primitive's trigger/input to compose it — e.g.
 Set `orientation="vertical"` to lay the toolbar out vertically (arrow navigation switches to Up/Down).
 
 ```html
-<div class="${rootClass} flex-col items-stretch" rdxToolbarRoot orientation="vertical" aria-label="Formatting options">
-  <div class="flex flex-col gap-1" rdxToggleGroupWithoutFocus [value]="alignment" aria-label="Text alignment">
-    <button class="${toggleClass}" rdxToggle value="left" aria-label="Align left">
-      <svg lucideAlignLeft size="16"></svg>
-    </button>
-    <button class="${toggleClass}" rdxToggle value="center" aria-label="Align center">
-      <svg lucideAlignCenter size="16"></svg>
-    </button>
-    <button class="${toggleClass}" rdxToggle value="right" aria-label="Align right">
-      <svg lucideAlignRight size="16"></svg>
-    </button>
-  </div>
-  <div class="bg-border mx-1 my-1 h-px" rdxToolbarSeparator orientation="horizontal"></div>
-  <button class="${buttonClass}" rdxToolbarButton>Share</button>
+<div
+    class="${rootClass} flex-col items-stretch"
+    rdxToolbarRoot
+    orientation="vertical"
+    aria-label="Formatting options"
+>
+    <div
+        class="flex flex-col gap-1"
+        rdxToggleGroupWithoutFocus
+        [value]="alignment"
+        aria-label="Text alignment"
+    >
+        <button class="${toggleClass}" rdxToggle value="left" aria-label="Align left">
+            <svg lucideAlignLeft size="16"></svg>
+        </button>
+        <button class="${toggleClass}" rdxToggle value="center" aria-label="Align center">
+            <svg lucideAlignCenter size="16"></svg>
+        </button>
+        <button class="${toggleClass}" rdxToggle value="right" aria-label="Align right">
+            <svg lucideAlignRight size="16"></svg>
+        </button>
+    </div>
+    <div class="bg-border mx-1 my-1 h-px" rdxToolbarSeparator orientation="horizontal"></div>
+    <button class="${buttonClass}" rdxToolbarButton>Share</button>
 </div>
 ```
 
@@ -110,10 +123,10 @@ screen-reader users can still reach it.
 
 ```html
 <div class="${rootClass}" rdxToolbarRoot aria-label="Formatting options">
-  <button class="${buttonClass}" rdxToolbarButton>Bold</button>
-  <button class="${buttonClass}" rdxToolbarButton disabled>Italic</button>
-  <div class="${separatorClass}" rdxToolbarSeparator orientation="vertical"></div>
-  <button class="${buttonClass}" rdxToolbarButton>Underline</button>
+    <button class="${buttonClass}" rdxToolbarButton>Bold</button>
+    <button class="${buttonClass}" rdxToolbarButton disabled>Italic</button>
+    <div class="${separatorClass}" rdxToolbarSeparator orientation="vertical"></div>
+    <button class="${buttonClass}" rdxToolbarButton>Underline</button>
 </div>
 ```
 
@@ -129,56 +142,56 @@ import { toolbarImports } from '@radix-ng/primitives/toolbar';
 import { cn, demoMenu } from '../../storybook/styles';
 
 @Component({
-  selector: 'toolbar-with-menu',
-  imports: [...toolbarImports, RdxMenuModule, LucideChevronDown],
-  template: `
-    <div
-      class="border-border bg-background flex items-center gap-1 rounded-lg border p-1 shadow-sm"
-      rdxToolbarRoot
-      aria-label="Toolbar with menu"
-    >
-      <button
-        class="${'text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-8 items-center justify-center rounded-md px-2.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2'}"
-        rdxToolbarButton
-      >
-        Bold
-      </button>
-      <button
-        class="${'text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-8 items-center justify-center rounded-md px-2.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2'}"
-        rdxToolbarButton
-      >
-        Italic
-      </button>
-
-      <div class="bg-border mx-1 h-5 w-px" rdxToolbarSeparator orientation="vertical"></div>
-
-      <ng-container #menu="rdxMenuRoot" rdxMenuRoot>
-        <button
-          class="text-foreground hover:bg-muted focus-visible:ring-ring data-[popup-open]:bg-muted inline-flex h-8 items-center justify-center gap-1 rounded-md px-2.5 text-sm font-medium transition-colors outline-none focus-visible:ring-2"
-          rdxToolbarButton
-          rdxMenuTrigger
+    selector: 'toolbar-with-menu',
+    imports: [...toolbarImports, RdxMenuModule, LucideChevronDown],
+    template: `
+        <div
+            class="border-border bg-background flex items-center gap-1 rounded-lg border p-1 shadow-sm"
+            rdxToolbarRoot
+            aria-label="Toolbar with menu"
         >
-          More
-          <svg lucideChevronDown size="14"></svg>
-        </button>
+            <button
+                class="${'text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-8 items-center justify-center rounded-md px-2.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2'}"
+                rdxToolbarButton
+            >
+                Bold
+            </button>
+            <button
+                class="${'text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-8 items-center justify-center rounded-md px-2.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2'}"
+                rdxToolbarButton
+            >
+                Italic
+            </button>
 
-        @if (menu.open()) {
-          <div [class]="m.positioner" sideOffset="6" rdxMenuPositioner>
-            <div [class]="m.popup" rdxMenuPopup>
-              <button [class]="m.item" rdxMenuItem>Undo</button>
-              <button [class]="m.item" rdxMenuItem>Redo</button>
-              <div [class]="m.separator" rdxMenuSeparator></div>
-              <button [class]="m.item" rdxMenuItem>Clear formatting</button>
-            </div>
-          </div>
-        }
-      </ng-container>
-    </div>
-  `
+            <div class="bg-border mx-1 h-5 w-px" rdxToolbarSeparator orientation="vertical"></div>
+
+            <ng-container #menu="rdxMenuRoot" rdxMenuRoot>
+                <button
+                    class="text-foreground hover:bg-muted focus-visible:ring-ring data-[popup-open]:bg-muted inline-flex h-8 items-center justify-center gap-1 rounded-md px-2.5 text-sm font-medium transition-colors outline-none focus-visible:ring-2"
+                    rdxToolbarButton
+                    rdxMenuTrigger
+                >
+                    More
+                    <svg lucideChevronDown size="14"></svg>
+                </button>
+
+                @if (menu.open()) {
+                    <div [class]="m.positioner" sideOffset="6" rdxMenuPositioner>
+                        <div [class]="m.popup" rdxMenuPopup>
+                            <button [class]="m.item" rdxMenuItem>Undo</button>
+                            <button [class]="m.item" rdxMenuItem>Redo</button>
+                            <div [class]="m.separator" rdxMenuSeparator></div>
+                            <button [class]="m.item" rdxMenuItem>Clear formatting</button>
+                        </div>
+                    </div>
+                }
+            </ng-container>
+        </div>
+    `
 })
 export class ToolbarWithMenuExample {
-  protected readonly cn = cn;
-  protected readonly m = demoMenu;
+    protected readonly cn = cn;
+    protected readonly m = demoMenu;
 }
 ```
 
@@ -194,49 +207,49 @@ import { tooltipImports } from '@radix-ng/primitives/tooltip';
 import { demoTooltip } from '../../storybook/styles';
 
 const itemClass =
-  'text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center rounded-md outline-none transition-colors focus-visible:ring-2';
+    'text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center rounded-md outline-none transition-colors focus-visible:ring-2';
 
 @Component({
-  selector: 'toolbar-with-tooltip',
-  imports: [...toolbarImports, ...tooltipImports, LucideBold, LucideItalic],
-  template: `
-    <div
-      class="border-border bg-background flex items-center gap-1 rounded-lg border p-1 shadow-sm"
-      rdxToolbarRoot
-      aria-label="Toolbar with tooltips"
-    >
-      <ng-container rdxTooltip>
-        <button class="${itemClass}" aria-label="Bold" rdxToolbarButton rdxTooltipTrigger>
-          <svg lucideBold size="16"></svg>
-        </button>
-        <div [container]="bold" rdxTooltipPortal>
-          <ng-template #bold rdxTooltipPortalPresence>
-            <div [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
-              <div [class]="t.popup" rdxTooltipPopup>Bold</div>
-              <span [class]="t.arrow" rdxTooltipArrow></span>
-            </div>
-          </ng-template>
-        </div>
-      </ng-container>
+    selector: 'toolbar-with-tooltip',
+    imports: [...toolbarImports, ...tooltipImports, LucideBold, LucideItalic],
+    template: `
+        <div
+            class="border-border bg-background flex items-center gap-1 rounded-lg border p-1 shadow-sm"
+            rdxToolbarRoot
+            aria-label="Toolbar with tooltips"
+        >
+            <ng-container rdxTooltip>
+                <button class="${itemClass}" aria-label="Bold" rdxToolbarButton rdxTooltipTrigger>
+                    <svg lucideBold size="16"></svg>
+                </button>
+                <div [container]="bold" rdxTooltipPortal>
+                    <ng-template #bold rdxTooltipPortalPresence>
+                        <div [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
+                            <div [class]="t.popup" rdxTooltipPopup>Bold</div>
+                            <span [class]="t.arrow" rdxTooltipArrow></span>
+                        </div>
+                    </ng-template>
+                </div>
+            </ng-container>
 
-      <ng-container rdxTooltip>
-        <button class="${itemClass}" aria-label="Italic" rdxToolbarButton rdxTooltipTrigger>
-          <svg lucideItalic size="16"></svg>
-        </button>
-        <div [container]="italic" rdxTooltipPortal>
-          <ng-template #italic rdxTooltipPortalPresence>
-            <div [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
-              <div [class]="t.popup" rdxTooltipPopup>Italic</div>
-              <span [class]="t.arrow" rdxTooltipArrow></span>
-            </div>
-          </ng-template>
+            <ng-container rdxTooltip>
+                <button class="${itemClass}" aria-label="Italic" rdxToolbarButton rdxTooltipTrigger>
+                    <svg lucideItalic size="16"></svg>
+                </button>
+                <div [container]="italic" rdxTooltipPortal>
+                    <ng-template #italic rdxTooltipPortalPresence>
+                        <div [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
+                            <div [class]="t.popup" rdxTooltipPopup>Italic</div>
+                            <span [class]="t.arrow" rdxTooltipArrow></span>
+                        </div>
+                    </ng-template>
+                </div>
+            </ng-container>
         </div>
-      </ng-container>
-    </div>
-  `
+    `
 })
 export class ToolbarWithTooltipExample {
-  protected readonly t = demoTooltip;
+    protected readonly t = demoTooltip;
 }
 ```
 
@@ -253,41 +266,48 @@ import { RdxNumberFieldModule } from '@radix-ng/primitives/number-field';
 import { toolbarImports } from '@radix-ng/primitives/toolbar';
 
 const stepClass =
-  'text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center rounded-md outline-none transition-colors focus-visible:ring-2 disabled:opacity-50';
+    'text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center rounded-md outline-none transition-colors focus-visible:ring-2 disabled:opacity-50';
 
 @Component({
-  selector: 'toolbar-with-number-field',
-  imports: [...toolbarImports, RdxNumberFieldModule, LucideMinus, LucidePlus],
-  template: `
-    <div
-      class="border-border bg-background flex items-center gap-1 rounded-lg border p-1 shadow-sm"
-      rdxToolbarRoot
-      aria-label="Toolbar with number field"
-    >
-      <button
-        class="${'text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-8 items-center justify-center rounded-md px-2.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2'}"
-        rdxToolbarButton
-      >
-        Bold
-      </button>
+    selector: 'toolbar-with-number-field',
+    imports: [...toolbarImports, RdxNumberFieldModule, LucideMinus, LucidePlus],
+    template: `
+        <div
+            class="border-border bg-background flex items-center gap-1 rounded-lg border p-1 shadow-sm"
+            rdxToolbarRoot
+            aria-label="Toolbar with number field"
+        >
+            <button
+                class="${'text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-8 items-center justify-center rounded-md px-2.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2'}"
+                rdxToolbarButton
+            >
+                Bold
+            </button>
 
-      <div class="bg-border mx-1 h-5 w-px" rdxToolbarSeparator orientation="vertical"></div>
+            <div class="bg-border mx-1 h-5 w-px" rdxToolbarSeparator orientation="vertical"></div>
 
-      <div class="flex items-center gap-0.5" [value]="16" rdxNumberFieldRoot min="8" max="72" aria-label="Font size">
-        <button class="${stepClass}" aria-label="Decrease" rdxToolbarButton rdxNumberFieldDecrement>
-          <svg lucideMinus size="16"></svg>
-        </button>
-        <input
-          class="border-border bg-background text-foreground focus-visible:ring-ring h-8 w-12 rounded-md border text-center text-sm outline-none focus-visible:ring-2"
-          rdxToolbarInput
-          rdxNumberFieldInput
-        />
-        <button class="${stepClass}" aria-label="Increase" rdxToolbarButton rdxNumberFieldIncrement>
-          <svg lucidePlus size="16"></svg>
-        </button>
-      </div>
-    </div>
-  `
+            <div
+                class="flex items-center gap-0.5"
+                [value]="16"
+                rdxNumberFieldRoot
+                min="8"
+                max="72"
+                aria-label="Font size"
+            >
+                <button class="${stepClass}" aria-label="Decrease" rdxToolbarButton rdxNumberFieldDecrement>
+                    <svg lucideMinus size="16"></svg>
+                </button>
+                <input
+                    class="border-border bg-background text-foreground focus-visible:ring-ring h-8 w-12 rounded-md border text-center text-sm outline-none focus-visible:ring-2"
+                    rdxToolbarInput
+                    rdxNumberFieldInput
+                />
+                <button class="${stepClass}" aria-label="Increase" rdxToolbarButton rdxNumberFieldIncrement>
+                    <svg lucidePlus size="16"></svg>
+                </button>
+            </div>
+        </div>
+    `
 })
 export class ToolbarWithNumberFieldExample {}
 ```
@@ -307,21 +327,21 @@ export class ToolbarWithNumberFieldExample {}
 
 `RdxToolbarButton`
 
-| Data attribute       | Value                                  |
-| -------------------- | -------------------------------------- |
-| `[data-orientation]` | `"horizontal" \| "vertical"`           |
-| `[data-disabled]`    | Present when disabled.                 |
-| `[data-focusable]`   | Present when focusable while disabled. |
+| Data attribute       | Value                                       |
+| -------------------- | ------------------------------------------- |
+| `[data-orientation]` | `"horizontal" \| "vertical"`                |
+| `[data-disabled]`    | Present when disabled.                      |
+| `[data-focusable]`   | Present when focusable while disabled.      |
 
 ### ToolbarInput
 
 `RdxToolbarInput`
 
-| Data attribute       | Value                                  |
-| -------------------- | -------------------------------------- |
-| `[data-orientation]` | `"horizontal" \| "vertical"`           |
-| `[data-disabled]`    | Present when disabled.                 |
-| `[data-focusable]`   | Present when focusable while disabled. |
+| Data attribute       | Value                                       |
+| -------------------- | ------------------------------------------- |
+| `[data-orientation]` | `"horizontal" \| "vertical"`                |
+| `[data-disabled]`    | Present when disabled.                      |
+| `[data-focusable]`   | Present when focusable while disabled.      |
 
 ### ToolbarGroup
 
