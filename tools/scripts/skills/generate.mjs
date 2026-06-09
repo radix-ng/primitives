@@ -24,8 +24,9 @@ const workspaceRoot = path.resolve(__dirname, '../../..');
 const primitivesRoot = path.join(workspaceRoot, 'packages/primitives');
 const skillsRoot = path.join(workspaceRoot, 'skills');
 
-// Live Storybook (Astro docs are being replaced and are not deployed) — for visual browsing only.
-const STORYBOOK_URL = 'https://sb-primitives.radix-ng.com';
+// Storybook is served on the main domain and also serves the LLM docs bundle as static files
+// (see apps/radix-storybook/.storybook/main.ts staticDirs): /llms.txt, /llms-full.txt, /<section>/<slug>.md.
+const SITE_URL = 'https://radix-ng.com';
 
 const write = (filePath, content) => {
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
@@ -153,6 +154,23 @@ const llmsFull = [
 ].join('\n\n');
 write(path.join(refsRoot, 'llms-full.txt'), `${llmsFull}\n`);
 
+// llms.txt index (served at SITE_URL/llms.txt) — links to the served per-page Markdown
+const sectionTitles = { components: 'Components', utils: 'Utilities', guides: 'Guides', examples: 'Examples' };
+const llmsIndex = [
+    '# Radix NG Primitives',
+    'Unstyled, accessible, signals-first Angular primitives for building design systems and web apps.',
+    `Full documentation in one file: ${SITE_URL}/llms-full.txt`,
+    ...Object.entries(sectionTitles)
+        .map(([section, title]) => {
+            const links = docs
+                .filter((doc) => doc.section === section)
+                .map((doc) => `- [${doc.title}](${SITE_URL}/${doc.section}/${doc.slug}.md): ${doc.description}`);
+            return links.length ? `## ${title}\n\n${links.join('\n')}` : null;
+        })
+        .filter(Boolean)
+].join('\n\n');
+write(path.join(refsRoot, 'llms.txt'), `${llmsIndex}\n`);
+
 // 2. styling contract (components + utilities)
 const contract = docs
     .filter((doc) => doc.section === 'components' || doc.section === 'utils')
@@ -164,7 +182,7 @@ const contract = docs
             section: doc.section,
             description: doc.description,
             doc: `radix-ng-examples/references/${doc.section}/${doc.slug}.md`,
-            storybook: `${STORYBOOK_URL}/?path=/docs/primitives-${doc.slug}--docs`,
+            storybook: `${SITE_URL}/?path=/docs/primitives-${doc.slug}--docs`,
             anatomy: meta.anatomy ?? '',
             dataAttributes: meta.dataAttributes ?? []
         };
@@ -183,7 +201,7 @@ const indexBody = componentDocs
         const items = metaFor(doc)
             .examples.map((ex) => `- **${ex.name}**${ex.description ? ` — ${ex.description}` : ''}`)
             .join('\n');
-        return `### ${doc.title}\n\nFull source (all examples): [\`references/components/${doc.slug}.md\`](./references/components/${doc.slug}.md) · [Storybook](${STORYBOOK_URL}/?path=/docs/primitives-${doc.slug}--docs)\n\n${items}`;
+        return `### ${doc.title}\n\nFull source (all examples): [\`references/components/${doc.slug}.md\`](./references/components/${doc.slug}.md) · [Storybook](${SITE_URL}/?path=/docs/primitives-${doc.slug}--docs)\n\n${items}`;
     })
     .join('\n\n');
 
@@ -205,7 +223,7 @@ metadata:
 > Do not edit by hand — the Storybook stories are the source of truth.
 
 Working examples built on \`@radix-ng/primitives\`. Full source is **bundled offline** under
-\`references/\`; browse visually at ${STORYBOOK_URL}.
+\`references/\`; browse visually at ${SITE_URL}.
 
 ## How to use this skill
 
@@ -228,6 +246,6 @@ ${indexBody}
 write(path.join(skillsRoot, 'radix-ng-examples/SKILL.md'), examplesSkill);
 
 console.log(`✓ ${docs.length} docs rendered → ${path.relative(workspaceRoot, refsRoot)}/<section>/`);
-console.log(`✓ llms-full.txt (${docs.length} docs)`);
+console.log(`✓ llms.txt + llms-full.txt (${docs.length} docs)`);
 console.log(`✓ styling-contract.json (${contract.length} primitives)`);
 console.log(`✓ radix-ng-examples/SKILL.md (${totalExamples} examples / ${componentDocs.length} components)`);

@@ -1,4 +1,4 @@
-# RdxLiveAnnouncer
+# LiveAnnouncer
 
 #### Announces messages to screen readers through an `aria-live` region, without moving focus.
 

@@ -6,7 +6,7 @@
       "section": "components",
       "description": "A vertically stacked set of interactive headings that each reveal an associated section of content.",
       "doc": "radix-ng-examples/references/components/accordion.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-accordion--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-accordion--docs",
       "anatomy": "<div rdxAccordionRoot>\n  <div rdxAccordionItem>\n    <div rdxAccordionHeader>\n      <button rdxAccordionTrigger></button>\n    </div>\n    <div rdxAccordionContent></div>\n  </div>\n</div>",
       "dataAttributes": [
         {
@@ -42,7 +42,7 @@
       "section": "components",
       "description": "A modal dialog that interrupts the user with important content and expects a response.",
       "doc": "radix-ng-examples/references/components/alert-dialog.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-alert-dialog--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-alert-dialog--docs",
       "anatomy": "<div rdxAlertDialogRoot>\n    <button rdxAlertDialogTrigger>Delete</button>\n\n    <ng-template rdxAlertDialogPortalPresence>\n        <div rdxAlertDialogPortal>\n            <div rdxAlertDialogBackdrop></div>\n            <div rdxAlertDialogPopup>\n                <h2 rdxAlertDialogTitle>Are you sure?</h2>\n                <p rdxAlertDialogDescription>This action cannot be undone.</p>\n                <button rdxAlertDialogClose>Cancel</button>\n                <button rdxAlertDialogClose>Confirm</button>\n            </div>\n        </div>\n    </ng-template>\n</div>",
       "dataAttributes": []
     },
@@ -52,7 +52,7 @@
       "section": "components",
       "description": "Displays content within a desired ratio.",
       "doc": "radix-ng-examples/references/components/aspect-ratio.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-aspect-ratio--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-aspect-ratio--docs",
       "anatomy": "",
       "dataAttributes": []
     },
@@ -62,7 +62,7 @@
       "section": "components",
       "description": "An image element with a fallback for representing the user.",
       "doc": "radix-ng-examples/references/components/avatar.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-avatar--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-avatar--docs",
       "anatomy": "<span rdxAvatarRoot>\n  <img rdxAvatarImage src=\"...\" alt=\"...\" />\n  <span rdxAvatarFallback>AB</span>\n</span>",
       "dataAttributes": []
     },
@@ -72,7 +72,7 @@
       "section": "components",
       "description": "A button, or any element that should behave like one.",
       "doc": "radix-ng-examples/references/components/button.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-button--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-button--docs",
       "anatomy": "<button rdxButton>...</button>\n\n<!-- or on any other host -->\n<a rdxButton href=\"...\">...</a>",
       "dataAttributes": []
     },
@@ -82,7 +82,7 @@
       "section": "components",
       "description": "Displays dates and days of the week, facilitating date-related interactions.",
       "doc": "radix-ng-examples/references/components/calendar.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-calendar--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-calendar--docs",
       "anatomy": "<div\n    rdxCalendarRoot\n    #root=\"rdxCalendarRoot\">\n    <div rdxCalendarHeader>\n        <button type=\"button\" rdxCalendarPrev></button>\n        <div #head=\"rdxCalendarHeading\" rdxCalendarHeading>\n            {{ head.headingValue() }}\n        </div>\n        <button type=\"button\" rdxCalendarNext></button>\n    </div>\n\n    <table rdxCalendarGrid>\n        @for (month of root.months(); track $index) {\n            <thead rdxCalendarGridHead>\n                <tr rdxCalendarGridRow>\n                    @for (day of root.weekDays(); track $index) {\n                        <th rdxCalendarHeadCell>{{ day }}</th>\n                    }\n                </tr>\n            </thead>\n            <tbody rdxCalendarGridBody>\n                @for (weekDates of month.weeks; track $index) {\n                    <tr rdxCalendarGridRow>\n                        @for (weekDate of weekDates; track $index) {\n                            <td rdxCalendarCell>\n                                <div\n                                    #cell=\"rdxCalendarCellTrigger\"\n                                    rdxCalendarCellTrigger\n                                >\n                                    {{ cell.dayValue() }}\n                                </div>\n                            </td>\n                        }\n                    </tr>\n                }\n            </tbody>\n        }\n    </table>\n</div>",
       "dataAttributes": []
     },
@@ -92,7 +92,7 @@
       "section": "components",
       "description": "A control that allows the user to toggle between checked and not checked.",
       "doc": "radix-ng-examples/references/components/checkbox.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-checkbox--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-checkbox--docs",
       "anatomy": "<div rdxCheckboxRoot>\n  <button rdxCheckboxButton>\n    <svg rdxCheckboxIndicator lucideCheck />\n  </button>\n  <input rdxCheckboxInput />\n</div>",
       "dataAttributes": []
     },
@@ -102,7 +102,7 @@
       "section": "components",
       "description": "A panel that expands and collapses, revealing or hiding its contents.",
       "doc": "radix-ng-examples/references/components/collapsible.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-collapsible--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-collapsible--docs",
       "anatomy": "<div rdxCollapsibleRoot>\n  <button rdxCollapsibleTrigger>Trigger</button>\n  <div rdxCollapsiblePanel>Panel</div>\n</div>",
       "dataAttributes": []
     },
@@ -112,7 +112,7 @@
       "section": "components",
       "description": "A menu that appears at the pointer on right click (or touch long-press), built on the Menu primitive.",
       "doc": "radix-ng-examples/references/components/context-menu.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-context-menu--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-context-menu--docs",
       "anatomy": "<ng-container #root=\"rdxContextMenuRoot\" rdxContextMenuRoot>\n    <div rdxContextMenuTrigger>Right click here</div>\n\n    @if (root.menuRoot.open()) {\n        <div rdxMenuPositioner>\n            <div rdxMenuPopup>\n                <button rdxMenuItem>Back</button>\n                <button rdxMenuItem>Reload</button>\n\n                <div rdxMenuSeparator></div>\n\n                <!-- submenu -->\n                <ng-container #sub=\"rdxMenuRoot\" rdxMenuRoot>\n                    <button rdxMenuSubTrigger>More Tools ›</button>\n                    @if (sub.open()) {\n                        <div side=\"right\" align=\"start\" rdxMenuPositioner>\n                            <div rdxMenuPopup>\n                                <button rdxMenuItem>Save Page As…</button>\n                            </div>\n                        </div>\n                    }\n                </ng-container>\n            </div>\n        </div>\n    }\n</ng-container>",
       "dataAttributes": []
     },
@@ -122,7 +122,7 @@
       "section": "components",
       "description": "Headless component for interactive image cropping — inspired by the experience on [X](https://x.com/)",
       "doc": "radix-ng-examples/references/components/cropper.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-cropper--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-cropper--docs",
       "anatomy": "<div rdxCropperRoot>\n    <div rdxCropperDescription></div>\n    <div rdxCropperImage></div>\n    <div rdxCropperCropArea></div>\n</div>",
       "dataAttributes": []
     },
@@ -132,7 +132,7 @@
       "section": "components",
       "description": "Enables users to input specific dates within a designated field.",
       "doc": "radix-ng-examples/references/components/date-field.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-date-field--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-date-field--docs",
       "anatomy": "<div rdxDateFieldRoot>\n    <div rdxDateFieldInput></div>\n    <input rdxVisuallyHiddenInput />\n</div>",
       "dataAttributes": []
     },
@@ -142,7 +142,7 @@
       "section": "components",
       "description": "A window overlaid on the page, rendering the content underneath inert.",
       "doc": "radix-ng-examples/references/components/dialog.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-dialog--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-dialog--docs",
       "anatomy": "<div rdxDialogRoot>\n    <button rdxDialogTrigger>Open</button>\n\n    <ng-template rdxDialogPortalPresence>\n        <div rdxDialogPortal>\n            <div rdxDialogBackdrop></div>\n            <div rdxDialogPopup>\n                <h2 rdxDialogTitle>Edit profile</h2>\n                <p rdxDialogDescription>Make changes to your profile.</p>\n                <button rdxDialogClose>Close</button>\n            </div>\n        </div>\n    </ng-template>\n</div>",
       "dataAttributes": []
     },
@@ -152,7 +152,7 @@
       "section": "components",
       "description": "An edge-anchored sheet that opens over the page and dismisses with a swipe.",
       "doc": "radix-ng-examples/references/components/drawer.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-drawer--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-drawer--docs",
       "anatomy": "<div rdxDrawerRoot>\n    <button rdxDrawerTrigger>Open</button>\n\n    <ng-template rdxDrawerPortalPresence>\n        <div rdxDrawerPortal>\n            <div rdxDrawerBackdrop></div>\n            <div rdxDrawerPopup>\n                <h2 rdxDrawerTitle>Title</h2>\n                <p rdxDrawerDescription>Description</p>\n                <div rdxDrawerContent>…scrollable body…</div>\n                <button rdxDrawerClose>Close</button>\n            </div>\n        </div>\n    </ng-template>\n</div>",
       "dataAttributes": []
     },
@@ -162,7 +162,7 @@
       "section": "components",
       "description": "Groups a control with accessible label, description, error message, and field state.",
       "doc": "radix-ng-examples/references/components/field.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-field--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-field--docs",
       "anatomy": "<div rdxFieldRoot>\n    <label rdxFieldLabel>Label</label>\n    <input rdxFieldControl />\n    <p rdxFieldDescription>Description</p>\n    <p rdxFieldError>Error</p>\n</div>",
       "dataAttributes": []
     },
@@ -172,7 +172,7 @@
       "section": "components",
       "description": "Groups related form controls with a legend and shared disabled state.",
       "doc": "radix-ng-examples/references/components/fieldset.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-fieldset--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-fieldset--docs",
       "anatomy": "<fieldset rdxFieldsetRoot>\n  <legend rdxFieldsetLegend>Shipping address</legend>\n  <!-- fields -->\n</fieldset>",
       "dataAttributes": []
     },
@@ -182,7 +182,7 @@
       "section": "components",
       "description": "A native text input with headless state attributes and Field integration.",
       "doc": "radix-ng-examples/references/components/input.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-input--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-input--docs",
       "anatomy": "<div rdxFieldRoot>\n    <label rdxFieldLabel>Email</label>\n    <input rdxInput />\n    <p rdxFieldDescription>Used for account notifications.</p>\n    <p rdxFieldError>Enter a valid email address.</p>\n</div>",
       "dataAttributes": []
     },
@@ -192,7 +192,7 @@
       "section": "components",
       "description": "Renders an accessible label associated with controls.",
       "doc": "radix-ng-examples/references/components/label.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-label--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-label--docs",
       "anatomy": "",
       "dataAttributes": []
     },
@@ -202,7 +202,7 @@
       "section": "components",
       "description": "A headless dropdown menu anchored to a trigger button.",
       "doc": "radix-ng-examples/references/components/menu.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-menu--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-menu--docs",
       "anatomy": "<ng-container #root=\"rdxMenuRoot\" rdxMenuRoot>\n    <button rdxMenuTrigger>Open</button>\n\n    <!-- optional backdrop — place before the positioner -->\n    @if (root.open()) {\n        <div rdxMenuBackdrop></div>\n    }\n\n    @if (root.open()) {\n        <div sideOffset=\"4\" rdxMenuPositioner>\n            <div rdxMenuPopup>\n                <span rdxMenuArrow></span>\n\n                <!-- regular item -->\n                <button rdxMenuItem>New Tab</button>\n\n                <!-- link item — does not close by default -->\n                <a rdxMenuLinkItem href=\"/settings\">Settings</a>\n\n                <div rdxMenuSeparator></div>\n\n                <!-- checkbox item — does not close the menu -->\n                <label rdxMenuCheckboxItem>\n                    <span rdxMenuCheckboxItemIndicator></span>\n                    Show Bookmarks\n                </label>\n\n                <!-- radio group — items do not close the menu by default -->\n                <div rdxMenuRadioGroup>\n                    <label value=\"grid\" rdxMenuRadioItem>\n                        <span rdxMenuRadioItemIndicator></span>\n                        Grid View\n                    </label>\n                    <label value=\"list\" rdxMenuRadioItem>\n                        <span rdxMenuRadioItemIndicator></span>\n                        List View\n                    </label>\n                </div>\n\n                <div rdxMenuSeparator></div>\n\n                <!-- group with a label -->\n                <div rdxMenuGroup>\n                    <span rdxMenuGroupLabel>Section</span>\n                    <button rdxMenuItem>Item</button>\n                </div>\n\n                <div rdxMenuSeparator></div>\n\n                <!-- submenu: wrap trigger + popup in a nested rdxMenuRoot -->\n                <ng-container #sub=\"rdxMenuRoot\" rdxMenuRoot>\n                    <button rdxMenuSubTrigger>More options ›</button>\n\n                    @if (sub.open()) {\n                        <div side=\"right\" align=\"start\" sideOffset=\"4\" rdxMenuPositioner>\n                            <div rdxMenuPopup>\n                                <button rdxMenuItem>Sub item A</button>\n                                <button rdxMenuItem>Sub item B</button>\n                            </div>\n                        </div>\n                    }\n                </ng-container>\n            </div>\n        </div>\n    }\n</ng-container>",
       "dataAttributes": []
     },
@@ -212,7 +212,7 @@
       "section": "components",
       "description": "A visually persistent menu common in desktop applications that provides quick access to a consistent set of commands.",
       "doc": "radix-ng-examples/references/components/menubar.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-menubar--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-menubar--docs",
       "anatomy": "<div rdxMenubarRoot>\n    <!-- File -->\n    <ng-container #fileMenu=\"rdxMenuRoot\" rdxMenuRoot>\n        <button rdxMenuTrigger>File</button>\n\n        <div class=\"data-[closed]:hidden\" align=\"start\" sideOffset=\"4\" rdxMenuPositioner>\n            <div rdxMenuPopup>\n                <button rdxMenuItem>New Tab</button>\n                <div rdxMenuSeparator></div>\n\n                <!-- submenu -->\n                <ng-container #shareSub=\"rdxMenuRoot\" rdxMenuRoot>\n                    <button rdxMenuSubTrigger>Share ›</button>\n                    @if (shareSub.open()) {\n                        <div side=\"right\" align=\"start\" rdxMenuPositioner>\n                            <div rdxMenuPopup>\n                                <button rdxMenuItem>Email Link</button>\n                            </div>\n                        </div>\n                    }\n                </ng-container>\n\n                <button rdxMenuItem>Print…</button>\n            </div>\n        </div>\n    </ng-container>\n\n    <!-- Edit -->\n    <ng-container #editMenu=\"rdxMenuRoot\" rdxMenuRoot>\n        <button rdxMenuTrigger>Edit</button>\n\n        <div class=\"data-[closed]:hidden\" align=\"start\" sideOffset=\"4\" rdxMenuPositioner>\n            <div rdxMenuPopup>\n                <button rdxMenuItem>Undo</button>\n                <button rdxMenuItem>Redo</button>\n            </div>\n        </div>\n    </ng-container>\n</div>",
       "dataAttributes": []
     },
@@ -222,7 +222,7 @@
       "section": "components",
       "description": "A graphical display of a numeric value within a range.",
       "doc": "radix-ng-examples/references/components/meter.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-meter--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-meter--docs",
       "anatomy": "<div rdxMeterRoot [value]=\"24\">\n  <span rdxMeterLabel>Storage used</span>\n  <div rdxMeterTrack>\n    <div rdxMeterIndicator></div>\n  </div>\n  <span rdxMeterValue></span>\n</div>",
       "dataAttributes": []
     },
@@ -232,7 +232,7 @@
       "section": "components",
       "description": "A collection of links and menus for website navigation.",
       "doc": "radix-ng-examples/references/components/navigation-menu.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-navigation-menu--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-navigation-menu--docs",
       "anatomy": "<nav rdxNavigationMenuRoot>\n    <ul rdxNavigationMenuList>\n        <li rdxNavigationMenuItem value=\"products\">\n            <button rdxNavigationMenuTrigger>\n                Products\n                <svg rdxNavigationMenuIcon></svg>\n            </button>\n\n            <ng-container *rdxNavigationMenuContent>\n                <a rdxNavigationMenuLink href=\"#\">Analytics</a>\n            </ng-container>\n        </li>\n\n        <li rdxNavigationMenuItem>\n            <a rdxNavigationMenuLink href=\"#\">Pricing</a>\n        </li>\n    </ul>\n\n    <ng-template rdxNavigationMenuPortalPresence>\n        <div rdxNavigationMenuPortal>\n            <div rdxNavigationMenuBackdrop></div>\n            <div sideOffset=\"8\" rdxNavigationMenuPositioner>\n                <div rdxNavigationMenuPopup>\n                    <svg rdxNavigationMenuArrow></svg>\n                    <div rdxNavigationMenuViewport></div>\n                </div>\n            </div>\n        </div>\n    </ng-template>\n</nav>",
       "dataAttributes": []
     },
@@ -242,7 +242,7 @@
       "section": "components",
       "description": "A numeric input with stepper buttons, drag-to-scrub, locale-aware formatting and keyboard control.",
       "doc": "radix-ng-examples/references/components/number-field.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-number-field--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-number-field--docs",
       "anatomy": "<div rdxNumberFieldRoot>\n    <input rdxNumberFieldHiddenInput />\n    <span rdxNumberFieldScrubArea>\n        <label>Label</label>\n        <span rdxNumberFieldScrubAreaCursor></span>\n    </span>\n    <div rdxNumberFieldGroup>\n        <button rdxNumberFieldDecrement></button>\n        <input rdxNumberFieldInput />\n        <button rdxNumberFieldIncrement></button>\n    </div>\n</div>",
       "dataAttributes": []
     },
@@ -252,7 +252,7 @@
       "section": "components",
       "description": "Displays data in paged format and provides navigation between pages.",
       "doc": "radix-ng-examples/references/components/pagination.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-pagination--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-pagination--docs",
       "anatomy": "<div rdxPaginationRoot>\n    <div rdxPaginationList #list=\"rdxPaginationList\">\n        <button rdxPaginationFirst></button>\n        <button rdxPaginationPrev></button>\n\n        @for (item of list.transformedRange(); track item) {\n            <button rdxPaginationListItem [value]=\"item.value\">{{ item.value }}</button>\n        }\n\n        <button rdxPaginationNext></button>\n        <button rdxPaginationLast></button>\n    </div>\n</div>",
       "dataAttributes": []
     },
@@ -262,7 +262,7 @@
       "section": "components",
       "description": "An accessible popup anchored to a button.",
       "doc": "radix-ng-examples/references/components/popover.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-popover--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-popover--docs",
       "anatomy": "<ng-container rdxPopoverRoot>\n    <button rdxPopoverTrigger>Open</button>\n\n    <ng-template rdxPopoverPortalPresence>\n        <div rdxPopoverPortal>\n            <div rdxPopoverBackdrop></div>\n            <div sideOffset=\"8\" rdxPopoverPositioner>\n                <div rdxPopoverPopup>\n                    <span rdxPopoverArrow></span>\n                    <div rdxPopoverViewport>\n                        <div>\n                            <h2 rdxPopoverTitle>Notifications</h2>\n                            <p rdxPopoverDescription>You are all caught up.</p>\n                            <button rdxPopoverClose>Close</button>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </ng-template>\n</ng-container>",
       "dataAttributes": []
     },
@@ -272,7 +272,7 @@
       "section": "components",
       "description": "A popup that appears when a link is hovered or focused, showing a visual preview.",
       "doc": "radix-ng-examples/references/components/preview-card.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-preview-card--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-preview-card--docs",
       "anatomy": "<ng-container rdxPreviewCardRoot>\n  <a href=\"#\" rdxPreviewCardTrigger>Preview link</a>\n\n  <ng-template rdxPreviewCardPortalPresence>\n    <div rdxPreviewCardPortal>\n      <div rdxPreviewCardBackdrop></div>\n\n      <div rdxPreviewCardPositioner>\n        <div rdxPreviewCardPopup>\n          <span rdxPreviewCardArrow></span>\n          <div rdxPreviewCardViewport>Preview content</div>\n        </div>\n      </div>\n    </div>\n  </ng-template>\n</ng-container>",
       "dataAttributes": []
     },
@@ -282,7 +282,7 @@
       "section": "components",
       "description": "Displays task completion with accessible label, value, track, and indicator parts.",
       "doc": "radix-ng-examples/references/components/progress.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-progress--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-progress--docs",
       "anatomy": "<div rdxProgressRoot [value]=\"70\">\n  <span rdxProgressLabel>Upload progress</span>\n  <span rdxProgressValue></span>\n  <div rdxProgressTrack>\n    <div rdxProgressIndicator></div>\n  </div>\n</div>",
       "dataAttributes": []
     },
@@ -292,7 +292,7 @@
       "section": "components",
       "description": "A set of checkable buttons—known as radio buttons—where no more than one of the buttons can be checked at a time.",
       "doc": "radix-ng-examples/references/components/radio.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-radio--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-radio--docs",
       "anatomy": "<div rdxRadioRoot name=\"density\">\n  <label>\n    <span rdxRadioItem value=\"default\">\n      <span rdxRadioIndicator></span>\n    </span>\n    Default\n  </label>\n</div>",
       "dataAttributes": []
     },
@@ -302,7 +302,7 @@
       "section": "components",
       "description": "A control that presents a list of options for the user to pick from, triggered by a button.",
       "doc": "radix-ng-examples/references/components/select.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-select--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-select--docs",
       "anatomy": "<ng-container rdxSelectRoot>\n    <button rdxSelectTrigger>\n        <span #v=\"rdxSelectedValue\" rdxSelectValue placeholder=\"Pick one…\">{{ v.slotText() }}</span>\n        <!-- chevron icon -->\n    </button>\n\n    <div rdxSelectPortal>\n        <ng-template rdxSelectPortalPresence>\n            <div rdxSelectContent>\n                <div sideOffset=\"4\" align=\"start\" rdxSelectPopperPositionWrapper>\n                    <div rdxSelectPopperPositionContent>\n                        <!-- optional scroll-up button -->\n                        <div rdxSelectScrollUpButton><!-- up icon --></div>\n\n                        <div rdxSelectViewport>\n                            <div rdxSelectLabel>Group label</div>\n                            <div rdxSelectGroup>\n                                <div value=\"apple\" rdxSelectItem>\n                                    <span rdxSelectItemIndicator><!-- check icon --></span>\n                                    <span rdxSelectItemText>Apple</span>\n                                </div>\n                            </div>\n                        </div>\n\n                        <!-- optional scroll-down button -->\n                        <div rdxSelectScrollDownButton><!-- down icon --></div>\n                    </div>\n                </div>\n            </div>\n        </ng-template>\n    </div>\n</ng-container>",
       "dataAttributes": []
     },
@@ -312,7 +312,7 @@
       "section": "components",
       "description": "A separator element accessible to screen readers.",
       "doc": "radix-ng-examples/references/components/separator.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-separator--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-separator--docs",
       "anatomy": "<div rdxSeparatorRoot></div>",
       "dataAttributes": []
     },
@@ -322,7 +322,7 @@
       "section": "components",
       "description": "An input where the user selects a value, or a range of values, from within a given range.",
       "doc": "radix-ng-examples/references/components/slider.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-slider--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-slider--docs",
       "anatomy": "<div rdxSliderRoot>\n    <output rdxSliderValue></output>\n    <div rdxSliderControl>\n        <div rdxSliderTrack>\n            <div rdxSliderIndicator></div>\n            <div rdxSliderThumb>\n                <input rdxSliderThumbInput />\n            </div>\n        </div>\n    </div>\n</div>",
       "dataAttributes": []
     },
@@ -332,7 +332,7 @@
       "section": "components",
       "description": "A set of steps that are used to indicate progress through a multi-step process.",
       "doc": "radix-ng-examples/references/components/stepper.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-stepper--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-stepper--docs",
       "anatomy": "<div rdxStepperRoot >\n    <div rdxStepperItem >\n        <div rdxStepperSeparator></div>\n        <button rdxStepperTrigger>\n            <div rdxStepperIndicator></div>\n        </button>\n\n        <h4 rdxStepperTitle></h4>\n        <p rdxStepperDescription></p>\n    </div>\n</div>",
       "dataAttributes": []
     },
@@ -342,7 +342,7 @@
       "section": "components",
       "description": "A control that allows the user to toggle between checked and not checked.",
       "doc": "radix-ng-examples/references/components/switch.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-switch--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-switch--docs",
       "anatomy": "<button rdxSwitchRoot [(checked)]=\"checked\">\n    <input rdxSwitchInput />\n    <span rdxSwitchThumb></span>\n</button>",
       "dataAttributes": []
     },
@@ -352,7 +352,7 @@
       "section": "components",
       "description": "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
       "doc": "radix-ng-examples/references/components/tabs.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-tabs--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-tabs--docs",
       "anatomy": "<div rdxTabsRoot>\n    <div rdxTabsList>\n        <button rdxTabsTab value=\"1\"></button>\n        <button rdxTabsTab value=\"2\"></button>\n        <span rdxTabsIndicator></span>\n    </div>\n    <div rdxTabsPanel value=\"1\"></div>\n    <div rdxTabsPanel value=\"2\"></div>\n</div>",
       "dataAttributes": []
     },
@@ -362,7 +362,7 @@
       "section": "components",
       "description": "A segmented time input that lets users enter a time hour-by-hour with full keyboard control and localization.",
       "doc": "radix-ng-examples/references/components/time-field.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-time-field--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-time-field--docs",
       "anatomy": "<div rdxTimeFieldRoot>\n    @for (item of root.segmentContents(); track $index) {\n        <div rdxTimeFieldInput [part]=\"item.part\">{{ item.value }}</div>\n    }\n    <input rdxVisuallyHiddenInput feature=\"focusable\" />\n</div>",
       "dataAttributes": []
     },
@@ -372,7 +372,7 @@
       "section": "components",
       "description": "A succinct, low-priority message that appears temporarily, stacks, and can be swiped away.",
       "doc": "radix-ng-examples/references/components/toast.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-toast--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-toast--docs",
       "anatomy": "<div rdxToastProvider>\n    <div rdxToastPortal>\n        <div rdxToastViewport>\n            <!-- @for (toast of manager.toasts(); track toast.id) -->\n            <div rdxToastRoot [toast]=\"toast\">\n                <div rdxToastContent>\n                    <p rdxToastTitle></p>\n                    <p rdxToastDescription></p>\n                    <button rdxToastAction></button>\n                    <button rdxToastClose></button>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>",
       "dataAttributes": [
         {
@@ -418,7 +418,7 @@
       "section": "components",
       "description": "A two-state button that can be either on or off.",
       "doc": "radix-ng-examples/references/components/toggle.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-toggle--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-toggle--docs",
       "anatomy": "<button rdxToggle aria-label=\"Toggle italic\">\n    <icon />\n</button>",
       "dataAttributes": []
     },
@@ -428,7 +428,7 @@
       "section": "components",
       "description": "A set of two-state buttons that can be toggled on or off.",
       "doc": "radix-ng-examples/references/components/toggle-group.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-toggle-group--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-toggle-group--docs",
       "anatomy": "<div rdxToggleGroup [value]=\"['center']\" aria-label=\"Text alignment\">\n    <button rdxToggle value=\"left\"></button>\n    <button rdxToggle value=\"center\"></button>\n    <button rdxToggle value=\"right\"></button>\n</div>",
       "dataAttributes": []
     },
@@ -438,7 +438,7 @@
       "section": "components",
       "description": "A container for grouping a set of controls, such as buttons, toggle groups or menus.",
       "doc": "radix-ng-examples/references/components/toolbar.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-toolbar--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-toolbar--docs",
       "anatomy": "<div rdxToolbarRoot>\n    <div rdxToolbarGroup>\n        <button rdxToolbarButton></button>\n        <button rdxToolbarButton></button>\n    </div>\n    <div rdxToolbarSeparator></div>\n    <input rdxToolbarInput />\n    <a rdxToolbarLink></a>\n</div>",
       "dataAttributes": []
     },
@@ -448,7 +448,7 @@
       "section": "components",
       "description": "Displays contextual information when a trigger is hovered or focused.",
       "doc": "radix-ng-examples/references/components/tooltip.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-tooltip--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-tooltip--docs",
       "anatomy": "<ng-container rdxTooltip>\n    <button rdxTooltipTrigger>+</button>\n\n    <div rdxTooltipPortal [container]=\"content\">\n        <ng-template rdxTooltipPortalPresence #content>\n            <div sideOffset=\"8\" rdxTooltipPositioner>\n                <div rdxTooltipPopup>Add to library</div>\n                <span rdxTooltipArrow></span>\n            </div>\n        </ng-template>\n    </div>\n</ng-container>",
       "dataAttributes": []
     },
@@ -458,7 +458,7 @@
       "section": "utils",
       "description": "Detects interactions outside a layer and provides the low-level behavior used by dialogs, popovers, and menus.",
       "doc": "radix-ng-examples/references/utils/dismissable-layer.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-dismissable-layer--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-dismissable-layer--docs",
       "anatomy": "<div (dismiss)=\"close()\" rdxDismissableLayer>\n  Layer content\n</div>",
       "dataAttributes": []
     },
@@ -468,7 +468,7 @@
       "section": "utils",
       "description": "Manages focus within a component boundary with support for trapping and looping focus navigation.",
       "doc": "radix-ng-examples/references/utils/focus-scope.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-focus-scope--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-focus-scope--docs",
       "anatomy": "<div rdxFocusScope trapped loop>\n  <input type=\"text\" />\n  <button type=\"button\">Save</button>\n  <button type=\"button\">Close</button>\n</div>",
       "dataAttributes": []
     },
@@ -478,7 +478,17 @@
       "section": "utils",
       "description": "Generates unique, SSR-stable element IDs — the Angular counterpart of React's `useId`.",
       "doc": "radix-ng-examples/references/utils/inject-id.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-inject-id--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-inject-id--docs",
+      "anatomy": "",
+      "dataAttributes": []
+    },
+    {
+      "name": "LiveAnnouncer",
+      "slug": "live-announcer",
+      "section": "utils",
+      "description": "Announces messages to screen readers through an `aria-live` region, without moving focus.",
+      "doc": "radix-ng-examples/references/utils/live-announcer.md",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-live-announcer--docs",
       "anatomy": "",
       "dataAttributes": []
     },
@@ -488,7 +498,7 @@
       "section": "utils",
       "description": "Positions floating content relative to an anchor.",
       "doc": "radix-ng-examples/references/utils/popper.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-popper--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-popper--docs",
       "anatomy": "<div rdxPopperRoot>\n    <button rdxPopperAnchor>Anchor</button>\n\n    <div side=\"top\" sideOffset=\"8\" rdxPopperContentWrapper>\n        <div rdxPopperContent>Floating content</div>\n        <span rdxPopperArrow></span>\n    </div>\n</div>",
       "dataAttributes": []
     },
@@ -498,7 +508,7 @@
       "section": "utils",
       "description": "Renders its host element into a different part of the DOM (`document.body` by default).",
       "doc": "radix-ng-examples/references/utils/portal.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-portal--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-portal--docs",
       "anatomy": "<div rdxPortal>This content is moved to the document body.</div>",
       "dataAttributes": []
     },
@@ -508,17 +518,7 @@
       "section": "utils",
       "description": "Presence",
       "doc": "radix-ng-examples/references/utils/presence.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-presence--docs",
-      "anatomy": "",
-      "dataAttributes": []
-    },
-    {
-      "name": "RdxLiveAnnouncer",
-      "slug": "live-announcer",
-      "section": "utils",
-      "description": "Announces messages to screen readers through an `aria-live` region, without moving focus.",
-      "doc": "radix-ng-examples/references/utils/live-announcer.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-live-announcer--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-presence--docs",
       "anatomy": "",
       "dataAttributes": []
     },
@@ -528,7 +528,7 @@
       "section": "utils",
       "description": "Usage",
       "doc": "radix-ng-examples/references/utils/roving-focus.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-roving-focus--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-roving-focus--docs",
       "anatomy": "<div rdxRovingFocusGroup>\n    <button rdxRovingFocusItem></button>\n    <button rdxRovingFocusItem></button>\n    <button rdxRovingFocusItem></button>\n</div>",
       "dataAttributes": []
     },
@@ -538,7 +538,7 @@
       "section": "utils",
       "description": "Hides content visually while keeping it available to assistive technology.",
       "doc": "radix-ng-examples/references/utils/visually-hidden.md",
-      "storybook": "https://sb-primitives.radix-ng.com/?path=/docs/primitives-visually-hidden--docs",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-visually-hidden--docs",
       "anatomy": "<button>\n  <icon aria-hidden=\"true\" />\n  <span rdxVisuallyHidden>Add to favorites</span>\n</button>",
       "dataAttributes": []
     }

@@ -65,8 +65,8 @@ Primitives are headless: style them via the `data-*` attributes they expose (e.g
 
 ## Documentation
 
-- 📖 [radix-ng.com](https://radix-ng.com) — guides and API reference
-- 🧪 [sb-primitives.radix-ng.com](https://sb-primitives.radix-ng.com/) — Storybook
+- 📖 [radix-ng.com](https://radix-ng.com) — documentation, examples & API reference (Storybook)
+- 📄 [radix-ng.com/llms.txt](https://radix-ng.com/llms.txt) — docs for LLMs (full text at [/llms-full.txt](https://radix-ng.com/llms-full.txt))
 - 🤖 [AI assistant skills](#ai-assistant-skills) — for Claude Code, Cursor, Copilot, and others
 - 🎙 [The Story of My Radix UI Port for Angular](https://frontendconf.ru/moscow/2025/abstracts/16014) — talk, FrontendConf Moscow 2025
 

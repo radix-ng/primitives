@@ -1,0 +1,63 @@
+# Radix NG Primitives
+
+Unstyled, accessible, signals-first Angular primitives for building design systems and web apps.
+
+Full documentation in one file: https://radix-ng.com/llms-full.txt
+
+## Components
+
+- [Accordion](https://radix-ng.com/components/accordion.md): A vertically stacked set of interactive headings that each reveal an associated section of content.
+- [Alert Dialog](https://radix-ng.com/components/alert-dialog.md): A modal dialog that interrupts the user with important content and expects a response.
+- [Aspect Ratio](https://radix-ng.com/components/aspect-ratio.md): Displays content within a desired ratio.
+- [Avatar](https://radix-ng.com/components/avatar.md): An image element with a fallback for representing the user.
+- [Button](https://radix-ng.com/components/button.md): A button, or any element that should behave like one.
+- [Calendar](https://radix-ng.com/components/calendar.md): Displays dates and days of the week, facilitating date-related interactions.
+- [Checkbox](https://radix-ng.com/components/checkbox.md): A control that allows the user to toggle between checked and not checked.
+- [Collapsible](https://radix-ng.com/components/collapsible.md): A panel that expands and collapses, revealing or hiding its contents.
+- [Context Menu](https://radix-ng.com/components/context-menu.md): A menu that appears at the pointer on right click (or touch long-press), built on the Menu primitive.
+- [Cropper](https://radix-ng.com/components/cropper.md): Headless component for interactive image cropping — inspired by the experience on [X](https://x.com/)
+- [Date Field](https://radix-ng.com/components/date-field.md): Enables users to input specific dates within a designated field.
+- [Dialog](https://radix-ng.com/components/dialog.md): A window overlaid on the page, rendering the content underneath inert.
+- [Drawer](https://radix-ng.com/components/drawer.md): An edge-anchored sheet that opens over the page and dismisses with a swipe.
+- [Field](https://radix-ng.com/components/field.md): Groups a control with accessible label, description, error message, and field state.
+- [Fieldset](https://radix-ng.com/components/fieldset.md): Groups related form controls with a legend and shared disabled state.
+- [Input](https://radix-ng.com/components/input.md): A native text input with headless state attributes and Field integration.
+- [Label](https://radix-ng.com/components/label.md): Renders an accessible label associated with controls.
+- [Menu](https://radix-ng.com/components/menu.md): A headless dropdown menu anchored to a trigger button.
+- [Menubar](https://radix-ng.com/components/menubar.md): A visually persistent menu common in desktop applications that provides quick access to a consistent set of commands.
+- [Meter](https://radix-ng.com/components/meter.md): A graphical display of a numeric value within a range.
+- [Navigation Menu](https://radix-ng.com/components/navigation-menu.md): A collection of links and menus for website navigation.
+- [Number Field](https://radix-ng.com/components/number-field.md): A numeric input with stepper buttons, drag-to-scrub, locale-aware formatting and keyboard control.
+- [Pagination](https://radix-ng.com/components/pagination.md): Displays data in paged format and provides navigation between pages.
+- [Popover](https://radix-ng.com/components/popover.md): An accessible popup anchored to a button.
+- [Preview Card](https://radix-ng.com/components/preview-card.md): A popup that appears when a link is hovered or focused, showing a visual preview.
+- [Progress](https://radix-ng.com/components/progress.md): Displays task completion with accessible label, value, track, and indicator parts.
+- [Radio Group](https://radix-ng.com/components/radio.md): A set of checkable buttons—known as radio buttons—where no more than one of the buttons can be checked at a time.
+- [Select](https://radix-ng.com/components/select.md): A control that presents a list of options for the user to pick from, triggered by a button.
+- [Separator](https://radix-ng.com/components/separator.md): A separator element accessible to screen readers.
+- [Slider](https://radix-ng.com/components/slider.md): An input where the user selects a value, or a range of values, from within a given range.
+- [Stepper](https://radix-ng.com/components/stepper.md): A set of steps that are used to indicate progress through a multi-step process.
+- [Switch](https://radix-ng.com/components/switch.md): A control that allows the user to toggle between checked and not checked.
+- [Tabs](https://radix-ng.com/components/tabs.md): A set of layered sections of content—known as tab panels—that are displayed one at a time.
+- [Time Field](https://radix-ng.com/components/time-field.md): A segmented time input that lets users enter a time hour-by-hour with full keyboard control and localization.
+- [Toast](https://radix-ng.com/components/toast.md): A succinct, low-priority message that appears temporarily, stacks, and can be swiped away.
+- [Toggle](https://radix-ng.com/components/toggle.md): A two-state button that can be either on or off.
+- [Toggle Group](https://radix-ng.com/components/toggle-group.md): A set of two-state buttons that can be toggled on or off.
+- [Toolbar](https://radix-ng.com/components/toolbar.md): A container for grouping a set of controls, such as buttons, toggle groups or menus.
+- [Tooltip](https://radix-ng.com/components/tooltip.md): Displays contextual information when a trigger is hovered or focused.
+
+## Utilities
+
+- [Dismissable Layer](https://radix-ng.com/utils/dismissable-layer.md): Detects interactions outside a layer and provides the low-level behavior used by dialogs, popovers, and menus.
+- [Focus Scope](https://radix-ng.com/utils/focus-scope.md): Manages focus within a component boundary with support for trapping and looping focus navigation.
+- [injectId](https://radix-ng.com/utils/inject-id.md): Generates unique, SSR-stable element IDs — the Angular counterpart of React's `useId`.
+- [LiveAnnouncer](https://radix-ng.com/utils/live-announcer.md): Announces messages to screen readers through an `aria-live` region, without moving focus.
+- [Popper](https://radix-ng.com/utils/popper.md): Positions floating content relative to an anchor.
+- [Portal](https://radix-ng.com/utils/portal.md): Renders its host element into a different part of the DOM (`document.body` by default).
+- [Presence](https://radix-ng.com/utils/presence.md): Presence
+- [Roving Focus](https://radix-ng.com/utils/roving-focus.md): Usage
+- [Visually Hidden](https://radix-ng.com/utils/visually-hidden.md): Hides content visually while keeping it available to assistive technology.
+
+## Guides
+
+- [Styling guide for demos](https://radix-ng.com/guides/styling.md): Styling guide for demos

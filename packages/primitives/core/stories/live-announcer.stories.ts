@@ -7,7 +7,7 @@ const source = (code: string) => ({ docs: { source: { code, language: 'typescrip
 const html = String.raw;
 
 export default {
-    title: 'Utilities/RdxLiveAnnouncer',
+    title: 'Utilities/LiveAnnouncer',
     decorators: [
         moduleMetadata({
             imports: [LiveAnnouncerExample]

@@ -16,7 +16,7 @@ metadata:
 > Do not edit by hand — the Storybook stories are the source of truth.
 
 Working examples built on `@radix-ng/primitives`. Full source is **bundled offline** under
-`references/`; browse visually at https://sb-primitives.radix-ng.com.
+`references/`; browse visually at https://radix-ng.com.
 
 ## How to use this skill
 
@@ -36,7 +36,7 @@ Total: **186 examples** across **37 components**.
 
 ### Accordion
 
-Full source (all examples): [`references/components/accordion.md`](./references/components/accordion.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-accordion--docs)
+Full source (all examples): [`references/components/accordion.md`](./references/components/accordion.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-accordion--docs)
 
 - **Disabled**
 - **Multiple**
@@ -47,7 +47,7 @@ Full source (all examples): [`references/components/accordion.md`](./references/
 
 ### Alert Dialog
 
-Full source (all examples): [`references/components/alert-dialog.md`](./references/components/alert-dialog.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-alert-dialog--docs)
+Full source (all examples): [`references/components/alert-dialog.md`](./references/components/alert-dialog.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-alert-dialog--docs)
 
 - **Default**
 - **Controlled**
@@ -59,7 +59,7 @@ Full source (all examples): [`references/components/alert-dialog.md`](./referenc
 
 ### Avatar
 
-Full source (all examples): [`references/components/avatar.md`](./references/components/avatar.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-avatar--docs)
+Full source (all examples): [`references/components/avatar.md`](./references/components/avatar.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-avatar--docs)
 
 - **Sizes**
 - **Fallback**
@@ -67,7 +67,7 @@ Full source (all examples): [`references/components/avatar.md`](./references/com
 
 ### Button
 
-Full source (all examples): [`references/components/button.md`](./references/components/button.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-button--docs)
+Full source (all examples): [`references/components/button.md`](./references/components/button.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-button--docs)
 
 - **Variants**
 - **Sizes**
@@ -77,7 +77,7 @@ Full source (all examples): [`references/components/button.md`](./references/com
 
 ### Calendar
 
-Full source (all examples): [`references/components/calendar.md`](./references/components/calendar.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-calendar--docs)
+Full source (all examples): [`references/components/calendar.md`](./references/components/calendar.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-calendar--docs)
 
 - **Calendar with Locale and Calendar System Selection**
 - **Multiple selection**
@@ -89,7 +89,7 @@ Full source (all examples): [`references/components/calendar.md`](./references/c
 
 ### Checkbox
 
-Full source (all examples): [`references/components/checkbox.md`](./references/components/checkbox.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-checkbox--docs)
+Full source (all examples): [`references/components/checkbox.md`](./references/components/checkbox.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-checkbox--docs)
 
 - **Indeterminate**
 - **Presence**
@@ -101,7 +101,7 @@ Full source (all examples): [`references/components/checkbox.md`](./references/c
 
 ### Collapsible
 
-Full source (all examples): [`references/components/collapsible.md`](./references/components/collapsible.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-collapsible--docs)
+Full source (all examples): [`references/components/collapsible.md`](./references/components/collapsible.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-collapsible--docs)
 
 - **Keep mounted**
 - **Animation**
@@ -109,26 +109,26 @@ Full source (all examples): [`references/components/collapsible.md`](./reference
 
 ### Context Menu
 
-Full source (all examples): [`references/components/context-menu.md`](./references/components/context-menu.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-context-menu--docs)
+Full source (all examples): [`references/components/context-menu.md`](./references/components/context-menu.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-context-menu--docs)
 
 - **Default**
 
 ### Cropper
 
-Full source (all examples): [`references/components/cropper.md`](./references/components/cropper.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-cropper--docs)
+Full source (all examples): [`references/components/cropper.md`](./references/components/cropper.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-cropper--docs)
 
 - **With Data Area**
 
 ### Date Field
 
-Full source (all examples): [`references/components/date-field.md`](./references/components/date-field.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-date-field--docs)
+Full source (all examples): [`references/components/date-field.md`](./references/components/date-field.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-date-field--docs)
 
 - **With locale**
 - **Invalid**
 
 ### Dialog
 
-Full source (all examples): [`references/components/dialog.md`](./references/components/dialog.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-dialog--docs)
+Full source (all examples): [`references/components/dialog.md`](./references/components/dialog.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-dialog--docs)
 
 - **Default**
 - **Controlled**
@@ -146,7 +146,7 @@ Full source (all examples): [`references/components/dialog.md`](./references/com
 
 ### Drawer
 
-Full source (all examples): [`references/components/drawer.md`](./references/components/drawer.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-drawer--docs)
+Full source (all examples): [`references/components/drawer.md`](./references/components/drawer.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-drawer--docs)
 
 - **Default**
 - **State**
@@ -162,7 +162,7 @@ Full source (all examples): [`references/components/drawer.md`](./references/com
 
 ### Field
 
-Full source (all examples): [`references/components/field.md`](./references/components/field.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-field--docs)
+Full source (all examples): [`references/components/field.md`](./references/components/field.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-field--docs)
 
 - **Default**
 - **Invalid**
@@ -171,7 +171,7 @@ Full source (all examples): [`references/components/field.md`](./references/comp
 
 ### Fieldset
 
-Full source (all examples): [`references/components/fieldset.md`](./references/components/fieldset.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-fieldset--docs)
+Full source (all examples): [`references/components/fieldset.md`](./references/components/fieldset.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-fieldset--docs)
 
 - **Default**
 - **Disabled**
@@ -179,7 +179,7 @@ Full source (all examples): [`references/components/fieldset.md`](./references/c
 
 ### Input
 
-Full source (all examples): [`references/components/input.md`](./references/components/input.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-input--docs)
+Full source (all examples): [`references/components/input.md`](./references/components/input.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-input--docs)
 
 - **Disabled**
 - **With Field**
@@ -188,7 +188,7 @@ Full source (all examples): [`references/components/input.md`](./references/comp
 
 ### Menu
 
-Full source (all examples): [`references/components/menu.md`](./references/components/menu.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-menu--docs)
+Full source (all examples): [`references/components/menu.md`](./references/components/menu.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-menu--docs)
 
 - **Default**
 - **Radio items**
@@ -202,13 +202,13 @@ Full source (all examples): [`references/components/menu.md`](./references/compo
 
 ### Menubar
 
-Full source (all examples): [`references/components/menubar.md`](./references/components/menubar.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-menubar--docs)
+Full source (all examples): [`references/components/menubar.md`](./references/components/menubar.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-menubar--docs)
 
 - **Default**
 
 ### Meter
 
-Full source (all examples): [`references/components/meter.md`](./references/components/meter.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-meter--docs)
+Full source (all examples): [`references/components/meter.md`](./references/components/meter.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-meter--docs)
 
 - **Default**
 - **Custom range**
@@ -216,7 +216,7 @@ Full source (all examples): [`references/components/meter.md`](./references/comp
 
 ### Navigation Menu
 
-Full source (all examples): [`references/components/navigation-menu.md`](./references/components/navigation-menu.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-navigation-menu--docs)
+Full source (all examples): [`references/components/navigation-menu.md`](./references/components/navigation-menu.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-navigation-menu--docs)
 
 - **Default**
 - **Vertical**
@@ -229,7 +229,7 @@ Full source (all examples): [`references/components/navigation-menu.md`](./refer
 
 ### Number Field
 
-Full source (all examples): [`references/components/number-field.md`](./references/components/number-field.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-number-field--docs)
+Full source (all examples): [`references/components/number-field.md`](./references/components/number-field.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-number-field--docs)
 
 - **Default**
 - **Decimal**
@@ -240,14 +240,14 @@ Full source (all examples): [`references/components/number-field.md`](./referenc
 
 ### Pagination
 
-Full source (all examples): [`references/components/pagination.md`](./references/components/pagination.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-pagination--docs)
+Full source (all examples): [`references/components/pagination.md`](./references/components/pagination.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-pagination--docs)
 
 - **With ellipsis**
 - **With first/last button**
 
 ### Popover
 
-Full source (all examples): [`references/components/popover.md`](./references/components/popover.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-popover--docs)
+Full source (all examples): [`references/components/popover.md`](./references/components/popover.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-popover--docs)
 
 - **Default**
 - **Controlled**
@@ -262,7 +262,7 @@ Full source (all examples): [`references/components/popover.md`](./references/co
 
 ### Preview Card
 
-Full source (all examples): [`references/components/preview-card.md`](./references/components/preview-card.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-preview-card--docs)
+Full source (all examples): [`references/components/preview-card.md`](./references/components/preview-card.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-preview-card--docs)
 
 - **Controlled Multiple**
 - **Detached**
@@ -271,7 +271,7 @@ Full source (all examples): [`references/components/preview-card.md`](./referenc
 
 ### Progress
 
-Full source (all examples): [`references/components/progress.md`](./references/components/progress.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-progress--docs)
+Full source (all examples): [`references/components/progress.md`](./references/components/progress.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-progress--docs)
 
 - **Default**
 - **Indeterminate**
@@ -280,7 +280,7 @@ Full source (all examples): [`references/components/progress.md`](./references/c
 
 ### Radio Group
 
-Full source (all examples): [`references/components/radio.md`](./references/components/radio.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-radio--docs)
+Full source (all examples): [`references/components/radio.md`](./references/components/radio.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-radio--docs)
 
 - **Default**
 - **Disabled**
@@ -288,7 +288,7 @@ Full source (all examples): [`references/components/radio.md`](./references/comp
 
 ### Select
 
-Full source (all examples): [`references/components/select.md`](./references/components/select.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-select--docs)
+Full source (all examples): [`references/components/select.md`](./references/components/select.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-select--docs)
 
 - **Default**
 - **With scroll buttons**
@@ -297,14 +297,14 @@ Full source (all examples): [`references/components/select.md`](./references/com
 
 ### Separator
 
-Full source (all examples): [`references/components/separator.md`](./references/components/separator.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-separator--docs)
+Full source (all examples): [`references/components/separator.md`](./references/components/separator.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-separator--docs)
 
 - **Vertical**
 - **Horizontal**
 
 ### Slider
 
-Full source (all examples): [`references/components/slider.md`](./references/components/slider.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-slider--docs)
+Full source (all examples): [`references/components/slider.md`](./references/components/slider.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-slider--docs)
 
 - **Range**
 - **Vertical**
@@ -314,14 +314,14 @@ Full source (all examples): [`references/components/slider.md`](./references/com
 
 ### Stepper
 
-Full source (all examples): [`references/components/stepper.md`](./references/components/stepper.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-stepper--docs)
+Full source (all examples): [`references/components/stepper.md`](./references/components/stepper.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-stepper--docs)
 
 - **Vertical**
 - **Navigation**
 
 ### Switch
 
-Full source (all examples): [`references/components/switch.md`](./references/components/switch.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-switch--docs)
+Full source (all examples): [`references/components/switch.md`](./references/components/switch.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-switch--docs)
 
 - **Preselection**
 - **Disabled**
@@ -330,7 +330,7 @@ Full source (all examples): [`references/components/switch.md`](./references/com
 
 ### Tabs
 
-Full source (all examples): [`references/components/tabs.md`](./references/components/tabs.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-tabs--docs)
+Full source (all examples): [`references/components/tabs.md`](./references/components/tabs.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-tabs--docs)
 
 - **Activate on focus**
 - **Vertical**
@@ -342,7 +342,7 @@ Full source (all examples): [`references/components/tabs.md`](./references/compo
 
 ### Time Field
 
-Full source (all examples): [`references/components/time-field.md`](./references/components/time-field.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-time-field--docs)
+Full source (all examples): [`references/components/time-field.md`](./references/components/time-field.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-time-field--docs)
 
 - **Default**
 - **Hour cycle**
@@ -354,7 +354,7 @@ Full source (all examples): [`references/components/time-field.md`](./references
 
 ### Toast
 
-Full source (all examples): [`references/components/toast.md`](./references/components/toast.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-toast--docs)
+Full source (all examples): [`references/components/toast.md`](./references/components/toast.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-toast--docs)
 
 - **Default**
 - **Stacking**
@@ -370,7 +370,7 @@ Full source (all examples): [`references/components/toast.md`](./references/comp
 
 ### Toggle
 
-Full source (all examples): [`references/components/toggle.md`](./references/components/toggle.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-toggle--docs)
+Full source (all examples): [`references/components/toggle.md`](./references/components/toggle.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-toggle--docs)
 
 - **Pressed by default**
 - **Controlled**
@@ -378,7 +378,7 @@ Full source (all examples): [`references/components/toggle.md`](./references/com
 
 ### Toggle Group
 
-Full source (all examples): [`references/components/toggle-group.md`](./references/components/toggle-group.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-toggle-group--docs)
+Full source (all examples): [`references/components/toggle-group.md`](./references/components/toggle-group.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-toggle-group--docs)
 
 - **Multiple**
 - **Disabled**
@@ -386,7 +386,7 @@ Full source (all examples): [`references/components/toggle-group.md`](./referenc
 
 ### Toolbar
 
-Full source (all examples): [`references/components/toolbar.md`](./references/components/toolbar.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-toolbar--docs)
+Full source (all examples): [`references/components/toolbar.md`](./references/components/toolbar.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-toolbar--docs)
 
 - **Vertical**
 - **Disabled**
@@ -396,7 +396,7 @@ Full source (all examples): [`references/components/toolbar.md`](./references/co
 
 ### Tooltip
 
-Full source (all examples): [`references/components/tooltip.md`](./references/components/tooltip.md) · [Storybook](https://sb-primitives.radix-ng.com/?path=/docs/primitives-tooltip--docs)
+Full source (all examples): [`references/components/tooltip.md`](./references/components/tooltip.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-tooltip--docs)
 
 - **Default**
 - **Provider**
