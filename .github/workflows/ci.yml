@@ -49,8 +49,10 @@ jobs:
       - name: Derive affected SHAs
         uses: nrwl/nx-set-shas@afb73a62d26e41464e9254689e1fd6122ee683c1 # v5.0.1
 
+      # Scope to the primitives library — CI never tested the apps/docs projects, and
+      # `affected` has no project allow-list (only --exclude), so list them explicitly.
       - name: Run unit tests
-        run: npx nx affected -t test
+        run: npx nx affected -t test --exclude=radix-storybook,radix-ssr-testing,radix-docs,radix-ng
 
   builds:
     runs-on: ubuntu-latest
@@ -66,8 +68,10 @@ jobs:
       - name: Derive affected SHAs
         uses: nrwl/nx-set-shas@afb73a62d26e41464e9254689e1fd6122ee683c1 # v5.0.1
 
+      # Scope to the primitives library — CI never built the apps/docs projects (radix-docs
+      # is deprecated and its build is broken), and `affected` has no project allow-list.
       - name: Build Primitives and Schematics
-        run: npx nx affected -t build build:schematics
+        run: npx nx affected -t build build:schematics --exclude=radix-storybook,radix-ssr-testing,radix-docs,radix-ng
 
   skills:
     runs-on: ubuntu-latest
