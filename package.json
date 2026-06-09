@@ -24,6 +24,7 @@
         "primitives:ssr:build": "nx build radix-ssr-testing",
         "primitives:ssr:dist": "node dist/apps/radix-ssr-testing/server/server.mjs",
         "primitives:build:typedoc": "node tools/scripts/api-doc/build.mjs",
+        "skills:build": "node tools/scripts/skills/generate.mjs",
         "----Radix Docs---": "-----------------------------------------------------------------------",
         "radix-docs:dev": "nx run radix-docs:dev",
         "radix-docs:build": "nx run radix-docs:build",

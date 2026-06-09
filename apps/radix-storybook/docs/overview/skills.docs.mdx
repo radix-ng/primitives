@@ -1,0 +1,78 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Overview/Skills" />
+
+# Skills
+
+Give your AI coding assistant structured knowledge of Radix NG so it writes correct, accessible
+code on the primitives — and styles them with your own design system — without guessing APIs.
+
+Skills are reusable capabilities for AI agents, distributed through the open
+[Agent Skills ecosystem](https://skills.sh). They are **self-contained**: every example, the full
+documentation, and the `data-*` styling contract are bundled offline, so they work even when no
+documentation site is available.
+
+## Install
+
+Install both skills with a single command, using your package manager:
+
+```bash
+# npm
+npx skills add radix-ng/primitives
+```
+
+```bash
+# pnpm
+pnpm dlx skills add radix-ng/primitives
+```
+
+```bash
+# yarn
+yarn dlx skills add radix-ng/primitives
+```
+
+```bash
+# bun
+bunx skills add radix-ng/primitives
+```
+
+This adds the skills to your project so your agent (Claude Code, Cursor, and others) picks them up
+automatically when you work on UI.
+
+## What's included
+
+Two skills ship together:
+
+### `radix-ng`
+
+How to build correct, accessible UI on the primitives:
+
+- **Component knowledge** — the full headless primitive catalog, compound anatomy, and DI-context
+  composition rules.
+- **Styling contract** — `styling-contract.json`: per primitive, the parts and every `data-*`
+  attribute (with its values). This is how the agent themes a headless primitive with **your own
+  design system** — Tailwind, CSS modules, vanilla CSS, or any token set.
+- **Composition** — `hostDirectives` patterns for wrapping primitives in your own components.
+- **Forms** — the Fieldset → Field → control structure and label-association rules.
+
+### `radix-ng-examples`
+
+An index of **every documented example**, with the full Angular source bundled offline. The agent
+finds the closest working pattern and adapts it instead of writing from scratch.
+
+## How it works
+
+1. **Discovery** — each skill declares a short description; the agent loads it when your task matches
+   (e.g. "build an accordion", "add a validated form field", "style this with my tokens").
+2. **Reference** — the agent pulls the relevant primitive's contract and a matching example from the
+   bundle, on demand.
+3. **Generate** — it assembles the correct part hierarchy, wires signal-based inputs/outputs, and
+   keeps the accessibility and keyboard behavior the primitives provide.
+4. **Style** — it maps each `data-*` state to your design tokens, so the result fits your system.
+
+Because everything is local, the agent never invents an input, output, or part that doesn't exist.
+
+## Supported agents
+
+The skills work with Claude Code, Cursor, Codex, Cline, Windsurf, GitHub Copilot, Gemini, and many
+other agents that support the Agent Skills format.

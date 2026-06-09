@@ -1,0 +1,71 @@
+# Focus Scope
+
+#### Manages focus within a component boundary with support for trapping and looping focus navigation.
+
+Focus Scope is a low-level utility for overlays such as dialogs and popovers. It moves focus into a mounted scope,
+optionally keeps focus inside it, and restores focus when the scope is removed.
+
+## Features
+
+- Moves focus to the first tabbable control when mounted.
+- Restores focus to the previously focused element when unmounted.
+- Supports trapped focus for modal surfaces.
+- Supports looping Tab and Shift+Tab navigation.
+- Exposes preventable mount and unmount auto-focus events.
+- Coordinates nested scopes so only the active scope manages focus.
+
+## Anatomy
+
+Apply `rdxFocusScope` to the element that contains the focusable controls.
+
+```html
+<div rdxFocusScope trapped loop>
+  <input type="text" />
+  <button type="button">Save</button>
+  <button type="button">Close</button>
+</div>
+```
+
+## Examples
+
+### Trapped Focus
+
+Use `trapped` for modal surfaces. Pointer, keyboard, and programmatic focus attempts outside the scope return focus to
+the last focused element inside it. Closing the scope restores focus to the trigger.
+
+```html
+<focus-scope-trapped />
+```
+
+### Looping Navigation
+
+Use `loop` when Tab from the last control should wrap to the first control, and Shift+Tab from the first should wrap to
+the last.
+
+```html
+<focus-scope-trapped-loop />
+```
+
+### Preventing Auto-focus
+
+The `mountAutoFocus` and `unmountAutoFocus` events are preventable. Use `preventDefault()` when the consumer needs to
+manage initial focus or focus restoration manually.
+
+```html
+<focus-scope-events />
+```
+
+```html
+<div (mountAutoFocus)="$event.preventDefault()" (unmountAutoFocus)="$event.preventDefault()" rdxFocusScope>...</div>
+```
+
+## Notes
+
+- Use `trapped` for modal behavior. Use `loop` separately when wrapping keyboard navigation is desired.
+- Focus Scope manages focus only. Compose it with Dismissable Layer when Escape and outside interactions should close
+  an overlay.
+- Place at least one tabbable control inside the scope. When none exists, the scope container receives focus.
+
+## API Reference
+
+### RdxFocusScope

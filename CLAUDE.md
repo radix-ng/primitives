@@ -43,7 +43,6 @@ packages/
       stories/
         <name>.stories.ts
         <name>.ts                    ← standalone story components
-  components/          ← styled components that consume primitives
 apps/
   radix-storybook/     ← Storybook app for primitives
   radix-docs/          ← documentation site

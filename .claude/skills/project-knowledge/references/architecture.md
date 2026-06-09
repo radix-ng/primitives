@@ -38,8 +38,6 @@ apps/
   radix-storybook/     ← Storybook app (port 4400)
   radix-docs/          ← documentation site (Astro)
   radix-ssr-testing/   ← SSR smoke-test app
-packages/
-  components/          ← styled components consuming primitives (not part of published lib)
 tools/scripts/         ← build helpers (typedoc, api-docs)
 ```
 

@@ -25,6 +25,7 @@ now align primarily with [Base UI](https://base-ui.com/).
 - 🧩 **Composable** — primitives compose via `hostDirectives` and shared building blocks.
 - 🌗 **Theme-ready** — state-driven styling works with light/dark and any design tokens.
 - 📦 **Tree-shakeable** — granular secondary entry points (`@radix-ng/primitives/<name>`).
+- 🤖 **AI-ready** — installable [Skills](#ai-assistant-skills) teach AI coding assistants the APIs, examples, and `data-*` styling contract.
 
 ## Installation
 
@@ -66,7 +67,20 @@ Primitives are headless: style them via the `data-*` attributes they expose (e.g
 
 - 📖 [radix-ng.com](https://radix-ng.com) — guides and API reference
 - 🧪 [sb-primitives.radix-ng.com](https://sb-primitives.radix-ng.com/) — Storybook
+- 🤖 [AI assistant skills](#ai-assistant-skills) — for Claude Code, Cursor, Copilot, and others
 - 🎙 [The Story of My Radix UI Port for Angular](https://frontendconf.ru/moscow/2025/abstracts/16014) — talk, FrontendConf Moscow 2025
+
+## AI assistant skills
+
+Give your AI coding assistant structured knowledge of the primitives — APIs, working examples, and
+the `data-*` styling contract — so it writes correct, accessible code instead of guessing. The
+[Skills](skills/) are self-contained (everything bundled offline) and work with Claude Code, Cursor,
+Codex, Cline, Windsurf, GitHub Copilot, Gemini, and other agents via the open
+[Agent Skills ecosystem](https://skills.sh).
+
+```bash
+npx skills add radix-ng/primitives
+```
 
 ## Components
 

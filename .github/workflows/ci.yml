@@ -77,11 +77,31 @@ jobs:
       - name: Build Schematics
         run: pnpm primitives:build:schematics
 
+  skills:
+    runs-on: ubuntu-latest
+    needs: install-deps
+    steps:
+      - name: Checkout code repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup
+
+      - name: Verify skills bundle is up to date
+        run: |
+          pnpm skills:build
+          if [ -n "$(git status --porcelain skills)" ]; then
+            echo "::error::Skills bundle is out of date. Run 'pnpm skills:build' and commit the result."
+            git -c core.pager=cat diff -- skills
+            exit 1
+          fi
+
   summary:
     if: ${{ always() }}
-    needs: [lint, unit, builds]
+    needs: [lint, unit, builds, skills]
     runs-on: ubuntu-latest
     steps:
       - name: On error
-        if: ${{ needs.builds.result != 'success' || needs.unit.result != 'success' || needs.lint.result != 'success' }}
+        if: ${{ needs.builds.result != 'success' || needs.unit.result != 'success' || needs.lint.result != 'success' || needs.skills.result != 'success' }}
         run: exit 1

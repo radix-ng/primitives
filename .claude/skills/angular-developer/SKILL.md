@@ -37,7 +37,7 @@ The core of this library. Consult:
 
 ## Components and directives
 
-Authoring patterns for the directive parts and the few styled components:
+Authoring patterns for the directive parts and the few component-based parts:
 
 - **Components fundamentals**: anatomy, metadata, control flow (`@if`/`@for`/`@switch`). Read [components.md](references/components.md)
 - **Inputs**: signal inputs, transforms, `model` inputs. Read [inputs.md](references/inputs.md)

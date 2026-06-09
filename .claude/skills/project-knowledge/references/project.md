@@ -31,7 +31,7 @@ Angular developers building their own design systems or adopting accessible head
 
 - No visual styling or CSS shipped
 - No opinionated design tokens (consumers bring their own)
-- Not a full component library (that's `packages/components/`, which consumes primitives)
+- Not a full component library — consumers compose the headless primitives with their own styling
 
 ## Available primitives (48+)
 
