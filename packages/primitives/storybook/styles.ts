@@ -200,6 +200,65 @@ export const demoDrawer = {
     )
 } as const;
 
+/**
+ * Toast stack + parts. The headless primitive only writes the data/CSS-variable contract; these
+ * classes turn it into a visible bottom-right stack that expands on hover and follows swipes.
+ *
+ * - `--toast-index` (0 = front) drives the collapsed peek (translate up + scale + fade).
+ * - `data-expanded` (viewport hovered/focused) lays toasts out by their measured `--toast-offset-y`.
+ * - `--toast-swipe-movement-x/y` + `data-swiping` move the inner content live during a swipe.
+ * - `data-[state]` runs the enter/leave keyframes; the leave keyframe is required for the toast to
+ *   unmount (the primitive removes it on `animationend`).
+ */
+export const demoToast = {
+    viewport: cn(
+        'fixed right-4 bottom-4 z-50 w-[360px] max-w-[calc(100vw-2rem)] outline-none',
+        '[--toast-gap:0.75rem]'
+    ),
+    root: cn(
+        'group absolute right-0 bottom-0 w-full origin-bottom',
+        '[z-index:calc(50-var(--toast-index))]',
+        '[opacity:calc(1-var(--toast-index)*0.3)] data-[expanded]:opacity-100 data-[front]:opacity-100',
+        '[transform:translateY(calc(var(--toast-index)*-0.75rem))_scale(calc(1-var(--toast-index)*0.05))]',
+        'data-[expanded]:[transform:translateY(calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1))]',
+        '[transition:transform_320ms_cubic-bezier(0.22,1,0.36,1),opacity_320ms_ease]',
+        'data-[state=open]:animate-toast-in data-[state=closed]:animate-toast-out'
+    ),
+    content: cn(
+        demoCard,
+        'relative flex touch-none items-start gap-3 p-4 pr-9 shadow-lg select-none',
+        '[transform:translate3d(var(--toast-swipe-movement-x,0px),var(--toast-swipe-movement-y,0px),0)]',
+        '[transition:transform_220ms_ease] group-data-[swiping]:[transition:none]'
+    ),
+    icon: 'mt-0.5 size-5 shrink-0',
+    title: 'text-sm font-semibold text-card-foreground',
+    description: 'mt-1 text-sm text-muted-foreground',
+    close: cn(demoButton.base, demoButton.ghost, 'absolute top-2 right-2 size-6 p-0'),
+    action: cn(demoButton.base, demoButton.outline, demoButton.size.sm, 'mt-3'),
+    /** Top-center placement variant: the stack grows downward (signs flipped, anchored at the top). */
+    viewportTop: cn(
+        'fixed top-4 left-1/2 z-50 w-[360px] max-w-[calc(100vw-2rem)] -translate-x-1/2 outline-none',
+        '[--toast-gap:0.75rem]'
+    ),
+    rootTop: cn(
+        'group absolute top-0 left-0 w-full origin-top',
+        '[z-index:calc(50-var(--toast-index))]',
+        '[opacity:calc(1-var(--toast-index)*0.3)] data-[expanded]:opacity-100 data-[front]:opacity-100',
+        '[transform:translateY(calc(var(--toast-index)*0.75rem))_scale(calc(1-var(--toast-index)*0.05))]',
+        'data-[expanded]:[transform:translateY(calc(var(--toast-offset-y)+var(--toast-index)*var(--toast-gap)))]',
+        '[transition:transform_320ms_cubic-bezier(0.22,1,0.36,1),opacity_320ms_ease]',
+        'data-[state=open]:animate-toast-in-top data-[state=closed]:animate-toast-out-top'
+    ),
+    /**
+     * Anchored variant: the toast is placed by `rdxToastPositioner` (popper), so it needs no stacking
+     * transform — just a scale/fade keyed to `data-state`. Reuses the popover popup keyframes.
+     */
+    anchored: cn(
+        'w-72 origin-[var(--toast-transform-origin)]',
+        'data-[state=open]:animate-popover-popup-in data-[state=closed]:animate-popover-popup-out'
+    )
+} as const;
+
 /** Popover surfaces and parts. */
 export const demoPopover = {
     positioner: 'z-50',

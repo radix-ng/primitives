@@ -58,6 +58,7 @@
             "@radix-ng/primitives/switch": ["packages/primitives/switch/index.ts"],
             "@radix-ng/primitives/tabs": ["packages/primitives/tabs/index.ts"],
             "@radix-ng/primitives/time-field": ["packages/primitives/time-field/index.ts"],
+            "@radix-ng/primitives/toast": ["packages/primitives/toast/index.ts"],
             "@radix-ng/primitives/toggle": ["packages/primitives/toggle/index.ts"],
             "@radix-ng/primitives/toggle-group": ["packages/primitives/toggle-group/index.ts"],
             "@radix-ng/primitives/toolbar": ["packages/primitives/toolbar/index.ts"],

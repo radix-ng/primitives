@@ -1,0 +1,183 @@
+import { Canvas, Meta, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as Stories from './toast.stories';
+import { RdxToastProvider } from '../src/toast-provider';
+import { RdxToastRoot } from '../src/toast-root';
+import { RdxToastPositioner } from '../src/toast-positioner';
+
+<Meta title="Primitives/Toast" of={Stories} />
+
+# Toast
+
+#### A succinct, low-priority message that appears temporarily, stacks, and can be swiped away.
+
+<Canvas sourceState="hidden" of={Stories.Default} />
+
+## Features
+
+- ✅ Imperative API — push toasts from anywhere with `add` / `update` / `close` / `promise`.
+- ✅ Headless and unstyled — state is exposed through `data-*` attributes and CSS variables.
+- ✅ Stacking with a hover/focus expand, driven by measured heights (`--toast-offset-y`).
+- ✅ Swipe-to-dismiss with rubber-banding and flick detection in any allowed direction.
+- ✅ Auto-dismiss timers that pause while the stack is hovered, focused, or being swiped.
+- ✅ Promise toasts with `loading` / `success` / `error` copy.
+- ✅ Accessible — announces through `role="status"` / `role="alert"` by priority.
+
+## Import
+
+```ts
+import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
+```
+
+`toastImports` bundles every part directive; `provideRdxToastManager()` (or the `[rdxToastProvider]`
+directive) supplies the queue, and `RdxToastManager` is injected to push toasts.
+
+## Anatomy
+
+Provide the manager once, render the viewport, and iterate the queue. Each item from
+`manager.toasts()` is bound to a `rdxToastRoot`.
+
+```html
+<div rdxToastProvider>
+    <div rdxToastPortal>
+        <div rdxToastViewport>
+            <!-- @for (toast of manager.toasts(); track toast.id) -->
+            <div rdxToastRoot [toast]="toast">
+                <div rdxToastContent>
+                    <p rdxToastTitle></p>
+                    <p rdxToastDescription></p>
+                    <button rdxToastAction></button>
+                    <button rdxToastClose></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+```ts
+const manager = inject(RdxToastManager);
+manager.add({ title: 'Saved', description: 'Your changes are live.' });
+```
+
+An anchored toast is wrapped in `rdxToastPositioner` instead of joining the stack:
+
+```html
+<div rdxToastPositioner [anchor]="toast.positionerProps.anchor">
+    <div rdxToastRoot [toast]="toast">
+        <div rdxToastContent>
+            <p rdxToastTitle></p>
+        </div>
+    </div>
+</div>
+```
+
+## Examples
+
+### Default
+
+Push a single toast; it auto-dismisses after the timeout.
+
+<Canvas of={Stories.Default} />
+
+### Stacking
+
+Add several toasts to see the collapsed stack, then hover or focus it to expand. Auto-dismiss pauses
+while the stack is hovered or focused.
+
+<Canvas of={Stories.Stacking} />
+
+### Swipe to dismiss
+
+Drag a toast toward an allowed `swipeDirection` to dismiss it; release early to snap back.
+
+<Canvas of={Stories.SwipeToDismiss} />
+
+### Promise
+
+Drive one toast through a promise: `loading`, then `success` or `error`.
+
+<Canvas of={Stories.Promise} />
+
+### Types
+
+Branch on a free-form `type` to render an icon, and raise `priority` to `high` for assertive errors.
+
+<Canvas of={Stories.Types} />
+
+### Custom position
+
+Placement is the consumer's CSS — here the viewport is anchored top-center and the stack grows down.
+
+<Canvas of={Stories.CustomPosition} />
+
+### Undo action
+
+`rdxToastAction` adds an in-toast action button; this one undoes the change and dismisses the toast.
+
+<Canvas of={Stories.UndoAction} />
+
+### Custom data
+
+Attach a typed `data` payload and read it back in the template for rich, app-specific toasts.
+
+<Canvas of={Stories.CustomData} />
+
+### Deduplicated
+
+Pass a fixed `id` to upsert a single toast in place instead of stacking duplicates.
+
+<Canvas of={Stories.Deduplicated} />
+
+### Varying heights
+
+Measured heights feed `--toast-offset-y`, so the expanded stack lines up even with differing heights.
+
+<Canvas of={Stories.VaryingHeights} />
+
+### Anchored
+
+Pin a toast to an element with `rdxToastPositioner` (powered by popper) instead of joining the stack.
+
+<Canvas of={Stories.Anchored} />
+
+## Data attributes
+
+| Attribute              | Part | Present when                                            |
+| ---------------------- | ---- | ------------------------------------------------------- |
+| `data-state`           | Root | `open` while visible, `closed` once dismissal begins    |
+| `data-front`           | Root | this is the frontmost toast (`--toast-index` is `0`)    |
+| `data-expanded`        | Root | the viewport is hovered or focused                      |
+| `data-type`            | Root | the toast has a `type`                                  |
+| `data-swiping`         | Root | a swipe gesture is active                               |
+| `data-swipe-direction` | Root | the active swipe direction (`up`/`down`/`left`/`right`) |
+| `data-swipe-dismiss`   | Root | a release committed to dismissal                        |
+
+The root also writes CSS variables for styling: `--toast-index`, `--toast-height`,
+`--toast-offset-y`, and `--toast-swipe-movement-x` / `--toast-swipe-movement-y`.
+
+## API Reference
+
+### RdxToastProvider
+
+Hosts the `RdxToastManager` for its subtree (`[rdxToastProvider]`).
+
+<ArgTypes of={RdxToastProvider} />
+
+### RdxToastRoot
+
+A single toast. Bind the toast model from the viewport's `@for`.
+
+<ArgTypes of={RdxToastRoot} />
+
+### RdxToastPositioner
+
+Anchors a toast to an element via popper. Forwards the popper positioning inputs (`anchor`, `side`,
+`sideOffset`, `align`, `alignOffset`, `arrowPadding`, `avoidCollisions`, `collisionPadding`, …).
+
+<ArgTypes of={RdxToastPositioner} />
+
+### Other parts
+
+`RdxToastPortal`, `RdxToastViewport`, `RdxToastContent`, `RdxToastTitle`, `RdxToastDescription`,
+`RdxToastClose` and `RdxToastAction` take no inputs of their own — they read from the toast root
+context and the manager. `RdxToastPortal` forwards a `container` input to the underlying portal.

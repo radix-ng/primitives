@@ -20,6 +20,7 @@ export * from './src/dom/use-scroll-lock';
 
 export * from './src/composables/use-arrow-navigation';
 export * from './src/composables/use-grace-area';
+export * from './src/composables/use-pointer-drag';
 export * from './src/composables/use-transition-status';
 export * from './src/composables/watch';
 
