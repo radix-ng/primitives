@@ -18,7 +18,7 @@ import {
     resource,
     signal
 } from '@angular/core';
-import type { ReferenceElement, VirtualElement } from '@floating-ui/dom';
+import type { ComputePositionReturn, ReferenceElement, VirtualElement } from '@floating-ui/dom';
 import {
     autoUpdate,
     computePosition,
@@ -313,7 +313,10 @@ export class RdxPopperContentWrapper {
      * resolved position — a visible flicker at high pointer-move rates. Holding the previous value
      * keeps the popup placed and visible until the new position is ready.
      */
-    private readonly resolvedPosition = linkedSignal({
+    private readonly resolvedPosition = linkedSignal<
+        ComputePositionReturn | undefined,
+        ComputePositionReturn | undefined
+    >({
         source: () => this.position.value(),
         computation: (value, previous) => value ?? previous?.value
     });
