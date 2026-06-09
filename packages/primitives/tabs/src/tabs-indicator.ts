@@ -88,11 +88,21 @@ export class RdxTabsIndicator {
         const listRect = list.getBoundingClientRect();
         const tabRect = tab.getBoundingClientRect();
 
+        // Measure `left` / `top` relative to the list's scrollable content origin rather than its
+        // visible edge. When the list is a scroll container (e.g. its tabs overflow inside a Scroll
+        // Area), the indicator is an absolutely positioned child of that container and scrolls along
+        // with the content, so these offsets must be content-relative to stay aligned with the tab.
+        // For non-scrolling lists `scrollLeft` / `scrollTop` are `0`, leaving the geometry unchanged.
+        // `right` / `bottom` stay visible-edge relative — there is no unambiguous content-relative
+        // meaning for them inside a scroll container, and the moving indicator uses `left`/`top`.
+        const scrollLeft = list.scrollLeft;
+        const scrollTop = list.scrollTop;
+
         this.geometry.set({
-            top: tabRect.top - listRect.top,
+            top: tabRect.top - listRect.top + scrollTop,
             right: listRect.right - tabRect.right,
             bottom: listRect.bottom - tabRect.bottom,
-            left: tabRect.left - listRect.left,
+            left: tabRect.left - listRect.left + scrollLeft,
             width: tabRect.width,
             height: tabRect.height
         });

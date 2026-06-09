@@ -1,0 +1,144 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as ScrollAreaStories from './scroll-area.stories';
+import { RdxScrollAreaRoot } from '../src/scroll-area-root';
+import { RdxScrollAreaScrollbar } from '../src/scroll-area-scrollbar';
+
+<Meta title="Primitives/Scroll Area" />
+
+# Scroll Area
+
+#### A native scroll container with a custom, cross-browser scrollbar.
+
+Headless scroll area modeled on [Base UI](https://base-ui.com/react/components/scroll-area). It keeps
+the browser's native scrolling — momentum, keyboard, and accessibility — while hiding the platform
+scrollbar and letting you style your own. It carries no styles; the scrollbars in the examples are
+plain Tailwind utilities driven by `data-*` attributes and CSS variables.
+
+<Canvas sourceState="hidden" of={ScrollAreaStories.Default} />
+
+## Features
+
+- ✅ Native scrolling preserved — keyboard, touch, momentum, and `scroll` semantics all work.
+- ✅ Custom scrollbar and thumb with cross-browser consistency (native scrollbar hidden).
+- ✅ Draggable thumb, click-to-page on the track, and wheel support on the scrollbar.
+- ✅ Independent vertical and horizontal scrollbars, plus a `Corner` where they meet.
+- ✅ Rich styling state: `data-scrolling`, `data-hovering`, `data-has-overflow-x/y`, and per-edge `data-overflow-*-start/end`.
+- ✅ Edge-distance CSS variables (`--scroll-area-overflow-*`) for masks and fade effects.
+- ✅ RTL aware and SSR safe.
+
+## Import
+
+```typescript
+import {
+    RdxScrollAreaRoot,
+    RdxScrollAreaViewport,
+    RdxScrollAreaContent,
+    RdxScrollAreaScrollbar,
+    RdxScrollAreaThumb,
+    RdxScrollAreaCorner
+} from '@radix-ng/primitives/scroll-area';
+```
+
+Or import the module:
+
+```typescript
+import { RdxScrollAreaModule } from '@radix-ng/primitives/scroll-area';
+```
+
+## Anatomy
+
+Assemble the scroll area from its parts. The `Viewport` is the actual scrollable element and must wrap
+the `Content`; each `Scrollbar` hosts a `Thumb`, and the optional `Corner` fills the intersection when
+both scrollbars are present.
+
+```html
+<div rdxScrollAreaRoot>
+    <div rdxScrollAreaViewport>
+        <div rdxScrollAreaContent>
+            <!-- scrollable content -->
+        </div>
+    </div>
+
+    <div rdxScrollAreaScrollbar orientation="vertical">
+        <div rdxScrollAreaThumb></div>
+    </div>
+
+    <div rdxScrollAreaScrollbar orientation="horizontal">
+        <div rdxScrollAreaThumb></div>
+    </div>
+
+    <div rdxScrollAreaCorner></div>
+</div>
+```
+
+## Examples
+
+The hero above shows the default vertical setup: a single scrollbar over a tall list, where the thumb
+is sized from the viewport-to-content ratio and the track stays hidden until the content is measured.
+
+### Horizontal
+
+A horizontal scrollbar for a row of items that overflows on the x-axis.
+
+<Canvas of={ScrollAreaStories.Horizontal} />
+
+### Both scrollbars
+
+When content overflows on both axes, render two `Scrollbar` parts and a `Corner` to fill the gap where
+they meet.
+
+<Canvas of={ScrollAreaStories.BothScrollbars} />
+
+### Gradient scroll fade
+
+Feed the viewport's `--scroll-area-overflow-y-start` / `--scroll-area-overflow-y-end` variables (the
+pixel distance to each edge) into a `mask-image` gradient. Each fade disappears as you reach the
+matching edge.
+
+<Canvas of={ScrollAreaStories.GradientFade} />
+
+### Combining with Tabs
+
+Stack `rdxTabsList` and `rdxScrollAreaViewport` on the same element so the tab list _is_ the scrollable
+viewport (the Angular equivalent of Base UI's `render` prop). Keeping the scroll state on that element
+lets a horizontal `mask-image` fade the tabs at whichever edge still has more to reveal.
+
+<Canvas of={ScrollAreaStories.CombiningWithTabs} />
+
+## API Reference
+
+### Root
+
+Groups all parts of the scroll area and owns the shared scroll/overflow state. Exposes `data-scrolling`,
+`data-has-overflow-x/y`, and `data-overflow-x/y-start/end`, plus the `--scroll-area-corner-width/height`
+CSS variables.
+
+<ArgTypes of={RdxScrollAreaRoot} />
+
+### Viewport
+
+The actual scrollable container (`overflow: scroll` with the native scrollbar hidden). Wrap your
+`Content` in it. Sets the `--scroll-area-overflow-*` edge-distance variables. Reads everything from
+context — no inputs.
+
+### Content
+
+A wrapper around the scrollable content that observes size changes to keep the thumb in sync. Reads
+everything from context — no inputs.
+
+### Scrollbar
+
+A vertical or horizontal scrollbar track. Hosts the `Thumb` and exposes `data-orientation`,
+`data-hovering`, `data-scrolling`, and the overflow attributes, plus `--scroll-area-thumb-width/height`.
+
+<ArgTypes of={RdxScrollAreaScrollbar} />
+
+### Thumb
+
+The draggable indicator inside a `Scrollbar`. Exposes `data-orientation`. Reads everything from
+context — no inputs.
+
+### Corner
+
+A small box at the intersection of the two scrollbars; sized automatically and hidden when either
+scrollbar is hidden. Reads everything from context — no inputs.

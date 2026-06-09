@@ -317,7 +317,9 @@ export class RdxMenuNestedComponent {
 ### Arrow
 
 Add `rdxMenuArrow` inside the popup to render a visual pointer connecting the popup to its trigger.
-Fill color should match the popup surface — use `fill-popover` or set `fill` directly.
+The arrow SVG fills with `currentColor`, so match the popup surface with a `text-*` token (e.g.
+`text-popover`) rather than a `fill-*` class. A directional `drop-shadow` in the border color lets
+the popup border flow into the arrow as one continuous outline.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';

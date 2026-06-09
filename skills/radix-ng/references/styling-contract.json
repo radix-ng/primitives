@@ -297,6 +297,16 @@
       "dataAttributes": []
     },
     {
+      "name": "Scroll Area",
+      "slug": "scroll-area",
+      "section": "components",
+      "description": "A native scroll container with a custom, cross-browser scrollbar.",
+      "doc": "radix-ng-examples/references/components/scroll-area.md",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-scroll-area--docs",
+      "anatomy": "<div rdxScrollAreaRoot>\n    <div rdxScrollAreaViewport>\n        <div rdxScrollAreaContent>\n            <!-- scrollable content -->\n        </div>\n    </div>\n\n    <div rdxScrollAreaScrollbar orientation=\"vertical\">\n        <div rdxScrollAreaThumb></div>\n    </div>\n\n    <div rdxScrollAreaScrollbar orientation=\"horizontal\">\n        <div rdxScrollAreaThumb></div>\n    </div>\n\n    <div rdxScrollAreaCorner></div>\n</div>",
+      "dataAttributes": []
+    },
+    {
       "name": "Select",
       "slug": "select",
       "section": "components",

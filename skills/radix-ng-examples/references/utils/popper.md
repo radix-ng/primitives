@@ -57,7 +57,7 @@ The Default story exposes these values as controls.
         >
             Positioned relative to the anchor
         </div>
-        <span class="fill-popover" rdxPopperArrow></span>
+        <span class="text-popover my-px drop-shadow-[0_1px_0_var(--color-border)]" rdxPopperArrow></span>
     </div>
 </div>
 ```

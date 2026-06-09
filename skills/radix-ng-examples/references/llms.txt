@@ -33,6 +33,7 @@ Full documentation in one file: https://radix-ng.com/llms-full.txt
 - [Preview Card](https://radix-ng.com/components/preview-card.md): A popup that appears when a link is hovered or focused, showing a visual preview.
 - [Progress](https://radix-ng.com/components/progress.md): Displays task completion with accessible label, value, track, and indicator parts.
 - [Radio Group](https://radix-ng.com/components/radio.md): A set of checkable buttons—known as radio buttons—where no more than one of the buttons can be checked at a time.
+- [Scroll Area](https://radix-ng.com/components/scroll-area.md): A native scroll container with a custom, cross-browser scrollbar.
 - [Select](https://radix-ng.com/components/select.md): A control that presents a list of options for the user to pick from, triggered by a button.
 - [Separator](https://radix-ng.com/components/separator.md): A separator element accessible to screen readers.
 - [Slider](https://radix-ng.com/components/slider.md): An input where the user selects a value, or a range of values, from within a given range.

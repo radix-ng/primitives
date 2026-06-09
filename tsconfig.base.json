@@ -51,6 +51,7 @@
             "@radix-ng/primitives/presence": ["packages/primitives/presence/index.ts"],
             "@radix-ng/primitives/radio": ["packages/primitives/radio/index.ts"],
             "@radix-ng/primitives/roving-focus": ["packages/primitives/roving-focus/index.ts"],
+            "@radix-ng/primitives/scroll-area": ["packages/primitives/scroll-area/index.ts"],
             "@radix-ng/primitives/select": ["packages/primitives/select/index.ts"],
             "@radix-ng/primitives/separator": ["packages/primitives/separator/index.ts"],
             "@radix-ng/primitives/slider": ["packages/primitives/slider/index.ts"],

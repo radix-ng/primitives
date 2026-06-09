@@ -30,7 +30,7 @@ Working examples built on `@radix-ng/primitives`. Full source is **bundled offli
 To style a primitive with a custom design system, pair an example with the data-attribute contract in
 the `radix-ng` skill (`references/styling-contract.json`).
 
-Total: **186 examples** across **37 components**.
+Total: **190 examples** across **38 components**.
 
 ## Components
 
@@ -285,6 +285,15 @@ Full source (all examples): [`references/components/radio.md`](./references/comp
 - **Default**
 - **Disabled**
 - **Template-driven forms**
+
+### Scroll Area
+
+Full source (all examples): [`references/components/scroll-area.md`](./references/components/scroll-area.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-scroll-area--docs)
+
+- **Horizontal**
+- **Both scrollbars**
+- **Gradient scroll fade**
+- **Combining with Tabs**
 
 ### Select
 
