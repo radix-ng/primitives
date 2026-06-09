@@ -35,10 +35,11 @@ packages/
     storybook/         ← shared story utilities (styles.ts, tailwind-demo.ts, etc.)
     schematics/        ← ng-add schematic
 apps/
-  radix-storybook/     ← Storybook app (port 4400)
-  radix-docs/          ← documentation site (Astro)
+  radix-storybook/     ← Storybook app (port 4400); also the public site on radix-ng.com
+  radix-docs/          ← Astro docs site (deprecated, not deployed)
   radix-ssr-testing/   ← SSR smoke-test app
-tools/scripts/         ← build helpers (typedoc, api-docs)
+skills/                ← LLM consumer Agent Skills (radix-ng, radix-ng-examples)
+tools/scripts/         ← build helpers (typedoc/api-docs, skills bundle generator)
 ```
 
 ## Shared building blocks (composition primitives in `packages/primitives/`)
@@ -91,6 +92,17 @@ Own replacements for what CDK used to provide:
 - `Direction` (`cdk/bidi`) → `core/src/types.ts` `export type Direction = 'ltr' | 'rtl'` (re-exported from `@radix-ng/primitives/core`).
 - `BooleanInput`, `NumberInput` (`cdk/coercion`) → defined in `core/src/types.ts` (re-exported from `@radix-ng/primitives/core`). The transforms themselves are Angular's `booleanAttribute` / `numberAttribute`; CDK only ever supplied the input-value type aliases.
 - CDK Dialog/Overlay, `cdk/portal`, and `CdkTrapFocus` were previously replaced with own implementations (so consumers no longer need `@angular/cdk/overlay-prebuilt.css`).
+
+## LLM consumer skills & docs pipeline
+
+`skills/` holds two consumer-facing Agent Skills distributed via skills.sh (install `npx skills add radix-ng/primitives/skills` — the `/skills` subpath scopes discovery so the repo's own `.claude/skills/` contributor skills aren't offered):
+
+- **`radix-ng`** — hand-authored usage rules (`SKILL.md` + references for styling, composition, forms) plus a generated `styling-contract.json`: per-primitive parts, anatomy, and `data-*` attributes — the machine-readable styling contract for theming with any design system.
+- **`radix-ng-examples`** — a generated `SKILL.md` indexing every documented example, with the full rendered docs bundled under `references/` (per-component `.md`, plus `llms.txt` index and `llms-full.txt`).
+
+The Storybook docs MDX (`packages/primitives/**/stories/*.docs.mdx`) is the single source of truth. `tools/scripts/skills/generate.mjs` builds the bundle; `storybook-docs.mjs` is an Astro-independent port of the docs renderer (resolves `<Canvas>` blocks into real example source), so the pipeline does not depend on the deprecated Astro app. Hand-authored skill files are never overwritten by the generator.
+
+The same bundle is consumed two ways: offline inside the installed skill, and online as static files served by Storybook from the main domain. Generated files are committed, excluded from Prettier (`.prettierignore`), and kept in sync by a CI job. See deployment.md for the build command, serving, and CI details.
 
 ## tsconfig paths
 

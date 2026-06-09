@@ -11,10 +11,12 @@ import {
     inject,
     Injector,
     input,
+    linkedSignal,
     numberAttribute,
     output,
     PLATFORM_ID,
-    resource
+    resource,
+    signal
 } from '@angular/core';
 import type { ReferenceElement, VirtualElement } from '@floating-ui/dom';
 import {
@@ -159,6 +161,13 @@ export class RdxPopperContentWrapper {
 
     readonly arrow = contentChild(forwardRef(() => RdxPopperArrow));
 
+    /**
+     * When `true`, the content is rendered click/hover-through (`pointer-events: none`). Used for
+     * cursor-following content (e.g. a tooltip tracking the pointer) that must never intercept the
+     * pointer and steal hover from its trigger.
+     */
+    readonly nonInteractive = signal(false);
+
     readonly shouldHideArrow = computed(() => this.position.value()?.middlewareData['arrow']?.centerOffset !== 0);
     /** Whether the arrow could not be centered on the anchor because the popup was shifted. */
     readonly arrowUncentered = computed(
@@ -296,6 +305,20 @@ export class RdxPopperContentWrapper {
     });
 
     /**
+     * The last successfully computed position, retained while a new one is being computed.
+     *
+     * The `position` resource resets `value()` to `undefined` whenever its params change (e.g. on
+     * every pointer move while a tooltip tracks the cursor). Reading it directly would blank the
+     * popup (`visibility: hidden` + off-screen transform) for the frames between a move and the next
+     * resolved position — a visible flicker at high pointer-move rates. Holding the previous value
+     * keeps the popup placed and visible until the new position is ready.
+     */
+    private readonly resolvedPosition = linkedSignal({
+        source: () => this.position.value(),
+        computation: (value, previous) => value ?? previous?.value
+    });
+
+    /**
      * Whether the panel is positioned.
      */
     readonly isPositioned = computed(() => this.position.hasValue());
@@ -344,7 +367,7 @@ export class RdxPopperContentWrapper {
     });
 
     protected readonly style = computed(() => {
-        const pos = this.position.value();
+        const pos = this.resolvedPosition();
         const x = pos?.x;
         const y = pos?.y;
 
@@ -352,7 +375,7 @@ export class RdxPopperContentWrapper {
 
         return {
             position: this.positionStrategy(),
-            transform: this.isPositioned() ? '' : 'translate(0, -200%)', // keep off the page when measuring
+            transform: ready ? '' : 'translate(0, -200%)', // keep off the page when measuring
             minWidth: 'max-content',
             zIndex: this.contentZIndex(),
             top: Number.isFinite(y as number) ? `${y}px` : '',
@@ -365,7 +388,7 @@ export class RdxPopperContentWrapper {
             '--radix-popper-content-wrapper-height': `${this.elementRef.nativeElement.offsetHeight}px`,
 
             visibility: ready ? 'visible' : 'hidden',
-            pointerEvents: ready ? 'auto' : 'none',
+            pointerEvents: this.nonInteractive() || !ready ? 'none' : 'auto',
 
             // hide the content if using the hide middleware and should be hidden
             // set visibility to hidden and disable pointer events so the UI behaves

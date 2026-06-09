@@ -17,7 +17,8 @@ All workflows are in `.github/workflows/`.
 2. `lint` — prettier check + stylelint + eslint (all `--max-warnings=0`)
 3. `unit` — `pnpm primitives:test` (Vitest)
 4. `builds` — `pnpm primitives:build` + `pnpm primitives:build:schematics`
-5. `summary` — gate job; fails if any of lint/unit/builds fails
+5. `skills` — regenerates the LLM skills bundle (`pnpm skills:build`) and fails if the committed output drifts from the Storybook docs, keeping the bundle in sync (see architecture.md)
+6. `summary` — gate job; fails if any of lint/unit/builds/skills fails
 
 **`chromatic.yml`** — visual regression on push to `main` via Chromaui action. `exitZeroOnChanges: true` — changes are flagged but don't fail the build; review happens in Chromatic dashboard.
 
@@ -39,20 +40,23 @@ Notes:
 - `pnpm release:dry-run` previews version bumps and release notes; `pnpm release:primitives` cuts version + changelog without publishing.
 - Current version: `1.0.0-beta.0` (first `1.0.0` prerelease; previous stable line was `0.51.0`).
 
-## Storybook
+## Storybook — also the public site
+
+Storybook now serves the public documentation site on the main domain `https://radix-ng.com`.
 
 - **Dev:** `pnpm storybook:primitives` → `http://localhost:4400`
 - **Build check:** `nx run radix-storybook:build-storybook` (add `--skip-nx-cache` to force rebuild)
 - **Static serve:** `pnpm static-storybook`
 - **Output:** `dist/radix-storybook/`
+- **LLM endpoints:** the generated skills bundle is served as static files via `staticDirs` (`apps/radix-storybook/.storybook/main.ts`), so `/llms.txt`, `/llms-full.txt`, and `/<section>/<slug>.md` are available on the main domain. Source: `skills/radix-ng-examples/references/` (see LLM consumer skills below and architecture.md).
 
-## Docs site (`radix-docs`)
+## Docs site (`radix-docs`) — deprecated, not deployed
 
-- **Dev:** `pnpm radix-docs:dev`
-- **Build:** `pnpm radix-docs:build`
-- **Output:** `dist/radix-docs/`
-- **Public site:** `https://radix-ng.com`
-- LLM endpoints: `/llms.txt` and `/primitives/<section>/<slug>.md` (static Astro routes built from Storybook MDX)
+The Astro docs app under `apps/radix-docs` is no longer deployed; Storybook took over the main domain. Its former `/llms.txt` and `/primitives/<section>/<slug>.md` routes are superseded by the Storybook-served bundle above. The app is kept in the repo pending a docs-site rework; `pnpm radix-docs:dev` / `pnpm radix-docs:build` still run locally.
+
+## LLM consumer skills
+
+`pnpm skills:build` regenerates the Agent Skills bundle under `skills/` from the Storybook docs (generator in `tools/scripts/skills/`). Run it after changing any `*.docs.mdx`. The output is committed, CI-verified (the `skills` job above), and excluded from Prettier via `.prettierignore` so it isn't reformatted into drift. Contents and architecture: see architecture.md. Published via skills.sh: `npx skills add radix-ng/primitives/skills`.
 
 ## SSR testing app
 

@@ -59,7 +59,12 @@ const inputClasses =
                                     <input class="${inputClasses}" aria-label="Note" type="text" value="Review draft" />
                                     <button class="${buttonClasses}" (click)="open.set(false)">Close Popover</button>
                                 </div>
-                                <span class="fill-card" rdxPopperArrow width="10" height="4"></span>
+                                <span
+                                    class="text-card my-px drop-shadow-[0_1px_0_var(--color-border)]"
+                                    rdxPopperArrow
+                                    width="10"
+                                    height="4"
+                                ></span>
                             </div>
                         </div>
                     </div>

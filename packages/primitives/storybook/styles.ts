@@ -69,6 +69,18 @@ export const demoButton = {
 /** Card / panel surface: popovers, list rows, content boxes. */
 export const demoCard = 'bg-card text-card-foreground border border-border rounded-md shadow-sm';
 
+/**
+ * Popup arrow recipe shared by tooltip / popover / menu / navigation-menu demos.
+ *
+ * The SVG arrow fills with `currentColor`, so `surface` must be a `text-*` token matching the popup
+ * background (`text-popover`, `text-card`, …) — not a `fill-*` class, which never reaches the
+ * polygon. `my-px` overlaps the base 1px into the popup (our arrows sit at `bottom:0`/`top:0` plus a
+ * translate, so a positive margin pulls the base toward the popup and punches a notch in its
+ * border), and the directional `0 1px 0` border-colored drop-shadow continues that border down the
+ * arrow's two diagonal edges to the tip — so popup and arrow read as one continuous shape.
+ */
+export const demoArrow = (surface: string) => cn(surface, 'my-px drop-shadow-[0_1px_0_var(--color-border)]');
+
 /** Text input surface. */
 export const demoInput = cn(
     'h-9 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground',
@@ -266,7 +278,7 @@ export const demoPopover = {
     popupAnimated: 'data-[state=open]:animate-popover-popup-in data-[state=closed]:animate-popover-popup-out',
     portalAnimated: 'data-[state=open]:animate-popover-in data-[state=closed]:animate-popover-out',
     backdrop: 'fixed inset-0 bg-foreground/10',
-    arrow: 'fill-popover',
+    arrow: demoArrow('text-card'),
     title: 'text-sm font-semibold text-popover-foreground',
     description: 'mt-1 text-sm text-muted-foreground',
     close: cn(demoButton.base, demoButton.ghost, 'absolute top-2 right-2 size-7 p-0')
@@ -397,7 +409,7 @@ export const demoNavigationMenu = {
         'relative overflow-hidden p-0 origin-[var(--transform-origin)]',
         'data-[starting-style]:animate-navigation-menu-popup-in data-[ending-style]:animate-navigation-menu-popup-out'
     ),
-    arrow: 'fill-popover',
+    arrow: demoArrow('text-card'),
     viewport: cn(
         // Size to the active content via the variables the viewport measures; fall back to
         // `max-content`/`auto` so the popup hugs its content before the first measurement instead of
@@ -421,8 +433,8 @@ export const demoNavigationMenu = {
 /** Tooltip parts: a small popup anchored to a trigger. */
 export const demoTooltip = {
     positioner: 'z-50',
-    popup: 'border-border bg-popover text-popover-foreground select-none rounded-md border px-3 py-2 text-sm leading-none shadow-md',
-    arrow: 'fill-popover'
+    popup: 'border-border bg-popover text-popover-foreground relative max-w-72 select-none rounded-md border px-3 py-1.5 text-sm',
+    arrow: demoArrow('text-popover')
 } as const;
 
 /**
@@ -469,9 +481,5 @@ export const demoMenu = {
     itemIndicator: 'absolute left-2 flex size-3.5 items-center justify-center',
     separator: '-mx-1 my-1 h-px bg-border',
     groupLabel: 'px-2 py-1.5 text-xs font-semibold text-muted-foreground',
-    /**
-     * Arrow span: SVG uses fill="currentColor" so set CSS `color` to match the popup surface.
-     * drop-shadow outlines the triangle in the border color so it's visible on light backgrounds.
-     */
-    arrow: cn('text-popover', '[filter:drop-shadow(0_0_1px_var(--color-border))]')
+    arrow: demoArrow('text-popover')
 } as const;

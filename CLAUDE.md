@@ -44,10 +44,11 @@ packages/
         <name>.stories.ts
         <name>.ts                    ← standalone story components
 apps/
-  radix-storybook/     ← Storybook app for primitives
-  radix-docs/          ← documentation site
+  radix-storybook/     ← Storybook app for primitives; also the public site on radix-ng.com
+  radix-docs/          ← Astro docs site (deprecated, not deployed)
+skills/                ← LLM consumer Agent Skills (generated from Storybook docs)
 tools/
-  scripts/             ← build helpers
+  scripts/             ← build helpers (incl. skills bundle generator)
 ```
 
 ## Naming conventions
@@ -264,14 +265,13 @@ Follow this section order (modeled on Base UI): **`# Name` + one-line `####` sum
 - **Examples**: each example gets `### Title` + a one-line description, then its `<Canvas of={Stories.X} />` — never a bare Canvas without a caption.
 - **API Reference**: only render `<ArgTypes of={Directive} />` for parts that actually have inputs/outputs. Skip parts that read everything from context (a one-line note is enough) — an empty ArgTypes table is noise.
 
-### LLM documentation (`llms.txt` and `.md` routes)
+### LLM documentation & consumer skills (`llms.txt`, `.md`, `skills/`)
 
-- The public docs app (`apps/radix-docs`) exposes `/llms.txt` and `/primitives/<section>/<slug>.md` as static Astro routes for LLM consumption.
-- Overview pages (`/primitives/overview/*.md`) come from `apps/radix-docs/src/content/primitives`.
-- Primitive, utility, guide, and example markdown pages come from Storybook docs MDX in `packages/primitives/**/stories/*.docs.mdx`, via `apps/radix-docs/src/utils/storybook-docs.ts`.
-- Keep Storybook `*.docs.mdx` files as the source of truth for component API/examples; the docs app markdown endpoint strips Storybook-only imports and docs blocks (`Meta`, `Canvas`, `ArgTypes`, etc.) at build time.
-- When adding or renaming a Storybook docs page, verify `getStorybookDocs()` still maps it to the intended URL. Normal components use `/primitives/components/<package-name>.md`; utilities use `/primitives/utils/<slug>.md`; guides use `/primitives/guides/<slug>.md`; examples use `/primitives/examples/<slug>.md`.
-- Verify with `pnpm exec nx run radix-docs:build --skip-nx-cache`, then check `dist/radix-docs/llms.txt` and a generated page such as `dist/radix-docs/primitives/components/input.md`.
+- Storybook docs MDX (`packages/primitives/**/stories/*.docs.mdx`) is the **single source of truth** for component API/examples. Everything LLM-facing is generated from it — keep the MDX correct and regenerate.
+- The generated bundle under `skills/` powers two consumer Agent Skills (`radix-ng`, `radix-ng-examples`) distributed via skills.sh (`npx skills add radix-ng/primitives/skills`). It contains a per-primitive `styling-contract.json` (parts + `data-*`), per-component `.md`, an `llms.txt` index, and `llms-full.txt`.
+- Generator: `tools/scripts/skills/generate.mjs` (+ `storybook-docs.mjs`, an Astro-independent renderer that resolves `<Canvas>` blocks into real source). Run `pnpm skills:build` after changing any `*.docs.mdx`. Hand-authored skill files (`skills/radix-ng/SKILL.md` + its references) are not overwritten; generated files are in `.prettierignore` and CI-verified.
+- The same bundle is served as static files by Storybook on the main domain (`radix-ng.com/llms.txt`, `/llms-full.txt`, `/<section>/<slug>.md`) via `staticDirs` in `apps/radix-storybook/.storybook/main.ts`.
+- The Astro app `apps/radix-docs` (which previously generated these routes via `getStorybookDocs()`) is **deprecated and not deployed**. See `.claude/skills/project-knowledge/references/{architecture,deployment}.md` for the full pipeline.
 
 ### "Show code" / full source in stories
 

@@ -3,6 +3,7 @@ import {
     booleanAttribute,
     DestroyRef,
     Directive,
+    effect,
     ElementRef,
     inject,
     input,
@@ -174,7 +175,11 @@ export class RdxTooltipPositioner {
         });
 
         this.graceArea.onPointerExit(() => {
-            if (this.rootContext.disableHoverablePopup()) return;
+            // A disabled root is fully controlled by the consumer (e.g. the slider thumb drives
+            // `open` while dragging). Hover never opens it, so the hover grace area must not close
+            // it either — otherwise a drag that leaves the grace polygon would dismiss it and the
+            // one-way `open` binding could not bring it back.
+            if (this.rootContext.disabled() || this.rootContext.disableHoverablePopup()) return;
             this.rootContext.closeDelayed();
         });
     });
@@ -183,5 +188,10 @@ export class RdxTooltipPositioner {
         this.dismissableLayer.focusOutside.subscribe((e) => e.preventDefault());
 
         this.dismissableLayer.dismiss.subscribe(() => this.rootContext.close());
+
+        // While following the cursor the popup sits right under the pointer; if it could intercept
+        // the pointer it would steal hover from the trigger and the tooltip would flicker. Render it
+        // pointer-events: none so the pointer always passes through to the trigger underneath.
+        effect(() => this.wrapper.nonInteractive.set(this.rootContext.trackCursorAxis() !== 'none'));
     }
 }
