@@ -5,10 +5,10 @@ runs:
   using: composite
   steps:
     - name: Setup pnpm
-      uses: pnpm/action-setup@v6
+      uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
 
     - name: Setup Node.js
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
       with:
         node-version-file: .nvmrc
         cache: pnpm
@@ -16,8 +16,6 @@ runs:
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
       shell: bash
-
-    - uses: nrwl/nx-set-shas@v5
 
     - name: Print Environment Info
       run: npx nx report

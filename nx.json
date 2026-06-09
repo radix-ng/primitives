@@ -65,7 +65,12 @@
             "!{projectRoot}/.storybook/**/*",
             "!{projectRoot}/tsconfig.storybook.json"
         ],
-        "sharedGlobals": []
+        "sharedGlobals": [
+            "{workspaceRoot}/tsconfig.base.json",
+            "{workspaceRoot}/package.json",
+            "{workspaceRoot}/pnpm-lock.yaml",
+            "{workspaceRoot}/nx.json"
+        ]
     },
     "generators": {
         "@nx/angular:application": {
