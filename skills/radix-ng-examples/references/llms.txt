@@ -19,6 +19,7 @@ Full documentation in one file: https://radix-ng.com/llms-full.txt
 - [Date Field](https://radix-ng.com/components/date-field.md): Enables users to input specific dates within a designated field.
 - [Dialog](https://radix-ng.com/components/dialog.md): A window overlaid on the page, rendering the content underneath inert.
 - [Drawer](https://radix-ng.com/components/drawer.md): An edge-anchored sheet that opens over the page and dismisses with a swipe.
+- [Editable](https://radix-ng.com/components/editable.md): An inline text field that swaps a read-only preview for an editable input.
 - [Field](https://radix-ng.com/components/field.md): Groups a control with accessible label, description, error message, and field state.
 - [Fieldset](https://radix-ng.com/components/fieldset.md): Groups related form controls with a legend and shared disabled state.
 - [Input](https://radix-ng.com/components/input.md): A native text input with headless state attributes and Field integration.

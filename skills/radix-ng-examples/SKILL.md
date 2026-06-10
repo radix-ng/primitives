@@ -30,7 +30,7 @@ Working examples built on `@radix-ng/primitives`. Full source is **bundled offli
 To style a primitive with a custom design system, pair an example with the data-attribute contract in
 the `radix-ng` skill (`references/styling-contract.json`).
 
-Total: **191 examples** across **38 components**.
+Total: **193 examples** across **39 components**.
 
 ## Components
 
@@ -160,6 +160,13 @@ Full source (all examples): [`references/components/drawer.md`](./references/com
 - **Nested drawers**
 - **Indent effect**
 - **Detached triggers**
+
+### Editable
+
+Full source (all examples): [`references/components/editable.md`](./references/components/editable.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-editable--docs)
+
+- **Double-click to edit**
+- **Auto-resize**
 
 ### Field
 

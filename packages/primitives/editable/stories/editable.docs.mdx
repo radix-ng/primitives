@@ -1,0 +1,111 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import { RdxEditableRoot } from '../src/editable-root';
+import * as EditableStories from './editable.stories';
+
+<Meta title="Primitives/Editable" />
+
+# Editable
+
+#### An inline text field that swaps a read-only preview for an editable input.
+
+<Canvas sourceState="hidden" of={EditableStories.Default} />
+
+## Features
+
+- ✅ Can be controlled (`value`) or uncontrolled (`defaultValue`).
+- ✅ Activate by focus, double-click, or a dedicated edit trigger.
+- ✅ Submit on blur, `Enter`, or both; cancel on `Escape`.
+- ✅ Restores focus to the preview after submit/cancel.
+- ✅ Optional auto-resizing input that grows with its content.
+- ✅ Headless state exposed via `data-*` attributes.
+
+## Import
+
+```typescript
+import {
+    RdxEditableRoot,
+    RdxEditableArea,
+    RdxEditablePreview,
+    RdxEditableInput,
+    RdxEditableEditTrigger,
+    RdxEditableSubmitTrigger,
+    RdxEditableCancelTrigger
+} from '@radix-ng/primitives/editable';
+```
+
+All parts are also bundled in `RdxEditableModule`.
+
+## Anatomy
+
+```html
+<div rdxEditableRoot>
+    <div rdxEditableArea>
+        <span rdxEditablePreview></span>
+        <input rdxEditableInput />
+    </div>
+
+    <button rdxEditableEditTrigger></button>
+    <button rdxEditableSubmitTrigger></button>
+    <button rdxEditableCancelTrigger></button>
+</div>
+```
+
+The `Preview` is focusable (`tabindex="0"`); the `Input` is hidden until edit mode is active. The triggers
+are optional — `activationMode` and `submitMode` can drive the whole interaction without them.
+
+## Examples
+
+### Double-click to edit
+
+Set `activationMode="dblclick"` so the preview only enters edit mode on double-click instead of on focus.
+
+<Canvas of={EditableStories.DoubleClick} />
+
+### Auto-resize
+
+With `autoResize`, the preview and input overlay in a single grid cell, so the field grows to fit its
+content. The parts carry `[data-auto-resize]` for styling.
+
+<Canvas of={EditableStories.AutoResize} />
+
+## API Reference
+
+### Root
+
+`RdxEditableRoot`
+
+<ArgTypes of={RdxEditableRoot} />
+
+| Data attribute             | Present on        | Value                              |
+| -------------------------- | ----------------- | ---------------------------------- |
+| `[data-placeholder-shown]` | Area, Preview     | When not editing.                  |
+| `[data-focus]`             | Area              | While editing.                     |
+| `[data-empty]`             | Area              | When the value is empty.           |
+| `[data-disabled]`          | Area, Input       | When disabled.                     |
+| `[data-readonly]`          | Area, Input       | When read-only.                    |
+| `[data-auto-resize]`       | Area, Preview, Input | When `autoResize` is enabled.   |
+
+### Area / Preview
+
+`RdxEditableArea`, `RdxEditablePreview` — read everything from context; no inputs. The preview is the
+focusable label that swaps to the input.
+
+### Input
+
+`RdxEditableInput` — the text field. Accepts `aria-label` (defaults to `"editable input"`); all other
+state (value, disabled, readonly, required, maxlength) comes from the root.
+
+### Triggers
+
+`RdxEditableEditTrigger`, `RdxEditableSubmitTrigger`, `RdxEditableCancelTrigger` — `<button>` parts that
+call `edit` / `submit` / `cancel`. Each accepts `aria-label` (defaults to `"edit"` / `"submit"` /
+`"cancel"`).
+
+## Accessibility
+
+### Keyboard Interactions
+
+| Key      | Description                                          |
+| -------- | --------------------------------------------------- |
+| `Enter`  | Submits when `submitMode` is `enter` or `both`.     |
+| `Escape` | Cancels the edit and restores the previous value.   |

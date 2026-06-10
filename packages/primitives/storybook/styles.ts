@@ -88,6 +88,23 @@ export const demoInput = cn(
     demoFocusRing
 );
 
+/**
+ * Editable (inline edit) parts: a focusable preview that swaps to an input.
+ *
+ * `preview` and `input` share the same box metrics so the swap doesn't shift layout.
+ * The placeholder look is driven by `[data-placeholder-shown]` set on the preview.
+ */
+export const demoEditable = {
+    root: 'flex w-[260px] flex-col gap-3',
+    preview: cn(
+        'inline-block min-h-9 w-full rounded-md border border-transparent px-3 py-1.5 text-sm text-foreground',
+        'cursor-text hover:bg-muted data-[placeholder-shown]:text-muted-foreground',
+        demoFocusRing
+    ),
+    input: demoInput,
+    controls: 'flex gap-2'
+} as const;
+
 /** Calendar parts: card-framed month grid with circular day cells driven by `data-*` state. */
 export const demoCalendar = {
     root: 'w-[300px] rounded-xl border border-border bg-background p-4 shadow-sm',
