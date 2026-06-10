@@ -20,7 +20,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
     }
 })
 export class RdxFieldDescription {
-    protected readonly rootContext = injectFieldRootContext()!;
+    protected readonly rootContext = injectFieldRootContext();
 
     /**
      * Description id.

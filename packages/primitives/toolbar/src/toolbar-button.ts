@@ -24,7 +24,7 @@ import { injectToolbarGroupContext, injectToolbarRootContext } from './toolbar-c
     }
 })
 export class RdxToolbarButton {
-    protected readonly rootContext = injectToolbarRootContext()!;
+    protected readonly rootContext = injectToolbarRootContext();
     private readonly groupContext = injectToolbarGroupContext(true);
     private readonly rovingItem = inject(RdxRovingFocusItemDirective);
 

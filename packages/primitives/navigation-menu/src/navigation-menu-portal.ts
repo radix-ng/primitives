@@ -20,7 +20,7 @@ import { injectNavigationMenuRootContext } from './navigation-menu-root-context'
     }
 })
 export class RdxNavigationMenuPortal {
-    protected readonly rootContext = injectNavigationMenuRootContext()!;
+    protected readonly rootContext = injectNavigationMenuRootContext();
 
     /**
      * Optional container to portal the popup into. Defaults to `document.body`.

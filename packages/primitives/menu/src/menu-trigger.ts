@@ -50,7 +50,7 @@ const numberOrUndefined = (value: NumberInput | undefined) => (value == null ? u
     }
 })
 export class RdxMenuTrigger {
-    protected readonly rootContext = injectRdxMenuRootContext()!;
+    protected readonly rootContext = injectRdxMenuRootContext();
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly destroyRef = inject(DestroyRef);
     private readonly dismissableLayersContext = inject(RdxDismissableLayersContextToken);

@@ -61,8 +61,8 @@ export type SelectEvent = CustomEvent<{ originalEvent: PointerEvent | KeyboardEv
     }
 })
 export class RdxSelectItem {
-    private readonly rootContext = injectSelectRootContext()!;
-    private readonly contentContext = injectSelectContentContext()!;
+    private readonly rootContext = injectSelectRootContext();
+    private readonly contentContext = injectSelectContentContext();
 
     private readonly currentElement = inject(ElementRef);
 

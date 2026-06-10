@@ -92,7 +92,7 @@ export class RdxStepperTriggerDirective {
 
         if ([kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.ARROW_UP, kbd.ARROW_DOWN].includes(keyEvent.key)) {
             useArrowNavigation(keyEvent, getActiveElement() as HTMLElement, undefined, {
-                itemsArray: this.stepperItems() as HTMLElement[],
+                itemsArray: this.stepperItems(),
                 focus: true,
                 loop: false,
                 arrowKeyOptions: this.rootContext.orientation(),

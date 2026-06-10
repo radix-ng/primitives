@@ -295,9 +295,7 @@ export class RdxDialogRoot {
             this.triggers.update((triggers) => triggers.filter((candidate) => candidate !== trigger));
 
             if (!this.destroyRef.destroyed && this.trigger() === trigger) {
-                const next = this.registeredTriggers.entries().next().value as
-                    | [string, RdxDialogRegisteredTrigger]
-                    | undefined;
+                const next = this.registeredTriggers.entries().next().value;
 
                 if (this.triggerId() !== null) {
                     this.triggerId.set(next?.[0] ?? null);

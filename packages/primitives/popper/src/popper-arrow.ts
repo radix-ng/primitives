@@ -28,7 +28,7 @@ const OPPOSITE_SIDE: Record<Side, Side> = {
     }
 })
 export class RdxPopperArrow {
-    private readonly popperContentContext = injectPopperContentWrapperContext()!;
+    private readonly popperContentContext = injectPopperContentWrapperContext();
 
     private readonly environmentInjector = inject(EnvironmentInjector);
 

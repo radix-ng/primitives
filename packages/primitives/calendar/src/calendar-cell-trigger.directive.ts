@@ -60,7 +60,7 @@ export class RdxCalendarCellTriggerDirective {
     /**
      * Current selected state
      */
-    readonly isSelectedDate = computed(() => this.rootContext.isDateSelected!(<DateValue>this.day()));
+    readonly isSelectedDate = computed(() => this.rootContext.isDateSelected(<DateValue>this.day()));
 
     readonly isDisabled = computed(() => this.rootContext.dateDisabled(<DateValue>this.day()));
 

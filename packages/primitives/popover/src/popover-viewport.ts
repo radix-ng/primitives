@@ -16,7 +16,7 @@ import { injectRdxPopoverRootContext } from './popover-root';
     }
 })
 export class RdxPopoverViewport {
-    private readonly rootContext = injectRdxPopoverRootContext()!;
+    private readonly rootContext = injectRdxPopoverRootContext();
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly destroyRef = inject(DestroyRef);
     private previous: HTMLElement | undefined;

@@ -62,7 +62,7 @@ import { injectRdxPreviewCardRootContext } from './preview-card-root';
     }
 })
 export class RdxPreviewCardPositioner {
-    protected readonly rootContext = injectRdxPreviewCardRootContext()!;
+    protected readonly rootContext = injectRdxPreviewCardRootContext();
     protected readonly wrapper = inject(RdxPopperContentWrapper);
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly triggerEl = signal<HTMLElement | null>(null);

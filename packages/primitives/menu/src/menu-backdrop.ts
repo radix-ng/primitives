@@ -18,5 +18,5 @@ import { injectRdxMenuRootContext } from './menu-root';
     }
 })
 export class RdxMenuBackdrop {
-    protected readonly rootContext = injectRdxMenuRootContext()!;
+    protected readonly rootContext = injectRdxMenuRootContext();
 }

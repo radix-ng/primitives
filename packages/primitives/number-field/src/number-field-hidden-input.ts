@@ -29,7 +29,7 @@ import { injectNumberFieldRootContext } from './number-field-context';
     }
 })
 export class RdxNumberFieldHiddenInput {
-    protected readonly rootContext = injectNumberFieldRootContext()!;
+    protected readonly rootContext = injectNumberFieldRootContext();
 
     /** Move focus to the visible input when the hidden one is focused (e.g. via form validation). */
     onFocus(): void {

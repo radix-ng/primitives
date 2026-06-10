@@ -30,7 +30,7 @@ import { focusFirst, getTabbableCandidates } from './utils';
     }
 })
 export class RdxNavigationMenuPopup {
-    protected readonly rootContext = injectNavigationMenuRootContext()!;
+    protected readonly rootContext = injectNavigationMenuRootContext();
     private readonly dismissableLayer = inject(RdxDismissableLayer);
     private readonly wrapper = inject(RdxPopperContentWrapper, { optional: true });
     private readonly layersContext = inject(RdxDismissableLayersContextToken);

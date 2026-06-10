@@ -10,7 +10,7 @@ import { injectRdxDialogRootContext } from './dialog-root';
     hostDirectives: [RdxPresenceDirective],
     providers: [
         provideRdxPresenceContext(() => {
-            const context = injectRdxDialogRootContext()!;
+            const context = injectRdxDialogRootContext();
 
             return { present: context.isOpen };
         })

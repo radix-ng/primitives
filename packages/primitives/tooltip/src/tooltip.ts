@@ -183,14 +183,14 @@ export class RdxTooltip {
 
     private readonly openTimer = useTimeoutFn(
         () => this.applyOpen(false),
-        () => this.resolvedDelay()!,
+        () => this.resolvedDelay(),
         { immediate: false },
         this.destroyRef
     );
 
     private readonly closeTimer = useTimeoutFn(
         () => this.applyClose(),
-        () => this.resolvedCloseDelay()!,
+        () => this.resolvedCloseDelay(),
         { immediate: false },
         this.destroyRef
     );
@@ -247,7 +247,7 @@ export class RdxTooltip {
     scheduleClose() {
         this.openTimer.stop();
 
-        if (this.resolvedCloseDelay()! <= 0) {
+        if (this.resolvedCloseDelay() <= 0) {
             this.applyClose();
         } else {
             this.closeTimer.start();
@@ -267,7 +267,7 @@ export class RdxTooltip {
         this.payload.set(payload);
         this.closeTimer.stop();
 
-        if (this.instantGroup.isInstant() || this.resolvedDelay()! <= 0) {
+        if (this.instantGroup.isInstant() || this.resolvedDelay() <= 0) {
             this.applyOpen(true, trigger, payload);
         } else {
             this.openTimer.start();

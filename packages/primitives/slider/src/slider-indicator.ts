@@ -19,7 +19,7 @@ import { valueToPercent } from './slider.utils';
     }
 })
 export class RdxSliderIndicator {
-    protected readonly root = injectSliderRootContext()!;
+    protected readonly root = injectSliderRootContext();
 
     protected readonly indicatorStyle = computed<Record<string, string | number>>(() => {
         const vertical = this.root.orientation() === 'vertical';

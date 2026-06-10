@@ -285,8 +285,8 @@ export class RdxCalendarRootDirective {
         watch([this.value], ([_modelValue]) => {
             if (Array.isArray(_modelValue) && _modelValue.length) {
                 const lastValue = _modelValue[_modelValue.length - 1];
-                if (lastValue && !isEqualDay(this.placeholder(), <DateValue>lastValue)) {
-                    this.onPlaceholderChange(<DateValue>lastValue);
+                if (lastValue && !isEqualDay(this.placeholder(), lastValue)) {
+                    this.onPlaceholderChange(lastValue);
                 }
             } else if (!Array.isArray(_modelValue) && _modelValue && !isEqualDay(this.placeholder(), _modelValue)) {
                 this.onPlaceholderChange(_modelValue);

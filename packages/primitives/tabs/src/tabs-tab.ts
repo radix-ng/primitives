@@ -35,7 +35,7 @@ import { makePanelId, makeTabId, RdxTabsValue } from './utils';
     }
 })
 export class RdxTabsTab {
-    protected readonly rootContext = injectTabsRootContext()!;
+    protected readonly rootContext = injectTabsRootContext();
     private readonly rovingFocusItem = inject(RdxRovingFocusItemDirective);
 
     /**

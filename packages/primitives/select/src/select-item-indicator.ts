@@ -9,5 +9,5 @@ import { injectSelectItemContext } from './select-item';
     }
 })
 export class RdxSelectItemIndicator {
-    readonly itemContext = injectSelectItemContext()!;
+    readonly itemContext = injectSelectItemContext();
 }

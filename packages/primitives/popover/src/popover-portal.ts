@@ -20,7 +20,7 @@ import { injectRdxPopoverRootContext } from './popover-root';
     }
 })
 export class RdxPopoverPortal {
-    protected readonly rootContext = injectRdxPopoverRootContext()!;
+    protected readonly rootContext = injectRdxPopoverRootContext();
 
     /**
      * Optional container to portal the content into. Defaults to `document.body`.

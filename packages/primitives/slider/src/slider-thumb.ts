@@ -32,7 +32,7 @@ import { valueToPercent } from './slider.utils';
     }
 })
 export class RdxSliderThumb implements RdxSliderThumbRef {
-    protected readonly root = injectSliderRootContext()!;
+    protected readonly root = injectSliderRootContext();
     readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
     /** The nested range input, set by `[rdxSliderThumbInput]`. */

@@ -20,7 +20,7 @@ import { injectRdxPreviewCardRootContext } from './preview-card-root';
     }
 })
 export class RdxPreviewCardPortal {
-    protected readonly rootContext = injectRdxPreviewCardRootContext()!;
+    protected readonly rootContext = injectRdxPreviewCardRootContext();
 
     /**
      * Optional container to portal the content into. Defaults to `document.body`.

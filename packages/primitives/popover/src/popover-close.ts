@@ -13,7 +13,7 @@ import { injectRdxPopoverRootContext } from './popover-root';
     }
 })
 export class RdxPopoverClose {
-    protected readonly rootContext = injectRdxPopoverRootContext()!;
+    protected readonly rootContext = injectRdxPopoverRootContext();
 
     constructor() {
         if (inject(RdxPopoverPopup, { optional: true })) {

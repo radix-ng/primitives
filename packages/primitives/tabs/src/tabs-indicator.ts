@@ -33,7 +33,7 @@ interface TabGeometry {
     }
 })
 export class RdxTabsIndicator {
-    protected readonly rootContext = injectTabsRootContext()!;
+    protected readonly rootContext = injectTabsRootContext();
     private readonly destroyRef = inject(DestroyRef);
 
     /** @ignore */

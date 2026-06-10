@@ -17,7 +17,7 @@ import { injectNavigationMenuRootContext } from './navigation-menu-root-context'
     }
 })
 export class RdxNavigationMenuArrow {
-    protected readonly rootContext = injectNavigationMenuRootContext()!;
+    protected readonly rootContext = injectNavigationMenuRootContext();
     private readonly wrapper = inject(RdxPopperContentWrapper, { optional: true });
 
     protected readonly side = computed(() => this.wrapper?.placedSide());

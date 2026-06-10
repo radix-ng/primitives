@@ -22,7 +22,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
     }
 })
 export class RdxFieldError {
-    protected readonly rootContext = injectFieldRootContext()!;
+    protected readonly rootContext = injectFieldRootContext();
 
     /**
      * Error message id.

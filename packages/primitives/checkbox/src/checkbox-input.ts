@@ -26,7 +26,7 @@ import { injectCheckboxRootContext } from './checkbox-root';
     }
 })
 export class RdxCheckboxInputDirective {
-    protected readonly rootContext = injectCheckboxRootContext()!;
+    protected readonly rootContext = injectCheckboxRootContext();
 
     private readonly input = inject<ElementRef<HTMLInputElement>>(ElementRef).nativeElement;
 

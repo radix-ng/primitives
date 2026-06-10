@@ -15,5 +15,5 @@ import { injectRdxToastRootContext } from './toast-root';
     }
 })
 export class RdxToastContent {
-    protected readonly rootContext = injectRdxToastRootContext()!;
+    protected readonly rootContext = injectRdxToastRootContext();
 }

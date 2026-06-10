@@ -34,7 +34,7 @@ function getFocusableItems(popup: HTMLElement): HTMLElement[] {
     hostDirectives: [RdxPopperContent, RdxDismissableLayer, RdxFocusScope],
     providers: [
         provideRdxDismissableLayerConfig(() => {
-            const rootContext = injectRdxMenuRootContext()!;
+            const rootContext = injectRdxMenuRootContext();
             return {
                 disableOutsidePointerEvents: computed(() => rootContext.modal())
             };
@@ -59,7 +59,7 @@ function getFocusableItems(popup: HTMLElement): HTMLElement[] {
     }
 })
 export class RdxMenuPopup {
-    protected readonly rootContext = injectRdxMenuRootContext()!;
+    protected readonly rootContext = injectRdxMenuRootContext();
     private readonly dismissableLayer = inject(RdxDismissableLayer);
     private readonly focusScope = inject(RdxFocusScope);
     private readonly wrapper = inject(RdxPopperContentWrapper, { optional: true });

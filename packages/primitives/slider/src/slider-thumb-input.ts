@@ -37,7 +37,7 @@ import { ALL_KEYS, COMPOSITE_KEYS, getDefaultAriaValueText, getNewValue, roundVa
     }
 })
 export class RdxSliderThumbInput {
-    protected readonly root = injectSliderRootContext()!;
+    protected readonly root = injectSliderRootContext();
     protected readonly thumb = inject(RdxSliderThumb);
     private readonly element = inject<ElementRef<HTMLInputElement>>(ElementRef).nativeElement;
 

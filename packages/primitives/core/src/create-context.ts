@@ -4,6 +4,18 @@
 import { inject, InjectionToken, Provider } from '@angular/core';
 
 /**
+ * Retrieves the context value from Angular's dependency injection.
+ * Overloaded so the non-optional call returns a non-nullable `T` (no `!` needed),
+ * while the optional call may return `null`.
+ */
+export interface InjectContext<T> {
+    (): T;
+    (optional: false): T;
+    (optional: true): T | null;
+    (optional?: boolean): T | null;
+}
+
+/**
  * Creates a context with injector and provider functions for a given type
  * @template T The type of the context value
  * @param description Descriptive string for the context (used in token creation)
@@ -13,7 +25,7 @@ import { inject, InjectionToken, Provider } from '@angular/core';
  */
 export function createContext<T>(
     description: string
-): readonly [injectContext: (optional?: boolean) => T | null, provideContext: (useFactory: () => T) => Provider] {
+): readonly [injectContext: InjectContext<T>, provideContext: (useFactory: () => T) => Provider] {
     const CONTEXT_TOKEN = new InjectionToken<T>(`${description}Context`);
 
     /**
@@ -23,10 +35,16 @@ export function createContext<T>(
      * @throws Error when context is not provided and not optional
      */
     const injectContext = (optional = false): T | null => {
-        const value = optional ? inject(CONTEXT_TOKEN, { optional: true }) : inject(CONTEXT_TOKEN);
+        // Always inject optionally so a missing context produces our own descriptive
+        // error instead of Angular's generic NullInjectorError. This also catches a
+        // provided factory that returns null/undefined for the non-optional case.
+        const value = inject(CONTEXT_TOKEN, { optional: true });
 
         if (value == null && !optional) {
-            throw new Error(`No context provided for token ${CONTEXT_TOKEN.toString()}`);
+            throw new Error(
+                `No \`${description}Context\` found. A part of the \`${description}\` primitive ` +
+                    `must be used inside its root (the directive that provides \`${description}Context\`).`
+            );
         }
 
         return value;
@@ -42,5 +60,5 @@ export function createContext<T>(
         useFactory: useFactory
     });
 
-    return [injectContext, provideContext] as const;
+    return [injectContext as InjectContext<T>, provideContext] as const;
 }

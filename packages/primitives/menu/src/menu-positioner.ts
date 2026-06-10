@@ -62,7 +62,7 @@ import { injectRdxMenuRootContext } from './menu-root';
     }
 })
 export class RdxMenuPositioner {
-    protected readonly rootContext = injectRdxMenuRootContext()!;
+    protected readonly rootContext = injectRdxMenuRootContext();
     protected readonly wrapper = inject(RdxPopperContentWrapper);
 
     /**

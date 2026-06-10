@@ -20,7 +20,7 @@ import { injectScrollAreaRootContext } from './scroll-area-root';
     }
 })
 export class RdxScrollAreaCorner {
-    protected readonly rootContext = injectScrollAreaRootContext()!;
+    protected readonly rootContext = injectScrollAreaRootContext();
 
     constructor() {
         this.rootContext.cornerRef.current = inject(ElementRef).nativeElement;

@@ -19,7 +19,7 @@ import { injectTabsRootContext } from './tabs-root-context';
     }
 })
 export class RdxTabsList {
-    protected readonly rootContext = injectTabsRootContext()!;
+    protected readonly rootContext = injectTabsRootContext();
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly rovingFocusGroup = inject(RdxRovingFocusGroupDirective, { self: true });
 

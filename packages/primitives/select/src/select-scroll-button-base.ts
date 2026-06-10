@@ -16,7 +16,7 @@ import { injectSelectContentContext } from './select-content';
     }
 })
 export class RdxSelectScrollButtonBase {
-    private readonly contentContext = injectSelectContentContext()!;
+    private readonly contentContext = injectSelectContentContext();
 
     readonly autoScrollTimerRef = signal<number | null>(null);
 

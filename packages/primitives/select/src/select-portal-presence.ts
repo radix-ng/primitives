@@ -7,7 +7,7 @@ import { injectSelectRootContext } from './select-root';
     hostDirectives: [RdxPresenceDirective],
     providers: [
         provideRdxPresenceContext(() => {
-            const context = injectSelectRootContext()!;
+            const context = injectSelectRootContext();
 
             return { present: context.open };
         })

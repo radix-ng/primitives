@@ -78,9 +78,9 @@ const itemContext = (): AccordionItemContext => {
 export class RdxAccordionItemDirective {
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
-    private readonly collapsibleContext = injectCollapsibleRootContext()!;
+    private readonly collapsibleContext = injectCollapsibleRootContext();
 
-    protected readonly rootContext = injectAccordionRootContext()!;
+    protected readonly rootContext = injectAccordionRootContext();
 
     /**
      * A string value for the accordion item. All items within an accordion should use a unique value.
@@ -164,7 +164,7 @@ export class RdxAccordionItemDirective {
         useArrowNavigation(
             keyEvent,
             this.elementRef.nativeElement.querySelector('[data-rdx-collection-item]')!,
-            this.rootContext.elementRef.nativeElement!,
+            this.rootContext.elementRef.nativeElement,
             {
                 arrowKeyOptions: this.rootContext.orientation(),
                 dir: this.rootContext.direction(),

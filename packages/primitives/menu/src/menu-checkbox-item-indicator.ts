@@ -18,7 +18,7 @@ import { getCheckedState, isIndeterminate } from './menu-utils';
     }
 })
 export class RdxMenuCheckboxItemIndicator {
-    private readonly itemContext = injectRdxMenuCheckboxItemContext()!;
+    private readonly itemContext = injectRdxMenuCheckboxItemContext();
 
     /** Keep the indicator in the DOM when unchecked so CSS exit animations can play. */
     readonly keepMounted = input<boolean, BooleanInput>(false, { transform: booleanAttribute });

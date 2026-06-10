@@ -24,8 +24,8 @@ import { injectScrollAreaViewportContext } from './scroll-area-viewport';
     }
 })
 export class RdxScrollAreaContent {
-    protected readonly rootContext = injectScrollAreaRootContext()!;
-    private readonly viewportContext = injectScrollAreaViewportContext()!;
+    protected readonly rootContext = injectScrollAreaRootContext();
+    private readonly viewportContext = injectScrollAreaViewportContext();
     private readonly element: HTMLElement = inject(ElementRef).nativeElement;
     private readonly destroyRef = inject(DestroyRef);
 

@@ -15,5 +15,5 @@ import { injectRdxToastRootContext } from './toast-root';
 })
 export class RdxToastAction {
     /** The toast root context, so handlers can read the toast or dismiss it after acting. */
-    readonly rootContext = injectRdxToastRootContext()!;
+    readonly rootContext = injectRdxToastRootContext();
 }

@@ -21,8 +21,8 @@ import { injectAccordionRootContext } from './accordion-root.directive';
     }
 })
 export class RdxAccordionTriggerDirective {
-    protected readonly rootContext = injectAccordionRootContext()!;
-    protected readonly itemContext = injectAccordionItemContext()!;
+    protected readonly rootContext = injectAccordionRootContext();
+    protected readonly itemContext = injectAccordionItemContext();
 
     constructor() {
         this.itemContext.triggerId.set(injectId('rdx-accordion-trigger-'));

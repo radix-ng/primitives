@@ -62,7 +62,7 @@ const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();
     }
 })
 export class RdxMenuSubTrigger {
-    protected readonly submenuContext = injectRdxMenuRootContext()!;
+    protected readonly submenuContext = injectRdxMenuRootContext();
     private readonly submenuRoot = inject(RdxMenuRoot);
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly destroyRef = inject(DestroyRef);

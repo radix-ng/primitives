@@ -17,7 +17,7 @@ import { injectToolbarRootContext } from './toolbar-context';
     }
 })
 export class RdxToolbarLink {
-    protected readonly rootContext = injectToolbarRootContext()!;
+    protected readonly rootContext = injectToolbarRootContext();
 
     /** @ignore Space activates a link, matching native button behavior in a toolbar. */
     protected onKeyDown(event: KeyboardEvent): void {

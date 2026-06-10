@@ -11,5 +11,5 @@ import { injectSelectRootContext } from './select-root';
     }
 })
 export class RdxSelectPopperPositionContent {
-    protected rootContext = injectSelectRootContext()!;
+    protected rootContext = injectSelectRootContext();
 }

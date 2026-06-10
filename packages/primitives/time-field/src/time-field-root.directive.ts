@@ -185,7 +185,7 @@ export class RdxTimeFieldRootDirective {
 
     readonly convertedPlaceholder = linkedSignal({
         source: () => {
-            return convertValue(<TimeValue>this.placeholder()) as TimeValue;
+            return convertValue(<TimeValue>this.placeholder());
         },
         computation: (value: TimeValue) => {
             return value;
@@ -205,7 +205,7 @@ export class RdxTimeFieldRootDirective {
     >({
         source: () => ({
             value: this.convertedModelValue(),
-            granularity: <Granularity>this.inferredGranularity(),
+            granularity: this.inferredGranularity(),
             formatter: this.formatter()
         }),
         computation: ({ value, granularity, formatter }) =>
@@ -240,7 +240,7 @@ export class RdxTimeFieldRootDirective {
      */
     readonly allSegmentContent = computed(() =>
         createContent({
-            granularity: <Granularity>this.inferredGranularity(),
+            granularity: this.inferredGranularity(),
             dateRef: <DateValue>this.convertedPlaceholder(),
             formatter: this.formatter(),
             hideTimeZone: this.hideTimeZone(),

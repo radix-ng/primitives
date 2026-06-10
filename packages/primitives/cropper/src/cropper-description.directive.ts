@@ -8,5 +8,5 @@ import { injectCropperRootContext } from './cropper-context.token';
     }
 })
 export class RdxCropperDescriptionDirective {
-    readonly rootContext = injectCropperRootContext()!;
+    readonly rootContext = injectCropperRootContext();
 }

@@ -16,7 +16,7 @@ import { injectSliderRootContext } from './slider-context';
     }
 })
 export class RdxSliderValue {
-    protected readonly root = injectSliderRootContext()!;
+    protected readonly root = injectSliderRootContext();
 
     /** The separator placed between values of a range slider. */
     readonly separator = input<string>(' – ');

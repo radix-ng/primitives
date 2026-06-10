@@ -14,14 +14,14 @@ import { injectRdxPopoverRootContext, RdxPopoverOpenChangeReason } from './popov
     hostDirectives: [RdxPopperContent, RdxDismissableLayer, RdxFocusScope],
     providers: [
         provideRdxDismissableLayerConfig(() => {
-            const rootContext = injectRdxPopoverRootContext()!;
+            const rootContext = injectRdxPopoverRootContext();
 
             return {
                 disableOutsidePointerEvents: computed(() => rootContext.modal() === true)
             };
         }),
         provideRdxFocusScopeConfig(() => {
-            const rootContext = injectRdxPopoverRootContext()!;
+            const rootContext = injectRdxPopoverRootContext();
 
             return {
                 trapped: computed(
@@ -49,7 +49,7 @@ import { injectRdxPopoverRootContext, RdxPopoverOpenChangeReason } from './popov
     }
 })
 export class RdxPopoverPopup {
-    protected readonly rootContext = injectRdxPopoverRootContext()!;
+    protected readonly rootContext = injectRdxPopoverRootContext();
     private readonly dismissableLayer = inject(RdxDismissableLayer);
     private readonly focusScope = inject(RdxFocusScope);
     private readonly wrapper = inject(RdxPopperContentWrapper, { optional: true });

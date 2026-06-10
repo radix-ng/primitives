@@ -16,5 +16,5 @@ import { injectRdxPopoverRootContext } from './popover-root';
     }
 })
 export class RdxPopoverBackdrop {
-    protected readonly rootContext = injectRdxPopoverRootContext()!;
+    protected readonly rootContext = injectRdxPopoverRootContext();
 }

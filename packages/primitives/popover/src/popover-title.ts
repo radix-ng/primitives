@@ -12,7 +12,7 @@ import { injectRdxPopoverRootContext } from './popover-root';
     }
 })
 export class RdxPopoverTitle {
-    private readonly rootContext = injectRdxPopoverRootContext()!;
+    private readonly rootContext = injectRdxPopoverRootContext();
     readonly id = injectId('rdx-popover-title-');
 
     constructor() {

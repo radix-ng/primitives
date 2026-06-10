@@ -17,7 +17,7 @@ import { injectRdxPreviewCardRootContext } from './preview-card-root';
     }
 })
 export class RdxPreviewCardArrow {
-    protected readonly rootContext = injectRdxPreviewCardRootContext()!;
+    protected readonly rootContext = injectRdxPreviewCardRootContext();
     private readonly wrapper = inject(RdxPopperContentWrapper, { optional: true });
 
     protected readonly side = computed(() => this.wrapper?.placedSide());

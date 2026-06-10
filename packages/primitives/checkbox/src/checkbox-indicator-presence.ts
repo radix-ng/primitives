@@ -6,7 +6,7 @@ import { injectCheckboxRootContext } from './checkbox-root';
     selector: 'ng-template[rdxCheckboxIndicatorPresence]',
     providers: [
         provideRdxPresenceContext(() => {
-            const rootContext = injectCheckboxRootContext()!;
+            const rootContext = injectCheckboxRootContext();
 
             return {
                 present: computed(() => rootContext.checked() || rootContext.indeterminate())

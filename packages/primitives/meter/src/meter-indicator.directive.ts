@@ -17,5 +17,5 @@ import { injectMeterRootContext } from './meter-root.directive';
     }
 })
 export class RdxMeterIndicatorDirective {
-    protected readonly meter = injectMeterRootContext()!;
+    protected readonly meter = injectMeterRootContext();
 }

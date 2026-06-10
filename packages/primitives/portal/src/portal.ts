@@ -24,7 +24,7 @@ export type RdxPortalContainer = ElementRef<HTMLElement> | HTMLElement | string;
 export class RdxPortal {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly platformId = inject(PLATFORM_ID);
-    private readonly document = inject(DOCUMENT, { optional: true }) as Document | null;
+    private readonly document = inject(DOCUMENT, { optional: true });
     private readonly destroyRef = inject(DestroyRef);
 
     /**

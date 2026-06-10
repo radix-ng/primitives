@@ -17,5 +17,5 @@ import { injectSliderRootContext } from './slider-context';
     }
 })
 export class RdxSliderTrack {
-    protected readonly root = injectSliderRootContext()!;
+    protected readonly root = injectSliderRootContext();
 }

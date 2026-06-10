@@ -23,8 +23,8 @@ import { injectScrollAreaScrollbarContext } from './scroll-area-scrollbar';
     }
 })
 export class RdxScrollAreaThumb {
-    protected readonly rootContext = injectScrollAreaRootContext()!;
-    protected readonly scrollbarContext = injectScrollAreaScrollbarContext()!;
+    protected readonly rootContext = injectScrollAreaRootContext();
+    protected readonly scrollbarContext = injectScrollAreaScrollbarContext();
     private readonly element: HTMLElement = inject(ElementRef).nativeElement;
 
     constructor() {

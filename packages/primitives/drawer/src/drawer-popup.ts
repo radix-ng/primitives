@@ -52,8 +52,8 @@ function rootFontSize(): number {
     }
 })
 export class RdxDrawerPopup {
-    protected readonly drawerContext = injectRdxDrawerRootContext()!;
-    private readonly dialogContext = injectRdxDialogRootContext()!;
+    protected readonly drawerContext = injectRdxDrawerRootContext();
+    private readonly dialogContext = injectRdxDialogRootContext();
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly element = this.elementRef.nativeElement;
 

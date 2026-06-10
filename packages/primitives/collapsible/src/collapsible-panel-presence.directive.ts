@@ -11,7 +11,7 @@ import { injectCollapsibleRootContext } from './collapsible-root.directive';
     selector: 'ng-template[rdxCollapsiblePanelPresence]',
     providers: [
         provideRdxPresenceContext(() => ({
-            present: injectCollapsibleRootContext()!.open
+            present: injectCollapsibleRootContext().open
         }))
     ],
     hostDirectives: [RdxPresenceDirective]

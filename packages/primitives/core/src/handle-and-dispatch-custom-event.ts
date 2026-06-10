@@ -9,7 +9,7 @@ export function handleAndDispatchCustomEvent<E extends CustomEvent, OriginalEven
         cancelable: true,
         detail
     });
-    if (handler) target.addEventListener(name, handler as EventListener, { once: true });
+    if (handler) target.addEventListener(name, handler, { once: true });
 
     target.dispatchEvent(event);
 }

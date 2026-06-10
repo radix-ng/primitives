@@ -16,6 +16,6 @@ const attr = (value: boolean) => (value ? '' : undefined);
     }
 })
 export class RdxFieldsetLegend {
-    protected readonly rootContext = injectFieldsetRootContext()!;
+    protected readonly rootContext = injectFieldsetRootContext();
     protected readonly dataAttr = attr;
 }

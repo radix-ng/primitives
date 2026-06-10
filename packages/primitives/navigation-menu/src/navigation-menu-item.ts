@@ -10,7 +10,7 @@ import { generateId } from './utils';
     exportAs: 'rdxNavigationMenuItem'
 })
 export class RdxNavigationMenuItem {
-    private readonly rootContext = injectNavigationMenuRootContext()!;
+    private readonly rootContext = injectNavigationMenuRootContext();
 
     /**
      * A unique value that identifies the item. Falls back to a generated id.

@@ -45,7 +45,7 @@ interface RenderedContent {
     }
 })
 export class RdxNavigationMenuViewport {
-    protected readonly rootContext = injectNavigationMenuRootContext()!;
+    protected readonly rootContext = injectNavigationMenuRootContext();
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly viewContainerRef = inject(ViewContainerRef);
     private readonly renderer = inject(Renderer2);

@@ -23,5 +23,5 @@ import { injectRdxDialogRootContext } from './dialog-root';
     }
 })
 export class RdxDialogViewport {
-    protected readonly rootContext = injectRdxDialogRootContext()!;
+    protected readonly rootContext = injectRdxDialogRootContext();
 }

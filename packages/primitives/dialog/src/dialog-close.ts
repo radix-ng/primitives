@@ -13,5 +13,5 @@ import { injectRdxDialogRootContext } from './dialog-root';
     }
 })
 export class RdxDialogClose {
-    protected readonly rootContext = injectRdxDialogRootContext()!;
+    protected readonly rootContext = injectRdxDialogRootContext();
 }

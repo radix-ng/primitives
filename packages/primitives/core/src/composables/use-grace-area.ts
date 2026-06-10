@@ -221,19 +221,19 @@ function isPointInPolygon(point: Point, polygon: Polygon) {
 }
 
 function getHull<PointType extends Point>(points: Readonly<Array<PointType>>): Array<PointType> {
-    const sortedPoints: Array<PointType> = points.slice() as Array<PointType>;
+    const sortedPoints: Array<PointType> = points.slice();
     sortedPoints.sort((a, b) => a.x - b.x || a.y - b.y);
     return getHullPresorted(sortedPoints);
 }
 
 function getHullPresorted<PointType extends Point>(points: Readonly<Array<PointType>>): Array<PointType> {
-    if (points.length <= 1) return points.slice() as Array<PointType>;
+    if (points.length <= 1) return points.slice();
 
     const upper: Array<PointType> = [];
     for (const point of points) {
         while (upper.length >= 2) {
-            const q = upper[upper.length - 1]!;
-            const r = upper[upper.length - 2]!;
+            const q = upper[upper.length - 1];
+            const r = upper[upper.length - 2];
             if ((q.x - r.x) * (point.y - r.y) >= (q.y - r.y) * (point.x - r.x)) upper.pop();
             else break;
         }
@@ -243,10 +243,10 @@ function getHullPresorted<PointType extends Point>(points: Readonly<Array<PointT
 
     const lower: Array<PointType> = [];
     for (let index = points.length - 1; index >= 0; index--) {
-        const point = points[index]!;
+        const point = points[index];
         while (lower.length >= 2) {
-            const q = lower[lower.length - 1]!;
-            const r = lower[lower.length - 2]!;
+            const q = lower[lower.length - 1];
+            const r = lower[lower.length - 2];
             if ((q.x - r.x) * (point.y - r.y) >= (q.y - r.y) * (point.x - r.x)) lower.pop();
             else break;
         }
@@ -254,7 +254,7 @@ function getHullPresorted<PointType extends Point>(points: Readonly<Array<PointT
     }
     lower.pop();
 
-    if (upper.length === 1 && lower.length === 1 && upper[0]!.x === lower[0]!.x && upper[0]!.y === lower[0]!.y) {
+    if (upper.length === 1 && lower.length === 1 && upper[0].x === lower[0].x && upper[0].y === lower[0].y) {
         return upper;
     }
 

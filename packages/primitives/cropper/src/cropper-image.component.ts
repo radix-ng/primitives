@@ -17,7 +17,7 @@ import { injectCropperRootContext } from './cropper-context.token';
     `
 })
 export class RdxCropperImageComponent {
-    protected readonly rootContext = injectCropperRootContext()!;
+    protected readonly rootContext = injectCropperRootContext();
 
     readonly imgClass = input<string>();
 

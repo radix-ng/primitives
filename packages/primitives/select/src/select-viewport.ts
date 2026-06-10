@@ -16,7 +16,7 @@ import { injectSelectContentContext } from './select-content';
     }
 })
 export class RdxSelectViewport {
-    private readonly contentContext = injectSelectContentContext()!;
+    private readonly contentContext = injectSelectContentContext();
     private readonly elementRef = inject(ElementRef<HTMLElement>);
 
     private readonly prevScrollTopRef = signal(0);

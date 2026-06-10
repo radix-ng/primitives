@@ -352,9 +352,7 @@ export class RdxPopoverRoot {
             }
 
             if (this.trigger() === trigger) {
-                const next = this.registeredTriggers.entries().next().value as
-                    | [string, RdxPopoverRegisteredTrigger]
-                    | undefined;
+                const next = this.registeredTriggers.entries().next().value;
 
                 if (this.triggerId() !== null) {
                     this.triggerId.set(next?.[0] ?? null);

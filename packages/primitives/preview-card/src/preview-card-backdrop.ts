@@ -16,5 +16,5 @@ import { injectRdxPreviewCardRootContext } from './preview-card-root';
     }
 })
 export class RdxPreviewCardBackdrop {
-    protected readonly rootContext = injectRdxPreviewCardRootContext()!;
+    protected readonly rootContext = injectRdxPreviewCardRootContext();
 }

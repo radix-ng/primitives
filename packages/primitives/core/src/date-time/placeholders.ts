@@ -139,5 +139,5 @@ function getLocaleLanguage(locale: string) {
     if (Intl.Locale) {
         return new Intl.Locale(locale).language;
     }
-    return locale.split('-')[0]!;
+    return locale.split('-')[0];
 }

@@ -14,7 +14,7 @@ import { injectNavigationMenuRootContext } from './navigation-menu-root-context'
     hostDirectives: [RdxPresenceDirective],
     providers: [
         provideRdxPresenceContext(() => {
-            const context = injectNavigationMenuRootContext()!;
+            const context = injectNavigationMenuRootContext();
 
             return { present: context.isOpen };
         })

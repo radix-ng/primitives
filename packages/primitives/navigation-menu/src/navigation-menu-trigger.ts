@@ -30,7 +30,7 @@ import { focusFirst, getTabbableCandidates } from './utils';
 })
 export class RdxNavigationMenuTrigger {
     protected readonly item = inject(RdxNavigationMenuItem);
-    private readonly rootContext = injectNavigationMenuRootContext()!;
+    private readonly rootContext = injectNavigationMenuRootContext();
     private readonly rovingFocusItem = inject(RdxRovingFocusItemDirective, { self: true });
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly document = injectDocument();

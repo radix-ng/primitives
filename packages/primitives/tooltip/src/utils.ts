@@ -47,7 +47,7 @@ export function useTimeoutFn(
 ): TimeoutController {
     let id: number | null = null;
 
-    const resolveDelay = () => (typeof delay === 'function' ? (delay as () => number)() : delay);
+    const resolveDelay = () => (typeof delay === 'function' ? delay() : delay);
 
     const stop = () => {
         if (id != null) {

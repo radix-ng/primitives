@@ -16,7 +16,7 @@ import { injectRdxTooltipContext } from './tooltip';
     }
 })
 export class RdxTooltipArrow {
-    protected readonly rootContext = injectRdxTooltipContext()!;
+    protected readonly rootContext = injectRdxTooltipContext();
     private readonly wrapper = inject(RdxPopperContentWrapper, { optional: true });
 
     protected readonly side = computed(() => this.wrapper?.placedSide());

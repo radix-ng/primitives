@@ -34,7 +34,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
     }
 })
 export class RdxFieldControl {
-    protected readonly rootContext = injectFieldRootContext()!;
+    protected readonly rootContext = injectFieldRootContext();
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private initialValue = '';
 

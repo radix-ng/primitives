@@ -337,9 +337,7 @@ export class RdxPreviewCardRoot {
             }
 
             if (this.trigger() === trigger) {
-                const next = this.registeredTriggers.entries().next().value as
-                    | [string, RdxPreviewCardRegisteredTrigger]
-                    | undefined;
+                const next = this.registeredTriggers.entries().next().value;
 
                 if (this.triggerId() !== null) {
                     this.triggerId.set(next?.[0] ?? null);

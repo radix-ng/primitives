@@ -7,7 +7,7 @@ import { injectRdxTooltipContext } from './tooltip';
     hostDirectives: [RdxPresenceDirective],
     providers: [
         provideRdxPresenceContext(() => {
-            const context = injectRdxTooltipContext()!;
+            const context = injectRdxTooltipContext();
 
             return { present: context.isOpen };
         })

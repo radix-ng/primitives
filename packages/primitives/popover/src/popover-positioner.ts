@@ -62,7 +62,7 @@ import { injectRdxPopoverRootContext } from './popover-root';
     }
 })
 export class RdxPopoverPositioner {
-    protected readonly rootContext = injectRdxPopoverRootContext()!;
+    protected readonly rootContext = injectRdxPopoverRootContext();
     protected readonly wrapper = inject(RdxPopperContentWrapper);
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly triggerEl = signal<HTMLElement | null>(null);

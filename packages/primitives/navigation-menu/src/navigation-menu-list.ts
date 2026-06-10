@@ -15,7 +15,7 @@ import { injectNavigationMenuRootContext } from './navigation-menu-root-context'
     }
 })
 export class RdxNavigationMenuList {
-    protected readonly rootContext = injectNavigationMenuRootContext()!;
+    protected readonly rootContext = injectNavigationMenuRootContext();
     private readonly rovingFocusGroup = inject(RdxRovingFocusGroupDirective, { self: true });
 
     constructor() {

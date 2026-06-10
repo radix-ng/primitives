@@ -17,5 +17,5 @@ import { injectSwitchContext } from './switch-context';
     }
 })
 export class RdxSwitchThumb {
-    protected readonly rootContext = injectSwitchContext()!;
+    protected readonly rootContext = injectSwitchContext();
 }

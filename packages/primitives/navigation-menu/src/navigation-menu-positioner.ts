@@ -56,7 +56,7 @@ import { injectNavigationMenuRootContext } from './navigation-menu-root-context'
     }
 })
 export class RdxNavigationMenuPositioner {
-    protected readonly rootContext = injectNavigationMenuRootContext()!;
+    protected readonly rootContext = injectNavigationMenuRootContext();
     protected readonly wrapper = inject(RdxPopperContentWrapper);
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly triggerEl = signal<HTMLElement | null>(null);

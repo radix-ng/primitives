@@ -11,7 +11,7 @@ import { valueComparator } from './utils';
     }
 })
 export class RdxSelectValue {
-    readonly rootContext = injectSelectRootContext()!;
+    readonly rootContext = injectSelectRootContext();
 
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 

@@ -18,7 +18,7 @@ import { getCheckedState } from './menu-utils';
     }
 })
 export class RdxMenuRadioItemIndicator {
-    private readonly itemContext = injectRdxMenuRadioItemContext()!;
+    private readonly itemContext = injectRdxMenuRadioItemContext();
 
     /** Keep the indicator in the DOM when unselected so CSS exit animations can play. */
     readonly keepMounted = input<boolean, BooleanInput>(false, { transform: booleanAttribute });

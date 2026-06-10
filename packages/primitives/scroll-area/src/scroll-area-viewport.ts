@@ -51,7 +51,7 @@ const viewportContext = (): ScrollAreaViewportContext => {
     }
 })
 export class RdxScrollAreaViewport {
-    protected readonly rootContext = injectScrollAreaRootContext()!;
+    protected readonly rootContext = injectScrollAreaRootContext();
 
     private readonly element: HTMLElement = inject(ElementRef).nativeElement;
     private readonly destroyRef = inject(DestroyRef);

@@ -35,8 +35,8 @@ import { CONTENT_MARGIN } from './utils';
 })
 export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
     private readonly currentElement = inject(ElementRef);
-    private readonly rootContext = injectSelectRootContext()!;
-    readonly contentContext = injectSelectContentContext()!;
+    private readonly rootContext = injectSelectRootContext();
+    readonly contentContext = injectSelectContentContext();
 
     readonly placed = output();
 

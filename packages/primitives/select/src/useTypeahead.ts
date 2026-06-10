@@ -41,7 +41,7 @@ export function useTypeahead(callback?: (search: string) => void) {
 
             const newItem = itemsWithTextValue.find((item) => item.textValue === nextMatch);
 
-            if (newItem) (newItem.ref as HTMLElement).focus();
+            if (newItem) newItem.ref.focus();
             return newItem?.ref;
         }
     };

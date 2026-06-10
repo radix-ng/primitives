@@ -24,6 +24,6 @@ const attr = (value: boolean) => (value ? '' : undefined);
     }
 })
 export class RdxProgressValueDirective {
-    protected readonly progress = injectProgressRootContext()!;
+    protected readonly progress = injectProgressRootContext();
     protected readonly dataAttr = attr;
 }

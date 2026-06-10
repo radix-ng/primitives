@@ -23,7 +23,7 @@ const groupContext = (): RdxToolbarGroupContext => {
     }
 })
 export class RdxToolbarGroup {
-    protected readonly rootContext = injectToolbarRootContext()!;
+    protected readonly rootContext = injectToolbarRootContext();
 
     /**
      * Whether the group is disabled.

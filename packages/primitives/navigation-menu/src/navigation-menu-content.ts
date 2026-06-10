@@ -14,7 +14,7 @@ import { injectNavigationMenuRootContext } from './navigation-menu-root-context'
     selector: '[rdxNavigationMenuContent]'
 })
 export class RdxNavigationMenuContent {
-    private readonly rootContext = injectNavigationMenuRootContext()!;
+    private readonly rootContext = injectNavigationMenuRootContext();
     private readonly item = inject(RdxNavigationMenuItem);
     private readonly templateRef = inject<TemplateRef<unknown>>(TemplateRef);
 

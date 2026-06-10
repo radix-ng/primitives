@@ -18,5 +18,5 @@ import { injectNumberFieldRootContext } from './number-field-context';
     }
 })
 export class RdxNumberFieldGroup {
-    protected readonly rootContext = injectNumberFieldRootContext()!;
+    protected readonly rootContext = injectNumberFieldRootContext();
 }

@@ -134,7 +134,7 @@ export function getLastFirstDayOfWeek<T extends DateValue = DateValue>(
 
     if (firstDayOfWeek > day) return date.subtract({ days: day + 7 - firstDayOfWeek }) as T;
 
-    if (firstDayOfWeek === day) return date as T;
+    if (firstDayOfWeek === day) return date;
 
     return date.subtract({ days: day - firstDayOfWeek }) as T;
 }
@@ -147,7 +147,7 @@ export function getNextLastDayOfWeek<T extends DateValue = DateValue>(
     const day = getDayOfWeek(date, locale);
     const lastDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
 
-    if (day === lastDayOfWeek) return date as T;
+    if (day === lastDayOfWeek) return date;
 
     if (day > lastDayOfWeek) return date.add({ days: 7 - day + lastDayOfWeek }) as T;
 
@@ -198,7 +198,7 @@ type GetDefaultDateProps = {
 export function getDefaultDate(props: GetDefaultDateProps): DateValue {
     const { defaultValue, defaultPlaceholder, granularity = 'day', locale = 'en' } = props;
 
-    if (Array.isArray(defaultValue) && defaultValue.length) return defaultValue[defaultValue.length - 1]!.copy();
+    if (Array.isArray(defaultValue) && defaultValue.length) return defaultValue[defaultValue.length - 1].copy();
 
     if (defaultValue && !Array.isArray(defaultValue)) return defaultValue.copy();
 

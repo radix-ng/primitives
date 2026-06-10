@@ -31,7 +31,7 @@ import { injectRdxPreviewCardRootContext, RdxPreviewCardOpenChangeReason } from 
     }
 })
 export class RdxPreviewCardPopup {
-    protected readonly rootContext = injectRdxPreviewCardRootContext()!;
+    protected readonly rootContext = injectRdxPreviewCardRootContext();
     private readonly dismissableLayer = inject(RdxDismissableLayer);
     private readonly wrapper = inject(RdxPopperContentWrapper, { optional: true });
     protected readonly align = computed(() => this.wrapper?.placedAlign());

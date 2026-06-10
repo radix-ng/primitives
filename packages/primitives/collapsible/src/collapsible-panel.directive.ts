@@ -41,7 +41,7 @@ const optionalBoolean = (value: BooleanInput | undefined): boolean | undefined =
 export class RdxCollapsiblePanelDirective {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
-    protected readonly rootContext = injectCollapsibleRootContext()!;
+    protected readonly rootContext = injectCollapsibleRootContext();
 
     /**
      * Whether to keep the element in the DOM while the panel is closed.

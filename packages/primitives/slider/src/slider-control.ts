@@ -30,7 +30,7 @@ const INTENTIONAL_DRAG_COUNT_THRESHOLD = 2;
     }
 })
 export class RdxSliderControl {
-    protected readonly root = injectSliderRootContext()!;
+    protected readonly root = injectSliderRootContext();
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly document = inject(DOCUMENT);
 

@@ -10,7 +10,7 @@ import { injectRdxPreviewCardRootContext } from './preview-card-root';
     hostDirectives: [RdxPresenceDirective],
     providers: [
         provideRdxPresenceContext(() => {
-            const context = injectRdxPreviewCardRootContext()!;
+            const context = injectRdxPreviewCardRootContext();
 
             return { present: context.isOpen };
         })

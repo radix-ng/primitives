@@ -381,8 +381,8 @@ export class RdxPopperContentWrapper {
             transform: ready ? '' : 'translate(0, -200%)', // keep off the page when measuring
             minWidth: 'max-content',
             zIndex: this.contentZIndex(),
-            top: Number.isFinite(y as number) ? `${y}px` : '',
-            left: Number.isFinite(x as number) ? `${x}px` : '',
+            top: Number.isFinite(y) ? `${y}px` : '',
+            left: Number.isFinite(x) ? `${x}px` : '',
             '--radix-popper-transform-origin': [
                 pos?.middlewareData['transformOrigin']?.x,
                 pos?.middlewareData['transformOrigin']?.y

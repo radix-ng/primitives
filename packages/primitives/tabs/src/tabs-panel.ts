@@ -46,7 +46,7 @@ const panelPresenceContext = () => ({ present: inject(RdxTabsPanel).present });
 })
 export class RdxTabsPanel {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
-    protected readonly rootContext = injectTabsRootContext()!;
+    protected readonly rootContext = injectTabsRootContext();
 
     /**
      * A unique value that associates the panel with a tab.

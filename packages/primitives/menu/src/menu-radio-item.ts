@@ -55,7 +55,7 @@ const radioItemContextFactory = (): RdxMenuRadioItemContext => {
 })
 export class RdxMenuRadioItem {
     private readonly rootContext = injectRdxMenuRootContext(true);
-    private readonly radioGroupContext = injectRdxMenuRadioGroupContext()!;
+    private readonly radioGroupContext = injectRdxMenuRadioGroupContext();
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly isFocused = signal(false);
 

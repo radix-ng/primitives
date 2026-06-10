@@ -27,5 +27,5 @@ import { injectSwitchContext } from './switch-context';
     }
 })
 export class RdxSwitchInput {
-    protected readonly rootContext = injectSwitchContext()!;
+    protected readonly rootContext = injectSwitchContext();
 }

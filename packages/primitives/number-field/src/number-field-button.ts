@@ -39,7 +39,7 @@ function isTouchLikePointerType(pointerType: string): boolean {
     }
 })
 export abstract class RdxNumberFieldButton {
-    protected readonly rootContext = injectNumberFieldRootContext()!;
+    protected readonly rootContext = injectNumberFieldRootContext();
 
     /** Whether this is the increment (`+1`) button; `false` for decrement (`-1`). */
     protected abstract readonly isIncrement: boolean;

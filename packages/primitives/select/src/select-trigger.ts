@@ -20,7 +20,7 @@ import { OPEN_KEYS } from './utils';
     }
 })
 export class RdxSelectTrigger {
-    readonly rootContext = injectSelectRootContext()!;
+    readonly rootContext = injectSelectRootContext();
 
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 

@@ -14,14 +14,14 @@ import { injectRdxDialogRootContext, RdxDialogOpenChangeReason } from './dialog-
     hostDirectives: [RdxDismissableLayer, RdxFocusScope],
     providers: [
         provideRdxDismissableLayerConfig(() => {
-            const rootContext = injectRdxDialogRootContext()!;
+            const rootContext = injectRdxDialogRootContext();
 
             return {
                 disableOutsidePointerEvents: computed(() => rootContext.modal() === true)
             };
         }),
         provideRdxFocusScopeConfig(() => {
-            const rootContext = injectRdxDialogRootContext()!;
+            const rootContext = injectRdxDialogRootContext();
 
             return {
                 trapped: computed(() => rootContext.modal() === 'trap-focus' || rootContext.modal() === true)
@@ -44,7 +44,7 @@ import { injectRdxDialogRootContext, RdxDialogOpenChangeReason } from './dialog-
     }
 })
 export class RdxDialogPopup {
-    protected readonly rootContext = injectRdxDialogRootContext()!;
+    protected readonly rootContext = injectRdxDialogRootContext();
     private readonly dismissableLayer = inject(RdxDismissableLayer);
     private readonly focusScope = inject(RdxFocusScope);
     private dismissDetails: { reason: RdxDialogOpenChangeReason; event: Event } = {

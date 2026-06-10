@@ -41,8 +41,8 @@ function inwardDistance(direction: RdxDrawerSwipeDirection, dx: number, dy: numb
     }
 })
 export class RdxDrawerSwipeArea {
-    private readonly drawerContext = injectRdxDrawerRootContext()!;
-    private readonly dialogContext = injectRdxDialogRootContext()!;
+    private readonly drawerContext = injectRdxDrawerRootContext();
+    private readonly dialogContext = injectRdxDialogRootContext();
 
     /** Direction the swipe area opens from; defaults to the root's `swipeDirection`. */
     readonly swipeDirection = input<RdxDrawerSwipeDirection>();

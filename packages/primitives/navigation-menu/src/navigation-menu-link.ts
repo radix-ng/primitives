@@ -18,7 +18,7 @@ import { injectNavigationMenuRootContext } from './navigation-menu-root-context'
     }
 })
 export class RdxNavigationMenuLink {
-    private readonly rootContext = injectNavigationMenuRootContext()!;
+    private readonly rootContext = injectNavigationMenuRootContext();
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
     /**

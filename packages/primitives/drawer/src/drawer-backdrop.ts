@@ -18,5 +18,5 @@ import { injectRdxDrawerRootContext } from './drawer-root';
     }
 })
 export class RdxDrawerBackdrop {
-    protected readonly drawerContext = injectRdxDrawerRootContext()!;
+    protected readonly drawerContext = injectRdxDrawerRootContext();
 }

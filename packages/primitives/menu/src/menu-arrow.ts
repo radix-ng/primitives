@@ -19,7 +19,7 @@ import { injectRdxMenuRootContext } from './menu-root';
     }
 })
 export class RdxMenuArrow {
-    protected readonly rootContext = injectRdxMenuRootContext()!;
+    protected readonly rootContext = injectRdxMenuRootContext();
     private readonly wrapper = inject(RdxPopperContentWrapper, { optional: true });
 
     protected readonly side = computed(() => this.wrapper?.placedSide());

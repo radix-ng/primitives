@@ -12,6 +12,6 @@ import { injectAccordionRootContext } from './accordion-root.directive';
     }
 })
 export class RdxAccordionHeaderDirective {
-    protected readonly rootContext = injectAccordionRootContext()!;
-    protected readonly itemContext = injectAccordionItemContext()!;
+    protected readonly rootContext = injectAccordionRootContext();
+    protected readonly itemContext = injectAccordionItemContext();
 }

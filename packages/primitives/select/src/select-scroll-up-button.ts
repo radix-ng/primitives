@@ -10,7 +10,7 @@ import { RdxSelectScrollButtonBase } from './select-scroll-button-base';
     }
 })
 export class RdxSelectScrollUpButton {
-    private readonly contentContext = injectSelectContentContext()!;
+    private readonly contentContext = injectSelectContentContext();
 
     readonly canScrollUp = signal<boolean>(false);
 

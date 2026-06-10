@@ -37,7 +37,7 @@ import { injectNumberFieldRootContext } from './number-field-context';
 })
 export class RdxNumberFieldInput {
     private readonly elementRef = inject<ElementRef<HTMLInputElement>>(ElementRef);
-    protected readonly rootContext = injectNumberFieldRootContext()!;
+    protected readonly rootContext = injectNumberFieldRootContext();
 
     /** Browsers place the caret at the start; we move it to the end on the first focus. */
     private hasTouchedInput = false;

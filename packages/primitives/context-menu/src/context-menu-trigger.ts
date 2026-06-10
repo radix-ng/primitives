@@ -23,7 +23,7 @@ import { injectRdxContextMenuRootContext } from './context-menu-root';
     }
 })
 export class RdxContextMenuTrigger {
-    protected readonly rootContext = injectRdxContextMenuRootContext()!;
+    protected readonly rootContext = injectRdxContextMenuRootContext();
 
     /** Whether the trigger is disabled. */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });

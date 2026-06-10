@@ -21,7 +21,7 @@ import { injectRdxDialogRootContext } from './dialog-root';
     }
 })
 export class RdxDialogPortal {
-    protected readonly rootContext = injectRdxDialogRootContext()!;
+    protected readonly rootContext = injectRdxDialogRootContext();
 
     /**
      * Optional container to portal the content into. Defaults to `document.body`.

@@ -58,7 +58,7 @@ const scrollbarContext = (): ScrollAreaScrollbarContext => {
     }
 })
 export class RdxScrollAreaScrollbar {
-    protected readonly rootContext = injectScrollAreaRootContext()!;
+    protected readonly rootContext = injectScrollAreaRootContext();
     private readonly element: HTMLElement = inject(ElementRef).nativeElement;
 
     /** Whether the scrollbar controls vertical or horizontal scroll. */

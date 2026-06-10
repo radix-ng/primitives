@@ -64,7 +64,7 @@ import { injectRdxTooltipContext } from './tooltip';
     }
 })
 export class RdxTooltipPositioner {
-    protected readonly rootContext = injectRdxTooltipContext()!;
+    protected readonly rootContext = injectRdxTooltipContext();
     protected readonly wrapper = inject(RdxPopperContentWrapper);
     private readonly destroyRef = inject(DestroyRef);
     private readonly dismissableLayer = inject(RdxDismissableLayer);

@@ -22,7 +22,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
     }
 })
 export class RdxFieldLabel {
-    protected readonly rootContext = injectFieldRootContext()!;
+    protected readonly rootContext = injectFieldRootContext();
 
     /**
      * Label id.

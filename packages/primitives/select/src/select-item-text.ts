@@ -12,9 +12,9 @@ import { injectSelectRootContext } from './select-root';
 export class RdxSelectItemText {
     private readonly elementRef = inject(ElementRef<HTMLElement>);
 
-    readonly rootContext = injectSelectRootContext()!;
-    readonly contentContext = injectSelectContentContext()!;
-    readonly itemContext = injectSelectItemContext()!;
+    readonly rootContext = injectSelectRootContext();
+    readonly contentContext = injectSelectContentContext();
+    readonly itemContext = injectSelectItemContext();
 
     readonly optionProps = computed(() => {
         return {

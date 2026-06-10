@@ -16,7 +16,7 @@ import { injectRdxPreviewCardRootContext } from './preview-card-root';
     }
 })
 export class RdxPreviewCardViewport {
-    private readonly rootContext = injectRdxPreviewCardRootContext()!;
+    private readonly rootContext = injectRdxPreviewCardRootContext();
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly destroyRef = inject(DestroyRef);
     private previous: HTMLElement | undefined;

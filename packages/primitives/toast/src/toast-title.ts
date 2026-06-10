@@ -10,7 +10,7 @@ import { injectRdxToastRootContext } from './toast-root';
     }
 })
 export class RdxToastTitle {
-    protected readonly rootContext = injectRdxToastRootContext()!;
+    protected readonly rootContext = injectRdxToastRootContext();
 
     constructor() {
         this.rootContext.setTitlePresent(true);

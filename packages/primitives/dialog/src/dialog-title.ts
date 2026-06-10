@@ -13,7 +13,7 @@ import { injectRdxDialogRootContext } from './dialog-root';
     }
 })
 export class RdxDialogTitle {
-    private readonly rootContext = injectRdxDialogRootContext()!;
+    private readonly rootContext = injectRdxDialogRootContext();
     readonly id = injectId('rdx-dialog-title-');
 
     constructor() {

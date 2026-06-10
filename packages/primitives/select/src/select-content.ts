@@ -96,7 +96,7 @@ export class RdxSelectContent {
     private readonly currentElement = inject(ElementRef);
     private readonly collection = inject(RdxCollectionProvider);
 
-    readonly rootContext = injectSelectRootContext()!;
+    readonly rootContext = injectSelectRootContext();
 
     readonly selectedItem = signal<HTMLElement | undefined>(undefined);
 

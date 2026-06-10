@@ -17,5 +17,5 @@ import { injectCollapsibleRootContext } from './collapsible-root.directive';
     }
 })
 export class RdxCollapsibleTriggerDirective {
-    protected readonly rootContext = injectCollapsibleRootContext()!;
+    protected readonly rootContext = injectCollapsibleRootContext();
 }

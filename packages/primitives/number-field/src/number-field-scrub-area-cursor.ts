@@ -32,7 +32,7 @@ function isWebKitBrowser(): boolean {
 })
 export class RdxNumberFieldScrubAreaCursor {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
-    private readonly scrubContext = injectNumberFieldScrubAreaContext()!;
+    private readonly scrubContext = injectNumberFieldScrubAreaContext();
 
     protected readonly shouldRender = computed(
         () =>

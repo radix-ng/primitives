@@ -10,7 +10,7 @@ import { injectRdxPopoverRootContext } from './popover-root';
     hostDirectives: [RdxPresenceDirective],
     providers: [
         provideRdxPresenceContext(() => {
-            const context = injectRdxPopoverRootContext()!;
+            const context = injectRdxPopoverRootContext();
 
             return { present: context.isOpen };
         })

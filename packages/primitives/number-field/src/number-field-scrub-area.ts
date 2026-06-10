@@ -68,7 +68,7 @@ function getViewportRect(teleportDistance: number | undefined, scrubAreaEl: HTML
     }
 })
 export class RdxNumberFieldScrubArea {
-    protected readonly rootContext = injectNumberFieldRootContext()!;
+    protected readonly rootContext = injectNumberFieldRootContext();
 
     /**
      * The direction the cursor must move to change the value.

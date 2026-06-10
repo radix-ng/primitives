@@ -110,7 +110,7 @@ export class RdxToastManager {
             dropped.onRemove?.();
         });
 
-        this.scheduleTimeout(toast as RdxToastObject);
+        this.scheduleTimeout(toast);
         return id;
     }
 

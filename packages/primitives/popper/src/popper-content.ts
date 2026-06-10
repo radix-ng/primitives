@@ -10,7 +10,7 @@ import { injectPopperContentWrapperContext } from './popper-content-wrapper';
     }
 })
 export class RdxPopperContent {
-    protected readonly popperContentWrapper = injectPopperContentWrapperContext()!;
+    protected readonly popperContentWrapper = injectPopperContentWrapperContext();
 
     /**
      * if the PopperContent hasn't been placed yet (not all measurements done)
