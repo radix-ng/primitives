@@ -1,3 +1,25 @@
+## 1.0.0-beta.1 (2026-06-10)
+
+### 🚀 Features
+
+- **cropper:** disabled, SSR safety, keyboard zoom, and signals cleanup ([9c413fc](https://github.com/radix-ng/primitives/commit/9c413fc))
+- **menu:** keep submenu open across diagonal hover via safe polygon ([#413](https://github.com/radix-ng/primitives/pull/413))
+- **scroll-area:** add headless Scroll Area primitive ([b6864ac](https://github.com/radix-ng/primitives/commit/b6864ac))
+- **skills:** serve LLM docs (llms.txt) from Storybook on the main domain ([d633c9c](https://github.com/radix-ng/primitives/commit/d633c9c))
+- **toast:** add headless Toast primitive ported from Base UI ([b42be9e](https://github.com/radix-ng/primitives/commit/b42be9e))
+
+### 🩹 Fixes
+
+- toast swipe-to-dismiss not working on mobile ([fde61f1](https://github.com/radix-ng/primitives/commit/fde61f1))
+- **popover:** property does not exist on type ([e189d9e](https://github.com/radix-ng/primitives/commit/e189d9e))
+- **tooltip:** prevent cursor-tracking flicker and premature close on moving anchors ([596a175](https://github.com/radix-ng/primitives/commit/596a175))
+- **calendar:** correct date matchers, focus skipping and prev-button; signals-first refactor ([a4c6217](https://github.com/radix-ng/primitives/commit/a4c6217))
+- **date-field:** correct segment a11y attributes and modernize stories ([55b618a](https://github.com/radix-ng/primitives/commit/55b618a))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 1.0.0-beta.0 (2026-06-07)
 
 ### 🚀 Features
