@@ -54,7 +54,7 @@ export class RdxMenuDefaultComponent {
 - ✅ `closeOnClick` per item — defaults to `true` for regular items, `false` for checkbox, radio, and link items.
 - ✅ Checkbox items toggle state independently; radio groups enforce single selection.
 - ✅ Grouped items with optional group labels and visual separators.
-- ✅ Nested submenus via `rdxMenuSubTrigger` — opens on hover (200 ms delay), click, or ArrowRight; closes on ArrowLeft.
+- ✅ Nested submenus via `rdxMenuSubTrigger` — opens on hover (100 ms delay) with safe-polygon traversal, click, or ArrowRight; closes on ArrowLeft.
 - ✅ CSS transition lifecycle via `data-starting-style` / `data-ending-style` and `(onOpenChangeComplete)`.
 - ✅ All collision, side, and alignment metadata exposed via `data-side` / `data-align`.
 - ✅ `data-highlighted` on the focused item and `data-disabled` on disabled items.
@@ -235,8 +235,15 @@ Disabled items are skipped by keyboard navigation and styled via `data-disabled`
 ### Nested submenus
 
 Wrap a `rdxMenuSubTrigger` and its popup inside a nested `ng-container rdxMenuRoot`. The subtrigger
-opens the submenu on hover (200 ms delay), click, or ArrowRight; ArrowLeft closes it and returns
+opens the submenu on hover (100 ms `delay`), click, or ArrowRight; ArrowLeft closes it and returns
 focus to the subtrigger.
+
+When opened by hover, the submenu keeps a **safe polygon** between the trigger and the popup: you can
+move the pointer diagonally toward the submenu — even across a sibling subtrigger in between — without
+it closing or switching. Moving the pointer away from that area closes the submenu (use `closeDelay`
+to add a grace period).
+
+![Submenu safe polygon — a triangular safe zone spans from the pointer to the popup, so the pointer can cut diagonally across the sibling row below without closing the submenu.](/menu-safe-polygon.svg)
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
@@ -308,6 +315,101 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
     `
 })
 export class RdxMenuNestedComponent {
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly m = demoMenu;
+}
+```
+
+```typescript
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RdxMenuModule } from '@radix-ng/primitives/menu';
+import { cn, demoButton, demoMenu } from '../../storybook/styles';
+
+/**
+ * RTL nested menu: submenus open to the *left* (`side="left"`), so the safe-polygon geometry must
+ * resolve the placed side correctly. Mirrors the LTR nested demo with the direction reversed.
+ */
+@Component({
+    selector: 'rdx-menu-nested-rtl',
+    imports: [RdxMenuModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
+        <div dir="rtl">
+            <ng-container #root="rdxMenuRoot" rdxMenuRoot>
+                <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>تحرير</button>
+
+                @if (root.open()) {
+                    <div [class]="m.positioner" side="bottom" align="end" sideOffset="4" rdxMenuPositioner>
+                        <div [class]="m.popup" rdxMenuPopup>
+                            <button [class]="m.item" rdxMenuItem>تراجع</button>
+                            <button [class]="m.item" rdxMenuItem>إعادة</button>
+                            <div [class]="m.separator" rdxMenuSeparator></div>
+
+                            <!-- Submenu opens to the left in RTL -->
+                            <ng-container #findSub="rdxMenuRoot" rdxMenuRoot>
+                                <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
+                                    <span class="text-muted-foreground text-xs">‹</span>
+                                    بحث
+                                </button>
+
+                                @if (findSub.open()) {
+                                    <div
+                                        [class]="m.positioner"
+                                        side="left"
+                                        align="start"
+                                        sideOffset="4"
+                                        rdxMenuPositioner
+                                    >
+                                        <div [class]="m.popup" rdxMenuPopup>
+                                            <button [class]="m.item" rdxMenuItem>بحث في الويب…</button>
+                                            <button [class]="m.item" rdxMenuItem>بحث…</button>
+                                            <button [class]="m.item" rdxMenuItem>بحث واستبدال…</button>
+                                            <button [class]="m.item" rdxMenuItem>استخدام التحديد للبحث</button>
+                                        </div>
+                                    </div>
+                                }
+                            </ng-container>
+
+                            <ng-container #spellSub="rdxMenuRoot" rdxMenuRoot>
+                                <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
+                                    <span class="text-muted-foreground text-xs">‹</span>
+                                    التدقيق الإملائي والنحوي
+                                </button>
+
+                                @if (spellSub.open()) {
+                                    <div
+                                        [class]="m.positioner"
+                                        side="left"
+                                        align="start"
+                                        sideOffset="4"
+                                        rdxMenuPositioner
+                                    >
+                                        <div [class]="m.popup" rdxMenuPopup>
+                                            <button [class]="m.item" rdxMenuItem>عرض التدقيق الإملائي والنحوي</button>
+                                            <button [class]="m.item" rdxMenuItem>تدقيق المستند الآن</button>
+                                            <div [class]="m.separator" rdxMenuSeparator></div>
+                                            <button [class]="m.item" rdxMenuItem>التدقيق الإملائي أثناء الكتابة</button>
+                                            <button [class]="m.item" [disabled]="true" rdxMenuItem>
+                                                التدقيق النحوي
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                            </ng-container>
+
+                            <div [class]="m.separator" rdxMenuSeparator></div>
+                            <button [class]="m.item" rdxMenuItem>قص</button>
+                            <button [class]="m.item" rdxMenuItem>نسخ</button>
+                            <button [class]="m.item" rdxMenuItem>لصق</button>
+                        </div>
+                    </div>
+                }
+            </ng-container>
+        </div>
+    `
+})
+export class RdxMenuNestedRtlComponent {
     protected readonly cn = cn;
     protected readonly b = demoButton;
     protected readonly m = demoMenu;

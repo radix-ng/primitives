@@ -1,3 +1,4 @@
+import { isPlatformBrowser } from '@angular/common';
 import {
     booleanAttribute,
     computed,
@@ -8,12 +9,20 @@ import {
     inject,
     input,
     numberAttribute,
+    PLATFORM_ID,
     signal
 } from '@angular/core';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
 import { RdxDismissableLayerBranch } from '@radix-ng/primitives/dismissable-layer';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { injectRdxMenuRootContext, RdxMenuRoot } from './menu-root';
+import {
+    applyPointerTunnel,
+    createSafePolygonHandler,
+    hasOpenChildSubmenu,
+    MenuSide,
+    registerOpenSubmenu
+} from './menu-safe-polygon';
 
 const numberOrUndefined = (value: NumberInput | undefined) => (value == null ? undefined : numberAttribute(value));
 const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();
@@ -57,8 +66,14 @@ export class RdxMenuSubTrigger {
     private readonly submenuRoot = inject(RdxMenuRoot);
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly destroyRef = inject(DestroyRef);
+    private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
     private readonly isFocused = signal(false);
     private openTimer: ReturnType<typeof setTimeout> | undefined;
+    private closeTimer: ReturnType<typeof setTimeout> | undefined;
+    /** Cursor position from the last pointer move over the trigger (safe-polygon apex). */
+    private lastPointer: { x: number; y: number } | null = null;
+    /** Whether the current open was initiated by hover (vs keyboard / click). */
+    private openedByHover = false;
 
     /** Whether this trigger (and therefore the submenu) is disabled. */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
@@ -98,9 +113,70 @@ export class RdxMenuSubTrigger {
             });
         });
 
+        // While this submenu is open by hover, it owns the decision to close itself: a document
+        // `mousemove` handler keeps it open while the cursor traverses the safe polygon toward the
+        // popup, and a pointer-events tunnel stops siblings from stealing it mid-traversal.
+        effect((onCleanup) => {
+            const open = this.submenuContext.isOpen();
+            const popup = this.submenuContext.popupElement();
+
+            // Once closed, forget how this open started so the next (possibly keyboard / programmatic)
+            // open doesn't re-arm the hover tunnel from a stale flag.
+            if (!open) {
+                this.openedByHover = false;
+                this.lastPointer = null;
+                return;
+            }
+
+            if (!popup || !this.openedByHover || !this.lastPointer || !this.isBrowser) {
+                return;
+            }
+
+            const reference = this.elementRef.nativeElement;
+            const scope = reference.closest<HTMLElement>('[rdxMenuPopup]') ?? document.body;
+            const unregisterOpen = registerOpenSubmenu(reference, popup);
+            let removeTunnel: (() => void) | undefined = applyPointerTunnel(scope, reference, popup);
+
+            const { handler, dispose } = createSafePolygonHandler({
+                reference,
+                floating: popup,
+                // Live getter: `data-side` may be unresolved at open time and can flip on collision.
+                side: () => (popup.getAttribute('data-side') as MenuSide) ?? 'right',
+                x: this.lastPointer.x,
+                y: this.lastPointer.y,
+                onClose: () => this.scheduleClose(),
+                cancelClose: () => clearTimeout(this.closeTimer),
+                hasOpenChild: () => hasOpenChildSubmenu(reference, popup),
+                onLanded: () => {
+                    removeTunnel?.();
+                    removeTunnel = undefined;
+                }
+            });
+
+            document.addEventListener('mousemove', handler);
+            onCleanup(() => {
+                document.removeEventListener('mousemove', handler);
+                dispose();
+                removeTunnel?.();
+                unregisterOpen();
+                clearTimeout(this.closeTimer);
+            });
+        });
+
         this.destroyRef.onDestroy(() => {
             clearTimeout(this.openTimer);
+            clearTimeout(this.closeTimer);
         });
+    }
+
+    private scheduleClose(): void {
+        clearTimeout(this.closeTimer);
+        const delay = this.closeDelay() ?? 0;
+        if (delay <= 0) {
+            this.submenuContext.close();
+        } else {
+            this.closeTimer = setTimeout(() => this.submenuContext.close(), delay);
+        }
     }
 
     protected onFocus(): void {
@@ -116,6 +192,7 @@ export class RdxMenuSubTrigger {
 
     protected onClick(): void {
         if (this.disabled()) return;
+        this.openedByHover = false;
         this.clearSiblingHighlights();
         if (!this.submenuContext.isOpen()) {
             this.closeSiblingSubmenus();
@@ -127,6 +204,7 @@ export class RdxMenuSubTrigger {
         if (this.disabled()) return;
         event.preventDefault();
         event.stopPropagation();
+        this.openedByHover = false;
         this.clearSiblingHighlights();
         if (!this.submenuContext.isOpen()) {
             this.closeSiblingSubmenus();
@@ -137,6 +215,7 @@ export class RdxMenuSubTrigger {
     protected onPointerMove(event: PointerEvent): void {
         if (event.pointerType !== 'mouse' || this.disabled() || !this.openOnHover()) return;
 
+        this.lastPointer = { x: event.clientX, y: event.clientY };
         this.clearSiblingHighlights();
         if (this.submenuContext.highlightItemOnHover() && document.activeElement !== this.elementRef.nativeElement) {
             this.elementRef.nativeElement.focus({ preventScroll: true });
@@ -146,6 +225,7 @@ export class RdxMenuSubTrigger {
             clearTimeout(this.openTimer);
             this.closeSiblingSubmenus();
             this.openTimer = setTimeout(() => {
+                this.openedByHover = true;
                 this.submenuContext.show(false);
             }, this.delay() ?? 100);
         }

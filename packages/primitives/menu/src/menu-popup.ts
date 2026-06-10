@@ -103,8 +103,10 @@ export class RdxMenuPopup {
 
     constructor() {
         const unregister = this.rootContext.registerTransitionElement(this.elementRef.nativeElement);
+        const unregisterPopup = this.rootContext.registerPopup(this.elementRef.nativeElement);
         inject(DestroyRef).onDestroy(() => {
             unregister();
+            unregisterPopup();
             clearTimeout(this.searchTimer);
         });
 

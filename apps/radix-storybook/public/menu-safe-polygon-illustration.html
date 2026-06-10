@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta content="width=device-width, initial-scale=1" name="viewport" />
+        <title>Submenu Safe Polygon — Radix NG</title>
+        <link href="https://fonts.googleapis.com" rel="preconnect" />
+        <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,900&family=JetBrains+Mono:wght@400;500;700&family=Spectral:ital,wght@0,300;0,400;1,400&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            :root {
+                --paper: #efe7d6;
+                --paper-2: #e7dcc6;
+                --ink: #15233c;
+                --ink-soft: #5b6076;
+                --teal: #1c8a76;
+                --teal-deep: #0f6f5d;
+                --vermillion: #cf4322;
+                --amber: #d99a3f;
+                --line: rgba(21, 35, 60, 0.16);
+                --line-strong: rgba(21, 35, 60, 0.4);
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            html,
+            body {
+                margin: 0;
+            }
+
+            body {
+                min-height: 100vh;
+                background-color: var(--paper);
+                background-image:
+                    radial-gradient(circle at 18% 12%, rgba(217, 154, 63, 0.12), transparent 42%),
+                    radial-gradient(circle at 88% 88%, rgba(28, 138, 118, 0.1), transparent 46%),
+                    linear-gradient(var(--line) 1px, transparent 1px),
+                    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+                background-size:
+                    100% 100%,
+                    100% 100%,
+                    34px 34px,
+                    34px 34px;
+                background-position:
+                    0 0,
+                    0 0,
+                    -1px -1px,
+                    -1px -1px;
+                color: var(--ink);
+                font-family: 'Spectral', Georgia, serif;
+                -webkit-font-smoothing: antialiased;
+                padding: clamp(1.5rem, 4vw, 4rem) clamp(1rem, 4vw, 3rem) 4rem;
+            }
+
+            /* grain overlay */
+            body::before {
+                content: '';
+                position: fixed;
+                inset: 0;
+                pointer-events: none;
+                opacity: 0.5;
+                mix-blend-mode: multiply;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E");
+            }
+
+            .sheet {
+                position: relative;
+                max-width: 1040px;
+                margin: 0 auto;
+            }
+
+            header {
+                display: grid;
+                gap: 0.6rem;
+                margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+            }
+
+            .kicker {
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 0.72rem;
+                letter-spacing: 0.34em;
+                text-transform: uppercase;
+                color: var(--ink-soft);
+                display: flex;
+                align-items: center;
+                gap: 0.9rem;
+            }
+
+            .kicker::before {
+                content: '';
+                width: 38px;
+                height: 1px;
+                background: var(--ink);
+            }
+
+            h1 {
+                font-family: 'Fraunces', serif;
+                font-weight: 900;
+                font-optical-sizing: 144;
+                font-size: clamp(2.6rem, 8vw, 5.4rem);
+                line-height: 0.92;
+                letter-spacing: -0.02em;
+                margin: 0;
+            }
+
+            h1 em {
+                font-style: italic;
+                font-weight: 400;
+                color: var(--teal-deep);
+            }
+
+            .dek {
+                max-width: 58ch;
+                font-size: clamp(1rem, 1.6vw, 1.18rem);
+                line-height: 1.55;
+                color: #2c3142;
+                margin: 0.2rem 0 0;
+            }
+
+            .dek code {
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 0.85em;
+                background: rgba(21, 35, 60, 0.08);
+                padding: 0.05em 0.4em;
+                border-radius: 3px;
+            }
+
+            figure {
+                margin: 0;
+                border: 1.5px solid var(--ink);
+                background: linear-gradient(160deg, var(--paper) 0%, var(--paper-2) 100%);
+                box-shadow: 14px 16px 0 -2px rgba(21, 35, 60, 0.16);
+            }
+
+            .stage {
+                position: relative;
+                border-bottom: 1.5px solid var(--ink);
+            }
+
+            .corner {
+                position: absolute;
+                width: 9px;
+                height: 9px;
+                border: 1.5px solid var(--ink);
+                background: var(--paper);
+            }
+            .corner.tl {
+                top: -1.5px;
+                left: -1.5px;
+            }
+            .corner.tr {
+                top: -1.5px;
+                right: -1.5px;
+            }
+            .corner.bl {
+                bottom: -1.5px;
+                left: -1.5px;
+            }
+            .corner.br {
+                bottom: -1.5px;
+                right: -1.5px;
+            }
+
+            svg.diagram {
+                display: block;
+                width: 100%;
+                height: auto;
+            }
+
+            /* ---- diagram state styling ---- */
+            .label {
+                font-family: 'JetBrains Mono', monospace;
+                fill: var(--ink-soft);
+                font-size: 12px;
+                letter-spacing: 0.04em;
+            }
+            .label.b {
+                fill: var(--ink);
+                font-weight: 700;
+            }
+            .leader {
+                stroke: var(--ink-soft);
+                stroke-width: 1;
+                stroke-dasharray: 2 3;
+                fill: none;
+            }
+            .panel {
+                fill: var(--paper);
+                stroke: var(--ink);
+                stroke-width: 1.5;
+            }
+            .panel-sh {
+                fill: rgba(21, 35, 60, 0.14);
+            }
+            .item {
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 12.5px;
+                fill: var(--ink);
+            }
+            .sep {
+                stroke: var(--line);
+                stroke-width: 1;
+            }
+            .rowfill {
+                fill: transparent;
+                transition: fill 0.35s ease;
+            }
+            .chev {
+                fill: var(--ink-soft);
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 12px;
+            }
+
+            #findRow {
+                fill: rgba(28, 138, 118, 0.16);
+                transition: opacity 0.4s ease;
+            }
+            #findSubmenu {
+                transition: opacity 0.45s ease;
+            }
+            #spellGhost {
+                opacity: 0;
+                transition: opacity 0.4s ease;
+            }
+            #spellRow {
+                fill: transparent;
+                transition: fill 0.3s ease;
+            }
+
+            #wedge {
+                fill: rgba(28, 138, 118, 0.12);
+                stroke: var(--teal-deep);
+                stroke-width: 1.3;
+                stroke-dasharray: 5 4;
+                transition:
+                    fill 0.4s ease,
+                    opacity 0.4s ease;
+            }
+            #troughRect {
+                fill: rgba(217, 154, 63, 0.16);
+                stroke: var(--amber);
+                stroke-width: 1;
+                stroke-dasharray: 3 3;
+            }
+            #pathLine {
+                stroke: var(--ink);
+                stroke-width: 1.6;
+                stroke-dasharray: 6 5;
+                fill: none;
+                opacity: 0.55;
+            }
+            .nodeDot {
+                fill: var(--paper);
+                stroke: var(--ink);
+                stroke-width: 1.4;
+            }
+
+            /* SAFE on */
+            svg.safe #wedge {
+                fill: rgba(28, 138, 118, 0.22);
+                opacity: 1;
+            }
+            /* SAFE off → wedge faded */
+            svg.off #wedge {
+                opacity: 0.12;
+            }
+            /* STOLEN */
+            svg.stolen #findSubmenu {
+                opacity: 0.12;
+            }
+            svg.stolen #findRow {
+                opacity: 0.12;
+            }
+            svg.stolen #spellGhost {
+                opacity: 1;
+            }
+            svg.stolen #spellRow {
+                fill: rgba(207, 67, 34, 0.2);
+            }
+
+            .cursor path {
+                fill: var(--ink);
+                stroke: var(--paper);
+                stroke-width: 1.1;
+            }
+            svg.stolen .cursor path {
+                fill: var(--vermillion);
+            }
+
+            /* ---- caption / controls ---- */
+            figcaption {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                gap: 1.2rem 2rem;
+                align-items: center;
+                padding: clamp(1rem, 2.5vw, 1.6rem) clamp(1rem, 3vw, 2rem);
+            }
+            @media (max-width: 720px) {
+                figcaption {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            .legend {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.4rem 1.4rem;
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 0.74rem;
+                letter-spacing: 0.02em;
+                color: var(--ink-soft);
+            }
+            .legend span {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            .sw {
+                width: 16px;
+                height: 10px;
+                border: 1px solid var(--ink);
+                display: inline-block;
+            }
+            .sw.teal {
+                background: rgba(28, 138, 118, 0.4);
+            }
+            .sw.amber {
+                background: rgba(217, 154, 63, 0.45);
+            }
+            .sw.verm {
+                background: rgba(207, 67, 34, 0.45);
+            }
+
+            .controls {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.7rem;
+            }
+            .toggle {
+                appearance: none;
+                border: 1.5px solid var(--ink);
+                background: var(--ink);
+                color: var(--paper);
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 0.8rem;
+                font-weight: 700;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                padding: 0.7rem 1.1rem;
+                cursor: pointer;
+                box-shadow: 4px 4px 0 -1px rgba(21, 35, 60, 0.25);
+                transition:
+                    transform 0.12s ease,
+                    box-shadow 0.12s ease;
+                white-space: nowrap;
+            }
+            .toggle:hover {
+                transform: translate(-1px, -1px);
+                box-shadow: 6px 6px 0 -1px rgba(21, 35, 60, 0.25);
+            }
+            .toggle:active {
+                transform: translate(2px, 2px);
+                box-shadow: 2px 2px 0 -1px rgba(21, 35, 60, 0.25);
+            }
+            .toggle[data-on='false'] {
+                background: var(--paper);
+                color: var(--ink);
+            }
+            .status {
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 0.78rem;
+                line-height: 1.5;
+                max-width: 30ch;
+            }
+            .status b {
+                color: var(--teal-deep);
+            }
+            .status.bad b {
+                color: var(--vermillion);
+            }
+
+            footer {
+                margin-top: 1.6rem;
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 0.72rem;
+                letter-spacing: 0.06em;
+                color: var(--ink-soft);
+                display: flex;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="sheet">
+            <header>
+                <div class="kicker">Radix NG · Menu primitive · figure 01</div>
+                <h1>
+                    The submenu
+                    <br />
+                    <em>safe&nbsp;polygon</em>
+                </h1>
+                <p class="dek">
+                    When a submenu opens on hover, it claims a triangular
+                    <em>safe zone</em>
+                    between the pointer and the popup. You can cut the corner diagonally — straight across the sibling
+                    row below — and the submenu stays put. A pointer-events tunnel keeps those siblings
+                    <code>inert</code>
+                    mid-traverse. Toggle the polygon off to watch the classic flicker: the sibling steals the open
+                    submenu.
+                </p>
+            </header>
+
+            <figure>
+                <div class="stage">
+                    <span class="corner tl"></span>
+                    <span class="corner tr"></span>
+                    <span class="corner bl"></span>
+                    <span class="corner br"></span>
+
+                    <svg
+                        id="diagram"
+                        aria-label="Diagram of a menu with an open submenu and the safe polygon between the pointer and the popup"
+                        role="img"
+                        viewBox="0 0 960 600"
+                        class="diagram safe"
+                    >
+                        <!-- ====== PARENT MENU ====== -->
+                        <g>
+                            <rect height="250" rx="10" width="190" x="116" y="156" class="panel-sh" />
+                            <rect height="250" rx="10" width="190" x="110" y="150" class="panel" />
+
+                            <!-- rows -->
+                            <text x="130" y="186" class="item">Undo</text>
+                            <text x="130" y="220" class="item">Redo</text>
+                            <line x1="122" x2="288" y1="236" y2="236" class="sep" />
+
+                            <!-- Find (active sub-trigger) -->
+                            <rect id="findRow" height="30" rx="6" width="182" x="114" y="240" />
+                            <text x="130" y="260" class="item">Find</text>
+                            <text text-anchor="end" x="278" y="260" class="chev">▸</text>
+
+                            <!-- Spelling (the would-be thief) -->
+                            <rect id="spellRow" height="30" rx="6" width="182" x="114" y="272" />
+                            <text x="130" y="292" class="item">Spelling</text>
+                            <text text-anchor="end" x="278" y="292" class="chev">▸</text>
+
+                            <line x1="122" x2="288" y1="308" y2="308" class="sep" />
+                            <text x="130" y="332" class="item">Cut</text>
+                            <text x="130" y="366" class="item">Copy</text>
+                        </g>
+
+                        <!-- ====== TROUGH ====== -->
+                        <rect id="troughRect" height="183" rx="2" width="30" x="300" y="240" />
+
+                        <!-- ====== SAFE WEDGE ====== -->
+                        <polygon id="wedge" points="240,255 330,240 330,423" />
+
+                        <!-- ====== FIND SUBMENU (open) ====== -->
+                        <g id="findSubmenu">
+                            <rect height="184" rx="10" width="218" x="336" y="244" class="panel-sh" />
+                            <rect height="184" rx="10" width="218" x="330" y="238" class="panel" />
+                            <text x="350" y="276" class="item">Search Web…</text>
+                            <text x="350" y="310" class="item">Find…</text>
+                            <text x="350" y="344" class="item">Find &amp; Replace…</text>
+                            <text x="350" y="378" class="item">Use Selection…</text>
+                        </g>
+
+                        <!-- ====== SPELLING GHOST SUBMENU (appears on steal) ====== -->
+                        <g id="spellGhost">
+                            <rect height="150" rx="10" width="218" x="336" y="280" class="panel-sh" />
+                            <rect
+                                height="150"
+                                rx="10"
+                                style="stroke: var(--vermillion)"
+                                width="218"
+                                x="330"
+                                y="274"
+                                class="panel"
+                            />
+                            <text style="fill: var(--vermillion)" x="350" y="308" class="item">Show Spelling…</text>
+                            <text style="fill: var(--vermillion)" x="350" y="342" class="item">Check Now…</text>
+                            <text style="fill: var(--vermillion)" x="350" y="376" class="item">While Typing…</text>
+                        </g>
+
+                        <!-- ====== POINTER PATH ====== -->
+                        <path id="pathLine" d="M 240 255 L 372 366" />
+                        <circle cx="240" cy="255" r="3.4" class="nodeDot" />
+                        <circle cx="372" cy="366" r="3.4" class="nodeDot" />
+
+                        <!-- ====== ANNOTATIONS ====== -->
+                        <!-- apex (routed up the empty column between labels and chevrons) -->
+                        <path d="M 240 252 C 240 188 224 132 156 124" class="leader" />
+                        <text x="48" y="120" class="label b">apex</text>
+                        <text x="48" y="136" class="label">pointer exit</text>
+
+                        <!-- safe polygon -->
+                        <text transform="rotate(22 250 360)" x="250" y="360" class="label b">safe polygon</text>
+
+                        <!-- near edge -->
+                        <path d="M 330 330 C 360 470 380 486 408 492" class="leader" />
+                        <text x="416" y="488" class="label b">near edge</text>
+                        <text x="416" y="504" class="label">popup faces the trigger</text>
+
+                        <!-- trough -->
+                        <path d="M 315 423 C 300 470 285 486 250 492" class="leader" />
+                        <text x="150" y="488" class="label b">trough</text>
+                        <text x="150" y="504" class="label">the gap, always safe</text>
+
+                        <!-- sibling inert -->
+                        <path d="M 205 287 C 150 300 120 320 96 340" class="leader" />
+                        <text x="40" y="356" class="label b">sibling = inert</text>
+                        <text x="40" y="372" class="label">pointer-events tunnel</text>
+
+                        <!-- pointer -->
+                        <g id="cursor" transform="translate(240,255)" class="cursor">
+                            <path
+                                d="M0,0 L0,17 L4.2,12.8 L7.4,19.2 L9.6,18.1 L6.5,11.8 L11.8,11.8 Z"
+                                transform="translate(-1,-1)"
+                            />
+                        </g>
+                    </svg>
+                </div>
+
+                <figcaption>
+                    <div class="legend">
+                        <span>
+                            <i class="sw teal"></i>
+                            safe polygon
+                        </span>
+                        <span>
+                            <i class="sw amber"></i>
+                            trough
+                        </span>
+                        <span>
+                            <i class="sw verm"></i>
+                            stolen / sibling
+                        </span>
+                        <span>▸ subtrigger</span>
+                    </div>
+                    <div class="controls">
+                        <button id="toggle" aria-pressed="true" data-on="true" class="toggle">
+                            Safe&nbsp;polygon: ON
+                        </button>
+                        <p id="status" class="status">
+                            Pointer cuts the corner across
+                            <b>Spelling</b>
+                            — and
+                            <b>Find</b>
+                            stays open.
+                        </p>
+                    </div>
+                </figcaption>
+            </figure>
+
+            <footer>
+                <span>packages/primitives/menu/src/menu-safe-polygon.ts</span>
+                <span>port of Floating UI safePolygon · self-close + pointer-events tunnel</span>
+            </footer>
+        </div>
+
+        <script>
+            const svg = document.getElementById('diagram');
+            const cursor = document.getElementById('cursor');
+            const toggle = document.getElementById('toggle');
+            const status = document.getElementById('status');
+
+            // Pointer path endpoints (must match #pathLine).
+            const A = { x: 240, y: 255 };
+            const B = { x: 372, y: 366 };
+            // Spelling row band (inner), used to detect the "crossing".
+            const SPELL = { x0: 114, x1: 300, y0: 272, y1: 302 };
+
+            let safe = true;
+            let stolen = false;
+
+            const DUR = 3000; // travel
+            const HOLD = 900; // pause at the end
+            let start = null;
+
+            const easeInOut = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+
+            function setSafe(on) {
+                safe = on;
+                toggle.dataset.on = String(on);
+                toggle.setAttribute('aria-pressed', String(on));
+                toggle.innerHTML = on ? 'Safe&nbsp;polygon: ON' : 'Safe&nbsp;polygon: OFF';
+                svg.classList.toggle('safe', on);
+                svg.classList.toggle('off', !on);
+            }
+
+            function setStolen(on) {
+                if (on === stolen) return;
+                stolen = on;
+                svg.classList.toggle('stolen', on);
+                if (on) {
+                    status.classList.add('bad');
+                    status.innerHTML =
+                        'Without the polygon, crossing <b>Spelling</b> closes Find and opens the sibling.';
+                } else {
+                    status.classList.remove('bad');
+                    status.innerHTML = safe
+                        ? 'Pointer cuts the corner across <b>Spelling</b> — and <b>Find</b> stays open.'
+                        : 'Polygon off — watch the pointer reach the sibling row…';
+                }
+            }
+
+            toggle.addEventListener('click', () => {
+                setSafe(!safe);
+                if (safe) setStolen(false);
+            });
+
+            function frame(now) {
+                if (start === null) start = now;
+                let elapsed = now - start;
+                const cycle = DUR + HOLD;
+                if (elapsed >= cycle) {
+                    start = now;
+                    elapsed = 0;
+                    setStolen(false); // reset each loop
+                }
+
+                const raw = Math.min(elapsed / DUR, 1);
+                const t = easeInOut(raw);
+                const x = A.x + (B.x - A.x) * t;
+                const y = A.y + (B.y - A.y) * t;
+                cursor.setAttribute('transform', `translate(${x},${y})`);
+
+                const overSibling = x >= SPELL.x0 && x <= SPELL.x1 && y >= SPELL.y0 && y <= SPELL.y1;
+                if (!safe && overSibling) setStolen(true);
+
+                requestAnimationFrame(frame);
+            }
+
+            setSafe(true);
+            requestAnimationFrame(frame);
+        </script>
+    </body>
+</html>

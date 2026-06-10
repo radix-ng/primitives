@@ -1,0 +1,81 @@
+<svg viewBox="0 0 960 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A menu with an open submenu; a translucent triangular safe polygon spans from the pointer to the popup, so the pointer can cut diagonally across the sibling row below without closing the submenu.">
+    <style>
+        text { font-family: 'JetBrains Mono', 'SFMono-Regular', ui-monospace, monospace; }
+        .item { font-size: 12.5px; fill: #15233c; }
+        .label { font-size: 12px; letter-spacing: .04em; fill: #5b6076; }
+        .label.b { fill: #15233c; font-weight: 700; }
+        .leader { stroke: #5b6076; stroke-width: 1; stroke-dasharray: 2 3; fill: none; }
+        .panel { fill: #efe7d6; stroke: #15233c; stroke-width: 1.5; }
+        .panel-sh { fill: rgba(21,35,60,.14); }
+        .sep { stroke: rgba(21,35,60,.16); stroke-width: 1; }
+        .chev { fill: #5b6076; font-size: 12px; }
+    </style>
+
+    <!-- paper -->
+    <rect width="960" height="600" fill="#efe7d6"/>
+    <rect x="8" y="8" width="944" height="584" fill="none" stroke="rgba(21,35,60,.18)" stroke-width="1.5"/>
+
+    <!-- parent menu -->
+    <rect class="panel-sh" x="116" y="156" width="190" height="250" rx="10"/>
+    <rect class="panel" x="110" y="150" width="190" height="250" rx="10"/>
+    <text class="item" x="130" y="186">Undo</text>
+    <text class="item" x="130" y="220">Redo</text>
+    <line class="sep" x1="122" y1="236" x2="288" y2="236"/>
+
+    <!-- Find (active sub-trigger) -->
+    <rect x="114" y="240" width="182" height="30" rx="6" fill="rgba(28,138,118,.18)"/>
+    <text class="item" x="130" y="260">Find</text>
+    <text class="chev" x="278" y="260" text-anchor="end">▸</text>
+
+    <!-- Spelling (the sibling the pointer cuts across) -->
+    <text class="item" x="130" y="292">Spelling</text>
+    <text class="chev" x="278" y="292" text-anchor="end">▸</text>
+
+    <line class="sep" x1="122" y1="308" x2="288" y2="308"/>
+    <text class="item" x="130" y="332">Cut</text>
+    <text class="item" x="130" y="366">Copy</text>
+
+    <!-- trough -->
+    <rect x="300" y="240" width="30" height="183" rx="2" fill="rgba(217,154,63,.18)" stroke="#d99a3f" stroke-width="1" stroke-dasharray="3 3"/>
+
+    <!-- safe polygon -->
+    <polygon points="240,255 330,240 330,423" fill="rgba(28,138,118,.22)" stroke="#0f6f5d" stroke-width="1.3" stroke-dasharray="5 4"/>
+
+    <!-- Find submenu (open) -->
+    <rect class="panel-sh" x="336" y="244" width="218" height="184" rx="10"/>
+    <rect class="panel" x="330" y="238" width="218" height="184" rx="10"/>
+    <text class="item" x="350" y="276">Search Web…</text>
+    <text class="item" x="350" y="310">Find…</text>
+    <text class="item" x="350" y="344">Find &amp; Replace…</text>
+    <text class="item" x="350" y="378">Use Selection…</text>
+
+    <!-- pointer path -->
+    <path d="M 240 255 L 372 366" stroke="#15233c" stroke-width="1.6" stroke-dasharray="6 5" fill="none" opacity=".55"/>
+    <circle cx="240" cy="255" r="3.4" fill="#efe7d6" stroke="#15233c" stroke-width="1.4"/>
+    <circle cx="372" cy="366" r="3.4" fill="#efe7d6" stroke="#15233c" stroke-width="1.4"/>
+
+    <!-- annotations -->
+    <path class="leader" d="M 240 252 C 240 188 224 132 156 124"/>
+    <text class="label b" x="48" y="120">apex</text>
+    <text class="label" x="48" y="136">pointer exit</text>
+
+    <path class="leader" d="M 330 330 C 360 470 380 486 408 492"/>
+    <text class="label b" x="416" y="488">near edge</text>
+    <text class="label" x="416" y="504">popup faces the trigger</text>
+
+    <path class="leader" d="M 315 423 C 300 470 285 486 250 492"/>
+    <text class="label b" x="150" y="488">trough</text>
+    <text class="label" x="150" y="504">the gap, always safe</text>
+
+    <path class="leader" d="M 206 290 C 150 348 110 404 86 432"/>
+    <text class="label b" x="40" y="448">sibling = inert</text>
+    <text class="label" x="40" y="464">pointer-events tunnel</text>
+
+    <!-- pointer, mid-traverse over the sibling row -->
+    <g transform="translate(293,299)">
+        <path d="M0,0 L0,17 L4.2,12.8 L7.4,19.2 L9.6,18.1 L6.5,11.8 L11.8,11.8 Z" transform="translate(-1,-1)" fill="#15233c" stroke="#efe7d6" stroke-width="1.1"/>
+    </g>
+
+    <!-- safe polygon label (on top, inside the visible wedge body) -->
+    <text class="label b" x="246" y="362" transform="rotate(23 246 362)">safe polygon</text>
+</svg>
