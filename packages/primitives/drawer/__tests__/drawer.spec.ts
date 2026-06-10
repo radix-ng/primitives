@@ -208,6 +208,7 @@ describe('Drawer', () => {
     it('reflects the swipeDirection on the popup', () => {
         fixture.componentInstance.swipeDirection = 'right';
         fixture.componentInstance.open = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(popup()!.getAttribute('data-swipe-direction')).toBe('right');
@@ -226,6 +227,7 @@ describe('Drawer', () => {
     it('does not lock scroll and drops aria-modal when made non-modal', () => {
         fixture.componentInstance.modal = false;
         fixture.componentInstance.open = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(document.body.style.overflow).toBe('');
@@ -246,6 +248,7 @@ describe('Drawer', () => {
 
     it('does not start a gesture for a tap (clicks inside the drawer keep working)', () => {
         fixture.componentInstance.open = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         const drawer = popup()!;
@@ -262,6 +265,7 @@ describe('Drawer', () => {
 
     it('dismisses on a swipe past the threshold and reports reason "swipe"', () => {
         fixture.componentInstance.open = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         const drawer = popup()!;
@@ -281,6 +285,7 @@ describe('Drawer', () => {
 
     it('snaps back without closing when the swipe is cancelled mid-drag', () => {
         fixture.componentInstance.open = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         const drawer = popup()!;
@@ -328,6 +333,7 @@ describe('Drawer', () => {
 
         it('opens at the most open snap point by default', () => {
             snapFixture.componentInstance.open = true;
+            snapFixture.changeDetectorRef.markForCheck();
             snapFixture.detectChanges();
 
             expect(snapFixture.componentInstance.snapPoint).toBe(1);
@@ -336,6 +342,7 @@ describe('Drawer', () => {
         it('opens at defaultSnapPoint when provided', () => {
             snapFixture.componentInstance.defaultSnapPoint = 0.5;
             snapFixture.componentInstance.open = true;
+            snapFixture.changeDetectorRef.markForCheck();
             snapFixture.detectChanges();
 
             expect(snapFixture.componentInstance.snapPoint).toBe(0.5);
@@ -344,16 +351,19 @@ describe('Drawer', () => {
         it('keeps a controlled snap point across close (does not clobber the binding)', () => {
             snapFixture.componentInstance.snapPoint = 0.5;
             snapFixture.componentInstance.open = true;
+            snapFixture.changeDetectorRef.markForCheck();
             snapFixture.detectChanges();
             expect(snapFixture.componentInstance.snapPoint).toBe(0.5);
 
             snapFixture.componentInstance.open = false;
+            snapFixture.changeDetectorRef.markForCheck();
             snapFixture.detectChanges();
 
             // The active snap point survives a close/reopen cycle instead of being reset to null.
             expect(snapFixture.componentInstance.snapPoint).toBe(0.5);
 
             snapFixture.componentInstance.open = true;
+            snapFixture.changeDetectorRef.markForCheck();
             snapFixture.detectChanges();
             expect(snapFixture.componentInstance.snapPoint).toBe(0.5);
         });
@@ -361,6 +371,7 @@ describe('Drawer', () => {
         it('honors a controlled snap point without overriding it on open', () => {
             snapFixture.componentInstance.snapPoint = 0.5;
             snapFixture.componentInstance.open = true;
+            snapFixture.changeDetectorRef.markForCheck();
             snapFixture.detectChanges();
 
             expect(snapFixture.componentInstance.snapPoint).toBe(0.5);
@@ -406,6 +417,7 @@ describe('Drawer nesting & provider', () => {
         expect(indent.getAttribute('data-active')).toBeNull();
 
         fixture.componentInstance.outer = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(indent.getAttribute('data-active')).toBe('');
@@ -413,12 +425,14 @@ describe('Drawer nesting & provider', () => {
 
     it('flags the parent popup when a nested drawer opens', () => {
         fixture.componentInstance.outer = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         const outer = document.body.querySelector('[data-testid="outer"]') as HTMLElement;
         expect(outer.getAttribute('data-nested-drawer-open')).toBeNull();
 
         fixture.componentInstance.inner = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(outer.getAttribute('data-nested-drawer-open')).toBe('');
@@ -428,6 +442,7 @@ describe('Drawer nesting & provider', () => {
         fixture.componentInstance.outer = true;
         fixture.componentInstance.inner = true;
         fixture.componentInstance.deep = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         const outer = document.body.querySelector('[data-testid="outer"]') as HTMLElement;

@@ -19,7 +19,7 @@
     ],
     "peerDependencies": {
         "@angular/core": "^19.2.0 || ^20.0.0 || ^21.0.0",
-        "@floating-ui/dom": "^1.7.4",
+        "@floating-ui/dom": "^1.7.6",
         "@internationalized/date": "^3.12.2",
         "@internationalized/number": "^3.6.7"
     },

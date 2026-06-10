@@ -66,6 +66,7 @@ describe('Field', () => {
 
     it('adds invalid state and error description when invalid', () => {
         fixture.componentInstance.invalid = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(root.getAttribute('data-invalid')).toBe('');
@@ -79,6 +80,7 @@ describe('Field', () => {
         fixture.componentInstance.disabled = true;
         fixture.componentInstance.dirty = true;
         fixture.componentInstance.touched = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(root.getAttribute('data-required')).toBe('');

@@ -41,6 +41,7 @@ describe('Fieldset', () => {
 
     it('reflects disabled state on the root and legend', () => {
         fixture.componentInstance.disabled = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(fieldset.getAttribute('disabled')).toBe('');

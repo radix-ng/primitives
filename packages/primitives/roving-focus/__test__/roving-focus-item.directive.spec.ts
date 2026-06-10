@@ -85,6 +85,7 @@ describe('RdxRovingFocusItemDirective', () => {
 
     it('does not loop past the last item when loop is disabled', async () => {
         fixture.componentInstance.loop = false;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         buttons[2].focus();
@@ -111,6 +112,7 @@ describe('RdxRovingFocusItemDirective', () => {
 
     it('ignores horizontal arrows when orientation is vertical', async () => {
         fixture.componentInstance.orientation = 'vertical';
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         buttons[0].focus();
@@ -127,6 +129,7 @@ describe('RdxRovingFocusItemDirective', () => {
 
     it('skips non-focusable items during navigation', async () => {
         fixture.componentInstance.secondFocusable = false;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(buttons[1].getAttribute('data-disabled')).toBe('');
@@ -145,6 +148,7 @@ describe('RdxRovingFocusItemDirective', () => {
         fixture.detectChanges();
 
         fixture.componentInstance.secondFocusable = false;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(buttons[0].getAttribute('tabindex')).toBe('0');
@@ -154,9 +158,11 @@ describe('RdxRovingFocusItemDirective', () => {
 
     it('registers an item once focusable flips to true', async () => {
         fixture.componentInstance.secondFocusable = false;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         fixture.componentInstance.secondFocusable = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         buttons[0].focus();
@@ -206,6 +212,7 @@ describe('RdxRovingFocusItemDirective', () => {
         expect(buttons[0].getAttribute('data-orientation')).toBe('horizontal');
 
         fixture.componentInstance.orientation = 'vertical';
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(buttons[0].getAttribute('data-orientation')).toBe('vertical');

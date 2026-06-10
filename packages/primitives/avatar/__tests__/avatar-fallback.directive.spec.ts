@@ -1,6 +1,7 @@
 import { Component, PLATFORM_ID } from '@angular/core';
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { afterEach, vi } from 'vitest';
 import { RdxAvatarFallbackDirective } from '../src/avatar-fallback.directive';
 import { RdxAvatarRootDirective } from '../src/avatar-root.directive';
 
@@ -28,6 +29,10 @@ describe('RdxAvatarFallbackDirective', () => {
         component = fixture.componentInstance;
     });
 
+    afterEach(() => {
+        vi.useRealTimers();
+    });
+
     it('should compile', () => {
         expect(component).toBeTruthy();
     });
@@ -38,13 +43,15 @@ describe('RdxAvatarFallbackDirective', () => {
         expect(fallbackElement.nativeElement.style.display).toBe('none');
     });
 
-    it('should show fallback after delay', fakeAsync(() => {
+    it('should show fallback after delay', () => {
+        vi.useFakeTimers();
+
         fixture.detectChanges();
 
-        tick(1000);
+        vi.advanceTimersByTime(1000);
         fixture.detectChanges();
 
         const fallbackElement = fixture.debugElement.query(By.css('span[rdxAvatarFallback]'));
         expect(fallbackElement.nativeElement.style.display).not.toBe('none');
-    }));
+    });
 });

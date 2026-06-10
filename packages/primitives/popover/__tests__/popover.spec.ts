@@ -602,6 +602,7 @@ describe('Popover', () => {
         const focusScope = modalFixture.debugElement.query(By.directive(RdxFocusScope)).injector.get(RdxFocusScope);
 
         modalFixture.componentInstance.modal = true;
+        modalFixture.changeDetectorRef.markForCheck();
         modalFixture.detectChanges();
         await modalFixture.whenStable();
 
@@ -610,6 +611,7 @@ describe('Popover', () => {
         expect(focusScope.isTrapped()).toBe(true);
 
         modalFixture.componentInstance.modal = 'trap-focus';
+        modalFixture.changeDetectorRef.markForCheck();
         modalFixture.detectChanges();
         await modalFixture.whenStable();
 
@@ -618,6 +620,7 @@ describe('Popover', () => {
         expect(focusScope.isTrapped()).toBe(true);
 
         modalFixture.componentInstance.modal = false;
+        modalFixture.changeDetectorRef.markForCheck();
         modalFixture.detectChanges();
 
         expect(focusScope.isTrapped()).toBe(false);
@@ -1018,6 +1021,7 @@ describe('Popover', () => {
             const popper = controlledFixture.debugElement.query(By.directive(RdxPopoverRoot)).injector.get(RdxPopper);
 
             controlledFixture.componentInstance.triggerId = null;
+            controlledFixture.changeDetectorRef.markForCheck();
             controlledFixture.detectChanges();
 
             expect(root.trigger()).toBeUndefined();

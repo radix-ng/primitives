@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
-import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { afterEach, vi } from 'vitest';
 import { RdxCollapsiblePanelDirective } from '../src/collapsible-panel.directive';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 
@@ -73,9 +74,33 @@ describe('RdxCollapsiblePanel — mount + transition', () => {
         expect(panel().getAttribute('hidden')).toBeNull();
     });
 
-    it('keeps the panel visible during the exit transition, then hides it', fakeAsync(() => {
+    it('keeps the panel visible during the exit transition, then hides it', async () => {
+        // jsdom reports 0ms CSS durations and lacks the Web Animations API, so the exit transition
+        // would otherwise settle synchronously inside `detectChanges()` and the `ending` phase would
+        // never be observable. Give the panel a non-zero duration and a controllable running
+        // animation so completion lands when we resolve it — mirroring the real `animationend` path.
+        const realGetComputedStyle = window.getComputedStyle.bind(window);
+        vi.spyOn(window, 'getComputedStyle').mockImplementation((element: Element, pseudoElt?: string | null) => {
+            const styles = realGetComputedStyle(element, pseudoElt ?? undefined);
+            if (element === panel()) {
+                return {
+                    transitionDuration: '0.2s',
+                    transitionDelay: '0s',
+                    animationDuration: '0s',
+                    animationDelay: '0s'
+                } as CSSStyleDeclaration;
+            }
+            return styles;
+        });
+
         create(true);
         expect(panel().hidden).toBe(false);
+
+        let finishAnimation!: () => void;
+        const finished = new Promise<void>((resolve) => {
+            finishAnimation = resolve;
+        });
+        panel().getAnimations = vi.fn().mockReturnValue([{ finished } as unknown as Animation]);
 
         // close: the panel stays visible while the exit transition runs
         host.open.set(false);
@@ -83,10 +108,18 @@ describe('RdxCollapsiblePanel — mount + transition', () => {
         expect(panel().getAttribute('hidden')).toBeNull();
         expect(panel().getAttribute('data-ending-style')).toBe('');
 
-        // once the transition completes, the panel is hidden
-        flush();
+        // once the running animation finishes, the panel is hidden. Completion runs through a
+        // `Promise.all(finished).then(complete)` microtask chain; a macrotask only fires once that
+        // whole chain has drained, so it is the reliable point to flush the resulting render.
+        finishAnimation();
+        await new Promise<void>((resolve) => setTimeout(resolve));
+        await fixture.whenStable();
         fixture.detectChanges();
         expect(panel().getAttribute('hidden')).toBe('');
         expect(panel().getAttribute('data-ending-style')).toBeNull();
-    }));
+    });
+
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
 });

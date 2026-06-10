@@ -88,6 +88,7 @@ describe('RdxProgress', () => {
 
     it('reflects complete state when value equals max', () => {
         component.value = 100;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(root.getAttribute('data-state')).toBe('complete');
@@ -98,6 +99,7 @@ describe('RdxProgress', () => {
 
     it('reflects indeterminate state for null value', () => {
         component.value = null;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(root.getAttribute('data-state')).toBe('indeterminate');
@@ -114,6 +116,7 @@ describe('RdxProgress', () => {
         component.min = 50;
         component.max = 150;
         component.value = 100;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(root.getAttribute('aria-valuemin')).toBe('50');
@@ -125,6 +128,7 @@ describe('RdxProgress', () => {
 
     it('clamps out-of-range values without mutating the input', () => {
         component.value = 200;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(component.value).toBe(200);

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { navigationMenuImports, RdxNavigationMenuRoot } from '@radix-ng/primitives/navigation-menu';
 
@@ -139,17 +139,18 @@ describe('RdxNavigationMenu', () => {
         expect(one.getAttribute('aria-controls')).toBe(root().contentId('one'));
     });
 
-    it('renders the active content into the shared viewport', fakeAsync(() => {
+    it('renders the active content into the shared viewport', async () => {
         createComponent();
         triggers()[0].click();
         fixture.detectChanges();
-        tick();
+        await fixture.whenStable();
+        fixture.detectChanges();
 
         const viewport = document.querySelector('[data-test-viewport]');
         expect(viewport?.textContent).toContain('One link');
         const content = document.getElementById(root().contentId('one'));
         expect(content).not.toBeNull();
-    }));
+    });
 
     it('applies defaultValue once', () => {
         fixture = TestBed.createComponent(HostComponent);

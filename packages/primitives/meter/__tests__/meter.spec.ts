@@ -98,6 +98,7 @@ describe('RdxMeter', () => {
         component.min = 500;
         component.max = 1000;
         component.format = {};
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(root.getAttribute('aria-valuemin')).toBe('500');
@@ -109,6 +110,7 @@ describe('RdxMeter', () => {
 
     it('uses explicit ariaValueText over getAriaValueText', () => {
         component.ariaValueText = 'Twenty four gigabytes used';
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(root.getAttribute('aria-valuetext')).toBe('Twenty four gigabytes used');
@@ -116,6 +118,7 @@ describe('RdxMeter', () => {
 
     it('clamps out-of-range values without mutating the input', () => {
         component.value = 200;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(component.value).toBe(200);

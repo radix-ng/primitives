@@ -64,12 +64,14 @@ describe('RdxButtonDirective', () => {
 
         it('passes through the type input', () => {
             component.type = 'submit';
+            fixture.changeDetectorRef.markForCheck();
             fixture.detectChanges();
             expect(el.getAttribute('type')).toBe('submit');
         });
 
         it('uses native disabled (not aria-disabled) when disabled', () => {
             component.disabled = true;
+            fixture.changeDetectorRef.markForCheck();
             fixture.detectChanges();
             expect(el.getAttribute('data-disabled')).toBe('');
             expect(el.hasAttribute('disabled')).toBe(true);
@@ -79,6 +81,7 @@ describe('RdxButtonDirective', () => {
         it('uses aria-disabled and stays focusable with focusableWhenDisabled', () => {
             component.disabled = true;
             component.focusableWhenDisabled = true;
+            fixture.changeDetectorRef.markForCheck();
             fixture.detectChanges();
             expect(el.getAttribute('data-disabled')).toBe('');
             expect(el.hasAttribute('disabled')).toBe(false);
@@ -88,6 +91,7 @@ describe('RdxButtonDirective', () => {
         it('suppresses click activation when disabled (focusableWhenDisabled)', () => {
             component.disabled = true;
             component.focusableWhenDisabled = true;
+            fixture.changeDetectorRef.markForCheck();
             fixture.detectChanges();
             el.click();
             expect(component.clicks).toBe(0);
@@ -129,6 +133,7 @@ describe('RdxButtonDirective', () => {
 
         it('uses aria-disabled and tabindex -1 when disabled', () => {
             component.disabled = true;
+            fixture.changeDetectorRef.markForCheck();
             fixture.detectChanges();
             expect(el.getAttribute('aria-disabled')).toBe('true');
             expect(el.getAttribute('tabindex')).toBe('-1');
@@ -137,6 +142,7 @@ describe('RdxButtonDirective', () => {
 
         it('does not activate on Enter when disabled', () => {
             component.disabled = true;
+            fixture.changeDetectorRef.markForCheck();
             fixture.detectChanges();
             el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
             expect(component.clicks).toBe(0);

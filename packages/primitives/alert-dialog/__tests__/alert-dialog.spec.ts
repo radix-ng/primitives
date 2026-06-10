@@ -162,6 +162,7 @@ describe('AlertDialog', () => {
 
     it('supports controlled open via the model', () => {
         fixture.componentInstance.open = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(trigger.getAttribute('aria-expanded')).toBe('true');

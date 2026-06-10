@@ -60,6 +60,7 @@ describe('RdxVisuallyHiddenInputBubbleDirective', () => {
 
     it('should dispatch a bubbling change event when the value changes', () => {
         component.value = 'off';
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(input.nativeElement.value).toBe('off');

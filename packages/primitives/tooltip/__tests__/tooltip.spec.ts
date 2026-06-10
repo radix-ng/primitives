@@ -179,6 +179,7 @@ describe('Tooltip', () => {
 
     it('links and marks the trigger when open via the model', () => {
         host.open = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(trigger.getAttribute('data-popup-open')).toBe('');
@@ -187,8 +188,10 @@ describe('Tooltip', () => {
 
     it('emits onOpenChange only on changes', () => {
         host.open = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         host.open = false;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         vi.advanceTimersByTime(0);
         fixture.detectChanges();
@@ -218,6 +221,7 @@ describe('Tooltip', () => {
 
     it('respects a custom close delay', () => {
         host.closeDelay = 200;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         trigger.dispatchEvent(new Event('focus'));
@@ -247,6 +251,7 @@ describe('Tooltip', () => {
 
     it('keeps the tooltip open on click when closeOnClick is false', () => {
         host.closeOnClick = false;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         trigger.dispatchEvent(new Event('focus'));
@@ -289,6 +294,7 @@ describe('Tooltip', () => {
     it('closes on pointer leave when the popup is not hoverable', () => {
         host.disableHoverablePopup = true;
         host.delay = 0;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         trigger.dispatchEvent(new Event('pointermove'));
@@ -305,6 +311,7 @@ describe('Tooltip', () => {
     it('ignores trigger interaction while disabled', () => {
         host.disabled = true;
         host.delay = 0;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         trigger.dispatchEvent(new Event('focus'));
@@ -319,6 +326,7 @@ describe('Tooltip', () => {
     it('still opens from the controlled input while disabled', () => {
         host.disabled = true;
         host.open = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(root.open()).toBe(true);

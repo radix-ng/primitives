@@ -46,6 +46,7 @@ describe('RdxVisuallyHiddenInputDirective', () => {
 
     it('should update the value when the binding changes', () => {
         component.value = 'off';
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(input.nativeElement.getAttribute('value')).toBe('off');

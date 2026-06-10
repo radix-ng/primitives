@@ -41,22 +41,26 @@ describe('SeparatorDirective', () => {
 
     it('should not set aria-orientation if orientation is horizontal', () => {
         fixture.componentInstance.orientation = 'horizontal';
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         expect(element.getAttribute('aria-orientation')).toBeNull();
     });
 
     it('should set aria-orientation to "vertical" if orientation is vertical', () => {
         fixture.componentInstance.orientation = 'vertical';
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         expect(element.getAttribute('aria-orientation')).toBe('vertical');
     });
 
     it('should set data-orientation based on the orientation input', () => {
         fixture.componentInstance.orientation = 'vertical';
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         expect(element.getAttribute('data-orientation')).toBe('vertical');
 
         fixture.componentInstance.orientation = 'horizontal';
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         expect(element.getAttribute('data-orientation')).toBe('horizontal');
     });

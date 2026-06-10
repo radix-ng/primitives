@@ -247,6 +247,7 @@ describe('Dialog', () => {
 
     it('does not close on outside pointerdown when disablePointerDismissal is set', async () => {
         fixture.componentInstance.disablePointerDismissal = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         trigger.click();
@@ -281,6 +282,7 @@ describe('Dialog', () => {
 
     it('does not lock body scroll for a non-modal dialog', () => {
         fixture.componentInstance.modal = false;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         trigger.click();
@@ -294,6 +296,7 @@ describe('Dialog', () => {
 
     it('closes (not reopens) when the trigger of an open non-modal dialog is clicked', async () => {
         fixture.componentInstance.modal = false;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         trigger.click();
@@ -324,12 +327,14 @@ describe('Dialog', () => {
 
     it('supports controlled open via the model', () => {
         fixture.componentInstance.open = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(trigger.getAttribute('aria-expanded')).toBe('true');
         expect(popup()).not.toBeNull();
 
         fixture.componentInstance.open = false;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
     });
 
@@ -380,6 +385,7 @@ describe('Dialog', () => {
         expect(two.getAttribute('aria-expanded')).toBe('true');
 
         multiFixture.componentInstance.triggerId = null;
+        multiFixture.changeDetectorRef.markForCheck();
         multiFixture.detectChanges();
 
         // No trigger is active anymore, so neither button reports itself as expanded.

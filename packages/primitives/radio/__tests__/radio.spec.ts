@@ -122,8 +122,14 @@ describe('RdxRadio', () => {
 
     it('selects the newly focused item during arrow navigation', async () => {
         buttons()[0].focus();
-        buttons()[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+        // Let the initial focus settle before the arrow press: its selection-follows-focus
+        // microtask must run while arrow navigation is still off, so it stays a no-op.
         await Promise.resolve();
+
+        buttons()[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+        // Arrow nav moves focus on one microtask, then selection-follows-focus runs on the next
+        // (a chained `queueMicrotask`); a macrotask drains the whole sequence in one await.
+        await new Promise<void>((resolve) => setTimeout(resolve));
         fixture.detectChanges();
 
         expect(host.value).toBe('comfortable');
@@ -133,6 +139,7 @@ describe('RdxRadio', () => {
     it('propagates group disabled and required state to items, indicators, and hidden inputs', () => {
         host.disabled = true;
         host.required = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(group().getAttribute('data-disabled')).toBe('');
@@ -146,6 +153,7 @@ describe('RdxRadio', () => {
 
     it('does not select a different item when readonly', () => {
         host.readonly = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         buttons()[1].click();

@@ -60,10 +60,12 @@ describe('Input', () => {
 
         it('applies controlled and default values', () => {
             fixture.componentInstance.defaultValue = 'Initial';
+            fixture.changeDetectorRef.markForCheck();
             fixture.detectChanges();
             expect(input.value).toBe('Initial');
 
             fixture.componentInstance.value = 'Controlled';
+            fixture.changeDetectorRef.markForCheck();
             fixture.detectChanges();
             expect(input.value).toBe('Controlled');
         });
@@ -95,6 +97,7 @@ describe('Input', () => {
             fixture.componentInstance.disabled = true;
             fixture.componentInstance.required = true;
             fixture.componentInstance.invalid = true;
+            fixture.changeDetectorRef.markForCheck();
             fixture.detectChanges();
 
             expect(input.getAttribute('disabled')).toBe('');

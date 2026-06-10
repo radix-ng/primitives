@@ -46,6 +46,7 @@ describe('RdxArrow', () => {
 
             fixture.componentInstance.width = 20;
             fixture.componentInstance.height = 8;
+            fixture.changeDetectorRef.markForCheck();
             fixture.detectChanges();
 
             expect((svg() as unknown as HTMLElement).style.width).toBe('20px');

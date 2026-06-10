@@ -126,6 +126,7 @@ describe('RdxPortal', () => {
 
             const target = createContainer();
             fixture.componentInstance.container = target;
+            fixture.changeDetectorRef.markForCheck();
             fixture.detectChanges();
 
             expect(target.nativeElement.contains(portaledElement())).toBe(true);
@@ -153,6 +154,7 @@ describe('RdxPortal', () => {
             expect(portaledElement()?.parentElement).toBe(document.body);
 
             fixture.componentInstance.show = false;
+            fixture.changeDetectorRef.markForCheck();
             fixture.detectChanges();
 
             expect(portaledElement()).toBeNull();

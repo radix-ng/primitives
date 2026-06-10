@@ -62,6 +62,7 @@ describe('RdxVisuallyHiddenDirective', () => {
     describe('feature = "fully-hidden"', () => {
         beforeEach(() => {
             component.feature = 'fully-hidden';
+            fixture.changeDetectorRef.markForCheck();
             fixture.detectChanges();
         });
 

@@ -238,6 +238,7 @@ describe('RdxCheckboxInput (hidden native input)', () => {
         expect(input().indeterminate).toBe(false);
 
         host.checked = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         expect(input().getAttribute('checked')).toBe('');
         expect(input().checked).toBe(true);

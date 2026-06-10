@@ -43,6 +43,7 @@ describe('AspectRatioDirective', () => {
         const div: HTMLElement = fixture.nativeElement.querySelector('div');
 
         component.ratio = 4 / 3;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         // 1 / (4/3) * 100 = 75%
@@ -53,6 +54,7 @@ describe('AspectRatioDirective', () => {
         const div: HTMLElement = fixture.nativeElement.querySelector('div');
 
         component.ratio = 1 / 1;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         // 1 / (1/1) * 100 = 100%
@@ -63,6 +65,7 @@ describe('AspectRatioDirective', () => {
         const div: HTMLElement = fixture.nativeElement.querySelector('div');
 
         component.ratio = 0;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(div.style.paddingBottom).toBe('0%');
