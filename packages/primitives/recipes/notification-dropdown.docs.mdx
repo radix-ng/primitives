@@ -1,0 +1,85 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './notification-dropdown.stories';
+
+<Meta title="Recipes/Notification Dropdown" />
+
+# Notification Dropdown
+
+#### A bell trigger opening a scrollable list of notifications with an unread badge.
+
+This is a composition, not a primitive. The [Popover](?path=/docs/primitives-popover--docs) provides
+the anchored, dismissable panel and its focus management; the
+[ScrollArea](?path=/docs/primitives-scroll-area--docs) provides the custom scrollbar over a long list.
+The recipe adds the unread count badge, per-item read state, and "mark all read".
+
+<Canvas sourceState="hidden" of={Stories.Default} />
+
+## Composed from
+
+- **[Popover](?path=/docs/primitives-popover--docs)** (`rdxPopoverRoot` / `rdxPopoverTrigger` /
+  `rdxPopoverPortalPresence` / `rdxPopoverPortal` / `rdxPopoverPositioner` / `rdxPopoverPopup` /
+  `rdxPopoverTitle`) — the bell trigger and the anchored panel.
+- **[ScrollArea](?path=/docs/primitives-scroll-area--docs)** (`rdxScrollAreaRoot` / `…Viewport` /
+  `…Content` / `…Scrollbar` / `…Thumb`) — the scrollable notification list with a styled scrollbar.
+
+## Anatomy
+
+A popover panel with three regions — a header, a scroll area holding the list, and a footer. The list
+lives inside the scroll area's `Content`; the vertical `Scrollbar` and `Thumb` sit beside the viewport.
+
+```html
+<ng-container rdxPopoverRoot>
+    <button aria-label="Notifications" rdxPopoverTrigger>
+        <svg lucideBell></svg>
+        <!-- unread badge -->
+    </button>
+
+    <ng-template rdxPopoverPortalPresence>
+        <div rdxPopoverPortal>
+            <div sideOffset="8" align="end" rdxPopoverPositioner>
+                <div rdxPopoverPopup>
+                    <div><!-- header: title + "Mark all read" --></div>
+
+                    <div rdxScrollAreaRoot>
+                        <div rdxScrollAreaViewport>
+                            <div rdxScrollAreaContent>
+                                <!-- one button per notification -->
+                            </div>
+                        </div>
+                        <div orientation="vertical" rdxScrollAreaScrollbar>
+                            <div rdxScrollAreaThumb></div>
+                        </div>
+                    </div>
+
+                    <div><!-- footer: "View all" --></div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</ng-container>
+```
+
+## Examples
+
+### Default
+
+A bell button shows the unread count. Opening the popover reveals the list; clicking a notification
+marks it read, and "Mark all read" clears the badge.
+
+<Canvas of={Stories.Default} />
+
+## Accessibility
+
+Give the icon-only trigger an `aria-label`. The Popover primitive manages focus (moving it into the
+panel and restoring it on close) and dismissal (Escape and outside-pointer). Each notification is a real
+`<button>`, so the list is fully keyboard operable. For live updates, announce new notifications with the
+[LiveAnnouncer](?path=/docs/utilities-liveannouncer--docs) so they reach screen readers even when the
+panel is closed.
+
+### Keyboard Interactions
+
+| Key               | Description                                                                |
+| ----------------- | -------------------------------------------------------------------------- |
+| `Enter` / `Space` | Opens the panel when the trigger is focused; activates the focused item.   |
+| `Tab`             | Moves focus into and through the panel — the actions and notification list. |
+| `Escape`          | Closes the panel and returns focus to the trigger.                         |
