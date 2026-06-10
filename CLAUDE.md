@@ -340,7 +340,8 @@ Prefer the package.json scripts above over ad-hoc shell, and keep commands match
 ## Tests
 
 - `packages/primitives` uses `@nx/vitest:test` with `packages/primitives/vite.config.ts`.
-- Test setup lives in `packages/primitives/test-setup.ts`; it initializes Angular's testing environment through `@analogjs/vite-plugin-angular/setup-vitest`, loads `@testing-library/jest-dom/vitest`, and registers the `jest-axe` matcher.
+- Test setup lives in `packages/primitives/test-setup.ts`; it sets `provideZonelessChangeDetection`, initializes Angular's testing environment, loads `@testing-library/jest-dom/vitest`, and registers the `jest-axe` matcher. It intentionally does **not** import `@analogjs/vite-plugin-angular/setup-vitest` (that harness hard-loads zone.js), so the suite runs **zone-free**.
+- The suite is zoneless: `fakeAsync` / `tick` / `waitForAsync` are unavailable — use `vi.useFakeTimers()` + `vi.advanceTimersByTime()`, `await fixture.whenStable()`, or a macrotask (`await new Promise(r => setTimeout(r))`) to drain chained microtasks. Mutating a plain (non-signal) fixture field then calling `fixture.detectChanges()` throws `NG0100`; call `fixture.changeDetectorRef.markForCheck()` first (signal writes don't need it).
 - Use Vitest APIs (`vi.fn`, `vi.spyOn`, `vi.mock`, `vi.importActual`) instead of Jest globals. Legacy skipped suites may still use `xdescribe` / `xit`, which are mapped to `describe.skip` / `it.skip` in the setup file.
 - `apps/radix-ssr-testing:test` is also a Vitest target, but currently has no specs and uses `passWithNoTests`.
 

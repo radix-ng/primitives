@@ -9,17 +9,17 @@ metadata:
 
 ## Tech stack
 
-| Layer                  | Choice                                                   | Why                                                           |
-| ---------------------- | -------------------------------------------------------- | ------------------------------------------------------------- |
-| Framework              | Angular 21, zoneless                                     | Modern signals API; zoneless for performance                  |
-| Monorepo               | Nx 22 + pnpm workspaces                                  | Task caching, affected-graph CI, secondary entry generation   |
-| Build                  | ng-packagr                                               | Angular library standard; each primitive is a secondary entry |
-| Tests                  | Vitest + AnalogJS vite plugin + @testing-library/angular | Faster than Jest; AnalogJS bridges Angular and Vite           |
-| Storybook              | Storybook 10 + @storybook/angular + AnalogJS             | Visual development; Chromatic for visual regression           |
-| Styling (stories only) | Tailwind v4 (CSS-based config, no tailwind.config.js)    | Zero-style primitives; Tailwind only in demo/story layer      |
-| Positioning            | @floating-ui/dom                                         | Precise floating element positioning (popover, tooltip, etc.) |
-| Dates                  | @internationalized/date, @internationalized/number       | Locale-aware date/number primitives                           |
-| Icons (stories)        | @lucide/angular                                          | Consistent icon set in demos                                  |
+| Layer                  | Choice                                                   | Why                                                                                            |
+| ---------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Framework              | Angular 21, zoneless                                     | Modern signals API; zoneless for performance                                                   |
+| Monorepo               | Nx 22 + pnpm workspaces                                  | Task caching, affected-graph CI, secondary entry generation                                    |
+| Build                  | ng-packagr                                               | Angular library standard; each primitive is a secondary entry                                  |
+| Tests                  | Vitest + AnalogJS vite plugin + @testing-library/angular | Faster than Jest; AnalogJS bridges Angular and Vite; runs zoneless/zone-free (see patterns.md) |
+| Storybook              | Storybook 10 + @storybook/angular + AnalogJS             | Visual development; Chromatic for visual regression                                            |
+| Styling (stories only) | Tailwind v4 (CSS-based config, no tailwind.config.js)    | Zero-style primitives; Tailwind only in demo/story layer                                       |
+| Positioning            | @floating-ui/dom                                         | Precise floating element positioning (popover, tooltip, etc.)                                  |
+| Dates                  | @internationalized/date, @internationalized/number       | Locale-aware date/number primitives                                                            |
+| Icons (stories)        | @lucide/angular                                          | Consistent icon set in demos                                                                   |
 
 ## Monorepo layout
 

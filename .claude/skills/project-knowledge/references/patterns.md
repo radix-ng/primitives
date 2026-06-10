@@ -64,7 +64,7 @@ migrate over time; flip the rule to `error` once they are cleared.
 
 ## Zoneless — no `NgZone`
 
-The library is signals-first and **zoneless** (the Storybook app runs with `provideZonelessChangeDetection`). Do **not** use `NgZone`, `runOutsideAngular`, or `zone.run` — change detection is scheduled by the signal scheduler when a signal changes, not by the zone, so the zone wrappers are unnecessary noise.
+The library is signals-first and **zoneless** — the Storybook app, the SSR-testing app, and the Vitest test suite all run with `provideZonelessChangeDetection` (zone.js is no longer loaded in any of those runtimes). Do **not** use `NgZone`, `runOutsideAngular`, or `zone.run` — change detection is scheduled by the signal scheduler when a signal changes, not by the zone, so the zone wrappers are unnecessary noise. The `zone.js` package is still a dependency, kept only for the deprecated `radix-docs` app.
 
 - Attach DOM event listeners directly; update signals directly inside the handlers. The scheduler reacts to the signal write.
 - This holds even for high-frequency events. `dismissable-layer` attaches its global pointer/key listeners with no `NgZone`; the drawer gesture engine (`usePointerDrag` / `useDrawerSwipe`) does the same.
@@ -85,10 +85,13 @@ Every primitive family uses `createContext` from `@radix-ng/primitives/core`. Ro
 
 - **Framework:** Vitest + AnalogJS angular plugin + `@testing-library/angular`
 - **Globals:** use `vi.fn`, `vi.spyOn`, `vi.mock` (not Jest globals)
-- **Setup:** `packages/primitives/test-setup.ts` — initializes Angular testing env, `@testing-library/jest-dom/vitest`, `jest-axe`
+- **Setup:** `packages/primitives/test-setup.ts` — sets `provideZonelessChangeDetection`, initializes the Angular testing env, `@testing-library/jest-dom/vitest`, `jest-axe`. It does **not** import AnalogJS's `setup-vitest` (that harness hard-loads zone.js), so the suite is zone-free.
 - **Run all tests:** `pnpm primitives:test`
 - **Run single file:** `nx run primitives:test --testFile packages/primitives/<name>/__tests__/<file>.spec.ts`
 - `xdescribe` / `xit` are mapped to `describe.skip` / `it.skip` — used for legacy skipped suites
+- **Zoneless test conventions** (the suite runs zone-free):
+  - `fakeAsync` / `tick` / `waitForAsync` are unavailable. Use `vi.useFakeTimers()` + `vi.advanceTimersByTime()` for `setTimeout`-based delays, `await fixture.whenStable()` for render/effects, and a macrotask (`await new Promise(r => setTimeout(r))`) to drain a chained microtask queue.
+  - Mutating a **plain (non-signal) field** on a fixture component and then calling `fixture.detectChanges()` throws `NG0100` — the plain write doesn't dirty the view. Call `fixture.changeDetectorRef.markForCheck()` first. Signal writes (`input.set`, `model.set`, `linkedSignal.set`, `componentRef.setInput`) don't need it.
 
 ## Storybook stories
 
