@@ -76,130 +76,98 @@ function commonSegmentAttrs(props: SegmentAttrProps) {
     };
 }
 
-function daySegmentAttrs(props: SegmentAttrProps) {
-    const { segmentValues, placeholder } = props;
-    const isEmpty = segmentValues.day === null;
-    const date = segmentValues.day ? placeholder.set({ day: segmentValues.day }) : placeholder;
+type NumericSegmentConfig = {
+    field: 'day' | 'month' | 'year' | 'hour' | 'minute' | 'second';
+    label: string;
+    valueMin: number;
+    valueMax: number | ((date: DateValue) => number);
+    valueText?: (date: DateValue) => string;
+    /** Time parts only exist on date-time values; bail out when the segment is absent. */
+    timePart?: boolean;
+};
 
-    const valueNow = date.day;
-    const valueMin = 1;
-    const valueMax = getDaysInMonth(date);
-    const valueText = isEmpty ? 'Empty' : `${valueNow}`;
+/**
+ * Shared spinbutton attributes for the numeric segments (day/month/year/hour/minute/second).
+ * Each segment differs only in its field, bounds, label and optional value-text formatting.
+ */
+function numericSegmentAttrs(props: SegmentAttrProps, config: NumericSegmentConfig) {
+    const { segmentValues, placeholder } = props;
+    const { field } = config;
+
+    if (config.timePart && (!(field in segmentValues) || !(field in placeholder))) return {};
+
+    const value = (segmentValues as Record<string, number | null>)[field];
+    const isEmpty = value == null;
+    const date = value != null ? placeholder.set({ [field]: value } as Partial<DateFields & TimeFields>) : placeholder;
+    const valueNow = (date as unknown as Record<string, number>)[field];
+    const valueMax = typeof config.valueMax === 'function' ? config.valueMax(date) : config.valueMax;
+    const valueText = isEmpty ? 'Empty' : (config.valueText?.(date) ?? `${valueNow}`);
 
     return {
         ...commonSegmentAttrs(props),
-        'aria-label': 'day,',
-        'aria-valuemin': valueMin,
+        'aria-label': config.label,
+        'aria-valuemin': config.valueMin,
         'aria-valuemax': valueMax,
         'aria-valuenow': valueNow,
         'aria-valuetext': valueText,
         'data-placeholder': isEmpty ? '' : undefined
     };
+}
+
+function daySegmentAttrs(props: SegmentAttrProps) {
+    return numericSegmentAttrs(props, {
+        field: 'day',
+        label: 'day,',
+        valueMin: 1,
+        valueMax: (date) => getDaysInMonth(date)
+    });
 }
 
 function monthSegmentAttrs(props: SegmentAttrProps) {
-    const { segmentValues, placeholder, formatter } = props;
-    const isEmpty = segmentValues.month === null;
-    const date = segmentValues.month ? placeholder.set({ month: segmentValues.month }) : placeholder;
-    const valueNow = date.month;
-    const valueMin = 1;
-    const valueMax = 12;
-    const valueText = isEmpty ? 'Empty' : `${valueNow} - ${formatter.fullMonth(toDate(date))}`;
-
-    return {
-        ...commonSegmentAttrs(props),
-        'aria-label': 'month, ',
-        contenteditable: true,
-        'aria-valuemin': valueMin,
-        'aria-valuemax': valueMax,
-        'aria-valuenow': valueNow,
-        'aria-valuetext': valueText,
-        'data-placeholder': isEmpty ? '' : undefined
-    };
+    return numericSegmentAttrs(props, {
+        field: 'month',
+        label: 'month, ',
+        valueMin: 1,
+        valueMax: 12,
+        valueText: (date) => `${date.month} - ${props.formatter.fullMonth(toDate(date))}`
+    });
 }
 
 function yearSegmentAttrs(props: SegmentAttrProps) {
-    const { segmentValues, placeholder } = props;
-    const isEmpty = segmentValues.year === null;
-    const date = segmentValues.year ? placeholder.set({ year: segmentValues.year }) : placeholder;
-    const valueMin = 1;
-    const valueMax = 9999;
-    const valueNow = date.year;
-    const valueText = isEmpty ? 'Empty' : `${valueNow}`;
-
-    return {
-        ...commonSegmentAttrs(props),
-        'aria-label': 'year, ',
-        'aria-valuemin': valueMin,
-        'aria-valuemax': valueMax,
-        'aria-valuenow': valueNow,
-        'aria-valuetext': valueText,
-        'data-placeholder': isEmpty ? '' : undefined
-    };
+    return numericSegmentAttrs(props, { field: 'year', label: 'year, ', valueMin: 1, valueMax: 9999 });
 }
 
 function hourSegmentAttrs(props: SegmentAttrProps) {
-    const { segmentValues, hourCycle, placeholder } = props;
-
-    if (!('hour' in segmentValues) || !('hour' in placeholder)) return {};
-    const isEmpty = segmentValues.hour === null;
-    const date = segmentValues.hour !== null ? placeholder.set({ hour: segmentValues.hour }) : placeholder;
-    const valueMin = hourCycle === 12 ? 1 : 0;
-    const valueMax = hourCycle === 12 ? 12 : 23;
-    const valueNow = date.hour;
-    const valueText = isEmpty ? 'Empty' : `${valueNow} ${segmentValues.dayPeriod ?? ''}`;
-
-    return {
-        ...commonSegmentAttrs(props),
-        'aria-label': 'hour, ',
-        'aria-valuemin': valueMin,
-        'aria-valuemax': valueMax,
-        'aria-valuenow': valueNow,
-        'aria-valuetext': valueText,
-        'data-placeholder': isEmpty ? '' : undefined
-    };
+    const is12h = props.hourCycle === 12;
+    return numericSegmentAttrs(props, {
+        field: 'hour',
+        label: 'hour, ',
+        valueMin: is12h ? 1 : 0,
+        valueMax: is12h ? 12 : 23,
+        valueText: (date) =>
+            `${(date as CalendarDateTime).hour} ${(props.segmentValues as DateAndTimeSegmentObj).dayPeriod ?? ''}`,
+        timePart: true
+    });
 }
 
 function minuteSegmentAttrs(props: SegmentAttrProps) {
-    const { segmentValues, placeholder } = props;
-    if (!('minute' in segmentValues) || !('minute' in placeholder)) return {};
-    const isEmpty = segmentValues.minute === null;
-    const date = segmentValues.minute !== null ? placeholder.set({ minute: segmentValues.minute }) : placeholder;
-    const valueNow = date.minute;
-    const valueMin = 0;
-    const valueMax = 59;
-    const valueText = isEmpty ? 'Empty' : `${valueNow}`;
-
-    return {
-        ...commonSegmentAttrs(props),
-        'aria-label': 'minute, ',
-        'aria-valuemin': valueMin,
-        'aria-valuemax': valueMax,
-        'aria-valuenow': valueNow,
-        'aria-valuetext': valueText,
-        'data-placeholder': isEmpty ? '' : undefined
-    };
+    return numericSegmentAttrs(props, {
+        field: 'minute',
+        label: 'minute, ',
+        valueMin: 0,
+        valueMax: 59,
+        timePart: true
+    });
 }
 
 function secondSegmentAttrs(props: SegmentAttrProps) {
-    const { segmentValues, placeholder } = props;
-    if (!('second' in segmentValues) || !('second' in placeholder)) return {};
-    const isEmpty = segmentValues.second === null;
-    const date = segmentValues.second !== null ? placeholder.set({ second: segmentValues.second }) : placeholder;
-    const valueNow = date.second;
-    const valueMin = 0;
-    const valueMax = 59;
-    const valueText = isEmpty ? 'Empty' : `${valueNow}`;
-
-    return {
-        ...commonSegmentAttrs(props),
-        'aria-label': 'second, ',
-        'aria-valuemin': valueMin,
-        'aria-valuemax': valueMax,
-        'aria-valuenow': valueNow,
-        'aria-valuetext': valueText,
-        'data-placeholder': isEmpty ? '' : undefined
-    };
+    return numericSegmentAttrs(props, {
+        field: 'second',
+        label: 'second, ',
+        valueMin: 0,
+        valueMax: 59,
+        timePart: true
+    });
 }
 
 function dayPeriodSegmentAttrs(props: SegmentAttrProps) {
@@ -626,88 +594,30 @@ export function useDateField(props: UseDateFieldProps) {
         }
     }
 
-    function handleMinuteSegmentKeydown(e: KeyboardEvent) {
+    // Minute and second segments behave identically; only the field differs.
+    function handleMinuteOrSecondSegmentKeydown(e: KeyboardEvent, part: 'minute' | 'second') {
         const dateRef = props.placeholder();
-
         const values = props.segmentValues() as DateAndTimeSegmentObj;
 
-        if (
-            !isAcceptableSegmentKey(e.key) ||
-            isSegmentNavigationKey(e.key) ||
-            !('minute' in dateRef) ||
-            !('minute' in values)
-        )
+        if (!isAcceptableSegmentKey(e.key) || isSegmentNavigationKey(e.key) || !(part in dateRef) || !(part in values))
             return;
 
-        const prevValue = values.minute;
+        const prevValue = values[part];
 
         if (e.key === ARROW_UP || e.key === ARROW_DOWN) {
-            props.segmentValues.update((prev) => ({
-                ...prev,
-                minute: minuteSecondIncrementation({
-                    e,
-                    part: 'minute',
-                    dateRef: props.placeholder(),
-                    prevValue
-                })
-            }));
+            const next = minuteSecondIncrementation({ e, part, dateRef: props.placeholder(), prevValue });
+            props.segmentValues.update((prev) => ({ ...prev, [part]: next }));
         }
 
         if (isNumberString(e.key)) {
-            const num = Number.parseInt(e.key);
-
-            const { value, moveToNext } = updateMinuteOrSecond(num, prevValue);
-
-            props.segmentValues.update((prev) => ({ ...prev, minute: value }));
-
+            const { value, moveToNext } = updateMinuteOrSecond(Number.parseInt(e.key), prevValue);
+            props.segmentValues.update((prev) => ({ ...prev, [part]: value }));
             if (moveToNext) props.focusNext();
         }
 
         if (e.key === BACKSPACE) {
             props.hasLeftFocus.set(false);
-            props.segmentValues.update((prev) => ({ ...prev, minute: deleteValue(prevValue) }));
-        }
-    }
-
-    function handleSecondSegmentKeydown(e: KeyboardEvent) {
-        const dateRef = props.placeholder();
-
-        const values = props.segmentValues() as DateAndTimeSegmentObj;
-
-        if (
-            !isAcceptableSegmentKey(e.key) ||
-            isSegmentNavigationKey(e.key) ||
-            !('second' in dateRef) ||
-            !('second' in values)
-        )
-            return;
-
-        const prevValue = values.second;
-
-        if (e.key === ARROW_UP || e.key === ARROW_DOWN) {
-            props.segmentValues.update((prev) => ({
-                ...prev,
-                second: minuteSecondIncrementation({
-                    e,
-                    part: 'second',
-                    dateRef: props.placeholder(),
-                    prevValue
-                })
-            }));
-        }
-
-        if (isNumberString(e.key)) {
-            const num = Number.parseInt(e.key);
-            const { value, moveToNext } = updateMinuteOrSecond(num, prevValue);
-
-            props.segmentValues.update((prev) => ({ ...prev, second: value }));
-
-            if (moveToNext) props.focusNext();
-        }
-
-        if (e.key === BACKSPACE) {
-            props.hasLeftFocus.set(false);
-            props.segmentValues.update((prev) => ({ ...prev, second: deleteValue(prevValue) }));
+            props.segmentValues.update((prev) => ({ ...prev, [part]: deleteValue(prevValue) }));
         }
     }
 
@@ -757,8 +667,8 @@ export function useDateField(props: UseDateFieldProps) {
             day: handleDaySegmentKeydown,
             year: handleYearSegmentKeydown,
             hour: handleHourSegmentKeydown,
-            minute: handleMinuteSegmentKeydown,
-            second: handleSecondSegmentKeydown,
+            minute: (e: KeyboardEvent) => handleMinuteOrSecondSegmentKeydown(e, 'minute'),
+            second: (e: KeyboardEvent) => handleMinuteOrSecondSegmentKeydown(e, 'second'),
             dayPeriod: handleDayPeriodSegmentKeydown,
             timeZoneName: () => {}
         } as const;

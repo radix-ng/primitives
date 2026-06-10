@@ -13,6 +13,7 @@ import { RdxTimeFieldRootDirective } from '../src/time-field-root.directive';
             [(value)]="value"
             [granularity]="granularity()"
             [hourCycle]="hourCycle()"
+            [placeholder]="placeholder()"
             rdxTimeFieldRoot
         >
             @for (item of root.segmentContents(); track $index) {
@@ -26,6 +27,7 @@ class TimeFieldHost {
     readonly granularity = signal<Granularity | undefined>(undefined);
     readonly hourCycle = signal<HourCycle>(undefined);
     readonly value = signal<TimeValue | undefined>(undefined);
+    readonly placeholder = signal<TimeValue | undefined>(undefined);
 }
 
 function arrowKey(code: 'ArrowLeft' | 'ArrowRight'): KeyboardEvent {
@@ -179,6 +181,19 @@ describe('Time Field', () => {
             const value = rootDirective(fixture).value() as Time;
             expect(value.hour).toBe(4);
             expect(value.minute).toBe(15);
+        });
+
+        it('reports a typed 0 (not the placeholder) in the hour aria value', () => {
+            host.hourCycle.set(24);
+            host.placeholder.set(new Time(5, 30));
+            fixture.detectChanges();
+
+            const [hour] = segments(fixture);
+            type(hour, '0'); // midnight; segment value 0 must not be treated as "empty"
+            fixture.detectChanges();
+
+            // with the falsy-zero bug this reported the placeholder's hour (5)
+            expect(hour.getAttribute('aria-valuenow')).toBe('0');
         });
 
         it('toggling AM/PM on an empty hour does not fabricate a value', () => {

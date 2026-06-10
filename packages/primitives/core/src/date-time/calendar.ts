@@ -146,7 +146,10 @@ export function getWeekNumber(date: DateValue, locale: string = 'en-US', firstDa
         return getWeekNumber(prevYearDate, locale, firstDayOfWeek);
     }
 
-    const days = getDaysBetween(firstWeekStart, date);
+    // `getDaysBetween` is exclusive of both ends, so extend the end by a day to count the
+    // full span from `firstWeekStart` through `date` (otherwise every 7-day boundary is
+    // under-counted by one and the week number lags).
+    const days = getDaysBetween(firstWeekStart, date.add({ days: 1 }));
 
     // Week number is days divided by 7 plus 1
     return Math.floor(days.length / 7) + 1;
