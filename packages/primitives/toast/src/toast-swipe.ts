@@ -48,6 +48,8 @@ export interface RdxToastSwipeConfig {
  * - `[data-swipe-dismiss]` — present briefly when a release commits to dismissal.
  *
  * Mark inner interactive regions with `[data-toast-swipe-ignore]` to opt them out of the gesture.
+ * `RdxToastRoot` (the gesture host) sets `touch-action: none` so a touch-drag is not stolen by native
+ * scrolling — without it the gesture only works with a mouse, not on touch devices.
  * Must be called from an injection context (a directive constructor).
  */
 export function useToastSwipe(config: RdxToastSwipeConfig): void {

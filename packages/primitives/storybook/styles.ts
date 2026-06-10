@@ -238,7 +238,7 @@ export const demoToast = {
     ),
     content: cn(
         demoCard,
-        'relative flex touch-none items-start gap-3 p-4 pr-9 shadow-lg select-none',
+        'relative flex items-start gap-3 p-4 pr-9 shadow-lg',
         '[transform:translate3d(var(--toast-swipe-movement-x,0px),var(--toast-swipe-movement-y,0px),0)]',
         '[transition:transform_220ms_ease] group-data-[swiping]:[transition:none]'
     ),

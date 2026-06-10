@@ -56,6 +56,14 @@ const rootContext = (): RdxToastRootContext => {
     exportAs: 'rdxToastRoot',
     providers: [provideRdxToastRootContext(rootContext)],
     host: {
+        // Own the swipe gesture's touch behavior on the element usePointerDrag binds to. Without
+        // touch-action:none a touch-drag is claimed by native scrolling (pointercancel fires before
+        // the gesture starts), so swipe-to-dismiss works with a mouse but not on touch devices. The
+        // toast surface never scrolls, so disabling pan/zoom here is safe; user-select stops text
+        // selection mid-swipe. Mirrors number-field's scrub area.
+        '[style.touch-action]': '"none"',
+        '[style.user-select]': '"none"',
+        '[style.-webkit-user-select]': '"none"',
         '[attr.role]': 'role()',
         '[attr.aria-labelledby]': 'titlePresent() ? titleId : undefined',
         '[attr.aria-describedby]': 'descriptionPresent() ? descriptionId : undefined',
