@@ -66,4 +66,5 @@ Full documentation in one file: https://radix-ng.com/llms-full.txt
 
 ## Recipes
 
+- [Confirmation Dialog](https://radix-ng.com/recipes/confirmation-dialog.md): An imperative `confirm()` that returns a `Promise<boolean>`, built on the Alert Dialog primitive.
 - [Split Button](https://radix-ng.com/recipes/split-button.md): A primary action paired with a menu of related actions, joined as one control.
