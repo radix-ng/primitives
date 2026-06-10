@@ -66,6 +66,7 @@ These are the headless infrastructure layers that complex primitives compose:
 - **time-field write-back:** time-field edits land in an internal `convertedModelValue` (always a `CalendarDateTime`, so the editor has a date context). It must be mirrored back to the public `value` model (converting to `Time` for time-only models) — **writing a `linkedSignal` does not propagate to its source**, so the mirror is an explicit, guarded `watch`.
 - **Placeholder vs locale:** the placeholder is seeded once at construction, before `locale` binds. date-field/calendar re-seed it on locale change (comparing calendar `identifier`) while the field is empty, so non-Gregorian calendars (Buddhist/Japanese) render correctly.
 - **Single sources of truth:** `TIME_GRANULARITIES` (in `comparators.ts`) for which granularities carry time; `DateFormatter` instances are cached in `formatter.ts` (never construct `Intl.DateTimeFormat` per call in the per-keystroke formatting path).
+- **`getDaysBetween(start, end)` is exclusive of both ends** (used in `calendar.ts` with ±1-day offsets to build inclusive grid ranges). Counting an inclusive span from it needs an extra day — e.g. `getWeekNumber` passes `date.add({ days: 1 })`, otherwise every 7-day boundary is under-counted by one.
 
 ## DI context pattern
 
