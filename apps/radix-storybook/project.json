@@ -24,7 +24,7 @@
                     "-d",
                     "apps/radix-storybook/.storybook"
                 ],
-                "styles": ["apps/radix-storybook/.storybook/main.css", "@radix-ui/themes/styles.css"]
+                "styles": ["apps/radix-storybook/.storybook/main.css"]
             },
             "configurations": {
                 "ci": {
@@ -40,7 +40,7 @@
                 "configDir": "apps/radix-storybook/.storybook",
                 "compodoc": true,
                 "compodocArgs": ["-e", "json", "-d", "apps/radix-storybook/.storybook"],
-                "styles": ["apps/radix-storybook/.storybook/main.css", "@radix-ui/themes/styles.css"],
+                "styles": ["apps/radix-storybook/.storybook/main.css"],
                 "experimentalZoneless": true,
                 "stylePreprocessorOptions": {
                     "loadPaths": ["node_modules/"]
