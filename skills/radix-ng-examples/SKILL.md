@@ -30,7 +30,7 @@ Working examples built on `@radix-ng/primitives`. Full source is **bundled offli
 To style a primitive with a custom design system, pair an example with the data-attribute contract in
 the `radix-ng` skill (`references/styling-contract.json`).
 
-Total: **190 examples** across **38 components**.
+Total: **191 examples** across **38 components**.
 
 ## Components
 
@@ -117,7 +117,8 @@ Full source (all examples): [`references/components/context-menu.md`](./referenc
 
 Full source (all examples): [`references/components/cropper.md`](./references/components/cropper.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-cropper--docs)
 
-- **With Data Area**
+- **Disabled**
+- **With crop data**
 
 ### Date Field
 

@@ -1,15 +1,11 @@
-import { inject, InjectionToken, InputSignal, WritableSignal } from '@angular/core';
+import { InputSignal, Signal } from '@angular/core';
+import { createContext } from '@radix-ng/primitives/core';
 
-export interface CropperContextToken {
+export interface CropperRootContext {
     image: InputSignal<string>;
-    getImageProps: () => { [key: string]: any };
-    getImageWrapperStyle: () => Record<string, string>;
-    getCropAreaStyle: () => Record<string, string>;
-    descriptionId: WritableSignal<string>;
+    imageWrapperStyle: Signal<Record<string, string>>;
+    cropAreaStyle: Signal<Record<string, string>>;
+    descriptionId: string;
 }
 
-export const CROPPER_ROOT_CONTEXT = new InjectionToken<CropperContextToken>('CROPPER_ROOT_CONTEXT');
-
-export function injectCropperRootContext() {
-    return inject(CROPPER_ROOT_CONTEXT);
-}
+export const [injectCropperRootContext, provideCropperRootContext] = createContext<CropperRootContext>('CropperRoot');

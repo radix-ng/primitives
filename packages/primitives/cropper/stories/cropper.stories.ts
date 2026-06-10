@@ -1,5 +1,23 @@
-import { componentWrapperDecorator, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { CropperDefault, CropperWithData } from './cropper';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
+import { CropperDefault } from './cropper-default';
+import { CropperDisabled } from './cropper-disabled';
+import { CropperWithData } from './cropper-with-data';
+
+// Full component source for the "Show code" panel (Vite `?raw` import).
+import defaultSource from './cropper-default?raw';
+import disabledSource from './cropper-disabled?raw';
+import withDataSource from './cropper-with-data?raw';
+
+const source = (code: string) => ({
+    docs: {
+        source: {
+            code: code.trim(),
+            language: 'typescript',
+            type: 'code'
+        }
+    }
+});
 
 const html = String.raw;
 
@@ -7,41 +25,37 @@ export default {
     title: 'Primitives/Cropper',
     decorators: [
         moduleMetadata({
-            imports: [CropperDefault, CropperWithData]
+            imports: [CropperDefault, CropperDisabled, CropperWithData]
         }),
-        componentWrapperDecorator(
-            (story) => html`
-                <div
-                    class="radix-themes light light-theme radix-themes-default-fonts"
-                    data-accent-color="indigo"
-                    data-radius="medium"
-                    data-scaling="100%"
-                >
-                    ${story}
-                </div>
-            `
-        )
+        tailwindDemoDecorator()
     ]
 } as Meta;
 
 type Story = StoryObj;
 
 export const Default: Story = {
+    parameters: source(defaultSource),
     render: () => ({
         template: html`
-            <div>
-                <app-cropper-default />
-            </div>
+            <cropper-default />
+        `
+    })
+};
+
+export const Disabled: Story = {
+    parameters: source(disabledSource),
+    render: () => ({
+        template: html`
+            <cropper-disabled />
         `
     })
 };
 
 export const WithData: Story = {
+    parameters: source(withDataSource),
     render: () => ({
         template: html`
-            <div>
-                <app-cropper-with-data />
-            </div>
+            <cropper-with-data />
         `
     })
 };

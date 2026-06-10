@@ -483,3 +483,22 @@ export const demoMenu = {
     groupLabel: 'px-2 py-1.5 text-xs font-semibold text-muted-foreground',
     arrow: demoArrow('text-popover')
 } as const;
+
+/**
+ * Image cropper. The root clips an oversized, draggable image; the crop area is a fixed window with a
+ * white frame and a dark mask (the classic cropper look) punched out by a huge spread box-shadow.
+ * `group` on the root lets the crop area show a focus ring when the widget is keyboard-focused.
+ */
+export const demoCropper = {
+    root: cn(
+        'group relative flex h-[280px] w-[500px] max-w-full items-center justify-center overflow-hidden rounded-lg',
+        'cursor-move touch-none outline-none',
+        'data-[disabled]:cursor-default data-[disabled]:opacity-60'
+    ),
+    image: 'pointer-events-none size-full object-cover',
+    cropArea: cn(
+        'pointer-events-none absolute border-[3px] border-white shadow-[0_0_0_9999px_rgba(0,0,0,0.4)]',
+        'group-focus-visible:shadow-[0_0_0_9999px_rgba(0,0,0,0.4),0_0_0_3px_rgba(255,255,255,0.5)]'
+    ),
+    output: 'mt-2 max-w-full overflow-auto rounded-md bg-muted p-2 text-sm whitespace-pre text-muted-foreground'
+} as const;

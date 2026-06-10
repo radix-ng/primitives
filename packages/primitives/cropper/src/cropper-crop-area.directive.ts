@@ -4,9 +4,9 @@ import { injectCropperRootContext } from './cropper-context.token';
 @Directive({
     selector: '[rdxCropperCropArea]',
     host: {
-        '[style]': 'rootContext.getCropAreaStyle()'
+        '[style]': 'rootContext.cropAreaStyle()'
     }
 })
 export class RdxCropperCropAreaDirective {
-    readonly rootContext = injectCropperRootContext();
+    readonly rootContext = injectCropperRootContext()!;
 }

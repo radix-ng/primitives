@@ -15,7 +15,7 @@ Full documentation in one file: https://radix-ng.com/llms-full.txt
 - [Checkbox](https://radix-ng.com/components/checkbox.md): A control that allows the user to toggle between checked and not checked.
 - [Collapsible](https://radix-ng.com/components/collapsible.md): A panel that expands and collapses, revealing or hiding its contents.
 - [Context Menu](https://radix-ng.com/components/context-menu.md): A menu that appears at the pointer on right click (or touch long-press), built on the Menu primitive.
-- [Cropper](https://radix-ng.com/components/cropper.md): Headless component for interactive image cropping — inspired by the experience on [X](https://x.com/)
+- [Cropper](https://radix-ng.com/components/cropper.md): Headless component for interactive image cropping — inspired by the experience on [X](https://x.com/).
 - [Date Field](https://radix-ng.com/components/date-field.md): Enables users to input specific dates within a designated field.
 - [Dialog](https://radix-ng.com/components/dialog.md): A window overlaid on the page, rendering the content underneath inert.
 - [Drawer](https://radix-ng.com/components/drawer.md): An edge-anchored sheet that opens over the page and dismisses with a swipe.

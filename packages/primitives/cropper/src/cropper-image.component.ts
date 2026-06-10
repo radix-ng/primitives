@@ -1,30 +1,32 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { injectCropperRootContext } from './cropper-context.token';
 
 @Component({
     selector: '[rdxCropperImage]',
     host: {
-        '[style]': 'rootContext.getImageWrapperStyle()'
+        '[style]': 'rootContext.imageWrapperStyle()'
     },
     template: `
         <img
-            [class]="imgClasses()"
-            [src]="rootContext.getImageProps()['src']"
-            [alt]="rootContext.getImageProps()['alt']"
-            [draggable]="rootContext.getImageProps()['draggable']"
-            [style]="imgStyless()"
-            aria-hidden="true"
+            [class]="imgClass()"
+            [src]="rootContext.image()"
+            [style]="imgStyles()"
+            [draggable]="false"
+            [alt]="imgAlt()"
         />
     `
 })
 export class RdxCropperImageComponent {
-    protected readonly rootContext = injectCropperRootContext();
+    protected readonly rootContext = injectCropperRootContext()!;
 
     readonly imgClass = input<string>();
 
     readonly imgStyles = input<string>();
 
-    protected readonly imgClasses = computed(() => this.imgClass());
-
-    protected readonly imgStyless = computed(() => this.imgStyles());
+    /**
+     * `alt` text for the rendered image. Defaults to `''` (decorative — screen readers skip it, since
+     * the cropper widget describes itself via the root's label/description). Set a non-empty value to
+     * give the image a meaningful accessible name.
+     */
+    readonly imgAlt = input('');
 }
