@@ -21,6 +21,8 @@ const groupToSection = (group) => {
             return 'utils';
         case 'Guides':
             return 'guides';
+        case 'Recipes':
+            return 'recipes';
         case 'Examples':
             return 'examples';
         default:
@@ -34,6 +36,8 @@ const sectionLabel = (section) => {
             return 'Utilities';
         case 'guides':
             return 'Guides';
+        case 'recipes':
+            return 'Recipes';
         case 'examples':
             return 'Examples';
         default:

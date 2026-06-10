@@ -63,3 +63,7 @@ Full documentation in one file: https://radix-ng.com/llms-full.txt
 ## Guides
 
 - [Styling guide for demos](https://radix-ng.com/guides/styling.md): Styling guide for demos
+
+## Recipes
+
+- [Split Button](https://radix-ng.com/recipes/split-button.md): A primary action paired with a menu of related actions, joined as one control.

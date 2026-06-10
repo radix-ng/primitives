@@ -57,7 +57,8 @@ const getSlug = (filePath) => {
     return packageName;
 };
 
-const sectionOf = (group) => ({ Utilities: 'utils', Guides: 'guides', Examples: 'examples' })[group] ?? 'components';
+const sectionOf = (group) =>
+    ({ Utilities: 'utils', Guides: 'guides', Recipes: 'recipes', Examples: 'examples' })[group] ?? 'components';
 
 const sectionBody = (content, heading) => {
     const start = new RegExp(`^##\\s+${heading}\\s*$`, 'm').exec(content);
@@ -155,7 +156,13 @@ const llmsFull = [
 write(path.join(refsRoot, 'llms-full.txt'), `${llmsFull}\n`);
 
 // llms.txt index (served at SITE_URL/llms.txt) — links to the served per-page Markdown
-const sectionTitles = { components: 'Components', utils: 'Utilities', guides: 'Guides', examples: 'Examples' };
+const sectionTitles = {
+    components: 'Components',
+    utils: 'Utilities',
+    guides: 'Guides',
+    recipes: 'Recipes',
+    examples: 'Examples'
+};
 const llmsIndex = [
     '# Radix NG Primitives',
     'Unstyled, accessible, signals-first Angular primitives for building design systems and web apps.',
