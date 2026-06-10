@@ -237,6 +237,7 @@ of rediscovering the project conventions from individual stories:
 | Naming           | `apps/radix-storybook/docs/guides/naming-conventions.docs.mdx` (`Guides/Naming Conventions`) | Naming selectors and directive classes                                                                                                                     |
 | Consumer theming | `apps/radix-storybook/docs/overview/theming.docs.mdx` (`Overview/Theming`)                   | Documenting `data-*` state styling, design tokens, or dark mode                                                                                            |
 | Accessibility    | `apps/radix-storybook/docs/overview/accessibility.docs.mdx` (`Overview/Accessibility`)       | Reviewing semantics, labels, keyboard navigation, or focus management                                                                                      |
+| SSR & Hydration  | `apps/radix-storybook/docs/guides/ssr.docs.mdx` (`Guides/Server-Side Rendering`)             | SSR/hydration behavior — stable IDs (`injectId`), platform guards, portal no-op on server, browser-only positioning, hydration-mismatch troubleshooting    |
 
 For animation work, distinguish the lifecycle owner before choosing an API:
 
@@ -344,7 +345,13 @@ Prefer the package.json scripts above over ad-hoc shell, and keep commands match
 - Test setup lives in `packages/primitives/test-setup.ts`; it sets `provideZonelessChangeDetection`, initializes Angular's testing environment, loads `@testing-library/jest-dom/vitest`, and registers the `jest-axe` matcher. It intentionally does **not** import `@analogjs/vite-plugin-angular/setup-vitest` (that harness hard-loads zone.js), so the suite runs **zone-free**.
 - The suite is zoneless: `fakeAsync` / `tick` / `waitForAsync` are unavailable — use `vi.useFakeTimers()` + `vi.advanceTimersByTime()`, `await fixture.whenStable()`, or a macrotask (`await new Promise(r => setTimeout(r))`) to drain chained microtasks. Mutating a plain (non-signal) fixture field then calling `fixture.detectChanges()` throws `NG0100`; call `fixture.changeDetectorRef.markForCheck()` first (signal writes don't need it).
 - Use Vitest APIs (`vi.fn`, `vi.spyOn`, `vi.mock`, `vi.importActual`) instead of Jest globals. Legacy skipped suites may still use `xdescribe` / `xit`, which are mapped to `describe.skip` / `it.skip` in the setup file.
-- `apps/radix-ssr-testing:test` is also a Vitest target, but currently has no specs and uses `passWithNoTests`.
+- `apps/radix-ssr-testing:test` is also a Vitest target. `src/ssr-rendering.spec.ts` renders the primitive
+  pages through `renderApplication` (`@angular/platform-server`) and asserts server render does not throw,
+  the markup is present, hydration annotations (`ngh`) are emitted, and ids are SSR-stable. It needs
+  `import '@angular/compiler';` at the top (platform-server is partially compiled → JIT fallback). The
+  target still keeps `passWithNoTests`. Note: CI excludes `radix-ssr-testing` from `test`/`build`, so its
+  page components are not type-checked there — the select page had drifted onto a removed API and only the
+  spec caught it; keep the pages current with the primitives' public API.
 
 ## Accessibility
 

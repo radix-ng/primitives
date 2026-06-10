@@ -1,0 +1,113 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Guides/Server-Side Rendering" />
+
+# Server-Side Rendering & Hydration
+
+Using Radix NG primitives with Angular SSR and full hydration.
+
+Radix NG is built to render on the server with [`@angular/ssr`](https://angular.dev/guide/ssr) and
+hydrate cleanly on the client. Headless UI primitives are a classic source of hydration mismatches —
+generated IDs, portals that move DOM around, layout measurements, and `window` / `document` access all
+have to behave identically (or do nothing) on the server. This guide explains how the library handles
+each, and what you need to do in your own code.
+
+## Why headless primitives are tricky under SSR
+
+Four things commonly break hydration in a component library:
+
+- **Non-deterministic IDs** — if `id` / `aria-*` values differ between server and client, Angular
+  reports a hydration mismatch.
+- **`window` / `document` access** — touching browser globals during server render throws.
+- **Portals** — teleporting an element to `document.body` changes the DOM tree shape.
+- **Measurements & positioning** — reading layout (sizes, `getComputedStyle`, Floating UI) is
+  meaningless on the server.
+
+Radix NG addresses all four. The sections below describe the mechanism and the consumer-facing
+implication of each.
+
+## Stable IDs
+
+Primitives generate their internal `id` / `aria-*` values with `injectId` (backed by `RdxIdGenerator`
+in `@radix-ng/primitives/core`). IDs are a **deterministic per-prefix counter**, so the server and the
+client produce the exact same sequence and hydration does not mismatch. The app's `APP_ID` is folded
+into the prefix so multiple Angular apps on one page never collide.
+
+```ts
+import { injectId } from '@radix-ng/primitives/core';
+
+// Deterministic, SSR-stable — server and client both produce "rdx-dialog-content-0", "…-1", …
+readonly contentId = injectId('rdx-dialog-content-');
+```
+
+**What you need to do:** when you generate your own IDs (e.g. wiring a custom label to a control), use
+`injectId` too — or any deterministic source. Avoid `Math.random()` / `Date.now()` / `crypto.randomUUID()`
+for render-time IDs, since those differ between server and client and will trigger a mismatch.
+
+## Browser-only work runs after render
+
+No primitive reads or writes the DOM during server render. Anything that needs a real element —
+`ResizeObserver`, event listeners, geometry — is deferred to `afterNextRender()` / `afterRenderEffect()`,
+which Angular runs **only in the browser, after the first render**. Examples: the Tabs indicator measures
+the active tab, Scroll Area sets up its `ResizeObserver`, and Select's item-aligned positioning measures
+the trigger — all after render, never on the server.
+
+Where a primitive must touch `window` / `document` outside a render hook, it guards with
+`isPlatformBrowser(inject(PLATFORM_ID))`. For instance, `RdxLiveAnnouncer` is a **no-op on the server**
+and only appends its visually-hidden `aria-live` region once running in the browser.
+
+**What you need to do:** apply the same discipline in your own wrapper components and demos — guard any
+`window` / `document` access with `isPlatformBrowser`, or move it into `afterNextRender()`.
+
+## Portals render in place on the server
+
+`RdxPortal` (used by Dialog, Popover, Menu, Select, etc. to teleport content to `document.body`) is
+**SSR-safe and does nothing on the server** — the element stays in its declared position in the server
+HTML. On the client, the portal's effect runs after hydration and relocates the element to its container.
+
+In practice this is rarely visible, because portaled content (dialog/popover/menu panels) is mounted
+through [Presence](?path=/docs/utilities-presence--docs) and is **closed on first paint**, so it isn't in
+the server HTML at all. If you do render an overlay open on initial load, expect its content to start in
+place and move to the body on hydration.
+
+## Positioning happens in the browser
+
+Floating elements (anything built on the Popper layer — Popover, Menu, Tooltip, Select, Context Menu,
+Navigation Menu) are positioned with [Floating UI](https://floating-ui.com/). Position is computed in an
+`afterRenderEffect()` and kept in sync with `autoUpdate()` — both **browser-only**. Until the first
+position is computed, the floating element renders off-screen and hidden, so the server never computes
+coordinates.
+
+**Caveat:** if you force a floating element **open during the initial render**, its content is present in
+the server HTML but unpositioned until the client places it (one frame after hydration). Prefer keeping
+overlays closed on first paint; open them in response to user interaction.
+
+## Consumer checklist
+
+- Set up SSR with [`@angular/ssr`](https://angular.dev/guide/ssr) and enable hydration with
+  `provideClientHydration()` (optionally `withEventReplay()`).
+- Generate your own render-time IDs with `injectId` from `@radix-ng/primitives/core`, not random/time-based
+  sources.
+- Guard your own `window` / `document` access with `isPlatformBrowser(inject(PLATFORM_ID))` or move it into
+  `afterNextRender()`.
+- Keep overlays (dialogs, popovers, menus, tooltips) **closed on first paint** unless you accept a
+  position-after-hydrate flash.
+- Make sure any `@if` / `@for` that gates a primitive evaluates to the same result on server and client —
+  branching on `window`, `localStorage`, or the current time produces different trees and breaks hydration.
+
+## Troubleshooting hydration mismatches
+
+If Angular logs a hydration mismatch (`NG0500` / "node mismatch") around a primitive:
+
+| Symptom                                    | Likely cause                                                    | Fix                                                                 |
+| ------------------------------------------ | --------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Mismatch on an `id` / `aria-*` attribute   | A custom ID from `Math.random()` / `Date.now()` / `randomUUID`  | Use `injectId` (or another deterministic value).                    |
+| Mismatch on whether an element is rendered | An `@if` / `@for` condition that differs server vs client       | Make the condition deterministic; defer client-only branches with `afterNextRender()`. |
+| Error during server render                 | Your own component touches `window` / `document` at render time | Guard with `isPlatformBrowser` or move into `afterNextRender()`.    |
+| Overlay flashes / jumps after load         | A floating element was open during the initial render           | Open it on interaction instead of on first paint.                   |
+
+## Related
+
+- [injectId](?path=/docs/utilities-injectid--docs) — SSR-stable ID generation.
+- [Portal](?path=/docs/utilities-portal--docs) — teleporting content; no-op on the server.
+- [LiveAnnouncer](?path=/docs/utilities-liveannouncer--docs) — `aria-live` announcements; no-op on the server.

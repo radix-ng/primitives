@@ -1,46 +1,72 @@
 import { Component } from '@angular/core';
 import {
-    RdxSelectComponent,
-    RdxSelectContentDirective,
-    RdxSelectIconDirective,
-    RdxSelectItemDirective,
-    RdxSelectItemIndicatorDirective,
-    RdxSelectTriggerDirective,
-    RdxSelectValueDirective
+    RdxSelectContent,
+    RdxSelectGroup,
+    RdxSelectItem,
+    RdxSelectItemIndicator,
+    RdxSelectItemText,
+    RdxSelectLabel,
+    RdxSelectPopperPositionContent,
+    RdxSelectPopperPositionWrapper,
+    RdxSelectPortal,
+    RdxSelectPortalPresence,
+    RdxSelectRoot,
+    RdxSelectTrigger,
+    RdxSelectValue,
+    RdxSelectViewport
 } from '@radix-ng/primitives/select';
 
 @Component({
     selector: 'app-select',
     imports: [
-        RdxSelectComponent,
-        RdxSelectItemIndicatorDirective,
-        RdxSelectItemDirective,
-        RdxSelectContentDirective,
-        RdxSelectTriggerDirective,
-        RdxSelectValueDirective,
-        RdxSelectIconDirective
+        RdxSelectRoot,
+        RdxSelectPortal,
+        RdxSelectTrigger,
+        RdxSelectValue,
+        RdxSelectPortalPresence,
+        RdxSelectContent,
+        RdxSelectViewport,
+        RdxSelectPopperPositionWrapper,
+        RdxSelectPopperPositionContent,
+        RdxSelectItem,
+        RdxSelectItemText,
+        RdxSelectItemIndicator,
+        RdxSelectLabel,
+        RdxSelectGroup
     ],
     template: `
-        <span [defaultValue]="'1'" rdxSelect>
-            <button rdxSelectTrigger>
-                <span rdxSelectValue></span>
-                <span rdxSelectIcon>▼</span>
+        <ng-container rdxSelectRoot>
+            <button aria-label="Choose a fruit" rdxSelectTrigger>
+                <span #selectedValue="rdxSelectedValue" rdxSelectValue placeholder="Pick a fruit">
+                    {{ selectedValue.slotText() }}
+                </span>
+                <span aria-hidden="true">▼</span>
             </button>
-            <div rdxSelectContent>
-                <div [value]="'1'" rdxSelectItem>
-                    <span>Item 1</span>
-                    <span rdxSelectItemIndicator>✔</span>
-                </div>
-                <div [value]="'2'" rdxSelectItem>
-                    <span>Item 2</span>
-                    <span rdxSelectItemIndicator>✔</span>
-                </div>
-                <div [value]="'3'" rdxSelectItem>
-                    <span>Item 3</span>
-                    <span rdxSelectItemIndicator>✔</span>
-                </div>
+
+            <div rdxSelectPortal>
+                <ng-template rdxSelectPortalPresence>
+                    <div rdxSelectContent>
+                        <div [sideOffset]="4" align="start" rdxSelectPopperPositionWrapper>
+                            <div rdxSelectPopperPositionContent>
+                                <div rdxSelectViewport>
+                                    <div rdxSelectLabel>Fruits</div>
+                                    <div rdxSelectGroup>
+                                        @for (option of options; track option) {
+                                            <div [value]="option" rdxSelectItem>
+                                                <span rdxSelectItemIndicator>✔</span>
+                                                <span rdxSelectItemText>{{ option }}</span>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
             </div>
-        </span>
+        </ng-container>
     `
 })
-export default class Page {}
+export default class Page {
+    readonly options = ['Apple', 'Banana', 'Blueberry'];
+}
