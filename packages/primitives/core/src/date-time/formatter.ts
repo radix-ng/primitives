@@ -15,6 +15,24 @@ export interface DateFormatterOptions extends Intl.DateTimeFormatOptions {
     calendar?: string;
 }
 
+/**
+ * Constructing a `DateFormatter` (which wraps `Intl.DateTimeFormat`) is by far the most
+ * expensive operation here, and `createContent` formats every segment on each keystroke.
+ * Reuse instances keyed by locale + options — the set of distinct combinations is tiny and
+ * the instances are immutable.
+ */
+const formatterCache = new Map<string, DateFormatter>();
+
+function getDateFormatter(locale: string, options: DateFormatterOptions): DateFormatter {
+    const key = `${locale}|${JSON.stringify(options)}`;
+    let formatter = formatterCache.get(key);
+    if (!formatter) {
+        formatter = new DateFormatter(locale, options);
+        formatterCache.set(key, formatter);
+    }
+    return formatter;
+}
+
 export type Formatter = {
     getLocale: () => string;
     setLocale: (newLocale: string) => void;
@@ -50,7 +68,7 @@ export function createFormatter(initialLocale: string, opts: DateFormatterOption
     }
 
     function custom(date: Date, options: DateFormatterOptions) {
-        return new DateFormatter(locale, { ...opts, ...options }).format(date);
+        return getDateFormatter(locale, { ...opts, ...options }).format(date);
     }
 
     function selectedDate(date: DateValue, includeTime = true) {
@@ -67,35 +85,35 @@ export function createFormatter(initialLocale: string, opts: DateFormatterOption
     }
 
     function fullMonthAndYear(date: Date, options: DateFormatterOptions = {}) {
-        return new DateFormatter(locale, { ...opts, month: 'long', year: 'numeric', ...options }).format(date);
+        return getDateFormatter(locale, { ...opts, month: 'long', year: 'numeric', ...options }).format(date);
     }
 
     function fullMonth(date: Date, options: DateFormatterOptions = {}) {
-        return new DateFormatter(locale, { ...opts, month: 'long', ...options }).format(date);
+        return getDateFormatter(locale, { ...opts, month: 'long', ...options }).format(date);
     }
 
     function fullYear(date: Date, options: DateFormatterOptions = {}) {
-        return new DateFormatter(locale, { ...opts, year: 'numeric', ...options }).format(date);
+        return getDateFormatter(locale, { ...opts, year: 'numeric', ...options }).format(date);
     }
 
     function toParts(date: DateValue, options?: DateFormatterOptions) {
         if (isZonedDateTime(date)) {
-            return new DateFormatter(locale, {
+            return getDateFormatter(locale, {
                 ...opts,
                 ...options,
                 timeZone: date.timeZone
             }).formatToParts(toDate(date));
         } else {
-            return new DateFormatter(locale, { ...opts, ...options }).formatToParts(toDate(date));
+            return getDateFormatter(locale, { ...opts, ...options }).formatToParts(toDate(date));
         }
     }
 
     function dayOfWeek(date: Date, length: DateFormatterOptions['weekday'] = 'narrow') {
-        return new DateFormatter(locale, { ...opts, weekday: length }).format(date);
+        return getDateFormatter(locale, { ...opts, weekday: length }).format(date);
     }
 
     function dayPeriod(date: Date, hourCycle: HourCycle | undefined = undefined) {
-        const parts = new DateFormatter(locale, {
+        const parts = getDateFormatter(locale, {
             ...opts,
             hour: 'numeric',
             minute: 'numeric',

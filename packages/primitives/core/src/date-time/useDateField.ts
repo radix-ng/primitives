@@ -8,6 +8,23 @@ import { Formatter } from './formatter';
 import { isAcceptableSegmentKey, isNumberString, isSegmentNavigationKey } from './segment';
 import { AnyExceptLiteral, DateAndTimeSegmentObj, DateStep, HourCycle, SegmentPart, SegmentValueObj } from './types';
 
+/** Convert a canonical 24-hour value (0-23) to its 12-hour clock equivalent (1-12). */
+function to12Hour(hour: number): number {
+    const h = hour % 12;
+    return h === 0 ? 12 : h;
+}
+
+/** Combine a 12-hour clock value (1-12) with a day period into a canonical 24-hour value (0-23). */
+function to24Hour(hour: number, period: 'AM' | 'PM'): number {
+    const h = hour % 12;
+    return period === 'PM' ? h + 12 : h;
+}
+
+/** The day period a canonical 24-hour value belongs to. */
+function dayPeriodForHour(hour: number): 'AM' | 'PM' {
+    return hour >= 12 ? 'PM' : 'AM';
+}
+
 type MinuteSecondIncrementProps = {
     e: KeyboardEvent;
     part: keyof TimeFields;
@@ -126,7 +143,7 @@ function hourSegmentAttrs(props: SegmentAttrProps) {
 
     if (!('hour' in segmentValues) || !('hour' in placeholder)) return {};
     const isEmpty = segmentValues.hour === null;
-    const date = segmentValues.hour ? placeholder.set({ hour: segmentValues.hour }) : placeholder;
+    const date = segmentValues.hour !== null ? placeholder.set({ hour: segmentValues.hour }) : placeholder;
     const valueMin = hourCycle === 12 ? 1 : 0;
     const valueMax = hourCycle === 12 ? 12 : 23;
     const valueNow = date.hour;
@@ -147,7 +164,7 @@ function minuteSegmentAttrs(props: SegmentAttrProps) {
     const { segmentValues, placeholder } = props;
     if (!('minute' in segmentValues) || !('minute' in placeholder)) return {};
     const isEmpty = segmentValues.minute === null;
-    const date = segmentValues.minute ? placeholder.set({ minute: segmentValues.minute }) : placeholder;
+    const date = segmentValues.minute !== null ? placeholder.set({ minute: segmentValues.minute }) : placeholder;
     const valueNow = date.minute;
     const valueMin = 0;
     const valueMax = 59;
@@ -168,7 +185,7 @@ function secondSegmentAttrs(props: SegmentAttrProps) {
     const { segmentValues, placeholder } = props;
     if (!('second' in segmentValues) || !('second' in placeholder)) return {};
     const isEmpty = segmentValues.second === null;
-    const date = segmentValues.second ? placeholder.set({ second: segmentValues.second }) : placeholder;
+    const date = segmentValues.second !== null ? placeholder.set({ second: segmentValues.second }) : placeholder;
     const valueNow = date.second;
     const valueMin = 0;
     const valueMax = 59;
@@ -191,7 +208,8 @@ function dayPeriodSegmentAttrs(props: SegmentAttrProps) {
 
     const valueMin = 0;
     const valueMax = 12;
-    const valueNow = segmentValues.hour ? (segmentValues.hour > 12 ? segmentValues.hour - 12 : segmentValues.hour) : 0;
+    const valueNow =
+        segmentValues.hour != null ? (segmentValues.hour > 12 ? segmentValues.hour - 12 : segmentValues.hour) : 0;
     const valueText = segmentValues.dayPeriod ?? 'AM';
 
     return {
@@ -326,81 +344,64 @@ export function useDateField(props: UseDateFieldProps) {
         ];
     }
 
-    function updateDayOrMonth(max: number, num: number, prev: number | null) {
+    /**
+     * Shared two-digit entry state machine for the numeric segments (day, month, hour,
+     * minute, second). Types one digit into `prev`, deciding the new value and whether focus
+     * should advance to the next segment.
+     *
+     * @param emptyZero  what a leading `0` produces on an empty segment — `0` for time parts
+     *                   (midnight/`:00` are valid), `null` for day/month (no zeroth day/month).
+     * @param moveOnOverflow  also advance focus when the two-digit total exceeds `max`
+     *                        (day/month behavior; time parts only advance on `num > maxStart`).
+     */
+    function updateNumberSegment(
+        num: number,
+        prev: number | null,
+        max: number,
+        { emptyZero = true, moveOnOverflow = false }: { emptyZero?: boolean; moveOnOverflow?: boolean } = {}
+    ): { value: number | null; moveToNext: boolean } {
         let moveToNext = false;
         const maxStart = Math.floor(max / 10);
 
-        /**
-         * If the user has left the segment, we want to reset the
-         * `prev` value so that we can start the segment over again
-         * when the user types a number.
-         */
+        // If the user has left the segment, reset `prev` so typing restarts the segment.
         if (props.hasLeftFocus()) {
             props.hasLeftFocus.set(false);
             prev = null;
         }
 
         if (prev === null) {
-            /**
-             * If the user types a 0 as the first number, we want
-             * to keep track of that so that when they type the next
-             * number, we can move to the next segment.
-             */
-
+            // A leading 0 is tracked so the next digit can advance to the next segment.
             if (num === 0) {
                 props.lastKeyZero.set(true);
-                return { value: null, moveToNext };
+                return { value: emptyZero ? 0 : null, moveToNext };
             }
-            /**
-             * If the last key was a 0, or if the first number is
-             * greater than the max start digit (0-3 in most cases), then
-             * we want to move to the next segment, since it's not possible
-             * to continue typing a valid number in this segment.
-             */
-
+            // If the last key was 0, or the first digit can't start a valid two-digit number
+            // (> the max start digit), advance to the next segment.
             if (props.lastKeyZero() || num > maxStart) {
-                // move to next
                 moveToNext = true;
             }
             props.lastKeyZero.set(false);
-            /**
-             * If none of the above conditions are met, then we can just
-             * return the number as the segment value and continue typing
-             * in this segment.
-             */
             return { value: num, moveToNext };
         }
 
-        /**
-         * If the number of digits is 2, or if the total with the existing digit
-         * and the pressed digit is greater than the maximum value for this
-         * month, then we will reset the segment as if the user had pressed the
-         * backspace key and then typed the number.
-         */
+        // Either the segment already holds two digits, or appending this digit overflows `max`:
+        // reset the segment as if backspaced and then typed.
         const digits = prev.toString().length;
         const total = Number.parseInt(prev.toString() + num.toString());
-        /**
-         * If the number of digits is 2, or if the total with the existing digit
-         * and the pressed digit is greater than the maximum value for this
-         * month, then we will reset the segment as if the user had pressed the
-         * backspace key and then typed the number.
-         */
 
         if (digits === 2 || total > max) {
-            /**
-             * As we're doing elsewhere, we're checking if the number is greater
-             * than the max start digit (0-3 in most months), and if so, we're
-             * going to move to the next segment.
-             */
-            if (num > maxStart || total > max) {
-                // move to next
+            if (num > maxStart || (moveOnOverflow && total > max)) {
                 moveToNext = true;
             }
             return { value: num, moveToNext };
         }
-        // move to next
+
         moveToNext = true;
         return { value: total, moveToNext };
+    }
+
+    function updateDayOrMonth(max: number, num: number, prev: number | null) {
+        return updateNumberSegment(num, prev, max, { emptyZero: false, moveOnOverflow: true });
     }
 
     function updateYear(num: number, prev: number | null) {
@@ -429,163 +430,12 @@ export function useDateField(props: UseDateFieldProps) {
         return { value: int, moveToNext };
     }
 
-    function updateHour(num: number, prev: number | null) {
-        const max = 24;
-        let moveToNext = false;
-        const maxStart = Math.floor(max / 10);
-
-        /**
-         * If the user has left the segment, we want to reset the
-         * `prev` value so that we can start the segment over again
-         * when the user types a number.
-         */
-        // probably not implement, kind of weird
-        if (props.hasLeftFocus()) {
-            props.hasLeftFocus.set(false);
-            prev = null;
-        }
-
-        if (prev === null) {
-            /**
-             * If the user types a 0 as the first number, we want
-             * to keep track of that so that when they type the next
-             * number, we can move to the next segment.
-             */
-
-            if (num === 0) {
-                props.lastKeyZero.set(true);
-                return { value: 0, moveToNext };
-            }
-            /**
-             * If the last key was a 0, or if the first number is
-             * greater than the max start digit (0-3 in most cases), then
-             * we want to move to the next segment, since it's not possible
-             * to continue typing a valid number in this segment.
-             */
-
-            if (props.lastKeyZero() || num > maxStart) {
-                // move to next
-                moveToNext = true;
-            }
-            props.lastKeyZero.set(false);
-            /**
-             * If none of the above conditions are met, then we can just
-             * return the number as the segment value and continue typing
-             * in this segment.
-             */
-            return { value: num, moveToNext };
-        }
-
-        /**
-         * If the number of digits is 2, or if the total with the existing digit
-         * and the pressed digit is greater than the maximum value for this
-         * month, then we will reset the segment as if the user had pressed the
-         * backspace key and then typed the number.
-         */
-        const digits = prev.toString().length;
-        const total = Number.parseInt(prev.toString() + num.toString());
-
-        /**
-         * If the number of digits is 2, or if the total with the existing digit
-         * and the pressed digit is greater than the maximum value for this
-         * month, then we will reset the segment as if the user had pressed the
-         * backspace key and then typed the number.
-         */
-
-        if (digits === 2 || total > max) {
-            /**
-             * As we're doing elsewhere, we're checking if the number is greater
-             * than the max start digit (0-3 in most months), and if so, we're
-             * going to move to the next segment.
-             */
-            if (num > maxStart) {
-                // move to next
-                moveToNext = true;
-            }
-            return { value: num, moveToNext };
-        }
-        // move to next
-        moveToNext = true;
-        return { value: total, moveToNext };
+    function updateHour(num: number, prev: number | null, max: number) {
+        return updateNumberSegment(num, prev, max);
     }
 
     function updateMinuteOrSecond(num: number, prev: number | null) {
-        const max = 59;
-        let moveToNext = false;
-        const maxStart = Math.floor(max / 10);
-
-        /**
-         * If the user has left the segment, we want to reset the
-         * `prev` value so that we can start the segment over again
-         * when the user types a number.
-         */
-        if (props.hasLeftFocus()) {
-            props.hasLeftFocus.set(false);
-            prev = null;
-        }
-
-        if (prev === null) {
-            /**
-             * If the user types a 0 as the first number, we want
-             * to keep track of that so that when they type the next
-             * number, we can move to the next segment.
-             */
-
-            if (num === 0) {
-                props.lastKeyZero.set(true);
-                return { value: 0, moveToNext };
-            }
-            /**
-             * If the last key was a 0, or if the first number is
-             * greater than the max start digit (0-3 in most cases), then
-             * we want to move to the next segment, since it's not possible
-             * to continue typing a valid number in this segment.
-             */
-
-            if (props.lastKeyZero() || num > maxStart) {
-                // move to next
-                moveToNext = true;
-            }
-            props.lastKeyZero.set(false);
-            /**
-             * If none of the above conditions are met, then we can just
-             * return the number as the segment value and continue typing
-             * in this segment.
-             */
-            return { value: num, moveToNext };
-        }
-
-        /**
-         * If the number of digits is 2, or if the total with the existing digit
-         * and the pressed digit is greater than the maximum value for this
-         * month, then we will reset the segment as if the user had pressed the
-         * backspace key and then typed the number.
-         */
-        const digits = prev.toString().length;
-        const total = Number.parseInt(prev.toString() + num.toString());
-
-        /**
-         * If the number of digits is 2, or if the total with the existing digit
-         * and the pressed digit is greater than the maximum value for this
-         * month, then we will reset the segment as if the user had pressed the
-         * backspace key and then typed the number.
-         */
-
-        if (digits === 2 || total > max) {
-            /**
-             * As we're doing elsewhere, we're checking if the number is greater
-             * than the max start digit (0-3 in most months), and if so, we're
-             * going to move to the next segment.
-             */
-            if (num > maxStart) {
-                // move to next
-                moveToNext = true;
-            }
-            return { value: num, moveToNext };
-        }
-        // move to next
-        moveToNext = true;
-        return { value: total, moveToNext };
+        return updateNumberSegment(num, prev, 59);
     }
 
     function minuteSecondIncrementation({ e, part, dateRef, prevValue }: MinuteSecondIncrementProps): number {
@@ -744,9 +594,10 @@ export function useDateField(props: UseDateFieldProps) {
                 })
             }));
 
-            if ('dayPeriod' in props.segmentValues() && values.hour != null) {
-                if (values.hour < 12) props.segmentValues.update((prev) => ({ ...prev, dayPeriod: 'AM' }));
-                else if (values.hour) props.segmentValues.update((prev) => ({ ...prev, dayPeriod: 'PM' }));
+            // Keep the day period in sync with the (just-updated) 24-hour value.
+            const updatedHour = (props.segmentValues() as DateAndTimeSegmentObj).hour;
+            if ('dayPeriod' in props.segmentValues() && updatedHour != null) {
+                props.segmentValues.update((prev) => ({ ...prev, dayPeriod: dayPeriodForHour(updatedHour) }));
             }
 
             return;
@@ -754,14 +605,17 @@ export function useDateField(props: UseDateFieldProps) {
 
         if (isNumberString(e.key)) {
             const num = Number.parseInt(e.key);
-            const { value, moveToNext } = updateHour(num, prevValue);
+            const is12h = hourCycle === 12;
+            const period: 'AM' | 'PM' = (values.dayPeriod as 'AM' | 'PM') ?? 'AM';
 
-            if ('dayPeriod' in props.segmentValues() && value && value > 12)
-                props.segmentValues.update((prev) => ({ ...prev, dayPeriod: 'AM' }));
-            else if ('dayPeriod' in props.segmentValues() && value)
-                props.segmentValues.update((prev) => ({ ...prev, dayPeriod: 'PM' }));
+            // Run the two-digit entry machine in the user-visible clock space (1-12 in 12h
+            // mode, 0-23 otherwise), then store the canonical 24-hour value. The day period
+            // is owned by its own segment, so typing the hour must not flip it.
+            const prevDisplay = prevValue === null ? null : is12h ? to12Hour(prevValue) : prevValue;
+            const { value, moveToNext } = updateHour(num, prevDisplay, is12h ? 12 : 23);
+            const hour = value === null ? null : is12h ? to24Hour(value, period) : value;
 
-            props.segmentValues.update((prev) => ({ ...prev, hour: value }));
+            props.segmentValues.update((prev) => ({ ...prev, hour }));
 
             if (moveToNext) props.focusNext();
         }
@@ -867,26 +721,26 @@ export function useDateField(props: UseDateFieldProps) {
 
         const values = props.segmentValues() as DateAndTimeSegmentObj;
 
+        const setPeriod = (period: 'AM' | 'PM') => {
+            if (values.dayPeriod === period) return;
+            // Re-anchor the canonical 24-hour value to the new period without ever leaving
+            // range; keep it null while the hour segment is still empty.
+            const hour = values.hour == null ? null : to24Hour(to12Hour(values.hour), period);
+            props.segmentValues.update((prev) => ({ ...prev, dayPeriod: period, hour }));
+        };
+
         if (e.key === ARROW_UP || e.key === ARROW_DOWN) {
-            if (values.dayPeriod === 'AM') {
-                props.segmentValues.update((prev) => ({ ...prev, dayPeriod: 'PM' }));
-                props.segmentValues.update((prev) => ({ ...prev, hour: values.hour! + 12 }));
-                return;
-            }
-            props.segmentValues.update((prev) => ({ ...prev, dayPeriod: 'AM' }));
-            props.segmentValues.update((prev) => ({ ...prev, hour: values.hour! - 12 }));
+            setPeriod(values.dayPeriod === 'AM' ? 'PM' : 'AM');
             return;
         }
 
-        if (['a', 'A'].includes(e.key) && values.dayPeriod !== 'AM') {
-            props.segmentValues.update((prev) => ({ ...prev, dayPeriod: 'AM' }));
-            props.segmentValues.update((prev) => ({ ...prev, hour: values.hour! - 12 }));
+        if (['a', 'A'].includes(e.key)) {
+            setPeriod('AM');
             return;
         }
 
-        if (['p', 'P'].includes(e.key) && values.dayPeriod !== 'PM') {
-            props.segmentValues.update((prev) => ({ ...prev, dayPeriod: 'PM' }));
-            props.segmentValues.update((prev) => ({ ...prev, hour: values.hour! + 12 }));
+        if (['p', 'P'].includes(e.key)) {
+            setPeriod('PM');
         }
     }
 

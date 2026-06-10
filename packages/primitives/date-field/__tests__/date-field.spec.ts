@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { CalendarDate, CalendarDateTime, DateValue } from '@internationalized/date';
 import { Granularity } from '@radix-ng/primitives/core';
 import { RdxDateFieldInputDirective } from '../src/date-field-input.directive';
@@ -7,7 +8,13 @@ import { RdxDateFieldRootDirective } from '../src/date-field-root.directive';
 
 @Component({
     template: `
-        <div #root="rdxDateFieldRoot" [granularity]="granularity()" [value]="value()" rdxDateFieldRoot>
+        <div
+            #root="rdxDateFieldRoot"
+            [granularity]="granularity()"
+            [locale]="locale()"
+            [value]="value()"
+            rdxDateFieldRoot
+        >
             @for (item of root.segmentContents(); track $index) {
                 <div [part]="item.part" rdxDateFieldInput>{{ item.value }}</div>
             }
@@ -17,7 +24,12 @@ import { RdxDateFieldRootDirective } from '../src/date-field-root.directive';
 })
 class DateFieldHost {
     readonly granularity = signal<Granularity | undefined>(undefined);
+    readonly locale = signal<string>('en');
     readonly value = signal<DateValue | undefined>(undefined);
+}
+
+function rootDirective(fixture: ComponentFixture<DateFieldHost>): RdxDateFieldRootDirective {
+    return fixture.debugElement.query(By.directive(RdxDateFieldRootDirective)).injector.get(RdxDateFieldRootDirective);
 }
 
 function arrowKey(code: 'ArrowLeft' | 'ArrowRight'): KeyboardEvent {
@@ -85,5 +97,16 @@ describe('Date Field', () => {
         hour.focus();
         hour.dispatchEvent(arrowKey('ArrowRight'));
         expect(document.activeElement).toBe(minute);
+    });
+
+    it('re-seeds the placeholder calendar when the locale selects a non-Gregorian calendar', () => {
+        const root = rootDirective(fixture);
+        expect(root.placeholder()?.calendar.identifier).toBe('gregory');
+
+        host.locale.set('en-US-u-ca-buddhist');
+        fixture.detectChanges();
+
+        // an empty field must follow the locale's calendar system, not stay Gregorian
+        expect(root.placeholder()?.calendar.identifier).toBe('buddhist');
     });
 });

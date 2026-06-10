@@ -11,7 +11,15 @@ import {
     model
 } from '@angular/core';
 import { DateValue, isEqualDay, isSameDay, startOfWeek, startOfYear } from '@internationalized/date';
-import { BooleanInput, DateMatcher, Formatter, getDefaultDate, Month, watch } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    DateMatcher,
+    Formatter,
+    getDefaultDate,
+    isNullish,
+    Month,
+    watch
+} from '@radix-ng/primitives/core';
 import { calendar, calendarState } from './calendar';
 import { CALENDAR_ROOT_CONTEXT } from './calendar-context.token';
 
@@ -290,6 +298,19 @@ export class RdxCalendarRootDirective {
                 }
             } else if (!Array.isArray(_modelValue) && _modelValue && !isEqualDay(this.placeholder(), _modelValue)) {
                 this.onPlaceholderChange(_modelValue);
+            }
+        });
+
+        // The placeholder is seeded once at construction, before `locale` binds. When the locale
+        // selects a different calendar system and no date is selected yet, re-seed it so the grid
+        // renders in that calendar.
+        watch([this.locale], () => {
+            const value = this.value();
+            const hasValue = Array.isArray(value) ? value.length > 0 : !isNullish(value);
+            if (hasValue) return;
+            const next = this.defaultDate();
+            if (this.placeholder()?.calendar.identifier !== next.calendar.identifier) {
+                this.onPlaceholderChange(next);
             }
         });
     }

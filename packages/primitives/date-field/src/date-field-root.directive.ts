@@ -276,6 +276,17 @@ export class RdxDateFieldRootDirective {
                 this.placeholder.set(modelValue.copy());
             }
         });
+
+        // The placeholder is seeded once at construction, before `locale` binds. When the locale
+        // selects a different calendar system (e.g. Buddhist, Japanese) and the field is still
+        // empty, re-seed it so segments and `getDaysInMonth` use that calendar.
+        watch([this.locale], () => {
+            if (!isNullish(this.value())) return;
+            const next = this.defaultDate();
+            if (this.placeholder()?.calendar.identifier !== next.calendar.identifier) {
+                this.placeholder.set(next.copy());
+            }
+        });
     }
 
     /**

@@ -1,6 +1,6 @@
 import { InputSignal } from '@angular/core';
 import { DateFields, DateValue } from '@internationalized/date';
-import { Granularity, isZonedDateTime, toDate } from './comparators';
+import { Granularity, isZonedDateTime, TIME_GRANULARITIES, toDate } from './comparators';
 import { Formatter } from './formatter';
 import {
     DATE_SEGMENT_PARTS,
@@ -12,8 +12,6 @@ import {
 import { getPlaceholder } from './placeholders';
 import { DateSegmentPart, HourCycle, SegmentContentObj, SegmentPart, SegmentValueObj, TimeSegmentPart } from './types';
 import { getOptsByGranularity, normalizeHourCycle } from './utils';
-
-const calendarDateTimeGranularities = ['hour', 'minute', 'second'];
 
 type SyncDateSegmentValuesProps = {
     value: DateValue;
@@ -34,16 +32,19 @@ export function syncTimeSegmentValues(props: SyncTimeSegmentValuesProps) {
     ) as SegmentValueObj;
 }
 
-export function initializeSegmentValues(granularity: Granularity): SegmentValueObj {
+export function initializeSegmentValues(granularity: Granularity, isTimeValue = false): SegmentValueObj {
     const initialParts = EDITABLE_SEGMENT_PARTS.map((part) => {
         if (part === 'dayPeriod') return [part, 'AM'];
 
         return [part, null];
     }).filter(([key]) => {
         if (key === 'literal' || key === null) return false;
+        // A time-only field has no date segments, so they must not be seeded — otherwise they
+        // stay null forever and block committing the value (every segment must be filled).
+        if (isTimeValue && isDateSegmentPart(key)) return false;
         if (granularity === 'minute' && key === 'second') return false;
         if (granularity === 'hour' && (key === 'second' || key === 'minute')) return false;
-        if (granularity === 'day') return !calendarDateTimeGranularities.includes(key) && key !== 'dayPeriod';
+        if (granularity === 'day') return !TIME_GRANULARITIES.includes(key as Granularity) && key !== 'dayPeriod';
         else return true;
     });
 

@@ -9,7 +9,7 @@ import {
     Signal,
     signal
 } from '@angular/core';
-import { DateValue, getLocalTimeZone, isEqualDay, toCalendarDateTime, today } from '@internationalized/date';
+import { DateValue, getLocalTimeZone, isEqualDay, Time, toCalendarDateTime, today } from '@internationalized/date';
 import {
     ARROW_LEFT,
     ARROW_RIGHT,
@@ -43,6 +43,24 @@ function convertValue(value: TimeValue, date: DateValue = today(getLocalTimeZone
     }
 
     return toCalendarDateTime(date, value);
+}
+
+/**
+ * Map the internal edit buffer (`convertedModelValue`, always a date-bearing value
+ * so the segment editor has a date context) back onto the public `value` model.
+ * A date-bearing model keeps its shape; a time-only model is exposed as a plain `Time`.
+ */
+function toModelValue(value: TimeValue, current: TimeValue | undefined): TimeValue {
+    if (current && 'day' in current) {
+        return value;
+    }
+
+    return new Time(value.hour, value.minute, value.second, value.millisecond);
+}
+
+function isSameTimeValue(a: TimeValue | undefined, b: TimeValue | undefined): boolean {
+    if (isNullish(a) || isNullish(b)) return a === b;
+    return (a as { compare(other: TimeValue): number }).compare(b) === 0;
 }
 
 @Directive({
@@ -211,7 +229,7 @@ export class RdxTimeFieldRootDirective {
         computation: ({ value, granularity, formatter }) =>
             value
                 ? { ...syncSegmentValues({ value: <DateValue>value, formatter }) }
-                : { ...initializeSegmentValues(granularity) }
+                : { ...initializeSegmentValues(granularity, true) }
     });
 
     /**
@@ -306,6 +324,15 @@ export class RdxTimeFieldRootDirective {
                     this.convertedPlaceholder().compare(value) !== 0)
             )
                 this.placeholder.set(value.copy());
+
+            // Segment editing (via `useDateField`) writes the internal `convertedModelValue`
+            // buffer; mirror it back onto the public `value` model so two-way binding and
+            // `valueChange` fire. The guard keeps this idempotent and breaks the feedback loop
+            // (`value` → `convertedModelValue` source → here) once the values agree.
+            const next = isNullish(value) ? undefined : toModelValue(value, this.value());
+            if (!isSameTimeValue(this.value(), next)) {
+                this.value.set(next);
+            }
         });
     }
 

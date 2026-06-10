@@ -178,6 +178,13 @@ export type TimeValue = Time | CalendarDateTime | ZonedDateTime;
 export type Granularity = 'day' | 'hour' | 'minute' | 'second';
 export type TimeGranularity = 'hour' | 'minute' | 'second';
 
+/**
+ * The granularities that require a time component (and therefore a `CalendarDateTime`
+ * rather than a `CalendarDate`). Single source of truth — used by both the default-date
+ * builder and the segment-value initializer.
+ */
+export const TIME_GRANULARITIES: readonly Granularity[] = ['hour', 'minute', 'second'];
+
 type GetDefaultDateProps = {
     defaultValue?: DateValue | DateValue[] | undefined;
     defaultPlaceholder?: DateValue | undefined;
@@ -198,9 +205,14 @@ type GetDefaultDateProps = {
 export function getDefaultDate(props: GetDefaultDateProps): DateValue {
     const { defaultValue, defaultPlaceholder, granularity = 'day', locale = 'en' } = props;
 
-    if (Array.isArray(defaultValue) && defaultValue.length) return defaultValue[defaultValue.length - 1].copy();
-
-    if (defaultValue && !Array.isArray(defaultValue)) return defaultValue.copy();
+    if (Array.isArray(defaultValue)) {
+        // Multiple-selection calendars pass an array. The view follows the most recently
+        // selected date — consistent with calendar-root's value→placeholder sync. An empty
+        // array means "no selection", so fall through to the placeholder / today.
+        if (defaultValue.length) return defaultValue[defaultValue.length - 1].copy();
+    } else if (defaultValue) {
+        return defaultValue.copy();
+    }
 
     if (defaultPlaceholder) return defaultPlaceholder.copy();
 
@@ -208,12 +220,11 @@ export function getDefaultDate(props: GetDefaultDateProps): DateValue {
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const day = date.getDate();
-    const calendarDateTimeGranularities = ['hour', 'minute', 'second'];
 
     const defaultFormatter = new DateFormatter(locale);
     const calendar = createCalendar(defaultFormatter.resolvedOptions().calendar as CalendarIdentifier);
 
-    if (calendarDateTimeGranularities.includes(granularity ?? 'day'))
+    if (TIME_GRANULARITIES.includes(granularity ?? 'day'))
         return toCalendar(new CalendarDateTime(year, month, day, 0, 0, 0), calendar);
 
     return toCalendar(new CalendarDate(year, month, day), calendar);

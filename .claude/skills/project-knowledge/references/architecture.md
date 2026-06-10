@@ -56,6 +56,17 @@ These are the headless infrastructure layers that complex primitives compose:
 - **`popper`** — floating-ui wrapper for positioned overlays
 - **`dismissable-layer`** — outside-dismiss via Escape / pointer-down-outside / focus-outside. Focus-outside check is async (two microtasks); register external triggers as branches via `rdxDismissableLayerBranch` to prevent premature dismissal
 
+## Date-time fields (`core/date-time`)
+
+`useDateField` is the shared segment-editing engine behind **date-field**, **time-field**, and **calendar** (with `parser`, `formatter`, `comparators`, `placeholders` wrapping `@internationalized/date`). Invariants worth preserving — each underpins a fixed bug, so don't regress them:
+
+- **Commit rule:** a value is committed only when **every** entry in `segmentValues` is non-null. A time-only field therefore must initialize without date parts — `initializeSegmentValues(granularity, /* isTimeValue */ true)` — otherwise `day`/`month`/`year` stay null and the field never commits.
+- **Hour is canonical 24-hour.** `segmentValues.hour` is always 0–23. 12-hour display/typing converts via `to12Hour` / `to24Hour`; the day period is derived with `dayPeriodForHour`. The `dayPeriod` segment owns AM/PM — typing the hour must not flip it. `updateHour` takes an hour-cycle-aware `max` (12 or 23).
+- **Numeric segment entry** (day/month/hour/minute/second) is one helper, `updateNumberSegment(num, prev, max, { emptyZero, moveOnOverflow })`; `updateYear` is separate (4-digit). Keep them unified — they previously drifted.
+- **time-field write-back:** time-field edits land in an internal `convertedModelValue` (always a `CalendarDateTime`, so the editor has a date context). It must be mirrored back to the public `value` model (converting to `Time` for time-only models) — **writing a `linkedSignal` does not propagate to its source**, so the mirror is an explicit, guarded `watch`.
+- **Placeholder vs locale:** the placeholder is seeded once at construction, before `locale` binds. date-field/calendar re-seed it on locale change (comparing calendar `identifier`) while the field is empty, so non-Gregorian calendars (Buddhist/Japanese) render correctly.
+- **Single sources of truth:** `TIME_GRANULARITIES` (in `comparators.ts`) for which granularities carry time; `DateFormatter` instances are cached in `formatter.ts` (never construct `Intl.DateTimeFormat` per call in the per-keystroke formatting path).
+
 ## DI context pattern
 
 Every primitive family exposes state via `createContext` from `@radix-ng/primitives/core`. The root directive provides context; children inject it. Optionality: `injectFooContext()` throws if absent; `injectFooContext(true)` returns null.
