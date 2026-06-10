@@ -41,7 +41,7 @@ headless — state is exposed through `data-*` attributes and the consumer provi
 - ✅ `closeOnClick` per item — defaults to `true` for regular items, `false` for checkbox, radio, and link items.
 - ✅ Checkbox items toggle state independently; radio groups enforce single selection.
 - ✅ Grouped items with optional group labels and visual separators.
-- ✅ Nested submenus via `rdxMenuSubTrigger` — opens on hover (200 ms delay), click, or ArrowRight; closes on ArrowLeft.
+- ✅ Nested submenus via `rdxMenuSubTrigger` — opens on hover (100 ms delay) with safe-polygon traversal, click, or ArrowRight; closes on ArrowLeft.
 - ✅ CSS transition lifecycle via `data-starting-style` / `data-ending-style` and `(onOpenChangeComplete)`.
 - ✅ All collision, side, and alignment metadata exposed via `data-side` / `data-align`.
 - ✅ `data-highlighted` on the focused item and `data-disabled` on disabled items.
@@ -183,10 +183,19 @@ Disabled items are skipped by keyboard navigation and styled via `data-disabled`
 ### Nested submenus
 
 Wrap a `rdxMenuSubTrigger` and its popup inside a nested `ng-container rdxMenuRoot`. The subtrigger
-opens the submenu on hover (200 ms delay), click, or ArrowRight; ArrowLeft closes it and returns
+opens the submenu on hover (100 ms `delay`), click, or ArrowRight; ArrowLeft closes it and returns
 focus to the subtrigger.
 
+When opened by hover, the submenu keeps a **safe polygon** between the trigger and the popup: you can
+move the pointer diagonally toward the submenu — even across a sibling subtrigger in between — without
+it closing or switching. Moving the pointer away from that area closes the submenu (use `closeDelay`
+to add a grace period).
+
+![Submenu safe polygon — a triangular safe zone spans from the pointer to the popup, so the pointer can cut diagonally across the sibling row below without closing the submenu.](/menu-safe-polygon.svg)
+
 <Canvas of={Stories.Nested} />
+
+<Canvas of={Stories.NestedRtl} />
 
 ### Arrow
 

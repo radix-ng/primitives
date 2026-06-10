@@ -12,6 +12,8 @@ import backdropSource from './menu-backdrop?raw';
 import { RdxMenuDefaultComponent } from './menu-default';
 import defaultSource from './menu-default?raw';
 import { RdxMenuNestedComponent } from './menu-nested';
+import { RdxMenuNestedRtlComponent } from './menu-nested-rtl';
+import nestedRtlSource from './menu-nested-rtl?raw';
 import nestedSource from './menu-nested?raw';
 import { RdxMenuViewportExampleComponent } from './menu-viewport';
 import viewportSource from './menu-viewport?raw';
@@ -31,6 +33,7 @@ export default {
             imports: [
                 RdxMenuDefaultComponent,
                 RdxMenuNestedComponent,
+                RdxMenuNestedRtlComponent,
                 RdxMenuArrowExampleComponent,
                 RdxMenuBackdropExampleComponent,
                 RdxMenuAnimatedComponent,
@@ -84,6 +87,15 @@ export const Nested: Story = {
     render: () => ({
         template: html`
             <rdx-menu-nested />
+        `
+    })
+};
+
+export const NestedRtl: Story = {
+    parameters: source(nestedRtlSource),
+    render: () => ({
+        template: html`
+            <rdx-menu-nested-rtl />
         `
     })
 };
