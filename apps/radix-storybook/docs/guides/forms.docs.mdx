@@ -1,0 +1,233 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Guides/Forms" />
+
+# Forms
+
+How Radix NG form controls integrate with Angular's form systems.
+
+Radix NG controls are **form-agnostic**. They do not ship a validation engine, a schema layer, or a
+submit lifecycle — Angular already owns those. A control's only job is to edit a value and expose its
+state; you wire that value into Reactive Forms, template-driven forms, or Signal Forms exactly as you
+would for any Angular control.
+
+This keeps the same control usable across every Angular form API, and means the integration code you
+write today carries forward as you adopt newer form systems. See [Why this is
+forward-compatible](#why-this-is-forward-compatible) for how that holds up against Signal Forms.
+
+## Two layers
+
+Form support in Radix NG is split into two independent layers. You can use either on its own, but they
+are designed to compose.
+
+1. **The control** — owns the value. Every form control exposes its value as a signal `model()`
+   (`value` for value controls, `checked` for toggles) and, where it is not a native element,
+   implements `ControlValueAccessor` so `formControl` / `ngModel` work. This is the value I/O layer.
+2. **[`Field`](?path=/docs/primitives-field--docs)** — owns presentation and accessibility. It wires a
+   label, description, and error message to the control with `for` / `id` / `aria-describedby`, and
+   reflects field state through `data-*` attributes. `Field` does **not** read or own validation; you
+   pass state into it from your form model.
+
+A control works without `Field`, and `Field` works with any control (including native and custom
+ones). Reach for `Field` when a control needs a label, description, error text, or shared
+invalid / disabled / required state.
+
+## Control reference
+
+Every control exposes its value as a signal `model()`, so two-way binding (`[(value)]` /
+`[(checked)]`) works everywhere. Controls that additionally integrate with **Reactive Forms and
+template-driven forms** do so through `ControlValueAccessor` (`formControl`, `formControlName`,
+`ngModel`).
+
+| Control                                                   | Model signal                   | Reactive & template-driven forms   |
+| --------------------------------------------------------- | ------------------------------ | ---------------------------------- |
+| [Input](?path=/docs/primitives-input--docs)               | `value`                        | ✅ native (`DefaultValueAccessor`) |
+| [Checkbox](?path=/docs/primitives-checkbox--docs)         | `checked` (+ `indeterminate`)  | ✅                                 |
+| [Switch](?path=/docs/primitives-switch--docs)             | `checked`                      | ✅                                 |
+| [Radio Group](?path=/docs/primitives-radio--docs)         | `value`                        | ✅                                 |
+| [Slider](?path=/docs/primitives-slider--docs)             | `value` (`number \| number[]`) | ✅                                 |
+| [Number Field](?path=/docs/primitives-number-field--docs) | `value`                        | ✅                                 |
+| [Toggle Group](?path=/docs/primitives-toggle-group--docs) | `value`                        | ✅                                 |
+| [Select](?path=/docs/primitives-select--docs)             | `value`                        | Two-way binding (`[(value)]`)      |
+| [Date Field](?path=/docs/primitives-date-field--docs)     | `value`                        | Two-way binding                    |
+| [Time Field](?path=/docs/primitives-time-field--docs)     | `value`                        | Two-way binding                    |
+| [Editable](?path=/docs/primitives-editable--docs)         | `value`                        | Two-way binding                    |
+
+## Reactive Forms
+
+Bind a control with `formControl` or `formControlName`. Native inputs work through Angular's built-in
+`DefaultValueAccessor`; custom controls (Checkbox, Switch, Radio, Slider, Number Field, Toggle Group)
+provide their own `ControlValueAccessor`, so the binding is identical:
+
+```ts
+@Component({
+  imports: [ReactiveFormsModule, RdxInputDirective, RdxSwitchRoot /* … */],
+  template: `
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <input rdxInput formControlName="email" type="email" />
+
+      <button rdxSwitchRoot formControlName="newsletter">
+        <span rdxSwitchThumb></span>
+      </button>
+    </form>
+  `
+})
+export class SignupForm {
+  private readonly fb = inject(FormBuilder);
+
+  readonly form = this.fb.group({
+    email: this.fb.control('', [Validators.required, Validators.email]),
+    newsletter: this.fb.control(false)
+  });
+
+  submit(): void {
+    this.form.markAllAsTouched();
+  }
+}
+```
+
+Angular owns validation and submission. To surface the resulting state to the user, wrap the control
+in a `Field` (next section).
+
+## Template-driven Forms
+
+Use `[(ngModel)]` with `FormsModule`. The same controls that support Reactive Forms support
+template-driven forms — they share the `ControlValueAccessor` mechanism:
+
+```ts
+@Component({
+  imports: [FormsModule, RdxInputDirective],
+  template: `
+    <input [(ngModel)]="email" rdxInput name="email" required />
+  `
+})
+export class Example {
+  email = '';
+}
+```
+
+Controls without a `ControlValueAccessor` (Select, Date Field, Time Field, Editable) are not bound with
+`ngModel` / `formControl`; use two-way binding on their `value` model instead:
+
+```html
+<button rdxSelectTrigger [(value)]="country">…</button>
+```
+
+## Surfacing state with Field
+
+`Field` reflects form state as `data-*` attributes for styling and wires accessibility relationships.
+Because it is form-agnostic, you map state from your form model onto its inputs explicitly:
+
+```html
+<div
+  rdxFieldRoot
+  required
+  [invalid]="email.invalid && (email.touched || submitted())"
+  [dirty]="email.dirty"
+  [touched]="email.touched"
+  [disabled]="email.disabled"
+>
+  <label rdxFieldLabel>Email</label>
+  <input rdxFieldControl type="email" formControlName="email" />
+  <p rdxFieldDescription>Use the email connected to your account.</p>
+  <p rdxFieldError>@if (email.hasError('required')) { Email is required. } @else { Enter a valid email address. }</p>
+</div>
+```
+
+`Field` inputs and the attributes they project:
+
+| Input                | Attribute       | Meaning                                      |
+| -------------------- | --------------- | -------------------------------------------- |
+| `invalid`            | `data-invalid`  | Control failed validation (you decide when). |
+| `disabled`           | `data-disabled` | Control is disabled.                         |
+| `required`           | `data-required` | Control is required.                         |
+| `dirty`              | `data-dirty`    | Value changed from its initial value.        |
+| `touched`            | `data-touched`  | Control was blurred after focus.             |
+| `filled` (override)  | `data-filled`   | Control has a non-empty value.               |
+| `focused` (override) | `data-focused`  | Control is focused.                          |
+
+`filled` and `focused` are derived automatically for native controls. Override them only when a custom
+control's DOM events are not enough for `Field` to infer the state.
+
+`rdxFieldControl` keeps the ARIA wiring (`id`, `aria-describedby`, `aria-invalid`) regardless of which
+form API drives the value, so the accessibility layer is the same across all of them.
+
+## Custom controls
+
+A custom control plugs into Reactive / template-driven forms by composing `RdxControlValueAccessor`
+from `@radix-ng/primitives/core` as a host directive — the same helper Checkbox, Switch, Slider, and
+Number Field use:
+
+```ts
+import { RdxControlValueAccessor } from '@radix-ng/primitives/core';
+
+@Component({
+  selector: 'my-control',
+  hostDirectives: [{ directive: RdxControlValueAccessor, inputs: ['value'] }]
+})
+export class MyControl {
+  private readonly cva = inject(RdxControlValueAccessor);
+  // read this.cva.value(), call this.cva.writeValue(...) on user interaction
+}
+```
+
+If the control wraps a native form element, you usually don't need this — Angular's built-in value
+accessors already handle it, as `rdxInput` relies on.
+
+## Signal Forms
+
+> ⚠️ **Experimental.** [Signal
+> Forms](https://angular.dev/guide/forms/signals/overview) (`@angular/forms/signals`) is experimental
+> in Angular 21 and targeted to stabilize in Angular 22. Radix NG does not yet ship a Signal Forms
+> story or adapter, and the exact directive / property names below will be confirmed against the stable
+> API. This section describes the intended shape so you can see how today's code carries over.
+
+Signal Forms is a **parallel** mechanism to `ControlValueAccessor`, not a replacement. A control can
+satisfy both at once, so adopting Signal Forms is additive — Reactive and template-driven forms keep
+working unchanged.
+
+Radix NG controls already expose the structural contract Signal Forms binds to:
+
+- **`FormValueControl<T>`** — a `value = model<T>()` member (Input, Radio, Select, Slider, Number /
+  Date / Time Field, Editable, Toggle Group).
+- **`FormCheckboxControl`** — a `checked = model<boolean>()` member, with no `value` member (Checkbox,
+  Switch).
+
+Checkbox, Input, Number Field, Radio, and Switch already declare these interfaces today; the remaining
+value controls expose the required `value` model and are contract-ready. That means when Signal Forms
+lands, you bind the control directly — the control itself needs no change:
+
+```html
+<input rdxInput [field]="form.email" />
+```
+
+And `Field` keeps the same role: you map Signal Forms field state onto the same `rdxFieldRoot` inputs.
+
+```html
+<div rdxFieldRoot [invalid]="!email().valid()" [touched]="email().touched()" [disabled]="email().disabled()">
+  <label rdxFieldLabel>Email</label>
+  <input rdxFieldControl [field]="form.email" />
+  <p rdxFieldError>Email is required.</p>
+</div>
+```
+
+If this state-mapping repeats across a codebase, Radix NG may add an optional, tree-shakeable
+`[rdxSignalField]` adapter directive that reads Signal Forms state and mirrors it onto `Field` — without
+owning the model, running validation, or wrapping `[field]`. See ADR 0004 for the boundaries of that
+adapter.
+
+## Why this is forward-compatible
+
+The two-layer split is what keeps your form code stable as Angular's form APIs evolve:
+
+- **The control's value contract does not change.** `value` / `checked` signal `model()`s are the same
+  members Signal Forms binds to, so existing controls are already contract-ready.
+- **`ControlValueAccessor` stays.** Signal Forms is parallel to it; Reactive and template-driven forms
+  remain first-class, and a single control can serve both.
+- **`Field` stays form-agnostic.** It maps state via inputs onto `data-*` regardless of which form
+  system produced that state, so the presentation and accessibility layer is untouched by a migration.
+
+In practice, moving a form to Signal Forms changes only the **binding expression** on the control
+(`formControlName="email"` → `[field]="form.email"`) and the **source** of the state you pass into
+`Field` (a `FormControl` → a Signal Forms field). The control inventory, the `Field` anatomy, the
+`data-*` styling contract, and your accessibility wiring all carry over unchanged.

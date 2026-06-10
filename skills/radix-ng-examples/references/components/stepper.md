@@ -124,3 +124,13 @@ The step item component.
 ```html
 <StepperNavigation />
 ```
+
+## Accessibility
+
+### Keyboard Interactions
+
+| Key | Description |
+| --- | ----------- |
+| `Enter` / `Space` | Activates the focused step trigger, setting it as the current step. |
+| `ArrowRight` / `ArrowDown` | Moves focus to the next step trigger (respects orientation). |
+| `ArrowLeft` / `ArrowUp` | Moves focus to the previous step trigger (respects orientation). |

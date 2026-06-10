@@ -44,43 +44,43 @@ a standard `rdxMenuTrigger` opens a Menu popup. Keep the top-level popup mounted
 
 ```html
 <div rdxMenubarRoot>
-    <!-- File -->
-    <ng-container #fileMenu="rdxMenuRoot" rdxMenuRoot>
-        <button rdxMenuTrigger>File</button>
+  <!-- File -->
+  <ng-container #fileMenu="rdxMenuRoot" rdxMenuRoot>
+    <button rdxMenuTrigger>File</button>
 
-        <div class="data-[closed]:hidden" align="start" sideOffset="4" rdxMenuPositioner>
+    <div class="data-[closed]:hidden" align="start" sideOffset="4" rdxMenuPositioner>
+      <div rdxMenuPopup>
+        <button rdxMenuItem>New Tab</button>
+        <div rdxMenuSeparator></div>
+
+        <!-- submenu -->
+        <ng-container #shareSub="rdxMenuRoot" rdxMenuRoot>
+          <button rdxMenuSubTrigger>Share ›</button>
+          @if (shareSub.open()) {
+          <div side="right" align="start" rdxMenuPositioner>
             <div rdxMenuPopup>
-                <button rdxMenuItem>New Tab</button>
-                <div rdxMenuSeparator></div>
-
-                <!-- submenu -->
-                <ng-container #shareSub="rdxMenuRoot" rdxMenuRoot>
-                    <button rdxMenuSubTrigger>Share ›</button>
-                    @if (shareSub.open()) {
-                        <div side="right" align="start" rdxMenuPositioner>
-                            <div rdxMenuPopup>
-                                <button rdxMenuItem>Email Link</button>
-                            </div>
-                        </div>
-                    }
-                </ng-container>
-
-                <button rdxMenuItem>Print…</button>
+              <button rdxMenuItem>Email Link</button>
             </div>
-        </div>
-    </ng-container>
+          </div>
+          }
+        </ng-container>
 
-    <!-- Edit -->
-    <ng-container #editMenu="rdxMenuRoot" rdxMenuRoot>
-        <button rdxMenuTrigger>Edit</button>
+        <button rdxMenuItem>Print…</button>
+      </div>
+    </div>
+  </ng-container>
 
-        <div class="data-[closed]:hidden" align="start" sideOffset="4" rdxMenuPositioner>
-            <div rdxMenuPopup>
-                <button rdxMenuItem>Undo</button>
-                <button rdxMenuItem>Redo</button>
-            </div>
-        </div>
-    </ng-container>
+  <!-- Edit -->
+  <ng-container #editMenu="rdxMenuRoot" rdxMenuRoot>
+    <button rdxMenuTrigger>Edit</button>
+
+    <div class="data-[closed]:hidden" align="start" sideOffset="4" rdxMenuPositioner>
+      <div rdxMenuPopup>
+        <button rdxMenuItem>Undo</button>
+        <button rdxMenuItem>Redo</button>
+      </div>
+    </div>
+  </ng-container>
 </div>
 ```
 
@@ -93,18 +93,20 @@ Click a trigger to open it, then hover the other triggers to switch, or use the 
 
 <Canvas of={Stories.Default} />
 
-## Keyboard interactions
+## Accessibility
 
-| Key                                 | Behavior                                                            |
-| ----------------------------------- | ------------------------------------------------------------------ |
-| <kbd>ArrowDown</kbd>                | Opens the focused trigger's menu and moves focus to the first item. |
-| <kbd>ArrowUp</kbd>                  | Opens the focused trigger's menu and moves focus to the last item.  |
-| <kbd>ArrowRight</kbd>              | Moves to the next trigger. Opens it if a menu was already open.     |
-| <kbd>ArrowLeft</kbd>               | Moves to the previous trigger. Opens it if a menu was already open. |
-| <kbd>Home</kbd>                     | Moves to the first trigger.                                         |
-| <kbd>End</kbd>                      | Moves to the last trigger.                                          |
-| <kbd>Escape</kbd>                   | Closes the open menu and returns focus to its trigger.             |
-| <kbd>Enter</kbd> / <kbd>Space</kbd> | Activates the focused item (handled by the Menu primitive).        |
+### Keyboard Interactions
+
+| Key               | Description                                                         |
+| ----------------- | ------------------------------------------------------------------- |
+| `ArrowDown`       | Opens the focused trigger's menu and moves focus to the first item. |
+| `ArrowUp`         | Opens the focused trigger's menu and moves focus to the last item.  |
+| `ArrowRight`      | Moves to the next trigger. Opens it if a menu was already open.     |
+| `ArrowLeft`       | Moves to the previous trigger. Opens it if a menu was already open. |
+| `Home`            | Moves to the first trigger.                                         |
+| `End`             | Moves to the last trigger.                                          |
+| `Escape`          | Closes the open menu and returns focus to its trigger.              |
+| `Enter` / `Space` | Activates the focused item (handled by the Menu primitive).         |
 
 Triggers move with a roving tabindex: only one trigger is in the tab order at a time, and
 arrow keys move focus between them without leaving the menubar. Disabled triggers are skipped.

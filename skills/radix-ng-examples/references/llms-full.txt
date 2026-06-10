@@ -473,15 +473,17 @@ export class AccordionKeepMountedExample {
 }
 ```
 
-## Keyboard interactions
+## Accessibility
 
-| Key                        | Description                                                                          |
-| -------------------------- | ----------------------------------------------------------------------------------- |
-| `Space` / `Enter`          | Toggles the focused item (in single non-collapsible mode an open item stays open).   |
-| `ArrowDown` / `ArrowRight` | Moves focus to the next trigger, wrapping to the first when `loopFocus` is enabled.  |
+### Keyboard Interactions
+
+| Key                        | Description                                                                            |
+| -------------------------- | -------------------------------------------------------------------------------------- |
+| `Space` / `Enter`          | Toggles the focused item (in single non-collapsible mode an open item stays open).     |
+| `ArrowDown` / `ArrowRight` | Moves focus to the next trigger, wrapping to the first when `loopFocus` is enabled.    |
 | `ArrowUp` / `ArrowLeft`    | Moves focus to the previous trigger, wrapping to the last when `loopFocus` is enabled. |
-| `Home`                     | Moves focus to the first trigger.                                                    |
-| `End`                      | Moves focus to the last trigger.                                                     |
+| `Home`                     | Moves focus to the first trigger.                                                      |
+| `End`                      | Moves focus to the last trigger.                                                       |
 
 Arrow keys follow `orientation`: Up/Down for vertical accordions, Left/Right for horizontal ones.
 
@@ -489,13 +491,13 @@ Arrow keys follow `orientation`: Up/Down for vertical accordions, Left/Right for
 
 State is exposed through `data-*` attributes for styling:
 
-| Attribute         | Parts                          | Values                                                       |
-| ----------------- | ------------------------------ | ----------------------------------------------------------- |
-| `data-state`      | item, header, trigger, content | `"open"` \| `"closed"`                                       |
-| `data-disabled`   | root, item, header, content    | Present when disabled                                        |
-| `data-orientation`| root, item, header, trigger, content | `"horizontal"` \| `"vertical"`                        |
-| `data-index`      | item, header, trigger, content | Zero-based position of the item                              |
-| `data-panel-open` | trigger                        | Present while the trigger's panel is open (e.g. rotate a chevron) |
+| Attribute          | Parts                                | Values                                                            |
+| ------------------ | ------------------------------------ | ----------------------------------------------------------------- |
+| `data-state`       | item, header, trigger, content       | `"open"` \| `"closed"`                                            |
+| `data-disabled`    | root, item, header, content          | Present when disabled                                             |
+| `data-orientation` | root, item, header, trigger, content | `"horizontal"` \| `"vertical"`                                    |
+| `data-index`       | item, header, trigger, content       | Zero-based position of the item                                   |
+| `data-panel-open`  | trigger                              | Present while the trigger's panel is open (e.g. rotate a chevron) |
 
 ## API Reference
 
@@ -1082,6 +1084,17 @@ dismissal, `role="alertdialog"`).
 These are thin wrappers around the matching dialog parts and read their behavior from context. See the
 Dialog docs for their full reference.
 
+## Accessibility
+
+### Keyboard Interactions
+
+| Key               | Description                                                                               |
+| ----------------- | ----------------------------------------------------------------------------------------- |
+| `Enter` / `Space` | Opens the alert dialog when focus is on the trigger; activates the focused action button. |
+| `Escape`          | Closes the alert dialog. Only the topmost dialog closes when dialogs are nested.          |
+| `Tab`             | Moves focus to the next focusable element; focus is trapped within the popup.             |
+| `Shift` + `Tab`   | Moves focus to the previous focusable element inside the popup.                           |
+
 ---
 
 # Aspect Ratio
@@ -1440,7 +1453,7 @@ export class RdxButtonLoadingComponent {
 
 # Calendar
 
-####  Displays dates and days of the week, facilitating date-related interactions.
+#### Displays dates and days of the week, facilitating date-related interactions.
 
 ```typescript
 import { Component } from '@angular/core';
@@ -1564,44 +1577,35 @@ npm install @radix-ng/primitives
 Import all parts and piece them together.
 
 ```html
-<div
-    rdxCalendarRoot
-    #root="rdxCalendarRoot">
-    <div rdxCalendarHeader>
-        <button type="button" rdxCalendarPrev></button>
-        <div #head="rdxCalendarHeading" rdxCalendarHeading>
-            {{ head.headingValue() }}
-        </div>
-        <button type="button" rdxCalendarNext></button>
-    </div>
+<div rdxCalendarRoot #root="rdxCalendarRoot">
+  <div rdxCalendarHeader>
+    <button type="button" rdxCalendarPrev></button>
+    <div #head="rdxCalendarHeading" rdxCalendarHeading>{{ head.headingValue() }}</div>
+    <button type="button" rdxCalendarNext></button>
+  </div>
 
-    <table rdxCalendarGrid>
-        @for (month of root.months(); track $index) {
-            <thead rdxCalendarGridHead>
-                <tr rdxCalendarGridRow>
-                    @for (day of root.weekDays(); track $index) {
-                        <th rdxCalendarHeadCell>{{ day }}</th>
-                    }
-                </tr>
-            </thead>
-            <tbody rdxCalendarGridBody>
-                @for (weekDates of month.weeks; track $index) {
-                    <tr rdxCalendarGridRow>
-                        @for (weekDate of weekDates; track $index) {
-                            <td rdxCalendarCell>
-                                <div
-                                    #cell="rdxCalendarCellTrigger"
-                                    rdxCalendarCellTrigger
-                                >
-                                    {{ cell.dayValue() }}
-                                </div>
-                            </td>
-                        }
-                    </tr>
-                }
-            </tbody>
+  <table rdxCalendarGrid>
+    @for (month of root.months(); track $index) {
+    <thead rdxCalendarGridHead>
+      <tr rdxCalendarGridRow>
+        @for (day of root.weekDays(); track $index) {
+        <th rdxCalendarHeadCell>{{ day }}</th>
         }
-    </table>
+      </tr>
+    </thead>
+    <tbody rdxCalendarGridBody>
+      @for (weekDates of month.weeks; track $index) {
+      <tr rdxCalendarGridRow>
+        @for (weekDate of weekDates; track $index) {
+        <td rdxCalendarCell>
+          <div #cell="rdxCalendarCellTrigger" rdxCalendarCellTrigger>{{ cell.dayValue() }}</div>
+        </td>
+        }
+      </tr>
+      }
+    </tbody>
+    }
+  </table>
 </div>
 ```
 
@@ -1627,18 +1631,18 @@ Import all parts and piece them together.
 
 `RdxCalendarHeadingDirective` Heading for displaying the current month and year.
 
-| exportAs       | Description |
-| ------------- | --------- |
-| `headingValue`  | `string` Current month and year |
+| exportAs       | Description                     |
+| -------------- | ------------------------------- |
+| `headingValue` | `string` Current month and year |
 
 ### Grid
 
 `RdxCalendarGridDirective` Container for wrapping the calendar grid.
 
-| Data Attribute     | Value |
-| ------------------ | --------- |
-| `[data-readonly]`  | Present when readonly |
-| `[data-disabled]`  | Present when disabled |
+| Data Attribute    | Value                 |
+| ----------------- | --------------------- |
+| `[data-readonly]` | Present when readonly |
+| `[data-disabled]` | Present when disabled |
 
 ### Grid Head
 
@@ -1660,24 +1664,24 @@ Import all parts and piece them together.
 
 `RdxCalendarCellDirective` Container for wrapping the calendar cells as `td`.
 
-| Data Attribute     | Value |
-| ------------------ | --------- |
-| `[data-disabled]`  | Present when disabled |
+| Data Attribute    | Value                 |
+| ----------------- | --------------------- |
+| `[data-disabled]` | Present when disabled |
 
 ### Cell Trigger
 
 `RdxCalendarCellTriggerDirective` Interactable container for displaying the cell dates. Clicking it selects the date.
 
-| Data Attribute     | Value |
-| ------------------ | --------- |
-| `[data-selected]`  | Present when selected |
-| `[data-value]`  | The ISO string value of the date. |
-| `[data-disabled]`  | Present when disabled |
-| `[data-unavailable]`  | Present when unavailable |
-| `[data-today]`  | Present when today |
-| `[data-outside-view]`  | Present when the date is outside the current month it is displayed in. |
-| `[data-outside-visible-view]`  | Present when the date is outside the months that are visible on the calendar. |
-| `[data-focused]`  | Present when focused |
+| Data Attribute                | Value                                                                         |
+| ----------------------------- | ----------------------------------------------------------------------------- |
+| `[data-selected]`             | Present when selected                                                         |
+| `[data-value]`                | The ISO string value of the date.                                             |
+| `[data-disabled]`             | Present when disabled                                                         |
+| `[data-unavailable]`          | Present when unavailable                                                      |
+| `[data-today]`                | Present when today                                                            |
+| `[data-outside-view]`         | Present when the date is outside the current month it is displayed in.        |
+| `[data-outside-visible-view]` | Present when the date is outside the months that are visible on the calendar. |
+| `[data-focused]`              | Present when focused                                                          |
 
 ## Examples
 
@@ -2497,12 +2501,12 @@ export class CalendarNumberOfMonths {
 ## Accessibility
 
 ### Keyboard Interactions
-| Key     | Description |
-| ------------------ | --------- |
-| `Tab`  | When focus moves onto the calendar, focuses the first navigation button. |
-| `Space`  |  When the focus is on either `CalendarNext` or `CalendarPrev`, it navigates the calendar. Otherwise, it selects the date.  |
-| `Enter`  |  When the focus is on either `CalendarNext` or `CalendarPrev`, it navigates the calendar. Otherwise, it selects the date.  |
-| `ArrowLeft` `ArrowRight` `ArrowUp` `ArrowDown`  |  When the focus is on `CalendarCellTrigger`, it navigates the dates, changing the month/year/decade if necessary.  |
+
+| Key                                                  | Description                                                                                               |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `Tab`                                                | When focus moves onto the calendar, focuses the first navigation button.                                  |
+| `Space` / `Enter`                                    | When focus is on `CalendarNext` or `CalendarPrev`, navigates the calendar. Otherwise, selects the date.   |
+| `ArrowLeft` / `ArrowRight` / `ArrowUp` / `ArrowDown` | When focus is on `CalendarCellTrigger`, navigates the dates, changing the month/year/decade if necessary. |
 
 ---
 
@@ -2912,13 +2916,13 @@ export class CheckboxValidationExample {
 
 There are two ways to build a "select all" parent. Pick by how much you want to own:
 
-| | **Select all** (below) | **Checkbox group** |
-| --- | --- | --- |
-| Source of truth | your own model (one boolean per item) | the group's `string[]` value (the checked `name`s) |
-| Parent / indeterminate logic | written by hand in the component | built in (`parent` + `allValues`) |
-| Parent click | flat toggle: all ↔ none | remembers the partial selection: partial → all → none → partial |
-| Disabled child during select-all | you handle it | preserved automatically |
-| Forms integration | wire each control yourself | the group is one control (`[(value)]` / `ngModel` / reactive forms) |
+|                                  | **Select all** (below)                | **Checkbox group**                                                  |
+| -------------------------------- | ------------------------------------- | ------------------------------------------------------------------- |
+| Source of truth                  | your own model (one boolean per item) | the group's `string[]` value (the checked `name`s)                  |
+| Parent / indeterminate logic     | written by hand in the component      | built in (`parent` + `allValues`)                                   |
+| Parent click                     | flat toggle: all ↔ none               | remembers the partial selection: partial → all → none → partial     |
+| Disabled child during select-all | you handle it                         | preserved automatically                                             |
+| Forms integration                | wire each control yourself            | the group is one control (`[(value)]` / `ngModel` / reactive forms) |
 
 Reach for **Select all** when you already manage the items yourself and just need the derived parent
 state. Reach for the **Checkbox group** when you want the array value and the Base UI parent behavior
@@ -3132,9 +3136,9 @@ Adheres to the [tri-state Checkbox WAI-ARIA design pattern](https://www.w3.org/W
 
 ### Keyboard Interactions
 
-| Key   | Description                   |
-| ----- | ----------------------------- |
-| Space | Checks/unchecks the checkbox. |
+| Key     | Description                   |
+| ------- | ----------------------------- |
+| `Space` | Checks/unchecks the checkbox. |
 
 ---
 
@@ -3307,6 +3311,15 @@ A button that toggles the panel. Reads everything from the root context; it expo
 
 `RdxCollapsiblePanelDirective`
 
+## Accessibility
+
+### Keyboard Interactions
+
+| Key     | Description                              |
+| ------- | ---------------------------------------- |
+| `Space` | Toggles the collapsible panel open/closed. |
+| `Enter` | Toggles the collapsible panel open/closed. |
+
 ---
 
 # Context Menu
@@ -3456,30 +3469,30 @@ standard Menu parts and positioned at the pointer, so `rdxMenuPositioner` needs 
 
 ```html
 <ng-container #root="rdxContextMenuRoot" rdxContextMenuRoot>
-    <div rdxContextMenuTrigger>Right click here</div>
+  <div rdxContextMenuTrigger>Right click here</div>
 
-    @if (root.menuRoot.open()) {
-        <div rdxMenuPositioner>
-            <div rdxMenuPopup>
-                <button rdxMenuItem>Back</button>
-                <button rdxMenuItem>Reload</button>
+  @if (root.menuRoot.open()) {
+  <div rdxMenuPositioner>
+    <div rdxMenuPopup>
+      <button rdxMenuItem>Back</button>
+      <button rdxMenuItem>Reload</button>
 
-                <div rdxMenuSeparator></div>
+      <div rdxMenuSeparator></div>
 
-                <!-- submenu -->
-                <ng-container #sub="rdxMenuRoot" rdxMenuRoot>
-                    <button rdxMenuSubTrigger>More Tools ›</button>
-                    @if (sub.open()) {
-                        <div side="right" align="start" rdxMenuPositioner>
-                            <div rdxMenuPopup>
-                                <button rdxMenuItem>Save Page As…</button>
-                            </div>
-                        </div>
-                    }
-                </ng-container>
-            </div>
+      <!-- submenu -->
+      <ng-container #sub="rdxMenuRoot" rdxMenuRoot>
+        <button rdxMenuSubTrigger>More Tools ›</button>
+        @if (sub.open()) {
+        <div side="right" align="start" rdxMenuPositioner>
+          <div rdxMenuPopup>
+            <button rdxMenuItem>Save Page As…</button>
+          </div>
         </div>
-    }
+        }
+      </ng-container>
+    </div>
+  </div>
+  }
 </ng-container>
 ```
 
@@ -3598,14 +3611,16 @@ export class RdxContextMenuDefaultComponent {
 }
 ```
 
-## Keyboard interactions
+## Accessibility
+
+### Keyboard Interactions
 
 When opened with a pointer (right click / long-press) the popup itself receives focus and no item
-is highlighted; pressing ArrowDown / ArrowUp then moves into the items. When opened from the
-keyboard (the Menu key / <kbd>Shift</kbd> + <kbd>F10</kbd>) the first item is highlighted right
+is highlighted; pressing `ArrowDown` / `ArrowUp` then moves into the items. When opened from the
+keyboard (the Menu key / `Shift` + `F10`) the first item is highlighted right
 away. Otherwise the popup behaves exactly like a [Menu](?path=/docs/primitives-menu--docs):
-ArrowDown / ArrowUp move between items, Home / End jump to the first / last item, typeahead matches
-item text, and Escape closes the menu.
+`ArrowDown` / `ArrowUp` move between items, `Home` / `End` jump to the first / last item, typeahead matches
+item text, and `Escape` closes the menu.
 
 ## API Reference
 
@@ -3679,10 +3694,10 @@ export class CropperDefault {
 
 ```ts
 import {
-    RdxCropperRootDirective,
-    RdxCropperImageComponent,
-    RdxCropperCropAreaDirective,
-    RdxCropperDescriptionDirective
+  RdxCropperRootDirective,
+  RdxCropperImageComponent,
+  RdxCropperCropAreaDirective,
+  RdxCropperDescriptionDirective
 } from '@radix-ng/primitives/cropper';
 ```
 
@@ -3692,9 +3707,9 @@ Import all parts and piece them together.
 
 ```html
 <div rdxCropperRoot>
-    <div rdxCropperDescription></div>
-    <div rdxCropperImage></div>
-    <div rdxCropperCropArea></div>
+  <div rdxCropperDescription></div>
+  <div rdxCropperImage></div>
+  <div rdxCropperCropArea></div>
 </div>
 ```
 
@@ -3792,22 +3807,14 @@ export class CropperWithData {
 }
 ```
 
-## Keyboard interactions
-
-| Key                     | Description                         |
-| ----------------------- | ----------------------------------- |
-| Arrow keys              | Pan the image within the crop area. |
-| `+` / `=` / `Page Up`   | Zoom in.                            |
-| `-` / `_` / `Page Down` | Zoom out.                           |
-
 ## Data attributes
 
 ### Root
 
-| Attribute       | Present when                  |
-| --------------- | ----------------------------- |
-| `data-dragging` | The image is being dragged.   |
-| `data-disabled` | The `disabled` input is set.  |
+| Attribute       | Present when                 |
+| --------------- | ---------------------------- |
+| `data-dragging` | The image is being dragged.  |
+| `data-disabled` | The `disabled` input is set. |
 
 ## Accessibility
 
@@ -3816,6 +3823,14 @@ root via `aria-describedby`, giving screen reader users instructions on how to o
 console warning is logged when it is missing. Visually hide it with an `sr-only` class. The root uses
 `role="application"` so arrow and zoom keys reach the cropper instead of the screen reader's browse
 mode, and its accessible name can be customized with the `ariaLabel` input.
+
+### Keyboard Interactions
+
+| Key                     | Description                         |
+| ----------------------- | ----------------------------------- |
+| Arrow keys              | Pan the image within the crop area. |
+| `+` / `=` / `Page Up`   | Zoom in.                            |
+| `-` / `_` / `Page Down` | Zoom out.                           |
 
 ## API Reference
 
@@ -4040,6 +4055,17 @@ export class DateFieldInvalid {
     }
 }
 ```
+
+## Accessibility
+
+### Keyboard Interactions
+
+| Key                        | Description                                          |
+| -------------------------- | ---------------------------------------------------- |
+| `ArrowLeft` / `ArrowRight` | Move focus to the previous / next segment.           |
+| `ArrowUp` / `ArrowDown`    | Increment / decrement the focused segment.           |
+| `0`–`9`                    | Type a value directly into the focused segment.      |
+| `Backspace`                | Clear the last digit of the focused segment's value. |
 
 ---
 
@@ -5030,6 +5056,17 @@ It reads everything from context and exposes no inputs.
 ### Backdrop, Title, Description, and Close
 
 These parts read their behavior and state from context and do not expose additional inputs or outputs.
+
+## Accessibility
+
+### Keyboard Interactions
+
+| Key               | Description                                                                       |
+| ----------------- | --------------------------------------------------------------------------------- |
+| `Enter` / `Space` | Opens the dialog when focus is on the trigger; activates the focused close button. |
+| `Escape`          | Closes the dialog. Only the topmost dialog closes when dialogs are nested.        |
+| `Tab`             | Moves focus to the next focusable element; focus is trapped within the dialog.    |
+| `Shift` + `Tab`   | Moves focus to the previous focusable element inside the dialog.                  |
 
 ---
 
@@ -7744,6 +7781,23 @@ the parent via context — no inputs.
 Visible only when the parent `rdxMenuRadioItem` is selected. Reads state from the parent via
 context — no inputs.
 
+## Accessibility
+
+### Keyboard Interactions
+
+| Key | Description |
+| --- | --- |
+| `Enter` / `Space` | On the trigger: toggles the menu open/closed (non-native-button elements only). On a focused item or sub-trigger: activates the item. |
+| `ArrowDown` | On the trigger: opens the menu and moves focus to the first item. Inside the popup: moves focus to the next item, wrapping to the first when `loopFocus` is enabled. |
+| `ArrowUp` | On the trigger: opens the menu and moves focus to the last item. Inside the popup: moves focus to the previous item, wrapping to the last when `loopFocus` is enabled. |
+| `ArrowRight` | On a sub-trigger: opens the submenu and moves focus into it. Inside the popup (menubar context): delegates to the menubar for sibling menu navigation. |
+| `ArrowLeft` | Inside a submenu popup: closes the submenu and returns focus to the sub-trigger. In a menubar context: delegates to the menubar for sibling menu navigation. |
+| `Home` | Inside the popup: moves focus to the first enabled item. |
+| `End` | Inside the popup: moves focus to the last enabled item. |
+| `Escape` | Inside the popup: closes the menu (and optionally its parent when `closeParentOnEsc` is set) and returns focus to the trigger. |
+| `Tab` | Inside the popup: closes the menu and allows natural tab navigation to continue. |
+| Character keys | Inside the popup: typeahead — jumps focus to the first item whose label starts with the typed character(s). |
+
 ---
 
 # Menubar
@@ -7944,43 +7998,43 @@ a standard `rdxMenuTrigger` opens a Menu popup. Keep the top-level popup mounted
 
 ```html
 <div rdxMenubarRoot>
-    <!-- File -->
-    <ng-container #fileMenu="rdxMenuRoot" rdxMenuRoot>
-        <button rdxMenuTrigger>File</button>
+  <!-- File -->
+  <ng-container #fileMenu="rdxMenuRoot" rdxMenuRoot>
+    <button rdxMenuTrigger>File</button>
 
-        <div class="data-[closed]:hidden" align="start" sideOffset="4" rdxMenuPositioner>
+    <div class="data-[closed]:hidden" align="start" sideOffset="4" rdxMenuPositioner>
+      <div rdxMenuPopup>
+        <button rdxMenuItem>New Tab</button>
+        <div rdxMenuSeparator></div>
+
+        <!-- submenu -->
+        <ng-container #shareSub="rdxMenuRoot" rdxMenuRoot>
+          <button rdxMenuSubTrigger>Share ›</button>
+          @if (shareSub.open()) {
+          <div side="right" align="start" rdxMenuPositioner>
             <div rdxMenuPopup>
-                <button rdxMenuItem>New Tab</button>
-                <div rdxMenuSeparator></div>
-
-                <!-- submenu -->
-                <ng-container #shareSub="rdxMenuRoot" rdxMenuRoot>
-                    <button rdxMenuSubTrigger>Share ›</button>
-                    @if (shareSub.open()) {
-                        <div side="right" align="start" rdxMenuPositioner>
-                            <div rdxMenuPopup>
-                                <button rdxMenuItem>Email Link</button>
-                            </div>
-                        </div>
-                    }
-                </ng-container>
-
-                <button rdxMenuItem>Print…</button>
+              <button rdxMenuItem>Email Link</button>
             </div>
-        </div>
-    </ng-container>
+          </div>
+          }
+        </ng-container>
 
-    <!-- Edit -->
-    <ng-container #editMenu="rdxMenuRoot" rdxMenuRoot>
-        <button rdxMenuTrigger>Edit</button>
+        <button rdxMenuItem>Print…</button>
+      </div>
+    </div>
+  </ng-container>
 
-        <div class="data-[closed]:hidden" align="start" sideOffset="4" rdxMenuPositioner>
-            <div rdxMenuPopup>
-                <button rdxMenuItem>Undo</button>
-                <button rdxMenuItem>Redo</button>
-            </div>
-        </div>
-    </ng-container>
+  <!-- Edit -->
+  <ng-container #editMenu="rdxMenuRoot" rdxMenuRoot>
+    <button rdxMenuTrigger>Edit</button>
+
+    <div class="data-[closed]:hidden" align="start" sideOffset="4" rdxMenuPositioner>
+      <div rdxMenuPopup>
+        <button rdxMenuItem>Undo</button>
+        <button rdxMenuItem>Redo</button>
+      </div>
+    </div>
+  </ng-container>
 </div>
 ```
 
@@ -8151,18 +8205,20 @@ export class RdxMenubarDefaultComponent {
 }
 ```
 
-## Keyboard interactions
+## Accessibility
 
-| Key                                 | Behavior                                                            |
-| ----------------------------------- | ------------------------------------------------------------------ |
-| <kbd>ArrowDown</kbd>                | Opens the focused trigger's menu and moves focus to the first item. |
-| <kbd>ArrowUp</kbd>                  | Opens the focused trigger's menu and moves focus to the last item.  |
-| <kbd>ArrowRight</kbd>              | Moves to the next trigger. Opens it if a menu was already open.     |
-| <kbd>ArrowLeft</kbd>               | Moves to the previous trigger. Opens it if a menu was already open. |
-| <kbd>Home</kbd>                     | Moves to the first trigger.                                         |
-| <kbd>End</kbd>                      | Moves to the last trigger.                                          |
-| <kbd>Escape</kbd>                   | Closes the open menu and returns focus to its trigger.             |
-| <kbd>Enter</kbd> / <kbd>Space</kbd> | Activates the focused item (handled by the Menu primitive).        |
+### Keyboard Interactions
+
+| Key               | Description                                                         |
+| ----------------- | ------------------------------------------------------------------- |
+| `ArrowDown`       | Opens the focused trigger's menu and moves focus to the first item. |
+| `ArrowUp`         | Opens the focused trigger's menu and moves focus to the last item.  |
+| `ArrowRight`      | Moves to the next trigger. Opens it if a menu was already open.     |
+| `ArrowLeft`       | Moves to the previous trigger. Opens it if a menu was already open. |
+| `Home`            | Moves to the first trigger.                                         |
+| `End`             | Moves to the last trigger.                                          |
+| `Escape`          | Closes the open menu and returns focus to its trigger.              |
+| `Enter` / `Space` | Activates the focused item (handled by the Menu primitive).         |
 
 Triggers move with a roving tabindex: only one trigger is in the tab order at a time, and
 arrow keys move focus between them without leaving the menubar. Disabled triggers are skipped.
@@ -9421,6 +9477,24 @@ These parts read their behavior and state from context. `List` is the `menubar` 
 focus, `Item` carries the `value`, `Icon` exposes the open state for a caret, and `Popup`, `Arrow`,
 and `Backdrop` reflect open / placement / transition state for styling.
 
+## Accessibility
+
+### Keyboard Interactions
+
+| Key | Description |
+| --- | --- |
+| `ArrowLeft` / `ArrowRight` | Moves focus between triggers in a horizontal menubar. Respects `dir` — `ArrowLeft` moves to the previous item in LTR and to the next in RTL. |
+| `ArrowUp` / `ArrowDown` | Moves focus between triggers in a vertical menubar. |
+| `Home` / `PageUp` | Moves focus to the first trigger in the menubar. |
+| `End` / `PageDown` | Moves focus to the last trigger in the menubar. |
+| `Enter` / `Space` | Toggles the focused trigger's content panel open or closed and moves focus into the open panel. |
+| `ArrowDown` | When a horizontal trigger is focused and the panel is open, moves focus to the first focusable element inside the content panel. |
+| `ArrowRight` | When a vertical (LTR) trigger is focused and the panel is open, moves focus to the first focusable element inside the content panel. |
+| `ArrowLeft` | When a vertical (RTL) trigger is focused and the panel is open, moves focus to the first focusable element inside the content panel. |
+| `Tab` | Moves focus to the next tabbable element. Inside an open panel, advances through the panel's links; on the last one, moves focus out of the menu. |
+| `Shift` + `Tab` | Moves focus to the previous tabbable element, exiting the menu when pressed on the first trigger. |
+| `Escape` | Closes the open popup and returns focus to the trigger that opened it. |
+
 ---
 
 # Number Field
@@ -9501,14 +9575,14 @@ so numbers are read and displayed according to the chosen `locale` and `format` 
 
 ```ts
 import {
-    RdxNumberFieldRoot,
-    RdxNumberFieldGroup,
-    RdxNumberFieldInput,
-    RdxNumberFieldHiddenInput,
-    RdxNumberFieldIncrement,
-    RdxNumberFieldDecrement,
-    RdxNumberFieldScrubArea,
-    RdxNumberFieldScrubAreaCursor
+  RdxNumberFieldRoot,
+  RdxNumberFieldGroup,
+  RdxNumberFieldInput,
+  RdxNumberFieldHiddenInput,
+  RdxNumberFieldIncrement,
+  RdxNumberFieldDecrement,
+  RdxNumberFieldScrubArea,
+  RdxNumberFieldScrubAreaCursor
 } from '@radix-ng/primitives/number-field';
 ```
 
@@ -9518,16 +9592,16 @@ Import all parts and piece them together.
 
 ```html
 <div rdxNumberFieldRoot>
-    <input rdxNumberFieldHiddenInput />
-    <span rdxNumberFieldScrubArea>
-        <label>Label</label>
-        <span rdxNumberFieldScrubAreaCursor></span>
-    </span>
-    <div rdxNumberFieldGroup>
-        <button rdxNumberFieldDecrement></button>
-        <input rdxNumberFieldInput />
-        <button rdxNumberFieldIncrement></button>
-    </div>
+  <input rdxNumberFieldHiddenInput />
+  <span rdxNumberFieldScrubArea>
+    <label>Label</label>
+    <span rdxNumberFieldScrubAreaCursor></span>
+  </span>
+  <div rdxNumberFieldGroup>
+    <button rdxNumberFieldDecrement></button>
+    <input rdxNumberFieldInput />
+    <button rdxNumberFieldIncrement></button>
+  </div>
 </div>
 ```
 
@@ -10007,14 +10081,14 @@ Adheres to the [Spinbutton WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/
 
 ### Keyboard Interactions
 
-| Key          | Description                                  |
-| ------------ | -------------------------------------------- |
-| Arrow Up     | Increase the value by `step`                 |
-| Arrow Down   | Decrease the value by `step`                 |
-| Shift + Arrow | Increase/decrease by `largeStep`            |
-| Alt + Arrow  | Increase/decrease by `smallStep`             |
-| Home         | Set the value to `min` (if provided)         |
-| End          | Set the value to `max` (if provided)         |
+| Key                               | Description                           |
+| --------------------------------- | ------------------------------------- |
+| `ArrowUp`                         | Increase the value by `step`.         |
+| `ArrowDown`                       | Decrease the value by `step`.         |
+| `Shift` + `ArrowUp` / `ArrowDown` | Increase/decrease by `largeStep`.     |
+| `Alt` + `ArrowUp` / `ArrowDown`   | Increase/decrease by `smallStep`.     |
+| `Home`                            | Set the value to `min` (if provided). |
+| `End`                             | Set the value to `max` (if provided). |
 
 ---
 
@@ -10987,6 +11061,17 @@ optional `anchor` input overrides the trigger only for positioning.
 
 These parts read their behavior and state from context and do not expose additional inputs or outputs.
 
+## Accessibility
+
+### Keyboard Interactions
+
+| Key               | Description                                                                                       |
+| ----------------- | ------------------------------------------------------------------------------------------------- |
+| `Enter` / `Space` | Opens or closes the popover when focus is on the trigger.                                         |
+| `Escape`          | Closes the popover. Only the topmost layer closes when layers are nested.                         |
+| `Tab`             | Moves focus to the next tabbable element inside the popup. In modal / trap-focus mode focus wraps to the first. |
+| `Shift` + `Tab`   | Moves focus to the previous tabbable element inside the popup. In modal / trap-focus mode focus wraps to the last. |
+
 ---
 
 # Preview Card
@@ -11384,6 +11469,15 @@ Positions the popup against the active trigger or a custom anchor.
 ### Popup
 
 The floating preview surface. It exposes dismiss events and transition attributes.
+
+## Accessibility
+
+### Keyboard Interactions
+
+| Key                     | Description                                                                                       |
+| ----------------------- | ------------------------------------------------------------------------------------------------- |
+| `Tab` / `Shift` + `Tab` | Moves focus onto the trigger (opening the preview card after the delay) or away from it (closing it). |
+| `Escape`                | Closes the open preview card.                                                                     |
 
 ---
 
@@ -12515,22 +12609,22 @@ export class SelectDefault {
 
 ```typescript
 import {
-    RdxSelectContent,
-    RdxSelectGroup,
-    RdxSelectItem,
-    RdxSelectItemIndicator,
-    RdxSelectItemText,
-    RdxSelectLabel,
-    RdxSelectPopperPositionContent,
-    RdxSelectPopperPositionWrapper,
-    RdxSelectPortal,
-    RdxSelectPortalPresence,
-    RdxSelectRoot,
-    RdxSelectScrollDownButton,
-    RdxSelectScrollUpButton,
-    RdxSelectTrigger,
-    RdxSelectValue,
-    RdxSelectViewport
+  RdxSelectContent,
+  RdxSelectGroup,
+  RdxSelectItem,
+  RdxSelectItemIndicator,
+  RdxSelectItemText,
+  RdxSelectLabel,
+  RdxSelectPopperPositionContent,
+  RdxSelectPopperPositionWrapper,
+  RdxSelectPortal,
+  RdxSelectPortalPresence,
+  RdxSelectRoot,
+  RdxSelectScrollDownButton,
+  RdxSelectScrollUpButton,
+  RdxSelectTrigger,
+  RdxSelectValue,
+  RdxSelectViewport
 } from '@radix-ng/primitives/select';
 ```
 
@@ -12544,36 +12638,36 @@ offsets.
 
 ```html
 <ng-container rdxSelectRoot>
-    <button rdxSelectTrigger>
-        <span #v="rdxSelectedValue" rdxSelectValue placeholder="Pick one…">{{ v.slotText() }}</span>
-        <!-- chevron icon -->
-    </button>
+  <button rdxSelectTrigger>
+    <span #v="rdxSelectedValue" rdxSelectValue placeholder="Pick one…">{{ v.slotText() }}</span>
+    <!-- chevron icon -->
+  </button>
 
-    <div rdxSelectPortal>
-        <ng-template rdxSelectPortalPresence>
-            <div rdxSelectContent>
-                <div sideOffset="4" align="start" rdxSelectPopperPositionWrapper>
-                    <div rdxSelectPopperPositionContent>
-                        <!-- optional scroll-up button -->
-                        <div rdxSelectScrollUpButton><!-- up icon --></div>
+  <div rdxSelectPortal>
+    <ng-template rdxSelectPortalPresence>
+      <div rdxSelectContent>
+        <div sideOffset="4" align="start" rdxSelectPopperPositionWrapper>
+          <div rdxSelectPopperPositionContent>
+            <!-- optional scroll-up button -->
+            <div rdxSelectScrollUpButton><!-- up icon --></div>
 
-                        <div rdxSelectViewport>
-                            <div rdxSelectLabel>Group label</div>
-                            <div rdxSelectGroup>
-                                <div value="apple" rdxSelectItem>
-                                    <span rdxSelectItemIndicator><!-- check icon --></span>
-                                    <span rdxSelectItemText>Apple</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- optional scroll-down button -->
-                        <div rdxSelectScrollDownButton><!-- down icon --></div>
-                    </div>
+            <div rdxSelectViewport>
+              <div rdxSelectLabel>Group label</div>
+              <div rdxSelectGroup>
+                <div value="apple" rdxSelectItem>
+                  <span rdxSelectItemIndicator><!-- check icon --></span>
+                  <span rdxSelectItemText>Apple</span>
                 </div>
+              </div>
             </div>
-        </ng-template>
-    </div>
+
+            <!-- optional scroll-down button -->
+            <div rdxSelectScrollDownButton><!-- down icon --></div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
 </ng-container>
 ```
 
@@ -12585,26 +12679,26 @@ the behavior of a native `<select>`. Use `rdxSelectItemAlignedPosition` and
 
 ```html
 <ng-container rdxSelectRoot>
-    <button rdxSelectTrigger>
-        <span #v="rdxSelectedValue" rdxSelectValue>{{ v.slotText() }}</span>
-    </button>
+  <button rdxSelectTrigger>
+    <span #v="rdxSelectedValue" rdxSelectValue>{{ v.slotText() }}</span>
+  </button>
 
-    <div rdxSelectPortal>
-        <ng-template rdxSelectPortalPresence>
-            <div rdxSelectContent>
-                <div rdxSelectItemAlignedPosition>
-                    <div rdxSelectItemAlignedPositionContent>
-                        <div rdxSelectViewport>
-                            <div value="apple" rdxSelectItem>
-                                <span rdxSelectItemIndicator><!-- check icon --></span>
-                                <span rdxSelectItemText>Apple</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+  <div rdxSelectPortal>
+    <ng-template rdxSelectPortalPresence>
+      <div rdxSelectContent>
+        <div rdxSelectItemAlignedPosition>
+          <div rdxSelectItemAlignedPositionContent>
+            <div rdxSelectViewport>
+              <div value="apple" rdxSelectItem>
+                <span rdxSelectItemIndicator><!-- check icon --></span>
+                <span rdxSelectItemText>Apple</span>
+              </div>
             </div>
-        </ng-template>
-    </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
 </ng-container>
 ```
 
@@ -13159,17 +13253,19 @@ export class SelectAlignedPositionWithScroll {
 }
 ```
 
-## Keyboard interactions
+## Accessibility
 
-| Key | Behavior |
-| --- | --- |
-| <kbd>Enter</kbd> / <kbd>Space</kbd> | Opens the popup when the trigger is focused; selects the highlighted item when open. |
-| <kbd>ArrowDown</kbd> | Highlights the next item. |
-| <kbd>ArrowUp</kbd> | Highlights the previous item. |
-| <kbd>Home</kbd> | Highlights the first item. |
-| <kbd>End</kbd> | Highlights the last item. |
-| <kbd>Escape</kbd> | Closes the popup without changing the value. |
-| Character keys | Typeahead — jumps to the first item whose text starts with the typed character. |
+### Keyboard Interactions
+
+| Key               | Description                                                                          |
+| ----------------- | ------------------------------------------------------------------------------------ |
+| `Enter` / `Space` | Opens the popup when the trigger is focused; selects the highlighted item when open. |
+| `ArrowDown`       | Highlights the next item.                                                            |
+| `ArrowUp`         | Highlights the previous item.                                                        |
+| `Home`            | Highlights the first item.                                                           |
+| `End`             | Highlights the last item.                                                            |
+| `Escape`          | Closes the popup without changing the value.                                         |
+| Character keys    | Typeahead — jumps to the first item whose text starts with the typed character.      |
 
 ## API Reference
 
@@ -13712,6 +13808,19 @@ export class SliderFormsExample {
 
 Adheres to the [Slider WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/slider-multithumb).
 
+### Keyboard Interactions
+
+| Key | Description |
+| --- | ----------- |
+| `ArrowRight` / `ArrowUp` | Increases the value of the focused thumb by one step. In RTL horizontal mode, `ArrowRight` decreases instead. |
+| `ArrowLeft` / `ArrowDown` | Decreases the value of the focused thumb by one step. In RTL horizontal mode, `ArrowLeft` increases instead. |
+| `Shift` + `ArrowRight` / `ArrowUp` | Increases the value of the focused thumb by one large step. |
+| `Shift` + `ArrowLeft` / `ArrowDown` | Decreases the value of the focused thumb by one large step. |
+| `PageUp` | Increases the value of the focused thumb by one large step. |
+| `PageDown` | Decreases the value of the focused thumb by one large step. |
+| `Home` | Sets the focused thumb to the minimum value (or the preceding thumb's value plus the minimum gap for range sliders). |
+| `End` | Sets the focused thumb to the maximum value (or the following thumb's value minus the minimum gap for range sliders). |
+
 ---
 
 # Stepper
@@ -13840,6 +13949,16 @@ The step item component.
 ```html
 <StepperNavigation />
 ```
+
+## Accessibility
+
+### Keyboard Interactions
+
+| Key | Description |
+| --- | ----------- |
+| `Enter` / `Space` | Activates the focused step trigger, setting it as the current step. |
+| `ArrowRight` / `ArrowDown` | Moves focus to the next step trigger (respects orientation). |
+| `ArrowLeft` / `ArrowUp` | Moves focus to the previous step trigger (respects orientation). |
 
 ---
 
@@ -14633,10 +14752,10 @@ optional visually-hidden input for native form participation.
 
 ```html
 <div rdxTimeFieldRoot>
-    @for (item of root.segmentContents(); track $index) {
-        <div rdxTimeFieldInput [part]="item.part">{{ item.value }}</div>
-    }
-    <input rdxVisuallyHiddenInput feature="focusable" />
+  @for (item of root.segmentContents(); track $index) {
+  <div rdxTimeFieldInput [part]="item.part">{{ item.value }}</div>
+  }
+  <input rdxVisuallyHiddenInput feature="focusable" />
 </div>
 ```
 
@@ -15042,12 +15161,12 @@ accessible name with `aria-labelledby` (or `aria-label`). Each editable segment 
 
 ### Keyboard Interactions
 
-| Key                | Description                                       |
-| ------------------ | ------------------------------------------------- |
-| Arrow Left / Right | Move focus to the previous / next segment         |
-| Arrow Up / Down    | Increment / decrement the focused segment         |
-| 0–9                | Type a value directly into the focused segment    |
-| Backspace          | Clear the focused segment                         |
+| Key                        | Description                                     |
+| -------------------------- | ----------------------------------------------- |
+| `ArrowLeft` / `ArrowRight` | Move focus to the previous / next segment.      |
+| `ArrowUp` / `ArrowDown`    | Increment / decrement the focused segment.      |
+| `0`–`9`                    | Type a value directly into the focused segment. |
+| `Backspace`                | Clear the focused segment.                      |
 
 ## API Reference
 
@@ -16946,6 +17065,15 @@ optional `anchor` input overrides the trigger only for positioning.
 `RdxTooltipPopup` and `RdxTooltipArrow` read their behavior and state from context and do not expose
 additional inputs or outputs. The arrow also reflects `data-uncentered` when it cannot be centered on
 the anchor (because the popup was shifted to avoid a collision).
+
+## Accessibility
+
+### Keyboard Interactions
+
+| Key                     | Description                                                                  |
+| ----------------------- | ---------------------------------------------------------------------------- |
+| `Tab` / `Shift` + `Tab` | Moves focus onto the trigger (opening the tooltip) or away from it (closing it). |
+| `Escape`                | Closes the open tooltip.                                                     |
 
 ---
 

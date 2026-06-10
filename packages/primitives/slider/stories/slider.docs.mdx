@@ -180,3 +180,16 @@ The root composes a `ControlValueAccessor`, so it binds directly to
 ## Accessibility
 
 Adheres to the [Slider WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/slider-multithumb).
+
+### Keyboard Interactions
+
+| Key | Description |
+| --- | ----------- |
+| `ArrowRight` / `ArrowUp` | Increases the value of the focused thumb by one step. In RTL horizontal mode, `ArrowRight` decreases instead. |
+| `ArrowLeft` / `ArrowDown` | Decreases the value of the focused thumb by one step. In RTL horizontal mode, `ArrowLeft` increases instead. |
+| `Shift` + `ArrowRight` / `ArrowUp` | Increases the value of the focused thumb by one large step. |
+| `Shift` + `ArrowLeft` / `ArrowDown` | Decreases the value of the focused thumb by one large step. |
+| `PageUp` | Increases the value of the focused thumb by one large step. |
+| `PageDown` | Decreases the value of the focused thumb by one large step. |
+| `Home` | Sets the focused thumb to the minimum value (or the preceding thumb's value plus the minimum gap for range sliders). |
+| `End` | Sets the focused thumb to the maximum value (or the following thumb's value minus the minimum gap for range sliders). |

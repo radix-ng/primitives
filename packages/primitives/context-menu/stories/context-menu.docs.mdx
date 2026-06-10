@@ -45,30 +45,30 @@ standard Menu parts and positioned at the pointer, so `rdxMenuPositioner` needs 
 
 ```html
 <ng-container #root="rdxContextMenuRoot" rdxContextMenuRoot>
-    <div rdxContextMenuTrigger>Right click here</div>
+  <div rdxContextMenuTrigger>Right click here</div>
 
-    @if (root.menuRoot.open()) {
-        <div rdxMenuPositioner>
-            <div rdxMenuPopup>
-                <button rdxMenuItem>Back</button>
-                <button rdxMenuItem>Reload</button>
+  @if (root.menuRoot.open()) {
+  <div rdxMenuPositioner>
+    <div rdxMenuPopup>
+      <button rdxMenuItem>Back</button>
+      <button rdxMenuItem>Reload</button>
 
-                <div rdxMenuSeparator></div>
+      <div rdxMenuSeparator></div>
 
-                <!-- submenu -->
-                <ng-container #sub="rdxMenuRoot" rdxMenuRoot>
-                    <button rdxMenuSubTrigger>More Tools ›</button>
-                    @if (sub.open()) {
-                        <div side="right" align="start" rdxMenuPositioner>
-                            <div rdxMenuPopup>
-                                <button rdxMenuItem>Save Page As…</button>
-                            </div>
-                        </div>
-                    }
-                </ng-container>
-            </div>
+      <!-- submenu -->
+      <ng-container #sub="rdxMenuRoot" rdxMenuRoot>
+        <button rdxMenuSubTrigger>More Tools ›</button>
+        @if (sub.open()) {
+        <div side="right" align="start" rdxMenuPositioner>
+          <div rdxMenuPopup>
+            <button rdxMenuItem>Save Page As…</button>
+          </div>
         </div>
-    }
+        }
+      </ng-container>
+    </div>
+  </div>
+  }
 </ng-container>
 ```
 
@@ -81,14 +81,16 @@ Right-click the dashed area to open the menu at the pointer.
 
 <Canvas of={Stories.Default} />
 
-## Keyboard interactions
+## Accessibility
+
+### Keyboard Interactions
 
 When opened with a pointer (right click / long-press) the popup itself receives focus and no item
-is highlighted; pressing ArrowDown / ArrowUp then moves into the items. When opened from the
-keyboard (the Menu key / <kbd>Shift</kbd> + <kbd>F10</kbd>) the first item is highlighted right
+is highlighted; pressing `ArrowDown` / `ArrowUp` then moves into the items. When opened from the
+keyboard (the Menu key / `Shift` + `F10`) the first item is highlighted right
 away. Otherwise the popup behaves exactly like a [Menu](?path=/docs/primitives-menu--docs):
-ArrowDown / ArrowUp move between items, Home / End jump to the first / last item, typeahead matches
-item text, and Escape closes the menu.
+`ArrowDown` / `ArrowUp` move between items, `Home` / `End` jump to the first / last item, typeahead matches
+item text, and `Escape` closes the menu.
 
 ## API Reference
 

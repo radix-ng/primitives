@@ -157,3 +157,12 @@ optional `anchor` input overrides the trigger only for positioning.
 `RdxTooltipPopup` and `RdxTooltipArrow` read their behavior and state from context and do not expose
 additional inputs or outputs. The arrow also reflects `data-uncentered` when it cannot be centered on
 the anchor (because the popup was shifted to avoid a collision).
+
+## Accessibility
+
+### Keyboard Interactions
+
+| Key                     | Description                                                                  |
+| ----------------------- | ---------------------------------------------------------------------------- |
+| `Tab` / `Shift` + `Tab` | Moves focus onto the trigger (opening the tooltip) or away from it (closing it). |
+| `Escape`                | Closes the open tooltip.                                                     |

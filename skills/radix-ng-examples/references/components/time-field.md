@@ -91,10 +91,10 @@ optional visually-hidden input for native form participation.
 
 ```html
 <div rdxTimeFieldRoot>
-    @for (item of root.segmentContents(); track $index) {
-        <div rdxTimeFieldInput [part]="item.part">{{ item.value }}</div>
-    }
-    <input rdxVisuallyHiddenInput feature="focusable" />
+  @for (item of root.segmentContents(); track $index) {
+  <div rdxTimeFieldInput [part]="item.part">{{ item.value }}</div>
+  }
+  <input rdxVisuallyHiddenInput feature="focusable" />
 </div>
 ```
 
@@ -500,12 +500,12 @@ accessible name with `aria-labelledby` (or `aria-label`). Each editable segment 
 
 ### Keyboard Interactions
 
-| Key                | Description                                       |
-| ------------------ | ------------------------------------------------- |
-| Arrow Left / Right | Move focus to the previous / next segment         |
-| Arrow Up / Down    | Increment / decrement the focused segment         |
-| 0–9                | Type a value directly into the focused segment    |
-| Backspace          | Clear the focused segment                         |
+| Key                        | Description                                     |
+| -------------------------- | ----------------------------------------------- |
+| `ArrowLeft` / `ArrowRight` | Move focus to the previous / next segment.      |
+| `ArrowUp` / `ArrowDown`    | Increment / decrement the focused segment.      |
+| `0`–`9`                    | Type a value directly into the focused segment. |
+| `Backspace`                | Clear the focused segment.                      |
 
 ## API Reference
 

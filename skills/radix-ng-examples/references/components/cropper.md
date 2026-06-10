@@ -48,10 +48,10 @@ export class CropperDefault {
 
 ```ts
 import {
-    RdxCropperRootDirective,
-    RdxCropperImageComponent,
-    RdxCropperCropAreaDirective,
-    RdxCropperDescriptionDirective
+  RdxCropperRootDirective,
+  RdxCropperImageComponent,
+  RdxCropperCropAreaDirective,
+  RdxCropperDescriptionDirective
 } from '@radix-ng/primitives/cropper';
 ```
 
@@ -61,9 +61,9 @@ Import all parts and piece them together.
 
 ```html
 <div rdxCropperRoot>
-    <div rdxCropperDescription></div>
-    <div rdxCropperImage></div>
-    <div rdxCropperCropArea></div>
+  <div rdxCropperDescription></div>
+  <div rdxCropperImage></div>
+  <div rdxCropperCropArea></div>
 </div>
 ```
 
@@ -161,22 +161,14 @@ export class CropperWithData {
 }
 ```
 
-## Keyboard interactions
-
-| Key                     | Description                         |
-| ----------------------- | ----------------------------------- |
-| Arrow keys              | Pan the image within the crop area. |
-| `+` / `=` / `Page Up`   | Zoom in.                            |
-| `-` / `_` / `Page Down` | Zoom out.                           |
-
 ## Data attributes
 
 ### Root
 
-| Attribute       | Present when                  |
-| --------------- | ----------------------------- |
-| `data-dragging` | The image is being dragged.   |
-| `data-disabled` | The `disabled` input is set.  |
+| Attribute       | Present when                 |
+| --------------- | ---------------------------- |
+| `data-dragging` | The image is being dragged.  |
+| `data-disabled` | The `disabled` input is set. |
 
 ## Accessibility
 
@@ -185,6 +177,14 @@ root via `aria-describedby`, giving screen reader users instructions on how to o
 console warning is logged when it is missing. Visually hide it with an `sr-only` class. The root uses
 `role="application"` so arrow and zoom keys reach the cropper instead of the screen reader's browse
 mode, and its accessible name can be customized with the `ariaLabel` input.
+
+### Keyboard Interactions
+
+| Key                     | Description                         |
+| ----------------------- | ----------------------------------- |
+| Arrow keys              | Pan the image within the crop area. |
+| `+` / `=` / `Page Up`   | Zoom in.                            |
+| `-` / `_` / `Page Down` | Zoom out.                           |
 
 ## API Reference
 

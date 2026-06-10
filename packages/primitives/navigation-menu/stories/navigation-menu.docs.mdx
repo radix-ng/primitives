@@ -213,3 +213,21 @@ and exposes `--popup-width` / `--popup-height` for the size morph.
 These parts read their behavior and state from context. `List` is the `menubar` container with roving
 focus, `Item` carries the `value`, `Icon` exposes the open state for a caret, and `Popup`, `Arrow`,
 and `Backdrop` reflect open / placement / transition state for styling.
+
+## Accessibility
+
+### Keyboard Interactions
+
+| Key | Description |
+| --- | --- |
+| `ArrowLeft` / `ArrowRight` | Moves focus between triggers in a horizontal menubar. Respects `dir` — `ArrowLeft` moves to the previous item in LTR and to the next in RTL. |
+| `ArrowUp` / `ArrowDown` | Moves focus between triggers in a vertical menubar. |
+| `Home` / `PageUp` | Moves focus to the first trigger in the menubar. |
+| `End` / `PageDown` | Moves focus to the last trigger in the menubar. |
+| `Enter` / `Space` | Toggles the focused trigger's content panel open or closed and moves focus into the open panel. |
+| `ArrowDown` | When a horizontal trigger is focused and the panel is open, moves focus to the first focusable element inside the content panel. |
+| `ArrowRight` | When a vertical (LTR) trigger is focused and the panel is open, moves focus to the first focusable element inside the content panel. |
+| `ArrowLeft` | When a vertical (RTL) trigger is focused and the panel is open, moves focus to the first focusable element inside the content panel. |
+| `Tab` | Moves focus to the next tabbable element. Inside an open panel, advances through the panel's links; on the last one, moves focus out of the menu. |
+| `Shift` + `Tab` | Moves focus to the previous tabbable element, exiting the menu when pressed on the first trigger. |
+| `Escape` | Closes the open popup and returns focus to the trigger that opened it. |

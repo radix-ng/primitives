@@ -417,3 +417,20 @@ the parent via context — no inputs.
 
 Visible only when the parent `rdxMenuRadioItem` is selected. Reads state from the parent via
 context — no inputs.
+
+## Accessibility
+
+### Keyboard Interactions
+
+| Key | Description |
+| --- | --- |
+| `Enter` / `Space` | On the trigger: toggles the menu open/closed (non-native-button elements only). On a focused item or sub-trigger: activates the item. |
+| `ArrowDown` | On the trigger: opens the menu and moves focus to the first item. Inside the popup: moves focus to the next item, wrapping to the first when `loopFocus` is enabled. |
+| `ArrowUp` | On the trigger: opens the menu and moves focus to the last item. Inside the popup: moves focus to the previous item, wrapping to the last when `loopFocus` is enabled. |
+| `ArrowRight` | On a sub-trigger: opens the submenu and moves focus into it. Inside the popup (menubar context): delegates to the menubar for sibling menu navigation. |
+| `ArrowLeft` | Inside a submenu popup: closes the submenu and returns focus to the sub-trigger. In a menubar context: delegates to the menubar for sibling menu navigation. |
+| `Home` | Inside the popup: moves focus to the first enabled item. |
+| `End` | Inside the popup: moves focus to the last enabled item. |
+| `Escape` | Inside the popup: closes the menu (and optionally its parent when `closeParentOnEsc` is set) and returns focus to the trigger. |
+| `Tab` | Inside the popup: closes the menu and allows natural tab navigation to continue. |
+| Character keys | Inside the popup: typeahead — jumps focus to the first item whose label starts with the typed character(s). |

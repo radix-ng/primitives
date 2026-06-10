@@ -166,3 +166,12 @@ A button that toggles the panel. Reads everything from the root context; it expo
 ### Panel
 
 `RdxCollapsiblePanelDirective`
+
+## Accessibility
+
+### Keyboard Interactions
+
+| Key     | Description                              |
+| ------- | ---------------------------------------- |
+| `Space` | Toggles the collapsible panel open/closed. |
+| `Enter` | Toggles the collapsible panel open/closed. |

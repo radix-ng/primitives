@@ -31,14 +31,14 @@ so numbers are read and displayed according to the chosen `locale` and `format` 
 
 ```ts
 import {
-    RdxNumberFieldRoot,
-    RdxNumberFieldGroup,
-    RdxNumberFieldInput,
-    RdxNumberFieldHiddenInput,
-    RdxNumberFieldIncrement,
-    RdxNumberFieldDecrement,
-    RdxNumberFieldScrubArea,
-    RdxNumberFieldScrubAreaCursor
+  RdxNumberFieldRoot,
+  RdxNumberFieldGroup,
+  RdxNumberFieldInput,
+  RdxNumberFieldHiddenInput,
+  RdxNumberFieldIncrement,
+  RdxNumberFieldDecrement,
+  RdxNumberFieldScrubArea,
+  RdxNumberFieldScrubAreaCursor
 } from '@radix-ng/primitives/number-field';
 ```
 
@@ -48,16 +48,16 @@ Import all parts and piece them together.
 
 ```html
 <div rdxNumberFieldRoot>
-    <input rdxNumberFieldHiddenInput />
-    <span rdxNumberFieldScrubArea>
-        <label>Label</label>
-        <span rdxNumberFieldScrubAreaCursor></span>
-    </span>
-    <div rdxNumberFieldGroup>
-        <button rdxNumberFieldDecrement></button>
-        <input rdxNumberFieldInput />
-        <button rdxNumberFieldIncrement></button>
-    </div>
+  <input rdxNumberFieldHiddenInput />
+  <span rdxNumberFieldScrubArea>
+    <label>Label</label>
+    <span rdxNumberFieldScrubAreaCursor></span>
+  </span>
+  <div rdxNumberFieldGroup>
+    <button rdxNumberFieldDecrement></button>
+    <input rdxNumberFieldInput />
+    <button rdxNumberFieldIncrement></button>
+  </div>
 </div>
 ```
 
@@ -146,11 +146,11 @@ Adheres to the [Spinbutton WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/
 
 ### Keyboard Interactions
 
-| Key          | Description                                  |
-| ------------ | -------------------------------------------- |
-| Arrow Up     | Increase the value by `step`                 |
-| Arrow Down   | Decrease the value by `step`                 |
-| Shift + Arrow | Increase/decrease by `largeStep`            |
-| Alt + Arrow  | Increase/decrease by `smallStep`             |
-| Home         | Set the value to `min` (if provided)         |
-| End          | Set the value to `max` (if provided)         |
+| Key                               | Description                           |
+| --------------------------------- | ------------------------------------- |
+| `ArrowUp`                         | Increase the value by `step`.         |
+| `ArrowDown`                       | Decrease the value by `step`.         |
+| `Shift` + `ArrowUp` / `ArrowDown` | Increase/decrease by `largeStep`.     |
+| `Alt` + `ArrowUp` / `ArrowDown`   | Increase/decrease by `smallStep`.     |
+| `Home`                            | Set the value to `min` (if provided). |
+| `End`                             | Set the value to `max` (if provided). |

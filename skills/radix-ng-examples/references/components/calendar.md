@@ -1,6 +1,6 @@
 # Calendar
 
-####  Displays dates and days of the week, facilitating date-related interactions.
+#### Displays dates and days of the week, facilitating date-related interactions.
 
 ```typescript
 import { Component } from '@angular/core';
@@ -124,44 +124,35 @@ npm install @radix-ng/primitives
 Import all parts and piece them together.
 
 ```html
-<div
-    rdxCalendarRoot
-    #root="rdxCalendarRoot">
-    <div rdxCalendarHeader>
-        <button type="button" rdxCalendarPrev></button>
-        <div #head="rdxCalendarHeading" rdxCalendarHeading>
-            {{ head.headingValue() }}
-        </div>
-        <button type="button" rdxCalendarNext></button>
-    </div>
+<div rdxCalendarRoot #root="rdxCalendarRoot">
+  <div rdxCalendarHeader>
+    <button type="button" rdxCalendarPrev></button>
+    <div #head="rdxCalendarHeading" rdxCalendarHeading>{{ head.headingValue() }}</div>
+    <button type="button" rdxCalendarNext></button>
+  </div>
 
-    <table rdxCalendarGrid>
-        @for (month of root.months(); track $index) {
-            <thead rdxCalendarGridHead>
-                <tr rdxCalendarGridRow>
-                    @for (day of root.weekDays(); track $index) {
-                        <th rdxCalendarHeadCell>{{ day }}</th>
-                    }
-                </tr>
-            </thead>
-            <tbody rdxCalendarGridBody>
-                @for (weekDates of month.weeks; track $index) {
-                    <tr rdxCalendarGridRow>
-                        @for (weekDate of weekDates; track $index) {
-                            <td rdxCalendarCell>
-                                <div
-                                    #cell="rdxCalendarCellTrigger"
-                                    rdxCalendarCellTrigger
-                                >
-                                    {{ cell.dayValue() }}
-                                </div>
-                            </td>
-                        }
-                    </tr>
-                }
-            </tbody>
+  <table rdxCalendarGrid>
+    @for (month of root.months(); track $index) {
+    <thead rdxCalendarGridHead>
+      <tr rdxCalendarGridRow>
+        @for (day of root.weekDays(); track $index) {
+        <th rdxCalendarHeadCell>{{ day }}</th>
         }
-    </table>
+      </tr>
+    </thead>
+    <tbody rdxCalendarGridBody>
+      @for (weekDates of month.weeks; track $index) {
+      <tr rdxCalendarGridRow>
+        @for (weekDate of weekDates; track $index) {
+        <td rdxCalendarCell>
+          <div #cell="rdxCalendarCellTrigger" rdxCalendarCellTrigger>{{ cell.dayValue() }}</div>
+        </td>
+        }
+      </tr>
+      }
+    </tbody>
+    }
+  </table>
 </div>
 ```
 
@@ -187,18 +178,18 @@ Import all parts and piece them together.
 
 `RdxCalendarHeadingDirective` Heading for displaying the current month and year.
 
-| exportAs       | Description |
-| ------------- | --------- |
-| `headingValue`  | `string` Current month and year |
+| exportAs       | Description                     |
+| -------------- | ------------------------------- |
+| `headingValue` | `string` Current month and year |
 
 ### Grid
 
 `RdxCalendarGridDirective` Container for wrapping the calendar grid.
 
-| Data Attribute     | Value |
-| ------------------ | --------- |
-| `[data-readonly]`  | Present when readonly |
-| `[data-disabled]`  | Present when disabled |
+| Data Attribute    | Value                 |
+| ----------------- | --------------------- |
+| `[data-readonly]` | Present when readonly |
+| `[data-disabled]` | Present when disabled |
 
 ### Grid Head
 
@@ -220,24 +211,24 @@ Import all parts and piece them together.
 
 `RdxCalendarCellDirective` Container for wrapping the calendar cells as `td`.
 
-| Data Attribute     | Value |
-| ------------------ | --------- |
-| `[data-disabled]`  | Present when disabled |
+| Data Attribute    | Value                 |
+| ----------------- | --------------------- |
+| `[data-disabled]` | Present when disabled |
 
 ### Cell Trigger
 
 `RdxCalendarCellTriggerDirective` Interactable container for displaying the cell dates. Clicking it selects the date.
 
-| Data Attribute     | Value |
-| ------------------ | --------- |
-| `[data-selected]`  | Present when selected |
-| `[data-value]`  | The ISO string value of the date. |
-| `[data-disabled]`  | Present when disabled |
-| `[data-unavailable]`  | Present when unavailable |
-| `[data-today]`  | Present when today |
-| `[data-outside-view]`  | Present when the date is outside the current month it is displayed in. |
-| `[data-outside-visible-view]`  | Present when the date is outside the months that are visible on the calendar. |
-| `[data-focused]`  | Present when focused |
+| Data Attribute                | Value                                                                         |
+| ----------------------------- | ----------------------------------------------------------------------------- |
+| `[data-selected]`             | Present when selected                                                         |
+| `[data-value]`                | The ISO string value of the date.                                             |
+| `[data-disabled]`             | Present when disabled                                                         |
+| `[data-unavailable]`          | Present when unavailable                                                      |
+| `[data-today]`                | Present when today                                                            |
+| `[data-outside-view]`         | Present when the date is outside the current month it is displayed in.        |
+| `[data-outside-visible-view]` | Present when the date is outside the months that are visible on the calendar. |
+| `[data-focused]`              | Present when focused                                                          |
 
 ## Examples
 
@@ -1057,9 +1048,9 @@ export class CalendarNumberOfMonths {
 ## Accessibility
 
 ### Keyboard Interactions
-| Key     | Description |
-| ------------------ | --------- |
-| `Tab`  | When focus moves onto the calendar, focuses the first navigation button. |
-| `Space`  |  When the focus is on either `CalendarNext` or `CalendarPrev`, it navigates the calendar. Otherwise, it selects the date.  |
-| `Enter`  |  When the focus is on either `CalendarNext` or `CalendarPrev`, it navigates the calendar. Otherwise, it selects the date.  |
-| `ArrowLeft` `ArrowRight` `ArrowUp` `ArrowDown`  |  When the focus is on `CalendarCellTrigger`, it navigates the dates, changing the month/year/decade if necessary.  |
+
+| Key                                                  | Description                                                                                               |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `Tab`                                                | When focus moves onto the calendar, focuses the first navigation button.                                  |
+| `Space` / `Enter`                                    | When focus is on `CalendarNext` or `CalendarPrev`, navigates the calendar. Otherwise, selects the date.   |
+| `ArrowLeft` / `ArrowRight` / `ArrowUp` / `ArrowDown` | When focus is on `CalendarCellTrigger`, navigates the dates, changing the month/year/decade if necessary. |

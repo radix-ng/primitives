@@ -465,15 +465,17 @@ export class AccordionKeepMountedExample {
 }
 ```
 
-## Keyboard interactions
+## Accessibility
 
-| Key                        | Description                                                                          |
-| -------------------------- | ----------------------------------------------------------------------------------- |
-| `Space` / `Enter`          | Toggles the focused item (in single non-collapsible mode an open item stays open).   |
-| `ArrowDown` / `ArrowRight` | Moves focus to the next trigger, wrapping to the first when `loopFocus` is enabled.  |
+### Keyboard Interactions
+
+| Key                        | Description                                                                            |
+| -------------------------- | -------------------------------------------------------------------------------------- |
+| `Space` / `Enter`          | Toggles the focused item (in single non-collapsible mode an open item stays open).     |
+| `ArrowDown` / `ArrowRight` | Moves focus to the next trigger, wrapping to the first when `loopFocus` is enabled.    |
 | `ArrowUp` / `ArrowLeft`    | Moves focus to the previous trigger, wrapping to the last when `loopFocus` is enabled. |
-| `Home`                     | Moves focus to the first trigger.                                                    |
-| `End`                      | Moves focus to the last trigger.                                                     |
+| `Home`                     | Moves focus to the first trigger.                                                      |
+| `End`                      | Moves focus to the last trigger.                                                       |
 
 Arrow keys follow `orientation`: Up/Down for vertical accordions, Left/Right for horizontal ones.
 
@@ -481,13 +483,13 @@ Arrow keys follow `orientation`: Up/Down for vertical accordions, Left/Right for
 
 State is exposed through `data-*` attributes for styling:
 
-| Attribute         | Parts                          | Values                                                       |
-| ----------------- | ------------------------------ | ----------------------------------------------------------- |
-| `data-state`      | item, header, trigger, content | `"open"` \| `"closed"`                                       |
-| `data-disabled`   | root, item, header, content    | Present when disabled                                        |
-| `data-orientation`| root, item, header, trigger, content | `"horizontal"` \| `"vertical"`                        |
-| `data-index`      | item, header, trigger, content | Zero-based position of the item                              |
-| `data-panel-open` | trigger                        | Present while the trigger's panel is open (e.g. rotate a chevron) |
+| Attribute          | Parts                                | Values                                                            |
+| ------------------ | ------------------------------------ | ----------------------------------------------------------------- |
+| `data-state`       | item, header, trigger, content       | `"open"` \| `"closed"`                                            |
+| `data-disabled`    | root, item, header, content          | Present when disabled                                             |
+| `data-orientation` | root, item, header, trigger, content | `"horizontal"` \| `"vertical"`                                    |
+| `data-index`       | item, header, trigger, content       | Zero-based position of the item                                   |
+| `data-panel-open`  | trigger                              | Present while the trigger's panel is open (e.g. rotate a chevron) |
 
 ## API Reference
 

@@ -92,9 +92,9 @@ description: |
 ## Import     (code block)
 ## Anatomy    (HTML block showing all parts)
 ## Examples   (### Title + one-line desc + <Canvas of={Stories.X} /> per example)
-## Keyboard interactions  (table, if applicable)
-## Data attributes  (table, if the primitive exposes data-* state)
+## Data attributes  (optional table, if the primitive exposes data-* state separately)
 ## API Reference  (### per part → <ArgTypes of={Directive} /> only for parts with inputs/outputs)
+## Accessibility  (a11y notes + a ### Keyboard Interactions table; goes LAST — see rules below)
 ```
 
 - **Surface `Default` with `<Primary />` (+ `<Controls />`)**, not `<Canvas of={Default}>` — see checklist item 1. A simple primitive may instead use `<Canvas sourceState="hidden" of={Stories.SomeStandaloneStory} />` as the hero (e.g. Button uses `Variants`).
@@ -102,6 +102,30 @@ description: |
 - **API Reference parts are `###` subheadings** under the `## API Reference` `##` — never repeat `##` for each directive (that makes them siblings of API Reference, not children).
 - **No empty `<ArgTypes>` tables.** Parts with no inputs → one-line prose note instead.
 - Imports at the top: Storybook blocks (incl. `Primary`, `Controls`) → `* as Stories` → individual directive classes for ArgTypes.
+
+### Keyboard Interactions & Accessibility (canonical convention)
+
+Every keyboard-interactive primitive documents its keys the same way. Match this exactly:
+
+- **Nesting & placement.** A `## Accessibility` section holds a `### Keyboard Interactions` subsection
+  (Title Case, level 3). `## Accessibility` is the **last** section on the page, after `## API Reference`.
+  Never use a standalone `## Keyboard interactions` heading. If `## Accessibility` already exists, add the
+  subsection inside it — never a second Accessibility section.
+- **Table shape.** `| Key | Description |`. One key (or key combo) per row. Descriptions are concise and
+  end with a period. (Prettier aligns the pipes — don't hand-pad.)
+- **Key formatting.** Each key token in backticks. Arrow keys are `ArrowUp` / `ArrowDown` / `ArrowLeft` /
+  `ArrowRight` (no space, not "Arrow Up"). Join alternatives with `/` (e.g. `Enter` / `Space`); join
+  chords with `+` (e.g. `Shift` + `Tab`). Use a `Character keys` row for typeahead. Function keys like
+  `F8` also go in backticks.
+- **Ground every key in source — never invent.** A key belongs in the table only if you can trace it to a
+  real handler: a `(keydown.*)` host listener, `useArrowNavigation`/roving-focus, a native `<button>`
+  trigger (Space/Enter activation counts), or a composed layer (`dismissable-layer` → `Escape`;
+  `focus-scope` → `Tab` / `Shift` + `Tab`). If a primitive has no keyboard handling at all (purely
+  pointer-driven, e.g. Toast), **omit the section** rather than fabricate one.
+- **User-facing language.** Describe behavior, not implementation — never name internal directives
+  (`RdxDismissableLayer`, `RdxEscapeKeyDown`, "roving-focus group") in the table.
+- **Reference sections to copy:** Tabs, Menu (rich nav + typeahead), Dialog (Escape + focus trap),
+  Time Field / Date Field (segmented input), Switch / Toggle (minimal Space/Enter).
 
 ### TOC gotcha — real headings in demos
 

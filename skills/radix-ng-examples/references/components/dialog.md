@@ -985,3 +985,14 @@ It reads everything from context and exposes no inputs.
 ### Backdrop, Title, Description, and Close
 
 These parts read their behavior and state from context and do not expose additional inputs or outputs.
+
+## Accessibility
+
+### Keyboard Interactions
+
+| Key               | Description                                                                       |
+| ----------------- | --------------------------------------------------------------------------------- |
+| `Enter` / `Space` | Opens the dialog when focus is on the trigger; activates the focused close button. |
+| `Escape`          | Closes the dialog. Only the topmost dialog closes when dialogs are nested.        |
+| `Tab`             | Moves focus to the next focusable element; focus is trapped within the dialog.    |
+| `Shift` + `Tab`   | Moves focus to the previous focusable element inside the dialog.                  |

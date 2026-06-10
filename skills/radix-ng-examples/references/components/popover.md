@@ -804,3 +804,14 @@ optional `anchor` input overrides the trigger only for positioning.
 ### Arrow, Backdrop, Title, Description, and Close
 
 These parts read their behavior and state from context and do not expose additional inputs or outputs.
+
+## Accessibility
+
+### Keyboard Interactions
+
+| Key               | Description                                                                                       |
+| ----------------- | ------------------------------------------------------------------------------------------------- |
+| `Enter` / `Space` | Opens or closes the popover when focus is on the trigger.                                         |
+| `Escape`          | Closes the popover. Only the topmost layer closes when layers are nested.                         |
+| `Tab`             | Moves focus to the next tabbable element inside the popup. In modal / trap-focus mode focus wraps to the first. |
+| `Shift` + `Tab`   | Moves focus to the previous tabbable element inside the popup. In modal / trap-focus mode focus wraps to the last. |

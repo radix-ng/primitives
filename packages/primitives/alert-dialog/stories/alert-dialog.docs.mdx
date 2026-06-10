@@ -134,3 +134,14 @@ dismissal, `role="alertdialog"`).
 
 These are thin wrappers around the matching dialog parts and read their behavior from context. See the
 Dialog docs for their full reference.
+
+## Accessibility
+
+### Keyboard Interactions
+
+| Key               | Description                                                                               |
+| ----------------- | ----------------------------------------------------------------------------------------- |
+| `Enter` / `Space` | Opens the alert dialog when focus is on the trigger; activates the focused action button. |
+| `Escape`          | Closes the alert dialog. Only the topmost dialog closes when dialogs are nested.          |
+| `Tab`             | Moves focus to the next focusable element; focus is trapped within the popup.             |
+| `Shift` + `Tab`   | Moves focus to the previous focusable element inside the popup.                           |

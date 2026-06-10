@@ -404,13 +404,13 @@ export class CheckboxValidationExample {
 
 There are two ways to build a "select all" parent. Pick by how much you want to own:
 
-| | **Select all** (below) | **Checkbox group** |
-| --- | --- | --- |
-| Source of truth | your own model (one boolean per item) | the group's `string[]` value (the checked `name`s) |
-| Parent / indeterminate logic | written by hand in the component | built in (`parent` + `allValues`) |
-| Parent click | flat toggle: all ↔ none | remembers the partial selection: partial → all → none → partial |
-| Disabled child during select-all | you handle it | preserved automatically |
-| Forms integration | wire each control yourself | the group is one control (`[(value)]` / `ngModel` / reactive forms) |
+|                                  | **Select all** (below)                | **Checkbox group**                                                  |
+| -------------------------------- | ------------------------------------- | ------------------------------------------------------------------- |
+| Source of truth                  | your own model (one boolean per item) | the group's `string[]` value (the checked `name`s)                  |
+| Parent / indeterminate logic     | written by hand in the component      | built in (`parent` + `allValues`)                                   |
+| Parent click                     | flat toggle: all ↔ none               | remembers the partial selection: partial → all → none → partial     |
+| Disabled child during select-all | you handle it                         | preserved automatically                                             |
+| Forms integration                | wire each control yourself            | the group is one control (`[(value)]` / `ngModel` / reactive forms) |
 
 Reach for **Select all** when you already manage the items yourself and just need the derived parent
 state. Reach for the **Checkbox group** when you want the array value and the Base UI parent behavior
@@ -624,6 +624,6 @@ Adheres to the [tri-state Checkbox WAI-ARIA design pattern](https://www.w3.org/W
 
 ### Keyboard Interactions
 
-| Key   | Description                   |
-| ----- | ----------------------------- |
-| Space | Checks/unchecks the checkbox. |
+| Key     | Description                   |
+| ------- | ----------------------------- |
+| `Space` | Checks/unchecks the checkbox. |

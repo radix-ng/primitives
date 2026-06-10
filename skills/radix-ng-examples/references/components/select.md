@@ -145,22 +145,22 @@ export class SelectDefault {
 
 ```typescript
 import {
-    RdxSelectContent,
-    RdxSelectGroup,
-    RdxSelectItem,
-    RdxSelectItemIndicator,
-    RdxSelectItemText,
-    RdxSelectLabel,
-    RdxSelectPopperPositionContent,
-    RdxSelectPopperPositionWrapper,
-    RdxSelectPortal,
-    RdxSelectPortalPresence,
-    RdxSelectRoot,
-    RdxSelectScrollDownButton,
-    RdxSelectScrollUpButton,
-    RdxSelectTrigger,
-    RdxSelectValue,
-    RdxSelectViewport
+  RdxSelectContent,
+  RdxSelectGroup,
+  RdxSelectItem,
+  RdxSelectItemIndicator,
+  RdxSelectItemText,
+  RdxSelectLabel,
+  RdxSelectPopperPositionContent,
+  RdxSelectPopperPositionWrapper,
+  RdxSelectPortal,
+  RdxSelectPortalPresence,
+  RdxSelectRoot,
+  RdxSelectScrollDownButton,
+  RdxSelectScrollUpButton,
+  RdxSelectTrigger,
+  RdxSelectValue,
+  RdxSelectViewport
 } from '@radix-ng/primitives/select';
 ```
 
@@ -174,36 +174,36 @@ offsets.
 
 ```html
 <ng-container rdxSelectRoot>
-    <button rdxSelectTrigger>
-        <span #v="rdxSelectedValue" rdxSelectValue placeholder="Pick one…">{{ v.slotText() }}</span>
-        <!-- chevron icon -->
-    </button>
+  <button rdxSelectTrigger>
+    <span #v="rdxSelectedValue" rdxSelectValue placeholder="Pick one…">{{ v.slotText() }}</span>
+    <!-- chevron icon -->
+  </button>
 
-    <div rdxSelectPortal>
-        <ng-template rdxSelectPortalPresence>
-            <div rdxSelectContent>
-                <div sideOffset="4" align="start" rdxSelectPopperPositionWrapper>
-                    <div rdxSelectPopperPositionContent>
-                        <!-- optional scroll-up button -->
-                        <div rdxSelectScrollUpButton><!-- up icon --></div>
+  <div rdxSelectPortal>
+    <ng-template rdxSelectPortalPresence>
+      <div rdxSelectContent>
+        <div sideOffset="4" align="start" rdxSelectPopperPositionWrapper>
+          <div rdxSelectPopperPositionContent>
+            <!-- optional scroll-up button -->
+            <div rdxSelectScrollUpButton><!-- up icon --></div>
 
-                        <div rdxSelectViewport>
-                            <div rdxSelectLabel>Group label</div>
-                            <div rdxSelectGroup>
-                                <div value="apple" rdxSelectItem>
-                                    <span rdxSelectItemIndicator><!-- check icon --></span>
-                                    <span rdxSelectItemText>Apple</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- optional scroll-down button -->
-                        <div rdxSelectScrollDownButton><!-- down icon --></div>
-                    </div>
+            <div rdxSelectViewport>
+              <div rdxSelectLabel>Group label</div>
+              <div rdxSelectGroup>
+                <div value="apple" rdxSelectItem>
+                  <span rdxSelectItemIndicator><!-- check icon --></span>
+                  <span rdxSelectItemText>Apple</span>
                 </div>
+              </div>
             </div>
-        </ng-template>
-    </div>
+
+            <!-- optional scroll-down button -->
+            <div rdxSelectScrollDownButton><!-- down icon --></div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
 </ng-container>
 ```
 
@@ -215,26 +215,26 @@ the behavior of a native `<select>`. Use `rdxSelectItemAlignedPosition` and
 
 ```html
 <ng-container rdxSelectRoot>
-    <button rdxSelectTrigger>
-        <span #v="rdxSelectedValue" rdxSelectValue>{{ v.slotText() }}</span>
-    </button>
+  <button rdxSelectTrigger>
+    <span #v="rdxSelectedValue" rdxSelectValue>{{ v.slotText() }}</span>
+  </button>
 
-    <div rdxSelectPortal>
-        <ng-template rdxSelectPortalPresence>
-            <div rdxSelectContent>
-                <div rdxSelectItemAlignedPosition>
-                    <div rdxSelectItemAlignedPositionContent>
-                        <div rdxSelectViewport>
-                            <div value="apple" rdxSelectItem>
-                                <span rdxSelectItemIndicator><!-- check icon --></span>
-                                <span rdxSelectItemText>Apple</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+  <div rdxSelectPortal>
+    <ng-template rdxSelectPortalPresence>
+      <div rdxSelectContent>
+        <div rdxSelectItemAlignedPosition>
+          <div rdxSelectItemAlignedPositionContent>
+            <div rdxSelectViewport>
+              <div value="apple" rdxSelectItem>
+                <span rdxSelectItemIndicator><!-- check icon --></span>
+                <span rdxSelectItemText>Apple</span>
+              </div>
             </div>
-        </ng-template>
-    </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
 </ng-container>
 ```
 
@@ -789,17 +789,19 @@ export class SelectAlignedPositionWithScroll {
 }
 ```
 
-## Keyboard interactions
+## Accessibility
 
-| Key | Behavior |
-| --- | --- |
-| <kbd>Enter</kbd> / <kbd>Space</kbd> | Opens the popup when the trigger is focused; selects the highlighted item when open. |
-| <kbd>ArrowDown</kbd> | Highlights the next item. |
-| <kbd>ArrowUp</kbd> | Highlights the previous item. |
-| <kbd>Home</kbd> | Highlights the first item. |
-| <kbd>End</kbd> | Highlights the last item. |
-| <kbd>Escape</kbd> | Closes the popup without changing the value. |
-| Character keys | Typeahead — jumps to the first item whose text starts with the typed character. |
+### Keyboard Interactions
+
+| Key               | Description                                                                          |
+| ----------------- | ------------------------------------------------------------------------------------ |
+| `Enter` / `Space` | Opens the popup when the trigger is focused; selects the highlighted item when open. |
+| `ArrowDown`       | Highlights the next item.                                                            |
+| `ArrowUp`         | Highlights the previous item.                                                        |
+| `Home`            | Highlights the first item.                                                           |
+| `End`             | Highlights the last item.                                                            |
+| `Escape`          | Closes the popup without changing the value.                                         |
+| Character keys    | Typeahead — jumps to the first item whose text starts with the typed character.      |
 
 ## API Reference
 

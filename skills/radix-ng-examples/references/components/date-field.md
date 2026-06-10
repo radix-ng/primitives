@@ -200,3 +200,14 @@ export class DateFieldInvalid {
     }
 }
 ```
+
+## Accessibility
+
+### Keyboard Interactions
+
+| Key                        | Description                                          |
+| -------------------------- | ---------------------------------------------------- |
+| `ArrowLeft` / `ArrowRight` | Move focus to the previous / next segment.           |
+| `ArrowUp` / `ArrowDown`    | Increment / decrement the focused segment.           |
+| `0`–`9`                    | Type a value directly into the focused segment.      |
+| `Backspace`                | Clear the last digit of the focused segment's value. |

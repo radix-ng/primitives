@@ -393,3 +393,12 @@ Positions the popup against the active trigger or a custom anchor.
 ### Popup
 
 The floating preview surface. It exposes dismiss events and transition attributes.
+
+## Accessibility
+
+### Keyboard Interactions
+
+| Key                     | Description                                                                                       |
+| ----------------------- | ------------------------------------------------------------------------------------------------- |
+| `Tab` / `Shift` + `Tab` | Moves focus onto the trigger (opening the preview card after the delay) or away from it (closing it). |
+| `Escape`                | Closes the open preview card.                                                                     |
