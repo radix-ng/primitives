@@ -33,6 +33,8 @@ Angular developers building their own design systems or adopting accessible head
 - No opinionated design tokens (consumers bring their own)
 - Not a full component library — consumers compose the headless primitives with their own styling
 
-## Available primitives (49+)
+## Available primitives (50+)
 
-accordion, alert-dialog, arrow, aspect-ratio, avatar, button, calendar, checkbox, collapsible, collection, config, context-menu, core, cropper, date-field, date-time, dialog, dismissable-layer, editable, field, fieldset, focus-guards, focus-scope, input, label, menu, menubar, meter, navigation-menu, number-field, pagination, popover, popper, portal, presence, preview-card, progress, radio, roving-focus, scroll-area, select, separator, slider, switch, tabs, time-field, toast, toggle, toggle-group, toolbar, tooltip, visually-hidden
+accordion, alert-dialog, arrow, aspect-ratio, avatar, button, calendar, checkbox, collapsible, collection, config, context-menu, core, cropper, date-field, date-time, dialog, dismissable-layer, editable, field, fieldset, focus-guards, focus-scope, form, input, label, menu, menubar, meter, navigation-menu, number-field, pagination, popover, popper, portal, presence, preview-card, progress, radio, roving-focus, scroll-area, select, separator, slider, switch, tabs, time-field, toast, toggle, toggle-group, toolbar, tooltip, visually-hidden
+
+The form layer composes as **Form → Fieldset → Field → control** (`input`, checkbox, radio, …): `field` owns one control's label/description/error/state, `fieldset` groups fields, and `form` (top layer) maps server errors onto fields by name, intercepts submit, and resets field state. See architecture.md for the cross-entry dependency direction.
