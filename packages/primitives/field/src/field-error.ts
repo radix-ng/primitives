@@ -31,6 +31,13 @@ export class RdxFieldError {
      */
     readonly id = input(`rdx-field-error-${errorId++}`);
 
+    /**
+     * The field's external messages (state provider's, then enclosing Form's), `[]` when none. Render
+     * them explicitly via the `exportAs` reference — the directive never injects text content itself:
+     * `<p rdxFieldError #err="rdxFieldError">{{ err.messages().join(' ') }}</p>`.
+     */
+    readonly messages = this.rootContext.messages;
+
     constructor() {
         effect((onCleanup) => {
             const id = this.id();

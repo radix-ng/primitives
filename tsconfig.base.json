@@ -35,6 +35,7 @@
             "@radix-ng/primitives/editable": ["packages/primitives/editable/index.ts"],
             "@radix-ng/primitives/field": ["packages/primitives/field/index.ts"],
             "@radix-ng/primitives/fieldset": ["packages/primitives/fieldset/index.ts"],
+            "@radix-ng/primitives/form": ["packages/primitives/form/index.ts"],
             "@radix-ng/primitives/input": ["packages/primitives/input/index.ts"],
             "@radix-ng/primitives/label": ["packages/primitives/label/index.ts"],
             "@radix-ng/primitives/focus-scope": ["packages/primitives/focus-scope/index.ts"],

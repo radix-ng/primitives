@@ -30,7 +30,7 @@ Working examples built on `@radix-ng/primitives`. Full source is **bundled offli
 To style a primitive with a custom design system, pair an example with the data-attribute contract in
 the `radix-ng` skill (`references/styling-contract.json`).
 
-Total: **207 examples** across **40 components**.
+Total: **211 examples** across **41 components**.
 
 ## Components
 
@@ -202,6 +202,15 @@ Full source (all examples): [`references/components/fieldset.md`](./references/c
 - **Default**
 - **Disabled**
 - **Signup form**
+
+### Form
+
+Full source (all examples): [`references/components/form.md`](./references/components/form.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-form--docs)
+
+- **Server errors with clear-on-edit**
+- **Reset**
+- **Reactive Forms**
+- **Native controls**
 
 ### Input
 

@@ -28,6 +28,10 @@ export const appRoutes: Route[] = [
                 loadComponent: () => import('./components/combobox/page')
             },
             {
+                path: 'form',
+                loadComponent: () => import('./components/form/page')
+            },
+            {
                 path: 'label',
                 loadComponent: () => import('./components/label/page')
             },

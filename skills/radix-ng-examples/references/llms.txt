@@ -23,6 +23,7 @@ Full documentation in one file: https://radix-ng.com/llms-full.txt
 - [Editable](https://radix-ng.com/components/editable.md): An inline text field that swaps a read-only preview for an editable input.
 - [Field](https://radix-ng.com/components/field.md): Groups a control with accessible label, description, error message, and field state.
 - [Fieldset](https://radix-ng.com/components/fieldset.md): Groups related form controls with a legend and shared disabled state.
+- [Form](https://radix-ng.com/components/form.md): The top of the forms layer cake: aggregates fields, maps server errors by name, and intercepts submit and reset.
 - [Input](https://radix-ng.com/components/input.md): A native text input with headless state attributes and Field integration.
 - [Label](https://radix-ng.com/components/label.md): Renders an accessible label associated with controls.
 - [Menu](https://radix-ng.com/components/menu.md): A headless dropdown menu anchored to a trigger button.

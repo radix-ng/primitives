@@ -285,18 +285,25 @@ now a **mandatory gate** before the Angular 22 bump is announced as Signal
 Forms-compatible. Note: `implements` is a **compile-time** guarantee — runtime
 binding of `[formField]` to these directives stays unverified until the spike.
 
-## Form layer (planned)
+## Form layer (shipped 2026-06-11)
 
-The `add-form-root` OpenSpec change (`openspec/changes/add-form-root/`) adds
-`RdxFormRoot` with an **`RdxFormState`** provider seam — the form-level
-counterpart of prep #4 (`invalid`/`dirty`/`touched`/`submitting`/`errorsFor`,
-structural accessors, `setStateProvider`). It also extends `RdxFieldState` with
-an optional `errors` accessor so Signal Forms `ValidationError[]` _content_ (not
-just the invalid boolean) can flow into `rdxFieldError` (`messages()`). The
+`RdxFormRoot` (`@radix-ng/primitives/form`, `form[rdxFormRoot]`) ships with an
+**`RdxFormState`** provider seam — the form-level counterpart of prep #4
+(`invalid`/`dirty`/`touched`/`submitting`/`errorsFor`, structural accessors,
+`setStateProvider`/`hasStateProvider`). `RdxFieldState` also gained an optional
+`errors` accessor (`() => RdxValidationError[]`) so Signal Forms
+`ValidationError[]` _content_ (not just the invalid boolean) flows into
+`rdxFieldError` (`messages()`, provider messages before Form messages). The
 Angular 22 adapter then becomes a pair: `[rdxSignalField]` (ADR 0004) +
-`[rdxSignalForm]`. Signal Forms' `submit()` owns the submit lifecycle and
-server-error application — while an `RdxFormState` provider owns `errorsFor`,
-Form's own `errors`-input/clear-on-edit machinery is inert by design.
+`[rdxSignalForm]` (registers an `RdxFormState`). Signal Forms' `submit()` owns
+the submit lifecycle and server-error application — while an `RdxFormState`
+provider owns `errorsFor`, Form's own `errors`-input/clear-on-edit machinery is
+inert by design; the submit guard reads `provider.invalid()` when owned, but
+first-invalid **focus** always uses the DOM-ordered field registry. Adapters must
+allow an explicit `Field.name` to win, since Signal Forms' path-derived names may
+not match server error keys. Entry direction is `field` → `form` (Form never
+imports Field; the registration interface uses structural `() =>` accessors to
+keep the ng-packagr graph acyclic).
 
 ## Related
 

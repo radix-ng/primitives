@@ -15,10 +15,10 @@ This keeps the same control usable across every Angular form API, and means the 
 write today carries forward as you adopt newer form systems. See [Why this is
 forward-compatible](#why-this-is-forward-compatible) for how that holds up against Signal Forms.
 
-## Two layers
+## Three parts
 
-Form support in Radix NG is split into two independent layers. You can use either on its own, but they
-are designed to compose.
+Form support in Radix NG is split into independent layers. You can use any on its own, but they are
+designed to compose into **Form → Field → Control**.
 
 1. **The control** — owns the value. Every form control exposes its value as a signal `model()`
    (`value` for value controls, `checked` for toggles) and, where it is not a native element,
@@ -27,10 +27,33 @@ are designed to compose.
    label, description, and error message to the control with `for` / `id` / `aria-describedby`, and
    reflects field state through `data-*` attributes. `Field` does **not** read or own validation; you
    pass state into it from your form model.
+3. **[`Form`](?path=/docs/primitives-form--docs)** — owns the `<form>`. It maps server/external errors
+   onto fields by `name`, clears them as the user edits, intercepts submit (serialized values, focus the
+   first invalid field), and resets field state on native reset. Like Field, it owns no values and runs
+   no validation.
 
-A control works without `Field`, and `Field` works with any control (including native and custom
-ones). Reach for `Field` when a control needs a label, description, error text, or shared
-invalid / disabled / required state.
+A control works without `Field`, `Field` works with any control, and `Form` is optional on top. Reach
+for `Field` when a control needs a label, description, error text, or shared invalid / disabled /
+required state; reach for `Form` when you also need server-error mapping, submit interception, or reset
+handling across the whole form.
+
+## Form: server errors, submit, reset
+
+[`Form`](?path=/docs/primitives-form--docs) (`form[rdxFormRoot]`, entry `@radix-ng/primitives/form`)
+rides the native `<form>`:
+
+- **Server errors** — bind `[errors]="{ email: 'Already taken' }"`. Each key matches a `Field`'s `name`;
+  the matched field becomes invalid and its messages flow to `rdxFieldError` (`err.messages()`). Editing
+  the field clears its error and `onClearErrors` emits the remaining map (treat it like any `*Change`).
+- **Submit** — `onFormSubmit` fires with the form's values serialized from `FormData`
+  (`{ values, event }`); navigation is always prevented. If any field is invalid the Form blocks the
+  emit and focuses the first invalid field instead.
+- **Reset** — native `reset` clears external errors and re-syncs every field's touched/dirty/focused/filled.
+
+`onFormSubmit` vs `(ngSubmit)`: the Form never `stopPropagation`s, so Reactive Forms' `(ngSubmit)` keeps
+firing on the same element — **pick one as your source of truth**. `FormData` only sees native named
+controls; for headless composite widgets (Select, Slider) submit through Reactive Forms (`(ngSubmit)` +
+`form.value`) or render a hidden native input.
 
 ## Control reference
 
@@ -215,6 +238,16 @@ If this state-mapping repeats across a codebase, Radix NG may add an optional, t
 `[rdxSignalField]` adapter directive that reads Signal Forms state and mirrors it onto `Field` — without
 owning the model, running validation, or wrapping `[field]`. See ADR 0004 for the boundaries of that
 adapter.
+
+`Form` is built for the same migration. Signal Forms will own at form level what `Form` does today —
+validity, the `submit(form, action)` lifecycle with a `submitting()` signal, and applying server errors
+returned by the submit action onto fields. `RdxFormRoot` already exposes an `RdxFormState` provider seam
+(`setStateProvider`) mirroring Field's: a future `[rdxSignalForm]` adapter registers one to own
+`invalid` / `dirty` / `touched` / `submitting` and the per-name error source, at which point the
+`errors` input and clear-on-edit go inert (Signal Forms reapplies server errors itself). The migration is
+adapter-only — `RdxFormRoot`'s inputs/outputs, the `data-*` contract, and your Field anatomy do not
+change. Provide an explicit `Field.name` for server-error keys, since Signal Forms' path-derived names
+may not match your backend's.
 
 ## Why this is forward-compatible
 

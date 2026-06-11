@@ -218,9 +218,10 @@ When creating or rewriting primitive stories, follow this format by default:
 ### Form primitives
 
 - `Input` is the headless native text input primitive (`input[rdxInput]`). It can be used standalone, but should be wrapped in `Field` when it needs a label, description, error text, or inherited invalid/disabled/required state.
-- `Field` groups one control with its label, description, error message, and state. Use `rdxFieldRoot`, `rdxFieldLabel`, `rdxFieldDescription`, `rdxFieldError`, and either `rdxFieldControl` or a compatible control such as `rdxInput`.
+- `Field` groups one control with its label, description, error message, and state. Use `rdxFieldRoot`, `rdxFieldLabel`, `rdxFieldDescription`, `rdxFieldError`, and either `rdxFieldControl` or a compatible control such as `rdxInput`. `rdxFieldRoot` takes a `name` (the key an enclosing `Form`'s `errors` map matches), registers with an optional enclosing `Form`, merges external errors into `invalidState`, and exposes matched messages via `rdxFieldError`'s `messages()`.
 - `Fieldset` groups related fields with native `fieldset`/`legend` semantics. Use `fieldset[rdxFieldsetRoot]` and `legend[rdxFieldsetLegend]`; disabled state belongs on the root and is exposed to the legend with `data-disabled`.
-- For larger form demos, prefer composing `Fieldset` → `Field` → `Input` so Storybook and `/primitives/components/*.md` examples show real accessible form structure.
+- `Form` (`form[rdxFormRoot]`, entry `@radix-ng/primitives/form`) is the top layer: it maps server `errors` onto fields by `name` (clearing on edit, `onClearErrors`), intercepts submit (`onFormSubmit` with `FormData`-serialized values, focus first invalid), and resets field state on native reset. It owns no values/validation — `field` → `form` is the only dependency direction (Form never imports Field; keep it acyclic). A `RdxFormState` provider seam mirrors Field's `RdxFieldState` for a future Signal Forms `[rdxSignalForm]` adapter.
+- For larger form demos, prefer composing `Form` → `Fieldset` → `Field` → `Input` so Storybook and `/primitives/components/*.md` examples show real accessible form structure.
 
 ### Storybook handbook index
 

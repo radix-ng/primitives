@@ -10,6 +10,7 @@ import AvatarPage from './app/components/avatar/page';
 import CheckboxPage from './app/components/checkbox/page';
 import CollapsiblePage from './app/components/collapsible/page';
 import ComboboxPage from './app/components/combobox/page';
+import FormPage from './app/components/form/page';
 import LabelPage from './app/components/label/page';
 import SelectPage from './app/components/select/page';
 import SeparatorPage from './app/components/separator/page';
@@ -47,6 +48,8 @@ const cases: readonly SsrCase[] = [
     // render — assert the input placeholder and the combobox role.
     { selector: 'app-combobox', component: ComboboxPage, expects: ['Pick a fruit', 'role="combobox"'] },
     { selector: 'app-collapsible', component: CollapsiblePage, expects: ['Trigger', 'Content'] },
+    // Form + Field render server-side with the external error already mapped onto the named field.
+    { selector: 'app-form', component: FormPage, expects: ['novalidate', 'Email is already taken'] },
     { selector: 'app-label', component: LabelPage, expects: ['Label'] },
     // Select's overlay is portal + presence gated, so on the server (closed) only the trigger renders —
     // assert the placeholder the value shows when nothing is selected.

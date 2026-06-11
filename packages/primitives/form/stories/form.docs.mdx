@@ -1,0 +1,88 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import { RdxFormRoot } from '../src/form-root';
+import * as FormStories from './form.stories';
+
+<Meta title="Primitives/Form" />
+
+# Form
+
+#### The top of the forms layer cake: aggregates fields, maps server errors by name, and intercepts submit and reset.
+
+Form rides the native `<form>` element. It owns no values and runs no validation — Angular form
+systems (or Field inputs) stay the source of validity. It maps external/server errors onto fields by
+`name`, clears them as the user edits, serializes values on submit, focuses the first invalid field,
+and resets field interaction state on native reset.
+
+<Canvas sourceState="hidden" of={FormStories.Default} />
+
+## Features
+
+- ✅ Maps `errors` (server/external) onto fields by `name`; messages flow to `rdxFieldError`.
+- ✅ Clears a field's external error as soon as the user edits it; `onClearErrors` emits the remaining map.
+- ✅ Intercepts submit (`preventDefault`), emitting `onFormSubmit` with values serialized from `FormData`.
+- ✅ Blocks submit when any field is invalid and focuses the first invalid field, in DOM order.
+- ✅ Handles native `reset`: clears errors and re-syncs each field's touched/dirty/focused/filled state.
+- ✅ Aggregate state via `data-invalid`, `data-dirty`, `data-touched`, and `data-submitting`.
+- ✅ Form-system-agnostic: works with plain native controls, Reactive Forms (`(ngSubmit)` still fires), and template-driven forms.
+- ✅ Signal Forms-ready: an `RdxFormState` provider seam lets a future `[rdxSignalForm]` adapter own validity, submitting, and server errors.
+
+## Import
+
+```typescript
+import { RdxFormRoot } from '@radix-ng/primitives/form';
+```
+
+## Anatomy
+
+Compose Form over Fieldset → Field → Control. Each field's `name` is the key the Form's `errors` map
+matches against; the native control's `name` is what `FormData` serializes.
+
+```html
+<form rdxFormRoot [errors]="serverErrors">
+    <fieldset rdxFieldsetRoot>
+        <legend rdxFieldsetLegend>Account</legend>
+        <div rdxFieldRoot name="email">
+            <label rdxFieldLabel>Email</label>
+            <input rdxFieldControl name="email" type="email" />
+            <p rdxFieldError #err="rdxFieldError">{{ err.messages().join(' ') }}</p>
+        </div>
+    </fieldset>
+    <button type="submit">Submit</button>
+</form>
+```
+
+## Examples
+
+### Server errors with clear-on-edit
+
+The submit handler simulates a backend rejecting a taken email (try `taken@example.com`); the returned
+error maps onto the field by `name` and clears when you edit it.
+
+<Canvas of={FormStories.Default} />
+
+### Reset
+
+Native `reset` clears external errors and every field's interaction state, and re-syncs `filled` to the
+reverted values.
+
+<Canvas of={FormStories.Reset} />
+
+### Reactive Forms
+
+Reactive Forms owns validity; Form adds the aggregate attributes and submit handling on the same
+`<form>`. `(ngSubmit)` is the source of truth — Form never stops propagation.
+
+<Canvas of={FormStories.ReactiveForms} />
+
+### Native controls
+
+No `@angular/forms` at all — a valid submit serializes the form's `FormData` into a plain values object
+(repeated names collapse into arrays).
+
+<Canvas of={FormStories.NativeControls} />
+
+## API Reference
+
+### RdxFormRoot
+
+<ArgTypes of={RdxFormRoot} />
