@@ -1,9 +1,9 @@
 # Contributing
 
-Thanks for your interest in contributing to Radix Angular. We're happy to have you here.
+Thanks for your interest in contributing to Radix NG. We're happy to have you here.
 Please take a moment to review this document before submitting your first pull request. We also strongly recommend that you check for open issues and pull requests to see if someone else is working on something similar.
 
-If you need any help, feel free to reach out to [Telegram](https://t.me/radixng).
+If you need any help, feel free to reach out to [Telegram](https://t.me/radixng) or [Discord](https://discord.gg/NaJb2XRWX9).
 
 ## Development
 
@@ -31,9 +31,42 @@ git checkout -b my-new-branch
 
 ### Install dependencies
 
+The repository is an Nx monorepo managed with [pnpm](https://pnpm.io) (see `packageManager` in
+`package.json`; with corepack enabled the right version is picked up automatically):
+
 ```bash
 pnpm install
 ```
+
+## Development workflow
+
+```bash
+pnpm storybook:primitives         # Storybook dev server (http://localhost:4400)
+pnpm primitives:test              # run the Vitest suite
+pnpm primitives:build             # build the library
+pnpm eslint:fix                   # lint + autofix
+pnpm prettier:fix                 # format
+nx run primitives:test --testFile packages/primitives/<name>/__tests__/<file>.spec.ts   # single spec
+```
+
+CI requires **zero lint warnings** (`--max-warnings=0`), clean Prettier formatting, green tests,
+and successful builds. Husky hooks run `lint-staged` on commit and `commitlint` on the commit
+message, so most issues surface before push.
+
+Note on tests: the suite runs **zoneless** — `fakeAsync` / `tick` / `waitForAsync` are unavailable.
+Use `vi.useFakeTimers()`, `await fixture.whenStable()`, or a macrotask to drain async work.
+
+### Generated files (`skills/`)
+
+The LLM-facing docs bundle under `skills/` is **generated** from the Storybook docs and the
+compodoc metadata. If your change touches any `stories/*.docs.mdx` **or a primitive's public API**
+(inputs, outputs, selectors), regenerate and commit the result:
+
+```bash
+pnpm skills:build
+```
+
+CI verifies the bundle is up to date and fails the PR otherwise.
 
 ## Commit Convention
 
@@ -60,7 +93,9 @@ the following categories:
 - `chore`: all changes to the repository that do not fit into any of the above
   categories
 
-  e.g. `feat(components): add new prop to the avatar component`
+  The scope is the primitive (package) name, e.g. `feat(avatar): add new prop`,
+  `fix(select): keep highlight in view on arrow navigation`. Commit messages are checked by
+  commitlint on commit.
 
 If you are interested in the detailed specification you can visit
 https://www.conventionalcommits.org/ or check out the
@@ -104,9 +139,17 @@ export class ExampleDirective {
 ## Components, Directives
 
 - Use `inject` for dependency injection.
-- Avoid using native DOM APIs (e.g., `document.`, `window.`).
-- Avoid using outdated lifecycle hooks (`ngOnChanges`, `ngAfterViewInit`, `ngAfterContentInit`, etc.).
-- Minimize the use of `ngOnInit` and `ngOnDestroy`. Prefer the `constructor`, as it runs within the injection context.
+- Avoid using native DOM APIs (e.g., `document.`, `window.`) directly — guard with
+  `isPlatformBrowser` where unavoidable (the primitives must be SSR-safe).
+- **Avoid lifecycle hooks** in primitive source (`packages/primitives/*/src/**`) — an ESLint rule
+  warns on `ngOnInit` / `ngOnChanges` / `ngOnDestroy` there. Pick the replacement by what the code
+  needs:
+  - DI and host-element work → the **`constructor`** (the host element exists there; `input()`
+    values do **not** yet);
+  - logic that depends on `input()` values → **`effect()` / `computed()` / `linkedSignal()`**;
+  - rendered DOM / measurements → **`afterNextRender()` / `afterRenderEffect()`**, signal
+    `viewChild()` / `contentChild()`;
+  - cleanup → **`inject(DestroyRef).onDestroy(() => …)`**.
 
 ```typescript
 export class MyComponent {
