@@ -5,6 +5,7 @@ export * from './src/create-context';
 export * from './src/date-time';
 export * from './src/handle-and-dispatch-custom-event';
 export * from './src/id-generator';
+export * from './src/item-helpers';
 export * from './src/kbd-constants';
 export * from './src/live-announcer';
 export * from './src/predicates';
@@ -19,7 +20,9 @@ export * from './src/dom/use-resize-observer';
 export * from './src/dom/use-scroll-lock';
 
 export * from './src/composables/use-arrow-navigation';
+export * from './src/composables/use-filter';
 export * from './src/composables/use-grace-area';
+export * from './src/composables/use-list-highlight';
 export * from './src/composables/use-pointer-drag';
 export * from './src/composables/use-transition-status';
 export * from './src/composables/watch';

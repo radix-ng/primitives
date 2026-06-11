@@ -30,7 +30,7 @@ Working examples built on `@radix-ng/primitives`. Full source is **bundled offli
 To style a primitive with a custom design system, pair an example with the data-attribute contract in
 the `radix-ng` skill (`references/styling-contract.json`).
 
-Total: **193 examples** across **39 components**.
+Total: **205 examples** across **40 components**.
 
 ## Components
 
@@ -106,6 +106,23 @@ Full source (all examples): [`references/components/collapsible.md`](./reference
 - **Keep mounted**
 - **Animation**
 - **External trigger**
+
+### Combobox
+
+Full source (all examples): [`references/components/combobox.md`](./references/components/combobox.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-combobox--docs)
+
+- **Default**
+- **Disabled**
+- **Grouped**
+- **Multiple**
+- **Async / external filtering**
+- **Async with multiple selection**
+- **Creatable**
+- **Input inside the popup**
+- **Command palette**
+- **Modal**
+- **Reactive forms**
+- **Empty state**
 
 ### Context Menu
 

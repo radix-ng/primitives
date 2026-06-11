@@ -1,0 +1,279 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './combobox.stories';
+import { RdxComboboxRoot } from '../src/combobox-root';
+import { RdxComboboxInput } from '../src/combobox-input';
+import { RdxComboboxItem } from '../src/combobox-item';
+import { RdxComboboxValue } from '../src/combobox-value';
+import { RdxComboboxChip } from '../src/combobox-chip';
+import { RdxComboboxPositioner } from '../src/combobox-positioner';
+
+<Meta title="Primitives/Combobox" />
+
+# Combobox
+
+#### A filterable select: a text input that filters a list of options, with the highlighted option tracked via `aria-activedescendant`.
+
+Combobox is headless — it ships no styles and exposes state via `data-*` attributes. Unlike Select,
+DOM focus stays in the `<input>` at all times; the active option is virtual (`data-highlighted` +
+`aria-activedescendant`). It does not accept free-form text — the input always reflects the current
+selection when closed. For free-form entry, reach for Autocomplete (planned).
+
+<Canvas sourceState="hidden" of={Stories.Default} />
+
+## Features
+
+- ✅ Controlled / uncontrolled selection via `[(value)]` and input text via `[(inputValue)]`.
+- ✅ Single and multiple selection (`multiple`) with chips.
+- ✅ Built-in locale-aware filtering, a custom `filter` function, or `[filter]="null"` for external/async lists.
+- ✅ `autoHighlight`: `'input-change'` (first match while typing) or `'always'` (keep first highlighted).
+- ✅ `selectionMode="none"` for filter-only / command-palette UIs (no committed value).
+- ✅ Full keyboard support: ArrowDown / ArrowUp (loop via `loopFocus`), Home / End, Enter, Escape, Tab, Backspace.
+- ✅ WAI-ARIA `combobox` / `listbox` semantics with `aria-activedescendant` (focus never leaves the input).
+- ✅ `RdxComboboxValue` renders the selection in a trigger; `onItemHighlighted` reports the active item.
+- ✅ Optional `modal` mode: locks page scroll and makes outside content inert, with a `Backdrop` part.
+- ✅ `submitOnItemClick` to submit the form on selection; `onOpenChangeComplete` fires after the transition.
+- ✅ `limit` caps how many matches show; arrow-key navigation never fights a resting mouse cursor.
+- ✅ Forms: `ControlValueAccessor` on the root, plus Field integration on the input.
+- ✅ Headless — state via `data-popup-open`, `data-list-empty`, `data-placeholder`, `data-selected`, `data-highlighted`.
+
+## Import
+
+```typescript
+import {
+  RdxComboboxAnchor,
+  RdxComboboxArrow,
+  RdxComboboxBackdrop,
+  RdxComboboxChip,
+  RdxComboboxChipRemove,
+  RdxComboboxChips,
+  RdxComboboxClear,
+  RdxComboboxEmpty,
+  RdxComboboxGroup,
+  RdxComboboxGroupLabel,
+  RdxComboboxIcon,
+  RdxComboboxInput,
+  RdxComboboxItem,
+  RdxComboboxItemIndicator,
+  RdxComboboxLabel,
+  RdxComboboxList,
+  RdxComboboxPopup,
+  RdxComboboxPortal,
+  RdxComboboxPortalPresence,
+  RdxComboboxPositioner,
+  RdxComboboxRoot,
+  RdxComboboxStatus,
+  RdxComboboxTrigger,
+  RdxComboboxValue
+} from '@radix-ng/primitives/combobox';
+```
+
+## Anatomy
+
+The input is the popper anchor and keeps focus; options live in a portalled popup and are filtered in
+place (non-matching items are hidden, not destroyed).
+
+```html
+<div rdxComboboxRoot>
+  <input rdxComboboxInput placeholder="Search…" />
+  <button rdxComboboxClear><!-- clear icon --></button>
+  <button rdxComboboxTrigger><!-- chevron icon --></button>
+
+  <div rdxComboboxPortal>
+    <ng-template rdxComboboxPortalPresence>
+      <div rdxComboboxPositioner>
+        <div rdxComboboxPopup>
+          <div rdxComboboxList>
+            <div rdxComboboxGroup>
+              <div rdxComboboxGroupLabel>Group</div>
+              <div value="apple" rdxComboboxItem>
+                <span rdxComboboxItemIndicator><!-- check icon --></span>
+                Apple
+              </div>
+            </div>
+          </div>
+          <div rdxComboboxEmpty>No results.</div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</div>
+```
+
+By default the **input is the popup anchor**, which is ideal when the input fills the control. When
+the control wraps more than the input — e.g. chips in `multiple` mode — put `rdxComboboxAnchor` on
+the wrapping element so the popup aligns to the whole control instead of the inline input:
+
+```html
+<div rdxComboboxAnchor>
+  <div rdxComboboxChips>
+    <span value="apple" rdxComboboxChip>
+      Apple
+      <button rdxComboboxChipRemove><!-- × --></button>
+    </span>
+  </div>
+  <input rdxComboboxInput />
+</div>
+```
+
+## Examples
+
+### Default
+
+Single selection with built-in substring filtering. Type to filter, ArrowDown / Enter to pick.
+
+<Canvas of={Stories.Default} />
+
+### Disabled
+
+The whole control is disabled and won't open.
+
+<Canvas of={Stories.Disabled} />
+
+### Grouped
+
+Options organized into sections with `RdxComboboxGroup` / `RdxComboboxGroupLabel`. A group hides its
+heading automatically once all of its items are filtered out.
+
+<Canvas of={Stories.Grouped} />
+
+### Multiple
+
+Multiple selection: picks become chips before the input, the popup stays open between selections,
+and Backspace in an empty input removes the last chip.
+
+<Canvas of={Stories.Multiple} />
+
+### Async / external filtering
+
+`[filter]="null"` disables built-in matching so you can drive the list yourself (e.g. from a
+request). `RdxComboboxStatus` announces loading and result counts.
+
+<Canvas of={Stories.Async} />
+
+### Async with multiple selection
+
+External filtering combined with `multiple` — results load asynchronously and picks become chips.
+
+<Canvas of={Stories.AsyncMultiple} />
+
+### Creatable
+
+Lets the user add a value that isn't in the list. When the query matches nothing, a "Create" row
+appears; choosing it opens a modal dialog (prefilled with the query) to confirm the new label, which
+is then added and selected — mirroring the Base UI pattern.
+
+<Canvas of={Stories.Creatable} />
+
+### Input inside the popup
+
+A select-like pattern where the trigger shows the current value and the search input lives inside the
+popup. Put `rdxComboboxAnchor` on the trigger so the popup anchors to it; the input takes focus when
+the popup opens.
+
+<Canvas of={Stories.InputInPopup} />
+
+### Command palette
+
+`selectionMode="none"` filters without committing a value — selecting an item emits `onValueChange`
+as an activation signal and (by default) fills the input. Paired with `autoHighlight="always"` so the
+first match is always ready for `Enter`.
+
+<Canvas of={Stories.Command} />
+
+### Modal
+
+With `modal`, page scroll is locked and content outside the popup is inert while open. Add a
+`rdxComboboxBackdrop` (styled `position: fixed; inset: 0; pointer-events: auto`) behind the popup;
+clicking it dismisses.
+
+<Canvas of={Stories.Modal} />
+
+### Reactive forms
+
+The root is a `ControlValueAccessor`, so it binds to a `FormControl` like any other control.
+
+<Canvas of={Stories.ReactiveForms} />
+
+### Empty state
+
+`RdxComboboxEmpty` shows only when no item matches the query.
+
+<Canvas of={Stories.Empty} />
+
+## Accessibility
+
+### Keyboard Interactions
+
+| Key                        | Description                                                                       |
+| -------------------------- | --------------------------------------------------------------------------------- |
+| Character keys             | Filter the list; open the popup if closed.                                        |
+| `ArrowDown`                | Open and highlight the first item, or move the highlight down.                     |
+| `ArrowUp`                  | Open and highlight the last item, or move the highlight up.                        |
+| `Home` / `End`             | Move the text caret to the start / end of the input (standard text editing).      |
+| `Enter`                    | Select the highlighted item; with none highlighted, close the popup (and submit). |
+| `Escape`                   | Close the popup (reverting the input); a second `Escape` clears the selection.     |
+| `Tab`                      | Close the popup and move focus.                                                   |
+| `Backspace`                | In `multiple` mode with an empty input, remove the last selected value.           |
+| `ArrowLeft` (input start)  | In `multiple` mode, move focus from the input into the chips.                     |
+| `ArrowLeft` / `ArrowRight` | Move focus between chips; `ArrowRight` past the last chip returns to the input.    |
+| `Delete` / `Backspace`     | On a focused chip, remove it and focus an adjacent chip (or the input).           |
+
+Modifier combinations (`Ctrl` / `Cmd` / `Alt`, or `Shift` for range selection) are left to the
+browser so text editing keeps working. IME composition is respected — the list doesn't filter or
+select mid-composition. Focus stays on the input throughout; the highlighted option is communicated
+via `aria-activedescendant` and `data-highlighted`.
+
+## API Reference
+
+### RdxComboboxRoot
+
+The context provider. Owns selection, input text, open state, filtering, and navigation, and
+implements `ControlValueAccessor`.
+
+<ArgTypes of={RdxComboboxRoot} />
+
+### RdxComboboxInput
+
+The text input. Carries `role="combobox"`, `aria-expanded`, `aria-controls`, `aria-autocomplete`,
+and `aria-activedescendant`, and inherits Field state. Exposes `data-popup-open`, `data-list-empty`,
+and `data-placeholder`.
+
+<ArgTypes of={RdxComboboxInput} />
+
+### RdxComboboxItem
+
+A selectable option. Receives a `value`, an optional `textValue` (defaults to its text content,
+excluding the indicator), and `disabled`. Exposes `data-selected`, `data-highlighted`, `data-disabled`.
+
+<ArgTypes of={RdxComboboxItem} />
+
+### RdxComboboxPositioner
+
+Positions the popup relative to the input. Accepts the popper positioning inputs (`side`,
+`sideOffset`, `align`, `avoidCollisions`, …).
+
+<ArgTypes of={RdxComboboxPositioner} />
+
+### RdxComboboxValue
+
+Renders the current selection's label(s) — typically inside the trigger. Set `placeholder` for the
+empty state; read `slotText()` (or `selectedLabels()`) in the template. Exposes `data-placeholder`
+while nothing is selected.
+
+<ArgTypes of={RdxComboboxValue} />
+
+### RdxComboboxChip
+
+A selected-value chip in `multiple` mode. Provide its `value`.
+
+<ArgTypes of={RdxComboboxChip} />
+
+### Parts without inputs
+
+`RdxComboboxAnchor`, `RdxComboboxLabel` (registers an `aria-labelledby` target), `RdxComboboxTrigger`,
+`RdxComboboxClear`, `RdxComboboxIcon`, `RdxComboboxPortal` (re-exposes `container`),
+`RdxComboboxPortalPresence`, `RdxComboboxBackdrop` (modal overlay), `RdxComboboxPopup`,
+`RdxComboboxArrow` (re-exposes `width` / `height`), `RdxComboboxList`, `RdxComboboxItemIndicator`,
+`RdxComboboxGroup`, `RdxComboboxGroupLabel`,
+`RdxComboboxEmpty`, `RdxComboboxStatus`, `RdxComboboxChips`, and `RdxComboboxChipRemove` read
+everything from context and take no inputs of their own.
