@@ -124,18 +124,20 @@ const preview: Preview = {
             source: { excludeDecorators: true }
         },
         viewport: {
-            defaultViewport: 'desktop',
-            viewports: {
+            options: {
                 mobile: {
                     name: 'Mobile',
+                    type: 'mobile',
                     styles: { width: '390px', height: '844px' }
                 },
                 tablet: {
                     name: 'Tablet',
+                    type: 'tablet',
                     styles: { width: '768px', height: '1024px' }
                 },
                 desktop: {
                     name: 'Desktop',
+                    type: 'desktop',
                     styles: { width: '1280px', height: '900px' }
                 }
             }
@@ -164,7 +166,8 @@ const preview: Preview = {
     },
 
     initialGlobals: {
-        theme: 'light'
+        theme: 'light',
+        viewport: { value: 'desktop', isRotated: false }
     },
 
     tags: ['autodocs']

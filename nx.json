@@ -47,8 +47,7 @@
                 "^production",
                 "{workspaceRoot}/packages/primitives/**/*.stories.@(js|jsx|ts|tsx|mdx)",
                 "{workspaceRoot}/packages/primitives/**/*.docs.mdx",
-                "{projectRoot}/.storybook/**/*",
-                "{projectRoot}/tsconfig.storybook.json"
+                "{projectRoot}/.storybook/**/*"
             ]
         }
     },

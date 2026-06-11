@@ -20,6 +20,9 @@ skills/radix-ng-examples/
 skills/radix-ng/references/styling-contract.json
 skills/radix-ng/references/api-contract.json
 
+# Generated self-hosted fonts (tools/scripts/fonts/generate.mjs)
+apps/radix-storybook/public/fonts.css
+
 apps/radix-docs/src/styles/*.css
 
 *.d.ts
