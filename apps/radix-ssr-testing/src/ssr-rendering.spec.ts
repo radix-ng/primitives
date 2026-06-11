@@ -9,6 +9,7 @@ import AccordionPage from './app/components/accordion/page';
 import AvatarPage from './app/components/avatar/page';
 import CheckboxPage from './app/components/checkbox/page';
 import CollapsiblePage from './app/components/collapsible/page';
+import ComboboxPage from './app/components/combobox/page';
 import LabelPage from './app/components/label/page';
 import SelectPage from './app/components/select/page';
 import SeparatorPage from './app/components/separator/page';
@@ -42,6 +43,9 @@ const cases: readonly SsrCase[] = [
     { selector: 'app-accordion', component: AccordionPage, expects: ['One', 'Four'] },
     { selector: 'app-avatar', component: AvatarPage, expects: ['A'] },
     { selector: 'app-checkbox', component: CheckboxPage, expects: ['data-state'] },
+    // Combobox's popup is portal + presence gated, so on the server (closed) only the input/trigger
+    // render — assert the input placeholder and the combobox role.
+    { selector: 'app-combobox', component: ComboboxPage, expects: ['Pick a fruit', 'role="combobox"'] },
     { selector: 'app-collapsible', component: CollapsiblePage, expects: ['Trigger', 'Content'] },
     { selector: 'app-label', component: LabelPage, expects: ['Label'] },
     // Select's overlay is portal + presence gated, so on the server (closed) only the trigger renders —

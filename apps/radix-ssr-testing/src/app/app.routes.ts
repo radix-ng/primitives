@@ -24,6 +24,10 @@ export const appRoutes: Route[] = [
                 loadComponent: () => import('./components/checkbox/page')
             },
             {
+                path: 'combobox',
+                loadComponent: () => import('./components/combobox/page')
+            },
+            {
                 path: 'label',
                 loadComponent: () => import('./components/label/page')
             },

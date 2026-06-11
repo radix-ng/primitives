@@ -519,3 +519,77 @@ export const demoCropper = {
     ),
     output: 'mt-2 max-w-full overflow-auto rounded-md bg-muted p-2 text-sm whitespace-pre text-muted-foreground'
 } as const;
+
+/**
+ * Combobox (filterable select). The control is a bordered box wrapping the input and trigger; the
+ * popup is a card-like listbox. Item highlight is virtual (`data-highlighted`, driven by keyboard /
+ * hover) rather than `:focus`, and selection shows via `data-selected`.
+ */
+export const demoCombobox = {
+    /**
+     * The control is `relative` and the **input fills it**; the trigger / clear buttons are absolutely
+     * positioned on top. This keeps the input (the popper anchor) the same box as the visible control,
+     * so the popup aligns to the control edges.
+     */
+    control: cn(
+        'relative inline-flex h-9 w-64 items-center rounded-md border border-border bg-background',
+        'focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background',
+        'data-[disabled]:opacity-50'
+    ),
+    input: cn(
+        'h-full w-full rounded-md bg-transparent pl-3 pr-9 text-sm text-foreground outline-none',
+        'placeholder:text-muted-foreground'
+    ),
+    /** Inline input for `multiple` mode — flows on the same row as the chips and grows to fill. */
+    inputInline: cn(
+        'min-w-24 flex-1 bg-transparent text-sm text-foreground outline-none',
+        'placeholder:text-muted-foreground'
+    ),
+    trigger: cn(
+        'absolute right-1 top-1/2 inline-flex size-7 -translate-y-1/2 items-center justify-center rounded-sm',
+        'text-muted-foreground hover:text-foreground disabled:pointer-events-none'
+    ),
+    clear: cn(
+        'absolute right-8 top-1/2 inline-flex size-7 -translate-y-1/2 items-center justify-center rounded-sm',
+        'text-muted-foreground hover:text-foreground'
+    ),
+    /** Modal backdrop — `pointer-events-auto` so clicking it dismisses while the page is inert. */
+    /** Transparent — just an invisible click-catcher so a click outside the popup dismisses while
+     * the page is inert. Add a `bg-*` for a dimmed (dialog-like) modal instead. */
+    backdrop: 'fixed inset-0 z-40 pointer-events-auto',
+    // The popper copies the popup's (content) z-index onto the positioner, so the z lives on `popup`.
+    positioner: 'w-64 data-[closed]:pointer-events-none',
+    popup: cn(
+        'z-50 mt-2 max-h-60 overflow-y-auto rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md',
+        'data-[closed]:hidden'
+    ),
+    list: 'flex flex-col',
+    item: cn(
+        'relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none',
+        'data-[highlighted]:bg-muted',
+        'data-[selected]:font-medium',
+        'data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
+    ),
+    itemIndicator: 'absolute left-2 flex size-3.5 items-center justify-center',
+    empty: 'py-6 text-center text-sm text-muted-foreground',
+    groupLabel: 'px-2 py-1.5 text-xs font-semibold text-muted-foreground',
+    /** Select-like trigger for the "input inside the popup" pattern. */
+    selectTrigger: cn(
+        'inline-flex h-9 w-64 items-center justify-between gap-2 rounded-md border border-border bg-background px-3 text-sm',
+        'text-foreground data-[placeholder]:text-muted-foreground hover:bg-muted',
+        'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background outline-none'
+    ),
+    /** Search header (input row) inside a popup. */
+    searchHeader: 'border-b border-border p-1',
+    popupInput: cn(
+        'h-8 w-full rounded-sm bg-transparent px-2 text-sm text-foreground outline-none',
+        'placeholder:text-muted-foreground'
+    ),
+    /** Chips for multiple mode. */
+    // `display: contents` so the chips become flex items of the control itself — the input then flows
+    // inline right after the last chip (wrapping only when it truly doesn't fit), instead of being
+    // pushed below the whole chips block.
+    chips: 'contents',
+    chip: 'inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-xs text-foreground',
+    chipRemove: 'inline-flex size-3.5 items-center justify-center rounded-full hover:bg-border'
+} as const;
