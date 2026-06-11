@@ -52,6 +52,9 @@
                     },
                     {
                         "command": "cpy 'dist/primitives-schematics/**/*' '!dist/primitives-schematics/package.json' dist/primitives"
+                    },
+                    {
+                        "command": "cpy LICENSE dist/primitives --flat"
                     }
                 ]
             }
