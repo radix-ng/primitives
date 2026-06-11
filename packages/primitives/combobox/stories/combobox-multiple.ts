@@ -21,7 +21,12 @@ import { _importsCombobox } from '../index';
                         }
                     </div>
                 }
-                <input [class]="c.inputInline" rdxComboboxInput placeholder="Add fruits…" aria-label="Fruits" />
+                <input
+                    [class]="c.inputInline"
+                    [placeholder]="value().length ? '' : 'Add fruits…'"
+                    rdxComboboxInput
+                    aria-label="Fruits"
+                />
                 <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
                     <svg lucideChevronDown size="16"></svg>
                 </button>

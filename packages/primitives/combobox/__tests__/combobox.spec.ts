@@ -254,17 +254,18 @@ describe('Combobox', () => {
             expect(host.value()).toBeNull();
         });
 
-        it('a second Escape (popup closed) clears the selection and input', async () => {
+        it('Escape closes the popup without clearing the selection', async () => {
             key('ArrowDown');
             await settle();
             key('Enter');
             await settle();
             expect(host.value()).toBe('apple');
-            expect(host.open()).toBe(false);
-            key('Escape'); // closed → clear
+            host.open.set(true);
             await settle();
-            expect(host.value()).toBeNull();
-            expect(inputEl().value).toBe('');
+            key('Escape');
+            await settle();
+            expect(host.open()).toBe(false);
+            expect(host.value()).toBe('apple'); // selection preserved
         });
 
         it('does not filter or select during IME composition', async () => {

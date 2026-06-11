@@ -25,7 +25,12 @@ const ALL = ['Angular', 'Astro', 'Ember', 'Lit', 'Preact', 'Qwik', 'React', 'Sol
                         }
                     </div>
                 }
-                <input [class]="c.inputInline" rdxComboboxInput placeholder="Add frameworks…" aria-label="Frameworks" />
+                <input
+                    [class]="c.inputInline"
+                    [placeholder]="value().length ? '' : 'Add frameworks…'"
+                    rdxComboboxInput
+                    aria-label="Frameworks"
+                />
                 <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
                     <svg lucideChevronDown size="16"></svg>
                 </button>

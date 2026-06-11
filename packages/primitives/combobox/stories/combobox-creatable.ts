@@ -37,7 +37,12 @@ const CREATE = '__rdx_create__';
                         }
                     </div>
                 }
-                <input [class]="c.inputInline" rdxComboboxInput placeholder="e.g. bug" aria-label="Labels" />
+                <input
+                    [class]="c.inputInline"
+                    [placeholder]="value().length ? '' : 'e.g. bug'"
+                    rdxComboboxInput
+                    aria-label="Labels"
+                />
                 <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
                     <svg lucideChevronDown size="16"></svg>
                 </button>

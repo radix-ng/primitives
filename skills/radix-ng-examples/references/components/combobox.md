@@ -350,7 +350,12 @@ import { _importsCombobox } from '../index';
                         }
                     </div>
                 }
-                <input [class]="c.inputInline" rdxComboboxInput placeholder="Add fruits…" aria-label="Fruits" />
+                <input
+                    [class]="c.inputInline"
+                    [placeholder]="value().length ? '' : 'Add fruits…'"
+                    rdxComboboxInput
+                    aria-label="Fruits"
+                />
                 <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
                     <svg lucideChevronDown size="16"></svg>
                 </button>
@@ -499,7 +504,12 @@ const ALL = ['Angular', 'Astro', 'Ember', 'Lit', 'Preact', 'Qwik', 'React', 'Sol
                         }
                     </div>
                 }
-                <input [class]="c.inputInline" rdxComboboxInput placeholder="Add frameworks…" aria-label="Frameworks" />
+                <input
+                    [class]="c.inputInline"
+                    [placeholder]="value().length ? '' : 'Add frameworks…'"
+                    rdxComboboxInput
+                    aria-label="Frameworks"
+                />
                 <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
                     <svg lucideChevronDown size="16"></svg>
                 </button>
@@ -603,7 +613,12 @@ const CREATE = '__rdx_create__';
                         }
                     </div>
                 }
-                <input [class]="c.inputInline" rdxComboboxInput placeholder="e.g. bug" aria-label="Labels" />
+                <input
+                    [class]="c.inputInline"
+                    [placeholder]="value().length ? '' : 'e.g. bug'"
+                    rdxComboboxInput
+                    aria-label="Labels"
+                />
                 <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
                     <svg lucideChevronDown size="16"></svg>
                 </button>
@@ -1039,7 +1054,7 @@ export class ComboboxEmpty {
 | `ArrowUp`                  | Open and highlight the last item, or move the highlight up.                        |
 | `Home` / `End`             | Move the text caret to the start / end of the input (standard text editing).      |
 | `Enter`                    | Select the highlighted item; with none highlighted, close the popup (and submit). |
-| `Escape`                   | Close the popup (reverting the input); a second `Escape` clears the selection.     |
+| `Escape`                   | Close the popup (reverting the in-progress query); the selection is preserved.     |
 | `Tab`                      | Close the popup and move focus.                                                   |
 | `Backspace`                | In `multiple` mode with an empty input, remove the last selected value.           |
 | `ArrowLeft` (input start)  | In `multiple` mode, move focus from the input into the chips.                     |

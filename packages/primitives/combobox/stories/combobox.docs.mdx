@@ -211,7 +211,7 @@ The root is a `ControlValueAccessor`, so it binds to a `FormControl` like any ot
 | `ArrowUp`                  | Open and highlight the last item, or move the highlight up.                        |
 | `Home` / `End`             | Move the text caret to the start / end of the input (standard text editing).      |
 | `Enter`                    | Select the highlighted item; with none highlighted, close the popup (and submit). |
-| `Escape`                   | Close the popup (reverting the input); a second `Escape` clears the selection.     |
+| `Escape`                   | Close the popup (reverting the in-progress query); the selection is preserved.     |
 | `Tab`                      | Close the popup and move focus.                                                   |
 | `Backspace`                | In `multiple` mode with an empty input, remove the last selected value.           |
 | `ArrowLeft` (input start)  | In `multiple` mode, move focus from the input into the chips.                     |

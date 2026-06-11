@@ -200,13 +200,10 @@ export class RdxComboboxInput {
                 }
                 break;
             case 'Escape':
+                // Just close the popup (reverting the in-progress query); never clear the selection.
                 if (open) {
                     event.preventDefault();
                     this.rootContext.closePopup(true);
-                } else if (!this.isEmptyValue() || this.element.value !== '') {
-                    // Second Escape on a closed combobox clears the selection and the input.
-                    event.preventDefault();
-                    this.rootContext.clearSelection();
                 }
                 break;
             case 'Tab':

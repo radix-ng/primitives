@@ -560,7 +560,7 @@ export const demoCombobox = {
     // The popper copies the popup's (content) z-index onto the positioner, so the z lives on `popup`.
     positioner: 'w-64 data-[closed]:pointer-events-none',
     popup: cn(
-        'z-50 mt-1 max-h-60 overflow-y-auto rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md',
+        'z-50 mt-2 max-h-60 overflow-y-auto rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md',
         'data-[closed]:hidden'
     ),
     list: 'flex flex-col',
@@ -586,7 +586,10 @@ export const demoCombobox = {
         'placeholder:text-muted-foreground'
     ),
     /** Chips for multiple mode. */
-    chips: 'flex flex-wrap items-center gap-1',
+    // `display: contents` so the chips become flex items of the control itself — the input then flows
+    // inline right after the last chip (wrapping only when it truly doesn't fit), instead of being
+    // pushed below the whole chips block.
+    chips: 'contents',
     chip: 'inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-xs text-foreground',
     chipRemove: 'inline-flex size-3.5 items-center justify-center rounded-full hover:bg-border'
 } as const;
