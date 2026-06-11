@@ -65,7 +65,9 @@ export const [injectFormRootContext, provideFormRootContext] = createContext<Rdx
 function serializeFormData(data: FormData): Record<string, FormDataEntryValue | FormDataEntryValue[]> {
     const values: Record<string, FormDataEntryValue | FormDataEntryValue[]> = {};
     data.forEach((value, key) => {
-        if (key in values) {
+        // `Object.hasOwn`, not `key in values` — a control named after an Object.prototype member
+        // (`toString`, `constructor`, …) must not be misread as a duplicate.
+        if (Object.hasOwn(values, key)) {
             const existing = values[key];
             values[key] = Array.isArray(existing) ? [...existing, value] : [existing, value];
         } else {
@@ -140,19 +142,16 @@ export class RdxFormRoot {
         return result;
     });
 
-    readonly anyInvalid = computed(() => {
-        const provider = this.stateProvider();
-        return provider?.invalid ? provider.invalid() : this.fields().some((field) => field.invalid());
-    });
-    readonly anyDirty = computed(() => {
-        const provider = this.stateProvider();
-        return provider?.dirty ? provider.dirty() : this.fields().some((field) => field.dirty());
-    });
-    readonly anyTouched = computed(() => {
-        const provider = this.stateProvider();
-        return provider?.touched ? provider.touched() : this.fields().some((field) => field.touched());
-    });
+    readonly anyInvalid = computed(() => this.aggregate('invalid'));
+    readonly anyDirty = computed(() => this.aggregate('dirty'));
+    readonly anyTouched = computed(() => this.aggregate('touched'));
     readonly submitting = computed(() => this.stateProvider()?.submitting?.() ?? false);
+
+    /** Resolve a boolean aggregate: a registered provider's accessor wins, else OR over the registry. */
+    private aggregate(key: 'invalid' | 'dirty' | 'touched'): boolean {
+        const accessor = this.stateProvider()?.[key];
+        return accessor ? accessor() : this.fields().some((field) => field[key]());
+    }
 
     /** Resolves the external messages for a field name (provider source wins over the `errors` input). */
     errorsFor(name: string | undefined): string[] {
@@ -176,7 +175,7 @@ export class RdxFormRoot {
             return;
         }
         const errors = this.errors() ?? {};
-        if (!(name in errors) || this.clearedNames().has(name)) {
+        if (!Object.hasOwn(errors, name) || this.clearedNames().has(name)) {
             return;
         }
         this.clearedNames.update((set) => new Set(set).add(name));
@@ -199,12 +198,11 @@ export class RdxFormRoot {
         // SPA submits never navigate; never stopPropagation so Reactive Forms `(ngSubmit)` keeps firing.
         event.preventDefault();
 
-        const fields = this.fields();
-        const provider = this.stateProvider();
-        const invalid = provider?.invalid ? provider.invalid() : fields.some((field) => field.invalid());
-        if (invalid) {
+        if (this.aggregate('invalid')) {
             // Focus the first invalid registered field (DOM order); provider-only invalid has none to focus.
-            fields.find((field) => field.invalid())?.focus();
+            this.fields()
+                .find((field) => field.invalid())
+                ?.focus();
             return;
         }
 

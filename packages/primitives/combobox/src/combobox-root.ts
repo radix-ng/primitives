@@ -459,8 +459,10 @@ export class RdxComboboxRoot implements ControlValueAccessor {
                 return;
             }
             untracked(() => {
+                // Programmatic move — reset the reason in both modes so the emit reports 'none', not a
+                // stale 'keyboard'/'pointer' left by the previous user interaction.
+                this.highlightReason.set('none');
                 if (this.virtualized()) {
-                    this.highlightReason.set('none');
                     this.highlightedIndex.set(edge === 'first' ? 0 : count - 1);
                 } else if (edge === 'first') {
                     this.highlight.first();
@@ -480,11 +482,16 @@ export class RdxComboboxRoot implements ControlValueAccessor {
             if (this.autoHighlightMode() === 'always' && this.open()) {
                 untracked(() => {
                     if (this.virtualized()) {
-                        if (this.highlightedIndex() < 0 && this.filteredItems().length > 0) {
+                        // Re-seed when the index is cleared OR has fallen out of range, so this works
+                        // regardless of whether the self-heal effect ran first (no ordering dependency).
+                        const length = this.filteredItems().length;
+                        const index = this.highlightedIndex();
+                        if ((index < 0 || index >= length) && length > 0) {
                             this.highlightReason.set('none');
                             this.highlightedIndex.set(0);
                         }
                     } else if (this.highlightedItem() === null) {
+                        this.highlightReason.set('none');
                         this.highlight.first();
                     }
                 });

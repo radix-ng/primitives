@@ -62,8 +62,12 @@ import { ComboboxItemHighlightedDetails, RdxComboboxRoot } from '../src/combobox
 })
 export class ComboboxVirtualizedExample {
     protected readonly c = demoCombobox;
-    // The popup is not the scroll container here — the inner `#scroll` div is — so drop its overflow.
-    protected readonly popup = cn(demoCombobox.popup, 'overflow-hidden p-0');
+    // The inner `#scroll` div owns scrolling + max-height, so the popup must NOT add its own (the
+    // shared `demoCombobox.popup` bakes in `max-h-60 overflow-y-auto`, which would be a second scrollbar).
+    protected readonly popup = cn(
+        'z-50 mt-2 rounded-md border border-border bg-popover text-popover-foreground shadow-md',
+        'data-[closed]:hidden'
+    );
     protected readonly scroller = 'max-h-60 overflow-auto overscroll-contain p-1';
     protected readonly spacer = 'relative w-full';
     // Absolutely positioned rows (no `relative` from `demoCombobox.item`) translated by the virtualizer.

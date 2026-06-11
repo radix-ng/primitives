@@ -23,11 +23,11 @@ import { formError, formField, formInput, formLabel, formSubmit } from './form.s
     imports: [RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldError],
     template: `
         <form
-            [errors]="errors()"
-            rdxFormRoot
             class="flex w-80 flex-col gap-4"
+            [errors]="errors()"
             (onFormSubmit)="onSubmit($event)"
             (onClearErrors)="errors.set($event)"
+            rdxFormRoot
         >
             <div [class]="field" name="email" rdxFieldRoot>
                 <label [class]="label" rdxFieldLabel>Email</label>
@@ -37,7 +37,7 @@ import { formError, formField, formInput, formLabel, formSubmit } from './form.s
 
             <button [class]="submit" type="submit">Create account</button>
             @if (success()) {
-                <p class="text-sm text-muted-foreground">Account created for {{ success() }}.</p>
+                <p class="text-muted-foreground text-sm">Account created for {{ success() }}.</p>
             }
         </form>
     `
@@ -109,6 +109,11 @@ matches against; the native control's `name` is what `FormData` serializes.
 The submit handler simulates a backend rejecting a taken email (try `taken@example.com`); the returned
 error maps onto the field by `name` and clears when you edit it.
 
+> Bind `errors` to a **stable reference** — a `signal`/property you reassign, not a getter or method
+> that returns a fresh object every change detection. Form tracks which fields the user has cleared
+> against the `errors` reference; a new reference resets that set (by design — the server "spoke again"),
+> so an always-fresh reference would resurrect cleared errors on the next change-detection pass.
+
 ```typescript
 import { Component, signal } from '@angular/core';
 import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
@@ -125,11 +130,11 @@ import { formError, formField, formInput, formLabel, formSubmit } from './form.s
     imports: [RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldError],
     template: `
         <form
-            [errors]="errors()"
-            rdxFormRoot
             class="flex w-80 flex-col gap-4"
+            [errors]="errors()"
             (onFormSubmit)="onSubmit($event)"
             (onClearErrors)="errors.set($event)"
+            rdxFormRoot
         >
             <div [class]="field" name="email" rdxFieldRoot>
                 <label [class]="label" rdxFieldLabel>Email</label>
@@ -139,7 +144,7 @@ import { formError, formField, formInput, formLabel, formSubmit } from './form.s
 
             <button [class]="submit" type="submit">Create account</button>
             @if (success()) {
-                <p class="text-sm text-muted-foreground">Account created for {{ success() }}.</p>
+                <p class="text-muted-foreground text-sm">Account created for {{ success() }}.</p>
             }
         </form>
     `
@@ -189,12 +194,12 @@ import { formError, formField, formInput, formLabel, formReset, formSubmit } fro
     imports: [RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldError],
     template: `
         <form
-            [errors]="errors()"
-            rdxFormRoot
             class="flex w-80 flex-col gap-4"
+            [errors]="errors()"
             (onFormSubmit)="onSubmit($event)"
             (onClearErrors)="errors.set($event)"
             (reset)="verified.set(false)"
+            rdxFormRoot
         >
             <div [class]="field" name="code" rdxFieldRoot>
                 <label [class]="label" rdxFieldLabel>Access code</label>
@@ -207,7 +212,7 @@ import { formError, formField, formInput, formLabel, formReset, formSubmit } fro
                 <button [class]="reset" type="reset">Reset</button>
             </div>
             @if (verified()) {
-                <p class="text-sm text-muted-foreground">Code accepted.</p>
+                <p class="text-muted-foreground text-sm">Code accepted.</p>
             }
         </form>
     `
@@ -256,7 +261,7 @@ import { formError, formField, formInput, formLabel, formSubmit } from './form.s
     selector: 'form-reactive-forms-example',
     imports: [ReactiveFormsModule, RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldError],
     template: `
-        <form [formGroup]="form" rdxFormRoot class="flex w-80 flex-col gap-4" (ngSubmit)="submit()">
+        <form class="flex w-80 flex-col gap-4" [formGroup]="form" (ngSubmit)="submit()" rdxFormRoot>
             <div
                 [class]="field"
                 [invalid]="email.invalid && (email.touched || submitted())"
@@ -325,7 +330,7 @@ import { formField, formInput, formLabel, formSubmit } from './form.shared';
     selector: 'form-native-controls-example',
     imports: [RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl],
     template: `
-        <form rdxFormRoot class="flex w-80 flex-col gap-4" (onFormSubmit)="onSubmit($event)">
+        <form class="flex w-80 flex-col gap-4" (onFormSubmit)="onSubmit($event)" rdxFormRoot>
             <div [class]="field" name="name" rdxFieldRoot>
                 <label [class]="label" rdxFieldLabel>Name</label>
                 <input [class]="input" name="name" rdxFieldControl value="Ada" />
@@ -337,7 +342,7 @@ import { formField, formInput, formLabel, formSubmit } from './form.shared';
 
             <button [class]="submit" type="submit">Submit</button>
             @if (values()) {
-                <pre class="rounded-md bg-muted p-3 text-xs text-foreground">{{ values() }}</pre>
+                <pre class="bg-muted text-foreground rounded-md p-3 text-xs">{{ values() }}</pre>
             }
         </form>
     `

@@ -58,6 +58,11 @@ matches against; the native control's `name` is what `FormData` serializes.
 The submit handler simulates a backend rejecting a taken email (try `taken@example.com`); the returned
 error maps onto the field by `name` and clears when you edit it.
 
+> Bind `errors` to a **stable reference** — a `signal`/property you reassign, not a getter or method
+> that returns a fresh object every change detection. Form tracks which fields the user has cleared
+> against the `errors` reference; a new reference resets that set (by design — the server "spoke again"),
+> so an always-fresh reference would resurrect cleared errors on the next change-detection pass.
+
 <Canvas of={FormStories.Default} />
 
 ### Reset

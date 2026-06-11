@@ -1,4 +1,4 @@
-import { booleanAttribute, computed, DestroyRef, Directive, inject, input, signal } from '@angular/core';
+import { booleanAttribute, computed, DestroyRef, Directive, ElementRef, inject, input, signal } from '@angular/core';
 import { BooleanInput, createContext, RdxValidationError } from '@radix-ng/primitives/core';
 import { injectFormRootContext, RdxFormFieldRegistration } from '@radix-ng/primitives/form';
 
@@ -251,11 +251,15 @@ export class RdxFieldRoot {
         this.controlElement()?.focus();
     }
 
+    private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+
+    /**
+     * The field's control element, found by `controlId` but scoped to this field's own subtree — a
+     * duplicate or consumer-reused id elsewhere on the page can't steal focus/reset. The control
+     * registers its id through `setControlId`, so this matches the same element the labels point at.
+     */
     private controlElement(): HTMLInputElement | null {
-        if (typeof document === 'undefined') {
-            return null;
-        }
-        return document.getElementById(this.controlId()) as HTMLInputElement | null;
+        return this.host.querySelector<HTMLInputElement>(`[id="${this.controlId()}"]`);
     }
 
     /**

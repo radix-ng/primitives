@@ -159,6 +159,34 @@ describe('RdxFormRoot', () => {
             expect(host.submitted()).toBeNull();
             expect(document.activeElement).toBe(input('password-input'));
         });
+
+        it('focuses the field control even when a duplicate id exists elsewhere on the page', async () => {
+            // A decoy earlier in document order would win a global getElementById; the field must scope
+            // the lookup to its own subtree.
+            const decoy = document.createElement('input');
+            decoy.id = 'password-input';
+            document.body.insertBefore(decoy, document.body.firstChild);
+            try {
+                host.errors.set({ password: 'weak' });
+                await settle();
+                submit();
+                await settle();
+                expect(document.activeElement).toBe(input('password-input'));
+                expect(document.activeElement).not.toBe(decoy);
+            } finally {
+                decoy.remove();
+            }
+        });
+
+        it('serializes a control named after an Object.prototype member correctly', async () => {
+            const proto = document.createElement('input');
+            proto.name = 'toString';
+            proto.value = 'hi';
+            formEl().appendChild(proto);
+            submit();
+            await settle();
+            expect(host.submitted()?.values.toString).toBe('hi');
+        });
     });
 
     describe('reset', () => {
