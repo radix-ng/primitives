@@ -1,3 +1,30 @@
+## 1.0.0-beta.2 (2026-06-11)
+
+### 🚀 Features
+
+- **core:** link missing-context errors to the primitive docs page ([bd6ed1b](https://github.com/radix-ng/primitives/commit/bd6ed1b))
+- **ng-add:** write AI agent instructions to AGENTS.md/CLAUDE.md, add common-mistakes skill ref ([862bc13](https://github.com/radix-ng/primitives/commit/862bc13))
+- added Form top layer ([2cee157](https://github.com/radix-ng/primitives/commit/2cee157))
+- **combobox:** add external list virtualization (virtualized, items, filteredItems) ([cb9091f](https://github.com/radix-ng/primitives/commit/cb9091f))
+- ⚠️  **select:** migrate to Base UI (highlight nav, renamed parts, modal) ([2515f19](https://github.com/radix-ng/primitives/commit/2515f19))
+- added Combobox ([#414](https://github.com/radix-ng/primitives/pull/414))
+- **input:** upd Signal Forms FormUiControl surface ([47e4d60](https://github.com/radix-ng/primitives/commit/47e4d60))
+
+### 🩹 Fixes
+
+- **form,combobox:** cancel deferred reset on destroy; warn on unlabeled virtualized items ([db346b2](https://github.com/radix-ng/primitives/commit/db346b2))
+- form accessors and combobox docs virtualized ([9789cd2](https://github.com/radix-ng/primitives/commit/9789cd2))
+- **calendar:** correct getWeekNumber off-by-one at week boundaries ([b1ce583](https://github.com/radix-ng/primitives/commit/b1ce583))
+- **date-time:** repair time-field value binding, 12h/AM-PM editing, and locale-aware placeholder ([46d472e](https://github.com/radix-ng/primitives/commit/46d472e))
+
+### ⚠️  Breaking Changes
+
+- **select:** migrate to Base UI (highlight nav, renamed parts, modal)  ([2515f19](https://github.com/radix-ng/primitives/commit/2515f19))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 1.0.0-beta.1 (2026-06-10)
 
 ### 🚀 Features
