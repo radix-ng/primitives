@@ -115,6 +115,7 @@
         "@swc/core": "1.15.8",
         "@swc/helpers": "0.5.23",
         "@tailwindcss/postcss": "^4.1.13",
+        "@tanstack/angular-virtual": "5.0.4",
         "@testing-library/angular": "^15.2.0",
         "@testing-library/jest-dom": "^6.6.3",
         "@testing-library/user-event": "^14.5.2",

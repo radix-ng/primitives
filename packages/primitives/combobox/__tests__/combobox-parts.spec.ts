@@ -84,15 +84,15 @@ describe('Combobox Value / Label / onItemHighlighted', () => {
         expect(trigger.getAttribute('aria-labelledby')).toBe(labelId);
     });
 
-    it('onItemHighlighted emits the highlighted value', async () => {
+    it('onItemHighlighted emits the highlighted value, index, and reason', async () => {
         host.open.set(true);
         await settle();
         key('ArrowDown'); // highlight first
         await settle();
-        expect(host.highlighted()).toBe('Apple');
+        expect(host.highlighted()).toEqual({ value: 'Apple', index: 0, reason: 'keyboard' });
         key('ArrowDown'); // highlight second
         await settle();
-        expect(host.highlighted()).toBe('Banana');
+        expect(host.highlighted()).toEqual({ value: 'Banana', index: 1, reason: 'keyboard' });
     });
 
     it('exposes the root onItemHighlighted output', () => {

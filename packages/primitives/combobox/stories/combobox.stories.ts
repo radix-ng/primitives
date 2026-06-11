@@ -24,6 +24,8 @@ import { ComboboxMultiple } from './combobox-multiple';
 import multipleSource from './combobox-multiple?raw';
 import { ComboboxReactiveForms } from './combobox-reactive-forms';
 import reactiveFormsSource from './combobox-reactive-forms?raw';
+import { ComboboxVirtualizedExample } from './combobox-virtualized';
+import virtualizedSource from './combobox-virtualized?raw';
 
 const html = String.raw;
 
@@ -47,7 +49,8 @@ export default {
                 ComboboxModal,
                 ComboboxCommand,
                 ComboboxReactiveForms,
-                ComboboxEmpty
+                ComboboxEmpty,
+                ComboboxVirtualizedExample
             ]
         }),
         tailwindDemoDecorator()
@@ -160,6 +163,15 @@ export const Empty: Story = {
     render: () => ({
         template: html`
             <combobox-empty />
+        `
+    })
+};
+
+export const Virtualized: Story = {
+    parameters: source(virtualizedSource),
+    render: () => ({
+        template: html`
+            <combobox-virtualized-example />
         `
     })
 };

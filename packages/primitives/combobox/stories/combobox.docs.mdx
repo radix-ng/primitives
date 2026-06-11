@@ -33,6 +33,7 @@ selection when closed. For free-form entry, reach for Autocomplete (planned).
 - ✅ Optional `modal` mode: locks page scroll and makes outside content inert, with a `Backdrop` part.
 - ✅ `submitOnItemClick` to submit the form on selection; `onOpenChangeComplete` fires after the transition.
 - ✅ `limit` caps how many matches show; arrow-key navigation never fights a resting mouse cursor.
+- ✅ External virtualization: `virtualized` + `[items]` drives index navigation and exposes `filteredItems()` for any virtualizer.
 - ✅ Forms: `ControlValueAccessor` on the root, plus Field integration on the input.
 - ✅ Headless — state via `data-popup-open`, `data-list-empty`, `data-placeholder`, `data-selected`, `data-highlighted`.
 
@@ -199,6 +200,29 @@ The root is a `ControlValueAccessor`, so it binds to a `FormControl` like any ot
 `RdxComboboxEmpty` shows only when no item matches the query.
 
 <Canvas of={Stories.Empty} />
+
+### Virtualized
+
+Render very large lists efficiently by virtualizing externally. Set `virtualized` and pass the full
+`[items]` to the root; it owns filtering and navigation by index and exposes the matching subset as
+`filteredItems()` for a virtualization library. Give each rendered `RdxComboboxItem` its `[index]`, and
+on `onItemHighlighted` call the virtualizer's `scrollToIndex(index)` so the highlighted row mounts
+before `aria-activedescendant` references it. Provide `itemToStringLabel` when items are objects (it
+supplies both the filter text and the selection label). Disabled items outside the rendered window are
+not skipped by keyboard navigation.
+
+Virtualizing the list requires a virtualization library. Radix NG does **not** depend on or ship one —
+install it in your app. The example below uses
+[`@tanstack/angular-virtual`](https://tanstack.com/virtual/latest/docs/framework/angular/angular-virtual):
+
+```bash
+npm install @tanstack/angular-virtual
+```
+
+Then drive a scroll container with `injectVirtualizer`, render only `getVirtualItems()`, and bind each
+row's `[index]` to the virtual item's index — exactly as in the example's "Show code".
+
+<Canvas of={Stories.Virtualized} />
 
 ## Accessibility
 

@@ -175,7 +175,7 @@ export class RdxComboboxInput {
                 if (!open) {
                     this.rootContext.openAndHighlight('first');
                 } else {
-                    this.rootContext.highlight.next();
+                    this.rootContext.highlightNext();
                 }
                 break;
             case 'ArrowUp':
@@ -184,12 +184,15 @@ export class RdxComboboxInput {
                 if (!open) {
                     this.rootContext.openAndHighlight('last');
                 } else {
-                    this.rootContext.highlight.previous();
+                    this.rootContext.highlightPrevious();
                 }
                 break;
             case 'Enter':
                 if (open) {
-                    if (this.rootContext.highlightedItem()) {
+                    const hasHighlight = this.rootContext.virtualized()
+                        ? this.rootContext.highlightedIndex() >= 0
+                        : this.rootContext.highlightedItem() !== null;
+                    if (hasHighlight) {
                         // Select the highlighted item (and prevent an accidental form submit).
                         event.preventDefault();
                         this.rootContext.selectHighlighted();

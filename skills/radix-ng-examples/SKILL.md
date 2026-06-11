@@ -30,7 +30,7 @@ Working examples built on `@radix-ng/primitives`. Full source is **bundled offli
 To style a primitive with a custom design system, pair an example with the data-attribute contract in
 the `radix-ng` skill (`references/styling-contract.json`).
 
-Total: **206 examples** across **40 components**.
+Total: **207 examples** across **40 components**.
 
 ## Components
 
@@ -123,6 +123,7 @@ Full source (all examples): [`references/components/combobox.md`](./references/c
 - **Modal**
 - **Reactive forms**
 - **Empty state**
+- **Virtualized**
 
 ### Context Menu
 

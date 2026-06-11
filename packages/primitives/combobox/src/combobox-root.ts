@@ -53,6 +53,23 @@ export interface ComboboxItemRef {
 /** A custom filter predicate: `(itemText, query) => matches`. */
 export type ComboboxFilter = (itemText: string, query: string) => boolean;
 
+/** Why the highlight moved: keyboard navigation, pointer hover, or a programmatic change. */
+export type ComboboxHighlightReason = 'keyboard' | 'pointer' | 'none';
+
+/** Payload of {@link RdxComboboxRoot.onItemHighlighted}. */
+export interface ComboboxItemHighlightedDetails {
+    /** The highlighted item's value, or `null` when the highlight is cleared. */
+    value: AcceptableValue | null;
+    /**
+     * The highlighted item's index in the visible/filtered list (`-1` when cleared). In virtualized
+     * mode this is the index into {@link RdxComboboxRoot.filteredItems} — pass it to the virtualizer's
+     * `scrollToIndex` so the item mounts before it needs DOM focus.
+     */
+    index: number;
+    /** What caused the highlight to move. */
+    reason: ComboboxHighlightReason;
+}
+
 const context = () => {
     const root = inject(RdxComboboxRoot);
     return {
@@ -70,8 +87,12 @@ const context = () => {
         requiredState: root.requiredState,
         openOnInputClick: root.openOnInputClick,
         modal: root.modal,
+        virtualized: root.virtualized,
+        filteredItems: root.filteredItems,
         highlightedItem: root.highlightedItem,
+        highlightedIndex: root.highlightedIndex.asReadonly(),
         activeId: root.activeId,
+        itemId: (index: number) => root.itemId(index),
         isKeyboardActive: () => root.isKeyboardActive(),
         setKeyboardActive: (value: boolean) => root.setKeyboardActive(value),
         transitionStatus: root.transitionStatus,
@@ -82,6 +103,13 @@ const context = () => {
         registerItem: (item: ComboboxItemRef) => root.registerItem(item),
         unregisterItem: (item: ComboboxItemRef) => root.unregisterItem(item),
         highlight: root.highlight,
+        highlightNext: () => root.highlightNext('keyboard'),
+        highlightPrevious: () => root.highlightPrevious('keyboard'),
+        highlightFirst: () => root.highlightFirst('keyboard'),
+        highlightLast: () => root.highlightLast('keyboard'),
+        highlightIndex: (index: number, reason: ComboboxHighlightReason) => root.highlightIndex(index, reason),
+        setHighlight: (item: ComboboxItemRef, reason: ComboboxHighlightReason) => root.setHighlight(item, reason),
+        clearHighlight: () => root.clearHighlightState(),
         inputElement: root.inputElement.asReadonly(),
         setInputElement: (el: HTMLInputElement | null) => root.inputElement.set(el),
         registerTrigger: (el: HTMLElement | null) => (root.triggerElement = el),
@@ -92,6 +120,7 @@ const context = () => {
         setInputValue: (value: string) => root.setInputValue(value),
         openAndHighlight: (edge: 'first' | 'last') => root.openAndHighlight(edge),
         select: (item: ComboboxItemRef) => root.handleSelect(item),
+        selectIndex: (index: number) => root.selectIndex(index),
         selectHighlighted: () => root.selectHighlighted(),
         clearSelection: () => root.clearSelection(),
         removeValue: (value: AcceptableValue) => root.removeValue(value),
@@ -220,6 +249,21 @@ export class RdxComboboxRoot implements ControlValueAccessor {
     /** Maximum number of matching items to show. `-1` (default) means no limit. */
     readonly limit = input(-1, { transform: numberAttribute });
 
+    /**
+     * The full set of item values, used as the source of truth for filtering and navigation in
+     * {@link virtualized} mode (where only a window of `RdxComboboxItem` is mounted). The filtered
+     * subset is exposed as {@link filteredItems} for an external virtualizer to render.
+     */
+    readonly items = input<readonly AcceptableValue[]>();
+
+    /**
+     * Whether the list is externally virtualized — only a window of items is rendered, so navigation
+     * runs over {@link items}/{@link filteredItems} by index instead of over mounted DOM elements.
+     * Requires {@link items}, and {@link itemToStringLabel} for selection labels/filter text. Disabled
+     * items outside the rendered window are not skipped by keyboard navigation.
+     */
+    readonly virtualized = input(false, { transform: booleanAttribute });
+
     /** How item values are compared for equality (function or object key). */
     readonly by = input<ItemValueComparator<AcceptableValue>>();
 
@@ -235,8 +279,11 @@ export class RdxComboboxRoot implements ControlValueAccessor {
     /** Emits when the popup opens or closes. */
     readonly onOpenChange = output<boolean>();
 
-    /** Emits the highlighted item's value (or `null`) as the highlight moves. */
-    readonly onItemHighlighted = output<AcceptableValue | null>();
+    /**
+     * Emits as the highlight moves, with the item's value, its index in {@link filteredItems}, and the
+     * reason. In virtualized mode, use `index` to call the virtualizer's `scrollToIndex`.
+     */
+    readonly onItemHighlighted = output<ComboboxItemHighlightedDetails>();
 
     /** Emits after the open/close transition (including any exit animation) finishes. */
     readonly onOpenChangeComplete = output<boolean>();
@@ -294,7 +341,34 @@ export class RdxComboboxRoot implements ControlValueAccessor {
 
     private readonly visibleSet = computed(() => new Set(this.visibleItems()));
 
-    readonly visibleCount = computed(() => this.visibleItems().length);
+    /**
+     * The filtered item values an external virtualizer should render (the analogue of Base UI's
+     * `useFilteredItems`). Driven by {@link items} when provided (virtualized mode), capped by
+     * {@link limit}; otherwise mirrors the values of the mounted {@link visibleItems}.
+     */
+    readonly filteredItems = computed<readonly AcceptableValue[]>(() => {
+        const data = this.items();
+        if (data === undefined) {
+            return this.visibleItems().map((item) => item.value());
+        }
+        const limit = this.limit();
+        const cap = (arr: readonly AcceptableValue[]) => (limit >= 0 ? arr.slice(0, limit) : arr);
+
+        const filter = this.filter();
+        if (filter === null) {
+            return cap(data);
+        }
+        const query = this.typed() ? (this.inputValue() ?? '') : '';
+        if (!query) {
+            return cap(data);
+        }
+        const matcher = filter ?? this.defaultFilter.contains;
+        return cap(data.filter((value) => matcher(this.textFor(value), query)));
+    });
+
+    readonly visibleCount = computed(() =>
+        this.virtualized() ? this.filteredItems().length : this.visibleItems().length
+    );
 
     readonly highlight = useListHighlight<ComboboxItemRef>({
         items: this.orderedItems,
@@ -305,7 +379,20 @@ export class RdxComboboxRoot implements ControlValueAccessor {
     });
 
     readonly highlightedItem = this.highlight.highlightedItem;
-    readonly activeId = this.highlight.activeId;
+
+    /** Highlighted index into {@link filteredItems} in virtualized mode (`-1` when cleared). */
+    readonly highlightedIndex = signal(-1);
+
+    /** Why the highlight last moved; read when emitting {@link onItemHighlighted}. */
+    private readonly highlightReason = signal<ComboboxHighlightReason>('none');
+
+    readonly activeId = computed(() => {
+        if (this.virtualized()) {
+            const index = this.highlightedIndex();
+            return index >= 0 ? this.itemId(index) : undefined;
+        }
+        return this.highlight.activeId();
+    });
 
     /** Edge to highlight once the list has mounted (items register asynchronously after opening). */
     private readonly pendingHighlightEdge = signal<'first' | 'last' | null>(null);
@@ -341,26 +428,41 @@ export class RdxComboboxRoot implements ControlValueAccessor {
             });
         });
 
-        // Emit highlight changes (skip the initial run).
+        // Emit highlight changes (skip the initial run). Tracks both the DOM-ref highlight and the
+        // virtualized index; only one is active per mode, so the other never fires spuriously.
         let highlightInitialized = false;
         effect(() => {
             const item = this.highlightedItem();
+            const index = this.highlightedIndex();
             if (!highlightInitialized) {
                 highlightInitialized = true;
                 return;
             }
-            untracked(() => this.onItemHighlighted.emit(item ? item.value() : null));
+            untracked(() => {
+                const reason = this.highlightReason();
+                if (this.virtualized()) {
+                    const value = index >= 0 ? (this.filteredItems()[index] ?? null) : null;
+                    this.onItemHighlighted.emit({ value, index, reason });
+                } else {
+                    const value = item ? item.value() : null;
+                    const itemIndex = item ? this.visibleItems().indexOf(item) : -1;
+                    this.onItemHighlighted.emit({ value, index: itemIndex, reason });
+                }
+            });
         });
 
-        // Apply a deferred open-edge highlight once items have registered.
+        // Apply a deferred open-edge highlight once items (DOM refs) or filtered data have registered.
         effect(() => {
             const edge = this.pendingHighlightEdge();
-            const hasItems = this.orderedItems().length > 0;
-            if (!this.open() || edge === null || !hasItems) {
+            const count = this.virtualized() ? this.filteredItems().length : this.orderedItems().length;
+            if (!this.open() || edge === null || count === 0) {
                 return;
             }
             untracked(() => {
-                if (edge === 'first') {
+                if (this.virtualized()) {
+                    this.highlightReason.set('none');
+                    this.highlightedIndex.set(edge === 'first' ? 0 : count - 1);
+                } else if (edge === 'first') {
                     this.highlight.first();
                 } else {
                     this.highlight.last();
@@ -370,18 +472,39 @@ export class RdxComboboxRoot implements ControlValueAccessor {
         });
 
         // autoHighlight 'always': keep the first navigable item highlighted whenever the popup is
-        // open. `visibleCount` re-runs this when filtering changes; `highlightedItem` is read
+        // open. `visibleCount` re-runs this when filtering changes; the current highlight is read
         // untracked to re-establish a highlight only after the self-heal clears it (no loop).
         effect(() => {
             this.orderedItems();
             this.visibleCount();
             if (this.autoHighlightMode() === 'always' && this.open()) {
                 untracked(() => {
-                    if (this.highlightedItem() === null) {
+                    if (this.virtualized()) {
+                        if (this.highlightedIndex() < 0 && this.filteredItems().length > 0) {
+                            this.highlightReason.set('none');
+                            this.highlightedIndex.set(0);
+                        }
+                    } else if (this.highlightedItem() === null) {
                         this.highlight.first();
                     }
                 });
             }
+        });
+
+        // Virtualized self-heal: clear a highlight that filtering has pushed out of range, so
+        // `activeId` never references an index past the end of the filtered list.
+        effect(() => {
+            if (!this.virtualized()) {
+                return;
+            }
+            const length = this.filteredItems().length;
+            untracked(() => {
+                const index = this.highlightedIndex();
+                if (index >= length && index !== -1) {
+                    this.highlightReason.set('none');
+                    this.highlightedIndex.set(-1);
+                }
+            });
         });
     }
 
@@ -466,7 +589,7 @@ export class RdxComboboxRoot implements ControlValueAccessor {
             return;
         }
         this.open.set(false);
-        this.highlight.clear();
+        this.clearHighlightState();
         if (revert) {
             this.revertInputValue();
         }
@@ -515,20 +638,47 @@ export class RdxComboboxRoot implements ControlValueAccessor {
         return item ? item.textValue() : defaultItemToStringLabel(value);
     }
 
+    /** Filter/label text for a raw item value (virtualized mode, no DOM element to read from). */
+    private textFor(value: AcceptableValue): string {
+        const custom = this.itemToStringLabel();
+        return custom ? custom(value) : defaultItemToStringLabel(value);
+    }
+
+    /** Deterministic id for the item at `index` in virtualized mode (matches `aria-activedescendant`). */
+    itemId(index: number): string {
+        return `${this.listId}-item-${index}`;
+    }
+
     handleSelect(item: ComboboxItemRef): void {
         if (this.disabledState() || this.readonly() || item.disabled()) {
             return;
         }
+        this.handleSelectValue(item.value(), item.textValue() || this.labelFor(item.value()));
+    }
 
+    /** Selects the filtered item at `index` (virtualized mode). The label comes from {@link labelFor}. */
+    selectIndex(index: number): void {
+        if (this.disabledState() || this.readonly()) {
+            return;
+        }
+        const value = this.filteredItems()[index];
+        if (value === undefined) {
+            return;
+        }
+        this.handleSelectValue(value, this.labelFor(value));
+    }
+
+    /** Commits a selection from a resolved value/label, independent of whether a DOM item exists. */
+    private handleSelectValue(value: AcceptableValue, textValue: string): void {
         if (this.mode() === 'none') {
             // No value is committed; `onValueChange` fires as a pointer/keyboard activation signal so
             // command-palette consumers can react. Optionally fill the input, then close.
-            this.onValueChange.emit(item.value());
+            this.onValueChange.emit(value);
             if (this.fillInputOnItemPress()) {
-                this.setLabel(item.textValue() || this.labelFor(item.value()));
+                this.setLabel(textValue);
             }
             this.open.set(false);
-            this.highlight.clear();
+            this.clearHighlightState();
             this.restoreFocusAfterSelect();
             this.maybeSubmit();
             return;
@@ -536,9 +686,9 @@ export class RdxComboboxRoot implements ControlValueAccessor {
 
         if (this.multiple()) {
             const current = Array.isArray(this.value()) ? [...(this.value() as AcceptableValue[])] : [];
-            const index = current.findIndex((v) => isItemEqualToValue(v, item.value(), this.by()));
+            const index = current.findIndex((v) => isItemEqualToValue(v, value, this.by()));
             if (index === -1) {
-                current.push(item.value());
+                current.push(value);
             } else {
                 current.splice(index, 1);
             }
@@ -546,10 +696,10 @@ export class RdxComboboxRoot implements ControlValueAccessor {
             this.setLabel('');
             this.focusInput();
         } else {
-            this.commitValue(item.value());
-            this.setLabel(item.textValue() || this.labelFor(item.value()));
+            this.commitValue(value);
+            this.setLabel(textValue);
             this.open.set(false);
-            this.highlight.clear();
+            this.clearHighlightState();
             this.restoreFocusAfterSelect();
         }
 
@@ -564,10 +714,99 @@ export class RdxComboboxRoot implements ControlValueAccessor {
     }
 
     selectHighlighted(): void {
+        if (this.virtualized()) {
+            const index = this.highlightedIndex();
+            if (index >= 0) {
+                this.selectIndex(index);
+            }
+            return;
+        }
         const item = this.highlightedItem();
         if (item) {
             this.handleSelect(item);
         }
+    }
+
+    // --- Highlight navigation facade (mode-aware: index-based when virtualized, else DOM-ref) ---
+
+    highlightNext(reason: ComboboxHighlightReason = 'keyboard'): void {
+        this.highlightReason.set(reason);
+        if (this.virtualized()) {
+            this.stepIndex(1);
+        } else {
+            this.highlight.next();
+        }
+    }
+
+    highlightPrevious(reason: ComboboxHighlightReason = 'keyboard'): void {
+        this.highlightReason.set(reason);
+        if (this.virtualized()) {
+            this.stepIndex(-1);
+        } else {
+            this.highlight.previous();
+        }
+    }
+
+    highlightFirst(reason: ComboboxHighlightReason = 'keyboard'): void {
+        this.highlightReason.set(reason);
+        if (this.virtualized()) {
+            this.highlightedIndex.set(this.filteredItems().length > 0 ? 0 : -1);
+        } else {
+            this.highlight.first();
+        }
+    }
+
+    highlightLast(reason: ComboboxHighlightReason = 'keyboard'): void {
+        this.highlightReason.set(reason);
+        if (this.virtualized()) {
+            const length = this.filteredItems().length;
+            this.highlightedIndex.set(length > 0 ? length - 1 : -1);
+        } else {
+            this.highlight.last();
+        }
+    }
+
+    /** Highlights a specific index in virtualized mode (e.g. pointer hover). Ignored if out of range. */
+    highlightIndex(index: number, reason: ComboboxHighlightReason): void {
+        if (index < 0 || index >= this.filteredItems().length) {
+            return;
+        }
+        this.highlightReason.set(reason);
+        this.highlightedIndex.set(index);
+    }
+
+    /** Highlights a DOM-ref item (non-virtualized pointer hover). */
+    setHighlight(item: ComboboxItemRef, reason: ComboboxHighlightReason): void {
+        this.highlightReason.set(reason);
+        this.highlight.set(item);
+    }
+
+    /** Clears whichever highlight model is active. */
+    clearHighlightState(): void {
+        this.highlight.clear();
+        this.highlightedIndex.set(-1);
+    }
+
+    /** Steps the virtualized highlight index by `direction`, wrapping when {@link loopFocus}. */
+    private stepIndex(direction: 1 | -1): void {
+        const length = this.filteredItems().length;
+        if (length === 0) {
+            this.highlightedIndex.set(-1);
+            return;
+        }
+        const current = this.highlightedIndex();
+        if (current < 0) {
+            this.highlightedIndex.set(direction === 1 ? 0 : length - 1);
+            return;
+        }
+        let next = current + direction;
+        const loop = this.loopFocus();
+        if (next < 0) {
+            next = loop ? length - 1 : 0;
+        } else if (next >= length) {
+            next = loop ? 0 : length - 1;
+        }
+        this.highlightedIndex.set(next);
     }
 
     clearSelection(): void {

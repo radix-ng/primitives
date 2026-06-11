@@ -204,6 +204,9 @@ importers:
       '@tailwindcss/postcss':
         specifier: ^4.1.13
         version: 4.3.0
+      '@tanstack/angular-virtual':
+        specifier: 5.0.4
+        version: 5.0.4(@angular/core@21.2.9(@angular/compiler@21.2.9)(rxjs@7.8.2)(zone.js@0.16.2))
       '@testing-library/angular':
         specifier: ^15.2.0
         version: 15.2.0(e08e8c9e54c339e403ec47827ef765e6)
@@ -6129,6 +6132,14 @@ packages:
 
   '@tailwindcss/postcss@4.3.0':
     resolution: {integrity: sha512-Jm05Tjx+9yCLGv5qw1c+84Psds8MnyrEQYCB+FFk2lgGiUjlRqdxke4mVTuYrj2xnVZqKim2Apr5ySuQRYAw/w==}
+
+  '@tanstack/angular-virtual@5.0.4':
+    resolution: {integrity: sha512-0EwmlJLMnrHEShLk8FBZ04YdM9kqDem97D1H6Le+BI8jFvJBo+0tlz3gPKAen7iM3L+EWV6wfopaGfAHniR0TA==}
+    peerDependencies:
+      '@angular/core': '>=19.0.0'
+
+  '@tanstack/virtual-core@3.17.0':
+    resolution: {integrity: sha512-gOxY/hFkPh/XQYhnThBHzkbkX3Ed+z/iushyz+R+JAr213aXxUDgQoTgTdrDpBSRsjFM73P/KfUyWmaF9WHMkQ==}
 
   '@testing-library/angular@15.2.0':
     resolution: {integrity: sha512-FqLMyS8FYYR/6FOSZrmUW7NCFIYSYZyg2MFd8S5PZcUNdfoPRaNY6nEmeuyoiQn6IveKUKCH3vTfOIeI16nxHg==}
@@ -22384,6 +22395,13 @@ snapshots:
       '@tailwindcss/oxide': 4.3.0
       postcss: 8.5.15
       tailwindcss: 4.3.0
+
+  '@tanstack/angular-virtual@5.0.4(@angular/core@21.2.9(@angular/compiler@21.2.9)(rxjs@7.8.2)(zone.js@0.16.2))':
+    dependencies:
+      '@angular/core': 21.2.9(@angular/compiler@21.2.9)(rxjs@7.8.2)(zone.js@0.16.2)
+      '@tanstack/virtual-core': 3.17.0
+
+  '@tanstack/virtual-core@3.17.0': {}
 
   '@testing-library/angular@15.2.0(e08e8c9e54c339e403ec47827ef765e6)':
     dependencies:

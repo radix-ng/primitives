@@ -40,9 +40,11 @@ export const [injectComboboxItemContext, provideComboboxItemContext] =
     providers: [provideComboboxItemContext(itemContext)],
     host: {
         role: 'option',
-        '[attr.id]': 'id',
+        '[attr.id]': 'elementId()',
         '[attr.aria-selected]': 'isSelected()',
         '[attr.aria-disabled]': 'disabled() ? "true" : undefined',
+        '[attr.aria-setsize]': 'ariaSetSize()',
+        '[attr.aria-posinset]': 'ariaPosInSet()',
         '[attr.data-selected]': 'isSelected() ? "" : undefined',
         '[attr.data-highlighted]': 'isHighlighted() ? "" : undefined',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
@@ -70,13 +72,36 @@ export class RdxComboboxItem implements ComboboxItemRef {
     /** Whether the option is disabled. */
     readonly disabled = input(false, { transform: booleanAttribute });
 
+    /**
+     * The option's index in the list. Required in virtualized mode — it drives the deterministic id
+     * (for `aria-activedescendant`), highlight matching, and selection when only a window is mounted.
+     */
+    readonly index = input<number>();
+
+    protected readonly virtualized = this.rootContext.virtualized;
+
     private readonly autoTextValue = signal('');
 
     readonly textValue = computed(() => this.textValueInput() || this.autoTextValue());
 
-    readonly isVisible = computed(() => this.rootContext.isVisible(this));
+    /** Host id: deterministic per-index in virtualized mode, otherwise a generated unique id. */
+    protected readonly elementId = computed(() =>
+        this.virtualized() ? this.rootContext.itemId(this.index() ?? -1) : this.id
+    );
+
+    protected readonly ariaSetSize = computed(() =>
+        this.virtualized() ? this.rootContext.filteredItems().length : undefined
+    );
+    protected readonly ariaPosInSet = computed(() => (this.virtualized() ? (this.index() ?? -1) + 1 : undefined));
+
+    // Virtualized items are always rendered (the consumer only mounts the filtered window).
+    readonly isVisible = computed(() => (this.virtualized() ? true : this.rootContext.isVisible(this)));
     readonly isSelected = computed(() => this.rootContext.isSelected(this.value()));
-    readonly isHighlighted = computed(() => this.rootContext.highlightedItem() === this);
+    readonly isHighlighted = computed(() =>
+        this.virtualized()
+            ? this.rootContext.highlightedIndex() === this.index()
+            : this.rootContext.highlightedItem() === this
+    );
 
     private readonly group = injectComboboxGroupContext(true);
 
@@ -84,6 +109,11 @@ export class RdxComboboxItem implements ComboboxItemRef {
         const destroyRef = inject(DestroyRef);
 
         afterNextRender(() => {
+            // Virtualized items are not registered: the root navigates over `items` data by index, and
+            // a windowed item mounting/unmounting must not churn the DOM-ordered registry or `labelFor`.
+            if (this.virtualized()) {
+                return;
+            }
             if (!this.textValueInput()) {
                 // Derive the match/label text from the element, excluding decorative indicator text
                 // (e.g. a checkmark) so it doesn't pollute filtering or the input label.
@@ -96,6 +126,9 @@ export class RdxComboboxItem implements ComboboxItemRef {
         });
 
         destroyRef.onDestroy(() => {
+            if (this.virtualized()) {
+                return;
+            }
             this.rootContext.unregisterItem(this);
             this.group?.unregisterItem(this);
         });
@@ -108,7 +141,11 @@ export class RdxComboboxItem implements ComboboxItemRef {
     }
 
     onPointerUp(): void {
-        this.rootContext.select(this);
+        if (this.virtualized()) {
+            this.rootContext.selectIndex(this.index() ?? -1);
+        } else {
+            this.rootContext.select(this);
+        }
     }
 
     onPointerMove(): void {
@@ -118,8 +155,13 @@ export class RdxComboboxItem implements ComboboxItemRef {
             this.rootContext.setKeyboardActive(false);
             return;
         }
-        if (!this.disabled() && this.isVisible()) {
-            this.rootContext.highlight.set(this);
+        if (this.disabled()) {
+            return;
+        }
+        if (this.virtualized()) {
+            this.rootContext.highlightIndex(this.index() ?? -1, 'pointer');
+        } else if (this.isVisible()) {
+            this.rootContext.setHighlight(this, 'pointer');
         }
     }
 }
