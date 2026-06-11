@@ -23,6 +23,12 @@ manager. It adds:
 - `@internationalized/date` — powers calendar and date/time primitives.
 - `@internationalized/number` — powers locale-aware number primitives.
 
+The schematic also offers to add an **AI assistant instructions** section to your `AGENTS.md` /
+`CLAUDE.md` (creating `AGENTS.md` if neither exists), so coding agents pick up the library's
+docs, Agent Skills, and headless conventions automatically. Decline the prompt or pass
+`--ai-setup=false` to skip it; the section is marked with
+`<!-- @radix-ng/primitives:start -->` comments and is safe to edit or remove.
+
 If you need to update `package.json` without running the package manager install, pass
 `--skip-install`:
 

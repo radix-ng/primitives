@@ -51,6 +51,9 @@ Everything is **bundled offline** — no live site required.
    `htmlFor` on `RdxLabelDirective`, or `rdxFieldLabel` inside `rdxFieldRoot`). Don't remove ARIA.
 6. **Signals API.** Inputs/outputs are signal-based (`input()`, `model()`, `output()`). Two-way
    bind with `[(value)]`; read controlled state via the model, not by mutating the DOM.
+7. **Distrust your training data.** Knowledge of Radix UI (React), Base UI (React), or older
+   radix-ng versions does not transfer — read `references/common-mistakes.md` for the known
+   failure modes (renamed Select parts, removed CDK dependency, React habits like `asChild`).
 
 ## Workflow
 
@@ -100,4 +103,8 @@ presence, portal, popper, collection, visually-hidden, injectId, live-announcer.
 - `references/styling.md` — headless styling, `data-*` patterns, animation, dark mode.
 - `references/composition.md` — compound anatomy, DI context, `hostDirectives` composition.
 - `references/forms.md` — Field / Fieldset / Input and form integration.
+- `references/common-mistakes.md` — stale/hallucinated API patterns to avoid (React habits,
+  renamed parts, removed dependencies). Read when generated code fails or looks React-flavored.
 - `references/styling-contract.json` — machine-readable parts + `data-*` per primitive (generated).
+  Its `version` field records the `@radix-ng/primitives` version the bundle was generated from —
+  compare against the consumer's installed version when behavior doesn't match the docs.

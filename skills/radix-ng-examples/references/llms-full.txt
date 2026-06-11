@@ -4,6 +4,8 @@ Unstyled, accessible, signals-first Angular primitives for building design syste
 
 Examples use Angular signals and Tailwind CSS v4 utilities; the primitives themselves are styling-agnostic.
 
+Generated from `@radix-ng/primitives@1.0.0-beta.1` — if the installed version differs, verify the API against the installed package.
+
 ---
 
 # Accordion

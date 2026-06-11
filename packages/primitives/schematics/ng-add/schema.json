@@ -8,6 +8,12 @@
             "description": "Skip package manager install after updating package.json.",
             "type": "boolean",
             "default": false
+        },
+        "aiSetup": {
+            "description": "Add AI assistant instructions (AGENTS.md / CLAUDE.md) pointing coding agents at the library docs and Agent Skills.",
+            "type": "boolean",
+            "default": true,
+            "x-prompt": "Add AI assistant instructions (AGENTS.md / CLAUDE.md) so coding agents use the library correctly?"
         }
     },
     "additionalProperties": false
