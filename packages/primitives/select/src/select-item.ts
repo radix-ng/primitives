@@ -6,12 +6,11 @@ import {
     ElementRef,
     inject,
     input,
-    linkedSignal,
-    signal
+    linkedSignal
 } from '@angular/core';
 import { RdxCollectionItem } from '@radix-ng/primitives/collection';
-import { createContext, getActiveElement, handleAndDispatchCustomEvent, injectId } from '@radix-ng/primitives/core';
-import { injectSelectContentContext } from './select-content';
+import { createContext, handleAndDispatchCustomEvent, injectId } from '@radix-ng/primitives/core';
+import { injectSelectPopupContext } from './select-popup';
 import { injectSelectRootContext } from './select-root';
 import { SELECTION_KEYS, valueComparator } from './utils';
 
@@ -38,31 +37,32 @@ export type SelectEvent = CustomEvent<{ originalEvent: PointerEvent | KeyboardEv
 
 @Directive({
     selector: '[rdxSelectItem]',
+    exportAs: 'rdxSelectItem',
     providers: [provideSelectItemContext(context)],
     hostDirectives: [
         {
             directive: RdxCollectionItem,
-            inputs: ['value']
+            inputs: ['value', 'disabled']
         }
     ],
     host: {
         role: 'option',
-        '[attr.tabindex]': 'disabled() ? undefined : -1',
-        '[attr.aria-selected]': 'isSelected() ? "checked" : "unchecked"',
+        '[attr.id]': 'id',
+        '[attr.aria-selected]': 'isSelected()',
+        '[attr.aria-disabled]': 'disabled() ? "true" : undefined',
         '[attr.data-state]': 'isSelected() ? "checked" : "unchecked"',
-        '[attr.data-highlighted]': 'isFocused() ? "" : undefined',
-        '(focus)': 'isFocused.set(true)',
-        '(blur)': 'isFocused.set(false)',
-        '(pointerdown)': 'onPointerDown($event)',
+        '[attr.data-selected]': 'isSelected() ? "" : undefined',
+        '[attr.data-highlighted]': 'isHighlighted() ? "" : undefined',
+        '[attr.data-disabled]': 'disabled() ? "" : undefined',
         '(pointerup)': 'onPointerUp($event)',
         '(pointerleave)': 'onPointerLeave($event)',
-        '(pointermove)': 'onPointerMove($event)',
-        '(keydown)': 'handleKeyDown($event)'
+        '(pointermove)': 'onPointerMove($event)'
     }
 })
 export class RdxSelectItem {
     private readonly rootContext = injectSelectRootContext();
-    private readonly contentContext = injectSelectContentContext();
+    private readonly contentContext = injectSelectPopupContext();
+    private readonly collectionItem = inject(RdxCollectionItem);
 
     private readonly currentElement = inject(ElementRef);
 
@@ -75,10 +75,14 @@ export class RdxSelectItem {
     readonly textValue$ = linkedSignal(this.textValue);
 
     readonly isSelected = computed(() =>
-        valueComparator(this.rootContext.value(), this.value(), this.rootContext.by())
+        valueComparator(this.rootContext.value(), this.value(), this.rootContext.isItemEqualToValue())
     );
 
-    readonly isFocused = signal(false);
+    /** Highlighted via the highlight model (keyboard / hover), not DOM focus. */
+    readonly isHighlighted = computed(() => this.contentContext.isHighlighted(this.collectionItem));
+
+    /** Item id, referenced by the popup's `aria-activedescendant`. */
+    readonly id = injectId('rdx-select-item-');
 
     readonly textId = injectId('rdx-select-item-text-');
 
@@ -88,12 +92,9 @@ export class RdxSelectItem {
 
     private SELECT_SELECT = 'select.select';
 
-    onPointerDown(event: Event) {
-        (event.currentTarget as HTMLElement).focus({ preventScroll: true });
-    }
-
     onPointerUp(event: PointerEvent | KeyboardEvent) {
         if (event.defaultPrevented) return;
+        if (this.disabled()) return;
 
         const eventDetail = { originalEvent: event, value: this.value() };
 
@@ -113,46 +114,24 @@ export class RdxSelectItem {
 
     onPointerLeave(event: Event) {
         if (event.defaultPrevented) return;
-
-        if (event.currentTarget === getActiveElement()) this.contentContext.onItemLeave?.();
+        this.contentContext.onItemLeave?.();
     }
 
     onPointerMove(event: Event) {
         if (event.defaultPrevented) return;
-        if (this.disabled()) {
-            this.contentContext.onItemLeave?.();
-        } else {
-            // even though safari doesn't support this option, it's acceptable
-            // as it only means it might scroll a few pixels when using the pointer.
-            (event.currentTarget as HTMLElement | null)?.focus({ preventScroll: true });
+        // Ignore pointer events synthesized by keyboard-driven scrolling (don't steal the highlight).
+        if (this.contentContext.isKeyboardActive()) {
+            this.contentContext.setKeyboardActive(false);
+            return;
+        }
+        if (!this.disabled()) {
+            this.contentContext.highlightItem(this.collectionItem);
         }
     }
 
     handleKeyDown(event: Event) {
         const keyEvent = event as KeyboardEvent;
         if (event.defaultPrevented) return;
-
-        if (SELECTION_KEYS.includes(keyEvent.key)) this.handleSelectCustomEvent(keyEvent);
-
-        // prevent page scroll if using the space key to select an item
-        if (keyEvent.key === ' ') event.preventDefault();
-    }
-
-    async handleSelectCustomEvent(event: PointerEvent | KeyboardEvent) {
-        if (event.defaultPrevented) return;
-
-        const eventDetail = { originalEvent: event, value: this.value() };
-        handleAndDispatchCustomEvent(
-            this.SELECT_SELECT,
-            async (event: SelectEvent) => {
-                if (event.defaultPrevented) return;
-
-                if (!this.disabled()) {
-                    this.rootContext.onValueChange(this.value());
-                    if (!this.rootContext.multiple()) this.rootContext.onOpenChange(false);
-                }
-            },
-            eventDetail
-        );
+        if (SELECTION_KEYS.includes(keyEvent.key)) this.onPointerUp(keyEvent);
     }
 }

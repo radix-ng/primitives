@@ -11,8 +11,8 @@ import {
 } from '@angular/core';
 import { RdxCollectionProvider } from '@radix-ng/primitives/collection';
 import { clamp, resizeEffect } from '@radix-ng/primitives/core';
-import { injectSelectContentContext, RDX_SELECT_POSITIONER_TOKEN, RdxPositionerImpl } from './select-content';
 import { RdxSelectItemAlignedPositionContent } from './select-item-aligned-position-content';
+import { injectSelectPopupContext, RDX_SELECT_POSITIONER_TOKEN, RdxPositionerImpl } from './select-popup';
 import { injectSelectRootContext } from './select-root';
 import { CONTENT_MARGIN } from './utils';
 
@@ -36,7 +36,7 @@ import { CONTENT_MARGIN } from './utils';
 export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
     private readonly currentElement = inject(ElementRef);
     private readonly rootContext = injectSelectRootContext();
-    readonly contentContext = injectSelectContentContext();
+    readonly contentContext = injectSelectPopupContext();
 
     readonly placed = output();
 

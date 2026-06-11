@@ -1,5 +1,5 @@
 import { Directive, effect, inject, signal } from '@angular/core';
-import { injectSelectContentContext } from './select-content';
+import { injectSelectPopupContext } from './select-popup';
 import { RdxSelectScrollButtonBase } from './select-scroll-button-base';
 
 @Directive({
@@ -10,7 +10,7 @@ import { RdxSelectScrollButtonBase } from './select-scroll-button-base';
     }
 })
 export class RdxSelectScrollDownButton {
-    private readonly contentContext = injectSelectContentContext();
+    private readonly contentContext = injectSelectPopupContext();
 
     readonly canScrollDown = signal<boolean>(false);
 

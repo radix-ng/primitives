@@ -6,6 +6,8 @@ import alignedPositionWithScrollSource from './select-aligned-position-with-scro
 import alignedPositionSource from './select-aligned-position?raw';
 import { SelectDefault } from './select-default';
 import defaultSource from './select-default?raw';
+import { SelectMultiple } from './select-multiple';
+import multipleSource from './select-multiple?raw';
 import { SelectWithScroll } from './select-with-scroll';
 import withScrollSource from './select-with-scroll?raw';
 
@@ -19,7 +21,13 @@ export default {
     title: 'Primitives/Select',
     decorators: [
         moduleMetadata({
-            imports: [SelectDefault, SelectWithScroll, SelectAlignedPosition, SelectAlignedPositionWithScroll]
+            imports: [
+                SelectDefault,
+                SelectMultiple,
+                SelectWithScroll,
+                SelectAlignedPosition,
+                SelectAlignedPositionWithScroll
+            ]
         }),
         tailwindDemoDecorator()
     ]
@@ -32,6 +40,15 @@ export const Default: Story = {
     render: () => ({
         template: html`
             <select-default />
+        `
+    })
+};
+
+export const Multiple: Story = {
+    parameters: source(multipleSource),
+    render: () => ({
+        template: html`
+            <select-multiple />
         `
     })
 };

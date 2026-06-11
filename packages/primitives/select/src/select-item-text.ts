@@ -1,6 +1,6 @@
 import { afterNextRender, computed, DestroyRef, Directive, ElementRef, inject } from '@angular/core';
-import { injectSelectContentContext } from './select-content';
 import { injectSelectItemContext } from './select-item';
+import { injectSelectPopupContext } from './select-popup';
 import { injectSelectRootContext } from './select-root';
 
 @Directive({
@@ -13,7 +13,7 @@ export class RdxSelectItemText {
     private readonly elementRef = inject(ElementRef<HTMLElement>);
 
     readonly rootContext = injectSelectRootContext();
-    readonly contentContext = injectSelectContentContext();
+    readonly contentContext = injectSelectPopupContext();
     readonly itemContext = injectSelectItemContext();
 
     readonly optionProps = computed(() => {

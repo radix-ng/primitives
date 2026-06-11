@@ -22,17 +22,19 @@ export class RdxSelectValue {
     });
 
     readonly selectedLabel = computed(() => {
-        // eslint-disable-next-line no-useless-assignment
-        let list: string[] = [];
         const options = Array.from(this.rootContext.optionsSet());
+        const customLabel = this.rootContext.itemToStringLabel();
 
-        const getOption = (value?: AcceptableValue) =>
-            options.find((option) => valueComparator(value, option.value, this.rootContext.by()));
-        if (Array.isArray(this.rootContext.value())) {
-            list = Array(this.rootContext.value()).map((value) => getOption(value)?.textContent ?? '');
-        } else {
-            list = [getOption(this.rootContext.value())?.textContent ?? ''];
-        }
+        const labelFor = (value?: AcceptableValue): string => {
+            if (customLabel && value !== undefined && value !== null) {
+                return customLabel(value);
+            }
+            const option = options.find((o) => valueComparator(value, o.value, this.rootContext.isItemEqualToValue()));
+            return option?.textContent ?? '';
+        };
+
+        const value = this.rootContext.value();
+        const list = Array.isArray(value) ? value.map((v) => labelFor(v)) : [labelFor(value)];
         return list.filter(Boolean);
     });
 

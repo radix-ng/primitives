@@ -1,7 +1,11 @@
 import { afterNextRender, booleanAttribute, computed, Directive, ElementRef, inject, input } from '@angular/core';
+import { injectId } from '@radix-ng/primitives/core';
+import { injectFieldRootContext } from '@radix-ng/primitives/field';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { injectSelectRootContext } from './select-root';
 import { OPEN_KEYS } from './utils';
+
+const attr = (value: boolean) => (value ? '' : undefined);
 
 @Directive({
     selector: 'button[rdxSelectTrigger]',
@@ -9,28 +13,67 @@ import { OPEN_KEYS } from './utils';
     host: {
         role: 'combobox',
         type: 'button',
+        '[attr.id]': 'id()',
+        '[attr.aria-describedby]': 'describedBy()',
+        '[attr.aria-invalid]': 'invalidState() ? "true" : undefined',
+        '[attr.aria-required]': 'requiredState() ? "true" : undefined',
         '[attr.disabled]': 'isDisabled() ? "" : undefined',
         '[dir]': 'rootContext.dir()',
         '[attr.data-state]': 'rootContext.open() ? "open" : "closed"',
-        '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
+        '[attr.data-popup-open]': 'dataAttr(rootContext.open())',
+        '[attr.data-placeholder]': 'dataAttr(rootContext.isEmptyModelValue())',
+        '[attr.data-disabled]': 'dataAttr(isDisabled())',
+        '[attr.data-invalid]': 'dataAttr(invalidState())',
+        '[attr.data-valid]': 'dataAttr(!invalidState())',
+        '[attr.data-required]': 'dataAttr(requiredState())',
+        '[attr.data-filled]': 'dataAttr(filledState())',
+        '[attr.data-focused]': 'dataAttr(focusedState())',
         '(click)': 'onClickHandler($event)',
         '(pointerdown)': 'onPointerDown($event)',
         '(pointerup)': 'onPointerUp($event)',
-        '(keydown)': 'onKeydown($event)'
+        '(keydown)': 'onKeydown($event)',
+        '(focus)': 'onFocus()',
+        '(blur)': 'onBlur()'
     }
 })
 export class RdxSelectTrigger {
     readonly rootContext = injectSelectRootContext();
 
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    private readonly fieldRootContext = injectFieldRootContext(true);
+
+    /** The trigger id; Field labels and descriptions reference it for accessible relationships. */
+    readonly id = input(injectId('rdx-select-trigger-'));
 
     readonly disabled = input(false, { transform: booleanAttribute });
 
-    readonly isDisabled = computed(() => this.rootContext.disabled() || this.disabled());
+    readonly isDisabled = computed(
+        () => this.rootContext.disabled() || this.disabled() || Boolean(this.fieldRootContext?.disabledState())
+    );
+
+    protected readonly invalidState = computed(() => Boolean(this.fieldRootContext?.invalidState()));
+    protected readonly requiredState = computed(() => Boolean(this.fieldRootContext?.requiredState()));
+    protected readonly filledState = computed(
+        () => !this.rootContext.isEmptyModelValue() || Boolean(this.fieldRootContext?.filledState())
+    );
+    protected readonly focusedState = computed(() => Boolean(this.fieldRootContext?.focusedState()));
+
+    protected readonly describedBy = computed(() => {
+        if (!this.fieldRootContext) {
+            return undefined;
+        }
+        const ids = [
+            ...this.fieldRootContext.descriptionIds(),
+            ...(this.fieldRootContext.invalidState() ? this.fieldRootContext.errorIds() : [])
+        ];
+        return ids.length ? ids.join(' ') : undefined;
+    });
 
     constructor() {
         afterNextRender(() => {
             this.rootContext.onTriggerChange(this.elementRef);
+            this.fieldRootContext?.setControlId(this.id());
+            this.fieldRootContext?.setFilled(!this.rootContext.isEmptyModelValue());
         });
     }
 
@@ -92,4 +135,15 @@ export class RdxSelectTrigger {
             event.preventDefault();
         }
     }
+
+    onFocus(): void {
+        this.fieldRootContext?.setFocused(true);
+    }
+
+    onBlur(): void {
+        this.fieldRootContext?.setFocused(false);
+        this.fieldRootContext?.setTouched(true);
+    }
+
+    protected readonly dataAttr = attr;
 }

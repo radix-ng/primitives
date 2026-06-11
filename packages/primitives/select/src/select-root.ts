@@ -1,5 +1,23 @@
-import { booleanAttribute, computed, Directive, inject, input, model, signal } from '@angular/core';
-import { AcceptableValue, createContext, Direction, isNullish } from '@radix-ng/primitives/core';
+import {
+    booleanAttribute,
+    computed,
+    Directive,
+    effect,
+    inject,
+    input,
+    model,
+    output,
+    signal,
+    untracked
+} from '@angular/core';
+import {
+    AcceptableValue,
+    createContext,
+    Direction,
+    isNullish,
+    ItemValueComparator,
+    useTransitionStatus
+} from '@radix-ng/primitives/core';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 import { compare, valueComparator } from './utils';
 
@@ -20,9 +38,14 @@ const context = () => {
         dir: context.dir,
         value: context.value,
         multiple: context.multiple,
-        by: context.by,
+        isItemEqualToValue: context.isItemEqualToValue,
+        itemToStringLabel: context.itemToStringLabel,
         open: context.open,
         disabled: context.disabled,
+        modal: context.modal,
+        isEmptyModelValue: context.isEmptyModelValue,
+        transitionStatus: context.transitionStatus,
+        registerTransitionElement: context.registerTransitionElement,
         optionsSet: context.optionsSet,
         onOptionAdd: (option: any) => {
             const existingOption = context.getOption(option());
@@ -71,18 +94,47 @@ export class RdxSelectRoot {
 
     readonly disabled = input(false, { transform: booleanAttribute });
 
+    /** Whether the popup is modal: locks page scroll and makes outside content inert while open. */
+    readonly modal = input(true, { transform: booleanAttribute });
+
     readonly dir = input<Direction>('ltr');
 
-    /** Use this to compare objects by a particular field, or pass your own comparison function for complete control over how objects are compared. */
-    readonly by = input<string | ((a: AcceptableValue, b: AcceptableValue) => boolean)>();
+    /** How item values are compared for equality — a function `(a, b) => boolean` or an object key. */
+    readonly isItemEqualToValue = input<ItemValueComparator<AcceptableValue>>();
+
+    /** Converts a value to its display label (used by `RdxSelectValue`). */
+    readonly itemToStringLabel = input<(value: AcceptableValue) => string>();
+
+    /** Emits after the open/close transition (including any exit animation) finishes. */
+    readonly onOpenChangeComplete = output<boolean>();
+
+    private readonly transition = useTransitionStatus((open) => this.onOpenChangeComplete.emit(open));
+
+    /** Open/close transition phase, for `data-starting-style` / `data-ending-style`. */
+    readonly transitionStatus = this.transition.status;
+
+    /** Registers the popup element whose animation determines transition completion. */
+    readonly registerTransitionElement = this.transition.registerElement;
 
     readonly isEmptyModelValue = computed(() => {
-        if (this.multiple() && Array.isArray(this.value())) {
-            return Array(this.value())?.length === 0;
-        } else {
-            return isNullish(this.value());
+        const value = this.value();
+        if (this.multiple() && Array.isArray(value)) {
+            return value.length === 0;
         }
+        return isNullish(value);
     });
+
+    constructor() {
+        let previousOpen = untracked(this.open);
+        effect(() => {
+            const open = this.open();
+            if (open === previousOpen) {
+                return;
+            }
+            previousOpen = open;
+            untracked(() => this.transition.start(open));
+        });
+    }
 
     readonly optionsSet = signal<Set<SelectOption>>(new Set());
 
@@ -105,13 +157,16 @@ export class RdxSelectRoot {
     });
 
     getOption(value: SelectOption['value']) {
-        return Array.from(this.optionsSet()).find((option) => valueComparator(value, option.value, this.by()));
+        return Array.from(this.optionsSet()).find((option) =>
+            valueComparator(value, option.value, this.isItemEqualToValue())
+        );
     }
 
     handleValueChange(value: AcceptableValue) {
         if (this.multiple()) {
-            const array = Array.isArray(this.value()) ? [...Array(this.value())] : [];
-            const index = array.findIndex((i) => compare(i, value, this.by()));
+            const current = this.value();
+            const array = Array.isArray(current) ? [...current] : [];
+            const index = array.findIndex((i) => compare(i, value, this.isItemEqualToValue()));
             index === -1 ? array.push(value) : array.splice(index, 1);
             this.value.set([...array]);
         } else {

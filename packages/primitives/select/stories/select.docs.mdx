@@ -4,7 +4,7 @@ import { RdxSelectRoot } from '../src/select-root';
 import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
 import { RdxSelectItem } from '../src/select-item';
-import { RdxSelectPopperPositionWrapper } from '../src/select-popper-position-wrapper';
+import { RdxSelectPositioner } from '../src/select-positioner';
 
 <Meta title="Primitives/Select" />
 
@@ -26,23 +26,26 @@ native `<select>` behavior).
 - ✅ Two positioning modes: Popper (Floating UI) and Item-aligned (native-like).
 - ✅ Scroll buttons appear automatically when the list overflows the viewport.
 - ✅ Typeahead: type a character to jump to matching items.
-- ✅ Custom comparison function (`by`) for object values.
+- ✅ Custom comparison (`isItemEqualToValue`) and labels (`itemToStringLabel`) for object values.
+- ✅ Highlight-model navigation (`aria-activedescendant`) — focus stays on the listbox, not the items.
 - ✅ Full keyboard navigation: ArrowDown / ArrowUp, Home, End, Enter / Space, Escape.
+- ✅ `modal` (default) locks page scroll and makes outside content inert, with an optional `Backdrop`.
+- ✅ Field integration on the trigger (invalid / disabled / required / focused state + `aria-describedby`).
 - ✅ WAI-ARIA `combobox` / `listbox` semantics with `aria-selected` and `aria-disabled`.
-- ✅ Headless — state is exposed via `data-highlighted`, `data-disabled`, `data-placeholder`.
+- ✅ Headless — state via `data-selected`, `data-highlighted`, `data-popup-open`, `data-placeholder`, `data-disabled`.
 
 ## Import
 
 ```typescript
 import {
-  RdxSelectContent,
+  RdxSelectPopup,
   RdxSelectGroup,
   RdxSelectItem,
   RdxSelectItemIndicator,
   RdxSelectItemText,
-  RdxSelectLabel,
-  RdxSelectPopperPositionContent,
-  RdxSelectPopperPositionWrapper,
+  RdxSelectGroupLabel,
+  RdxSelectPositionerContent,
+  RdxSelectPositioner,
   RdxSelectPortal,
   RdxSelectPortalPresence,
   RdxSelectRoot,
@@ -50,7 +53,7 @@ import {
   RdxSelectScrollUpButton,
   RdxSelectTrigger,
   RdxSelectValue,
-  RdxSelectViewport
+  RdxSelectList
 } from '@radix-ng/primitives/select';
 ```
 
@@ -59,7 +62,7 @@ import {
 ### Popper positioning (Floating UI)
 
 The popup is anchored to the trigger and positioned with Floating UI — the same approach used by
-Dropdown Menu and Popover. Use `rdxSelectPopperPositionWrapper` to configure side, align, and
+Dropdown Menu and Popover. Use `rdxSelectPositioner` to configure side, align, and
 offsets.
 
 ```html
@@ -71,14 +74,14 @@ offsets.
 
   <div rdxSelectPortal>
     <ng-template rdxSelectPortalPresence>
-      <div rdxSelectContent>
-        <div sideOffset="4" align="start" rdxSelectPopperPositionWrapper>
-          <div rdxSelectPopperPositionContent>
+      <div rdxSelectPopup>
+        <div sideOffset="4" align="start" rdxSelectPositioner>
+          <div rdxSelectPositionerContent>
             <!-- optional scroll-up button -->
             <div rdxSelectScrollUpButton><!-- up icon --></div>
 
-            <div rdxSelectViewport>
-              <div rdxSelectLabel>Group label</div>
+            <div rdxSelectList>
+              <div rdxSelectGroupLabel>Group label</div>
               <div rdxSelectGroup>
                 <div value="apple" rdxSelectItem>
                   <span rdxSelectItemIndicator><!-- check icon --></span>
@@ -111,10 +114,10 @@ the behavior of a native `<select>`. Use `rdxSelectItemAlignedPosition` and
 
   <div rdxSelectPortal>
     <ng-template rdxSelectPortalPresence>
-      <div rdxSelectContent>
+      <div rdxSelectPopup>
         <div rdxSelectItemAlignedPosition>
           <div rdxSelectItemAlignedPositionContent>
-            <div rdxSelectViewport>
+            <div rdxSelectList>
               <div value="apple" rdxSelectItem>
                 <span rdxSelectItemIndicator><!-- check icon --></span>
                 <span rdxSelectItemText>Apple</span>
@@ -135,6 +138,13 @@ the behavior of a native `<select>`. Use `rdxSelectItemAlignedPosition` and
 A grouped list (Fruits / Vegetables) with Popper positioning. Click the trigger to open the popup.
 
 <Canvas of={Stories.Default} />
+
+### Multiple
+
+With `multiple`, picks accumulate in the value array, the trigger joins their labels, and every chosen
+item keeps its indicator. Shows `RdxSelectIcon` and `RdxSelectSeparator`.
+
+<Canvas of={Stories.Multiple} />
 
 ### With scroll buttons
 
@@ -199,12 +209,12 @@ pointer focus) and `data-disabled`.
 
 <ArgTypes of={RdxSelectItem} />
 
-### RdxSelectPopperPositionWrapper
+### RdxSelectPositioner
 
 Wraps the popup panel when using Popper positioning. Accepts the same positioning inputs as
 `rdxMenuPositioner` (`sideOffset`, `alignOffset`, `align`, `side`, `avoidCollisions`, …).
 
-<ArgTypes of={RdxSelectPopperPositionWrapper} />
+<ArgTypes of={RdxSelectPositioner} />
 
 ### RdxSelectItemText
 
@@ -215,7 +225,7 @@ inputs.
 
 Visible only when the parent `rdxSelectItem` is selected. No inputs.
 
-### RdxSelectLabel
+### RdxSelectGroupLabel
 
 A non-interactive label for a group. No inputs.
 

@@ -1,7 +1,7 @@
 import { DestroyRef, Directive, effect, inject, output, signal } from '@angular/core';
 import { RdxCollectionProvider } from '@radix-ng/primitives/collection';
 import { getActiveElement } from '@radix-ng/primitives/core';
-import { injectSelectContentContext } from './select-content';
+import { injectSelectPopupContext } from './select-popup';
 
 @Directive({
     selector: '[rdxSelectScrollButtonBase]',
@@ -16,7 +16,7 @@ import { injectSelectContentContext } from './select-content';
     }
 })
 export class RdxSelectScrollButtonBase {
-    private readonly contentContext = injectSelectContentContext();
+    private readonly contentContext = injectSelectPopupContext();
 
     readonly autoScrollTimerRef = signal<number | null>(null);
 

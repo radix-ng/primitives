@@ -1,20 +1,20 @@
 import { Component, input } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { Align } from '@radix-ng/primitives/popper';
-import { RdxSelectContent } from '../src/select-content';
 import { RdxSelectGroup } from '../src/select-group';
+import { RdxSelectGroupLabel } from '../src/select-group-label';
 import { RdxSelectItem } from '../src/select-item';
 import { RdxSelectItemIndicator } from '../src/select-item-indicator';
 import { RdxSelectItemText } from '../src/select-item-text';
-import { RdxSelectLabel } from '../src/select-label';
-import { RdxSelectPopperPositionContent } from '../src/select-popper-position-content';
-import { RdxSelectPopperPositionWrapper } from '../src/select-popper-position-wrapper';
+import { RdxSelectList } from '../src/select-list';
+import { RdxSelectPopup } from '../src/select-popup';
 import { RdxSelectPortal } from '../src/select-portal';
 import { RdxSelectPortalPresence } from '../src/select-portal-presence';
+import { RdxSelectPositioner } from '../src/select-positioner';
+import { RdxSelectPositionerContent } from '../src/select-positioner-content';
 import { RdxSelectRoot } from '../src/select-root';
 import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
-import { RdxSelectViewport } from '../src/select-viewport';
 
 @Component({
     selector: 'select-default',
@@ -24,15 +24,15 @@ import { RdxSelectViewport } from '../src/select-viewport';
         RdxSelectTrigger,
         RdxSelectValue,
         RdxSelectPortalPresence,
-        RdxSelectContent,
-        RdxSelectViewport,
+        RdxSelectPopup,
+        RdxSelectList,
         LucideChevronDown,
         LucideCheck,
         RdxSelectItem,
-        RdxSelectLabel,
+        RdxSelectGroupLabel,
         RdxSelectGroup,
-        RdxSelectPopperPositionWrapper,
-        RdxSelectPopperPositionContent,
+        RdxSelectPositioner,
+        RdxSelectPositionerContent,
         RdxSelectItemText,
         RdxSelectItemIndicator
     ],
@@ -51,16 +51,16 @@ import { RdxSelectViewport } from '../src/select-viewport';
 
             <div rdxSelectPortal>
                 <ng-template rdxSelectPortalPresence>
-                    <div rdxSelectContent>
+                    <div rdxSelectPopup>
                         <div
                             class="border-border bg-popover text-popover-foreground z-[100] min-w-40 rounded-lg border shadow-md will-change-[opacity,transform]"
                             [sideOffset]="sideOffset()"
                             [align]="align()"
-                            rdxSelectPopperPositionWrapper
+                            rdxSelectPositioner
                         >
-                            <div rdxSelectPopperPositionContent>
-                                <div class="p-1" rdxSelectViewport>
-                                    <div class="text-muted-foreground px-6 text-xs leading-6" rdxSelectLabel>
+                            <div rdxSelectPositionerContent>
+                                <div class="p-1" rdxSelectList>
+                                    <div class="text-muted-foreground px-6 text-xs leading-6" rdxSelectGroupLabel>
                                         Fruits
                                     </div>
                                     <div rdxSelectGroup>
@@ -81,7 +81,7 @@ import { RdxSelectViewport } from '../src/select-viewport';
                                         }
                                     </div>
                                     <div class="bg-border mx-1 my-1 h-px"></div>
-                                    <div class="text-muted-foreground px-6 text-xs leading-6" rdxSelectLabel>
+                                    <div class="text-muted-foreground px-6 text-xs leading-6" rdxSelectGroupLabel>
                                         Vegetables
                                     </div>
                                     <div rdxSelectGroup>

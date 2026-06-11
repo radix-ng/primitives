@@ -1,24 +1,26 @@
 import {
     afterNextRender,
     ContentChild,
+    DestroyRef,
     Directive,
     effect,
     ElementRef,
     inject,
     InjectionToken,
+    Injector,
     OutputRef,
     signal
 } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
-import { RdxCollectionProvider } from '@radix-ng/primitives/collection';
-import { createContext } from '@radix-ng/primitives/core';
+import { RdxCollectionItem, RdxCollectionProvider } from '@radix-ng/primitives/collection';
+import { AcceptableValue, createContext, useListHighlight, useScrollLock } from '@radix-ng/primitives/core';
 import { provideRdxDismissableLayerConfig, RdxDismissableLayer } from '@radix-ng/primitives/dismissable-layer';
 import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import { injectSelectRootContext } from './select-root';
-import { focusFirst, valueComparator } from './utils';
+import { SELECTION_KEYS, valueComparator } from './utils';
 
 const context = () => {
-    const context = inject(RdxSelectContent);
+    const context = inject(RdxSelectPopup);
 
     return {
         content: context.content,
@@ -26,15 +28,24 @@ const context = () => {
         isPositioned: context.isPositioned,
         selectedItem: context.selectedItem,
         selectedItemText: context.selectedItemText,
+        highlightedItem: context.highlight.highlightedItem,
+        isHighlighted: (item: RdxCollectionItem) => context.highlight.highlightedItem() === item,
+        highlightItem: (item: RdxCollectionItem) => context.highlight.set(item),
+        isKeyboardActive: () => context.isKeyboardActive(),
+        setKeyboardActive: (value: boolean) => context.setKeyboardActive(value),
         onViewportChange: (node: any) => {
             context.viewport.set(node);
         },
         onItemLeave: () => {
-            context.content()?.focus();
+            context.highlight.clear();
         },
         itemRefCallback: (node: any, value: any, disabled: boolean) => {
             const isFirstValidItem = !context.firstValidItemFoundRef() && !disabled;
-            const isSelectedItem = valueComparator(context.rootContext.value(), value, context.rootContext.by());
+            const isSelectedItem = valueComparator(
+                context.rootContext.value(),
+                value,
+                context.rootContext.isItemEqualToValue()
+            );
 
             if (isSelectedItem || isFirstValidItem) {
                 context.selectedItem.set(node);
@@ -46,7 +57,11 @@ const context = () => {
         },
         itemTextRefCallback: (node: any, value: any, disabled: any) => {
             const isFirstValidItem = !context.firstValidItemFoundRef() && !disabled;
-            const isSelectedItem = valueComparator(context.rootContext.value(), value, context.rootContext.by());
+            const isSelectedItem = valueComparator(
+                context.rootContext.value(),
+                value,
+                context.rootContext.isItemEqualToValue()
+            );
 
             if (isSelectedItem || isFirstValidItem) {
                 context.selectedItemText.set(node);
@@ -55,10 +70,10 @@ const context = () => {
     };
 };
 
-export type RdxSelectContentContext = ReturnType<typeof context>;
+export type RdxSelectPopupContext = ReturnType<typeof context>;
 
-export const [injectSelectContentContext, provideSelectContentContext] =
-    createContext<RdxSelectContentContext>('RdxSelectContent');
+export const [injectSelectPopupContext, provideSelectPopupContext] =
+    createContext<RdxSelectPopupContext>('RdxSelectPopup');
 
 export interface RdxPositionerImpl {
     placed: OutputRef<any>;
@@ -66,20 +81,34 @@ export interface RdxPositionerImpl {
 
 export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>('RDX_SELECT_POSITIONER_TOKEN');
 
+/**
+ * The popup listbox. Holds DOM focus while open and navigates with the highlight model
+ * (`aria-activedescendant`) — items are not individually focusable. (Renamed to `RdxSelectPopup` in a
+ * later step; selector kept here during the navigation migration.)
+ *
+ * @group Components
+ */
 @Directive({
-    selector: '[rdxSelectContent]',
+    selector: '[rdxSelectPopup]',
     hostDirectives: [RdxFocusScope, RdxDismissableLayer, RdxCollectionProvider],
     providers: [
-        provideSelectContentContext(context),
+        provideSelectPopupContext(context),
         provideRdxDismissableLayerConfig(() => {
             return {
-                disableOutsidePointerEvents: signal(true)
+                disableOutsidePointerEvents: injectSelectRootContext().modal
             };
         })
     ],
     host: {
         role: 'listbox',
+        tabindex: '-1',
+        '[attr.aria-activedescendant]': 'highlight.activeId()',
+        '[attr.aria-multiselectable]': 'rootContext.multiple() ? "true" : undefined',
         '[attr.data-state]': 'rootContext.open() ? "open" : "closed"',
+        '[attr.data-open]': 'rootContext.open() ? "" : undefined',
+        '[attr.data-closed]': 'rootContext.open() ? undefined : ""',
+        '[attr.data-starting-style]': 'rootContext.transitionStatus() === "starting" ? "" : undefined',
+        '[attr.data-ending-style]': 'rootContext.transitionStatus() === "ending" ? "" : undefined',
         '[dir]': 'rootContext.dir()',
 
         '(keydown)': 'handleKeyDown($event)',
@@ -91,12 +120,21 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
         }`
     }
 })
-export class RdxSelectContent {
+export class RdxSelectPopup {
     private readonly dismissableLayer = inject(RdxDismissableLayer);
     private readonly currentElement = inject(ElementRef);
     private readonly collection = inject(RdxCollectionProvider);
+    private readonly injector = inject(Injector);
 
     readonly rootContext = injectSelectRootContext();
+
+    /** Highlight-model navigation over the collected items (DOM order). */
+    readonly highlight = useListHighlight<RdxCollectionItem>({
+        items: this.collection.items,
+        isNavigable: (item) => !item.disabled(),
+        getId: (item) => item.element.id,
+        injector: this.injector
+    });
 
     readonly selectedItem = signal<HTMLElement | undefined>(undefined);
 
@@ -107,6 +145,10 @@ export class RdxSelectContent {
     readonly viewport = signal<HTMLElement | undefined>(undefined);
 
     readonly isPositioned = signal(false);
+
+    // Tracks whether the last interaction was the keyboard, so the highlight doesn't jump to an item
+    // the cursor happens to rest on when arrow-key navigation scrolls the list.
+    private keyboardActive = false;
 
     /**
      * Event handler called when the escape key is down.
@@ -126,13 +168,21 @@ export class RdxSelectContent {
     set positioner(port: RdxPositionerImpl | undefined) {
         if (port) {
             port.placed.subscribe(() => {
-                this.focusSelectedItem();
+                this.highlightSelectedItem();
+                this.scrollSelectedIntoView();
                 this.isPositioned.set(true);
             });
         }
     }
 
     constructor() {
+        // Lock page scroll while a modal popup is open (content mounts only while open).
+        useScrollLock(this.rootContext.modal);
+
+        // The popup's animation determines when the open/close transition (onOpenChangeComplete) is done.
+        const unregisterTransition = this.rootContext.registerTransitionElement(this.currentElement.nativeElement);
+        inject(DestroyRef).onDestroy(unregisterTransition);
+
         this.dismissableLayer.focusOutside.subscribe((e) => e.preventDefault());
 
         this.dismissableLayer.dismiss.subscribe(() => this.rootContext.onOpenChange(false));
@@ -148,8 +198,11 @@ export class RdxSelectContent {
                 event.preventDefault();
             });
 
+            // Focus the popup itself (not an item) — the listbox is the focus owner; items are
+            // navigated virtually via aria-activedescendant.
             focusScope.mountAutoFocus.subscribe((event) => {
                 event.preventDefault();
+                this.content()?.focus({ preventScroll: true });
             });
 
             this.content.set(this.currentElement.nativeElement.firstElementChild);
@@ -199,30 +252,72 @@ export class RdxSelectContent {
         });
     }
 
-    focusSelectedItem() {
-        if (this.selectedItem() && this.content()) {
-            focusFirst([this.selectedItem()!, this.content()!]);
+    /** Highlights the selected item (or the first enabled one) when the popup opens. */
+    highlightSelectedItem() {
+        const items = this.collection.items();
+        const selected = items.find((item) =>
+            valueComparator(
+                this.rootContext.value(),
+                item.value() as AcceptableValue,
+                this.rootContext.isItemEqualToValue()
+            )
+        );
+        if (selected) {
+            this.highlight.set(selected);
+        } else {
+            this.highlight.first();
         }
+    }
+
+    private scrollSelectedIntoView() {
+        this.selectedItem()?.scrollIntoView?.({ block: 'nearest' });
+    }
+
+    setKeyboardActive(value: boolean) {
+        this.keyboardActive = value;
+    }
+
+    isKeyboardActive() {
+        return this.keyboardActive;
     }
 
     handleKeyDown(event: Event) {
         const keyEvent = event as KeyboardEvent;
+        if (keyEvent.isComposing) return;
+
         // select should not be navigated using tab key so we prevent it
-        if (keyEvent.key === 'Tab') event.preventDefault();
+        if (keyEvent.key === 'Tab') {
+            event.preventDefault();
+            return;
+        }
+
+        if (SELECTION_KEYS.includes(keyEvent.key)) {
+            event.preventDefault();
+            const item = this.highlight.highlightedItem();
+            if (item && !item.disabled()) {
+                this.rootContext.onValueChange(item.value() as AcceptableValue);
+                if (!this.rootContext.multiple()) this.rootContext.onOpenChange(false);
+            }
+            return;
+        }
 
         if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(keyEvent.key)) {
-            const collectionItems = this.collection.items().map((i) => i.element);
-            let candidateNodes = [...collectionItems];
-
-            if (['ArrowUp', 'End'].includes(keyEvent.key)) candidateNodes = candidateNodes.slice().reverse();
-
-            if (['ArrowUp', 'ArrowDown'].includes(keyEvent.key)) {
-                const currentElement = event.target as HTMLElement;
-                const currentIndex = candidateNodes.indexOf(currentElement);
-                candidateNodes = candidateNodes.slice(currentIndex + 1);
-            }
-            setTimeout(() => focusFirst(candidateNodes));
             event.preventDefault();
+            this.keyboardActive = true;
+            switch (keyEvent.key) {
+                case 'ArrowDown':
+                    this.highlight.next();
+                    break;
+                case 'ArrowUp':
+                    this.highlight.previous();
+                    break;
+                case 'Home':
+                    this.highlight.first();
+                    break;
+                case 'End':
+                    this.highlight.last();
+                    break;
+            }
         }
     }
 }

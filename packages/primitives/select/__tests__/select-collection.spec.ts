@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RdxCollectionProvider } from '@radix-ng/primitives/collection';
 import { _importsSelect } from '../index';
-import { RdxSelectContent } from '../src/select-content';
+import { RdxSelectPopup } from '../src/select-popup';
 import { RdxSelectRoot } from '../src/select-root';
 
 interface Fruit {
@@ -22,10 +22,10 @@ interface Fruit {
 
             <div rdxSelectPortal>
                 <ng-template rdxSelectPortalPresence>
-                    <div rdxSelectContent>
-                        <div rdxSelectPopperPositionWrapper>
-                            <div rdxSelectPopperPositionContent>
-                                <div rdxSelectViewport>
+                    <div rdxSelectPopup>
+                        <div rdxSelectPositioner>
+                            <div rdxSelectPositionerContent>
+                                <div rdxSelectList>
                                     @for (fruit of fruits(); track fruit.value) {
                                         <div [value]="fruit.value" [disabled]="fruit.disabled" rdxSelectItem>
                                             <span rdxSelectItemText>{{ fruit.label }}</span>
@@ -57,7 +57,7 @@ describe('Select collection integration', () => {
         root.open.set(true);
         fixture.detectChanges();
 
-        const content = fixture.debugElement.query(By.directive(RdxSelectContent));
+        const content = fixture.debugElement.query(By.directive(RdxSelectPopup));
         return content.injector.get(RdxCollectionProvider);
     }
 

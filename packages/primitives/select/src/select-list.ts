@@ -1,11 +1,11 @@
 import { afterNextRender, Directive, ElementRef, inject, signal } from '@angular/core';
-import { injectSelectContentContext } from './select-content';
+import { injectSelectPopupContext } from './select-popup';
 
 @Directive({
-    selector: '[rdxSelectViewport]',
+    selector: '[rdxSelectList]',
     host: {
         role: 'presentation',
-        '[attr.data-rdx-select-viewport]': '""',
+        '[attr.data-rdx-select-list]': '""',
         '[style]': `{
             position: 'relative',
             flex: 1,
@@ -15,8 +15,8 @@ import { injectSelectContentContext } from './select-content';
         '(scroll)': 'handleScroll($event)'
     }
 })
-export class RdxSelectViewport {
-    private readonly contentContext = injectSelectContentContext();
+export class RdxSelectList {
+    private readonly contentContext = injectSelectPopupContext();
     private readonly elementRef = inject(ElementRef<HTMLElement>);
 
     private readonly prevScrollTopRef = signal(0);

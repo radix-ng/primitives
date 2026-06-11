@@ -1,19 +1,19 @@
 import { Component } from '@angular/core';
 import {
-    RdxSelectContent,
     RdxSelectGroup,
+    RdxSelectGroupLabel,
     RdxSelectItem,
     RdxSelectItemIndicator,
     RdxSelectItemText,
-    RdxSelectLabel,
-    RdxSelectPopperPositionContent,
-    RdxSelectPopperPositionWrapper,
+    RdxSelectList,
+    RdxSelectPopup,
     RdxSelectPortal,
     RdxSelectPortalPresence,
+    RdxSelectPositioner,
+    RdxSelectPositionerContent,
     RdxSelectRoot,
     RdxSelectTrigger,
-    RdxSelectValue,
-    RdxSelectViewport
+    RdxSelectValue
 } from '@radix-ng/primitives/select';
 
 @Component({
@@ -24,14 +24,14 @@ import {
         RdxSelectTrigger,
         RdxSelectValue,
         RdxSelectPortalPresence,
-        RdxSelectContent,
-        RdxSelectViewport,
-        RdxSelectPopperPositionWrapper,
-        RdxSelectPopperPositionContent,
+        RdxSelectPopup,
+        RdxSelectList,
+        RdxSelectPositioner,
+        RdxSelectPositionerContent,
         RdxSelectItem,
         RdxSelectItemText,
         RdxSelectItemIndicator,
-        RdxSelectLabel,
+        RdxSelectGroupLabel,
         RdxSelectGroup
     ],
     template: `
@@ -45,11 +45,11 @@ import {
 
             <div rdxSelectPortal>
                 <ng-template rdxSelectPortalPresence>
-                    <div rdxSelectContent>
-                        <div [sideOffset]="4" align="start" rdxSelectPopperPositionWrapper>
-                            <div rdxSelectPopperPositionContent>
-                                <div rdxSelectViewport>
-                                    <div rdxSelectLabel>Fruits</div>
+                    <div rdxSelectPopup>
+                        <div [sideOffset]="4" align="start" rdxSelectPositioner>
+                            <div rdxSelectPositionerContent>
+                                <div rdxSelectList>
+                                    <div rdxSelectGroupLabel>Fruits</div>
                                     <div rdxSelectGroup>
                                         @for (option of options; track option) {
                                             <div [value]="option" rdxSelectItem>
