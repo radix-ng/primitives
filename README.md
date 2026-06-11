@@ -30,11 +30,14 @@ now align primarily with [Base UI](https://base-ui.com/).
 ## Installation
 
 ```bash
-npm install @radix-ng/primitives
-# or
-pnpm add @radix-ng/primitives
-# or
-yarn add @radix-ng/primitives
+ng add @radix-ng/primitives
+```
+
+The schematic installs the runtime peer dependencies and can add AI assistant instructions
+(`AGENTS.md` / `CLAUDE.md`) to your workspace. Or install manually:
+
+```bash
+npm install @radix-ng/primitives @floating-ui/dom @internationalized/date @internationalized/number
 ```
 
 ## Quick start
@@ -72,15 +75,20 @@ Primitives are headless: style them via the `data-*` attributes they expose (e.g
 
 ## AI assistant skills
 
-Give your AI coding assistant structured knowledge of the primitives — APIs, working examples, and
-the `data-*` styling contract — so it writes correct, accessible code instead of guessing. The
-[Skills](skills/) are self-contained (everything bundled offline) and work with Claude Code, Cursor,
-Codex, Cline, Windsurf, GitHub Copilot, Gemini, and other agents via the open
+Give your AI coding assistant structured knowledge of the primitives — the machine-readable API
+contract (selectors, inputs/outputs, two-way bindings), working examples, the `data-*` styling
+contract, and a list of common mistakes — so it writes correct, accessible code instead of
+guessing. The [Skills](skills/) are self-contained (everything bundled offline) and work with
+Claude Code, Cursor, Codex, Cline, Windsurf, GitHub Copilot, Gemini, and other agents via the open
 [Agent Skills ecosystem](https://skills.sh).
 
 ```bash
 npx skills add radix-ng/primitives/skills
 ```
+
+`ng add @radix-ng/primitives` also offers to add a Radix NG section to your `AGENTS.md` /
+`CLAUDE.md`, pointing agents at the docs and skills automatically. Plain-Markdown docs for every
+component are served at `https://radix-ng.com/components/<name>.md`.
 
 ## Components
 
