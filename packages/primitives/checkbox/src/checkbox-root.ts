@@ -48,8 +48,10 @@ const rootContext = () => {
 
 export type CheckboxRootContext = ReturnType<typeof rootContext>;
 
-export const [injectCheckboxRootContext, provideCheckboxRootContext] =
-    createContext<CheckboxRootContext>('CheckboxRootContext');
+export const [injectCheckboxRootContext, provideCheckboxRootContext] = createContext<CheckboxRootContext>(
+    'CheckboxRootContext',
+    'components/checkbox'
+);
 
 /**
  * @group Components

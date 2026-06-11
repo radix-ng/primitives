@@ -41,7 +41,30 @@ describe('createContext', () => {
 
         // Our own message, not Angular's generic NullInjectorError.
         expect(() => inject(() => injectFoo())).toThrow(/No `FooContext` found/);
-        expect(() => inject(() => injectFoo(false))).toThrow(/must be used inside its root/);
+        expect(() => inject(() => injectFoo(false))).toThrow(/must be placed inside the directive/);
+    });
+
+    it('normalizes a description that already ends in `Context`', () => {
+        const [injectFoo] = createContext<FooContext>('FooRootContext');
+        TestBed.configureTestingModule({ providers: [] });
+
+        // `FooRootContext`, not `FooRootContextContext`.
+        expect(() => inject(() => injectFoo())).toThrow(/No `FooRootContext` found/);
+    });
+
+    it('appends a documentation link to the error when a docs path is given', () => {
+        const [injectFoo] = createContext<FooContext>('Foo', 'components/foo');
+        TestBed.configureTestingModule({ providers: [] });
+
+        expect(() => inject(() => injectFoo())).toThrow(/See https:\/\/radix-ng\.com\/components\/foo\.md/);
+    });
+
+    it('omits the documentation link when no docs path is given', () => {
+        const [injectFoo] = createContext<FooContext>('Foo');
+        TestBed.configureTestingModule({ providers: [] });
+
+        expect(() => inject(() => injectFoo())).not.toThrow(/radix-ng\.com/);
+        expect(() => inject(() => injectFoo())).toThrow(/No `FooContext` found/);
     });
 
     it('throws the same descriptive error when a provided factory yields null and the context is required', () => {

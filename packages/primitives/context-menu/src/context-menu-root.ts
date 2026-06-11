@@ -16,7 +16,7 @@ export interface RdxContextMenuRootContext {
 }
 
 export const [injectRdxContextMenuRootContext, provideRdxContextMenuRootContext] =
-    createContext<RdxContextMenuRootContext>('RdxContextMenuRootContext');
+    createContext<RdxContextMenuRootContext>('RdxContextMenuRootContext', 'components/context-menu');
 
 const contextFactory = (): RdxContextMenuRootContext => {
     const root = inject(RdxContextMenuRoot);

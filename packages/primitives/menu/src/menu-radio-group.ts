@@ -7,7 +7,7 @@ export interface RdxMenuRadioGroupContext {
 }
 
 export const [injectRdxMenuRadioGroupContext, provideRdxMenuRadioGroupContext] =
-    createContext<RdxMenuRadioGroupContext>('RdxMenuRadioGroupContext');
+    createContext<RdxMenuRadioGroupContext>('RdxMenuRadioGroupContext', 'components/menu');
 
 const radioGroupContextFactory = (): RdxMenuRadioGroupContext => {
     const instance = inject(RdxMenuRadioGroup);

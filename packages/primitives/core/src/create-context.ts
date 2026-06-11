@@ -16,17 +16,28 @@ export interface InjectContext<T> {
 }
 
 /**
+ * Base URL of the documentation site. Each primitive's docs are also served as plain
+ * Markdown at `/<section>/<slug>.md`, which both humans and AI agents can open.
+ */
+const DOCS_BASE_URL = 'https://radix-ng.com';
+
+/**
  * Creates a context with injector and provider functions for a given type
  * @template T The type of the context value
  * @param description Descriptive string for the context (used in token creation)
+ * @param docs Documentation path for the owning primitive (e.g. `'components/accordion'`),
+ *   appended to the missing-context error as a link to the required anatomy
  * @returns A tuple containing:
  *   - injectContext: Function to retrieve the context value
  *   - provideContext: Function to create a provider for the context
  */
 export function createContext<T>(
-    description: string
+    description: string,
+    docs?: string
 ): readonly [injectContext: InjectContext<T>, provideContext: (useFactory: () => T) => Provider] {
-    const CONTEXT_TOKEN = new InjectionToken<T>(`${description}Context`);
+    // Normalize so both `'FooRoot'` and `'FooRootContext'` read as `FooRootContext`.
+    const contextName = `${description.replace(/\s*Context$/, '')}Context`;
+    const CONTEXT_TOKEN = new InjectionToken<T>(contextName);
 
     /**
      * Retrieves the context value from Angular's dependency injection
@@ -41,9 +52,11 @@ export function createContext<T>(
         const value = inject(CONTEXT_TOKEN, { optional: true });
 
         if (value == null && !optional) {
+            const docsHint = docs ? ` See ${DOCS_BASE_URL}/${docs}.md for the required part hierarchy.` : '';
+
             throw new Error(
-                `No \`${description}Context\` found. A part of the \`${description}\` primitive ` +
-                    `must be used inside its root (the directive that provides \`${description}Context\`).`
+                `No \`${contextName}\` found. This part must be placed inside the directive ` +
+                    `that provides \`${contextName}\` (usually the primitive's root).${docsHint}`
             );
         }
 

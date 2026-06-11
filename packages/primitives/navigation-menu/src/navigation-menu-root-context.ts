@@ -73,4 +73,4 @@ export interface RdxNavigationMenuRootContext {
 }
 
 export const [injectNavigationMenuRootContext, provideNavigationMenuRootContext] =
-    createContext<RdxNavigationMenuRootContext>('RdxNavigationMenuRootContext');
+    createContext<RdxNavigationMenuRootContext>('RdxNavigationMenuRootContext', 'components/navigation-menu');

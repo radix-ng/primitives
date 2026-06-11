@@ -41,8 +41,10 @@ export interface RdxMenubarContext {
     focusBoundary: (boundary: 'first' | 'last', openOnMove: boolean) => void;
 }
 
-export const [injectRdxMenubarContext, provideRdxMenubarContext] =
-    createContext<RdxMenubarContext>('RdxMenubarContext');
+export const [injectRdxMenubarContext, provideRdxMenubarContext] = createContext<RdxMenubarContext>(
+    'RdxMenubarContext',
+    'components/menubar'
+);
 
 const contextFactory = () => buildContext(inject(RdxMenubarRoot));
 

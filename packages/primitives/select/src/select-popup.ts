@@ -72,8 +72,10 @@ const context = () => {
 
 export type RdxSelectPopupContext = ReturnType<typeof context>;
 
-export const [injectSelectPopupContext, provideSelectPopupContext] =
-    createContext<RdxSelectPopupContext>('RdxSelectPopup');
+export const [injectSelectPopupContext, provideSelectPopupContext] = createContext<RdxSelectPopupContext>(
+    'RdxSelectPopup',
+    'components/select'
+);
 
 export interface RdxPositionerImpl {
     placed: OutputRef<any>;

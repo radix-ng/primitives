@@ -79,7 +79,10 @@ const fieldRootContext = () => {
 
 export type RdxFieldRootContext = ReturnType<typeof fieldRootContext>;
 
-export const [injectFieldRootContext, provideFieldRootContext] = createContext<RdxFieldRootContext>('RdxFieldRoot');
+export const [injectFieldRootContext, provideFieldRootContext] = createContext<RdxFieldRootContext>(
+    'RdxFieldRoot',
+    'components/field'
+);
 
 /**
  * Groups a form control with its label, description, error message, and field state.

@@ -78,6 +78,7 @@ Prefer `hostDirectives` over inheritance to reuse primitives. Map inputs/outputs
 
 Every primitive family uses `createContext` from `@radix-ng/primitives/core`. Root directive provides context; children inject it. Pattern:
 
+- `createContext<FooContext>('FooRootContext', 'components/foo')` — always pass the docs path (`'components/<name>'` or `'utils/<name>'`) as the second argument; the missing-context error appends it as a link (`https://radix-ng.com/<path>.md`) so consumers (and their AI agents) can self-correct the part hierarchy
 - `injectFooContext()` — throws if absent (required child)
 - `injectFooContext(true)` — returns null if absent (optional composition)
 

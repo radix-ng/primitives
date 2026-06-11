@@ -43,8 +43,10 @@ export type EditableRootContext = {
     canActivateOnFocus: () => boolean;
 };
 
-export const [injectEditableRootContext, provideEditableRootContext] =
-    createContext<EditableRootContext>('EditableRoot');
+export const [injectEditableRootContext, provideEditableRootContext] = createContext<EditableRootContext>(
+    'EditableRoot',
+    'components/editable'
+);
 
 const rootContext = (): EditableRootContext => {
     const context = inject(RdxEditableRoot);

@@ -10,8 +10,10 @@ const chipContext = () => {
 
 export type RdxComboboxChipContext = ReturnType<typeof chipContext>;
 
-export const [injectComboboxChipContext, provideComboboxChipContext] =
-    createContext<RdxComboboxChipContext>('RdxComboboxChipContext');
+export const [injectComboboxChipContext, provideComboboxChipContext] = createContext<RdxComboboxChipContext>(
+    'RdxComboboxChipContext',
+    'components/combobox'
+);
 
 /**
  * A single selected-value chip. Provide its `value` so {@link RdxComboboxChipRemove} can deselect it.

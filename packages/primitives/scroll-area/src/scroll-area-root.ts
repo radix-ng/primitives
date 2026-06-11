@@ -59,8 +59,10 @@ export interface ScrollAreaRootContext {
     handlePointerUp(event: PointerEvent): void;
 }
 
-export const [injectScrollAreaRootContext, provideScrollAreaRootContext] =
-    createContext<ScrollAreaRootContext>('ScrollAreaRootContext');
+export const [injectScrollAreaRootContext, provideScrollAreaRootContext] = createContext<ScrollAreaRootContext>(
+    'ScrollAreaRootContext',
+    'components/scroll-area'
+);
 
 const rootContext = (): ScrollAreaRootContext => {
     const root = inject(RdxScrollAreaRoot);

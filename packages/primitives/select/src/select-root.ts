@@ -76,8 +76,10 @@ const context = () => {
 
 export type RdxSelectRootContext = ReturnType<typeof context>;
 
-export const [injectSelectRootContext, provideSelectRootContext] =
-    createContext<RdxSelectRootContext>('RdxSelectRootContext');
+export const [injectSelectRootContext, provideSelectRootContext] = createContext<RdxSelectRootContext>(
+    'RdxSelectRootContext',
+    'components/select'
+);
 
 @Directive({
     selector: '[rdxSelectRoot]',

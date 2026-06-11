@@ -35,8 +35,10 @@ export type AccordionRootContext = {
     changeModelValue: (value: string) => void;
 };
 
-export const [injectAccordionRootContext, provideAccordionRootContext] =
-    createContext<AccordionRootContext>('AccordionRootContext');
+export const [injectAccordionRootContext, provideAccordionRootContext] = createContext<AccordionRootContext>(
+    'AccordionRootContext',
+    'components/accordion'
+);
 
 const rootContext = (): AccordionRootContext => {
     const instance = inject(RdxAccordionRootDirective);

@@ -29,8 +29,10 @@ export type AccordionItemContext = {
     index: Signal<number>;
 };
 
-export const [injectAccordionItemContext, provideAccordionItemContext] =
-    createContext<AccordionItemContext>('AccordionItemContext');
+export const [injectAccordionItemContext, provideAccordionItemContext] = createContext<AccordionItemContext>(
+    'AccordionItemContext',
+    'components/accordion'
+);
 
 const itemContext = (): AccordionItemContext => {
     const instance = inject(RdxAccordionItemDirective);

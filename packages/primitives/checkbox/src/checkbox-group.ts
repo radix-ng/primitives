@@ -37,8 +37,10 @@ export interface RdxCheckboxGroupContext {
     registerControl: (name: string, id: string) => () => void;
 }
 
-export const [injectCheckboxGroupContext, provideCheckboxGroupContext] =
-    createContext<RdxCheckboxGroupContext>('CheckboxGroupContext');
+export const [injectCheckboxGroupContext, provideCheckboxGroupContext] = createContext<RdxCheckboxGroupContext>(
+    'CheckboxGroupContext',
+    'components/checkbox'
+);
 
 const groupContext = (): RdxCheckboxGroupContext => {
     const group = inject(RdxCheckboxGroupDirective);

@@ -21,5 +21,7 @@ export interface RdxToggleGroupContext {
     toggle(value: string): void;
 }
 
-export const [injectToggleGroupContext, provideToggleGroupContext] =
-    createContext<RdxToggleGroupContext>('RdxToggleGroupContext');
+export const [injectToggleGroupContext, provideToggleGroupContext] = createContext<RdxToggleGroupContext>(
+    'RdxToggleGroupContext',
+    'components/toggle-group'
+);

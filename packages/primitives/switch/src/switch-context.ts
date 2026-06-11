@@ -26,4 +26,7 @@ export interface RdxSwitchContext {
     markAsTouched(): void;
 }
 
-export const [injectSwitchContext, provideSwitchContext] = createContext<RdxSwitchContext>('RdxSwitchContext');
+export const [injectSwitchContext, provideSwitchContext] = createContext<RdxSwitchContext>(
+    'RdxSwitchContext',
+    'components/switch'
+);

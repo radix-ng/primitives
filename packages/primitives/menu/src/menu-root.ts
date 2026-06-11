@@ -71,8 +71,10 @@ export type RdxMenuTriggerInteraction =
 
 export type RdxMenuTriggerInteractionHandler = (interaction: RdxMenuTriggerInteraction) => boolean;
 
-export const [injectRdxMenuRootContext, provideRdxMenuRootContext] =
-    createContext<RdxMenuRootContext>('RdxMenuRootContext');
+export const [injectRdxMenuRootContext, provideRdxMenuRootContext] = createContext<RdxMenuRootContext>(
+    'RdxMenuRootContext',
+    'components/menu'
+);
 
 function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
     return {

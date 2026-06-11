@@ -31,4 +31,7 @@ export interface RdxTabsRootContext {
     setTabListElement(element: HTMLElement | null): void;
 }
 
-export const [injectTabsRootContext, provideTabsRootContext] = createContext<RdxTabsRootContext>('RdxTabsRootContext');
+export const [injectTabsRootContext, provideTabsRootContext] = createContext<RdxTabsRootContext>(
+    'RdxTabsRootContext',
+    'components/tabs'
+);

@@ -90,8 +90,10 @@ export interface RdxPopoverRootContext {
     toggle: (triggerId: string, trigger: HTMLElement, payload?: unknown, event?: Event) => void;
 }
 
-export const [injectRdxPopoverRootContext, provideRdxPopoverRootContext] =
-    createContext<RdxPopoverRootContext>('RdxPopoverRootContext');
+export const [injectRdxPopoverRootContext, provideRdxPopoverRootContext] = createContext<RdxPopoverRootContext>(
+    'RdxPopoverRootContext',
+    'components/popover'
+);
 
 export type RdxPopoverTransitionStatus = RdxTransitionStatus;
 

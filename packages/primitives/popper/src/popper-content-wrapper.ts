@@ -63,7 +63,7 @@ const context = () => {
 export type PopperContentWrapperContext = ReturnType<typeof context>;
 
 export const [injectPopperContentWrapperContext, providePopperContentWrapperContext] =
-    createContext<PopperContentWrapperContext>('PopperContentWrapperContext');
+    createContext<PopperContentWrapperContext>('PopperContentWrapperContext', 'utils/popper');
 
 @Directive({
     selector: '[rdxPopperContentWrapper]',

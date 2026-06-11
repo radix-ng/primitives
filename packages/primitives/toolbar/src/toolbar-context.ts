@@ -9,13 +9,17 @@ export interface RdxToolbarRootContext {
     readonly disabled: Signal<boolean>;
 }
 
-export const [injectToolbarRootContext, provideToolbarRootContext] =
-    createContext<RdxToolbarRootContext>('RdxToolbarRootContext');
+export const [injectToolbarRootContext, provideToolbarRootContext] = createContext<RdxToolbarRootContext>(
+    'RdxToolbarRootContext',
+    'components/toolbar'
+);
 
 export interface RdxToolbarGroupContext {
     /** Whether the group (and therefore its items) is disabled. */
     readonly disabled: Signal<boolean>;
 }
 
-export const [injectToolbarGroupContext, provideToolbarGroupContext] =
-    createContext<RdxToolbarGroupContext>('RdxToolbarGroupContext');
+export const [injectToolbarGroupContext, provideToolbarGroupContext] = createContext<RdxToolbarGroupContext>(
+    'RdxToolbarGroupContext',
+    'components/toolbar'
+);

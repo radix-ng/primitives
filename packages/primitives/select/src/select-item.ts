@@ -30,8 +30,10 @@ const context = () => {
 
 export type RdxSelectItemContext = ReturnType<typeof context>;
 
-export const [injectSelectItemContext, provideSelectItemContext] =
-    createContext<RdxSelectItemContext>('RdxSelectItemContext');
+export const [injectSelectItemContext, provideSelectItemContext] = createContext<RdxSelectItemContext>(
+    'RdxSelectItemContext',
+    'components/select'
+);
 
 export type SelectEvent = CustomEvent<{ originalEvent: PointerEvent | KeyboardEvent; value?: any }>;
 

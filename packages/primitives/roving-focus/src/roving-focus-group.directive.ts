@@ -37,8 +37,10 @@ const rootContext = () => {
 
 export type RovingFocusGroupContext = ReturnType<typeof rootContext>;
 
-export const [injectRovingFocusGroupContext, provideRovingFocusGroupContext] =
-    createContext<RovingFocusGroupContext>('RovingFocusGroupContext');
+export const [injectRovingFocusGroupContext, provideRovingFocusGroupContext] = createContext<RovingFocusGroupContext>(
+    'RovingFocusGroupContext',
+    'utils/roving-focus'
+);
 
 /**
  * @group Components

@@ -19,7 +19,7 @@ export interface RdxMenuCheckboxItemContext {
 }
 
 export const [injectRdxMenuCheckboxItemContext, provideRdxMenuCheckboxItemContext] =
-    createContext<RdxMenuCheckboxItemContext>('RdxMenuCheckboxItemContext');
+    createContext<RdxMenuCheckboxItemContext>('RdxMenuCheckboxItemContext', 'components/menu');
 
 const checkboxItemContextFactory = (): RdxMenuCheckboxItemContext => {
     const instance = inject(RdxMenuCheckboxItem);

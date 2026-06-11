@@ -74,8 +74,10 @@ import { createContext } from '@radix-ng/primitives/core';
 
 export type RdxFooRootContext = { ... };
 
+// Second arg: docs path ('components/<name>' or 'utils/<name>') — appended to the
+// missing-context error as a link to https://radix-ng.com/<path>.md. Always pass it.
 export const [injectFooRootContext, provideFooRootContext] =
-    createContext<RdxFooRootContext>('FooRootContext');
+    createContext<RdxFooRootContext>('FooRootContext', 'components/foo');
 
 const rootContext = (): RdxFooRootContext => {
     const instance = inject(RdxFooRootDirective);
@@ -365,7 +367,7 @@ Prefer the package.json scripts above over ad-hoc shell, and keep commands match
 
 ## Key utilities from `@radix-ng/primitives/core`
 
-- `createContext<T>(description)` — DI context factory
+- `createContext<T>(description, docs?)` — DI context factory; `docs` ('components/<name>') links the missing-context error to the primitive's docs page
 - `useArrowNavigation(event, current, container, opts)` — keyboard list nav
 - `DataOrientation` — `'horizontal' | 'vertical'`
 - `AcceptableValue` — `string | Record<string, any> | null`

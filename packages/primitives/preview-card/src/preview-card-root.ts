@@ -78,7 +78,7 @@ export interface RdxPreviewCardRootContext {
 }
 
 export const [injectRdxPreviewCardRootContext, provideRdxPreviewCardRootContext] =
-    createContext<RdxPreviewCardRootContext>('RdxPreviewCardRootContext');
+    createContext<RdxPreviewCardRootContext>('RdxPreviewCardRootContext', 'components/preview-card');
 
 export type RdxPreviewCardTransitionStatus = 'starting' | 'ending' | undefined;
 

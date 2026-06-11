@@ -8,5 +8,7 @@ import type { RdxNumberFieldRoot } from './number-field-root';
  *
  * @see https://base-ui.com/react/components/number-field
  */
-export const [injectNumberFieldRootContext, provideNumberFieldRootContext] =
-    createContext<RdxNumberFieldRoot>('RdxNumberFieldRootContext');
+export const [injectNumberFieldRootContext, provideNumberFieldRootContext] = createContext<RdxNumberFieldRoot>(
+    'RdxNumberFieldRootContext',
+    'components/number-field'
+);

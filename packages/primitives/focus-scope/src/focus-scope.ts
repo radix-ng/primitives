@@ -32,8 +32,10 @@ export interface FocusScopeContext {
     trapped?: Signal<boolean>;
 }
 
-export const [injectFocusScopeContext, provideFocusScopeContext] =
-    createContext<FocusScopeContext>('FocusScope Context');
+export const [injectFocusScopeContext, provideFocusScopeContext] = createContext<FocusScopeContext>(
+    'FocusScope Context',
+    'utils/focus-scope'
+);
 
 const rootContext = (): FocusScopeContext => {
     const context = inject(RdxFocusScope);

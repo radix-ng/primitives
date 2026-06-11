@@ -135,8 +135,10 @@ const context = () => {
 
 export type RdxComboboxRootContext = ReturnType<typeof context>;
 
-export const [injectComboboxRootContext, provideComboboxRootContext] =
-    createContext<RdxComboboxRootContext>('RdxComboboxRootContext');
+export const [injectComboboxRootContext, provideComboboxRootContext] = createContext<RdxComboboxRootContext>(
+    'RdxComboboxRootContext',
+    'components/combobox'
+);
 
 /**
  * Root of a Combobox — a filterable select. Owns selection, input text, open state, filtering, and

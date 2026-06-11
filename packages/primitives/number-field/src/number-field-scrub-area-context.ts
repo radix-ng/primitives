@@ -18,4 +18,4 @@ export interface RdxNumberFieldScrubAreaContext {
  * @see https://base-ui.com/react/components/number-field
  */
 export const [injectNumberFieldScrubAreaContext, provideNumberFieldScrubAreaContext] =
-    createContext<RdxNumberFieldScrubAreaContext>('RdxNumberFieldScrubAreaContext');
+    createContext<RdxNumberFieldScrubAreaContext>('RdxNumberFieldScrubAreaContext', 'components/number-field');

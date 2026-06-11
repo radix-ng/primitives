@@ -17,7 +17,7 @@ export interface RdxTooltipProviderContext {
 }
 
 export const [injectRdxTooltipProviderContext, provideRdxTooltipProviderContext] =
-    createContext<RdxTooltipProviderContext>('RdxTooltipProviderContext');
+    createContext<RdxTooltipProviderContext>('RdxTooltipProviderContext', 'components/tooltip');
 
 const numberOrUndefined = (value: NumberInput | undefined) => (value == null ? undefined : numberAttribute(value));
 

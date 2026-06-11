@@ -44,8 +44,10 @@ export interface RdxDrawerRootContext {
     reportPopupHeight: (height: number) => void;
 }
 
-export const [injectRdxDrawerRootContext, provideRdxDrawerRootContext] =
-    createContext<RdxDrawerRootContext>('RdxDrawerRootContext');
+export const [injectRdxDrawerRootContext, provideRdxDrawerRootContext] = createContext<RdxDrawerRootContext>(
+    'RdxDrawerRootContext',
+    'components/drawer'
+);
 
 const context = (): RdxDrawerRootContext => {
     const root = inject(RdxDrawerRoot);

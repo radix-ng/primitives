@@ -39,7 +39,10 @@ const meterRootContext = () => {
 
 export type RdxMeterRootContext = ReturnType<typeof meterRootContext>;
 
-export const [injectMeterRootContext, provideMeterRootContext] = createContext<RdxMeterRootContext>('RdxMeterRoot');
+export const [injectMeterRootContext, provideMeterRootContext] = createContext<RdxMeterRootContext>(
+    'RdxMeterRoot',
+    'components/meter'
+);
 
 /**
  * Provides meter state and accessibility attributes.

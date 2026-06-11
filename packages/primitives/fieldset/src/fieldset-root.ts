@@ -13,8 +13,10 @@ const fieldsetRootContext = () => {
 
 export type RdxFieldsetRootContext = ReturnType<typeof fieldsetRootContext>;
 
-export const [injectFieldsetRootContext, provideFieldsetRootContext] =
-    createContext<RdxFieldsetRootContext>('RdxFieldsetRoot');
+export const [injectFieldsetRootContext, provideFieldsetRootContext] = createContext<RdxFieldsetRootContext>(
+    'RdxFieldsetRoot',
+    'components/fieldset'
+);
 
 /**
  * Groups related form controls and disables them as a set.

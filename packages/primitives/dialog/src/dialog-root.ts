@@ -85,8 +85,10 @@ export interface RdxDialogRootContext {
     toggle: (triggerId: string, trigger: HTMLElement, payload?: unknown, event?: Event) => void;
 }
 
-export const [injectRdxDialogRootContext, provideRdxDialogRootContext] =
-    createContext<RdxDialogRootContext>('RdxDialogRootContext');
+export const [injectRdxDialogRootContext, provideRdxDialogRootContext] = createContext<RdxDialogRootContext>(
+    'RdxDialogRootContext',
+    'components/dialog'
+);
 
 /**
  * Groups all parts of the dialog.

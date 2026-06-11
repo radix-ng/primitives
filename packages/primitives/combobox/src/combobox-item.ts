@@ -25,8 +25,10 @@ const itemContext = () => {
 
 export type RdxComboboxItemContext = ReturnType<typeof itemContext>;
 
-export const [injectComboboxItemContext, provideComboboxItemContext] =
-    createContext<RdxComboboxItemContext>('RdxComboboxItemContext');
+export const [injectComboboxItemContext, provideComboboxItemContext] = createContext<RdxComboboxItemContext>(
+    'RdxComboboxItemContext',
+    'components/combobox'
+);
 
 /**
  * A selectable option. Registers itself with the root for filtering and navigation. Highlight is

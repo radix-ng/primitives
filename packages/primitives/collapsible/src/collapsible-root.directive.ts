@@ -44,8 +44,10 @@ export interface CollapsibleRootContext {
     registerTransitionElement: (element: HTMLElement) => () => void;
 }
 
-export const [injectCollapsibleRootContext, provideCollapsibleRootContext] =
-    createContext<CollapsibleRootContext>('CollapsibleRootContext');
+export const [injectCollapsibleRootContext, provideCollapsibleRootContext] = createContext<CollapsibleRootContext>(
+    'CollapsibleRootContext',
+    'components/collapsible'
+);
 
 const rootContext = (): CollapsibleRootContext => {
     const instance = inject(RdxCollapsibleRootDirective);

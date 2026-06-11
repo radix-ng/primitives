@@ -10,7 +10,7 @@ export interface ScrollAreaScrollbarContext {
 }
 
 export const [injectScrollAreaScrollbarContext, provideScrollAreaScrollbarContext] =
-    createContext<ScrollAreaScrollbarContext>('ScrollAreaScrollbarContext');
+    createContext<ScrollAreaScrollbarContext>('ScrollAreaScrollbarContext', 'components/scroll-area');
 
 const scrollbarContext = (): ScrollAreaScrollbarContext => {
     const scrollbar = inject(RdxScrollAreaScrollbar);

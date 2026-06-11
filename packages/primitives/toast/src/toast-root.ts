@@ -19,8 +19,10 @@ export interface RdxToastRootContext {
     readonly close: () => void;
 }
 
-export const [injectRdxToastRootContext, provideRdxToastRootContext] =
-    createContext<RdxToastRootContext>('RdxToastRootContext');
+export const [injectRdxToastRootContext, provideRdxToastRootContext] = createContext<RdxToastRootContext>(
+    'RdxToastRootContext',
+    'components/toast'
+);
 
 const rootContext = (): RdxToastRootContext => {
     const instance = inject(RdxToastRoot);

@@ -18,8 +18,10 @@ export interface RdxMenuRadioItemContext {
     checked: Signal<boolean>;
 }
 
-export const [injectRdxMenuRadioItemContext, provideRdxMenuRadioItemContext] =
-    createContext<RdxMenuRadioItemContext>('RdxMenuRadioItemContext');
+export const [injectRdxMenuRadioItemContext, provideRdxMenuRadioItemContext] = createContext<RdxMenuRadioItemContext>(
+    'RdxMenuRadioItemContext',
+    'components/menu'
+);
 
 const radioItemContextFactory = (): RdxMenuRadioItemContext => {
     const instance = inject(RdxMenuRadioItem);

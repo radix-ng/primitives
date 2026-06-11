@@ -69,7 +69,10 @@ const formRootContext = () => {
 
 export type RdxFormRootContext = ReturnType<typeof formRootContext>;
 
-export const [injectFormRootContext, provideFormRootContext] = createContext<RdxFormRootContext>('RdxFormRoot');
+export const [injectFormRootContext, provideFormRootContext] = createContext<RdxFormRootContext>(
+    'RdxFormRoot',
+    'components/form'
+);
 
 /** Collapses `FormData` into a plain object; repeated names collapse into arrays. */
 function serializeFormData(data: FormData): Record<string, FormDataEntryValue | FormDataEntryValue[]> {

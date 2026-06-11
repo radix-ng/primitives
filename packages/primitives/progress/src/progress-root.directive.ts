@@ -43,8 +43,10 @@ const progressRootContext = () => {
 
 export type RdxProgressRootContext = ReturnType<typeof progressRootContext>;
 
-export const [injectProgressRootContext, provideProgressRootContext] =
-    createContext<RdxProgressRootContext>('RdxProgressRoot');
+export const [injectProgressRootContext, provideProgressRootContext] = createContext<RdxProgressRootContext>(
+    'RdxProgressRoot',
+    'components/progress'
+);
 
 /**
  * Provides progress state and accessibility attributes.

@@ -8,4 +8,7 @@ export interface CropperRootContext {
     descriptionId: string;
 }
 
-export const [injectCropperRootContext, provideCropperRootContext] = createContext<CropperRootContext>('CropperRoot');
+export const [injectCropperRootContext, provideCropperRootContext] = createContext<CropperRootContext>(
+    'CropperRoot',
+    'components/cropper'
+);

@@ -46,8 +46,10 @@ export interface RdxTooltipContext {
     setDelays: (delay: number | undefined, closeDelay: number | undefined) => void;
 }
 
-export const [injectRdxTooltipContext, provideRdxTooltipContext] =
-    createContext<RdxTooltipContext>('RdxTooltipContext');
+export const [injectRdxTooltipContext, provideRdxTooltipContext] = createContext<RdxTooltipContext>(
+    'RdxTooltipContext',
+    'components/tooltip'
+);
 
 const context = () => contextFor(inject(RdxTooltip));
 

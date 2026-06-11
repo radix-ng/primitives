@@ -13,8 +13,10 @@ const groupContext = () => {
 
 export type RdxComboboxGroupContext = ReturnType<typeof groupContext>;
 
-export const [injectComboboxGroupContext, provideComboboxGroupContext] =
-    createContext<RdxComboboxGroupContext>('RdxComboboxGroupContext');
+export const [injectComboboxGroupContext, provideComboboxGroupContext] = createContext<RdxComboboxGroupContext>(
+    'RdxComboboxGroupContext',
+    'components/combobox'
+);
 
 /**
  * Groups related options under a shared label. Hides itself when all of its items are filtered out,

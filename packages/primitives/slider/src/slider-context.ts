@@ -8,4 +8,7 @@ import type { RdxSliderRoot } from './slider-root';
  *
  * @see https://base-ui.com/react/components/slider
  */
-export const [injectSliderRootContext, provideSliderRootContext] = createContext<RdxSliderRoot>('RdxSliderRootContext');
+export const [injectSliderRootContext, provideSliderRootContext] = createContext<RdxSliderRoot>(
+    'RdxSliderRootContext',
+    'components/slider'
+);

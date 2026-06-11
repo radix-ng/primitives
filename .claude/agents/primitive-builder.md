@@ -75,7 +75,7 @@ constructor() {
 export type RdxFooRootContext = { ... };
 
 export const [injectFooRootContext, provideFooRootContext] =
-    createContext<RdxFooRootContext>('FooRoot');
+    createContext<RdxFooRootContext>('FooRoot', 'components/foo'); // docs path: 'components/<name>' or 'utils/<name>' — linked from the missing-context error
 
 const context = (): RdxFooRootContext => {
     const instance = inject(RdxFooRoot);

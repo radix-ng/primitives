@@ -11,7 +11,7 @@ export interface ScrollAreaViewportContext {
 }
 
 export const [injectScrollAreaViewportContext, provideScrollAreaViewportContext] =
-    createContext<ScrollAreaViewportContext>('ScrollAreaViewportContext');
+    createContext<ScrollAreaViewportContext>('ScrollAreaViewportContext', 'components/scroll-area');
 
 const viewportContext = (): ScrollAreaViewportContext => {
     const viewport = inject(RdxScrollAreaViewport);
