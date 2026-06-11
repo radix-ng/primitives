@@ -1,4 +1,14 @@
-import { computed, Directive, ElementRef, inject, input, linkedSignal, output, signal } from '@angular/core';
+import {
+    computed,
+    DestroyRef,
+    Directive,
+    ElementRef,
+    inject,
+    input,
+    linkedSignal,
+    output,
+    signal
+} from '@angular/core';
 import { createContext } from '@radix-ng/primitives/core';
 
 /** A normalized external-error map: each field name maps to its message(s) in display order. */
@@ -223,8 +233,19 @@ export class RdxFormRoot {
             }
         }
         // Values revert asynchronously relative to the reset event — re-sync field state next macrotask.
-        const fields = this.fields();
-        setTimeout(() => fields.forEach((field) => field.resetState()));
+        // Read the registry fresh inside the callback (fields may register/unregister in between), and
+        // cancel on destroy so resetState never runs against a torn-down field.
+        const timer = setTimeout(() => {
+            this.resetTimers.delete(timer);
+            this.fields().forEach((field) => field.resetState());
+        });
+        this.resetTimers.add(timer);
+    }
+
+    private readonly resetTimers = new Set<ReturnType<typeof setTimeout>>();
+
+    constructor() {
+        inject(DestroyRef).onDestroy(() => this.resetTimers.forEach((timer) => clearTimeout(timer)));
     }
 
     private remainingErrors(): RdxFormErrors {

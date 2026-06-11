@@ -6,6 +6,7 @@ import {
     inject,
     Injector,
     input,
+    isDevMode,
     model,
     numberAttribute,
     output,
@@ -513,6 +514,24 @@ export class RdxComboboxRoot implements ControlValueAccessor {
                 }
             });
         });
+
+        // Virtualized object values can't be labelled from the DOM (items aren't registered) — without
+        // `itemToStringLabel`, selection/revert fall back to a generic label. Warn once in dev.
+        if (isDevMode()) {
+            let warned = false;
+            effect(() => {
+                if (warned || !this.virtualized() || this.itemToStringLabel()) {
+                    return;
+                }
+                if (this.items()?.some((value) => value !== null && typeof value === 'object')) {
+                    warned = true;
+                    console.warn(
+                        '[rdxComboboxRoot] `virtualized` with object item values needs `itemToStringLabel` ' +
+                            'to render correct selection labels; falling back to a generic label.'
+                    );
+                }
+            });
+        }
     }
 
     /** Opens the popup for browsing (resets the query to "pristine" and selects the input text). */

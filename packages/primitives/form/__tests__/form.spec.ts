@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { RdxFieldControl, RdxFieldError, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { _importsForm, RdxFormErrors, RdxFormSubmitEvent } from '../index';
@@ -200,6 +201,20 @@ describe('RdxFormRoot', () => {
 
             expect(field('email').hasAttribute('data-invalid')).toBe(false);
             expect(host.cleared()).toEqual({});
+        });
+
+        it('does not reset fields after the form is destroyed', () => {
+            const fieldRoot = fixture.debugElement.query(By.directive(RdxFieldRoot)).injector.get(RdxFieldRoot);
+            const spy = vi.spyOn(fieldRoot, 'resetState');
+            vi.useFakeTimers();
+            try {
+                formEl().reset(); // queues the deferred field re-sync
+                fixture.destroy(); // must cancel it
+                vi.runAllTimers();
+                expect(spy).not.toHaveBeenCalled();
+            } finally {
+                vi.useRealTimers();
+            }
         });
 
         it('resets interaction state after a macrotask', async () => {
