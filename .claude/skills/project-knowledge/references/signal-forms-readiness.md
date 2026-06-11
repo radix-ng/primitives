@@ -25,18 +25,26 @@ state through signals:
 
 Both extend `FormUiControl`, which adds optional state as plain signals:
 
-| Kind       | Names                                                                                                                                                                                                |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `model()`  | `value` / `checked` (the only required member)                                                                                                                                                       |
-| `input()`  | `disabled`, `readonly`, `required`, `invalid`, `hidden`, `pending`, `touched`, `dirty`, `errors` (`ValidationError[]`), `disabledReasons`, `min`, `max`, `minLength`, `maxLength`, `pattern`, `name` |
-| `output()` | `touch` (`OutputRef<void>` — control notifies the form it was touched)                                                                                                                               |
+| Kind      | Names                                                                                                                                                                                     |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `model()` | `value` / `checked` (the only required member); `touched` (preferred shape — see note)                                                                                                    |
+| `input()` | `disabled`, `readonly`, `required`, `invalid`, `hidden`, `pending`, `dirty`, `errors` (`ValidationError[]`), `disabledReasons`, `min`, `max`, `minLength`, `maxLength`, `pattern`, `name` |
 
-> Verified against `angular.dev/api/forms/signals/FormValueControl` (June 2026):
-> `touched`/`dirty` are **inputs** the form writes into (not `model()`s the control
-> owns), and the touched **notification** is a separate `touch` output. The two
-> interfaces are mutually exclusive at the type level — `FormValueControl` declares
-> `checked?: undefined` and `FormCheckboxControl` declares `value?: undefined`, so a
-> control carrying the wrong member fails to compile.
+> **Stable Angular 22 verified (2026-06-11, angular.dev/api/forms/signals —
+> "stable since v22.0"; supersedes both earlier snapshots).** Signal Forms went
+> stable in **22.0.0 (released June 2026)** after the extended preview in
+> 21.1/21.2. The `touched` contract changed at stabilization: 21.2.9's
+> implementation listens to a `touched` **model**'s `touchedChange`, while
+> stable 22 reverted to a plain `touched` **input** plus a separate
+> **`touch: OutputRef<void>`** output. The dual shape — `touched = model(false)`
+> set on blur **plus** an emitted `touch` output — satisfies both generations
+> (`ModelSignal` extends `InputSignalWithTransform`, so it type-checks as the 22
+> input; each runtime listens to its own notification). 22 also adds an optional
+> **`reset(): void`** method, `markAsTouched()` now marks **descendants** by
+> default, and — strategically big — **`FormValueControl` now interops with
+> Reactive and template-driven forms without CVA**. The two interfaces remain
+> mutually exclusive at the type level (`checked?: undefined` /
+> `value?: undefined`).
 
 CVA stays for Reactive/Template forms; a control can implement **both** CVA and
 `FormValueControl`/`FormCheckboxControl` at once, enabling additive migration.
@@ -47,20 +55,20 @@ is version-independent.
 
 ## Conformance matrix
 
-| Control (file)                                                      | Target interface                       | Required signal                    | Optional already present                                         | Missing                                                                         | Collisions / risk                                                                                                                                                                                                                                   |
-| ------------------------------------------------------------------- | -------------------------------------- | ---------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **checkbox-root** (`checkbox/src/checkbox-root.ts`)                 | `FormCheckboxControl`                  | `checked = model<boolean>` ✅      | `disabled`, `readonly`, `required`, `name`                       | `invalid`, `errors`, `touched`, `dirty`                                         | 🟢 **`implements RdxFormCheckboxControl` ✅** (compiles) — `value` split (#1) + `indeterminate` split (#2): `checked` is now `model<boolean>`, mixed state moved to a separate `indeterminate = model<boolean>`                                     |
-| **checkbox-group** (`checkbox/src/checkbox-group.ts`)               | `FormValueControl<string[]>`           | `value = model` ✅                 | `disabled`                                                       | `required`, `readonly`, `invalid`, `errors`, `touched`, `dirty`, `name`         | —                                                                                                                                                                                                                                                   |
-| **switch-root** (`switch/src/switch-root.ts`)                       | `FormCheckboxControl`                  | `checked = model<boolean>` ✅      | `disabled`, `required`, `readonly`, `name`                       | `invalid`, `errors`, `touched`, `dirty`                                         | 🟢 **`implements RdxFormCheckboxControl` ✅** (compiles) — `value` collision resolved by the #2 split (`submitValue`, aliased `value`); `checked` is already `model<boolean>`                                                                       |
-| **radio-root** (`radio/src/radio-root.directive.ts`)                | `FormValueControl<string \| null>`     | `value = model` ✅                 | `disabled`, `readonly`, `required`, `name`                       | `invalid`, `errors`, `touched`, `dirty`                                         | 🟢 most ready — **`implements RdxFormValueControl<string \| null>` ✅** (compiles)                                                                                                                                                                  |
-| **select-root** (`select/src/select-root.ts`)                       | `FormValueControl<AcceptableValue…>`   | `value = model` ✅                 | `disabled`                                                       | `required`, `readonly`, `invalid`, `errors`, `touched`, `dirty`, `name`         | —                                                                                                                                                                                                                                                   |
-| **toggle-group** (`toggle-group/src/toggle-group-base.ts`)          | `FormValueControl<string[]>`           | `value = model<string[]>` ✅       | `disabled`                                                       | `required`, `readonly`, `invalid`, `errors`, `touched`, `dirty`, `name`         | —                                                                                                                                                                                                                                                   |
-| **slider-root** (`slider/src/slider-root.ts`)                       | `FormValueControl<number \| number[]>` | `value = model` ✅                 | `disabled`, `min`, `max`, `name`, `form`                         | `required`, `readonly`, `invalid`, `errors`, `touched`, `dirty`                 | 🟢 Base UI rewrite renamed `modelValue`→`value`, added `name`/`form`, uses `core` `_IdGenerator`; value is a `number \| number[]` union (single/range)                                                                                              |
-| **number-field-root** (`number-field/src/number-field-root.ts`)     | `FormValueControl<number \| null>`     | `value = model<number \| null>` ✅ | `disabled`, `readonly`, `required`, `min`, `max`, `name`, `form` | `invalid`, `errors`, `touched`, `dirty`                                         | 🟢 Base UI rewrite — **`implements RdxFormValueControl<number \| null>` ✅** (compiles); `null` = empty value, added `name`/`form` + hidden `[rdxNumberFieldHiddenInput]`, uses `core` `_IdGenerator`. `readOnly`→`readonly` to match the interface |
-| **input** (`input/src/input.directive.ts`)                          | `FormValueControl<RdxInputValue>`      | `value = model` ✅                 | `disabled`, `required`, **`invalid`** ✅                         | `readonly`, `errors`, `touched`, `dirty`, `minLength/maxLength/pattern`, `name` | 🟢 only control that already has `invalid` — **`implements RdxFormValueControl<RdxInputValue \| undefined>` ✅** (compiles)                                                                                                                         |
-| **date-field-root** (`date-field/src/date-field-root.directive.ts`) | `FormValueControl<DateValue>`          | `value = model` ✅                 | `disabled`, `readonly`                                           | `required`, `invalid`, `errors`, `touched`, `dirty`, `name`, `min/max`          | —                                                                                                                                                                                                                                                   |
-| **time-field-root** (`time-field/src/time-field-root.directive.ts`) | `FormValueControl<TimeValue>`          | `value = model` ✅                 | `disabled`, `readonly`                                           | `required`, `invalid`, `errors`, `touched`, `dirty`, `name`, `min/max`          | —                                                                                                                                                                                                                                                   |
-| **editable-root** (`editable/src/editable-root.ts`)                 | `FormValueControl<string>`             | `value = model<string>` ✅         | `disabled`, `readonly`, `required`, `maxLength`                  | `invalid`, `errors`, `touched`, `dirty`, `name`, `minLength`, `pattern`         | —                                                                                                                                                                                                                                                   |
+| Control (file)                                                      | Target interface                       | Required signal                    | Optional already present                                                                                                                                               | Missing                                                                 | Collisions / risk                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ------------------------------------------------------------------- | -------------------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **checkbox-root** (`checkbox/src/checkbox-root.ts`)                 | `FormCheckboxControl`                  | `checked = model<boolean>` ✅      | `disabled`, `readonly`, `required`, `name`                                                                                                                             | `invalid`, `errors`, `touched`, `dirty`                                 | 🟢 **`implements RdxFormCheckboxControl` ✅** (compiles) — `value` split (#1) + `indeterminate` split (#2): `checked` is now `model<boolean>`, mixed state moved to a separate `indeterminate = model<boolean>`                                                                                                                                                                                                                                                                                                   |
+| **checkbox-group** (`checkbox/src/checkbox-group.ts`)               | `FormValueControl<string[]>`           | `value = model` ✅                 | `disabled`                                                                                                                                                             | `required`, `readonly`, `invalid`, `errors`, `touched`, `dirty`, `name` | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **switch-root** (`switch/src/switch-root.ts`)                       | `FormCheckboxControl`                  | `checked = model<boolean>` ✅      | `disabled`, `required`, `readonly`, `name`                                                                                                                             | `invalid`, `errors`, `touched`, `dirty`                                 | 🟢 **`implements RdxFormCheckboxControl` ✅** (compiles) — `value` collision resolved by the #2 split (`submitValue`, aliased `value`); `checked` is already `model<boolean>`                                                                                                                                                                                                                                                                                                                                     |
+| **radio-root** (`radio/src/radio-root.directive.ts`)                | `FormValueControl<string \| null>`     | `value = model` ✅                 | `disabled`, `readonly`, `required`, `name`                                                                                                                             | `invalid`, `errors`, `touched`, `dirty`                                 | 🟢 most ready — **`implements RdxFormValueControl<string \| null>` ✅** (compiles)                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **select-root** (`select/src/select-root.ts`)                       | `FormValueControl<AcceptableValue…>`   | `value = model` ✅                 | `disabled`                                                                                                                                                             | `required`, `readonly`, `invalid`, `errors`, `touched`, `dirty`, `name` | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **toggle-group** (`toggle-group/src/toggle-group-base.ts`)          | `FormValueControl<string[]>`           | `value = model<string[]>` ✅       | `disabled`                                                                                                                                                             | `required`, `readonly`, `invalid`, `errors`, `touched`, `dirty`, `name` | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **slider-root** (`slider/src/slider-root.ts`)                       | `FormValueControl<number \| number[]>` | `value = model` ✅                 | `disabled`, `min`, `max`, `name`, `form`                                                                                                                               | `required`, `readonly`, `invalid`, `errors`, `touched`, `dirty`         | 🟢 Base UI rewrite renamed `modelValue`→`value`, added `name`/`form`, uses `core` `_IdGenerator`; value is a `number \| number[]` union (single/range)                                                                                                                                                                                                                                                                                                                                                            |
+| **number-field-root** (`number-field/src/number-field-root.ts`)     | `FormValueControl<number \| null>`     | `value = model<number \| null>` ✅ | `disabled`, `readonly`, `required`, `min`, `max`, `name`, `form`                                                                                                       | `invalid`, `errors`, `touched`, `dirty`                                 | 🟢 Base UI rewrite — **`implements RdxFormValueControl<number \| null>` ✅** (compiles); `null` = empty value, added `name`/`form` + hidden `[rdxNumberFieldHiddenInput]`, uses `core` `_IdGenerator`. `readOnly`→`readonly` to match the interface                                                                                                                                                                                                                                                               |
+| **input** (`input/src/input.directive.ts`)                          | `FormValueControl<string>`             | `value = model<string>` ✅         | **full `FormUiControl` surface** ✅ (`disabled`, `readonly`, `required`, `invalid`, `errors`, `touched` **model**, `dirty`, `name`, `minLength`/`maxLength`/`pattern`) | —                                                                       | 🟢 **batch #4 pilot — COMPLETE + runtime-verified by the spike (2026-06-11).** ⚠️ Breaking: `RdxInputValue` narrowed `string \| number \| readonly string[]` → `string` (native inputs round-trip strings; the union broke Signal Forms two-way typing). `pattern` reflects to the native attr only when exactly one regex. `touched = model(false)` + `touch` output, both emitted on blur (dual shape: 21.x listens to `touchedChange`, stable 22 to `touch`); `dirty` input merges with internal edit tracking |
+| **date-field-root** (`date-field/src/date-field-root.directive.ts`) | `FormValueControl<DateValue>`          | `value = model` ✅                 | `disabled`, `readonly`                                                                                                                                                 | `required`, `invalid`, `errors`, `touched`, `dirty`, `name`, `min/max`  | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **time-field-root** (`time-field/src/time-field-root.directive.ts`) | `FormValueControl<TimeValue>`          | `value = model` ✅                 | `disabled`, `readonly`                                                                                                                                                 | `required`, `invalid`, `errors`, `touched`, `dirty`, `name`, `min/max`  | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **editable-root** (`editable/src/editable-root.ts`)                 | `FormValueControl<string>`             | `value = model<string>` ✅         | `disabled`, `readonly`, `required`, `maxLength`                                                                                                                        | `invalid`, `errors`, `touched`, `dirty`, `name`, `minLength`, `pattern` | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 ## Collisions to resolve by design (Angular 21)
 
@@ -146,22 +154,71 @@ checkedState() ? 'checked' : 'unchecked'`.
    `number | number[]` union (single thumb vs range), so `FormValueControl<T>` is
    parameterised on the union rather than a fixed shape.
 4. 🟡 **Most controls lack `invalid`/`errors`/`touched`/`dirty`.** Homogeneous
-   batch — close it with one shared pattern (see prep #3).
+   batch — close it with one shared pattern (see prep #3). **Pilot landed on
+   `input` (runtime-verified 2026-06-11)**: the pattern to copy is — `errors`
+   input feeding the `invalidState` computed; **`touched = model(false)` set on
+   blur PLUS a `touch = output<void>()` emitted on blur** (dual shape: 21.x
+   listens to the model's `touchedChange`, stable 22 listens to `touch`);
+   `dirty` input merged with internally tracked edit state into `dirtyState`
+   (+ `data-touched`/`data-dirty`); `name` reflected to the native attribute.
+   Includes one breaking type narrow (`RdxInputValue` → `string`) justified by
+   Signal Forms two-way typing.
 
 ## Readiness ranking
 
-- 🟢 **radio, input, number-field, switch, checkbox** — `implements` applied and
-  compiles. radio/input/number-field via prep #3; **switch** via the `value`
+- 🟢 **input — fully conformant and runtime-verified** (batch #4 pilot complete:
+  entire optional `FormUiControl` surface, `touched` as model; bound end-to-end
+  by the spike spec).
+- 🟢 **radio, number-field, switch, checkbox** — `implements` applied and
+  compiles. radio/number-field via prep #3; **switch** via the `value`
   split (#1); **checkbox** via the `value` split (#1) + `indeterminate` split (#2).
-- 🟡 **select, toggle-group, checkbox-group, date/time-field, editable, slider** — need `invalid/errors/touched/dirty` (+ `required/name` where missing; slider may also add optional `required`/`readonly`).
+  Still missing the batch-#4 optional members — copy the input pilot pattern.
+- 🟡 **select, toggle-group, checkbox-group, date/time-field, editable, slider** — need `invalid/errors/touched/dirty` (+ `required/name` where missing; slider may also add optional `required`/`readonly`). Copy the input pilot pattern.
 - 🔴 none of the structural blockers remain — what's left is the homogeneous
   `invalid/errors/touched/dirty` batch (collisions #4) across the 🟡 controls.
 
-## Open question (not answered by the matrix)
+## Open question — ANSWERED by the runtime spike (2026-06-11, vs 21.2.9)
 
-All these controls are **directives**; Signal Forms examples are **components**.
-Whether `[field]` binds to a directive-based control via DI is the key technical
-risk — resolved only by a spike (prep #5).
+~~Whether the binding directive discovers a directive-based control via DI~~ —
+**resolved: yes.** Spike spec (9 specs, green vs 21.2.9) is **archived at
+`docs/spikes/signal-forms-spike.spec.ts`**, out of the test glob — keeping a pin
+on the experimental API in CI was noise once stable 22 was known to differ.
+Copy it back into `input/__tests__/` and re-run against stable 22 at the
+workspace bump (the remaining gate step). Findings:
+
+- **Attribute directives ARE discovered as custom controls.** `@angular/core`
+  scans **all directives on the node** (not just the host component) and picks
+  the first with a `value`/`checked` model (`initializeCustomControlStatus`).
+  `<input rdxInput [formField]>` runtime-verified: form writes the directive's
+  `value` model; typing flows back; `errors`/`name`/`disabled` are written into
+  the directive's inputs via `setInputOnDirectives`.
+- **Path precedence: CVA → custom control → native.** CVA injected
+  `{ self: true }` → our CVA controls (switch/checkbox/radio/…) bind through
+  CVA; runtime-verified with `button[rdxSwitchRoot]`.
+- **`touched` notification differs per generation** — 21.2.9 listens to a
+  `touched` model's `touchedChange`; **stable 22 reverted to a `touch` output**
+  (verified against the v22.0 API docs the same day). Resolution: `rdxInput`
+  ships the **dual shape** — `touched = model(false)` set on blur plus a
+  `touch = output<void>()` — covering both runtimes; the shim documents this.
+  Bonus fix: `rdxSwitchRoot` marks touched on button blur (was only on the
+  hidden input's blur — a gap that also hit Reactive Forms).
+- **Wrapper components are unnecessary** — that rung is pruned from ADR 0004's
+  fallback ladder.
+
+The gate is satisfied for the 21.x experimental API; re-run the spike + one-pass
+naming re-verification against stable Angular 22 before claiming compatibility.
+
+### Naming / API drift (re-verify in one pass on stable Angular 22)
+
+Project documents disagree because they snapshot different points of the
+experimental API: ADR 0004 and current angular.dev use **`[formField]`**; this
+document and `forms.docs.mdx` have used `[field]` / `[control]` in places.
+Member shapes drift too: `touched` has been observed both as a form-written
+`input()` + separate `touch` output (earlier snapshot of this document) and as a
+control-owned `model()` (June 2026 custom-controls guide). Treat every name in
+this file as provisional; the `implements` checks in the matrix are compile-time
+guarantees against **our shim**, which itself must be re-verified against the
+stable API before the Angular 22 bump.
 
 ## Prep work doable on Angular 21
 
@@ -201,8 +258,16 @@ filled/focused`) and the context gains `setStateProvider(provider | null)`
    The DOM heuristic in `rdxFieldControl`/`rdxInput` is untouched and stays the
    default; provider precedence simply makes its writes inert for owned states.
    Covered by 5 new specs in `field.directive.spec.ts`. Version-independent.
-5. **Learning spike (not for merge)** — Signal Forms exists as experimental in 21. Build a throwaway sandbox to confirm `[field]` discovery against a
-   directive-based control. Experimental API may differ from stable 22.
+5. ✅ **Runtime spike — DONE for 21.x experimental** (2026-06-11; was the
+   mandatory gate from the ADR 0004 amendment). 9 specs (custom-control
+   discovery of `rdxInput`, value round-trip, errors/name delivery, touched on
+   blur, CVA path via switch) ran green against 21.2.9; the spec is **archived
+   at `docs/spikes/signal-forms-spike.spec.ts`** out of the test glob — it
+   pinned the experimental API, and the stable-22 contract diff is already
+   known and documented. At the Angular 22 bump: copy back into
+   `input/__tests__/`, re-run against stable (the last gate step), then swap
+   the `core` shim for real imports (prep #3 note). See "Open question —
+   ANSWERED" above for the findings.
 6. ✅ **Remove CDK from the form path** — done as part of removing `@angular/cdk`
    from the whole library. `BooleanInput`/`NumberInput` now come from
    `@radix-ng/primitives/core` (`core/src/types.ts`), id generation uses the `core`
@@ -215,10 +280,23 @@ resolved — the `value` split (switch + checkbox) and the checkbox `indetermina
 split. All five clean controls (radio, input, number-field, switch, checkbox)
 now `implements` and compile. **6** (CDK removal from the form path) is done — CDK
 is fully removed from the library. Remaining: the shared **`invalid`/`errors`/
-`touched`/`dirty` batch** (collisions #4) across the 🟡 controls; **5** (spike)
-optional before the Angular 22 bump. Note: `implements` is a **compile-time**
-guarantee — runtime binding of
-`[control]` to these directives stays unverified until the spike / Angular 22.
+`touched`/`dirty` batch** (collisions #4) across the 🟡 controls; **5** (spike) —
+now a **mandatory gate** before the Angular 22 bump is announced as Signal
+Forms-compatible. Note: `implements` is a **compile-time** guarantee — runtime
+binding of `[formField]` to these directives stays unverified until the spike.
+
+## Form layer (planned)
+
+The `add-form-root` OpenSpec change (`openspec/changes/add-form-root/`) adds
+`RdxFormRoot` with an **`RdxFormState`** provider seam — the form-level
+counterpart of prep #4 (`invalid`/`dirty`/`touched`/`submitting`/`errorsFor`,
+structural accessors, `setStateProvider`). It also extends `RdxFieldState` with
+an optional `errors` accessor so Signal Forms `ValidationError[]` _content_ (not
+just the invalid boolean) can flow into `rdxFieldError` (`messages()`). The
+Angular 22 adapter then becomes a pair: `[rdxSignalField]` (ADR 0004) +
+`[rdxSignalForm]`. Signal Forms' `submit()` owns the submit lifecycle and
+server-error application — while an `RdxFormState` provider owns `errorsFor`,
+Form's own `errors`-input/clear-on-edit machinery is inert by design.
 
 ## Related
 

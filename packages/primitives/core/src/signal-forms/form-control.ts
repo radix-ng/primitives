@@ -41,15 +41,27 @@ export interface RdxFormUiControl {
     readonly invalid?: RdxFormStateInput<boolean>;
     readonly hidden?: RdxFormStateInput<boolean>;
     readonly pending?: RdxFormStateInput<boolean>;
-    readonly touched?: RdxFormStateInput<boolean>;
+    /**
+     * Touched status the form writes into the control.
+     *
+     * The two API generations disagree on the notification half: the 21.x
+     * experimental implementation listens to a `touched` **model**'s
+     * `touchedChange` output, while stable Angular 22 reverted to a plain
+     * `touched` input plus a separate {@link touch} output. A `model()` set on
+     * blur **plus** an emitted `touch` output satisfies both (`ModelSignal`
+     * extends `InputSignalWithTransform`, so it type-checks as the 22 input).
+     */
+    readonly touched?: ModelSignal<boolean> | RdxFormStateInput<boolean> | OutputRef<boolean>;
     readonly dirty?: RdxFormStateInput<boolean>;
     readonly name?: RdxFormStateInput<string | undefined>;
     readonly errors?: RdxFormStateInput<readonly RdxValidationError[]>;
     readonly minLength?: RdxFormStateInput<number | undefined>;
     readonly maxLength?: RdxFormStateInput<number | undefined>;
     readonly pattern?: RdxFormStateInput<readonly RegExp[]>;
-    /** Notifies the form that the control was touched (mirror of Angular's `touch` output). */
+    /** Notifies the form the control was touched (stable Angular 22 contract; ignored by 21.x). */
     readonly touch?: OutputRef<void>;
+    /** Resets the control's UI state (optional method added in stable Angular 22). */
+    reset?(): void;
 }
 
 /**

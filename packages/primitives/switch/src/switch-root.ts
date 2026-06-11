@@ -54,6 +54,7 @@ const context = (): RdxSwitchContext => {
         '[attr.data-required]': 'required() ? "" : undefined',
         '[attr.disabled]': 'isDisabled() ? "" : undefined',
         '(click)': 'toggle()',
+        '(blur)': 'cva.markAsTouched()',
         '(keydown.enter)': '$event.preventDefault()'
     }
 })

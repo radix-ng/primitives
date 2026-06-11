@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RdxValidationError } from '@radix-ng/primitives/core';
 import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxInputDirective, RdxInputValueChangeEvent } from '../src/input.directive';
 
@@ -11,7 +12,17 @@ import { RdxInputDirective, RdxInputValueChangeEvent } from '../src/input.direct
             [disabled]="disabled"
             [required]="required"
             [invalid]="invalid"
+            [readonly]="readonly"
+            [name]="name"
+            [errors]="errors"
+            [minLength]="minLength"
+            [maxLength]="maxLength"
+            [pattern]="pattern"
+            [touched]="touched"
+            [dirty]="dirty"
             (onValueChange)="onValueChange($event)"
+            (touchedChange)="touches = touches + 1"
+            (touch)="touchEmits = touchEmits + 1"
             rdxInput
         />
     `,
@@ -23,6 +34,16 @@ class StandaloneHostComponent {
     disabled = false;
     required = false;
     invalid = false;
+    readonly = false;
+    name: string | undefined;
+    errors: readonly RdxValidationError[] = [];
+    minLength: number | undefined;
+    maxLength: number | undefined;
+    pattern: readonly RegExp[] | undefined;
+    touched = false;
+    dirty = false;
+    touches = 0;
+    touchEmits = 0;
     changes: RdxInputValueChangeEvent[] = [];
 
     onValueChange(event: RdxInputValueChangeEvent): void {
@@ -106,6 +127,80 @@ describe('Input', () => {
             expect(input.getAttribute('data-disabled')).toBe('');
             expect(input.getAttribute('data-required')).toBe('');
             expect(input.getAttribute('data-invalid')).toBe('');
+        });
+
+        it('reflects readonly state', () => {
+            fixture.componentInstance.readonly = true;
+            fixture.changeDetectorRef.markForCheck();
+            fixture.detectChanges();
+
+            expect(input.getAttribute('readonly')).toBe('');
+            expect(input.getAttribute('data-readonly')).toBe('');
+        });
+
+        it('reflects name and constraint attributes', () => {
+            fixture.componentInstance.name = 'email';
+            fixture.componentInstance.minLength = 3;
+            fixture.componentInstance.maxLength = 20;
+            fixture.componentInstance.pattern = [/[a-z]+/];
+            fixture.changeDetectorRef.markForCheck();
+            fixture.detectChanges();
+
+            expect(input.getAttribute('name')).toBe('email');
+            expect(input.getAttribute('minlength')).toBe('3');
+            expect(input.getAttribute('maxlength')).toBe('20');
+            expect(input.getAttribute('pattern')).toBe('[a-z]+');
+        });
+
+        it('does not reflect multiple patterns to the native attribute', () => {
+            fixture.componentInstance.pattern = [/[a-z]+/, /\d+/];
+            fixture.changeDetectorRef.markForCheck();
+            fixture.detectChanges();
+
+            expect(input.hasAttribute('pattern')).toBe(false);
+        });
+
+        it('marks the input invalid when errors are present', () => {
+            fixture.componentInstance.errors = [{ kind: 'server', message: 'Taken' }];
+            fixture.changeDetectorRef.markForCheck();
+            fixture.detectChanges();
+
+            expect(input.getAttribute('aria-invalid')).toBe('true');
+            expect(input.getAttribute('data-invalid')).toBe('');
+
+            fixture.componentInstance.errors = [];
+            fixture.changeDetectorRef.markForCheck();
+            fixture.detectChanges();
+
+            expect(input.hasAttribute('data-invalid')).toBe(false);
+        });
+
+        it('tracks touched and dirty state and emits touchedChange + touch on blur', () => {
+            expect(input.hasAttribute('data-touched')).toBe(false);
+            expect(input.hasAttribute('data-dirty')).toBe(false);
+
+            input.value = 'Next';
+            input.dispatchEvent(new Event('input'));
+            fixture.detectChanges();
+            expect(input.getAttribute('data-dirty')).toBe('');
+
+            input.dispatchEvent(new FocusEvent('blur'));
+            fixture.detectChanges();
+            expect(input.getAttribute('data-touched')).toBe('');
+            // Both notification shapes: touchedChange (21.x experimental
+            // listens to it) and touch (stable Angular 22 listens to it).
+            expect(fixture.componentInstance.touches).toBe(1);
+            expect(fixture.componentInstance.touchEmits).toBe(1);
+        });
+
+        it('accepts form-owned touched and dirty inputs', () => {
+            fixture.componentInstance.touched = true;
+            fixture.componentInstance.dirty = true;
+            fixture.changeDetectorRef.markForCheck();
+            fixture.detectChanges();
+
+            expect(input.getAttribute('data-touched')).toBe('');
+            expect(input.getAttribute('data-dirty')).toBe('');
         });
     });
 
