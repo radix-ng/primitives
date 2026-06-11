@@ -26,6 +26,9 @@ Everything is **bundled offline** — no live site required.
 
 - **Examples** — the `radix-ng-examples` skill indexes every documented example and bundles the full,
   copy-paste-ready Angular source under its `references/`. The Storybook stories are authoritative.
+- **API contract** — `references/api-contract.json`: per primitive part, the selector,
+  `exportAs`, inputs (binding name, type, default, required), outputs, and two-way bindings.
+  **Use it to write and verify bindings — anything not listed there does not exist.**
 - **Styling contract** — `references/styling-contract.json`: per primitive, the parts, anatomy,
   and every `data-*` attribute (with its values) you can style. **This is how you theme headless
   primitives with a custom design system.**
@@ -36,8 +39,10 @@ Everything is **bundled offline** — no live site required.
 
 ## Critical rules
 
-1. **Never invent an API.** If an input, output, selector, or part isn't in the styling
-   contract / example for that primitive, it doesn't exist — look it up, don't assume.
+1. **Never invent an API.** If an input, output, selector, or part isn't in
+   `references/api-contract.json` for that primitive, it doesn't exist — look it up, don't
+   assume. Validate generated code against the contract: selectors, input names/types,
+   outputs, and two-way (`[(…)]`) bindings are all listed per part.
 2. **Headless: no styles ship with the primitive.** You provide all visuals. Drive them from
    `data-*` state attributes (`[data-state="open"]`, `[data-disabled]`, `[data-orientation]`, …),
    never by inspecting internal classes.
@@ -105,6 +110,9 @@ presence, portal, popper, collection, visually-hidden, injectId, live-announcer.
 - `references/forms.md` — Field / Fieldset / Input and form integration.
 - `references/common-mistakes.md` — stale/hallucinated API patterns to avoid (React habits,
   renamed parts, removed dependencies). Read when generated code fails or looks React-flavored.
+- `references/api-contract.json` — machine-readable API per part: selector, `exportAs`, inputs
+  with types/defaults, outputs, two-way bindings (generated from the same compodoc metadata
+  that powers the Storybook props tables).
 - `references/styling-contract.json` — machine-readable parts + `data-*` per primitive (generated).
-  Its `version` field records the `@radix-ng/primitives` version the bundle was generated from —
-  compare against the consumer's installed version when behavior doesn't match the docs.
+  Both contracts carry a `version` field recording the `@radix-ng/primitives` version they were
+  generated from — compare against the consumer's installed version when behavior doesn't match.

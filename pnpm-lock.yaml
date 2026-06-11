@@ -115,7 +115,7 @@ importers:
         specifier: ^19.5.0
         version: 19.8.1
       '@compodoc/compodoc':
-        specifier: ^1.1.30
+        specifier: ^1.2.1
         version: 1.2.1(@egjs/hammerjs@2.0.17)(component-emitter@2.0.0)(keycharm@0.4.0)(typescript@5.9.2)(vis-data@8.0.4(uuid@11.1.0)(vis-util@6.0.0(@egjs/hammerjs@2.0.17)(component-emitter@2.0.0)))(vis-util@6.0.0(@egjs/hammerjs@2.0.17)(component-emitter@2.0.0))
       '@eslint-community/eslint-plugin-eslint-comments':
         specifier: ^4.7.1
@@ -17249,6 +17249,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@babel/plugin-transform-private-methods@7.29.7(@babel/core@7.28.6)':
+    dependencies:
+      '@babel/core': 7.28.6
+      '@babel/helper-create-class-features-plugin': 7.29.7(@babel/core@7.28.6)
+      '@babel/helper-plugin-utils': 7.29.7
+    transitivePeerDependencies:
+      - supports-color
+
   '@babel/plugin-transform-private-methods@7.29.7(@babel/core@7.29.0)':
     dependencies:
       '@babel/core': 7.29.0
@@ -17595,7 +17603,7 @@ snapshots:
       '@babel/plugin-transform-optional-catch-binding': 7.29.7(@babel/core@7.28.6)
       '@babel/plugin-transform-optional-chaining': 7.29.7(@babel/core@7.28.6)
       '@babel/plugin-transform-parameters': 7.29.7(@babel/core@7.28.6)
-      '@babel/plugin-transform-private-methods': 7.28.6(@babel/core@7.28.6)
+      '@babel/plugin-transform-private-methods': 7.29.7(@babel/core@7.28.6)
       '@babel/plugin-transform-private-property-in-object': 7.29.7(@babel/core@7.28.6)
       '@babel/plugin-transform-property-literals': 7.29.7(@babel/core@7.28.6)
       '@babel/plugin-transform-regenerator': 7.29.7(@babel/core@7.28.6)

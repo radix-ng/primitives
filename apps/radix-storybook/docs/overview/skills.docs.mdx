@@ -49,6 +49,9 @@ How to build correct, accessible UI on the primitives:
 
 - **Component knowledge** — the full headless primitive catalog, compound anatomy, and DI-context
   composition rules.
+- **API contract** — `api-contract.json`: per primitive part, the selector, `exportAs`, inputs
+  with types and defaults, outputs, and two-way bindings — generated from the same metadata that
+  powers the props tables on this site, so the agent can verify every binding it writes.
 - **Styling contract** — `styling-contract.json`: per primitive, the parts and every `data-*`
   attribute (with its values). This is how the agent themes a headless primitive with **your own
   design system** — Tailwind, CSS modules, vanilla CSS, or any token set.

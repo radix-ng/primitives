@@ -7,6 +7,7 @@
  *
  * Outputs (do not edit by hand — regenerated):
  *   skills/radix-ng/references/styling-contract.json     parts + data-* per primitive
+ *   skills/radix-ng/references/api-contract.json         selectors + inputs/outputs per part (from compodoc)
  *   skills/radix-ng-examples/SKILL.md                    index of every documented example
  *   skills/radix-ng-examples/references/<section>/<slug>.md   full rendered docs (with code)
  *   skills/radix-ng-examples/references/llms-full.txt     all docs concatenated, one file
@@ -17,6 +18,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { generateApiContract } from './api-contract.mjs';
 import { getStorybookDocs } from './storybook-docs.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -260,7 +262,11 @@ ${indexBody}
 `;
 write(path.join(skillsRoot, 'radix-ng-examples/SKILL.md'), examplesSkill);
 
+// 4. API contract (selectors + inputs/outputs per part, from compodoc metadata)
+const api = generateApiContract({ workspaceRoot, primitivesRoot, skillsRoot, version: VERSION, write });
+
 console.log(`✓ ${docs.length} docs rendered → ${path.relative(workspaceRoot, refsRoot)}/<section>/`);
 console.log(`✓ llms.txt + llms-full.txt (${docs.length} docs)`);
 console.log(`✓ styling-contract.json (${contract.length} primitives)`);
+console.log(`✓ api-contract.json (${api.parts} parts / ${api.primitives} primitives)`);
 console.log(`✓ radix-ng-examples/SKILL.md (${totalExamples} examples / ${componentDocs.length} components)`);
