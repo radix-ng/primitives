@@ -124,7 +124,7 @@
         "@types/node": "^22.19.19",
         "@typescript-eslint/utils": "^8.60.1",
         "@vitest/browser": "4.1.8",
-        "@vitest/browser-playwright": "^4.1.8",
+        "@vitest/browser-playwright": "4.1.8",
         "@vitest/coverage-v8": "4.1.8",
         "@vitest/ui": "4.1.8",
         "angular-eslint": "^21.3.1",

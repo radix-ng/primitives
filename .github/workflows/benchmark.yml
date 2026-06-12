@@ -45,35 +45,53 @@ jobs:
       # Benchmark the merge-base in a worktree on the same runner. If the perf app does not exist at
       # the merge-base (bootstrap period) or the base run fails, base.json is simply absent and the
       # comparison falls back to "baseline unavailable" — this step never fails the job.
+      # Every failure mode here (no merge-base, fetch/worktree error, perf app absent at base, base
+      # run produces no report) must degrade to "baseline unavailable" — never fail the job. So git
+      # setup is checked explicitly rather than under `set -e`.
       - name: Benchmark base (merge-base)
         run: |
-          set -e
           BASE_REF="${{ github.base_ref || 'main' }}"
-          git fetch --no-tags origin "$BASE_REF"
-          BASE_SHA="$(git merge-base "origin/$BASE_REF" HEAD)"
+          if ! git fetch --no-tags origin "$BASE_REF"; then
+            echo "::warning::Could not fetch $BASE_REF — baseline unavailable."
+            exit 0
+          fi
+          BASE_SHA="$(git merge-base "origin/$BASE_REF" HEAD || true)"
+          if [ -z "$BASE_SHA" ]; then
+            echo "::warning::No merge-base with $BASE_REF — baseline unavailable."
+            exit 0
+          fi
           echo "Merge-base: $BASE_SHA"
-          git worktree add ../base "$BASE_SHA"
+          if ! git worktree add ../base "$BASE_SHA"; then
+            echo "::warning::Could not create base worktree — baseline unavailable."
+            exit 0
+          fi
 
           if [ ! -d ../base/apps/radix-perf-testing ]; then
             echo "::notice::Perf app absent at merge-base — baseline unavailable."
             exit 0
           fi
 
-          set +e
           (
             cd ../base
             pnpm install --frozen-lockfile
             BENCH_OUTPUT_PATH="$GITHUB_WORKSPACE/base.json" pnpm primitives:bench
-          )
+          ) || echo "::warning::Base benchmark run failed — baseline unavailable."
+
           if [ ! -f "$GITHUB_WORKSPACE/base.json" ]; then
             echo "::warning::Base benchmark did not produce a report — baseline unavailable."
           fi
 
+      # always() so a failed head/base step still posts the report it can (compare.mjs handles a
+      # missing head.json or base.json itself).
       - name: Compare and render report
+        if: always()
         run: node tools/scripts/benchmark/compare.mjs head.json base.json --out benchmark-comment.md
 
+      # continue-on-error: fork PRs get a read-only GITHUB_TOKEN regardless of `permissions`, so the
+      # comment API returns 403 there — that must not turn the (non-blocking) job red.
       - name: Post sticky PR comment
-        if: github.event_name == 'pull_request'
+        if: ${{ always() && github.event_name == 'pull_request' }}
+        continue-on-error: true
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           script: |

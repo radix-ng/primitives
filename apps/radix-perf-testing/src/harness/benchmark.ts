@@ -48,6 +48,9 @@ let sentinelSeq = 0;
 async function runIteration<T>(scenario: BenchScenario<T>): Promise<Sample> {
     const handle = await createMount(scenario.component);
     const id = `bench-sentinel-${sentinelSeq++}`;
+    // Captured so it can be removed in the finally: sentinels left in document.body accumulate
+    // across iterations, inflating later paint/layout samples (the metric corrupts itself).
+    let sentinel: HTMLElement | undefined;
 
     try {
         if (scenario.interact) {
@@ -60,7 +63,7 @@ async function runIteration<T>(scenario: BenchScenario<T>): Promise<Sample> {
             const rendersBefore = handle.renderCount();
             const paintPromise = observePaint(id);
             const t0 = performance.now();
-            appendSentinel(id);
+            sentinel = appendSentinel(id);
             scenario.interact(handle.instance);
             handle.tick();
             const t1 = performance.now();
@@ -77,7 +80,7 @@ async function runIteration<T>(scenario: BenchScenario<T>): Promise<Sample> {
         scenario.prepare?.(handle.instance);
         const paintPromise = observePaint(id);
         const t0 = performance.now();
-        appendSentinel(id);
+        sentinel = appendSentinel(id);
         handle.attach();
         handle.tick();
         const t1 = performance.now();
@@ -89,6 +92,7 @@ async function runIteration<T>(scenario: BenchScenario<T>): Promise<Sample> {
             renders: handle.renderCount()
         };
     } finally {
+        sentinel?.remove();
         handle.destroy();
     }
 }

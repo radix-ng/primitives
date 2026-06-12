@@ -58,20 +58,11 @@ function deltaMetric(head, base) {
     return { absoluteDiff, relativeDiff, withinNoise, arrow };
 }
 
-function durationCell(headStats, baseStats) {
-    if (!baseStats) {
-        return { text: `${ms(headStats.median)} (new)`, withinNoise: false };
-    }
-    const d = deltaMetric(headStats.median, baseStats.median);
-    return {
-        text: `${ms(headStats.median)} ${signedMs(d.absoluteDiff)} (${pct(d.relativeDiff)})${d.arrow}`,
-        withinNoise: d.withinNoise
-    };
-}
-
-function paintCell(headStats, baseStats) {
+// Render one time-metric cell (duration or paint). `nullText` is shown when the head stat is absent
+// (paint can be null; duration is always present so it never hits that branch).
+function metricCell(headStats, baseStats, nullText) {
     if (!headStats) {
-        return { text: '—', withinNoise: true };
+        return { text: nullText, withinNoise: true };
     }
     if (!baseStats) {
         return { text: `${ms(headStats.median)} (new)`, withinNoise: false };
@@ -97,8 +88,8 @@ function buildRows(head, base) {
 
     const rows = head.map((h) => {
         const b = baseByName.get(h.name);
-        const duration = durationCell(h.duration, b?.duration);
-        const paint = paintCell(h.paint, b?.paint);
+        const duration = metricCell(h.duration, b?.duration, '—');
+        const paint = metricCell(h.paint, b?.paint, '—');
         const renders = rendersCell(h.renders, b?.renders);
         const significant = !duration.withinNoise || !paint.withinNoise || !renders.withinNoise;
         return { name: h.name, duration, paint, renders, significant, removed: false };
@@ -123,24 +114,37 @@ function buildRows(head, base) {
 function totalsLine(head, base) {
     const sum = (rs, pick) => rs.reduce((acc, r) => acc + (pick(r) ?? 0), 0);
     const headDur = sum(head, (r) => r.duration.median);
-    const headPaint = sum(head, (r) => r.paint?.median);
     const headRenders = sum(head, (r) => r.renders);
+    const headPaint = sum(head, (r) => r.paint?.median);
+    // Paint total is only meaningful if every head row reported a paint; otherwise drop it rather
+    // than print a sum of a partial set (or a misleading "0.0 ms" when none reported).
+    const headPaintComplete = head.every((r) => r.paint);
 
     if (!base) {
-        return `**Total duration:** ${ms(headDur)} · **Renders:** ${headRenders} · **Paint:** ${ms(headPaint)}`;
+        const paintSeg = headPaintComplete ? ` · **Paint:** ${ms(headPaint)}` : '';
+        return `**Total duration:** ${ms(headDur)} · **Renders:** ${headRenders}${paintSeg}`;
     }
     const baseDur = sum(base, (r) => r.duration.median);
-    const basePaint = sum(base, (r) => r.paint?.median);
     const baseRenders = sum(base, (r) => r.renders);
 
     const dur = deltaMetric(headDur, baseDur);
-    const paint = deltaMetric(headPaint, basePaint);
     const rDiff = headRenders - baseRenders;
+
+    let paintSeg = '';
+    // Compare paint totals only over tests that reported a paint on BOTH sides, so a missing
+    // Element Timing entry on one side can't fake a large total-paint delta.
+    const baseByName = new Map(base.map((r) => [r.name, r]));
+    const matched = head.filter((h) => h.paint && baseByName.get(h.name)?.paint);
+    if (matched.length) {
+        const headMatchedPaint = sum(matched, (r) => r.paint.median);
+        const baseMatchedPaint = sum(matched, (h) => baseByName.get(h.name).paint.median);
+        const paint = deltaMetric(headMatchedPaint, baseMatchedPaint);
+        paintSeg = ` · **Paint:** ${ms(headMatchedPaint)} ${signedMs(paint.absoluteDiff)} (${pct(paint.relativeDiff)})${paint.arrow}`;
+    }
 
     return (
         `**Total duration:** ${ms(headDur)} ${signedMs(dur.absoluteDiff)} (${pct(dur.relativeDiff)})${dur.arrow} · ` +
-        `**Renders:** ${headRenders} (${rDiff >= 0 ? '+' : ''}${rDiff}) · ` +
-        `**Paint:** ${ms(headPaint)} ${signedMs(paint.absoluteDiff)} (${pct(paint.relativeDiff)})${paint.arrow}`
+        `**Renders:** ${headRenders} (${rDiff >= 0 ? '+' : ''}${rDiff})${paintSeg}`
     );
 }
 
