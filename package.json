@@ -162,7 +162,7 @@
         "rimraf": "^6.0.1",
         "rollup-plugin-typescript-paths": "^1.5.0",
         "rollup-plugin-visualizer": "^5.12.0",
-        "storybook": "10.4.1",
+        "storybook": "10.4.4",
         "stylelint": "^16.26.1",
         "stylelint-config-recommended-scss": "^14.1.0",
         "stylelint-prettier": "^5.0.2",
