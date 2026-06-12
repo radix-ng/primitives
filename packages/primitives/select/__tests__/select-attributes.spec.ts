@@ -11,16 +11,14 @@ import { _importsSelect } from '../index';
             <button rdxSelectTrigger>
                 <span rdxSelectValue placeholder="Select…"></span>
             </button>
-            <div *rdxSelectPortal rdxSelectPopup>
-                <div rdxSelectPositioner>
-                    <div rdxSelectPositionerContent>
-                        <div rdxSelectList>
-                            @for (fruit of fruits; track fruit) {
-                                <div [value]="fruit" rdxSelectItem>
-                                    <span rdxSelectItemText>{{ fruit }}</span>
-                                </div>
-                            }
-                        </div>
+            <div *rdxSelectPortal rdxSelectPositioner>
+                <div rdxSelectPopup>
+                    <div rdxSelectList>
+                        @for (fruit of fruits; track fruit) {
+                            <div [value]="fruit" rdxSelectItem>
+                                <span rdxSelectItemText>{{ fruit }}</span>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>

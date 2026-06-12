@@ -44,7 +44,6 @@ import {
   RdxSelectItemIndicator,
   RdxSelectItemText,
   RdxSelectGroupLabel,
-  RdxSelectPositionerContent,
   RdxSelectPositioner,
   RdxSelectPortal,
   RdxSelectRoot,
@@ -71,25 +70,23 @@ offsets.
     <!-- chevron icon -->
   </button>
 
-  <div *rdxSelectPortal rdxSelectPopup>
-    <div sideOffset="4" align="start" rdxSelectPositioner>
-      <div rdxSelectPositionerContent>
-        <!-- optional scroll-up button -->
-        <div rdxSelectScrollUpButton><!-- up icon --></div>
+  <div *rdxSelectPortal sideOffset="4" align="start" rdxSelectPositioner>
+    <div rdxSelectPopup>
+      <!-- optional scroll-up button -->
+      <div rdxSelectScrollUpButton><!-- up icon --></div>
 
-        <div rdxSelectList>
-          <div rdxSelectGroupLabel>Group label</div>
-          <div rdxSelectGroup>
-            <div value="apple" rdxSelectItem>
-              <span rdxSelectItemIndicator><!-- check icon --></span>
-              <span rdxSelectItemText>Apple</span>
-            </div>
+      <div rdxSelectList>
+        <div rdxSelectGroupLabel>Group label</div>
+        <div rdxSelectGroup>
+          <div value="apple" rdxSelectItem>
+            <span rdxSelectItemIndicator><!-- check icon --></span>
+            <span rdxSelectItemText>Apple</span>
           </div>
         </div>
-
-        <!-- optional scroll-down button -->
-        <div rdxSelectScrollDownButton><!-- down icon --></div>
       </div>
+
+      <!-- optional scroll-down button -->
+      <div rdxSelectScrollDownButton><!-- down icon --></div>
     </div>
   </div>
 </ng-container>
@@ -107,8 +104,8 @@ the behavior of a native `<select>`. Use `rdxSelectItemAlignedPosition` and
     <span #v="rdxSelectedValue" rdxSelectValue>{{ v.slotText() }}</span>
   </button>
 
-  <div *rdxSelectPortal rdxSelectPopup>
-    <div rdxSelectItemAlignedPosition>
+  <div *rdxSelectPortal rdxSelectItemAlignedPosition>
+    <div rdxSelectPopup>
       <div rdxSelectItemAlignedPositionContent>
         <div rdxSelectList>
           <div value="apple" rdxSelectItem>

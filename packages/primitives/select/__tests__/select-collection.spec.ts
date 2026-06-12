@@ -20,16 +20,14 @@ interface Fruit {
                 <span rdxSelectValue placeholder="Select…"></span>
             </button>
 
-            <div *rdxSelectPortal rdxSelectPopup>
-                <div rdxSelectPositioner>
-                    <div rdxSelectPositionerContent>
-                        <div rdxSelectList>
-                            @for (fruit of fruits(); track fruit.value) {
-                                <div [value]="fruit.value" [disabled]="fruit.disabled" rdxSelectItem>
-                                    <span rdxSelectItemText>{{ fruit.label }}</span>
-                                </div>
-                            }
-                        </div>
+            <div *rdxSelectPortal rdxSelectPositioner>
+                <div rdxSelectPopup>
+                    <div rdxSelectList>
+                        @for (fruit of fruits(); track fruit.value) {
+                            <div [value]="fruit.value" [disabled]="fruit.disabled" rdxSelectItem>
+                                <span rdxSelectItemText>{{ fruit.label }}</span>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>

@@ -7,7 +7,6 @@ import {
     RdxSelectPopup,
     RdxSelectPortal,
     RdxSelectPositioner,
-    RdxSelectPositionerContent,
     RdxSelectRoot,
     RdxSelectTrigger,
     RdxSelectValue
@@ -35,7 +34,6 @@ const COUNTS = [50, 1000];
         RdxSelectPortal,
         RdxSelectPopup,
         RdxSelectPositioner,
-        RdxSelectPositionerContent,
         RdxSelectList,
         RdxSelectGroup,
         RdxSelectItem,
@@ -47,17 +45,15 @@ const COUNTS = [50, 1000];
                 <span rdxSelectValue placeholder="Pick…"></span>
             </button>
 
-            <div *rdxSelectPortal rdxSelectPopup>
-                <div rdxSelectPositioner>
-                    <div rdxSelectPositionerContent>
-                        <div rdxSelectList>
-                            <div rdxSelectGroup>
-                                @for (option of options(); track option) {
-                                    <div [value]="option" rdxSelectItem>
-                                        <span rdxSelectItemText>{{ option }}</span>
-                                    </div>
-                                }
-                            </div>
+            <div *rdxSelectPortal rdxSelectPositioner>
+                <div rdxSelectPopup>
+                    <div rdxSelectList>
+                        <div rdxSelectGroup>
+                            @for (option of options(); track option) {
+                                <div [value]="option" rdxSelectItem>
+                                    <span rdxSelectItemText>{{ option }}</span>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>

@@ -1,6 +1,5 @@
 import {
     afterNextRender,
-    ContentChild,
     DestroyRef,
     Directive,
     effect,
@@ -16,6 +15,7 @@ import { RdxCollectionItem, RdxCollectionProvider } from '@radix-ng/primitives/c
 import { AcceptableValue, createContext, useListHighlight, useScrollLock } from '@radix-ng/primitives/core';
 import { provideRdxDismissableLayerConfig, RdxDismissableLayer } from '@radix-ng/primitives/dismissable-layer';
 import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
+import { RdxPopperContent } from '@radix-ng/primitives/popper';
 import { injectSelectRootContext } from './select-root';
 import { SELECTION_KEYS, valueComparator } from './utils';
 
@@ -85,14 +85,20 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
 
 /**
  * The popup listbox. Holds DOM focus while open and navigates with the highlight model
- * (`aria-activedescendant`) — items are not individually focusable. (Renamed to `RdxSelectPopup` in a
- * later step; selector kept here during the navigation migration.)
+ * (`aria-activedescendant`) — items are not individually focusable.
+ *
+ * Since ADR 0010 §6 the popup is the **inner** element (the positioner is its ancestor): it carries
+ * `role="listbox"`, the `contentId`, and — via the composed {@link RdxPopperContent} — the
+ * `data-side` / `data-align` attributes and the until-positioned animation guard previously held by
+ * the deleted `rdxSelectPositionerContent`. `RdxPopperContent` also makes the popup the element the
+ * `RdxPopperContentWrapper` ancestor reads its content z-index from. In item-aligned mode there is no
+ * wrapper, so `RdxPopperContent` no-ops.
  *
  * @group Components
  */
 @Directive({
     selector: '[rdxSelectPopup]',
-    hostDirectives: [RdxFocusScope, RdxDismissableLayer, RdxCollectionProvider],
+    hostDirectives: [RdxPopperContent, RdxFocusScope, RdxDismissableLayer, RdxCollectionProvider],
     providers: [
         provideSelectPopupContext(context),
         provideRdxDismissableLayerConfig(() => {
@@ -104,6 +110,7 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
     host: {
         role: 'listbox',
         tabindex: '-1',
+        '[id]': 'rootContext.contentId',
         '[attr.aria-activedescendant]': 'highlight.activeId()',
         '[attr.aria-multiselectable]': 'rootContext.multiple() ? "true" : undefined',
         '[attr.data-state]': 'rootContext.open() ? "open" : "closed"',
@@ -129,6 +136,13 @@ export class RdxSelectPopup {
     private readonly injector = inject(Injector);
 
     readonly rootContext = injectSelectRootContext();
+
+    /**
+     * The collected items (DOM order). Exposed so the `item-aligned` positioner — now the popup's
+     * **ancestor** — can read them without injecting {@link RdxCollectionProvider} (which the popup
+     * provides as a descendant, so an upward `inject` would not find it).
+     */
+    readonly items = this.collection.items;
 
     /** Highlight-model navigation over the collected items (DOM order). */
     readonly highlight = useListHighlight<RdxCollectionItem>({
@@ -166,18 +180,20 @@ export class RdxSelectPopup {
 
     readonly content = signal<HTMLElement | null>(null);
 
-    @ContentChild(RDX_SELECT_POSITIONER_TOKEN, { descendants: true })
-    set positioner(port: RdxPositionerImpl | undefined) {
-        if (port) {
-            port.placed.subscribe(() => {
-                this.highlightSelectedItem();
-                this.scrollSelectedIntoView();
-                this.isPositioned.set(true);
-            });
-        }
-    }
+    /**
+     * The positioner — now an **ancestor** element — provides {@link RDX_SELECT_POSITIONER_TOKEN}
+     * (Popper or item-aligned). We react to its `placed` to highlight and scroll the selected item
+     * into view and flag the popup as positioned.
+     */
+    private readonly positioner = inject(RDX_SELECT_POSITIONER_TOKEN, { optional: true });
 
     constructor() {
+        this.positioner?.placed.subscribe(() => {
+            this.highlightSelectedItem();
+            this.scrollSelectedIntoView();
+            this.isPositioned.set(true);
+        });
+
         // Lock page scroll while a modal popup is open (content mounts only while open).
         useScrollLock(this.rootContext.modal);
 
@@ -207,7 +223,8 @@ export class RdxSelectPopup {
                 this.content()?.focus({ preventScroll: true });
             });
 
-            this.content.set(this.currentElement.nativeElement.firstElementChild);
+            // The popup is now the listbox host itself (no longer the positioner's first child).
+            this.content.set(this.currentElement.nativeElement);
         });
 
         effect((onCleanup) => {

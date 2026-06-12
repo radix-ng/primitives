@@ -51,10 +51,10 @@ import { RdxSelectValue } from '../src/select-value';
                 <svg lucideChevronDown size="16" />
             </button>
 
-            <div class="min-w-40" *rdxSelectPortal rdxSelectPopup>
-                <div rdxSelectItemAlignedPosition>
+            <div *rdxSelectPortal rdxSelectItemAlignedPosition>
+                <div class="min-h-0 min-w-40 flex-1" rdxSelectPopup>
                     <div
-                        class="border-border bg-popover text-popover-foreground z-[100] min-w-40 overflow-hidden rounded-lg border shadow-md will-change-[opacity,transform]"
+                        class="border-border bg-popover text-popover-foreground z-[100] min-h-0 min-w-40 flex-1 overflow-hidden rounded-lg border shadow-md will-change-[opacity,transform]"
                         rdxSelectItemAlignedPositionContent
                     >
                         <div

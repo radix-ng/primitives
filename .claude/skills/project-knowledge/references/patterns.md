@@ -94,6 +94,53 @@ Every primitive family uses `createContext` from `@radix-ng/primitives/core`. Ro
   - `fakeAsync` / `tick` / `waitForAsync` are unavailable. Use `vi.useFakeTimers()` + `vi.advanceTimersByTime()` for `setTimeout`-based delays, `await fixture.whenStable()` for render/effects, and a macrotask (`await new Promise(r => setTimeout(r))`) to drain a chained microtask queue.
   - Mutating a **plain (non-signal) field** on a fixture component and then calling `fixture.detectChanges()` throws `NG0100` — the plain write doesn't dirty the view. Call `fixture.changeDetectorRef.markForCheck()` first. Signal writes (`input.set`, `model.set`, `linkedSignal.set`, `componentRef.setInput`) don't need it.
 
+### Browser-level regression tests — `apps/visual-regression`
+
+The Vitest suite runs in **jsdom, which has no real layout**: no element box sizes, no `offsetHeight` /
+`scrollHeight` / `clientHeight`, no flexbox/grid resolution, no `getComputedStyle` geometry, and no
+floating-ui positioning. So a class of bugs is **invisible to unit tests** and must be guarded in
+`apps/visual-regression` instead, where Playwright (Chromium) drives the **real built Storybook**:
+
+- layout / flex / `overflow` regressions (e.g. an inline `flex: 1` overriding a fixed viewport height so
+  a scroll container never overflows and its scroll buttons stay `[hidden]`);
+- overlay positioning, focus, and keyboard behavior;
+- **runtime errors that only throw on open/interaction** — missing-provider `NG0201`, required-query
+  `NG0951`, etc. — which a closed-trigger unit render never reaches.
+
+Two spec kinds live in `apps/visual-regression/tests/`:
+
+- **`<name>.behavior.spec.ts`** — assert DOM/behavior, not pixels. Open the story via its real
+  interaction (`page.locator('[rdxXxxTrigger]').click()`), then check: part visibility
+  (`toBeVisible()` / `toBeHidden()`; the parts use the `[hidden]` attribute), anatomy/parent
+  relationships, scroll metrics (`clientHeight < scrollHeight` proves a real overflow), and **absence of
+  errors** — attach `page.on('pageerror')` and a `console`-error listener **before** `page.goto`, then
+  `expect(errors).toEqual([])`. Prefer auto-retrying web-first assertions (`expect(locator).toBeVisible()`)
+  over fixed `waitForTimeout` so the async open/positioning settles deterministically.
+- **`<name>.visual.spec.ts`** — screenshot diffing (`toHaveScreenshot`, `animations: 'disabled'` → settled
+  state). Baselines are committed under `tests/*-snapshots/`, suffixed per project+platform
+  (`…-chromium-darwin.png`). `stories.visual.spec.ts` auto-shoots every story; `overlays.visual.spec.ts`
+  covers open-state positioning.
+
+**Convention: every layout / positioning / part-visibility / opens-without-error fix ships with a new or
+extended `*.behavior.spec.ts` here.** A green `pnpm primitives:test` does **not** prove such a fix — jsdom
+cannot observe it.
+
+Run:
+
+```bash
+pnpm test-visual          # CI path: build Storybook → serve on :4400 → run every spec
+pnpm test-visual:update   # regenerate screenshot baselines after an intentional visual change
+pnpm test-visual:report   # open the HTML actual/expected/diff report
+# Local fast loop — reuse a running dev server (no full build):
+pnpm storybook:primitives                                                            # keep on :4400
+pnpm exec playwright test -c apps/visual-regression/playwright.config.ts <name>.behavior
+```
+
+`playwright.config.ts` sets `reuseExistingServer: !CI`, so locally a running `:4400` (dev Storybook) is
+reused and the iframe story URLs (`/iframe.html?id=<storyId>&viewMode=story`) resolve the same as the
+built site. Run artifacts (`test-results/`, `playwright-report/`) are gitignored; only specs and
+`*-snapshots/` baselines are committed.
+
 ## Storybook stories
 
 - **Story file:** `stories/<name>.stories.ts` (CSF format)

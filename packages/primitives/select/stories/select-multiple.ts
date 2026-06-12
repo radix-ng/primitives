@@ -10,7 +10,6 @@ import { RdxSelectList } from '../src/select-list';
 import { RdxSelectPopup } from '../src/select-popup';
 import { RdxSelectPortal } from '../src/select-portal';
 import { RdxSelectPositioner } from '../src/select-positioner';
-import { RdxSelectPositionerContent } from '../src/select-positioner-content';
 import { RdxSelectRoot } from '../src/select-root';
 import { RdxSelectSeparator } from '../src/select-separator';
 import { RdxSelectTrigger } from '../src/select-trigger';
@@ -38,7 +37,6 @@ import { RdxSelectValue } from '../src/select-value';
         RdxSelectGroup,
         RdxSelectSeparator,
         RdxSelectPositioner,
-        RdxSelectPositionerContent,
         RdxSelectItemText,
         RdxSelectItemIndicator
     ],
@@ -55,37 +53,34 @@ import { RdxSelectValue } from '../src/select-value';
                 <svg lucideChevronDown size="16" rdxSelectIcon></svg>
             </button>
 
-            <div *rdxSelectPortal rdxSelectPopup>
+            <div *rdxSelectPortal [sideOffset]="5" rdxSelectPositioner>
                 <div
                     class="border-border bg-popover text-popover-foreground z-[100] min-w-52 rounded-lg border p-1 shadow-md"
-                    [sideOffset]="5"
-                    rdxSelectPositioner
+                    rdxSelectPopup
                 >
-                    <div rdxSelectPositionerContent>
-                        <div rdxSelectList>
-                            <div class="text-muted-foreground px-6 text-xs leading-6" rdxSelectGroupLabel>Fruits</div>
-                            <div rdxSelectGroup>
-                                @for (fruit of fruits; track fruit) {
-                                    <div [class]="itemClass" [value]="fruit" rdxSelectItem>
-                                        <span [class]="indicatorClass" rdxSelectItemIndicator>
-                                            <svg lucideCheck size="16"></svg>
-                                        </span>
-                                        <span rdxSelectItemText>{{ fruit }}</span>
-                                    </div>
-                                }
-                            </div>
-                            <div class="bg-border mx-1 my-1 h-px" rdxSelectSeparator></div>
-                            <div class="text-muted-foreground px-6 text-xs leading-6" rdxSelectGroupLabel>Berries</div>
-                            <div rdxSelectGroup>
-                                @for (berry of berries; track berry) {
-                                    <div [class]="itemClass" [value]="berry" rdxSelectItem>
-                                        <span [class]="indicatorClass" rdxSelectItemIndicator>
-                                            <svg lucideCheck size="16"></svg>
-                                        </span>
-                                        <span rdxSelectItemText>{{ berry }}</span>
-                                    </div>
-                                }
-                            </div>
+                    <div rdxSelectList>
+                        <div class="text-muted-foreground px-6 text-xs leading-6" rdxSelectGroupLabel>Fruits</div>
+                        <div rdxSelectGroup>
+                            @for (fruit of fruits; track fruit) {
+                                <div [class]="itemClass" [value]="fruit" rdxSelectItem>
+                                    <span [class]="indicatorClass" rdxSelectItemIndicator>
+                                        <svg lucideCheck size="16"></svg>
+                                    </span>
+                                    <span rdxSelectItemText>{{ fruit }}</span>
+                                </div>
+                            }
+                        </div>
+                        <div class="bg-border mx-1 my-1 h-px" rdxSelectSeparator></div>
+                        <div class="text-muted-foreground px-6 text-xs leading-6" rdxSelectGroupLabel>Berries</div>
+                        <div rdxSelectGroup>
+                            @for (berry of berries; track berry) {
+                                <div [class]="itemClass" [value]="berry" rdxSelectItem>
+                                    <span [class]="indicatorClass" rdxSelectItemIndicator>
+                                        <svg lucideCheck size="16"></svg>
+                                    </span>
+                                    <span rdxSelectItemText>{{ berry }}</span>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>

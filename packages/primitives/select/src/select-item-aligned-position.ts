@@ -9,10 +9,9 @@ import {
     output,
     signal
 } from '@angular/core';
-import { RdxCollectionProvider } from '@radix-ng/primitives/collection';
 import { clamp, resizeEffect } from '@radix-ng/primitives/core';
 import { RdxSelectItemAlignedPositionContent } from './select-item-aligned-position-content';
-import { injectSelectPopupContext, RDX_SELECT_POSITIONER_TOKEN, RdxPositionerImpl } from './select-popup';
+import { RDX_SELECT_POSITIONER_TOKEN, RdxPositionerImpl, RdxSelectPopup } from './select-popup';
 import { injectSelectRootContext } from './select-root';
 import { CONTENT_MARGIN } from './utils';
 
@@ -36,7 +35,12 @@ import { CONTENT_MARGIN } from './utils';
 export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
     private readonly currentElement = inject(ElementRef);
     private readonly rootContext = injectSelectRootContext();
-    readonly contentContext = injectSelectPopupContext();
+
+    /**
+     * The popup is now a **descendant** (item-aligned-position is the outer positioner), so read the
+     * viewport / selected-item measurements off the popup instance instead of injecting its context.
+     */
+    readonly popup = contentChild.required(RdxSelectPopup);
 
     readonly placed = output();
 
@@ -47,8 +51,6 @@ export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
     readonly contentWrapperElement = signal<HTMLElement | undefined>(this.currentElement.nativeElement);
 
     readonly contentElement = contentChild.required(RdxSelectItemAlignedPositionContent);
-
-    private readonly collection = inject(RdxCollectionProvider);
 
     constructor() {
         afterNextRender(() => {
@@ -76,9 +78,9 @@ export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
             this.rootContext.valueElement() &&
             this.contentWrapperElement() &&
             this.contentElement().currentElementRef.nativeElement &&
-            this.contentContext.viewport() &&
-            this.contentContext.selectedItem() &&
-            this.contentContext.selectedItemText()
+            this.popup().viewport() &&
+            this.popup().selectedItem() &&
+            this.popup().selectedItemText()
         ) {
             const triggerRect = this.rootContext.triggerElement()!.getBoundingClientRect();
 
@@ -87,7 +89,7 @@ export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
             // -----------------------------------------------------------------------------------------
             const contentRect = this.currentElement.nativeElement.getBoundingClientRect();
             const valueNodeRect = this.rootContext.valueElement()!.getBoundingClientRect();
-            const itemTextRect = this.contentContext.selectedItemText()!.getBoundingClientRect();
+            const itemTextRect = this.popup().selectedItemText()!.getBoundingClientRect();
 
             if (this.rootContext.dir() !== 'rtl') {
                 const itemTextOffset = itemTextRect.left - contentRect.left;
@@ -116,9 +118,11 @@ export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
             // -----------------------------------------------------------------------------------------
             // Vertical positioning
             // -----------------------------------------------------------------------------------------
-            const items = this.collection.items().map((i) => i.element);
+            const items = this.popup()
+                .items()
+                .map((i) => i.element);
             const availableHeight = window.innerHeight - CONTENT_MARGIN * 2;
-            const itemsHeight = this.contentContext.viewport()!.scrollHeight;
+            const itemsHeight = this.popup().viewport()!.scrollHeight;
 
             const contentStyles = window.getComputedStyle(this.currentElement.nativeElement);
             const contentBorderTopWidth = Number.parseInt(contentStyles.borderTopWidth, 10);
@@ -132,29 +136,29 @@ export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
                 itemsHeight +
                 contentPaddingBottom +
                 contentBorderBottomWidth;
-            const minContentHeight = Math.min(this.contentContext.selectedItem()!.offsetHeight * 5, fullContentHeight);
+            const minContentHeight = Math.min(this.popup().selectedItem()!.offsetHeight * 5, fullContentHeight);
 
-            const viewportStyles = window.getComputedStyle(this.contentContext.viewport()!);
+            const viewportStyles = window.getComputedStyle(this.popup().viewport()!);
             const viewportPaddingTop = Number.parseInt(viewportStyles.paddingTop, 10);
             const viewportPaddingBottom = Number.parseInt(viewportStyles.paddingBottom, 10);
 
             const topEdgeToTriggerMiddle = triggerRect.top + triggerRect.height / 2 - CONTENT_MARGIN;
             const triggerMiddleToBottomEdge = availableHeight - topEdgeToTriggerMiddle;
 
-            const selectedItemHalfHeight = this.contentContext.selectedItem()!.offsetHeight / 2;
-            const itemOffsetMiddle = this.contentContext.selectedItem()!.offsetTop + selectedItemHalfHeight;
+            const selectedItemHalfHeight = this.popup().selectedItem()!.offsetHeight / 2;
+            const itemOffsetMiddle = this.popup().selectedItem()!.offsetTop + selectedItemHalfHeight;
             const contentTopToItemMiddle = contentBorderTopWidth + contentPaddingTop + itemOffsetMiddle;
             const itemMiddleToContentBottom = fullContentHeight - contentTopToItemMiddle;
 
             const willAlignWithoutTopOverflow = contentTopToItemMiddle <= topEdgeToTriggerMiddle;
 
             if (willAlignWithoutTopOverflow) {
-                const isLastItem = this.contentContext.selectedItem()! === items[items.length - 1];
+                const isLastItem = this.popup().selectedItem()! === items[items.length - 1];
                 this.contentWrapperElement()!.style.bottom = `${0}px`;
                 const viewportOffsetBottom =
                     this.currentElement.nativeElement.clientHeight -
-                    this.contentContext.viewport()!.offsetTop -
-                    this.contentContext.viewport()!.offsetHeight;
+                    this.popup().viewport()!.offsetTop -
+                    this.popup().viewport()!.offsetHeight;
                 const clampedTriggerMiddleToBottomEdge = Math.max(
                     triggerMiddleToBottomEdge,
                     selectedItemHalfHeight +
@@ -166,20 +170,20 @@ export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
                 const height = contentTopToItemMiddle + clampedTriggerMiddleToBottomEdge;
                 this.contentWrapperElement()!.style.height = `${height}px`;
             } else {
-                const isFirstItem = this.contentContext.selectedItem()! === items[0];
+                const isFirstItem = this.popup().selectedItem()! === items[0];
                 this.contentWrapperElement()!.style.top = `${0}px`;
                 const clampedTopEdgeToTriggerMiddle = Math.max(
                     topEdgeToTriggerMiddle,
                     contentBorderTopWidth +
-                        this.contentContext.viewport()!.offsetTop +
+                        this.popup().viewport()!.offsetTop +
                         // viewport might have padding top, include it to avoid a scrollable viewport
                         (isFirstItem ? viewportPaddingTop : 0) +
                         selectedItemHalfHeight
                 );
                 const height = clampedTopEdgeToTriggerMiddle + itemMiddleToContentBottom;
                 this.contentWrapperElement()!.style.height = `${height}px`;
-                this.contentContext.viewport()!.scrollTop =
-                    contentTopToItemMiddle - topEdgeToTriggerMiddle + this.contentContext.viewport()!.offsetTop;
+                this.popup().viewport()!.scrollTop =
+                    contentTopToItemMiddle - topEdgeToTriggerMiddle + this.popup().viewport()!.offsetTop;
             }
 
             this.contentWrapperElement()!.style.margin = `${CONTENT_MARGIN}px 0`;

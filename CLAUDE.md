@@ -357,6 +357,26 @@ Prefer the package.json scripts above over ad-hoc shell, and keep commands match
   target still keeps `passWithNoTests`. Note: CI excludes `radix-ssr-testing` from `test`/`build`, so its
   page components are not type-checked there — the select page had drifted onto a removed API and only the
   spec caught it; keep the pages current with the primitives' public API.
+- **Browser-level regression tests — `apps/visual-regression` (Playwright over the built Storybook).**
+  The Vitest suite runs in **jsdom = no real layout** (no box sizes, `offsetHeight`/scroll metrics,
+  flexbox resolution, or floating-ui positioning). Anything that only manifests with real CSS/layout, or
+  that surfaces as a **runtime error on interaction**, must be guarded here, not in Vitest:
+  - `tests/<name>.behavior.spec.ts` — assert DOM/behavior (part visibility via `[hidden]` /
+    `toBeVisible`/`toBeHidden`, anatomy/parent relationships, scroll metrics like
+    `clientHeight < scrollHeight`, and **no errors**: attach `page.on('pageerror')` + `console`-error
+    listeners _before_ navigating and assert the list stays empty — this is how NG0201/NG0951 open-time
+    throws get caught). `tests/<name>.visual.spec.ts` — screenshot diffing, baselines under
+    `tests/*-snapshots/`.
+  - **Rule: when you fix a layout / positioning / part-visibility / opens-without-error bug, add or
+    extend the matching `*.behavior.spec.ts`** — a green unit suite does not prove the fix (jsdom can't
+    see it). Open the story via its real interaction; prefer auto-retrying web-first assertions over
+    fixed `waitForTimeout`.
+  - Run: `pnpm test-visual` (CI: builds Storybook → serves `:4400` → runs all). Local fast loop: keep
+    `pnpm storybook:primitives` (`:4400`) running, then
+    `pnpm exec playwright test -c apps/visual-regression/playwright.config.ts <name>.behavior` — the
+    config's `reuseExistingServer` (off in CI) reuses the dev server, so no full build is needed.
+    `test-results/` + `playwright-report/` are gitignored; `*-snapshots/` baselines are committed
+    (`pnpm test-visual:update` regenerates them after an intentional visual change).
 
 ## Accessibility
 

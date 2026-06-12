@@ -15,16 +15,14 @@ interface Fruit {
             <button rdxSelectTrigger>
                 <span #v="rdxSelectedValue" rdxSelectValue placeholder="Select…">{{ v.slotText() }}</span>
             </button>
-            <div *rdxSelectPortal rdxSelectPopup>
-                <div rdxSelectPositioner>
-                    <div rdxSelectPositionerContent>
-                        <div rdxSelectList>
-                            @for (fruit of fruits; track fruit.id) {
-                                <div [value]="fruit" rdxSelectItem>
-                                    <span rdxSelectItemText>{{ fruit.name }}</span>
-                                </div>
-                            }
-                        </div>
+            <div *rdxSelectPortal rdxSelectPositioner>
+                <div rdxSelectPopup>
+                    <div rdxSelectList>
+                        @for (fruit of fruits; track fruit.id) {
+                            <div [value]="fruit" rdxSelectItem>
+                                <span rdxSelectItemText>{{ fruit.name }}</span>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>

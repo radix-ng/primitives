@@ -9,7 +9,6 @@ import {
     RdxSelectPopup,
     RdxSelectPortal,
     RdxSelectPositioner,
-    RdxSelectPositionerContent,
     RdxSelectRoot,
     RdxSelectTrigger,
     RdxSelectValue
@@ -25,7 +24,6 @@ import {
         RdxSelectPopup,
         RdxSelectList,
         RdxSelectPositioner,
-        RdxSelectPositionerContent,
         RdxSelectItem,
         RdxSelectItemText,
         RdxSelectItemIndicator,
@@ -41,19 +39,17 @@ import {
                 <span aria-hidden="true">▼</span>
             </button>
 
-            <div *rdxSelectPortal rdxSelectPopup>
-                <div [sideOffset]="4" align="start" rdxSelectPositioner>
-                    <div rdxSelectPositionerContent>
-                        <div rdxSelectList>
-                            <div rdxSelectGroupLabel>Fruits</div>
-                            <div rdxSelectGroup>
-                                @for (option of options; track option) {
-                                    <div [value]="option" rdxSelectItem>
-                                        <span rdxSelectItemIndicator>✔</span>
-                                        <span rdxSelectItemText>{{ option }}</span>
-                                    </div>
-                                }
-                            </div>
+            <div *rdxSelectPortal [sideOffset]="4" align="start" rdxSelectPositioner>
+                <div rdxSelectPopup>
+                    <div rdxSelectList>
+                        <div rdxSelectGroupLabel>Fruits</div>
+                        <div rdxSelectGroup>
+                            @for (option of options; track option) {
+                                <div [value]="option" rdxSelectItem>
+                                    <span rdxSelectItemIndicator>✔</span>
+                                    <span rdxSelectItemText>{{ option }}</span>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
