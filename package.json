@@ -172,7 +172,7 @@
         "typescript": "5.9.2",
         "typescript-eslint": "^8.58.0",
         "verdaccio": "6.7.2",
-        "vite": "7.1.5",
+        "vite": "7.3.5",
         "vite-tsconfig-paths": "^5.1.4",
         "vitest": "4.1.8"
     },
