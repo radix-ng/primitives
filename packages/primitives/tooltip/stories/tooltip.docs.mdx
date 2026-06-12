@@ -1,12 +1,6 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as Stories from './tooltip.stories';
-import {
-    RdxTooltip,
-    RdxTooltipPortal,
-    RdxTooltipPositioner,
-    RdxTooltipProvider,
-    RdxTooltipTrigger
-} from '../index';
+import { RdxTooltip, RdxTooltipPositioner, RdxTooltipProvider, RdxTooltipTrigger } from '../index';
 
 <Meta title="Primitives/Tooltip" />
 
@@ -14,8 +8,9 @@ import {
 
 #### Displays contextual information when a trigger is hovered or focused.
 
-Tooltip composes the shared Popper, Portal, Presence, and Dismissable Layer primitives. It remains
-headless: styles and native CSS animations belong to the consumer. The API follows Base UI.
+Tooltip composes the shared Popper, structural Portal (portal + presence), and Dismissable Layer
+primitives. It remains headless: styles and native CSS animations belong to the consumer. The API
+follows Base UI.
 
 <Canvas sourceState="hidden" of={Stories.Default} />
 
@@ -39,7 +34,6 @@ import {
     RdxTooltipArrow,
     RdxTooltipPopup,
     RdxTooltipPortal,
-    RdxTooltipPortalPresence,
     RdxTooltipPositioner,
     RdxTooltipProvider,
     RdxTooltipTrigger
@@ -54,20 +48,18 @@ import { tooltipImports } from '@radix-ng/primitives/tooltip';
 
 ## Anatomy
 
-Apply the parts to your own markup. `rdxTooltipPortalPresence` manages mounting and waits for exit
-keyframes on the first DOM element inside its template.
+Apply the parts to your own markup. `rdxTooltipPortal` is a **structural** directive: it teleports its
+content into `document.body` while the tooltip is open and keeps it mounted until any closed-state CSS
+exit keyframes on its root element finish. Use the `*` microsyntax on the positioner (or the explicit
+`<ng-template rdxTooltipPortal>` form with `[container]` for a custom portal target):
 
 ```html
 <ng-container rdxTooltip>
     <button rdxTooltipTrigger>+</button>
 
-    <div rdxTooltipPortal [container]="content">
-        <ng-template rdxTooltipPortalPresence #content>
-            <div sideOffset="8" rdxTooltipPositioner>
-                <div rdxTooltipPopup>Add to library</div>
-                <span rdxTooltipArrow></span>
-            </div>
-        </ng-template>
+    <div *rdxTooltipPortal sideOffset="8" rdxTooltipPositioner>
+        <div rdxTooltipPopup>Add to library</div>
+        <span rdxTooltipArrow></span>
     </div>
 </ng-container>
 ```
@@ -141,9 +133,9 @@ when the trigger moves continuously, such as a slider thumb being dragged.
 
 ### Portal
 
-`RdxTooltipPortal` moves content to `document.body` by default or to a configured container.
-
-<ArgTypes of={RdxTooltipPortal} />
+`RdxTooltipPortal` is a structural directive (`*rdxTooltipPortal` or `<ng-template rdxTooltipPortal>`)
+that teleports content to `document.body` by default. Pass `[container]` on the explicit
+`<ng-template>` form to portal into a different element.
 
 ### Positioner
 

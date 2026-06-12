@@ -55,73 +55,73 @@ interface Notification {
                 }
             </button>
 
-            <ng-template rdxPopoverPortalPresence>
-                <div rdxPopoverPortal>
-                    <div [class]="p.positioner" sideOffset="8" align="end" rdxPopoverPositioner>
-                        <div [class]="popup" rdxPopoverPopup>
-                            <div class="border-border flex items-center justify-between border-b px-4 py-3">
-                                <h2 [class]="p.title" rdxPopoverTitle>Notifications</h2>
-                                <button
-                                    [class]="cn(b.base, b.ghost, b.size.sm, 'gap-1.5 text-xs')"
-                                    [disabled]="unreadCount() === 0"
-                                    (click)="markAllRead()"
-                                >
-                                    <svg aria-hidden="true" lucideCheckCheck size="14"></svg>
-                                    Mark all read
-                                </button>
-                            </div>
+            <div
+                *rdxPopoverPortal
+                [class]="cn(p.positioner, p.positionerAnimated)"
+                sideOffset="8"
+                align="end"
+                rdxPopoverPositioner
+            >
+                <div [class]="popup" rdxPopoverPopup>
+                    <div class="border-border flex items-center justify-between border-b px-4 py-3">
+                        <h2 [class]="p.title" rdxPopoverTitle>Notifications</h2>
+                        <button
+                            [class]="cn(b.base, b.ghost, b.size.sm, 'gap-1.5 text-xs')"
+                            [disabled]="unreadCount() === 0"
+                            (click)="markAllRead()"
+                        >
+                            <svg aria-hidden="true" lucideCheckCheck size="14"></svg>
+                            Mark all read
+                        </button>
+                    </div>
 
-                            <div class="relative h-72 overflow-hidden" rdxScrollAreaRoot>
-                                <div class="h-full w-full" rdxScrollAreaViewport>
-                                    <div rdxScrollAreaContent>
-                                        @for (n of notifications(); track n.id) {
-                                            <button
-                                                class="border-border/60 hover:bg-muted flex w-full gap-3 border-b px-4 py-3 text-left transition-colors last:border-b-0"
-                                                (click)="markRead(n.id)"
-                                            >
-                                                <span
-                                                    class="mt-1.5 size-2 shrink-0 rounded-full"
-                                                    [class.bg-primary]="!n.read"
-                                                    [class.bg-transparent]="n.read"
-                                                    aria-hidden="true"
-                                                ></span>
-                                                <span class="min-w-0 flex-1">
-                                                    <span class="text-foreground block text-sm font-medium">
-                                                        {{ n.title }}
-                                                    </span>
-                                                    <span class="text-muted-foreground block text-xs">
-                                                        {{ n.message }}
-                                                    </span>
-                                                    <span class="text-muted-foreground/70 mt-1 block text-[11px]">
-                                                        {{ n.time }}
-                                                    </span>
-                                                </span>
-                                            </button>
-                                        }
-                                    </div>
-                                </div>
-
-                                <div
-                                    class="data-[scrolling]:bg-muted/40 flex w-2.5 touch-none p-0.5 transition-opacity select-none"
-                                    orientation="vertical"
-                                    rdxScrollAreaScrollbar
-                                >
-                                    <div
-                                        class="bg-foreground/30 hover:bg-foreground/50 w-full rounded-full transition-colors"
-                                        rdxScrollAreaThumb
-                                    ></div>
-                                </div>
-                            </div>
-
-                            <div class="border-border border-t px-2 py-2">
-                                <button [class]="cn(b.base, b.ghost, b.size.sm, 'w-full')">
-                                    View all notifications
-                                </button>
+                    <div class="relative h-72 overflow-hidden" rdxScrollAreaRoot>
+                        <div class="h-full w-full" rdxScrollAreaViewport>
+                            <div rdxScrollAreaContent>
+                                @for (n of notifications(); track n.id) {
+                                    <button
+                                        class="border-border/60 hover:bg-muted flex w-full gap-3 border-b px-4 py-3 text-left transition-colors last:border-b-0"
+                                        (click)="markRead(n.id)"
+                                    >
+                                        <span
+                                            class="mt-1.5 size-2 shrink-0 rounded-full"
+                                            [class.bg-primary]="!n.read"
+                                            [class.bg-transparent]="n.read"
+                                            aria-hidden="true"
+                                        ></span>
+                                        <span class="min-w-0 flex-1">
+                                            <span class="text-foreground block text-sm font-medium">
+                                                {{ n.title }}
+                                            </span>
+                                            <span class="text-muted-foreground block text-xs">
+                                                {{ n.message }}
+                                            </span>
+                                            <span class="text-muted-foreground/70 mt-1 block text-[11px]">
+                                                {{ n.time }}
+                                            </span>
+                                        </span>
+                                    </button>
+                                }
                             </div>
                         </div>
+
+                        <div
+                            class="data-[scrolling]:bg-muted/40 flex w-2.5 touch-none p-0.5 transition-opacity select-none"
+                            orientation="vertical"
+                            rdxScrollAreaScrollbar
+                        >
+                            <div
+                                class="bg-foreground/30 hover:bg-foreground/50 w-full rounded-full transition-colors"
+                                rdxScrollAreaThumb
+                            ></div>
+                        </div>
+                    </div>
+
+                    <div class="border-border border-t px-2 py-2">
+                        <button [class]="cn(b.base, b.ghost, b.size.sm, 'w-full')">View all notifications</button>
                     </div>
                 </div>
-            </ng-template>
+            </div>
         </ng-container>
     `
 })

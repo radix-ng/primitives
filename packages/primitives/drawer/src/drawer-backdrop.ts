@@ -14,6 +14,7 @@ import { injectRdxDrawerRootContext } from './drawer-root';
     hostDirectives: [RdxDialogBackdrop],
     host: {
         '[style.--drawer-swipe-progress]': 'drawerContext.swipeProgress()',
+        '[attr.data-swiping]': 'drawerContext.openingSwipeActive() ? "" : undefined',
         '[attr.data-nested-drawer-open]': 'drawerContext.nestedDrawerOpen() ? "" : undefined'
     }
 })

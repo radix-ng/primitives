@@ -13,12 +13,8 @@ import { cn, demoButton, demoTooltip } from '../../storybook/styles';
                         {{ item.label }}
                     </button>
 
-                    <div [container]="content" rdxTooltipPortal>
-                        <ng-template #content rdxTooltipPortalPresence>
-                            <div [class]="t.positioner" rdxTooltipPositioner>
-                                <div [class]="t.popup" rdxTooltipPopup>{{ item.label }} tooltip</div>
-                            </div>
-                        </ng-template>
+                    <div *rdxTooltipPortal [class]="t.positioner" rdxTooltipPositioner>
+                        <div [class]="t.popup" rdxTooltipPopup>{{ item.label }} tooltip</div>
                     </div>
                 </ng-container>
             }

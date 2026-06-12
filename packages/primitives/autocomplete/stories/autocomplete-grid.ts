@@ -52,38 +52,34 @@ function chunk<T>(items: T[], size: number): T[][] {
                     😀
                 </button>
 
-                <div rdxAutocompletePortal>
-                    <ng-template rdxAutocompletePortalPresence>
-                        <div [class]="c.positioner" rdxAutocompletePositioner align="end">
-                            <div [class]="popup" rdxAutocompletePopup>
-                                <input
-                                    [class]="input"
-                                    rdxAutocompleteInput
-                                    placeholder="Search emojis…"
-                                    aria-label="Search emojis"
-                                />
-                                <div class="max-h-64 overflow-auto p-1">
-                                    @for (group of groups; track group.label) {
-                                        <div rdxAutocompleteGroup>
-                                            <div [class]="c.groupLabel" rdxAutocompleteGroupLabel>
-                                                {{ group.label }}
-                                            </div>
-                                            @for (row of group.rows; track $index) {
-                                                <div class="grid grid-cols-5" rdxAutocompleteRow>
-                                                    @for (item of row; track item.emoji) {
-                                                        <div [class]="cell" [textValue]="item.name" rdxAutocompleteItem>
-                                                            {{ item.emoji }}
-                                                        </div>
-                                                    }
+                <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner align="end">
+                    <div [class]="popup" rdxAutocompletePopup>
+                        <input
+                            [class]="input"
+                            rdxAutocompleteInput
+                            placeholder="Search emojis…"
+                            aria-label="Search emojis"
+                        />
+                        <div class="max-h-64 overflow-auto p-1">
+                            @for (group of groups; track group.label) {
+                                <div rdxAutocompleteGroup>
+                                    <div [class]="c.groupLabel" rdxAutocompleteGroupLabel>
+                                        {{ group.label }}
+                                    </div>
+                                    @for (row of group.rows; track $index) {
+                                        <div class="grid grid-cols-5" rdxAutocompleteRow>
+                                            @for (item of row; track item.emoji) {
+                                                <div [class]="cell" [textValue]="item.name" rdxAutocompleteItem>
+                                                    {{ item.emoji }}
                                                 </div>
                                             }
                                         </div>
                                     }
                                 </div>
-                                <div [class]="c.empty" rdxAutocompleteEmpty>No emoji found.</div>
-                            </div>
+                            }
                         </div>
-                    </ng-template>
+                        <div [class]="c.empty" rdxAutocompleteEmpty>No emoji found.</div>
+                    </div>
                 </div>
             </div>
         </div>

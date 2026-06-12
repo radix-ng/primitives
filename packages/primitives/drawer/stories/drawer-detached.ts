@@ -22,22 +22,20 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
             </button>
 
             <div [handle]="handle" rdxDrawerRoot>
-                <ng-template rdxDrawerPortalPresence>
-                    <div [class]="d.portalAnimated" rdxDrawerPortal>
-                        <div [class]="d.backdrop" rdxDrawerBackdrop></div>
+                <ng-template rdxDrawerPortal>
+                    <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
 
-                        <div [class]="cn(d.popup, d.side.right)" rdxDrawerPopup>
-                            <div [class]="d.body" rdxDrawerContent>
-                                <h2 [class]="d.title" rdxDrawerTitle>Detached triggers</h2>
-                                <p [class]="d.description" rdxDrawerDescription>
-                                    The triggers and this drawer are connected with
-                                    <code>createRdxDrawerHandle()</code>
-                                    rather than DOM nesting.
-                                </p>
+                    <div [class]="cn(d.popup, d.side.right)" rdxDrawerPopup>
+                        <div [class]="d.body" rdxDrawerContent>
+                            <h2 [class]="d.title" rdxDrawerTitle>Detached triggers</h2>
+                            <p [class]="d.description" rdxDrawerDescription>
+                                The triggers and this drawer are connected with
+                                <code>createRdxDrawerHandle()</code>
+                                rather than DOM nesting.
+                            </p>
 
-                                <div [class]="d.footer">
-                                    <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Close</button>
-                                </div>
+                            <div [class]="d.footer">
+                                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Close</button>
                             </div>
                         </div>
                     </div>

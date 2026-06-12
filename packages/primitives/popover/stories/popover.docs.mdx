@@ -2,7 +2,6 @@ import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as Stories from './popover.stories';
 import {
     RdxPopoverClose,
-    RdxPopoverPortal,
     RdxPopoverPositioner,
     RdxPopoverPopup,
     RdxPopoverRoot,
@@ -16,8 +15,8 @@ import {
 
 #### An accessible popup anchored to a button.
 
-Popover composes the shared Popper, Portal, Presence, Dismissable Layer, and Focus Scope primitives.
-It remains headless: styles and native CSS animations belong to the consumer.
+Popover composes the shared Popper, structural Portal (portal + presence), Dismissable Layer, and Focus
+Scope primitives. It remains headless: styles and native CSS animations belong to the consumer.
 
 <Canvas sourceState="hidden" of={Stories.Default} />
 
@@ -52,7 +51,6 @@ import {
     RdxPopoverDescription,
     RdxPopoverPopup,
     RdxPopoverPortal,
-    RdxPopoverPortalPresence,
     RdxPopoverPositioner,
     RdxPopoverRoot,
     RdxPopoverTitle,
@@ -69,31 +67,42 @@ import { RdxPopoverModule } from '@radix-ng/primitives/popover';
 
 ## Anatomy
 
-Apply the parts to your own markup. `rdxPopoverPortalPresence` manages mounting and waits for exit
-keyframes on the first DOM element inside its template.
+Apply the parts to your own markup. `rdxPopoverPortal` is a **structural** directive: it teleports
+its content into `document.body` while the popover is open and keeps it mounted until the closed-state
+CSS exit keyframes on its root element finish.
+
+Use the `*` microsyntax on the positioner for the common single-root case:
 
 ```html
 <ng-container rdxPopoverRoot>
     <button rdxPopoverTrigger>Open</button>
 
-    <ng-template rdxPopoverPortalPresence>
-        <div rdxPopoverPortal>
-            <div rdxPopoverBackdrop></div>
-            <div sideOffset="8" rdxPopoverPositioner>
-                <div rdxPopoverPopup>
-                    <span rdxPopoverArrow></span>
-                    <div rdxPopoverViewport>
-                        <div>
-                            <h2 rdxPopoverTitle>Notifications</h2>
-                            <p rdxPopoverDescription>You are all caught up.</p>
-                            <button rdxPopoverClose>Close</button>
-                        </div>
-                    </div>
+    <div *rdxPopoverPortal sideOffset="8" rdxPopoverPositioner>
+        <div rdxPopoverPopup>
+            <span rdxPopoverArrow></span>
+            <div rdxPopoverViewport>
+                <div>
+                    <h2 rdxPopoverTitle>Notifications</h2>
+                    <p rdxPopoverDescription>You are all caught up.</p>
+                    <button rdxPopoverClose>Close</button>
                 </div>
             </div>
         </div>
-    </ng-template>
+    </div>
 </ng-container>
+```
+
+When the content has more than one root node — for example an optional `rdxPopoverBackdrop` next to
+the positioner — use the explicit `<ng-template rdxPopoverPortal>` form (and the same form with
+`[container]` for a custom portal target):
+
+```html
+<ng-template rdxPopoverPortal>
+    <div rdxPopoverBackdrop></div>
+    <div sideOffset="8" rdxPopoverPositioner>
+        <div rdxPopoverPopup>…</div>
+    </div>
+</ng-template>
 ```
 
 ## Examples
@@ -127,8 +136,9 @@ shared Popper primitive updates `data-side` and `data-align` after collision han
 
 ### Animation
 
-For presence-managed content, apply native CSS keyframe animation utilities to the portal element.
-The closed animation keeps the portal mounted until `animationend`.
+Apply native CSS keyframe utilities to the positioner (the portal's root element) for the enter/exit
+fade — the closed-state keyframes keep the content mounted until `animationend`. Transform-based
+zoom/slide belongs on the popup, so it never fights the positioner's placement transform.
 
 <Canvas of={Stories.Animated} />
 
@@ -184,9 +194,9 @@ moves between triggers. The viewport exposes `data-activation-direction` and ret
 
 ### Portal
 
-`RdxPopoverPortal` moves content to `document.body` by default or to a configured container.
-
-<ArgTypes of={RdxPopoverPortal} />
+`RdxPopoverPortal` is a structural directive (`*rdxPopoverPortal` or `<ng-template rdxPopoverPortal>`)
+that teleports content to `document.body` by default. Pass `[container]` on the explicit
+`<ng-template>` form to portal into a different element.
 
 ### Positioner
 

@@ -23,18 +23,20 @@ import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styl
             <ng-container rdxPreviewCardRoot>
                 <a [class]="link" href="#" rdxPreviewCardTrigger>Hover the positioned preview card</a>
 
-                <ng-template rdxPreviewCardPortalPresence>
-                    <div rdxPreviewCardPortal>
-                        <div [class]="p.positioner" [side]="side()" sideOffset="8" rdxPreviewCardPositioner>
-                            <div [class]="p.popup" rdxPreviewCardPopup>
-                                <span [class]="p.arrow" rdxPreviewCardArrow></span>
-                                <p class="text-muted-foreground text-sm">
-                                    The positioner exposes placement attributes and CSS variables for styling.
-                                </p>
-                            </div>
-                        </div>
+                <div
+                    *rdxPreviewCardPortal
+                    [class]="p.positioner"
+                    [side]="side()"
+                    sideOffset="8"
+                    rdxPreviewCardPositioner
+                >
+                    <div [class]="p.popup" rdxPreviewCardPopup>
+                        <span [class]="p.arrow" rdxPreviewCardArrow></span>
+                        <p class="text-muted-foreground text-sm">
+                            The positioner exposes placement attributes and CSS variables for styling.
+                        </p>
                     </div>
-                </ng-template>
+                </div>
             </ng-container>
         </div>
     `

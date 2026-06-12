@@ -19,18 +19,19 @@ import { popoverImports } from '@radix-ng/primitives/popover';
                 <ng-content select="[trigger]" />
             </button>
 
-            <ng-template rdxPopoverPortalPresence>
-                <div rdxPopoverPortal>
-                    <div class="z-50" sideOffset="8" rdxPopoverPositioner>
-                        <div
-                            class="border-border bg-popover text-popover-foreground data-[open]:animate-popover-popup-in data-[closed]:animate-popover-popup-out w-72 rounded-lg border p-4 shadow-md"
-                            rdxPopoverPopup
-                        >
-                            <ng-content />
-                        </div>
-                    </div>
+            <div
+                class="data-[open]:animate-popover-in data-[closed]:animate-popover-out z-50"
+                *rdxPopoverPortal
+                sideOffset="8"
+                rdxPopoverPositioner
+            >
+                <div
+                    class="border-border bg-popover text-popover-foreground data-[open]:animate-popover-popup-in data-[closed]:animate-popover-popup-out w-72 rounded-lg border p-4 shadow-md"
+                    rdxPopoverPopup
+                >
+                    <ng-content />
                 </div>
-            </ng-template>
+            </div>
         </ng-container>
     `
 })

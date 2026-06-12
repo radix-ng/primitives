@@ -18,18 +18,16 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
         <ng-container #root="rdxMenuRoot" rdxMenuRoot>
             <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>File</button>
 
-            @if (root.open()) {
-                <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-                    <div [class]="m.popup" rdxMenuPopup>
-                        <button [class]="m.item" rdxMenuItem>New Tab</button>
-                        <button [class]="m.item" rdxMenuItem>New Window</button>
-                        <button [class]="m.item" [disabled]="true" rdxMenuItem>New Private Window</button>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" rdxMenuItem>Save Page As…</button>
-                        <button [class]="m.item" rdxMenuItem>Print…</button>
-                    </div>
+            <div *rdxMenuPortal [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
+                <div [class]="m.popup" rdxMenuPopup>
+                    <button [class]="m.item" rdxMenuItem>New Tab</button>
+                    <button [class]="m.item" rdxMenuItem>New Window</button>
+                    <button [class]="m.item" [disabled]="true" rdxMenuItem>New Private Window</button>
+                    <div [class]="m.separator" rdxMenuSeparator></div>
+                    <button [class]="m.item" rdxMenuItem>Save Page As…</button>
+                    <button [class]="m.item" rdxMenuItem>Print…</button>
                 </div>
-            }
+            </div>
         </ng-container>
     `
 })
@@ -92,19 +90,20 @@ import { RdxMenuModule } from '@radix-ng/primitives/menu';
 
 ## Anatomy
 
-Apply the directives to your own markup. Use `@if (root.open())` to conditionally mount the popup
-so it is removed from the DOM when closed.
+Apply the directives to your own markup. `rdxMenuPortal` is a **structural** directive: it teleports
+the popup into `document.body` while the menu is open and keeps it mounted until the closed-state exit
+keyframes finish. Use `*rdxMenuPortal` on the positioner for the common single-root case, or the
+explicit `<ng-template rdxMenuPortal>` form (shown below) when an optional `rdxMenuBackdrop` makes the
+content multi-root.
 
 ```html
 <ng-container #root="rdxMenuRoot" rdxMenuRoot>
     <button rdxMenuTrigger>Open</button>
 
-    <!-- optional backdrop — place before the positioner -->
-    @if (root.open()) {
+    <ng-template rdxMenuPortal>
+        <!-- optional backdrop — a sibling root, before the positioner -->
         <div rdxMenuBackdrop></div>
-    }
 
-    @if (root.open()) {
         <div sideOffset="4" rdxMenuPositioner>
             <div rdxMenuPopup>
                 <span rdxMenuArrow></span>
@@ -149,18 +148,16 @@ so it is removed from the DOM when closed.
                 <ng-container #sub="rdxMenuRoot" rdxMenuRoot>
                     <button rdxMenuSubTrigger>More options ›</button>
 
-                    @if (sub.open()) {
-                        <div side="right" align="start" sideOffset="4" rdxMenuPositioner>
-                            <div rdxMenuPopup>
-                                <button rdxMenuItem>Sub item A</button>
-                                <button rdxMenuItem>Sub item B</button>
-                            </div>
+                    <div *rdxMenuPortal side="right" align="start" sideOffset="4" rdxMenuPositioner>
+                        <div rdxMenuPopup>
+                            <button rdxMenuItem>Sub item A</button>
+                            <button rdxMenuItem>Sub item B</button>
                         </div>
-                    }
+                    </div>
                 </ng-container>
             </div>
         </div>
-    }
+    </ng-template>
 </ng-container>
 ```
 
@@ -183,18 +180,16 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
         <ng-container #root="rdxMenuRoot" rdxMenuRoot>
             <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>File</button>
 
-            @if (root.open()) {
-                <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-                    <div [class]="m.popup" rdxMenuPopup>
-                        <button [class]="m.item" rdxMenuItem>New Tab</button>
-                        <button [class]="m.item" rdxMenuItem>New Window</button>
-                        <button [class]="m.item" [disabled]="true" rdxMenuItem>New Private Window</button>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" rdxMenuItem>Save Page As…</button>
-                        <button [class]="m.item" rdxMenuItem>Print…</button>
-                    </div>
+            <div *rdxMenuPortal [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
+                <div [class]="m.popup" rdxMenuPopup>
+                    <button [class]="m.item" rdxMenuItem>New Tab</button>
+                    <button [class]="m.item" rdxMenuItem>New Window</button>
+                    <button [class]="m.item" [disabled]="true" rdxMenuItem>New Private Window</button>
+                    <div [class]="m.separator" rdxMenuSeparator></div>
+                    <button [class]="m.item" rdxMenuItem>Save Page As…</button>
+                    <button [class]="m.item" rdxMenuItem>Print…</button>
                 </div>
-            }
+            </div>
         </ng-container>
     `
 })
@@ -258,59 +253,67 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
         <ng-container #root="rdxMenuRoot" rdxMenuRoot>
             <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Edit</button>
 
-            @if (root.open()) {
-                <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-                    <div [class]="m.popup" rdxMenuPopup>
-                        <button [class]="m.item" rdxMenuItem>Undo</button>
-                        <button [class]="m.item" rdxMenuItem>Redo</button>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
+            <div *rdxMenuPortal [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
+                <div [class]="m.popup" rdxMenuPopup>
+                    <button [class]="m.item" rdxMenuItem>Undo</button>
+                    <button [class]="m.item" rdxMenuItem>Redo</button>
+                    <div [class]="m.separator" rdxMenuSeparator></div>
 
-                        <!-- Submenu: inner rdxMenuRoot provides submenu context -->
-                        <ng-container #findSub="rdxMenuRoot" rdxMenuRoot>
-                            <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
-                                Find
-                                <span class="text-muted-foreground text-xs">›</span>
-                            </button>
+                    <!-- Submenu: inner rdxMenuRoot provides submenu context -->
+                    <ng-container #findSub="rdxMenuRoot" rdxMenuRoot>
+                        <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
+                            Find
+                            <span class="text-muted-foreground text-xs">›</span>
+                        </button>
 
-                            @if (findSub.open()) {
-                                <div [class]="m.positioner" side="right" align="start" sideOffset="4" rdxMenuPositioner>
-                                    <div [class]="m.popup" rdxMenuPopup>
-                                        <button [class]="m.item" rdxMenuItem>Search Web…</button>
-                                        <button [class]="m.item" rdxMenuItem>Find…</button>
-                                        <button [class]="m.item" rdxMenuItem>Find and Replace…</button>
-                                        <button [class]="m.item" rdxMenuItem>Use Selection for Find</button>
-                                    </div>
-                                </div>
-                            }
-                        </ng-container>
+                        <div
+                            *rdxMenuPortal
+                            [class]="m.positioner"
+                            side="right"
+                            align="start"
+                            sideOffset="4"
+                            rdxMenuPositioner
+                        >
+                            <div [class]="m.popup" rdxMenuPopup>
+                                <button [class]="m.item" rdxMenuItem>Search Web…</button>
+                                <button [class]="m.item" rdxMenuItem>Find…</button>
+                                <button [class]="m.item" rdxMenuItem>Find and Replace…</button>
+                                <button [class]="m.item" rdxMenuItem>Use Selection for Find</button>
+                            </div>
+                        </div>
+                    </ng-container>
 
-                        <!-- Second submenu -->
-                        <ng-container #spellSub="rdxMenuRoot" rdxMenuRoot>
-                            <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
-                                Spelling and Grammar
-                                <span class="text-muted-foreground text-xs">›</span>
-                            </button>
+                    <!-- Second submenu -->
+                    <ng-container #spellSub="rdxMenuRoot" rdxMenuRoot>
+                        <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
+                            Spelling and Grammar
+                            <span class="text-muted-foreground text-xs">›</span>
+                        </button>
 
-                            @if (spellSub.open()) {
-                                <div [class]="m.positioner" side="right" align="start" sideOffset="4" rdxMenuPositioner>
-                                    <div [class]="m.popup" rdxMenuPopup>
-                                        <button [class]="m.item" rdxMenuItem>Show Spelling and Grammar</button>
-                                        <button [class]="m.item" rdxMenuItem>Check Document Now</button>
-                                        <div [class]="m.separator" rdxMenuSeparator></div>
-                                        <button [class]="m.item" rdxMenuItem>Check Spelling While Typing</button>
-                                        <button [class]="m.item" [disabled]="true" rdxMenuItem>Check Grammar</button>
-                                    </div>
-                                </div>
-                            }
-                        </ng-container>
+                        <div
+                            *rdxMenuPortal
+                            [class]="m.positioner"
+                            side="right"
+                            align="start"
+                            sideOffset="4"
+                            rdxMenuPositioner
+                        >
+                            <div [class]="m.popup" rdxMenuPopup>
+                                <button [class]="m.item" rdxMenuItem>Show Spelling and Grammar</button>
+                                <button [class]="m.item" rdxMenuItem>Check Document Now</button>
+                                <div [class]="m.separator" rdxMenuSeparator></div>
+                                <button [class]="m.item" rdxMenuItem>Check Spelling While Typing</button>
+                                <button [class]="m.item" [disabled]="true" rdxMenuItem>Check Grammar</button>
+                            </div>
+                        </div>
+                    </ng-container>
 
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" rdxMenuItem>Cut</button>
-                        <button [class]="m.item" rdxMenuItem>Copy</button>
-                        <button [class]="m.item" rdxMenuItem>Paste</button>
-                    </div>
+                    <div [class]="m.separator" rdxMenuSeparator></div>
+                    <button [class]="m.item" rdxMenuItem>Cut</button>
+                    <button [class]="m.item" rdxMenuItem>Copy</button>
+                    <button [class]="m.item" rdxMenuItem>Paste</button>
                 </div>
-            }
+            </div>
         </ng-container>
     `
 })
@@ -339,72 +342,66 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
             <ng-container #root="rdxMenuRoot" rdxMenuRoot>
                 <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>تحرير</button>
 
-                @if (root.open()) {
-                    <div [class]="m.positioner" side="bottom" align="end" sideOffset="4" rdxMenuPositioner>
-                        <div [class]="m.popup" rdxMenuPopup>
-                            <button [class]="m.item" rdxMenuItem>تراجع</button>
-                            <button [class]="m.item" rdxMenuItem>إعادة</button>
-                            <div [class]="m.separator" rdxMenuSeparator></div>
+                <div *rdxMenuPortal [class]="m.positioner" side="bottom" align="end" sideOffset="4" rdxMenuPositioner>
+                    <div [class]="m.popup" rdxMenuPopup>
+                        <button [class]="m.item" rdxMenuItem>تراجع</button>
+                        <button [class]="m.item" rdxMenuItem>إعادة</button>
+                        <div [class]="m.separator" rdxMenuSeparator></div>
 
-                            <!-- Submenu opens to the left in RTL -->
-                            <ng-container #findSub="rdxMenuRoot" rdxMenuRoot>
-                                <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
-                                    <span class="text-muted-foreground text-xs">‹</span>
-                                    بحث
-                                </button>
+                        <!-- Submenu opens to the left in RTL -->
+                        <ng-container #findSub="rdxMenuRoot" rdxMenuRoot>
+                            <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
+                                <span class="text-muted-foreground text-xs">‹</span>
+                                بحث
+                            </button>
 
-                                @if (findSub.open()) {
-                                    <div
-                                        [class]="m.positioner"
-                                        side="left"
-                                        align="start"
-                                        sideOffset="4"
-                                        rdxMenuPositioner
-                                    >
-                                        <div [class]="m.popup" rdxMenuPopup>
-                                            <button [class]="m.item" rdxMenuItem>بحث في الويب…</button>
-                                            <button [class]="m.item" rdxMenuItem>بحث…</button>
-                                            <button [class]="m.item" rdxMenuItem>بحث واستبدال…</button>
-                                            <button [class]="m.item" rdxMenuItem>استخدام التحديد للبحث</button>
-                                        </div>
-                                    </div>
-                                }
-                            </ng-container>
+                            <div
+                                *rdxMenuPortal
+                                [class]="m.positioner"
+                                side="left"
+                                align="start"
+                                sideOffset="4"
+                                rdxMenuPositioner
+                            >
+                                <div [class]="m.popup" rdxMenuPopup>
+                                    <button [class]="m.item" rdxMenuItem>بحث في الويب…</button>
+                                    <button [class]="m.item" rdxMenuItem>بحث…</button>
+                                    <button [class]="m.item" rdxMenuItem>بحث واستبدال…</button>
+                                    <button [class]="m.item" rdxMenuItem>استخدام التحديد للبحث</button>
+                                </div>
+                            </div>
+                        </ng-container>
 
-                            <ng-container #spellSub="rdxMenuRoot" rdxMenuRoot>
-                                <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
-                                    <span class="text-muted-foreground text-xs">‹</span>
-                                    التدقيق الإملائي والنحوي
-                                </button>
+                        <ng-container #spellSub="rdxMenuRoot" rdxMenuRoot>
+                            <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
+                                <span class="text-muted-foreground text-xs">‹</span>
+                                التدقيق الإملائي والنحوي
+                            </button>
 
-                                @if (spellSub.open()) {
-                                    <div
-                                        [class]="m.positioner"
-                                        side="left"
-                                        align="start"
-                                        sideOffset="4"
-                                        rdxMenuPositioner
-                                    >
-                                        <div [class]="m.popup" rdxMenuPopup>
-                                            <button [class]="m.item" rdxMenuItem>عرض التدقيق الإملائي والنحوي</button>
-                                            <button [class]="m.item" rdxMenuItem>تدقيق المستند الآن</button>
-                                            <div [class]="m.separator" rdxMenuSeparator></div>
-                                            <button [class]="m.item" rdxMenuItem>التدقيق الإملائي أثناء الكتابة</button>
-                                            <button [class]="m.item" [disabled]="true" rdxMenuItem>
-                                                التدقيق النحوي
-                                            </button>
-                                        </div>
-                                    </div>
-                                }
-                            </ng-container>
+                            <div
+                                *rdxMenuPortal
+                                [class]="m.positioner"
+                                side="left"
+                                align="start"
+                                sideOffset="4"
+                                rdxMenuPositioner
+                            >
+                                <div [class]="m.popup" rdxMenuPopup>
+                                    <button [class]="m.item" rdxMenuItem>عرض التدقيق الإملائي والنحوي</button>
+                                    <button [class]="m.item" rdxMenuItem>تدقيق المستند الآن</button>
+                                    <div [class]="m.separator" rdxMenuSeparator></div>
+                                    <button [class]="m.item" rdxMenuItem>التدقيق الإملائي أثناء الكتابة</button>
+                                    <button [class]="m.item" [disabled]="true" rdxMenuItem>التدقيق النحوي</button>
+                                </div>
+                            </div>
+                        </ng-container>
 
-                            <div [class]="m.separator" rdxMenuSeparator></div>
-                            <button [class]="m.item" rdxMenuItem>قص</button>
-                            <button [class]="m.item" rdxMenuItem>نسخ</button>
-                            <button [class]="m.item" rdxMenuItem>لصق</button>
-                        </div>
+                        <div [class]="m.separator" rdxMenuSeparator></div>
+                        <button [class]="m.item" rdxMenuItem>قص</button>
+                        <button [class]="m.item" rdxMenuItem>نسخ</button>
+                        <button [class]="m.item" rdxMenuItem>لصق</button>
                     </div>
-                }
+                </div>
             </ng-container>
         </div>
     `
@@ -436,17 +433,15 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
         <ng-container #root="rdxMenuRoot" rdxMenuRoot>
             <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>With Arrow</button>
 
-            @if (root.open()) {
-                <div [class]="m.positioner" sideOffset="8" rdxMenuPositioner>
-                    <div [class]="cn(m.popup, 'relative')" rdxMenuPopup>
-                        <span [class]="m.arrow" rdxMenuArrow></span>
-                        <button [class]="m.item" rdxMenuItem>New Tab</button>
-                        <button [class]="m.item" rdxMenuItem>New Window</button>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" rdxMenuItem>Print…</button>
-                    </div>
+            <div *rdxMenuPortal [class]="m.positioner" sideOffset="8" rdxMenuPositioner>
+                <div [class]="cn(m.popup, 'relative')" rdxMenuPopup>
+                    <span [class]="m.arrow" rdxMenuArrow></span>
+                    <button [class]="m.item" rdxMenuItem>New Tab</button>
+                    <button [class]="m.item" rdxMenuItem>New Window</button>
+                    <div [class]="m.separator" rdxMenuSeparator></div>
+                    <button [class]="m.item" rdxMenuItem>Print…</button>
                 </div>
-            }
+            </div>
         </ng-container>
     `
 })
@@ -459,8 +454,9 @@ export class RdxMenuArrowExampleComponent {
 
 ### Backdrop
 
-Add `rdxMenuBackdrop` before the positioner (both inside `@if (root.open())`) to render an overlay
-behind the popup. Set `[modal]="true"` on `rdxMenuRoot` to block outside pointer events.
+Add `rdxMenuBackdrop` as a sibling root before the positioner inside an explicit
+`<ng-template rdxMenuPortal>` to render an overlay behind the popup. Set `[modal]="true"` on
+`rdxMenuRoot` to block outside pointer events.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
@@ -475,7 +471,7 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
         <ng-container #root="rdxMenuRoot" [modal]="true" rdxMenuRoot>
             <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>With Backdrop</button>
 
-            @if (root.open()) {
+            <ng-template rdxMenuPortal>
                 <div class="bg-foreground/10 fixed inset-0" rdxMenuBackdrop></div>
                 <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
                     <div [class]="m.popup" rdxMenuPopup>
@@ -487,7 +483,7 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
                         <button [class]="m.item" rdxMenuItem>Print…</button>
                     </div>
                 </div>
-            }
+            </ng-template>
         </ng-container>
     `
 })
@@ -533,36 +529,34 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
         <ng-container #root="rdxMenuRoot" rdxMenuRoot>
             <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Settings</button>
 
-            @if (root.open()) {
-                <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-                    <div
-                        [class]="
-                            cn(
-                                m.popup,
-                                '[height:var(--popup-height)] [width:var(--popup-width)] overflow-hidden transition-[width,height] duration-200 ease-out'
-                            )
-                        "
-                        rdxMenuPopup
-                    >
-                        <div rdxMenuViewport>
-                            <button [class]="m.item" [closeOnClick]="false" (onSelect)="toggle()" rdxMenuItem>
-                                {{ expanded() ? 'Hide advanced' : 'Show advanced' }}
-                            </button>
-                            <div [class]="m.separator" rdxMenuSeparator></div>
-                            <button [class]="m.item" rdxMenuItem>Profile</button>
-                            <button [class]="m.item" rdxMenuItem>Billing</button>
+            <div *rdxMenuPortal [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
+                <div
+                    [class]="
+                        cn(
+                            m.popup,
+                            '[height:var(--popup-height)] [width:var(--popup-width)] overflow-hidden transition-[width,height] duration-200 ease-out'
+                        )
+                    "
+                    rdxMenuPopup
+                >
+                    <div rdxMenuViewport>
+                        <button [class]="m.item" [closeOnClick]="false" (onSelect)="toggle()" rdxMenuItem>
+                            {{ expanded() ? 'Hide advanced' : 'Show advanced' }}
+                        </button>
+                        <div [class]="m.separator" rdxMenuSeparator></div>
+                        <button [class]="m.item" rdxMenuItem>Profile</button>
+                        <button [class]="m.item" rdxMenuItem>Billing</button>
 
-                            @if (expanded()) {
-                                <div [class]="m.separator" rdxMenuSeparator></div>
-                                <button [class]="m.item" rdxMenuItem>Keyboard shortcuts</button>
-                                <button [class]="m.item" rdxMenuItem>Developer tools</button>
-                                <button [class]="m.item" rdxMenuItem>Feature flags</button>
-                                <button [class]="m.item" rdxMenuItem>API tokens</button>
-                            }
-                        </div>
+                        @if (expanded()) {
+                            <div [class]="m.separator" rdxMenuSeparator></div>
+                            <button [class]="m.item" rdxMenuItem>Keyboard shortcuts</button>
+                            <button [class]="m.item" rdxMenuItem>Developer tools</button>
+                            <button [class]="m.item" rdxMenuItem>Feature flags</button>
+                            <button [class]="m.item" rdxMenuItem>API tokens</button>
+                        }
                     </div>
                 </div>
-            }
+            </div>
         </ng-container>
     `
 })
@@ -581,9 +575,12 @@ export class RdxMenuViewportExampleComponent {
 
 ### CSS animations
 
-`rdxMenuPopup` exposes `data-starting-style` on the enter frame and `data-ending-style` while the
-exit animation plays. `(onOpenChangeComplete)` fires after the animation finishes. Use Angular
-`styles` on the component (or global CSS) to define the keyframes.
+The structural `*rdxMenuPortal` keeps the popup mounted until the closed-state exit keyframes on its
+root element (the positioner) finish, so the menu now has real exit animations. `rdxMenuPopup` also
+exposes `data-starting-style` on the enter frame and `data-ending-style` while the exit plays, and
+`(onOpenChangeComplete)` fires after the animation finishes. Put an opacity exit keyframe on the
+positioner (the part presence watches, keyed on `data-open` / `data-closed`) and keep the transform
+zoom on the popup. Use Angular `styles` on the component (or global CSS) to define the keyframes.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
@@ -622,22 +619,44 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
             .animated-popup[data-ending-style] {
                 animation: popup-out 150ms ease;
             }
+            /* The structural *rdxMenuPortal watches its root (the positioner); give it an opacity exit
+               keyframe so presence keeps the popup mounted until the popup's slide-out finishes. */
+            @keyframes positioner-fade-in {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+            @keyframes positioner-fade-out {
+                from {
+                    opacity: 1;
+                }
+                to {
+                    opacity: 0;
+                }
+            }
+            .animated-positioner[data-open] {
+                animation: positioner-fade-in 150ms ease;
+            }
+            .animated-positioner[data-closed] {
+                animation: positioner-fade-out 150ms ease;
+            }
         `
     ],
     template: `
         <ng-container #root="rdxMenuRoot" rdxMenuRoot>
             <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Animated</button>
 
-            @if (root.open()) {
-                <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-                    <div [class]="cn(m.popup, 'animated-popup')" rdxMenuPopup>
-                        <button [class]="m.item" rdxMenuItem>New Tab</button>
-                        <button [class]="m.item" rdxMenuItem>New Window</button>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" rdxMenuItem>Print…</button>
-                    </div>
+            <div *rdxMenuPortal [class]="cn(m.positioner, 'animated-positioner')" sideOffset="4" rdxMenuPositioner>
+                <div [class]="cn(m.popup, 'animated-popup')" rdxMenuPopup>
+                    <button [class]="m.item" rdxMenuItem>New Tab</button>
+                    <button [class]="m.item" rdxMenuItem>New Window</button>
+                    <div [class]="m.separator" rdxMenuSeparator></div>
+                    <button [class]="m.item" rdxMenuItem>Print…</button>
                 </div>
-            }
+            </div>
         </ng-container>
     `
 })
@@ -660,6 +679,20 @@ export class RdxMenuAnimatedComponent {
     to   { opacity: 0; transform: scale(0.95) translateY(-4px); }
 }
 
+/* The positioner is the part `*rdxMenuPortal` watches: its closed-state keyframe is what keeps the
+   popup mounted until the exit finishes. Opacity-only, so it never fights the popper's transform. */
+@keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+@keyframes fade-out {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+[rdxMenuPositioner][data-open]   { animation: fade-in 150ms ease; }
+[rdxMenuPositioner][data-closed] { animation: fade-out 150ms ease; }
+
+/* The popup carries the transform zoom (it is not popper-positioned). */
 [rdxMenuPopup] {
     animation: popup-in 150ms ease;
     transform-origin: var(--transform-origin);
@@ -669,24 +702,17 @@ export class RdxMenuAnimatedComponent {
 }
 ```
 
-The optional backdrop uses the same attributes:
+The optional backdrop is a sibling root; it carries `data-open` / `data-closed` too:
 
 ```css
 [rdxMenuBackdrop] {
     position: fixed;
     inset: 0;
     background: rgb(0 0 0 / 0.3);
-    animation: fade-in 150ms ease;
 }
-[rdxMenuBackdrop][data-ending-style] {
-    animation: fade-out 150ms ease;
-}
+[rdxMenuBackdrop][data-open]   { animation: fade-in 150ms ease; }
+[rdxMenuBackdrop][data-closed] { animation: fade-out 150ms ease; }
 ```
-
-> **Note:** exit animations require the popup to remain mounted during the animation. With the
-> `@if (root.open())` pattern the popup is removed immediately on close. To keep it mounted, render
-> the positioner/popup unconditionally and toggle visibility via CSS `data-state` instead, or use
-> a presence wrapper that waits for `animationend` before unmounting.
 
 #### `onOpenChangeComplete`
 

@@ -152,7 +152,7 @@ export const PageScale: Story = {
     parameters: source(pageScaleSource),
     render: () => ({
         template: html`
-            <rdx-drawer-page-scale />
+            <rdx-drawer-page-scale class="block w-full" />
         `
     })
 };

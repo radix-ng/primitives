@@ -26,23 +26,18 @@ import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
                 remain in the digital age.
             </p>
 
-            <ng-template rdxPreviewCardPortalPresence>
-                <div rdxPreviewCardPortal>
-                    <div [class]="p.positioner" sideOffset="8" rdxPreviewCardPositioner>
-                        <div [class]="p.popup" rdxPreviewCardPopup>
-                            <span [class]="p.arrow" rdxPreviewCardArrow></span>
-                            <div class="grid gap-3">
-                                <div class="bg-muted h-28 rounded-md"></div>
-                                <p class="text-muted-foreground text-sm">
-                                    <strong class="text-foreground font-medium">Typography</strong>
-                                    is the art and science of arranging type to make written language clear and
-                                    effective.
-                                </p>
-                            </div>
-                        </div>
+            <div *rdxPreviewCardPortal [class]="p.positioner" sideOffset="8" rdxPreviewCardPositioner>
+                <div [class]="p.popup" rdxPreviewCardPopup>
+                    <span [class]="p.arrow" rdxPreviewCardArrow></span>
+                    <div class="grid gap-3">
+                        <div class="bg-muted h-28 rounded-md"></div>
+                        <p class="text-muted-foreground text-sm">
+                            <strong class="text-foreground font-medium">Typography</strong>
+                            is the art and science of arranging type to make written language clear and effective.
+                        </p>
                     </div>
                 </div>
-            </ng-template>
+            </div>
         </ng-container>
     `
 })
@@ -71,7 +66,6 @@ export class RdxPreviewCardDefaultComponent {
   code={`import {
   RdxPreviewCardRoot,
   RdxPreviewCardTrigger,
-  RdxPreviewCardPortalPresence,
   RdxPreviewCardPortal,
   RdxPreviewCardBackdrop,
   RdxPreviewCardPositioner,
@@ -83,26 +77,36 @@ export class RdxPreviewCardDefaultComponent {
 
 ## Anatomy
 
-Apply the parts to your own markup. The root is virtual; the portal presence wrapper keeps the
-content mounted while CSS exit animations finish.
+Apply the parts to your own markup. The root is virtual; `rdxPreviewCardPortal` is a **structural**
+directive that teleports the content into `document.body` while the card is open and keeps it mounted
+until any closed-state CSS exit keyframes on its root element finish.
+
+Use the `*` microsyntax on the positioner for the common single-root case:
 
 ```html
 <ng-container rdxPreviewCardRoot>
   <a href="#" rdxPreviewCardTrigger>Preview link</a>
 
-  <ng-template rdxPreviewCardPortalPresence>
-    <div rdxPreviewCardPortal>
-      <div rdxPreviewCardBackdrop></div>
-
-      <div rdxPreviewCardPositioner>
-        <div rdxPreviewCardPopup>
-          <span rdxPreviewCardArrow></span>
-          <div rdxPreviewCardViewport>Preview content</div>
-        </div>
-      </div>
+  <div *rdxPreviewCardPortal rdxPreviewCardPositioner>
+    <div rdxPreviewCardPopup>
+      <span rdxPreviewCardArrow></span>
+      <div rdxPreviewCardViewport>Preview content</div>
     </div>
-  </ng-template>
+  </div>
 </ng-container>
+```
+
+When the content has more than one root node — for example an optional `rdxPreviewCardBackdrop` next
+to the positioner — use the explicit `<ng-template rdxPreviewCardPortal>` form (and the same form with
+`[container]` for a custom portal target):
+
+```html
+<ng-template rdxPreviewCardPortal>
+  <div rdxPreviewCardBackdrop></div>
+  <div rdxPreviewCardPositioner>
+    <div rdxPreviewCardPopup>…</div>
+  </div>
+</ng-template>
 ```
 
 ## Examples
@@ -147,19 +151,15 @@ import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styl
                     .
                 </p>
 
-                <ng-template rdxPreviewCardPortalPresence>
-                    <div rdxPreviewCardPortal>
-                        <div [class]="p.positioner" sideOffset="8" rdxPreviewCardPositioner>
-                            <div [class]="p.popup" rdxPreviewCardPopup>
-                                <span [class]="p.arrow" rdxPreviewCardArrow></span>
-                                <div class="grid gap-2">
-                                    <div class="bg-muted h-24 rounded-md"></div>
-                                    <p class="text-muted-foreground text-sm">{{ root.payload() }}</p>
-                                </div>
-                            </div>
+                <div *rdxPreviewCardPortal [class]="p.positioner" sideOffset="8" rdxPreviewCardPositioner>
+                    <div [class]="p.popup" rdxPreviewCardPopup>
+                        <span [class]="p.arrow" rdxPreviewCardArrow></span>
+                        <div class="grid gap-2">
+                            <div class="bg-muted h-24 rounded-md"></div>
+                            <p class="text-muted-foreground text-sm">{{ root.payload() }}</p>
                         </div>
                     </div>
-                </ng-template>
+                </div>
             </ng-container>
         </div>
     `
@@ -226,19 +226,15 @@ import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
             </p>
 
             <ng-container #root="rdxPreviewCardRoot" [handle]="previewCard" rdxPreviewCardRoot>
-                <ng-template rdxPreviewCardPortalPresence>
-                    <div rdxPreviewCardPortal>
-                        <div [class]="p.positioner" sideOffset="8" rdxPreviewCardPositioner>
-                            <div [class]="p.popup" rdxPreviewCardPopup>
-                                <span [class]="p.arrow" rdxPreviewCardArrow></span>
-                                <div class="grid gap-2">
-                                    <div class="bg-muted h-24 rounded-md"></div>
-                                    <p class="text-muted-foreground text-sm">{{ root.payload() }}</p>
-                                </div>
-                            </div>
+                <div *rdxPreviewCardPortal [class]="p.positioner" sideOffset="8" rdxPreviewCardPositioner>
+                    <div [class]="p.popup" rdxPreviewCardPopup>
+                        <span [class]="p.arrow" rdxPreviewCardArrow></span>
+                        <div class="grid gap-2">
+                            <div class="bg-muted h-24 rounded-md"></div>
+                            <p class="text-muted-foreground text-sm">{{ root.payload() }}</p>
                         </div>
                     </div>
-                </ng-template>
+                </div>
             </ng-container>
         </div>
     `
@@ -280,18 +276,20 @@ import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styl
             <ng-container rdxPreviewCardRoot>
                 <a [class]="link" href="#" rdxPreviewCardTrigger>Hover the positioned preview card</a>
 
-                <ng-template rdxPreviewCardPortalPresence>
-                    <div rdxPreviewCardPortal>
-                        <div [class]="p.positioner" [side]="side()" sideOffset="8" rdxPreviewCardPositioner>
-                            <div [class]="p.popup" rdxPreviewCardPopup>
-                                <span [class]="p.arrow" rdxPreviewCardArrow></span>
-                                <p class="text-muted-foreground text-sm">
-                                    The positioner exposes placement attributes and CSS variables for styling.
-                                </p>
-                            </div>
-                        </div>
+                <div
+                    *rdxPreviewCardPortal
+                    [class]="p.positioner"
+                    [side]="side()"
+                    sideOffset="8"
+                    rdxPreviewCardPositioner
+                >
+                    <div [class]="p.popup" rdxPreviewCardPopup>
+                        <span [class]="p.arrow" rdxPreviewCardArrow></span>
+                        <p class="text-muted-foreground text-sm">
+                            The positioner exposes placement attributes and CSS variables for styling.
+                        </p>
                     </div>
-                </ng-template>
+                </div>
             </ng-container>
         </div>
     `
@@ -344,28 +342,25 @@ import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
                 .
             </p>
 
-            <ng-template rdxPreviewCardPortalPresence>
-                <div rdxPreviewCardPortal>
-                    <div
-                        [class]="cn(p.positioner, 'transition-[left,right,top,bottom] duration-200')"
-                        sideOffset="8"
-                        rdxPreviewCardPositioner
-                    >
-                        <div
-                            [class]="cn(p.popup, 'overflow-hidden transition-[width,height] duration-200')"
-                            rdxPreviewCardPopup
-                        >
-                            <span [class]="p.arrow" rdxPreviewCardArrow></span>
-                            <div rdxPreviewCardViewport>
-                                <div class="grid gap-2">
-                                    <div class="bg-muted h-24 rounded-md"></div>
-                                    <p class="text-muted-foreground text-sm">{{ root.payload() }}</p>
-                                </div>
-                            </div>
+            <div
+                *rdxPreviewCardPortal
+                [class]="cn(p.positioner, 'transition-[left,right,top,bottom] duration-200')"
+                sideOffset="8"
+                rdxPreviewCardPositioner
+            >
+                <div
+                    [class]="cn(p.popup, 'overflow-hidden transition-[width,height] duration-200')"
+                    rdxPreviewCardPopup
+                >
+                    <span [class]="p.arrow" rdxPreviewCardArrow></span>
+                    <div rdxPreviewCardViewport>
+                        <div class="grid gap-2">
+                            <div class="bg-muted h-24 rounded-md"></div>
+                            <p class="text-muted-foreground text-sm">{{ root.payload() }}</p>
                         </div>
                     </div>
                 </div>
-            </ng-template>
+            </div>
         </ng-container>
     `
 })

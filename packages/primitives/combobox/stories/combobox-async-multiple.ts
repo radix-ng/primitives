@@ -36,33 +36,29 @@ const ALL = ['Angular', 'Astro', 'Ember', 'Lit', 'Preact', 'Qwik', 'React', 'Sol
                 </button>
             </div>
 
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div [class]="c.positioner" rdxComboboxPositioner>
-                        <div [class]="c.popup" rdxComboboxPopup>
-                            <div class="text-muted-foreground px-2 py-1 text-xs" rdxComboboxStatus>
-                                @if (loading()) {
-                                    Loading…
-                                } @else {
-                                    {{ results().length }} results
-                                }
-                            </div>
-                            <div [class]="c.list" rdxComboboxList aria-label="Frameworks">
-                                @for (item of results(); track item) {
-                                    <div [class]="c.item" [value]="item" rdxComboboxItem>
-                                        <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
-                                            <svg lucideCheck size="14"></svg>
-                                        </span>
-                                        {{ item }}
-                                    </div>
-                                }
-                            </div>
-                            @if (!loading() && results().length === 0) {
-                                <div [class]="c.empty" rdxComboboxEmpty>Nothing found.</div>
-                            }
-                        </div>
+            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
+                <div [class]="c.popup" rdxComboboxPopup>
+                    <div class="text-muted-foreground px-2 py-1 text-xs" rdxComboboxStatus>
+                        @if (loading()) {
+                            Loading…
+                        } @else {
+                            {{ results().length }} results
+                        }
                     </div>
-                </ng-template>
+                    <div [class]="c.list" rdxComboboxList aria-label="Frameworks">
+                        @for (item of results(); track item) {
+                            <div [class]="c.item" [value]="item" rdxComboboxItem>
+                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                    <svg lucideCheck size="14"></svg>
+                                </span>
+                                {{ item }}
+                            </div>
+                        }
+                    </div>
+                    @if (!loading() && results().length === 0) {
+                        <div [class]="c.empty" rdxComboboxEmpty>Nothing found.</div>
+                    }
+                </div>
             </div>
         </div>
     `

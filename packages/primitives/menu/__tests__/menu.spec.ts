@@ -8,6 +8,8 @@ import {
     RdxMenuGroup,
     RdxMenuItem,
     RdxMenuPopup,
+    RdxMenuPortal,
+    RdxMenuPortalMisuseGuard,
     RdxMenuPositioner,
     RdxMenuRadioGroup,
     RdxMenuRadioItem,
@@ -1750,5 +1752,68 @@ describe('Menu', () => {
             expect(viewport.style.getPropertyValue('--popup-height')).toBe('120px');
             expect(viewport.hasAttribute('data-transitioning')).toBe(true);
         });
+    });
+});
+
+describe('Menu structural portal', () => {
+    @Component({
+        imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPortal, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
+        template: `
+            <ng-container #root="rdxMenuRoot" rdxMenuRoot>
+                <button rdxMenuTrigger>Open</button>
+
+                <div *rdxMenuPortal data-test-portal rdxMenuPositioner>
+                    <div rdxMenuPopup>
+                        <button rdxMenuItem>Item</button>
+                    </div>
+                </div>
+            </ng-container>
+        `
+    })
+    class PortalHost {}
+
+    it('teleports the popup into document.body while open', () => {
+        const fixture = TestBed.createComponent(PortalHost);
+        fixture.detectChanges();
+        expect(document.body.querySelector('[data-test-portal]')).toBeNull();
+
+        const trigger: HTMLButtonElement = fixture.nativeElement.querySelector('[rdxMenuTrigger]');
+        trigger.click();
+        fixture.detectChanges();
+
+        const positioner = document.body.querySelector('[data-test-portal]');
+        expect(positioner).not.toBeNull();
+        expect(positioner!.parentElement).toBe(document.body);
+        fixture.destroy();
+    });
+
+    it('throws in dev mode when rdxMenuPortal is used as an attribute instead of structurally', () => {
+        @Component({
+            imports: [
+                RdxMenuRoot,
+                RdxMenuTrigger,
+                RdxMenuPortal,
+                RdxMenuPortalMisuseGuard,
+                RdxMenuPositioner,
+                RdxMenuPopup
+            ],
+            template: `
+                <ng-container rdxMenuRoot>
+                    <button rdxMenuTrigger>Open</button>
+
+                    <div rdxMenuPortal>
+                        <div rdxMenuPositioner>
+                            <div rdxMenuPopup>Oops</div>
+                        </div>
+                    </div>
+                </ng-container>
+            `
+        })
+        class MisuseHost {}
+
+        expect(() => {
+            const fixture = TestBed.createComponent(MisuseHost);
+            fixture.detectChanges();
+        }).toThrow(/structural directive/);
     });
 });

@@ -20,13 +20,9 @@ const itemClass =
                 <button class="${itemClass}" aria-label="Bold" rdxToolbarButton rdxTooltipTrigger>
                     <svg lucideBold size="16"></svg>
                 </button>
-                <div [container]="bold" rdxTooltipPortal>
-                    <ng-template #bold rdxTooltipPortalPresence>
-                        <div [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
-                            <div [class]="t.popup" rdxTooltipPopup>Bold</div>
-                            <span [class]="t.arrow" rdxTooltipArrow></span>
-                        </div>
-                    </ng-template>
+                <div *rdxTooltipPortal [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
+                    <div [class]="t.popup" rdxTooltipPopup>Bold</div>
+                    <span [class]="t.arrow" rdxTooltipArrow></span>
                 </div>
             </ng-container>
 
@@ -34,13 +30,9 @@ const itemClass =
                 <button class="${itemClass}" aria-label="Italic" rdxToolbarButton rdxTooltipTrigger>
                     <svg lucideItalic size="16"></svg>
                 </button>
-                <div [container]="italic" rdxTooltipPortal>
-                    <ng-template #italic rdxTooltipPortalPresence>
-                        <div [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
-                            <div [class]="t.popup" rdxTooltipPopup>Italic</div>
-                            <span [class]="t.arrow" rdxTooltipArrow></span>
-                        </div>
-                    </ng-template>
+                <div *rdxTooltipPortal [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
+                    <div [class]="t.popup" rdxTooltipPopup>Italic</div>
+                    <span [class]="t.arrow" rdxTooltipArrow></span>
                 </div>
             </ng-container>
         </div>

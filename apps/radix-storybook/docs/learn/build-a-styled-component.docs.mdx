@@ -21,17 +21,13 @@ positioned, focus and dismissal work, Escape closes it. It just has no look.
 <ng-container rdxPopoverRoot>
   <button rdxPopoverTrigger>Notifications</button>
 
-  <ng-template rdxPopoverPortalPresence>
-    <div rdxPopoverPortal>
-      <div sideOffset="8" rdxPopoverPositioner>
-        <div rdxPopoverPopup>
-          <h2 rdxPopoverTitle>Notifications</h2>
-          <p rdxPopoverDescription>You are all caught up.</p>
-          <button rdxPopoverClose>Close</button>
-        </div>
-      </div>
+  <div *rdxPopoverPortal sideOffset="8" rdxPopoverPositioner>
+    <div rdxPopoverPopup>
+      <h2 rdxPopoverTitle>Notifications</h2>
+      <p rdxPopoverDescription>You are all caught up.</p>
+      <button rdxPopoverClose>Close</button>
     </div>
-  </ng-template>
+  </div>
 </ng-container>
 ```
 
@@ -76,24 +72,32 @@ The popup is just an element you own, so style it like any card. The positioner 
 
 ## Step 4 — animate enter and exit
 
-The popup mounts and unmounts through a presence directive, and that directive waits for a CSS
-**`@keyframes` animation** to finish before removing the element — not a `transition` (see
-**Guides/Animation**). So drive the motion with keyframe animations keyed off the same
-`data-open` / `data-closed` you already know:
+The content mounts and unmounts through the structural `*rdxPopoverPortal`, and it waits for a CSS
+**`@keyframes` animation** on its **root element — the positioner** — to finish before removing the
+content (not a `transition`; see **Guides/Animation**). So put the fade that keeps the content mounted
+on the positioner, keyed off the same `data-open` / `data-closed` you already know, and keep the
+transform-based zoom on the popup (the positioner already carries the placement transform):
 
 ```html
 <div
-  rdxPopoverPopup
-  class="… data-[open]:animate-popover-popup-in data-[closed]:animate-popover-popup-out"
+  *rdxPopoverPortal
+  rdxPopoverPositioner
+  class="… data-[open]:animate-popover-in data-[closed]:animate-popover-out"
 >
-  …
+  <div
+    rdxPopoverPopup
+    class="… data-[open]:animate-popover-popup-in data-[closed]:animate-popover-popup-out"
+  >
+    …
+  </div>
 </div>
 ```
 
-`animate-popover-popup-in` / `-out` are keyframe animations defined in this repo's
-`tailwind.css` (a scale-and-fade in, the reverse out with `forwards`). The enter animation plays
-while `data-open` is set; on close the element keeps `data-closed` and stays mounted until the exit
-keyframes finish, so it animates out instead of vanishing. Open and close it a few times:
+These are keyframe animations defined in this repo's `tailwind.css` (`popover-in/out` is an opacity
+fade; `popover-popup-in/out` is a scale-and-fade, the reverse out with `forwards`). The enter
+animations play while `data-open` is set; on close the elements keep `data-closed` and the positioner
+stays mounted until its exit keyframes finish, so the content animates out instead of vanishing. Open
+and close it a few times:
 
 <Canvas sourceState="hidden" of={Tutorial.Step4Animated} />
 
@@ -112,15 +116,11 @@ trigger label and the body with `<ng-content>`, and keep the structure in one pl
         <ng-content select="[trigger]" />
       </button>
 
-      <ng-template rdxPopoverPortalPresence>
-        <div rdxPopoverPortal>
-          <div sideOffset="8" rdxPopoverPositioner>
-            <div rdxPopoverPopup class="…popup + animation classes…">
-              <ng-content />
-            </div>
-          </div>
+      <div *rdxPopoverPortal sideOffset="8" rdxPopoverPositioner class="…fade animation classes…">
+        <div rdxPopoverPopup class="…popup + zoom animation classes…">
+          <ng-content />
         </div>
-      </ng-template>
+      </div>
     </ng-container>
   `
 })

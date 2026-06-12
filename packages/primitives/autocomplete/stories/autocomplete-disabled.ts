@@ -11,18 +11,14 @@ import { _importsAutocomplete } from '../index';
                 <input [class]="c.input" rdxAutocompleteInput placeholder="Disabled" aria-label="Fruit" />
             </div>
 
-            <div rdxAutocompletePortal>
-                <ng-template rdxAutocompletePortalPresence>
-                    <div [class]="c.positioner" rdxAutocompletePositioner>
-                        <div [class]="c.popup" rdxAutocompletePopup>
-                            <div [class]="c.list" rdxAutocompleteList aria-label="Fruits">
-                                @for (fruit of fruits; track fruit) {
-                                    <div [class]="c.item" rdxAutocompleteItem>{{ fruit }}</div>
-                                }
-                            </div>
-                        </div>
+            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
+                <div [class]="c.popup" rdxAutocompletePopup>
+                    <div [class]="c.list" rdxAutocompleteList aria-label="Fruits">
+                        @for (fruit of fruits; track fruit) {
+                            <div [class]="c.item" rdxAutocompleteItem>{{ fruit }}</div>
+                        }
                     </div>
-                </ng-template>
+                </div>
             </div>
         </div>
     `

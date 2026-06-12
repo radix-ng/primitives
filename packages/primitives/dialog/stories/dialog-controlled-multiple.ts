@@ -16,27 +16,25 @@ import { cn, demoButton, demoDialog } from '../../storybook/styles';
                     <button id="billing" [class]="cn(b.base, b.outline, b.size.md)" rdxDialogTrigger>Billing</button>
                 </div>
 
-                <ng-template rdxDialogPortalPresence>
-                    <div [class]="d.portalAnimated" rdxDialogPortal>
-                        <div [class]="d.backdrop" rdxDialogBackdrop></div>
-                        <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-                            <h2 [class]="d.title" rdxDialogTitle>
-                                {{ triggerId() === 'billing' ? 'Billing' : 'Account' }}
-                            </h2>
-                            <p [class]="d.description" rdxDialogDescription>
-                                Both
-                                <code>open</code>
-                                and
-                                <code>triggerId</code>
-                                are bound, so the active panel is driven from component state.
-                            </p>
-                            <div [class]="d.footer">
-                                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Close</button>
-                            </div>
-                            <button [class]="d.close" aria-label="Close" rdxDialogClose>
-                                <svg aria-hidden="true" lucideX size="16" />
-                            </button>
+                <ng-template rdxDialogPortal>
+                    <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
+                    <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
+                        <h2 [class]="d.title" rdxDialogTitle>
+                            {{ triggerId() === 'billing' ? 'Billing' : 'Account' }}
+                        </h2>
+                        <p [class]="d.description" rdxDialogDescription>
+                            Both
+                            <code>open</code>
+                            and
+                            <code>triggerId</code>
+                            are bound, so the active panel is driven from component state.
+                        </p>
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Close</button>
                         </div>
+                        <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                            <svg aria-hidden="true" lucideX size="16" />
+                        </button>
                     </div>
                 </ng-template>
             </div>

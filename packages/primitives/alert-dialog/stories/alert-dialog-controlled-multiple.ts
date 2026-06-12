@@ -19,31 +19,27 @@ import { cn, demoButton, demoDialog } from '../../storybook/styles';
                     </button>
                 </div>
 
-                <ng-template rdxAlertDialogPortalPresence>
-                    <div [class]="d.portalAnimated" rdxAlertDialogPortal>
-                        <div [class]="d.backdrop" rdxAlertDialogBackdrop></div>
-                        <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
-                            <h2 [class]="d.title" rdxAlertDialogTitle>
-                                {{ triggerId() === 'delete' ? 'Delete account?' : 'Log out?' }}
-                            </h2>
-                            <p [class]="d.description" rdxAlertDialogDescription>
-                                Both
-                                <code>open</code>
-                                and
-                                <code>triggerId</code>
-                                are bound, so the active action is driven from component state.
-                            </p>
-                            <div [class]="d.footer">
-                                <button [class]="cn(b.base, b.outline, b.size.sm)" rdxAlertDialogClose>Cancel</button>
-                                <button
-                                    [class]="
-                                        cn(b.base, triggerId() === 'delete' ? b.destructive : b.primary, b.size.sm)
-                                    "
-                                    rdxAlertDialogClose
-                                >
-                                    {{ triggerId() === 'delete' ? 'Delete' : 'Log out' }}
-                                </button>
-                            </div>
+                <ng-template rdxAlertDialogPortal>
+                    <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxAlertDialogBackdrop></div>
+                    <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
+                        <h2 [class]="d.title" rdxAlertDialogTitle>
+                            {{ triggerId() === 'delete' ? 'Delete account?' : 'Log out?' }}
+                        </h2>
+                        <p [class]="d.description" rdxAlertDialogDescription>
+                            Both
+                            <code>open</code>
+                            and
+                            <code>triggerId</code>
+                            are bound, so the active action is driven from component state.
+                        </p>
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxAlertDialogClose>Cancel</button>
+                            <button
+                                [class]="cn(b.base, triggerId() === 'delete' ? b.destructive : b.primary, b.size.sm)"
+                                rdxAlertDialogClose
+                            >
+                                {{ triggerId() === 'delete' ? 'Delete' : 'Log out' }}
+                            </button>
                         </div>
                     </div>
                 </ng-template>

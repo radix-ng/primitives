@@ -15,20 +15,18 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
             <div [modal]="false" rdxDrawerRoot>
                 <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Open non-modal drawer</button>
 
-                <ng-template rdxDrawerPortalPresence>
-                    <div [class]="d.portalAnimated" rdxDrawerPortal>
-                        <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
-                            <div [class]="d.grip" aria-hidden="true"></div>
+                <ng-template rdxDrawerPortal>
+                    <div [class]="cn(d.popup, d.side.bottom, d.overlayAnimated)" rdxDrawerPopup>
+                        <div [class]="d.grip" aria-hidden="true"></div>
 
-                            <div [class]="d.body" rdxDrawerContent>
-                                <h2 [class]="d.title" rdxDrawerTitle>Non-modal drawer</h2>
-                                <p [class]="d.description" rdxDrawerDescription>
-                                    Keep interacting with the rest of the page; the counter below still works.
-                                </p>
+                        <div [class]="d.body" rdxDrawerContent>
+                            <h2 [class]="d.title" rdxDrawerTitle>Non-modal drawer</h2>
+                            <p [class]="d.description" rdxDrawerDescription>
+                                Keep interacting with the rest of the page; the counter below still works.
+                            </p>
 
-                                <div [class]="d.footer">
-                                    <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Close</button>
-                                </div>
+                            <div [class]="d.footer">
+                                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Close</button>
                             </div>
                         </div>
                     </div>

@@ -16,29 +16,27 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                 {{ level() === 1 ? 'Open drawer' : 'Open drawer ' + level() }}
             </button>
 
-            <ng-template rdxDrawerPortalPresence>
-                <div [class]="d.portalAnimated" rdxDrawerPortal>
-                    <div [class]="d.backdrop" rdxDrawerBackdrop></div>
+            <ng-template rdxDrawerPortal>
+                <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
 
-                    <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
-                        <div [class]="d.grip" aria-hidden="true"></div>
+                <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
+                    <div [class]="d.grip" aria-hidden="true"></div>
 
-                        <div [class]="d.body" rdxDrawerContent>
-                            <h2 [class]="d.title" rdxDrawerTitle>Drawer level {{ level() }}</h2>
-                            <p [class]="d.description" rdxDrawerDescription>
-                                @if (level() < max()) {
-                                    Open another to stack it on top — this one scales back and peeks behind it.
-                                } @else {
-                                    Deepest level. Swipe down or press Escape to peel the stack back one at a time.
-                                }
-                            </p>
+                    <div [class]="d.body" rdxDrawerContent>
+                        <h2 [class]="d.title" rdxDrawerTitle>Drawer level {{ level() }}</h2>
+                        <p [class]="d.description" rdxDrawerDescription>
+                            @if (level() < max()) {
+                                Open another to stack it on top — this one scales back and peeks behind it.
+                            } @else {
+                                Deepest level. Swipe down or press Escape to peel the stack back one at a time.
+                            }
+                        </p>
 
-                            <div [class]="d.footer">
-                                @if (level() < max()) {
-                                    <rdx-drawer-nested [level]="level() + 1" [max]="max()" />
-                                }
-                                <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>Close</button>
-                            </div>
+                        <div [class]="d.footer">
+                            @if (level() < max()) {
+                                <rdx-drawer-nested [level]="level() + 1" [max]="max()" />
+                            }
+                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>Close</button>
                         </div>
                     </div>
                 </div>

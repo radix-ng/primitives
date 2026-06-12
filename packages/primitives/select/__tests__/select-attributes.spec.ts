@@ -11,22 +11,18 @@ import { _importsSelect } from '../index';
             <button rdxSelectTrigger>
                 <span rdxSelectValue placeholder="Select…"></span>
             </button>
-            <div rdxSelectPortal>
-                <ng-template rdxSelectPortalPresence>
-                    <div rdxSelectPopup>
-                        <div rdxSelectPositioner>
-                            <div rdxSelectPositionerContent>
-                                <div rdxSelectList>
-                                    @for (fruit of fruits; track fruit) {
-                                        <div [value]="fruit" rdxSelectItem>
-                                            <span rdxSelectItemText>{{ fruit }}</span>
-                                        </div>
-                                    }
+            <div *rdxSelectPortal rdxSelectPopup>
+                <div rdxSelectPositioner>
+                    <div rdxSelectPositionerContent>
+                        <div rdxSelectList>
+                            @for (fruit of fruits; track fruit) {
+                                <div [value]="fruit" rdxSelectItem>
+                                    <span rdxSelectItemText>{{ fruit }}</span>
                                 </div>
-                            </div>
+                            }
                         </div>
                     </div>
-                </ng-template>
+                </div>
             </div>
         </div>
     `
@@ -135,5 +131,30 @@ describe('Select Field integration on the trigger', () => {
         expect(trigger().getAttribute('aria-invalid')).toBe('true');
         expect(trigger().getAttribute('data-required')).toBe('');
         expect(trigger().getAttribute('aria-required')).toBe('true');
+    });
+});
+
+describe('Select structural portal', () => {
+    it('throws in dev mode when rdxSelectPortal is used as an attribute instead of structurally', () => {
+        @Component({
+            imports: [_importsSelect],
+            template: `
+                <div rdxSelectRoot>
+                    <button rdxSelectTrigger>
+                        <span rdxSelectValue placeholder="Select…"></span>
+                    </button>
+
+                    <div rdxSelectPortal>
+                        <div rdxSelectPopup>Oops</div>
+                    </div>
+                </div>
+            `
+        })
+        class MisuseHost {}
+
+        expect(() => {
+            const fixture = TestBed.createComponent(MisuseHost);
+            fixture.detectChanges();
+        }).toThrow(/structural directive/);
     });
 });

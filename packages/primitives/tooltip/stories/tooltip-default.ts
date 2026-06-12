@@ -12,13 +12,9 @@ import { cn, demoButton, demoTooltip } from '../../storybook/styles';
                 <svg aria-hidden="true" lucidePlus size="16" />
             </button>
 
-            <div [container]="content" rdxTooltipPortal>
-                <ng-template #content rdxTooltipPortalPresence>
-                    <div [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
-                        <div [class]="t.popup" rdxTooltipPopup>Add to library</div>
-                        <span [class]="t.arrow" rdxTooltipArrow></span>
-                    </div>
-                </ng-template>
+            <div *rdxTooltipPortal [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
+                <div [class]="t.popup" rdxTooltipPopup>Add to library</div>
+                <span [class]="t.arrow" rdxTooltipArrow></span>
             </div>
         </ng-container>
     `

@@ -69,15 +69,16 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 </li>
             </ul>
 
-            <ng-template rdxNavigationMenuPortalPresence>
-                <div [class]="m.portalAnimated" rdxNavigationMenuPortal>
-                    <div [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
-                        <div [class]="m.popup" rdxNavigationMenuPopup>
-                            <div [class]="m.viewport" rdxNavigationMenuViewport></div>
-                        </div>
-                    </div>
+            <div
+                *rdxNavigationMenuPortal
+                [class]="cn(m.positioner, m.positionerAnimated)"
+                sideOffset="8"
+                rdxNavigationMenuPositioner
+            >
+                <div [class]="m.popup" rdxNavigationMenuPopup>
+                    <div [class]="m.viewport" rdxNavigationMenuViewport></div>
                 </div>
-            </ng-template>
+            </div>
         </nav>
     `
 })

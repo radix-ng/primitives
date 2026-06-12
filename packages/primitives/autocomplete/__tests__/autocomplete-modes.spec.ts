@@ -10,18 +10,14 @@ import { AutocompleteMode, RdxAutocompleteRoot } from '../src/autocomplete-root'
     template: `
         <div [(value)]="value" [(open)]="open" [mode]="mode()" [autoHighlight]="autoHighlight()" rdxAutocompleteRoot>
             <input rdxAutocompleteInput aria-label="Fruit" />
-            <div rdxAutocompletePortal>
-                <ng-template rdxAutocompletePortalPresence>
-                    <div rdxAutocompletePositioner>
-                        <div rdxAutocompletePopup>
-                            <div rdxAutocompleteList aria-label="Fruits">
-                                @for (fruit of fruits(); track fruit) {
-                                    <div rdxAutocompleteItem>{{ fruit }}</div>
-                                }
-                            </div>
-                        </div>
+            <div *rdxAutocompletePortal rdxAutocompletePositioner>
+                <div rdxAutocompletePopup>
+                    <div rdxAutocompleteList aria-label="Fruits">
+                        @for (fruit of fruits(); track fruit) {
+                            <div rdxAutocompleteItem>{{ fruit }}</div>
+                        }
                     </div>
-                </ng-template>
+                </div>
             </div>
         </div>
     `

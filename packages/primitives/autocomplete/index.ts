@@ -14,8 +14,7 @@ import { RdxAutocompleteItemIndicator } from './src/autocomplete-item-indicator'
 import { RdxAutocompleteLabel } from './src/autocomplete-label';
 import { RdxAutocompleteList } from './src/autocomplete-list';
 import { RdxAutocompletePopup } from './src/autocomplete-popup';
-import { RdxAutocompletePortal } from './src/autocomplete-portal';
-import { RdxAutocompletePortalPresence } from './src/autocomplete-portal-presence';
+import { RdxAutocompletePortal, RdxAutocompletePortalMisuseGuard } from './src/autocomplete-portal';
 import { RdxAutocompletePositioner } from './src/autocomplete-positioner';
 import { RdxAutocompleteRoot } from './src/autocomplete-root';
 import { RdxAutocompleteRow } from './src/autocomplete-row';
@@ -39,7 +38,6 @@ export * from './src/autocomplete-label';
 export * from './src/autocomplete-list';
 export * from './src/autocomplete-popup';
 export * from './src/autocomplete-portal';
-export * from './src/autocomplete-portal-presence';
 export * from './src/autocomplete-positioner';
 export * from './src/autocomplete-root';
 export * from './src/autocomplete-row';
@@ -58,7 +56,7 @@ export const _importsAutocomplete = [
     RdxAutocompleteIcon,
     RdxAutocompleteClear,
     RdxAutocompletePortal,
-    RdxAutocompletePortalPresence,
+    RdxAutocompletePortalMisuseGuard,
     RdxAutocompleteBackdrop,
     RdxAutocompletePositioner,
     RdxAutocompletePopup,

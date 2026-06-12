@@ -8,22 +8,18 @@ import { _importsAutocomplete } from '../index';
     template: `
         <div [(value)]="value" [(open)]="open" grid rdxAutocompleteRoot>
             <input rdxAutocompleteInput aria-label="Color" />
-            <div rdxAutocompletePortal>
-                <ng-template rdxAutocompletePortalPresence>
-                    <div rdxAutocompletePositioner>
-                        <div rdxAutocompletePopup>
-                            <div rdxAutocompleteList aria-label="Colors">
-                                @for (row of rows(); track $index) {
-                                    <div rdxAutocompleteRow>
-                                        @for (cell of row; track cell) {
-                                            <div rdxAutocompleteItem>{{ cell }}</div>
-                                        }
-                                    </div>
+            <div *rdxAutocompletePortal rdxAutocompletePositioner>
+                <div rdxAutocompletePopup>
+                    <div rdxAutocompleteList aria-label="Colors">
+                        @for (row of rows(); track $index) {
+                            <div rdxAutocompleteRow>
+                                @for (cell of row; track cell) {
+                                    <div rdxAutocompleteItem>{{ cell }}</div>
                                 }
                             </div>
-                        </div>
+                        }
                     </div>
-                </ng-template>
+                </div>
             </div>
         </div>
     `

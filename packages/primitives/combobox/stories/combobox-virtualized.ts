@@ -27,35 +27,31 @@ import { ComboboxItemHighlightedDetails, RdxComboboxRoot } from '../src/combobox
                 <input [class]="c.input" rdxComboboxInput placeholder="Search 10,000 items…" aria-label="Item" />
             </div>
 
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div [class]="c.positioner" rdxComboboxPositioner>
-                        <div [class]="popup" rdxComboboxPopup>
-                            <div [class]="c.empty" rdxComboboxEmpty>No items found.</div>
-                            <div [class]="c.list" rdxComboboxList aria-label="Items">
-                                <div #scroll [class]="scroller">
-                                    <div [class]="spacer" [style.height.px]="virtualizer.getTotalSize()">
-                                        @for (row of virtualizer.getVirtualItems(); track row.key) {
-                                            <div
-                                                [class]="item"
-                                                [value]="cmb.filteredItems()[row.index]"
-                                                [index]="row.index"
-                                                [style.height.px]="row.size"
-                                                [style.transform]="'translateY(' + row.start + 'px)'"
-                                                rdxComboboxItem
-                                            >
-                                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
-                                                    <svg lucideCheck size="14"></svg>
-                                                </span>
-                                                {{ cmb.filteredItems()[row.index] }}
-                                            </div>
-                                        }
+            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
+                <div [class]="popup" rdxComboboxPopup>
+                    <div [class]="c.empty" rdxComboboxEmpty>No items found.</div>
+                    <div [class]="c.list" rdxComboboxList aria-label="Items">
+                        <div #scroll [class]="scroller">
+                            <div [class]="spacer" [style.height.px]="virtualizer.getTotalSize()">
+                                @for (row of virtualizer.getVirtualItems(); track row.key) {
+                                    <div
+                                        [class]="item"
+                                        [value]="cmb.filteredItems()[row.index]"
+                                        [index]="row.index"
+                                        [style.height.px]="row.size"
+                                        [style.transform]="'translateY(' + row.start + 'px)'"
+                                        rdxComboboxItem
+                                    >
+                                        <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                            <svg lucideCheck size="14"></svg>
+                                        </span>
+                                        {{ cmb.filteredItems()[row.index] }}
                                     </div>
-                                </div>
+                                }
                             </div>
                         </div>
                     </div>
-                </ng-template>
+                </div>
             </div>
         </div>
     `

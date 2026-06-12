@@ -1,4 +1,4 @@
-import { Component, ElementRef, signal, viewChild } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
@@ -37,19 +37,16 @@ import { demoTooltip } from '../../storybook/styles';
                             <input rdxSliderThumbInput aria-label="Volume" />
                         </div>
 
-                        <ng-container [container]="tooltipContentRef()" rdxTooltipPortal>
-                            <ng-template #tooltipContent rdxTooltipPortalPresence>
-                                <div
-                                    [class]="t.positioner"
-                                    sideOffset="8"
-                                    side="top"
-                                    updatePositionStrategy="always"
-                                    rdxTooltipPositioner
-                                >
-                                    <div [class]="t.popup" rdxTooltipPopup>Volume</div>
-                                </div>
-                            </ng-template>
-                        </ng-container>
+                        <div
+                            *rdxTooltipPortal
+                            [class]="t.positioner"
+                            sideOffset="8"
+                            side="top"
+                            updatePositionStrategy="always"
+                            rdxTooltipPositioner
+                        >
+                            <div [class]="t.popup" rdxTooltipPopup>Volume</div>
+                        </div>
                     </ng-container>
                 </div>
             </div>
@@ -58,8 +55,6 @@ import { demoTooltip } from '../../storybook/styles';
 })
 export class RdxTooltipSliderComponent {
     protected readonly t = demoTooltip;
-
-    readonly tooltipContentRef = viewChild.required<ElementRef<HTMLElement>>('tooltipContent');
 
     readonly showTooltipState = signal(false);
 

@@ -47,8 +47,7 @@ standard Menu parts and positioned at the pointer, so `rdxMenuPositioner` needs 
 <ng-container #root="rdxContextMenuRoot" rdxContextMenuRoot>
   <div rdxContextMenuTrigger>Right click here</div>
 
-  @if (root.menuRoot.open()) {
-  <div rdxMenuPositioner>
+  <div *rdxMenuPortal rdxMenuPositioner>
     <div rdxMenuPopup>
       <button rdxMenuItem>Back</button>
       <button rdxMenuItem>Reload</button>
@@ -58,17 +57,14 @@ standard Menu parts and positioned at the pointer, so `rdxMenuPositioner` needs 
       <!-- submenu -->
       <ng-container #sub="rdxMenuRoot" rdxMenuRoot>
         <button rdxMenuSubTrigger>More Tools ›</button>
-        @if (sub.open()) {
-        <div side="right" align="start" rdxMenuPositioner>
+        <div *rdxMenuPortal side="right" align="start" rdxMenuPositioner>
           <div rdxMenuPopup>
             <button rdxMenuItem>Save Page As…</button>
           </div>
         </div>
-        }
       </ng-container>
     </div>
   </div>
-  }
 </ng-container>
 ```
 

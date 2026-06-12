@@ -21,23 +21,18 @@ import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
                 remain in the digital age.
             </p>
 
-            <ng-template rdxPreviewCardPortalPresence>
-                <div rdxPreviewCardPortal>
-                    <div [class]="p.positioner" sideOffset="8" rdxPreviewCardPositioner>
-                        <div [class]="p.popup" rdxPreviewCardPopup>
-                            <span [class]="p.arrow" rdxPreviewCardArrow></span>
-                            <div class="grid gap-3">
-                                <div class="bg-muted h-28 rounded-md"></div>
-                                <p class="text-muted-foreground text-sm">
-                                    <strong class="text-foreground font-medium">Typography</strong>
-                                    is the art and science of arranging type to make written language clear and
-                                    effective.
-                                </p>
-                            </div>
-                        </div>
+            <div *rdxPreviewCardPortal [class]="p.positioner" sideOffset="8" rdxPreviewCardPositioner>
+                <div [class]="p.popup" rdxPreviewCardPopup>
+                    <span [class]="p.arrow" rdxPreviewCardArrow></span>
+                    <div class="grid gap-3">
+                        <div class="bg-muted h-28 rounded-md"></div>
+                        <p class="text-muted-foreground text-sm">
+                            <strong class="text-foreground font-medium">Typography</strong>
+                            is the art and science of arranging type to make written language clear and effective.
+                        </p>
                     </div>
                 </div>
-            </ng-template>
+            </div>
         </ng-container>
     `
 })

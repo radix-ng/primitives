@@ -34,17 +34,13 @@ export const Step1Functional: Story = {
             <ng-container rdxPopoverRoot>
                 <button rdxPopoverTrigger>Notifications</button>
 
-                <ng-template rdxPopoverPortalPresence>
-                    <div rdxPopoverPortal>
-                        <div sideOffset="8" rdxPopoverPositioner>
-                            <div rdxPopoverPopup>
-                                <h2 rdxPopoverTitle>Notifications</h2>
-                                <p rdxPopoverDescription>You are all caught up.</p>
-                                <button rdxPopoverClose>Close</button>
-                            </div>
-                        </div>
+                <div *rdxPopoverPortal sideOffset="8" rdxPopoverPositioner>
+                    <div rdxPopoverPopup>
+                        <h2 rdxPopoverTitle>Notifications</h2>
+                        <p rdxPopoverDescription>You are all caught up.</p>
+                        <button rdxPopoverClose>Close</button>
                     </div>
-                </ng-template>
+                </div>
             </ng-container>
         `
     })
@@ -63,17 +59,13 @@ export const Step2Trigger: Story = {
                     Notifications
                 </button>
 
-                <ng-template rdxPopoverPortalPresence>
-                    <div rdxPopoverPortal>
-                        <div class="z-50" sideOffset="8" rdxPopoverPositioner>
-                            <div rdxPopoverPopup>
-                                <h2 rdxPopoverTitle>Notifications</h2>
-                                <p rdxPopoverDescription>You are all caught up.</p>
-                                <button rdxPopoverClose>Close</button>
-                            </div>
-                        </div>
+                <div class="z-50" *rdxPopoverPortal sideOffset="8" rdxPopoverPositioner>
+                    <div rdxPopoverPopup>
+                        <h2 rdxPopoverTitle>Notifications</h2>
+                        <p rdxPopoverDescription>You are all caught up.</p>
+                        <button rdxPopoverClose>Close</button>
                     </div>
-                </ng-template>
+                </div>
             </ng-container>
         `
     })
@@ -92,21 +84,15 @@ export const Step3Popup: Story = {
                     Notifications
                 </button>
 
-                <ng-template rdxPopoverPortalPresence>
-                    <div rdxPopoverPortal>
-                        <div class="z-50" sideOffset="8" rdxPopoverPositioner>
-                            <div
-                                class="border-border bg-popover text-popover-foreground w-72 rounded-lg border p-4 shadow-md"
-                                rdxPopoverPopup
-                            >
-                                <h2 class="text-sm font-medium" rdxPopoverTitle>Notifications</h2>
-                                <p class="text-muted-foreground mt-1 text-sm" rdxPopoverDescription>
-                                    You are all caught up.
-                                </p>
-                            </div>
-                        </div>
+                <div class="z-50" *rdxPopoverPortal sideOffset="8" rdxPopoverPositioner>
+                    <div
+                        class="border-border bg-popover text-popover-foreground w-72 rounded-lg border p-4 shadow-md"
+                        rdxPopoverPopup
+                    >
+                        <h2 class="text-sm font-medium" rdxPopoverTitle>Notifications</h2>
+                        <p class="text-muted-foreground mt-1 text-sm" rdxPopoverDescription>You are all caught up.</p>
                     </div>
-                </ng-template>
+                </div>
             </ng-container>
         `
     })
@@ -125,21 +111,20 @@ export const Step4Animated: Story = {
                     Notifications
                 </button>
 
-                <ng-template rdxPopoverPortalPresence>
-                    <div rdxPopoverPortal>
-                        <div class="z-50" sideOffset="8" rdxPopoverPositioner>
-                            <div
-                                class="border-border bg-popover text-popover-foreground data-[open]:animate-popover-popup-in data-[closed]:animate-popover-popup-out w-72 rounded-lg border p-4 shadow-md"
-                                rdxPopoverPopup
-                            >
-                                <h2 class="text-sm font-medium" rdxPopoverTitle>Notifications</h2>
-                                <p class="text-muted-foreground mt-1 text-sm" rdxPopoverDescription>
-                                    You are all caught up.
-                                </p>
-                            </div>
-                        </div>
+                <div
+                    class="data-[open]:animate-popover-in data-[closed]:animate-popover-out z-50"
+                    *rdxPopoverPortal
+                    sideOffset="8"
+                    rdxPopoverPositioner
+                >
+                    <div
+                        class="border-border bg-popover text-popover-foreground data-[open]:animate-popover-popup-in data-[closed]:animate-popover-popup-out w-72 rounded-lg border p-4 shadow-md"
+                        rdxPopoverPopup
+                    >
+                        <h2 class="text-sm font-medium" rdxPopoverTitle>Notifications</h2>
+                        <p class="text-muted-foreground mt-1 text-sm" rdxPopoverDescription>You are all caught up.</p>
                     </div>
-                </ng-template>
+                </div>
             </ng-container>
         `
     })

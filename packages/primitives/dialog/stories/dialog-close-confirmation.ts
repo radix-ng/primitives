@@ -12,48 +12,44 @@ import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
         <div [(open)]="editorOpen" (onOpenChange)="onEditorOpenChange($event)" rdxDialogRoot>
             <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Edit description</button>
 
-            <ng-template rdxDialogPortalPresence>
-                <div [class]="d.portalAnimated" rdxDialogPortal>
-                    <div [class]="d.backdrop" rdxDialogBackdrop></div>
+            <ng-template rdxDialogPortal>
+                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
 
-                    <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-                        <h2 [class]="d.title" rdxDialogTitle>Edit description</h2>
-                        <p [class]="d.description" rdxDialogDescription>
-                            Closing with unsaved changes asks for confirmation.
-                        </p>
+                <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
+                    <h2 [class]="d.title" rdxDialogTitle>Edit description</h2>
+                    <p [class]="d.description" rdxDialogDescription>
+                        Closing with unsaved changes asks for confirmation.
+                    </p>
 
-                        <label [class]="d.field">
-                            Description
-                            <input [(ngModel)]="text" [class]="input" placeholder="Type to create changes" />
-                        </label>
+                    <label [class]="d.field">
+                        Description
+                        <input [(ngModel)]="text" [class]="input" placeholder="Type to create changes" />
+                    </label>
 
-                        <div [class]="d.footer">
-                            <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="requestClose()">Cancel</button>
-                            <button [class]="cn(b.base, b.primary, b.size.sm)" (click)="save()">Save</button>
-                        </div>
-
-                        <button [class]="d.close" (click)="requestClose()" aria-label="Close">
-                            <svg aria-hidden="true" lucideX size="16" />
-                        </button>
+                    <div [class]="d.footer">
+                        <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="requestClose()">Cancel</button>
+                        <button [class]="cn(b.base, b.primary, b.size.sm)" (click)="save()">Save</button>
                     </div>
+
+                    <button [class]="d.close" (click)="requestClose()" aria-label="Close">
+                        <svg aria-hidden="true" lucideX size="16" />
+                    </button>
                 </div>
             </ng-template>
         </div>
 
         <!-- Confirmation dialog, controlled separately. -->
         <div [(open)]="confirmOpen" rdxDialogRoot>
-            <ng-template rdxDialogPortalPresence>
-                <div [class]="d.portalAnimated" rdxDialogPortal>
-                    <div [class]="d.backdrop" rdxDialogBackdrop></div>
-                    <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-                        <h2 [class]="d.title" rdxDialogTitle>Discard changes?</h2>
-                        <p [class]="d.description" rdxDialogDescription>Your edits will be lost.</p>
-                        <div [class]="d.footer">
-                            <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="confirmOpen.set(false)">
-                                Keep editing
-                            </button>
-                            <button [class]="cn(b.base, b.destructive, b.size.sm)" (click)="discard()">Discard</button>
-                        </div>
+            <ng-template rdxDialogPortal>
+                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
+                <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
+                    <h2 [class]="d.title" rdxDialogTitle>Discard changes?</h2>
+                    <p [class]="d.description" rdxDialogDescription>Your edits will be lost.</p>
+                    <div [class]="d.footer">
+                        <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="confirmOpen.set(false)">
+                            Keep editing
+                        </button>
+                        <button [class]="cn(b.base, b.destructive, b.size.sm)" (click)="discard()">Discard</button>
                     </div>
                 </div>
             </ng-template>

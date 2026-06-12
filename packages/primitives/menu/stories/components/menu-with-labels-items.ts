@@ -10,32 +10,30 @@ import { cn, demoButton, demoMenu } from '../../../storybook/styles';
         <ng-container #root="rdxMenuRoot" rdxMenuRoot>
             <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Foods</button>
 
-            @if (root.open()) {
-                <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-                    <div [class]="m.popup" rdxMenuPopup>
-                        @for (group of foodGroups; track $index) {
-                            <div rdxMenuGroup>
-                                @if (group.label) {
-                                    <span [class]="m.groupLabel" rdxMenuGroupLabel>{{ group.label }}</span>
-                                }
-                                @for (food of group.foods; track food.value) {
-                                    <button
-                                        [class]="m.item"
-                                        [disabled]="food.disabled ?? false"
-                                        (onSelect)="handleSelect(food.value)"
-                                        rdxMenuItem
-                                    >
-                                        {{ food.label }}
-                                    </button>
-                                }
-                            </div>
-                            @if ($index < foodGroups.length - 1) {
-                                <div [class]="m.separator" rdxMenuSeparator></div>
+            <div *rdxMenuPortal [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
+                <div [class]="m.popup" rdxMenuPopup>
+                    @for (group of foodGroups; track $index) {
+                        <div rdxMenuGroup>
+                            @if (group.label) {
+                                <span [class]="m.groupLabel" rdxMenuGroupLabel>{{ group.label }}</span>
                             }
+                            @for (food of group.foods; track food.value) {
+                                <button
+                                    [class]="m.item"
+                                    [disabled]="food.disabled ?? false"
+                                    (onSelect)="handleSelect(food.value)"
+                                    rdxMenuItem
+                                >
+                                    {{ food.label }}
+                                </button>
+                            }
+                        </div>
+                        @if ($index < foodGroups.length - 1) {
+                            <div [class]="m.separator" rdxMenuSeparator></div>
                         }
-                    </div>
+                    }
                 </div>
-            }
+            </div>
         </ng-container>
     `
 })

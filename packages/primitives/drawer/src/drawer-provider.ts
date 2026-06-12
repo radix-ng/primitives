@@ -6,6 +6,8 @@ export interface RdxDrawerRegistration {
     id: string;
     /** The drawer popup's measured size (px) along its dismiss axis. */
     height: Signal<number>;
+    /** 0..1 live dismiss progress of this drawer. */
+    swipeProgress: Signal<number>;
 }
 
 /**
@@ -29,6 +31,8 @@ export class RdxDrawerProvider {
 
     /** The frontmost drawer's measured size (px), or `0` when none is open. */
     readonly frontmostHeight = computed(() => this.frontmost()?.height() ?? 0);
+    /** The frontmost drawer's live dismiss progress, or `0` when none is open. */
+    readonly swipeProgress = computed(() => this.frontmost()?.swipeProgress() ?? 0);
 
     /** Register an open drawer; returns a disposer that removes it. */
     register(registration: RdxDrawerRegistration): () => void {

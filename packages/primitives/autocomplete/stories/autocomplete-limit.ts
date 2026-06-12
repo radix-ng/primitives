@@ -11,24 +11,20 @@ import { _importsAutocomplete } from '../index';
                 <input [class]="c.input" rdxAutocompleteInput placeholder="e.g. component" aria-label="Search tags" />
             </div>
 
-            <div rdxAutocompletePortal>
-                <ng-template rdxAutocompletePortalPresence>
-                    <div [class]="c.positioner" rdxAutocompletePositioner>
-                        <div [class]="c.popup" rdxAutocompletePopup>
-                            <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
-                                @for (tag of tags; track tag) {
-                                    <div [class]="c.item" rdxAutocompleteItem>{{ tag }}</div>
-                                }
-                            </div>
-                            <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
-                            @if (hiddenCount(ac.value()); as hidden) {
-                                <div class="text-muted-foreground border-border mt-1 border-t px-2 py-1 text-xs">
-                                    {{ hidden }} more {{ hidden === 1 ? 'result' : 'results' }} not shown
-                                </div>
-                            }
-                        </div>
+            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
+                <div [class]="c.popup" rdxAutocompletePopup>
+                    <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
+                        @for (tag of tags; track tag) {
+                            <div [class]="c.item" rdxAutocompleteItem>{{ tag }}</div>
+                        }
                     </div>
-                </ng-template>
+                    <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
+                    @if (hiddenCount(ac.value()); as hidden) {
+                        <div class="text-muted-foreground border-border mt-1 border-t px-2 py-1 text-xs">
+                            {{ hidden }} more {{ hidden === 1 ? 'result' : 'results' }} not shown
+                        </div>
+                    }
+                </div>
             </div>
         </div>
     `

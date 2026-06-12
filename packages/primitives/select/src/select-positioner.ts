@@ -33,11 +33,11 @@ import { RDX_SELECT_POSITIONER_TOKEN, RdxPositionerImpl } from './select-popup';
         // re-namespace exposed content custom properties
         '[style]': `{
           'boxSizing': 'border-box',
-          '--radix-tooltip-content-transform-origin': 'var(--radix-popper-transform-origin)',
-          '--radix-tooltip-content-available-width': 'var(--radix-popper-available-width)',
-          '--radix-tooltip-content-available-height': 'var(--radix-popper-available-height)',
-          '--radix-tooltip-trigger-width': 'var(--radix-popper-anchor-width)',
-          '--radix-tooltip-trigger-height': 'var(--radix-popper-anchor-height)',
+          '--radix-select-content-transform-origin': 'var(--radix-popper-transform-origin)',
+          '--radix-select-content-available-width': 'var(--radix-popper-available-width)',
+          '--radix-select-content-available-height': 'var(--radix-popper-available-height)',
+          '--radix-select-trigger-width': 'var(--radix-popper-anchor-width)',
+          '--radix-select-trigger-height': 'var(--radix-popper-anchor-height)',
         }`
     }
 })

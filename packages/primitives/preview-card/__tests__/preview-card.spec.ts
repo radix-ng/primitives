@@ -8,7 +8,7 @@ import {
     RdxPreviewCardOpenChange,
     RdxPreviewCardPopup,
     RdxPreviewCardPortal,
-    RdxPreviewCardPortalPresence,
+    RdxPreviewCardPortalMisuseGuard,
     RdxPreviewCardPositioner,
     RdxPreviewCardRoot,
     RdxPreviewCardTrigger,
@@ -21,7 +21,6 @@ import { vi } from 'vitest';
         RdxPreviewCardArrow,
         RdxPreviewCardPopup,
         RdxPreviewCardPortal,
-        RdxPreviewCardPortalPresence,
         RdxPreviewCardPositioner,
         RdxPreviewCardRoot,
         RdxPreviewCardTrigger
@@ -30,16 +29,12 @@ import { vi } from 'vitest';
         <ng-container #root="rdxPreviewCardRoot" [(open)]="open" rdxPreviewCardRoot>
             <a href="#" rdxPreviewCardTrigger>Typography</a>
 
-            <ng-template rdxPreviewCardPortalPresence>
-                <div data-test-preview-card-portal rdxPreviewCardPortal>
-                    <div rdxPreviewCardPositioner>
-                        <div rdxPreviewCardPopup>
-                            <span rdxPreviewCardArrow></span>
-                            Typography preview
-                        </div>
-                    </div>
+            <div *rdxPreviewCardPortal data-test-preview-card-portal rdxPreviewCardPositioner>
+                <div rdxPreviewCardPopup>
+                    <span rdxPreviewCardArrow></span>
+                    Typography preview
                 </div>
-            </ng-template>
+            </div>
         </ng-container>
     `
 })
@@ -51,7 +46,6 @@ class TestHostComponent {
     imports: [
         RdxPreviewCardPopup,
         RdxPreviewCardPortal,
-        RdxPreviewCardPortalPresence,
         RdxPreviewCardPositioner,
         RdxPreviewCardRoot,
         RdxPreviewCardTrigger
@@ -65,13 +59,9 @@ class TestHostComponent {
         >
             <a id="default-trigger" href="#" rdxPreviewCardTrigger>Default</a>
 
-            <ng-template rdxPreviewCardPortalPresence>
-                <div rdxPreviewCardPortal>
-                    <div rdxPreviewCardPositioner>
-                        <div rdxPreviewCardPopup>Preview</div>
-                    </div>
-                </div>
-            </ng-template>
+            <div *rdxPreviewCardPortal rdxPreviewCardPositioner>
+                <div rdxPreviewCardPopup>Preview</div>
+            </div>
         </ng-container>
     `
 })
@@ -126,7 +116,6 @@ class DetachedTriggersHostComponent {
     imports: [
         RdxPreviewCardPopup,
         RdxPreviewCardPortal,
-        RdxPreviewCardPortalPresence,
         RdxPreviewCardPositioner,
         RdxPreviewCardRoot,
         RdxPreviewCardTrigger
@@ -135,13 +124,9 @@ class DetachedTriggersHostComponent {
         <ng-container #root="rdxPreviewCardRoot" (onOpenChangeComplete)="complete.push($event)" rdxPreviewCardRoot>
             <a [delay]="0" href="#" rdxPreviewCardTrigger>Open</a>
 
-            <ng-template rdxPreviewCardPortalPresence>
-                <div rdxPreviewCardPortal>
-                    <div rdxPreviewCardPositioner>
-                        <div rdxPreviewCardPopup>Preview</div>
-                    </div>
-                </div>
-            </ng-template>
+            <div *rdxPreviewCardPortal rdxPreviewCardPositioner>
+                <div rdxPreviewCardPopup>Preview</div>
+            </div>
         </ng-container>
     `
 })
@@ -205,7 +190,6 @@ class PositionerDefaultsHostComponent {}
     imports: [
         RdxPreviewCardPopup,
         RdxPreviewCardPortal,
-        RdxPreviewCardPortalPresence,
         RdxPreviewCardPositioner,
         RdxPreviewCardRoot,
         RdxPreviewCardTrigger
@@ -220,13 +204,9 @@ class PositionerDefaultsHostComponent {}
                         <ng-container #child="rdxPreviewCardRoot" rdxPreviewCardRoot>
                             <a [delay]="0" href="#" rdxPreviewCardTrigger>Child</a>
 
-                            <ng-template rdxPreviewCardPortalPresence>
-                                <div data-test-child-portal rdxPreviewCardPortal>
-                                    <div rdxPreviewCardPositioner>
-                                        <div rdxPreviewCardPopup>Child popup</div>
-                                    </div>
-                                </div>
-                            </ng-template>
+                            <div *rdxPreviewCardPortal data-test-child-portal rdxPreviewCardPositioner>
+                                <div rdxPreviewCardPopup>Child popup</div>
+                            </div>
                         </ng-container>
                     </div>
                 </div>
@@ -538,5 +518,32 @@ describe('PreviewCard', () => {
         expect(controlledFixture.componentInstance.triggerId).toBe('controlled-two');
         expect(controlledFixture.componentInstance.changes[0].reason).toBe('trigger-hover');
         expect(controlledFixture.componentInstance.changes[0].trigger).toBe(triggers[1]);
+    });
+
+    it('throws in dev mode when rdxPreviewCardPortal is used as an attribute instead of structurally', () => {
+        @Component({
+            imports: [
+                RdxPreviewCardPopup,
+                RdxPreviewCardPortal,
+                RdxPreviewCardPortalMisuseGuard,
+                RdxPreviewCardRoot,
+                RdxPreviewCardTrigger
+            ],
+            template: `
+                <ng-container rdxPreviewCardRoot>
+                    <a href="#" rdxPreviewCardTrigger>Open</a>
+
+                    <div rdxPreviewCardPortal>
+                        <div rdxPreviewCardPopup>Oops</div>
+                    </div>
+                </ng-container>
+            `
+        })
+        class MisuseHostComponent {}
+
+        expect(() => {
+            const misuseFixture = TestBed.createComponent(MisuseHostComponent);
+            misuseFixture.detectChanges();
+        }).toThrow(/structural directive/);
     });
 });

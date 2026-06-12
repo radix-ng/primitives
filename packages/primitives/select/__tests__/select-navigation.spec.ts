@@ -16,22 +16,18 @@ interface Fruit {
             <button rdxSelectTrigger>
                 <span rdxSelectValue placeholder="Select…"></span>
             </button>
-            <div rdxSelectPortal>
-                <ng-template rdxSelectPortalPresence>
-                    <div rdxSelectPopup>
-                        <div rdxSelectPositioner>
-                            <div rdxSelectPositionerContent>
-                                <div rdxSelectList>
-                                    @for (fruit of fruits; track fruit.value) {
-                                        <div [value]="fruit.value" [disabled]="fruit.disabled" rdxSelectItem>
-                                            <span rdxSelectItemText>{{ fruit.label }}</span>
-                                        </div>
-                                    }
+            <div *rdxSelectPortal rdxSelectPopup>
+                <div rdxSelectPositioner>
+                    <div rdxSelectPositionerContent>
+                        <div rdxSelectList>
+                            @for (fruit of fruits; track fruit.value) {
+                                <div [value]="fruit.value" [disabled]="fruit.disabled" rdxSelectItem>
+                                    <span rdxSelectItemText>{{ fruit.label }}</span>
                                 </div>
-                            </div>
+                            }
                         </div>
                     </div>
-                </ng-template>
+                </div>
             </div>
         </div>
     `

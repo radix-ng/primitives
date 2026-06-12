@@ -16,36 +16,34 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
         <ng-container #root="rdxMenuRoot" rdxMenuRoot>
             <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Settings</button>
 
-            @if (root.open()) {
-                <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-                    <div
-                        [class]="
-                            cn(
-                                m.popup,
-                                '[height:var(--popup-height)] [width:var(--popup-width)] overflow-hidden transition-[width,height] duration-200 ease-out'
-                            )
-                        "
-                        rdxMenuPopup
-                    >
-                        <div rdxMenuViewport>
-                            <button [class]="m.item" [closeOnClick]="false" (onSelect)="toggle()" rdxMenuItem>
-                                {{ expanded() ? 'Hide advanced' : 'Show advanced' }}
-                            </button>
-                            <div [class]="m.separator" rdxMenuSeparator></div>
-                            <button [class]="m.item" rdxMenuItem>Profile</button>
-                            <button [class]="m.item" rdxMenuItem>Billing</button>
+            <div *rdxMenuPortal [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
+                <div
+                    [class]="
+                        cn(
+                            m.popup,
+                            '[height:var(--popup-height)] [width:var(--popup-width)] overflow-hidden transition-[width,height] duration-200 ease-out'
+                        )
+                    "
+                    rdxMenuPopup
+                >
+                    <div rdxMenuViewport>
+                        <button [class]="m.item" [closeOnClick]="false" (onSelect)="toggle()" rdxMenuItem>
+                            {{ expanded() ? 'Hide advanced' : 'Show advanced' }}
+                        </button>
+                        <div [class]="m.separator" rdxMenuSeparator></div>
+                        <button [class]="m.item" rdxMenuItem>Profile</button>
+                        <button [class]="m.item" rdxMenuItem>Billing</button>
 
-                            @if (expanded()) {
-                                <div [class]="m.separator" rdxMenuSeparator></div>
-                                <button [class]="m.item" rdxMenuItem>Keyboard shortcuts</button>
-                                <button [class]="m.item" rdxMenuItem>Developer tools</button>
-                                <button [class]="m.item" rdxMenuItem>Feature flags</button>
-                                <button [class]="m.item" rdxMenuItem>API tokens</button>
-                            }
-                        </div>
+                        @if (expanded()) {
+                            <div [class]="m.separator" rdxMenuSeparator></div>
+                            <button [class]="m.item" rdxMenuItem>Keyboard shortcuts</button>
+                            <button [class]="m.item" rdxMenuItem>Developer tools</button>
+                            <button [class]="m.item" rdxMenuItem>Feature flags</button>
+                            <button [class]="m.item" rdxMenuItem>API tokens</button>
+                        }
                     </div>
                 </div>
-            }
+            </div>
         </ng-container>
     `
 })

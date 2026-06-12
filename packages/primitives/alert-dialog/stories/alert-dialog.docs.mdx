@@ -35,7 +35,6 @@ import {
     RdxAlertDialogDescription,
     RdxAlertDialogPopup,
     RdxAlertDialogPortal,
-    RdxAlertDialogPortalPresence,
     RdxAlertDialogRoot,
     RdxAlertDialogTitle,
     RdxAlertDialogTrigger
@@ -54,15 +53,13 @@ import { RdxAlertDialogModule } from '@radix-ng/primitives/alert-dialog';
 <div rdxAlertDialogRoot>
     <button rdxAlertDialogTrigger>Delete</button>
 
-    <ng-template rdxAlertDialogPortalPresence>
-        <div rdxAlertDialogPortal>
-            <div rdxAlertDialogBackdrop></div>
-            <div rdxAlertDialogPopup>
-                <h2 rdxAlertDialogTitle>Are you sure?</h2>
-                <p rdxAlertDialogDescription>This action cannot be undone.</p>
-                <button rdxAlertDialogClose>Cancel</button>
-                <button rdxAlertDialogClose>Confirm</button>
-            </div>
+    <ng-template rdxAlertDialogPortal>
+        <div rdxAlertDialogBackdrop></div>
+        <div rdxAlertDialogPopup>
+            <h2 rdxAlertDialogTitle>Are you sure?</h2>
+            <p rdxAlertDialogDescription>This action cannot be undone.</p>
+            <button rdxAlertDialogClose>Cancel</button>
+            <button rdxAlertDialogClose>Confirm</button>
         </div>
     </ng-template>
 </div>

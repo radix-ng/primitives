@@ -16,24 +16,20 @@ interface Group {
                 <input [class]="c.input" rdxAutocompleteInput placeholder="e.g. fix" aria-label="Search tags" />
             </div>
 
-            <div rdxAutocompletePortal>
-                <ng-template rdxAutocompletePortalPresence>
-                    <div [class]="c.positioner" rdxAutocompletePositioner>
-                        <div [class]="c.popup" rdxAutocompletePopup>
-                            <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
-                                @for (group of groups; track group.label) {
-                                    <div rdxAutocompleteGroup>
-                                        <div [class]="c.groupLabel" rdxAutocompleteGroupLabel>{{ group.label }}</div>
-                                        @for (item of group.items; track item) {
-                                            <div [class]="c.item" rdxAutocompleteItem>{{ item }}</div>
-                                        }
-                                    </div>
+            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
+                <div [class]="c.popup" rdxAutocompletePopup>
+                    <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
+                        @for (group of groups; track group.label) {
+                            <div rdxAutocompleteGroup>
+                                <div [class]="c.groupLabel" rdxAutocompleteGroupLabel>{{ group.label }}</div>
+                                @for (item of group.items; track item) {
+                                    <div [class]="c.item" rdxAutocompleteItem>{{ item }}</div>
                                 }
                             </div>
-                            <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
-                        </div>
+                        }
                     </div>
-                </ng-template>
+                    <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
+                </div>
             </div>
         </div>
     `

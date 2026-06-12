@@ -23,19 +23,15 @@ import { AutocompleteFilter, AutocompleteValueChangeDetails, RdxAutocompleteRoot
             <button rdxAutocompleteTrigger>open</button>
             <button rdxAutocompleteClear>clear</button>
 
-            <div rdxAutocompletePortal>
-                <ng-template rdxAutocompletePortalPresence>
-                    <div rdxAutocompletePositioner>
-                        <div rdxAutocompletePopup>
-                            <div rdxAutocompleteList aria-label="Fruits">
-                                @for (fruit of fruits(); track fruit) {
-                                    <div rdxAutocompleteItem>{{ fruit }}</div>
-                                }
-                            </div>
-                            <div rdxAutocompleteEmpty>No results</div>
-                        </div>
+            <div *rdxAutocompletePortal rdxAutocompletePositioner>
+                <div rdxAutocompletePopup>
+                    <div rdxAutocompleteList aria-label="Fruits">
+                        @for (fruit of fruits(); track fruit) {
+                            <div rdxAutocompleteItem>{{ fruit }}</div>
+                        }
                     </div>
-                </ng-template>
+                    <div rdxAutocompleteEmpty>No results</div>
+                </div>
             </div>
         </div>
     `
@@ -234,5 +230,27 @@ describe('Autocomplete', () => {
             await settle();
             expect(await axe(fixture.nativeElement)).toHaveNoViolations();
         });
+    });
+});
+
+describe('Autocomplete structural portal', () => {
+    it('throws in dev mode when rdxAutocompletePortal is used as an attribute instead of structurally', () => {
+        @Component({
+            imports: [_importsAutocomplete],
+            template: `
+                <div rdxAutocompleteRoot>
+                    <input rdxAutocompleteInput aria-label="Search" />
+                    <div rdxAutocompletePortal>
+                        <div rdxAutocompletePopup>Oops</div>
+                    </div>
+                </div>
+            `
+        })
+        class MisuseHost {}
+
+        expect(() => {
+            const fixture = TestBed.createComponent(MisuseHost);
+            fixture.detectChanges();
+        }).toThrow(/structural directive/);
     });
 });

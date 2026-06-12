@@ -60,19 +60,15 @@ const TAGS = [
                 />
             </div>
 
-            <div rdxAutocompletePortal>
-                <ng-template rdxAutocompletePortalPresence>
-                    <div [class]="c.positioner" rdxAutocompletePositioner>
-                        <div [class]="c.popup" rdxAutocompletePopup>
-                            <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
-                                @for (tag of tags; track tag) {
-                                    <div [class]="c.item" rdxAutocompleteItem>{{ tag }}</div>
-                                }
-                            </div>
-                            <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
-                        </div>
+            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
+                <div [class]="c.popup" rdxAutocompletePopup>
+                    <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
+                        @for (tag of tags; track tag) {
+                            <div [class]="c.item" rdxAutocompleteItem>{{ tag }}</div>
+                        }
                     </div>
-                </ng-template>
+                    <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
+                </div>
             </div>
         </div>
     `

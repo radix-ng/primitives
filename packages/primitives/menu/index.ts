@@ -8,7 +8,7 @@ import { RdxMenuGroupLabel } from './src/menu-group-label';
 import { RdxMenuItem } from './src/menu-item';
 import { RdxMenuLinkItem } from './src/menu-link-item';
 import { RdxMenuPopup } from './src/menu-popup';
-import { RdxMenuPortal } from './src/menu-portal';
+import { RdxMenuPortal, RdxMenuPortalMisuseGuard } from './src/menu-portal';
 import { RdxMenuPositioner } from './src/menu-positioner';
 import { RdxMenuRadioGroup } from './src/menu-radio-group';
 import { RdxMenuRadioItem } from './src/menu-radio-item';
@@ -45,6 +45,7 @@ const menuImports = [
     RdxMenuTrigger,
     RdxMenuSubTrigger,
     RdxMenuPortal,
+    RdxMenuPortalMisuseGuard,
     RdxMenuPositioner,
     RdxMenuPopup,
     RdxMenuViewport,

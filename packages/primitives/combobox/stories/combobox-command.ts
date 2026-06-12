@@ -22,24 +22,20 @@ import { _importsCombobox } from '../index';
                 <input [class]="c.input" rdxComboboxInput placeholder="Run a command…" aria-label="Command" />
             </div>
 
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div [class]="c.positioner" rdxComboboxPositioner>
-                        <div [class]="c.popup" rdxComboboxPopup>
-                            <div [class]="c.list" rdxComboboxList aria-label="Commands">
-                                @for (command of commands; track command) {
-                                    <div [class]="c.item" [value]="command" rdxComboboxItem>
-                                        <span [class]="c.itemIndicator">
-                                            <svg lucideArrowRight size="14"></svg>
-                                        </span>
-                                        {{ command }}
-                                    </div>
-                                }
+            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
+                <div [class]="c.popup" rdxComboboxPopup>
+                    <div [class]="c.list" rdxComboboxList aria-label="Commands">
+                        @for (command of commands; track command) {
+                            <div [class]="c.item" [value]="command" rdxComboboxItem>
+                                <span [class]="c.itemIndicator">
+                                    <svg lucideArrowRight size="14"></svg>
+                                </span>
+                                {{ command }}
                             </div>
-                            <div [class]="c.empty" rdxComboboxEmpty>No commands.</div>
-                        </div>
+                        }
                     </div>
-                </ng-template>
+                    <div [class]="c.empty" rdxComboboxEmpty>No commands.</div>
+                </div>
             </div>
 
             <p class="text-muted-foreground text-sm">

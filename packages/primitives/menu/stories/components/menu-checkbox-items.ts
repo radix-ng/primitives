@@ -10,33 +10,31 @@ import { cn, demoButton, demoMenu } from '../../../storybook/styles';
         <ng-container #root="rdxMenuRoot" rdxMenuRoot>
             <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Options</button>
 
-            @if (root.open()) {
-                <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-                    <div [class]="m.popup" rdxMenuPopup>
+            <div *rdxMenuPortal [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
+                <div [class]="m.popup" rdxMenuPopup>
+                    <label
+                        [class]="m.selectableItem"
+                        [checked]="checkedState()"
+                        (onCheckedChange)="handleSelectAll()"
+                        rdxMenuCheckboxItem
+                    >
+                        <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>✓</span>
+                        Select All
+                    </label>
+                    <div [class]="m.separator" rdxMenuSeparator></div>
+                    @for (item of options(); track item) {
                         <label
                             [class]="m.selectableItem"
-                            [checked]="checkedState()"
-                            (onCheckedChange)="handleSelectAll()"
+                            [checked]="selectedItems().includes(item)"
+                            (onCheckedChange)="handleSelection(item)"
                             rdxMenuCheckboxItem
                         >
                             <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>✓</span>
-                            Select All
+                            {{ item }}
                         </label>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        @for (item of options(); track item) {
-                            <label
-                                [class]="m.selectableItem"
-                                [checked]="selectedItems().includes(item)"
-                                (onCheckedChange)="handleSelection(item)"
-                                rdxMenuCheckboxItem
-                            >
-                                <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>✓</span>
-                                {{ item }}
-                            </label>
-                        }
-                    </div>
+                    }
                 </div>
-            }
+            </div>
         </ng-container>
     `
 })

@@ -33,15 +33,18 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 }
             </ul>
 
-            <ng-template rdxNavigationMenuPortalPresence>
-                <div [class]="m.portalAnimated" rdxNavigationMenuPortal>
-                    <div [class]="m.positioner" side="right" sideOffset="8" align="start" rdxNavigationMenuPositioner>
-                        <div [class]="m.popup" rdxNavigationMenuPopup>
-                            <div [class]="m.viewport" rdxNavigationMenuViewport></div>
-                        </div>
-                    </div>
+            <div
+                *rdxNavigationMenuPortal
+                [class]="cn(m.positioner, m.positionerAnimated)"
+                side="right"
+                sideOffset="8"
+                align="start"
+                rdxNavigationMenuPositioner
+            >
+                <div [class]="m.popup" rdxNavigationMenuPopup>
+                    <div [class]="m.viewport" rdxNavigationMenuViewport></div>
                 </div>
-            </ng-template>
+            </div>
         </nav>
     `
 })

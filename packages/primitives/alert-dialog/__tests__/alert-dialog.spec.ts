@@ -8,7 +8,7 @@ import {
     RdxAlertDialogDescription,
     RdxAlertDialogPopup,
     RdxAlertDialogPortal,
-    RdxAlertDialogPortalPresence,
+    RdxAlertDialogPortalMisuseGuard,
     RdxAlertDialogRoot,
     RdxAlertDialogTitle,
     RdxAlertDialogTrigger
@@ -20,7 +20,6 @@ import { axe } from 'jest-axe';
         RdxAlertDialogRoot,
         RdxAlertDialogTrigger,
         RdxAlertDialogPortal,
-        RdxAlertDialogPortalPresence,
         RdxAlertDialogBackdrop,
         RdxAlertDialogPopup,
         RdxAlertDialogTitle,
@@ -31,14 +30,12 @@ import { axe } from 'jest-axe';
         <div [(open)]="open" (onOpenChange)="changes.push($event.reason)" rdxAlertDialogRoot>
             <button rdxAlertDialogTrigger>Delete</button>
 
-            <ng-template rdxAlertDialogPortalPresence>
-                <div rdxAlertDialogPortal>
-                    <div rdxAlertDialogBackdrop></div>
-                    <div rdxAlertDialogPopup>
-                        <h2 rdxAlertDialogTitle>Are you sure?</h2>
-                        <p rdxAlertDialogDescription>This cannot be undone.</p>
-                        <button rdxAlertDialogClose>Cancel</button>
-                    </div>
+            <ng-template rdxAlertDialogPortal>
+                <div rdxAlertDialogBackdrop></div>
+                <div rdxAlertDialogPopup>
+                    <h2 rdxAlertDialogTitle>Are you sure?</h2>
+                    <p rdxAlertDialogDescription>This cannot be undone.</p>
+                    <button rdxAlertDialogClose>Cancel</button>
                 </div>
             </ng-template>
         </div>
@@ -50,20 +47,12 @@ class TestHostComponent {
 }
 
 @Component({
-    imports: [
-        RdxAlertDialogTrigger,
-        RdxAlertDialogRoot,
-        RdxAlertDialogPortal,
-        RdxAlertDialogPortalPresence,
-        RdxAlertDialogPopup
-    ],
+    imports: [RdxAlertDialogTrigger, RdxAlertDialogRoot, RdxAlertDialogPortal, RdxAlertDialogPopup],
     template: `
         <button id="detached" [handle]="handle" rdxAlertDialogTrigger>Open</button>
         <div [handle]="handle" rdxAlertDialogRoot>
-            <ng-template rdxAlertDialogPortalPresence>
-                <div rdxAlertDialogPortal>
-                    <div rdxAlertDialogPopup>Popup</div>
-                </div>
+            <ng-template rdxAlertDialogPortal>
+                <div rdxAlertDialogPopup>Popup</div>
             </ng-template>
         </div>
     `
@@ -190,5 +179,34 @@ describe('AlertDialog', () => {
         await fixture.whenStable();
 
         expect(await axe(popup()!)).toHaveNoViolations();
+    });
+});
+
+describe('AlertDialog structural portal', () => {
+    it('throws in dev mode when rdxAlertDialogPortal is used as an attribute instead of structurally', () => {
+        @Component({
+            imports: [
+                RdxAlertDialogRoot,
+                RdxAlertDialogTrigger,
+                RdxAlertDialogPortal,
+                RdxAlertDialogPortalMisuseGuard,
+                RdxAlertDialogPopup
+            ],
+            template: `
+                <div rdxAlertDialogRoot>
+                    <button rdxAlertDialogTrigger>Open</button>
+
+                    <div rdxAlertDialogPortal>
+                        <div rdxAlertDialogPopup>Oops</div>
+                    </div>
+                </div>
+            `
+        })
+        class MisuseHostComponent {}
+
+        expect(() => {
+            const misuseFixture = TestBed.createComponent(MisuseHostComponent);
+            misuseFixture.detectChanges();
+        }).toThrow(/structural directive/);
     });
 });

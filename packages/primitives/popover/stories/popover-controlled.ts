@@ -18,20 +18,18 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
             <ng-container [(open)]="open" rdxPopoverRoot>
                 <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Toggle popover</button>
 
-                <ng-template rdxPopoverPortalPresence>
-                    <div rdxPopoverPortal>
-                        <div [class]="p.backdrop" rdxPopoverBackdrop></div>
-                        <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                            <div [class]="p.popup" rdxPopoverPopup>
-                                <span [class]="p.arrow" rdxPopoverArrow></span>
-                                <h2 [class]="p.title" rdxPopoverTitle>Controlled state</h2>
-                                <p [class]="p.description" rdxPopoverDescription>
-                                    The root uses Angular two-way binding with a signal.
-                                </p>
-                                <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                                    <svg aria-hidden="true" lucideX size="14" />
-                                </button>
-                            </div>
+                <ng-template rdxPopoverPortal>
+                    <div [class]="p.backdrop" rdxPopoverBackdrop></div>
+                    <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
+                        <div [class]="p.popup" rdxPopoverPopup>
+                            <span [class]="p.arrow" rdxPopoverArrow></span>
+                            <h2 [class]="p.title" rdxPopoverTitle>Controlled state</h2>
+                            <p [class]="p.description" rdxPopoverDescription>
+                                The root uses Angular two-way binding with a signal.
+                            </p>
+                            <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                                <svg aria-hidden="true" lucideX size="14" />
+                            </button>
                         </div>
                     </div>
                 </ng-template>

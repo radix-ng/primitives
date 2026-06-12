@@ -26,24 +26,20 @@ import { _importsCombobox } from '../index';
                 </button>
             </div>
 
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div [class]="c.positioner" rdxComboboxPositioner>
-                        <div [class]="c.popup" rdxComboboxPopup>
-                            <div [class]="c.list" rdxComboboxList aria-label="Fruits">
-                                @for (fruit of fruits; track fruit) {
-                                    <div [class]="c.item" [value]="fruit" rdxComboboxItem>
-                                        <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
-                                            <svg lucideCheck size="14"></svg>
-                                        </span>
-                                        {{ fruit }}
-                                    </div>
-                                }
+            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
+                <div [class]="c.popup" rdxComboboxPopup>
+                    <div [class]="c.list" rdxComboboxList aria-label="Fruits">
+                        @for (fruit of fruits; track fruit) {
+                            <div [class]="c.item" [value]="fruit" rdxComboboxItem>
+                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                    <svg lucideCheck size="14"></svg>
+                                </span>
+                                {{ fruit }}
                             </div>
-                            <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
-                        </div>
+                        }
                     </div>
-                </ng-template>
+                    <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
+                </div>
             </div>
         </div>
     `
@@ -95,7 +91,6 @@ import {
   RdxComboboxList,
   RdxComboboxPopup,
   RdxComboboxPortal,
-  RdxComboboxPortalPresence,
   RdxComboboxPositioner,
   RdxComboboxRoot,
   RdxComboboxStatus,
@@ -115,23 +110,19 @@ place (non-matching items are hidden, not destroyed).
   <button rdxComboboxClear><!-- clear icon --></button>
   <button rdxComboboxTrigger><!-- chevron icon --></button>
 
-  <div rdxComboboxPortal>
-    <ng-template rdxComboboxPortalPresence>
-      <div rdxComboboxPositioner>
-        <div rdxComboboxPopup>
-          <div rdxComboboxList>
-            <div rdxComboboxGroup>
-              <div rdxComboboxGroupLabel>Group</div>
-              <div value="apple" rdxComboboxItem>
-                <span rdxComboboxItemIndicator><!-- check icon --></span>
-                Apple
-              </div>
-            </div>
+  <div *rdxComboboxPortal rdxComboboxPositioner>
+    <div rdxComboboxPopup>
+      <div rdxComboboxList>
+        <div rdxComboboxGroup>
+          <div rdxComboboxGroupLabel>Group</div>
+          <div value="apple" rdxComboboxItem>
+            <span rdxComboboxItemIndicator><!-- check icon --></span>
+            Apple
           </div>
-          <div rdxComboboxEmpty>No results.</div>
         </div>
       </div>
-    </ng-template>
+      <div rdxComboboxEmpty>No results.</div>
+    </div>
   </div>
 </div>
 ```
@@ -176,24 +167,20 @@ import { _importsCombobox } from '../index';
                 </button>
             </div>
 
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div [class]="c.positioner" rdxComboboxPositioner>
-                        <div [class]="c.popup" rdxComboboxPopup>
-                            <div [class]="c.list" rdxComboboxList aria-label="Fruits">
-                                @for (fruit of fruits; track fruit) {
-                                    <div [class]="c.item" [value]="fruit" rdxComboboxItem>
-                                        <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
-                                            <svg lucideCheck size="14"></svg>
-                                        </span>
-                                        {{ fruit }}
-                                    </div>
-                                }
+            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
+                <div [class]="c.popup" rdxComboboxPopup>
+                    <div [class]="c.list" rdxComboboxList aria-label="Fruits">
+                        @for (fruit of fruits; track fruit) {
+                            <div [class]="c.item" [value]="fruit" rdxComboboxItem>
+                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                    <svg lucideCheck size="14"></svg>
+                                </span>
+                                {{ fruit }}
                             </div>
-                            <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
-                        </div>
+                        }
                     </div>
-                </ng-template>
+                    <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
+                </div>
             </div>
         </div>
     `
@@ -227,23 +214,19 @@ import { _importsCombobox } from '../index';
                 </button>
             </div>
 
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div [class]="c.positioner" rdxComboboxPositioner>
-                        <div [class]="c.popup" rdxComboboxPopup>
-                            <div [class]="c.list" rdxComboboxList aria-label="Fruits">
-                                @for (fruit of fruits; track fruit) {
-                                    <div [class]="c.item" [value]="fruit" rdxComboboxItem>
-                                        <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
-                                            <svg lucideCheck size="14"></svg>
-                                        </span>
-                                        {{ fruit }}
-                                    </div>
-                                }
+            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
+                <div [class]="c.popup" rdxComboboxPopup>
+                    <div [class]="c.list" rdxComboboxList aria-label="Fruits">
+                        @for (fruit of fruits; track fruit) {
+                            <div [class]="c.item" [value]="fruit" rdxComboboxItem>
+                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                    <svg lucideCheck size="14"></svg>
+                                </span>
+                                {{ fruit }}
                             </div>
-                        </div>
+                        }
                     </div>
-                </ng-template>
+                </div>
             </div>
         </div>
     `
@@ -280,38 +263,34 @@ import { _importsCombobox } from '../index';
                 </button>
             </div>
 
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div [class]="c.positioner" rdxComboboxPositioner>
-                        <div [class]="c.popup" rdxComboboxPopup>
-                            <div [class]="c.list" rdxComboboxList aria-label="Produce">
-                                <div rdxComboboxGroup>
-                                    <div [class]="c.groupLabel" rdxComboboxGroupLabel>Fruits</div>
-                                    @for (fruit of fruits; track fruit) {
-                                        <div [class]="c.item" [value]="fruit" rdxComboboxItem>
-                                            <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
-                                                <svg lucideCheck size="14"></svg>
-                                            </span>
-                                            {{ fruit }}
-                                        </div>
-                                    }
+            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
+                <div [class]="c.popup" rdxComboboxPopup>
+                    <div [class]="c.list" rdxComboboxList aria-label="Produce">
+                        <div rdxComboboxGroup>
+                            <div [class]="c.groupLabel" rdxComboboxGroupLabel>Fruits</div>
+                            @for (fruit of fruits; track fruit) {
+                                <div [class]="c.item" [value]="fruit" rdxComboboxItem>
+                                    <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                        <svg lucideCheck size="14"></svg>
+                                    </span>
+                                    {{ fruit }}
                                 </div>
-                                <div rdxComboboxGroup>
-                                    <div [class]="c.groupLabel" rdxComboboxGroupLabel>Vegetables</div>
-                                    @for (vegetable of vegetables; track vegetable) {
-                                        <div [class]="c.item" [value]="vegetable" rdxComboboxItem>
-                                            <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
-                                                <svg lucideCheck size="14"></svg>
-                                            </span>
-                                            {{ vegetable }}
-                                        </div>
-                                    }
+                            }
+                        </div>
+                        <div rdxComboboxGroup>
+                            <div [class]="c.groupLabel" rdxComboboxGroupLabel>Vegetables</div>
+                            @for (vegetable of vegetables; track vegetable) {
+                                <div [class]="c.item" [value]="vegetable" rdxComboboxItem>
+                                    <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                        <svg lucideCheck size="14"></svg>
+                                    </span>
+                                    {{ vegetable }}
                                 </div>
-                            </div>
-                            <div [class]="c.empty" rdxComboboxEmpty>No produce found.</div>
+                            }
                         </div>
                     </div>
-                </ng-template>
+                    <div [class]="c.empty" rdxComboboxEmpty>No produce found.</div>
+                </div>
             </div>
         </div>
     `
@@ -364,24 +343,20 @@ import { _importsCombobox } from '../index';
                 </button>
             </div>
 
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div [class]="c.positioner" rdxComboboxPositioner>
-                        <div [class]="c.popup" rdxComboboxPopup>
-                            <div [class]="c.list" rdxComboboxList aria-label="Fruits">
-                                @for (fruit of fruits; track fruit) {
-                                    <div [class]="c.item" [value]="fruit" rdxComboboxItem>
-                                        <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
-                                            <svg lucideCheck size="14"></svg>
-                                        </span>
-                                        {{ fruit }}
-                                    </div>
-                                }
+            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
+                <div [class]="c.popup" rdxComboboxPopup>
+                    <div [class]="c.list" rdxComboboxList aria-label="Fruits">
+                        @for (fruit of fruits; track fruit) {
+                            <div [class]="c.item" [value]="fruit" rdxComboboxItem>
+                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                    <svg lucideCheck size="14"></svg>
+                                </span>
+                                {{ fruit }}
                             </div>
-                            <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
-                        </div>
+                        }
                     </div>
-                </ng-template>
+                    <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
+                </div>
             </div>
         </div>
     `
@@ -424,33 +399,29 @@ const ALL = ['Angular', 'Astro', 'Ember', 'Lit', 'Preact', 'Qwik', 'React', 'Sol
                 </button>
             </div>
 
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div [class]="c.positioner" rdxComboboxPositioner>
-                        <div [class]="c.popup" rdxComboboxPopup>
-                            <div class="text-muted-foreground px-2 py-1 text-xs" rdxComboboxStatus>
-                                @if (loading()) {
-                                    Loading…
-                                } @else {
-                                    {{ results().length }} results
-                                }
-                            </div>
-                            <div [class]="c.list" rdxComboboxList aria-label="Frameworks">
-                                @for (item of results(); track item) {
-                                    <div [class]="c.item" [value]="item" rdxComboboxItem>
-                                        <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
-                                            <svg lucideCheck size="14"></svg>
-                                        </span>
-                                        {{ item }}
-                                    </div>
-                                }
-                            </div>
-                            @if (!loading() && results().length === 0) {
-                                <div [class]="c.empty" rdxComboboxEmpty>Nothing found.</div>
-                            }
-                        </div>
+            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
+                <div [class]="c.popup" rdxComboboxPopup>
+                    <div class="text-muted-foreground px-2 py-1 text-xs" rdxComboboxStatus>
+                        @if (loading()) {
+                            Loading…
+                        } @else {
+                            {{ results().length }} results
+                        }
                     </div>
-                </ng-template>
+                    <div [class]="c.list" rdxComboboxList aria-label="Frameworks">
+                        @for (item of results(); track item) {
+                            <div [class]="c.item" [value]="item" rdxComboboxItem>
+                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                    <svg lucideCheck size="14"></svg>
+                                </span>
+                                {{ item }}
+                            </div>
+                        }
+                    </div>
+                    @if (!loading() && results().length === 0) {
+                        <div [class]="c.empty" rdxComboboxEmpty>Nothing found.</div>
+                    }
+                </div>
             </div>
         </div>
     `
@@ -518,33 +489,29 @@ const ALL = ['Angular', 'Astro', 'Ember', 'Lit', 'Preact', 'Qwik', 'React', 'Sol
                 </button>
             </div>
 
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div [class]="c.positioner" rdxComboboxPositioner>
-                        <div [class]="c.popup" rdxComboboxPopup>
-                            <div class="text-muted-foreground px-2 py-1 text-xs" rdxComboboxStatus>
-                                @if (loading()) {
-                                    Loading…
-                                } @else {
-                                    {{ results().length }} results
-                                }
-                            </div>
-                            <div [class]="c.list" rdxComboboxList aria-label="Frameworks">
-                                @for (item of results(); track item) {
-                                    <div [class]="c.item" [value]="item" rdxComboboxItem>
-                                        <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
-                                            <svg lucideCheck size="14"></svg>
-                                        </span>
-                                        {{ item }}
-                                    </div>
-                                }
-                            </div>
-                            @if (!loading() && results().length === 0) {
-                                <div [class]="c.empty" rdxComboboxEmpty>Nothing found.</div>
-                            }
-                        </div>
+            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
+                <div [class]="c.popup" rdxComboboxPopup>
+                    <div class="text-muted-foreground px-2 py-1 text-xs" rdxComboboxStatus>
+                        @if (loading()) {
+                            Loading…
+                        } @else {
+                            {{ results().length }} results
+                        }
                     </div>
-                </ng-template>
+                    <div [class]="c.list" rdxComboboxList aria-label="Frameworks">
+                        @for (item of results(); track item) {
+                            <div [class]="c.item" [value]="item" rdxComboboxItem>
+                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                    <svg lucideCheck size="14"></svg>
+                                </span>
+                                {{ item }}
+                            </div>
+                        }
+                    </div>
+                    @if (!loading() && results().length === 0) {
+                        <div [class]="c.empty" rdxComboboxEmpty>Nothing found.</div>
+                    }
+                </div>
             </div>
         </div>
     `
@@ -627,58 +594,52 @@ const CREATE = '__rdx_create__';
                 </button>
             </div>
 
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div [class]="c.positioner" rdxComboboxPositioner>
-                        <div [class]="c.popup" rdxComboboxPopup>
-                            <div [class]="c.list" rdxComboboxList aria-label="Labels">
-                                @for (label of options(); track label) {
-                                    <div [class]="c.item" [value]="label" rdxComboboxItem>
-                                        <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
-                                            <svg lucideCheck size="14"></svg>
-                                        </span>
-                                        {{ label }}
-                                    </div>
-                                }
-                                @if (showCreate()) {
-                                    <div [class]="c.item" [value]="CREATE" [textValue]="query()" rdxComboboxItem>
-                                        <span [class]="c.itemIndicator">
-                                            <svg lucidePlus size="14"></svg>
-                                        </span>
-                                        Create "{{ query().trim() }}"
-                                    </div>
-                                }
+            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
+                <div [class]="c.popup" rdxComboboxPopup>
+                    <div [class]="c.list" rdxComboboxList aria-label="Labels">
+                        @for (label of options(); track label) {
+                            <div [class]="c.item" [value]="label" rdxComboboxItem>
+                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                    <svg lucideCheck size="14"></svg>
+                                </span>
+                                {{ label }}
                             </div>
-                            <div [class]="c.empty" rdxComboboxEmpty>No labels found.</div>
-                        </div>
+                        }
+                        @if (showCreate()) {
+                            <div [class]="c.item" [value]="CREATE" [textValue]="query()" rdxComboboxItem>
+                                <span [class]="c.itemIndicator">
+                                    <svg lucidePlus size="14"></svg>
+                                </span>
+                                Create "{{ query().trim() }}"
+                            </div>
+                        }
                     </div>
-                </ng-template>
+                    <div [class]="c.empty" rdxComboboxEmpty>No labels found.</div>
+                </div>
             </div>
         </div>
 
         <div [(open)]="dialogOpen" rdxDialogRoot>
-            <ng-template rdxDialogPortalPresence>
-                <div [class]="d.portalAnimated" rdxDialogPortal>
-                    <div [class]="d.backdrop" rdxDialogBackdrop></div>
-                    <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-                        <h2 [class]="d.title" rdxDialogTitle>Create new label</h2>
-                        <p [class]="d.description" rdxDialogDescription>Add a new label to select.</p>
-                        <form (submit)="confirmCreate($event)">
-                            <input
-                                [class]="dialogInput"
-                                [value]="newLabel()"
-                                (input)="newLabel.set($any($event.target).value)"
-                                placeholder="Label name"
-                                aria-label="Label name"
-                            />
-                            <div [class]="d.footer">
-                                <button [class]="cn(b.base, b.outline, b.size.sm)" type="button" rdxDialogClose>
-                                    Cancel
-                                </button>
-                                <button [class]="cn(b.base, b.primary, b.size.sm)" type="submit">Create</button>
-                            </div>
-                        </form>
-                    </div>
+            <ng-template rdxDialogPortal>
+                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
+                <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
+                    <h2 [class]="d.title" rdxDialogTitle>Create new label</h2>
+                    <p [class]="d.description" rdxDialogDescription>Add a new label to select.</p>
+                    <form (submit)="confirmCreate($event)">
+                        <input
+                            [class]="dialogInput"
+                            [value]="newLabel()"
+                            (input)="newLabel.set($any($event.target).value)"
+                            placeholder="Label name"
+                            aria-label="Label name"
+                        />
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.outline, b.size.sm)" type="button" rdxDialogClose>
+                                Cancel
+                            </button>
+                            <button [class]="cn(b.base, b.primary, b.size.sm)" type="submit">Create</button>
+                        </div>
+                    </form>
                 </div>
             </ng-template>
         </div>
@@ -768,32 +729,23 @@ import { _importsCombobox } from '../index';
                 <svg lucideChevronDown size="16"></svg>
             </button>
 
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div [class]="c.positioner" rdxComboboxPositioner>
-                        <div [class]="c.popup + ' p-0'" rdxComboboxPopup>
-                            <div [class]="c.searchHeader">
-                                <input
-                                    [class]="c.popupInput"
-                                    rdxComboboxInput
-                                    placeholder="Search…"
-                                    aria-label="Fruit"
-                                />
-                            </div>
-                            <div [class]="c.list + ' p-1'" rdxComboboxList aria-label="Fruits">
-                                @for (fruit of fruits; track fruit) {
-                                    <div [class]="c.item" [value]="fruit" rdxComboboxItem>
-                                        <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
-                                            <svg lucideCheck size="14"></svg>
-                                        </span>
-                                        {{ fruit }}
-                                    </div>
-                                }
-                                <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
-                            </div>
-                        </div>
+            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
+                <div [class]="c.popup + ' p-0'" rdxComboboxPopup>
+                    <div [class]="c.searchHeader">
+                        <input [class]="c.popupInput" rdxComboboxInput placeholder="Search…" aria-label="Fruit" />
                     </div>
-                </ng-template>
+                    <div [class]="c.list + ' p-1'" rdxComboboxList aria-label="Fruits">
+                        @for (fruit of fruits; track fruit) {
+                            <div [class]="c.item" [value]="fruit" rdxComboboxItem>
+                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                    <svg lucideCheck size="14"></svg>
+                                </span>
+                                {{ fruit }}
+                            </div>
+                        }
+                        <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
+                    </div>
+                </div>
             </div>
         </div>
     `
@@ -836,24 +788,20 @@ import { _importsCombobox } from '../index';
                 <input [class]="c.input" rdxComboboxInput placeholder="Run a command…" aria-label="Command" />
             </div>
 
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div [class]="c.positioner" rdxComboboxPositioner>
-                        <div [class]="c.popup" rdxComboboxPopup>
-                            <div [class]="c.list" rdxComboboxList aria-label="Commands">
-                                @for (command of commands; track command) {
-                                    <div [class]="c.item" [value]="command" rdxComboboxItem>
-                                        <span [class]="c.itemIndicator">
-                                            <svg lucideArrowRight size="14"></svg>
-                                        </span>
-                                        {{ command }}
-                                    </div>
-                                }
+            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
+                <div [class]="c.popup" rdxComboboxPopup>
+                    <div [class]="c.list" rdxComboboxList aria-label="Commands">
+                        @for (command of commands; track command) {
+                            <div [class]="c.item" [value]="command" rdxComboboxItem>
+                                <span [class]="c.itemIndicator">
+                                    <svg lucideArrowRight size="14"></svg>
+                                </span>
+                                {{ command }}
                             </div>
-                            <div [class]="c.empty" rdxComboboxEmpty>No commands.</div>
-                        </div>
+                        }
                     </div>
-                </ng-template>
+                    <div [class]="c.empty" rdxComboboxEmpty>No commands.</div>
+                </div>
             </div>
 
             <p class="text-muted-foreground text-sm">
@@ -902,26 +850,24 @@ import { _importsCombobox } from '../index';
                 </button>
             </div>
 
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div [class]="c.backdrop" rdxComboboxBackdrop></div>
-                    <div [class]="c.positioner" rdxComboboxPositioner>
-                        <div [class]="c.popup" rdxComboboxPopup>
-                            <div [class]="c.list" rdxComboboxList aria-label="Fruits">
-                                @for (fruit of fruits; track fruit) {
-                                    <div [class]="c.item" [value]="fruit" rdxComboboxItem>
-                                        <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
-                                            <svg lucideCheck size="14"></svg>
-                                        </span>
-                                        {{ fruit }}
-                                    </div>
-                                }
-                            </div>
-                            <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
+            <ng-template rdxComboboxPortal>
+                <div [class]="c.backdrop" rdxComboboxBackdrop></div>
+                <div [class]="c.positioner" rdxComboboxPositioner>
+                    <div [class]="c.popup" rdxComboboxPopup>
+                        <div [class]="c.list" rdxComboboxList aria-label="Fruits">
+                            @for (fruit of fruits; track fruit) {
+                                <div [class]="c.item" [value]="fruit" rdxComboboxItem>
+                                    <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                        <svg lucideCheck size="14"></svg>
+                                    </span>
+                                    {{ fruit }}
+                                </div>
+                            }
                         </div>
+                        <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
                     </div>
-                </ng-template>
-            </div>
+                </div>
+            </ng-template>
         </div>
     `
 })
@@ -956,24 +902,20 @@ import { _importsCombobox } from '../index';
                     </button>
                 </div>
 
-                <div rdxComboboxPortal>
-                    <ng-template rdxComboboxPortalPresence>
-                        <div [class]="c.positioner" rdxComboboxPositioner>
-                            <div [class]="c.popup" rdxComboboxPopup>
-                                <div [class]="c.list" rdxComboboxList aria-label="Fruits">
-                                    @for (f of fruits; track f) {
-                                        <div [class]="c.item" [value]="f" rdxComboboxItem>
-                                            <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
-                                                <svg lucideCheck size="14"></svg>
-                                            </span>
-                                            {{ f }}
-                                        </div>
-                                    }
+                <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
+                    <div [class]="c.popup" rdxComboboxPopup>
+                        <div [class]="c.list" rdxComboboxList aria-label="Fruits">
+                            @for (f of fruits; track f) {
+                                <div [class]="c.item" [value]="f" rdxComboboxItem>
+                                    <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                        <svg lucideCheck size="14"></svg>
+                                    </span>
+                                    {{ f }}
                                 </div>
-                                <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
-                            </div>
+                            }
                         </div>
-                    </ng-template>
+                        <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
+                    </div>
                 </div>
             </div>
 
@@ -1017,24 +959,20 @@ import { _importsCombobox } from '../index';
                 </button>
             </div>
 
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div [class]="c.positioner" rdxComboboxPositioner>
-                        <div [class]="c.popup" rdxComboboxPopup>
-                            <div [class]="c.list" rdxComboboxList aria-label="Fruits">
-                                @for (fruit of fruits; track fruit) {
-                                    <div [class]="c.item" [value]="fruit" rdxComboboxItem>
-                                        <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
-                                            <svg lucideCheck size="14"></svg>
-                                        </span>
-                                        {{ fruit }}
-                                    </div>
-                                }
+            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
+                <div [class]="c.popup" rdxComboboxPopup>
+                    <div [class]="c.list" rdxComboboxList aria-label="Fruits">
+                        @for (fruit of fruits; track fruit) {
+                            <div [class]="c.item" [value]="fruit" rdxComboboxItem>
+                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                    <svg lucideCheck size="14"></svg>
+                                </span>
+                                {{ fruit }}
                             </div>
-                            <div [class]="c.empty" rdxComboboxEmpty>No fruit matches your search.</div>
-                        </div>
+                        }
                     </div>
-                </ng-template>
+                    <div [class]="c.empty" rdxComboboxEmpty>No fruit matches your search.</div>
+                </div>
             </div>
         </div>
     `
@@ -1097,35 +1035,31 @@ import { ComboboxItemHighlightedDetails, RdxComboboxRoot } from '../src/combobox
                 <input [class]="c.input" rdxComboboxInput placeholder="Search 10,000 items…" aria-label="Item" />
             </div>
 
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div [class]="c.positioner" rdxComboboxPositioner>
-                        <div [class]="popup" rdxComboboxPopup>
-                            <div [class]="c.empty" rdxComboboxEmpty>No items found.</div>
-                            <div [class]="c.list" rdxComboboxList aria-label="Items">
-                                <div #scroll [class]="scroller">
-                                    <div [class]="spacer" [style.height.px]="virtualizer.getTotalSize()">
-                                        @for (row of virtualizer.getVirtualItems(); track row.key) {
-                                            <div
-                                                [class]="item"
-                                                [value]="cmb.filteredItems()[row.index]"
-                                                [index]="row.index"
-                                                [style.height.px]="row.size"
-                                                [style.transform]="'translateY(' + row.start + 'px)'"
-                                                rdxComboboxItem
-                                            >
-                                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
-                                                    <svg lucideCheck size="14"></svg>
-                                                </span>
-                                                {{ cmb.filteredItems()[row.index] }}
-                                            </div>
-                                        }
+            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
+                <div [class]="popup" rdxComboboxPopup>
+                    <div [class]="c.empty" rdxComboboxEmpty>No items found.</div>
+                    <div [class]="c.list" rdxComboboxList aria-label="Items">
+                        <div #scroll [class]="scroller">
+                            <div [class]="spacer" [style.height.px]="virtualizer.getTotalSize()">
+                                @for (row of virtualizer.getVirtualItems(); track row.key) {
+                                    <div
+                                        [class]="item"
+                                        [value]="cmb.filteredItems()[row.index]"
+                                        [index]="row.index"
+                                        [style.height.px]="row.size"
+                                        [style.transform]="'translateY(' + row.start + 'px)'"
+                                        rdxComboboxItem
+                                    >
+                                        <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                            <svg lucideCheck size="14"></svg>
+                                        </span>
+                                        {{ cmb.filteredItems()[row.index] }}
                                     </div>
-                                </div>
+                                }
                             </div>
                         </div>
                     </div>
-                </ng-template>
+                </div>
             </div>
         </div>
     `
@@ -1238,8 +1172,8 @@ A selected-value chip in `multiple` mode. Provide its `value`.
 ### Parts without inputs
 
 `RdxComboboxAnchor`, `RdxComboboxLabel` (registers an `aria-labelledby` target), `RdxComboboxTrigger`,
-`RdxComboboxClear`, `RdxComboboxIcon`, `RdxComboboxPortal` (re-exposes `container`),
-`RdxComboboxPortalPresence`, `RdxComboboxBackdrop` (modal overlay), `RdxComboboxPopup`,
+`RdxComboboxClear`, `RdxComboboxIcon`, `RdxComboboxPortal` (structural; re-exposes `container`),
+`RdxComboboxBackdrop` (modal overlay), `RdxComboboxPopup`,
 `RdxComboboxArrow` (re-exposes `width` / `height`), `RdxComboboxList`, `RdxComboboxItemIndicator`,
 `RdxComboboxGroup`, `RdxComboboxGroupLabel`,
 `RdxComboboxEmpty`, `RdxComboboxStatus`, `RdxComboboxChips`, and `RdxComboboxChipRemove` read

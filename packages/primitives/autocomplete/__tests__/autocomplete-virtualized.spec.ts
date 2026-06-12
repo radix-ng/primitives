@@ -15,18 +15,14 @@ import { _importsAutocomplete } from '../index';
             rdxAutocompleteRoot
         >
             <input rdxAutocompleteInput aria-label="Item" />
-            <div rdxAutocompletePortal>
-                <ng-template rdxAutocompletePortalPresence>
-                    <div rdxAutocompletePositioner>
-                        <div rdxAutocompletePopup>
-                            <div rdxAutocompleteList aria-label="Items">
-                                @for (item of ac.filteredItems(); track item; let i = $index) {
-                                    <div [value]="item" [index]="i" rdxAutocompleteItem>{{ item }}</div>
-                                }
-                            </div>
-                        </div>
+            <div *rdxAutocompletePortal rdxAutocompletePositioner>
+                <div rdxAutocompletePopup>
+                    <div rdxAutocompleteList aria-label="Items">
+                        @for (item of ac.filteredItems(); track item; let i = $index) {
+                            <div [value]="item" [index]="i" rdxAutocompleteItem>{{ item }}</div>
+                        }
                     </div>
-                </ng-template>
+                </div>
             </div>
         </div>
     `

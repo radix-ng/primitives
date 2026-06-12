@@ -73,19 +73,15 @@ const TAGS = [
                 />
             </div>
 
-            <div rdxAutocompletePortal>
-                <ng-template rdxAutocompletePortalPresence>
-                    <div [class]="c.positioner" rdxAutocompletePositioner>
-                        <div [class]="c.popup" rdxAutocompletePopup>
-                            <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
-                                @for (tag of tags; track tag) {
-                                    <div [class]="c.item" rdxAutocompleteItem>{{ tag }}</div>
-                                }
-                            </div>
-                            <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
-                        </div>
+            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
+                <div [class]="c.popup" rdxAutocompletePopup>
+                    <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
+                        @for (tag of tags; track tag) {
+                            <div [class]="c.item" rdxAutocompleteItem>{{ tag }}</div>
+                        }
                     </div>
-                </ng-template>
+                    <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
+                </div>
             </div>
         </div>
     `
@@ -136,7 +132,6 @@ import {
   RdxAutocompleteList,
   RdxAutocompletePopup,
   RdxAutocompletePortal,
-  RdxAutocompletePortalPresence,
   RdxAutocompletePositioner,
   RdxAutocompleteRoot,
   RdxAutocompleteRow,
@@ -158,22 +153,18 @@ in place (non-matching items are hidden, not destroyed).
     <button rdxAutocompleteClear></button>
   </div>
 
-  <div rdxAutocompletePortal>
-    <ng-template rdxAutocompletePortalPresence>
-      <div rdxAutocompletePositioner>
-        <div rdxAutocompletePopup>
-          <div rdxAutocompleteList>
-            <div rdxAutocompleteGroup>
-              <div rdxAutocompleteGroupLabel></div>
-              <div rdxAutocompleteItem>
-                <span rdxAutocompleteItemIndicator></span>
-              </div>
-            </div>
+  <div *rdxAutocompletePortal rdxAutocompletePositioner>
+    <div rdxAutocompletePopup>
+      <div rdxAutocompleteList>
+        <div rdxAutocompleteGroup>
+          <div rdxAutocompleteGroupLabel></div>
+          <div rdxAutocompleteItem>
+            <span rdxAutocompleteItemIndicator></span>
           </div>
-          <div rdxAutocompleteEmpty></div>
         </div>
       </div>
-    </ng-template>
+      <div rdxAutocompleteEmpty></div>
+    </div>
   </div>
 </div>
 ```
@@ -247,19 +238,15 @@ const TAGS = [
                 />
             </div>
 
-            <div rdxAutocompletePortal>
-                <ng-template rdxAutocompletePortalPresence>
-                    <div [class]="c.positioner" rdxAutocompletePositioner>
-                        <div [class]="c.popup" rdxAutocompletePopup>
-                            <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
-                                @for (tag of tags; track tag) {
-                                    <div [class]="c.item" rdxAutocompleteItem>{{ tag }}</div>
-                                }
-                            </div>
-                            <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
-                        </div>
+            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
+                <div [class]="c.popup" rdxAutocompletePopup>
+                    <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
+                        @for (tag of tags; track tag) {
+                            <div [class]="c.item" rdxAutocompleteItem>{{ tag }}</div>
+                        }
                     </div>
-                </ng-template>
+                    <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
+                </div>
             </div>
         </div>
     `
@@ -336,19 +323,15 @@ const TAGS = [
                 <input [class]="c.input" rdxAutocompleteInput placeholder="e.g. fix" aria-label="Search tags" />
             </div>
 
-            <div rdxAutocompletePortal>
-                <ng-template rdxAutocompletePortalPresence>
-                    <div [class]="c.positioner" rdxAutocompletePositioner>
-                        <div [class]="c.popup" rdxAutocompletePopup>
-                            <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
-                                @for (tag of tags; track tag) {
-                                    <div [class]="c.item" rdxAutocompleteItem>{{ tag }}</div>
-                                }
-                            </div>
-                            <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
-                        </div>
+            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
+                <div [class]="c.popup" rdxAutocompletePopup>
+                    <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
+                        @for (tag of tags; track tag) {
+                            <div [class]="c.item" rdxAutocompleteItem>{{ tag }}</div>
+                        }
                     </div>
-                </ng-template>
+                    <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
+                </div>
             </div>
         </div>
     `
@@ -422,19 +405,15 @@ const TAGS = [
                 <input [class]="c.input" rdxAutocompleteInput placeholder="e.g. fix" aria-label="Search tags" />
             </div>
 
-            <div rdxAutocompletePortal>
-                <ng-template rdxAutocompletePortalPresence>
-                    <div [class]="c.positioner" rdxAutocompletePositioner>
-                        <div [class]="c.popup" rdxAutocompletePopup>
-                            <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
-                                @for (tag of tags; track tag) {
-                                    <div [class]="c.item" rdxAutocompleteItem>{{ tag }}</div>
-                                }
-                            </div>
-                            <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
-                        </div>
+            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
+                <div [class]="c.popup" rdxAutocompletePopup>
+                    <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
+                        @for (tag of tags; track tag) {
+                            <div [class]="c.item" rdxAutocompleteItem>{{ tag }}</div>
+                        }
                     </div>
-                </ng-template>
+                    <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
+                </div>
             </div>
         </div>
     `
@@ -470,24 +449,20 @@ interface Group {
                 <input [class]="c.input" rdxAutocompleteInput placeholder="e.g. fix" aria-label="Search tags" />
             </div>
 
-            <div rdxAutocompletePortal>
-                <ng-template rdxAutocompletePortalPresence>
-                    <div [class]="c.positioner" rdxAutocompletePositioner>
-                        <div [class]="c.popup" rdxAutocompletePopup>
-                            <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
-                                @for (group of groups; track group.label) {
-                                    <div rdxAutocompleteGroup>
-                                        <div [class]="c.groupLabel" rdxAutocompleteGroupLabel>{{ group.label }}</div>
-                                        @for (item of group.items; track item) {
-                                            <div [class]="c.item" rdxAutocompleteItem>{{ item }}</div>
-                                        }
-                                    </div>
+            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
+                <div [class]="c.popup" rdxAutocompletePopup>
+                    <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
+                        @for (group of groups; track group.label) {
+                            <div rdxAutocompleteGroup>
+                                <div [class]="c.groupLabel" rdxAutocompleteGroupLabel>{{ group.label }}</div>
+                                @for (item of group.items; track item) {
+                                    <div [class]="c.item" rdxAutocompleteItem>{{ item }}</div>
                                 }
                             </div>
-                            <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
-                        </div>
+                        }
                     </div>
-                </ng-template>
+                    <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
+                </div>
             </div>
         </div>
     `
@@ -559,24 +534,20 @@ import { _importsAutocomplete } from '../index';
                 <input [class]="c.input" rdxAutocompleteInput placeholder="e.g. component" aria-label="Search tags" />
             </div>
 
-            <div rdxAutocompletePortal>
-                <ng-template rdxAutocompletePortalPresence>
-                    <div [class]="c.positioner" rdxAutocompletePositioner>
-                        <div [class]="c.popup" rdxAutocompletePopup>
-                            <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
-                                @for (tag of tags; track tag) {
-                                    <div [class]="c.item" rdxAutocompleteItem>{{ tag }}</div>
-                                }
-                            </div>
-                            <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
-                            @if (hiddenCount(ac.value()); as hidden) {
-                                <div class="text-muted-foreground border-border mt-1 border-t px-2 py-1 text-xs">
-                                    {{ hidden }} more {{ hidden === 1 ? 'result' : 'results' }} not shown
-                                </div>
-                            }
-                        </div>
+            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
+                <div [class]="c.popup" rdxAutocompletePopup>
+                    <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
+                        @for (tag of tags; track tag) {
+                            <div [class]="c.item" rdxAutocompleteItem>{{ tag }}</div>
+                        }
                     </div>
-                </ng-template>
+                    <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
+                    @if (hiddenCount(ac.value()); as hidden) {
+                        <div class="text-muted-foreground border-border mt-1 border-t px-2 py-1 text-xs">
+                            {{ hidden }} more {{ hidden === 1 ? 'result' : 'results' }} not shown
+                        </div>
+                    }
+                </div>
             </div>
         </div>
     `
@@ -693,35 +664,26 @@ const fuzzyFilter: AutocompleteFilter = (_text, query, value) => {
                 <input [class]="c.input" rdxAutocompleteInput placeholder="e.g. React" aria-label="Documentation" />
             </div>
 
-            <div rdxAutocompletePortal>
-                <ng-template rdxAutocompletePortalPresence>
-                    <div [class]="positioner" rdxAutocompletePositioner>
-                        <div [class]="popup" rdxAutocompletePopup>
-                            <div [class]="c.empty" rdxAutocompleteEmpty>No results found for "{{ ac.value() }}".</div>
-                            <div [class]="c.list" rdxAutocompleteList aria-label="Documentation">
-                                @for (item of items; track item.title) {
-                                    <div
-                                        [class]="itemClass"
-                                        [value]="item"
-                                        [textValue]="item.title"
-                                        rdxAutocompleteItem
-                                    >
-                                        <span class="flex flex-col gap-0.5">
-                                            <span
-                                                class="text-foreground leading-5 font-semibold"
-                                                [innerHTML]="highlight(item.title, ac.value())"
-                                            ></span>
-                                            <span
-                                                class="text-muted-foreground text-xs leading-4"
-                                                [innerHTML]="highlight(item.description, ac.value())"
-                                            ></span>
-                                        </span>
-                                    </div>
-                                }
+            <div *rdxAutocompletePortal [class]="positioner" rdxAutocompletePositioner>
+                <div [class]="popup" rdxAutocompletePopup>
+                    <div [class]="c.empty" rdxAutocompleteEmpty>No results found for "{{ ac.value() }}".</div>
+                    <div [class]="c.list" rdxAutocompleteList aria-label="Documentation">
+                        @for (item of items; track item.title) {
+                            <div [class]="itemClass" [value]="item" [textValue]="item.title" rdxAutocompleteItem>
+                                <span class="flex flex-col gap-0.5">
+                                    <span
+                                        class="text-foreground leading-5 font-semibold"
+                                        [innerHTML]="highlight(item.title, ac.value())"
+                                    ></span>
+                                    <span
+                                        class="text-muted-foreground text-xs leading-4"
+                                        [innerHTML]="highlight(item.description, ac.value())"
+                                    ></span>
+                                </span>
                             </div>
-                        </div>
+                        }
                     </div>
-                </ng-template>
+                </div>
             </div>
         </div>
     `
@@ -990,40 +952,28 @@ const top100Movies: Movie[] = [
                 />
             </div>
 
-            <div rdxAutocompletePortal>
-                <ng-template rdxAutocompletePortalPresence>
-                    <div [class]="c.positioner" rdxAutocompletePositioner>
-                        <div [class]="c.popup" [hidden]="!status()" rdxAutocompletePopup>
-                            <div
-                                class="text-muted-foreground flex items-center gap-2 px-2 py-1 text-xs"
-                                rdxAutocompleteStatus
-                            >
-                                @if (loading()) {
-                                    <span
-                                        class="inline-block size-3 animate-spin rounded-full border border-current border-r-transparent"
-                                        aria-hidden="true"
-                                    ></span>
-                                    Searching…
-                                } @else {
-                                    {{ status() }}
-                                }
-                            </div>
-                            <div [class]="c.list" rdxAutocompleteList aria-label="Movies">
-                                @for (movie of results(); track movie.id) {
-                                    <div
-                                        [class]="c.item"
-                                        [value]="movie.title"
-                                        [textValue]="movie.title"
-                                        rdxAutocompleteItem
-                                    >
-                                        {{ movie.title }}
-                                        <span class="text-muted-foreground ml-1 text-xs">{{ movie.year }}</span>
-                                    </div>
-                                }
-                            </div>
-                        </div>
+            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
+                <div [class]="c.popup" [hidden]="!status()" rdxAutocompletePopup>
+                    <div class="text-muted-foreground flex items-center gap-2 px-2 py-1 text-xs" rdxAutocompleteStatus>
+                        @if (loading()) {
+                            <span
+                                class="inline-block size-3 animate-spin rounded-full border border-current border-r-transparent"
+                                aria-hidden="true"
+                            ></span>
+                            Searching…
+                        } @else {
+                            {{ status() }}
+                        }
                     </div>
-                </ng-template>
+                    <div [class]="c.list" rdxAutocompleteList aria-label="Movies">
+                        @for (movie of results(); track movie.id) {
+                            <div [class]="c.item" [value]="movie.title" [textValue]="movie.title" rdxAutocompleteItem>
+                                {{ movie.title }}
+                                <span class="text-muted-foreground ml-1 text-xs">{{ movie.year }}</span>
+                            </div>
+                        }
+                    </div>
+                </div>
             </div>
         </div>
     `
@@ -1122,53 +1072,51 @@ interface Group {
         <div [(open)]="open" rdxDialogRoot>
             <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open command palette</button>
 
-            <ng-template rdxDialogPortalPresence>
-                <div [class]="d.portalAnimated" rdxDialogPortal>
-                    <div [class]="d.backdrop" rdxDialogBackdrop></div>
+            <ng-template rdxDialogPortal>
+                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
 
-                    <div class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 pt-[12vh]">
-                        <div [class]="popup" rdxDialogPopup aria-label="Command palette">
-                            <div [(open)]="open" autoHighlight="always" rdxAutocompleteRoot>
-                                <input
-                                    [class]="input"
-                                    rdxAutocompleteInput
-                                    placeholder="Search for apps and commands…"
-                                    aria-label="Command"
-                                />
+                <div class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 pt-[12vh]">
+                    <div [class]="popup" rdxDialogPopup aria-label="Command palette">
+                        <div [(open)]="open" autoHighlight="always" rdxAutocompleteRoot>
+                            <input
+                                [class]="input"
+                                rdxAutocompleteInput
+                                placeholder="Search for apps and commands…"
+                                aria-label="Command"
+                            />
 
-                                <div [class]="list" rdxAutocompleteList aria-label="Commands">
-                                    @for (group of groups; track group.value) {
-                                        <div class="mb-1" rdxAutocompleteGroup>
-                                            <div [class]="groupLabel" rdxAutocompleteGroupLabel>{{ group.value }}</div>
-                                            @for (item of group.items; track item.value) {
-                                                <div
-                                                    [class]="itemClass"
-                                                    [value]="item"
-                                                    [textValue]="item.label"
-                                                    rdxAutocompleteItem
-                                                >
-                                                    <span class="truncate">{{ item.label }}</span>
-                                                    <span [class]="badge">
-                                                        {{ group.value === 'Suggestions' ? 'Application' : 'Command' }}
-                                                    </span>
-                                                </div>
-                                            }
-                                        </div>
-                                    }
-                                    <div [class]="empty" rdxAutocompleteEmpty>No results found.</div>
-                                </div>
+                            <div [class]="list" rdxAutocompleteList aria-label="Commands">
+                                @for (group of groups; track group.value) {
+                                    <div class="mb-1" rdxAutocompleteGroup>
+                                        <div [class]="groupLabel" rdxAutocompleteGroupLabel>{{ group.value }}</div>
+                                        @for (item of group.items; track item.value) {
+                                            <div
+                                                [class]="itemClass"
+                                                [value]="item"
+                                                [textValue]="item.label"
+                                                rdxAutocompleteItem
+                                            >
+                                                <span class="truncate">{{ item.label }}</span>
+                                                <span [class]="badge">
+                                                    {{ group.value === 'Suggestions' ? 'Application' : 'Command' }}
+                                                </span>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                <div [class]="empty" rdxAutocompleteEmpty>No results found.</div>
+                            </div>
 
-                                <div [class]="footer">
-                                    <span class="flex items-center gap-1">
-                                        Activate
-                                        <kbd [class]="kbd">Enter</kbd>
-                                    </span>
-                                    <span class="flex items-center gap-1">
-                                        Actions
-                                        <kbd [class]="kbd">Cmd</kbd>
-                                        <kbd [class]="kbd">K</kbd>
-                                    </span>
-                                </div>
+                            <div [class]="footer">
+                                <span class="flex items-center gap-1">
+                                    Activate
+                                    <kbd [class]="kbd">Enter</kbd>
+                                </span>
+                                <span class="flex items-center gap-1">
+                                    Actions
+                                    <kbd [class]="kbd">Cmd</kbd>
+                                    <kbd [class]="kbd">K</kbd>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -1306,38 +1254,34 @@ function chunk<T>(items: T[], size: number): T[][] {
                     😀
                 </button>
 
-                <div rdxAutocompletePortal>
-                    <ng-template rdxAutocompletePortalPresence>
-                        <div [class]="c.positioner" rdxAutocompletePositioner align="end">
-                            <div [class]="popup" rdxAutocompletePopup>
-                                <input
-                                    [class]="input"
-                                    rdxAutocompleteInput
-                                    placeholder="Search emojis…"
-                                    aria-label="Search emojis"
-                                />
-                                <div class="max-h-64 overflow-auto p-1">
-                                    @for (group of groups; track group.label) {
-                                        <div rdxAutocompleteGroup>
-                                            <div [class]="c.groupLabel" rdxAutocompleteGroupLabel>
-                                                {{ group.label }}
-                                            </div>
-                                            @for (row of group.rows; track $index) {
-                                                <div class="grid grid-cols-5" rdxAutocompleteRow>
-                                                    @for (item of row; track item.emoji) {
-                                                        <div [class]="cell" [textValue]="item.name" rdxAutocompleteItem>
-                                                            {{ item.emoji }}
-                                                        </div>
-                                                    }
+                <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner align="end">
+                    <div [class]="popup" rdxAutocompletePopup>
+                        <input
+                            [class]="input"
+                            rdxAutocompleteInput
+                            placeholder="Search emojis…"
+                            aria-label="Search emojis"
+                        />
+                        <div class="max-h-64 overflow-auto p-1">
+                            @for (group of groups; track group.label) {
+                                <div rdxAutocompleteGroup>
+                                    <div [class]="c.groupLabel" rdxAutocompleteGroupLabel>
+                                        {{ group.label }}
+                                    </div>
+                                    @for (row of group.rows; track $index) {
+                                        <div class="grid grid-cols-5" rdxAutocompleteRow>
+                                            @for (item of row; track item.emoji) {
+                                                <div [class]="cell" [textValue]="item.name" rdxAutocompleteItem>
+                                                    {{ item.emoji }}
                                                 </div>
                                             }
                                         </div>
                                     }
                                 </div>
-                                <div [class]="c.empty" rdxAutocompleteEmpty>No emoji found.</div>
-                            </div>
+                            }
                         </div>
-                    </ng-template>
+                        <div [class]="c.empty" rdxAutocompleteEmpty>No emoji found.</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1548,32 +1492,28 @@ import { _importsAutocomplete, AutocompleteItemHighlightedDetails, RdxAutocomple
                 <input [class]="c.input" rdxAutocompleteInput placeholder="Search 10,000 items…" aria-label="Item" />
             </div>
 
-            <div rdxAutocompletePortal>
-                <ng-template rdxAutocompletePortalPresence>
-                    <div [class]="c.positioner" rdxAutocompletePositioner>
-                        <div [class]="popup" rdxAutocompletePopup>
-                            <div [class]="c.empty" rdxAutocompleteEmpty>No items found.</div>
-                            <div [class]="c.list" rdxAutocompleteList aria-label="Items">
-                                <div #scroll [class]="scroller">
-                                    <div [class]="spacer" [style.height.px]="virtualizer.getTotalSize()">
-                                        @for (row of virtualizer.getVirtualItems(); track row.key) {
-                                            <div
-                                                [class]="item"
-                                                [value]="ac.filteredItems()[row.index]"
-                                                [index]="row.index"
-                                                [style.height.px]="row.size"
-                                                [style.transform]="'translateY(' + row.start + 'px)'"
-                                                rdxAutocompleteItem
-                                            >
-                                                {{ ac.filteredItems()[row.index] }}
-                                            </div>
-                                        }
+            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
+                <div [class]="popup" rdxAutocompletePopup>
+                    <div [class]="c.empty" rdxAutocompleteEmpty>No items found.</div>
+                    <div [class]="c.list" rdxAutocompleteList aria-label="Items">
+                        <div #scroll [class]="scroller">
+                            <div [class]="spacer" [style.height.px]="virtualizer.getTotalSize()">
+                                @for (row of virtualizer.getVirtualItems(); track row.key) {
+                                    <div
+                                        [class]="item"
+                                        [value]="ac.filteredItems()[row.index]"
+                                        [index]="row.index"
+                                        [style.height.px]="row.size"
+                                        [style.transform]="'translateY(' + row.start + 'px)'"
+                                        rdxAutocompleteItem
+                                    >
+                                        {{ ac.filteredItems()[row.index] }}
                                     </div>
-                                </div>
+                                }
                             </div>
                         </div>
                     </div>
-                </ng-template>
+                </div>
             </div>
         </div>
     `
@@ -1643,19 +1583,15 @@ import { _importsAutocomplete } from '../index';
                     <input [class]="c.input" rdxAutocompleteInput placeholder="Search a fruit…" aria-label="Fruit" />
                 </div>
 
-                <div rdxAutocompletePortal>
-                    <ng-template rdxAutocompletePortalPresence>
-                        <div [class]="c.positioner" rdxAutocompletePositioner>
-                            <div [class]="c.popup" rdxAutocompletePopup>
-                                <div [class]="c.list" rdxAutocompleteList aria-label="Fruits">
-                                    @for (item of fruits; track item) {
-                                        <div [class]="c.item" rdxAutocompleteItem>{{ item }}</div>
-                                    }
-                                </div>
-                                <div [class]="c.empty" rdxAutocompleteEmpty>No fruit found.</div>
-                            </div>
+                <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
+                    <div [class]="c.popup" rdxAutocompletePopup>
+                        <div [class]="c.list" rdxAutocompleteList aria-label="Fruits">
+                            @for (item of fruits; track item) {
+                                <div [class]="c.item" rdxAutocompleteItem>{{ item }}</div>
+                            }
                         </div>
-                    </ng-template>
+                        <div [class]="c.empty" rdxAutocompleteEmpty>No fruit found.</div>
+                    </div>
                 </div>
             </div>
 
@@ -1693,19 +1629,15 @@ import { _importsAutocomplete } from '../index';
                     <input [class]="c.input" rdxAutocompleteInput placeholder="Search a fruit…" aria-label="Fruit" />
                 </div>
 
-                <div rdxAutocompletePortal>
-                    <ng-template rdxAutocompletePortalPresence>
-                        <div [class]="c.positioner" rdxAutocompletePositioner>
-                            <div [class]="c.popup" rdxAutocompletePopup>
-                                <div [class]="c.list" rdxAutocompleteList aria-label="Fruits">
-                                    @for (item of fruits; track item) {
-                                        <div [class]="c.item" rdxAutocompleteItem>{{ item }}</div>
-                                    }
-                                </div>
-                                <div [class]="c.empty" rdxAutocompleteEmpty>No fruit found.</div>
-                            </div>
+                <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
+                    <div [class]="c.popup" rdxAutocompletePopup>
+                        <div [class]="c.list" rdxAutocompleteList aria-label="Fruits">
+                            @for (item of fruits; track item) {
+                                <div [class]="c.item" rdxAutocompleteItem>{{ item }}</div>
+                            }
                         </div>
-                    </ng-template>
+                        <div [class]="c.empty" rdxAutocompleteEmpty>No fruit found.</div>
+                    </div>
                 </div>
             </div>
 
@@ -1736,18 +1668,14 @@ import { _importsAutocomplete } from '../index';
                 <input [class]="c.input" rdxAutocompleteInput placeholder="Disabled" aria-label="Fruit" />
             </div>
 
-            <div rdxAutocompletePortal>
-                <ng-template rdxAutocompletePortalPresence>
-                    <div [class]="c.positioner" rdxAutocompletePositioner>
-                        <div [class]="c.popup" rdxAutocompletePopup>
-                            <div [class]="c.list" rdxAutocompleteList aria-label="Fruits">
-                                @for (fruit of fruits; track fruit) {
-                                    <div [class]="c.item" rdxAutocompleteItem>{{ fruit }}</div>
-                                }
-                            </div>
-                        </div>
+            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
+                <div [class]="c.popup" rdxAutocompletePopup>
+                    <div [class]="c.list" rdxAutocompleteList aria-label="Fruits">
+                        @for (fruit of fruits; track fruit) {
+                            <div [class]="c.item" rdxAutocompleteItem>{{ fruit }}</div>
+                        }
                     </div>
-                </ng-template>
+                </div>
             </div>
         </div>
     `
@@ -1797,6 +1725,6 @@ Positions the popup against the input anchor via the popper engine.
 
 Renders the current value as text (with a `placeholder` when empty).
 
-Other parts (`Portal`, `PortalPresence`, `Backdrop`, `Popup`, `List`, `Row`, `Group`, `GroupLabel`,
+Other parts (`Portal` (structural), `Backdrop`, `Popup`, `List`, `Row`, `Group`, `GroupLabel`,
 `ItemIndicator`, `Empty`, `Status`, `Trigger`, `Icon`, `Clear`, `Label`, `Anchor`, `InputGroup`) read
 everything from context and take no inputs of their own.

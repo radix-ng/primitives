@@ -1,18 +1,40 @@
-import { Directive, input } from '@angular/core';
-import { RdxPortal, RdxPortalContainer } from '@radix-ng/primitives/portal';
+import { Directive, isDevMode } from '@angular/core';
+import { RdxPortalPresence } from '@radix-ng/primitives/portal';
+import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
+import { injectRdxTooltipContext } from './tooltip';
 
 /**
- * Moves the tooltip to a different part of the DOM.
+ * Structural directive that teleports the tooltip content into a container (default `document.body`)
+ * while the tooltip is open, and keeps it mounted until any CSS exit `@keyframes` finishes.
+ *
+ * Apply it with the `*` microsyntax on the positioner — `<div *rdxTooltipPortal rdxTooltipPositioner>`
+ * — or as an explicit `<ng-template rdxTooltipPortal>`. For a custom container use the explicit form
+ * with `[container]`.
  */
 @Directive({
-    selector: '[rdxTooltipPortal]',
-    hostDirectives: [
-        {
-            directive: RdxPortal,
-            inputs: ['container']
-        }
-    ]
+    selector: 'ng-template[rdxTooltipPortal]',
+    exportAs: 'rdxTooltipPortal',
+    hostDirectives: [{ directive: RdxPortalPresence, inputs: ['container'] }],
+    providers: [provideRdxPresenceContext(() => ({ present: injectRdxTooltipContext().isOpen }))]
 })
-export class RdxTooltipPortal {
-    readonly container = input.required<RdxPortalContainer>();
+export class RdxTooltipPortal {}
+
+/**
+ * Dev-mode guard: `rdxTooltipPortal` used to be an attribute directive on a `<div>`. It is now
+ * structural, so the old `<div rdxTooltipPortal>` markup would silently stop portaling — fail loudly
+ * instead.
+ */
+@Directive({
+    selector: '[rdxTooltipPortal]:not(ng-template)'
+})
+export class RdxTooltipPortalMisuseGuard {
+    constructor() {
+        if (isDevMode()) {
+            throw new Error(
+                '[rdxTooltipPortal] is now a structural directive. ' +
+                    'Use `*rdxTooltipPortal` on the positioner element or `<ng-template rdxTooltipPortal>`. ' +
+                    'rdxTooltipPortalPresence has been removed. See https://radix-ng.com/components/tooltip.md'
+            );
+        }
+    }
 }

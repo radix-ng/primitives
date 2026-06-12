@@ -60,7 +60,6 @@ import {
   RdxAutocompleteList,
   RdxAutocompletePopup,
   RdxAutocompletePortal,
-  RdxAutocompletePortalPresence,
   RdxAutocompletePositioner,
   RdxAutocompleteRoot,
   RdxAutocompleteRow,
@@ -82,22 +81,18 @@ in place (non-matching items are hidden, not destroyed).
     <button rdxAutocompleteClear></button>
   </div>
 
-  <div rdxAutocompletePortal>
-    <ng-template rdxAutocompletePortalPresence>
-      <div rdxAutocompletePositioner>
-        <div rdxAutocompletePopup>
-          <div rdxAutocompleteList>
-            <div rdxAutocompleteGroup>
-              <div rdxAutocompleteGroupLabel></div>
-              <div rdxAutocompleteItem>
-                <span rdxAutocompleteItemIndicator></span>
-              </div>
-            </div>
+  <div *rdxAutocompletePortal rdxAutocompletePositioner>
+    <div rdxAutocompletePopup>
+      <div rdxAutocompleteList>
+        <div rdxAutocompleteGroup>
+          <div rdxAutocompleteGroupLabel></div>
+          <div rdxAutocompleteItem>
+            <span rdxAutocompleteItemIndicator></span>
           </div>
-          <div rdxAutocompleteEmpty></div>
         </div>
       </div>
-    </ng-template>
+      <div rdxAutocompleteEmpty></div>
+    </div>
   </div>
 </div>
 ```
@@ -240,6 +235,6 @@ Renders the current value as text (with a `placeholder` when empty).
 
 <ArgTypes of={RdxAutocompleteValue} />
 
-Other parts (`Portal`, `PortalPresence`, `Backdrop`, `Popup`, `List`, `Row`, `Group`, `GroupLabel`,
+Other parts (`Portal` (structural), `Backdrop`, `Popup`, `List`, `Row`, `Group`, `GroupLabel`,
 `ItemIndicator`, `Empty`, `Status`, `Trigger`, `Icon`, `Clear`, `Label`, `Anchor`, `InputGroup`) read
 everything from context and take no inputs of their own.

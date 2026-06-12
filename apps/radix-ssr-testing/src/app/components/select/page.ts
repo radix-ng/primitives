@@ -8,7 +8,6 @@ import {
     RdxSelectList,
     RdxSelectPopup,
     RdxSelectPortal,
-    RdxSelectPortalPresence,
     RdxSelectPositioner,
     RdxSelectPositionerContent,
     RdxSelectRoot,
@@ -23,7 +22,6 @@ import {
         RdxSelectPortal,
         RdxSelectTrigger,
         RdxSelectValue,
-        RdxSelectPortalPresence,
         RdxSelectPopup,
         RdxSelectList,
         RdxSelectPositioner,
@@ -43,26 +41,22 @@ import {
                 <span aria-hidden="true">▼</span>
             </button>
 
-            <div rdxSelectPortal>
-                <ng-template rdxSelectPortalPresence>
-                    <div rdxSelectPopup>
-                        <div [sideOffset]="4" align="start" rdxSelectPositioner>
-                            <div rdxSelectPositionerContent>
-                                <div rdxSelectList>
-                                    <div rdxSelectGroupLabel>Fruits</div>
-                                    <div rdxSelectGroup>
-                                        @for (option of options; track option) {
-                                            <div [value]="option" rdxSelectItem>
-                                                <span rdxSelectItemIndicator>✔</span>
-                                                <span rdxSelectItemText>{{ option }}</span>
-                                            </div>
-                                        }
+            <div *rdxSelectPortal rdxSelectPopup>
+                <div [sideOffset]="4" align="start" rdxSelectPositioner>
+                    <div rdxSelectPositionerContent>
+                        <div rdxSelectList>
+                            <div rdxSelectGroupLabel>Fruits</div>
+                            <div rdxSelectGroup>
+                                @for (option of options; track option) {
+                                    <div [value]="option" rdxSelectItem>
+                                        <span rdxSelectItemIndicator>✔</span>
+                                        <span rdxSelectItemText>{{ option }}</span>
                                     </div>
-                                </div>
+                                }
                             </div>
                         </div>
                     </div>
-                </ng-template>
+                </div>
             </div>
         </ng-container>
     `

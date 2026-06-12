@@ -13,34 +13,28 @@ import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
                 Add details
             </button>
 
-            <ng-template rdxPopoverPortalPresence>
-                <div rdxPopoverPortal>
-                    <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                        <div [class]="p.popup" rdxPopoverPopup>
-                            <span [class]="p.arrow" rdxPopoverArrow></span>
-                            <h2 [class]="p.title" rdxPopoverTitle>Dimensions</h2>
-                            <p [class]="p.description" rdxPopoverDescription>
-                                Set the width and height for the element.
-                            </p>
+            <div *rdxPopoverPortal [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
+                <div [class]="p.popup" rdxPopoverPopup>
+                    <span [class]="p.arrow" rdxPopoverArrow></span>
+                    <h2 [class]="p.title" rdxPopoverTitle>Dimensions</h2>
+                    <p [class]="p.description" rdxPopoverDescription>Set the width and height for the element.</p>
 
-                            <div class="mt-4 grid gap-3">
-                                <label class="grid gap-1 text-xs font-medium">
-                                    Width
-                                    <input [class]="input" value="100%" />
-                                </label>
-                                <label class="grid gap-1 text-xs font-medium">
-                                    Max width
-                                    <input [class]="input" value="300px" />
-                                </label>
-                            </div>
-
-                            <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                                <svg aria-hidden="true" lucideX size="14" />
-                            </button>
-                        </div>
+                    <div class="mt-4 grid gap-3">
+                        <label class="grid gap-1 text-xs font-medium">
+                            Width
+                            <input [class]="input" value="100%" />
+                        </label>
+                        <label class="grid gap-1 text-xs font-medium">
+                            Max width
+                            <input [class]="input" value="300px" />
+                        </label>
                     </div>
+
+                    <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                        <svg aria-hidden="true" lucideX size="14" />
+                    </button>
                 </div>
-            </ng-template>
+            </div>
         </ng-container>
     `
 })

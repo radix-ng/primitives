@@ -24,6 +24,12 @@ export interface RdxDrawerRootContext {
     swipeProgress: Signal<number>;
     /** Reports gesture progress from the popup's swipe engine. */
     setSwipeProgress: (value: number) => void;
+    /** Whether the drawer is currently being revealed from a SwipeArea. */
+    openingSwipeActive: Signal<boolean>;
+    /** Pointer travel (px) inward from the SwipeArea while revealing the drawer. */
+    openingSwipeDistance: Signal<number>;
+    /** Starts or updates the SwipeArea reveal gesture. */
+    setOpeningSwipe: (active: boolean, distance: number) => void;
     /** Configured snap points (empty when the drawer has none). */
     snapPoints: Signal<readonly RdxDrawerSnapPoint[]>;
     /** Whether the drawer rests at discrete snap points. */
@@ -56,6 +62,12 @@ const context = (): RdxDrawerRootContext => {
         swipeDirection: root.swipeDirection,
         swipeProgress: root.swipeProgress.asReadonly(),
         setSwipeProgress: (value) => root.swipeProgress.set(value),
+        openingSwipeActive: root.openingSwipeActive.asReadonly(),
+        openingSwipeDistance: root.openingSwipeDistance.asReadonly(),
+        setOpeningSwipe: (active, distance) => {
+            root.openingSwipeDistance.set(distance);
+            root.openingSwipeActive.set(active);
+        },
         snapPoints: root.normalizedSnapPoints,
         hasSnapPoints: root.hasSnapPoints,
         activeSnapPoint: root.snapPoint,
@@ -112,14 +124,14 @@ export class RdxDrawerRoot {
 
     /**
      * Resting positions the drawer snaps to along the dismiss axis. Order ascending by openness; the
-     * last entry is the default the drawer opens to. Omit for a plain open/closed drawer.
+     * first entry is the default the drawer opens to. Omit for a plain open/closed drawer.
      */
     readonly snapPoints = input<readonly RdxDrawerSnapPoint[]>();
 
     /** The active snap point (controlled / uncontrolled with `[(snapPoint)]`). */
     readonly snapPoint = model<RdxDrawerSnapPoint | null>(null);
 
-    /** The snap point the drawer opens to when uncontrolled; defaults to the most open point. */
+    /** The snap point the drawer opens to when uncontrolled; defaults to the first point. */
     readonly defaultSnapPoint = input<RdxDrawerSnapPoint>();
 
     /** Step at most one snap point per release instead of letting velocity skip points. */
@@ -130,6 +142,9 @@ export class RdxDrawerRoot {
 
     /** 0..1 progress of the active dismiss gesture, written by the popup's swipe engine. */
     readonly swipeProgress = signal(0);
+    /** Live SwipeArea reveal state; the popup converts distance into its measured-axis movement. */
+    readonly openingSwipeActive = signal(false);
+    readonly openingSwipeDistance = signal(0);
 
     readonly normalizedSnapPoints = computed<readonly RdxDrawerSnapPoint[]>(() => this.snapPoints() ?? []);
     readonly hasSnapPoints = computed(() => this.normalizedSnapPoints().length > 0);
@@ -159,7 +174,7 @@ export class RdxDrawerRoot {
                 const points = this.normalizedSnapPoints();
 
                 if (open && this.snapPoint() === null && points.length > 0) {
-                    this.snapPoint.set(this.defaultSnapPoint() ?? points[points.length - 1]);
+                    this.snapPoint.set(this.defaultSnapPoint() ?? points[0]);
                 }
             });
         });
@@ -167,7 +182,11 @@ export class RdxDrawerRoot {
         // Reset live swipe progress when closed so a reopened drawer never starts mid-gesture.
         effect(() => {
             if (!this.dialog.open()) {
-                untracked(() => this.swipeProgress.set(0));
+                untracked(() => {
+                    this.swipeProgress.set(0);
+                    this.openingSwipeActive.set(false);
+                    this.openingSwipeDistance.set(0);
+                });
             }
         });
 
@@ -176,7 +195,11 @@ export class RdxDrawerRoot {
             if (this.dialog.open() && this.provider) {
                 onCleanup(
                     untracked(() =>
-                        this.provider!.register({ id: this.dialog.contentId, height: this.popupHeight.asReadonly() })
+                        this.provider!.register({
+                            id: this.dialog.contentId,
+                            height: this.popupHeight.asReadonly(),
+                            swipeProgress: this.swipeProgress.asReadonly()
+                        })
                     )
                 );
             }

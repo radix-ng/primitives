@@ -10,12 +10,7 @@ import {
     linkedSignal,
     PLATFORM_ID
 } from '@angular/core';
-
-/**
- * A target container for the portal. Accepts an `ElementRef`, a native element, or a CSS selector
- * resolved against the document.
- */
-export type RdxPortalContainer = ElementRef<HTMLElement> | HTMLElement | string;
+import { RdxPortalContainer, resolvePortalContainer } from './resolve-container';
 
 @Directive({
     selector: '[rdxPortal]',
@@ -37,7 +32,7 @@ export class RdxPortal {
     readonly computedContainer = this._computedContainer.asReadonly();
 
     private readonly elementContainer = computed<HTMLElement | null>(() => {
-        const provided = this.resolveContainer(this.computedContainer());
+        const provided = resolvePortalContainer(this.computedContainer(), this.document);
         const body = this.document?.body ?? null;
         return provided ?? body;
     });
@@ -68,20 +63,5 @@ export class RdxPortal {
 
     setContainer(container: RdxPortalContainer) {
         this._computedContainer.set(container);
-    }
-
-    private resolveContainer(container: RdxPortalContainer | undefined): HTMLElement | null {
-        if (!container) {
-            return null;
-        }
-        if (typeof container === 'string') {
-            return this.document?.querySelector<HTMLElement>(container) ?? null;
-        }
-        if (container instanceof ElementRef) {
-            return container.nativeElement ?? null;
-        }
-        // Anything that isn't a real element (e.g. a TemplateRef passed by mistake) falls back to
-        // the default container so the element still leaves the flow instead of staying in place.
-        return container instanceof HTMLElement ? container : null;
     }
 }

@@ -1,29 +1,43 @@
-import { Directive, input } from '@angular/core';
-import { RdxPortal, RdxPortalContainer } from '@radix-ng/primitives/portal';
+import { Directive, isDevMode } from '@angular/core';
+import { RdxPortalPresence } from '@radix-ng/primitives/portal';
+import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
 import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
 
 /**
- * Moves the navigation menu popup to a different part of the DOM (by default `document.body`).
+ * Structural directive that teleports the navigation menu popup into a container (default
+ * `document.body`) while the menu is open, and keeps it mounted until any CSS exit `@keyframes`
+ * finishes.
+ *
+ * Apply it with the `*` microsyntax on the positioner —
+ * `<div *rdxNavigationMenuPortal rdxNavigationMenuPositioner>` — or as an explicit
+ * `<ng-template rdxNavigationMenuPortal>`. For a custom container use the explicit form with
+ * `[container]`.
  */
 @Directive({
-    selector: '[rdxNavigationMenuPortal]',
-    hostDirectives: [
-        {
-            directive: RdxPortal,
-            inputs: ['container']
-        }
-    ],
-    host: {
-        '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
-        '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
-        '[attr.data-state]': 'rootContext.isOpen() ? "open" : "closed"'
-    }
+    selector: 'ng-template[rdxNavigationMenuPortal]',
+    exportAs: 'rdxNavigationMenuPortal',
+    hostDirectives: [{ directive: RdxPortalPresence, inputs: ['container'] }],
+    providers: [provideRdxPresenceContext(() => ({ present: injectNavigationMenuRootContext().isOpen }))]
 })
-export class RdxNavigationMenuPortal {
-    protected readonly rootContext = injectNavigationMenuRootContext();
+export class RdxNavigationMenuPortal {}
 
-    /**
-     * Optional container to portal the popup into. Defaults to `document.body`.
-     */
-    readonly container = input<RdxPortalContainer>();
+/**
+ * Dev-mode guard: `rdxNavigationMenuPortal` used to be an attribute directive on a `<div>`. It is now
+ * structural, so the old `<div rdxNavigationMenuPortal>` markup would silently stop portaling — fail
+ * loudly instead.
+ */
+@Directive({
+    selector: '[rdxNavigationMenuPortal]:not(ng-template)'
+})
+export class RdxNavigationMenuPortalMisuseGuard {
+    constructor() {
+        if (isDevMode()) {
+            throw new Error(
+                '[rdxNavigationMenuPortal] is now a structural directive. ' +
+                    'Use `*rdxNavigationMenuPortal` on the positioner element or ' +
+                    '`<ng-template rdxNavigationMenuPortal>`. rdxNavigationMenuPortalPresence has been removed. ' +
+                    'See https://radix-ng.com/components/navigation-menu.md'
+            );
+        }
+    }
 }

@@ -17,8 +17,8 @@ The recipe adds the unread count badge, per-item read state, and "mark all read"
 ## Composed from
 
 - **[Popover](?path=/docs/primitives-popover--docs)** (`rdxPopoverRoot` / `rdxPopoverTrigger` /
-  `rdxPopoverPortalPresence` / `rdxPopoverPortal` / `rdxPopoverPositioner` / `rdxPopoverPopup` /
-  `rdxPopoverTitle`) — the bell trigger and the anchored panel.
+  `rdxPopoverPortal` / `rdxPopoverPositioner` / `rdxPopoverPopup` / `rdxPopoverTitle`) — the bell
+  trigger and the anchored panel.
 - **[ScrollArea](?path=/docs/primitives-scroll-area--docs)** (`rdxScrollAreaRoot` / `…Viewport` /
   `…Content` / `…Scrollbar` / `…Thumb`) — the scrollable notification list with a styled scrollbar.
 
@@ -34,28 +34,24 @@ lives inside the scroll area's `Content`; the vertical `Scrollbar` and `Thumb` s
         <!-- unread badge -->
     </button>
 
-    <ng-template rdxPopoverPortalPresence>
-        <div rdxPopoverPortal>
-            <div sideOffset="8" align="end" rdxPopoverPositioner>
-                <div rdxPopoverPopup>
-                    <div><!-- header: title + "Mark all read" --></div>
+    <div *rdxPopoverPortal sideOffset="8" align="end" rdxPopoverPositioner>
+        <div rdxPopoverPopup>
+            <div><!-- header: title + "Mark all read" --></div>
 
-                    <div rdxScrollAreaRoot>
-                        <div rdxScrollAreaViewport>
-                            <div rdxScrollAreaContent>
-                                <!-- one button per notification -->
-                            </div>
-                        </div>
-                        <div orientation="vertical" rdxScrollAreaScrollbar>
-                            <div rdxScrollAreaThumb></div>
-                        </div>
+            <div rdxScrollAreaRoot>
+                <div rdxScrollAreaViewport>
+                    <div rdxScrollAreaContent>
+                        <!-- one button per notification -->
                     </div>
-
-                    <div><!-- footer: "View all" --></div>
+                </div>
+                <div orientation="vertical" rdxScrollAreaScrollbar>
+                    <div rdxScrollAreaThumb></div>
                 </div>
             </div>
+
+            <div><!-- footer: "View all" --></div>
         </div>
-    </ng-template>
+    </div>
 </ng-container>
 ```
 

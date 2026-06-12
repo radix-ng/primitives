@@ -27,22 +27,18 @@ interface Fruit {
             <button rdxComboboxTrigger>open</button>
             <button rdxComboboxClear>clear</button>
 
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div rdxComboboxPositioner>
-                        <div rdxComboboxPopup>
-                            <div rdxComboboxList aria-label="Fruits">
-                                @for (fruit of fruits(); track fruit.value) {
-                                    <div [value]="fruit.value" rdxComboboxItem>
-                                        {{ fruit.label }}
-                                        <span rdxComboboxItemIndicator>✓</span>
-                                    </div>
-                                }
+            <div *rdxComboboxPortal rdxComboboxPositioner>
+                <div rdxComboboxPopup>
+                    <div rdxComboboxList aria-label="Fruits">
+                        @for (fruit of fruits(); track fruit.value) {
+                            <div [value]="fruit.value" rdxComboboxItem>
+                                {{ fruit.label }}
+                                <span rdxComboboxItemIndicator>✓</span>
                             </div>
-                            <div rdxComboboxEmpty>No results</div>
-                        </div>
+                        }
                     </div>
-                </ng-template>
+                    <div rdxComboboxEmpty>No results</div>
+                </div>
             </div>
         </div>
     `
@@ -402,5 +398,27 @@ describe('Combobox', () => {
             await settle();
             expect(host.value()).toEqual(['apple']);
         });
+    });
+});
+
+describe('Combobox structural portal', () => {
+    it('throws in dev mode when rdxComboboxPortal is used as an attribute instead of structurally', () => {
+        @Component({
+            imports: [_importsCombobox],
+            template: `
+                <div rdxComboboxRoot>
+                    <input rdxComboboxInput aria-label="Fruit" />
+                    <div rdxComboboxPortal>
+                        <div rdxComboboxPopup>Oops</div>
+                    </div>
+                </div>
+            `
+        })
+        class MisuseHost {}
+
+        expect(() => {
+            const fixture = TestBed.createComponent(MisuseHost);
+            fixture.detectChanges();
+        }).toThrow(/structural directive/);
     });
 });

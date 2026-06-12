@@ -18,12 +18,8 @@ import { cn, demoButton, demoTooltip } from '../../storybook/styles';
                         <svg [lucideIcon]="action.icon" aria-hidden="true" size="16" />
                     </button>
 
-                    <div [container]="content" rdxTooltipPortal>
-                        <ng-template #content rdxTooltipPortalPresence>
-                            <div [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
-                                <div [class]="t.popup" rdxTooltipPopup>{{ action.name }}</div>
-                            </div>
-                        </ng-template>
+                    <div *rdxTooltipPortal [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
+                        <div [class]="t.popup" rdxTooltipPopup>{{ action.name }}</div>
                     </div>
                 </ng-container>
             }

@@ -24,42 +24,40 @@ const LINKS = [
         <div rdxDrawerRoot>
             <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Open menu</button>
 
-            <ng-template rdxDrawerPortalPresence>
-                <div [class]="d.portalAnimated" rdxDrawerPortal>
-                    <div [class]="d.backdrop" rdxDrawerBackdrop></div>
+            <ng-template rdxDrawerPortal>
+                <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
 
-                    <div [class]="cn(d.popup, d.side.bottom, 'h-[70vh]')" rdxDrawerPopup>
-                        <div [class]="d.grip" aria-hidden="true"></div>
+                <div [class]="cn(d.popup, d.side.bottom, 'h-[70vh]')" rdxDrawerPopup>
+                    <div [class]="d.grip" aria-hidden="true"></div>
 
-                        <!-- Header stays put: a swipe started here always dismisses. -->
-                        <div class="border-border border-b px-6 py-3">
-                            <h2 [class]="d.title" rdxDrawerTitle>Navigation</h2>
-                            <p [class]="d.description" rdxDrawerDescription>
-                                Scroll the list; the drawer only swipes away once the list is at the top.
-                            </p>
-                        </div>
-
-                        <!-- Scroll region: a swipe started here yields to scrolling until at the edge. -->
-                        <nav [class]="d.body" rdxDrawerContent>
-                            <ul class="flex flex-col">
-                                @for (link of links; track link) {
-                                    <li>
-                                        <button
-                                            [class]="
-                                                cn(
-                                                    'text-foreground w-full rounded-md px-3 py-3 text-left text-sm',
-                                                    'hover:bg-muted focus-visible:bg-muted focus-visible:outline-none'
-                                                )
-                                            "
-                                            rdxDrawerClose
-                                        >
-                                            {{ link }}
-                                        </button>
-                                    </li>
-                                }
-                            </ul>
-                        </nav>
+                    <!-- Header stays put: a swipe started here always dismisses. -->
+                    <div class="border-border border-b px-6 py-3">
+                        <h2 [class]="d.title" rdxDrawerTitle>Navigation</h2>
+                        <p [class]="d.description" rdxDrawerDescription>
+                            Scroll the list; the drawer only swipes away once the list is at the top.
+                        </p>
                     </div>
+
+                    <!-- Scroll region: a swipe started here yields to scrolling until at the edge. -->
+                    <nav [class]="d.body" rdxDrawerContent>
+                        <ul class="flex flex-col">
+                            @for (link of links; track link) {
+                                <li>
+                                    <button
+                                        [class]="
+                                            cn(
+                                                'text-foreground w-full rounded-md px-3 py-3 text-left text-sm',
+                                                'hover:bg-muted focus-visible:bg-muted focus-visible:outline-none'
+                                            )
+                                        "
+                                        rdxDrawerClose
+                                    >
+                                        {{ link }}
+                                    </button>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
                 </div>
             </ng-template>
         </div>

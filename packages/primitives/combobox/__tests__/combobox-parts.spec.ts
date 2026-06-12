@@ -14,18 +14,14 @@ import { RdxComboboxRoot } from '../src/combobox-root';
                 <span #v="rdxComboboxValue" rdxComboboxValue placeholder="Pick one">{{ v.slotText() }}</span>
             </button>
             <input rdxComboboxInput aria-label="Fruit" />
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div rdxComboboxPositioner>
-                        <div rdxComboboxPopup>
-                            <div rdxComboboxList aria-label="Fruits">
-                                @for (fruit of fruits; track fruit) {
-                                    <div [value]="fruit" rdxComboboxItem>{{ fruit }}</div>
-                                }
-                            </div>
-                        </div>
+            <div *rdxComboboxPortal rdxComboboxPositioner>
+                <div rdxComboboxPopup>
+                    <div rdxComboboxList aria-label="Fruits">
+                        @for (fruit of fruits; track fruit) {
+                            <div [value]="fruit" rdxComboboxItem>{{ fruit }}</div>
+                        }
                     </div>
-                </ng-template>
+                </div>
             </div>
         </div>
     `

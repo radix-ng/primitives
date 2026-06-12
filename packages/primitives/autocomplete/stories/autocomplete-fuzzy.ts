@@ -37,35 +37,26 @@ const fuzzyFilter: AutocompleteFilter = (_text, query, value) => {
                 <input [class]="c.input" rdxAutocompleteInput placeholder="e.g. React" aria-label="Documentation" />
             </div>
 
-            <div rdxAutocompletePortal>
-                <ng-template rdxAutocompletePortalPresence>
-                    <div [class]="positioner" rdxAutocompletePositioner>
-                        <div [class]="popup" rdxAutocompletePopup>
-                            <div [class]="c.empty" rdxAutocompleteEmpty>No results found for "{{ ac.value() }}".</div>
-                            <div [class]="c.list" rdxAutocompleteList aria-label="Documentation">
-                                @for (item of items; track item.title) {
-                                    <div
-                                        [class]="itemClass"
-                                        [value]="item"
-                                        [textValue]="item.title"
-                                        rdxAutocompleteItem
-                                    >
-                                        <span class="flex flex-col gap-0.5">
-                                            <span
-                                                class="text-foreground leading-5 font-semibold"
-                                                [innerHTML]="highlight(item.title, ac.value())"
-                                            ></span>
-                                            <span
-                                                class="text-muted-foreground text-xs leading-4"
-                                                [innerHTML]="highlight(item.description, ac.value())"
-                                            ></span>
-                                        </span>
-                                    </div>
-                                }
+            <div *rdxAutocompletePortal [class]="positioner" rdxAutocompletePositioner>
+                <div [class]="popup" rdxAutocompletePopup>
+                    <div [class]="c.empty" rdxAutocompleteEmpty>No results found for "{{ ac.value() }}".</div>
+                    <div [class]="c.list" rdxAutocompleteList aria-label="Documentation">
+                        @for (item of items; track item.title) {
+                            <div [class]="itemClass" [value]="item" [textValue]="item.title" rdxAutocompleteItem>
+                                <span class="flex flex-col gap-0.5">
+                                    <span
+                                        class="text-foreground leading-5 font-semibold"
+                                        [innerHTML]="highlight(item.title, ac.value())"
+                                    ></span>
+                                    <span
+                                        class="text-muted-foreground text-xs leading-4"
+                                        [innerHTML]="highlight(item.description, ac.value())"
+                                    ></span>
+                                </span>
                             </div>
-                        </div>
+                        }
                     </div>
-                </ng-template>
+                </div>
             </div>
         </div>
     `

@@ -20,35 +20,33 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
         <div rdxDrawerRoot>
             <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Open drawer</button>
 
-            <ng-template rdxDrawerPortalPresence>
-                <div [class]="d.portalAnimated" rdxDrawerPortal>
-                    <div [class]="d.backdrop" rdxDrawerBackdrop></div>
+            <ng-template rdxDrawerPortal>
+                <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
 
-                    <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
-                        <div [class]="d.grip" aria-hidden="true"></div>
+                <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
+                    <div [class]="d.grip" aria-hidden="true"></div>
 
-                        <div [class]="d.body" rdxDrawerContent>
-                            <h2 [class]="d.title" rdxDrawerTitle>Drag me down</h2>
-                            <p [class]="d.description" rdxDrawerDescription>
-                                Swipe the sheet downwards or press Escape to dismiss it. Releasing before the halfway
-                                point snaps it back.
-                            </p>
+                    <div [class]="d.body" rdxDrawerContent>
+                        <h2 [class]="d.title" rdxDrawerTitle>Drag me down</h2>
+                        <p [class]="d.description" rdxDrawerDescription>
+                            Swipe the sheet downwards or press Escape to dismiss it. Releasing before the halfway point
+                            snaps it back.
+                        </p>
 
-                            <p class="text-muted-foreground mt-4 text-sm">
-                                The grab handle above is purely visual — the whole panel is draggable. Scrollable
-                                regions yield to scrolling until they reach their edge.
-                            </p>
+                        <p class="text-muted-foreground mt-4 text-sm">
+                            The grab handle above is purely visual — the whole panel is draggable. Scrollable regions
+                            yield to scrolling until they reach their edge.
+                        </p>
 
-                            <div [class]="d.footer">
-                                <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>Cancel</button>
-                                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Confirm</button>
-                            </div>
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>Cancel</button>
+                            <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Confirm</button>
                         </div>
-
-                        <button [class]="d.close" aria-label="Close" rdxDrawerClose>
-                            <svg aria-hidden="true" lucideX size="16"></svg>
-                        </button>
                     </div>
+
+                    <button [class]="d.close" aria-label="Close" rdxDrawerClose>
+                        <svg aria-hidden="true" lucideX size="16"></svg>
+                    </button>
                 </div>
             </ng-template>
         </div>
@@ -91,7 +89,6 @@ import {
     RdxDrawerIndentBackground,
     RdxDrawerPopup,
     RdxDrawerPortal,
-    RdxDrawerPortalPresence,
     RdxDrawerProviderDirective,
     RdxDrawerRoot,
     RdxDrawerSwipeArea,
@@ -111,20 +108,25 @@ The `drawerImports` array re-exports every part for standalone `imports`.
 
 ## Anatomy
 
-Apply the parts to your own markup. `rdxDrawerPortalPresence` manages mounting and waits for exit
-keyframes on the first DOM element inside its template — the `rdxDrawerPortal`. That element **must**
-have a `data-[state=closed]` exit animation, otherwise presence sees no animation on the root node and
-unmounts the drawer instantly, skipping the slide-out. Give the portal an overlay fade (it also dims
-the backdrop) sized to at least the popup's slide duration:
+Apply the parts to your own markup. `rdxDrawerPortal` is a **structural** directive: it teleports the
+backdrop and popup into `document.body` while the drawer is open and waits for the closed-state CSS
+exit keyframes on every root element before unmounting. At least one root **must** have a
+`data-[state=closed]` `@keyframes` exit animation, otherwise presence sees no animation on the roots
+and unmounts the drawer instantly, skipping the slide-out (the popup's slide is a CSS _transition_,
+which presence does not wait for). Give the backdrop an overlay fade sized to at least the popup's
+slide duration:
 
 ```css
-[rdxDrawerPortal][data-state='open'] {
+[rdxDrawerBackdrop][data-state='open'] {
     animation: overlay-in 250ms ease-out;
 }
-[rdxDrawerPortal][data-state='closed'] {
+[rdxDrawerBackdrop][data-state='closed'] {
     animation: overlay-out 200ms ease-in forwards;
 }
 ```
+
+For a non-modal drawer (no backdrop) put the overlay-fade keyframe on the popup instead — it carries
+`data-state` too.
 
 The popup's resting transform should read the swipe variables so the gesture and snap-back are visible,
 and its slide-out keyframe should hold the closed position with `forwards`:
@@ -146,15 +148,13 @@ and its slide-out keyframe should hold the closed position with `forwards`:
 <div rdxDrawerRoot>
     <button rdxDrawerTrigger>Open</button>
 
-    <ng-template rdxDrawerPortalPresence>
-        <div rdxDrawerPortal>
-            <div rdxDrawerBackdrop></div>
-            <div rdxDrawerPopup>
-                <h2 rdxDrawerTitle>Title</h2>
-                <p rdxDrawerDescription>Description</p>
-                <div rdxDrawerContent>…scrollable body…</div>
-                <button rdxDrawerClose>Close</button>
-            </div>
+    <ng-template rdxDrawerPortal>
+        <div rdxDrawerBackdrop></div>
+        <div rdxDrawerPopup>
+            <h2 rdxDrawerTitle>Title</h2>
+            <p rdxDrawerDescription>Description</p>
+            <div rdxDrawerContent>…scrollable body…</div>
+            <button rdxDrawerClose>Close</button>
         </div>
     </ng-template>
 </div>
@@ -179,35 +179,33 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
         <div rdxDrawerRoot>
             <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Open drawer</button>
 
-            <ng-template rdxDrawerPortalPresence>
-                <div [class]="d.portalAnimated" rdxDrawerPortal>
-                    <div [class]="d.backdrop" rdxDrawerBackdrop></div>
+            <ng-template rdxDrawerPortal>
+                <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
 
-                    <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
-                        <div [class]="d.grip" aria-hidden="true"></div>
+                <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
+                    <div [class]="d.grip" aria-hidden="true"></div>
 
-                        <div [class]="d.body" rdxDrawerContent>
-                            <h2 [class]="d.title" rdxDrawerTitle>Drag me down</h2>
-                            <p [class]="d.description" rdxDrawerDescription>
-                                Swipe the sheet downwards or press Escape to dismiss it. Releasing before the halfway
-                                point snaps it back.
-                            </p>
+                    <div [class]="d.body" rdxDrawerContent>
+                        <h2 [class]="d.title" rdxDrawerTitle>Drag me down</h2>
+                        <p [class]="d.description" rdxDrawerDescription>
+                            Swipe the sheet downwards or press Escape to dismiss it. Releasing before the halfway point
+                            snaps it back.
+                        </p>
 
-                            <p class="text-muted-foreground mt-4 text-sm">
-                                The grab handle above is purely visual — the whole panel is draggable. Scrollable
-                                regions yield to scrolling until they reach their edge.
-                            </p>
+                        <p class="text-muted-foreground mt-4 text-sm">
+                            The grab handle above is purely visual — the whole panel is draggable. Scrollable regions
+                            yield to scrolling until they reach their edge.
+                        </p>
 
-                            <div [class]="d.footer">
-                                <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>Cancel</button>
-                                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Confirm</button>
-                            </div>
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>Cancel</button>
+                            <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Confirm</button>
                         </div>
-
-                        <button [class]="d.close" aria-label="Close" rdxDrawerClose>
-                            <svg aria-hidden="true" lucideX size="16"></svg>
-                        </button>
                     </div>
+
+                    <button [class]="d.close" aria-label="Close" rdxDrawerClose>
+                        <svg aria-hidden="true" lucideX size="16"></svg>
+                    </button>
                 </div>
             </ng-template>
         </div>
@@ -242,26 +240,24 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
             <div [(open)]="open" rdxDrawerRoot>
                 <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Open drawer</button>
 
-                <ng-template rdxDrawerPortalPresence>
-                    <div [class]="d.portalAnimated" rdxDrawerPortal>
-                        <div [class]="d.backdrop" rdxDrawerBackdrop></div>
+                <ng-template rdxDrawerPortal>
+                    <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
 
-                        <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
-                            <div [class]="d.grip" aria-hidden="true"></div>
+                    <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
+                        <div [class]="d.grip" aria-hidden="true"></div>
 
-                            <div [class]="d.body" rdxDrawerContent>
-                                <h2 [class]="d.title" rdxDrawerTitle>Controlled drawer</h2>
-                                <p [class]="d.description" rdxDrawerDescription>
-                                    The open state is owned by the component and bound with
-                                    <code>[(open)]</code>
-                                    .
-                                </p>
+                        <div [class]="d.body" rdxDrawerContent>
+                            <h2 [class]="d.title" rdxDrawerTitle>Controlled drawer</h2>
+                            <p [class]="d.description" rdxDrawerDescription>
+                                The open state is owned by the component and bound with
+                                <code>[(open)]</code>
+                                .
+                            </p>
 
-                                <div [class]="d.footer">
-                                    <button [class]="cn(b.base, b.primary, b.size.sm)" (click)="open.set(false)">
-                                        Close from outside
-                                    </button>
-                                </div>
+                            <div [class]="d.footer">
+                                <button [class]="cn(b.base, b.primary, b.size.sm)" (click)="open.set(false)">
+                                    Close from outside
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -301,20 +297,18 @@ const SIDES: RdxDrawerSwipeDirection[] = ['top', 'right', 'bottom', 'left'];
                         {{ side }}
                     </button>
 
-                    <ng-template rdxDrawerPortalPresence>
-                        <div [class]="d.portalAnimated" rdxDrawerPortal>
-                            <div [class]="d.backdrop" rdxDrawerBackdrop></div>
+                    <ng-template rdxDrawerPortal>
+                        <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
 
-                            <div [class]="cn(d.popup, d.side[side])" rdxDrawerPopup>
-                                <div [class]="d.body" rdxDrawerContent>
-                                    <h2 [class]="cn(d.title, 'capitalize')" rdxDrawerTitle>{{ side }} drawer</h2>
-                                    <p [class]="d.description" rdxDrawerDescription>
-                                        Swipe toward the {{ side }} edge to dismiss.
-                                    </p>
+                        <div [class]="cn(d.popup, d.side[side])" rdxDrawerPopup>
+                            <div [class]="d.body" rdxDrawerContent>
+                                <h2 [class]="cn(d.title, 'capitalize')" rdxDrawerTitle>{{ side }} drawer</h2>
+                                <p [class]="d.description" rdxDrawerDescription>
+                                    Swipe toward the {{ side }} edge to dismiss.
+                                </p>
 
-                                    <div [class]="d.footer">
-                                        <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Done</button>
-                                    </div>
+                                <div [class]="d.footer">
+                                    <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Done</button>
                                 </div>
                             </div>
                         </div>
@@ -338,47 +332,63 @@ Pass `[snapPoints]` (fractions `0–1`, pixel numbers, or strings like `'160px'`
 ordered ascending by openness) to let the drawer rest at intermediate heights. Bind `[(snapPoint)]` to
 read or drive the active point; a fast flick skips points and dragging past the lowest one dismisses.
 The popup gains `data-expanded` at the most open point and exposes `--drawer-snap-point-offset` /
-`--drawer-height`. Add `[snapToSequentialPoints]` to step one point per release instead of skipping.
+`--drawer-height`. This example mirrors Base UI's compact `31rem` peek and near full-height snap
+points, with a fixed drag header and independently scrollable content. Add `[snapToSequentialPoints]`
+to step one point per release instead of skipping.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { drawerImports, RdxDrawerSnapPoint } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
+import { cn, demoButton } from '../../storybook/styles';
+
+const TOP_MARGIN_REM = 1;
+const VISIBLE_SNAP_POINTS_REM = [30];
+
+function toViewportSnapPoint(heightRem: number): RdxDrawerSnapPoint {
+    return `${heightRem + TOP_MARGIN_REM}rem`;
+}
 
 @Component({
     selector: 'rdx-drawer-snap-points',
     imports: [...drawerImports],
     template: `
-        <div [(snapPoint)]="snap" [snapPoints]="snapPoints" rdxDrawerRoot>
-            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Open snap drawer</button>
+        <div [snapPoints]="snapPoints" rdxDrawerRoot>
+            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerTrigger>Open snap drawer</button>
 
-            <ng-template rdxDrawerPortalPresence>
-                <div [class]="d.portalAnimated" rdxDrawerPortal>
-                    <div [class]="d.backdrop" rdxDrawerBackdrop></div>
+            <ng-template rdxDrawerPortal>
+                <div
+                    class="bg-foreground/20 fixed inset-0 min-h-dvh opacity-[calc(1-var(--drawer-swipe-progress))] transition-opacity duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)] data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0"
+                    rdxDrawerBackdrop
+                ></div>
 
-                    <div [class]="cn(d.popup, d.side.bottom, 'h-[85vh]')" rdxDrawerPopup>
-                        <div [class]="d.grip" aria-hidden="true"></div>
-
-                        <div class="text-muted-foreground px-6 pt-2 text-center text-xs font-medium">
-                            Active snap point: {{ snap() }}
+                <div class="fixed inset-0 flex touch-none items-end justify-center" rdxDrawerViewport>
+                    <div
+                        class="border-border bg-card text-card-foreground relative flex h-[calc(100dvh-var(--top-margin))] min-h-0 w-full [transform:translateY(var(--drawer-swipe-movement-y))] touch-none flex-col overflow-visible border-t shadow-lg outline-none [--bleed:3rem] [--top-margin:1rem] [transition:transform_450ms_cubic-bezier(0.32,0.72,0,1),box-shadow_450ms_cubic-bezier(0.32,0.72,0,1)] after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-[var(--bleed)] after:bg-[inherit] after:content-[''] data-[ending-style]:[transform:translateY(calc(100%+2px))] data-[starting-style]:[transform:translateY(calc(100%+2px))] data-[swiping]:select-none data-[swiping]:[transition:none]"
+                        rdxDrawerPopup
+                    >
+                        <div class="border-border shrink-0 touch-none border-b px-6 pt-3.5 pb-4">
+                            <div class="bg-muted mx-auto mb-2.5 h-1 w-12 shrink-0"></div>
+                            <h2 class="cursor-default text-center text-base font-bold" rdxDrawerTitle>Snap points</h2>
                         </div>
 
-                        <div [class]="d.body" rdxDrawerContent>
-                            <h2 [class]="d.title" rdxDrawerTitle>Snap points</h2>
-                            <p [class]="d.description" rdxDrawerDescription>
-                                Drag the sheet between {{ snapPoints.length }} resting positions. A fast flick skips
-                                points; dragging past the lowest one dismisses it.
-                            </p>
+                        <div
+                            class="min-h-0 flex-1 touch-auto overflow-y-auto overscroll-contain px-6 pt-4 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]"
+                            rdxDrawerContent
+                        >
+                            <div class="mx-auto w-full max-w-90">
+                                <p class="text-muted-foreground mb-4 text-center text-sm" rdxDrawerDescription>
+                                    Drag the sheet to snap between a compact peek and a near full-height view.
+                                </p>
 
-                            <p class="text-muted-foreground mt-4 text-sm">
-                                The active snap point is two-way bound with
-                                <code>[(snapPoint)]</code>
-                                , so app state and the gesture stay in sync.
-                            </p>
+                                <div class="mb-6 grid gap-3" aria-hidden="true">
+                                    @for (item of items; track item) {
+                                        <div class="bg-muted h-12"></div>
+                                    }
+                                </div>
 
-                            <div [class]="d.footer">
-                                <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="snap.set(1)">Expand</button>
-                                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Close</button>
+                                <div class="flex items-center justify-end gap-3">
+                                    <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>Close</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -390,15 +400,17 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 export class RdxDrawerSnapPointsComponent {
     protected readonly cn = cn;
     protected readonly b = demoButton;
-    protected readonly d = demoDrawer;
-    protected readonly snapPoints: RdxDrawerSnapPoint[] = ['160px', 0.5, 1];
-    protected readonly snap = signal<RdxDrawerSnapPoint | null>(null);
+    protected readonly snapPoints: RdxDrawerSnapPoint[] = [...VISIBLE_SNAP_POINTS_REM.map(toViewportSnapPoint), 1];
+    protected readonly items = Array.from({ length: 20 }, (_, index) => index);
 }
 ```
 
 ### Swipe to open
 
-An off-canvas `rdxDrawerSwipeArea` strip opens the drawer when swiped inward.
+An off-canvas `rdxDrawerSwipeArea` strip reveals the drawer as the pointer moves, then settles it
+open or closed on release. This example mirrors
+Base UI's right-edge swipe-area demo: the non-modal drawer portals back into a local,
+`overflow-hidden` container and uses `rdxDrawerViewport` to position the popup inside it.
 
 ```typescript
 import { Component } from '@angular/core';
@@ -409,31 +421,50 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
     selector: 'rdx-drawer-swipe-to-open',
     imports: [...drawerImports],
     template: `
-        <div class="border-border bg-muted/40 relative h-72 w-full max-w-md overflow-hidden rounded-xl border">
-            <div rdxDrawerRoot>
-                <p class="text-muted-foreground p-4 text-sm">
-                    Swipe up from the highlighted strip at the bottom to open the drawer (or use the button).
-                </p>
-
-                <button [class]="cn(b.base, b.outline, b.size.sm, 'ml-4')" rdxDrawerTrigger>Open</button>
-
-                <!-- Edge strip: swiping inward opens the drawer. -->
+        <div
+            class="border-border bg-background text-foreground relative min-h-80 w-full max-w-2xl overflow-hidden border"
+            #portalContainer
+        >
+            <div [modal]="false" swipeDirection="right" rdxDrawerRoot>
                 <div
-                    class="bg-primary/15 absolute inset-x-0 bottom-0 h-8 cursor-grab touch-none data-[swiping]:cursor-grabbing"
+                    class="border-primary bg-primary/10 absolute inset-y-0 right-0 z-[1] w-10 cursor-grab border-l-2 border-dashed data-[swiping]:cursor-grabbing"
                     rdxDrawerSwipeArea
-                ></div>
+                >
+                    <span
+                        class="text-primary pointer-events-none absolute top-1/2 right-0 z-0 mr-2 origin-center -translate-y-1/2 -rotate-90 text-xs font-bold tracking-[0.12em] whitespace-nowrap uppercase"
+                    >
+                        Swipe here
+                    </span>
+                </div>
 
-                <ng-template rdxDrawerPortalPresence>
-                    <div [class]="d.portalAnimated" rdxDrawerPortal>
-                        <div [class]="d.backdrop" rdxDrawerBackdrop></div>
+                <div class="flex min-h-80 flex-col items-center justify-center gap-3 p-4 pr-16 text-center">
+                    <p class="text-muted-foreground text-sm">Swipe from the right edge to open the drawer.</p>
+                </div>
 
-                        <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
-                            <div [class]="d.grip" aria-hidden="true"></div>
-                            <div [class]="d.body" rdxDrawerContent>
-                                <h2 [class]="d.title" rdxDrawerTitle>Opened by swipe</h2>
-                                <p [class]="d.description" rdxDrawerDescription>Swipe back down to dismiss.</p>
+                <ng-template [container]="portalContainer" rdxDrawerPortal>
+                    <div
+                        [class]="
+                            cn(
+                                'bg-foreground/20 absolute inset-0 opacity-[calc(1-var(--drawer-swipe-progress))]',
+                                'transition-opacity duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)]',
+                                'data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0'
+                            )
+                        "
+                        rdxDrawerBackdrop
+                    ></div>
+
+                    <div class="absolute inset-0 z-20 flex items-stretch justify-end" rdxDrawerViewport>
+                        <div
+                            class="border-border bg-card text-card-foreground h-full w-80 max-w-[calc(100%-3rem)] [transform:translateX(var(--drawer-swipe-movement-x))] overflow-y-auto border-l p-6 shadow-lg outline-none [--drawer-swipe-movement-x:0px] [transition:transform_450ms_cubic-bezier(0.32,0.72,0,1)] data-[ending-style]:[transform:translateX(100%)] data-[starting-style]:[transform:translateX(100%)] data-[swiping]:select-none data-[swiping]:[transition:none]"
+                            rdxDrawerPopup
+                        >
+                            <div class="mx-auto w-full max-w-lg" rdxDrawerContent>
+                                <h2 [class]="d.title" rdxDrawerTitle>Library</h2>
+                                <p [class]="d.description" rdxDrawerDescription>
+                                    Swipe from the edge whenever you want to jump back into your playlists.
+                                </p>
                                 <div [class]="d.footer">
-                                    <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Close</button>
+                                    <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>Close</button>
                                 </div>
                             </div>
                         </div>
@@ -482,42 +513,40 @@ const LINKS = [
         <div rdxDrawerRoot>
             <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Open menu</button>
 
-            <ng-template rdxDrawerPortalPresence>
-                <div [class]="d.portalAnimated" rdxDrawerPortal>
-                    <div [class]="d.backdrop" rdxDrawerBackdrop></div>
+            <ng-template rdxDrawerPortal>
+                <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
 
-                    <div [class]="cn(d.popup, d.side.bottom, 'h-[70vh]')" rdxDrawerPopup>
-                        <div [class]="d.grip" aria-hidden="true"></div>
+                <div [class]="cn(d.popup, d.side.bottom, 'h-[70vh]')" rdxDrawerPopup>
+                    <div [class]="d.grip" aria-hidden="true"></div>
 
-                        <!-- Header stays put: a swipe started here always dismisses. -->
-                        <div class="border-border border-b px-6 py-3">
-                            <h2 [class]="d.title" rdxDrawerTitle>Navigation</h2>
-                            <p [class]="d.description" rdxDrawerDescription>
-                                Scroll the list; the drawer only swipes away once the list is at the top.
-                            </p>
-                        </div>
-
-                        <!-- Scroll region: a swipe started here yields to scrolling until at the edge. -->
-                        <nav [class]="d.body" rdxDrawerContent>
-                            <ul class="flex flex-col">
-                                @for (link of links; track link) {
-                                    <li>
-                                        <button
-                                            [class]="
-                                                cn(
-                                                    'text-foreground w-full rounded-md px-3 py-3 text-left text-sm',
-                                                    'hover:bg-muted focus-visible:bg-muted focus-visible:outline-none'
-                                                )
-                                            "
-                                            rdxDrawerClose
-                                        >
-                                            {{ link }}
-                                        </button>
-                                    </li>
-                                }
-                            </ul>
-                        </nav>
+                    <!-- Header stays put: a swipe started here always dismisses. -->
+                    <div class="border-border border-b px-6 py-3">
+                        <h2 [class]="d.title" rdxDrawerTitle>Navigation</h2>
+                        <p [class]="d.description" rdxDrawerDescription>
+                            Scroll the list; the drawer only swipes away once the list is at the top.
+                        </p>
                     </div>
+
+                    <!-- Scroll region: a swipe started here yields to scrolling until at the edge. -->
+                    <nav [class]="d.body" rdxDrawerContent>
+                        <ul class="flex flex-col">
+                            @for (link of links; track link) {
+                                <li>
+                                    <button
+                                        [class]="
+                                            cn(
+                                                'text-foreground w-full rounded-md px-3 py-3 text-left text-sm',
+                                                'hover:bg-muted focus-visible:bg-muted focus-visible:outline-none'
+                                            )
+                                        "
+                                        rdxDrawerClose
+                                    >
+                                        {{ link }}
+                                    </button>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
                 </div>
             </ng-template>
         </div>
@@ -554,20 +583,18 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
             <div [modal]="false" rdxDrawerRoot>
                 <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Open non-modal drawer</button>
 
-                <ng-template rdxDrawerPortalPresence>
-                    <div [class]="d.portalAnimated" rdxDrawerPortal>
-                        <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
-                            <div [class]="d.grip" aria-hidden="true"></div>
+                <ng-template rdxDrawerPortal>
+                    <div [class]="cn(d.popup, d.side.bottom, d.overlayAnimated)" rdxDrawerPopup>
+                        <div [class]="d.grip" aria-hidden="true"></div>
 
-                            <div [class]="d.body" rdxDrawerContent>
-                                <h2 [class]="d.title" rdxDrawerTitle>Non-modal drawer</h2>
-                                <p [class]="d.description" rdxDrawerDescription>
-                                    Keep interacting with the rest of the page; the counter below still works.
-                                </p>
+                        <div [class]="d.body" rdxDrawerContent>
+                            <h2 [class]="d.title" rdxDrawerTitle>Non-modal drawer</h2>
+                            <p [class]="d.description" rdxDrawerDescription>
+                                Keep interacting with the rest of the page; the counter below still works.
+                            </p>
 
-                                <div [class]="d.footer">
-                                    <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Close</button>
-                                </div>
+                            <div [class]="d.footer">
+                                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Close</button>
                             </div>
                         </div>
                     </div>
@@ -611,38 +638,36 @@ const action = cn(
         <div rdxDrawerRoot>
             <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Photo options</button>
 
-            <ng-template rdxDrawerPortalPresence>
-                <div [class]="d.portalAnimated" rdxDrawerPortal>
-                    <div [class]="d.backdrop" rdxDrawerBackdrop></div>
+            <ng-template rdxDrawerPortal>
+                <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
 
-                    <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
-                        <div [class]="d.grip" aria-hidden="true"></div>
+                <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
+                    <div [class]="d.grip" aria-hidden="true"></div>
 
-                        <div class="overflow-y-auto pb-2" rdxDrawerContent>
-                            <h2 class="sr-only" rdxDrawerTitle>Photo options</h2>
-                            <p class="text-muted-foreground px-6 py-3 text-center text-xs" rdxDrawerDescription>
-                                Choose an action for this photo
-                            </p>
+                    <div class="overflow-y-auto pb-2" rdxDrawerContent>
+                        <h2 class="sr-only" rdxDrawerTitle>Photo options</h2>
+                        <p class="text-muted-foreground px-6 py-3 text-center text-xs" rdxDrawerDescription>
+                            Choose an action for this photo
+                        </p>
 
-                            <!-- Primary group of actions. -->
-                            <div class="divide-border border-border flex flex-col divide-y border-y">
-                                <button [class]="action" rdxDrawerClose>Save to Photos</button>
-                                <button [class]="action" rdxDrawerClose>Copy Link</button>
-                                <button [class]="action" rdxDrawerClose>Add to Album</button>
-                            </div>
-
-                            <!-- Destructive action, set apart by a full-bleed spacer. -->
-                            <div class="bg-muted h-2" aria-hidden="true"></div>
-                            <button
-                                [class]="cn(action, 'border-border text-destructive border-b font-medium')"
-                                rdxDrawerClose
-                            >
-                                Delete Photo
-                            </button>
-
-                            <div class="bg-muted h-2" aria-hidden="true"></div>
-                            <button [class]="cn(action, 'font-semibold')" rdxDrawerClose>Cancel</button>
+                        <!-- Primary group of actions. -->
+                        <div class="divide-border border-border flex flex-col divide-y border-y">
+                            <button [class]="action" rdxDrawerClose>Save to Photos</button>
+                            <button [class]="action" rdxDrawerClose>Copy Link</button>
+                            <button [class]="action" rdxDrawerClose>Add to Album</button>
                         </div>
+
+                        <!-- Destructive action, set apart by a full-bleed spacer. -->
+                        <div class="bg-muted h-2" aria-hidden="true"></div>
+                        <button
+                            [class]="cn(action, 'border-border text-destructive border-b font-medium')"
+                            rdxDrawerClose
+                        >
+                            Delete Photo
+                        </button>
+
+                        <div class="bg-muted h-2" aria-hidden="true"></div>
+                        <button [class]="cn(action, 'font-semibold')" rdxDrawerClose>Cancel</button>
                     </div>
                 </div>
             </ng-template>
@@ -682,29 +707,27 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                 {{ level() === 1 ? 'Open drawer' : 'Open drawer ' + level() }}
             </button>
 
-            <ng-template rdxDrawerPortalPresence>
-                <div [class]="d.portalAnimated" rdxDrawerPortal>
-                    <div [class]="d.backdrop" rdxDrawerBackdrop></div>
+            <ng-template rdxDrawerPortal>
+                <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
 
-                    <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
-                        <div [class]="d.grip" aria-hidden="true"></div>
+                <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
+                    <div [class]="d.grip" aria-hidden="true"></div>
 
-                        <div [class]="d.body" rdxDrawerContent>
-                            <h2 [class]="d.title" rdxDrawerTitle>Drawer level {{ level() }}</h2>
-                            <p [class]="d.description" rdxDrawerDescription>
-                                @if (level() < max()) {
-                                    Open another to stack it on top — this one scales back and peeks behind it.
-                                } @else {
-                                    Deepest level. Swipe down or press Escape to peel the stack back one at a time.
-                                }
-                            </p>
+                    <div [class]="d.body" rdxDrawerContent>
+                        <h2 [class]="d.title" rdxDrawerTitle>Drawer level {{ level() }}</h2>
+                        <p [class]="d.description" rdxDrawerDescription>
+                            @if (level() < max()) {
+                                Open another to stack it on top — this one scales back and peeks behind it.
+                            } @else {
+                                Deepest level. Swipe down or press Escape to peel the stack back one at a time.
+                            }
+                        </p>
 
-                            <div [class]="d.footer">
-                                @if (level() < max()) {
-                                    <rdx-drawer-nested [level]="level() + 1" [max]="max()" />
-                                }
-                                <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>Close</button>
-                            </div>
+                        <div [class]="d.footer">
+                            @if (level() < max()) {
+                                <rdx-drawer-nested [level]="level() + 1" [max]="max()" />
+                            }
+                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>Close</button>
                         </div>
                     </div>
                 </div>
@@ -727,9 +750,10 @@ export class RdxDrawerNestedComponent {
 ### Indent effect
 
 Wrap content in `rdxDrawerProvider` (or call `provideRdxDrawerProvider()` at the app root) and mark a
-region with `rdxDrawerIndentBackground` / `rdxDrawerIndent`. It gains `[data-active]`,
-`--nested-drawers`, and `--drawer-frontmost-height` while any drawer is open, for an iOS-style
-page-scale effect.
+background layer with `rdxDrawerIndentBackground` and the foreground page with `rdxDrawerIndent`.
+Both gain `[data-active]`, `--drawer-swipe-progress`, `--nested-drawers`, and
+`--drawer-frontmost-height` while any drawer is open, so the page-scale effect follows the closing
+gesture.
 
 ```typescript
 import { Component } from '@angular/core';
@@ -740,32 +764,48 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
     selector: 'rdx-drawer-page-scale',
     imports: [...drawerImports],
     template: `
-        <!-- The provider tracks every open drawer; the indented region reacts via [data-active]. -->
-        <div class="w-full max-w-md" rdxDrawerProvider>
-            <div [class]="cn(d.indent, 'border-border bg-muted/40 rounded-xl border p-6')" rdxDrawerIndentBackground>
-                <h3 class="text-foreground text-sm font-semibold">Page content</h3>
-                <p class="text-muted-foreground mt-1 text-sm">
-                    This panel scales back while the drawer is open, like an iOS sheet pushing the page away.
-                </p>
+        <div class="w-full" rdxDrawerProvider>
+            <div class="relative w-full overflow-hidden [--bleed:3rem]" #portalContainer>
+                <div class="bg-foreground absolute inset-0" rdxDrawerIndentBackground></div>
 
-                <div rdxDrawerRoot>
-                    <button [class]="cn(b.base, b.primary, b.size.md, 'mt-4')" rdxDrawerTrigger>Open drawer</button>
+                <div
+                    class="border-border bg-background text-foreground relative min-h-80 origin-top [transform:scale(1)_translateY(0)] border p-4 [transition-duration:calc(400ms*var(--indent-transition)),calc(250ms*var(--indent-transition))] will-change-transform [--indent-radius:calc(1rem*(1-var(--drawer-swipe-progress)))] [--indent-transition:calc(1-clamp(0,calc(var(--drawer-swipe-progress)*100000),1))] [transition:transform_400ms_cubic-bezier(0.32,0.72,0,1),border-radius_250ms_cubic-bezier(0.32,0.72,0,1)] data-[active]:[transform:scale(calc(0.98+(0.02*var(--drawer-swipe-progress))))_translateY(calc(0.5rem*(1-var(--drawer-swipe-progress))))] data-[active]:rounded-tl-[var(--indent-radius)] data-[active]:rounded-tr-[var(--indent-radius)]"
+                    rdxDrawerIndent
+                >
+                    <div class="flex min-h-80 items-center justify-center">
+                        <div [modal]="false" rdxDrawerRoot>
+                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerTrigger>Open drawer</button>
 
-                    <ng-template rdxDrawerPortalPresence>
-                        <div [class]="d.portalAnimated" rdxDrawerPortal>
-                            <div [class]="d.backdrop" rdxDrawerBackdrop></div>
-                            <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
-                                <div [class]="d.grip" aria-hidden="true"></div>
-                                <div [class]="d.body" rdxDrawerContent>
-                                    <h2 [class]="d.title" rdxDrawerTitle>Sheet</h2>
-                                    <p [class]="d.description" rdxDrawerDescription>Close me to restore the page.</p>
-                                    <div [class]="d.footer">
-                                        <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Close</button>
+                            <ng-template [container]="portalContainer" rdxDrawerPortal>
+                                <div
+                                    class="bg-foreground/20 absolute inset-0 opacity-[calc(1-var(--drawer-swipe-progress))] transition-opacity duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)] data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0"
+                                    rdxDrawerBackdrop
+                                ></div>
+
+                                <div class="absolute inset-0 z-20 flex items-end justify-center" rdxDrawerViewport>
+                                    <div
+                                        class="border-border bg-card text-card-foreground -mb-[var(--bleed)] max-h-[calc(80vh+var(--bleed))] w-full [transform:translateY(var(--drawer-swipe-movement-y))] overflow-y-auto overscroll-contain border-t px-6 py-4 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px)+var(--bleed))] shadow-lg outline-none [transition:transform_450ms_cubic-bezier(0.32,0.72,0,1)] data-[ending-style]:[transform:translateY(calc(100%-var(--bleed)+2px))] data-[starting-style]:[transform:translateY(calc(100%-var(--bleed)+2px))] data-[swiping]:select-none data-[swiping]:[transition:none]"
+                                        rdxDrawerPopup
+                                    >
+                                        <div class="bg-muted mx-auto mb-4 h-1 w-12"></div>
+                                        <div class="mx-auto w-full max-w-lg" rdxDrawerContent>
+                                            <h2 class="text-center" [class]="cn(d.title, 'text-center')" rdxDrawerTitle>
+                                                Notifications
+                                            </h2>
+                                            <p [class]="cn(d.description, 'mb-6 text-center')" rdxDrawerDescription>
+                                                You are all caught up. Good job!
+                                            </p>
+                                            <div class="flex justify-center gap-3">
+                                                <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>
+                                                    Close
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </ng-template>
                         </div>
-                    </ng-template>
+                    </div>
                 </div>
             </div>
         </div>
@@ -808,22 +848,20 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
             </button>
 
             <div [handle]="handle" rdxDrawerRoot>
-                <ng-template rdxDrawerPortalPresence>
-                    <div [class]="d.portalAnimated" rdxDrawerPortal>
-                        <div [class]="d.backdrop" rdxDrawerBackdrop></div>
+                <ng-template rdxDrawerPortal>
+                    <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
 
-                        <div [class]="cn(d.popup, d.side.right)" rdxDrawerPopup>
-                            <div [class]="d.body" rdxDrawerContent>
-                                <h2 [class]="d.title" rdxDrawerTitle>Detached triggers</h2>
-                                <p [class]="d.description" rdxDrawerDescription>
-                                    The triggers and this drawer are connected with
-                                    <code>createRdxDrawerHandle()</code>
-                                    rather than DOM nesting.
-                                </p>
+                    <div [class]="cn(d.popup, d.side.right)" rdxDrawerPopup>
+                        <div [class]="d.body" rdxDrawerContent>
+                            <h2 [class]="d.title" rdxDrawerTitle>Detached triggers</h2>
+                            <p [class]="d.description" rdxDrawerDescription>
+                                The triggers and this drawer are connected with
+                                <code>createRdxDrawerHandle()</code>
+                                rather than DOM nesting.
+                            </p>
 
-                                <div [class]="d.footer">
-                                    <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Close</button>
-                                </div>
+                            <div [class]="d.footer">
+                                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Close</button>
                             </div>
                         </div>
                     </div>
@@ -862,7 +900,8 @@ context.
 
 `rdxDrawerProvider` hosts the optional app-level coordinator (also available as
 `provideRdxDrawerProvider()`). `rdxDrawerIndent` and `rdxDrawerIndentBackground` read it and expose
-`[data-active]`, `--nested-drawers`, and `--drawer-frontmost-height`; they take no inputs.
+`[data-active]`, `--drawer-swipe-progress`, `--nested-drawers`, and `--drawer-frontmost-height`; they
+take no inputs.
 
 ### Trigger, Portal, Viewport, Backdrop, Content, Title, Description, and Close
 

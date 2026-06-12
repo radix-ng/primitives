@@ -194,23 +194,20 @@
           "outputs": []
         },
         {
-          "directive": "RdxAlertDialogPortalPresence",
-          "selector": "ng-template[rdxAlertDialogPortalPresence]",
-          "description": "Mounts the portal while the alert dialog is open and waits for CSS exit keyframes before unmounting.",
+          "directive": "RdxAlertDialogPortal",
+          "selector": "ng-template[rdxAlertDialogPortal]",
+          "exportAs": "rdxAlertDialogPortal",
+          "description": "Structural directive that teleports the alert dialog content (backdrop + popup) into a container\n(default `document.body`) while the dialog is open, keeping it mounted until its CSS exit\n`@keyframes` finish. It composes the structural {@link RdxDialogPortal}, inheriting the dialog\npresence context.\n\nUse the explicit `<ng-template rdxAlertDialogPortal>` form; pass `[container]` for a custom target.",
           "hostDirectives": [
-            "RdxDialogPortalPresence"
+            "RdxDialogPortal"
           ],
           "inputs": [],
           "outputs": []
         },
         {
-          "directive": "RdxAlertDialogPortal",
-          "selector": "[rdxAlertDialogPortal]",
-          "exportAs": "rdxAlertDialogPortal",
-          "description": "Moves the alert dialog to a different part of the DOM. Defaults to `document.body`.",
-          "hostDirectives": [
-            "RdxDialogPortal"
-          ],
+          "directive": "RdxAlertDialogPortalMisuseGuard",
+          "selector": "[rdxAlertDialogPortal]:not(ng-template)",
+          "description": "Dev-mode guard: `rdxAlertDialogPortal` is now structural, so the old `<div rdxAlertDialogPortal>`\nmarkup would silently stop portaling — fail loudly instead.",
           "inputs": [],
           "outputs": []
         },
@@ -502,23 +499,20 @@
           "outputs": []
         },
         {
-          "directive": "RdxAutocompletePortalPresence",
-          "selector": "ng-template[rdxAutocompletePortalPresence]",
-          "description": "Wraps the popup template in a presence directive so it mounts/unmounts with the open state and can\nrun enter/leave animations. Reuses the combobox portal-presence (which reads the open state from\nthe combobox root context provided by {@link RdxAutocompleteRoot}).",
+          "directive": "RdxAutocompletePortal",
+          "selector": "ng-template[rdxAutocompletePortal]",
+          "exportAs": "rdxAutocompletePortal",
+          "description": "Structural directive that teleports the autocomplete popup into a container (default\n`document.body`) while the autocomplete is open, keeping it mounted until any CSS exit `@keyframes`\nfinishes. Composes the structural {@link RdxComboboxPortal} (which reads the open state from the\ncombobox root context provided by `RdxAutocompleteRoot`).\n\nApply it with the `*` microsyntax on the positioner —\n`<div *rdxAutocompletePortal rdxAutocompletePositioner>` — or as an explicit\n`<ng-template rdxAutocompletePortal>`. For a custom container use the explicit form with `[container]`.",
           "hostDirectives": [
-            "RdxComboboxPortalPresence"
+            "RdxComboboxPortal"
           ],
           "inputs": [],
           "outputs": []
         },
         {
-          "directive": "RdxAutocompletePortal",
-          "selector": "[rdxAutocompletePortal]",
-          "exportAs": "rdxAutocompletePortal",
-          "description": "Teleports the popup into a container (default `document.body`). Composes the portal primitive\ndirectly (the same building block the combobox portal uses).",
-          "hostDirectives": [
-            "RdxPortal"
-          ],
+          "directive": "RdxAutocompletePortalMisuseGuard",
+          "selector": "[rdxAutocompletePortal]:not(ng-template)",
+          "description": "Dev-mode guard: `rdxAutocompletePortal` is now structural, so the old `<div rdxAutocompletePortal>`\nmarkup would silently stop portaling — fail loudly instead.",
           "inputs": [],
           "outputs": []
         },
@@ -1582,23 +1576,26 @@
           "outputs": []
         },
         {
-          "directive": "RdxComboboxPortalPresence",
-          "selector": "ng-template[rdxComboboxPortalPresence]",
-          "description": "Wraps the popup template in {@link RdxPresenceDirective} so it mounts/unmounts with the open state\nand can run enter/leave animations.",
+          "directive": "RdxComboboxPortal",
+          "selector": "ng-template[rdxComboboxPortal]",
+          "exportAs": "rdxComboboxPortal",
+          "description": "Structural directive that teleports the combobox popup into a container (default `document.body`)\nwhile the combobox is open, and keeps it mounted until any CSS exit `@keyframes` finishes.\n\nApply it with the `*` microsyntax on the positioner —\n`<div *rdxComboboxPortal rdxComboboxPositioner>` — or as an explicit `<ng-template rdxComboboxPortal>`.\nFor a custom container use the explicit form with `[container]`.",
           "hostDirectives": [
-            "RdxPresenceDirective"
+            "RdxPortalPresence"
           ],
-          "inputs": [],
+          "inputs": [
+            {
+              "name": "container",
+              "type": "RdxPortalContainer",
+              "description": "Optional container to portal the content into. Defaults to `document.body`. Declared here (and\nforwarded to the composed {@link RdxPortalPresence}) so the autocomplete portal can re-expose it\nthrough its own `hostDirectives`."
+            }
+          ],
           "outputs": []
         },
         {
-          "directive": "RdxComboboxPortal",
-          "selector": "[rdxComboboxPortal]",
-          "exportAs": "rdxComboboxPortal",
-          "description": "Teleports the popup into a container (default `document.body`).",
-          "hostDirectives": [
-            "RdxPortal"
-          ],
+          "directive": "RdxComboboxPortalMisuseGuard",
+          "selector": "[rdxComboboxPortal]:not(ng-template)",
+          "description": "Dev-mode guard: `rdxComboboxPortal` used to be an attribute directive on a `<div>`. It is now\nstructural, so the old `<div rdxComboboxPortal>` markup would silently stop portaling — fail loudly\ninstead.",
           "inputs": [],
           "outputs": []
         },
@@ -2155,30 +2152,27 @@
           "outputs": []
         },
         {
-          "directive": "RdxDialogPortalPresence",
-          "selector": "ng-template[rdxDialogPortalPresence]",
-          "description": "Mounts the portal while the dialog is open and waits for CSS exit keyframes before unmounting.",
-          "hostDirectives": [
-            "RdxPresenceDirective"
-          ],
-          "inputs": [],
-          "outputs": []
-        },
-        {
           "directive": "RdxDialogPortal",
-          "selector": "[rdxDialogPortal]",
+          "selector": "ng-template[rdxDialogPortal]",
           "exportAs": "rdxDialogPortal",
-          "description": "Moves the dialog to a different part of the DOM.",
+          "description": "Structural directive that teleports the dialog content (backdrop + popup) into a container (default\n`document.body`) while the dialog is open, and keeps it mounted until the CSS exit `@keyframes` on\nevery root element finish.\n\nDialog has two root nodes (backdrop + popup), so use the explicit `<ng-template rdxDialogPortal>`\nform. Pass `[container]` to portal into a different element.",
           "hostDirectives": [
-            "RdxPortal"
+            "RdxPortalPresence"
           ],
           "inputs": [
             {
               "name": "container",
               "type": "RdxPortalContainer",
-              "description": "Optional container to portal the content into. Defaults to `document.body`."
+              "description": "Optional container to portal the content into. Defaults to `document.body`. Declared here (and\nforwarded to the composed {@link RdxPortalPresence}) so that the drawer and alert-dialog portals\ncan re-expose it through their own `hostDirectives`."
             }
           ],
+          "outputs": []
+        },
+        {
+          "directive": "RdxDialogPortalMisuseGuard",
+          "selector": "[rdxDialogPortal]:not(ng-template)",
+          "description": "Dev-mode guard: `rdxDialogPortal` used to be an attribute directive on a `<div>`. It is now\nstructural, so the old `<div rdxDialogPortal>` markup would silently stop portaling — fail loudly\ninstead.",
+          "inputs": [],
           "outputs": []
         },
         {
@@ -2448,7 +2442,7 @@
           "directive": "RdxDrawerIndentBackground",
           "selector": "[rdxDrawerIndentBackground]",
           "exportAs": "rdxDrawerIndentBackground",
-          "description": "The page background layer that scales/indents while any drawer is open.\n\nBehaves like {@link RdxDrawerIndent} (same `[data-active]` / `--nested-drawers` /\n`--drawer-frontmost-height` contract); kept as a distinct part so the page backdrop and the\nindented content can be styled independently, mirroring Base UI.",
+          "description": "The page background layer that scales/indents while any drawer is open.\n\nBehaves like {@link RdxDrawerIndent} (same `[data-active]` / `--drawer-swipe-progress` /\n`--nested-drawers` / `--drawer-frontmost-height` contract); kept as a distinct part so the page\nbackdrop and the indented content can be styled independently, mirroring Base UI.",
           "inputs": [],
           "outputs": []
         },
@@ -2456,7 +2450,7 @@
           "directive": "RdxDrawerIndent",
           "selector": "[rdxDrawerIndent]",
           "exportAs": "rdxDrawerIndent",
-          "description": "Background content that scales/indents while any drawer is open.\n\nReads the nearest {@link RdxDrawerProvider} and exposes styling hooks; the visual transform is\nconsumer CSS (headless):\n- `[data-active]` — present while at least one drawer is open.\n- `--nested-drawers` — the number of open drawers.\n- `--drawer-frontmost-height` — the frontmost drawer's measured size, in pixels.",
+          "description": "Background content that scales/indents while any drawer is open.\n\nReads the nearest {@link RdxDrawerProvider} and exposes styling hooks; the visual transform is\nconsumer CSS (headless):\n- `[data-active]` — present while at least one drawer is open.\n- `--drawer-swipe-progress` — 0..1 live dismiss progress of the frontmost drawer.\n- `--nested-drawers` — the number of open drawers.\n- `--drawer-frontmost-height` — the frontmost drawer's measured size, in pixels.",
           "inputs": [],
           "outputs": []
         },
@@ -2472,23 +2466,20 @@
           "outputs": []
         },
         {
-          "directive": "RdxDrawerPortalPresence",
-          "selector": "ng-template[rdxDrawerPortalPresence]",
-          "description": "Mounts the portal while the drawer is open and waits for CSS exit keyframes before unmounting.",
+          "directive": "RdxDrawerPortal",
+          "selector": "ng-template[rdxDrawerPortal]",
+          "exportAs": "rdxDrawerPortal",
+          "description": "Structural directive that teleports the drawer content (backdrop + popup) into a container (default\n`document.body`) while the drawer is open, keeping it mounted until its CSS exit `@keyframes`\nfinish. It composes the structural {@link RdxDialogPortal}, inheriting the dialog presence context.\n\nUse the explicit `<ng-template rdxDrawerPortal>` form; pass `[container]` for a custom target.",
           "hostDirectives": [
-            "RdxDialogPortalPresence"
+            "RdxDialogPortal"
           ],
           "inputs": [],
           "outputs": []
         },
         {
-          "directive": "RdxDrawerPortal",
-          "selector": "[rdxDrawerPortal]",
-          "exportAs": "rdxDrawerPortal",
-          "description": "Moves the drawer to a different part of the DOM. Defaults to `document.body`.",
-          "hostDirectives": [
-            "RdxDialogPortal"
-          ],
+          "directive": "RdxDrawerPortalMisuseGuard",
+          "selector": "[rdxDrawerPortal]:not(ng-template)",
+          "description": "Dev-mode guard: `rdxDrawerPortal` is now structural, so the old `<div rdxDrawerPortal>` markup would\nsilently stop portaling — fail loudly instead.",
           "inputs": [],
           "outputs": []
         },
@@ -2512,7 +2503,7 @@
             {
               "name": "defaultSnapPoint",
               "type": "RdxDrawerSnapPoint",
-              "description": "The snap point the drawer opens to when uncontrolled; defaults to the most open point."
+              "description": "The snap point the drawer opens to when uncontrolled; defaults to the first point."
             },
             {
               "name": "snapPoint",
@@ -2523,7 +2514,7 @@
             {
               "name": "snapPoints",
               "type": "readonly RdxDrawerSnapPoint[]",
-              "description": "Resting positions the drawer snaps to along the dismiss axis. Order ascending by openness; the\nlast entry is the default the drawer opens to. Omit for a plain open/closed drawer."
+              "description": "Resting positions the drawer snaps to along the dismiss axis. Order ascending by openness; the\nfirst entry is the default the drawer opens to. Omit for a plain open/closed drawer."
             },
             {
               "name": "snapToSequentialPoints",
@@ -2553,7 +2544,7 @@
           "directive": "RdxDrawerSwipeArea",
           "selector": "[rdxDrawerSwipeArea]",
           "exportAs": "rdxDrawerSwipeArea",
-          "description": "An off-canvas region (typically pinned to a screen edge) that opens the drawer when swiped inward.\n\nPhase 1 opens on a threshold crossing rather than following the pointer live (the popup is not\nmounted while closed); the live-follow open will land with snap points. Shares the drawer's\npointer-drag lifecycle so capture/cancel handling stays consistent with the popup gesture.",
+          "description": "An off-canvas region (typically pinned to a screen edge) that opens the drawer when swiped inward.\n\nOpens the drawer at the start of a drag so its popup can follow the pointer live. Releasing past\nthe threshold settles open; releasing before it or cancelling animates the drawer back out.",
           "inputs": [
             {
               "name": "disabled",
@@ -2564,7 +2555,7 @@
             {
               "name": "swipeDirection",
               "type": "RdxDrawerSwipeDirection",
-              "description": "Direction the swipe area opens from; defaults to the root's `swipeDirection`."
+              "description": "Direction the opening gesture travels; defaults to the opposite of the root's dismiss direction."
             }
           ],
           "outputs": []
@@ -3294,19 +3285,20 @@
         },
         {
           "directive": "RdxMenuPortal",
-          "selector": "[rdxMenuPortal]",
+          "selector": "ng-template[rdxMenuPortal]",
           "exportAs": "rdxMenuPortal",
-          "description": "Moves the menu to a different part of the DOM.\nApplied on ng-template — no host bindings (ng-template is not a real DOM node).",
+          "description": "Structural directive that teleports the menu popup into a container (default `document.body`) while\nthe menu is open, and keeps it mounted until any CSS exit `@keyframes` finishes.\n\nThis replaces the consumer-owned `@if (root.open())` mount: it adds both teleporting *and*\nexit-animation support. Apply it with the `*` microsyntax on the positioner —\n`<div *rdxMenuPortal rdxMenuPositioner>` — or as an explicit `<ng-template rdxMenuPortal>`. For a\ncustom container, or a backdrop alongside the positioner (multi-root), use the explicit form.",
           "hostDirectives": [
-            "RdxPortal"
+            "RdxPortalPresence"
           ],
-          "inputs": [
-            {
-              "name": "container",
-              "type": "RdxPortalContainer",
-              "description": "Optional container to portal the content into. Defaults to `document.body`."
-            }
-          ],
+          "inputs": [],
+          "outputs": []
+        },
+        {
+          "directive": "RdxMenuPortalMisuseGuard",
+          "selector": "[rdxMenuPortal]:not(ng-template)",
+          "description": "Dev-mode guard: `rdxMenuPortal` is a structural directive. The old `<div rdxMenuPortal>` markup\nwould silently stop portaling — fail loudly instead.",
+          "inputs": [],
           "outputs": []
         },
         {
@@ -3890,29 +3882,21 @@
           "outputs": []
         },
         {
-          "directive": "RdxNavigationMenuPortalPresence",
-          "selector": "ng-template[rdxNavigationMenuPortalPresence]",
-          "description": "Mounts the popup while the menu is open and waits for CSS exit keyframes before unmounting.\n\n```html\n<ng-template rdxNavigationMenuPortalPresence>…</ng-template>\n```",
+          "directive": "RdxNavigationMenuPortal",
+          "selector": "ng-template[rdxNavigationMenuPortal]",
+          "exportAs": "rdxNavigationMenuPortal",
+          "description": "Structural directive that teleports the navigation menu popup into a container (default\n`document.body`) while the menu is open, and keeps it mounted until any CSS exit `@keyframes`\nfinishes.\n\nApply it with the `*` microsyntax on the positioner —\n`<div *rdxNavigationMenuPortal rdxNavigationMenuPositioner>` — or as an explicit\n`<ng-template rdxNavigationMenuPortal>`. For a custom container use the explicit form with\n`[container]`.",
           "hostDirectives": [
-            "RdxPresenceDirective"
+            "RdxPortalPresence"
           ],
           "inputs": [],
           "outputs": []
         },
         {
-          "directive": "RdxNavigationMenuPortal",
-          "selector": "[rdxNavigationMenuPortal]",
-          "description": "Moves the navigation menu popup to a different part of the DOM (by default `document.body`).",
-          "hostDirectives": [
-            "RdxPortal"
-          ],
-          "inputs": [
-            {
-              "name": "container",
-              "type": "RdxPortalContainer",
-              "description": "Optional container to portal the popup into. Defaults to `document.body`."
-            }
-          ],
+          "directive": "RdxNavigationMenuPortalMisuseGuard",
+          "selector": "[rdxNavigationMenuPortal]:not(ng-template)",
+          "description": "Dev-mode guard: `rdxNavigationMenuPortal` used to be an attribute directive on a `<div>`. It is now\nstructural, so the old `<div rdxNavigationMenuPortal>` markup would silently stop portaling — fail\nloudly instead.",
+          "inputs": [],
           "outputs": []
         },
         {
@@ -4492,29 +4476,21 @@
           "outputs": []
         },
         {
-          "directive": "RdxPopoverPortalPresence",
-          "selector": "ng-template[rdxPopoverPortalPresence]",
-          "description": "Mounts the portal while the popover is open and waits for CSS exit keyframes before unmounting.",
+          "directive": "RdxPopoverPortal",
+          "selector": "ng-template[rdxPopoverPortal]",
+          "exportAs": "rdxPopoverPortal",
+          "description": "Structural directive that teleports the popover content into a container (default `document.body`)\nwhile the popover is open, and keeps it mounted until any CSS exit `@keyframes` finishes.\n\nApply it with the `*` microsyntax on the positioner — `<div *rdxPopoverPortal rdxPopoverPositioner>`\n— or as an explicit `<ng-template rdxPopoverPortal>`. For a custom container use the explicit form\nwith `[container]`.",
           "hostDirectives": [
-            "RdxPresenceDirective"
+            "RdxPortalPresence"
           ],
           "inputs": [],
           "outputs": []
         },
         {
-          "directive": "RdxPopoverPortal",
-          "selector": "[rdxPopoverPortal]",
-          "description": "Moves the popover to a different part of the DOM.",
-          "hostDirectives": [
-            "RdxPortal"
-          ],
-          "inputs": [
-            {
-              "name": "container",
-              "type": "RdxPortalContainer",
-              "description": "Optional container to portal the content into. Defaults to `document.body`."
-            }
-          ],
+          "directive": "RdxPopoverPortalMisuseGuard",
+          "selector": "[rdxPopoverPortal]:not(ng-template)",
+          "description": "Dev-mode guard: `rdxPopoverPortal` used to be an attribute directive on a `<div>`. It is now\nstructural, so the old `<div rdxPopoverPortal>` markup would silently stop portaling — fail loudly\ninstead.",
+          "inputs": [],
           "outputs": []
         },
         {
@@ -4907,29 +4883,21 @@
           "outputs": []
         },
         {
-          "directive": "RdxPreviewCardPortalPresence",
-          "selector": "ng-template[rdxPreviewCardPortalPresence]",
-          "description": "Mounts the portal while the preview-card is open and waits for CSS exit keyframes before unmounting.",
+          "directive": "RdxPreviewCardPortal",
+          "selector": "ng-template[rdxPreviewCardPortal]",
+          "exportAs": "rdxPreviewCardPortal",
+          "description": "Structural directive that teleports the preview-card content into a container (default\n`document.body`) while the card is open, and keeps it mounted until any CSS exit `@keyframes`\nfinishes.\n\nApply it with the `*` microsyntax on the positioner —\n`<div *rdxPreviewCardPortal rdxPreviewCardPositioner>` — or as an explicit\n`<ng-template rdxPreviewCardPortal>`. For a custom container use the explicit form with `[container]`.",
           "hostDirectives": [
-            "RdxPresenceDirective"
+            "RdxPortalPresence"
           ],
           "inputs": [],
           "outputs": []
         },
         {
-          "directive": "RdxPreviewCardPortal",
-          "selector": "[rdxPreviewCardPortal]",
-          "description": "Moves the preview-card to a different part of the DOM.",
-          "hostDirectives": [
-            "RdxPortal"
-          ],
-          "inputs": [
-            {
-              "name": "container",
-              "type": "RdxPortalContainer",
-              "description": "Optional container to portal the content into. Defaults to `document.body`."
-            }
-          ],
+          "directive": "RdxPreviewCardPortalMisuseGuard",
+          "selector": "[rdxPreviewCardPortal]:not(ng-template)",
+          "description": "Dev-mode guard: `rdxPreviewCardPortal` used to be an attribute directive on a `<div>`. It is now\nstructural, so the old `<div rdxPreviewCardPortal>` markup would silently stop portaling — fail\nloudly instead.",
+          "inputs": [],
           "outputs": []
         },
         {
@@ -5592,27 +5560,21 @@
           "outputs": []
         },
         {
-          "directive": "RdxSelectPortalPresence",
-          "selector": "ng-template[rdxSelectPortalPresence]",
+          "directive": "RdxSelectPortal",
+          "selector": "ng-template[rdxSelectPortal]",
+          "exportAs": "rdxSelectPortal",
+          "description": "Structural directive that teleports the select popup into a container (default `document.body`)\nwhile the select is open, and keeps it mounted until any CSS exit `@keyframes` finishes.\n\nApply it with the `*` microsyntax on the popup — `<div *rdxSelectPortal rdxSelectPopup>` — or as an\nexplicit `<ng-template rdxSelectPortal>`. For a custom container use the explicit form with\n`[container]`. Unlike the previous attribute portal it no longer parks an empty wrapper `<div>` in\n`document.body` while the select is closed.",
           "hostDirectives": [
-            "RdxPresenceDirective"
+            "RdxPortalPresence"
           ],
           "inputs": [],
           "outputs": []
         },
         {
-          "directive": "RdxSelectPortal",
-          "selector": "[rdxSelectPortal]",
-          "hostDirectives": [
-            "RdxPortal"
-          ],
-          "inputs": [
-            {
-              "name": "container",
-              "type": "RdxPortalContainer",
-              "description": "Optional container to portal the content into. Defaults to `document.body` when not set."
-            }
-          ],
+          "directive": "RdxSelectPortalMisuseGuard",
+          "selector": "[rdxSelectPortal]:not(ng-template)",
+          "description": "Dev-mode guard: `rdxSelectPortal` used to be an attribute directive on a `<div>`. It is now\nstructural, so the old `<div rdxSelectPortal>` markup would silently stop portaling — fail loudly\ninstead.",
+          "inputs": [],
           "outputs": []
         },
         {
@@ -6921,28 +6883,21 @@
           "outputs": []
         },
         {
-          "directive": "RdxTooltipPortalPresence",
-          "selector": "ng-template[rdxTooltipPortalPresence]",
+          "directive": "RdxTooltipPortal",
+          "selector": "ng-template[rdxTooltipPortal]",
+          "exportAs": "rdxTooltipPortal",
+          "description": "Structural directive that teleports the tooltip content into a container (default `document.body`)\nwhile the tooltip is open, and keeps it mounted until any CSS exit `@keyframes` finishes.\n\nApply it with the `*` microsyntax on the positioner — `<div *rdxTooltipPortal rdxTooltipPositioner>`\n— or as an explicit `<ng-template rdxTooltipPortal>`. For a custom container use the explicit form\nwith `[container]`.",
           "hostDirectives": [
-            "RdxPresenceDirective"
+            "RdxPortalPresence"
           ],
           "inputs": [],
           "outputs": []
         },
         {
-          "directive": "RdxTooltipPortal",
-          "selector": "[rdxTooltipPortal]",
-          "description": "Moves the tooltip to a different part of the DOM.",
-          "hostDirectives": [
-            "RdxPortal"
-          ],
-          "inputs": [
-            {
-              "name": "container",
-              "type": "RdxPortalContainer",
-              "required": true
-            }
-          ],
+          "directive": "RdxTooltipPortalMisuseGuard",
+          "selector": "[rdxTooltipPortal]:not(ng-template)",
+          "description": "Dev-mode guard: `rdxTooltipPortal` used to be an attribute directive on a `<div>`. It is now\nstructural, so the old `<div rdxTooltipPortal>` markup would silently stop portaling — fail loudly\ninstead.",
+          "inputs": [],
           "outputs": []
         },
         {

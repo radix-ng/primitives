@@ -20,20 +20,16 @@ import { ComboboxItemHighlightedDetails, RdxComboboxRoot } from '../src/combobox
             rdxComboboxRoot
         >
             <input rdxComboboxInput aria-label="Item" />
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div rdxComboboxPositioner>
-                        <div rdxComboboxPopup>
-                            <div rdxComboboxList aria-label="Items">
-                                @for (i of windowIndexes; track i) {
-                                    <div [value]="cmb.filteredItems()[i]" [index]="i" rdxComboboxItem>
-                                        {{ cmb.filteredItems()[i] }}
-                                    </div>
-                                }
+            <div *rdxComboboxPortal rdxComboboxPositioner>
+                <div rdxComboboxPopup>
+                    <div rdxComboboxList aria-label="Items">
+                        @for (i of windowIndexes; track i) {
+                            <div [value]="cmb.filteredItems()[i]" [index]="i" rdxComboboxItem>
+                                {{ cmb.filteredItems()[i] }}
                             </div>
-                        </div>
+                        }
                     </div>
-                </ng-template>
+                </div>
             </div>
         </div>
     `

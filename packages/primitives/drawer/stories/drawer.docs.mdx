@@ -45,7 +45,6 @@ import {
     RdxDrawerIndentBackground,
     RdxDrawerPopup,
     RdxDrawerPortal,
-    RdxDrawerPortalPresence,
     RdxDrawerProviderDirective,
     RdxDrawerRoot,
     RdxDrawerSwipeArea,
@@ -65,20 +64,25 @@ The `drawerImports` array re-exports every part for standalone `imports`.
 
 ## Anatomy
 
-Apply the parts to your own markup. `rdxDrawerPortalPresence` manages mounting and waits for exit
-keyframes on the first DOM element inside its template — the `rdxDrawerPortal`. That element **must**
-have a `data-[state=closed]` exit animation, otherwise presence sees no animation on the root node and
-unmounts the drawer instantly, skipping the slide-out. Give the portal an overlay fade (it also dims
-the backdrop) sized to at least the popup's slide duration:
+Apply the parts to your own markup. `rdxDrawerPortal` is a **structural** directive: it teleports the
+backdrop and popup into `document.body` while the drawer is open and waits for the closed-state CSS
+exit keyframes on every root element before unmounting. At least one root **must** have a
+`data-[state=closed]` `@keyframes` exit animation, otherwise presence sees no animation on the roots
+and unmounts the drawer instantly, skipping the slide-out (the popup's slide is a CSS _transition_,
+which presence does not wait for). Give the backdrop an overlay fade sized to at least the popup's
+slide duration:
 
 ```css
-[rdxDrawerPortal][data-state='open'] {
+[rdxDrawerBackdrop][data-state='open'] {
     animation: overlay-in 250ms ease-out;
 }
-[rdxDrawerPortal][data-state='closed'] {
+[rdxDrawerBackdrop][data-state='closed'] {
     animation: overlay-out 200ms ease-in forwards;
 }
 ```
+
+For a non-modal drawer (no backdrop) put the overlay-fade keyframe on the popup instead — it carries
+`data-state` too.
 
 The popup's resting transform should read the swipe variables so the gesture and snap-back are visible,
 and its slide-out keyframe should hold the closed position with `forwards`:
@@ -100,15 +104,13 @@ and its slide-out keyframe should hold the closed position with `forwards`:
 <div rdxDrawerRoot>
     <button rdxDrawerTrigger>Open</button>
 
-    <ng-template rdxDrawerPortalPresence>
-        <div rdxDrawerPortal>
-            <div rdxDrawerBackdrop></div>
-            <div rdxDrawerPopup>
-                <h2 rdxDrawerTitle>Title</h2>
-                <p rdxDrawerDescription>Description</p>
-                <div rdxDrawerContent>…scrollable body…</div>
-                <button rdxDrawerClose>Close</button>
-            </div>
+    <ng-template rdxDrawerPortal>
+        <div rdxDrawerBackdrop></div>
+        <div rdxDrawerPopup>
+            <h2 rdxDrawerTitle>Title</h2>
+            <p rdxDrawerDescription>Description</p>
+            <div rdxDrawerContent>…scrollable body…</div>
+            <button rdxDrawerClose>Close</button>
         </div>
     </ng-template>
 </div>
@@ -142,13 +144,18 @@ Pass `[snapPoints]` (fractions `0–1`, pixel numbers, or strings like `'160px'`
 ordered ascending by openness) to let the drawer rest at intermediate heights. Bind `[(snapPoint)]` to
 read or drive the active point; a fast flick skips points and dragging past the lowest one dismisses.
 The popup gains `data-expanded` at the most open point and exposes `--drawer-snap-point-offset` /
-`--drawer-height`. Add `[snapToSequentialPoints]` to step one point per release instead of skipping.
+`--drawer-height`. This example mirrors Base UI's compact `31rem` peek and near full-height snap
+points, with a fixed drag header and independently scrollable content. Add `[snapToSequentialPoints]`
+to step one point per release instead of skipping.
 
 <Canvas of={Stories.SnapPoints} />
 
 ### Swipe to open
 
-An off-canvas `rdxDrawerSwipeArea` strip opens the drawer when swiped inward.
+An off-canvas `rdxDrawerSwipeArea` strip reveals the drawer as the pointer moves, then settles it
+open or closed on release. This example mirrors
+Base UI's right-edge swipe-area demo: the non-modal drawer portals back into a local,
+`overflow-hidden` container and uses `rdxDrawerViewport` to position the popup inside it.
 
 <Canvas of={Stories.SwipeToOpen} />
 
@@ -184,9 +191,10 @@ detected through the dialog hierarchy, so every parent gains `data-nested-drawer
 ### Indent effect
 
 Wrap content in `rdxDrawerProvider` (or call `provideRdxDrawerProvider()` at the app root) and mark a
-region with `rdxDrawerIndentBackground` / `rdxDrawerIndent`. It gains `[data-active]`,
-`--nested-drawers`, and `--drawer-frontmost-height` while any drawer is open, for an iOS-style
-page-scale effect.
+background layer with `rdxDrawerIndentBackground` and the foreground page with `rdxDrawerIndent`.
+Both gain `[data-active]`, `--drawer-swipe-progress`, `--nested-drawers`, and
+`--drawer-frontmost-height` while any drawer is open, so the page-scale effect follows the closing
+gesture.
 
 <Canvas of={Stories.PageScale} />
 
@@ -225,7 +233,8 @@ context.
 
 `rdxDrawerProvider` hosts the optional app-level coordinator (also available as
 `provideRdxDrawerProvider()`). `rdxDrawerIndent` and `rdxDrawerIndentBackground` read it and expose
-`[data-active]`, `--nested-drawers`, and `--drawer-frontmost-height`; they take no inputs.
+`[data-active]`, `--drawer-swipe-progress`, `--nested-drawers`, and `--drawer-frontmost-height`; they
+take no inputs.
 
 ### Trigger, Portal, Viewport, Backdrop, Content, Title, Description, and Close
 

@@ -39,7 +39,6 @@ import {
     RdxDialogDescription,
     RdxDialogPopup,
     RdxDialogPortal,
-    RdxDialogPortalPresence,
     RdxDialogRoot,
     RdxDialogTitle,
     RdxDialogTrigger,
@@ -57,21 +56,22 @@ The `dialogImports` array re-exports every part for standalone `imports`.
 
 ## Anatomy
 
-Apply the parts to your own markup. `rdxDialogPortalPresence` manages mounting and waits for exit
-keyframes on the first DOM element inside its template.
+Apply the parts to your own markup. `rdxDialogPortal` is a **structural** directive: it teleports the
+backdrop and popup into `document.body` while the dialog is open and keeps them mounted until the
+closed-state CSS exit keyframes on every root element finish. Because the dialog has two root nodes
+(backdrop + popup), use the explicit `<ng-template rdxDialogPortal>` form (pass `[container]` for a
+custom portal target).
 
 ```html
 <div rdxDialogRoot>
     <button rdxDialogTrigger>Open</button>
 
-    <ng-template rdxDialogPortalPresence>
-        <div rdxDialogPortal>
-            <div rdxDialogBackdrop></div>
-            <div rdxDialogPopup>
-                <h2 rdxDialogTitle>Edit profile</h2>
-                <p rdxDialogDescription>Make changes to your profile.</p>
-                <button rdxDialogClose>Close</button>
-            </div>
+    <ng-template rdxDialogPortal>
+        <div rdxDialogBackdrop></div>
+        <div rdxDialogPopup>
+            <h2 rdxDialogTitle>Edit profile</h2>
+            <p rdxDialogDescription>Make changes to your profile.</p>
+            <button rdxDialogClose>Close</button>
         </div>
     </ng-template>
 </div>
@@ -181,7 +181,8 @@ Control the dialog's `open` state from a menu item to launch it from a `Menu`.
 
 ### Portal
 
-`RdxDialogPortal` moves content to `document.body` by default or to a configured container.
+`RdxDialogPortal` is a structural directive (`<ng-template rdxDialogPortal>`) that teleports the
+backdrop and popup into `document.body` by default, or into the `container` element when set.
 
 <ArgTypes of={RdxDialogPortal} />
 

@@ -15,20 +15,18 @@ const SIDES: RdxDrawerSwipeDirection[] = ['top', 'right', 'bottom', 'left'];
                         {{ side }}
                     </button>
 
-                    <ng-template rdxDrawerPortalPresence>
-                        <div [class]="d.portalAnimated" rdxDrawerPortal>
-                            <div [class]="d.backdrop" rdxDrawerBackdrop></div>
+                    <ng-template rdxDrawerPortal>
+                        <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
 
-                            <div [class]="cn(d.popup, d.side[side])" rdxDrawerPopup>
-                                <div [class]="d.body" rdxDrawerContent>
-                                    <h2 [class]="cn(d.title, 'capitalize')" rdxDrawerTitle>{{ side }} drawer</h2>
-                                    <p [class]="d.description" rdxDrawerDescription>
-                                        Swipe toward the {{ side }} edge to dismiss.
-                                    </p>
+                        <div [class]="cn(d.popup, d.side[side])" rdxDrawerPopup>
+                            <div [class]="d.body" rdxDrawerContent>
+                                <h2 [class]="cn(d.title, 'capitalize')" rdxDrawerTitle>{{ side }} drawer</h2>
+                                <p [class]="d.description" rdxDrawerDescription>
+                                    Swipe toward the {{ side }} edge to dismiss.
+                                </p>
 
-                                    <div [class]="d.footer">
-                                        <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Done</button>
-                                    </div>
+                                <div [class]="d.footer">
+                                    <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Done</button>
                                 </div>
                             </div>
                         </div>

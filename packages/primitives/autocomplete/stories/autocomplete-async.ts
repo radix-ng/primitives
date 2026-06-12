@@ -132,40 +132,28 @@ const top100Movies: Movie[] = [
                 />
             </div>
 
-            <div rdxAutocompletePortal>
-                <ng-template rdxAutocompletePortalPresence>
-                    <div [class]="c.positioner" rdxAutocompletePositioner>
-                        <div [class]="c.popup" [hidden]="!status()" rdxAutocompletePopup>
-                            <div
-                                class="text-muted-foreground flex items-center gap-2 px-2 py-1 text-xs"
-                                rdxAutocompleteStatus
-                            >
-                                @if (loading()) {
-                                    <span
-                                        class="inline-block size-3 animate-spin rounded-full border border-current border-r-transparent"
-                                        aria-hidden="true"
-                                    ></span>
-                                    Searching…
-                                } @else {
-                                    {{ status() }}
-                                }
-                            </div>
-                            <div [class]="c.list" rdxAutocompleteList aria-label="Movies">
-                                @for (movie of results(); track movie.id) {
-                                    <div
-                                        [class]="c.item"
-                                        [value]="movie.title"
-                                        [textValue]="movie.title"
-                                        rdxAutocompleteItem
-                                    >
-                                        {{ movie.title }}
-                                        <span class="text-muted-foreground ml-1 text-xs">{{ movie.year }}</span>
-                                    </div>
-                                }
-                            </div>
-                        </div>
+            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
+                <div [class]="c.popup" [hidden]="!status()" rdxAutocompletePopup>
+                    <div class="text-muted-foreground flex items-center gap-2 px-2 py-1 text-xs" rdxAutocompleteStatus>
+                        @if (loading()) {
+                            <span
+                                class="inline-block size-3 animate-spin rounded-full border border-current border-r-transparent"
+                                aria-hidden="true"
+                            ></span>
+                            Searching…
+                        } @else {
+                            {{ status() }}
+                        }
                     </div>
-                </ng-template>
+                    <div [class]="c.list" rdxAutocompleteList aria-label="Movies">
+                        @for (movie of results(); track movie.id) {
+                            <div [class]="c.item" [value]="movie.title" [textValue]="movie.title" rdxAutocompleteItem>
+                                {{ movie.title }}
+                                <span class="text-muted-foreground ml-1 text-xs">{{ movie.year }}</span>
+                            </div>
+                        }
+                    </div>
+                </div>
             </div>
         </div>
     `

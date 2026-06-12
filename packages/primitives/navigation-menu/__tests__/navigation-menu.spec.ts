@@ -25,15 +25,11 @@ import { navigationMenuImports, RdxNavigationMenuRoot } from '@radix-ng/primitiv
                 </li>
             </ul>
 
-            <ng-template rdxNavigationMenuPortalPresence>
-                <div rdxNavigationMenuPortal>
-                    <div rdxNavigationMenuPositioner>
-                        <div data-test-popup rdxNavigationMenuPopup>
-                            <div data-test-viewport rdxNavigationMenuViewport></div>
-                        </div>
-                    </div>
+            <div *rdxNavigationMenuPortal rdxNavigationMenuPositioner>
+                <div data-test-popup rdxNavigationMenuPopup>
+                    <div data-test-viewport rdxNavigationMenuViewport></div>
                 </div>
-            </ng-template>
+            </div>
         </nav>
     `
 })
@@ -168,5 +164,30 @@ describe('RdxNavigationMenu', () => {
         root().close();
         fixture.detectChanges();
         expect(root().value()).toBeNull();
+    });
+});
+
+describe('NavigationMenu structural portal', () => {
+    it('throws in dev mode when rdxNavigationMenuPortal is used as an attribute instead of structurally', () => {
+        @Component({
+            imports: [...navigationMenuImports],
+            template: `
+                <nav rdxNavigationMenuRoot>
+                    <ul rdxNavigationMenuList></ul>
+
+                    <div rdxNavigationMenuPortal>
+                        <div rdxNavigationMenuPositioner>
+                            <div rdxNavigationMenuPopup>Oops</div>
+                        </div>
+                    </div>
+                </nav>
+            `
+        })
+        class MisuseHost {}
+
+        expect(() => {
+            const fixture = TestBed.createComponent(MisuseHost);
+            fixture.detectChanges();
+        }).toThrow(/structural directive/);
     });
 });

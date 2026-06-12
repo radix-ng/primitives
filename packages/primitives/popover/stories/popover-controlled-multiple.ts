@@ -31,22 +31,18 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
                     </button>
                 </div>
 
-                <ng-template rdxPopoverPortalPresence>
-                    <div rdxPopoverPortal>
-                        <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                            <div [class]="p.popup" rdxPopoverPopup>
-                                <span [class]="p.arrow" rdxPopoverArrow></span>
-                                <h2 [class]="p.title" rdxPopoverTitle>{{ activeItem()?.label }}</h2>
-                                <p [class]="p.description" rdxPopoverDescription>
-                                    The externally controlled trigger id is {{ triggerId() }}.
-                                </p>
-                                <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                                    <svg aria-hidden="true" lucideX size="14" />
-                                </button>
-                            </div>
-                        </div>
+                <div *rdxPopoverPortal [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
+                    <div [class]="p.popup" rdxPopoverPopup>
+                        <span [class]="p.arrow" rdxPopoverArrow></span>
+                        <h2 [class]="p.title" rdxPopoverTitle>{{ activeItem()?.label }}</h2>
+                        <p [class]="p.description" rdxPopoverDescription>
+                            The externally controlled trigger id is {{ triggerId() }}.
+                        </p>
+                        <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                            <svg aria-hidden="true" lucideX size="14" />
+                        </button>
                     </div>
-                </ng-template>
+                </div>
             </ng-container>
 
             <p class="text-muted-foreground text-center text-xs">

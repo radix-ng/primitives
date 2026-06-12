@@ -25,53 +25,51 @@ interface Group {
         <div [(open)]="open" rdxDialogRoot>
             <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open command palette</button>
 
-            <ng-template rdxDialogPortalPresence>
-                <div [class]="d.portalAnimated" rdxDialogPortal>
-                    <div [class]="d.backdrop" rdxDialogBackdrop></div>
+            <ng-template rdxDialogPortal>
+                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
 
-                    <div class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 pt-[12vh]">
-                        <div [class]="popup" rdxDialogPopup aria-label="Command palette">
-                            <div [(open)]="open" autoHighlight="always" rdxAutocompleteRoot>
-                                <input
-                                    [class]="input"
-                                    rdxAutocompleteInput
-                                    placeholder="Search for apps and commands…"
-                                    aria-label="Command"
-                                />
+                <div class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 pt-[12vh]">
+                    <div [class]="popup" rdxDialogPopup aria-label="Command palette">
+                        <div [(open)]="open" autoHighlight="always" rdxAutocompleteRoot>
+                            <input
+                                [class]="input"
+                                rdxAutocompleteInput
+                                placeholder="Search for apps and commands…"
+                                aria-label="Command"
+                            />
 
-                                <div [class]="list" rdxAutocompleteList aria-label="Commands">
-                                    @for (group of groups; track group.value) {
-                                        <div class="mb-1" rdxAutocompleteGroup>
-                                            <div [class]="groupLabel" rdxAutocompleteGroupLabel>{{ group.value }}</div>
-                                            @for (item of group.items; track item.value) {
-                                                <div
-                                                    [class]="itemClass"
-                                                    [value]="item"
-                                                    [textValue]="item.label"
-                                                    rdxAutocompleteItem
-                                                >
-                                                    <span class="truncate">{{ item.label }}</span>
-                                                    <span [class]="badge">
-                                                        {{ group.value === 'Suggestions' ? 'Application' : 'Command' }}
-                                                    </span>
-                                                </div>
-                                            }
-                                        </div>
-                                    }
-                                    <div [class]="empty" rdxAutocompleteEmpty>No results found.</div>
-                                </div>
+                            <div [class]="list" rdxAutocompleteList aria-label="Commands">
+                                @for (group of groups; track group.value) {
+                                    <div class="mb-1" rdxAutocompleteGroup>
+                                        <div [class]="groupLabel" rdxAutocompleteGroupLabel>{{ group.value }}</div>
+                                        @for (item of group.items; track item.value) {
+                                            <div
+                                                [class]="itemClass"
+                                                [value]="item"
+                                                [textValue]="item.label"
+                                                rdxAutocompleteItem
+                                            >
+                                                <span class="truncate">{{ item.label }}</span>
+                                                <span [class]="badge">
+                                                    {{ group.value === 'Suggestions' ? 'Application' : 'Command' }}
+                                                </span>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                <div [class]="empty" rdxAutocompleteEmpty>No results found.</div>
+                            </div>
 
-                                <div [class]="footer">
-                                    <span class="flex items-center gap-1">
-                                        Activate
-                                        <kbd [class]="kbd">Enter</kbd>
-                                    </span>
-                                    <span class="flex items-center gap-1">
-                                        Actions
-                                        <kbd [class]="kbd">Cmd</kbd>
-                                        <kbd [class]="kbd">K</kbd>
-                                    </span>
-                                </div>
+                            <div [class]="footer">
+                                <span class="flex items-center gap-1">
+                                    Activate
+                                    <kbd [class]="kbd">Enter</kbd>
+                                </span>
+                                <span class="flex items-center gap-1">
+                                    Actions
+                                    <kbd [class]="kbd">Cmd</kbd>
+                                    <kbd [class]="kbd">K</kbd>
+                                </span>
                             </div>
                         </div>
                     </div>

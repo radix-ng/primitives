@@ -10,7 +10,7 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
         <ng-container #root="rdxMenuRoot" [modal]="true" rdxMenuRoot>
             <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>With Backdrop</button>
 
-            @if (root.open()) {
+            <ng-template rdxMenuPortal>
                 <div class="bg-foreground/10 fixed inset-0" rdxMenuBackdrop></div>
                 <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
                     <div [class]="m.popup" rdxMenuPopup>
@@ -22,7 +22,7 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
                         <button [class]="m.item" rdxMenuItem>Print…</button>
                     </div>
                 </div>
-            }
+            </ng-template>
         </ng-container>
     `
 })

@@ -80,30 +80,28 @@ export class ConfirmService {
     imports: [...alertDialogImports],
     template: `
         <div [open]="confirm.open()" (openChange)="confirm.onOpenChange($event)" rdxAlertDialogRoot>
-            <ng-template rdxAlertDialogPortalPresence>
-                <div [class]="d.portalAnimated" rdxAlertDialogPortal>
-                    <div [class]="d.backdrop" rdxAlertDialogBackdrop></div>
+            <ng-template rdxAlertDialogPortal>
+                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxAlertDialogBackdrop></div>
 
-                    <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
-                        @if (confirm.options(); as o) {
-                            <h2 [class]="d.title" rdxAlertDialogTitle>{{ o.title }}</h2>
-                            @if (o.description) {
-                                <p [class]="d.description" rdxAlertDialogDescription>{{ o.description }}</p>
-                            }
-
-                            <div [class]="d.footer">
-                                <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="confirm.settle(false)">
-                                    {{ o.cancelText ?? 'Cancel' }}
-                                </button>
-                                <button
-                                    [class]="cn(b.base, o.destructive ? b.destructive : b.primary, b.size.sm)"
-                                    (click)="confirm.settle(true)"
-                                >
-                                    {{ o.confirmText ?? 'Confirm' }}
-                                </button>
-                            </div>
+                <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
+                    @if (confirm.options(); as o) {
+                        <h2 [class]="d.title" rdxAlertDialogTitle>{{ o.title }}</h2>
+                        @if (o.description) {
+                            <p [class]="d.description" rdxAlertDialogDescription>{{ o.description }}</p>
                         }
-                    </div>
+
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="confirm.settle(false)">
+                                {{ o.cancelText ?? 'Cancel' }}
+                            </button>
+                            <button
+                                [class]="cn(b.base, o.destructive ? b.destructive : b.primary, b.size.sm)"
+                                (click)="confirm.settle(true)"
+                            >
+                                {{ o.confirmText ?? 'Confirm' }}
+                            </button>
+                        </div>
+                    }
                 </div>
             </ng-template>
         </div>
@@ -161,9 +159,9 @@ export class ConfirmationDialogExample {
 
 ## Composed from
 
-- **[Alert Dialog](?path=/docs/primitives-alert-dialog--docs)** (`rdxAlertDialogRoot` / `…PortalPresence` /
-  `…Portal` / `…Backdrop` / `…Popup` / `…Title` / `…Description`) — the modal dialog, driven by `[open]`
-  and `(openChange)` instead of a trigger.
+- **[Alert Dialog](?path=/docs/primitives-alert-dialog--docs)** (`rdxAlertDialogRoot` / `…Portal` /
+  `…Backdrop` / `…Popup` / `…Title` / `…Description`) — the modal dialog, driven by `[open]` and
+  `(openChange)` instead of a trigger.
 - **[Button](?path=/docs/primitives-button--docs)** (`rdxButton`) — the call-site action that awaits the
   result.
 
@@ -291,30 +289,28 @@ export class ConfirmService {
     imports: [...alertDialogImports],
     template: `
         <div [open]="confirm.open()" (openChange)="confirm.onOpenChange($event)" rdxAlertDialogRoot>
-            <ng-template rdxAlertDialogPortalPresence>
-                <div [class]="d.portalAnimated" rdxAlertDialogPortal>
-                    <div [class]="d.backdrop" rdxAlertDialogBackdrop></div>
+            <ng-template rdxAlertDialogPortal>
+                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxAlertDialogBackdrop></div>
 
-                    <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
-                        @if (confirm.options(); as o) {
-                            <h2 [class]="d.title" rdxAlertDialogTitle>{{ o.title }}</h2>
-                            @if (o.description) {
-                                <p [class]="d.description" rdxAlertDialogDescription>{{ o.description }}</p>
-                            }
-
-                            <div [class]="d.footer">
-                                <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="confirm.settle(false)">
-                                    {{ o.cancelText ?? 'Cancel' }}
-                                </button>
-                                <button
-                                    [class]="cn(b.base, o.destructive ? b.destructive : b.primary, b.size.sm)"
-                                    (click)="confirm.settle(true)"
-                                >
-                                    {{ o.confirmText ?? 'Confirm' }}
-                                </button>
-                            </div>
+                <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
+                    @if (confirm.options(); as o) {
+                        <h2 [class]="d.title" rdxAlertDialogTitle>{{ o.title }}</h2>
+                        @if (o.description) {
+                            <p [class]="d.description" rdxAlertDialogDescription>{{ o.description }}</p>
                         }
-                    </div>
+
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="confirm.settle(false)">
+                                {{ o.cancelText ?? 'Cancel' }}
+                            </button>
+                            <button
+                                [class]="cn(b.base, o.destructive ? b.destructive : b.primary, b.size.sm)"
+                                (click)="confirm.settle(true)"
+                            >
+                                {{ o.confirmText ?? 'Confirm' }}
+                            </button>
+                        </div>
+                    }
                 </div>
             </ng-template>
         </div>

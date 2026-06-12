@@ -16,31 +16,29 @@ import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
             <div modal="trap-focus" rdxDialogRoot>
                 <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open dialog</button>
 
-                <ng-template rdxDialogPortalPresence>
-                    <div [class]="d.portalAnimated" rdxDialogPortal>
-                        <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-                            <h2 [class]="d.title" rdxDialogTitle>Focus is trapped</h2>
-                            <p [class]="d.description" rdxDialogDescription>
-                                Press Tab and notice focus never leaves the dialog.
-                            </p>
+                <ng-template rdxDialogPortal>
+                    <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
+                        <h2 [class]="d.title" rdxDialogTitle>Focus is trapped</h2>
+                        <p [class]="d.description" rdxDialogDescription>
+                            Press Tab and notice focus never leaves the dialog.
+                        </p>
 
-                            <label [class]="d.field">
-                                First field
-                                <input [class]="input" placeholder="Focused when opened" />
-                            </label>
-                            <label [class]="d.field">
-                                Second field
-                                <input [class]="input" placeholder="Tab to reach me" />
-                            </label>
+                        <label [class]="d.field">
+                            First field
+                            <input [class]="input" placeholder="Focused when opened" />
+                        </label>
+                        <label [class]="d.field">
+                            Second field
+                            <input [class]="input" placeholder="Tab to reach me" />
+                        </label>
 
-                            <div [class]="d.footer">
-                                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Done</button>
-                            </div>
-
-                            <button [class]="d.close" aria-label="Close" rdxDialogClose>
-                                <svg aria-hidden="true" lucideX size="16" />
-                            </button>
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Done</button>
                         </div>
+
+                        <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                            <svg aria-hidden="true" lucideX size="16" />
+                        </button>
                     </div>
                 </ng-template>
             </div>

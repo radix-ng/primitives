@@ -49,8 +49,9 @@ test('menu — open', async ({ page }) => {
 test('select — open', async ({ page }) => {
     await gotoStory(page, 'primitives-select--default');
     await page.locator('[rdxSelectTrigger]').first().click();
-    // `[rdxSelectContent]` is a zero-size listbox layer; the visible popup is the positioned wrapper.
-    await expect(page.locator('[rdxSelectPopperPositionWrapper]')).toBeVisible();
+    // The popup is a zero-size listbox layer; the visible positioned element is the popper wrapper
+    // (the `rdxSelectPositioner` host), teleported to <body> by the structural `*rdxSelectPortal`.
+    await expect(page.locator('[data-radix-popper-content-wrapper]')).toBeVisible();
     await shoot(page, 'select-default-open.png');
 });
 

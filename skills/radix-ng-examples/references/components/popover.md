@@ -2,8 +2,8 @@
 
 #### An accessible popup anchored to a button.
 
-Popover composes the shared Popper, Portal, Presence, Dismissable Layer, and Focus Scope primitives.
-It remains headless: styles and native CSS animations belong to the consumer.
+Popover composes the shared Popper, structural Portal (portal + presence), Dismissable Layer, and Focus
+Scope primitives. It remains headless: styles and native CSS animations belong to the consumer.
 
 ```typescript
 import { Component } from '@angular/core';
@@ -21,34 +21,28 @@ import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
                 Add details
             </button>
 
-            <ng-template rdxPopoverPortalPresence>
-                <div rdxPopoverPortal>
-                    <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                        <div [class]="p.popup" rdxPopoverPopup>
-                            <span [class]="p.arrow" rdxPopoverArrow></span>
-                            <h2 [class]="p.title" rdxPopoverTitle>Dimensions</h2>
-                            <p [class]="p.description" rdxPopoverDescription>
-                                Set the width and height for the element.
-                            </p>
+            <div *rdxPopoverPortal [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
+                <div [class]="p.popup" rdxPopoverPopup>
+                    <span [class]="p.arrow" rdxPopoverArrow></span>
+                    <h2 [class]="p.title" rdxPopoverTitle>Dimensions</h2>
+                    <p [class]="p.description" rdxPopoverDescription>Set the width and height for the element.</p>
 
-                            <div class="mt-4 grid gap-3">
-                                <label class="grid gap-1 text-xs font-medium">
-                                    Width
-                                    <input [class]="input" value="100%" />
-                                </label>
-                                <label class="grid gap-1 text-xs font-medium">
-                                    Max width
-                                    <input [class]="input" value="300px" />
-                                </label>
-                            </div>
-
-                            <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                                <svg aria-hidden="true" lucideX size="14" />
-                            </button>
-                        </div>
+                    <div class="mt-4 grid gap-3">
+                        <label class="grid gap-1 text-xs font-medium">
+                            Width
+                            <input [class]="input" value="100%" />
+                        </label>
+                        <label class="grid gap-1 text-xs font-medium">
+                            Max width
+                            <input [class]="input" value="300px" />
+                        </label>
                     </div>
+
+                    <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                        <svg aria-hidden="true" lucideX size="14" />
+                    </button>
                 </div>
-            </ng-template>
+            </div>
         </ng-container>
     `
 })
@@ -91,7 +85,6 @@ import {
     RdxPopoverDescription,
     RdxPopoverPopup,
     RdxPopoverPortal,
-    RdxPopoverPortalPresence,
     RdxPopoverPositioner,
     RdxPopoverRoot,
     RdxPopoverTitle,
@@ -108,31 +101,42 @@ import { RdxPopoverModule } from '@radix-ng/primitives/popover';
 
 ## Anatomy
 
-Apply the parts to your own markup. `rdxPopoverPortalPresence` manages mounting and waits for exit
-keyframes on the first DOM element inside its template.
+Apply the parts to your own markup. `rdxPopoverPortal` is a **structural** directive: it teleports
+its content into `document.body` while the popover is open and keeps it mounted until the closed-state
+CSS exit keyframes on its root element finish.
+
+Use the `*` microsyntax on the positioner for the common single-root case:
 
 ```html
 <ng-container rdxPopoverRoot>
     <button rdxPopoverTrigger>Open</button>
 
-    <ng-template rdxPopoverPortalPresence>
-        <div rdxPopoverPortal>
-            <div rdxPopoverBackdrop></div>
-            <div sideOffset="8" rdxPopoverPositioner>
-                <div rdxPopoverPopup>
-                    <span rdxPopoverArrow></span>
-                    <div rdxPopoverViewport>
-                        <div>
-                            <h2 rdxPopoverTitle>Notifications</h2>
-                            <p rdxPopoverDescription>You are all caught up.</p>
-                            <button rdxPopoverClose>Close</button>
-                        </div>
-                    </div>
+    <div *rdxPopoverPortal sideOffset="8" rdxPopoverPositioner>
+        <div rdxPopoverPopup>
+            <span rdxPopoverArrow></span>
+            <div rdxPopoverViewport>
+                <div>
+                    <h2 rdxPopoverTitle>Notifications</h2>
+                    <p rdxPopoverDescription>You are all caught up.</p>
+                    <button rdxPopoverClose>Close</button>
                 </div>
             </div>
         </div>
-    </ng-template>
+    </div>
 </ng-container>
+```
+
+When the content has more than one root node — for example an optional `rdxPopoverBackdrop` next to
+the positioner — use the explicit `<ng-template rdxPopoverPortal>` form (and the same form with
+`[container]` for a custom portal target):
+
+```html
+<ng-template rdxPopoverPortal>
+    <div rdxPopoverBackdrop></div>
+    <div sideOffset="8" rdxPopoverPositioner>
+        <div rdxPopoverPopup>…</div>
+    </div>
+</ng-template>
 ```
 
 ## Examples
@@ -157,34 +161,28 @@ import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
                 Add details
             </button>
 
-            <ng-template rdxPopoverPortalPresence>
-                <div rdxPopoverPortal>
-                    <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                        <div [class]="p.popup" rdxPopoverPopup>
-                            <span [class]="p.arrow" rdxPopoverArrow></span>
-                            <h2 [class]="p.title" rdxPopoverTitle>Dimensions</h2>
-                            <p [class]="p.description" rdxPopoverDescription>
-                                Set the width and height for the element.
-                            </p>
+            <div *rdxPopoverPortal [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
+                <div [class]="p.popup" rdxPopoverPopup>
+                    <span [class]="p.arrow" rdxPopoverArrow></span>
+                    <h2 [class]="p.title" rdxPopoverTitle>Dimensions</h2>
+                    <p [class]="p.description" rdxPopoverDescription>Set the width and height for the element.</p>
 
-                            <div class="mt-4 grid gap-3">
-                                <label class="grid gap-1 text-xs font-medium">
-                                    Width
-                                    <input [class]="input" value="100%" />
-                                </label>
-                                <label class="grid gap-1 text-xs font-medium">
-                                    Max width
-                                    <input [class]="input" value="300px" />
-                                </label>
-                            </div>
-
-                            <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                                <svg aria-hidden="true" lucideX size="14" />
-                            </button>
-                        </div>
+                    <div class="mt-4 grid gap-3">
+                        <label class="grid gap-1 text-xs font-medium">
+                            Width
+                            <input [class]="input" value="100%" />
+                        </label>
+                        <label class="grid gap-1 text-xs font-medium">
+                            Max width
+                            <input [class]="input" value="300px" />
+                        </label>
                     </div>
+
+                    <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                        <svg aria-hidden="true" lucideX size="14" />
+                    </button>
                 </div>
-            </ng-template>
+            </div>
         </ng-container>
     `
 })
@@ -222,20 +220,18 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
             <ng-container [(open)]="open" rdxPopoverRoot>
                 <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Toggle popover</button>
 
-                <ng-template rdxPopoverPortalPresence>
-                    <div rdxPopoverPortal>
-                        <div [class]="p.backdrop" rdxPopoverBackdrop></div>
-                        <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                            <div [class]="p.popup" rdxPopoverPopup>
-                                <span [class]="p.arrow" rdxPopoverArrow></span>
-                                <h2 [class]="p.title" rdxPopoverTitle>Controlled state</h2>
-                                <p [class]="p.description" rdxPopoverDescription>
-                                    The root uses Angular two-way binding with a signal.
-                                </p>
-                                <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                                    <svg aria-hidden="true" lucideX size="14" />
-                                </button>
-                            </div>
+                <ng-template rdxPopoverPortal>
+                    <div [class]="p.backdrop" rdxPopoverBackdrop></div>
+                    <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
+                        <div [class]="p.popup" rdxPopoverPopup>
+                            <span [class]="p.arrow" rdxPopoverArrow></span>
+                            <h2 [class]="p.title" rdxPopoverTitle>Controlled state</h2>
+                            <p [class]="p.description" rdxPopoverDescription>
+                                The root uses Angular two-way binding with a signal.
+                            </p>
+                            <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                                <svg aria-hidden="true" lucideX size="14" />
+                            </button>
                         </div>
                     </div>
                 </ng-template>
@@ -290,22 +286,18 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
                     </button>
                 </div>
 
-                <ng-template rdxPopoverPortalPresence>
-                    <div rdxPopoverPortal>
-                        <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                            <div [class]="p.popup" rdxPopoverPopup>
-                                <span [class]="p.arrow" rdxPopoverArrow></span>
-                                <h2 [class]="p.title" rdxPopoverTitle>{{ activeItem()?.label }}</h2>
-                                <p [class]="p.description" rdxPopoverDescription>
-                                    The externally controlled trigger id is {{ triggerId() }}.
-                                </p>
-                                <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                                    <svg aria-hidden="true" lucideX size="14" />
-                                </button>
-                            </div>
-                        </div>
+                <div *rdxPopoverPortal [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
+                    <div [class]="p.popup" rdxPopoverPopup>
+                        <span [class]="p.arrow" rdxPopoverArrow></span>
+                        <h2 [class]="p.title" rdxPopoverTitle>{{ activeItem()?.label }}</h2>
+                        <p [class]="p.description" rdxPopoverDescription>
+                            The externally controlled trigger id is {{ triggerId() }}.
+                        </p>
+                        <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                            <svg aria-hidden="true" lucideX size="14" />
+                        </button>
                     </div>
-                </ng-template>
+                </div>
             </ng-container>
 
             <p class="text-muted-foreground text-center text-xs">
@@ -374,22 +366,24 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
             <ng-container rdxPopoverRoot>
                 <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Open {{ selectedSide() }}</button>
 
-                <ng-template rdxPopoverPortalPresence>
-                    <div rdxPopoverPortal>
-                        <div [class]="p.positioner" [side]="selectedSide()" sideOffset="8" rdxPopoverPositioner>
-                            <div [class]="p.popup" rdxPopoverPopup>
-                                <span [class]="p.arrow" rdxPopoverArrow></span>
-                                <h2 [class]="p.title" rdxPopoverTitle>Positioned popup</h2>
-                                <p [class]="p.description" rdxPopoverDescription>
-                                    The positioner delegates collision handling to the shared Popper primitive.
-                                </p>
-                                <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                                    <svg aria-hidden="true" lucideX size="14" />
-                                </button>
-                            </div>
-                        </div>
+                <div
+                    *rdxPopoverPortal
+                    [class]="p.positioner"
+                    [side]="selectedSide()"
+                    sideOffset="8"
+                    rdxPopoverPositioner
+                >
+                    <div [class]="p.popup" rdxPopoverPopup>
+                        <span [class]="p.arrow" rdxPopoverArrow></span>
+                        <h2 [class]="p.title" rdxPopoverTitle>Positioned popup</h2>
+                        <p [class]="p.description" rdxPopoverDescription>
+                            The positioner delegates collision handling to the shared Popper primitive.
+                        </p>
+                        <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                            <svg aria-hidden="true" lucideX size="14" />
+                        </button>
                     </div>
-                </ng-template>
+                </div>
             </ng-container>
         </div>
     `
@@ -405,8 +399,9 @@ export class RdxPopoverPositioningComponent {
 
 ### Animation
 
-For presence-managed content, apply native CSS keyframe animation utilities to the portal element.
-The closed animation keeps the portal mounted until `animationend`.
+Apply native CSS keyframe utilities to the positioner (the portal's root element) for the enter/exit
+fade — the closed-state keyframes keep the content mounted until `animationend`. Transform-based
+zoom/slide belongs on the popup, so it never fights the positioner's placement transform.
 
 ```typescript
 import { Component } from '@angular/core';
@@ -421,22 +416,18 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
         <ng-container rdxPopoverRoot>
             <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Animated popover</button>
 
-            <ng-template rdxPopoverPortalPresence>
-                <div [class]="p.portalAnimated" rdxPopoverPortal>
-                    <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                        <div [class]="cn(p.popup, p.popupAnimated)" rdxPopoverPopup>
-                            <span [class]="p.arrow" rdxPopoverArrow></span>
-                            <h2 [class]="p.title" rdxPopoverTitle>Native CSS keyframes</h2>
-                            <p [class]="p.description" rdxPopoverDescription>
-                                Presence keeps this portal mounted until the exit animation finishes.
-                            </p>
-                            <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                                <svg aria-hidden="true" lucideX size="14" />
-                            </button>
-                        </div>
-                    </div>
+            <div *rdxPopoverPortal [class]="cn(p.positioner, p.positionerAnimated)" sideOffset="8" rdxPopoverPositioner>
+                <div [class]="cn(p.popup, p.popupAnimated)" rdxPopoverPopup>
+                    <span [class]="p.arrow" rdxPopoverArrow></span>
+                    <h2 [class]="p.title" rdxPopoverTitle>Native CSS keyframes</h2>
+                    <p [class]="p.description" rdxPopoverDescription>
+                        Presence keeps this content mounted until the exit animation finishes.
+                    </p>
+                    <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                        <svg aria-hidden="true" lucideX size="14" />
+                    </button>
                 </div>
-            </ng-template>
+            </div>
         </ng-container>
     `
 })
@@ -481,32 +472,30 @@ import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
             <ng-container [modal]="modal()" rdxPopoverRoot>
                 <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Open popover</button>
 
-                <ng-template rdxPopoverPortalPresence>
-                    <div rdxPopoverPortal>
-                        @if (modal() === true) {
-                            <div [class]="p.backdrop" rdxPopoverBackdrop></div>
-                        }
-                        <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                            <div [class]="p.popup" rdxPopoverPopup>
-                                <span [class]="p.arrow" rdxPopoverArrow></span>
-                                <h2 [class]="p.title" rdxPopoverTitle>Modal behavior</h2>
-                                <p [class]="p.description" rdxPopoverDescription>
-                                    Switch modes, use Tab to move between controls, then try the outside button.
-                                </p>
+                <ng-template rdxPopoverPortal>
+                    @if (modal() === true) {
+                        <div [class]="p.backdrop" rdxPopoverBackdrop></div>
+                    }
+                    <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
+                        <div [class]="p.popup" rdxPopoverPopup>
+                            <span [class]="p.arrow" rdxPopoverArrow></span>
+                            <h2 [class]="p.title" rdxPopoverTitle>Modal behavior</h2>
+                            <p [class]="p.description" rdxPopoverDescription>
+                                Switch modes, use Tab to move between controls, then try the outside button.
+                            </p>
 
-                                <label class="mt-4 grid gap-1 text-xs font-medium">
-                                    Name
-                                    <input [class]="input" placeholder="Focused when opened" />
-                                </label>
+                            <label class="mt-4 grid gap-1 text-xs font-medium">
+                                Name
+                                <input [class]="input" placeholder="Focused when opened" />
+                            </label>
 
-                                <button [class]="cn(b.base, b.primary, b.size.sm, 'mt-3')" type="button">
-                                    Save changes
-                                </button>
+                            <button [class]="cn(b.base, b.primary, b.size.sm, 'mt-3')" type="button">
+                                Save changes
+                            </button>
 
-                                <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                                    <svg aria-hidden="true" lucideX size="14" />
-                                </button>
-                            </div>
+                            <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                                <svg aria-hidden="true" lucideX size="14" />
+                            </button>
                         </div>
                     </div>
                 </ng-template>
@@ -570,22 +559,24 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
                     Popup anchor
                 </div>
 
-                <ng-template rdxPopoverPortalPresence>
-                    <div rdxPopoverPortal>
-                        <div [class]="p.positioner" [anchor]="customAnchor" sideOffset="8" rdxPopoverPositioner>
-                            <div [class]="p.popup" rdxPopoverPopup>
-                                <span [class]="p.arrow" rdxPopoverArrow></span>
-                                <h2 [class]="p.title" rdxPopoverTitle>Custom anchor</h2>
-                                <p [class]="p.description" rdxPopoverDescription>
-                                    The trigger controls open state, but the positioner is anchored to the dashed box.
-                                </p>
-                                <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                                    <svg aria-hidden="true" lucideX size="14" />
-                                </button>
-                            </div>
-                        </div>
+                <div
+                    *rdxPopoverPortal
+                    [class]="p.positioner"
+                    [anchor]="customAnchor"
+                    sideOffset="8"
+                    rdxPopoverPositioner
+                >
+                    <div [class]="p.popup" rdxPopoverPopup>
+                        <span [class]="p.arrow" rdxPopoverArrow></span>
+                        <h2 [class]="p.title" rdxPopoverTitle>Custom anchor</h2>
+                        <p [class]="p.description" rdxPopoverDescription>
+                            The trigger controls open state, but the positioner is anchored to the dashed box.
+                        </p>
+                        <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                            <svg aria-hidden="true" lucideX size="14" />
+                        </button>
                     </div>
-                </ng-template>
+                </div>
             </ng-container>
         </div>
     `
@@ -634,23 +625,19 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
             </div>
 
             <ng-container [handle]="popover" rdxPopoverRoot>
-                <ng-template rdxPopoverPortalPresence>
-                    <div rdxPopoverPortal>
-                        <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                            <div [class]="p.popup" rdxPopoverPopup>
-                                <span [class]="p.arrow" rdxPopoverArrow></span>
-                                <h2 [class]="p.title" rdxPopoverTitle>Detached handles</h2>
-                                <p [class]="p.description" rdxPopoverDescription>
-                                    Both triggers live outside the root. Open another trigger to move this popup without
-                                    closing it first.
-                                </p>
-                                <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                                    <svg aria-hidden="true" lucideX size="14" />
-                                </button>
-                            </div>
-                        </div>
+                <div *rdxPopoverPortal [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
+                    <div [class]="p.popup" rdxPopoverPopup>
+                        <span [class]="p.arrow" rdxPopoverArrow></span>
+                        <h2 [class]="p.title" rdxPopoverTitle>Detached handles</h2>
+                        <p [class]="p.description" rdxPopoverDescription>
+                            Both triggers live outside the root. Open another trigger to move this popup without closing
+                            it first.
+                        </p>
+                        <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                            <svg aria-hidden="true" lucideX size="14" />
+                        </button>
                     </div>
-                </ng-template>
+                </div>
             </ng-container>
         </div>
     `
@@ -683,22 +670,18 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
                 Hover for details
             </button>
 
-            <ng-template rdxPopoverPortalPresence>
-                <div rdxPopoverPortal>
-                    <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                        <div [class]="p.popup" rdxPopoverPopup>
-                            <span [class]="p.arrow" rdxPopoverArrow></span>
-                            <h2 [class]="p.title" rdxPopoverTitle>Hover popover</h2>
-                            <p [class]="p.description" rdxPopoverDescription>
-                                Move the pointer into this popup. It remains interactive after leaving the trigger.
-                            </p>
-                            <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                                <svg aria-hidden="true" lucideX size="14" />
-                            </button>
-                        </div>
-                    </div>
+            <div *rdxPopoverPortal [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
+                <div [class]="p.popup" rdxPopoverPopup>
+                    <span [class]="p.arrow" rdxPopoverArrow></span>
+                    <h2 [class]="p.title" rdxPopoverTitle>Hover popover</h2>
+                    <p [class]="p.description" rdxPopoverDescription>
+                        Move the pointer into this popup. It remains interactive after leaving the trigger.
+                    </p>
+                    <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                        <svg aria-hidden="true" lucideX size="14" />
+                    </button>
                 </div>
-            </ng-template>
+            </div>
         </ng-container>
     `
 })
@@ -738,27 +721,23 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
                 }
             </div>
 
-            <ng-template rdxPopoverPortalPresence>
-                <div rdxPopoverPortal>
-                    <div class="transition-[left,right,top,bottom] duration-200" sideOffset="8" rdxPopoverPositioner>
+            <div
+                class="transition-[left,right,top,bottom] duration-200"
+                *rdxPopoverPortal
+                sideOffset="8"
+                rdxPopoverPositioner
+            >
+                <div [class]="cn(p.popup, 'overflow-hidden transition-[width,height] duration-200')" rdxPopoverPopup>
+                    <div class="relative" rdxPopoverViewport>
                         <div
-                            [class]="cn(p.popup, 'overflow-hidden transition-[width,height] duration-200')"
-                            rdxPopoverPopup
+                            class="data-[previous]:animate-popover-viewport-out data-[current]:animate-popover-viewport-in data-[previous]:absolute data-[previous]:inset-0"
                         >
-                            <div class="relative" rdxPopoverViewport>
-                                <div
-                                    class="data-[previous]:animate-popover-viewport-out data-[current]:animate-popover-viewport-in data-[previous]:absolute data-[previous]:inset-0"
-                                >
-                                    <h2 [class]="p.title" rdxPopoverTitle>{{ root.payload()?.label }}</h2>
-                                    <p [class]="p.description" rdxPopoverDescription>
-                                        {{ root.payload()?.description }}
-                                    </p>
-                                </div>
-                            </div>
+                            <h2 [class]="p.title" rdxPopoverTitle>{{ root.payload()?.label }}</h2>
+                            <p [class]="p.description" rdxPopoverDescription>{{ root.payload()?.description }}</p>
                         </div>
                     </div>
                 </div>
-            </ng-template>
+            </div>
         </ng-container>
     `
 })
@@ -786,7 +765,9 @@ export class RdxPopoverViewportComponent {
 
 ### Portal
 
-`RdxPopoverPortal` moves content to `document.body` by default or to a configured container.
+`RdxPopoverPortal` is a structural directive (`*rdxPopoverPortal` or `<ng-template rdxPopoverPortal>`)
+that teleports content to `document.body` by default. Pass `[container]` on the explicit
+`<ng-template>` form to portal into a different element.
 
 ### Positioner
 

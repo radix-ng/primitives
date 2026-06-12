@@ -20,27 +20,23 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
                 }
             </div>
 
-            <ng-template rdxPopoverPortalPresence>
-                <div rdxPopoverPortal>
-                    <div class="transition-[left,right,top,bottom] duration-200" sideOffset="8" rdxPopoverPositioner>
+            <div
+                class="transition-[left,right,top,bottom] duration-200"
+                *rdxPopoverPortal
+                sideOffset="8"
+                rdxPopoverPositioner
+            >
+                <div [class]="cn(p.popup, 'overflow-hidden transition-[width,height] duration-200')" rdxPopoverPopup>
+                    <div class="relative" rdxPopoverViewport>
                         <div
-                            [class]="cn(p.popup, 'overflow-hidden transition-[width,height] duration-200')"
-                            rdxPopoverPopup
+                            class="data-[previous]:animate-popover-viewport-out data-[current]:animate-popover-viewport-in data-[previous]:absolute data-[previous]:inset-0"
                         >
-                            <div class="relative" rdxPopoverViewport>
-                                <div
-                                    class="data-[previous]:animate-popover-viewport-out data-[current]:animate-popover-viewport-in data-[previous]:absolute data-[previous]:inset-0"
-                                >
-                                    <h2 [class]="p.title" rdxPopoverTitle>{{ root.payload()?.label }}</h2>
-                                    <p [class]="p.description" rdxPopoverDescription>
-                                        {{ root.payload()?.description }}
-                                    </p>
-                                </div>
-                            </div>
+                            <h2 [class]="p.title" rdxPopoverTitle>{{ root.payload()?.label }}</h2>
+                            <p [class]="p.description" rdxPopoverDescription>{{ root.payload()?.description }}</p>
                         </div>
                     </div>
                 </div>
-            </ng-template>
+            </div>
         </ng-container>
     `
 })

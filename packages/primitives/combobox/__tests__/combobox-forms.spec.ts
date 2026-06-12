@@ -21,18 +21,14 @@ const FRUITS: Fruit[] = [
     template: `
         <div [(open)]="open" [formControl]="control" rdxComboboxRoot>
             <input rdxComboboxInput aria-label="Fruit" />
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div rdxComboboxPositioner>
-                        <div rdxComboboxPopup>
-                            <div rdxComboboxList aria-label="Fruits">
-                                @for (fruit of fruits; track fruit.value) {
-                                    <div [value]="fruit.value" rdxComboboxItem>{{ fruit.label }}</div>
-                                }
-                            </div>
-                        </div>
+            <div *rdxComboboxPortal rdxComboboxPositioner>
+                <div rdxComboboxPopup>
+                    <div rdxComboboxList aria-label="Fruits">
+                        @for (fruit of fruits; track fruit.value) {
+                            <div [value]="fruit.value" rdxComboboxItem>{{ fruit.label }}</div>
+                        }
                     </div>
-                </ng-template>
+                </div>
             </div>
         </div>
     `

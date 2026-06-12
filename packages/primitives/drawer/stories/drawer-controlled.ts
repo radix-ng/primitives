@@ -14,26 +14,24 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
             <div [(open)]="open" rdxDrawerRoot>
                 <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Open drawer</button>
 
-                <ng-template rdxDrawerPortalPresence>
-                    <div [class]="d.portalAnimated" rdxDrawerPortal>
-                        <div [class]="d.backdrop" rdxDrawerBackdrop></div>
+                <ng-template rdxDrawerPortal>
+                    <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
 
-                        <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
-                            <div [class]="d.grip" aria-hidden="true"></div>
+                    <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
+                        <div [class]="d.grip" aria-hidden="true"></div>
 
-                            <div [class]="d.body" rdxDrawerContent>
-                                <h2 [class]="d.title" rdxDrawerTitle>Controlled drawer</h2>
-                                <p [class]="d.description" rdxDrawerDescription>
-                                    The open state is owned by the component and bound with
-                                    <code>[(open)]</code>
-                                    .
-                                </p>
+                        <div [class]="d.body" rdxDrawerContent>
+                            <h2 [class]="d.title" rdxDrawerTitle>Controlled drawer</h2>
+                            <p [class]="d.description" rdxDrawerDescription>
+                                The open state is owned by the component and bound with
+                                <code>[(open)]</code>
+                                .
+                            </p>
 
-                                <div [class]="d.footer">
-                                    <button [class]="cn(b.base, b.primary, b.size.sm)" (click)="open.set(false)">
-                                        Close from outside
-                                    </button>
-                                </div>
+                            <div [class]="d.footer">
+                                <button [class]="cn(b.base, b.primary, b.size.sm)" (click)="open.set(false)">
+                                    Close from outside
+                                </button>
                             </div>
                         </div>
                     </div>

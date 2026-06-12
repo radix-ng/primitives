@@ -10,14 +10,15 @@ import {
     RdxDrawerIndentBackground,
     RdxDrawerPopup,
     RdxDrawerPortal,
-    RdxDrawerPortalPresence,
+    RdxDrawerPortalMisuseGuard,
     RdxDrawerProvider,
     RdxDrawerProviderDirective,
     RdxDrawerRoot,
     RdxDrawerSnapPoint,
     RdxDrawerSwipeArea,
     RdxDrawerTitle,
-    RdxDrawerTrigger
+    RdxDrawerTrigger,
+    RdxDrawerViewport
 } from '@radix-ng/primitives/drawer';
 import { axe } from 'jest-axe';
 
@@ -27,7 +28,6 @@ import { axe } from 'jest-axe';
         RdxDrawerTrigger,
         RdxDrawerSwipeArea,
         RdxDrawerPortal,
-        RdxDrawerPortalPresence,
         RdxDrawerBackdrop,
         RdxDrawerPopup,
         RdxDrawerContent,
@@ -46,15 +46,13 @@ import { axe } from 'jest-axe';
             <button rdxDrawerTrigger>Open</button>
             <div rdxDrawerSwipeArea></div>
 
-            <ng-template rdxDrawerPortalPresence>
-                <div rdxDrawerPortal>
-                    <div rdxDrawerBackdrop></div>
-                    <div rdxDrawerPopup>
-                        <h2 rdxDrawerTitle>Title</h2>
-                        <p rdxDrawerDescription>Description</p>
-                        <div rdxDrawerContent>Body</div>
-                        <button rdxDrawerClose>Close</button>
-                    </div>
+            <ng-template rdxDrawerPortal>
+                <div rdxDrawerBackdrop></div>
+                <div rdxDrawerPopup>
+                    <h2 rdxDrawerTitle>Title</h2>
+                    <p rdxDrawerDescription>Description</p>
+                    <div rdxDrawerContent>Body</div>
+                    <button rdxDrawerClose>Close</button>
                 </div>
             </ng-template>
         </div>
@@ -68,14 +66,12 @@ class TestHostComponent {
 }
 
 @Component({
-    imports: [RdxDrawerTrigger, RdxDrawerRoot, RdxDrawerPortal, RdxDrawerPortalPresence, RdxDrawerPopup],
+    imports: [RdxDrawerTrigger, RdxDrawerRoot, RdxDrawerPortal, RdxDrawerPopup],
     template: `
         <button id="detached" [handle]="handle" rdxDrawerTrigger>Open</button>
         <div [handle]="handle" rdxDrawerRoot>
-            <ng-template rdxDrawerPortalPresence>
-                <div rdxDrawerPortal>
-                    <div rdxDrawerPopup>Popup</div>
-                </div>
+            <ng-template rdxDrawerPortal>
+                <div rdxDrawerPopup>Popup</div>
             </ng-template>
         </div>
     `
@@ -85,7 +81,7 @@ class DetachedHostComponent {
 }
 
 @Component({
-    imports: [RdxDrawerRoot, RdxDrawerTrigger, RdxDrawerPortal, RdxDrawerPortalPresence, RdxDrawerPopup],
+    imports: [RdxDrawerRoot, RdxDrawerTrigger, RdxDrawerPortal, RdxDrawerPopup],
     template: `
         <div
             [(open)]="open"
@@ -96,10 +92,8 @@ class DetachedHostComponent {
             rdxDrawerRoot
         >
             <button rdxDrawerTrigger>Open</button>
-            <ng-template rdxDrawerPortalPresence>
-                <div rdxDrawerPortal>
-                    <div rdxDrawerPopup>Body</div>
-                </div>
+            <ng-template rdxDrawerPortal>
+                <div rdxDrawerPopup>Body</div>
             </ng-template>
         </div>
     `
@@ -113,37 +107,24 @@ class SnapHostComponent {
 }
 
 @Component({
-    imports: [
-        RdxDrawerProviderDirective,
-        RdxDrawerIndentBackground,
-        RdxDrawerRoot,
-        RdxDrawerPortal,
-        RdxDrawerPortalPresence,
-        RdxDrawerPopup
-    ],
+    imports: [RdxDrawerProviderDirective, RdxDrawerIndentBackground, RdxDrawerRoot, RdxDrawerPortal, RdxDrawerPopup],
     template: `
         <div rdxDrawerProvider>
             <div id="indent" rdxDrawerIndentBackground></div>
 
             <div [(open)]="outer" rdxDrawerRoot>
-                <ng-template rdxDrawerPortalPresence>
-                    <div rdxDrawerPortal>
-                        <div data-testid="outer" rdxDrawerPopup>
-                            <div [(open)]="inner" rdxDrawerRoot>
-                                <ng-template rdxDrawerPortalPresence>
-                                    <div rdxDrawerPortal>
-                                        <div data-testid="inner" rdxDrawerPopup>
-                                            <div [(open)]="deep" rdxDrawerRoot>
-                                                <ng-template rdxDrawerPortalPresence>
-                                                    <div rdxDrawerPortal>
-                                                        <div data-testid="deep" rdxDrawerPopup>Deep</div>
-                                                    </div>
-                                                </ng-template>
-                                            </div>
-                                        </div>
+                <ng-template rdxDrawerPortal>
+                    <div data-testid="outer" rdxDrawerPopup>
+                        <div [(open)]="inner" rdxDrawerRoot>
+                            <ng-template rdxDrawerPortal>
+                                <div data-testid="inner" rdxDrawerPopup>
+                                    <div [(open)]="deep" rdxDrawerRoot>
+                                        <ng-template rdxDrawerPortal>
+                                            <div data-testid="deep" rdxDrawerPopup>Deep</div>
+                                        </ng-template>
                                     </div>
-                                </ng-template>
-                            </div>
+                                </div>
+                            </ng-template>
                         </div>
                     </div>
                 </ng-template>
@@ -156,6 +137,25 @@ class NestedHostComponent {
     inner = false;
     deep = false;
 }
+
+@Component({
+    imports: [RdxDrawerRoot, RdxDrawerSwipeArea, RdxDrawerPortal, RdxDrawerBackdrop, RdxDrawerViewport, RdxDrawerPopup],
+    template: `
+        <div #portalContainer data-testid="portal-container">
+            <div [modal]="false" swipeDirection="right" rdxDrawerRoot>
+                <div data-testid="swipe-area" rdxDrawerSwipeArea></div>
+
+                <ng-template [container]="portalContainer" rdxDrawerPortal>
+                    <div rdxDrawerBackdrop></div>
+                    <div rdxDrawerViewport>
+                        <div rdxDrawerPopup>Body</div>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    `
+})
+class LocalSwipeAreaHostComponent {}
 
 function popup(): HTMLElement | null {
     return document.body.querySelector('[rdxDrawerPopup]');
@@ -212,6 +212,28 @@ describe('Drawer', () => {
         fixture.detectChanges();
 
         expect(popup()!.getAttribute('data-swipe-direction')).toBe('right');
+    });
+
+    it('defaults the swipe area opening direction opposite to the dismiss direction', () => {
+        fixture.componentInstance.swipeDirection = 'right';
+        fixture.changeDetectorRef.markForCheck();
+        fixture.detectChanges();
+
+        const swipeArea: HTMLElement = fixture.nativeElement.querySelector('[rdxDrawerSwipeArea]');
+
+        expect(swipeArea.getAttribute('data-swipe-direction')).toBe('left');
+        expect(swipeArea.getAttribute('role')).toBe('presentation');
+        expect(swipeArea.getAttribute('aria-hidden')).toBe('true');
+    });
+
+    it('stops the swipe area from intercepting pointer events while open', () => {
+        fixture.componentInstance.open = true;
+        fixture.changeDetectorRef.markForCheck();
+        fixture.detectChanges();
+
+        const swipeArea: HTMLElement = fixture.nativeElement.querySelector('[rdxDrawerSwipeArea]');
+
+        expect(swipeArea.style.pointerEvents).toBe('none');
     });
 
     it('locks body scroll while open when modal', () => {
@@ -331,12 +353,12 @@ describe('Drawer', () => {
 
         afterEach(() => snapFixture.destroy());
 
-        it('opens at the most open snap point by default', () => {
+        it('opens at the first snap point by default', () => {
             snapFixture.componentInstance.open = true;
             snapFixture.changeDetectorRef.markForCheck();
             snapFixture.detectChanges();
 
-            expect(snapFixture.componentInstance.snapPoint).toBe(1);
+            expect(snapFixture.componentInstance.snapPoint).toBe('160px');
         });
 
         it('opens at defaultSnapPoint when provided', () => {
@@ -380,21 +402,29 @@ describe('Drawer', () => {
 });
 
 describe('RdxDrawerProvider', () => {
-    it('tracks open count, active state, and the frontmost height', () => {
+    it('tracks open count, active state, and the frontmost drawer state', () => {
         const provider = new RdxDrawerProvider();
+        const progressA = signal(0.25);
+        const progressB = signal(0.5);
 
         expect(provider.active()).toBe(false);
         expect(provider.frontmostHeight()).toBe(0);
+        expect(provider.swipeProgress()).toBe(0);
 
-        const releaseA = provider.register({ id: 'a', height: signal(100) });
-        const releaseB = provider.register({ id: 'b', height: signal(220) });
+        const releaseA = provider.register({ id: 'a', height: signal(100), swipeProgress: progressA });
+        const releaseB = provider.register({ id: 'b', height: signal(220), swipeProgress: progressB });
 
         expect(provider.count()).toBe(2);
         expect(provider.active()).toBe(true);
         expect(provider.frontmostHeight()).toBe(220);
+        expect(provider.swipeProgress()).toBe(0.5);
+
+        progressB.set(0.75);
+        expect(provider.swipeProgress()).toBe(0.75);
 
         releaseB();
         expect(provider.frontmostHeight()).toBe(100);
+        expect(provider.swipeProgress()).toBe(0.25);
 
         releaseA();
         expect(provider.active()).toBe(false);
@@ -458,5 +488,46 @@ describe('Drawer nesting & provider', () => {
         expect(outer.getAttribute('data-nested-drawer-open')).toBe('');
         expect(inner.getAttribute('data-nested-drawer-open')).toBe('');
         expect(deep.getAttribute('data-nested-drawer-open')).toBeNull();
+    });
+});
+
+describe('Drawer structural portal', () => {
+    it('opens from a right-edge swipe area and portals into a local container', () => {
+        const fixture = TestBed.createComponent(LocalSwipeAreaHostComponent);
+        fixture.detectChanges();
+
+        const container: HTMLElement = fixture.nativeElement.querySelector('[data-testid="portal-container"]');
+        const swipeArea: HTMLElement = fixture.nativeElement.querySelector('[data-testid="swipe-area"]');
+
+        swipeArea.dispatchEvent(pointer('pointerdown', { clientX: 100, clientY: 0 }));
+        window.dispatchEvent(pointer('pointermove', { clientX: 60, clientY: 0 }));
+        fixture.detectChanges();
+
+        expect(container.querySelector('[rdxDrawerBackdrop]')).not.toBeNull();
+        expect(container.querySelector('[rdxDrawerViewport]')).not.toBeNull();
+        expect(container.querySelector('[rdxDrawerPopup]')).not.toBeNull();
+
+        fixture.destroy();
+    });
+
+    it('throws in dev mode when rdxDrawerPortal is used as an attribute instead of structurally', () => {
+        @Component({
+            imports: [RdxDrawerRoot, RdxDrawerTrigger, RdxDrawerPortal, RdxDrawerPortalMisuseGuard, RdxDrawerPopup],
+            template: `
+                <div rdxDrawerRoot>
+                    <button rdxDrawerTrigger>Open</button>
+
+                    <div rdxDrawerPortal>
+                        <div rdxDrawerPopup>Oops</div>
+                    </div>
+                </div>
+            `
+        })
+        class MisuseHostComponent {}
+
+        expect(() => {
+            const misuseFixture = TestBed.createComponent(MisuseHostComponent);
+            misuseFixture.detectChanges();
+        }).toThrow(/structural directive/);
     });
 });

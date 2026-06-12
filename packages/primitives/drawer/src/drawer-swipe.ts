@@ -239,9 +239,8 @@ export function useDrawerSwipe(config: RdxDrawerSwipeConfig): void {
 
         if (enabled) {
             writeMovement(offset, 0);
+            config.onProgress?.(0);
         }
-
-        config.onProgress?.(0);
     });
 
     inject(DestroyRef).onDestroy(cancelRaf);

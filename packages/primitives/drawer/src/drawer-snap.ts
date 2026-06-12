@@ -9,8 +9,8 @@ import { RdxDrawerSwipeDirection } from './drawer-swipe';
  * - a string — `'148px'` (pixels), `'30rem'` (root-em), `'40%'` (fraction of size), or a bare number
  *   as above.
  *
- * Order the `snapPoints` array ascending by openness; the last entry is treated as "most open" and
- * is the default the drawer opens to when `defaultSnapPoint` is not set.
+ * Order the `snapPoints` array ascending by openness; the first entry is the default the drawer opens
+ * to when `defaultSnapPoint` is not set.
  */
 export type RdxDrawerSnapPoint = number | string;
 

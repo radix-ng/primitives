@@ -6,7 +6,6 @@ import {
     RdxSelectList,
     RdxSelectPopup,
     RdxSelectPortal,
-    RdxSelectPortalPresence,
     RdxSelectPositioner,
     RdxSelectPositionerContent,
     RdxSelectRoot,
@@ -34,7 +33,6 @@ const COUNTS = [50, 1000];
         RdxSelectTrigger,
         RdxSelectValue,
         RdxSelectPortal,
-        RdxSelectPortalPresence,
         RdxSelectPopup,
         RdxSelectPositioner,
         RdxSelectPositionerContent,
@@ -49,24 +47,20 @@ const COUNTS = [50, 1000];
                 <span rdxSelectValue placeholder="Pick…"></span>
             </button>
 
-            <div rdxSelectPortal>
-                <ng-template rdxSelectPortalPresence>
-                    <div rdxSelectPopup>
-                        <div rdxSelectPositioner>
-                            <div rdxSelectPositionerContent>
-                                <div rdxSelectList>
-                                    <div rdxSelectGroup>
-                                        @for (option of options(); track option) {
-                                            <div [value]="option" rdxSelectItem>
-                                                <span rdxSelectItemText>{{ option }}</span>
-                                            </div>
-                                        }
+            <div *rdxSelectPortal rdxSelectPopup>
+                <div rdxSelectPositioner>
+                    <div rdxSelectPositionerContent>
+                        <div rdxSelectList>
+                            <div rdxSelectGroup>
+                                @for (option of options(); track option) {
+                                    <div [value]="option" rdxSelectItem>
+                                        <span rdxSelectItemText>{{ option }}</span>
                                     </div>
-                                </div>
+                                }
                             </div>
                         </div>
                     </div>
-                </ng-template>
+                </div>
             </div>
         </ng-container>
     `

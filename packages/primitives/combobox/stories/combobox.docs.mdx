@@ -61,7 +61,6 @@ import {
   RdxComboboxList,
   RdxComboboxPopup,
   RdxComboboxPortal,
-  RdxComboboxPortalPresence,
   RdxComboboxPositioner,
   RdxComboboxRoot,
   RdxComboboxStatus,
@@ -81,23 +80,19 @@ place (non-matching items are hidden, not destroyed).
   <button rdxComboboxClear><!-- clear icon --></button>
   <button rdxComboboxTrigger><!-- chevron icon --></button>
 
-  <div rdxComboboxPortal>
-    <ng-template rdxComboboxPortalPresence>
-      <div rdxComboboxPositioner>
-        <div rdxComboboxPopup>
-          <div rdxComboboxList>
-            <div rdxComboboxGroup>
-              <div rdxComboboxGroupLabel>Group</div>
-              <div value="apple" rdxComboboxItem>
-                <span rdxComboboxItemIndicator><!-- check icon --></span>
-                Apple
-              </div>
-            </div>
+  <div *rdxComboboxPortal rdxComboboxPositioner>
+    <div rdxComboboxPopup>
+      <div rdxComboboxList>
+        <div rdxComboboxGroup>
+          <div rdxComboboxGroupLabel>Group</div>
+          <div value="apple" rdxComboboxItem>
+            <span rdxComboboxItemIndicator><!-- check icon --></span>
+            Apple
           </div>
-          <div rdxComboboxEmpty>No results.</div>
         </div>
       </div>
-    </ng-template>
+      <div rdxComboboxEmpty>No results.</div>
+    </div>
   </div>
 </div>
 ```
@@ -297,8 +292,8 @@ A selected-value chip in `multiple` mode. Provide its `value`.
 ### Parts without inputs
 
 `RdxComboboxAnchor`, `RdxComboboxLabel` (registers an `aria-labelledby` target), `RdxComboboxTrigger`,
-`RdxComboboxClear`, `RdxComboboxIcon`, `RdxComboboxPortal` (re-exposes `container`),
-`RdxComboboxPortalPresence`, `RdxComboboxBackdrop` (modal overlay), `RdxComboboxPopup`,
+`RdxComboboxClear`, `RdxComboboxIcon`, `RdxComboboxPortal` (structural; re-exposes `container`),
+`RdxComboboxBackdrop` (modal overlay), `RdxComboboxPopup`,
 `RdxComboboxArrow` (re-exposes `width` / `height`), `RdxComboboxList`, `RdxComboboxItemIndicator`,
 `RdxComboboxGroup`, `RdxComboboxGroupLabel`,
 `RdxComboboxEmpty`, `RdxComboboxStatus`, `RdxComboboxChips`, and `RdxComboboxChipRemove` read

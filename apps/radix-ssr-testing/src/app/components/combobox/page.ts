@@ -8,7 +8,6 @@ import {
     RdxComboboxList,
     RdxComboboxPopup,
     RdxComboboxPortal,
-    RdxComboboxPortalPresence,
     RdxComboboxPositioner,
     RdxComboboxRoot,
     RdxComboboxTrigger
@@ -22,7 +21,6 @@ import {
         RdxComboboxTrigger,
         RdxComboboxIcon,
         RdxComboboxPortal,
-        RdxComboboxPortalPresence,
         RdxComboboxPositioner,
         RdxComboboxPopup,
         RdxComboboxList,
@@ -37,22 +35,18 @@ import {
                 <span rdxComboboxIcon aria-hidden="true">▼</span>
             </button>
 
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div rdxComboboxPositioner>
-                        <div rdxComboboxPopup>
-                            <div rdxComboboxList aria-label="Fruits">
-                                @for (option of options; track option) {
-                                    <div [value]="option" rdxComboboxItem>
-                                        <span rdxComboboxItemIndicator>✔</span>
-                                        {{ option }}
-                                    </div>
-                                }
+            <div *rdxComboboxPortal rdxComboboxPositioner>
+                <div rdxComboboxPopup>
+                    <div rdxComboboxList aria-label="Fruits">
+                        @for (option of options; track option) {
+                            <div [value]="option" rdxComboboxItem>
+                                <span rdxComboboxItemIndicator>✔</span>
+                                {{ option }}
                             </div>
-                            <div rdxComboboxEmpty>No results</div>
-                        </div>
+                        }
                     </div>
-                </ng-template>
+                    <div rdxComboboxEmpty>No results</div>
+                </div>
             </div>
         </div>
     `

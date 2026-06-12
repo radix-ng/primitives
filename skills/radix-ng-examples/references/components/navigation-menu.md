@@ -67,25 +67,26 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 </li>
             </ul>
 
-            <ng-template rdxNavigationMenuPortalPresence>
-                <div [class]="m.portalAnimated" rdxNavigationMenuPortal>
-                    <div [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
-                        <div [class]="m.popup" rdxNavigationMenuPopup>
-                            <svg
-                                [class]="m.arrow"
-                                width="10"
-                                height="5"
-                                viewBox="0 0 30 10"
-                                preserveAspectRatio="none"
-                                rdxNavigationMenuArrow
-                            >
-                                <polygon points="0,0 30,0 15,10" />
-                            </svg>
-                            <div [class]="m.viewport" rdxNavigationMenuViewport></div>
-                        </div>
-                    </div>
+            <div
+                *rdxNavigationMenuPortal
+                [class]="cn(m.positioner, m.positionerAnimated)"
+                sideOffset="8"
+                rdxNavigationMenuPositioner
+            >
+                <div [class]="m.popup" rdxNavigationMenuPopup>
+                    <svg
+                        [class]="m.arrow"
+                        width="10"
+                        height="5"
+                        viewBox="0 0 30 10"
+                        preserveAspectRatio="none"
+                        rdxNavigationMenuArrow
+                    >
+                        <polygon points="0,0 30,0 15,10" />
+                    </svg>
+                    <div [class]="m.viewport" rdxNavigationMenuViewport></div>
                 </div>
-            </ng-template>
+            </div>
         </nav>
     `
 })
@@ -136,7 +137,6 @@ import {
     RdxNavigationMenuList,
     RdxNavigationMenuPopup,
     RdxNavigationMenuPortal,
-    RdxNavigationMenuPortalPresence,
     RdxNavigationMenuPositioner,
     RdxNavigationMenuRoot,
     RdxNavigationMenuTrigger,
@@ -153,8 +153,11 @@ import { RdxNavigationMenuModule } from '@radix-ng/primitives/navigation-menu';
 ## Anatomy
 
 Apply the parts to your own markup. Each item's `*rdxNavigationMenuContent` template is rendered into
-the shared `rdxNavigationMenuViewport`. `rdxNavigationMenuPortalPresence` manages mounting and waits
-for exit keyframes on the first DOM element inside its template.
+the shared `rdxNavigationMenuViewport`. `rdxNavigationMenuPortal` is a **structural** directive: it
+teleports the popup into `document.body` while the menu is open and keeps it mounted until the
+closed-state exit keyframes finish. Use `*rdxNavigationMenuPortal` on the positioner for the common
+single-root case, or the explicit `<ng-template rdxNavigationMenuPortal>` form shown below when an
+optional `rdxNavigationMenuBackdrop` makes the content multi-root.
 
 ```html
 <nav rdxNavigationMenuRoot>
@@ -175,14 +178,12 @@ for exit keyframes on the first DOM element inside its template.
         </li>
     </ul>
 
-    <ng-template rdxNavigationMenuPortalPresence>
-        <div rdxNavigationMenuPortal>
-            <div rdxNavigationMenuBackdrop></div>
-            <div sideOffset="8" rdxNavigationMenuPositioner>
-                <div rdxNavigationMenuPopup>
-                    <svg rdxNavigationMenuArrow></svg>
-                    <div rdxNavigationMenuViewport></div>
-                </div>
+    <ng-template rdxNavigationMenuPortal>
+        <div rdxNavigationMenuBackdrop></div>
+        <div sideOffset="8" rdxNavigationMenuPositioner>
+            <div rdxNavigationMenuPopup>
+                <svg rdxNavigationMenuArrow></svg>
+                <div rdxNavigationMenuViewport></div>
             </div>
         </div>
     </ng-template>
@@ -257,25 +258,26 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 </li>
             </ul>
 
-            <ng-template rdxNavigationMenuPortalPresence>
-                <div [class]="m.portalAnimated" rdxNavigationMenuPortal>
-                    <div [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
-                        <div [class]="m.popup" rdxNavigationMenuPopup>
-                            <svg
-                                [class]="m.arrow"
-                                width="10"
-                                height="5"
-                                viewBox="0 0 30 10"
-                                preserveAspectRatio="none"
-                                rdxNavigationMenuArrow
-                            >
-                                <polygon points="0,0 30,0 15,10" />
-                            </svg>
-                            <div [class]="m.viewport" rdxNavigationMenuViewport></div>
-                        </div>
-                    </div>
+            <div
+                *rdxNavigationMenuPortal
+                [class]="cn(m.positioner, m.positionerAnimated)"
+                sideOffset="8"
+                rdxNavigationMenuPositioner
+            >
+                <div [class]="m.popup" rdxNavigationMenuPopup>
+                    <svg
+                        [class]="m.arrow"
+                        width="10"
+                        height="5"
+                        viewBox="0 0 30 10"
+                        preserveAspectRatio="none"
+                        rdxNavigationMenuArrow
+                    >
+                        <polygon points="0,0 30,0 15,10" />
+                    </svg>
+                    <div [class]="m.viewport" rdxNavigationMenuViewport></div>
                 </div>
-            </ng-template>
+            </div>
         </nav>
     `
 })
@@ -338,15 +340,18 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 }
             </ul>
 
-            <ng-template rdxNavigationMenuPortalPresence>
-                <div [class]="m.portalAnimated" rdxNavigationMenuPortal>
-                    <div [class]="m.positioner" side="right" sideOffset="8" align="start" rdxNavigationMenuPositioner>
-                        <div [class]="m.popup" rdxNavigationMenuPopup>
-                            <div [class]="m.viewport" rdxNavigationMenuViewport></div>
-                        </div>
-                    </div>
+            <div
+                *rdxNavigationMenuPortal
+                [class]="cn(m.positioner, m.positionerAnimated)"
+                side="right"
+                sideOffset="8"
+                align="start"
+                rdxNavigationMenuPositioner
+            >
+                <div [class]="m.popup" rdxNavigationMenuPopup>
+                    <div [class]="m.viewport" rdxNavigationMenuViewport></div>
                 </div>
-            </ng-template>
+            </div>
         </nav>
     `
 })
@@ -403,15 +408,16 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 }
             </ul>
 
-            <ng-template rdxNavigationMenuPortalPresence>
-                <div [class]="m.portalAnimated" rdxNavigationMenuPortal>
-                    <div [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
-                        <div [class]="m.popup" rdxNavigationMenuPopup>
-                            <div [class]="m.viewport" rdxNavigationMenuViewport></div>
-                        </div>
-                    </div>
+            <div
+                *rdxNavigationMenuPortal
+                [class]="cn(m.positioner, m.positionerAnimated)"
+                sideOffset="8"
+                rdxNavigationMenuPositioner
+            >
+                <div [class]="m.popup" rdxNavigationMenuPopup>
+                    <div [class]="m.viewport" rdxNavigationMenuViewport></div>
                 </div>
-            </ng-template>
+            </div>
         </nav>
     `
 })
@@ -562,15 +568,16 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 </li>
             </ul>
 
-            <ng-template rdxNavigationMenuPortalPresence>
-                <div [class]="m.portalAnimated" rdxNavigationMenuPortal>
-                    <div [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
-                        <div [class]="m.popup" rdxNavigationMenuPopup>
-                            <div [class]="m.viewport" rdxNavigationMenuViewport></div>
-                        </div>
-                    </div>
+            <div
+                *rdxNavigationMenuPortal
+                [class]="cn(m.positioner, m.positionerAnimated)"
+                sideOffset="8"
+                rdxNavigationMenuPositioner
+            >
+                <div [class]="m.popup" rdxNavigationMenuPopup>
+                    <div [class]="m.viewport" rdxNavigationMenuViewport></div>
                 </div>
-            </ng-template>
+            </div>
         </nav>
     `
 })
@@ -637,15 +644,16 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 </li>
             </ul>
 
-            <ng-template rdxNavigationMenuPortalPresence>
-                <div [class]="m.portalAnimated" rdxNavigationMenuPortal>
-                    <div [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
-                        <div [class]="m.popup" rdxNavigationMenuPopup>
-                            <div [class]="m.viewport" rdxNavigationMenuViewport></div>
-                        </div>
-                    </div>
+            <div
+                *rdxNavigationMenuPortal
+                [class]="cn(m.positioner, m.positionerAnimated)"
+                sideOffset="8"
+                rdxNavigationMenuPositioner
+            >
+                <div [class]="m.popup" rdxNavigationMenuPopup>
+                    <div [class]="m.viewport" rdxNavigationMenuViewport></div>
                 </div>
-            </ng-template>
+            </div>
         </nav>
     `
 })
@@ -728,19 +736,18 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                                     }
                                 </ul>
 
-                                <ng-template rdxNavigationMenuPortalPresence>
-                                    <div
-                                        [class]="m.positioner"
-                                        side="right"
-                                        sideOffset="12"
-                                        align="start"
-                                        rdxNavigationMenuPositioner
-                                    >
-                                        <div [class]="m.popup" rdxNavigationMenuPopup>
-                                            <div [class]="m.viewport" rdxNavigationMenuViewport></div>
-                                        </div>
+                                <div
+                                    *rdxNavigationMenuPortal
+                                    [class]="cn(m.positioner, m.positionerAnimated)"
+                                    side="right"
+                                    sideOffset="12"
+                                    align="start"
+                                    rdxNavigationMenuPositioner
+                                >
+                                    <div [class]="m.popup" rdxNavigationMenuPopup>
+                                        <div [class]="m.viewport" rdxNavigationMenuViewport></div>
                                     </div>
-                                </ng-template>
+                                </div>
                             </nav>
                         </div>
                     </ng-container>
@@ -751,15 +758,16 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 </li>
             </ul>
 
-            <ng-template rdxNavigationMenuPortalPresence>
-                <div [class]="m.portalAnimated" rdxNavigationMenuPortal>
-                    <div [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
-                        <div [class]="m.popup" rdxNavigationMenuPopup>
-                            <div [class]="m.viewport" rdxNavigationMenuViewport></div>
-                        </div>
-                    </div>
+            <div
+                *rdxNavigationMenuPortal
+                [class]="cn(m.positioner, m.positionerAnimated)"
+                sideOffset="8"
+                rdxNavigationMenuPositioner
+            >
+                <div [class]="m.popup" rdxNavigationMenuPopup>
+                    <div [class]="m.viewport" rdxNavigationMenuViewport></div>
                 </div>
-            </ng-template>
+            </div>
         </nav>
     `
 })
@@ -852,15 +860,16 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 </li>
             </ul>
 
-            <ng-template rdxNavigationMenuPortalPresence>
-                <div [class]="m.portalAnimated" rdxNavigationMenuPortal>
-                    <div [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
-                        <div [class]="m.popup" rdxNavigationMenuPopup>
-                            <div [class]="m.viewport" rdxNavigationMenuViewport></div>
-                        </div>
-                    </div>
+            <div
+                *rdxNavigationMenuPortal
+                [class]="cn(m.positioner, m.positionerAnimated)"
+                sideOffset="8"
+                rdxNavigationMenuPositioner
+            >
+                <div [class]="m.popup" rdxNavigationMenuPopup>
+                    <div [class]="m.viewport" rdxNavigationMenuViewport></div>
                 </div>
-            </ng-template>
+            </div>
         </nav>
     `
 })
@@ -934,7 +943,9 @@ viewport when its item is active.
 
 ### Portal
 
-`RdxNavigationMenuPortal` moves the popup to `document.body` by default or to a configured container.
+`RdxNavigationMenuPortal` is a structural directive (`*rdxNavigationMenuPortal` or
+`<ng-template rdxNavigationMenuPortal>`) that teleports the popup to `document.body` by default. Pass
+`[container]` on the explicit `<ng-template>` form to portal into a different element.
 
 ### Positioner
 

@@ -26,32 +26,30 @@ import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
             <ng-container [modal]="modal()" rdxPopoverRoot>
                 <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Open popover</button>
 
-                <ng-template rdxPopoverPortalPresence>
-                    <div rdxPopoverPortal>
-                        @if (modal() === true) {
-                            <div [class]="p.backdrop" rdxPopoverBackdrop></div>
-                        }
-                        <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                            <div [class]="p.popup" rdxPopoverPopup>
-                                <span [class]="p.arrow" rdxPopoverArrow></span>
-                                <h2 [class]="p.title" rdxPopoverTitle>Modal behavior</h2>
-                                <p [class]="p.description" rdxPopoverDescription>
-                                    Switch modes, use Tab to move between controls, then try the outside button.
-                                </p>
+                <ng-template rdxPopoverPortal>
+                    @if (modal() === true) {
+                        <div [class]="p.backdrop" rdxPopoverBackdrop></div>
+                    }
+                    <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
+                        <div [class]="p.popup" rdxPopoverPopup>
+                            <span [class]="p.arrow" rdxPopoverArrow></span>
+                            <h2 [class]="p.title" rdxPopoverTitle>Modal behavior</h2>
+                            <p [class]="p.description" rdxPopoverDescription>
+                                Switch modes, use Tab to move between controls, then try the outside button.
+                            </p>
 
-                                <label class="mt-4 grid gap-1 text-xs font-medium">
-                                    Name
-                                    <input [class]="input" placeholder="Focused when opened" />
-                                </label>
+                            <label class="mt-4 grid gap-1 text-xs font-medium">
+                                Name
+                                <input [class]="input" placeholder="Focused when opened" />
+                            </label>
 
-                                <button [class]="cn(b.base, b.primary, b.size.sm, 'mt-3')" type="button">
-                                    Save changes
-                                </button>
+                            <button [class]="cn(b.base, b.primary, b.size.sm, 'mt-3')" type="button">
+                                Save changes
+                            </button>
 
-                                <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                                    <svg aria-hidden="true" lucideX size="14" />
-                                </button>
-                            </div>
+                            <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                                <svg aria-hidden="true" lucideX size="14" />
+                            </button>
                         </div>
                     </div>
                 </ng-template>

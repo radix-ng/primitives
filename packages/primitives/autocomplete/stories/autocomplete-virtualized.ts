@@ -25,32 +25,28 @@ import { _importsAutocomplete, AutocompleteItemHighlightedDetails, RdxAutocomple
                 <input [class]="c.input" rdxAutocompleteInput placeholder="Search 10,000 items…" aria-label="Item" />
             </div>
 
-            <div rdxAutocompletePortal>
-                <ng-template rdxAutocompletePortalPresence>
-                    <div [class]="c.positioner" rdxAutocompletePositioner>
-                        <div [class]="popup" rdxAutocompletePopup>
-                            <div [class]="c.empty" rdxAutocompleteEmpty>No items found.</div>
-                            <div [class]="c.list" rdxAutocompleteList aria-label="Items">
-                                <div #scroll [class]="scroller">
-                                    <div [class]="spacer" [style.height.px]="virtualizer.getTotalSize()">
-                                        @for (row of virtualizer.getVirtualItems(); track row.key) {
-                                            <div
-                                                [class]="item"
-                                                [value]="ac.filteredItems()[row.index]"
-                                                [index]="row.index"
-                                                [style.height.px]="row.size"
-                                                [style.transform]="'translateY(' + row.start + 'px)'"
-                                                rdxAutocompleteItem
-                                            >
-                                                {{ ac.filteredItems()[row.index] }}
-                                            </div>
-                                        }
+            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
+                <div [class]="popup" rdxAutocompletePopup>
+                    <div [class]="c.empty" rdxAutocompleteEmpty>No items found.</div>
+                    <div [class]="c.list" rdxAutocompleteList aria-label="Items">
+                        <div #scroll [class]="scroller">
+                            <div [class]="spacer" [style.height.px]="virtualizer.getTotalSize()">
+                                @for (row of virtualizer.getVirtualItems(); track row.key) {
+                                    <div
+                                        [class]="item"
+                                        [value]="ac.filteredItems()[row.index]"
+                                        [index]="row.index"
+                                        [style.height.px]="row.size"
+                                        [style.transform]="'translateY(' + row.start + 'px)'"
+                                        rdxAutocompleteItem
+                                    >
+                                        {{ ac.filteredItems()[row.index] }}
                                     </div>
-                                </div>
+                                }
                             </div>
                         </div>
                     </div>
-                </ng-template>
+                </div>
             </div>
         </div>
     `

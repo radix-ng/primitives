@@ -24,19 +24,16 @@ import { cn, demoButton, demoDialog, demoMenu } from '../../storybook/styles';
 
         <!-- Controlled alert dialog opened from the menu item. -->
         <div [(open)]="deleteOpen" rdxAlertDialogRoot>
-            <ng-template rdxAlertDialogPortalPresence>
-                <div [class]="d.portalAnimated" rdxAlertDialogPortal>
-                    <div [class]="d.backdrop" rdxAlertDialogBackdrop></div>
-                    <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
-                        <h2 [class]="d.title" rdxAlertDialogTitle>Delete project?</h2>
-                        <p [class]="d.description" rdxAlertDialogDescription>
-                            This permanently deletes the project. Opened by controlling the alert dialog from a menu
-                            item.
-                        </p>
-                        <div [class]="d.footer">
-                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxAlertDialogClose>Cancel</button>
-                            <button [class]="cn(b.base, b.destructive, b.size.sm)" rdxAlertDialogClose>Delete</button>
-                        </div>
+            <ng-template rdxAlertDialogPortal>
+                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxAlertDialogBackdrop></div>
+                <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
+                    <h2 [class]="d.title" rdxAlertDialogTitle>Delete project?</h2>
+                    <p [class]="d.description" rdxAlertDialogDescription>
+                        This permanently deletes the project. Opened by controlling the alert dialog from a menu item.
+                    </p>
+                    <div [class]="d.footer">
+                        <button [class]="cn(b.base, b.outline, b.size.sm)" rdxAlertDialogClose>Cancel</button>
+                        <button [class]="cn(b.base, b.destructive, b.size.sm)" rdxAlertDialogClose>Delete</button>
                     </div>
                 </div>
             </ng-template>

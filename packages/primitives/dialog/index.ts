@@ -3,8 +3,7 @@ import { RdxDialogBackdrop } from './src/dialog-backdrop';
 import { RdxDialogClose } from './src/dialog-close';
 import { RdxDialogDescription } from './src/dialog-description';
 import { RdxDialogPopup } from './src/dialog-popup';
-import { RdxDialogPortal } from './src/dialog-portal';
-import { RdxDialogPortalPresence } from './src/dialog-portal-presence';
+import { RdxDialogPortal, RdxDialogPortalMisuseGuard } from './src/dialog-portal';
 import { RdxDialogRoot } from './src/dialog-root';
 import { RdxDialogTitle } from './src/dialog-title';
 import { RdxDialogTrigger } from './src/dialog-trigger';
@@ -16,7 +15,6 @@ export * from './src/dialog-description';
 export * from './src/dialog-handle';
 export * from './src/dialog-popup';
 export * from './src/dialog-portal';
-export * from './src/dialog-portal-presence';
 export * from './src/dialog-root';
 export * from './src/dialog-title';
 export * from './src/dialog-trigger';
@@ -26,8 +24,8 @@ export * from './src/dialog-viewport';
 export const dialogImports = [
     RdxDialogRoot,
     RdxDialogTrigger,
-    RdxDialogPortalPresence,
     RdxDialogPortal,
+    RdxDialogPortalMisuseGuard,
     RdxDialogBackdrop,
     RdxDialogViewport,
     RdxDialogPopup,

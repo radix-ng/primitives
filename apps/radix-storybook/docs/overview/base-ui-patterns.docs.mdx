@@ -75,16 +75,12 @@ import { RdxPopoverModule } from '@radix-ng/primitives/popover';
         <ng-container rdxPopoverRoot>
             <button rdxPopoverTrigger>Notifications</button>
 
-            <ng-template rdxPopoverPortalPresence>
-                <div rdxPopoverPortal>
-                    <div sideOffset="8" rdxPopoverPositioner>
-                        <div rdxPopoverPopup>
-                            <h2 rdxPopoverTitle>Notifications</h2>
-                            <p rdxPopoverDescription>You are all caught up.</p>
-                        </div>
-                    </div>
+            <div *rdxPopoverPortal sideOffset="8" rdxPopoverPositioner>
+                <div rdxPopoverPopup>
+                    <h2 rdxPopoverTitle>Notifications</h2>
+                    <p rdxPopoverDescription>You are all caught up.</p>
                 </div>
-            </ng-template>
+            </div>
         </ng-container>
     `
 })

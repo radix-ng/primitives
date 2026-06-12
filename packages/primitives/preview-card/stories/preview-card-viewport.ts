@@ -31,28 +31,25 @@ import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
                 .
             </p>
 
-            <ng-template rdxPreviewCardPortalPresence>
-                <div rdxPreviewCardPortal>
-                    <div
-                        [class]="cn(p.positioner, 'transition-[left,right,top,bottom] duration-200')"
-                        sideOffset="8"
-                        rdxPreviewCardPositioner
-                    >
-                        <div
-                            [class]="cn(p.popup, 'overflow-hidden transition-[width,height] duration-200')"
-                            rdxPreviewCardPopup
-                        >
-                            <span [class]="p.arrow" rdxPreviewCardArrow></span>
-                            <div rdxPreviewCardViewport>
-                                <div class="grid gap-2">
-                                    <div class="bg-muted h-24 rounded-md"></div>
-                                    <p class="text-muted-foreground text-sm">{{ root.payload() }}</p>
-                                </div>
-                            </div>
+            <div
+                *rdxPreviewCardPortal
+                [class]="cn(p.positioner, 'transition-[left,right,top,bottom] duration-200')"
+                sideOffset="8"
+                rdxPreviewCardPositioner
+            >
+                <div
+                    [class]="cn(p.popup, 'overflow-hidden transition-[width,height] duration-200')"
+                    rdxPreviewCardPopup
+                >
+                    <span [class]="p.arrow" rdxPreviewCardArrow></span>
+                    <div rdxPreviewCardViewport>
+                        <div class="grid gap-2">
+                            <div class="bg-muted h-24 rounded-md"></div>
+                            <p class="text-muted-foreground text-sm">{{ root.payload() }}</p>
                         </div>
                     </div>
                 </div>
-            </ng-template>
+            </div>
         </ng-container>
     `
 })

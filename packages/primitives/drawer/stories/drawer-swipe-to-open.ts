@@ -6,31 +6,50 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
     selector: 'rdx-drawer-swipe-to-open',
     imports: [...drawerImports],
     template: `
-        <div class="border-border bg-muted/40 relative h-72 w-full max-w-md overflow-hidden rounded-xl border">
-            <div rdxDrawerRoot>
-                <p class="text-muted-foreground p-4 text-sm">
-                    Swipe up from the highlighted strip at the bottom to open the drawer (or use the button).
-                </p>
-
-                <button [class]="cn(b.base, b.outline, b.size.sm, 'ml-4')" rdxDrawerTrigger>Open</button>
-
-                <!-- Edge strip: swiping inward opens the drawer. -->
+        <div
+            class="border-border bg-background text-foreground relative min-h-80 w-full max-w-2xl overflow-hidden border"
+            #portalContainer
+        >
+            <div [modal]="false" swipeDirection="right" rdxDrawerRoot>
                 <div
-                    class="bg-primary/15 absolute inset-x-0 bottom-0 h-8 cursor-grab touch-none data-[swiping]:cursor-grabbing"
+                    class="border-primary bg-primary/10 absolute inset-y-0 right-0 z-[1] w-10 cursor-grab border-l-2 border-dashed data-[swiping]:cursor-grabbing"
                     rdxDrawerSwipeArea
-                ></div>
+                >
+                    <span
+                        class="text-primary pointer-events-none absolute top-1/2 right-0 z-0 mr-2 origin-center -translate-y-1/2 -rotate-90 text-xs font-bold tracking-[0.12em] whitespace-nowrap uppercase"
+                    >
+                        Swipe here
+                    </span>
+                </div>
 
-                <ng-template rdxDrawerPortalPresence>
-                    <div [class]="d.portalAnimated" rdxDrawerPortal>
-                        <div [class]="d.backdrop" rdxDrawerBackdrop></div>
+                <div class="flex min-h-80 flex-col items-center justify-center gap-3 p-4 pr-16 text-center">
+                    <p class="text-muted-foreground text-sm">Swipe from the right edge to open the drawer.</p>
+                </div>
 
-                        <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
-                            <div [class]="d.grip" aria-hidden="true"></div>
-                            <div [class]="d.body" rdxDrawerContent>
-                                <h2 [class]="d.title" rdxDrawerTitle>Opened by swipe</h2>
-                                <p [class]="d.description" rdxDrawerDescription>Swipe back down to dismiss.</p>
+                <ng-template [container]="portalContainer" rdxDrawerPortal>
+                    <div
+                        [class]="
+                            cn(
+                                'bg-foreground/20 absolute inset-0 opacity-[calc(1-var(--drawer-swipe-progress))]',
+                                'transition-opacity duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)]',
+                                'data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0'
+                            )
+                        "
+                        rdxDrawerBackdrop
+                    ></div>
+
+                    <div class="absolute inset-0 z-20 flex items-stretch justify-end" rdxDrawerViewport>
+                        <div
+                            class="border-border bg-card text-card-foreground h-full w-80 max-w-[calc(100%-3rem)] [transform:translateX(var(--drawer-swipe-movement-x))] overflow-y-auto border-l p-6 shadow-lg outline-none [--drawer-swipe-movement-x:0px] [transition:transform_450ms_cubic-bezier(0.32,0.72,0,1)] data-[ending-style]:[transform:translateX(100%)] data-[starting-style]:[transform:translateX(100%)] data-[swiping]:select-none data-[swiping]:[transition:none]"
+                            rdxDrawerPopup
+                        >
+                            <div class="mx-auto w-full max-w-lg" rdxDrawerContent>
+                                <h2 [class]="d.title" rdxDrawerTitle>Library</h2>
+                                <p [class]="d.description" rdxDrawerDescription>
+                                    Swipe from the edge whenever you want to jump back into your playlists.
+                                </p>
                                 <div [class]="d.footer">
-                                    <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Close</button>
+                                    <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>Close</button>
                                 </div>
                             </div>
                         </div>

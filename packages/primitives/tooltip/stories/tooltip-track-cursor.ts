@@ -15,12 +15,8 @@ import { demoTooltip } from '../../storybook/styles';
                 Move the cursor over me
             </button>
 
-            <div [container]="content" rdxTooltipPortal>
-                <ng-template #content rdxTooltipPortalPresence>
-                    <div [class]="t.positioner" sideOffset="12" rdxTooltipPositioner>
-                        <div [class]="t.popup" rdxTooltipPopup>Following the cursor</div>
-                    </div>
-                </ng-template>
+            <div *rdxTooltipPortal [class]="t.positioner" sideOffset="12" rdxTooltipPositioner>
+                <div [class]="t.popup" rdxTooltipPopup>Following the cursor</div>
             </div>
         </ng-container>
     `

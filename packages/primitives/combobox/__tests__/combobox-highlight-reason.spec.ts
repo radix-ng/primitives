@@ -11,18 +11,14 @@ import { ComboboxItemHighlightedDetails, RdxComboboxRoot } from '../src/combobox
     template: `
         <div [(open)]="open" (onItemHighlighted)="events.push($event)" autoHighlight="input-change" rdxComboboxRoot>
             <input rdxComboboxInput aria-label="Fruit" />
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div rdxComboboxPositioner>
-                        <div rdxComboboxPopup>
-                            <div rdxComboboxList aria-label="Fruits">
-                                @for (fruit of fruits; track fruit) {
-                                    <div [value]="fruit" rdxComboboxItem>{{ fruit }}</div>
-                                }
-                            </div>
-                        </div>
+            <div *rdxComboboxPortal rdxComboboxPositioner>
+                <div rdxComboboxPopup>
+                    <div rdxComboboxList aria-label="Fruits">
+                        @for (fruit of fruits; track fruit) {
+                            <div [value]="fruit" rdxComboboxItem>{{ fruit }}</div>
+                        }
                     </div>
-                </ng-template>
+                </div>
             </div>
         </div>
     `
@@ -47,18 +43,14 @@ class ReasonHost {
             rdxComboboxRoot
         >
             <input rdxComboboxInput aria-label="Item" />
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div rdxComboboxPositioner>
-                        <div rdxComboboxPopup>
-                            <div rdxComboboxList aria-label="Items">
-                                @for (i of windowIndexes; track i) {
-                                    <div [value]="cmb.filteredItems()[i]" [index]="i" rdxComboboxItem></div>
-                                }
-                            </div>
-                        </div>
+            <div *rdxComboboxPortal rdxComboboxPositioner>
+                <div rdxComboboxPopup>
+                    <div rdxComboboxList aria-label="Items">
+                        @for (i of windowIndexes; track i) {
+                            <div [value]="cmb.filteredItems()[i]" [index]="i" rdxComboboxItem></div>
+                        }
                     </div>
-                </ng-template>
+                </div>
             </div>
         </div>
     `

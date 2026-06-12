@@ -29,23 +29,19 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
             </div>
 
             <ng-container [handle]="popover" rdxPopoverRoot>
-                <ng-template rdxPopoverPortalPresence>
-                    <div rdxPopoverPortal>
-                        <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                            <div [class]="p.popup" rdxPopoverPopup>
-                                <span [class]="p.arrow" rdxPopoverArrow></span>
-                                <h2 [class]="p.title" rdxPopoverTitle>Detached handles</h2>
-                                <p [class]="p.description" rdxPopoverDescription>
-                                    Both triggers live outside the root. Open another trigger to move this popup without
-                                    closing it first.
-                                </p>
-                                <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                                    <svg aria-hidden="true" lucideX size="14" />
-                                </button>
-                            </div>
-                        </div>
+                <div *rdxPopoverPortal [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
+                    <div [class]="p.popup" rdxPopoverPopup>
+                        <span [class]="p.arrow" rdxPopoverArrow></span>
+                        <h2 [class]="p.title" rdxPopoverTitle>Detached handles</h2>
+                        <p [class]="p.description" rdxPopoverDescription>
+                            Both triggers live outside the root. Open another trigger to move this popup without closing
+                            it first.
+                        </p>
+                        <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                            <svg aria-hidden="true" lucideX size="14" />
+                        </button>
                     </div>
-                </ng-template>
+                </div>
             </ng-container>
         </div>
     `

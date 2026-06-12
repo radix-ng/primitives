@@ -58,25 +58,26 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 </li>
             </ul>
 
-            <ng-template rdxNavigationMenuPortalPresence>
-                <div [class]="m.portalAnimated" rdxNavigationMenuPortal>
-                    <div [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
-                        <div [class]="m.popup" rdxNavigationMenuPopup>
-                            <svg
-                                [class]="m.arrow"
-                                width="10"
-                                height="5"
-                                viewBox="0 0 30 10"
-                                preserveAspectRatio="none"
-                                rdxNavigationMenuArrow
-                            >
-                                <polygon points="0,0 30,0 15,10" />
-                            </svg>
-                            <div [class]="m.viewport" rdxNavigationMenuViewport></div>
-                        </div>
-                    </div>
+            <div
+                *rdxNavigationMenuPortal
+                [class]="cn(m.positioner, m.positionerAnimated)"
+                sideOffset="8"
+                rdxNavigationMenuPositioner
+            >
+                <div [class]="m.popup" rdxNavigationMenuPopup>
+                    <svg
+                        [class]="m.arrow"
+                        width="10"
+                        height="5"
+                        viewBox="0 0 30 10"
+                        preserveAspectRatio="none"
+                        rdxNavigationMenuArrow
+                    >
+                        <polygon points="0,0 30,0 15,10" />
+                    </svg>
+                    <div [class]="m.viewport" rdxNavigationMenuViewport></div>
                 </div>
-            </ng-template>
+            </div>
         </nav>
     `
 })

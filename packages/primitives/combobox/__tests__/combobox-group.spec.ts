@@ -8,24 +8,20 @@ import { _importsCombobox } from '../index';
     template: `
         <div [(open)]="open" rdxComboboxRoot>
             <input rdxComboboxInput aria-label="Produce" />
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div rdxComboboxPositioner>
-                        <div rdxComboboxPopup>
-                            <div rdxComboboxList aria-label="Produce">
-                                <div data-group="fruits" rdxComboboxGroup>
-                                    <div rdxComboboxGroupLabel>Fruits</div>
-                                    <div [value]="'apple'" rdxComboboxItem>Apple</div>
-                                    <div [value]="'grape'" rdxComboboxItem>Grape</div>
-                                </div>
-                                <div data-group="veg" rdxComboboxGroup>
-                                    <div rdxComboboxGroupLabel>Vegetables</div>
-                                    <div [value]="'carrot'" rdxComboboxItem>Carrot</div>
-                                </div>
-                            </div>
+            <div *rdxComboboxPortal rdxComboboxPositioner>
+                <div rdxComboboxPopup>
+                    <div rdxComboboxList aria-label="Produce">
+                        <div data-group="fruits" rdxComboboxGroup>
+                            <div rdxComboboxGroupLabel>Fruits</div>
+                            <div [value]="'apple'" rdxComboboxItem>Apple</div>
+                            <div [value]="'grape'" rdxComboboxItem>Grape</div>
+                        </div>
+                        <div data-group="veg" rdxComboboxGroup>
+                            <div rdxComboboxGroupLabel>Vegetables</div>
+                            <div [value]="'carrot'" rdxComboboxItem>Carrot</div>
                         </div>
                     </div>
-                </ng-template>
+                </div>
             </div>
         </div>
     `

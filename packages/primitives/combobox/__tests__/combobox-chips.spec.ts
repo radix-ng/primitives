@@ -19,18 +19,14 @@ import { _importsCombobox } from '../index';
                 <input rdxComboboxInput aria-label="Fruits" />
             </div>
 
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div rdxComboboxPositioner>
-                        <div rdxComboboxPopup>
-                            <div rdxComboboxList aria-label="Fruits">
-                                @for (f of fruits; track f) {
-                                    <div [value]="f" rdxComboboxItem>{{ f }}</div>
-                                }
-                            </div>
-                        </div>
+            <div *rdxComboboxPortal rdxComboboxPositioner>
+                <div rdxComboboxPopup>
+                    <div rdxComboboxList aria-label="Fruits">
+                        @for (f of fruits; track f) {
+                            <div [value]="f" rdxComboboxItem>{{ f }}</div>
+                        }
                     </div>
-                </ng-template>
+                </div>
             </div>
         </div>
     `

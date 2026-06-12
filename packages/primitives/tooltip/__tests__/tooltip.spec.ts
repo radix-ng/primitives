@@ -6,6 +6,8 @@ import {
     createRdxTooltipHandle,
     RdxTooltip,
     RdxTooltipPopup,
+    RdxTooltipPortal,
+    RdxTooltipPortalMisuseGuard,
     RdxTooltipPositioner,
     RdxTooltipProvider,
     RdxTooltipTrigger
@@ -553,5 +555,28 @@ describe('Tooltip config', () => {
         vi.advanceTimersByTime(1);
         fixture.detectChanges();
         expect(root.open()).toBe(true);
+    });
+});
+
+describe('Tooltip structural portal', () => {
+    it('throws in dev mode when rdxTooltipPortal is used as an attribute instead of structurally', () => {
+        @Component({
+            imports: [RdxTooltip, RdxTooltipTrigger, RdxTooltipPortal, RdxTooltipPortalMisuseGuard, RdxTooltipPopup],
+            template: `
+                <ng-container rdxTooltip>
+                    <button rdxTooltipTrigger>Trigger</button>
+
+                    <div rdxTooltipPortal>
+                        <div rdxTooltipPopup>Oops</div>
+                    </div>
+                </ng-container>
+            `
+        })
+        class MisuseHostComponent {}
+
+        expect(() => {
+            const misuseFixture = TestBed.createComponent(MisuseHostComponent);
+            misuseFixture.detectChanges();
+        }).toThrow(/structural directive/);
     });
 });

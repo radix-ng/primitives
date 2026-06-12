@@ -12,22 +12,18 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
                 Hover for details
             </button>
 
-            <ng-template rdxPopoverPortalPresence>
-                <div rdxPopoverPortal>
-                    <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                        <div [class]="p.popup" rdxPopoverPopup>
-                            <span [class]="p.arrow" rdxPopoverArrow></span>
-                            <h2 [class]="p.title" rdxPopoverTitle>Hover popover</h2>
-                            <p [class]="p.description" rdxPopoverDescription>
-                                Move the pointer into this popup. It remains interactive after leaving the trigger.
-                            </p>
-                            <button [class]="p.close" aria-label="Close" rdxPopoverClose>
-                                <svg aria-hidden="true" lucideX size="14" />
-                            </button>
-                        </div>
-                    </div>
+            <div *rdxPopoverPortal [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
+                <div [class]="p.popup" rdxPopoverPopup>
+                    <span [class]="p.arrow" rdxPopoverArrow></span>
+                    <h2 [class]="p.title" rdxPopoverTitle>Hover popover</h2>
+                    <p [class]="p.description" rdxPopoverDescription>
+                        Move the pointer into this popup. It remains interactive after leaving the trigger.
+                    </p>
+                    <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                        <svg aria-hidden="true" lucideX size="14" />
+                    </button>
                 </div>
-            </ng-template>
+            </div>
         </ng-container>
     `
 })

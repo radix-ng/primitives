@@ -10,50 +10,44 @@ import { cn, demoButton, demoDialog } from '../../storybook/styles';
         <div rdxDialogRoot>
             <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open dialog</button>
 
-            <ng-template rdxDialogPortalPresence>
-                <div [class]="d.portalAnimated" rdxDialogPortal>
-                    <div [class]="d.backdrop" rdxDialogBackdrop></div>
+            <ng-template rdxDialogPortal>
+                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
 
-                    <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-                        <h2 [class]="d.title" rdxDialogTitle>Parent dialog</h2>
-                        <p [class]="d.description" rdxDialogDescription>
-                            Opening the nested dialog scales this popup back via
-                            <code>[data-nested-dialog-open]</code>
-                            .
-                        </p>
+                <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
+                    <h2 [class]="d.title" rdxDialogTitle>Parent dialog</h2>
+                    <p [class]="d.description" rdxDialogDescription>
+                        Opening the nested dialog scales this popup back via
+                        <code>[data-nested-dialog-open]</code>
+                        .
+                    </p>
 
-                        <div [class]="d.footer">
-                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDialogClose>Close</button>
+                    <div [class]="d.footer">
+                        <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDialogClose>Close</button>
 
-                            <div rdxDialogRoot>
-                                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogTrigger>Open nested</button>
+                        <div rdxDialogRoot>
+                            <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogTrigger>Open nested</button>
 
-                                <ng-template rdxDialogPortalPresence>
-                                    <div [class]="d.portalAnimated" rdxDialogPortal>
-                                        <div [class]="d.backdrop" rdxDialogBackdrop></div>
-                                        <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-                                            <h2 [class]="d.title" rdxDialogTitle>Nested dialog</h2>
-                                            <p [class]="d.description" rdxDialogDescription>
-                                                Escape or the backdrop closes this one first, then the parent.
-                                            </p>
-                                            <div [class]="d.footer">
-                                                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>
-                                                    Done
-                                                </button>
-                                            </div>
-                                            <button [class]="d.close" aria-label="Close" rdxDialogClose>
-                                                <svg aria-hidden="true" lucideX size="16" />
-                                            </button>
-                                        </div>
+                            <ng-template rdxDialogPortal>
+                                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
+                                <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
+                                    <h2 [class]="d.title" rdxDialogTitle>Nested dialog</h2>
+                                    <p [class]="d.description" rdxDialogDescription>
+                                        Escape or the backdrop closes this one first, then the parent.
+                                    </p>
+                                    <div [class]="d.footer">
+                                        <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Done</button>
                                     </div>
-                                </ng-template>
-                            </div>
+                                    <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                                        <svg aria-hidden="true" lucideX size="16" />
+                                    </button>
+                                </div>
+                            </ng-template>
                         </div>
-
-                        <button [class]="d.close" aria-label="Close" rdxDialogClose>
-                            <svg aria-hidden="true" lucideX size="16" />
-                        </button>
                     </div>
+
+                    <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                        <svg aria-hidden="true" lucideX size="16" />
+                    </button>
                 </div>
             </ng-template>
         </div>

@@ -48,58 +48,52 @@ const CREATE = '__rdx_create__';
                 </button>
             </div>
 
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div [class]="c.positioner" rdxComboboxPositioner>
-                        <div [class]="c.popup" rdxComboboxPopup>
-                            <div [class]="c.list" rdxComboboxList aria-label="Labels">
-                                @for (label of options(); track label) {
-                                    <div [class]="c.item" [value]="label" rdxComboboxItem>
-                                        <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
-                                            <svg lucideCheck size="14"></svg>
-                                        </span>
-                                        {{ label }}
-                                    </div>
-                                }
-                                @if (showCreate()) {
-                                    <div [class]="c.item" [value]="CREATE" [textValue]="query()" rdxComboboxItem>
-                                        <span [class]="c.itemIndicator">
-                                            <svg lucidePlus size="14"></svg>
-                                        </span>
-                                        Create "{{ query().trim() }}"
-                                    </div>
-                                }
+            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
+                <div [class]="c.popup" rdxComboboxPopup>
+                    <div [class]="c.list" rdxComboboxList aria-label="Labels">
+                        @for (label of options(); track label) {
+                            <div [class]="c.item" [value]="label" rdxComboboxItem>
+                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                    <svg lucideCheck size="14"></svg>
+                                </span>
+                                {{ label }}
                             </div>
-                            <div [class]="c.empty" rdxComboboxEmpty>No labels found.</div>
-                        </div>
+                        }
+                        @if (showCreate()) {
+                            <div [class]="c.item" [value]="CREATE" [textValue]="query()" rdxComboboxItem>
+                                <span [class]="c.itemIndicator">
+                                    <svg lucidePlus size="14"></svg>
+                                </span>
+                                Create "{{ query().trim() }}"
+                            </div>
+                        }
                     </div>
-                </ng-template>
+                    <div [class]="c.empty" rdxComboboxEmpty>No labels found.</div>
+                </div>
             </div>
         </div>
 
         <div [(open)]="dialogOpen" rdxDialogRoot>
-            <ng-template rdxDialogPortalPresence>
-                <div [class]="d.portalAnimated" rdxDialogPortal>
-                    <div [class]="d.backdrop" rdxDialogBackdrop></div>
-                    <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-                        <h2 [class]="d.title" rdxDialogTitle>Create new label</h2>
-                        <p [class]="d.description" rdxDialogDescription>Add a new label to select.</p>
-                        <form (submit)="confirmCreate($event)">
-                            <input
-                                [class]="dialogInput"
-                                [value]="newLabel()"
-                                (input)="newLabel.set($any($event.target).value)"
-                                placeholder="Label name"
-                                aria-label="Label name"
-                            />
-                            <div [class]="d.footer">
-                                <button [class]="cn(b.base, b.outline, b.size.sm)" type="button" rdxDialogClose>
-                                    Cancel
-                                </button>
-                                <button [class]="cn(b.base, b.primary, b.size.sm)" type="submit">Create</button>
-                            </div>
-                        </form>
-                    </div>
+            <ng-template rdxDialogPortal>
+                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
+                <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
+                    <h2 [class]="d.title" rdxDialogTitle>Create new label</h2>
+                    <p [class]="d.description" rdxDialogDescription>Add a new label to select.</p>
+                    <form (submit)="confirmCreate($event)">
+                        <input
+                            [class]="dialogInput"
+                            [value]="newLabel()"
+                            (input)="newLabel.set($any($event.target).value)"
+                            placeholder="Label name"
+                            aria-label="Label name"
+                        />
+                        <div [class]="d.footer">
+                            <button [class]="cn(b.base, b.outline, b.size.sm)" type="button" rdxDialogClose>
+                                Cancel
+                            </button>
+                            <button [class]="cn(b.base, b.primary, b.size.sm)" type="submit">Create</button>
+                        </div>
+                    </form>
                 </div>
             </ng-template>
         </div>

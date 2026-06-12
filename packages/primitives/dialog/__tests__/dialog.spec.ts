@@ -9,7 +9,7 @@ import {
     RdxDialogOpenChange,
     RdxDialogPopup,
     RdxDialogPortal,
-    RdxDialogPortalPresence,
+    RdxDialogPortalMisuseGuard,
     RdxDialogRoot,
     RdxDialogTitle,
     RdxDialogTrigger
@@ -21,7 +21,6 @@ import { axe } from 'jest-axe';
         RdxDialogRoot,
         RdxDialogTrigger,
         RdxDialogPortal,
-        RdxDialogPortalPresence,
         RdxDialogBackdrop,
         RdxDialogPopup,
         RdxDialogTitle,
@@ -41,14 +40,12 @@ import { axe } from 'jest-axe';
         >
             <button rdxDialogTrigger>Open</button>
 
-            <ng-template rdxDialogPortalPresence>
-                <div data-test-portal rdxDialogPortal>
-                    <div data-test-backdrop rdxDialogBackdrop></div>
-                    <div rdxDialogPopup>
-                        <h2 rdxDialogTitle>Title</h2>
-                        <p rdxDialogDescription>Description</p>
-                        <button rdxDialogClose>Close</button>
-                    </div>
+            <ng-template rdxDialogPortal>
+                <div data-test-backdrop rdxDialogBackdrop></div>
+                <div data-test-portal rdxDialogPopup>
+                    <h2 rdxDialogTitle>Title</h2>
+                    <p rdxDialogDescription>Description</p>
+                    <button rdxDialogClose>Close</button>
                 </div>
             </ng-template>
         </div>
@@ -64,14 +61,12 @@ class TestHostComponent {
 }
 
 @Component({
-    imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPortalPresence, RdxDialogPopup],
+    imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPopup],
     template: `
         <div [defaultOpen]="true" rdxDialogRoot>
             <button rdxDialogTrigger>Open</button>
-            <ng-template rdxDialogPortalPresence>
-                <div rdxDialogPortal>
-                    <div rdxDialogPopup>Popup</div>
-                </div>
+            <ng-template rdxDialogPortal>
+                <div rdxDialogPopup>Popup</div>
             </ng-template>
         </div>
     `
@@ -79,15 +74,13 @@ class TestHostComponent {
 class DefaultOpenHostComponent {}
 
 @Component({
-    imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPortalPresence, RdxDialogPopup],
+    imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPopup],
     template: `
         <div #root="rdxDialogRoot" [(open)]="open" [(triggerId)]="triggerId" rdxDialogRoot>
             <button id="trigger-one" rdxDialogTrigger>One</button>
             <button id="trigger-two" rdxDialogTrigger>Two</button>
-            <ng-template rdxDialogPortalPresence>
-                <div rdxDialogPortal>
-                    <div rdxDialogPopup>Popup</div>
-                </div>
+            <ng-template rdxDialogPortal>
+                <div rdxDialogPopup>Popup</div>
             </ng-template>
         </div>
     `
@@ -98,15 +91,13 @@ class MultipleTriggersHostComponent {
 }
 
 @Component({
-    imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPortalPresence, RdxDialogPopup],
+    imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPopup],
     template: `
         <button id="detached-one" [handle]="handle" rdxDialogTrigger>One</button>
         <button id="detached-two" [handle]="handle" rdxDialogTrigger>Two</button>
         <div [handle]="handle" rdxDialogRoot>
-            <ng-template rdxDialogPortalPresence>
-                <div rdxDialogPortal>
-                    <div rdxDialogPopup>Popup</div>
-                </div>
+            <ng-template rdxDialogPortal>
+                <div rdxDialogPopup>Popup</div>
             </ng-template>
         </div>
     `
@@ -116,21 +107,17 @@ class DetachedTriggersHostComponent {
 }
 
 @Component({
-    imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPortalPresence, RdxDialogPopup],
+    imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPopup],
     template: `
         <div rdxDialogRoot>
             <button id="outer-trigger" rdxDialogTrigger>Open outer</button>
-            <ng-template rdxDialogPortalPresence>
-                <div rdxDialogPortal>
-                    <div data-test-outer rdxDialogPopup>
-                        <div rdxDialogRoot>
-                            <button id="inner-trigger" rdxDialogTrigger>Open inner</button>
-                            <ng-template rdxDialogPortalPresence>
-                                <div rdxDialogPortal>
-                                    <div data-test-inner rdxDialogPopup>Inner</div>
-                                </div>
-                            </ng-template>
-                        </div>
+            <ng-template rdxDialogPortal>
+                <div data-test-outer rdxDialogPopup>
+                    <div rdxDialogRoot>
+                        <button id="inner-trigger" rdxDialogTrigger>Open inner</button>
+                        <ng-template rdxDialogPortal>
+                            <div data-test-inner rdxDialogPopup>Inner</div>
+                        </ng-template>
                     </div>
                 </div>
             </ng-template>
@@ -193,6 +180,27 @@ describe('Dialog', () => {
 
         expect(document.body.querySelector('[data-test-portal]')).not.toBeNull();
         expect(popup()).not.toBeNull();
+    });
+
+    it('throws in dev mode when rdxDialogPortal is used as an attribute instead of structurally', () => {
+        @Component({
+            imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPortalMisuseGuard, RdxDialogPopup],
+            template: `
+                <div rdxDialogRoot>
+                    <button rdxDialogTrigger>Open</button>
+
+                    <div rdxDialogPortal>
+                        <div rdxDialogPopup>Oops</div>
+                    </div>
+                </div>
+            `
+        })
+        class MisuseHostComponent {}
+
+        expect(() => {
+            const misuseFixture = TestBed.createComponent(MisuseHostComponent);
+            misuseFixture.detectChanges();
+        }).toThrow(/structural directive/);
     });
 
     it('links the trigger and popup with accessible ids and roles', () => {

@@ -34,22 +34,44 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
             .animated-popup[data-ending-style] {
                 animation: popup-out 150ms ease;
             }
+            /* The structural *rdxMenuPortal watches its root (the positioner); give it an opacity exit
+               keyframe so presence keeps the popup mounted until the popup's slide-out finishes. */
+            @keyframes positioner-fade-in {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+            @keyframes positioner-fade-out {
+                from {
+                    opacity: 1;
+                }
+                to {
+                    opacity: 0;
+                }
+            }
+            .animated-positioner[data-open] {
+                animation: positioner-fade-in 150ms ease;
+            }
+            .animated-positioner[data-closed] {
+                animation: positioner-fade-out 150ms ease;
+            }
         `
     ],
     template: `
         <ng-container #root="rdxMenuRoot" rdxMenuRoot>
             <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Animated</button>
 
-            @if (root.open()) {
-                <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-                    <div [class]="cn(m.popup, 'animated-popup')" rdxMenuPopup>
-                        <button [class]="m.item" rdxMenuItem>New Tab</button>
-                        <button [class]="m.item" rdxMenuItem>New Window</button>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" rdxMenuItem>Print…</button>
-                    </div>
+            <div *rdxMenuPortal [class]="cn(m.positioner, 'animated-positioner')" sideOffset="4" rdxMenuPositioner>
+                <div [class]="cn(m.popup, 'animated-popup')" rdxMenuPopup>
+                    <button [class]="m.item" rdxMenuItem>New Tab</button>
+                    <button [class]="m.item" rdxMenuItem>New Window</button>
+                    <div [class]="m.separator" rdxMenuSeparator></div>
+                    <button [class]="m.item" rdxMenuItem>Print…</button>
                 </div>
-            }
+            </div>
         </ng-container>
     `
 })

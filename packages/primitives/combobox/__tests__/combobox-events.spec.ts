@@ -9,18 +9,14 @@ import { _importsCombobox } from '../index';
         <form>
             <div [(open)]="open" submitOnItemClick rdxComboboxRoot>
                 <input rdxComboboxInput aria-label="Fruit" />
-                <div rdxComboboxPortal>
-                    <ng-template rdxComboboxPortalPresence>
-                        <div rdxComboboxPositioner>
-                            <div rdxComboboxPopup>
-                                <div rdxComboboxList aria-label="Fruits">
-                                    @for (fruit of fruits; track fruit) {
-                                        <div [value]="fruit" rdxComboboxItem>{{ fruit }}</div>
-                                    }
-                                </div>
-                            </div>
+                <div *rdxComboboxPortal rdxComboboxPositioner>
+                    <div rdxComboboxPopup>
+                        <div rdxComboboxList aria-label="Fruits">
+                            @for (fruit of fruits; track fruit) {
+                                <div [value]="fruit" rdxComboboxItem>{{ fruit }}</div>
+                            }
                         </div>
-                    </ng-template>
+                    </div>
                 </div>
             </div>
         </form>
@@ -36,18 +32,14 @@ class SubmitHost {
     template: `
         <div [(open)]="open" (onOpenChangeComplete)="completed.set($event)" rdxComboboxRoot>
             <input rdxComboboxInput aria-label="Fruit" />
-            <div rdxComboboxPortal>
-                <ng-template rdxComboboxPortalPresence>
-                    <div rdxComboboxPositioner>
-                        <div rdxComboboxPopup>
-                            <div rdxComboboxList aria-label="Fruits">
-                                @for (fruit of fruits; track fruit) {
-                                    <div [value]="fruit" rdxComboboxItem>{{ fruit }}</div>
-                                }
-                            </div>
-                        </div>
+            <div *rdxComboboxPortal rdxComboboxPositioner>
+                <div rdxComboboxPopup>
+                    <div rdxComboboxList aria-label="Fruits">
+                        @for (fruit of fruits; track fruit) {
+                            <div [value]="fruit" rdxComboboxItem>{{ fruit }}</div>
+                        }
                     </div>
-                </ng-template>
+                </div>
             </div>
         </div>
     `

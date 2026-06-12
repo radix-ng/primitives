@@ -6,8 +6,7 @@ import { RdxDrawerDescription } from './src/drawer-description';
 import { RdxDrawerIndent } from './src/drawer-indent';
 import { RdxDrawerIndentBackground } from './src/drawer-indent-background';
 import { RdxDrawerPopup } from './src/drawer-popup';
-import { RdxDrawerPortal } from './src/drawer-portal';
-import { RdxDrawerPortalPresence } from './src/drawer-portal-presence';
+import { RdxDrawerPortal, RdxDrawerPortalMisuseGuard } from './src/drawer-portal';
 import { RdxDrawerProviderDirective } from './src/drawer-provider';
 import { RdxDrawerRoot } from './src/drawer-root';
 import { RdxDrawerSwipeArea } from './src/drawer-swipe-area';
@@ -25,7 +24,6 @@ export * from './src/drawer-indent-background';
 export * from './src/drawer-pointer';
 export * from './src/drawer-popup';
 export * from './src/drawer-portal';
-export * from './src/drawer-portal-presence';
 export * from './src/drawer-provider';
 export * from './src/drawer-root';
 export * from './src/drawer-snap';
@@ -40,8 +38,8 @@ export const drawerImports = [
     RdxDrawerRoot,
     RdxDrawerTrigger,
     RdxDrawerSwipeArea,
-    RdxDrawerPortalPresence,
     RdxDrawerPortal,
+    RdxDrawerPortalMisuseGuard,
     RdxDrawerBackdrop,
     RdxDrawerViewport,
     RdxDrawerPopup,

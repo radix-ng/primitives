@@ -34,19 +34,15 @@ import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
             </p>
 
             <ng-container #root="rdxPreviewCardRoot" [handle]="previewCard" rdxPreviewCardRoot>
-                <ng-template rdxPreviewCardPortalPresence>
-                    <div rdxPreviewCardPortal>
-                        <div [class]="p.positioner" sideOffset="8" rdxPreviewCardPositioner>
-                            <div [class]="p.popup" rdxPreviewCardPopup>
-                                <span [class]="p.arrow" rdxPreviewCardArrow></span>
-                                <div class="grid gap-2">
-                                    <div class="bg-muted h-24 rounded-md"></div>
-                                    <p class="text-muted-foreground text-sm">{{ root.payload() }}</p>
-                                </div>
-                            </div>
+                <div *rdxPreviewCardPortal [class]="p.positioner" sideOffset="8" rdxPreviewCardPositioner>
+                    <div [class]="p.popup" rdxPreviewCardPopup>
+                        <span [class]="p.arrow" rdxPreviewCardArrow></span>
+                        <div class="grid gap-2">
+                            <div class="bg-muted h-24 rounded-md"></div>
+                            <p class="text-muted-foreground text-sm">{{ root.payload() }}</p>
                         </div>
                     </div>
-                </ng-template>
+                </div>
             </ng-container>
         </div>
     `

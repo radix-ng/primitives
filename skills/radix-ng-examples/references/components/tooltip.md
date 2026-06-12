@@ -2,8 +2,9 @@
 
 #### Displays contextual information when a trigger is hovered or focused.
 
-Tooltip composes the shared Popper, Portal, Presence, and Dismissable Layer primitives. It remains
-headless: styles and native CSS animations belong to the consumer. The API follows Base UI.
+Tooltip composes the shared Popper, structural Portal (portal + presence), and Dismissable Layer
+primitives. It remains headless: styles and native CSS animations belong to the consumer. The API
+follows Base UI.
 
 ```typescript
 import { Component } from '@angular/core';
@@ -20,13 +21,9 @@ import { cn, demoButton, demoTooltip } from '../../storybook/styles';
                 <svg aria-hidden="true" lucidePlus size="16" />
             </button>
 
-            <div [container]="content" rdxTooltipPortal>
-                <ng-template #content rdxTooltipPortalPresence>
-                    <div [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
-                        <div [class]="t.popup" rdxTooltipPopup>Add to library</div>
-                        <span [class]="t.arrow" rdxTooltipArrow></span>
-                    </div>
-                </ng-template>
+            <div *rdxTooltipPortal [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
+                <div [class]="t.popup" rdxTooltipPopup>Add to library</div>
+                <span [class]="t.arrow" rdxTooltipArrow></span>
             </div>
         </ng-container>
     `
@@ -58,7 +55,6 @@ import {
     RdxTooltipArrow,
     RdxTooltipPopup,
     RdxTooltipPortal,
-    RdxTooltipPortalPresence,
     RdxTooltipPositioner,
     RdxTooltipProvider,
     RdxTooltipTrigger
@@ -73,20 +69,18 @@ import { tooltipImports } from '@radix-ng/primitives/tooltip';
 
 ## Anatomy
 
-Apply the parts to your own markup. `rdxTooltipPortalPresence` manages mounting and waits for exit
-keyframes on the first DOM element inside its template.
+Apply the parts to your own markup. `rdxTooltipPortal` is a **structural** directive: it teleports its
+content into `document.body` while the tooltip is open and keeps it mounted until any closed-state CSS
+exit keyframes on its root element finish. Use the `*` microsyntax on the positioner (or the explicit
+`<ng-template rdxTooltipPortal>` form with `[container]` for a custom portal target):
 
 ```html
 <ng-container rdxTooltip>
     <button rdxTooltipTrigger>+</button>
 
-    <div rdxTooltipPortal [container]="content">
-        <ng-template rdxTooltipPortalPresence #content>
-            <div sideOffset="8" rdxTooltipPositioner>
-                <div rdxTooltipPopup>Add to library</div>
-                <span rdxTooltipArrow></span>
-            </div>
-        </ng-template>
+    <div *rdxTooltipPortal sideOffset="8" rdxTooltipPositioner>
+        <div rdxTooltipPopup>Add to library</div>
+        <span rdxTooltipArrow></span>
     </div>
 </ng-container>
 ```
@@ -115,13 +109,9 @@ import { cn, demoButton, demoTooltip } from '../../storybook/styles';
                 <svg aria-hidden="true" lucidePlus size="16" />
             </button>
 
-            <div [container]="content" rdxTooltipPortal>
-                <ng-template #content rdxTooltipPortalPresence>
-                    <div [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
-                        <div [class]="t.popup" rdxTooltipPopup>Add to library</div>
-                        <span [class]="t.arrow" rdxTooltipArrow></span>
-                    </div>
-                </ng-template>
+            <div *rdxTooltipPortal [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
+                <div [class]="t.popup" rdxTooltipPopup>Add to library</div>
+                <span [class]="t.arrow" rdxTooltipArrow></span>
             </div>
         </ng-container>
     `
@@ -160,12 +150,8 @@ import { cn, demoButton, demoTooltip } from '../../storybook/styles';
                         <svg [lucideIcon]="action.icon" aria-hidden="true" size="16" />
                     </button>
 
-                    <div [container]="content" rdxTooltipPortal>
-                        <ng-template #content rdxTooltipPortalPresence>
-                            <div [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
-                                <div [class]="t.popup" rdxTooltipPopup>{{ action.name }}</div>
-                            </div>
-                        </ng-template>
+                    <div *rdxTooltipPortal [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
+                        <div [class]="t.popup" rdxTooltipPopup>{{ action.name }}</div>
                     </div>
                 </ng-container>
             }
@@ -206,12 +192,8 @@ import { cn, demoButton, demoTooltip } from '../../storybook/styles';
                         {{ item.label }}
                     </button>
 
-                    <div [container]="content" rdxTooltipPortal>
-                        <ng-template #content rdxTooltipPortalPresence>
-                            <div [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
-                                <div [class]="t.popup" rdxTooltipPopup>Opened after {{ item.delay }} ms</div>
-                            </div>
-                        </ng-template>
+                    <div *rdxTooltipPortal [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
+                        <div [class]="t.popup" rdxTooltipPopup>Opened after {{ item.delay }} ms</div>
                     </div>
                 </ng-container>
             }
@@ -252,12 +234,8 @@ import { cn, demoButton, demoTooltip } from '../../storybook/styles';
                         {{ item.label }}
                     </button>
 
-                    <div [container]="content" rdxTooltipPortal>
-                        <ng-template #content rdxTooltipPortalPresence>
-                            <div [class]="t.positioner" rdxTooltipPositioner>
-                                <div [class]="t.popup" rdxTooltipPopup>{{ item.label }} tooltip</div>
-                            </div>
-                        </ng-template>
+                    <div *rdxTooltipPortal [class]="t.positioner" rdxTooltipPositioner>
+                        <div [class]="t.popup" rdxTooltipPopup>{{ item.label }} tooltip</div>
                     </div>
                 </ng-container>
             }
@@ -299,12 +277,8 @@ import { demoTooltip } from '../../storybook/styles';
                 Move the cursor over me
             </button>
 
-            <div [container]="content" rdxTooltipPortal>
-                <ng-template #content rdxTooltipPortalPresence>
-                    <div [class]="t.positioner" sideOffset="12" rdxTooltipPositioner>
-                        <div [class]="t.popup" rdxTooltipPopup>Following the cursor</div>
-                    </div>
-                </ng-template>
+            <div *rdxTooltipPortal [class]="t.positioner" sideOffset="12" rdxTooltipPositioner>
+                <div [class]="t.popup" rdxTooltipPopup>Following the cursor</div>
             </div>
         </ng-container>
     `
@@ -320,7 +294,7 @@ Tooltip uses `updatePositionStrategy="always"` so it can follow moving triggers 
 when the trigger moves continuously, such as a slider thumb being dragged.
 
 ```typescript
-import { Component, ElementRef, signal, viewChild } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
@@ -359,19 +333,16 @@ import { demoTooltip } from '../../storybook/styles';
                             <input rdxSliderThumbInput aria-label="Volume" />
                         </div>
 
-                        <ng-container [container]="tooltipContentRef()" rdxTooltipPortal>
-                            <ng-template #tooltipContent rdxTooltipPortalPresence>
-                                <div
-                                    [class]="t.positioner"
-                                    sideOffset="8"
-                                    side="top"
-                                    updatePositionStrategy="always"
-                                    rdxTooltipPositioner
-                                >
-                                    <div [class]="t.popup" rdxTooltipPopup>Volume</div>
-                                </div>
-                            </ng-template>
-                        </ng-container>
+                        <div
+                            *rdxTooltipPortal
+                            [class]="t.positioner"
+                            sideOffset="8"
+                            side="top"
+                            updatePositionStrategy="always"
+                            rdxTooltipPositioner
+                        >
+                            <div [class]="t.popup" rdxTooltipPopup>Volume</div>
+                        </div>
                     </ng-container>
                 </div>
             </div>
@@ -380,8 +351,6 @@ import { demoTooltip } from '../../storybook/styles';
 })
 export class RdxTooltipSliderComponent {
     protected readonly t = demoTooltip;
-
-    readonly tooltipContentRef = viewChild.required<ElementRef<HTMLElement>>('tooltipContent');
 
     readonly showTooltipState = signal(false);
 
@@ -417,7 +386,9 @@ export class RdxTooltipSliderComponent {
 
 ### Portal
 
-`RdxTooltipPortal` moves content to `document.body` by default or to a configured container.
+`RdxTooltipPortal` is a structural directive (`*rdxTooltipPortal` or `<ng-template rdxTooltipPortal>`)
+that teleports content to `document.body` by default. Pass `[container]` on the explicit
+`<ng-template>` form to portal into a different element.
 
 ### Positioner
 

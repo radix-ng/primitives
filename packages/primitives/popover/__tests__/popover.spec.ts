@@ -10,7 +10,7 @@ import {
     RdxPopoverOpenChange,
     RdxPopoverPopup,
     RdxPopoverPortal,
-    RdxPopoverPortalPresence,
+    RdxPopoverPortalMisuseGuard,
     RdxPopoverPositioner,
     RdxPopoverRoot,
     RdxPopoverTitle,
@@ -62,39 +62,26 @@ class TestHostComponent {
 class DefaultOpenHostComponent {}
 
 @Component({
-    imports: [RdxPopoverPortal, RdxPopoverPortalPresence, RdxPopoverRoot, RdxPopoverTrigger],
+    imports: [RdxPopoverPortal, RdxPopoverRoot, RdxPopoverTrigger],
     template: `
         <div #root="rdxPopoverRoot" rdxPopoverRoot>
             <button rdxPopoverTrigger>Open</button>
 
-            <ng-template rdxPopoverPortalPresence>
-                <div data-test-popover-portal rdxPopoverPortal>Portal</div>
-            </ng-template>
+            <div *rdxPopoverPortal data-test-popover-portal>Portal</div>
         </div>
     `
 })
 class PortalHostComponent {}
 
 @Component({
-    imports: [
-        RdxPopoverPopup,
-        RdxPopoverPortal,
-        RdxPopoverPortalPresence,
-        RdxPopoverPositioner,
-        RdxPopoverRoot,
-        RdxPopoverTrigger
-    ],
+    imports: [RdxPopoverPopup, RdxPopoverPortal, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
     template: `
         <div #root="rdxPopoverRoot" (onOpenChangeComplete)="complete.push($event)" rdxPopoverRoot>
             <button rdxPopoverTrigger>Open</button>
 
-            <ng-template rdxPopoverPortalPresence>
-                <div data-test-lifecycle-portal rdxPopoverPortal>
-                    <div rdxPopoverPositioner>
-                        <div rdxPopoverPopup>Popup</div>
-                    </div>
-                </div>
-            </ng-template>
+            <div *rdxPopoverPortal data-test-lifecycle-portal rdxPopoverPositioner>
+                <div rdxPopoverPopup>Popup</div>
+            </div>
         </div>
     `
 })
@@ -103,14 +90,7 @@ class LifecycleHostComponent {
 }
 
 @Component({
-    imports: [
-        RdxPopoverPopup,
-        RdxPopoverPortal,
-        RdxPopoverPortalPresence,
-        RdxPopoverPositioner,
-        RdxPopoverRoot,
-        RdxPopoverTrigger
-    ],
+    imports: [RdxPopoverPopup, RdxPopoverPortal, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
     template: `
         <div #parent="rdxPopoverRoot" rdxPopoverRoot>
             <button [delay]="0" openOnHover rdxPopoverTrigger>Parent trigger</button>
@@ -121,13 +101,9 @@ class LifecycleHostComponent {
                         <div #child="rdxPopoverRoot" rdxPopoverRoot>
                             <button [delay]="0" openOnHover rdxPopoverTrigger>Child trigger</button>
 
-                            <ng-template rdxPopoverPortalPresence>
-                                <div data-test-child-portal rdxPopoverPortal>
-                                    <div rdxPopoverPositioner>
-                                        <div rdxPopoverPopup>Child popup</div>
-                                    </div>
-                                </div>
-                            </ng-template>
+                            <div *rdxPopoverPortal data-test-child-portal rdxPopoverPositioner>
+                                <div rdxPopoverPopup>Child popup</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -436,6 +412,25 @@ describe('Popover', () => {
         portalFixture.detectChanges();
 
         expect(document.body.querySelector('[data-test-popover-portal]')).not.toBeNull();
+    });
+
+    it('throws in dev mode when rdxPopoverPortal is used as an attribute instead of structurally', () => {
+        @Component({
+            imports: [RdxPopoverPortal, RdxPopoverPortalMisuseGuard, RdxPopoverRoot, RdxPopoverTrigger],
+            template: `
+                <div rdxPopoverRoot>
+                    <button rdxPopoverTrigger>Open</button>
+
+                    <div rdxPopoverPortal>Oops</div>
+                </div>
+            `
+        })
+        class MisuseHostComponent {}
+
+        expect(() => {
+            const misuseFixture = TestBed.createComponent(MisuseHostComponent);
+            misuseFixture.detectChanges();
+        }).toThrow(/structural directive/);
     });
 
     it('emits open completion and exposes transition lifecycle attributes', async () => {

@@ -138,10 +138,11 @@ export const demoCalendar = {
 /**
  * Dialog surfaces and parts: a centered modal popup over a dimmed backdrop.
  *
- * `portalAnimated` goes on the `rdxDialogPortal` element because the portal is the
- * presence root — its exit keyframes are what `RdxPresenceDirective` waits for before
- * unmounting. `popupAnimated` drives the popup's own zoom; centering is handled by the
- * `translate` property (Tailwind utilities), so the `dialog-popup-*` keyframes animate scale only.
+ * `backdropAnimated` goes on the `rdxDialogBackdrop` element: since the structural
+ * `rdxDialogPortal` made backdrop + popup the presence roots, the backdrop's overlay-fade exit
+ * keyframes are (with the popup's) what the presence machine waits for before unmounting.
+ * `popupAnimated` drives the popup's own zoom; centering is handled by the `translate` property
+ * (Tailwind utilities), so the `dialog-popup-*` keyframes animate scale only.
  *
  * For scrollable dialogs, use `viewport` (a fixed full-screen scroll container) with `popupStatic`
  * (a non-fixed popup centered by the viewport's flex layout). `scrollBody` makes an inner region
@@ -149,7 +150,7 @@ export const demoCalendar = {
  * `data-nested` hooks let a parent popup react when a nested dialog opens.
  */
 export const demoDialog = {
-    portalAnimated: 'data-[state=open]:animate-dialog-overlay-in data-[state=closed]:animate-dialog-overlay-out',
+    backdropAnimated: 'data-[state=open]:animate-dialog-overlay-in data-[state=closed]:animate-dialog-overlay-out',
     backdrop: 'fixed inset-0 z-50 bg-foreground/50',
     popup: cn(
         demoCard,
@@ -180,13 +181,14 @@ export const demoDialog = {
  */
 export const demoDrawer = {
     /**
-     * The portal is the presence root, so it must carry an exit animation for the close to be
-     * awaited before unmount; without it `RdxPresenceDirective` sees `animation-name: none` on the
-     * root node and removes the drawer instantly, skipping the slide-out. Its fade also dims the
-     * backdrop (mirroring the dialog), so the backdrop element itself stays unanimated. Sized to the
-     * 200ms slide-out so the slide is not cut short.
+     * A presence root must carry an exit keyframe for the close to be awaited before unmount; without
+     * it the presence machine sees `animation-name: none` on every root and removes the drawer
+     * instantly, skipping the popup's slide-out (the slide is a CSS *transition*, which the machine
+     * does not wait for). This overlay-fade keyframe (sized to the 200ms slide-out) goes on the
+     * backdrop for modal drawers, or on the popup itself when there is no backdrop (non-modal) — both
+     * carry `data-state` (the drawer backdrop/popup compose the dialog backdrop/popup).
      */
-    portalAnimated: 'data-[state=open]:animate-drawer-overlay-in data-[state=closed]:animate-drawer-overlay-out',
+    overlayAnimated: 'data-[state=open]:animate-drawer-overlay-in data-[state=closed]:animate-drawer-overlay-out',
     backdrop: 'fixed inset-0 z-50 bg-foreground/50',
     popup: cn(
         'fixed z-50 flex flex-col bg-card text-card-foreground shadow-lg focus:outline-none',
@@ -288,12 +290,20 @@ export const demoToast = {
     )
 } as const;
 
-/** Popover surfaces and parts. */
+/**
+ * Popover surfaces and parts.
+ *
+ * `positionerAnimated` goes on the `rdxPopoverPositioner` element: since the structural
+ * `*rdxPopoverPortal` made the positioner the presence root, its exit keyframes are what the presence
+ * machine waits for before unmounting. It keys on the positioner's `data-open`/`data-closed`
+ * attributes and animates opacity only (no transform), so it never fights the popper's positioning.
+ * `popupAnimated` drives the popup's own zoom/slide via `data-state`.
+ */
 export const demoPopover = {
     positioner: 'z-50',
+    positionerAnimated: 'data-[open]:animate-popover-in data-[closed]:animate-popover-out',
     popup: cn(demoCard, 'relative w-80 p-4'),
     popupAnimated: 'data-[state=open]:animate-popover-popup-in data-[state=closed]:animate-popover-popup-out',
-    portalAnimated: 'data-[state=open]:animate-popover-in data-[state=closed]:animate-popover-out',
     backdrop: 'fixed inset-0 bg-foreground/10',
     arrow: demoArrow('text-card'),
     title: 'text-sm font-semibold text-popover-foreground',
@@ -420,7 +430,10 @@ export const demoNavigationMenu = {
     ),
     icon: 'size-3.5 transition-transform duration-200 data-[state=open]:rotate-180',
     positioner: 'z-50 data-[closed]:pointer-events-none',
-    portalAnimated: 'data-[state=open]:animate-navigation-menu-in data-[state=closed]:animate-navigation-menu-out',
+    // Goes on the `rdxNavigationMenuPositioner` (the structural `*rdxNavigationMenuPortal` root) and
+    // keys on its `data-open`/`data-closed` attributes. Opacity-only, so it never fights the popper's
+    // positioning transform; the popup's own zoom is driven by the transition-status flow.
+    positionerAnimated: 'data-[open]:animate-navigation-menu-in data-[closed]:animate-navigation-menu-out',
     popup: cn(
         demoCard,
         'relative overflow-hidden p-0 origin-[var(--transform-origin)]',

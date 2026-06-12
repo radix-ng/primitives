@@ -16,8 +16,7 @@ import { RdxComboboxItemIndicator } from './src/combobox-item-indicator';
 import { RdxComboboxLabel } from './src/combobox-label';
 import { RdxComboboxList } from './src/combobox-list';
 import { RdxComboboxPopup } from './src/combobox-popup';
-import { RdxComboboxPortal } from './src/combobox-portal';
-import { RdxComboboxPortalPresence } from './src/combobox-portal-presence';
+import { RdxComboboxPortal, RdxComboboxPortalMisuseGuard } from './src/combobox-portal';
 import { RdxComboboxPositioner } from './src/combobox-positioner';
 import { RdxComboboxRoot } from './src/combobox-root';
 import { RdxComboboxStatus } from './src/combobox-status';
@@ -42,7 +41,6 @@ export * from './src/combobox-label';
 export * from './src/combobox-list';
 export * from './src/combobox-popup';
 export * from './src/combobox-portal';
-export * from './src/combobox-portal-presence';
 export * from './src/combobox-positioner';
 export * from './src/combobox-root';
 export * from './src/combobox-status';
@@ -59,7 +57,7 @@ export const _importsCombobox = [
     RdxComboboxIcon,
     RdxComboboxClear,
     RdxComboboxPortal,
-    RdxComboboxPortalPresence,
+    RdxComboboxPortalMisuseGuard,
     RdxComboboxBackdrop,
     RdxComboboxPositioner,
     RdxComboboxPopup,

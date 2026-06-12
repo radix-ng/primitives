@@ -2,7 +2,7 @@ import { computed, Directive, effect, ElementRef, inject, Injector } from '@angu
 import { elementSize } from '@radix-ng/primitives/core';
 import { injectRdxDialogRootContext, RdxDialogPopup } from '@radix-ng/primitives/dialog';
 import { injectRdxDrawerRootContext } from './drawer-root';
-import { buildSnapEntries, resolveSnapTarget } from './drawer-snap';
+import { buildSnapEntries, dismissUnitVector, resolveSnapTarget } from './drawer-snap';
 import { RdxDrawerRelease, useDrawerSwipe } from './drawer-swipe';
 
 /** Fraction of the drawer size a plain (no-snap) release must pass to dismiss. */
@@ -99,7 +99,7 @@ export class RdxDrawerPopup {
         useDrawerSwipe({
             element: () => this.element,
             direction: this.drawerContext.swipeDirection,
-            enabled: computed(() => this.dialogContext.isOpen()),
+            enabled: computed(() => this.dialogContext.isOpen() && !this.drawerContext.openingSwipeActive()),
             restingOffset: this.restingOffset,
             resolveRelease: (projected, velocity, canDismiss) => this.resolveRelease(projected, velocity, canDismiss),
             onDismiss: (event) => this.dialogContext.close('swipe', event),
@@ -119,12 +119,46 @@ export class RdxDrawerPopup {
             this.element.style.setProperty('--drawer-snap-point-offset', `${offset}px`);
             this.drawerContext.reportPopupHeight(size);
         });
+
+        effect(() => {
+            const active = this.drawerContext.openingSwipeActive();
+            const distance = this.drawerContext.openingSwipeDistance();
+
+            if (!active) {
+                if (distance === Number.POSITIVE_INFINITY) {
+                    this.element.style.setProperty('--drawer-swipe-movement-x', '0px');
+                    this.element.style.setProperty('--drawer-swipe-movement-y', '0px');
+                    this.element.style.setProperty('--drawer-swipe-strength', '0');
+                    this.drawerContext.setSwipeProgress(0);
+                }
+
+                this.element.removeAttribute('data-swiping');
+                return;
+            }
+
+            const size = this.axisSize() || this.axisElementSize();
+            const movement = Math.max(0, size - distance);
+            const strength = size > 0 ? movement / size : 1;
+            const unit = dismissUnitVector(this.drawerContext.swipeDirection());
+
+            this.element.setAttribute('data-swiping', '');
+            this.element.style.setProperty('--drawer-swipe-movement-x', `${unit.x * movement}px`);
+            this.element.style.setProperty('--drawer-swipe-movement-y', `${unit.y * movement}px`);
+            this.element.style.setProperty('--drawer-swipe-strength', `${strength}`);
+            this.drawerContext.setSwipeProgress(strength);
+        });
     }
 
     private axisSize(): number {
         const direction = this.drawerContext.swipeDirection();
         const size = this.size();
-        return direction === 'up' || direction === 'down' ? size.height : size.width;
+        const measured = direction === 'up' || direction === 'down' ? size.height : size.width;
+        return measured || this.axisElementSize();
+    }
+
+    private axisElementSize(): number {
+        const direction = this.drawerContext.swipeDirection();
+        return direction === 'up' || direction === 'down' ? this.element.offsetHeight : this.element.offsetWidth;
     }
 
     private resolveRelease(projected: number, velocity: number, canDismiss: boolean): RdxDrawerRelease {
