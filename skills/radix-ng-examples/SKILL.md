@@ -31,7 +31,7 @@ Working examples built on `@radix-ng/primitives`. Full source is **bundled offli
 To style a primitive with a custom design system, pair an example with the data-attribute contract in
 the `radix-ng` skill (`references/styling-contract.json`).
 
-Total: **211 examples** across **41 components**.
+Total: **224 examples** across **42 components**.
 
 ## Components
 
@@ -57,6 +57,24 @@ Full source (all examples): [`references/components/alert-dialog.md`](./referenc
 - **Detached triggers**
 - **Close confirmation**
 - **Open from a menu**
+
+### Autocomplete
+
+Full source (all examples): [`references/components/autocomplete.md`](./references/components/autocomplete.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-autocomplete--docs)
+
+- **Default**
+- **Inline autocompletion**
+- **Auto highlight**
+- **Grouped**
+- **Limit**
+- **Fuzzy matching**
+- **Async**
+- **Command palette**
+- **Grid**
+- **Virtualized**
+- **Reactive forms**
+- **Template-driven forms**
+- **Disabled**
 
 ### Avatar
 

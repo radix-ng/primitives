@@ -48,6 +48,9 @@
     --color-input: var(--border);
     --color-accent: var(--muted);
     --color-accent-foreground: var(--foreground);
+    /* Distinct accent for search-match highlighting (e.g. fuzzy results). Stays available in demos
+       (not reset in the [data-demo] block below), unlike the docs-only `--color-highlight`. */
+    --color-match: var(--match);
 
     /* Functional colors for the docs */
     --color-content: white;
@@ -498,6 +501,7 @@
     --destructive-foreground: white;
     --border: oklch(90% 1% 264deg);
     --ring: oklch(55% 1% 264deg);
+    --match: oklch(45% 50% 264deg);
 }
 
 :root[data-theme='dark'] {
@@ -529,6 +533,7 @@
     --destructive-foreground: oklch(18% 1% 264deg);
     --border: oklch(30% 1% 264deg);
     --ring: oklch(65% 1% 264deg);
+    --match: oklch(69% 50% 264deg);
 
     /* Functional colors */
     --color-content: black;

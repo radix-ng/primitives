@@ -1,0 +1,245 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './autocomplete.stories';
+import { RdxAutocompleteRoot } from '../src/autocomplete-root';
+import { RdxAutocompleteInput } from '../src/autocomplete-input';
+import { RdxAutocompleteItem } from '../src/autocomplete-item';
+import { RdxAutocompleteValue } from '../src/autocomplete-value';
+import { RdxAutocompletePositioner } from '../src/autocomplete-positioner';
+
+<Meta title="Primitives/Autocomplete" />
+
+# Autocomplete
+
+#### A text input with a list of suggestions: free-form text whose value **is** the input string, with the active option tracked via `aria-activedescendant`.
+
+Autocomplete is headless — it ships no styles and exposes state via `data-*` attributes. It is built on
+the same engine as [Combobox](?path=/docs/primitives-combobox--docs), configured for a single, free-form
+string value: typing, picking a suggestion, or clearing all change one string. DOM focus stays in the
+`<input>` at all times; the active option is virtual (`data-highlighted` + `aria-activedescendant`).
+
+Use Autocomplete for free-form entry with suggestions (search boxes, command inputs); use Combobox when
+the value is a chosen item (or items) rather than the typed text.
+
+<Canvas sourceState="hidden" of={Stories.Default} />
+
+## Features
+
+- ✅ The value **is** the input string — `[(value)]`, `defaultValue`, and `onValueChange` (with a `reason`: `input-change` / `item-press` / `input-clear`).
+- ✅ Four `mode`s: `list` (filter), `both` (filter + inline complete), `inline` (static + inline complete), `none` (static).
+- ✅ Inline autocompletion: the active item's label fills the input with the completed suffix selected.
+- ✅ Built-in locale-aware filtering, a custom `filter` function, or `[filter]="null"` for external/async lists.
+- ✅ `autoHighlight`: `true` (first match while typing) or `'always'` (keep first highlighted).
+- ✅ Hover behavior: `highlightItemOnHover` (default `true`) and `keepHighlight` (keep the highlight when the pointer leaves the list).
+- ✅ Full keyboard support: ArrowDown / ArrowUp (loop via `loopFocus`), Enter, Escape, Tab.
+- ✅ Grid layout (`grid` + `rdxAutocompleteRow`) with 2D arrow navigation (Up/Down by row, Left/Right within a row).
+- ✅ Inline list (command palette): render `List` directly without `Portal` / `Positioner` / `Popup` for an always-open list.
+- ✅ WAI-ARIA `combobox` / `listbox` semantics with `aria-activedescendant` (focus never leaves the input).
+- ✅ Optional `modal` mode: locks page scroll and makes outside content inert, with a `Backdrop` part.
+- ✅ `limit` caps how many matches show; arrow-key navigation never fights a resting mouse cursor.
+- ✅ External virtualization: `virtualized` + `[items]` drives index navigation and exposes `filteredItems()`.
+- ✅ Forms: `ControlValueAccessor` on the root (value = input string), plus Field integration on the input.
+- ✅ Headless — state via `data-popup-open`, `data-list-empty`, `data-highlighted`, `data-selected`, `data-disabled`.
+
+## Import
+
+```typescript
+import {
+  RdxAutocompleteAnchor,
+  RdxAutocompleteArrow,
+  RdxAutocompleteBackdrop,
+  RdxAutocompleteClear,
+  RdxAutocompleteEmpty,
+  RdxAutocompleteGroup,
+  RdxAutocompleteGroupLabel,
+  RdxAutocompleteIcon,
+  RdxAutocompleteInput,
+  RdxAutocompleteInputGroup,
+  RdxAutocompleteItem,
+  RdxAutocompleteItemIndicator,
+  RdxAutocompleteLabel,
+  RdxAutocompleteList,
+  RdxAutocompletePopup,
+  RdxAutocompletePortal,
+  RdxAutocompletePortalPresence,
+  RdxAutocompletePositioner,
+  RdxAutocompleteRoot,
+  RdxAutocompleteRow,
+  RdxAutocompleteStatus,
+  RdxAutocompleteTrigger,
+  RdxAutocompleteValue
+} from '@radix-ng/primitives/autocomplete';
+```
+
+## Anatomy
+
+The input is the popper anchor and keeps focus; suggestions live in a portalled popup and are filtered
+in place (non-matching items are hidden, not destroyed).
+
+```html
+<div rdxAutocompleteRoot>
+  <div rdxAutocompleteInputGroup>
+    <input rdxAutocompleteInput />
+    <button rdxAutocompleteClear></button>
+  </div>
+
+  <div rdxAutocompletePortal>
+    <ng-template rdxAutocompletePortalPresence>
+      <div rdxAutocompletePositioner>
+        <div rdxAutocompletePopup>
+          <div rdxAutocompleteList>
+            <div rdxAutocompleteGroup>
+              <div rdxAutocompleteGroupLabel></div>
+              <div rdxAutocompleteItem>
+                <span rdxAutocompleteItemIndicator></span>
+              </div>
+            </div>
+          </div>
+          <div rdxAutocompleteEmpty></div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</div>
+```
+
+## Examples
+
+### Default
+
+Type to filter a list of suggestions; pick one to fill the input.
+
+<Canvas of={Stories.Default} />
+
+### Inline autocompletion
+
+With `mode="both"` (filter + inline) the input is completed from the first match, with the completed
+suffix selected so the next keystroke replaces it. Inline modes highlight the first match implicitly,
+so no `autoHighlight` is required.
+
+<Canvas of={Stories.InlineAutocompletion} />
+
+### Auto highlight
+
+`autoHighlight` keeps the first match highlighted as you type, so Enter selects it immediately.
+
+<Canvas of={Stories.AutoHighlight} />
+
+### Grouped
+
+Group related suggestions with `rdxAutocompleteGroup` / `rdxAutocompleteGroupLabel`; an empty group
+hides its heading automatically.
+
+<Canvas of={Stories.Grouped} />
+
+### Limit
+
+`limit` caps how many matches are shown at once.
+
+<Canvas of={Stories.Limit} />
+
+### Fuzzy matching
+
+A custom `filter` receives the item's text, the query, **and the item value** — so it can rank across
+multiple fields. This example uses `match-sorter` over `title` / `description` / `category` and
+highlights the matched text.
+
+<Canvas of={Stories.FuzzyMatching} />
+
+### Async
+
+`[filter]="null"` hands filtering to you; a fake request searches the movie list (`will_error` simulates
+a failure) and `RdxAutocompleteStatus` announces loading, result counts, and errors.
+
+<Canvas of={Stories.Async} />
+
+### Command palette
+
+An always-open, inline autocomplete (no popup — the `List` is rendered directly) inside a `Dialog`.
+`autoHighlight="always"` keeps the first match highlighted; selecting a command closes the dialog
+(the autocomplete's `open` is shared with the dialog via `[(open)]`).
+
+<Canvas of={Stories.CommandPalette} />
+
+### Grid
+
+An emoji picker: enable `grid` and wrap each row in `rdxAutocompleteRow` for two-dimensional arrow
+navigation. The search input lives **inside** the popup (opened by the trigger) and auto-focuses on
+open; pressing an item inserts it into the message field, and `onValueChange` is ignored when
+`reason === 'item-press'` so the search box is not overwritten.
+
+<Canvas of={Stories.Grid} />
+
+### Virtualized
+
+`virtualized` + `[items]` drives index-based navigation over a large data source while a virtualizer
+renders only the visible window.
+
+<Canvas of={Stories.Virtualized} />
+
+### Reactive forms
+
+The form value is the input string. Bind `[formControl]` to the root.
+
+<Canvas of={Stories.ReactiveForms} />
+
+### Template-driven forms
+
+`[(ngModel)]` binds the input string two-way.
+
+<Canvas of={Stories.TemplateDrivenForms} />
+
+### Disabled
+
+<Canvas of={Stories.Disabled} />
+
+## Accessibility
+
+Implements the WAI-ARIA [combobox](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) pattern. DOM
+focus stays on the input; the active option is referenced with `aria-activedescendant`.
+
+### Keyboard interactions
+
+| Key                  | Behavior                                                                              |
+| -------------------- | ------------------------------------------------------------------------------------- |
+| `ArrowDown`          | Open the popup (highlighting the first item), or move the highlight to the next item. |
+| `ArrowUp`            | Open the popup (highlighting the last item), or move the highlight to the previous item. |
+| `ArrowLeft` / `ArrowRight` | In `grid` mode, move within / across cells. Otherwise move the text caret.       |
+| `Enter`              | Select the highlighted item, or close the popup and submit the form.                  |
+| `Escape`            | Close the popup.                                                                       |
+| `Tab`                | Close the popup and move focus to the next element.                                   |
+
+## API Reference
+
+### RdxAutocompleteRoot
+
+The root. Owns the value (the input string), open state, filtering, inline completion, and navigation.
+
+<ArgTypes of={RdxAutocompleteRoot} />
+
+### RdxAutocompleteInput
+
+The text input. Holds focus; in `both` / `inline` modes it shows the inline completion.
+
+<ArgTypes of={RdxAutocompleteInput} />
+
+### RdxAutocompleteItem
+
+A selectable suggestion. `value` is optional and defaults to the option's text.
+
+<ArgTypes of={RdxAutocompleteItem} />
+
+### RdxAutocompletePositioner
+
+Positions the popup against the input anchor via the popper engine.
+
+<ArgTypes of={RdxAutocompletePositioner} />
+
+### RdxAutocompleteValue
+
+Renders the current value as text (with a `placeholder` when empty).
+
+<ArgTypes of={RdxAutocompleteValue} />
+
+Other parts (`Portal`, `PortalPresence`, `Backdrop`, `Popup`, `List`, `Row`, `Group`, `GroupLabel`,
+`ItemIndicator`, `Empty`, `Status`, `Trigger`, `Icon`, `Clear`, `Label`, `Anchor`, `InputGroup`) read
+everything from context and take no inputs of their own.

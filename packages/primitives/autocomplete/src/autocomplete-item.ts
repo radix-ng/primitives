@@ -10,12 +10,16 @@ import {
     input,
     signal
 } from '@angular/core';
-import { AcceptableValue, createContext, injectId } from '@radix-ng/primitives/core';
-import { injectComboboxGroupContext } from './combobox-group';
-import { ComboboxItemRef, injectComboboxRootContext } from './combobox-root';
+import {
+    ComboboxItemRef,
+    injectComboboxGroupContext,
+    injectComboboxRootContext,
+    provideComboboxItemContext
+} from '@radix-ng/primitives/combobox';
+import { AcceptableValue, injectId } from '@radix-ng/primitives/core';
 
 const itemContext = () => {
-    const item = inject(RdxComboboxItem);
+    const item = inject(RdxAutocompleteItem);
     return {
         isSelected: item.isSelected,
         isHighlighted: item.isHighlighted,
@@ -24,22 +28,17 @@ const itemContext = () => {
     };
 };
 
-export type RdxComboboxItemContext = ReturnType<typeof itemContext>;
-
-export const [injectComboboxItemContext, provideComboboxItemContext] = createContext<RdxComboboxItemContext>(
-    'RdxComboboxItemContext',
-    'components/combobox'
-);
-
 /**
- * A selectable option. Registers itself with the root for filtering and navigation. Highlight is
+ * A selectable suggestion. Registers itself with the root for filtering and navigation. Highlight is
  * virtual (`data-highlighted` + `aria-activedescendant` on the input) — items never take DOM focus.
+ * Selecting an item writes its text into the input. Unlike the combobox item, the `value` is optional;
+ * when omitted, selection falls back to the option's text content (autocomplete's value is the input string).
  *
  * @group Components
  */
 @Directive({
-    selector: '[rdxComboboxItem]',
-    exportAs: 'rdxComboboxItem',
+    selector: '[rdxAutocompleteItem]',
+    exportAs: 'rdxAutocompleteItem',
     providers: [provideComboboxItemContext(itemContext)],
     host: {
         role: 'option',
@@ -60,26 +59,23 @@ export const [injectComboboxItemContext, provideComboboxItemContext] = createCon
         '(pointerleave)': 'onPointerLeave($event)'
     }
 })
-export class RdxComboboxItem implements ComboboxItemRef {
+export class RdxAutocompleteItem implements ComboboxItemRef {
     private readonly rootContext = injectComboboxRootContext();
 
     readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
-    readonly id = injectId('rdx-combobox-item-');
+    readonly id = injectId('rdx-autocomplete-item-');
 
-    /** The option's value. */
-    readonly value = input.required<AcceptableValue>();
+    /** The option's value. When omitted, selecting the item writes its text content into the input. */
+    readonly value = input<AcceptableValue>('');
 
-    /** Explicit text matched against the query. Defaults to the element's text content. */
+    /** Explicit text matched against the query and written to the input. Defaults to text content. */
     readonly textValueInput = input<string>('', { alias: 'textValue' });
 
     /** Whether the option is disabled. */
     readonly disabled = input(false, { transform: booleanAttribute });
 
-    /**
-     * The option's index in the list. Required in virtualized mode — it drives the deterministic id
-     * (for `aria-activedescendant`), highlight matching, and selection when only a window is mounted.
-     */
+    /** The option's index in the list. Required in virtualized mode. */
     readonly index = input<number>();
 
     protected readonly virtualized = this.rootContext.virtualized;
@@ -88,7 +84,6 @@ export class RdxComboboxItem implements ComboboxItemRef {
 
     readonly textValue = computed(() => this.textValueInput() || this.autoTextValue());
 
-    /** Host id: deterministic per-index in virtualized mode, otherwise a generated unique id. */
     protected readonly elementId = computed(() =>
         this.virtualized() ? this.rootContext.itemId(this.index() ?? -1) : this.id
     );
@@ -98,7 +93,6 @@ export class RdxComboboxItem implements ComboboxItemRef {
     );
     protected readonly ariaPosInSet = computed(() => (this.virtualized() ? (this.index() ?? -1) + 1 : undefined));
 
-    // Virtualized items are always rendered (the consumer only mounts the filtered window).
     readonly isVisible = computed(() => (this.virtualized() ? true : this.rootContext.isVisible(this)));
     readonly isSelected = computed(() => this.rootContext.isSelected(this.value()));
     readonly isHighlighted = computed(() =>
@@ -113,16 +107,12 @@ export class RdxComboboxItem implements ComboboxItemRef {
         const destroyRef = inject(DestroyRef);
 
         afterNextRender(() => {
-            // Virtualized items are not registered: the root navigates over `items` data by index, and
-            // a windowed item mounting/unmounting must not churn the DOM-ordered registry or `labelFor`.
             if (this.virtualized()) {
                 return;
             }
             if (!this.textValueInput()) {
-                // Derive the match/label text from the element, excluding decorative indicator text
-                // (e.g. a checkmark) so it doesn't pollute filtering or the input label.
                 const clone = this.element.cloneNode(true) as HTMLElement;
-                clone.querySelectorAll('[rdxComboboxItemIndicator]').forEach((node) => node.remove());
+                clone.querySelectorAll('[rdxAutocompleteItemIndicator]').forEach((node) => node.remove());
                 this.autoTextValue.set(clone.textContent?.trim() ?? '');
             }
             this.rootContext.registerItem(this);
@@ -147,7 +137,6 @@ export class RdxComboboxItem implements ComboboxItemRef {
     }
 
     onPointerDown(event: MouseEvent): void {
-        // Keep focus on the input; prevent the item from stealing focus on pointer/mouse down.
         event.preventDefault();
         this.rootContext.setKeyboardActive(false);
     }
@@ -165,8 +154,6 @@ export class RdxComboboxItem implements ComboboxItemRef {
         if (!this.rootContext.highlightItemOnHover()) {
             return;
         }
-        // Ignore the first move after keyboard navigation: arrow keys scroll the list under a still
-        // cursor, and the resulting pointer event must not yank the highlight off the keyboard target.
         if (this.rootContext.isKeyboardActive()) {
             this.rootContext.setKeyboardActive(false);
             return;

@@ -58,6 +58,16 @@
       "dataAttributes": []
     },
     {
+      "name": "Autocomplete",
+      "slug": "autocomplete",
+      "section": "components",
+      "description": "A text input with a list of suggestions: free-form text whose value **is** the input string, with the active option tracked via `aria-activedescendant`.",
+      "doc": "radix-ng-examples/references/components/autocomplete.md",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-autocomplete--docs",
+      "anatomy": "<div rdxAutocompleteRoot>\n  <div rdxAutocompleteInputGroup>\n    <input rdxAutocompleteInput />\n    <button rdxAutocompleteClear></button>\n  </div>\n\n  <div rdxAutocompletePortal>\n    <ng-template rdxAutocompletePortalPresence>\n      <div rdxAutocompletePositioner>\n        <div rdxAutocompletePopup>\n          <div rdxAutocompleteList>\n            <div rdxAutocompleteGroup>\n              <div rdxAutocompleteGroupLabel></div>\n              <div rdxAutocompleteItem>\n                <span rdxAutocompleteItemIndicator></span>\n              </div>\n            </div>\n          </div>\n          <div rdxAutocompleteEmpty></div>\n        </div>\n      </div>\n    </ng-template>\n  </div>\n</div>",
+      "dataAttributes": []
+    },
+    {
       "name": "Avatar",
       "slug": "avatar",
       "section": "components",

@@ -1,4 +1,4 @@
-import { DestroyRef, Directive, effect, ElementRef, inject, untracked } from '@angular/core';
+import { afterRenderEffect, DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 import { useScrollLock } from '@radix-ng/primitives/core';
 import { provideRdxDismissableLayerConfig, RdxDismissableLayer } from '@radix-ng/primitives/dismissable-layer';
 import { injectPopperContentWrapperContext, RdxPopperContent } from '@radix-ng/primitives/popper';
@@ -47,18 +47,17 @@ export class RdxComboboxPopup {
         this.dismissableLayer.dismiss.subscribe(() => this.rootContext.closePopup(true));
 
         // For the "input inside the popup" pattern, move focus to the input once the popup is
-        // positioned. Focusing earlier fails in the browser: the portal `appendChild` blurs the
-        // input and an unplaced popup isn't yet visible/focusable.
-        effect(() => {
+        // positioned. Use `afterRenderEffect` (not `effect`): when `isPositioned` flips true the
+        // popup's final position/visibility is applied in the *following* render, so a synchronous
+        // `effect` would call `focus()` while the element is still unfocusable and silently no-op.
+        afterRenderEffect(() => {
             if (!this.popper.isPositioned() || !this.rootContext.open()) {
                 return;
             }
             const input = this.rootContext.inputElement();
             if (input && input.closest('[rdxComboboxPopup]')) {
-                untracked(() => {
-                    input.focus();
-                    input.select();
-                });
+                input.focus();
+                input.select();
             }
         });
     }

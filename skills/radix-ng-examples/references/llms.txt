@@ -11,6 +11,7 @@ Generated from `@radix-ng/primitives@1.0.0-beta.2` — if the installed version 
 - [Accordion](https://radix-ng.com/components/accordion.md): A vertically stacked set of interactive headings that each reveal an associated section of content.
 - [Alert Dialog](https://radix-ng.com/components/alert-dialog.md): A modal dialog that interrupts the user with important content and expects a response.
 - [Aspect Ratio](https://radix-ng.com/components/aspect-ratio.md): Displays content within a desired ratio.
+- [Autocomplete](https://radix-ng.com/components/autocomplete.md): A text input with a list of suggestions: free-form text whose value **is** the input string, with the active option tracked via `aria-activedescendant`.
 - [Avatar](https://radix-ng.com/components/avatar.md): An image element with a fallback for representing the user.
 - [Button](https://radix-ng.com/components/button.md): A button, or any element that should behave like one.
 - [Calendar](https://radix-ng.com/components/calendar.md): Displays dates and days of the week, facilitating date-related interactions.

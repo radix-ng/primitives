@@ -5,7 +5,8 @@
 Combobox is headless — it ships no styles and exposes state via `data-*` attributes. Unlike Select,
 DOM focus stays in the `<input>` at all times; the active option is virtual (`data-highlighted` +
 `aria-activedescendant`). It does not accept free-form text — the input always reflects the current
-selection when closed. For free-form entry, reach for Autocomplete (planned).
+selection when closed. For free-form entry whose value is the typed text, reach for
+[Autocomplete](?path=/docs/primitives-autocomplete--docs).
 
 ```typescript
 import { Component, signal } from '@angular/core';
@@ -67,6 +68,7 @@ export class ComboboxDefault {
 - ✅ Optional `modal` mode: locks page scroll and makes outside content inert, with a `Backdrop` part.
 - ✅ `submitOnItemClick` to submit the form on selection; `onOpenChangeComplete` fires after the transition.
 - ✅ `limit` caps how many matches show; arrow-key navigation never fights a resting mouse cursor.
+- ✅ Hover behavior: `highlightItemOnHover` (default `true`) and `keepHighlight` (keep the highlight when the pointer leaves the list).
 - ✅ External virtualization: `virtualized` + `[items]` drives index navigation and exposes `filteredItems()` for any virtualizer.
 - ✅ Forms: `ControlValueAccessor` on the root, plus Field integration on the input.
 - ✅ Headless — state via `data-popup-open`, `data-list-empty`, `data-placeholder`, `data-selected`, `data-highlighted`.
