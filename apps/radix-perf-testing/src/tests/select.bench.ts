@@ -18,7 +18,10 @@ import { benchmark, BenchmarkResult } from '../harness/benchmark';
 import { writeResults } from '../harness/reporter';
 
 const FILE = 'select.bench.ts';
-const COUNT = 1000;
+// 50 = typical real-world list (the common path); 1000 = non-virtualized worst case (stresses the
+// collection + popper + portal machinery). Track both so a regression in the common path is visible
+// separately from the stress case.
+const COUNTS = [50, 1000];
 
 // Highest-risk path: opening a Select renders all options through the collection (DOM-order
 // contentChildren), the portal, and the popper positioner at once. Mounted closed is cheap; the
@@ -88,14 +91,16 @@ describe('Select', () => {
         await writeResults(FILE, rows);
     });
 
-    it(`open (${COUNT} options)`, async () => {
-        const result = await benchmark<SelectOpen>(`Select open (${COUNT} options)`, () => ({
-            component: SelectOpen,
-            prepare: (instance) => instance.setCount(COUNT),
-            interact: (instance) => instance.open()
-        }));
-        rows.push(result);
+    for (const count of COUNTS) {
+        it(`open (${count} options)`, async () => {
+            const result = await benchmark<SelectOpen>(`Select open (${count} options)`, () => ({
+                component: SelectOpen,
+                prepare: (instance) => instance.setCount(count),
+                interact: (instance) => instance.open()
+            }));
+            rows.push(result);
 
-        expect(result.duration.median).toBeGreaterThan(0);
-    });
+            expect(result.duration.median).toBeGreaterThan(0);
+        });
+    }
 });
