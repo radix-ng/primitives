@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "target": "es2022",
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "noImplicitOverride": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "module": "preserve",
+        "moduleResolution": "bundler",
+        "lib": ["dom", "es2022"],
+        "types": ["vitest/globals", "node"]
+    },
+    "files": [],
+    "include": ["src/**/*.ts"],
+    "extends": "../../tsconfig.base.json",
+    "angularCompilerOptions": {
+        "strictInjectionParameters": true,
+        "strictInputAccessModifiers": true,
+        "strictTemplates": true
+    }
+}

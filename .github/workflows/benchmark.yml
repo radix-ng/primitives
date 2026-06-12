@@ -1,0 +1,125 @@
+name: Benchmark
+
+# Per-PR performance comparison (see docs/adr/0009). Benchmarks the PR head and the merge-base on the
+# SAME runner (the primary noise mitigation), diffs them, and posts/updates a sticky PR comment.
+# Informational only — never a required status — until runner variance is characterized.
+
+on:
+  pull_request:
+    paths:
+      - 'packages/primitives/**'
+      - 'apps/radix-perf-testing/**'
+      - 'tools/scripts/benchmark/**'
+      - '.github/workflows/benchmark.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: benchmark-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: true
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      # fetch-depth: 0 — we need history to resolve the merge-base for the baseline worktree.
+      - name: Checkout code repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Benchmark head
+        run: BENCH_OUTPUT_PATH="$GITHUB_WORKSPACE/head.json" pnpm primitives:bench
+
+      # Benchmark the merge-base in a worktree on the same runner. If the perf app does not exist at
+      # the merge-base (bootstrap period) or the base run fails, base.json is simply absent and the
+      # comparison falls back to "baseline unavailable" — this step never fails the job.
+      # Every failure mode here (no merge-base, fetch/worktree error, perf app absent at base, base
+      # run produces no report) must degrade to "baseline unavailable" — never fail the job. So git
+      # setup is checked explicitly rather than under `set -e`.
+      - name: Benchmark base (merge-base)
+        run: |
+          BASE_REF="${{ github.base_ref || 'main' }}"
+          if ! git fetch --no-tags origin "$BASE_REF"; then
+            echo "::warning::Could not fetch $BASE_REF — baseline unavailable."
+            exit 0
+          fi
+          BASE_SHA="$(git merge-base "origin/$BASE_REF" HEAD || true)"
+          if [ -z "$BASE_SHA" ]; then
+            echo "::warning::No merge-base with $BASE_REF — baseline unavailable."
+            exit 0
+          fi
+          echo "Merge-base: $BASE_SHA"
+          if ! git worktree add ../base "$BASE_SHA"; then
+            echo "::warning::Could not create base worktree — baseline unavailable."
+            exit 0
+          fi
+
+          if [ ! -d ../base/apps/radix-perf-testing ]; then
+            echo "::notice::Perf app absent at merge-base — baseline unavailable."
+            exit 0
+          fi
+
+          (
+            cd ../base
+            pnpm install --frozen-lockfile
+            BENCH_OUTPUT_PATH="$GITHUB_WORKSPACE/base.json" pnpm primitives:bench
+          ) || echo "::warning::Base benchmark run failed — baseline unavailable."
+
+          if [ ! -f "$GITHUB_WORKSPACE/base.json" ]; then
+            echo "::warning::Base benchmark did not produce a report — baseline unavailable."
+          fi
+
+      # always() so a failed head/base step still posts the report it can (compare.mjs handles a
+      # missing head.json or base.json itself).
+      - name: Compare and render report
+        if: always()
+        run: node tools/scripts/benchmark/compare.mjs head.json base.json --out benchmark-comment.md
+
+      # continue-on-error: fork PRs get a read-only GITHUB_TOKEN regardless of `permissions`, so the
+      # comment API returns 403 there — that must not turn the (non-blocking) job red.
+      - name: Post sticky PR comment
+        if: ${{ always() && github.event_name == 'pull_request' }}
+        continue-on-error: true
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('benchmark-comment.md', 'utf8');
+            const marker = '<!-- radix-ng-benchmark -->';
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number
+            });
+            const existing = comments.find((c) => c.body && c.body.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
+
+      - name: Upload benchmark reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: benchmark-reports
+          path: |
+            head.json
+            base.json
+          if-no-files-found: warn

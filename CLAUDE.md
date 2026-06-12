@@ -241,6 +241,7 @@ of rediscovering the project conventions from individual stories:
 | Consumer theming | `apps/radix-storybook/docs/overview/theming.docs.mdx` (`Overview/Theming`)                   | Documenting `data-*` state styling, design tokens, or dark mode                                                                                            |
 | Accessibility    | `apps/radix-storybook/docs/overview/accessibility.docs.mdx` (`Overview/Accessibility`)       | Reviewing semantics, labels, keyboard navigation, or focus management                                                                                      |
 | SSR & Hydration  | `apps/radix-storybook/docs/guides/ssr.docs.mdx` (`Guides/Server-Side Rendering`)             | SSR/hydration behavior — stable IDs (`injectId`), platform guards, portal no-op on server, browser-only positioning, hydration-mismatch troubleshooting    |
+| Performance      | `apps/radix-storybook/docs/guides/performance.docs.mdx` (`Guides/Performance`)               | Benchmark suite (`pnpm primitives:bench`, `apps/radix-perf-testing`) — reading the report, writing a bench, the harness; design in `docs/adr/0009`         |
 
 For animation work, distinguish the lifecycle owner before choosing an API:
 

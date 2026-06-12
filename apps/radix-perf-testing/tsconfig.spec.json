@@ -1,0 +1,13 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "outDir": "../../dist/out-tsc",
+        "module": "preserve",
+        "target": "es2022",
+        "types": ["vitest/globals", "node"],
+        "moduleResolution": "bundler",
+        "isolatedModules": true
+    },
+    "files": ["vite.config.mts"],
+    "include": ["src/**/*.bench.ts", "src/**/*.ts", "src/**/*.d.ts"]
+}

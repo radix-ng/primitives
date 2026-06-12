@@ -1,0 +1,21 @@
+{
+    "name": "radix-perf-testing",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "projectType": "application",
+    "prefix": "app",
+    "sourceRoot": "apps/radix-perf-testing/src",
+    "tags": [],
+    "targets": {
+        "bench": {
+            "executor": "@nx/vitest:test",
+            "cache": false,
+            "options": {
+                "configFile": "apps/radix-perf-testing/vite.config.mts",
+                "watch": false
+            }
+        },
+        "lint": {
+            "executor": "@nx/eslint:lint"
+        }
+    }
+}

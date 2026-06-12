@@ -1,0 +1,136 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Guides/Performance" />
+
+# Performance Benchmarks
+
+How Radix NG measures the runtime cost of its primitives, and how to read the numbers.
+
+The library ships a benchmark suite that mounts and exercises primitives in a **real Chromium browser**
+and reports mount time, re-render time, paint time, and change-detection cycle counts. It exists to
+catch performance regressions per pull request — the same way [Base UI](https://base-ui.com/) does — so
+a change that doubles the cost of rendering 500 checkboxes is visible before it ships.
+
+It is **not** part of the normal test run. Benchmarks are noisy and slow by nature, so they live in a
+dedicated project with their own target.
+
+## Running the benchmarks
+
+```bash
+pnpm primitives:bench
+```
+
+This runs every `*.bench.ts` file in `apps/radix-perf-testing` and prints a table:
+
+```
+  📊 select.bench.ts
+    Select open (1000 options)       duration   49.4ms ±2.5  paint   52.8ms  renders 7  n=19 (-1 outlier)
+  📊 checkbox.bench.ts
+    Checkbox mount (500 instances)   duration   18.0ms ±1.8  paint   25.4ms  renders 1  n=20
+    Checkbox toggle (500 instances)  duration   11.1ms ±0.5  paint   14.7ms  renders 1  n=19 (-1 outlier)
+```
+
+To also save a machine-readable report (used by CI to diff against the base branch):
+
+```bash
+BENCH_OUTPUT_PATH=head.json pnpm primitives:bench
+```
+
+## Reading a row
+
+```
+Checkbox mount (500 instances)   duration   18.0ms ±1.8  paint   25.4ms  renders 1  n=20
+```
+
+| Column         | What it is                                                                                  | How to read it                                                                                          |
+| -------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| **duration**   | Pure **JS/CPU time** of the measured section (create 500 components + one change detection), median of the measured runs | The work that blocks the main thread. This is the primary regression signal.                            |
+| **±1.8**       | Standard deviation of that median (ms)                                                       | The noise. The smaller it is, the more you can trust the number.                                         |
+| **paint**      | Time from section start until the browser **actually paints** the frame (Element Timing API) | Always ≥ duration — it adds layout + paint on top of the JS. `paint − duration` is the browser render cost. |
+| **renders**    | Number of change-detection passes during the section                                        | Deterministic. A jump here (e.g. 1 → 2) almost always means an extra, avoidable CD cycle.                |
+| **n=20** / **(-1 outlier)** | Samples kept after IQR outlier removal (out of 20 measured runs, after 10 warmup runs) | `-1 outlier` means one run was discarded as a statistical outlier. Normal.                               |
+
+### What good looks like
+
+The numbers above are healthy. Concretely:
+
+- **`renders 1`** for both mount and toggle is ideal — mounting _and_ re-rendering 500 checkboxes each
+  collapse into a **single** change-detection pass. Seeing `2`–`3` on a simple primitive is a red flag:
+  something triggers redundant CD (e.g. a signal written during change detection).
+- **`toggle` (11 ms) is cheaper than `mount` (18 ms)** — expected, because the components already exist
+  and only re-render. If a toggle were _more_ expensive than the mount, the re-render is doing too much.
+- **`paint ≈ duration + ~7 ms`** — a healthy gap. If paint were several times the duration, the
+  bottleneck is in the DOM/layout, not in Angular.
+- **small `±stdDev`** (here 4–10% of the median) — the measurement is stable enough to trust.
+
+`renders 7` for `Select open` is also fine: opening a popup legitimately runs several passes
+(transition status → portal presence → positioner → Floating UI). It is deterministic; a jump to a
+two-digit count would be worth investigating.
+
+### What to watch for
+
+Absolute numbers depend on the machine — their real purpose is **PR-vs-base comparison on the same
+runner**. Rules of thumb:
+
+- **`duration` up by more than ~20%** vs the base branch → likely a regression (this is the noise
+  threshold the comparison uses).
+- **`renders` changed** (e.g. 1 → 2) → almost always a real bug, even if `duration` barely moved: a CD
+  cycle was added.
+- **large `±stdDev`** (> ~25% of the median) → the test is too noisy to trust that run; ignore the delta.
+- **`paint` grew while `duration` did not** → a regression in DOM/styles rather than in logic.
+
+As a rough scale for a headless primitive: mounting 500 instances in ~15–20 ms and re-rendering in
+~10 ms is cheap and healthy. Hundreds of milliseconds, or a two-digit `renders` count on a simple
+primitive, is worth digging into.
+
+## How a benchmark is written
+
+A bench file mounts a tiny, **unstyled** scenario component (headless — paint cost should track DOM
+size, not CSS) and calls `benchmark()`. No `interact` measures the **mount**; an `interact` callback
+measures a **re-render** (the mount becomes untimed warmup).
+
+```ts
+import { benchmark, BenchmarkResult } from '../harness/benchmark';
+import { writeResults } from '../harness/reporter';
+
+describe('Checkbox', () => {
+  const rows: BenchmarkResult[] = [];
+  afterAll(async () => writeResults('checkbox.bench.ts', rows));
+
+  it('mount (500 instances)', async () => {
+    const result = await benchmark('Checkbox mount (500 instances)', () => ({
+      component: CheckboxList,
+      prepare: (instance) => instance.setCount(500) // configure before the timed mount
+    }));
+    rows.push(result);
+    expect(result.duration.median).toBeGreaterThan(0);
+  });
+
+  it('toggle (500 instances)', async () => {
+    const result = await benchmark('Checkbox toggle (500 instances)', () => ({
+      component: CheckboxList,
+      prepare: (instance) => instance.setCount(500),
+      interact: (instance) => instance.toggleAll() // ← presence switches to re-render mode
+    }));
+    rows.push(result);
+    expect(result.duration.median).toBeGreaterThan(0);
+  });
+});
+```
+
+The harness runs 10 warmup + 20 measured iterations, drops outliers with a Tukey (1.5·IQR) fence, and
+reports the median, standard deviation, and a deterministic render count.
+
+## How it works under the hood
+
+- **Real browser.** Benchmarks run under **Vitest Browser Mode (Playwright/Chromium)**, not jsdom, so
+  layout and paint are real. Each iteration bootstraps a fresh zoneless application with
+  `createApplication()` and tears it down, so nothing leaks between samples.
+- **Paint** is captured with the [Element Timing API](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceElementTiming):
+  the harness appends a tiny on-screen sentinel element and observes when the browser paints it.
+- **Renders** are counted with `afterEveryRender` registered on the app injector — the framework-native
+  analog of Base UI's `React.Profiler` commit count.
+
+The design, trade-offs, and the planned CI comparison (diff PR vs the merge-base, post a sticky comment
+like Base UI's `▼ -41%` / "within noise" table) are documented in
+`docs/adr/0009-performance-benchmarks-vitest-browser-mode.md`.
