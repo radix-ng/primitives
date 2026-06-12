@@ -83,7 +83,13 @@ export class RdxDialogPopup {
     readonly closeAutoFocus = outputFromObservable(outputToObservable(this.focusScope.unmountAutoFocus));
 
     constructor() {
-        useScrollLock(computed(() => this.rootContext.modal() === true && this.rootContext.isOpen()));
+        // Lock for the popup's whole mounted lifetime, not just while `isOpen()`. The popup is kept
+        // mounted by the portal-presence machine until the exit `@keyframes` finish, then destroyed
+        // (firing `useScrollLock`'s `onDestroy` unlock). Gating on `isOpen()` would restore the page
+        // scrollbar the instant the dialog starts closing, reflowing the page by the scrollbar width
+        // mid-animation — a visible judder. Holding the lock until unmount defers that to after the
+        // animation, when the dialog is already gone.
+        useScrollLock(computed(() => this.rootContext.modal() === true));
 
         const unregisterTransitionElement = this.rootContext.registerTransitionElement(
             inject<ElementRef<HTMLElement>>(ElementRef).nativeElement

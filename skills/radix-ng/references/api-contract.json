@@ -5550,8 +5550,9 @@
         {
           "directive": "RdxSelectPopup",
           "selector": "[rdxSelectPopup]",
-          "description": "The popup listbox. Holds DOM focus while open and navigates with the highlight model\n(`aria-activedescendant`) — items are not individually focusable. (Renamed to `RdxSelectPopup` in a\nlater step; selector kept here during the navigation migration.)",
+          "description": "The popup listbox. Holds DOM focus while open and navigates with the highlight model\n(`aria-activedescendant`) — items are not individually focusable.\n\nSince ADR 0010 §6 the popup is the **inner** element (the positioner is its ancestor): it carries\n`role=\"listbox\"`, the `contentId`, and — via the composed {@link RdxPopperContent} — the\n`data-side` / `data-align` attributes and the until-positioned animation guard previously held by\nthe deleted `rdxSelectPositionerContent`. `RdxPopperContent` also makes the popup the element the\n`RdxPopperContentWrapper` ancestor reads its content z-index from. In item-aligned mode there is no\nwrapper, so `RdxPopperContent` no-ops.",
           "hostDirectives": [
+            "RdxPopperContent",
             "RdxFocusScope",
             "RdxDismissableLayer",
             "RdxCollectionProvider"
@@ -5574,15 +5575,6 @@
           "directive": "RdxSelectPortalMisuseGuard",
           "selector": "[rdxSelectPortal]:not(ng-template)",
           "description": "Dev-mode guard: `rdxSelectPortal` used to be an attribute directive on a `<div>`. It is now\nstructural, so the old `<div rdxSelectPortal>` markup would silently stop portaling — fail loudly\ninstead.",
-          "inputs": [],
-          "outputs": []
-        },
-        {
-          "directive": "RdxSelectPositionerContent",
-          "selector": "[rdxSelectPositionerContent]",
-          "hostDirectives": [
-            "RdxPopperContent"
-          ],
           "inputs": [],
           "outputs": []
         },

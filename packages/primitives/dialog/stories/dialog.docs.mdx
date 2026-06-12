@@ -148,7 +148,10 @@ confirmation dialog when there are unsaved changes.
 
 ### Outside scroll
 
-Wrap the popup in `rdxDialogViewport` to make the whole dialog scroll when it is taller than the screen.
+Make the `rdxDialogViewport` fill the screen and compose a custom [Scroll Area](?path=/docs/primitives-scroll-area--docs)
+inside it, so the whole dialog scrolls — with a styled overlay scrollbar — when it is taller than the
+screen. Center the popup with the scroll-area content's `min-h-full items-center` layout and give it
+vertical margin so it can grow past the bottom edge.
 
 <Canvas of={Stories.OutsideScroll} />
 
