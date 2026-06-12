@@ -1,6 +1,6 @@
 # ADR 0009: Performance Benchmarks via Vitest Browser Mode (base-ui–style harness, Angular-native metrics)
 
-- Status: Proposed
+- Status: Accepted — Phases 1 (spike), 2 (harness + pilots) & 3 (CI) done; Phase 4 (more primitives / blocking thresholds) later
 - Date: 2026-06-12
 - Decision owners: Radix NG maintainers
 - Related: new project `apps/radix-perf-testing` (consumers: all primitives; pilot: `checkbox`, `select`), `.github/workflows/`, `tools/scripts/benchmark/`
@@ -122,32 +122,42 @@ tools/scripts/benchmark/
 ```ts
 // apps/radix-perf-testing/vite.config.mts
 import angular from '@analogjs/vite-plugin-angular';
+import { playwright } from '@vitest/browser-playwright';
 import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   plugins: [angular(), tsconfigPaths()],
+  // Pre-bundle the JIT compiler so the browser runner doesn't reload mid-run on first import.
+  optimizeDeps: { include: ['@angular/compiler'] },
   test: {
     include: ['src/tests/**/*.bench.ts'],
+    fileParallelism: false, // benchmarks are sequential — one file at a time
     browser: {
       enabled: true,
-      provider: 'playwright',
+      provider: playwright(), // Vitest 4: provider is a factory, not the string 'playwright'
       headless: true,
       instances: [{ browser: 'chromium' }]
-    },
-    // benchmarks are sequential by nature — one file at a time, no parallelism
-    fileParallelism: false
+    }
   }
 });
 ```
 
-Notes:
+Notes (validated by the Phase 1 spike):
 
 - **Do not reuse `packages/primitives/test-setup.ts`** — it initializes the jsdom/TestBed
   environment. The perf app bootstraps real applications via `createApplication` instead.
+- **Vitest 4 needs the `@vitest/browser-playwright` package** and a `playwright()` provider factory
+  (the `provider: 'playwright'` string form was removed). Keep `@vitest/browser`,
+  `@vitest/browser-playwright`, and `vitest` on the **exact same version** (the spike hit a hard
+  "mixed versions" failure between 4.1.7 and 4.1.8 — all are pinned to 4.1.8).
+- **Every bench file (or a shared setup) must `import '@angular/compiler';` first** — primitives are
+  partially compiled and fall back to JIT under `createApplication()`, exactly like
+  `radix-ssr-testing`. Without it: `_PlatformLocation needs to be compiled using the JIT compiler`.
 - `*.bench.ts` files use plain `it()`/`describe()` from Vitest (as base-ui does — their `.bench.tsx`
   files are regular browser-mode tests, the "bench" is the helper, not Vitest bench mode), so the
-  `include` pattern above keeps them out of every other project's `**/*.spec.ts` globs.
+  `include` pattern above keeps them out of every other project's `**/*.spec.ts` globs. The project
+  exposes only `bench` + `lint` targets (no `test`), so CI's `test`/`build` sweeps skip it.
 - The suite stays **zoneless**: `provideZonelessChangeDetection()` in every bootstrapped app.
 
 ### Harness API
@@ -185,24 +195,44 @@ Per iteration:
    stabilization + a fresh sentinel paint).
 4. Destroy the `ApplicationRef`, remove the host element, `performance.clearMarks()`.
 
-After all iterations: drop outliers outside `[Q1 - 1.5·IQR, Q3 + 1.5·IQR]`, compute stats, append to
-the in-memory result list. A Vitest `afterAll`/reporter hook writes the full
-`BenchmarkResult[]` JSON to `process.env.BENCH_OUTPUT_PATH ?? 'bench-results.json'`.
+After all iterations: drop outliers outside `[Q1 - 1.5·IQR, Q3 + 1.5·IQR]`, compute stats, and
+**return** the `BenchmarkResult` (one `benchmark()` call = one row). The bench file collects rows in a
+local array and flushes them in `afterAll`.
 
-**Renders metric**: wrap `ApplicationRef.tick` (or subscribe to a counter incremented in an
-`afterRender` callback registered on the app injector) and report the count per iteration. It must be
-deterministic; the harness should warn if the count varies across runs. `ɵsetProfiler`-based template
-profiling is explicitly out of scope for v1 (private API; revisit only if CD-cycle counts prove too
-coarse).
+> **Gotcha (Phase 2):** Vitest Browser Mode does **not** isolate module state between bench files —
+> they share one page/module graph. A module-level results array therefore leaks rows across files
+> (the first file's rows reappear under the next file's output). The harness keeps **no** shared
+> state: `benchmark()` returns its row; the file owns the array. Do not reintroduce a global collector.
+
+**Reporter**: writing a file from the browser isn't possible directly, so the JSON write goes through
+a **custom Vitest browser command** registered in `vite.config.mts` under `browser.commands` (runs in
+Node). The browser side imports `commands` from **`vitest/browser`** (not the deprecated
+`@vitest/browser/context`) and calls `commands.writeBenchResults(file, rows)`. The Node command
+accumulates rows by source file, writes `process.env.BENCH_OUTPUT_PATH ?? 'bench-results.json'`, **and
+prints a readable table to the terminal** on each flush (the `@nx/vitest:test` executor otherwise
+swallows per-test output, so a plain run shows only "Successfully ran" — the command's `console.log`
+surfaces alongside vite's logs). `bench-results.json` / `bench-*.json` are gitignored.
+
+**Renders metric**: count render passes via **`afterEveryRender`** (Angular 21 renamed `afterRender`
+→ `afterEveryRender`) registered on the app injector, reported per iteration. It must be deterministic
+(checkbox mount/toggle = 1; select open = 7, stable); the harness warns if the count varies across
+runs. `ɵsetProfiler`-based template profiling is out of scope for v1 (private API; revisit only if
+CD-cycle counts prove too coarse).
 
 ### Pilot bench files
 
-- `checkbox.bench.ts`:
-  - `Checkbox mount (500 instances)` — direct analog of base-ui's test;
-  - `Checkbox toggle (500 instances)` — interaction: flip all `checked` signals, one CD pass expected.
-- `select.bench.ts`:
-  - `Select open (1000 options)` — mount closed, interaction opens the popup; this covers collection
-    (DOM-order `contentChildren`), popper positioning, and portal cost — our highest-risk path.
+- `checkbox.bench.ts` — **done**:
+  - `Checkbox mount (500 instances)` — direct analog of base-ui's test (~17 ms, renders 1);
+  - `Checkbox toggle (500 instances)` — interaction: flip a shared `[checked]` signal bound into all
+    N, one CD pass (~11 ms, renders 1).
+- `select.bench.ts` — **done**:
+  - `Select open (1000 options)` — mount closed (`[open]` bound to a signal), interaction sets it
+    true; covers collection (DOM-order `contentChildren`), popper positioning, and portal cost — our
+    highest-risk path (~49 ms, renders 7 — the open path runs multiple CD passes, deterministically).
+
+Local stability (Phase 2 acceptance): within a run stdDev is ~4% of the median; run-to-run medians
+vary ~10–14% on a busy dev machine — under base-ui's ±20% noise threshold and the reason same-runner
+head/base comparison (not absolute thresholds) is the CI design.
 
 Scenario components live next to the bench files, are standalone, and use **no styles** (headless —
 paint cost is dominated by DOM size, which is exactly what we want to track).
@@ -267,30 +297,44 @@ Negative / accepted costs:
 
 ## Risks and open questions
 
-1. **AnalogJS Angular plugin under Vitest Browser Mode** — the main technical risk; it is known to
-   work in jsdom and in Storybook's Vite pipeline, but browser mode must be verified first.
-   **Mitigation / go-no-go**: phase 1 is a spike that mounts one Checkbox in browser mode before any
-   harness work. Fallback if it fails: precompile scenarios with a small Vite build (the Storybook
-   builder path) — decided only if needed.
-2. **Element Timing in headless Chromium** — paints do occur in headless mode, but the observer
-   wiring must be verified in the spike. The entry type `element` requires the `elementtiming`
-   attribute on a rendered, non-`display:none` element — the harness appends a 1×1 transparent
-   sentinel element itself (scenario components don't need to know about it), positioned offscreen
-   rather than hidden.
+1. **AnalogJS Angular plugin under Vitest Browser Mode** — **resolved by the spike: it works.**
+   `createApplication()` + `createComponent()` mounts 500 real `rdxCheckboxRoot` primitives in
+   Chromium with correct `role`/`aria-checked` and non-zero layout. The only requirement is the
+   `@angular/compiler` JIT import noted above. No precompile fallback needed.
+2. **Element Timing in headless Chromium** — **resolved by the spike: it fires.** The `element`
+   entry requires the `elementtiming` attribute on a rendered element that **intersects the viewport
+   and contains text or an image** — an empty, `display:none`, or fully off-screen element does
+   _not_ report. The harness therefore appends its own sentinel as a tiny on-screen text node
+   (`position:fixed; top:0; left:0; font-size:1px; opacity:0.01; textContent:'.'`), filtering
+   `PerformanceObserver` `element` entries by `entry.identifier === 'bench-sentinel'`. Scenario
+   components don't need to know about it. (Earlier draft said "1×1 transparent, off-screen" — that
+   would not report; corrected here.)
 3. **Runner variance** — collect ~2 weeks of runs before considering making the check blocking or
    alerting on it.
 
 ## Rollout plan (implementation phases)
 
-1. **Spike (go/no-go)**: `apps/radix-perf-testing` skeleton + browser-mode config + one trivial test
-   mounting `RdxCheckboxRootDirective`-based component and observing a sentinel `element` timing
-   entry. Verifies risks 1 and 2.
-2. **Harness + pilots**: `benchmark()` with warmup/runs/IQR, CD-cycle counter, JSON reporter;
-   `checkbox.bench.ts` and `select.bench.ts`; `primitives:bench` script; local numbers reviewed for
-   stability (run 5× locally, compare medians).
-3. **CI**: `benchmark.yml`, `compare.mjs`, sticky comment, noise thresholds; non-blocking.
+1. **Spike (go/no-go) — ✅ DONE (go).** `apps/radix-perf-testing` skeleton + browser-mode config + a
+   throwaway `spike.bench.ts` that mounted 500 `rdxCheckboxRoot` components and observed the sentinel
+   `element` timing entry. Both risks resolved (see Risks 1 & 2); the spike file was then **removed**
+   (the real `checkbox.bench.ts` now covers mount + Element Timing). Established facts now baked into
+   the config above: `@vitest/browser-playwright` + `playwright()` factory, all `@vitest/*` pinned to
+   4.1.8, `import '@angular/compiler'` required, sentinel must be on-screen text.
+2. **Harness + pilots — ✅ DONE.** `benchmark()` with warmup(10)/runs(20)/IQR in
+   `src/harness/{benchmark,metrics,mount,reporter}.ts`; `afterEveryRender` render counter; Element
+   Timing paint; JSON reporter via a `vitest/browser` command that also prints a terminal table;
+   `checkbox.bench.ts` (mount + toggle) and `select.bench.ts` (open 1000); `primitives:bench` script.
+   Local medians reviewed for stability (within-run ~4%, run-to-run ~10–14%).
+3. **CI — ✅ DONE.** `.github/workflows/benchmark.yml` (paths-triggered + `workflow_dispatch`,
+   pinned actions) benchmarks head, then the merge-base in a `git worktree` on the **same runner**,
+   and runs `tools/scripts/benchmark/compare.mjs`. The script ports base-ui's `compareBenchmarkReports.ts`
+   rules (±20% noise, regression/improvement/within-noise, simple-sum totals) and renders a compact
+   sticky PR comment (significant tests in the table, within-noise ones collapsed) + the full table in
+   the job summary; reports upload as artifacts. Handles `new` / `removed` tests and
+   `baseline unavailable` (perf app absent at merge-base, or base run failed). Sticky comment via
+   `actions/github-script` (find-by-marker, update-or-create). **Non-blocking** (informational status).
 4. **Later (separate decisions)**: more primitives (Autocomplete virtualized, Menu, Slider drag),
-   profiler-hook render timings, blocking thresholds, historical tracking.
+   profiler-hook render timings, blocking thresholds once variance is known, historical tracking.
 
 ## References
 
