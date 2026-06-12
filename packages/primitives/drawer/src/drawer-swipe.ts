@@ -16,6 +16,10 @@ export type RdxDrawerRelease = { type: 'dismiss' } | { type: 'snap'; offset: num
 export interface RdxDrawerSwipeConfig {
     /** The popup element the gesture lives on (CSS variables + data attributes are written here). */
     element: () => HTMLElement;
+    /** Gesture boundary used to discover scrollable ancestors around the popup. */
+    boundary?: () => HTMLElement;
+    /** Visible size along the dismiss axis, used to normalize live swipe progress. */
+    size?: () => number;
     /** Active swipe direction. */
     direction: Signal<RdxDrawerSwipeDirection>;
     /** Whether the gesture is currently armed (typically `open`). */
@@ -105,7 +109,8 @@ export function useDrawerSwipe(config: RdxDrawerSwipeConfig): void {
     assertInInjectionContext(useDrawerSwipe);
 
     const element = () => config.element();
-    const axisSize = () => (isVertical(config.direction()) ? element().offsetHeight : element().offsetWidth);
+    const axisSize = () =>
+        config.size?.() ?? (isVertical(config.direction()) ? element().offsetHeight : element().offsetWidth);
 
     let active = false;
     let startX = 0;
@@ -167,7 +172,7 @@ export function useDrawerSwipe(config: RdxDrawerSwipeConfig): void {
                 return false;
             }
 
-            return !scrollGuards(target, element(), config.direction());
+            return !scrollGuards(target, config.boundary?.() ?? element(), config.direction());
         },
         onStart: (event) => {
             active = true;

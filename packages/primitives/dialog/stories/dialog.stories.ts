@@ -24,6 +24,8 @@ import { RdxDialogOutsideScrollComponent } from './dialog-outside-scroll';
 import outsideScrollSource from './dialog-outside-scroll?raw';
 import { RdxDialogTrapFocusComponent } from './dialog-trap-focus';
 import trapFocusSource from './dialog-trap-focus?raw';
+import { RdxDialogUncontainedComponent } from './dialog-uncontained';
+import uncontainedSource from './dialog-uncontained?raw';
 import { RdxDialogWithoutDismissComponent } from './dialog-without-dismiss';
 import withoutDismissSource from './dialog-without-dismiss?raw';
 
@@ -55,6 +57,7 @@ export default {
                 RdxDialogCloseConfirmationComponent,
                 RdxDialogOutsideScrollComponent,
                 RdxDialogInsideScrollComponent,
+                RdxDialogUncontainedComponent,
                 RdxDialogFromMenuComponent
             ]
         }),
@@ -168,6 +171,15 @@ export const InsideScroll: Story = {
     render: () => ({
         template: html`
             <rdx-dialog-inside-scroll />
+        `
+    })
+};
+
+export const Uncontained: Story = {
+    parameters: source(uncontainedSource),
+    render: () => ({
+        template: html`
+            <rdx-dialog-uncontained />
         `
     })
 };

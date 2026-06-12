@@ -98,6 +98,8 @@ export class RdxDrawerPopup {
     constructor() {
         useDrawerSwipe({
             element: () => this.element,
+            boundary: () => this.swipeBoundary(),
+            size: () => this.visibleAxisSize(),
             direction: this.drawerContext.swipeDirection,
             enabled: computed(() => this.dialogContext.isOpen() && !this.drawerContext.openingSwipeActive()),
             restingOffset: this.restingOffset,
@@ -161,8 +163,25 @@ export class RdxDrawerPopup {
         return direction === 'up' || direction === 'down' ? this.element.offsetHeight : this.element.offsetWidth;
     }
 
+    private swipeBoundary(): HTMLElement {
+        return this.element.closest<HTMLElement>('[rdxDrawerViewport]') ?? this.element;
+    }
+
+    private visibleAxisSize(): number {
+        const popupSize = this.axisSize();
+        const boundary = this.swipeBoundary();
+
+        if (boundary === this.element) {
+            return popupSize;
+        }
+
+        const direction = this.drawerContext.swipeDirection();
+        const boundarySize = direction === 'up' || direction === 'down' ? boundary.clientHeight : boundary.clientWidth;
+        return boundarySize > 0 ? Math.min(popupSize, boundarySize) : popupSize;
+    }
+
     private resolveRelease(projected: number, velocity: number, canDismiss: boolean): RdxDrawerRelease {
-        const size = this.axisSize();
+        const size = this.drawerContext.hasSnapPoints() ? this.axisSize() : this.visibleAxisSize();
         const dismissAllowed = canDismiss && !this.dialogContext.disablePointerDismissal();
 
         if (!this.drawerContext.hasSnapPoints()) {

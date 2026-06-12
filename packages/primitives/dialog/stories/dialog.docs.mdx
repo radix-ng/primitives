@@ -161,6 +161,14 @@ Keep the popup fixed on screen and scroll an inner region instead.
 
 <Canvas of={Stories.InsideScroll} />
 
+### Placing elements outside the popup
+
+Make the popup a transparent `pointer-events-none` frame and opt its children back into pointer events
+individually, so elements such as a close button can sit outside the visible content card while the gaps
+around it stay dismissable.
+
+<Canvas of={Stories.Uncontained} />
+
 ### Open from a menu
 
 Control the dialog's `open` state from a menu item to launch it from a `Menu`.

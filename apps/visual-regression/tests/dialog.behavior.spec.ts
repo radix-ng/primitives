@@ -131,3 +131,49 @@ test.describe('Dialog outside-scroll (custom scroll area)', () => {
         await expect(page.locator(popup)).toHaveCount(0);
     });
 });
+
+/**
+ * The "uncontained" story renders the close button outside the visible content card while keeping it
+ * inside the popup (and thus inside the focus trap). Guards the layout (close above the card) and that
+ * every dismissal path still works in a modal where the popup is a viewport-filling frame.
+ */
+test.describe('Dialog uncontained (elements outside the popup)', () => {
+    const close = '[rdxDialogClose]';
+
+    async function open(page: Page) {
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+        await expect(page.locator(popup)).not.toHaveAttribute('data-starting-style', '');
+    }
+
+    test('renders the close button above the content card', async ({ page }) => {
+        await gotoStory(page, 'primitives-dialog--uncontained');
+        await page.setViewportSize({ width: 900, height: 700 });
+        await open(page);
+
+        const closeBox = (await page.locator(close).boundingBox())!;
+        const cardTop = await page
+            .locator('[rdxDialogTitle]')
+            .evaluate((el) => el.closest('div')!.getBoundingClientRect().top);
+        // The close button's bottom edge sits at or above the card's top edge.
+        expect(closeBox.y + closeBox.height).toBeLessThanOrEqual(cardTop + 1);
+    });
+
+    test('dismisses via Escape, the outside close button, and outside-press', async ({ page }) => {
+        await gotoStory(page, 'primitives-dialog--uncontained');
+        await page.setViewportSize({ width: 900, height: 700 });
+
+        await open(page);
+        await page.keyboard.press('Escape');
+        await expect(page.locator(popup)).toHaveCount(0);
+
+        await open(page);
+        await page.locator(close).click();
+        await expect(page.locator(popup)).toHaveCount(0);
+
+        await open(page);
+        // Dimmed padding above the frame, away from the close button (top-right).
+        await page.mouse.click(300, 12);
+        await expect(page.locator(popup)).toHaveCount(0);
+    });
+});

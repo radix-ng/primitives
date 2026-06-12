@@ -85,6 +85,97 @@ test.describe('Drawer swipe area', () => {
 
         await expect(popup).toBeHidden();
     });
+
+    test('animates closed after an outside click', async ({ page }) => {
+        await gotoStory(page, 'primitives-drawer--swipe-to-open');
+
+        const swipeArea = page.locator('[rdxDrawerSwipeArea]');
+        const popup = page.locator('[rdxDrawerPopup]');
+        const backdrop = page.locator('[rdxDrawerBackdrop]');
+        const viewport = page.locator('[rdxDrawerViewport]');
+        const box = await swipeArea.boundingBox();
+
+        expect(box).not.toBeNull();
+
+        await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
+        await page.mouse.down();
+        await page.mouse.move(box!.x - 180, box!.y + box!.height / 2);
+        await page.mouse.up();
+
+        await expect(popup).toBeVisible();
+        await viewport.click({ position: { x: 20, y: 20 } });
+
+        await expect(popup).toHaveAttribute('data-ending-style', '');
+        await expect(backdrop).toHaveAttribute('data-state', 'closed');
+        await expect
+            .poll(() => popup.evaluate((element) => new DOMMatrixReadOnly(getComputedStyle(element).transform).m41))
+            .toBeGreaterThan(0);
+        await expect(popup).toBeHidden();
+    });
+});
+
+test.describe('Drawer mobile navigation', () => {
+    test('dismisses against the visible viewport height when the popup is taller than the screen', async ({ page }) => {
+        await gotoStory(page, 'primitives-drawer--scrollable');
+        await page.getByRole('button', { name: 'Open mobile menu' }).click();
+
+        const popup = page.locator('[rdxDrawerPopup]');
+        const viewport = page.locator('[rdxDrawerViewport]');
+        const closeButton = page.getByRole('button', { name: 'Close menu' });
+        const popupBox = await popup.boundingBox();
+        const viewportBox = await viewport.boundingBox();
+
+        expect(popupBox).not.toBeNull();
+        expect(viewportBox).not.toBeNull();
+        expect(popupBox!.height).toBeGreaterThan(viewportBox!.height);
+
+        const startY = Math.max(popupBox!.y + 24, 24);
+        const dragDistance = viewportBox!.height * 0.6;
+
+        await popup.dispatchEvent('pointerdown', {
+            button: 0,
+            clientX: popupBox!.x + popupBox!.width / 2,
+            clientY: startY,
+            isPrimary: true,
+            pointerId: 1
+        });
+        await page.evaluate(
+            ({ clientX, clientY }) => {
+                window.dispatchEvent(
+                    new PointerEvent('pointermove', {
+                        bubbles: true,
+                        button: 0,
+                        clientX,
+                        clientY,
+                        isPrimary: true,
+                        pointerId: 1
+                    })
+                );
+            },
+            { clientX: popupBox!.x + popupBox!.width / 2, clientY: startY + dragDistance }
+        );
+
+        await expect(popup).toHaveAttribute('data-swiping', '');
+        await page.waitForTimeout(100);
+
+        await page.evaluate(
+            ({ clientX, clientY }) => {
+                window.dispatchEvent(
+                    new PointerEvent('pointerup', {
+                        bubbles: true,
+                        button: 0,
+                        clientX,
+                        clientY,
+                        isPrimary: true,
+                        pointerId: 1
+                    })
+                );
+            },
+            { clientX: popupBox!.x + popupBox!.width / 2, clientY: startY + dragDistance }
+        );
+
+        await expect(closeButton).toBeHidden();
+    });
 });
 
 test.describe('Drawer indent effect', () => {
@@ -159,12 +250,18 @@ test.describe('Drawer snap points', () => {
     test('opens at the compact point and expands from the drag header', async ({ page }) => {
         await gotoStory(page, 'primitives-drawer--snap-points');
 
-        await page.getByRole('button', { name: 'Open snap drawer' }).click();
-
         const popup = page.locator('[rdxDrawerPopup]');
         const dragHeader = popup.locator('[rdxDrawerTitle]').locator('..');
+        await page.getByRole('button', { name: 'Open snap drawer' }).click();
+
+        const startingBox = await popup.boundingBox();
+        await page.waitForTimeout(100);
+        const movingBox = await popup.boundingBox();
 
         await expect(popup).toBeVisible();
+        expect(startingBox).not.toBeNull();
+        expect(movingBox).not.toBeNull();
+        expect(startingBox!.y).toBeGreaterThan(movingBox!.y);
         await expect(popup).not.toHaveAttribute('data-expanded', '');
         await expect
             .poll(() =>

@@ -32,6 +32,8 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                             cn(
                                 'bg-foreground/20 absolute inset-0 opacity-[calc(1-var(--drawer-swipe-progress))]',
                                 'transition-opacity duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)]',
+                                d.overlayAnimated,
+                                'data-[state=closed]:[animation-duration:450ms] data-[state=open]:[animation-duration:450ms]',
                                 'data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0'
                             )
                         "
