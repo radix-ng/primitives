@@ -144,11 +144,16 @@ export class RdxSelectPopup {
      */
     readonly items = this.collection.items;
 
-    /** Highlight-model navigation over the collected items (DOM order). */
+    /**
+     * Highlight-model navigation over the collected items (DOM order). `loop` is disabled so arrow
+     * navigation stops at the first / last item instead of wrapping around — matching native
+     * `<select>` behavior.
+     */
     readonly highlight = useListHighlight<RdxCollectionItem>({
         items: this.collection.items,
         isNavigable: (item) => !item.disabled(),
         getId: (item) => item.element.id,
+        loop: signal(false),
         injector: this.injector
     });
 
@@ -192,6 +197,26 @@ export class RdxSelectPopup {
             this.highlightSelectedItem();
             this.scrollSelectedIntoView();
             this.isPositioned.set(true);
+
+            // In Popper mode the popup lives inside the positioner, which stays `visibility: hidden`
+            // until it is placed — so the mount-time `mountAutoFocus` call no-ops on the hidden
+            // listbox and keyboard navigation never starts. Focus it now that it is visible (skip if
+            // focus already moved inside, e.g. item-aligned mode or a re-placement).
+            const popup = this.content();
+            if (popup && !popup.contains(document.activeElement)) {
+                popup.focus({ preventScroll: true });
+            }
+        });
+
+        // Keep the highlighted item in view during keyboard navigation. The highlight model is pure
+        // state (it never moves DOM focus or scrolls), so without this the highlight can move past the
+        // visible viewport — behind the scroll buttons. Only keyboard moves scroll; hover highlights
+        // must not (the cursor is already over a visible item).
+        effect(() => {
+            const item = this.highlight.highlightedItem();
+            if (item && this.keyboardActive) {
+                item.element.scrollIntoView?.({ block: 'nearest' });
+            }
         });
 
         // Lock page scroll while a modal popup is open (content mounts only while open).

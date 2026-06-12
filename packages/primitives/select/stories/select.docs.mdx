@@ -134,6 +134,14 @@ item keeps its indicator. Shows `RdxSelectIcon` and `RdxSelectSeparator`.
 
 <Canvas of={Stories.Multiple} />
 
+### Object values
+
+Each item's `value` is an object. Set `[isItemEqualToValue]="'id'"` so items are matched by a stable
+key (here `id`) instead of reference, and render rich, two-line content in both the trigger and the
+items from the selected object.
+
+<Canvas of={Stories.ObjectValues} />
+
 ### With scroll buttons
 
 When the list is taller than the available viewport, `rdxSelectScrollUpButton` and

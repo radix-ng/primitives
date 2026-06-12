@@ -8,6 +8,8 @@ import { SelectDefault } from './select-default';
 import defaultSource from './select-default?raw';
 import { SelectMultiple } from './select-multiple';
 import multipleSource from './select-multiple?raw';
+import { SelectObjectValues } from './select-object-values';
+import objectValuesSource from './select-object-values?raw';
 import { SelectWithScroll } from './select-with-scroll';
 import withScrollSource from './select-with-scroll?raw';
 
@@ -24,6 +26,7 @@ export default {
             imports: [
                 SelectDefault,
                 SelectMultiple,
+                SelectObjectValues,
                 SelectWithScroll,
                 SelectAlignedPosition,
                 SelectAlignedPositionWithScroll
@@ -49,6 +52,15 @@ export const Multiple: Story = {
     render: () => ({
         template: html`
             <select-multiple />
+        `
+    })
+};
+
+export const ObjectValues: Story = {
+    parameters: source(objectValuesSource),
+    render: () => ({
+        template: html`
+            <select-object-values />
         `
     })
 };
