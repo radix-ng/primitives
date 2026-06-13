@@ -1,3 +1,22 @@
+## 1.0.0-beta.3 (2026-06-13)
+
+### 🚀 Features
+
+- **presence:** subtree-aware WAAPI exit detection (ADR 0011) ([#418](https://github.com/radix-ng/primitives/pull/418))
+- **select:** finish ADR 0010 §6 restructure — keyboard a11y + scroll fixes, object-values story ([b4030f5](https://github.com/radix-ng/primitives/commit/b4030f5))
+- **select:** finish §6 restructure — popup owns RdxPopperContent (ADR 0010) ([9ac4d43](https://github.com/radix-ng/primitives/commit/9ac4d43))
+- **portal:** structural *rdxXxxPortal merging portal + presence (ADR 0010) ([19dc851](https://github.com/radix-ng/primitives/commit/19dc851))
+- **autocomplete:** add Autocomplete primitive (modes, grid, virtualized, async, forms) ([f243c92](https://github.com/radix-ng/primitives/commit/f243c92))
+
+### 🩹 Fixes
+
+- **drawer:** refine swipe interactions and animations ([8b8ff31](https://github.com/radix-ng/primitives/commit/8b8ff31))
+- **drawer, dialog:** align scrollable and swipe animations ([2694a8c](https://github.com/radix-ng/primitives/commit/2694a8c))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 1.0.0-beta.2 (2026-06-11)
 
 ### 🚀 Features
