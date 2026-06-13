@@ -40,24 +40,14 @@ import { injectNavigationMenuRootContext } from './navigation-menu-root-context'
     host: {
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
-        '[attr.data-anchor-hidden]': 'wrapper.anchorHidden() ? "" : undefined',
-        '[attr.data-align]': 'wrapper.placedAlign()',
-        '[attr.data-side]': 'wrapper.placedSide()',
-        '[attr.data-instant]': 'rootContext.instant() ? "" : undefined',
-        '[style]': `{
-            '--anchor-width': 'var(--radix-popper-anchor-width)',
-            '--anchor-height': 'var(--radix-popper-anchor-height)',
-            '--available-width': 'var(--radix-popper-available-width)',
-            '--available-height': 'var(--radix-popper-available-height)',
-            '--positioner-width': 'var(--radix-popper-content-wrapper-width)',
-            '--positioner-height': 'var(--radix-popper-content-wrapper-height)',
-            '--transform-origin': 'var(--radix-popper-transform-origin)'
-        }`
+        '[attr.data-instant]': 'rootContext.instant() ? "" : undefined'
+        // `data-side`/`data-align`/`data-anchor-hidden` and the unified `--anchor-*`/`--available-*`/
+        // `--transform-origin` vars now come from the composed `RdxPopperContentWrapper` (ADR 0012);
+        // navigation-menu exposed no legacy `--radix-*` aliases, so no `[style]` block remains.
     }
 })
 export class RdxNavigationMenuPositioner {
     protected readonly rootContext = injectNavigationMenuRootContext();
-    protected readonly wrapper = inject(RdxPopperContentWrapper);
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly triggerEl = signal<HTMLElement | null>(null);
     private readonly containerEl = signal<HTMLElement | null>(this.elementRef.nativeElement);

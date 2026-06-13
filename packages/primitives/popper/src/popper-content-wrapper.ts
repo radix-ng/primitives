@@ -15,8 +15,10 @@ import {
     numberAttribute,
     output,
     PLATFORM_ID,
+    Provider,
     resource,
-    signal
+    signal,
+    Type
 } from '@angular/core';
 import type { ComputePositionReturn, ReferenceElement, VirtualElement } from '@floating-ui/dom';
 import {
@@ -70,6 +72,11 @@ export const [injectPopperContentWrapperContext, providePopperContentWrapperCont
     providers: [providePopperContentWrapperContext(context)],
     host: {
         'data-radix-popper-content-wrapper': '',
+        // Placement state, emitted once for every positioner (ADR 0012). The popup
+        // (`RdxPopperContent`) keeps its own `data-side`/`data-align` as popup-level styling hooks.
+        '[attr.data-side]': 'placedSide()',
+        '[attr.data-align]': 'placedAlign()',
+        '[attr.data-anchor-hidden]': 'anchorHidden() ? "" : undefined',
         '[style]': 'style()'
     }
 })
@@ -390,6 +397,17 @@ export class RdxPopperContentWrapper {
             '--radix-popper-content-wrapper-width': `${this.elementRef.nativeElement.offsetWidth}px`,
             '--radix-popper-content-wrapper-height': `${this.elementRef.nativeElement.offsetHeight}px`,
 
+            // Unified Base UI-style variables (ADR 0012), emitted once for every positioner so
+            // consumers learn a single dialect. They alias the engine-level `--radix-popper-*` values
+            // (the `--anchor-*`/`--available-*` ones are set imperatively by the `size` middleware).
+            '--anchor-width': 'var(--radix-popper-anchor-width)',
+            '--anchor-height': 'var(--radix-popper-anchor-height)',
+            '--available-width': 'var(--radix-popper-available-width)',
+            '--available-height': 'var(--radix-popper-available-height)',
+            '--positioner-width': 'var(--radix-popper-content-wrapper-width)',
+            '--positioner-height': 'var(--radix-popper-content-wrapper-height)',
+            '--transform-origin': 'var(--radix-popper-transform-origin)',
+
             visibility: ready ? 'visible' : 'hidden',
             pointerEvents: this.nonInteractive() || !ready ? 'none' : 'auto',
 
@@ -427,4 +445,43 @@ export class RdxPopperContentWrapper {
             );
         });
     }
+}
+
+/**
+ * Providers a "thin" positioner that `extends RdxPopperContentWrapper` must include. Angular
+ * inherits a base directive's inputs/outputs/host bindings/queries but **not** its `providers`, so
+ * the `useExisting` alias (lets the popup and arrow resolve the subclass through the
+ * {@link RdxPopperContentWrapper} token) and the wrapper context provider (what
+ * `injectPopperContentWrapperContext()` reads) are re-declared here in one place.
+ *
+ * Combine with {@link provideRdxPopperContentConfig} for per-primitive positioning defaults:
+ *
+ * ```ts
+ * providers: [
+ *   ...provideRdxPopperContentWrapper(RdxComboboxPositioner),
+ *   provideRdxPopperContentConfig({ sideOffset: 4, align: 'start' })
+ * ]
+ * ```
+ */
+export function provideRdxPopperContentWrapper(positioner: Type<RdxPopperContentWrapper>): Provider[] {
+    return [{ provide: RdxPopperContentWrapper, useExisting: positioner }, providePopperContentWrapperContext(context)];
+}
+
+/**
+ * Deprecated per-primitive aliases of the unified popper variables (ADR 0012). Since the wrapper now
+ * emits the unified `--anchor-*` / `--available-*` / `--transform-origin` set itself, a positioner no
+ * longer hand-writes a re-namespacing `[style]` map; it spreads this helper into a host `[style]`
+ * binding only to keep the legacy `--radix-<name>-content-*` / `--radix-<name>-trigger-*` names alive
+ * for one release of consumer back-compat. Migrate to the unified set; these are removed next minor.
+ *
+ * @deprecated Use the unified `--anchor-*` / `--available-*` / `--transform-origin` variables.
+ */
+export function legacyPopperVars(name: string): Record<string, string> {
+    return {
+        [`--radix-${name}-content-transform-origin`]: 'var(--radix-popper-transform-origin)',
+        [`--radix-${name}-content-available-width`]: 'var(--radix-popper-available-width)',
+        [`--radix-${name}-content-available-height`]: 'var(--radix-popper-available-height)',
+        [`--radix-${name}-trigger-width`]: 'var(--radix-popper-anchor-width)',
+        [`--radix-${name}-trigger-height`]: 'var(--radix-popper-anchor-height)'
+    };
 }

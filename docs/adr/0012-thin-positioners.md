@@ -1,6 +1,6 @@
 # ADR 0012: Thin positioners — single-source popper inputs, unified CSS variables, z-index decoupling
 
-- Status: Proposed (spec for implementation; no code yet)
+- Status: Accepted — Phases 1 (combobox spike) & 2 (wrapper unified vars + placement attrs) landed; Phases 3–4 pending
 - Date: 2026-06-13
 - Decision owners: Radix NG maintainers
 - Related: ADR 0002 (popper arrow Base UI alignment), ADR 0010 (anatomy flattening),
@@ -150,13 +150,37 @@ inner `RdxPopperContent` to exist — the query crash goes away.
 
 ## Phases (separate PRs)
 
-1. **Spike: docs pipeline vs inheritance.** One positioner (combobox — smallest) converted on a
-   branch; verify ArgTypes table and `api-contract.json` show inherited inputs with correct
-   defaults. Outcome gates the rest; fix `api-contract.mjs` here if needed.
-2. **Wrapper emits unified vars + placement attrs** (§1) and popover/preview-card/navigation-menu
-   drop their hand-written maps (popover is the pilot — it already exposes both dialects, so its
-   visual baselines prove equivalence). Shared `legacyPopperVars()` helper for the deprecated
-   aliases of the remaining primitives.
+1. ✅ **Spike: docs pipeline vs inheritance — DONE, gate PASSED.** Combobox positioner converted to
+   `extends RdxPopperContentWrapper` (57 → 26 lines) + `provideRdxPopperContentConfig({ sideOffset: 4,
+align: 'start' })`. Added a `provideRdxPopperContentWrapper(positioner)` helper to `popper` for the
+   `useExisting` alias + context provider (Angular does not inherit a base directive's `providers`).
+   Findings: **compodoc already flattens inherited inputs** into `inputsClass` (with an
+   `inheritance: { file }` marker) — no `extends`-chain walk needed. The real gap was **defaults**:
+   inherited inputs report the base expression `this.config.<key> ?? <fallback>` and ignore the
+   positioner's config override. Resolved in **two** docs surfaces with the same small parser
+   (reads `provideRdxPopperContentConfig({...})` from the entry's `sourceCode`, gated on
+   `extends.includes('RdxPopperContentWrapper')`): `tools/scripts/skills/api-contract.mjs` (for
+   `api-contract.json`) and the Storybook `plugins/compodoc.ts` (for ArgTypes). Verified: combobox
+   publishes `sideOffset: 4`/`align: 'start'`; the bare wrapper resolves to clean `0`/`'center'`;
+   ArgTypes no longer leaks `this.config`. Combobox unit (13 specs) + `combobox.behavior` green;
+   `primitives:build` + `build-storybook` green. NB this also enacts combobox's intended runtime
+   default change (no story bound `sideOffset`/`align`, so all popups move to `4`/`'start'` — the
+   documented values); combobox has no open-state visual baseline, so nothing to re-baseline.
+2. ✅ **Wrapper emits unified vars + placement attrs (§1) — DONE.** `RdxPopperContentWrapper` now
+   emits the unified `--anchor-*` / `--available-*` / `--positioner-*` / `--transform-origin` vars in
+   its `style()` and binds `[attr.data-side]` / `[attr.data-align]` / `[attr.data-anchor-hidden]` on
+   its host — so every positioner gets them for free. popover / preview-card / navigation-menu dropped
+   their hand-written `[style]` maps + duplicate placement-attr bindings (kept popover/preview-card's
+   `data-open`/`data-closed`/`data-instant`). Added a `legacyPopperVars(name)` helper to `popper`;
+   popover/preview-card spread it into `[style]` to keep their deprecated `--radix-<name>-*` aliases
+   for one release (these are unused in-repo but kept for external back-compat); navigation-menu had
+   none. Note: Angular allows the redundant host bindings, so menu/tooltip/toast (which also bind
+   `data-side`) still compile and run — their own bindings become redundant and are removed when those
+   positioners convert in Phase 3. Verified: `overlays.visual` popover screenshot **unchanged** (var
+   equivalence), popover/preview-card/navigation-menu behavior green, and a DOM check confirms the
+   wrapper emits `data-side`/`--anchor-width`/`--transform-origin` while the helper emits the legacy
+   alias. Only `--radix-select-trigger-width` is consumed in-repo (select-object-values story) — select
+   is Phase 3, so its positioner is untouched here.
 3. **Inheritance conversion** (§2), primitive by primitive in one PR each or batched by
    similarity: combobox+autocomplete (with their new config defaults), select, tooltip, menu,
    navigation-menu, popover, preview-card, toast. Each: positioner rewrite, story audit for

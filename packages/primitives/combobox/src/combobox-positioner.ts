@@ -1,54 +1,27 @@
-import { booleanAttribute, Directive, ElementRef, input, numberAttribute } from '@angular/core';
-import { Align, RdxPopperContentWrapper, Side } from '@radix-ng/primitives/popper';
+import { Directive } from '@angular/core';
+import {
+    provideRdxPopperContentConfig,
+    provideRdxPopperContentWrapper,
+    RdxPopperContentWrapper
+} from '@radix-ng/primitives/popper';
 
 /**
- * Positions the popup relative to the input anchor using the popper engine. Re-exposes the popper
- * positioning inputs.
+ * Positions the combobox popup relative to the input anchor using the popper engine.
+ *
+ * A "thin" positioner (ADR 0012): it inherits the full popper positioning surface — the inputs
+ * (`side`, `sideOffset`, `align`, …), the `placed` output, and the host bindings — from
+ * {@link RdxPopperContentWrapper}, and only declares combobox's Base UI-aligned defaults through the
+ * config provider. `provideRdxPopperContentWrapper` re-wires the `useExisting` alias + context that
+ * the popup and arrow resolve (Angular does not inherit a base directive's `providers`).
  *
  * @group Components
  */
 @Directive({
     selector: '[rdxComboboxPositioner]',
     exportAs: 'rdxComboboxPositioner',
-    hostDirectives: [
-        {
-            directive: RdxPopperContentWrapper,
-            inputs: [
-                'side',
-                'sideOffset',
-                'align',
-                'alignOffset',
-                'arrowPadding',
-                'avoidCollisions',
-                'collisionBoundary',
-                'collisionPadding',
-                'sticky',
-                'hideWhenDetached',
-                'updatePositionStrategy'
-            ]
-        }
-    ],
-    host: {
-        '[style]': `{
-            'boxSizing': 'border-box',
-            '--radix-combobox-content-transform-origin': 'var(--radix-popper-transform-origin)',
-            '--radix-combobox-content-available-width': 'var(--radix-popper-available-width)',
-            '--radix-combobox-content-available-height': 'var(--radix-popper-available-height)',
-            '--radix-combobox-trigger-width': 'var(--radix-popper-anchor-width)',
-            '--radix-combobox-trigger-height': 'var(--radix-popper-anchor-height)'
-        }`
-    }
+    providers: [
+        ...provideRdxPopperContentWrapper(RdxComboboxPositioner),
+        provideRdxPopperContentConfig({ sideOffset: 4, align: 'start' })
+    ]
 })
-export class RdxComboboxPositioner {
-    readonly side = input<Side>('bottom');
-    readonly sideOffset = input(4, { transform: numberAttribute });
-    readonly align = input<Align>('start');
-    readonly alignOffset = input(0, { transform: numberAttribute });
-    readonly arrowPadding = input(0, { transform: numberAttribute });
-    readonly avoidCollisions = input(true, { transform: booleanAttribute });
-    readonly collisionBoundary = input<ElementRef<HTMLElement> | ElementRef<HTMLElement>[]>();
-    readonly collisionPadding = input<number | Partial<Record<Side, number>>>(0);
-    readonly sticky = input<'partial' | 'always'>('partial');
-    readonly hideWhenDetached = input(false, { transform: booleanAttribute });
-    readonly updatePositionStrategy = input<'optimized' | 'always'>('optimized');
-}
+export class RdxComboboxPositioner extends RdxPopperContentWrapper {}

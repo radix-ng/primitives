@@ -3,6 +3,7 @@ import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-int
 import { BooleanInput, NumberInput, useGraceArea } from '@radix-ng/primitives/core';
 import {
     Align,
+    legacyPopperVars,
     provideRdxPopperContentConfig,
     RdxPopperAnchorElement,
     RdxPopperContentWrapper,
@@ -41,29 +42,16 @@ import { injectRdxPopoverRootContext } from './popover-root';
     host: {
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
-        '[attr.data-anchor-hidden]': 'wrapper.anchorHidden() ? "" : undefined',
-        '[attr.data-align]': 'wrapper.placedAlign()',
-        '[attr.data-side]': 'wrapper.placedSide()',
         '[attr.data-instant]': 'rootContext.instant() ? "" : undefined',
-        '[style]': `{
-            '--anchor-width': 'var(--radix-popper-anchor-width)',
-            '--anchor-height': 'var(--radix-popper-anchor-height)',
-            '--available-width': 'var(--radix-popper-available-width)',
-            '--available-height': 'var(--radix-popper-available-height)',
-            '--positioner-width': 'var(--radix-popper-content-wrapper-width)',
-            '--positioner-height': 'var(--radix-popper-content-wrapper-height)',
-            '--transform-origin': 'var(--radix-popper-transform-origin)',
-            '--radix-popover-content-transform-origin': 'var(--radix-popper-transform-origin)',
-            '--radix-popover-content-available-width': 'var(--radix-popper-available-width)',
-            '--radix-popover-content-available-height': 'var(--radix-popper-available-height)',
-            '--radix-popover-trigger-width': 'var(--radix-popper-anchor-width)',
-            '--radix-popover-trigger-height': 'var(--radix-popper-anchor-height)'
-        }`
+        // `data-side`/`data-align`/`data-anchor-hidden` and the unified `--anchor-*`/`--available-*`/
+        // `--transform-origin` vars now come from the composed `RdxPopperContentWrapper` (ADR 0012);
+        // only the deprecated `--radix-popover-*` aliases remain, for one release of back-compat.
+        '[style]': 'legacyVars'
     }
 })
 export class RdxPopoverPositioner {
     protected readonly rootContext = injectRdxPopoverRootContext();
-    protected readonly wrapper = inject(RdxPopperContentWrapper);
+    protected readonly legacyVars = legacyPopperVars('popover');
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly triggerEl = signal<HTMLElement | null>(null);
     private readonly containerEl = signal<HTMLElement | null>(this.elementRef.nativeElement);

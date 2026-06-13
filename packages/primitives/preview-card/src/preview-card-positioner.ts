@@ -3,6 +3,7 @@ import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-int
 import { BooleanInput, NumberInput, useGraceArea } from '@radix-ng/primitives/core';
 import {
     Align,
+    legacyPopperVars,
     provideRdxPopperContentConfig,
     RdxPopperAnchorElement,
     RdxPopperContentWrapper,
@@ -41,29 +42,16 @@ import { injectRdxPreviewCardRootContext } from './preview-card-root';
     host: {
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
-        '[attr.data-anchor-hidden]': 'wrapper.anchorHidden() ? "" : undefined',
-        '[attr.data-align]': 'wrapper.placedAlign()',
-        '[attr.data-side]': 'wrapper.placedSide()',
         '[attr.data-instant]': 'rootContext.instant() ? "" : undefined',
-        '[style]': `{
-            '--anchor-width': 'var(--radix-popper-anchor-width)',
-            '--anchor-height': 'var(--radix-popper-anchor-height)',
-            '--available-width': 'var(--radix-popper-available-width)',
-            '--available-height': 'var(--radix-popper-available-height)',
-            '--positioner-width': 'var(--radix-popper-content-wrapper-width)',
-            '--positioner-height': 'var(--radix-popper-content-wrapper-height)',
-            '--transform-origin': 'var(--radix-popper-transform-origin)',
-            '--radix-preview-card-content-transform-origin': 'var(--radix-popper-transform-origin)',
-            '--radix-preview-card-content-available-width': 'var(--radix-popper-available-width)',
-            '--radix-preview-card-content-available-height': 'var(--radix-popper-available-height)',
-            '--radix-preview-card-trigger-width': 'var(--radix-popper-anchor-width)',
-            '--radix-preview-card-trigger-height': 'var(--radix-popper-anchor-height)'
-        }`
+        // `data-side`/`data-align`/`data-anchor-hidden` and the unified `--anchor-*`/`--available-*`/
+        // `--transform-origin` vars now come from the composed `RdxPopperContentWrapper` (ADR 0012);
+        // only the deprecated `--radix-preview-card-*` aliases remain, for one release of back-compat.
+        '[style]': 'legacyVars'
     }
 })
 export class RdxPreviewCardPositioner {
     protected readonly rootContext = injectRdxPreviewCardRootContext();
-    protected readonly wrapper = inject(RdxPopperContentWrapper);
+    protected readonly legacyVars = legacyPopperVars('preview-card');
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly triggerEl = signal<HTMLElement | null>(null);
     private readonly containerEl = signal<HTMLElement | null>(this.elementRef.nativeElement);
