@@ -11,6 +11,8 @@ import { _importsAutocomplete } from '../index';
             [(value)]="value"
             [(open)]="open"
             [items]="items()"
+            [mode]="mode()"
+            [autoHighlight]="autoHighlight()"
             virtualized
             rdxAutocompleteRoot
         >
@@ -31,6 +33,8 @@ class HostComponent {
     readonly value = signal('');
     readonly open = signal(false);
     readonly items = signal(['Alpha', 'Apple', 'Apricot', 'Banana', 'Cherry']);
+    readonly mode = signal<'list' | 'both' | 'inline' | 'none'>('list');
+    readonly autoHighlight = signal(false);
 }
 
 describe('Autocomplete virtualized', () => {
@@ -92,5 +96,36 @@ describe('Autocomplete virtualized', () => {
         await settle();
         expect(host.value()).toBe('Apple');
         expect(host.open()).toBe(false);
+    });
+
+    // Characterization (ADR 0014, Phase 0): the virtualized self-heal must survive the engine extraction.
+    it('clears a highlight that filtering pushes past the end of the list', async () => {
+        host.open.set(true);
+        await settle();
+        // Highlight index 3 (Banana) in the full list.
+        for (let i = 0; i < 4; i++) {
+            key('ArrowDown');
+            await settle();
+        }
+        expect(inputEl().getAttribute('aria-activedescendant')).toBe(renderedItems()[3].id);
+
+        // Typing shrinks the filtered list to 2 items, so index 3 is out of range and self-heals to none.
+        type('ap');
+        await settle();
+        expect(renderedItems().map((el) => el.textContent?.trim())).toEqual(['Apple', 'Apricot']);
+        expect(inputEl().getAttribute('aria-activedescendant')).toBeNull();
+    });
+
+    // ADR 0014 review: inline completion must work in virtualized mode (the preview is derived from the
+    // highlighted index, not a DOM item ref).
+    it('inline-completes in virtualized mode (preview from the highlighted index)', async () => {
+        host.mode.set('both');
+        host.autoHighlight.set(true);
+        await settle();
+        type('ap');
+        await settle();
+        // First prefix match (Apple) is highlighted by index; the input shows the inline completion.
+        expect(renderedItems().map((el) => el.textContent?.trim())).toEqual(['Apple', 'Apricot']);
+        expect(inputEl().value).toBe('apple');
     });
 });

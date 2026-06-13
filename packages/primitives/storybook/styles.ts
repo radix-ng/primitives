@@ -585,7 +585,9 @@ export const demoCombobox = {
         'data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
     ),
     itemIndicator: 'absolute left-2 flex size-3.5 items-center justify-center',
-    empty: 'py-6 text-center text-sm text-muted-foreground',
+    // The Empty part is an always-mounted live region; pad it only while it shows the message
+    // (`data-[empty]`) so it collapses to zero height when results exist instead of leaving a gap.
+    empty: 'text-center text-sm text-muted-foreground data-[empty]:py-6',
     groupLabel: 'px-2 py-1.5 text-xs font-semibold text-muted-foreground',
     /** Select-like trigger for the "input inside the popup" pattern. */
     selectTrigger: cn(

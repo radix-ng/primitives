@@ -102,4 +102,78 @@ describe('Autocomplete grid', () => {
         await settle();
         expect(host.value()).toBe('Green');
     });
+
+    // Characterization (ADR 0014, Phase 0): grid moves into the shared engine in P2 — pin its edges.
+    it('wraps from the last row back to the first on ArrowDown (loop)', async () => {
+        key('ArrowDown');
+        await settle(); // Red (row 0, col 0)
+        key('ArrowDown');
+        await settle(); // Cyan (row 1)
+        key('ArrowDown');
+        await settle(); // Black (row 2, last)
+        expect(highlighted()?.textContent?.trim()).toBe('Black');
+        key('ArrowDown');
+        await settle(); // wraps to Red (row 0)
+        expect(highlighted()?.textContent?.trim()).toBe('Red');
+    });
+
+    it('wraps from the first row to the last on ArrowUp (loop)', async () => {
+        key('ArrowDown');
+        await settle(); // Red (row 0)
+        key('ArrowUp');
+        await settle(); // wraps to Black (row 2)
+        expect(highlighted()?.textContent?.trim()).toBe('Black');
+    });
+
+    it('clamps the column to a shorter target row', async () => {
+        host.rows.set([['A', 'B', 'C'], ['D']]);
+        await settle();
+        key('ArrowDown');
+        await settle(); // A (row 0, col 0)
+        key('ArrowRight');
+        await settle(); // B
+        key('ArrowRight');
+        await settle(); // C (col 2)
+        expect(highlighted()?.textContent?.trim()).toBe('C');
+        key('ArrowDown');
+        await settle(); // row 1 has only 'D' → column clamps to it
+        expect(highlighted()?.textContent?.trim()).toBe('D');
+    });
+});
+
+@Component({
+    imports: [_importsAutocomplete],
+    template: `
+        <div [(open)]="open" grid rdxAutocompleteRoot>
+            <input rdxAutocompleteInput aria-label="X" />
+            <div *rdxAutocompletePortal rdxAutocompletePositioner>
+                <div rdxAutocompletePopup>
+                    <div rdxAutocompleteList aria-label="X">
+                        <div rdxAutocompleteRow>
+                            <div rdxAutocompleteItem>A</div>
+                        </div>
+                        <div rdxAutocompleteItem>Loose</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+})
+class MixedHost {
+    readonly open = signal(true);
+}
+
+describe('Autocomplete grid role resolution', () => {
+    it('gives gridcell only to items inside a row, not to a stray item under a grid list', async () => {
+        TestBed.configureTestingModule({ imports: [MixedHost] });
+        const fixture = TestBed.createComponent(MixedHost);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+        const items = Array.from(document.querySelectorAll('[rdxAutocompleteItem]'));
+        const inRow = items.find((el) => el.textContent?.trim() === 'A')!;
+        const loose = items.find((el) => el.textContent?.trim() === 'Loose')!;
+        expect(inRow.getAttribute('role')).toBe('gridcell');
+        expect(loose.getAttribute('role')).toBe('option');
+    });
 });

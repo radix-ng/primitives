@@ -26,7 +26,7 @@ export const [injectComboboxChipContext, provideComboboxChipContext] = createCon
     exportAs: 'rdxComboboxChip',
     providers: [provideComboboxChipContext(chipContext)],
     host: {
-        role: 'listitem',
+        // No explicit role (Base UI): a focusable child of the `toolbar` chips container.
         tabindex: '-1',
         '(keydown)': 'onKeydown($event)'
     }
@@ -53,19 +53,24 @@ export class RdxComboboxChip {
                 this.rootContext.navigateByKeyboard(event.key === 'ArrowDown' ? 1 : -1);
                 break;
             case 'ArrowLeft':
-                if (index > 0) {
+            case 'ArrowRight': {
+                // Direction-aware: in RTL the visual arrows flip. "Forward" steps toward the input
+                // (the next chip, then the input); "backward" steps toward the first chip.
+                const rtl = this.rootContext.dir() === 'rtl';
+                const forward = (event.key === 'ArrowRight') !== rtl;
+                if (forward) {
+                    event.preventDefault();
+                    if (index < list.length - 1) {
+                        list[index + 1].focus();
+                    } else {
+                        this.rootContext.focusInput();
+                    }
+                } else if (index > 0) {
                     event.preventDefault();
                     list[index - 1].focus();
                 }
                 break;
-            case 'ArrowRight':
-                event.preventDefault();
-                if (index < list.length - 1) {
-                    list[index + 1].focus();
-                } else {
-                    this.rootContext.focusInput();
-                }
-                break;
+            }
             case 'Home':
                 if (list.length) {
                     event.preventDefault();

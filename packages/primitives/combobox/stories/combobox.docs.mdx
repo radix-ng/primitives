@@ -134,6 +134,13 @@ heading automatically once all of its items are filtered out.
 
 <Canvas of={Stories.Grouped} />
 
+### Grid
+
+A 2D grid (`grid`): wrap items in `RdxComboboxRow` and the list becomes `role="grid"`. `ArrowUp` /
+`ArrowDown` move between rows keeping the column; `ArrowLeft` / `ArrowRight` move within a row.
+
+<Canvas of={Stories.Grid} />
+
 ### Multiple
 
 Multiple selection: picks become chips before the input, the popup stays open between selections,
@@ -293,11 +300,13 @@ A selected-value chip in `multiple` mode. Provide its `value`.
 
 ### Parts without inputs
 
-`RdxComboboxAnchor`, `RdxComboboxLabel` (registers an `aria-labelledby` target), `RdxComboboxTrigger`,
-`RdxComboboxClear`, `RdxComboboxIcon`, `RdxComboboxPortal` (structural; re-exposes `container`),
-`RdxComboboxBackdrop` (modal overlay), `RdxComboboxPopup`,
+`RdxComboboxAnchor`, `RdxComboboxInputGroup` (optional wrapper mirroring state via `data-*`),
+`RdxComboboxLabel` (registers an `aria-labelledby` target), `RdxComboboxTrigger`, `RdxComboboxClear`
+(also takes a `disabled` input), `RdxComboboxIcon`, `RdxComboboxPortal` (structural; re-exposes
+`container`), `RdxComboboxBackdrop` (modal overlay), `RdxComboboxPopup`,
 `RdxComboboxArrow` (re-exposes `width` / `height`), `RdxComboboxList` (exposes `data-empty` while no
-options match), `RdxComboboxItemIndicator`,
-`RdxComboboxGroup`, `RdxComboboxGroupLabel`,
-`RdxComboboxEmpty`, `RdxComboboxStatus`, `RdxComboboxChips`, and `RdxComboboxChipRemove` read
-everything from context and take no inputs of their own.
+options match, `role="grid"` when the root has `grid`), `RdxComboboxRow` (`role="row"` for grid lists),
+`RdxComboboxItemIndicator`,
+`RdxComboboxGroup`, `RdxComboboxGroupLabel`, `RdxComboboxSeparator` (`role="separator"`),
+`RdxComboboxEmpty` / `RdxComboboxStatus` (polite atomic live regions), `RdxComboboxChips`
+(`role="toolbar"`), and `RdxComboboxChipRemove` read everything from context and take no inputs of their own.

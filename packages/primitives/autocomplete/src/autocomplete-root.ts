@@ -16,25 +16,26 @@ import {
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import {
     ComboboxHighlightReason,
+    ComboboxInputLayout,
     ComboboxItemHighlightedDetails,
     ComboboxItemRef,
     provideComboboxRootContext,
-    RdxComboboxRootContext
+    RdxComboboxRootContext,
+    useComboboxEngine
 } from '@radix-ng/primitives/combobox';
 import {
     AcceptableValue,
     BooleanInput,
     itemToStringLabel as defaultItemToStringLabel,
     Direction,
-    injectId,
-    isItemEqualToValue,
+    isItemEqualToValue as itemsEqual,
     ItemValueComparator,
-    rdxDevWarning,
-    useFilter,
-    useListHighlight,
-    useTransitionStatus
+    rdxDevWarning
 } from '@radix-ng/primitives/core';
 import { RdxPopper } from '@radix-ng/primitives/popper';
+
+/** The shared engine instance shape (the `ComboboxEngine` type is not part of combobox's public API). */
+type ComboboxEngine = ReturnType<typeof useComboboxEngine>;
 
 /**
  * Autocomplete filtering / inline-completion behavior, mirroring Base UI's `mode`:
@@ -46,10 +47,15 @@ import { RdxPopper } from '@radix-ng/primitives/popper';
 export type AutocompleteMode = 'list' | 'both' | 'inline' | 'none';
 
 /**
- * A custom filter predicate. Receives the item's text, the query, and the item's value (the object
- * for object items) so a filter can match across multiple fields — e.g. fuzzy/multi-key matching.
+ * A custom filter predicate, matching Base UI's signature: the item's raw value (the object for object
+ * items), the query, and an `itemToString` resolver. Value-first lets one filter match strings and
+ * objects alike (fuzzy / multi-key). The same shape as the shared combobox engine's `ComboboxFilter`.
  */
-export type AutocompleteFilter = (itemText: string, query: string, itemValue: AcceptableValue) => boolean;
+export type AutocompleteFilter = (
+    itemValue: AcceptableValue,
+    query: string,
+    itemToString?: (itemValue: AcceptableValue) => string
+) => boolean;
 
 /** Why the input value changed, mirroring Base UI's `onValueChange` details. */
 export type AutocompleteChangeReason = 'input-change' | 'item-press' | 'input-clear' | 'none';
@@ -68,19 +74,23 @@ export type {
     ComboboxItemHighlightedDetails as AutocompleteItemHighlightedDetails
 } from '@radix-ng/primitives/combobox';
 
+// The engine stays private to the root; the context factory (a free function) reads it through this registry.
+const engineRegistry = new WeakMap<RdxAutocompleteRoot, ComboboxEngine>();
+
 /**
  * Builds the {@link RdxComboboxRootContext} the autocomplete parts consume. Autocomplete reuses the
- * combobox parts (List, Popup, Positioner, Item, …) verbatim, so the root exposes the exact combobox
- * context shape — configured for a single-value, `selectionMode: 'none'` control whose value is the
- * input string. Autocomplete-specific state (mode, inline completion, grid) is read by the local
- * parts via direct injection of {@link RdxAutocompleteRoot}.
+ * combobox parts (List, Popup, Positioner, Item, …) verbatim, so it provides the exact combobox context
+ * shape — configured for a single-value, `selectionMode: 'none'` control whose value **is** the input
+ * string. The shared engine supplies registry / filtering / highlight / inline; the root supplies the
+ * string-value semantics. Autocomplete-specific parts (mode, inline, grid) inject {@link RdxAutocompleteRoot}.
  */
 const context = (): RdxComboboxRootContext => {
     const root = inject(RdxAutocompleteRoot);
+    const engine = engineRegistry.get(root)!;
     return {
-        listId: root.listId,
-        labelId: root.labelId,
-        setLabelId: (id: string | undefined) => root.labelId.set(id),
+        listId: engine.listId,
+        labelId: engine.labelId,
+        setLabelId: (id: string | undefined) => engine.setLabelId(id),
         dir: root.dir,
         value: root.value,
         inputValue: root.value,
@@ -93,39 +103,49 @@ const context = (): RdxComboboxRootContext => {
         openOnInputClick: root.openOnInputClick,
         modal: root.modal,
         virtualized: root.virtualized,
-        filteredItems: root.filteredItems,
-        highlightedItem: root.highlightedItem,
-        highlightedIndex: root.highlightedIndex.asReadonly(),
-        activeId: root.activeId,
-        itemId: (index: number) => root.itemId(index),
-        isKeyboardActive: () => root.isKeyboardActive(),
-        setKeyboardActive: (value: boolean) => root.setKeyboardActive(value),
-        transitionStatus: root.transitionStatus,
-        registerTransitionElement: root.registerTransitionElement,
-        visibleCount: root.visibleCount,
-        isVisible: (item: ComboboxItemRef) => root.isVisible(item),
+        grid: root.grid,
+        filteredItems: engine.filteredItems,
+        highlightedItem: engine.highlightedItem,
+        highlightedIndex: engine.highlightedIndex,
+        activeId: engine.activeId,
+        itemId: (index: number) => engine.itemId(index),
+        isKeyboardActive: () => engine.isKeyboardActive(),
+        setKeyboardActive: (value: boolean) => engine.setKeyboardActive(value),
+        transitionStatus: engine.transitionStatus,
+        registerTransitionElement: engine.registerTransitionElement,
+        visibleCount: engine.visibleCount,
+        isVisible: (item: ComboboxItemRef) => engine.isVisible(item),
         isSelected: (value: AcceptableValue) => root.isSelectedValue(value),
-        registerItem: (item: ComboboxItemRef) => root.registerItem(item),
-        unregisterItem: (item: ComboboxItemRef) => root.unregisterItem(item),
-        highlight: root.highlight,
-        highlightNext: () => root.moveDown(),
-        highlightPrevious: () => root.moveUp(),
-        highlightFirst: () => root.highlightFirst('keyboard'),
-        highlightLast: () => root.highlightLast('keyboard'),
-        highlightIndex: (index: number, reason: ComboboxHighlightReason) => root.highlightIndex(index, reason),
-        setHighlight: (item: ComboboxItemRef, reason: ComboboxHighlightReason) => root.setHighlight(item, reason),
-        clearHighlight: () => root.clearHighlightState(),
+        registerItem: (item: ComboboxItemRef) => engine.registerItem(item),
+        unregisterItem: (item: ComboboxItemRef) => engine.unregisterItem(item),
+        highlight: engine.highlight,
+        highlightNext: () => engine.highlightNext('keyboard'),
+        highlightPrevious: () => engine.highlightPrevious('keyboard'),
+        highlightNextColumn: () => engine.highlightNextColumn('keyboard'),
+        highlightPreviousColumn: () => engine.highlightPreviousColumn('keyboard'),
+        highlightFirst: () => engine.highlightFirst('keyboard'),
+        highlightLast: () => engine.highlightLast('keyboard'),
+        highlightIndex: (index: number, reason: ComboboxHighlightReason) => engine.highlightIndex(index, reason),
+        setHighlight: (item: ComboboxItemRef, reason: ComboboxHighlightReason) => engine.setHighlight(item, reason),
+        clearHighlight: () => engine.clearHighlightState(),
         highlightItemOnHover: root.highlightItemOnHover,
         keepHighlight: root.keepHighlight,
-        inputElement: root.inputElement.asReadonly(),
-        setInputElement: (el: HTMLInputElement | null) => root.inputElement.set(el),
-        registerTrigger: (el: HTMLElement | null) => (root.triggerElement = el),
-        focusInput: () => root.focusInput(),
+        inputElement: engine.inputElement,
+        setInputElement: (el: HTMLInputElement | null) => engine.setInputElement(el),
+        inputLayout: engine.inputLayout,
+        setInputLayout: (layout: ComboboxInputLayout) => engine.setInputLayout(layout),
+        openedByTouch: engine.openedByTouch,
+        setOpenedByTouch: (value: boolean) => engine.setOpenedByTouch(value),
+        popupMounted: engine.popupMounted,
+        setPopupMounted: (value: boolean) => engine.setPopupMounted(value),
+        registerTrigger: (el: HTMLElement | null) => engine.setTrigger(el),
+        focusInput: () => engine.focusInput(),
         openPopup: () => root.setOpen(true),
         openForBrowse: () => root.openForBrowse(),
         closePopup: (revert = true) => root.closePopup(revert),
         setInputValue: (value: string) => root.setQuery(value),
         openAndHighlight: (edge: 'first' | 'last') => root.openAndHighlight(edge),
+        navigateByKeyboard: (direction: 1 | -1) => root.navigateByKeyboard(direction),
         select: (item: ComboboxItemRef) => root.handleSelect(item),
         selectIndex: (index: number) => root.selectIndex(index),
         selectHighlighted: () => root.selectHighlighted(),
@@ -136,26 +156,23 @@ const context = (): RdxComboboxRootContext => {
         focusLastChip: () => false,
         labelFor: (value: AcceptableValue) => root.labelFor(value),
         markAsTouched: () => root.markAsTouched()
+        // `value`/`inputValue` are the input string here, not `ComboboxValue` — cast to the shared context.
     } as RdxComboboxRootContext;
 };
 
 /**
  * `autoHighlight` transform: pass `'always'` through verbatim, coerce everything else as a boolean
- * attribute (so the bare `autoHighlight` attribute reads `true`).
- *
- * Kept as a named module-level function rather than an inline `transform` arrow: compodoc 1.2.1
- * (the metadata source for the API contract and Storybook ArgTypes) hangs parsing an inline arrow
- * combined with explicit generic union type arguments on `input()`. A plain function reference sidesteps it.
+ * attribute (so the bare `autoHighlight` attribute reads `true`). Kept as a named function (compodoc
+ * hangs on an inline arrow combined with union-generic `input()`).
  */
 function coerceAutoHighlight(value: BooleanInput | 'always'): boolean | 'always' {
     return value === 'always' ? 'always' : booleanAttribute(value);
 }
 
 /**
- * Root of an Autocomplete — a text input with a filtered list of suggestions. Built on the combobox
- * engine with `selectionMode: 'none'`, so its value **is** the input string: typing, selecting an
- * item, or clearing all change a single string value. Owns input text, open state, filtering, inline
- * completion, and highlight-model navigation, and provides them to the combobox parts. Implements
+ * Root of an Autocomplete — a text input with a filtered list of suggestions. A thin configuration over
+ * the shared combobox engine (ADR 0014) with `selectionMode: 'none'`, so its value **is** the input
+ * string: typing, selecting an item, or clearing all change a single string value. Implements
  * `ControlValueAccessor` (the form value is the input string).
  *
  * @group Components
@@ -225,18 +242,10 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
         return 'off';
     });
 
-    /**
-     * Whether moving the pointer over an item highlights it. `true` (default) paints `data-highlighted`
-     * on hover; `false` suppresses hover-driven highlight entirely, letting CSS `:hover` stay distinct
-     * from the `data-highlighted` (keyboard) state. Clicking an item still selects it.
-     */
+    /** Whether moving the pointer over an item highlights it. */
     readonly highlightItemOnHover = input(true, { transform: booleanAttribute });
 
-    /**
-     * Whether a pointer-driven highlight is kept when the cursor leaves the list. `false` (default)
-     * clears the highlight on pointer-leave; `true` retains the last hovered item highlighted. Keyboard
-     * navigation and auto-highlight are unaffected.
-     */
+    /** Whether a pointer-driven highlight is kept when the cursor leaves the list. */
     readonly keepHighlight = input(false, { transform: booleanAttribute });
 
     /** Whether clicking the input opens the popup. Defaults to `false` (Base UI default). */
@@ -253,26 +262,22 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
 
     /**
      * Filter applied to items against the input query (only when {@link mode} is `'list'` / `'both'`).
-     * - `undefined` (default): locale-aware "contains" via {@link useFilter};
-     * - a function: custom matching;
-     * - `null`: built-in filtering disabled (the consumer controls which items exist).
+     * `undefined` → locale-aware contains; a function → custom `(value, query, itemToString)`; `null` →
+     * built-in filtering disabled.
      */
     readonly filter = input<AutocompleteFilter | null | undefined>(undefined);
 
     /** Maximum number of matching items to show. `-1` (default) means no limit. */
     readonly limit = input(-1, { transform: numberAttribute });
 
-    /**
-     * The full set of item values, used as the source of truth for filtering and navigation in
-     * {@link virtualized} mode (where only a window of `RdxAutocompleteItem` is mounted).
-     */
+    /** The full set of item values for {@link virtualized} mode. */
     readonly items = input<readonly AcceptableValue[]>();
 
     /** Whether the list is externally virtualized (navigation runs over {@link items} by index). */
     readonly virtualized = input(false, { transform: booleanAttribute });
 
-    /** How item values are compared for equality (function or object key). */
-    readonly by = input<ItemValueComparator<AcceptableValue>>();
+    /** How item values are compared for equality (a comparator function or an object key). Base UI prop name. */
+    readonly isItemEqualToValue = input<ItemValueComparator<AcceptableValue>>();
 
     /** Converts an item value to its string label (filter text + input text on selection). */
     readonly itemToStringValue = input<(value: AcceptableValue) => string>();
@@ -289,20 +294,6 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
     /** Emits after the open/close transition (including any exit animation) finishes. */
     readonly onOpenChangeComplete = output<boolean>();
 
-    private readonly transition = useTransitionStatus((open) => this.onOpenChangeComplete.emit(open));
-
-    /** Open/close transition phase, for `data-starting-style` / `data-ending-style`. */
-    readonly transitionStatus = this.transition.status;
-
-    /** Registers the popup element whose animation determines transition completion. */
-    readonly registerTransitionElement = this.transition.registerElement;
-
-    readonly listId = injectId('rdx-autocomplete-list-');
-
-    readonly labelId = signal<string | undefined>(undefined);
-
-    readonly inputElement = signal<HTMLInputElement | null>(null);
-
     /** Constant signals exposed to the combobox context (autocomplete is always single-value). */
     readonly alwaysFalse = signal(false);
     readonly noneMode = signal<'none'>('none');
@@ -311,110 +302,113 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
     readonly disabledState = computed(() => this.disabled() || this.cvaDisabled());
     readonly requiredState = computed(() => this.required());
 
-    private readonly defaultFilter = useFilter();
-
-    /** Whether built-in filtering applies in the current mode. */
+    /** Whether built-in filtering applies in the current mode (`list` / `both`). */
     private readonly filteringMode = computed(() => this.mode() === 'list' || this.mode() === 'both');
 
-    /** Whether inline completion applies in the current mode. */
+    /** Whether inline completion applies in the current mode (`both` / `inline`). */
     readonly inlineMode = computed(() => this.mode() === 'both' || this.mode() === 'inline');
 
     /**
      * Whether the input text is a fresh user query rather than a committed selection's label. While
-     * `false` (just opened, or showing a committed selection), the list is unfiltered so the user can
-     * browse; it flips `true` on the first keystroke.
+     * `false` (just opened, or showing a committed selection), the list is unfiltered; it flips `true`
+     * on the first keystroke.
      */
     private readonly typed = signal(false);
 
     /** The text the user actually typed, used as the filter query. */
     readonly query = computed(() => (this.typed() ? (this.value() ?? '') : ''));
 
-    /** Transient inline-completion preview (the active item's label), or `null`. */
-    readonly inlinePreview = signal<string | null>(null);
+    /** The shared engine: item registry, filtering, highlight navigation (grid), inline, transition. */
+    private readonly engine: ComboboxEngine = useComboboxEngine({
+        injector: this.injector,
+        listIdPrefix: 'rdx-autocomplete-list-',
+        popupSelector: '[rdxAutocompletePopup]',
+        open: this.open,
+        query: this.query,
+        filteringEnabled: this.filteringMode,
+        loopFocus: this.loopFocus,
+        autoHighlightMode: this.autoHighlightMode,
+        virtualized: this.virtualized,
+        items: this.items,
+        filter: this.filter,
+        limit: this.limit,
+        grid: this.grid,
+        rowOf: (element) => element.closest('[rdxAutocompleteRow]'),
+        inlineMode: this.inlineMode,
+        itemToString: (value) => this.labelFor(value),
+        onItemHighlighted: (details) => this.onItemHighlighted.emit(details),
+        onOpenChange: (open) => this.onOpenChange.emit(open),
+        onOpenChangeComplete: (open) => this.onOpenChangeComplete.emit(open)
+    });
 
     /** What the input element displays: the inline preview if any, else the committed value. */
-    readonly displayValue = computed(() => this.inlinePreview() ?? this.value() ?? '');
+    readonly displayValue = computed(() => this.engine.inlinePreview() ?? this.value() ?? '');
 
-    /** Suppresses inline completion for the current edit (set while a delete key is pressed). */
-    private suppressInline = false;
-
-    private readonly _items = signal<readonly ComboboxItemRef[]>([]);
-
-    /** Registered items, sorted into DOM order. */
-    readonly orderedItems = computed(() => [...this._items()].sort((a, b) => domOrder(a.element, b.element)));
-
-    /** Matching items in DOM order, capped at `limit`. The set of items the list shows. */
-    readonly visibleItems = computed(() => {
-        const matching = this.orderedItems().filter((item) => this.matchesFilter(item));
-        const limit = this.limit();
-        return limit >= 0 ? matching.slice(0, limit) : matching;
-    });
-
-    private readonly visibleSet = computed(() => new Set(this.visibleItems()));
-
-    /** The filtered item values an external virtualizer should render. */
-    readonly filteredItems = computed<readonly AcceptableValue[]>(() => {
-        const data = this.items();
-        if (data === undefined) {
-            return this.visibleItems().map((item) => item.value());
-        }
-        const limit = this.limit();
-        const cap = (arr: readonly AcceptableValue[]) => (limit >= 0 ? arr.slice(0, limit) : arr);
-
-        if (!this.filteringMode()) {
-            return cap(data);
-        }
-        const filter = this.filter();
-        if (filter === null) {
-            return cap(data);
-        }
-        const query = this.query();
-        if (!query) {
-            return cap(data);
-        }
-        const matcher = filter ?? this.defaultFilter.contains;
-        return cap(data.filter((value) => matcher(this.textFor(value), query, value)));
-    });
-
-    readonly visibleCount = computed(() =>
-        this.virtualized() ? this.filteredItems().length : this.visibleItems().length
-    );
-
-    readonly highlight = useListHighlight<ComboboxItemRef>({
-        items: this.orderedItems,
-        isNavigable: (item) => this.isVisible(item) && !item.disabled(),
-        getId: (item) => item.id,
-        loop: this.loopFocus,
-        injector: this.injector
-    });
-
-    readonly highlightedItem = this.highlight.highlightedItem;
-
-    /** Highlighted index into {@link filteredItems} in virtualized mode (`-1` when cleared). */
-    readonly highlightedIndex = signal(-1);
-
-    /** Why the highlight last moved; read when emitting {@link onItemHighlighted}. */
-    private readonly highlightReason = signal<ComboboxHighlightReason>('none');
-
-    readonly activeId = computed(() => {
-        if (this.virtualized()) {
-            const index = this.highlightedIndex();
-            return index >= 0 ? this.itemId(index) : undefined;
-        }
-        return this.highlight.activeId();
-    });
-
-    /**
-     * What to highlight once the list has mounted (items register asynchronously after opening):
-     * an end edge, or `'first-match'` (the first item whose label starts with the query — used by
-     * auto-highlight so inline completion lands on a real prefix match even when the list is static).
-     */
-    private readonly pendingHighlightEdge = signal<'first' | 'last' | 'first-match' | null>(null);
+    // --- engine-backed surface read by the parts / tests ---
+    get listId() {
+        return this.engine.listId;
+    }
+    get labelId() {
+        return this.engine.labelId;
+    }
+    get inputElement() {
+        return this.engine.inputElement;
+    }
+    setInputElement(el: HTMLInputElement | null): void {
+        this.engine.setInputElement(el);
+    }
+    setInputLayout(layout: ComboboxInputLayout): void {
+        this.engine.setInputLayout(layout);
+    }
+    setPopupMounted(value: boolean): void {
+        this.engine.setPopupMounted(value);
+    }
+    get inputLayout() {
+        return this.engine.inputLayout;
+    }
+    get openedByTouch() {
+        return this.engine.openedByTouch;
+    }
+    get popupMounted() {
+        return this.engine.popupMounted;
+    }
+    get highlight() {
+        return this.engine.highlight;
+    }
+    get highlightedItem() {
+        return this.engine.highlightedItem;
+    }
+    get highlightedIndex() {
+        return this.engine.highlightedIndex;
+    }
+    get activeId() {
+        return this.engine.activeId;
+    }
+    get filteredItems() {
+        return this.engine.filteredItems;
+    }
+    get visibleCount() {
+        return this.engine.visibleCount;
+    }
+    get inlinePreview() {
+        return this.engine.inlinePreview;
+    }
+    get transitionStatus() {
+        return this.engine.transitionStatus;
+    }
+    get registerTransitionElement() {
+        return this.engine.registerTransitionElement;
+    }
+    get triggerElement() {
+        return this.engine.triggerElement;
+    }
 
     private onChange?: (value: string) => void;
     private onTouched?: () => void;
 
     constructor() {
+        engineRegistry.set(this, this.engine);
+
         // Apply uncontrolled defaults once.
         effect(() => {
             const initial = this.defaultValue();
@@ -426,109 +420,6 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
             if (untracked(this.open) === false && this.defaultOpen()) {
                 this.open.set(true);
             }
-        });
-
-        // Emit open changes and drive the open/close transition (skip the initial run).
-        let previousOpen = untracked(this.open);
-        effect(() => {
-            const open = this.open();
-            if (open === previousOpen) {
-                return;
-            }
-            previousOpen = open;
-            untracked(() => {
-                this.onOpenChange.emit(open);
-                this.transition.start(open);
-            });
-        });
-
-        // Emit highlight changes (skip the initial run).
-        let highlightInitialized = false;
-        effect(() => {
-            const item = this.highlightedItem();
-            const index = this.highlightedIndex();
-            if (!highlightInitialized) {
-                highlightInitialized = true;
-                return;
-            }
-            untracked(() => {
-                const reason = this.highlightReason();
-                if (this.virtualized()) {
-                    const value = index >= 0 ? (this.filteredItems()[index] ?? null) : null;
-                    this.onItemHighlighted.emit({ value, index, reason });
-                } else {
-                    const value = item ? item.value() : null;
-                    const itemIndex = item ? this.visibleItems().indexOf(item) : -1;
-                    this.onItemHighlighted.emit({ value, index: itemIndex, reason });
-                }
-            });
-        });
-
-        // Inline completion: mirror the active item's label into the input (with the completed suffix
-        // selected by the input directive). Recomputes whenever the highlight or query changes.
-        effect(() => {
-            const item = this.highlightedItem();
-            const query = this.query();
-            const reason = this.highlightReason();
-            untracked(() => this.recomputeInlinePreview(item, query, reason));
-        });
-
-        // Apply a deferred open-edge highlight once items (DOM refs) or filtered data have registered.
-        effect(() => {
-            const edge = this.pendingHighlightEdge();
-            const count = this.virtualized() ? this.filteredItems().length : this.orderedItems().length;
-            if (!this.open() || edge === null || count === 0) {
-                return;
-            }
-            untracked(() => {
-                this.highlightReason.set('none');
-                if (this.virtualized()) {
-                    this.highlightedIndex.set(this.resolveVirtualizedEdge(edge, count));
-                } else if (edge === 'last') {
-                    this.highlight.last();
-                } else if (edge === 'first-match') {
-                    this.highlight.set(this.firstMatchItem() ?? this.firstVisibleNavigable());
-                } else {
-                    this.highlight.first();
-                }
-                this.pendingHighlightEdge.set(null);
-            });
-        });
-
-        // autoHighlight 'always': keep the first navigable item highlighted whenever the popup is open.
-        effect(() => {
-            this.orderedItems();
-            this.visibleCount();
-            if (this.autoHighlightMode() === 'always' && this.open()) {
-                untracked(() => {
-                    if (this.virtualized()) {
-                        const length = this.filteredItems().length;
-                        const index = this.highlightedIndex();
-                        if ((index < 0 || index >= length) && length > 0) {
-                            this.highlightReason.set('none');
-                            this.highlightedIndex.set(0);
-                        }
-                    } else if (this.highlightedItem() === null) {
-                        this.highlightReason.set('none');
-                        this.highlight.first();
-                    }
-                });
-            }
-        });
-
-        // Virtualized self-heal: clear a highlight that filtering pushed out of range.
-        effect(() => {
-            if (!this.virtualized()) {
-                return;
-            }
-            const length = this.filteredItems().length;
-            untracked(() => {
-                const index = this.highlightedIndex();
-                if (index >= length && index !== -1) {
-                    this.highlightReason.set('none');
-                    this.highlightedIndex.set(-1);
-                }
-            });
         });
 
         // Virtualized object values can't be labelled from the DOM — warn once in dev.
@@ -549,29 +440,8 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
         }
     }
 
-    private recomputeInlinePreview(item: ComboboxItemRef | null, query: string, reason: ComboboxHighlightReason): void {
-        // Pointer hover must not rewrite the input (matches Base UI); only typing / keyboard nav complete it.
-        if (!this.inlineMode() || this.suppressInline || !item || reason === 'pointer') {
-            this.inlinePreview.set(null);
-            return;
-        }
-        const label = item.textValue();
-        if (label && query && label.toLowerCase().startsWith(query.toLowerCase())) {
-            // Type-ahead: keep the typed prefix (preserving its casing) and complete the rest.
-            this.inlinePreview.set(query + label.slice(query.length));
-            return;
-        }
-        // Keyboard navigation to an item that doesn't prefix-match the query: show its full label so the
-        // input reflects the highlighted option. Typing (reason 'none') never jumps to a non-prefix label.
-        if (reason === 'keyboard' && label) {
-            this.inlinePreview.set(label);
-            return;
-        }
-        this.inlinePreview.set(null);
-    }
-
     setSuppressInline(value: boolean): void {
-        this.suppressInline = value;
+        this.engine.setSuppressInline(value);
     }
 
     /** Opens the popup for browsing (resets the query to "pristine" and selects the input text). */
@@ -580,9 +450,9 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
             this.typed.set(false);
         }
         this.setOpen(true);
-        this.selectInputText();
+        this.engine.selectInputText();
         if (this.autoHighlightMode() === 'always') {
-            this.pendingHighlightEdge.set('first');
+            this.engine.setPendingHighlightEdge('first');
         }
     }
 
@@ -592,73 +462,8 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
             this.typed.set(false);
         }
         this.setOpen(true);
-        this.selectInputText();
-        this.pendingHighlightEdge.set(edge);
-    }
-
-    /** Whether the item matches the active query (ignores the `limit` cap). */
-    private matchesFilter(item: ComboboxItemRef): boolean {
-        if (!this.filteringMode()) {
-            return true;
-        }
-        const filter = this.filter();
-        if (filter === null) {
-            return true;
-        }
-        const query = this.query();
-        const matcher = filter ?? this.defaultFilter.contains;
-        return matcher(item.textValue(), query, item.value());
-    }
-
-    /** Whether the item is shown in the list (matches the query and is within `limit`). */
-    isVisible(item: ComboboxItemRef): boolean {
-        return this.visibleSet().has(item);
-    }
-
-    /** The first visible, navigable item whose label starts with the query (for inline completion). */
-    private firstMatchItem(): ComboboxItemRef | null {
-        const query = this.query();
-        if (!query) {
-            return null;
-        }
-        const lower = query.toLowerCase();
-        return (
-            this.visibleItems().find((item) => !item.disabled() && item.textValue().toLowerCase().startsWith(lower)) ??
-            null
-        );
-    }
-
-    /** The first visible, navigable item (auto-highlight fallback when no prefix match exists). */
-    private firstVisibleNavigable(): ComboboxItemRef | null {
-        return this.visibleItems().find((item) => !item.disabled()) ?? null;
-    }
-
-    /** Resolves a pending edge to a virtualized index. */
-    private resolveVirtualizedEdge(edge: 'first' | 'last' | 'first-match', count: number): number {
-        if (edge === 'last') {
-            return count - 1;
-        }
-        if (edge === 'first-match') {
-            const query = this.query();
-            if (query) {
-                const lower = query.toLowerCase();
-                const index = this.filteredItems().findIndex((value) =>
-                    this.textFor(value).toLowerCase().startsWith(lower)
-                );
-                if (index >= 0) {
-                    return index;
-                }
-            }
-        }
-        return 0;
-    }
-
-    private keyboardActive = false;
-    isKeyboardActive(): boolean {
-        return this.keyboardActive;
-    }
-    setKeyboardActive(value: boolean): void {
-        this.keyboardActive = value;
+        this.engine.selectInputText();
+        this.engine.setPendingHighlightEdge(edge);
     }
 
     /** Whether the item's value/label matches the current input value (combobox context contract). */
@@ -667,15 +472,7 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
         if (!current) {
             return false;
         }
-        return value === current || isItemEqualToValue(value, current, this.by());
-    }
-
-    registerItem(item: ComboboxItemRef): void {
-        this._items.update((items) => [...items, item]);
-    }
-
-    unregisterItem(item: ComboboxItemRef): void {
-        this._items.update((items) => items.filter((i) => i !== item));
+        return value === current || itemsEqual(value, current, this.isItemEqualToValue());
     }
 
     setOpen(open: boolean): void {
@@ -690,8 +487,8 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
             return;
         }
         this.open.set(false);
-        this.clearHighlightState();
-        this.inlinePreview.set(null);
+        this.engine.clearHighlightState();
+        this.engine.clearInlinePreview();
         if (revert) {
             this.typed.set(false);
         }
@@ -705,13 +502,8 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
         // Inline modes (`both` / `inline`) implicitly highlight the first prefix match so the input can
         // be inline-completed even without an explicit `autoHighlight`.
         if (this.autoHighlightMode() !== 'off' || (this.inlineMode() && value.length > 0)) {
-            this.pendingHighlightEdge.set('first-match');
+            this.engine.setPendingHighlightEdge('first-match');
         }
-    }
-
-    /** Selects all input text so the next keystroke replaces a committed label. */
-    selectInputText(): void {
-        this.inputElement()?.select();
     }
 
     labelFor(value: AcceptableValue): string {
@@ -719,19 +511,24 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
         if (custom) {
             return custom(value);
         }
-        const item = this.orderedItems().find((i) => isItemEqualToValue(i.value(), value, this.by()));
+        const item = this.engine.orderedItems().find((i) => itemsEqual(i.value(), value, this.isItemEqualToValue()));
         return item ? item.textValue() : defaultItemToStringLabel(value);
     }
 
-    /** Label text for a raw item value (virtualized mode, no DOM element to read from). */
-    private textFor(value: AcceptableValue): string {
-        const custom = this.itemToStringValue();
-        return custom ? custom(value) : defaultItemToStringLabel(value);
+    itemId(index: number): string {
+        return this.engine.itemId(index);
     }
 
-    /** Deterministic id for the item at `index` in virtualized mode (matches `aria-activedescendant`). */
-    itemId(index: number): string {
-        return `${this.listId}-item-${index}`;
+    isVisible(item: ComboboxItemRef): boolean {
+        return this.engine.isVisible(item);
+    }
+
+    registerItem(item: ComboboxItemRef): void {
+        this.engine.registerItem(item);
+    }
+
+    unregisterItem(item: ComboboxItemRef): void {
+        this.engine.unregisterItem(item);
     }
 
     handleSelect(item: ComboboxItemRef): void {
@@ -746,7 +543,7 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
         if (this.disabledState() || this.readOnly()) {
             return;
         }
-        const value = this.filteredItems()[index];
+        const value = this.engine.filteredItems()[index];
         if (value === undefined) {
             return;
         }
@@ -755,195 +552,99 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
 
     /** Commits a selection: the input value becomes the item's label, the popup closes. */
     private commitSelection(label: string): void {
-        this.inlinePreview.set(null);
+        // Capture focus before `commitValue` emits `onValueChange`, so restoration is skipped when the
+        // consumer moves focus in that callback (e.g. focusing a message field after an emoji press).
+        const activeBefore = typeof document !== 'undefined' ? document.activeElement : null;
+        this.engine.clearInlinePreview();
         this.commitValue(label, 'item-press');
         this.typed.set(false);
         this.open.set(false);
-        this.clearHighlightState();
-        this.restoreFocusAfterSelect();
+        this.engine.clearHighlightState();
+        this.engine.restoreFocusAfterSelect(activeBefore);
         this.maybeSubmit();
     }
 
     private maybeSubmit(): void {
         if (this.submitOnItemClick()) {
-            this.inputElement()?.form?.requestSubmit?.();
+            this.engine.inputElement()?.form?.requestSubmit?.();
         }
     }
 
     selectHighlighted(): void {
         if (this.virtualized()) {
-            const index = this.highlightedIndex();
+            const index = this.engine.highlightedIndex();
             if (index >= 0) {
                 this.selectIndex(index);
             }
             return;
         }
-        const item = this.highlightedItem();
+        const item = this.engine.highlightedItem();
         if (item) {
             this.handleSelect(item);
         }
     }
 
-    // --- Highlight navigation facade (mode-aware: index-based when virtualized, grid-aware, else DOM-ref) ---
+    // --- highlight navigation facade (delegates to the engine; grid-aware) ---
+
+    navigateByKeyboard(direction: 1 | -1): void {
+        this.engine.setKeyboardActive(true);
+        if (!this.open()) {
+            this.openAndHighlight(direction === 1 ? 'first' : 'last');
+        } else if (direction === 1) {
+            this.engine.highlightNext();
+        } else {
+            this.engine.highlightPrevious();
+        }
+    }
 
     moveDown(): void {
-        this.highlightReason.set('keyboard');
-        if (this.virtualized()) {
-            this.stepIndex(1);
-        } else if (this.grid()) {
-            this.gridVertical(1);
-        } else {
-            this.highlight.next();
-        }
+        this.engine.highlightNext();
     }
-
     moveUp(): void {
-        this.highlightReason.set('keyboard');
-        if (this.virtualized()) {
-            this.stepIndex(-1);
-        } else if (this.grid()) {
-            this.gridVertical(-1);
-        } else {
-            this.highlight.previous();
-        }
+        this.engine.highlightPrevious();
     }
-
-    /** Grid: move to the next cell in DOM order. Non-grid: no-op (caret movement). */
     moveRight(): void {
-        if (!this.grid() || this.virtualized()) {
-            return;
-        }
-        this.highlightReason.set('keyboard');
-        this.highlight.next();
+        this.engine.highlightNextColumn();
     }
-
     moveLeft(): void {
-        if (!this.grid() || this.virtualized()) {
-            return;
-        }
-        this.highlightReason.set('keyboard');
-        this.highlight.previous();
+        this.engine.highlightPreviousColumn();
     }
-
     highlightFirst(reason: ComboboxHighlightReason = 'keyboard'): void {
-        this.highlightReason.set(reason);
-        if (this.virtualized()) {
-            this.highlightedIndex.set(this.filteredItems().length > 0 ? 0 : -1);
-        } else {
-            this.highlight.first();
-        }
+        this.engine.highlightFirst(reason);
     }
-
     highlightLast(reason: ComboboxHighlightReason = 'keyboard'): void {
-        this.highlightReason.set(reason);
-        if (this.virtualized()) {
-            const length = this.filteredItems().length;
-            this.highlightedIndex.set(length > 0 ? length - 1 : -1);
-        } else {
-            this.highlight.last();
-        }
+        this.engine.highlightLast(reason);
     }
-
     highlightIndex(index: number, reason: ComboboxHighlightReason): void {
-        if (index < 0 || index >= this.filteredItems().length) {
-            return;
-        }
-        this.highlightReason.set(reason);
-        this.highlightedIndex.set(index);
+        this.engine.highlightIndex(index, reason);
     }
-
     setHighlight(item: ComboboxItemRef, reason: ComboboxHighlightReason): void {
-        this.highlightReason.set(reason);
-        this.highlight.set(item);
+        this.engine.setHighlight(item, reason);
     }
-
     clearHighlightState(): void {
-        this.highlight.clear();
-        this.highlightedIndex.set(-1);
+        this.engine.clearHighlightState();
     }
 
-    private stepIndex(direction: 1 | -1): void {
-        const length = this.filteredItems().length;
-        if (length === 0) {
-            this.highlightedIndex.set(-1);
-            return;
-        }
-        const current = this.highlightedIndex();
-        if (current < 0) {
-            this.highlightedIndex.set(direction === 1 ? 0 : length - 1);
-            return;
-        }
-        let next = current + direction;
-        const loop = this.loopFocus();
-        if (next < 0) {
-            next = loop ? length - 1 : 0;
-        } else if (next >= length) {
-            next = loop ? 0 : length - 1;
-        }
-        this.highlightedIndex.set(next);
+    isKeyboardActive(): boolean {
+        return this.engine.isKeyboardActive();
     }
-
-    /** Grid vertical move: keep the column index, jump to the adjacent row. */
-    private gridVertical(direction: 1 | -1): void {
-        const rows = this.gridRows();
-        if (rows.length === 0) {
-            return;
-        }
-        const current = this.highlightedItem();
-        if (!current) {
-            const row = direction === 1 ? rows[0] : rows[rows.length - 1];
-            this.highlight.set(row[0] ?? null);
-            return;
-        }
-        let rowIndex = rows.findIndex((row) => row.includes(current));
-        const col = rowIndex >= 0 ? rows[rowIndex].indexOf(current) : 0;
-        const loop = this.loopFocus();
-        rowIndex += direction;
-        if (rowIndex < 0) {
-            rowIndex = loop ? rows.length - 1 : 0;
-        } else if (rowIndex >= rows.length) {
-            rowIndex = loop ? 0 : rows.length - 1;
-        }
-        const targetRow = rows[rowIndex];
-        this.highlight.set(targetRow[Math.min(col, targetRow.length - 1)] ?? null);
-    }
-
-    /** Visible items grouped into rows by their nearest `[rdxAutocompleteRow]` ancestor (DOM order). */
-    private gridRows(): ComboboxItemRef[][] {
-        const rows = new Map<Element | null, ComboboxItemRef[]>();
-        for (const item of this.visibleItems()) {
-            const key = item.element.closest('[rdxAutocompleteRow]');
-            const bucket = rows.get(key);
-            if (bucket) {
-                bucket.push(item);
-            } else {
-                rows.set(key, [item]);
-            }
-        }
-        return [...rows.values()];
+    setKeyboardActive(value: boolean): void {
+        this.engine.setKeyboardActive(value);
     }
 
     clearValue(): void {
+        if (this.disabledState() || this.readOnly()) {
+            return;
+        }
         this.commitValue('', 'input-clear');
         this.typed.set(true);
-        this.inlinePreview.set(null);
-        this.focusInput();
+        this.engine.clearInlinePreview();
+        this.engine.clearHighlightState();
+        this.engine.focusInput();
     }
-
-    /** The trigger element, used as a focus fallback when the input lives inside the popup. */
-    triggerElement: HTMLElement | null = null;
 
     focusInput(): void {
-        this.inputElement()?.focus();
-    }
-
-    restoreFocusAfterSelect(): void {
-        const input = this.inputElement();
-        if (input && !input.closest('[rdxAutocompletePopup]')) {
-            input.focus();
-        } else {
-            this.triggerElement?.focus();
-        }
+        this.engine.focusInput();
     }
 
     markAsTouched(): void {
@@ -951,6 +652,11 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
     }
 
     private commitValue(value: string, reason: AutocompleteChangeReason): void {
+        // Mirror combobox's guarded commit: never mutate the value while disabled or read-only
+        // (the input is the form value here, so Clear / item-press / typing must all be inert).
+        if (this.disabledState() || this.readOnly()) {
+            return;
+        }
         this.value.set(value);
         this.onValueChange.emit({ value, reason });
         this.onChange?.(value);
@@ -972,16 +678,4 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
     setDisabledState(isDisabled: boolean): void {
         this.cvaDisabled.set(isDisabled);
     }
-}
-
-/** DOM-order comparator for two elements (precedes → -1, follows → 1). */
-function domOrder(a: HTMLElement, b: HTMLElement): number {
-    const position = a.compareDocumentPosition(b);
-    if (position & Node.DOCUMENT_POSITION_FOLLOWING) {
-        return -1;
-    }
-    if (position & Node.DOCUMENT_POSITION_PRECEDING) {
-        return 1;
-    }
-    return 0;
 }

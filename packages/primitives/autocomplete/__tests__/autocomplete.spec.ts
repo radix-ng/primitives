@@ -132,7 +132,7 @@ describe('Autocomplete', () => {
         it('selecting an item writes its text into the value and closes', async () => {
             host.open.set(true);
             await settle();
-            visibleItems()[1].dispatchEvent(new Event('pointerup', { bubbles: true }));
+            visibleItems()[1].click();
             await settle();
             expect(host.value()).toBe('Banana');
             expect(host.open()).toBe(false);
@@ -151,7 +151,7 @@ describe('Autocomplete', () => {
             await settle();
             expect(host.changes.at(-1)).toEqual({ value: 'ap', reason: 'input-change' });
 
-            visibleItems()[0].dispatchEvent(new Event('pointerup', { bubbles: true }));
+            visibleItems()[0].click();
             await settle();
             expect(host.changes.at(-1)).toEqual({ value: 'Apple', reason: 'item-press' });
 

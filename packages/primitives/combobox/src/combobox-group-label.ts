@@ -1,4 +1,4 @@
-import { Directive } from '@angular/core';
+import { DestroyRef, Directive, inject } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
 import { injectComboboxGroupContext } from './combobox-group';
 
@@ -21,5 +21,11 @@ export class RdxComboboxGroupLabel {
 
     constructor() {
         this.groupContext.labelId.set(this.id);
+        // Clear the registration on unmount so the group doesn't reference a removed label's id.
+        inject(DestroyRef).onDestroy(() => {
+            if (this.groupContext.labelId() === this.id) {
+                this.groupContext.labelId.set(undefined);
+            }
+        });
     }
 }

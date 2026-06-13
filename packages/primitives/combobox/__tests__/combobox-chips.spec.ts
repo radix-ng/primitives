@@ -6,7 +6,7 @@ import { _importsCombobox } from '../index';
 @Component({
     imports: [_importsCombobox],
     template: `
-        <div [(value)]="value" [(open)]="open" multiple rdxComboboxRoot>
+        <div [(value)]="value" [(open)]="open" [dir]="dir()" multiple rdxComboboxRoot>
             <div rdxComboboxAnchor>
                 <div rdxComboboxChips>
                     @for (v of value(); track v) {
@@ -34,6 +34,7 @@ import { _importsCombobox } from '../index';
 class ChipsHost {
     readonly value = signal<string[]>(['apple', 'banana', 'grape']);
     readonly open = signal(false);
+    readonly dir = signal<'ltr' | 'rtl'>('ltr');
     readonly fruits = ['apple', 'banana', 'grape', 'orange'];
 }
 
@@ -75,6 +76,36 @@ describe('Combobox chips navigation', () => {
         keyOn(chips()[2], 'ArrowLeft');
         expect(document.activeElement).toBe(chips()[1]);
         keyOn(chips()[1], 'ArrowRight');
+        expect(document.activeElement).toBe(chips()[2]);
+    });
+
+    it('uses role="toolbar" on the chips container (NVDA focus mode)', () => {
+        expect(fixture.nativeElement.querySelector('[rdxComboboxChips]').getAttribute('role')).toBe('toolbar');
+        // The chips themselves carry no role (focusable toolbar children).
+        expect(chips()[0].hasAttribute('role')).toBe(false);
+    });
+
+    it('flips chip arrow navigation in RTL', async () => {
+        host.dir.set('rtl');
+        await settle();
+        chips()[1].focus();
+        // RTL: ArrowRight moves toward the first chip (previous), ArrowLeft toward the input (next).
+        keyOn(chips()[1], 'ArrowRight');
+        expect(document.activeElement).toBe(chips()[0]);
+        keyOn(chips()[0], 'ArrowLeft');
+        expect(document.activeElement).toBe(chips()[1]);
+        // ArrowLeft from the last chip returns to the input.
+        chips()[2].focus();
+        keyOn(chips()[2], 'ArrowLeft');
+        expect(document.activeElement).toBe(inputEl());
+    });
+
+    it('steps into the chips with ArrowRight in RTL (from the input start)', async () => {
+        host.dir.set('rtl');
+        await settle();
+        inputEl().focus();
+        inputEl().setSelectionRange(0, 0);
+        keyOn(inputEl(), 'ArrowRight');
         expect(document.activeElement).toBe(chips()[2]);
     });
 

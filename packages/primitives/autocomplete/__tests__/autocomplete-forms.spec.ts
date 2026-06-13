@@ -90,7 +90,7 @@ describe('Autocomplete forms', () => {
         it('writes the selected item label into the control', async () => {
             host.open.set(true);
             await settle();
-            visibleItems()[2].dispatchEvent(new Event('pointerup', { bubbles: true }));
+            visibleItems()[2].click();
             await settle();
             expect(host.control.value).toBe('Grape');
         });

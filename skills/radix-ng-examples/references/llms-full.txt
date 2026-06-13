@@ -1726,7 +1726,7 @@ interface DocItem {
 }
 
 /** Fuzzy, multi-field ranking with `match-sorter`. The filter receives the item value (object). */
-const fuzzyFilter: AutocompleteFilter = (_text, query, value) => {
+const fuzzyFilter: AutocompleteFilter = (value, query) => {
     if (!query) {
         return true;
     }
@@ -2134,7 +2134,7 @@ An always-open, inline autocomplete (no popup — the `List` is rendered directl
 (the autocomplete's `open` is shared with the dialog via `[(open)]`).
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { Component, effect, ElementRef, signal, viewChild } from '@angular/core';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoCard, demoDialog } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
@@ -2168,6 +2168,7 @@ interface Group {
                     <div [class]="popup" rdxDialogPopup aria-label="Command palette">
                         <div [(open)]="open" autoHighlight="always" rdxAutocompleteRoot>
                             <input
+                                #cmdInput
                                 [class]="input"
                                 rdxAutocompleteInput
                                 placeholder="Search for apps and commands…"
@@ -2290,7 +2291,7 @@ open; pressing an item inserts it into the message field, and `onValueChange` is
 
 ```typescript
 import { Component, ElementRef, signal, viewChild } from '@angular/core';
-import { cn, demoCombobox } from '../../storybook/styles';
+import { cn, demoCombobox, demoFocusRing } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
 interface Emoji {
@@ -2325,7 +2326,7 @@ function chunk<T>(items: T[], size: number): T[][] {
     template: `
         <div class="relative flex w-64">
             <input
-                class="border-border bg-background text-foreground placeholder:text-muted-foreground -mr-px h-9 flex-1 rounded-l-md border px-2 text-sm outline-none"
+                class="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring relative -mr-px h-9 flex-1 rounded-l-md border px-2 text-sm outline-none focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-inset"
                 #message
                 placeholder="Message…"
                 aria-label="Message"
@@ -2335,7 +2336,7 @@ function chunk<T>(items: T[], size: number): T[][] {
                 [(open)]="open"
                 [value]="search()"
                 (onValueChange)="onSearch($event)"
-                (onOpenChangeComplete)="search.set('')"
+                (onOpenChangeComplete)="onOpenComplete($event)"
                 grid
                 rdxAutocompleteRoot
             >
@@ -2379,15 +2380,21 @@ function chunk<T>(items: T[], size: number): T[][] {
 export class AutocompleteGrid {
     protected readonly c = demoCombobox;
     protected readonly trigger = cn(
-        'border-border bg-background text-foreground inline-flex size-9 items-center justify-center rounded-r-md border text-lg',
-        'hover:bg-muted data-[popup-open]:bg-muted outline-none'
+        'border-border bg-background text-foreground relative inline-flex size-9 items-center justify-center rounded-r-md border text-lg',
+        'hover:bg-muted data-[popup-open]:bg-muted',
+        // The trigger is the focusable control here (`tabindex="0"`), so it carries the focus ring
+        // itself; `z-10` lifts it above the adjoining message input so the ring isn't clipped.
+        'focus-visible:z-10',
+        demoFocusRing
     );
     protected readonly popup = cn(
         'border-border bg-popover text-popover-foreground z-50 mt-2 w-64 rounded-md border shadow-md',
         'data-[closed]:hidden'
     );
     protected readonly input = cn(
-        'border-border bg-background text-foreground placeholder:text-muted-foreground h-9 w-full rounded-t-md border-b px-2 text-sm outline-none'
+        'border-border bg-background text-foreground placeholder:text-muted-foreground h-9 w-full rounded-t-md border-b px-2 text-sm',
+        // Inset ring (no offset) so the search field's focus stays crisp against the popup's top edge.
+        'outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset'
     );
     protected readonly cell = cn(
         'flex h-10 cursor-default items-center justify-center rounded-sm text-xl outline-none',
@@ -2540,10 +2547,19 @@ export class AutocompleteGrid {
         const start = input.selectionStart ?? input.value.length;
         const end = input.selectionEnd ?? input.value.length;
         input.value = input.value.slice(0, start) + emoji + input.value.slice(end);
-        this.open.set(false);
-        input.focus();
         const caret = start + emoji.length;
         input.setSelectionRange(caret, caret);
+        // Focus the message field synchronously inside the `onValueChange` callback. The autocomplete
+        // detects that the consumer moved focus and skips its own restoration, so this just works.
+        input.focus();
+        this.open.set(false);
+    }
+
+    /** Reset the search query once the popup has fully closed. */
+    onOpenComplete(open: boolean): void {
+        if (!open) {
+            this.search.set('');
+        }
     }
 }
 ```
@@ -5336,6 +5352,69 @@ export class ComboboxGrouped {
 }
 ```
 
+### Grid
+
+A 2D grid (`grid`): wrap items in `RdxComboboxRow` and the list becomes `role="grid"`. `ArrowUp` /
+`ArrowDown` move between rows keeping the column; `ArrowLeft` / `ArrowRight` move within a row.
+
+```typescript
+import { Component, signal } from '@angular/core';
+import { LucideChevronDown } from '@lucide/angular';
+import { cn, demoCombobox } from '../../storybook/styles';
+import { _importsCombobox } from '../index';
+
+/**
+ * A 2D grid list (`grid`): `ArrowUp`/`ArrowDown` move between rows keeping the column, `ArrowLeft`/
+ * `ArrowRight` move within a row. Items are wrapped in `RdxComboboxRow` and the list becomes
+ * `role="grid"`.
+ */
+@Component({
+    selector: 'combobox-grid',
+    imports: [_importsCombobox, LucideChevronDown],
+    template: `
+        <div [(value)]="value" grid rdxComboboxRoot>
+            <div [class]="c.control">
+                <input [class]="c.input" rdxComboboxInput placeholder="Pick a size…" aria-label="Size" />
+                <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                    <svg lucideChevronDown size="16"></svg>
+                </button>
+            </div>
+
+            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
+                <div [class]="c.popup" rdxComboboxPopup>
+                    <div [class]="list" rdxComboboxList aria-label="Sizes">
+                        @for (row of rows; track $index) {
+                            <div [class]="rowClass" rdxComboboxRow>
+                                @for (size of row; track size) {
+                                    <div [class]="cell" [value]="size" rdxComboboxItem>{{ size }}</div>
+                                }
+                            </div>
+                        }
+                    </div>
+                    <div [class]="c.empty" rdxComboboxEmpty>No size found.</div>
+                </div>
+            </div>
+        </div>
+    `
+})
+export class ComboboxGrid {
+    protected readonly c = demoCombobox;
+    protected readonly list = 'flex flex-col gap-1 p-1';
+    protected readonly rowClass = 'flex gap-1';
+    protected readonly cell = cn(
+        'flex h-9 flex-1 cursor-default items-center justify-center rounded-sm text-sm outline-none',
+        'data-[highlighted]:bg-muted data-[selected]:bg-primary data-[selected]:text-primary-foreground'
+    );
+
+    readonly value = signal<string | null>(null);
+
+    readonly rows = [
+        ['XS', 'S', 'M', 'L'],
+        ['XL', '2XL', '3XL', '4XL']
+    ];
+}
+```
+
 ### Multiple
 
 Multiple selection: picks become chips before the input, the popup stays open between selections,
@@ -5440,7 +5519,7 @@ interface DirectoryUser {
             (onValueChange)="onValueChange()"
             (onInputValueChange)="search($event)"
             (onOpenChangeComplete)="onOpenChangeComplete($event)"
-            by="id"
+            isItemEqualToValue="id"
             rdxComboboxRoot
         >
             <div class="flex flex-col gap-1">
@@ -5563,7 +5642,11 @@ export class ComboboxAsync {
     onValueChange(): void {
         this.searchValue.set('');
         this.error.set(null);
+        // A pick writes its label back into the input (a synchronous echo) — suppress that one search.
+        // Disarmed on a microtask so the deselect-on-empty `onValueChange(null)` (which has no echo)
+        // doesn't leak the flag onto the next keystroke.
         this.suppressSearch = true;
+        queueMicrotask(() => (this.suppressSearch = false));
     }
 
     onOpenChangeComplete(open: boolean): void {
@@ -5587,14 +5670,13 @@ export class ComboboxAsync {
         this.searchValue.set(query);
 
         if (query.trim() === '') {
-            // Emptying the field deselects: the clear (×) hides and the popup falls back to the
-            // pristine "start typing" state instead of keeping the previous pick around.
+            // Emptying the field resets the results to the pristine "start typing" state. The combobox
+            // itself deselects the single value on empty (Base UI), so the demo doesn't clear it here.
             clearTimeout(this.handle);
             this.requestToken++;
             this.loading.set(false);
             this.searchResults.set([]);
             this.error.set(null);
-            this.value.set(null);
             return;
         }
 
@@ -6676,14 +6758,16 @@ A selected-value chip in `multiple` mode. Provide its `value`.
 
 ### Parts without inputs
 
-`RdxComboboxAnchor`, `RdxComboboxLabel` (registers an `aria-labelledby` target), `RdxComboboxTrigger`,
-`RdxComboboxClear`, `RdxComboboxIcon`, `RdxComboboxPortal` (structural; re-exposes `container`),
-`RdxComboboxBackdrop` (modal overlay), `RdxComboboxPopup`,
+`RdxComboboxAnchor`, `RdxComboboxInputGroup` (optional wrapper mirroring state via `data-*`),
+`RdxComboboxLabel` (registers an `aria-labelledby` target), `RdxComboboxTrigger`, `RdxComboboxClear`
+(also takes a `disabled` input), `RdxComboboxIcon`, `RdxComboboxPortal` (structural; re-exposes
+`container`), `RdxComboboxBackdrop` (modal overlay), `RdxComboboxPopup`,
 `RdxComboboxArrow` (re-exposes `width` / `height`), `RdxComboboxList` (exposes `data-empty` while no
-options match), `RdxComboboxItemIndicator`,
-`RdxComboboxGroup`, `RdxComboboxGroupLabel`,
-`RdxComboboxEmpty`, `RdxComboboxStatus`, `RdxComboboxChips`, and `RdxComboboxChipRemove` read
-everything from context and take no inputs of their own.
+options match, `role="grid"` when the root has `grid`), `RdxComboboxRow` (`role="row"` for grid lists),
+`RdxComboboxItemIndicator`,
+`RdxComboboxGroup`, `RdxComboboxGroupLabel`, `RdxComboboxSeparator` (`role="separator"`),
+`RdxComboboxEmpty` / `RdxComboboxStatus` (polite atomic live regions), `RdxComboboxChips`
+(`role="toolbar"`), and `RdxComboboxChipRemove` read everything from context and take no inputs of their own.
 
 ---
 

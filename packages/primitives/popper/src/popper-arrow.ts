@@ -24,6 +24,8 @@ const OPPOSITE_SIDE: Record<Side, Side> = {
 @Directive({
     selector: '[rdxPopperArrow]',
     host: {
+        // The arrow is purely decorative — keep it out of the accessibility tree (Base UI does the same).
+        'aria-hidden': 'true',
         '[style]': 'style()'
     }
 })

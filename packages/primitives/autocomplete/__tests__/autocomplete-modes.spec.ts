@@ -101,6 +101,21 @@ describe('Autocomplete modes', () => {
             expect(root().inlinePreview()).toBe('apple');
             expect(root().displayValue()).toBe('apple');
         });
+
+        // ADR 0014 review: switching out of an inline mode must clear an active preview.
+        it('clears an active inline preview when mode switches to a non-inline mode', async () => {
+            host.mode.set('both');
+            host.autoHighlight.set(true);
+            await settle();
+            type('ap');
+            await settle();
+            expect(root().inlinePreview()).toBe('apple');
+
+            host.mode.set('list');
+            await settle();
+            expect(root().inlinePreview()).toBeNull();
+            expect(root().displayValue()).toBe('ap');
+        });
     });
 
     describe('inline', () => {

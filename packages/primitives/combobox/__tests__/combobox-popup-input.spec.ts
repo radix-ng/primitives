@@ -61,16 +61,37 @@ describe('Combobox with the input inside the popup', () => {
     it('returns focus to the trigger after a selection', async () => {
         trigger().click();
         await settle();
-        items()[1].dispatchEvent(new Event('pointerup', { bubbles: true }));
+        items()[1].click();
         await settle();
         expect(fixture.componentInstance.value()).toBe('Banana');
         expect(document.activeElement).toBe(trigger());
     });
 
+    it('clearing the in-popup search keeps the popup open and the selection (Base UI inputInsidePopup)', async () => {
+        fixture.componentInstance.value.set('Banana');
+        trigger().click(); // opens; the in-popup input mounts → layout 'inside'
+        await settle();
+
+        const search = input()!;
+        search.value = 'App';
+        search.dispatchEvent(new Event('input', { bubbles: true }));
+        await settle();
+
+        // Empty the search box.
+        search.value = '';
+        search.dispatchEvent(new Event('input', { bubbles: true }));
+        await settle();
+
+        // Selection retained (NOT deselected) and the popup stays open — only the search text cleared.
+        expect(fixture.componentInstance.value()).toBe('Banana');
+        expect(input()).not.toBeNull();
+        expect(items().length).toBeGreaterThan(0);
+    });
+
     it('can reopen from the trigger after selecting', async () => {
         trigger().click();
         await settle();
-        items()[0].dispatchEvent(new Event('pointerup', { bubbles: true }));
+        items()[0].click();
         await settle();
         // focus is on the trigger; clicking (or Enter) reopens
         trigger().click();

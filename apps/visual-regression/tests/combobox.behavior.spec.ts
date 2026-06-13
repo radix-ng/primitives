@@ -178,3 +178,32 @@ test('combobox async multiple shows the status hint on open, not the full list',
     await expect(items).toHaveCount(1);
     await expect(items.first()).toContainText('Leslie Alexander');
 });
+
+/**
+ * P2 (ADR 0014): grid combobox renders role=grid / role=row and arrow keys navigate the 2D grid with
+ * no errors (real layout; jsdom unit covers the model, this covers the rendered roles + open path).
+ */
+test('combobox grid exposes grid/row roles and navigates with the arrow keys', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (e) => errors.push(String(e)));
+    page.on('console', (m) => {
+        if (m.type() === 'error') errors.push(m.text());
+    });
+
+    await gotoStory(page, 'primitives-combobox--grid');
+
+    const input = page.locator('[rdxComboboxInput]');
+    await input.click();
+    await expect(page.locator('[rdxComboboxPopup]')).toBeVisible();
+    await expect(page.locator('[rdxComboboxList]')).toHaveAttribute('role', 'grid');
+    await expect(page.locator('[rdxComboboxRow]').first()).toHaveAttribute('role', 'row');
+
+    // ArrowDown highlights the first cell; ArrowRight moves within the row; ArrowDown drops a row.
+    await input.press('ArrowDown');
+    await expect(page.locator('[rdxComboboxItem][data-highlighted]')).toHaveCount(1);
+    await input.press('ArrowRight');
+    await input.press('ArrowDown');
+    await expect(page.locator('[rdxComboboxItem][data-highlighted]')).toHaveCount(1);
+
+    expect(errors).toEqual([]);
+});

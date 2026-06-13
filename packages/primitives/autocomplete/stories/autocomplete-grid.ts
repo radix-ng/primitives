@@ -1,5 +1,5 @@
 import { Component, ElementRef, signal, viewChild } from '@angular/core';
-import { cn, demoCombobox } from '../../storybook/styles';
+import { cn, demoCombobox, demoFocusRing } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
 interface Emoji {
@@ -34,7 +34,7 @@ function chunk<T>(items: T[], size: number): T[][] {
     template: `
         <div class="relative flex w-64">
             <input
-                class="border-border bg-background text-foreground placeholder:text-muted-foreground -mr-px h-9 flex-1 rounded-l-md border px-2 text-sm outline-none"
+                class="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring relative -mr-px h-9 flex-1 rounded-l-md border px-2 text-sm outline-none focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-inset"
                 #message
                 placeholder="Message…"
                 aria-label="Message"
@@ -44,7 +44,7 @@ function chunk<T>(items: T[], size: number): T[][] {
                 [(open)]="open"
                 [value]="search()"
                 (onValueChange)="onSearch($event)"
-                (onOpenChangeComplete)="search.set('')"
+                (onOpenChangeComplete)="onOpenComplete($event)"
                 grid
                 rdxAutocompleteRoot
             >
@@ -88,15 +88,21 @@ function chunk<T>(items: T[], size: number): T[][] {
 export class AutocompleteGrid {
     protected readonly c = demoCombobox;
     protected readonly trigger = cn(
-        'border-border bg-background text-foreground inline-flex size-9 items-center justify-center rounded-r-md border text-lg',
-        'hover:bg-muted data-[popup-open]:bg-muted outline-none'
+        'border-border bg-background text-foreground relative inline-flex size-9 items-center justify-center rounded-r-md border text-lg',
+        'hover:bg-muted data-[popup-open]:bg-muted',
+        // The trigger is the focusable control here (`tabindex="0"`), so it carries the focus ring
+        // itself; `z-10` lifts it above the adjoining message input so the ring isn't clipped.
+        'focus-visible:z-10',
+        demoFocusRing
     );
     protected readonly popup = cn(
         'border-border bg-popover text-popover-foreground z-50 mt-2 w-64 rounded-md border shadow-md',
         'data-[closed]:hidden'
     );
     protected readonly input = cn(
-        'border-border bg-background text-foreground placeholder:text-muted-foreground h-9 w-full rounded-t-md border-b px-2 text-sm outline-none'
+        'border-border bg-background text-foreground placeholder:text-muted-foreground h-9 w-full rounded-t-md border-b px-2 text-sm',
+        // Inset ring (no offset) so the search field's focus stays crisp against the popup's top edge.
+        'outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset'
     );
     protected readonly cell = cn(
         'flex h-10 cursor-default items-center justify-center rounded-sm text-xl outline-none',
@@ -249,9 +255,18 @@ export class AutocompleteGrid {
         const start = input.selectionStart ?? input.value.length;
         const end = input.selectionEnd ?? input.value.length;
         input.value = input.value.slice(0, start) + emoji + input.value.slice(end);
-        this.open.set(false);
-        input.focus();
         const caret = start + emoji.length;
         input.setSelectionRange(caret, caret);
+        // Focus the message field synchronously inside the `onValueChange` callback. The autocomplete
+        // detects that the consumer moved focus and skips its own restoration, so this just works.
+        input.focus();
+        this.open.set(false);
+    }
+
+    /** Reset the search query once the popup has fully closed. */
+    onOpenComplete(open: boolean): void {
+        if (!open) {
+            this.search.set('');
+        }
     }
 }

@@ -5,6 +5,7 @@ import {
     computed,
     DestroyRef,
     Directive,
+    effect,
     ElementRef,
     inject,
     input,
@@ -17,6 +18,7 @@ import {
     provideComboboxItemContext
 } from '@radix-ng/primitives/combobox';
 import { AcceptableValue, injectId } from '@radix-ng/primitives/core';
+import { RdxAutocompleteRow } from './autocomplete-row';
 
 const itemContext = () => {
     const item = inject(RdxAutocompleteItem);
@@ -41,20 +43,21 @@ const itemContext = () => {
     exportAs: 'rdxAutocompleteItem',
     providers: [provideComboboxItemContext(itemContext)],
     host: {
-        role: 'option',
+        '[attr.role]': 'role()',
         '[attr.id]': 'elementId()',
-        '[attr.aria-selected]': 'isSelected()',
+        // Autocomplete is always `selectionMode="none"`, so options carry no selection state: Base UI
+        // omits `aria-selected` / `data-selected` here entirely (rather than rendering `false`).
         '[attr.aria-disabled]': 'disabled() ? "true" : undefined',
         '[attr.aria-setsize]': 'ariaSetSize()',
         '[attr.aria-posinset]': 'ariaPosInSet()',
-        '[attr.data-selected]': 'isSelected() ? "" : undefined',
         '[attr.data-highlighted]': 'isHighlighted() ? "" : undefined',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
         '[hidden]': '!isVisible()',
         '[attr.data-hidden]': 'isVisible() ? undefined : ""',
         '(pointerdown)': 'onPointerDown($event)',
-        '(mousedown)': 'onPointerDown($event)',
-        '(pointerup)': 'onPointerUp()',
+        '(mousedown)': 'onMouseDown($event)',
+        '(mouseup)': 'onMouseUp($event)',
+        '(click)': 'onClick()',
         '(pointermove)': 'onPointerMove()',
         '(pointerleave)': 'onPointerLeave($event)'
     }
@@ -66,8 +69,12 @@ export class RdxAutocompleteItem implements ComboboxItemRef {
 
     readonly id = injectId('rdx-autocomplete-item-');
 
-    /** The option's value. When omitted, selecting the item writes its text content into the input. */
-    readonly value = input<AcceptableValue>('');
+    /**
+     * The explicit `[value]`, or `undefined` when omitted. Read the resolved {@link value} instead —
+     * it falls back to the text content only when no value was bound (so explicit falsy values like
+     * `0` / `''` / `null` are preserved for the filter and selection).
+     */
+    readonly valueInput = input<AcceptableValue | undefined>(undefined, { alias: 'value' });
 
     /** Explicit text matched against the query and written to the input. Defaults to text content. */
     readonly textValueInput = input<string>('', { alias: 'textValue' });
@@ -84,6 +91,16 @@ export class RdxAutocompleteItem implements ComboboxItemRef {
 
     readonly textValue = computed(() => this.textValueInput() || this.autoTextValue());
 
+    /**
+     * The option's effective value: the explicit `[value]` if bound (preserving `0` / `''` / `null`),
+     * otherwise the text content (autocomplete's value is the input string). Only an absent input —
+     * `undefined` — falls back, so a custom filter still sees the real `itemValue` for falsy values.
+     */
+    readonly value = computed<AcceptableValue>(() => {
+        const bound = this.valueInput();
+        return bound === undefined ? this.textValue() : bound;
+    });
+
     protected readonly elementId = computed(() =>
         this.virtualized() ? this.rootContext.itemId(this.index() ?? -1) : this.id
     );
@@ -92,6 +109,12 @@ export class RdxAutocompleteItem implements ComboboxItemRef {
         this.virtualized() ? this.rootContext.filteredItems().length : undefined
     );
     protected readonly ariaPosInSet = computed(() => (this.virtualized() ? (this.index() ?? -1) + 1 : undefined));
+
+    /** The nearest enclosing grid row, if any (drives the `gridcell` role). */
+    private readonly row = inject(RdxAutocompleteRow, { optional: true });
+
+    /** `gridcell` only when actually inside a `RdxAutocompleteRow` of a grid list; otherwise `option`. */
+    protected readonly role = computed(() => (this.rootContext.grid() && this.row ? 'gridcell' : 'option'));
 
     readonly isVisible = computed(() => (this.virtualized() ? true : this.rootContext.isVisible(this)));
     readonly isSelected = computed(() => this.rootContext.isSelected(this.value()));
@@ -134,14 +157,55 @@ export class RdxAutocompleteItem implements ComboboxItemRef {
                 this.element.scrollIntoView({ block: 'nearest' });
             }
         });
+
+        // Reset the press flag whenever the popup closes (matches Base UI), so a later drag-end onto
+        // this item isn't blocked by a stale press from an earlier interaction.
+        effect(() => {
+            if (!this.rootContext.open()) {
+                this.pointerDownStarted = false;
+            }
+        });
     }
+
+    // Whether a primary-button pointerdown started on **this** item. A normal press+release here is
+    // committed by `click`; `mouseup` is only the drag-end fallback for a press that began *elsewhere*.
+    private pointerDownStarted = false;
 
     onPointerDown(event: MouseEvent): void {
+        if (event.button !== 0) {
+            return;
+        }
         event.preventDefault();
         this.rootContext.setKeyboardActive(false);
+        this.pointerDownStarted = true;
     }
 
-    onPointerUp(): void {
+    onMouseDown(event: MouseEvent): void {
+        // Belt-and-suspenders for keeping focus on the input (and iOS Safari blur on tap).
+        if (event.button === 0) {
+            event.preventDefault();
+        }
+    }
+
+    onMouseUp(event: MouseEvent): void {
+        // Read-and-reset the press flag first (matches Base UI), so a press+release here doesn't leave
+        // it set and block a later drag-end onto this same item. Drag-end: commit when the primary
+        // button is released over the highlighted item while the press began on a *different* element
+        // (so `click` won't fire here). A press that began on this item is committed by `click` instead.
+        const startedHere = this.pointerDownStarted;
+        this.pointerDownStarted = false;
+        if (event.button !== 0 || startedHere || !this.isHighlighted()) {
+            return;
+        }
+        this.commitSelection();
+    }
+
+    onClick(): void {
+        // Primary selection trigger; also fires for programmatic `.click()`.
+        this.commitSelection();
+    }
+
+    private commitSelection(): void {
         if (this.virtualized()) {
             this.rootContext.selectIndex(this.index() ?? -1);
         } else {

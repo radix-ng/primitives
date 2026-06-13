@@ -18,6 +18,7 @@ import { RdxAutocompletePortal, RdxAutocompletePortalMisuseGuard } from './src/a
 import { RdxAutocompletePositioner } from './src/autocomplete-positioner';
 import { RdxAutocompleteRoot } from './src/autocomplete-root';
 import { RdxAutocompleteRow } from './src/autocomplete-row';
+import { RdxAutocompleteSeparator } from './src/autocomplete-separator';
 import { RdxAutocompleteStatus } from './src/autocomplete-status';
 import { RdxAutocompleteTrigger } from './src/autocomplete-trigger';
 import { RdxAutocompleteValue } from './src/autocomplete-value';
@@ -41,6 +42,7 @@ export * from './src/autocomplete-portal';
 export * from './src/autocomplete-positioner';
 export * from './src/autocomplete-root';
 export * from './src/autocomplete-row';
+export * from './src/autocomplete-separator';
 export * from './src/autocomplete-status';
 export * from './src/autocomplete-trigger';
 export * from './src/autocomplete-value';
@@ -63,6 +65,7 @@ export const _importsAutocomplete = [
     RdxAutocompleteArrow,
     RdxAutocompleteList,
     RdxAutocompleteRow,
+    RdxAutocompleteSeparator,
     RdxAutocompleteItem,
     RdxAutocompleteItemIndicator,
     RdxAutocompleteGroup,

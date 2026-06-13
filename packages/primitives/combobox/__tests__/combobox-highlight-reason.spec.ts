@@ -62,6 +62,32 @@ class VirtualAlwaysHost {
     readonly windowIndexes = [0, 1, 2, 3, 4];
 }
 
+// --- #3 (ADR 0014 review): DOM-mode self-heal clears the highlight with reason 'none'. With no
+// autoHighlight, filtering the highlighted item out leaves nothing re-seeded — `useListHighlight`
+// clears `highlighted` without touching `highlightReason`, so the cleared emit must still be 'none'.
+@Component({
+    imports: [_importsCombobox],
+    template: `
+        <div [(open)]="open" (onItemHighlighted)="events.push($event)" rdxComboboxRoot>
+            <input rdxComboboxInput aria-label="Fruit" />
+            <div *rdxComboboxPortal rdxComboboxPositioner>
+                <div rdxComboboxPopup>
+                    <div rdxComboboxList aria-label="Fruits">
+                        @for (fruit of fruits; track fruit) {
+                            <div [value]="fruit" rdxComboboxItem>{{ fruit }}</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+})
+class NoAutoHighlightHost {
+    readonly open = signal(false);
+    readonly fruits = ['Apple', 'Apricot', 'Banana'];
+    readonly events: ComboboxItemHighlightedDetails[] = [];
+}
+
 async function settle(fixture: ComponentFixture<unknown>): Promise<void> {
     fixture.detectChanges();
     await fixture.whenStable();
@@ -110,5 +136,25 @@ describe('Combobox highlight reason / re-seed', () => {
 
         // 'always' must keep the first item highlighted, not leave it cleared at -1.
         expect(root.highlightedIndex()).toBe(0);
+    });
+
+    it('DOM-mode self-heal clears the highlight with reason "none", not a stale "keyboard"', async () => {
+        const fixture = TestBed.createComponent(NoAutoHighlightHost);
+        const host = fixture.componentInstance;
+        host.open.set(true);
+        await settle(fixture);
+
+        const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+        input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+        await settle(fixture);
+        expect(host.events.at(-1)).toEqual({ value: 'Apple', index: 0, reason: 'keyboard' });
+
+        // Typing 'Ban' filters the highlighted 'Apple' out; with no autoHighlight nothing re-seeds, so
+        // the highlight is cleared. The cleared emit must report 'none', not the stale 'keyboard'.
+        input.value = 'Ban';
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        await settle(fixture);
+
+        expect(host.events.at(-1)).toEqual({ value: null, index: -1, reason: 'none' });
     });
 });

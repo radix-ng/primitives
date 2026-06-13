@@ -10,7 +10,8 @@ import { Directive } from '@angular/core';
     exportAs: 'rdxComboboxStatus',
     host: {
         role: 'status',
-        'aria-live': 'polite'
+        'aria-live': 'polite',
+        'aria-atomic': 'true'
     }
 })
 export class RdxComboboxStatus {}

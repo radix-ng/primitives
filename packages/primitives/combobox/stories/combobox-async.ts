@@ -29,7 +29,7 @@ interface DirectoryUser {
             (onValueChange)="onValueChange()"
             (onInputValueChange)="search($event)"
             (onOpenChangeComplete)="onOpenChangeComplete($event)"
-            by="id"
+            isItemEqualToValue="id"
             rdxComboboxRoot
         >
             <div class="flex flex-col gap-1">
@@ -152,7 +152,11 @@ export class ComboboxAsync {
     onValueChange(): void {
         this.searchValue.set('');
         this.error.set(null);
+        // A pick writes its label back into the input (a synchronous echo) — suppress that one search.
+        // Disarmed on a microtask so the deselect-on-empty `onValueChange(null)` (which has no echo)
+        // doesn't leak the flag onto the next keystroke.
         this.suppressSearch = true;
+        queueMicrotask(() => (this.suppressSearch = false));
     }
 
     onOpenChangeComplete(open: boolean): void {
@@ -176,14 +180,13 @@ export class ComboboxAsync {
         this.searchValue.set(query);
 
         if (query.trim() === '') {
-            // Emptying the field deselects: the clear (×) hides and the popup falls back to the
-            // pristine "start typing" state instead of keeping the previous pick around.
+            // Emptying the field resets the results to the pristine "start typing" state. The combobox
+            // itself deselects the single value on empty (Base UI), so the demo doesn't clear it here.
             clearTimeout(this.handle);
             this.requestToken++;
             this.loading.set(false);
             this.searchResults.set([]);
             this.error.set(null);
-            this.value.set(null);
             return;
         }
 

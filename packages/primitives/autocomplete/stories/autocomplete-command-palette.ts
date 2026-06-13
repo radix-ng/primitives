@@ -32,6 +32,7 @@ interface Group {
                     <div [class]="popup" rdxDialogPopup aria-label="Command palette">
                         <div [(open)]="open" autoHighlight="always" rdxAutocompleteRoot>
                             <input
+                                #cmdInput
                                 [class]="input"
                                 rdxAutocompleteInput
                                 placeholder="Search for apps and commands…"

@@ -10,7 +10,7 @@ interface DocItem {
 }
 
 /** Fuzzy, multi-field ranking with `match-sorter`. The filter receives the item value (object). */
-const fuzzyFilter: AutocompleteFilter = (_text, query, value) => {
+const fuzzyFilter: AutocompleteFilter = (value, query) => {
     if (!query) {
         return true;
     }

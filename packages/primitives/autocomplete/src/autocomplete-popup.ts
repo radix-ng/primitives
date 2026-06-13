@@ -22,11 +22,16 @@ import { RdxAutocompleteRoot } from './autocomplete-root';
         }))
     ],
     host: {
+        // Base UI: a `dialog` (focusable, tabindex -1) when the input lives inside the popup, otherwise
+        // a presentational wrapper around the `listbox` (the List part owns the listbox role).
+        tabindex: '-1',
+        '[attr.role]': 'root.inputLayout() === "inside" ? "dialog" : "presentation"',
         '[attr.data-state]': 'root.open() ? "open" : "closed"',
         '[attr.data-open]': 'root.open() ? "" : undefined',
         '[attr.data-closed]': 'root.open() ? undefined : ""',
         '[attr.data-starting-style]': 'root.transitionStatus() === "starting" ? "" : undefined',
-        '[attr.data-ending-style]': 'root.transitionStatus() === "ending" ? "" : undefined'
+        '[attr.data-ending-style]': 'root.transitionStatus() === "ending" ? "" : undefined',
+        '(focusin)': 'onFocusIn($event)'
     }
 })
 export class RdxAutocompletePopup {
@@ -39,7 +44,12 @@ export class RdxAutocompletePopup {
         useScrollLock(this.root.modal);
 
         const unregister = this.root.registerTransitionElement(this.element);
-        inject(DestroyRef).onDestroy(unregister);
+        // Track mounted state so Escape can tell "closing this open popup" from "already closed".
+        this.root.setPopupMounted(true);
+        inject(DestroyRef).onDestroy(() => {
+            unregister();
+            this.root.setPopupMounted(false);
+        });
 
         this.dismissableLayer.dismiss.subscribe(() => this.root.closePopup(true));
 
@@ -54,9 +64,35 @@ export class RdxAutocompletePopup {
             }
             const input = this.root.inputElement();
             if (input && input.closest('[rdxAutocompletePopup]')) {
-                input.focus();
-                input.select();
+                // Base UI: a touch-open focuses the popup itself so Android keeps the virtual keyboard
+                // closed; mouse/keyboard opens focus (and select) the search input as usual.
+                if (this.root.openedByTouch()) {
+                    this.element.focus();
+                } else {
+                    input.focus();
+                    input.select();
+                }
             }
         });
+    }
+
+    /**
+     * Base UI focus handoff: if focus lands on the popup or the list (the `tabindex="-1"` programmatic
+     * focus targets), hand it back to the input so arrow-key navigation (`aria-activedescendant`) keeps
+     * working. Skipped for a touch interaction, where focus is parked on the popup to keep the Android
+     * virtual keyboard closed.
+     */
+    onFocusIn(event: FocusEvent): void {
+        if (this.root.openedByTouch()) {
+            return;
+        }
+        const input = this.root.inputElement();
+        const target = event.target as HTMLElement | null;
+        if (!input || !target || target === input) {
+            return;
+        }
+        if (target === this.element || target.matches('[rdxAutocompleteList]')) {
+            input.focus();
+        }
     }
 }

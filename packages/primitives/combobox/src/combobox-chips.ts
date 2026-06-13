@@ -4,7 +4,9 @@ import { injectComboboxRootContext } from './combobox-root';
 
 /**
  * Container for the selected-value chips in `multiple` mode. Sits before the input and coordinates
- * arrow-key navigation across the chips (the chips themselves handle the key events).
+ * arrow-key navigation across the chips (the chips themselves handle the key events). Uses
+ * `role="toolbar"` (Base UI): it keeps NVDA in focus mode while arrow-navigating the chips, where a
+ * plain `list` would drop into browse mode.
  *
  * @group Components
  */
@@ -13,7 +15,7 @@ import { injectComboboxRootContext } from './combobox-root';
     exportAs: 'rdxComboboxChips',
     hostDirectives: [RdxDismissableLayerBranch],
     host: {
-        role: 'list'
+        role: 'toolbar'
     }
 })
 export class RdxComboboxChips {

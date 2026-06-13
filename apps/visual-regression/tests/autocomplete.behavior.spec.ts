@@ -130,3 +130,63 @@ test.describe('Autocomplete scroll into view', () => {
         expect(box.y + box.height).toBeLessThanOrEqual(popupBox.y + popupBox.height + 1);
     });
 });
+
+/**
+ * Regression (ADR 0014 review): in the emoji-picker layout the search Input lives inside the popup, so
+ * the "Choose emoji" Trigger must be the focusable `role="combobox"` and reachable by Tab from the
+ * very first render — before the popup (and its input) has ever mounted. jsdom only sees the attribute;
+ * this asserts real keyboard focus traversal.
+ */
+test.describe('Autocomplete grid (emoji picker) trigger reachability', () => {
+    const trigger = 'button[rdxAutocompleteTrigger]';
+
+    test('the Choose emoji trigger is Tab-reachable before the popup ever opens', async ({ page }) => {
+        const errors: string[] = [];
+        page.on('pageerror', (e) => errors.push(String(e)));
+        await gotoStory(page, 'primitives-autocomplete--grid');
+
+        // Focusable from the initial render even though the input lives in the unopened popup.
+        await expect(page.locator(trigger)).toHaveAttribute('tabindex', '0');
+
+        // Tab from the message field lands on the trigger (not skipped past it).
+        await page.locator('input[aria-label="Message"]').focus();
+        await page.keyboard.press('Tab');
+        await expect(page.locator(trigger)).toBeFocused();
+
+        // ArrowDown opens the popup and focus moves into the in-popup search input.
+        await page.keyboard.press('ArrowDown');
+        await expect(page.locator(popup)).toBeVisible();
+        await expect(page.locator(input)).toBeFocused();
+        expect(errors).toEqual([]);
+    });
+
+    test('Home / End jump to the first / last emoji in the grid', async ({ page }) => {
+        await gotoStory(page, 'primitives-autocomplete--grid');
+        await page.locator(trigger).click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        const items = page.locator('[rdxAutocompleteItem]');
+        await page.keyboard.press('ArrowDown'); // engage grid navigation
+        await page.keyboard.press('End');
+        await expect(items.last()).toHaveAttribute('data-highlighted', '');
+        await page.keyboard.press('Home');
+        await expect(items.first()).toHaveAttribute('data-highlighted', '');
+    });
+
+    test('selecting an emoji inserts it and returns focus to the message field', async ({ page }) => {
+        await gotoStory(page, 'primitives-autocomplete--grid');
+
+        await page.locator(trigger).click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        const firstEmoji = page.locator('[rdxAutocompleteItem]').first();
+        const emojiChar = (await firstEmoji.textContent())?.trim();
+        await firstEmoji.click();
+
+        // The popup closes and focus lands on the message field (not the trigger), with the emoji inserted.
+        await expect(page.locator(popup)).toBeHidden();
+        const message = page.locator('input[aria-label="Message"]');
+        await expect(message).toBeFocused();
+        expect(await message.inputValue()).toContain(emojiChar ?? '😀');
+    });
+});

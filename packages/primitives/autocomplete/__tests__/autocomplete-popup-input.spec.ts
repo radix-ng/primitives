@@ -61,7 +61,7 @@ describe('Autocomplete with the input inside the popup', () => {
     it('returns focus to the trigger after a selection', async () => {
         trigger().click();
         await settle();
-        items()[1].dispatchEvent(new Event('pointerup', { bubbles: true }));
+        items()[1].click();
         await settle();
         expect(fixture.componentInstance.value()).toBe('Banana');
         expect(document.activeElement).toBe(trigger());

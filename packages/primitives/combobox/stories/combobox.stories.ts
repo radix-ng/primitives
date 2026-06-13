@@ -14,6 +14,8 @@ import { ComboboxDisabled } from './combobox-disabled';
 import disabledSource from './combobox-disabled?raw';
 import { ComboboxEmpty } from './combobox-empty';
 import emptySource from './combobox-empty?raw';
+import { ComboboxGrid } from './combobox-grid';
+import gridSource from './combobox-grid?raw';
 import { ComboboxGrouped } from './combobox-grouped';
 import groupedSource from './combobox-grouped?raw';
 import { ComboboxInputInPopup } from './combobox-input-in-popup';
@@ -41,6 +43,7 @@ export default {
                 ComboboxDefault,
                 ComboboxDisabled,
                 ComboboxGrouped,
+                ComboboxGrid,
                 ComboboxMultiple,
                 ComboboxAsync,
                 ComboboxAsyncMultiple,
@@ -82,6 +85,15 @@ export const Grouped: Story = {
     render: () => ({
         template: html`
             <combobox-grouped />
+        `
+    })
+};
+
+export const Grid: Story = {
+    parameters: source(gridSource),
+    render: () => ({
+        template: html`
+            <combobox-grid />
         `
     })
 };

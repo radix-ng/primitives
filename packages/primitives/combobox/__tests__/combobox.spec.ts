@@ -85,6 +85,10 @@ describe('Combobox', () => {
     function key(k: string): void {
         inputEl().dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true }));
     }
+    // Selection is click-driven (matches Base UI; also covers programmatic clicks).
+    function pointerSelect(el: HTMLElement): void {
+        el.click();
+    }
 
     beforeEach(async () => {
         TestBed.configureTestingModule({ imports: [HostComponent] });
@@ -191,6 +195,7 @@ describe('Combobox', () => {
             expect(inputEl().getAttribute('role')).toBe('combobox');
             expect(inputEl().getAttribute('aria-autocomplete')).toBe('list');
             expect(inputEl().getAttribute('aria-expanded')).toBe('false');
+            expect(inputEl().getAttribute('aria-haspopup')).toBe('listbox');
         });
 
         it('ArrowDown opens and highlights the first item', async () => {
@@ -251,17 +256,22 @@ describe('Combobox', () => {
         });
 
         it('Escape closes the popup without clearing the selection', async () => {
-            key('ArrowDown');
-            await settle();
-            key('Enter');
-            await settle();
-            expect(host.value()).toBe('apple');
+            host.value.set('apple');
             host.open.set(true);
             await settle();
             key('Escape');
             await settle();
             expect(host.open()).toBe(false);
-            expect(host.value()).toBe('apple'); // selection preserved
+            expect(host.value()).toBe('apple'); // open → Escape only closes; selection preserved
+        });
+
+        it('Escape on a CLOSED combobox clears the input and selection (Base UI)', async () => {
+            host.value.set('apple');
+            await settle();
+            expect(host.open()).toBe(false);
+            key('Escape');
+            await settle();
+            expect(host.value()).toBeNull();
         });
 
         it('does not filter or select during IME composition', async () => {
@@ -294,7 +304,7 @@ describe('Combobox', () => {
         it('keeps focus on the input after selecting, so the keyboard can reopen it', async () => {
             host.open.set(true);
             await settle();
-            items()[0].dispatchEvent(new Event('pointerup', { bubbles: true }));
+            pointerSelect(items()[0]);
             await settle();
             expect(host.open()).toBe(false);
             expect(document.activeElement).toBe(inputEl());
@@ -308,7 +318,7 @@ describe('Combobox', () => {
             // select Banana
             host.open.set(true);
             await settle();
-            items()[1].dispatchEvent(new Event('pointerup', { bubbles: true }));
+            pointerSelect(items()[1]);
             await settle();
             expect(inputEl().value).toBe('Banana');
             // reopen via the trigger — all items must be visible, not just "Banana"
@@ -321,13 +331,67 @@ describe('Combobox', () => {
             expect(visibleItems().length).toBe(2);
         });
 
-        it('selects via pointerup', async () => {
+        it('selects on click (also covers programmatic click)', async () => {
             host.open.set(true);
             await settle();
-            items()[1].dispatchEvent(new Event('pointerup', { bubbles: true }));
+            items()[1].click();
             await settle();
             expect(host.value()).toBe('banana');
             expect(host.open()).toBe(false);
+        });
+
+        // ADR 0014, Finding 6 (Base UI parity): a right-click never selects, and a mouseup over a
+        // non-highlighted item never selects (the mouseup path only commits the highlighted item).
+        it('does not select on right-click or a mouseup over a non-highlighted item', async () => {
+            host.open.set(true);
+            await settle();
+
+            // Right-click: no `click` fires, and mouseup with a non-primary button is ignored.
+            items()[1].dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, button: 2 }));
+            items()[1].dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 2 }));
+            await settle();
+            expect(host.value()).toBeNull();
+
+            // Nothing highlighted → a primary mouseup must not select.
+            items()[2].dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }));
+            await settle();
+            expect(host.value()).toBeNull();
+            expect(host.open()).toBe(true);
+        });
+
+        // Base UI: a drag begun elsewhere and released over the highlighted item commits via mouseup
+        // (no `click` fires because pointerdown and pointerup are on different elements). A press +
+        // release on the same item, by contrast, is committed by `click` — covered above.
+        it('selects on a drag-end mouseup over the highlighted item (press began elsewhere)', async () => {
+            host.open.set(true);
+            await settle();
+            key('ArrowDown'); // highlight Apple (items()[0])
+            await settle();
+            // Press on a different item, drag, release over the highlighted Apple.
+            items()[1].dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, button: 0 }));
+            items()[0].dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }));
+            await settle();
+            expect(host.value()).toBe('apple');
+        });
+
+        // ADR 0014, Finding 6: a press+release on an item must reset its flag in `mouseup`, so a later
+        // drag-end onto that same item is not blocked (the flag would otherwise stay stale until close).
+        it('does not let a prior press+release block a later drag-end onto the same item', async () => {
+            host.open.set(true);
+            await settle();
+            key('ArrowDown'); // highlight Apple
+            await settle();
+            const apple = items()[0];
+            // Press + release on Apple WITHOUT a click (e.g. a tiny drag) — must reset the press flag.
+            apple.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, button: 0 }));
+            apple.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }));
+            await settle();
+            expect(host.value()).toBeNull();
+            // Now a real drag-end (press elsewhere → release over the still-highlighted Apple) commits.
+            items()[1].dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, button: 0 }));
+            apple.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }));
+            await settle();
+            expect(host.value()).toBe('apple');
         });
 
         it('reverts the input text on outside close', async () => {
@@ -382,9 +446,9 @@ describe('Combobox', () => {
         it('toggles values, keeps the popup open, and clears the input', async () => {
             host.open.set(true);
             await settle();
-            items()[0].dispatchEvent(new Event('pointerup', { bubbles: true }));
+            pointerSelect(items()[0]);
             await settle();
-            items()[2].dispatchEvent(new Event('pointerup', { bubbles: true }));
+            pointerSelect(items()[2]);
             await settle();
             expect(host.value()).toEqual(['apple', 'grape']);
             expect(host.open()).toBe(true);

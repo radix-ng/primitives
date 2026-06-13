@@ -1,4 +1,4 @@
-import { computed, Directive } from '@angular/core';
+import { booleanAttribute, computed, Directive, input } from '@angular/core';
 import { RdxDismissableLayerBranch } from '@radix-ng/primitives/dismissable-layer';
 import { injectComboboxRootContext } from './combobox-root';
 
@@ -16,7 +16,7 @@ import { injectComboboxRootContext } from './combobox-root';
         tabindex: '-1',
         'aria-label': 'Clear',
         '[hidden]': 'isEmpty()',
-        '[attr.disabled]': 'rootContext.disabledState() ? "" : undefined',
+        '[attr.disabled]': 'isDisabled() ? "" : undefined',
         '(pointerdown)': 'onPointerDown($event)',
         '(mousedown)': 'onPointerDown($event)',
         '(click)': 'onClick()'
@@ -24,6 +24,13 @@ import { injectComboboxRootContext } from './combobox-root';
 })
 export class RdxComboboxClear {
     protected readonly rootContext = injectComboboxRootContext();
+
+    /** Disables just this clear button (in addition to the combobox's own disabled / read-only state). */
+    readonly disabled = input(false, { transform: booleanAttribute });
+
+    protected readonly isDisabled = computed(
+        () => this.disabled() || this.rootContext.disabledState() || this.rootContext.readonly()
+    );
 
     /**
      * Whether there is nothing to clear, mirroring Base UI's visibility rule: in `none` mode the

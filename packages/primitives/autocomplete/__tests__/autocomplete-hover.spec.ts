@@ -77,7 +77,7 @@ describe('Autocomplete hover highlight', () => {
         it('still allows the item to be selected by click when hover highlight is off', async () => {
             host.hover.set(false);
             await settle();
-            items()[1].dispatchEvent(new Event('pointerup', { bubbles: true }));
+            items()[1].click();
             await settle();
             expect(inputEl().value).toBe('Banana');
         });

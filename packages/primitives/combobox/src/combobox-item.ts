@@ -5,14 +5,17 @@ import {
     computed,
     DestroyRef,
     Directive,
+    effect,
     ElementRef,
     inject,
     input,
-    signal
+    signal,
+    Signal
 } from '@angular/core';
 import { AcceptableValue, createContext, injectId } from '@radix-ng/primitives/core';
 import { injectComboboxGroupContext } from './combobox-group';
 import { ComboboxItemRef, injectComboboxRootContext } from './combobox-root';
+import { RdxComboboxRow } from './combobox-row';
 
 const itemContext = () => {
     const item = inject(RdxComboboxItem);
@@ -20,7 +23,8 @@ const itemContext = () => {
         isSelected: item.isSelected,
         isHighlighted: item.isHighlighted,
         disabled: item.disabled,
-        value: item.value
+        // Read-only `Signal` (not `InputSignal`) so autocomplete's computed `value` is assignable too.
+        value: item.value as Signal<AcceptableValue>
     };
 };
 
@@ -42,20 +46,21 @@ export const [injectComboboxItemContext, provideComboboxItemContext] = createCon
     exportAs: 'rdxComboboxItem',
     providers: [provideComboboxItemContext(itemContext)],
     host: {
-        role: 'option',
+        '[attr.role]': 'role()',
         '[attr.id]': 'elementId()',
-        '[attr.aria-selected]': 'isSelected()',
+        '[attr.aria-selected]': 'selectable() ? isSelected() : undefined',
         '[attr.aria-disabled]': 'disabled() ? "true" : undefined',
         '[attr.aria-setsize]': 'ariaSetSize()',
         '[attr.aria-posinset]': 'ariaPosInSet()',
-        '[attr.data-selected]': 'isSelected() ? "" : undefined',
+        '[attr.data-selected]': 'selectable() && isSelected() ? "" : undefined',
         '[attr.data-highlighted]': 'isHighlighted() ? "" : undefined',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
         '[hidden]': '!isVisible()',
         '[attr.data-hidden]': 'isVisible() ? undefined : ""',
         '(pointerdown)': 'onPointerDown($event)',
-        '(mousedown)': 'onPointerDown($event)',
-        '(pointerup)': 'onPointerUp()',
+        '(mousedown)': 'onMouseDown($event)',
+        '(mouseup)': 'onMouseUp($event)',
+        '(click)': 'onClick()',
         '(pointermove)': 'onPointerMove()',
         '(pointerleave)': 'onPointerLeave($event)'
     }
@@ -97,6 +102,19 @@ export class RdxComboboxItem implements ComboboxItemRef {
         this.virtualized() ? this.rootContext.filteredItems().length : undefined
     );
     protected readonly ariaPosInSet = computed(() => (this.virtualized() ? (this.index() ?? -1) + 1 : undefined));
+
+    /** The nearest enclosing grid row, if any (drives the `gridcell` role). */
+    private readonly row = inject(RdxComboboxRow, { optional: true });
+
+    /** `gridcell` only when actually inside a `RdxComboboxRow` of a grid list; otherwise `option`. */
+    protected readonly role = computed(() => (this.rootContext.grid() && this.row ? 'gridcell' : 'option'));
+
+    /**
+     * Whether selection is a meaningful concept here (Base UI's `selectable`). In `selectionMode="none"`
+     * (every autocomplete option, and a pure-search combobox) options carry no selection state, so
+     * `aria-selected` / `data-selected` are omitted entirely rather than rendered as `false`.
+     */
+    protected readonly selectable = computed(() => this.rootContext.selectionMode() !== 'none');
 
     // Virtualized items are always rendered (the consumer only mounts the filtered window).
     readonly isVisible = computed(() => (this.virtualized() ? true : this.rootContext.isVisible(this)));
@@ -144,15 +162,56 @@ export class RdxComboboxItem implements ComboboxItemRef {
                 this.element.scrollIntoView({ block: 'nearest' });
             }
         });
+
+        // Reset the press flag whenever the popup closes (matches Base UI), so a later drag-end onto
+        // this item isn't blocked by a stale press from an earlier interaction.
+        effect(() => {
+            if (!this.rootContext.open()) {
+                this.pointerDownStarted = false;
+            }
+        });
     }
+
+    // Whether a primary-button pointerdown started on **this** item. A normal press+release here is
+    // committed by `click`; `mouseup` is only the drag-end fallback for a press that began *elsewhere*.
+    private pointerDownStarted = false;
 
     onPointerDown(event: MouseEvent): void {
-        // Keep focus on the input; prevent the item from stealing focus on pointer/mouse down.
+        if (event.button !== 0) {
+            return;
+        }
+        // Keep focus on the input; prevent the item from stealing focus.
         event.preventDefault();
         this.rootContext.setKeyboardActive(false);
+        this.pointerDownStarted = true;
     }
 
-    onPointerUp(): void {
+    onMouseDown(event: MouseEvent): void {
+        // Belt-and-suspenders for keeping focus on the input (and iOS Safari blur on tap).
+        if (event.button === 0) {
+            event.preventDefault();
+        }
+    }
+
+    onMouseUp(event: MouseEvent): void {
+        // Read-and-reset the press flag first (matches Base UI), so a press+release here doesn't leave
+        // it set and block a later drag-end onto this same item. Drag-end: commit when the primary
+        // button is released over the highlighted item while the press began on a *different* element
+        // (so `click` won't fire here). A press that began on this item is committed by `click` instead.
+        const startedHere = this.pointerDownStarted;
+        this.pointerDownStarted = false;
+        if (event.button !== 0 || startedHere || !this.isHighlighted()) {
+            return;
+        }
+        this.commitSelection();
+    }
+
+    onClick(): void {
+        // Primary selection trigger; also fires for programmatic `.click()`.
+        this.commitSelection();
+    }
+
+    private commitSelection(): void {
         if (this.virtualized()) {
             this.rootContext.selectIndex(this.index() ?? -1);
         } else {

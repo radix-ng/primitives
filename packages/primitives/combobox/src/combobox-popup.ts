@@ -19,11 +19,16 @@ import { injectComboboxRootContext } from './combobox-root';
         provideRdxDismissableLayerConfig(() => ({ disableOutsidePointerEvents: injectComboboxRootContext().modal }))
     ],
     host: {
+        // Base UI: a `dialog` (focusable, tabindex -1) when the input lives inside the popup, otherwise
+        // a presentational wrapper around the `listbox` (the List part owns the listbox role).
+        tabindex: '-1',
+        '[attr.role]': 'rootContext.inputLayout() === "inside" ? "dialog" : "presentation"',
         '[attr.data-state]': 'rootContext.open() ? "open" : "closed"',
         '[attr.data-open]': 'rootContext.open() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.open() ? undefined : ""',
         '[attr.data-starting-style]': 'rootContext.transitionStatus() === "starting" ? "" : undefined',
-        '[attr.data-ending-style]': 'rootContext.transitionStatus() === "ending" ? "" : undefined'
+        '[attr.data-ending-style]': 'rootContext.transitionStatus() === "ending" ? "" : undefined',
+        '(focusin)': 'onFocusIn($event)'
     }
 })
 export class RdxComboboxPopup {
@@ -39,7 +44,12 @@ export class RdxComboboxPopup {
 
         // The popup's animation determines when the open/close transition (onOpenChangeComplete) is done.
         const unregister = this.rootContext.registerTransitionElement(this.element);
-        inject(DestroyRef).onDestroy(unregister);
+        // Track mounted state so Escape can tell "closing this open popup" from "already closed".
+        this.rootContext.setPopupMounted(true);
+        inject(DestroyRef).onDestroy(() => {
+            unregister();
+            this.rootContext.setPopupMounted(false);
+        });
 
         // The input keeps focus while the popup is open; it is registered as a layer branch, so
         // focus/pointer interactions on it don't count as "outside" and won't self-dismiss. Escape
@@ -56,9 +66,35 @@ export class RdxComboboxPopup {
             }
             const input = this.rootContext.inputElement();
             if (input && input.closest('[rdxComboboxPopup]')) {
-                input.focus();
-                input.select();
+                // Base UI: a touch-open focuses the popup itself so Android keeps the virtual keyboard
+                // closed; mouse/keyboard opens focus (and select) the search input as usual.
+                if (this.rootContext.openedByTouch()) {
+                    this.element.focus();
+                } else {
+                    input.focus();
+                    input.select();
+                }
             }
         });
+    }
+
+    /**
+     * Base UI focus handoff: if focus lands on the popup or the list (the `tabindex="-1"` programmatic
+     * focus targets), hand it back to the input so arrow-key navigation (`aria-activedescendant`) keeps
+     * working. Skipped for a touch interaction, where focus is intentionally parked on the popup to keep
+     * the Android virtual keyboard closed.
+     */
+    onFocusIn(event: FocusEvent): void {
+        if (this.rootContext.openedByTouch()) {
+            return;
+        }
+        const input = this.rootContext.inputElement();
+        const target = event.target as HTMLElement | null;
+        if (!input || !target || target === input) {
+            return;
+        }
+        if (target === this.element || target.matches('[rdxComboboxList]')) {
+            input.focus();
+        }
     }
 }

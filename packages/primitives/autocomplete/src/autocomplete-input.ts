@@ -13,6 +13,7 @@ import { BooleanInput, injectId } from '@radix-ng/primitives/core';
 import { RdxDismissableLayerBranch } from '@radix-ng/primitives/dismissable-layer';
 import { injectFieldRootContext } from '@radix-ng/primitives/field';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
+import { RdxAutocompletePositioner } from './autocomplete-positioner';
 import { RdxAutocompleteRoot } from './autocomplete-root';
 
 const attr = (value: boolean) => (value ? '' : undefined);
@@ -33,6 +34,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
         autocomplete: 'off',
         '[attr.aria-autocomplete]': 'ariaAutocomplete()',
         '[attr.id]': 'id()',
+        '[attr.aria-haspopup]': 'root.grid() ? "grid" : "listbox"',
         '[attr.aria-expanded]': 'root.open()',
         '[attr.aria-controls]': 'root.listId',
         '[attr.aria-labelledby]': 'root.labelId()',
@@ -101,7 +103,11 @@ export class RdxAutocompleteInput {
     });
 
     constructor() {
-        this.root.inputElement.set(this.element);
+        this.root.setInputElement(this.element);
+        // Report the layout (Base UI's `inputInsidePopup`): a positioner ancestor means the input lives
+        // inside the popup, so the Trigger becomes the focusable `role="combobox"`; otherwise the input
+        // is the tab stop and the Trigger is a `tabindex="-1"` toggle.
+        this.root.setInputLayout(inject(RdxAutocompletePositioner, { optional: true }) ? 'inside' : 'outside');
 
         afterNextRender(() => {
             this.fieldRootContext?.setControlId(this.id());
@@ -121,7 +127,7 @@ export class RdxAutocompleteInput {
 
         inject(DestroyRef).onDestroy(() => {
             if (this.root.inputElement() === this.element) {
-                this.root.inputElement.set(null);
+                this.root.setInputElement(null);
             }
         });
     }
@@ -142,7 +148,8 @@ export class RdxAutocompleteInput {
     }
 
     private commitInput(value: string): void {
-        if (!this.root.open()) {
+        // Base UI opens on input only for a non-empty trimmed value — whitespace alone won't open it.
+        if (!this.root.open() && value.trim() !== '') {
             this.root.setOpen(true);
         }
         this.root.setQuery(value);
@@ -209,6 +216,22 @@ export class RdxAutocompleteInput {
                     this.root.moveLeft();
                 }
                 break;
+            case 'Home':
+                // In a grid the search box is a filter, so Home/End jump to the first/last cell rather
+                // than moving the caret (outside a grid they keep their native text-editing behavior).
+                if (open && this.root.grid()) {
+                    event.preventDefault();
+                    this.root.setKeyboardActive(true);
+                    this.root.highlightFirst();
+                }
+                break;
+            case 'End':
+                if (open && this.root.grid()) {
+                    event.preventDefault();
+                    this.root.setKeyboardActive(true);
+                    this.root.highlightLast();
+                }
+                break;
             case 'Enter':
                 if (open) {
                     const hasHighlight = this.root.virtualized()
@@ -228,10 +251,18 @@ export class RdxAutocompleteInput {
                 if (open) {
                     event.preventDefault();
                     this.root.closePopup(true);
+                } else if (!this.root.popupMounted()) {
+                    // Base UI: Escape on a closed autocomplete clears the input value (a no-op while
+                    // read-only / disabled). Guard on `popupMounted` so the same Escape that just closed
+                    // an open popup (dismissable layer, capture phase) doesn't also clear.
+                    this.root.clearValue();
                 }
                 break;
             case 'Tab':
-                if (open) {
+                // Tab dismisses a real popup and lets focus move on. With no popup (the always-open,
+                // inline "command palette" layout), Tab must NOT close — it just moves focus within the
+                // surrounding dialog. Guard on `popupMounted` so closing doesn't tear down that dialog.
+                if (open && this.root.popupMounted()) {
                     this.root.closePopup(true);
                 }
                 break;

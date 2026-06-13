@@ -78,7 +78,7 @@ describe('Combobox selectionMode / autoHighlight', () => {
             root().onValueChange.subscribe((v) => activations.push(v));
             host.open.set(true);
             await settle();
-            items()[1].dispatchEvent(new Event('pointerup', { bubbles: true }));
+            items()[1].click();
             await settle();
             expect(host.value()).toBeNull();
             expect(inputEl().value).toBe('Banana');
@@ -90,7 +90,7 @@ describe('Combobox selectionMode / autoHighlight', () => {
             host.fillInput.set(false);
             host.open.set(true);
             await settle();
-            items()[1].dispatchEvent(new Event('pointerup', { bubbles: true }));
+            items()[1].click();
             await settle();
             expect(inputEl().value).toBe('');
         });
@@ -98,7 +98,7 @@ describe('Combobox selectionMode / autoHighlight', () => {
         it('never marks items selected', async () => {
             host.open.set(true);
             await settle();
-            items()[0].dispatchEvent(new Event('pointerup', { bubbles: true }));
+            items()[0].click();
             host.open.set(true);
             await settle();
             expect(items().some((el) => el.hasAttribute('data-selected'))).toBe(false);

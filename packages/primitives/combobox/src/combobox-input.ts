@@ -12,6 +12,7 @@ import { BooleanInput, injectId } from '@radix-ng/primitives/core';
 import { RdxDismissableLayerBranch } from '@radix-ng/primitives/dismissable-layer';
 import { injectFieldRootContext } from '@radix-ng/primitives/field';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
+import { RdxComboboxPositioner } from './combobox-positioner';
 import { injectComboboxRootContext } from './combobox-root';
 
 const attr = (value: boolean) => (value ? '' : undefined);
@@ -31,6 +32,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
         autocomplete: 'off',
         'aria-autocomplete': 'list',
         '[attr.id]': 'id()',
+        '[attr.aria-haspopup]': 'rootContext.grid() ? "grid" : "listbox"',
         '[attr.aria-expanded]': 'rootContext.open()',
         '[attr.aria-controls]': 'rootContext.listId',
         '[attr.aria-labelledby]': 'rootContext.labelId()',
@@ -105,6 +107,10 @@ export class RdxComboboxInput {
 
     constructor() {
         this.rootContext.setInputElement(this.element);
+        // Report the layout (Base UI's `inputInsidePopup`): a positioner ancestor means the input lives
+        // inside the popup (e.g. a command palette), so the Trigger becomes the focusable
+        // `role="combobox"`; otherwise the input is the tab stop and the Trigger is a `tabindex="-1"` toggle.
+        this.rootContext.setInputLayout(inject(RdxComboboxPositioner, { optional: true }) ? 'inside' : 'outside');
 
         afterNextRender(() => {
             this.fieldRootContext?.setControlId(this.id());
@@ -134,10 +140,18 @@ export class RdxComboboxInput {
     }
 
     private commitInput(value: string): void {
-        if (!this.rootContext.open()) {
+        // Base UI: clearing the field closes the popup only when the input is OUTSIDE it (and doesn't
+        // open on click). When the input lives inside the popup, emptying the search must keep the popup
+        // open (closing it would dismiss the field the user is typing in); otherwise typing (including
+        // down to empty in browse mode) opens it.
+        if (value === '' && !this.rootContext.openOnInputClick() && this.rootContext.inputLayout() !== 'inside') {
+            this.rootContext.closePopup(false);
+        } else if (!this.rootContext.open() && value.trim() !== '') {
+            // Base UI opens on input only for a non-empty trimmed value — whitespace alone won't open it.
             this.rootContext.openPopup();
         }
-        // setInputValue applies any autoHighlight (deferred until items mount).
+        // setInputValue applies any autoHighlight (deferred until items mount) and, in single mode,
+        // deselects when the field is emptied.
         this.rootContext.setInputValue(value);
     }
 
@@ -157,8 +171,9 @@ export class RdxComboboxInput {
     }
 
     onKeydown(event: KeyboardEvent): void {
-        // Don't interfere with IME composition or text-editing shortcuts / range selection. Home/End
-        // and Shift+Arrows must keep moving the caret, Ctrl/Meta combos stay browser shortcuts.
+        // Don't interfere with IME composition or text-editing shortcuts / range selection. Shift+Arrows
+        // and modified Home/End keep moving/extending the caret; Ctrl/Meta combos stay browser shortcuts.
+        // (Plain Home/End navigate the grid below, but only in `grid` mode.)
         if (event.isComposing || this.composing) {
             return;
         }
@@ -193,26 +208,59 @@ export class RdxComboboxInput {
                 }
                 break;
             case 'Escape':
-                // Just close the popup (reverting the in-progress query); never clear the selection.
                 if (open) {
+                    // Close the popup, reverting the in-progress query; keep the selection.
                     event.preventDefault();
                     this.rootContext.closePopup(true);
+                } else if (!this.rootContext.popupMounted()) {
+                    // Base UI: Escape on a closed combobox clears the input text and the selection
+                    // (`clearSelection` resets both, a no-op while read-only / disabled). Guard on
+                    // `popupMounted`: the dismissable layer closes in the capture phase, so `open()` is
+                    // already false here when this same Escape just closed an open popup — in that case
+                    // the popup is still mounted (exiting) and we must not also clear.
+                    this.rootContext.clearSelection();
                 }
                 break;
             case 'Tab':
-                if (open) {
+                // Tab dismisses a real popup and lets focus move on. With no popup mounted (an always-open
+                // inline layout) Tab must NOT close — it just moves focus on. Guard on `popupMounted`.
+                if (open && this.rootContext.popupMounted()) {
                     this.rootContext.closePopup(true);
                 }
                 break;
-            case 'ArrowLeft':
-                // From the very start of the input in multiple mode, step into the chips.
-                if (
-                    this.rootContext.multiple() &&
-                    this.element.selectionStart === 0 &&
-                    this.element.selectionEnd === 0 &&
-                    this.rootContext.focusLastChip()
-                ) {
+            case 'ArrowRight':
+                // In a grid, the horizontal arrows move within a row.
+                if (open && this.rootContext.grid()) {
                     event.preventDefault();
+                    this.rootContext.setKeyboardActive(true);
+                    this.rootContext.highlightNextColumn();
+                    break;
+                }
+                this.maybeStepIntoChips('ArrowRight', event);
+                break;
+            case 'ArrowLeft':
+                if (open && this.rootContext.grid()) {
+                    event.preventDefault();
+                    this.rootContext.setKeyboardActive(true);
+                    this.rootContext.highlightPreviousColumn();
+                    break;
+                }
+                this.maybeStepIntoChips('ArrowLeft', event);
+                break;
+            case 'Home':
+                // In a grid the search box is a filter, so Home/End jump to the first/last cell rather
+                // than moving the caret (outside a grid they keep their native text-editing behavior).
+                if (open && this.rootContext.grid()) {
+                    event.preventDefault();
+                    this.rootContext.setKeyboardActive(true);
+                    this.rootContext.highlightFirst();
+                }
+                break;
+            case 'End':
+                if (open && this.rootContext.grid()) {
+                    event.preventDefault();
+                    this.rootContext.setKeyboardActive(true);
+                    this.rootContext.highlightLast();
                 }
                 break;
             case 'Backspace':
@@ -220,6 +268,23 @@ export class RdxComboboxInput {
                     this.rootContext.removeLastValue();
                 }
                 break;
+        }
+    }
+
+    /**
+     * From the very start of the input in `multiple` mode, step into the chips. The key that points
+     * toward the chips is direction-aware: `ArrowLeft` in LTR, `ArrowRight` in RTL.
+     */
+    private maybeStepIntoChips(key: 'ArrowLeft' | 'ArrowRight', event: KeyboardEvent): void {
+        const towardChips = this.rootContext.dir() === 'rtl' ? 'ArrowRight' : 'ArrowLeft';
+        if (
+            key === towardChips &&
+            this.rootContext.multiple() &&
+            this.element.selectionStart === 0 &&
+            this.element.selectionEnd === 0 &&
+            this.rootContext.focusLastChip()
+        ) {
+            event.preventDefault();
         }
     }
 

@@ -77,7 +77,7 @@ describe('Combobox submitOnItemClick', () => {
         fixture.componentInstance.open.set(true);
         await settle();
         const items = Array.from(document.querySelectorAll('[rdxComboboxItem]')) as HTMLElement[];
-        items[0].dispatchEvent(new Event('pointerup', { bubbles: true }));
+        items[0].click();
         await settle();
 
         expect(submitSpy).toHaveBeenCalledTimes(1);

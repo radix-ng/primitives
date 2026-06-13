@@ -18,5 +18,12 @@ getTestBed().initTestEnvironment([BrowserTestingModule, TestModule], platformBro
 
 expect.extend(toHaveNoViolations);
 
+// jsdom doesn't implement layout, so `Element.prototype.scrollIntoView` is missing. Several primitives
+// call it from an `afterRenderEffect` (e.g. keeping the highlighted combobox item in view); without a
+// stub that throws mid-render, destabilising change detection. Provide a no-op so those effects run.
+if (typeof Element !== 'undefined' && !Element.prototype.scrollIntoView) {
+    Element.prototype.scrollIntoView = () => {};
+}
+
 globalThis.xdescribe = describe.skip;
 globalThis.xit = it.skip;
