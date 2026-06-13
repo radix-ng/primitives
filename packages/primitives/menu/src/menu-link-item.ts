@@ -11,8 +11,8 @@ import { injectRdxMenuRootContext } from './menu-root';
     host: {
         role: 'menuitem',
         tabindex: '-1',
-        '[attr.data-disabled]': 'disabled() ? "" : undefined',
-        '[attr.aria-disabled]': 'disabled() ? true : undefined',
+        '[attr.data-disabled]': 'effectiveDisabled() ? "" : undefined',
+        '[attr.aria-disabled]': 'effectiveDisabled() ? true : undefined',
         '[attr.data-highlighted]': 'highlighted() ? "" : undefined',
         '[attr.data-label]': 'label() ?? undefined',
         '(focus)': 'onFocus()',
@@ -41,9 +41,10 @@ export class RdxMenuLinkItem {
     readonly onSelect = output<void>();
 
     protected readonly highlighted = computed(() => this.isFocused());
+    protected readonly effectiveDisabled = computed(() => this.disabled() || (this.rootContext?.disabled() ?? false));
 
     onFocus(): void {
-        if (!this.disabled()) {
+        if (!this.effectiveDisabled()) {
             this.isFocused.set(true);
         }
     }
@@ -53,7 +54,7 @@ export class RdxMenuLinkItem {
     }
 
     onPointerMove(event: PointerEvent): void {
-        if (event.defaultPrevented || event.pointerType !== 'mouse' || this.disabled()) {
+        if (event.defaultPrevented || event.pointerType !== 'mouse' || this.effectiveDisabled()) {
             return;
         }
         if (this.rootContext && !this.rootContext.highlightItemOnHover()) {
@@ -74,7 +75,7 @@ export class RdxMenuLinkItem {
     }
 
     onItemClick(event: MouseEvent): void {
-        if (this.disabled()) {
+        if (this.effectiveDisabled()) {
             event.preventDefault();
             return;
         }
@@ -83,7 +84,7 @@ export class RdxMenuLinkItem {
     }
 
     protected onActivate(event: Event): void {
-        if (this.disabled()) {
+        if (this.effectiveDisabled()) {
             event.preventDefault();
             return;
         }

@@ -40,8 +40,8 @@ const checkboxItemContextFactory = (): RdxMenuCheckboxItemContext => {
         tabindex: '-1',
         '[attr.aria-checked]': 'isIndeterminate(checked()) ? "mixed" : checked()',
         '[attr.data-state]': 'getCheckedState(checked())',
-        '[attr.data-disabled]': 'disabled() ? "" : undefined',
-        '[attr.aria-disabled]': 'disabled() ? true : undefined',
+        '[attr.data-disabled]': 'effectiveDisabled() ? "" : undefined',
+        '[attr.aria-disabled]': 'effectiveDisabled() ? true : undefined',
         '[attr.data-highlighted]': 'highlighted() ? "" : undefined',
         '[attr.data-label]': 'label() ?? undefined',
         '(focus)': 'onFocus()',
@@ -74,13 +74,14 @@ export class RdxMenuCheckboxItem {
     readonly onCheckedChange = output<CheckedState>();
 
     protected readonly highlighted = computed(() => this.isFocused());
+    protected readonly effectiveDisabled = computed(() => this.disabled() || (this.rootContext?.disabled() ?? false));
 
     // Expose helpers for host bindings
     protected readonly isIndeterminate = isIndeterminate;
     protected readonly getCheckedState = getCheckedState;
 
     onFocus(): void {
-        if (!this.disabled()) {
+        if (!this.effectiveDisabled()) {
             this.isFocused.set(true);
         }
     }
@@ -90,7 +91,7 @@ export class RdxMenuCheckboxItem {
     }
 
     onPointerMove(event: PointerEvent): void {
-        if (event.defaultPrevented || event.pointerType !== 'mouse' || this.disabled()) {
+        if (event.defaultPrevented || event.pointerType !== 'mouse' || this.effectiveDisabled()) {
             return;
         }
         if (this.rootContext && !this.rootContext.highlightItemOnHover()) {
@@ -111,13 +112,13 @@ export class RdxMenuCheckboxItem {
     }
 
     onItemClick(): void {
-        if (this.disabled()) return;
+        if (this.effectiveDisabled()) return;
         this.toggleChecked();
         if (this.closeOnClick()) this.rootContext?.close();
     }
 
     protected onActivate(event: Event): void {
-        if (this.disabled()) return;
+        if (this.effectiveDisabled()) return;
         event.preventDefault();
         this.toggleChecked();
         if (this.closeOnClick()) this.rootContext?.close();

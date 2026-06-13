@@ -7,6 +7,7 @@ import {
     RdxMenuCheckboxItemIndicator,
     RdxMenuGroup,
     RdxMenuItem,
+    RdxMenuLinkItem,
     RdxMenuPopup,
     RdxMenuPortal,
     RdxMenuPortalMisuseGuard,
@@ -111,6 +112,50 @@ class DefaultOpenMenuComponent {}
 })
 class DisabledRootMenuComponent {
     disabled = true;
+}
+
+@Component({
+    imports: [
+        RdxMenuRoot,
+        RdxMenuPositioner,
+        RdxMenuPopup,
+        RdxMenuItem,
+        RdxMenuCheckboxItem,
+        RdxMenuRadioGroup,
+        RdxMenuRadioItem,
+        RdxMenuLinkItem,
+        RdxMenuSubTrigger
+    ],
+    template: `
+        <div [open]="true" [disabled]="true" rdxMenuRoot>
+            <div rdxMenuPositioner>
+                <div rdxMenuPopup>
+                    <button (onSelect)="selections.push('item')" rdxMenuItem>Item</button>
+                    <button [(checked)]="checked" rdxMenuCheckboxItem>Checkbox</button>
+                    <div [(value)]="radioValue" rdxMenuRadioGroup>
+                        <button value="radio" rdxMenuRadioItem>Radio</button>
+                    </div>
+                    <a (onSelect)="selections.push('link')" href="#disabled-link" rdxMenuLinkItem>Link</a>
+
+                    <ng-container #submenu="rdxMenuRoot" rdxMenuRoot>
+                        <button rdxMenuSubTrigger>Submenu</button>
+                        @if (submenu.open()) {
+                            <div rdxMenuPositioner>
+                                <div rdxMenuPopup>
+                                    <button rdxMenuItem>Submenu item</button>
+                                </div>
+                            </div>
+                        }
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    `
+})
+class DisabledRootItemsMenuComponent {
+    selections: string[] = [];
+    checked = false;
+    radioValue: string | undefined;
 }
 
 @Component({
@@ -515,6 +560,30 @@ describe('Menu', () => {
             // disabled item at index 1 should be skipped → focus lands on index 2
             const lastItem: HTMLElement = fixture.nativeElement.querySelectorAll('[rdxMenuItem]')[2];
             expect(document.activeElement).toBe(lastItem);
+        });
+
+        it('propagates root disabled state to every interactive item type', () => {
+            const rootFixture = TestBed.createComponent(DisabledRootItemsMenuComponent);
+            rootFixture.detectChanges();
+
+            const interactiveItems: HTMLElement[] = Array.from(
+                rootFixture.nativeElement.querySelectorAll(
+                    '[rdxMenuItem],[rdxMenuCheckboxItem],[rdxMenuRadioItem],[rdxMenuLinkItem],[rdxMenuSubTrigger]'
+                )
+            );
+
+            expect(interactiveItems).toHaveLength(5);
+            for (const item of interactiveItems) {
+                expect(item.hasAttribute('data-disabled')).toBe(true);
+                expect(item.getAttribute('aria-disabled')).toBe('true');
+                item.click();
+            }
+            rootFixture.detectChanges();
+
+            expect(rootFixture.componentInstance.selections).toEqual([]);
+            expect(rootFixture.componentInstance.checked).toBe(false);
+            expect(rootFixture.componentInstance.radioValue).toBeUndefined();
+            expect(rootFixture.nativeElement.querySelectorAll('[rdxMenuPopup]')).toHaveLength(1);
         });
     });
 

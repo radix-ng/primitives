@@ -79,7 +79,7 @@ export const [injectRdxMenuRootContext, provideRdxMenuRootContext] = createConte
 function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
     return {
         isOpen: instance.open,
-        disabled: instance.disabled,
+        disabled: instance.effectiveDisabled,
         modal: instance.effectiveModal,
         loopFocus: instance.loopFocus,
         highlightItemOnHover: instance.highlightItemOnHover,
@@ -120,6 +120,7 @@ const contextFactory = () => buildContext(inject(RdxMenuRoot));
 })
 export class RdxMenuRoot {
     private readonly popper = inject(RdxPopper);
+    private readonly parentRoot = inject(RdxMenuRoot, { optional: true, skipSelf: true });
 
     /** Shared open/close transition state machine (completes on the real animationend). */
     private readonly transition = useTransitionStatus((open) => this.onOpenChangeComplete.emit(open));
@@ -168,6 +169,9 @@ export class RdxMenuRoot {
     /** Whether the popup grabs focus when it opens. Set false for menubar hover-switching. */
     readonly autoFocus = signal<RdxMenuAutoFocus>('first');
     readonly isSubmenu = signal(false);
+    readonly effectiveDisabled: Signal<boolean> = computed(
+        () => this.disabled() || (this.parentRoot?.effectiveDisabled() ?? false)
+    );
     readonly effectiveModal = computed(() => this.modal() && !this.isSubmenu());
     readonly hasTriggerInteractionHandler = signal(false);
     readonly state = computed(() => (this.open() ? 'open' : 'closed'));
@@ -195,7 +199,7 @@ export class RdxMenuRoot {
     }
 
     show(autoFocus: RdxMenuAutoFocusInput = 'first') {
-        if (this.disabled()) {
+        if (this.effectiveDisabled()) {
             return;
         }
 
@@ -214,7 +218,7 @@ export class RdxMenuRoot {
     }
 
     toggle() {
-        if (this.disabled()) {
+        if (this.effectiveDisabled()) {
             return;
         }
 

@@ -42,8 +42,8 @@ const radioItemContextFactory = (): RdxMenuRadioItemContext => {
         tabindex: '-1',
         '[attr.aria-checked]': 'checked()',
         '[attr.data-state]': 'getCheckedState(checked())',
-        '[attr.data-disabled]': 'disabled() ? "" : undefined',
-        '[attr.aria-disabled]': 'disabled() ? true : undefined',
+        '[attr.data-disabled]': 'effectiveDisabled() ? "" : undefined',
+        '[attr.aria-disabled]': 'effectiveDisabled() ? true : undefined',
         '[attr.data-highlighted]': 'highlighted() ? "" : undefined',
         '[attr.data-label]': 'label() ?? undefined',
         '(focus)': 'onFocus()',
@@ -79,10 +79,11 @@ export class RdxMenuRadioItem {
     readonly checked = computed(() => this.radioGroupContext.value() === this.value());
 
     protected readonly highlighted = computed(() => this.isFocused());
+    protected readonly effectiveDisabled = computed(() => this.disabled() || (this.rootContext?.disabled() ?? false));
     protected readonly getCheckedState = getCheckedState;
 
     onFocus(): void {
-        if (!this.disabled()) {
+        if (!this.effectiveDisabled()) {
             this.isFocused.set(true);
         }
     }
@@ -92,7 +93,7 @@ export class RdxMenuRadioItem {
     }
 
     onPointerMove(event: PointerEvent): void {
-        if (event.defaultPrevented || event.pointerType !== 'mouse' || this.disabled()) {
+        if (event.defaultPrevented || event.pointerType !== 'mouse' || this.effectiveDisabled()) {
             return;
         }
         if (this.rootContext && !this.rootContext.highlightItemOnHover()) {
@@ -113,14 +114,14 @@ export class RdxMenuRadioItem {
     }
 
     onItemClick(): void {
-        if (this.disabled()) {
+        if (this.effectiveDisabled()) {
             return;
         }
         this.selectItem();
     }
 
     protected onActivate(event: Event): void {
-        if (this.disabled()) {
+        if (this.effectiveDisabled()) {
             return;
         }
         event.preventDefault();

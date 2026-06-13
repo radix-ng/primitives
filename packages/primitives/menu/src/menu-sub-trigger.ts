@@ -45,12 +45,12 @@ const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();
         tabindex: '-1',
         '[attr.aria-haspopup]': '"menu"',
         '[attr.aria-expanded]': 'submenuContext.isOpen()',
-        '[attr.aria-disabled]': 'disabled() ? true : undefined',
-        '[attr.disabled]': 'nativeButtonState() && disabled() ? "" : undefined',
+        '[attr.aria-disabled]': 'effectiveDisabled() ? true : undefined',
+        '[attr.disabled]': 'nativeButtonState() && effectiveDisabled() ? "" : undefined',
         '[attr.data-state]': 'submenuContext.isOpen() ? "open" : "closed"',
         '[attr.data-popup-open]': 'submenuContext.isOpen() ? "" : undefined',
         '[attr.data-highlighted]': 'highlighted() ? "" : undefined',
-        '[attr.data-disabled]': 'disabled() ? "" : undefined',
+        '[attr.data-disabled]': 'effectiveDisabled() ? "" : undefined',
         '[attr.data-label]': 'label() ?? undefined',
         '(focus)': 'onFocus()',
         '(blur)': 'onBlur()',
@@ -95,6 +95,7 @@ export class RdxMenuSubTrigger {
 
     /** Highlighted when focused OR while the submenu is open. */
     protected readonly highlighted = computed(() => this.isFocused() || this.submenuContext.isOpen());
+    protected readonly effectiveDisabled = computed(() => this.disabled() || this.submenuContext.disabled());
     protected readonly nativeButtonState = computed(
         () => this.nativeButton() || this.elementRef.nativeElement.tagName === 'BUTTON'
     );
@@ -180,7 +181,7 @@ export class RdxMenuSubTrigger {
     }
 
     protected onFocus(): void {
-        if (!this.disabled()) {
+        if (!this.effectiveDisabled()) {
             this.clearSiblingHighlights();
             this.isFocused.set(true);
         }
@@ -191,7 +192,7 @@ export class RdxMenuSubTrigger {
     }
 
     protected onClick(): void {
-        if (this.disabled()) return;
+        if (this.effectiveDisabled()) return;
         this.openedByHover = false;
         this.clearSiblingHighlights();
         if (!this.submenuContext.isOpen()) {
@@ -201,7 +202,7 @@ export class RdxMenuSubTrigger {
     }
 
     protected onArrowRight(event: Event): void {
-        if (this.disabled()) return;
+        if (this.effectiveDisabled()) return;
         event.preventDefault();
         event.stopPropagation();
         this.openedByHover = false;
@@ -213,7 +214,7 @@ export class RdxMenuSubTrigger {
     }
 
     protected onPointerMove(event: PointerEvent): void {
-        if (event.pointerType !== 'mouse' || this.disabled() || !this.openOnHover()) return;
+        if (event.pointerType !== 'mouse' || this.effectiveDisabled() || !this.openOnHover()) return;
 
         this.lastPointer = { x: event.clientX, y: event.clientY };
         this.clearSiblingHighlights();
