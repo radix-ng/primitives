@@ -72,7 +72,7 @@ Style the parts via the `data-*` attributes they expose (e.g. `[data-state="open
 ## Community
 
 - [GitHub](https://github.com/radix-ng/primitives) · [Discussions](https://github.com/radix-ng/primitives/discussions)
-- [Discord](https://discord.gg/NaJb2XRWX9) · [Telegram](https://t.me/radixng)
+- [Discord](https://discord.gg/NaJb2XRWX9) · [Telegram](https://t.me/headless_angular)
 
 ## License
 
