@@ -1,6 +1,6 @@
 # ADR 0011: WAAPI-based exit detection for presence — transitions-first styling, subtree-aware
 
-- Status: Proposed (spec for implementation; no code yet)
+- Status: Accepted — all phases landed (1 machine upgrade, 2 Playwright coverage, 3 decoy retirement + docs)
 - Date: 2026-06-13
 - Decision owners: Radix NG maintainers
 - Related: ADR 0010 (structural portal+presence; flagged this as explicit follow-up in its §4),
@@ -145,16 +145,51 @@ Once the machine is subtree-aware, the rollout's decoy convention can be unwound
 
 ## Phases (separate PRs)
 
-1. **Machine upgrade** — §1–§3 in `presence-machine.ts` (+ version guard, safety net). Existing
-   jsdom suites pass unmodified; new unit tests only for what jsdom can express (freshness
-   bookkeeping, version guard via manually-resolved fake animation objects if practical).
-2. **Playwright behavior coverage** — extend `apps/visual-regression` behavior specs:
-   - popup-only **transition** exit (no keyframes anywhere) stays mounted until `transitionend`,
-     then unmounts (this is the headline capability — fails on main today);
-   - popup-only **keyframe** exit with _no_ positioner decoy stays mounted (fails on main);
-   - infinite spinner inside an open popup does **not** delay unmount (freshness filter);
-   - re-open during a transition exit keeps the view (no flicker/teardown).
-3. **Decoy retirement + docs** — §4. Visual baselines guard the demo edits.
+1. ✅ **Machine upgrade** — §1–§3 in `presence-machine.ts` (+ version guard, safety net). DONE:
+   subtree-aware `getAnimations({ subtree: true })` with `startTime >= closeTimestamp` freshness
+   filter (snapshot via `document.timeline.currentTime` when `present` flips false), `finished`
+   promises gated by an `exitVersion` counter bumped on every mount/unmount, and a
+   `getMaxTransitionDuration`-based safety net (measured over the animated targets, falling back to
+   roots) + `EXIT_FALLBACK_BUFFER` (50 ms). The legacy root computed-`animationName` acceptor and
+   `animationstart`/`animationend` listeners are kept and gated off while a WAAPI wait owns
+   completion (`waapiPending`). `presence.directive.spec.ts` + `portal-presence.spec.ts` pass
+   unmodified; `pnpm primitives:build` green. (Used `animation.pending`, not `playState ===
+'pending'` — the latter is not in the WAAPI `playState` enum.) The version-guard / late-end path
+   is already covered by the existing "late animationend must not tear down re-opened content" jsdom
+   test; no new jsdom test added (the new paths are browser-truth → Phase 2).
+2. ✅ **Playwright behavior coverage** — DONE. `apps/visual-regression/tests/presence-waapi.behavior.spec.ts`
+   (4 tests, green) driven by three `!visual` fixtures under `Utilities/Presence`
+   (`presence-waapi-{transition,subtree,spinner}.ts`), each exercising `RdxPresenceDirective`'s
+   shared `PresenceMachine`:
+   - **transition** exit on the root (no keyframes anywhere) stays mounted until the transition
+     finishes, then unmounts — the headline capability;
+   - **keyframe** exit on a _descendant_ (no root/positioner decoy) stays mounted — proves
+     `{ subtree: true }`;
+   - **infinite spinner** running since mount does **not** delay unmount — proves the freshness
+     filter;
+   - **re-open during the transition exit** keeps the same element mounted+open — proves the
+     version guard.
+     Verified as genuine regression guards: with the Phase-1 machine reverted (old root-only event
+     path), the transition / subtree / re-open tests **fail** and only the spinner test (trivially)
+     passes. Infra fix bundled: the `!visual` opt-out was a no-op (Storybook strips `!`-prefixed tags
+     from `index.json`); added a global `visual` tag in `.storybook/preview.ts` and flipped
+     `stories.visual.spec.ts` to include-by-`visual`, which also repairs `menu-safe-polygon`'s
+     previously-ineffective opt-out. No new screenshot baselines (fixtures are behavior-only).
+3. ✅ **Decoy retirement + docs** — DONE. Removed the positioner opacity "decoy" from
+   `demoPopover`/`demoNavigationMenu` (styles.ts) and their story usages (`popover-animated`, the 8
+   navigation-menu stories, `recipes/notification-dropdown`); those popups already carry their own
+   opacity+transform exit (`popover-popup-out` via `data-state`; `navigation-menu-popup-out` via
+   `data-ending-style`), so the subtree machine keeps them mounted. Dropped the now-unused
+   `--animate-navigation-menu-in/out` CSS vars (kept `popover-in/out` — still used by the
+   `build-a-styled-component` learn tutorials, where the positioner opacity is the _sole_ animation,
+   not a decoy). **Menu kept its positioner carrier** (`menu-animated`): the shared `demoMenu.popup`
+   has `data-[closed]:hidden` (reused by always-rendered menubar popups), so on close the menu popup
+   is `display:none` and cannot run its own exit — verified in-browser (positioner unmounts
+   synchronously without the carrier). Per §4 that is "a visual choice", not a removable decoy.
+   Updated `animation.docs.mdx` (new "Exit animations: keyframes or transitions" section) + CLAUDE.md
+   (presence lifecycle row + portal bullet) + regenerated the skills bundle. Verified: popover /
+   navigation-menu / menu / presence-waapi behavior specs (12) green, overlays.visual unchanged (no
+   static drift).
 
 ## Testing
 

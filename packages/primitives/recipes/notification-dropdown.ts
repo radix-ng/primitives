@@ -55,13 +55,7 @@ interface Notification {
                 }
             </button>
 
-            <div
-                *rdxPopoverPortal
-                [class]="cn(p.positioner, p.positionerAnimated)"
-                sideOffset="8"
-                align="end"
-                rdxPopoverPositioner
-            >
+            <div *rdxPopoverPortal [class]="p.positioner" sideOffset="8" align="end" rdxPopoverPositioner>
                 <div [class]="popup" rdxPopoverPopup>
                     <div class="border-border flex items-center justify-between border-b px-4 py-3">
                         <h2 [class]="p.title" rdxPopoverTitle>Notifications</h2>

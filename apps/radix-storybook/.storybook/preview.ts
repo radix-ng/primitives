@@ -170,7 +170,12 @@ const preview: Preview = {
         viewport: { value: 'desktop', isRotated: false }
     },
 
-    tags: ['autodocs']
+    // `visual` opts every story into the `apps/visual-regression` per-story screenshot sweep.
+    // A story (or meta) can leave the sweep with `tags: ['!visual']` — the `!` prefix removes the
+    // tag, and Storybook only keeps it in `index.json` for stories that still carry it, which is
+    // what `stories.visual.spec.ts` filters on. (A bare `!visual` with no global `visual` would be
+    // stripped from the index and silently exclude nothing.)
+    tags: ['autodocs', 'visual']
 };
 
 export default preview;

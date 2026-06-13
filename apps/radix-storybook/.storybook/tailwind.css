@@ -134,8 +134,6 @@
     --animate-popover-viewport-in: popover-viewport-in 200ms ease-out;
     --animate-popover-viewport-out: popover-viewport-out 200ms ease-in forwards;
 
-    --animate-navigation-menu-in: popover-in 150ms ease-out;
-    --animate-navigation-menu-out: popover-out 120ms ease-in;
     --animate-navigation-menu-popup-in: navigation-menu-popup-in 200ms ease;
     --animate-navigation-menu-popup-out: navigation-menu-popup-out 200ms ease;
     --animate-navigation-menu-content-in: navigation-menu-content-in 250ms ease;

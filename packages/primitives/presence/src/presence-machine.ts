@@ -1,4 +1,5 @@
 import { afterNextRender, effect, Injector, Signal } from '@angular/core';
+import { getMaxTransitionDuration } from '@radix-ng/primitives/core';
 
 type PresenceState = 'mounted' | 'unmountSuspended' | 'unmounted';
 type PresenceEvent = 'MOUNT' | 'UNMOUNT' | 'ANIMATION_OUT' | 'ANIMATION_END';
@@ -16,6 +17,14 @@ const MACHINE: Record<PresenceState, Partial<Record<PresenceEvent, PresenceState
     unmountSuspended: { MOUNT: 'mounted', ANIMATION_END: 'unmounted' },
     unmounted: { MOUNT: 'mounted' }
 };
+
+/**
+ * Grace period (ms) added to the longest declared exit duration before the safety-net timer
+ * force-completes the exit. Only matters when a `finished` promise never settles (the engine
+ * under-reports `getAnimations`, the animation is replaced without a cancel, reduced motion, …).
+ * Mirrors `TRANSITION_FALLBACK_BUFFER` in `use-transition-status.ts`.
+ */
+const EXIT_FALLBACK_BUFFER = 50;
 
 /**
  * Operations the host directive supplies to {@link PresenceMachine}. The machine owns *when* the
@@ -42,10 +51,19 @@ export interface PresenceMachineHost {
 
 /**
  * Reusable presence state machine extracted from `RdxPresenceDirective`. It keeps content mounted
- * while a CSS exit animation (`@keyframes` applied for the closed state) is running on *any* watched
- * root node, and unmounts only once every running exit animation has finished. With no exit
- * animation it unmounts immediately. For a single watched node this reduces exactly to the original
- * `RdxPresenceDirective` behavior.
+ * while a CSS exit animation runs anywhere inside the template — a `@keyframes` **or** a
+ * `transition` (`data-ending-style`), on a watched root **or any of its descendants** — and unmounts
+ * only once every exit animation started by the close has finished. With no exit animation it
+ * unmounts immediately. For a single watched node and a root-level keyframe this reduces exactly to
+ * the original `RdxPresenceDirective` behavior.
+ *
+ * Detection (ADR 0011) uses the Web Animations API: when `present()` flips `false` we snapshot a
+ * close timestamp, and after the next render collect `node.getAnimations({ subtree: true })`, keeping
+ * only animations that are running/pending and were *started by* the close (`startTime` null or
+ * `>= closeTimestamp`). The view stays mounted until all of their `finished` promises settle, bounded
+ * by a duration-based safety net. The legacy root-level computed-`animationName` check and the
+ * `animationstart`/`animationend` listeners are kept as an additional acceptor — they drive the
+ * zoneless jsdom suites (where `getAnimations` is absent) and cost nothing in a real browser.
  */
 export class PresenceMachine {
     private state: PresenceState;
@@ -53,11 +71,26 @@ export class PresenceMachine {
 
     /** Root nodes currently watched for exit animations (set on mount). */
     private nodes: HTMLElement[] = [];
-    /** Last-seen computed `animationName` per node, used to detect a *fresh* exit animation. */
+    /** Last-seen computed `animationName` per node, used to detect a *fresh* root exit animation. */
     private readonly prevAnimationNames = new WeakMap<HTMLElement, string>();
-    /** Nodes whose exit animation we are still waiting on before unmounting. */
+    /** Root nodes whose exit animation the event path is still waiting on (jsdom / root-keyframe). */
     private readonly pendingExits = new Set<HTMLElement>();
     private removeListeners: (() => void) | null = null;
+
+    /**
+     * Timeline time captured the moment `present` flipped `false`, on the same clock as
+     * `Animation.startTime`. Animations started at or after it are the exit animations.
+     */
+    private closeTimestamp = 0;
+    /**
+     * Monotonic counter bumped on every mount/unmount transition. A suspended exit captures it and
+     * its `finished`/safety-net resolution is ignored if it changed in the meantime (re-open or a
+     * second close), so a stale promise can never tear down a freshly-reopened view.
+     */
+    private exitVersion = 0;
+    /** True while a WAAPI `finished`-promise wait owns completion; gates the event path off. */
+    private waapiPending = false;
+    private safetyTimer: ReturnType<typeof setTimeout> | null = null;
 
     constructor(private readonly host: PresenceMachineHost) {
         this.prevPresent = host.present();
@@ -80,9 +113,12 @@ export class PresenceMachine {
                     // Mount synchronously so the enter animation can start on this frame.
                     this.send('MOUNT');
                 } else if (host.isBrowser) {
+                    // Snapshot the close time *now* (before the render that applies the closed-state
+                    // styles) so the freshness filter can tell exit animations from pre-existing ones.
+                    this.closeTimestamp = this.now();
                     // Defer the unmount decision until the next render, so the consumer's
-                    // `data-state` (and therefore the exit `@keyframes`) is applied to the DOM
-                    // before we read the computed animation name.
+                    // `data-state` / `data-ending-style` (and therefore the exit styles) are applied
+                    // to the DOM before we read the running animations.
                     afterNextRender(() => this.evaluateExit(), { injector: host.injector });
                 } else {
                     this.send('UNMOUNT');
@@ -106,13 +142,14 @@ export class PresenceMachine {
 
         this.pendingExits.clear();
 
+        // Legacy acceptor: a watched root whose closed state starts a *different* `@keyframes`.
+        // This is what the zoneless jsdom suite drives (via synthetic `animationstart`/`animationend`)
+        // and what catches root keyframes in engines that do not expose `getAnimations`.
         for (const node of this.nodes) {
             const styles = getComputedStyle(node);
             const currentAnimationName = styles.animationName || 'none';
             const prevAnimationName = this.prevAnimationNames.get(node) ?? 'none';
 
-            // Only suspend for a node whose closed state actually starts a *different* animation
-            // (and that is not hidden).
             const isAnimating =
                 currentAnimationName !== 'none' &&
                 styles.display !== 'none' &&
@@ -123,9 +160,103 @@ export class PresenceMachine {
             }
         }
 
-        // No root runs a fresh exit animation — unmount right away. Otherwise suspend until every
-        // pending exit animation has finished.
-        this.send(this.pendingExits.size === 0 ? 'UNMOUNT' : 'ANIMATION_OUT');
+        // WAAPI acceptor (ADR 0011): subtree-aware, transitions *or* keyframes, on any element in the
+        // template. This is what makes popup-level exits work without a positioner decoy keyframe.
+        const exitAnimations = this.collectExitAnimations();
+
+        if (this.pendingExits.size === 0 && exitAnimations.length === 0) {
+            // Nothing runs a fresh exit animation — unmount right away.
+            this.send('UNMOUNT');
+            return;
+        }
+
+        this.send('ANIMATION_OUT');
+
+        if (exitAnimations.length > 0) {
+            // WAAPI sees the whole subtree, so it supersedes the root-event path for this close:
+            // wait for every fresh exit animation, version-guarded against re-open.
+            this.waapiPending = true;
+            const version = this.exitVersion;
+
+            void Promise.all(exitAnimations.map((animation) => animation.finished.catch(() => undefined))).then(() =>
+                this.finishExit(version)
+            );
+
+            this.armSafetyNet(version, exitAnimations);
+        }
+        // else: no WAAPI animations (jsdom, or an engine without `getAnimations`) → the root-event
+        // path drains `pendingExits` through `onEnd`, exactly as before this ADR.
+    }
+
+    /**
+     * Running/pending animations across the watched subtrees that were *started by* the close.
+     * Pre-existing animations (an infinite spinner, a settled enter) have an earlier `startTime`
+     * and must not delay the unmount.
+     */
+    private collectExitAnimations(): Animation[] {
+        if (!this.host.isBrowser) {
+            return [];
+        }
+
+        const result: Animation[] = [];
+
+        for (const node of this.nodes) {
+            if (typeof node.getAnimations !== 'function') {
+                continue;
+            }
+
+            for (const animation of node.getAnimations({ subtree: true })) {
+                const fresh = animation.startTime === null || Number(animation.startTime) >= this.closeTimestamp;
+
+                // `animation.pending` is the WAAPI "created but not yet started this frame" flag — a
+                // freshly triggered exit. `playState` itself never reports `'pending'`.
+                if ((animation.playState === 'running' || animation.pending) && fresh) {
+                    result.push(animation);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Force-completes the exit shortly after the longest declared duration, in case a `finished`
+     * promise never settles. Measures the animated targets (falling back to the roots).
+     */
+    private armSafetyNet(version: number, exitAnimations: Animation[]): void {
+        const targets = new Set<HTMLElement>(this.nodes);
+
+        for (const animation of exitAnimations) {
+            const target = (animation.effect as KeyframeEffect | null)?.target;
+            if (target instanceof HTMLElement) {
+                targets.add(target);
+            }
+        }
+
+        let maxDuration = 0;
+        for (const element of targets) {
+            maxDuration = Math.max(maxDuration, getMaxTransitionDuration(element));
+        }
+
+        this.clearSafetyNet();
+        this.safetyTimer = setTimeout(() => this.finishExit(version), maxDuration + EXIT_FALLBACK_BUFFER);
+    }
+
+    /** Settle a WAAPI/safety-net exit wait, ignoring it if a newer mount/unmount superseded it. */
+    private finishExit(version: number): void {
+        if (version !== this.exitVersion) {
+            return;
+        }
+        this.waapiPending = false;
+        this.clearSafetyNet();
+        this.send('ANIMATION_END');
+    }
+
+    private clearSafetyNet(): void {
+        if (this.safetyTimer !== null) {
+            clearTimeout(this.safetyTimer);
+            this.safetyTimer = null;
+        }
     }
 
     private send(event: PresenceEvent): void {
@@ -137,6 +268,11 @@ export class PresenceMachine {
         this.state = next;
 
         if (next === 'mounted') {
+            // Bump the version so any in-flight exit wait from a prior close is ignored.
+            this.exitVersion++;
+            this.waapiPending = false;
+            this.clearSafetyNet();
+
             if (this.nodes.length > 0) {
                 // Re-opened while an exit animation was running — refresh the tracked animations and
                 // drop any pending exits so a late `animationend` cannot tear down the live view.
@@ -148,6 +284,7 @@ export class PresenceMachine {
                 this.mount();
             }
         } else if (next === 'unmounted') {
+            this.exitVersion++;
             this.unmount();
         }
         // `unmountSuspended` keeps the existing view mounted until ANIMATION_END.
@@ -167,6 +304,8 @@ export class PresenceMachine {
     private unmount(): void {
         this.removeListeners?.();
         this.removeListeners = null;
+        this.clearSafetyNet();
+        this.waapiPending = false;
         this.host.destroyView();
         this.nodes = [];
         this.pendingExits.clear();
@@ -190,8 +329,10 @@ export class PresenceMachine {
             }
 
             this.pendingExits.delete(node);
-            if (this.pendingExits.size === 0) {
-                this.send('ANIMATION_END');
+            // While a WAAPI wait owns completion it is authoritative (it sees the full subtree); the
+            // event path only drives the unmount when no WAAPI animations were detected.
+            if (!this.waapiPending && this.pendingExits.size === 0) {
+                this.finishExit(this.exitVersion);
             }
         };
 
@@ -212,5 +353,11 @@ export class PresenceMachine {
 
     private getAnimationName(node: HTMLElement): string {
         return (this.host.isBrowser ? getComputedStyle(node).animationName : '') || 'none';
+    }
+
+    /** Current timeline time on the same clock as `Animation.startTime` (ms), or 0 if unavailable. */
+    private now(): number {
+        const time = typeof document !== 'undefined' ? document.timeline?.currentTime : null;
+        return typeof time === 'number' ? time : Number(time ?? 0);
     }
 }
