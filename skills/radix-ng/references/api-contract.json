@@ -3502,8 +3502,20 @@
           "description": "Groups radio items in a menu.",
           "inputs": [
             {
+              "name": "defaultValue",
+              "type": "T | undefined",
+              "default": "undefined",
+              "description": "The initially selected value for uncontrolled usage."
+            },
+            {
+              "name": "disabled",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether all radio items in the group are disabled."
+            },
+            {
               "name": "value",
-              "type": "string | undefined",
+              "type": "T | undefined",
               "default": "undefined",
               "description": "The currently selected value."
             }
@@ -3511,7 +3523,7 @@
           "outputs": [
             {
               "name": "onValueChange",
-              "type": "string",
+              "type": "T",
               "description": "Emits when the selected value changes."
             }
           ],
@@ -3560,7 +3572,7 @@
             },
             {
               "name": "value",
-              "type": "string",
+              "type": "T",
               "required": true,
               "description": "The value of this radio item."
             }
@@ -3568,7 +3580,7 @@
           "outputs": [
             {
               "name": "onSelect",
-              "type": "string",
+              "type": "T",
               "description": "Emits when this item is selected."
             }
           ]

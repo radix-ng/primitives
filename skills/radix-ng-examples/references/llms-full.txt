@@ -11360,7 +11360,10 @@ export class RdxMenuDefaultComponent {
 ### Radio items
 
 A radio group selects exactly one option. Selecting an item keeps the menu open (`closeOnClick`
-defaults to `false` for radio items). Bind `[(value)]` on `rdxMenuRadioGroup` for controlled state.
+defaults to `false` for radio items). Bind `[(value)]` for controlled state or use `defaultValue` for
+uncontrolled state. Values may be strings, numbers, objects, or other types and are compared by identity.
+Set `disabled` on the group to disable all of its radio items. A nested `rdxMenuGroupLabel`
+automatically labels the group through `aria-labelledby`.
 
 ```html
 <menu-radio-items-story />
@@ -11378,6 +11381,7 @@ indeterminate state is supported when only some items in a related set are selec
 ### With labels
 
 Group items visually and semantically with `rdxMenuGroup` and label them with `rdxMenuGroupLabel`.
+The label automatically supplies the group's `aria-labelledby` relationship.
 Disabled items are skipped by keyboard navigation and styled via `data-disabled`.
 
 ```html

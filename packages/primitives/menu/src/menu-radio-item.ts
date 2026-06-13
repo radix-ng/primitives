@@ -55,14 +55,14 @@ const radioItemContextFactory = (): RdxMenuRadioItemContext => {
         '(keydown.space)': 'onActivate($event)'
     }
 })
-export class RdxMenuRadioItem {
+export class RdxMenuRadioItem<T = unknown> {
     private readonly rootContext = injectRdxMenuRootContext(true);
     private readonly radioGroupContext = injectRdxMenuRadioGroupContext();
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly isFocused = signal(false);
 
     /** The value of this radio item. */
-    readonly value = input.required<string>();
+    readonly value = input.required<T>();
 
     /** Whether this item is disabled. */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
@@ -74,12 +74,14 @@ export class RdxMenuRadioItem {
     readonly label = input<string | undefined>(undefined);
 
     /** Emits when this item is selected. */
-    readonly onSelect = output<string>();
+    readonly onSelect = output<T>();
 
     readonly checked = computed(() => this.radioGroupContext.value() === this.value());
 
     protected readonly highlighted = computed(() => this.isFocused());
-    protected readonly effectiveDisabled = computed(() => this.disabled() || (this.rootContext?.disabled() ?? false));
+    protected readonly effectiveDisabled = computed(
+        () => this.disabled() || this.radioGroupContext.disabled() || (this.rootContext?.disabled() ?? false)
+    );
     protected readonly getCheckedState = getCheckedState;
 
     onFocus(): void {

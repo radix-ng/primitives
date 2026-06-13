@@ -6,6 +6,7 @@ import {
     RdxMenuCheckboxItem,
     RdxMenuCheckboxItemIndicator,
     RdxMenuGroup,
+    RdxMenuGroupLabel,
     RdxMenuItem,
     RdxMenuLinkItem,
     RdxMenuPopup,
@@ -246,6 +247,23 @@ class CheckboxMenuComponent {
 class RadioMenuComponent {
     selected: string | undefined = undefined;
     changes: string[] = [];
+}
+
+@Component({
+    imports: [RdxMenuRadioGroup, RdxMenuRadioItem, RdxMenuGroupLabel],
+    template: `
+        <div [defaultValue]="first" [disabled]="disabled" (onValueChange)="changes.push($event)" rdxMenuRadioGroup>
+            <div rdxMenuGroupLabel>Choices</div>
+            <button [value]="first" rdxMenuRadioItem>First</button>
+            <button [value]="second" rdxMenuRadioItem>Second</button>
+        </div>
+    `
+})
+class RadioGroupApiComponent {
+    readonly first = { id: 1 };
+    readonly second = { id: 2 };
+    disabled = false;
+    changes: { id: number }[] = [];
 }
 
 @Component({
@@ -829,6 +847,46 @@ describe('Menu', () => {
             );
             expect(refreshed[0].style.display).not.toBe('none');
             expect(refreshed[1].style.display).toBe('none');
+        });
+
+        it('supports object values and applies defaultValue once', () => {
+            const apiFixture = TestBed.createComponent(RadioGroupApiComponent);
+            apiFixture.detectChanges();
+            const items: HTMLElement[] = Array.from(apiFixture.nativeElement.querySelectorAll('[rdxMenuRadioItem]'));
+
+            expect(items[0].getAttribute('aria-checked')).toBe('true');
+            items[1].click();
+            apiFixture.detectChanges();
+
+            expect(apiFixture.componentInstance.changes).toEqual([apiFixture.componentInstance.second]);
+            expect(items[0].getAttribute('aria-checked')).toBe('false');
+            expect(items[1].getAttribute('aria-checked')).toBe('true');
+        });
+
+        it('disables all radio items when the group is disabled', () => {
+            const apiFixture = TestBed.createComponent(RadioGroupApiComponent);
+            apiFixture.componentInstance.disabled = true;
+            apiFixture.detectChanges();
+            const group: HTMLElement = apiFixture.nativeElement.querySelector('[rdxMenuRadioGroup]');
+            const items: HTMLElement[] = Array.from(apiFixture.nativeElement.querySelectorAll('[rdxMenuRadioItem]'));
+
+            expect(group.hasAttribute('data-disabled')).toBe(true);
+            items.forEach((item) => expect(item.hasAttribute('data-disabled')).toBe(true));
+            items[1].click();
+            apiFixture.detectChanges();
+
+            expect(apiFixture.componentInstance.changes).toEqual([]);
+            expect(items[0].getAttribute('aria-checked')).toBe('true');
+        });
+
+        it('links the group to its GroupLabel', () => {
+            const apiFixture = TestBed.createComponent(RadioGroupApiComponent);
+            apiFixture.detectChanges();
+            const group: HTMLElement = apiFixture.nativeElement.querySelector('[rdxMenuRadioGroup]');
+            const label: HTMLElement = apiFixture.nativeElement.querySelector('[rdxMenuGroupLabel]');
+
+            expect(label.id).not.toBe('');
+            expect(group.getAttribute('aria-labelledby')).toBe(label.id);
         });
     });
 

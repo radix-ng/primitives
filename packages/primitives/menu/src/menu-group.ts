@@ -1,4 +1,10 @@
-import { Directive } from '@angular/core';
+import { Directive, inject, signal } from '@angular/core';
+import { provideRdxMenuGroupContext, RdxMenuGroupContext } from './menu-group-context';
+
+const groupContextFactory = (): RdxMenuGroupContext => {
+    const instance = inject(RdxMenuGroup);
+    return { labelId: instance.labelId };
+};
 
 /**
  * Groups related menu items together.
@@ -6,8 +12,12 @@ import { Directive } from '@angular/core';
 @Directive({
     selector: '[rdxMenuGroup]',
     exportAs: 'rdxMenuGroup',
+    providers: [provideRdxMenuGroupContext(groupContextFactory)],
     host: {
-        role: 'group'
+        role: 'group',
+        '[attr.aria-labelledby]': 'labelId()'
     }
 })
-export class RdxMenuGroup {}
+export class RdxMenuGroup {
+    readonly labelId = signal<string | undefined>(undefined);
+}
