@@ -178,6 +178,80 @@ test.describe('Drawer mobile navigation', () => {
     });
 });
 
+test.describe('Drawer default', () => {
+    test('stretches the anchored-edge bleed while pulling up', async ({ page }) => {
+        await gotoStory(page, 'primitives-drawer--default');
+        await page.getByRole('button', { name: 'Open drawer' }).click();
+
+        const popup = page.locator('[rdxDrawerPopup]');
+        await popup.evaluate((element) =>
+            Promise.allSettled(element.getAnimations().map((animation) => animation.finished))
+        );
+        const box = await popup.boundingBox();
+
+        expect(box).not.toBeNull();
+
+        await popup.dispatchEvent('pointerdown', {
+            button: 0,
+            clientX: box!.x + box!.width / 2,
+            clientY: box!.y + 24,
+            isPrimary: true,
+            pointerId: 1
+        });
+        await page.evaluate(
+            ({ clientX, clientY }) => {
+                window.dispatchEvent(
+                    new PointerEvent('pointermove', {
+                        bubbles: true,
+                        button: 0,
+                        clientX,
+                        clientY,
+                        isPrimary: true,
+                        pointerId: 1
+                    })
+                );
+            },
+            { clientX: box!.x + box!.width / 2, clientY: box!.y - 176 }
+        );
+
+        await expect(popup).toHaveAttribute('data-swiping', '');
+        const bleedHeight = await popup.evaluate((element) =>
+            Number.parseFloat(getComputedStyle(element, '::after').height)
+        );
+        const movement = await popup.evaluate((element) =>
+            Math.abs(new DOMMatrixReadOnly(getComputedStyle(element).transform).m42)
+        );
+
+        expect(movement).toBeGreaterThan(48);
+        expect(bleedHeight).toBeGreaterThanOrEqual(movement + 47.5);
+
+        await page.evaluate(() => {
+            window.dispatchEvent(
+                new PointerEvent('pointerup', {
+                    bubbles: true,
+                    button: 0,
+                    clientX: 0,
+                    clientY: 0,
+                    isPrimary: true,
+                    pointerId: 1
+                })
+            );
+        });
+
+        await page.waitForTimeout(75);
+
+        const settlingBleedHeight = await popup.evaluate((element) =>
+            Number.parseFloat(getComputedStyle(element, '::after').height)
+        );
+        const settlingMovement = await popup.evaluate((element) =>
+            Math.abs(new DOMMatrixReadOnly(getComputedStyle(element).transform).m42)
+        );
+
+        expect(settlingMovement).toBeGreaterThan(0);
+        expect(settlingBleedHeight).toBeGreaterThanOrEqual(settlingMovement + 47.5);
+    });
+});
+
 test.describe('Drawer indent effect', () => {
     test('scales the page and follows the closing swipe progress', async ({ page }) => {
         await gotoStory(page, 'primitives-drawer--page-scale');

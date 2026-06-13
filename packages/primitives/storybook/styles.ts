@@ -201,19 +201,23 @@ export const demoDrawer = {
     ),
     side: {
         bottom: cn(
-            'inset-x-0 bottom-0 max-h-[90vh] rounded-t-2xl border-t border-border',
+            'inset-x-0 bottom-0 max-h-[90vh] rounded-t-2xl border-t border-b-0 border-border',
+            'after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-[calc(3rem+max(0px,calc(-1*var(--drawer-swipe-movement-y))))] after:border-0 after:bg-[inherit] after:transition-[height] after:duration-300 after:ease after:content-[""] data-[swiping]:after:duration-0',
             'data-[state=open]:animate-drawer-in-bottom data-[state=closed]:animate-drawer-out-bottom'
         ),
         top: cn(
             'inset-x-0 top-0 max-h-[90vh] rounded-b-2xl border-b border-border',
+            'after:pointer-events-none after:absolute after:inset-x-0 after:bottom-full after:h-[calc(3rem+max(0px,var(--drawer-swipe-movement-y)))] after:border-0 after:bg-[inherit] after:transition-[height] after:duration-300 after:ease after:content-[""] data-[swiping]:after:duration-0',
             'data-[state=open]:animate-drawer-in-top data-[state=closed]:animate-drawer-out-top'
         ),
         left: cn(
             'inset-y-0 left-0 w-80 max-w-[90vw] rounded-r-2xl border-r border-border',
+            'after:pointer-events-none after:absolute after:inset-y-0 after:right-full after:w-[calc(3rem+max(0px,var(--drawer-swipe-movement-x)))] after:border-0 after:bg-[inherit] after:transition-[width] after:duration-300 after:ease after:content-[""] data-[swiping]:after:duration-0',
             'data-[state=open]:animate-drawer-in-left data-[state=closed]:animate-drawer-out-left'
         ),
         right: cn(
             'inset-y-0 right-0 w-80 max-w-[90vw] rounded-l-2xl border-l border-border',
+            'after:pointer-events-none after:absolute after:inset-y-0 after:left-full after:w-[calc(3rem+max(0px,calc(-1*var(--drawer-swipe-movement-x))))] after:border-0 after:bg-[inherit] after:transition-[width] after:duration-300 after:ease after:content-[""] data-[swiping]:after:duration-0',
             'data-[state=open]:animate-drawer-in-right data-[state=closed]:animate-drawer-out-right'
         )
     },
