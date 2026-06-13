@@ -75,7 +75,7 @@ Implementation note: `inject(HOST_TAG_NAME)` throws on synthetic hosts; guard wi
 `inject(HOST_TAG_NAME, { optional: true })` wherever a part can legally sit on `ng-template` or a
 component host. Checks must be cheap (constructor-time string compares) and must not read layout.
 
-**Explicitly deferred, not part of this ADR:** _adaptive_ ARIA (automatically adding
+Explicitly deferred, not part of this ADR:\*\* _adaptive_ ARIA (automatically adding
 `role="button"`/`tabindex="0"` on non-button triggers, as Base UI's render-prop components do).
 That is a per-part behavior change with its own WAI-ARIA review and spec updates; if wanted, it
 graduates from these warnings part-by-part in a follow-up.
