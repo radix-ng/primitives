@@ -3733,7 +3733,7 @@
             {
               "name": "delay",
               "type": "number | undefined",
-              "default": "undefined",
+              "default": "100",
               "description": "Delay before hover opens the menu, in milliseconds."
             },
             {

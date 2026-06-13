@@ -62,6 +62,24 @@ class BasicMenuComponent {
 @Component({
     imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
     template: `
+        <div #root="rdxMenuRoot" rdxMenuRoot>
+            <button openOnHover rdxMenuTrigger>Open</button>
+
+            @if (root.open()) {
+                <div rdxMenuPositioner>
+                    <div rdxMenuPopup>
+                        <button rdxMenuItem>Item</button>
+                    </div>
+                </div>
+            }
+        </div>
+    `
+})
+class HoverMenuComponent {}
+
+@Component({
+    imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
+    template: `
         <div #root="rdxMenuRoot" [modal]="false" rdxMenuRoot>
             <button rdxMenuTrigger>Open</button>
 
@@ -349,6 +367,23 @@ describe('Menu', () => {
             fixture.detectChanges();
 
             expect(fixture.componentInstance.open).toBe(true);
+        });
+
+        it('opens on hover after the default 100ms delay', async () => {
+            const hoverFixture = TestBed.createComponent(HoverMenuComponent);
+            hoverFixture.detectChanges();
+            const hoverTrigger: HTMLButtonElement = hoverFixture.nativeElement.querySelector('[rdxMenuTrigger]');
+            const pointerEnter = new Event('pointerenter');
+            Object.defineProperty(pointerEnter, 'pointerType', { value: 'mouse' });
+            hoverTrigger.dispatchEvent(pointerEnter);
+
+            await new Promise((resolve) => setTimeout(resolve, 50));
+            hoverFixture.detectChanges();
+            expect(hoverTrigger.getAttribute('aria-expanded')).toBe('false');
+
+            await new Promise((resolve) => setTimeout(resolve, 70));
+            hoverFixture.detectChanges();
+            expect(hoverTrigger.getAttribute('aria-expanded')).toBe('true');
         });
     });
 

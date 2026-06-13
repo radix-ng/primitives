@@ -1,3 +1,4 @@
+import { isPlatformBrowser } from '@angular/common';
 import {
     booleanAttribute,
     computed,
@@ -7,12 +8,14 @@ import {
     ElementRef,
     inject,
     input,
-    numberAttribute
+    numberAttribute,
+    PLATFORM_ID
 } from '@angular/core';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
 import { RdxDismissableLayersContextToken } from '@radix-ng/primitives/dismissable-layer';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { injectRdxMenuRootContext } from './menu-root';
+import { applyPointerTunnel, createSafePolygonHandler, hasOpenChildSubmenu, MenuSide } from './menu-safe-polygon';
 
 const numberOrUndefined = (value: NumberInput | undefined) => (value == null ? undefined : numberAttribute(value));
 
@@ -38,6 +41,7 @@ const numberOrUndefined = (value: NumberInput | undefined) => (value == null ? u
         '[style.pointer-events]': 'rootContext.isOpen() && rootContext.modal() ? "auto" : undefined',
         '(click)': 'handleClick()',
         '(pointerenter)': 'handlePointerEnter($event)',
+        '(pointermove)': 'handlePointerMove($event)',
         '(pointerleave)': 'handlePointerLeave($event)',
         '(keydown.arrowdown)': 'handleArrowDown($event)',
         '(keydown.arrowup)': 'handleArrowUp($event)',
@@ -55,8 +59,11 @@ export class RdxMenuTrigger {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly destroyRef = inject(DestroyRef);
     private readonly dismissableLayersContext = inject(RdxDismissableLayersContextToken);
+    private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
     private openTimer: ReturnType<typeof setTimeout> | undefined;
     private closeTimer: ReturnType<typeof setTimeout> | undefined;
+    private lastPointer: { x: number; y: number } | null = null;
+    private openedByHover = false;
 
     /** Whether this trigger should be treated as a native button. Auto-detected for `<button>`. */
     readonly nativeButton = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
@@ -68,7 +75,7 @@ export class RdxMenuTrigger {
     readonly openOnHover = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /** Delay before hover opens the menu, in milliseconds. */
-    readonly delay = input<number | undefined, NumberInput | undefined>(undefined, { transform: numberOrUndefined });
+    readonly delay = input<number | undefined, NumberInput | undefined>(100, { transform: numberOrUndefined });
 
     /** Delay before hover leave closes the menu, in milliseconds. */
     readonly closeDelay = input<number | undefined, NumberInput | undefined>(undefined, {
@@ -86,6 +93,46 @@ export class RdxMenuTrigger {
             const el = this.elementRef.nativeElement;
             const unregister = this.rootContext.registerTrigger(el);
             onCleanup(unregister);
+        });
+
+        effect((onCleanup) => {
+            const open = this.rootContext.isOpen();
+            const popup = this.rootContext.popupElement();
+
+            if (!open) {
+                this.openedByHover = false;
+                this.lastPointer = null;
+                return;
+            }
+
+            if (!popup || !this.openedByHover || !this.lastPointer || !this.isBrowser) {
+                return;
+            }
+
+            const trigger = this.elementRef.nativeElement;
+            let removeTunnel: (() => void) | undefined = applyPointerTunnel(document.body, trigger, popup);
+            const { handler, dispose } = createSafePolygonHandler({
+                reference: trigger,
+                floating: popup,
+                side: () => (popup.getAttribute('data-side') as MenuSide) ?? 'bottom',
+                x: this.lastPointer.x,
+                y: this.lastPointer.y,
+                onClose: () => this.scheduleClose(),
+                cancelClose: () => this.clearCloseTimer(),
+                hasOpenChild: () => hasOpenChildSubmenu(trigger, popup),
+                onLanded: () => {
+                    removeTunnel?.();
+                    removeTunnel = undefined;
+                }
+            });
+
+            document.addEventListener('mousemove', handler);
+            onCleanup(() => {
+                document.removeEventListener('mousemove', handler);
+                dispose();
+                removeTunnel?.();
+                this.clearCloseTimer();
+            });
         });
 
         // Keep coordinated triggers and the active trigger of a modal menu interactive. Registering
@@ -121,6 +168,7 @@ export class RdxMenuTrigger {
             return;
         }
 
+        this.openedByHover = false;
         this.rootContext.toggle();
     }
 
@@ -186,15 +234,18 @@ export class RdxMenuTrigger {
 
         this.clearCloseTimer();
         this.clearOpenTimer();
+        this.lastPointer = { x: event.clientX, y: event.clientY };
 
-        const delay = this.delay() ?? 0;
+        const delay = this.delay() ?? 100;
         if (delay <= 0) {
+            this.openedByHover = true;
             this.rootContext.show();
             return;
         }
 
         this.openTimer = setTimeout(() => {
             this.openTimer = undefined;
+            this.openedByHover = true;
             this.rootContext.show();
         }, delay);
     }
@@ -205,14 +256,22 @@ export class RdxMenuTrigger {
         }
 
         this.clearOpenTimer();
-        this.clearCloseTimer();
+        this.lastPointer = { x: event.clientX, y: event.clientY };
 
-        const closeDelay = this.closeDelay() ?? 0;
-        if (closeDelay <= 0) {
-            this.rootContext.close();
-            return;
+        if (!this.rootContext.isOpen() || !this.openedByHover) {
+            this.scheduleClose();
         }
+    }
 
+    protected handlePointerMove(event: PointerEvent): void {
+        if (event.pointerType !== 'touch' && this.openOnHover()) {
+            this.lastPointer = { x: event.clientX, y: event.clientY };
+        }
+    }
+
+    private scheduleClose(): void {
+        this.clearCloseTimer();
+        const closeDelay = this.closeDelay() ?? 0;
         this.closeTimer = setTimeout(() => {
             this.closeTimer = undefined;
             this.rootContext.close();
