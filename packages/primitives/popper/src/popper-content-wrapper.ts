@@ -1,4 +1,3 @@
-import { isPlatformBrowser } from '@angular/common';
 import {
     afterNextRender,
     afterRenderEffect,
@@ -14,7 +13,6 @@ import {
     linkedSignal,
     numberAttribute,
     output,
-    PLATFORM_ID,
     Provider,
     resource,
     signal,
@@ -36,7 +34,6 @@ import {
 import { BooleanInput, createContext, elementSize, NumberInput, watch } from '@radix-ng/primitives/core';
 import { RdxPopper } from './popper';
 import { RdxPopperArrow } from './popper-arrow';
-import { RdxPopperContent } from './popper-content';
 import { RdxPopperContentConfigToken } from './popper-content.config';
 import { Align, isNotNull, Side, transformOrigin } from './utils';
 
@@ -85,7 +82,6 @@ export class RdxPopperContentWrapper {
     private readonly injector = inject(Injector);
 
     private readonly context = inject(RdxPopper);
-    private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
     /** Optional positioning defaults provided by a composing primitive (e.g. tooltip). */
     private readonly config = inject(RdxPopperContentConfigToken);
@@ -361,21 +357,6 @@ export class RdxPopperContentWrapper {
      */
     readonly placedAlign = computed(() => this.placement()?.align);
 
-    private readonly contentElementRef = contentChild.required<RdxPopperContent, ElementRef<HTMLElement>>(
-        RdxPopperContent,
-        {
-            read: ElementRef
-        }
-    );
-
-    protected readonly contentZIndex = computed(() => {
-        if (!this.isBrowser) {
-            return 0;
-        }
-
-        return getComputedStyle(this.contentElementRef().nativeElement).zIndex;
-    });
-
     protected readonly style = computed(() => {
         const pos = this.resolvedPosition();
         const x = pos?.x;
@@ -387,7 +368,9 @@ export class RdxPopperContentWrapper {
             position: this.positionStrategy(),
             transform: ready ? '' : 'translate(0, -200%)', // keep off the page when measuring
             minWidth: 'max-content',
-            zIndex: this.contentZIndex(),
+            // ADR 0012 §3: z-index belongs on the positioner (set it via a class/style on the
+            // positioner element), Base UI-aligned. The wrapper no longer copies the popup's computed
+            // z-index, so a positioner no longer requires an inner `RdxPopperContent` to exist.
             top: Number.isFinite(y) ? `${y}px` : '',
             left: Number.isFinite(x) ? `${x}px` : '',
             '--radix-popper-transform-origin': [

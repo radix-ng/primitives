@@ -63,28 +63,26 @@ headless `data-disabled` attribute, so it pairs directly with `RdxButtonDirectiv
 See the **Primitives/Button** story for the live reference. Other primitives are migrated onto this
 layer in follow-up changes.
 
-## Positioning popups: put `z-index` on the popup, not the positioner
+## Positioning popups: put `z-index` on the positioner
 
 Popper-based popups (Combobox, Select, Popover, Menu, Tooltip, …) render a **positioner** wrapper
-(`RdxPopperContentWrapper`) around the **popup** content (`RdxPopperContent`). The positioner copies
-the popup's computed `z-index` onto itself via an inline style — so it can sit above sibling layers —
-and that inline value **overrides any `z-index` class you put on the positioner**.
+(`RdxPopperContentWrapper`) around the **popup** content (`RdxPopperContent`). The positioner is the
+element teleported into the body and given a `position: fixed`/`absolute`, so it is the natural owner
+of the stacking `z-index` — Base UI places it there too.
 
-Practical rule: **set the stacking `z-*` on the popup element, not the positioner.**
+Practical rule: **set the stacking `z-*` on the positioner element, not the popup.**
 
 ```html
-<!-- ✅ z on the popup -->
-<div rdxComboboxPositioner class="w-64">
-  <div rdxComboboxPopup class="z-50 …">…</div>
-</div>
-
-<!-- ❌ z on the positioner is overwritten to `auto` (the popup has no z), so a backdrop/overlay
-        with a higher z ends up on top and swallows clicks -->
+<!-- ✅ z on the positioner -->
 <div rdxComboboxPositioner class="z-50 w-64">
   <div rdxComboboxPopup class="…">…</div>
 </div>
 ```
 
-This matters most in **modal** mode: a `Backdrop` (e.g. `z-40`) must sit *below* the popup. If the
-popup's z lands on the wrong element, the backdrop covers the popup and items become unclickable.
-The shared `demoCombobox` constants already place `z-50` on `popup` for this reason.
+This matters most in **modal** mode: a `Backdrop` (e.g. `z-40`) must sit *below* the popup. Putting
+the `z-*` on the positioner keeps the whole popup above the backdrop.
+
+> **Migration (ADR 0012).** Earlier versions copied the popup's computed `z-index` onto the
+> positioner, so the guidance was the inverse ("put `z-*` on the popup"). The positioner no longer
+> copies anything; if you set the stacking `z-*` on the popup, move it up one element to the
+> positioner. The shared `demoCombobox` constants now place `z-50` on `positioner` for this reason.

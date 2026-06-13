@@ -1,6 +1,6 @@
 # ADR 0012: Thin positioners — single-source popper inputs, unified CSS variables, z-index decoupling
 
-- Status: Accepted — Phases 1–3 landed (spike, wrapper unification, all 9 positioners on inheritance); Phase 4 (z-index) pending
+- Status: Accepted — all phases landed (1 spike, 2 wrapper unification, 3 inheritance ×9, 4 z-index decoupling)
 - Date: 2026-06-13
 - Decision owners: Radix NG maintainers
 - Related: ADR 0002 (popper arrow Base UI alignment), ADR 0010 (anatomy flattening),
@@ -200,7 +200,19 @@ align: 'start' })`. Added a `provideRdxPopperContentWrapper(positioner)` helper 
      no open-state baseline (their 4px/align shift is the documented fix). `api-contract.json` defaults
      now match every config exactly (the drift-bug regression test). No theming docs referenced these
      vars, so no doc churn.
-4. **z-index decoupling** (§3) — last, isolated, with the migration note.
+4. ✅ **z-index decoupling (§3) — DONE.** Removed `contentChild.required(RdxPopperContent)`,
+   `contentZIndex`, and the `zIndex` entry from the wrapper's `style()` (plus the now-unused
+   `isBrowser`/`PLATFORM_ID`/`isPlatformBrowser`/`RdxPopperContent` imports). z-index now lives on the
+   positioner. In-repo sweep: moved `z-50` from popup→positioner in `demoCombobox` (combobox +
+   autocomplete) and `z-[100]` popup→positioner in the 4 popper-mode select stories (the 2
+   item-aligned stories were never copied — left alone). Migration note added to
+   `storybook/styling.docs.mdx` (the section that taught the inverse now documents the new contract +
+   an ADR-0012 migration callout) and CLAUDE.md. Verified: build + lint + unit (popper/select/
+   combobox/autocomplete/tooltip) green; `overlays.visual` (all open overlays) + behavior specs (33)
+   **unchanged** — popover/tooltip/menu/nav-menu positioners that previously had their `z-50` class
+   silently overridden to the popup's `auto` now correctly apply `z-50`, but single-overlay stacking
+   is identical (fixed + last-in-body). The positioner no longer requires an inner `RdxPopperContent`
+   — the `contentChild.required` open-time crash is gone.
 
 ## Testing
 

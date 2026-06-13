@@ -570,10 +570,11 @@ export const demoCombobox = {
     /** Transparent — just an invisible click-catcher so a click outside the popup dismisses while
      * the page is inert. Add a `bg-*` for a dimmed (dialog-like) modal instead. */
     backdrop: 'fixed inset-0 z-40 pointer-events-auto',
-    // The popper copies the popup's (content) z-index onto the positioner, so the z lives on `popup`.
-    positioner: 'w-64 data-[closed]:pointer-events-none',
+    // ADR 0012 §3: z-index belongs on the positioner (Base UI-aligned); the popper no longer copies
+    // the popup's z onto it.
+    positioner: 'z-50 w-64 data-[closed]:pointer-events-none',
     popup: cn(
-        'z-50 mt-2 max-h-60 overflow-y-auto rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md',
+        'mt-2 max-h-60 overflow-y-auto rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md',
         'data-[closed]:hidden'
     ),
     list: 'flex flex-col',
