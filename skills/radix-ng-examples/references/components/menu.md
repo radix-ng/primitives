@@ -455,8 +455,8 @@ export class RdxMenuArrowExampleComponent {
 ### Backdrop
 
 Add `rdxMenuBackdrop` as a sibling root before the positioner inside an explicit
-`<ng-template rdxMenuPortal>` to render an overlay behind the popup. Set `[modal]="true"` on
-`rdxMenuRoot` to block outside pointer events.
+`<ng-template rdxMenuPortal>` to render an overlay behind the popup. Menus are modal by default,
+blocking outside pointer events and page scrolling; set `[modal]="false"` to opt out.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';

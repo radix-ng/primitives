@@ -3615,8 +3615,8 @@
             {
               "name": "modal",
               "type": "boolean",
-              "default": "false",
-              "description": "Whether the menu should block outside interactions."
+              "default": "true",
+              "description": "Whether the menu should block outside interactions and page scrolling.\nNested menus are always non-modal."
             },
             {
               "name": "open",

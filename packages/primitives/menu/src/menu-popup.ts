@@ -1,5 +1,6 @@
 import { computed, DestroyRef, Directive, effect, ElementRef, inject, signal } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
+import { useScrollLock } from '@radix-ng/primitives/core';
 import {
     provideRdxDismissableLayerConfig,
     RdxDismissableLayer,
@@ -102,6 +103,10 @@ export class RdxMenuPopup {
     readonly closeAutoFocus = outputFromObservable(outputToObservable(this.focusScope.unmountAutoFocus));
 
     constructor() {
+        // Keep the page locked for the popup's whole mounted lifetime, including exit animations.
+        // Nested menus expose an effective non-modal value from their root context.
+        useScrollLock(this.rootContext.modal);
+
         const unregister = this.rootContext.registerTransitionElement(this.elementRef.nativeElement);
         const unregisterPopup = this.rootContext.registerPopup(this.elementRef.nativeElement);
         inject(DestroyRef).onDestroy(() => {

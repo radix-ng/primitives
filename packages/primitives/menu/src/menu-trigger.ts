@@ -35,6 +35,7 @@ const numberOrUndefined = (value: NumberInput | undefined) => (value == null ? u
         '[attr.data-state]': 'rootContext.isOpen() ? "open" : "closed"',
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
         '[attr.data-popup-open]': 'rootContext.isOpen() ? "" : undefined',
+        '[style.pointer-events]': 'rootContext.isOpen() && rootContext.modal() ? "auto" : undefined',
         '(click)': 'handleClick()',
         '(pointerenter)': 'handlePointerEnter($event)',
         '(pointerleave)': 'handlePointerLeave($event)',
@@ -87,12 +88,14 @@ export class RdxMenuTrigger {
             onCleanup(unregister);
         });
 
-        // When a coordinator (e.g. the menubar) drives this trigger, hover-switching focuses the
-        // trigger and opens the popup without pulling focus inside it. Register the trigger as a
-        // dismissable-layer branch so that focus/pointer interactions on it are treated as "inside"
-        // and do not dismiss the just-opened popup.
+        // Keep coordinated triggers and the active trigger of a modal menu interactive. Registering
+        // them as a dismissable-layer branch prevents pointer/focus interaction on the trigger from
+        // dismissing the popup before the trigger's own click can toggle it.
         effect((onCleanup) => {
-            if (!this.rootContext.hasTriggerInteractionHandler()) {
+            if (
+                !this.rootContext.hasTriggerInteractionHandler() &&
+                !(this.rootContext.isOpen() && this.rootContext.modal())
+            ) {
                 return;
             }
 

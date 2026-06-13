@@ -20,6 +20,31 @@ test('menu teleports the positioner directly into <body> with no wrapper element
     expect(parentTag).toBe('BODY');
 });
 
+test('menu locks page scrolling by default and releases it when closed', async ({ page }) => {
+    await gotoStory(page, 'primitives-menu--default');
+
+    const htmlOverflow = () => page.locator('html').evaluate((el) => el.style.overflow);
+
+    await page.locator('[rdxMenuTrigger]').first().click();
+    await expect(page.locator('[rdxMenuPopup]')).toBeVisible();
+    expect(await htmlOverflow()).toBe('hidden');
+
+    await page.keyboard.press('Escape');
+    await expect(page.locator('[rdxMenuPopup]')).toHaveCount(0);
+    expect(await htmlOverflow()).toBe('');
+});
+
+test('modal menu trigger stays interactive and closes the open menu on click', async ({ page }) => {
+    await gotoStory(page, 'primitives-menu--default');
+
+    const trigger = page.locator('[rdxMenuTrigger]').first();
+    await trigger.click();
+    await expect(page.locator('[rdxMenuPopup]')).toBeVisible();
+
+    await trigger.click();
+    await expect(page.locator('[rdxMenuPopup]')).toHaveCount(0);
+});
+
 test('animated menu keeps the popup mounted through the exit animation, then unmounts it', async ({ page }) => {
     await gotoStory(page, 'primitives-menu--animated');
 

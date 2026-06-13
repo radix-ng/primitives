@@ -60,6 +60,24 @@ class BasicMenuComponent {
 @Component({
     imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
     template: `
+        <div #root="rdxMenuRoot" [modal]="false" rdxMenuRoot>
+            <button rdxMenuTrigger>Open</button>
+
+            @if (root.open()) {
+                <div rdxMenuPositioner>
+                    <div rdxMenuPopup>
+                        <button rdxMenuItem>Item</button>
+                    </div>
+                </div>
+            }
+        </div>
+    `
+})
+class NonModalMenuComponent {}
+
+@Component({
+    imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
+    template: `
         <div #root="rdxMenuRoot" [defaultOpen]="true" rdxMenuRoot>
             <button rdxMenuTrigger>Open</button>
 
@@ -338,6 +356,31 @@ describe('Menu', () => {
         it('has aria-orientation="vertical"', () => {
             const popup: HTMLElement = fixture.nativeElement.querySelector('[rdxMenuPopup]');
             expect(popup.getAttribute('aria-orientation')).toBe('vertical');
+        });
+
+        it('locks page scrolling by default and restores it when closed', () => {
+            expect(document.documentElement.style.overflow).toBe('hidden');
+            expect(document.body.style.overflow).toBe('hidden');
+
+            trigger.click();
+            fixture.detectChanges();
+
+            expect(document.documentElement.style.overflow).toBe('');
+            expect(document.body.style.overflow).toBe('');
+        });
+
+        it('does not lock page scrolling when modal=false', () => {
+            fixture.destroy();
+            TestBed.resetTestingModule();
+            TestBed.configureTestingModule({ imports: [NonModalMenuComponent] });
+            const nonModalFixture = TestBed.createComponent(NonModalMenuComponent);
+            nonModalFixture.detectChanges();
+
+            nonModalFixture.nativeElement.querySelector('[rdxMenuTrigger]').click();
+            nonModalFixture.detectChanges();
+
+            expect(document.documentElement.style.overflow).toBe('');
+            expect(document.body.style.overflow).toBe('');
         });
 
         it('items have role="menuitem" and tabindex="-1"', () => {
@@ -1226,6 +1269,49 @@ describe('Menu', () => {
 
             expect(subTrigger.getAttribute('aria-expanded')).toBe('true');
             expect((fixture.nativeElement as HTMLElement).querySelectorAll('[rdxMenuPopup]').length).toBe(2);
+        });
+
+        it('does not make a submenu modal when its parent menu is non-modal', () => {
+            fixture.destroy();
+
+            @Component({
+                imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem, RdxMenuSubTrigger],
+                template: `
+                    <div #root="rdxMenuRoot" [modal]="false" rdxMenuRoot>
+                        <button rdxMenuTrigger>Open</button>
+                        @if (root.open()) {
+                            <div rdxMenuPositioner>
+                                <div rdxMenuPopup>
+                                    <ng-container #sub="rdxMenuRoot" rdxMenuSubmenuRoot>
+                                        <button rdxMenuSubTrigger>Sub</button>
+                                        @if (sub.open()) {
+                                            <div rdxMenuPositioner>
+                                                <div rdxMenuPopup>
+                                                    <button rdxMenuItem>Sub item</button>
+                                                </div>
+                                            </div>
+                                        }
+                                    </ng-container>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                `
+            })
+            class NonModalParentHost {}
+
+            TestBed.resetTestingModule();
+            TestBed.configureTestingModule({ imports: [NonModalParentHost] });
+            const nonModalFixture = TestBed.createComponent(NonModalParentHost);
+            nonModalFixture.detectChanges();
+            nonModalFixture.nativeElement.querySelector('[rdxMenuTrigger]').click();
+            nonModalFixture.detectChanges();
+            nonModalFixture.nativeElement.querySelector('[rdxMenuSubTrigger]').click();
+            nonModalFixture.detectChanges();
+
+            expect(nonModalFixture.nativeElement.querySelectorAll('[rdxMenuPopup]').length).toBe(2);
+            expect(document.documentElement.style.overflow).toBe('');
+            expect(document.body.style.overflow).toBe('');
         });
 
         it('opens submenu on ArrowRight', () => {

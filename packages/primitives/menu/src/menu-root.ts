@@ -80,7 +80,7 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
     return {
         isOpen: instance.open,
         disabled: instance.disabled,
-        modal: instance.modal,
+        modal: instance.effectiveModal,
         loopFocus: instance.loopFocus,
         highlightItemOnHover: instance.highlightItemOnHover,
         orientation: instance.orientation,
@@ -138,8 +138,11 @@ export class RdxMenuRoot {
     /** Whether interactions with the menu are disabled. */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    /** Whether the menu should block outside interactions. */
-    readonly modal = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+    /**
+     * Whether the menu should block outside interactions and page scrolling.
+     * Nested menus are always non-modal.
+     */
+    readonly modal = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
 
     /** Whether keyboard navigation wraps at list boundaries. */
     readonly loopFocus = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
@@ -165,6 +168,7 @@ export class RdxMenuRoot {
     /** Whether the popup grabs focus when it opens. Set false for menubar hover-switching. */
     readonly autoFocus = signal<RdxMenuAutoFocus>('first');
     readonly isSubmenu = signal(false);
+    readonly effectiveModal = computed(() => this.modal() && !this.isSubmenu());
     readonly hasTriggerInteractionHandler = signal(false);
     readonly state = computed(() => (this.open() ? 'open' : 'closed'));
 
