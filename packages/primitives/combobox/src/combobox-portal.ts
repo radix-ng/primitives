@@ -1,4 +1,5 @@
 import { Directive, input, isDevMode } from '@angular/core';
+import { rdxDevError } from '@radix-ng/primitives/core';
 import { RdxPortalContainer, RdxPortalPresence } from '@radix-ng/primitives/portal';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
 import { injectComboboxRootContext } from './combobox-root';
@@ -41,10 +42,12 @@ export class RdxComboboxPortal {
 export class RdxComboboxPortalMisuseGuard {
     constructor() {
         if (isDevMode()) {
-            throw new Error(
-                '[rdxComboboxPortal] is now a structural directive. ' +
+            rdxDevError(
+                'combobox/portal-on-element',
+                '`rdxComboboxPortal` is now a structural directive. ' +
                     'Use `*rdxComboboxPortal` on the positioner element or `<ng-template rdxComboboxPortal>`. ' +
-                    'rdxComboboxPortalPresence has been removed. See https://radix-ng.com/components/combobox.md'
+                    'rdxComboboxPortalPresence has been removed.',
+                'components/combobox'
             );
         }
     }

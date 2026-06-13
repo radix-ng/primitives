@@ -1,5 +1,6 @@
 import { Directive, isDevMode } from '@angular/core';
 import { RdxComboboxPortal } from '@radix-ng/primitives/combobox';
+import { rdxDevError } from '@radix-ng/primitives/core';
 
 /**
  * Structural directive that teleports the autocomplete popup into a container (default
@@ -32,10 +33,12 @@ export class RdxAutocompletePortal {}
 export class RdxAutocompletePortalMisuseGuard {
     constructor() {
         if (isDevMode()) {
-            throw new Error(
-                '[rdxAutocompletePortal] is now a structural directive. ' +
+            rdxDevError(
+                'autocomplete/portal-on-element',
+                '`rdxAutocompletePortal` is now a structural directive. ' +
                     'Use `*rdxAutocompletePortal` on the positioner element or `<ng-template rdxAutocompletePortal>`. ' +
-                    'rdxAutocompletePortalPresence has been removed. See https://radix-ng.com/components/autocomplete.md'
+                    'rdxAutocompletePortalPresence has been removed.',
+                'components/autocomplete'
             );
         }
     }

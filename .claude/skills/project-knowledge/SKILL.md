@@ -46,6 +46,7 @@ Read specific guides as needed for your task:
 - Creating branches or PRs - read [patterns.md](references/patterns.md) (Git Workflow section)
 - Investigating logs or errors - read [deployment.md](references/deployment.md) (Monitoring section)
 - Working with domain logic - read [patterns.md](references/patterns.md) (Business Rules section)
+- Reporting a misuse / adding a dev-mode warning, error, or host-element check to a primitive - read [patterns.md](references/patterns.md) (Dev-mode diagnostics section). Always go through `core/src/dev/diagnostics.ts` (`rdxDevWarning` / `rdxDevError` / `rdxCheckTriggerElement` / `rdxCheckLabelElement`) with a stable `[rdx:<primitive>/<slug>]` code — never a fresh ad-hoc `console.warn` / `throw`
 - Adopting Angular Signal Forms or touching form controls - read [signal-forms-readiness.md](references/signal-forms-readiness.md)
 
 All guides are maintained as single source of truth for project knowledge.

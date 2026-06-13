@@ -1,4 +1,5 @@
 import { Directive, isDevMode } from '@angular/core';
+import { rdxDevError } from '@radix-ng/primitives/core';
 import { RdxPortalPresence } from '@radix-ng/primitives/portal';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
 import { injectRdxPopoverRootContext } from './popover-root';
@@ -30,10 +31,12 @@ export class RdxPopoverPortal {}
 export class RdxPopoverPortalMisuseGuard {
     constructor() {
         if (isDevMode()) {
-            throw new Error(
-                '[rdxPopoverPortal] is now a structural directive. ' +
+            rdxDevError(
+                'popover/portal-on-element',
+                '`rdxPopoverPortal` is now a structural directive. ' +
                     'Use `*rdxPopoverPortal` on the positioner element or `<ng-template rdxPopoverPortal>`. ' +
-                    'rdxPopoverPortalPresence has been removed. See https://radix-ng.com/components/popover.md'
+                    'rdxPopoverPortalPresence has been removed.',
+                'components/popover'
             );
         }
     }

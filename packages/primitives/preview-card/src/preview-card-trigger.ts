@@ -9,7 +9,7 @@ import {
     numberAttribute,
     untracked
 } from '@angular/core';
-import { injectId, NumberInput } from '@radix-ng/primitives/core';
+import { injectId, NumberInput, rdxCheckTriggerElement } from '@radix-ng/primitives/core';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { RdxPreviewCardHandle } from './preview-card-handle';
 import { injectRdxPreviewCardRootContext } from './preview-card-root';
@@ -85,6 +85,8 @@ export class RdxPreviewCardTrigger {
     private readonly generatedId = injectId('rdx-preview-card-trigger-');
 
     constructor() {
+        rdxCheckTriggerElement('rdxPreviewCardTrigger', 'preview-card/trigger-element', 'components/preview-card');
+
         effect((onCleanup) => {
             const handle = this.handle();
 

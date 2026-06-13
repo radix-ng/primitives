@@ -124,7 +124,7 @@ export class PresenceMachine {
                     this.send('UNMOUNT');
                 }
             },
-            { injector: host.injector }
+            { injector: host.injector, debugName: 'PresenceMachine.present' }
         );
     }
 

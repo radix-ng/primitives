@@ -1,4 +1,5 @@
 import { Directive, isDevMode } from '@angular/core';
+import { rdxDevError } from '@radix-ng/primitives/core';
 import { RdxDialogPortal } from '@radix-ng/primitives/dialog';
 
 /**
@@ -25,10 +26,12 @@ export class RdxDrawerPortal {}
 export class RdxDrawerPortalMisuseGuard {
     constructor() {
         if (isDevMode()) {
-            throw new Error(
-                '[rdxDrawerPortal] is now a structural directive. ' +
+            rdxDevError(
+                'drawer/portal-on-element',
+                '`rdxDrawerPortal` is now a structural directive. ' +
                     'Use `<ng-template rdxDrawerPortal>` around the backdrop and popup. ' +
-                    'rdxDrawerPortalPresence has been removed. See https://radix-ng.com/components/drawer.md'
+                    'rdxDrawerPortalPresence has been removed.',
+                'components/drawer'
             );
         }
     }

@@ -168,52 +168,69 @@ export class RdxPopoverRoot {
     private readonly registeredTriggers = new Map<string, RdxPopoverRegisteredTrigger>();
     private readonly viewportTriggerChange = new Set<(previous: HTMLElement, next: HTMLElement) => void>();
 
-    readonly state = computed(() => (this.open() ? 'open' : 'closed'));
+    readonly state = computed(() => (this.open() ? 'open' : 'closed'), { debugName: 'RdxPopoverRoot.state' });
 
     constructor() {
         let previousOpen = this.open();
 
-        effect(() => {
-            const defaultOpen = this.defaultOpen();
+        effect(
+            () => {
+                const defaultOpen = this.defaultOpen();
 
-            if (!this.hasAppliedDefaultOpen && defaultOpen) {
-                this.hasAppliedDefaultOpen = true;
-                this.open.set(defaultOpen);
-            }
+                if (!this.hasAppliedDefaultOpen && defaultOpen) {
+                    this.hasAppliedDefaultOpen = true;
+                    this.open.set(defaultOpen);
+                }
+            },
+            { debugName: 'RdxPopoverRoot.applyDefaultOpen' }
+        );
+
+        effect(
+            () => {
+                const defaultTriggerId = this.defaultTriggerId();
+
+                if (!this.hasAppliedDefaultTriggerId && defaultTriggerId !== null) {
+                    this.hasAppliedDefaultTriggerId = true;
+                    this.triggerId.set(defaultTriggerId);
+                }
+            },
+            { debugName: 'RdxPopoverRoot.applyDefaultTriggerId' }
+        );
+
+        effect(
+            () => {
+                const triggerId = this.triggerId();
+                untracked(() => this.syncTriggerId(triggerId));
+            },
+            { debugName: 'RdxPopoverRoot.syncTriggerId' }
+        );
+
+        effect(
+            () => {
+                const open = this.open();
+
+                if (open !== previousOpen) {
+                    previousOpen = open;
+                    untracked(() => this.transition.start(open));
+                }
+            },
+            { debugName: 'RdxPopoverRoot.startTransition' }
+        );
+
+        effect(
+            (onCleanup) => {
+                const handle = this.handle();
+
+                if (handle) {
+                    onCleanup(untracked(() => handle.registerRoot(contextFor(this))));
+                }
+            },
+            { debugName: 'RdxPopoverRoot.registerHandle' }
+        );
+
+        effect(() => this.popper.anchorOverride.set(this.trigger()), {
+            debugName: 'RdxPopoverRoot.syncAnchorOverride'
         });
-
-        effect(() => {
-            const defaultTriggerId = this.defaultTriggerId();
-
-            if (!this.hasAppliedDefaultTriggerId && defaultTriggerId !== null) {
-                this.hasAppliedDefaultTriggerId = true;
-                this.triggerId.set(defaultTriggerId);
-            }
-        });
-
-        effect(() => {
-            const triggerId = this.triggerId();
-            untracked(() => this.syncTriggerId(triggerId));
-        });
-
-        effect(() => {
-            const open = this.open();
-
-            if (open !== previousOpen) {
-                previousOpen = open;
-                untracked(() => this.transition.start(open));
-            }
-        });
-
-        effect((onCleanup) => {
-            const handle = this.handle();
-
-            if (handle) {
-                onCleanup(untracked(() => handle.registerRoot(contextFor(this))));
-            }
-        });
-
-        effect(() => this.popper.anchorOverride.set(this.trigger()));
 
         this.destroyRef.onDestroy(() => {
             this.clearHoverTimers();

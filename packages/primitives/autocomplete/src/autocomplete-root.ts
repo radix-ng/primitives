@@ -29,6 +29,7 @@ import {
     injectId,
     isItemEqualToValue,
     ItemValueComparator,
+    rdxDevWarning,
     useFilter,
     useListHighlight,
     useTransitionStatus
@@ -532,16 +533,16 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
 
         // Virtualized object values can't be labelled from the DOM — warn once in dev.
         if (isDevMode()) {
-            let warned = false;
             effect(() => {
-                if (warned || !this.virtualized() || this.itemToStringValue()) {
+                if (!this.virtualized() || this.itemToStringValue()) {
                     return;
                 }
                 if (this.items()?.some((value) => value !== null && typeof value === 'object')) {
-                    warned = true;
-                    console.warn(
-                        '[rdxAutocompleteRoot] `virtualized` with object item values needs `itemToStringValue` ' +
-                            'to render correct labels; falling back to a generic label.'
+                    rdxDevWarning(
+                        'autocomplete/virtualized-item-label',
+                        '`rdxAutocompleteRoot` `virtualized` with object item values needs `itemToStringValue` ' +
+                            'to render correct labels; falling back to a generic label.',
+                        'components/autocomplete'
                     );
                 }
             });

@@ -1,4 +1,5 @@
 import { Directive, isDevMode } from '@angular/core';
+import { rdxDevError } from '@radix-ng/primitives/core';
 import { RdxPortalPresence } from '@radix-ng/primitives/portal';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
 import { injectSelectRootContext } from './select-root';
@@ -31,10 +32,12 @@ export class RdxSelectPortal {}
 export class RdxSelectPortalMisuseGuard {
     constructor() {
         if (isDevMode()) {
-            throw new Error(
-                '[rdxSelectPortal] is now a structural directive. ' +
+            rdxDevError(
+                'select/portal-on-element',
+                '`rdxSelectPortal` is now a structural directive. ' +
                     'Use `*rdxSelectPortal` on the popup element or `<ng-template rdxSelectPortal>`. ' +
-                    'rdxSelectPortalPresence has been removed. See https://radix-ng.com/components/select.md'
+                    'rdxSelectPortalPresence has been removed.',
+                'components/select'
             );
         }
     }

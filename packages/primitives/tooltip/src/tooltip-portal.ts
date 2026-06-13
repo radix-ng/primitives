@@ -1,4 +1,5 @@
 import { Directive, isDevMode } from '@angular/core';
+import { rdxDevError } from '@radix-ng/primitives/core';
 import { RdxPortalPresence } from '@radix-ng/primitives/portal';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
 import { injectRdxTooltipContext } from './tooltip';
@@ -30,10 +31,12 @@ export class RdxTooltipPortal {}
 export class RdxTooltipPortalMisuseGuard {
     constructor() {
         if (isDevMode()) {
-            throw new Error(
-                '[rdxTooltipPortal] is now a structural directive. ' +
+            rdxDevError(
+                'tooltip/portal-on-element',
+                '`rdxTooltipPortal` is now a structural directive. ' +
                     'Use `*rdxTooltipPortal` on the positioner element or `<ng-template rdxTooltipPortal>`. ' +
-                    'rdxTooltipPortalPresence has been removed. See https://radix-ng.com/components/tooltip.md'
+                    'rdxTooltipPortalPresence has been removed.',
+                'components/tooltip'
             );
         }
     }

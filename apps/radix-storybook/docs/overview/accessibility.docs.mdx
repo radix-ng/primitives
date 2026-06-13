@@ -40,4 +40,37 @@ In many Radix Primitives, we move focus based on the interactions a user normall
 For example, in `AlertDialog`, when the modal is opened, focus is programmatically moved to a `Cancel` button
 element to anticipate a response to the prompt.
 
+## Dev-mode diagnostics
+
+A headless library fails quietly: a misused part doesn't render wrong, it just stops working — the
+popup never opens, the label is never announced, the state is never styled. To surface these mistakes,
+the primitives emit **development-only** diagnostics. All of them are stripped from production builds
+(`isDevMode()` is `false`), so they never reach your users and add no runtime cost in production.
+
+Every message is prefixed with a stable, greppable code in the form `[rdx:<primitive>/<slug>]` and
+links to the relevant docs page.
+
+**Warnings** (`console.warn`, deduplicated so each code logs at most once per page load) flag a
+recoverable mistake:
+
+| Code                                | Fires when                                                                                                  |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `field/unassociated-label`          | `rdxFieldLabel` is placed on a non-`<label>` element, so its `for` attribute can't associate the control.    |
+| `preview-card/trigger-element`      | `rdxPreviewCardTrigger` is on a non-interactive, non-focusable host (use a `<button>`/`<a>` or add `tabindex`). |
+| `autocomplete/virtualized-item-label` | `rdxAutocompleteRoot` is `virtualized` with object items but has no `itemToStringValue` to label them.       |
+
+**Errors** (thrown in dev) flag markup that cannot work at all — currently the structural portal
+guards (`<primitive>/portal-on-element`), thrown when a structural `*rdx…Portal` directive is used as a
+plain attribute on an element instead of an `ng-template`.
+
+Most parts that require a specific host element enforce it through their **selector** (e.g.
+`button[rdxSelectTrigger]`, `label[rdxLabel]`), so the mistake is caught at compile time and needs no
+runtime check.
+
+## Debugging in Angular DevTools
+
+Root state signals, computeds, and long-lived effects carry a `debugName` (e.g. `RdxPopoverRoot.state`,
+`RdxPopoverRoot.startTransition`) so they show up by name — instead of anonymous nodes — in the Angular
+DevTools signal graph and profiler.
+
 Source: [Radix UI](https://www.radix-ui.com/)

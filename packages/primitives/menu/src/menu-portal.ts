@@ -1,4 +1,5 @@
 import { Directive, isDevMode } from '@angular/core';
+import { rdxDevError } from '@radix-ng/primitives/core';
 import { RdxPortalPresence } from '@radix-ng/primitives/portal';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
 import { injectRdxMenuRootContext } from './menu-root';
@@ -30,10 +31,11 @@ export class RdxMenuPortal {}
 export class RdxMenuPortalMisuseGuard {
     constructor() {
         if (isDevMode()) {
-            throw new Error(
-                '[rdxMenuPortal] is a structural directive. ' +
-                    'Use `*rdxMenuPortal` on the positioner element or `<ng-template rdxMenuPortal>`. ' +
-                    'See https://radix-ng.com/components/menu.md'
+            rdxDevError(
+                'menu/portal-on-element',
+                '`rdxMenuPortal` is a structural directive. ' +
+                    'Use `*rdxMenuPortal` on the positioner element or `<ng-template rdxMenuPortal>`.',
+                'components/menu'
             );
         }
     }

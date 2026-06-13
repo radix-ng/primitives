@@ -3,6 +3,7 @@ export * from './src/accessor/provide-value-accessor';
 export * from './src/clamp';
 export * from './src/create-context';
 export * from './src/date-time';
+export * from './src/dev/diagnostics';
 export * from './src/handle-and-dispatch-custom-event';
 export * from './src/id-generator';
 export * from './src/item-helpers';

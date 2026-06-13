@@ -1,4 +1,5 @@
 import { Directive, isDevMode } from '@angular/core';
+import { rdxDevError } from '@radix-ng/primitives/core';
 import { RdxDialogPortal } from '@radix-ng/primitives/dialog';
 
 /**
@@ -26,10 +27,12 @@ export class RdxAlertDialogPortal {}
 export class RdxAlertDialogPortalMisuseGuard {
     constructor() {
         if (isDevMode()) {
-            throw new Error(
-                '[rdxAlertDialogPortal] is now a structural directive. ' +
+            rdxDevError(
+                'alert-dialog/portal-on-element',
+                '`rdxAlertDialogPortal` is now a structural directive. ' +
                     'Use `<ng-template rdxAlertDialogPortal>` around the backdrop and popup. ' +
-                    'rdxAlertDialogPortalPresence has been removed. See https://radix-ng.com/components/alert-dialog.md'
+                    'rdxAlertDialogPortalPresence has been removed.',
+                'components/alert-dialog'
             );
         }
     }

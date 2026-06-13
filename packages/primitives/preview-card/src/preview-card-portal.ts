@@ -1,4 +1,5 @@
 import { Directive, isDevMode } from '@angular/core';
+import { rdxDevError } from '@radix-ng/primitives/core';
 import { RdxPortalPresence } from '@radix-ng/primitives/portal';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
 import { injectRdxPreviewCardRootContext } from './preview-card-root';
@@ -31,10 +32,12 @@ export class RdxPreviewCardPortal {}
 export class RdxPreviewCardPortalMisuseGuard {
     constructor() {
         if (isDevMode()) {
-            throw new Error(
-                '[rdxPreviewCardPortal] is now a structural directive. ' +
+            rdxDevError(
+                'preview-card/portal-on-element',
+                '`rdxPreviewCardPortal` is now a structural directive. ' +
                     'Use `*rdxPreviewCardPortal` on the positioner element or `<ng-template rdxPreviewCardPortal>`. ' +
-                    'rdxPreviewCardPortalPresence has been removed. See https://radix-ng.com/components/preview-card.md'
+                    'rdxPreviewCardPortalPresence has been removed.',
+                'components/preview-card'
             );
         }
     }

@@ -2,6 +2,7 @@
 // https://github.com/unovue/reka-ui/blob/v2/packages/core/src/shared/createContext.ts
 
 import { inject, InjectionToken, Provider } from '@angular/core';
+import { docsUrl } from './dev/diagnostics';
 
 /**
  * Retrieves the context value from Angular's dependency injection.
@@ -14,12 +15,6 @@ export interface InjectContext<T> {
     (optional: true): T | null;
     (optional?: boolean): T | null;
 }
-
-/**
- * Base URL of the documentation site. Each primitive's docs are also served as plain
- * Markdown at `/<section>/<slug>.md`, which both humans and AI agents can open.
- */
-const DOCS_BASE_URL = 'https://radix-ng.com';
 
 /**
  * Creates a context with injector and provider functions for a given type
@@ -52,7 +47,7 @@ export function createContext<T>(
         const value = inject(CONTEXT_TOKEN, { optional: true });
 
         if (value == null && !optional) {
-            const docsHint = docs ? ` See ${DOCS_BASE_URL}/${docs}.md for the required part hierarchy.` : '';
+            const docsHint = docs ? ` See ${docsUrl(docs)} for the required part hierarchy.` : '';
 
             throw new Error(
                 `No \`${contextName}\` found. This part must be placed inside the directive ` +

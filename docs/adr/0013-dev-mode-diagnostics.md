@@ -1,6 +1,6 @@
 # ADR 0013: Dev-mode diagnostics & debuggability — one warning system, tag-aware checks, named signals
 
-- Status: Proposed (spec for implementation; no code yet)
+- Status: Accepted (Phases 1–2 implemented; Phase 3 `debugName` rolling — see "Implementation notes")
 - Date: 2026-06-13
 - Decision owners: Radix NG maintainers
 - Related: `packages/primitives/core/src/create-context.ts` (missing-context error + docs link),
@@ -113,6 +113,34 @@ rule. CLAUDE.md gets one line in the a11y section. `pnpm skills:build` after the
    correct element.
 3. **`debugName` sweep + conventions** (§3, §4). No runtime assertions — review-driven; the
    patterns.md rule keeps future code consistent.
+
+## Implementation notes (what shipped vs. the spec)
+
+Building Phase 2 surfaced that the spec over-estimated how many parts need a _runtime_ host check —
+most are already constrained statically, which is strictly better (compile-time, no bundle cost):
+
+- **Trigger-element check applies to far fewer parts than enumerated.** `rdxSelectTrigger`,
+  `rdxPopoverTrigger`, `rdxDialogTrigger`, `rdxDrawerTrigger`, `rdxComboboxTrigger`,
+  `rdxAutocompleteTrigger`, `rdxNavigationMenuTrigger`, etc. are scoped to `button[...]` **selectors**,
+  so a non-button host simply doesn't match — no runtime check needed. `rdxMenuTrigger` already
+  **adapts** its ARIA (`nativeButtonState()` → `role="button"`/`tabindex` on non-button hosts), so a
+  "your responsibility" warning would be wrong there. `rdxContextMenuTrigger` (any element) and
+  `rdxMenuSubTrigger` (a `menuitem`, not a button) are excluded by design. The check ships only on the
+  attribute-selector, interactive-host-assuming, non-adaptive triggers — **`rdxPreviewCardTrigger`**.
+  `rdxTooltipTrigger` was deliberately **excluded**: it can legitimately sit on a focusable composite
+  (the slider-thumb story puts it on a `<div>` wrapping the focusable `<input>`), where a tag-based
+  check false-positives. The helper skips hosts that opt into focus with `tabindex`.
+- **Label check applies only to `rdxFieldLabel`.** `RdxLabelDirective` is scoped to `label[rdxLabel]`
+  (selector-enforced). `rdxFieldLabel` is attribute-selector and associates purely via `for`/`id`
+  (Field has no `aria-labelledby` fallback), so on a non-`<label>` the association silently breaks —
+  exactly the `field/unassociated-label` warning.
+- **Phase 2 §2 third bullet (tag-aware wording on the portal misuse errors) was dropped** as
+  low-value churn; the migrated `rdxDevError` codes already make those errors greppable.
+- **Phase 3 `debugName` is rolling, not a single sweep.** Applied to the shared `PresenceMachine`
+  effect and to `RdxPopoverRoot` (state computed + all five constructor effects) as the worked
+  example the `patterns.md` convention points to; remaining roots adopt it as they're touched.
+  `afterRenderEffect` (e.g. `RdxPopperContentWrapper`) was left alone — its options don't take a
+  `debugName`.
 
 ## Rejected alternatives
 

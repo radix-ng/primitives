@@ -390,6 +390,7 @@ Prefer the package.json scripts above over ad-hoc shell, and keep commands match
 - Support keyboard navigation (`arrowDown`, `arrowUp`, `home`, `end`, `enter`, `space`) via `(keydown.*)` host listeners.
 - Use `useArrowNavigation` from `@radix-ng/primitives/core` for list navigation.
 - Support `dir` input (`'ltr' | 'rtl'`) for bidirectional text.
+- Surface misuse with the dev-mode diagnostics helpers (ADR 0013) — `rdxDevWarning` / `rdxDevError` (stable `[rdx:<primitive>/<slug>]` codes) and the `rdxCheckTriggerElement` / `rdxCheckLabelElement` host-element checks in `core/src/dev/diagnostics.ts`. Add new checks here, not as ad-hoc `console.warn`/`throw`. See `patterns.md` → "Dev-mode diagnostics".
 
 ## Key utilities from `@radix-ng/primitives/core`
 
@@ -398,3 +399,4 @@ Prefer the package.json scripts above over ad-hoc shell, and keep commands match
 - `DataOrientation` — `'horizontal' | 'vertical'`
 - `AcceptableValue` — `string | Record<string, any> | null`
 - `isNullish(v)` — null/undefined check
+- `rdxDevWarning` / `rdxDevError` / `rdxCheckTriggerElement` / `rdxCheckLabelElement` — dev-mode diagnostics (ADR 0013); `docsUrl(path)` builds a `radix-ng.com/<path>.md` link
