@@ -3,8 +3,8 @@ import { playwright } from '@vitest/browser-playwright';
 import { writeFileSync } from 'node:fs';
 import { dirname, isAbsolute, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import { defineConfig } from 'vitest/config';
 
 const root = dirname(fileURLToPath(import.meta.url));
 const workspaceRoot = resolve(root, '../..');

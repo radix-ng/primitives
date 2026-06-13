@@ -171,21 +171,11 @@ export class RdxComboboxInput {
         switch (event.key) {
             case 'ArrowDown':
                 event.preventDefault();
-                this.rootContext.setKeyboardActive(true);
-                if (!open) {
-                    this.rootContext.openAndHighlight('first');
-                } else {
-                    this.rootContext.highlightNext();
-                }
+                this.rootContext.navigateByKeyboard(1);
                 break;
             case 'ArrowUp':
                 event.preventDefault();
-                this.rootContext.setKeyboardActive(true);
-                if (!open) {
-                    this.rootContext.openAndHighlight('last');
-                } else {
-                    this.rootContext.highlightPrevious();
-                }
+                this.rootContext.navigateByKeyboard(-1);
                 break;
             case 'Enter':
                 if (open) {

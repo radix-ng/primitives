@@ -143,14 +143,16 @@ and Backspace in an empty input removes the last chip.
 
 ### Async / external filtering
 
-`[filter]="null"` disables built-in matching so you can drive the list yourself (e.g. from a
-request). `RdxComboboxStatus` announces loading and result counts.
+`[filter]="null"` disables built-in matching so you can drive the list yourself from a request.
+Nothing loads until the user types — `RdxComboboxStatus` shows the "start typing" hint and announces
+loading / counts, while the just-selected item is kept available so it survives new result streams.
 
 <Canvas of={Stories.Async} />
 
 ### Async with multiple selection
 
-External filtering combined with `multiple` — results load asynchronously and picks become chips.
+External filtering combined with `multiple` — nothing loads until the user types, picks become
+chips, and already-selected people stay available as new results stream in.
 
 <Canvas of={Stories.AsyncMultiple} />
 
@@ -294,7 +296,8 @@ A selected-value chip in `multiple` mode. Provide its `value`.
 `RdxComboboxAnchor`, `RdxComboboxLabel` (registers an `aria-labelledby` target), `RdxComboboxTrigger`,
 `RdxComboboxClear`, `RdxComboboxIcon`, `RdxComboboxPortal` (structural; re-exposes `container`),
 `RdxComboboxBackdrop` (modal overlay), `RdxComboboxPopup`,
-`RdxComboboxArrow` (re-exposes `width` / `height`), `RdxComboboxList`, `RdxComboboxItemIndicator`,
+`RdxComboboxArrow` (re-exposes `width` / `height`), `RdxComboboxList` (exposes `data-empty` while no
+options match), `RdxComboboxItemIndicator`,
 `RdxComboboxGroup`, `RdxComboboxGroupLabel`,
 `RdxComboboxEmpty`, `RdxComboboxStatus`, `RdxComboboxChips`, and `RdxComboboxChipRemove` read
 everything from context and take no inputs of their own.

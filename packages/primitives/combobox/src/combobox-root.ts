@@ -123,6 +123,7 @@ const context = () => {
         closePopup: (revert = true) => root.closePopup(revert),
         setInputValue: (value: string) => root.setInputValue(value),
         openAndHighlight: (edge: 'first' | 'last') => root.openAndHighlight(edge),
+        navigateByKeyboard: (direction: 1 | -1) => root.navigateByKeyboard(direction),
         select: (item: ComboboxItemRef) => root.handleSelect(item),
         selectIndex: (index: number) => root.selectIndex(index),
         selectHighlighted: () => root.selectHighlighted(),
@@ -587,6 +588,22 @@ export class RdxComboboxRoot implements ControlValueAccessor {
         this.pendingHighlightEdge.set(edge);
     }
 
+    /**
+     * Keyboard list navigation shared by the input and the chips: opens the popup and highlights the
+     * leading/trailing edge when closed, otherwise steps the highlight. `direction` is `1` (down) or
+     * `-1` (up). Centralized so the input and chip key handlers can't drift apart.
+     */
+    navigateByKeyboard(direction: 1 | -1): void {
+        this.setKeyboardActive(true);
+        if (!this.open()) {
+            this.openAndHighlight(direction === 1 ? 'first' : 'last');
+        } else if (direction === 1) {
+            this.highlightNext();
+        } else {
+            this.highlightPrevious();
+        }
+    }
+
     /** Whether the item matches the active query (ignores the `limit` cap). */
     private matchesFilter(item: ComboboxItemRef): boolean {
         const filter = this.filter();
@@ -867,8 +884,13 @@ export class RdxComboboxRoot implements ControlValueAccessor {
     }
 
     clearSelection(): void {
-        this.commitValue(this.multiple() ? [] : null);
+        // In `none` mode there is no committed value to clear — only the input text. Otherwise reset
+        // the selection. Also drop any highlight (Base UI resets the active/selected indices here).
+        if (this.mode() !== 'none') {
+            this.commitValue(this.multiple() ? [] : null);
+        }
         this.setLabel('');
+        this.clearHighlightState();
         this.focusInput();
     }
 

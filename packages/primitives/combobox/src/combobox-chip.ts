@@ -44,6 +44,14 @@ export class RdxComboboxChip {
         const index = list.indexOf(this.element);
 
         switch (event.key) {
+            case 'ArrowDown':
+            case 'ArrowUp':
+                // Leave the chips and engage the list: focus must return to the input so
+                // `aria-activedescendant` navigation works, then run the same nav as the input.
+                event.preventDefault();
+                this.rootContext.focusInput();
+                this.rootContext.navigateByKeyboard(event.key === 'ArrowDown' ? 1 : -1);
+                break;
             case 'ArrowLeft':
                 if (index > 0) {
                     event.preventDefault();

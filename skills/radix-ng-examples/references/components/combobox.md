@@ -371,56 +371,99 @@ export class ComboboxMultiple {
 
 ### Async / external filtering
 
-`[filter]="null"` disables built-in matching so you can drive the list yourself (e.g. from a
-request). `RdxComboboxStatus` announces loading and result counts.
+`[filter]="null"` disables built-in matching so you can drive the list yourself from a request.
+Nothing loads until the user types — `RdxComboboxStatus` shows the "start typing" hint and announces
+loading / counts, while the just-selected item is kept available so it survives new result streams.
 
 ```typescript
-import { Component, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown } from '@lucide/angular';
-import { demoCombobox } from '../../storybook/styles';
+import { Component, computed, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown, LucideX } from '@lucide/angular';
+import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
 
-const ALL = ['Angular', 'Astro', 'Ember', 'Lit', 'Preact', 'Qwik', 'React', 'Solid', 'Svelte', 'Vue'];
+interface DirectoryUser {
+    id: string;
+    name: string;
+    username: string;
+    email: string;
+    title: string;
+}
 
 /**
- * External filtering with `[filter]="null"`: the combobox does no matching of its own; the consumer
- * owns the rendered list. Here a fake async request populates results, and `RdxComboboxStatus`
- * announces loading / counts to assistive technology.
+ * Async search backed by a remote source: results load on input changes (`[filter]="null"`, the
+ * consumer owns the list), nothing is shown until the user types, and the just-selected item is kept
+ * available so it survives new result streams. `RdxComboboxStatus` announces loading / counts and
+ * `RdxComboboxEmpty` covers the "no matches" case — mirrors Base UI's async-single example.
  */
 @Component({
     selector: 'combobox-async',
-    imports: [_importsCombobox, LucideChevronDown, LucideCheck],
+    imports: [_importsCombobox, LucideChevronDown, LucideCheck, LucideX],
     template: `
-        <div [(value)]="value" [filter]="null" (onInputValueChange)="search($event)" rdxComboboxRoot>
-            <div [class]="c.control">
-                <input [class]="c.input" rdxComboboxInput placeholder="Search frameworks…" aria-label="Framework" />
-                <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
-                    <svg lucideChevronDown size="16"></svg>
-                </button>
+        <div
+            [(value)]="value"
+            [items]="items()"
+            [itemToStringLabel]="labelOf"
+            [filter]="null"
+            (onValueChange)="onValueChange()"
+            (onInputValueChange)="search($event)"
+            (onOpenChangeComplete)="onOpenChangeComplete($event)"
+            by="id"
+            rdxComboboxRoot
+        >
+            <div class="flex flex-col gap-1">
+                <label class="text-foreground text-sm font-medium" for="async-reviewer">Assign reviewer</label>
+                <div [class]="c.control">
+                    <input id="async-reviewer" [class]="input" rdxComboboxInput placeholder="e.g. Michael" />
+                    @if (value()) {
+                        <button [class]="c.clear" rdxComboboxClear aria-label="Clear selection">
+                            <svg lucideX size="14"></svg>
+                        </button>
+                    }
+                    <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                        <svg lucideChevronDown size="16"></svg>
+                    </button>
+                </div>
             </div>
 
             <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" rdxComboboxPopup>
-                    <div class="text-muted-foreground px-2 py-1 text-xs" rdxComboboxStatus>
+                <div [class]="c.popup" [attr.aria-busy]="loading() ? 'true' : null" rdxComboboxPopup>
+                    <div rdxComboboxStatus>
                         @if (loading()) {
-                            Loading…
-                        } @else {
-                            {{ results().length }} results
+                            <div class="text-muted-foreground flex items-center gap-2 px-2 py-1.5 text-sm">
+                                <span
+                                    class="inline-block size-3 animate-spin rounded-full border border-current border-r-transparent"
+                                    aria-hidden="true"
+                                ></span>
+                                Searching…
+                            </div>
+                        } @else if (statusText(); as text) {
+                            <div class="text-muted-foreground px-2 py-1.5 text-sm">{{ text }}</div>
                         }
                     </div>
-                    <div [class]="c.list" rdxComboboxList aria-label="Frameworks">
-                        @for (item of results(); track item) {
-                            <div [class]="c.item" [value]="item" rdxComboboxItem>
-                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+
+                    @if (emptyMessage(); as message) {
+                        <div [class]="c.empty" rdxComboboxEmpty>{{ message }}</div>
+                    }
+
+                    <div [class]="c.list" rdxComboboxList aria-label="People">
+                        @for (user of items(); track user.id) {
+                            <div [class]="item" [value]="user" [textValue]="user.name" rdxComboboxItem>
+                                <span
+                                    class="col-start-1 mt-0.5 flex size-3.5 items-center justify-center"
+                                    rdxComboboxItemIndicator
+                                >
                                     <svg lucideCheck size="14"></svg>
                                 </span>
-                                {{ item }}
+                                <span class="col-start-2 flex flex-col gap-0.5">
+                                    <span class="text-foreground text-sm font-medium">{{ user.name }}</span>
+                                    <span class="text-muted-foreground text-xs">{{ user.email }}</span>
+                                    <span class="text-muted-foreground text-xs">
+                                        {{ '@' + user.username }} · {{ user.title }}
+                                    </span>
+                                </span>
                             </div>
                         }
                     </div>
-                    @if (!loading() && results().length === 0) {
-                        <div [class]="c.empty" rdxComboboxEmpty>Nothing found.</div>
-                    }
                 </div>
             </div>
         </div>
@@ -428,89 +471,315 @@ const ALL = ['Angular', 'Astro', 'Ember', 'Lit', 'Preact', 'Qwik', 'React', 'Sol
 })
 export class ComboboxAsync {
     protected readonly c = demoCombobox;
-    readonly value = signal<string | null>(null);
-    readonly results = signal<string[]>(ALL);
-    readonly loading = signal(false);
+    protected readonly input = cn(demoCombobox.input, 'pr-16');
+    protected readonly item = cn(
+        'relative grid cursor-default select-none grid-cols-[1rem_1fr] items-start gap-2 rounded-sm px-2 py-2 text-sm outline-none',
+        'data-[highlighted]:bg-muted'
+    );
 
+    readonly value = signal<DirectoryUser | null>(null);
+
+    /** Latest server results for the current query. */
+    private readonly searchResults = signal<DirectoryUser[]>([]);
+    /** The trimmed query text driving the search. */
+    private readonly searchValue = signal('');
+    readonly loading = signal(false);
+    private readonly error = signal<string | null>(null);
+
+    /** Render the selected user even when it isn't in the latest results, so it stays available. */
+    readonly items = computed<DirectoryUser[]>(() => {
+        const selected = this.value();
+        const results = this.searchResults();
+        if (!selected || results.some((user) => user.id === selected.id)) {
+            return results;
+        }
+        return [...results, selected];
+    });
+
+    /** Non-loading status message (loading renders a spinner separately). */
+    readonly statusText = computed<string | null>(() => {
+        if (this.error()) {
+            return this.error();
+        }
+        const query = this.searchValue().trim();
+        if (query === '') {
+            return this.value() ? null : 'Start typing to search people…';
+        }
+        if (this.searchResults().length === 0) {
+            return `No matches for "${query}".`;
+        }
+        return null;
+    });
+
+    readonly emptyMessage = computed<string | null>(() => {
+        const query = this.searchValue().trim();
+        if (query === '' || this.loading() || this.searchResults().length > 0 || this.error()) {
+            return null;
+        }
+        return 'Try a different search term.';
+    });
+
+    protected readonly labelOf = (user: DirectoryUser) => user.name;
+
+    // Selecting a value writes its label back into the input, which re-emits `onInputValueChange`;
+    // skip that single echo so it doesn't kick off a search for the just-selected name.
+    private suppressSearch = false;
+    private requestToken = 0;
     private handle: ReturnType<typeof setTimeout> | undefined;
 
+    onValueChange(): void {
+        this.searchValue.set('');
+        this.error.set(null);
+        this.suppressSearch = true;
+    }
+
+    onOpenChangeComplete(open: boolean): void {
+        // Once closed with a selection, narrow the results to just it so reopening shows it (and
+        // nothing else) until the next query streams in.
+        const selected = this.value();
+        if (!open && selected) {
+            this.searchResults.set([selected]);
+        }
+    }
+
     search(query: string): void {
+        if (this.suppressSearch) {
+            this.suppressSearch = false;
+            if (query.trim() === '') {
+                this.searchResults.set([]);
+            }
+            return;
+        }
+
+        this.searchValue.set(query);
+
+        if (query.trim() === '') {
+            // Emptying the field deselects: the clear (×) hides and the popup falls back to the
+            // pristine "start typing" state instead of keeping the previous pick around.
+            clearTimeout(this.handle);
+            this.requestToken++;
+            this.loading.set(false);
+            this.searchResults.set([]);
+            this.error.set(null);
+            this.value.set(null);
+            return;
+        }
+
+        const token = ++this.requestToken;
         this.loading.set(true);
+        this.error.set(null);
         clearTimeout(this.handle);
         this.handle = setTimeout(() => {
-            const q = query.trim().toLowerCase();
-            this.results.set(q ? ALL.filter((item) => item.toLowerCase().includes(q)) : ALL);
+            if (token !== this.requestToken) {
+                return;
+            }
+            if (query.trim() === 'will_error') {
+                this.searchResults.set([]);
+                this.error.set('Failed to fetch people. Please try again.');
+            } else {
+                this.searchResults.set(this.filterUsers(query));
+            }
             this.loading.set(false);
-        }, 300);
+        }, 350);
+    }
+
+    private filterUsers(query: string): DirectoryUser[] {
+        const q = query.trim().toLowerCase();
+        return ALL_USERS.filter(
+            (user) =>
+                user.name.toLowerCase().includes(q) ||
+                user.username.toLowerCase().includes(q) ||
+                user.email.toLowerCase().includes(q) ||
+                user.title.toLowerCase().includes(q)
+        );
     }
 }
+
+const ALL_USERS: DirectoryUser[] = [
+    {
+        id: 'leslie-alexander',
+        name: 'Leslie Alexander',
+        username: 'leslie',
+        email: 'leslie.alexander@example.com',
+        title: 'Product Manager'
+    },
+    {
+        id: 'kathryn-murphy',
+        name: 'Kathryn Murphy',
+        username: 'kathryn',
+        email: 'kathryn.murphy@example.com',
+        title: 'Marketing Lead'
+    },
+    {
+        id: 'courtney-henry',
+        name: 'Courtney Henry',
+        username: 'courtney',
+        email: 'courtney.henry@example.com',
+        title: 'Design Systems'
+    },
+    {
+        id: 'michael-foster',
+        name: 'Michael Foster',
+        username: 'michael',
+        email: 'michael.foster@example.com',
+        title: 'Engineering Manager'
+    },
+    {
+        id: 'lindsay-walton',
+        name: 'Lindsay Walton',
+        username: 'lindsay',
+        email: 'lindsay.walton@example.com',
+        title: 'Product Designer'
+    },
+    { id: 'tom-cook', name: 'Tom Cook', username: 'tom', email: 'tom.cook@example.com', title: 'Frontend Engineer' },
+    {
+        id: 'whitney-francis',
+        name: 'Whitney Francis',
+        username: 'whitney',
+        email: 'whitney.francis@example.com',
+        title: 'Customer Success'
+    },
+    {
+        id: 'jacob-jones',
+        name: 'Jacob Jones',
+        username: 'jacob',
+        email: 'jacob.jones@example.com',
+        title: 'Security Engineer'
+    },
+    {
+        id: 'arlene-mccoy',
+        name: 'Arlene McCoy',
+        username: 'arlene',
+        email: 'arlene.mccoy@example.com',
+        title: 'Data Analyst'
+    },
+    {
+        id: 'marvin-mckinney',
+        name: 'Marvin McKinney',
+        username: 'marvin',
+        email: 'marvin.mckinney@example.com',
+        title: 'QA Specialist'
+    },
+    {
+        id: 'eleanor-pena',
+        name: 'Eleanor Pena',
+        username: 'eleanor',
+        email: 'eleanor.pena@example.com',
+        title: 'Operations'
+    },
+    {
+        id: 'jerome-bell',
+        name: 'Jerome Bell',
+        username: 'jerome',
+        email: 'jerome.bell@example.com',
+        title: 'DevOps Engineer'
+    }
+];
 ```
 
 ### Async with multiple selection
 
-External filtering combined with `multiple` — results load asynchronously and picks become chips.
+External filtering combined with `multiple` — nothing loads until the user types, picks become
+chips, and already-selected people stay available as new results stream in.
 
 ```typescript
-import { Component, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown, LucideX } from '@lucide/angular';
+import { Component, computed, signal } from '@angular/core';
+import { LucideCheck, LucideX } from '@lucide/angular';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
 
-const ALL = ['Angular', 'Astro', 'Ember', 'Lit', 'Preact', 'Qwik', 'React', 'Solid', 'Svelte', 'Vue'];
+interface DirectoryUser {
+    id: string;
+    name: string;
+    username: string;
+    email: string;
+    title: string;
+}
 
-/** External filtering (`[filter]="null"`) combined with multiple selection: results load
- * asynchronously and picks become chips, while `RdxComboboxStatus` announces loading / counts. */
+/**
+ * Async search with multiple selection: results load on input changes (`[filter]="null"`, the
+ * consumer owns the list), nothing shows until the user types, picks become chips, and the
+ * already-selected people stay available while new results stream in. `RdxComboboxStatus` announces
+ * loading / counts and `RdxComboboxEmpty` covers "no matches" — mirrors Base UI's async-multiple example.
+ */
 @Component({
     selector: 'combobox-async-multiple',
-    imports: [_importsCombobox, LucideChevronDown, LucideCheck, LucideX],
+    imports: [_importsCombobox, LucideCheck, LucideX],
     template: `
-        <div [(value)]="value" [filter]="null" (onInputValueChange)="search($event)" multiple rdxComboboxRoot>
-            <div [class]="control" rdxComboboxAnchor>
-                @if (value().length) {
-                    <div [class]="c.chips" rdxComboboxChips>
-                        @for (item of value(); track item) {
-                            <span [class]="c.chip" [value]="item" rdxComboboxChip>
-                                {{ item }}
-                                <button [class]="c.chipRemove" rdxComboboxChipRemove aria-label="Remove">
-                                    <svg lucideX size="12"></svg>
-                                </button>
-                            </span>
-                        }
-                    </div>
-                }
-                <input
-                    [class]="c.inputInline"
-                    [placeholder]="value().length ? '' : 'Add frameworks…'"
-                    rdxComboboxInput
-                    aria-label="Frameworks"
-                />
-                <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
-                    <svg lucideChevronDown size="16"></svg>
-                </button>
+        <div
+            [(value)]="value"
+            [items]="items()"
+            [itemToStringLabel]="labelOf"
+            [filter]="null"
+            (onValueChange)="onValueChange($event)"
+            (onInputValueChange)="search($event)"
+            (onOpenChangeComplete)="onOpenChangeComplete($event)"
+            multiple
+            rdxComboboxRoot
+        >
+            <div class="flex flex-col gap-1">
+                <label class="text-foreground text-sm font-medium" for="async-reviewers">Assign reviewers</label>
+                <div [class]="control" rdxComboboxAnchor>
+                    @if (value().length) {
+                        <div [class]="c.chips" rdxComboboxChips>
+                            @for (user of value(); track user.id) {
+                                <span [class]="c.chip" [value]="user" rdxComboboxChip>
+                                    {{ user.name }}
+                                    <button [class]="c.chipRemove" rdxComboboxChipRemove aria-label="Remove">
+                                        <svg lucideX size="12"></svg>
+                                    </button>
+                                </span>
+                            }
+                        </div>
+                    }
+                    <input
+                        id="async-reviewers"
+                        [class]="c.inputInline"
+                        [placeholder]="value().length ? '' : 'e.g. Michael'"
+                        rdxComboboxInput
+                    />
+                </div>
             </div>
 
             <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" rdxComboboxPopup>
-                    <div class="text-muted-foreground px-2 py-1 text-xs" rdxComboboxStatus>
+                <div [class]="c.popup" [attr.aria-busy]="loading() ? 'true' : null" rdxComboboxPopup>
+                    <div rdxComboboxStatus>
                         @if (loading()) {
-                            Loading…
-                        } @else {
-                            {{ results().length }} results
+                            <div class="text-muted-foreground flex items-center gap-2 px-2 py-1.5 text-sm">
+                                <span
+                                    class="inline-block size-3 animate-spin rounded-full border border-current border-r-transparent"
+                                    aria-hidden="true"
+                                ></span>
+                                Searching…
+                            </div>
+                        } @else if (statusText(); as text) {
+                            <div class="text-muted-foreground px-2 py-1.5 text-sm">{{ text }}</div>
                         }
                     </div>
-                    <div [class]="c.list" rdxComboboxList aria-label="Frameworks">
-                        @for (item of results(); track item) {
-                            <div [class]="c.item" [value]="item" rdxComboboxItem>
-                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+
+                    @if (emptyMessage(); as message) {
+                        <div [class]="c.empty" rdxComboboxEmpty>{{ message }}</div>
+                    }
+
+                    <div [class]="c.list" rdxComboboxList aria-label="People">
+                        @for (user of items(); track user.id) {
+                            <div [class]="item" [value]="user" [textValue]="user.name" rdxComboboxItem>
+                                <span
+                                    class="col-start-1 mt-0.5 flex size-3.5 items-center justify-center"
+                                    rdxComboboxItemIndicator
+                                >
                                     <svg lucideCheck size="14"></svg>
                                 </span>
-                                {{ item }}
+                                <span class="col-start-2 flex flex-col gap-0.5">
+                                    <span class="text-foreground text-sm font-medium">{{ user.name }}</span>
+                                    <span class="text-muted-foreground text-xs">{{ user.email }}</span>
+                                    <span class="text-muted-foreground text-xs">
+                                        {{ '@' + user.username }} · {{ user.title }}
+                                    </span>
+                                </span>
                             </div>
                         }
                     </div>
-                    @if (!loading() && results().length === 0) {
-                        <div [class]="c.empty" rdxComboboxEmpty>Nothing found.</div>
-                    }
                 </div>
             </div>
         </div>
@@ -519,22 +788,225 @@ const ALL = ['Angular', 'Astro', 'Ember', 'Lit', 'Preact', 'Qwik', 'React', 'Sol
 export class ComboboxAsyncMultiple {
     protected readonly c = demoCombobox;
     protected readonly control = cn(demoCombobox.control, 'h-auto min-h-9 flex-wrap items-center gap-1 py-1 pl-1');
-    readonly value = signal<string[]>([]);
-    readonly results = signal<string[]>(ALL);
-    readonly loading = signal(false);
+    protected readonly item = cn(
+        'relative grid cursor-default select-none grid-cols-[1rem_1fr] items-start gap-2 rounded-sm px-2 py-2 text-sm outline-none',
+        'data-[highlighted]:bg-muted'
+    );
 
+    /** Selected people (rendered as chips). */
+    readonly value = signal<DirectoryUser[]>([]);
+
+    /** Latest server results for the current query. */
+    private readonly searchResults = signal<DirectoryUser[]>([]);
+    /** The query text driving the search. */
+    private readonly searchValue = signal('');
+    readonly loading = signal(false);
+    private readonly error = signal<string | null>(null);
+    /**
+     * After a pick the input clears but results stay visible for picking more — suppress the
+     * "Start typing" / "No matches" status during that window (Base UI's `blockStartStatus`).
+     */
+    private readonly blockStartStatus = signal(false);
+
+    /** Merge selected people into the results so picked chips stay available as results stream in. */
+    readonly items = computed<DirectoryUser[]>(() => {
+        const selected = this.value();
+        const results = this.searchResults();
+        if (selected.length === 0) {
+            return results;
+        }
+        const merged = [...results];
+        for (const user of selected) {
+            if (!results.some((result) => result.id === user.id)) {
+                merged.push(user);
+            }
+        }
+        return merged;
+    });
+
+    /** Non-loading status message (loading renders a spinner separately). */
+    readonly statusText = computed<string | null>(() => {
+        if (this.error()) {
+            return this.error();
+        }
+        const query = this.searchValue().trim();
+        if (query === '' && !this.blockStartStatus()) {
+            return this.value().length > 0 ? null : 'Start typing to search people…';
+        }
+        if (this.searchResults().length === 0 && !this.blockStartStatus()) {
+            return `No matches for "${query}".`;
+        }
+        return null;
+    });
+
+    readonly emptyMessage = computed<string | null>(() => {
+        const query = this.searchValue().trim();
+        if (query === '' || this.loading() || this.searchResults().length > 0 || this.error()) {
+            return null;
+        }
+        return 'Try a different search term.';
+    });
+
+    protected readonly labelOf = (user: DirectoryUser) => user.name;
+
+    // A pick writes '' back into the input, re-emitting `onInputValueChange` synchronously. Skip that
+    // echo (Base UI's `reason === 'item-press'`) so the current results stay visible for more picks.
+    // Disarmed on a microtask so paths without an echo (chip remove / Backspace) don't leak it.
+    private suppressEmptyEcho = false;
+    private requestToken = 0;
     private handle: ReturnType<typeof setTimeout> | undefined;
 
+    onValueChange(next: DirectoryUser[]): void {
+        this.searchValue.set('');
+        this.error.set(null);
+        if (next.length === 0) {
+            this.searchResults.set([]);
+            this.blockStartStatus.set(false);
+        } else {
+            this.blockStartStatus.set(true);
+        }
+        this.suppressEmptyEcho = true;
+        queueMicrotask(() => (this.suppressEmptyEcho = false));
+    }
+
+    onOpenChangeComplete(open: boolean): void {
+        // Once closed, narrow the results to just the current selection so reopening shows the picks
+        // (and nothing else) until the next query streams in.
+        if (!open) {
+            this.searchResults.set(this.value());
+            this.blockStartStatus.set(false);
+        }
+    }
+
     search(query: string): void {
-        this.loading.set(true);
+        this.searchValue.set(query);
+        // Any input change aborts a pending request.
+        const token = ++this.requestToken;
         clearTimeout(this.handle);
-        this.handle = setTimeout(() => {
-            const q = query.trim().toLowerCase();
-            this.results.set(q ? ALL.filter((item) => item.toLowerCase().includes(q)) : ALL);
+
+        if (query === '') {
+            if (this.suppressEmptyEcho) {
+                this.suppressEmptyEcho = false;
+                this.loading.set(false);
+                return;
+            }
+            // Genuine clear of the field: fall back to the selected people.
             this.loading.set(false);
-        }, 300);
+            this.searchResults.set(this.value());
+            this.error.set(null);
+            this.blockStartStatus.set(false);
+            return;
+        }
+
+        this.suppressEmptyEcho = false;
+        this.loading.set(true);
+        this.error.set(null);
+        this.handle = setTimeout(() => {
+            if (token !== this.requestToken) {
+                return;
+            }
+            if (query.trim() === 'will_error') {
+                this.searchResults.set([]);
+                this.error.set('Failed to fetch people. Please try again.');
+            } else {
+                this.searchResults.set(this.filterUsers(query));
+            }
+            this.loading.set(false);
+        }, 350);
+    }
+
+    private filterUsers(query: string): DirectoryUser[] {
+        const q = query.trim().toLowerCase();
+        return ALL_USERS.filter(
+            (user) =>
+                user.name.toLowerCase().includes(q) ||
+                user.username.toLowerCase().includes(q) ||
+                user.email.toLowerCase().includes(q) ||
+                user.title.toLowerCase().includes(q)
+        );
     }
 }
+
+const ALL_USERS: DirectoryUser[] = [
+    {
+        id: 'leslie-alexander',
+        name: 'Leslie Alexander',
+        username: 'leslie',
+        email: 'leslie.alexander@example.com',
+        title: 'Product Manager'
+    },
+    {
+        id: 'kathryn-murphy',
+        name: 'Kathryn Murphy',
+        username: 'kathryn',
+        email: 'kathryn.murphy@example.com',
+        title: 'Marketing Lead'
+    },
+    {
+        id: 'courtney-henry',
+        name: 'Courtney Henry',
+        username: 'courtney',
+        email: 'courtney.henry@example.com',
+        title: 'Design Systems'
+    },
+    {
+        id: 'michael-foster',
+        name: 'Michael Foster',
+        username: 'michael',
+        email: 'michael.foster@example.com',
+        title: 'Engineering Manager'
+    },
+    {
+        id: 'lindsay-walton',
+        name: 'Lindsay Walton',
+        username: 'lindsay',
+        email: 'lindsay.walton@example.com',
+        title: 'Product Designer'
+    },
+    { id: 'tom-cook', name: 'Tom Cook', username: 'tom', email: 'tom.cook@example.com', title: 'Frontend Engineer' },
+    {
+        id: 'whitney-francis',
+        name: 'Whitney Francis',
+        username: 'whitney',
+        email: 'whitney.francis@example.com',
+        title: 'Customer Success'
+    },
+    {
+        id: 'jacob-jones',
+        name: 'Jacob Jones',
+        username: 'jacob',
+        email: 'jacob.jones@example.com',
+        title: 'Security Engineer'
+    },
+    {
+        id: 'arlene-mccoy',
+        name: 'Arlene McCoy',
+        username: 'arlene',
+        email: 'arlene.mccoy@example.com',
+        title: 'Data Analyst'
+    },
+    {
+        id: 'marvin-mckinney',
+        name: 'Marvin McKinney',
+        username: 'marvin',
+        email: 'marvin.mckinney@example.com',
+        title: 'QA Specialist'
+    },
+    {
+        id: 'eleanor-pena',
+        name: 'Eleanor Pena',
+        username: 'eleanor',
+        email: 'eleanor.pena@example.com',
+        title: 'Operations'
+    },
+    {
+        id: 'jerome-bell',
+        name: 'Jerome Bell',
+        username: 'jerome',
+        email: 'jerome.bell@example.com',
+        title: 'DevOps Engineer'
+    }
+];
 ```
 
 ### Creatable
@@ -1174,7 +1646,8 @@ A selected-value chip in `multiple` mode. Provide its `value`.
 `RdxComboboxAnchor`, `RdxComboboxLabel` (registers an `aria-labelledby` target), `RdxComboboxTrigger`,
 `RdxComboboxClear`, `RdxComboboxIcon`, `RdxComboboxPortal` (structural; re-exposes `container`),
 `RdxComboboxBackdrop` (modal overlay), `RdxComboboxPopup`,
-`RdxComboboxArrow` (re-exposes `width` / `height`), `RdxComboboxList`, `RdxComboboxItemIndicator`,
+`RdxComboboxArrow` (re-exposes `width` / `height`), `RdxComboboxList` (exposes `data-empty` while no
+options match), `RdxComboboxItemIndicator`,
 `RdxComboboxGroup`, `RdxComboboxGroupLabel`,
 `RdxComboboxEmpty`, `RdxComboboxStatus`, `RdxComboboxChips`, and `RdxComboboxChipRemove` read
 everything from context and take no inputs of their own.

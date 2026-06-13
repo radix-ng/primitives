@@ -1589,7 +1589,7 @@
           "directive": "RdxComboboxList",
           "selector": "[rdxComboboxList]",
           "exportAs": "rdxComboboxList",
-          "description": "The listbox container for options. Carries the id referenced by the input's `aria-controls`.",
+          "description": "The listbox container for options. Carries the id referenced by the input's `aria-controls`, and\nexposes `data-empty` while no options match the current query (Base UI's `ComboboxList` empty state).",
           "inputs": [],
           "outputs": []
         },
