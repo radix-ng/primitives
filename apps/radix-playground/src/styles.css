@@ -1,0 +1,26 @@
+/*
+ * Playground global styles.
+ *
+ * The theme (semantic tokens, light/dark values, keyframes, demo utilities) is the SAME one the
+ * Storybook demos use, so the playground stays visually identical to the docs site without
+ * duplicating ~600 lines of token definitions. Single source of truth:
+ *   apps/radix-storybook/.storybook/tailwind.css
+ */
+@import '../../radix-storybook/.storybook/tailwind.css';
+
+/*
+ * Tailwind v4 content sources.
+ *
+ * Auto-detection is scoped to this app via the `base` option in `.postcssrc.json` — otherwise Tailwind
+ * scans the whole repo from the Nx cwd and picks up class-like prose in docs (e.g. a `[data-…]:flex-row`
+ * example in skills/*.md), emitting bogus utilities. The app templates are covered by that base; the
+ * shared demo-style constants live outside it (`packages/primitives/storybook/styles.ts`, re-used via
+ * `app/shared/styles.ts`), so register them explicitly.
+ */
+@source './app';
+@source '../../../packages/primitives/storybook/styles.ts';
+
+body {
+    font-family: var(--font-sans);
+    margin: 0;
+}

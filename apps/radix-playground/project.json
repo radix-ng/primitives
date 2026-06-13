@@ -1,0 +1,63 @@
+{
+    "name": "radix-playground",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "projectType": "application",
+    "prefix": "app",
+    "sourceRoot": "apps/radix-playground/src",
+    "tags": [],
+    "targets": {
+        "build": {
+            "executor": "@angular/build:application",
+            "outputs": ["{options.outputPath}"],
+            "options": {
+                "outputPath": "dist/apps/radix-playground",
+                "index": "apps/radix-playground/src/index.html",
+                "browser": "apps/radix-playground/src/main.ts",
+                "tsConfig": "apps/radix-playground/tsconfig.app.json",
+                "inlineStyleLanguage": "css",
+                "assets": [
+                    {
+                        "glob": "**/*",
+                        "input": "apps/radix-playground/public"
+                    }
+                ],
+                "styles": ["apps/radix-playground/src/styles.css"],
+                "scripts": []
+            },
+            "configurations": {
+                "production": {
+                    "budgets": [
+                        {
+                            "type": "initial",
+                            "maximumWarning": "1mb",
+                            "maximumError": "3mb"
+                        }
+                    ],
+                    "outputHashing": "all"
+                },
+                "development": {
+                    "optimization": false,
+                    "extractLicenses": false,
+                    "sourceMap": true
+                }
+            },
+            "defaultConfiguration": "production"
+        },
+        "serve": {
+            "executor": "@angular/build:dev-server",
+            "configurations": {
+                "production": {
+                    "buildTarget": "radix-playground:build:production"
+                },
+                "development": {
+                    "buildTarget": "radix-playground:build:development"
+                }
+            },
+            "defaultConfiguration": "development",
+            "continuous": true
+        },
+        "lint": {
+            "executor": "@nx/eslint:lint"
+        }
+    }
+}

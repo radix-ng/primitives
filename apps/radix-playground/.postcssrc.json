@@ -1,0 +1,7 @@
+{
+    "plugins": {
+        "@tailwindcss/postcss": {
+            "base": "apps/radix-playground"
+        }
+    }
+}
