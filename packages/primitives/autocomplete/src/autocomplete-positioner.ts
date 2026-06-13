@@ -1,55 +1,26 @@
-import { booleanAttribute, Directive, ElementRef, input, numberAttribute } from '@angular/core';
-import { Align, RdxPopperContentWrapper, Side } from '@radix-ng/primitives/popper';
+import { Directive } from '@angular/core';
+import {
+    provideRdxPopperContentConfig,
+    provideRdxPopperContentWrapper,
+    RdxPopperContentWrapper
+} from '@radix-ng/primitives/popper';
 
 /**
- * Positions the popup relative to the input anchor using the popper engine. Composes the popper
- * content wrapper directly (the same building block the combobox positioner uses) and re-exposes its
- * positioning inputs.
+ * Positions the autocomplete popup relative to the input anchor using the popper engine.
+ *
+ * A "thin" positioner (ADR 0012): it inherits the full popper positioning surface — the inputs
+ * (`side`, `sideOffset`, `align`, …), the `placed` output, and the host bindings — from
+ * {@link RdxPopperContentWrapper}, and only declares autocomplete's Base UI-aligned defaults through
+ * the config provider (the same building block the combobox positioner uses).
  *
  * @group Components
  */
 @Directive({
     selector: '[rdxAutocompletePositioner]',
     exportAs: 'rdxAutocompletePositioner',
-    hostDirectives: [
-        {
-            directive: RdxPopperContentWrapper,
-            inputs: [
-                'side',
-                'sideOffset',
-                'align',
-                'alignOffset',
-                'arrowPadding',
-                'avoidCollisions',
-                'collisionBoundary',
-                'collisionPadding',
-                'sticky',
-                'hideWhenDetached',
-                'updatePositionStrategy'
-            ]
-        }
-    ],
-    host: {
-        '[style]': `{
-            'boxSizing': 'border-box',
-            '--radix-autocomplete-content-transform-origin': 'var(--radix-popper-transform-origin)',
-            '--radix-autocomplete-content-available-width': 'var(--radix-popper-available-width)',
-            '--radix-autocomplete-content-available-height': 'var(--radix-popper-available-height)',
-            '--radix-autocomplete-trigger-width': 'var(--radix-popper-anchor-width)',
-            '--radix-autocomplete-trigger-height': 'var(--radix-popper-anchor-height)'
-        }`
-    }
+    providers: [
+        ...provideRdxPopperContentWrapper(RdxAutocompletePositioner),
+        provideRdxPopperContentConfig({ sideOffset: 4, align: 'start' })
+    ]
 })
-export class RdxAutocompletePositioner {
-    readonly side = input<Side>('bottom');
-    readonly sideOffset = input(4, { transform: numberAttribute });
-    readonly align = input<Align>('start');
-    readonly alignOffset = input(0, { transform: numberAttribute });
-    readonly arrowPadding = input(0, { transform: numberAttribute });
-    readonly avoidCollisions = input(true, { transform: booleanAttribute });
-    readonly collisionBoundary = input<ElementRef<HTMLElement> | ElementRef<HTMLElement>[]>();
-    readonly collisionPadding = input<number | Partial<Record<Side, number>>>(0);
-    readonly sticky = input<'partial' | 'always'>('partial');
-    readonly hideWhenDetached = input(false, { transform: booleanAttribute });
-    readonly updatePositionStrategy = input<'optimized' | 'always'>('optimized');
-}
+export class RdxAutocompletePositioner extends RdxPopperContentWrapper {}

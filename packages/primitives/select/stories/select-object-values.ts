@@ -66,9 +66,9 @@ interface ShippingMethod {
                     <svg class="text-muted-foreground shrink-0" lucideChevronsUpDown size="16" />
                 </button>
 
-                <div *rdxSelectPortal [sideOffset]="5" align="start" rdxSelectPositioner>
+                <div class="z-[100]" *rdxSelectPortal [sideOffset]="5" align="start" rdxSelectPositioner>
                     <div
-                        class="border-border bg-popover text-popover-foreground z-[100] min-w-[var(--radix-select-trigger-width)] rounded-lg border shadow-md will-change-[opacity,transform]"
+                        class="border-border bg-popover text-popover-foreground min-w-[var(--radix-select-trigger-width)] rounded-lg border shadow-md will-change-[opacity,transform]"
                         rdxSelectPopup
                     >
                         <div class="p-1" rdxSelectList>

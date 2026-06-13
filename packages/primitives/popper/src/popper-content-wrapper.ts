@@ -1,4 +1,3 @@
-import { isPlatformBrowser } from '@angular/common';
 import {
     afterNextRender,
     afterRenderEffect,
@@ -14,9 +13,10 @@ import {
     linkedSignal,
     numberAttribute,
     output,
-    PLATFORM_ID,
+    Provider,
     resource,
-    signal
+    signal,
+    Type
 } from '@angular/core';
 import type { ComputePositionReturn, ReferenceElement, VirtualElement } from '@floating-ui/dom';
 import {
@@ -34,7 +34,6 @@ import {
 import { BooleanInput, createContext, elementSize, NumberInput, watch } from '@radix-ng/primitives/core';
 import { RdxPopper } from './popper';
 import { RdxPopperArrow } from './popper-arrow';
-import { RdxPopperContent } from './popper-content';
 import { RdxPopperContentConfigToken } from './popper-content.config';
 import { Align, isNotNull, Side, transformOrigin } from './utils';
 
@@ -70,6 +69,11 @@ export const [injectPopperContentWrapperContext, providePopperContentWrapperCont
     providers: [providePopperContentWrapperContext(context)],
     host: {
         'data-radix-popper-content-wrapper': '',
+        // Placement state, emitted once for every positioner (ADR 0012). The popup
+        // (`RdxPopperContent`) keeps its own `data-side`/`data-align` as popup-level styling hooks.
+        '[attr.data-side]': 'placedSide()',
+        '[attr.data-align]': 'placedAlign()',
+        '[attr.data-anchor-hidden]': 'anchorHidden() ? "" : undefined',
         '[style]': 'style()'
     }
 })
@@ -78,7 +82,6 @@ export class RdxPopperContentWrapper {
     private readonly injector = inject(Injector);
 
     private readonly context = inject(RdxPopper);
-    private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
     /** Optional positioning defaults provided by a composing primitive (e.g. tooltip). */
     private readonly config = inject(RdxPopperContentConfigToken);
@@ -354,21 +357,6 @@ export class RdxPopperContentWrapper {
      */
     readonly placedAlign = computed(() => this.placement()?.align);
 
-    private readonly contentElementRef = contentChild.required<RdxPopperContent, ElementRef<HTMLElement>>(
-        RdxPopperContent,
-        {
-            read: ElementRef
-        }
-    );
-
-    protected readonly contentZIndex = computed(() => {
-        if (!this.isBrowser) {
-            return 0;
-        }
-
-        return getComputedStyle(this.contentElementRef().nativeElement).zIndex;
-    });
-
     protected readonly style = computed(() => {
         const pos = this.resolvedPosition();
         const x = pos?.x;
@@ -380,7 +368,9 @@ export class RdxPopperContentWrapper {
             position: this.positionStrategy(),
             transform: ready ? '' : 'translate(0, -200%)', // keep off the page when measuring
             minWidth: 'max-content',
-            zIndex: this.contentZIndex(),
+            // ADR 0012 §3: z-index belongs on the positioner (set it via a class/style on the
+            // positioner element), Base UI-aligned. The wrapper no longer copies the popup's computed
+            // z-index, so a positioner no longer requires an inner `RdxPopperContent` to exist.
             top: Number.isFinite(y) ? `${y}px` : '',
             left: Number.isFinite(x) ? `${x}px` : '',
             '--radix-popper-transform-origin': [
@@ -389,6 +379,17 @@ export class RdxPopperContentWrapper {
             ].join(' '),
             '--radix-popper-content-wrapper-width': `${this.elementRef.nativeElement.offsetWidth}px`,
             '--radix-popper-content-wrapper-height': `${this.elementRef.nativeElement.offsetHeight}px`,
+
+            // Unified Base UI-style variables (ADR 0012), emitted once for every positioner so
+            // consumers learn a single dialect. They alias the engine-level `--radix-popper-*` values
+            // (the `--anchor-*`/`--available-*` ones are set imperatively by the `size` middleware).
+            '--anchor-width': 'var(--radix-popper-anchor-width)',
+            '--anchor-height': 'var(--radix-popper-anchor-height)',
+            '--available-width': 'var(--radix-popper-available-width)',
+            '--available-height': 'var(--radix-popper-available-height)',
+            '--positioner-width': 'var(--radix-popper-content-wrapper-width)',
+            '--positioner-height': 'var(--radix-popper-content-wrapper-height)',
+            '--transform-origin': 'var(--radix-popper-transform-origin)',
 
             visibility: ready ? 'visible' : 'hidden',
             pointerEvents: this.nonInteractive() || !ready ? 'none' : 'auto',
@@ -427,4 +428,43 @@ export class RdxPopperContentWrapper {
             );
         });
     }
+}
+
+/**
+ * Providers a "thin" positioner that `extends RdxPopperContentWrapper` must include. Angular
+ * inherits a base directive's inputs/outputs/host bindings/queries but **not** its `providers`, so
+ * the `useExisting` alias (lets the popup and arrow resolve the subclass through the
+ * {@link RdxPopperContentWrapper} token) and the wrapper context provider (what
+ * `injectPopperContentWrapperContext()` reads) are re-declared here in one place.
+ *
+ * Combine with {@link provideRdxPopperContentConfig} for per-primitive positioning defaults:
+ *
+ * ```ts
+ * providers: [
+ *   ...provideRdxPopperContentWrapper(RdxComboboxPositioner),
+ *   provideRdxPopperContentConfig({ sideOffset: 4, align: 'start' })
+ * ]
+ * ```
+ */
+export function provideRdxPopperContentWrapper(positioner: Type<RdxPopperContentWrapper>): Provider[] {
+    return [{ provide: RdxPopperContentWrapper, useExisting: positioner }, providePopperContentWrapperContext(context)];
+}
+
+/**
+ * Deprecated per-primitive aliases of the unified popper variables (ADR 0012). Since the wrapper now
+ * emits the unified `--anchor-*` / `--available-*` / `--transform-origin` set itself, a positioner no
+ * longer hand-writes a re-namespacing `[style]` map; it spreads this helper into a host `[style]`
+ * binding only to keep the legacy `--radix-<name>-content-*` / `--radix-<name>-trigger-*` names alive
+ * for one release of consumer back-compat. Migrate to the unified set; these are removed next minor.
+ *
+ * @deprecated Use the unified `--anchor-*` / `--available-*` / `--transform-origin` variables.
+ */
+export function legacyPopperVars(name: string): Record<string, string> {
+    return {
+        [`--radix-${name}-content-transform-origin`]: 'var(--radix-popper-transform-origin)',
+        [`--radix-${name}-content-available-width`]: 'var(--radix-popper-available-width)',
+        [`--radix-${name}-content-available-height`]: 'var(--radix-popper-available-height)',
+        [`--radix-${name}-trigger-width`]: 'var(--radix-popper-anchor-width)',
+        [`--radix-${name}-trigger-height`]: 'var(--radix-popper-anchor-height)'
+    };
 }

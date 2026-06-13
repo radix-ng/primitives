@@ -55,9 +55,9 @@ import { RdxSelectValue } from '../src/select-value';
                 <svg lucideChevronDown size="16" />
             </button>
 
-            <div *rdxSelectPortal [sideOffset]="sideOffset()" [align]="align()" rdxSelectPositioner>
+            <div class="z-[100]" *rdxSelectPortal [sideOffset]="sideOffset()" [align]="align()" rdxSelectPositioner>
                 <div
-                    class="border-border bg-popover text-popover-foreground z-[100] min-w-40 rounded-lg border shadow-md will-change-[opacity,transform]"
+                    class="border-border bg-popover text-popover-foreground min-w-40 rounded-lg border shadow-md will-change-[opacity,transform]"
                     rdxSelectPopup
                 >
                     <div class="p-1" rdxSelectList>
@@ -267,9 +267,9 @@ import { RdxSelectValue } from '../src/select-value';
                 <svg lucideChevronDown size="16" />
             </button>
 
-            <div *rdxSelectPortal [sideOffset]="sideOffset()" [align]="align()" rdxSelectPositioner>
+            <div class="z-[100]" *rdxSelectPortal [sideOffset]="sideOffset()" [align]="align()" rdxSelectPositioner>
                 <div
-                    class="border-border bg-popover text-popover-foreground z-[100] min-w-40 rounded-lg border shadow-md will-change-[opacity,transform]"
+                    class="border-border bg-popover text-popover-foreground min-w-40 rounded-lg border shadow-md will-change-[opacity,transform]"
                     rdxSelectPopup
                 >
                     <div class="p-1" rdxSelectList>
@@ -386,9 +386,9 @@ import { RdxSelectValue } from '../src/select-value';
                 <svg lucideChevronDown size="16" rdxSelectIcon></svg>
             </button>
 
-            <div *rdxSelectPortal [sideOffset]="5" rdxSelectPositioner>
+            <div class="z-[100]" *rdxSelectPortal [sideOffset]="5" rdxSelectPositioner>
                 <div
-                    class="border-border bg-popover text-popover-foreground z-[100] min-w-52 rounded-lg border p-1 shadow-md"
+                    class="border-border bg-popover text-popover-foreground min-w-52 rounded-lg border p-1 shadow-md"
                     rdxSelectPopup
                 >
                     <div rdxSelectList>
@@ -507,9 +507,9 @@ interface ShippingMethod {
                     <svg class="text-muted-foreground shrink-0" lucideChevronsUpDown size="16" />
                 </button>
 
-                <div *rdxSelectPortal [sideOffset]="5" align="start" rdxSelectPositioner>
+                <div class="z-[100]" *rdxSelectPortal [sideOffset]="5" align="start" rdxSelectPositioner>
                     <div
-                        class="border-border bg-popover text-popover-foreground z-[100] min-w-[var(--radix-select-trigger-width)] rounded-lg border shadow-md will-change-[opacity,transform]"
+                        class="border-border bg-popover text-popover-foreground min-w-[var(--radix-select-trigger-width)] rounded-lg border shadow-md will-change-[opacity,transform]"
                         rdxSelectPopup
                     >
                         <div class="p-1" rdxSelectList>
@@ -613,9 +613,9 @@ import { RdxSelectValue } from '../src/select-value';
                 <svg lucideChevronDown size="16" />
             </button>
 
-            <div *rdxSelectPortal [sideOffset]="5" align="start" rdxSelectPositioner>
+            <div class="z-[100]" *rdxSelectPortal [sideOffset]="5" align="start" rdxSelectPositioner>
                 <div
-                    class="border-border bg-popover text-popover-foreground z-[100] max-h-[300px] min-w-40 overflow-hidden rounded-lg border shadow-md will-change-[opacity,transform]"
+                    class="border-border bg-popover text-popover-foreground max-h-[300px] min-w-40 overflow-hidden rounded-lg border shadow-md will-change-[opacity,transform]"
                     rdxSelectPopup
                 >
                     <div

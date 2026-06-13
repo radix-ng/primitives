@@ -56,10 +56,37 @@ const ensureCompodocJson = (workspaceRoot, primitivesRoot) => {
 // `input<T, TransformInput>()` is reported as "T, TransformInput" — keep only the value type.
 const cleanType = (type) => (type ?? '').replace(/,\s*[^,]*(?:BooleanInput|NumberInput)[^,]*$/, '').trim();
 
-// `defaultValue` is the raw `input()` argument list — drop the options object.
-const cleanDefault = (defaultValue) => {
+// Inputs inherited from `RdxPopperContentWrapper` (ADR 0012 thin positioners) default to
+// `this.config.<key> ?? <fallback>`, where `config` is the positioner's own
+// `provideRdxPopperContentConfig({...})`. Resolve to that config value (or the fallback) so the
+// published default matches runtime instead of leaking the base-class expression.
+const CONFIG_DEFAULT_RE = /^this\.config\.(\w+)\s*\?\?\s*([\s\S]+)$/;
+
+const parsePositionerConfig = (sourceCode) => {
+    const match = /provideRdxPopperContentConfig\(\s*\{([\s\S]*?)\}\s*\)/.exec(sourceCode ?? '');
+    if (!match) return {};
+
+    const config = {};
+    for (const pair of match[1].split(',')) {
+        const kv = /^\s*(\w+)\s*:\s*([\s\S]+?)\s*$/.exec(pair);
+        if (kv) config[kv[1]] = kv[2].trim();
+    }
+    return config;
+};
+
+// `defaultValue` is the raw `input()` argument list — drop the options object, then resolve any
+// inherited `this.config.<key> ?? <fallback>` against the positioner's config defaults.
+const cleanDefault = (defaultValue, config = {}) => {
     if (defaultValue === undefined) return undefined;
-    const cleaned = defaultValue.replace(/,\s*\{[\s\S]*\}\s*$/, '').trim();
+
+    let cleaned = defaultValue.replace(/,\s*\{[\s\S]*\}\s*$/, '').trim();
+
+    const inherited = CONFIG_DEFAULT_RE.exec(cleaned);
+    if (inherited) {
+        const [, key, fallback] = inherited;
+        cleaned = (config[key] ?? fallback).trim();
+    }
+
     return cleaned || undefined;
 };
 
@@ -80,6 +107,12 @@ export function generateApiContract({ workspaceRoot, primitivesRoot, skillsRoot,
         .filter((entry) => /^packages\/primitives\/(?!storybook\/)[^/]+\/src\//.test(entry.file) && entry.selector)
         .map((entry) => {
             const pkg = entry.file.match(/^packages\/primitives\/([^/]+)\//)[1];
+            // Only thin positioners (those that `extends RdxPopperContentWrapper`) carry a config
+            // override; parsing any other entry's source risks matching a `provideRdxPopperContentConfig`
+            // example in a doc comment.
+            const positionerConfig = entry.extends?.includes('RdxPopperContentWrapper')
+                ? parsePositionerConfig(entry.sourceCode)
+                : {};
             const inputNames = new Set((entry.inputsClass ?? []).map(bindingName));
             // A `model()` appears in both lists under the same name — that's the two-way set.
             const twoWay = (entry.outputsClass ?? []).map((o) => o.name).filter((name) => inputNames.has(name));
@@ -101,7 +134,7 @@ export function generateApiContract({ workspaceRoot, primitivesRoot, skillsRoot,
                         compact({
                             name: bindingName(input),
                             type: cleanType(input.type) || undefined,
-                            default: cleanDefault(input.defaultValue),
+                            default: cleanDefault(input.defaultValue, positionerConfig),
                             required: input.required || undefined,
                             deprecated: input.deprecated || undefined,
                             description: description(input)
