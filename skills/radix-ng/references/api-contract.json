@@ -520,62 +520,92 @@
           "directive": "RdxAutocompletePositioner",
           "selector": "[rdxAutocompletePositioner]",
           "exportAs": "rdxAutocompletePositioner",
-          "description": "Positions the popup relative to the input anchor using the popper engine. Composes the popper\ncontent wrapper directly (the same building block the combobox positioner uses) and re-exposes its\npositioning inputs.",
-          "hostDirectives": [
-            "RdxPopperContentWrapper"
-          ],
+          "description": "Positions the autocomplete popup relative to the input anchor using the popper engine.\n\nA \"thin\" positioner (ADR 0012): it inherits the full popper positioning surface — the inputs\n(`side`, `sideOffset`, `align`, …), the `placed` output, and the host bindings — from\n{@link RdxPopperContentWrapper}, and only declares autocomplete's Base UI-aligned defaults through\nthe config provider (the same building block the combobox positioner uses).",
           "inputs": [
             {
               "name": "align",
               "type": "Align",
-              "default": "'start'"
+              "default": "'start'",
+              "description": "How to align the popup relative to the specified side. May change when collisions occur."
             },
             {
               "name": "alignOffset",
-              "default": "0"
+              "type": "number",
+              "default": "0",
+              "description": "An offset in pixels from the `start` or `end` alignment options."
+            },
+            {
+              "name": "anchor",
+              "type": "RdxPopperAnchorElement",
+              "description": "An element to position the popup against. Defaults to the popper anchor."
             },
             {
               "name": "arrowPadding",
-              "default": "0"
+              "type": "number",
+              "default": "0",
+              "description": "Minimum distance to maintain between the arrow and the edges of the popup.\nIf your content has border-radius, this will prevent it from overflowing the corners."
             },
             {
               "name": "avoidCollisions",
-              "default": "true"
+              "type": "boolean",
+              "default": "true",
+              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges."
             },
             {
               "name": "collisionBoundary",
-              "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]"
+              "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
+              "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
             },
             {
               "name": "collisionPadding",
               "type": "number | Partial<Record<Side, number>>",
-              "default": "0"
+              "default": "0",
+              "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
             },
             {
               "name": "hideWhenDetached",
-              "default": "false"
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether to hide the content when the trigger becomes fully occluded."
+            },
+            {
+              "name": "positionStrategy",
+              "type": "\"fixed\" | \"absolute\"",
+              "default": "'fixed'",
+              "description": "The type of CSS position property to use."
             },
             {
               "name": "side",
               "type": "Side",
-              "default": "'bottom'"
+              "default": "'bottom'",
+              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled."
             },
             {
               "name": "sideOffset",
-              "default": "4"
+              "type": "number",
+              "default": "4",
+              "description": "Distance between the anchor and the popup in pixels."
             },
             {
               "name": "sticky",
               "type": "\"partial\" | \"always\"",
-              "default": "'partial'"
+              "default": "'partial'",
+              "description": "The sticky behavior on the align axis. `partial` will keep the\ncontent in the boundary as long as the trigger is at least partially\nin the boundary whilst \"always\" will keep the content in the boundary\nregardless."
             },
             {
               "name": "updatePositionStrategy",
               "type": "\"optimized\" | \"always\"",
-              "default": "'optimized'"
+              "default": "'optimized'",
+              "description": "Strategy to update the position of the floating element on every animation frame."
             }
           ],
-          "outputs": []
+          "outputs": [
+            {
+              "name": "placed",
+              "type": "void",
+              "description": "Emits when the element is placed."
+            }
+          ]
         },
         {
           "directive": "RdxAutocompleteRoot",
@@ -3335,16 +3365,13 @@
           "directive": "RdxMenuPositioner",
           "selector": "[rdxMenuPositioner]",
           "exportAs": "rdxMenuPositioner",
-          "description": "Positions the menu against its trigger.",
-          "hostDirectives": [
-            "RdxPopperContentWrapper"
-          ],
+          "description": "Positions the menu against its trigger.\n\nA \"thin\" positioner (ADR 0012): it inherits the popper positioning surface (inputs, `placed`\noutput, unified vars + placement attrs) from {@link RdxPopperContentWrapper} and adds the menu\ndefaults, the open/closed state attributes, and the deprecated `--radix-menu-*` aliases.",
           "inputs": [
             {
               "name": "align",
               "type": "Align",
-              "default": "'start'",
-              "description": "How to align the popup relative to the specified side."
+              "default": "'center'",
+              "description": "How to align the popup relative to the specified side. May change when collisions occur."
             },
             {
               "name": "alignOffset",
@@ -3355,69 +3382,75 @@
             {
               "name": "anchor",
               "type": "RdxPopperAnchorElement",
-              "description": "An element to position the popup against. Defaults to the trigger."
+              "description": "An element to position the popup against. Defaults to the popper anchor."
             },
             {
               "name": "arrowPadding",
               "type": "number",
               "default": "5",
-              "description": "Minimum distance to maintain between the arrow and the edges of the popup."
+              "description": "Minimum distance to maintain between the arrow and the edges of the popup.\nIf your content has border-radius, this will prevent it from overflowing the corners."
             },
             {
               "name": "avoidCollisions",
               "type": "boolean",
               "default": "true",
-              "description": "Whether to override side and alignment preferences to prevent collisions."
+              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges."
             },
             {
               "name": "collisionBoundary",
               "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
-              "description": "The element used as the collision boundary."
+              "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
             },
             {
               "name": "collisionPadding",
               "type": "number | Partial<Record<Side, number>>",
               "default": "5",
-              "description": "Distance in pixels from the boundary edges where collision detection should occur."
+              "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
             },
             {
               "name": "hideWhenDetached",
               "type": "boolean",
               "default": "false",
-              "description": "Whether to hide the popup when the trigger becomes fully occluded."
+              "description": "Whether to hide the content when the trigger becomes fully occluded."
             },
             {
               "name": "positionStrategy",
               "type": "\"fixed\" | \"absolute\"",
               "default": "'fixed'",
-              "description": "The CSS position strategy used by Floating UI."
+              "description": "The type of CSS position property to use."
             },
             {
               "name": "side",
               "type": "Side",
               "default": "'bottom'",
-              "description": "The preferred side of the trigger to render against when open."
+              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled."
             },
             {
               "name": "sideOffset",
               "type": "number",
               "default": "0",
-              "description": "Distance between the trigger and the popup in pixels."
+              "description": "Distance between the anchor and the popup in pixels."
             },
             {
               "name": "sticky",
               "type": "\"partial\" | \"always\"",
               "default": "'partial'",
-              "description": "The sticky behavior on the alignment axis."
+              "description": "The sticky behavior on the align axis. `partial` will keep the\ncontent in the boundary as long as the trigger is at least partially\nin the boundary whilst \"always\" will keep the content in the boundary\nregardless."
             },
             {
               "name": "updatePositionStrategy",
               "type": "\"optimized\" | \"always\"",
               "default": "'always'",
-              "description": "Whether to update position on every animation frame."
+              "description": "Strategy to update the position of the floating element on every animation frame."
             }
           ],
-          "outputs": []
+          "outputs": [
+            {
+              "name": "placed",
+              "type": "void",
+              "description": "Emits when the element is placed."
+            }
+          ]
         },
         {
           "directive": "RdxMenuRadioGroup",
@@ -3932,16 +3965,13 @@
         {
           "directive": "RdxNavigationMenuPositioner",
           "selector": "[rdxNavigationMenuPositioner]",
-          "description": "Positions the shared popup against the active trigger.",
-          "hostDirectives": [
-            "RdxPopperContentWrapper"
-          ],
+          "description": "Positions the shared popup against the active trigger.\n\nA \"thin\" positioner (ADR 0012): it inherits the popper positioning surface (inputs, `placed`\noutput, unified vars + placement attrs) from {@link RdxPopperContentWrapper} and adds the\nnavigation-menu defaults, the open/closed/instant state attributes, and the grace-area hover\nbridge. It exposes no legacy `--radix-*` aliases.",
           "inputs": [
             {
               "name": "align",
               "type": "Align",
               "default": "'center'",
-              "description": "How to align the popup relative to the specified side."
+              "description": "How to align the popup relative to the specified side. May change when collisions occur."
             },
             {
               "name": "alignOffset",
@@ -3952,69 +3982,75 @@
             {
               "name": "anchor",
               "type": "RdxPopperAnchorElement",
-              "description": "An element to position the popup against. Defaults to the active trigger."
+              "description": "An element to position the popup against. Defaults to the popper anchor."
             },
             {
               "name": "arrowPadding",
               "type": "number",
               "default": "5",
-              "description": "Minimum distance to maintain between the arrow and the edges of the popup."
+              "description": "Minimum distance to maintain between the arrow and the edges of the popup.\nIf your content has border-radius, this will prevent it from overflowing the corners."
             },
             {
               "name": "avoidCollisions",
               "type": "boolean",
               "default": "true",
-              "description": "Whether to override side and alignment preferences to prevent collisions."
+              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges."
             },
             {
               "name": "collisionBoundary",
               "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
-              "description": "The element used as the collision boundary."
+              "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
             },
             {
               "name": "collisionPadding",
               "type": "number | Partial<Record<Side, number>>",
               "default": "5",
-              "description": "Distance in pixels from the boundary edges where collision detection should occur."
+              "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
             },
             {
               "name": "hideWhenDetached",
               "type": "boolean",
               "default": "false",
-              "description": "Whether to hide the popup when the trigger becomes fully occluded."
+              "description": "Whether to hide the content when the trigger becomes fully occluded."
             },
             {
               "name": "positionStrategy",
               "type": "\"fixed\" | \"absolute\"",
               "default": "'fixed'",
-              "description": "The CSS position strategy used by Floating UI."
+              "description": "The type of CSS position property to use."
             },
             {
               "name": "side",
               "type": "Side",
               "default": "'bottom'",
-              "description": "The preferred side of the trigger to render against when open."
+              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled."
             },
             {
               "name": "sideOffset",
               "type": "number",
               "default": "0",
-              "description": "Distance between the trigger and the popup in pixels."
+              "description": "Distance between the anchor and the popup in pixels."
             },
             {
               "name": "sticky",
               "type": "\"partial\" | \"always\"",
               "default": "'partial'",
-              "description": "The sticky behavior on the alignment axis."
+              "description": "The sticky behavior on the align axis. `partial` will keep the\ncontent in the boundary as long as the trigger is at least partially\nin the boundary whilst \"always\" will keep the content in the boundary\nregardless."
             },
             {
               "name": "updatePositionStrategy",
               "type": "\"optimized\" | \"always\"",
               "default": "'always'",
-              "description": "Whether to update position on every animation frame."
+              "description": "Strategy to update the position of the floating element on every animation frame."
             }
           ],
-          "outputs": []
+          "outputs": [
+            {
+              "name": "placed",
+              "type": "void",
+              "description": "Emits when the element is placed."
+            }
+          ]
         },
         {
           "directive": "RdxNavigationMenuRoot",
@@ -4526,16 +4562,13 @@
         {
           "directive": "RdxPopoverPositioner",
           "selector": "[rdxPopoverPositioner]",
-          "description": "Positions the popover against its trigger.",
-          "hostDirectives": [
-            "RdxPopperContentWrapper"
-          ],
+          "description": "Positions the popover against its trigger.\n\nA \"thin\" positioner (ADR 0012): it inherits the popper positioning surface (inputs, `placed`\noutput, unified vars + placement attrs) from {@link RdxPopperContentWrapper} and adds popover's own\nconcerns — Base UI-aligned defaults via the config provider, the open/closed/instant state\nattributes, the deprecated `--radix-popover-*` aliases, and the grace-area hover bridge.",
           "inputs": [
             {
               "name": "align",
               "type": "Align",
               "default": "'center'",
-              "description": "How to align the popup relative to the specified side."
+              "description": "How to align the popup relative to the specified side. May change when collisions occur."
             },
             {
               "name": "alignOffset",
@@ -4546,69 +4579,75 @@
             {
               "name": "anchor",
               "type": "RdxPopperAnchorElement",
-              "description": "An element to position the popup against. Defaults to the trigger."
+              "description": "An element to position the popup against. Defaults to the popper anchor."
             },
             {
               "name": "arrowPadding",
               "type": "number",
               "default": "5",
-              "description": "Minimum distance to maintain between the arrow and the edges of the popup."
+              "description": "Minimum distance to maintain between the arrow and the edges of the popup.\nIf your content has border-radius, this will prevent it from overflowing the corners."
             },
             {
               "name": "avoidCollisions",
               "type": "boolean",
               "default": "true",
-              "description": "Whether to override side and alignment preferences to prevent collisions."
+              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges."
             },
             {
               "name": "collisionBoundary",
               "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
-              "description": "The element used as the collision boundary."
+              "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
             },
             {
               "name": "collisionPadding",
               "type": "number | Partial<Record<Side, number>>",
               "default": "5",
-              "description": "Distance in pixels from the boundary edges where collision detection should occur."
+              "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
             },
             {
               "name": "hideWhenDetached",
               "type": "boolean",
               "default": "false",
-              "description": "Whether to hide the popup when the trigger becomes fully occluded."
+              "description": "Whether to hide the content when the trigger becomes fully occluded."
             },
             {
               "name": "positionStrategy",
               "type": "\"fixed\" | \"absolute\"",
               "default": "'fixed'",
-              "description": "The CSS position strategy used by Floating UI."
+              "description": "The type of CSS position property to use."
             },
             {
               "name": "side",
               "type": "Side",
               "default": "'bottom'",
-              "description": "The preferred side of the trigger to render against when open."
+              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled."
             },
             {
               "name": "sideOffset",
               "type": "number",
               "default": "0",
-              "description": "Distance between the trigger and the popup in pixels."
+              "description": "Distance between the anchor and the popup in pixels."
             },
             {
               "name": "sticky",
               "type": "\"partial\" | \"always\"",
               "default": "'partial'",
-              "description": "The sticky behavior on the alignment axis."
+              "description": "The sticky behavior on the align axis. `partial` will keep the\ncontent in the boundary as long as the trigger is at least partially\nin the boundary whilst \"always\" will keep the content in the boundary\nregardless."
             },
             {
               "name": "updatePositionStrategy",
               "type": "\"optimized\" | \"always\"",
               "default": "'always'",
-              "description": "Whether to update position on every animation frame."
+              "description": "Strategy to update the position of the floating element on every animation frame."
             }
           ],
-          "outputs": []
+          "outputs": [
+            {
+              "name": "placed",
+              "type": "void",
+              "description": "Emits when the element is placed."
+            }
+          ]
         },
         {
           "directive": "RdxPopoverRoot",
@@ -4933,16 +4972,13 @@
         {
           "directive": "RdxPreviewCardPositioner",
           "selector": "[rdxPreviewCardPositioner]",
-          "description": "Positions the preview-card against its trigger.",
-          "hostDirectives": [
-            "RdxPopperContentWrapper"
-          ],
+          "description": "Positions the preview-card against its trigger.\n\nA \"thin\" positioner (ADR 0012): it inherits the popper positioning surface (inputs, `placed`\noutput, unified vars + placement attrs) from {@link RdxPopperContentWrapper} and adds preview-card's\nown concerns — Base UI-aligned defaults via the config provider, the open/closed/instant state\nattributes, the deprecated `--radix-preview-card-*` aliases, and the grace-area hover bridge.",
           "inputs": [
             {
               "name": "align",
               "type": "Align",
               "default": "'center'",
-              "description": "How to align the popup relative to the specified side."
+              "description": "How to align the popup relative to the specified side. May change when collisions occur."
             },
             {
               "name": "alignOffset",
@@ -4953,69 +4989,75 @@
             {
               "name": "anchor",
               "type": "RdxPopperAnchorElement",
-              "description": "An element to position the popup against. Defaults to the trigger."
+              "description": "An element to position the popup against. Defaults to the popper anchor."
             },
             {
               "name": "arrowPadding",
               "type": "number",
               "default": "5",
-              "description": "Minimum distance to maintain between the arrow and the edges of the popup."
+              "description": "Minimum distance to maintain between the arrow and the edges of the popup.\nIf your content has border-radius, this will prevent it from overflowing the corners."
             },
             {
               "name": "avoidCollisions",
               "type": "boolean",
               "default": "true",
-              "description": "Whether to override side and alignment preferences to prevent collisions."
+              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges."
             },
             {
               "name": "collisionBoundary",
               "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
-              "description": "The element used as the collision boundary."
+              "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
             },
             {
               "name": "collisionPadding",
               "type": "number | Partial<Record<Side, number>>",
               "default": "5",
-              "description": "Distance in pixels from the boundary edges where collision detection should occur."
+              "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
             },
             {
               "name": "hideWhenDetached",
               "type": "boolean",
               "default": "false",
-              "description": "Whether to hide the popup when the trigger becomes fully occluded."
+              "description": "Whether to hide the content when the trigger becomes fully occluded."
             },
             {
               "name": "positionStrategy",
               "type": "\"fixed\" | \"absolute\"",
               "default": "'fixed'",
-              "description": "The CSS position strategy used by Floating UI."
+              "description": "The type of CSS position property to use."
             },
             {
               "name": "side",
               "type": "Side",
               "default": "'bottom'",
-              "description": "The preferred side of the trigger to render against when open."
+              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled."
             },
             {
               "name": "sideOffset",
               "type": "number",
               "default": "0",
-              "description": "Distance between the trigger and the popup in pixels."
+              "description": "Distance between the anchor and the popup in pixels."
             },
             {
               "name": "sticky",
               "type": "\"partial\" | \"always\"",
               "default": "'partial'",
-              "description": "The sticky behavior on the alignment axis."
+              "description": "The sticky behavior on the align axis. `partial` will keep the\ncontent in the boundary as long as the trigger is at least partially\nin the boundary whilst \"always\" will keep the content in the boundary\nregardless."
             },
             {
               "name": "updatePositionStrategy",
               "type": "\"optimized\" | \"always\"",
               "default": "'always'",
-              "description": "Whether to update position on every animation frame."
+              "description": "Strategy to update the position of the floating element on every animation frame."
             }
           ],
-          "outputs": []
+          "outputs": [
+            {
+              "name": "placed",
+              "type": "void",
+              "description": "Emits when the element is placed."
+            }
+          ]
         },
         {
           "directive": "RdxPreviewCardRoot",
@@ -5611,28 +5653,34 @@
         {
           "directive": "RdxSelectPositioner",
           "selector": "[rdxSelectPositioner]",
-          "hostDirectives": [
-            "RdxPopperContentWrapper"
-          ],
+          "description": "Positions the select popup against the trigger using the popper engine.\n\nA \"thin\" positioner (ADR 0012): it inherits the full popper positioning surface — the inputs\n(`side`, `sideOffset`, `align`, …), the `placed` output, and the host bindings — from\n{@link RdxPopperContentWrapper}, and declares select's Base UI-aligned defaults via the config\nprovider. It also satisfies {@link RdxPositionerImpl} (via the inherited `placed`) so the popup can\nresolve it through {@link RDX_SELECT_POSITIONER_TOKEN}, the same as the item-aligned positioner.",
           "inputs": [
             {
               "name": "align",
               "type": "Align",
               "default": "'start'",
-              "description": "The preferred alignment against the anchor. May change when collisions occur."
+              "description": "How to align the popup relative to the specified side. May change when collisions occur."
             },
             {
               "name": "alignOffset",
+              "type": "number",
               "default": "0",
               "description": "An offset in pixels from the `start` or `end` alignment options."
             },
             {
+              "name": "anchor",
+              "type": "RdxPopperAnchorElement",
+              "description": "An element to position the popup against. Defaults to the popper anchor."
+            },
+            {
               "name": "arrowPadding",
+              "type": "number",
               "default": "0",
-              "description": "The padding between the arrow and the edges of the content.\nIf your content has border-radius, this will prevent it from overflowing the corners."
+              "description": "Minimum distance to maintain between the arrow and the edges of the popup.\nIf your content has border-radius, this will prevent it from overflowing the corners."
             },
             {
               "name": "avoidCollisions",
+              "type": "boolean",
               "default": "true",
               "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges."
             },
@@ -5649,8 +5697,15 @@
             },
             {
               "name": "hideWhenDetached",
+              "type": "boolean",
               "default": "false",
               "description": "Whether to hide the content when the trigger becomes fully occluded."
+            },
+            {
+              "name": "positionStrategy",
+              "type": "\"fixed\" | \"absolute\"",
+              "default": "'fixed'",
+              "description": "The type of CSS position property to use."
             },
             {
               "name": "side",
@@ -5660,23 +5715,30 @@
             },
             {
               "name": "sideOffset",
+              "type": "number",
               "default": "0",
-              "description": "The distance in pixels from the anchor."
+              "description": "Distance between the anchor and the popup in pixels."
             },
             {
               "name": "sticky",
               "type": "\"partial\" | \"always\"",
               "default": "'partial'",
-              "description": "The sticky behavior on the `align` axis.\n- `partial` will keep the content in the boundary as long as the trigger is at least partially in the boundary\n- `always` will keep the content in the boundary regardless."
+              "description": "The sticky behavior on the align axis. `partial` will keep the\ncontent in the boundary as long as the trigger is at least partially\nin the boundary whilst \"always\" will keep the content in the boundary\nregardless."
             },
             {
               "name": "updatePositionStrategy",
               "type": "\"optimized\" | \"always\"",
               "default": "'always'",
-              "description": "Whether to update the position of the floating element on every animation frame if required."
+              "description": "Strategy to update the position of the floating element on every animation frame."
             }
           ],
-          "outputs": []
+          "outputs": [
+            {
+              "name": "placed",
+              "type": "void",
+              "description": "Emits when the element is placed."
+            }
+          ]
         },
         {
           "directive": "RdxSelectRoot",
@@ -6496,13 +6558,95 @@
           "directive": "RdxToastPositioner",
           "selector": "[rdxToastPositioner]",
           "exportAs": "rdxToastPositioner",
-          "description": "Positions an anchored toast against an element — the Angular counterpart of `<Toast.Positioner>`.\nComposes the popper machinery so a toast can point at a trigger instead of living in the stack.\n\nBind `anchor` (and optionally `side`/`align`/offsets) — typically from a toast's `positionerProps`.\nIt hosts its own `RdxPopper` so it is self-contained (no surrounding `rdxPopperRoot` needed), and\nmirrors the popper measurements as friendlier CSS variables plus `data-side` / `data-align`.",
+          "description": "Positions an anchored toast against an element — the Angular counterpart of `<Toast.Positioner>`.\n\nA \"thin\" positioner (ADR 0012): it inherits the popper positioning surface (inputs, `placed`\noutput, unified vars + placement attrs) from {@link RdxPopperContentWrapper}. Bind `anchor` (and\noptionally `side`/`align`/offsets) — typically from a toast's `positionerProps`. It also composes\nits own {@link RdxPopper} so it is self-contained (no surrounding `rdxPopperRoot` needed), and\nmirrors the anchor width / transform origin as friendlier `--toast-*` CSS variables.",
           "hostDirectives": [
-            "RdxPopper",
-            "RdxPopperContentWrapper"
+            "RdxPopper"
           ],
-          "inputs": [],
-          "outputs": []
+          "inputs": [
+            {
+              "name": "align",
+              "type": "Align",
+              "default": "'center'",
+              "description": "How to align the popup relative to the specified side. May change when collisions occur."
+            },
+            {
+              "name": "alignOffset",
+              "type": "number",
+              "default": "0",
+              "description": "An offset in pixels from the `start` or `end` alignment options."
+            },
+            {
+              "name": "anchor",
+              "type": "RdxPopperAnchorElement",
+              "description": "An element to position the popup against. Defaults to the popper anchor."
+            },
+            {
+              "name": "arrowPadding",
+              "type": "number",
+              "default": "6",
+              "description": "Minimum distance to maintain between the arrow and the edges of the popup.\nIf your content has border-radius, this will prevent it from overflowing the corners."
+            },
+            {
+              "name": "avoidCollisions",
+              "type": "boolean",
+              "default": "true",
+              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges."
+            },
+            {
+              "name": "collisionBoundary",
+              "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
+              "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
+            },
+            {
+              "name": "collisionPadding",
+              "type": "number | Partial<Record<Side, number>>",
+              "default": "8",
+              "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
+            },
+            {
+              "name": "hideWhenDetached",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether to hide the content when the trigger becomes fully occluded."
+            },
+            {
+              "name": "positionStrategy",
+              "type": "\"fixed\" | \"absolute\"",
+              "default": "'fixed'",
+              "description": "The type of CSS position property to use."
+            },
+            {
+              "name": "side",
+              "type": "Side",
+              "default": "'top'",
+              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled."
+            },
+            {
+              "name": "sideOffset",
+              "type": "number",
+              "default": "8",
+              "description": "Distance between the anchor and the popup in pixels."
+            },
+            {
+              "name": "sticky",
+              "type": "\"partial\" | \"always\"",
+              "default": "'partial'",
+              "description": "The sticky behavior on the align axis. `partial` will keep the\ncontent in the boundary as long as the trigger is at least partially\nin the boundary whilst \"always\" will keep the content in the boundary\nregardless."
+            },
+            {
+              "name": "updatePositionStrategy",
+              "type": "\"optimized\" | \"always\"",
+              "default": "'always'",
+              "description": "Strategy to update the position of the floating element on every animation frame."
+            }
+          ],
+          "outputs": [
+            {
+              "name": "placed",
+              "type": "void",
+              "description": "Emits when the element is placed."
+            }
+          ]
         },
         {
           "directive": "RdxToastProvider",
@@ -6925,17 +7069,16 @@
         {
           "directive": "RdxTooltipPositioner",
           "selector": "[rdxTooltipPositioner]",
-          "description": "Positions the tooltip popup against its trigger (or a custom anchor).",
+          "description": "Positions the tooltip popup against its trigger (or a custom anchor).\n\nA \"thin\" positioner (ADR 0012): it inherits the popper positioning surface (inputs, `placed`\noutput, unified vars + placement attrs) from {@link RdxPopperContentWrapper} and adds tooltip's own\nconcerns — Base UI-aligned defaults (`side: 'top'`) via the config provider, dismiss handling\n(composing {@link RdxDismissableLayer}), the cursor-follow pointer-through behavior (via the\ninherited `nonInteractive` signal), the open/closed state attributes, and the hover grace area.",
           "hostDirectives": [
-            "RdxDismissableLayer",
-            "RdxPopperContentWrapper"
+            "RdxDismissableLayer"
           ],
           "inputs": [
             {
               "name": "align",
               "type": "Align",
               "default": "'center'",
-              "description": "The preferred alignment against the anchor."
+              "description": "How to align the popup relative to the specified side. May change when collisions occur."
             },
             {
               "name": "alignOffset",
@@ -6946,13 +7089,13 @@
             {
               "name": "anchor",
               "type": "RdxPopperAnchorElement",
-              "description": "An element to position the popup against. Defaults to the trigger."
+              "description": "An element to position the popup against. Defaults to the popper anchor."
             },
             {
               "name": "arrowPadding",
               "type": "number",
               "default": "5",
-              "description": "The padding between the arrow and the edges of the content."
+              "description": "Minimum distance to maintain between the arrow and the edges of the popup.\nIf your content has border-radius, this will prevent it from overflowing the corners."
             },
             {
               "name": "avoidCollisions",
@@ -6963,13 +7106,13 @@
             {
               "name": "collisionBoundary",
               "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
-              "description": "The element used as the collision boundary."
+              "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
             },
             {
               "name": "collisionPadding",
               "type": "number | Partial<Record<Side, number>>",
               "default": "5",
-              "description": "The distance in pixels from the boundary edges where collision detection should occur."
+              "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
             },
             {
               "name": "hideWhenDetached",
@@ -6981,34 +7124,40 @@
               "name": "positionStrategy",
               "type": "\"fixed\" | \"absolute\"",
               "default": "'fixed'",
-              "description": "The CSS position strategy used by Floating UI."
+              "description": "The type of CSS position property to use."
             },
             {
               "name": "side",
               "type": "Side",
               "default": "'top'",
-              "description": "The preferred side of the anchor to render against when open."
+              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled."
             },
             {
               "name": "sideOffset",
               "type": "number",
               "default": "0",
-              "description": "The distance in pixels from the anchor."
+              "description": "Distance between the anchor and the popup in pixels."
             },
             {
               "name": "sticky",
               "type": "\"partial\" | \"always\"",
               "default": "'partial'",
-              "description": "The sticky behavior on the `align` axis."
+              "description": "The sticky behavior on the align axis. `partial` will keep the\ncontent in the boundary as long as the trigger is at least partially\nin the boundary whilst \"always\" will keep the content in the boundary\nregardless."
             },
             {
               "name": "updatePositionStrategy",
               "type": "\"optimized\" | \"always\"",
-              "default": "'always'",
-              "description": "Whether to update the position of the floating element on every animation frame if required."
+              "default": "'optimized'",
+              "description": "Strategy to update the position of the floating element on every animation frame."
             }
           ],
-          "outputs": []
+          "outputs": [
+            {
+              "name": "placed",
+              "type": "void",
+              "description": "Emits when the element is placed."
+            }
+          ]
         },
         {
           "directive": "RdxTooltipProvider",

@@ -1,6 +1,6 @@
 # ADR 0012: Thin positioners — single-source popper inputs, unified CSS variables, z-index decoupling
 
-- Status: Accepted — Phases 1 (combobox spike) & 2 (wrapper unified vars + placement attrs) landed; Phases 3–4 pending
+- Status: Accepted — Phases 1–3 landed (spike, wrapper unification, all 9 positioners on inheritance); Phase 4 (z-index) pending
 - Date: 2026-06-13
 - Decision owners: Radix NG maintainers
 - Related: ADR 0002 (popper arrow Base UI alignment), ADR 0010 (anatomy flattening),
@@ -181,10 +181,25 @@ align: 'start' })`. Added a `provideRdxPopperContentWrapper(positioner)` helper 
    wrapper emits `data-side`/`--anchor-width`/`--transform-origin` while the helper emits the legacy
    alias. Only `--radix-select-trigger-width` is consumed in-repo (select-object-values story) — select
    is Phase 3, so its positioner is untouched here.
-3. **Inheritance conversion** (§2), primitive by primitive in one PR each or batched by
-   similarity: combobox+autocomplete (with their new config defaults), select, tooltip, menu,
-   navigation-menu, popover, preview-card, toast. Each: positioner rewrite, story audit for
-   unbound defaults, ArgTypes/skills regen, visual + behavior suites.
+3. ✅ **Inheritance conversion (§2) — DONE.** All 9 positioners now `extends RdxPopperContentWrapper`
+   (combobox in Phase 1; autocomplete, select, popover, preview-card, navigation-menu, tooltip, menu,
+   toast here). Total positioner LOC **1045 → 409 (−61%)**. Mechanics: each spreads
+   `provideRdxPopperContentWrapper(Self)` (useExisting + context, since `providers` aren't inherited)
+   - `provideRdxPopperContentConfig(...)`; behavior subclasses (popover/preview-card grace-area,
+     navigation-menu, tooltip cursor-follow + dismissable-layer, select's `RdxPositionerImpl` token,
+     toast's own `RdxPopper`) keep their logic and call `super()`. Removed the now-redundant
+     `data-side`/`data-align` from menu/tooltip/toast (the wrapper emits them). **Breaking default
+     changes (combobox/autocomplete/select only, per §2):** combobox+autocomplete → `sideOffset: 4`,
+     `align: 'start'`; select → `align: 'start'` + `updatePositionStrategy: 'always'`. All other
+     positioners are **behavior-preserving** — their existing config is kept verbatim, so the
+     api-contract now publishes the _truthful_ runtime default (e.g. menu `align: 'center'`, tooltip
+     `updatePositionStrategy: 'optimized'`) instead of the old dead re-declared doc value. Verified:
+     build + lint + unit (all converted packages) + SSR green; `overlays.visual` (popover/tooltip/menu/
+     **select**/context-menu open) unchanged — select's `center→start` shift is invisible because its
+     popup matches the trigger width (`min-w-[--radix-select-trigger-width]`); combobox/autocomplete have
+     no open-state baseline (their 4px/align shift is the documented fix). `api-contract.json` defaults
+     now match every config exactly (the drift-bug regression test). No theming docs referenced these
+     vars, so no doc churn.
 4. **z-index decoupling** (§3) — last, isolated, with the migration note.
 
 ## Testing
