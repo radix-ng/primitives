@@ -34,8 +34,13 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
             .animated-popup[data-ending-style] {
                 animation: popup-out 150ms ease;
             }
-            /* The structural *rdxMenuPortal watches its root (the positioner); give it an opacity exit
-               keyframe so presence keeps the popup mounted until the popup's slide-out finishes. */
+            /*
+             * Unlike popover/navigation-menu, the shared menu popup carries 'data-[closed]:hidden' (it
+             * is reused by the always-rendered menubar popups), so on close it is 'display: none' and
+             * cannot run its own exit animation. The exit therefore lives on the positioner — keyed on
+             * its 'data-open'/'data-closed' — which is what the presence machine waits on before
+             * unmounting. This is a legitimate carrier, not an ADR-0011 "decoy".
+             */
             @keyframes positioner-fade-in {
                 from {
                     opacity: 0;

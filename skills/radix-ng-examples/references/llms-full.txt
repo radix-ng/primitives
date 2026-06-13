@@ -11219,8 +11219,13 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
             .animated-popup[data-ending-style] {
                 animation: popup-out 150ms ease;
             }
-            /* The structural *rdxMenuPortal watches its root (the positioner); give it an opacity exit
-               keyframe so presence keeps the popup mounted until the popup's slide-out finishes. */
+            /*
+             * Unlike popover/navigation-menu, the shared menu popup carries 'data-[closed]:hidden' (it
+             * is reused by the always-rendered menubar popups), so on close it is 'display: none' and
+             * cannot run its own exit animation. The exit therefore lives on the positioner — keyed on
+             * its 'data-open'/'data-closed' — which is what the presence machine waits on before
+             * unmounting. This is a legitimate carrier, not an ADR-0011 "decoy".
+             */
             @keyframes positioner-fade-in {
                 from {
                     opacity: 0;
@@ -12240,12 +12245,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 </li>
             </ul>
 
-            <div
-                *rdxNavigationMenuPortal
-                [class]="cn(m.positioner, m.positionerAnimated)"
-                sideOffset="8"
-                rdxNavigationMenuPositioner
-            >
+            <div *rdxNavigationMenuPortal [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
                 <div [class]="m.popup" rdxNavigationMenuPopup>
                     <svg
                         [class]="m.arrow"
@@ -12431,12 +12431,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 </li>
             </ul>
 
-            <div
-                *rdxNavigationMenuPortal
-                [class]="cn(m.positioner, m.positionerAnimated)"
-                sideOffset="8"
-                rdxNavigationMenuPositioner
-            >
+            <div *rdxNavigationMenuPortal [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
                 <div [class]="m.popup" rdxNavigationMenuPopup>
                     <svg
                         [class]="m.arrow"
@@ -12515,7 +12510,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
 
             <div
                 *rdxNavigationMenuPortal
-                [class]="cn(m.positioner, m.positionerAnimated)"
+                [class]="m.positioner"
                 side="right"
                 sideOffset="8"
                 align="start"
@@ -12581,12 +12576,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 }
             </ul>
 
-            <div
-                *rdxNavigationMenuPortal
-                [class]="cn(m.positioner, m.positionerAnimated)"
-                sideOffset="8"
-                rdxNavigationMenuPositioner
-            >
+            <div *rdxNavigationMenuPortal [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
                 <div [class]="m.popup" rdxNavigationMenuPopup>
                     <div [class]="m.viewport" rdxNavigationMenuViewport></div>
                 </div>
@@ -12741,12 +12731,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 </li>
             </ul>
 
-            <div
-                *rdxNavigationMenuPortal
-                [class]="cn(m.positioner, m.positionerAnimated)"
-                sideOffset="8"
-                rdxNavigationMenuPositioner
-            >
+            <div *rdxNavigationMenuPortal [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
                 <div [class]="m.popup" rdxNavigationMenuPopup>
                     <div [class]="m.viewport" rdxNavigationMenuViewport></div>
                 </div>
@@ -12817,12 +12802,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 </li>
             </ul>
 
-            <div
-                *rdxNavigationMenuPortal
-                [class]="cn(m.positioner, m.positionerAnimated)"
-                sideOffset="8"
-                rdxNavigationMenuPositioner
-            >
+            <div *rdxNavigationMenuPortal [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
                 <div [class]="m.popup" rdxNavigationMenuPopup>
                     <div [class]="m.viewport" rdxNavigationMenuViewport></div>
                 </div>
@@ -12911,7 +12891,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
 
                                 <div
                                     *rdxNavigationMenuPortal
-                                    [class]="cn(m.positioner, m.positionerAnimated)"
+                                    [class]="m.positioner"
                                     side="right"
                                     sideOffset="12"
                                     align="start"
@@ -12931,12 +12911,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 </li>
             </ul>
 
-            <div
-                *rdxNavigationMenuPortal
-                [class]="cn(m.positioner, m.positionerAnimated)"
-                sideOffset="8"
-                rdxNavigationMenuPositioner
-            >
+            <div *rdxNavigationMenuPortal [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
                 <div [class]="m.popup" rdxNavigationMenuPopup>
                     <div [class]="m.viewport" rdxNavigationMenuViewport></div>
                 </div>
@@ -13033,12 +13008,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 </li>
             </ul>
 
-            <div
-                *rdxNavigationMenuPortal
-                [class]="cn(m.positioner, m.positionerAnimated)"
-                sideOffset="8"
-                rdxNavigationMenuPositioner
-            >
+            <div *rdxNavigationMenuPortal [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
                 <div [class]="m.popup" rdxNavigationMenuPopup>
                     <div [class]="m.viewport" rdxNavigationMenuViewport></div>
                 </div>
@@ -14331,7 +14301,7 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
         <ng-container rdxPopoverRoot>
             <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Animated popover</button>
 
-            <div *rdxPopoverPortal [class]="cn(p.positioner, p.positionerAnimated)" sideOffset="8" rdxPopoverPositioner>
+            <div *rdxPopoverPortal [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
                 <div [class]="cn(p.popup, p.popupAnimated)" rdxPopoverPopup>
                     <span [class]="p.arrow" rdxPopoverArrow></span>
                     <h2 [class]="p.title" rdxPopoverTitle>Native CSS keyframes</h2>
@@ -21379,13 +21349,7 @@ interface Notification {
                 }
             </button>
 
-            <div
-                *rdxPopoverPortal
-                [class]="cn(p.positioner, p.positionerAnimated)"
-                sideOffset="8"
-                align="end"
-                rdxPopoverPositioner
-            >
+            <div *rdxPopoverPortal [class]="p.positioner" sideOffset="8" align="end" rdxPopoverPositioner>
                 <div [class]="popup" rdxPopoverPopup>
                     <div class="border-border flex items-center justify-between border-b px-4 py-3">
                         <h2 [class]="p.title" rdxPopoverTitle>Notifications</h2>
@@ -21586,13 +21550,7 @@ interface Notification {
                 }
             </button>
 
-            <div
-                *rdxPopoverPortal
-                [class]="cn(p.positioner, p.positionerAnimated)"
-                sideOffset="8"
-                align="end"
-                rdxPopoverPositioner
-            >
+            <div *rdxPopoverPortal [class]="p.positioner" sideOffset="8" align="end" rdxPopoverPositioner>
                 <div [class]="popup" rdxPopoverPopup>
                     <div class="border-border flex items-center justify-between border-b px-4 py-3">
                         <h2 [class]="p.title" rdxPopoverTitle>Notifications</h2>

@@ -297,15 +297,13 @@ export const demoToast = {
 /**
  * Popover surfaces and parts.
  *
- * `positionerAnimated` goes on the `rdxPopoverPositioner` element: since the structural
- * `*rdxPopoverPortal` made the positioner the presence root, its exit keyframes are what the presence
- * machine waits for before unmounting. It keys on the positioner's `data-open`/`data-closed`
- * attributes and animates opacity only (no transform), so it never fights the popper's positioning.
- * `popupAnimated` drives the popup's own zoom/slide via `data-state`.
+ * `popupAnimated` drives the popup's own zoom/slide via `data-state`; that exit animation is what the
+ * presence machine waits for before unmounting (ADR 0011 — `getAnimations({ subtree: true })` sees
+ * the popup even though the positioner is the structural `*rdxPopoverPortal` root). No positioner-level
+ * "decoy" opacity keyframe is needed; the transparent positioner carries no exit animation of its own.
  */
 export const demoPopover = {
     positioner: 'z-50',
-    positionerAnimated: 'data-[open]:animate-popover-in data-[closed]:animate-popover-out',
     popup: cn(demoCard, 'relative w-80 p-4'),
     popupAnimated: 'data-[state=open]:animate-popover-popup-in data-[state=closed]:animate-popover-popup-out',
     backdrop: 'fixed inset-0 bg-foreground/10',
@@ -434,10 +432,8 @@ export const demoNavigationMenu = {
     ),
     icon: 'size-3.5 transition-transform duration-200 data-[state=open]:rotate-180',
     positioner: 'z-50 data-[closed]:pointer-events-none',
-    // Goes on the `rdxNavigationMenuPositioner` (the structural `*rdxNavigationMenuPortal` root) and
-    // keys on its `data-open`/`data-closed` attributes. Opacity-only, so it never fights the popper's
-    // positioning transform; the popup's own zoom is driven by the transition-status flow.
-    positionerAnimated: 'data-[open]:animate-navigation-menu-in data-[closed]:animate-navigation-menu-out',
+    // The popup's own `data-ending-style` zoom (below) is the exit the presence machine waits for
+    // (ADR 0011 — subtree-aware), so the positioner needs no opacity "decoy" keyframe.
     popup: cn(
         demoCard,
         'relative overflow-hidden p-0 origin-[var(--transform-origin)]',

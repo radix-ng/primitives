@@ -58,12 +58,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 </li>
             </ul>
 
-            <div
-                *rdxNavigationMenuPortal
-                [class]="cn(m.positioner, m.positionerAnimated)"
-                sideOffset="8"
-                rdxNavigationMenuPositioner
-            >
+            <div *rdxNavigationMenuPortal [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
                 <div [class]="m.popup" rdxNavigationMenuPopup>
                     <svg
                         [class]="m.arrow"

@@ -23,7 +23,7 @@ Use the lifecycle owner to choose the animation API:
 | --- | --- |
 | The element always remains mounted | CSS transition driven by `data-state` or a class |
 | Your template adds and removes the element with `@if` | Angular `animate.enter` and `animate.leave` |
-| A Radix NG presence directive mounts and unmounts the primitive part | CSS `@keyframes` driven by `data-state` |
+| A Radix NG presence directive mounts and unmounts the primitive part | CSS `@keyframes` **or** transitions driven by `data-state` / `data-ending-style` |
 | A third-party JavaScript library owns the animation | Angular animation callbacks or a controlled primitive |
 
 ## CSS transitions
@@ -67,8 +67,9 @@ its exit transition before hiding (`data-ending-style` is present while it runs)
 
 Use `@keyframes` when a primitive part is conditionally mounted through a Radix NG presence
 directive, such as `rdxCollapsiblePanelPresence`, or through a structural portal such as
-`*rdxPopoverPortal` / `*rdxTooltipPortal` (which merge portal + presence — the exit keyframes go on
-the portal's root element, e.g. the positioner).
+`*rdxPopoverPortal` / `*rdxTooltipPortal` (which merge portal + presence). The exit animation can go
+on the portal's root element (the positioner) **or any element inside it** (the popup) — see
+[Exit animations](#exit-animations-keyframes-or-transitions) below.
 
 ```html
 <ng-template rdxCollapsiblePanelPresence>
@@ -108,15 +109,26 @@ the portal's root element, e.g. the positioner).
 }
 ```
 
-`RdxPresenceDirective` checks the computed `animation-name` after the closed state is applied. If an
-exit animation is running, it keeps the element mounted until `animationend`. If no exit animation
-exists, it unmounts immediately.
+### Exit animations: keyframes or transitions
 
-Place the exit `@keyframes` on the first DOM element inside the presence template. That is the
-element whose animation lifecycle is observed.
+After the closed state is applied, the presence machine inspects the running animations
+([Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Element/getAnimations)) on the
+template's root element **and its whole subtree**. It keeps the element mounted until every exit
+animation _started by the close_ has finished, then unmounts. If nothing animates, it unmounts
+immediately.
 
-> `RdxPresenceDirective` currently waits for CSS keyframe animations, not CSS transitions. Use
-> `@keyframes` for presence-managed exit animations.
+This means:
+
+- **Keyframes or transitions both work.** A `@keyframes` exit (`data-closed`) and a transition
+  (a property change under `data-ending-style`) are detected the same way.
+- **Any element in the template carries the exit.** With a structural portal you can put the exit on
+  the positioner (the root) or on the popup nested inside it — you do **not** need a separate
+  "decoy" keyframe on the positioner just to keep the popup mounted.
+- **Pre-existing animations are ignored.** A spinner or other animation that was already running
+  before the close does not delay the unmount; only animations that start with the close count.
+
+A duration-based safety net (the longest declared transition/animation duration plus a small buffer)
+guarantees the element still unmounts if an animation is interrupted or never reports completion.
 
 ## Angular `animate.enter` and `animate.leave`
 
