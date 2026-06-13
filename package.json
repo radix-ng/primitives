@@ -132,7 +132,7 @@
         "chromatic": "^11.27.0",
         "clsx": "^2.1.1",
         "cpy-cli": "^5.0.0",
-        "esbuild": "^0.19.12",
+        "esbuild": "^0.28.1",
         "eslint": "^10.4.1",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-prettier": "^5.5.6",
