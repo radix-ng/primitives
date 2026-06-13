@@ -248,8 +248,12 @@ For animation work, distinguish the lifecycle owner before choosing an API:
 - Always-mounted primitive parts: use CSS transitions driven by `data-state`.
 - Application-owned conditional DOM (`@if`): prefer Angular 21+ `animate.enter` / `animate.leave`;
   legacy `@angular/animations` is not required.
-- Parts mounted through `RdxPresenceDirective`: use exit CSS `@keyframes` driven by `data-state`;
-  the current presence implementation waits for `animationend`, not `transitionend`.
+- Parts mounted through `RdxPresenceDirective` / `RdxPortalPresence`: drive the exit with CSS
+  `@keyframes` (`data-closed`) **or** transitions (`data-ending-style`). Since ADR 0011 the presence
+  machine detects exits via the Web Animations API across the template root **and its subtree**, so
+  the exit may live on the positioner **or** the popup nested inside it (no positioner "decoy"
+  keyframe needed), and a duration safety-net bounds the unmount. The legacy root-`@keyframes` +
+  `animationend` path is kept only so the zoneless jsdom suites stay meaningful.
 
 ### Centralized demo styles
 
@@ -309,7 +313,7 @@ Complex components compose these headless building blocks — good entry points 
 
 - `core` — `createContext`, `useArrowNavigation`, id generators, shared types/utils.
 - `collection` — `RdxCollectionProvider` + `RdxCollectionItem`: collects item directives in **DOM order** via `contentChildren` (matches `hostDirectives` too). Read items off the instance (`item.element`, `item.value()`, `item.disabled()`); `useCollection()` = `inject(RdxCollectionProvider)`. Only consumer: `select`.
-- `portal` — `RdxPortal` (attribute): teleports its host element into a container (default `document.body`), reactively; non-element containers fall back to body. `RdxPortalPresence` (structural, `ng-template`): merges portal + presence — mounts its template while `present()` (from `RDX_PRESENCE_CONTEXT`) is true, relocates **all** root nodes into the container with **no wrapper element**, and waits for exit `@keyframes` on **every** `HTMLElement` root before unmounting (dialog backdrop + popup). This is the ADR 0010 anatomy-flattening primitive; popover is the migrated pilot (`*rdxPopoverPortal` on the positioner). Entry depends on `presence`.
+- `portal` — `RdxPortal` (attribute): teleports its host element into a container (default `document.body`), reactively; non-element containers fall back to body. `RdxPortalPresence` (structural, `ng-template`): merges portal + presence — mounts its template while `present()` (from `RDX_PRESENCE_CONTEXT`) is true, relocates **all** root nodes into the container with **no wrapper element**, and waits for exit animations before unmounting (dialog backdrop + popup). Since ADR 0011 the wait is Web-Animations-API-based and **subtree-aware**: an exit `@keyframes` **or** transition on any watched root **or any descendant** suspends the unmount (bounded by a duration safety net), so the popup's own exit keeps it mounted — no positioner "decoy" keyframe. This is the ADR 0010 anatomy-flattening primitive; popover is the migrated pilot (`*rdxPopoverPortal` on the positioner). Entry depends on `presence` and `core`.
 - `presence` — conditional mount/unmount with enter/leave animation support. The state machine lives in `presence/src/presence-machine.ts` (`PresenceMachine`, parameterized by `mountView`/`destroyView`); both `RdxPresenceDirective` (in place) and `RdxPortalPresence` (relocating) reuse it.
 - `roving-focus`, `focus-scope`, `popper` — focus roving, focus trapping, positioning.
 - `dismissable-layer` — outside-dismiss (Escape / pointer-down-outside / focus-outside). **Gotcha:** the focus-outside check is **async** (defers two microtasks before deciding), so an element that takes focus _outside_ a layer and then opens it can be dismissed a tick later. Register such elements as **branches** (`rdxDismissableLayerBranch`, or push the element into `RdxDismissableLayersContextToken.branches`) so focus/pointer on them counts as "inside" and won't dismiss. Example: a menu trigger the menubar focuses before opening a sibling popup.

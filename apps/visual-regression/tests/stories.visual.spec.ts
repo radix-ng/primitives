@@ -31,7 +31,9 @@ function loadStories(): StoryEntry[] {
     const index = JSON.parse(raw) as { entries?: Record<string, StoryEntry>; stories?: Record<string, StoryEntry> };
     const entries = Object.values(index.entries ?? index.stories ?? {});
 
-    return entries.filter((entry) => entry.type === 'story' && !entry.tags?.includes('!visual'));
+    // Sweep only stories that carry the global `visual` tag (added in `.storybook/preview.ts`).
+    // A story opts out with `tags: ['!visual']`, which removes `visual` from its published tags.
+    return entries.filter((entry) => entry.type === 'story' && entry.tags?.includes('visual'));
 }
 
 const stories = loadStories();

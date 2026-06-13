@@ -416,7 +416,7 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
         <ng-container rdxPopoverRoot>
             <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Animated popover</button>
 
-            <div *rdxPopoverPortal [class]="cn(p.positioner, p.positionerAnimated)" sideOffset="8" rdxPopoverPositioner>
+            <div *rdxPopoverPortal [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
                 <div [class]="cn(p.popup, p.popupAnimated)" rdxPopoverPopup>
                     <span [class]="p.arrow" rdxPopoverArrow></span>
                     <h2 [class]="p.title" rdxPopoverTitle>Native CSS keyframes</h2>

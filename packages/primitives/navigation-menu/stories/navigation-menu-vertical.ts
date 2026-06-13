@@ -35,7 +35,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
 
             <div
                 *rdxNavigationMenuPortal
-                [class]="cn(m.positioner, m.positionerAnimated)"
+                [class]="m.positioner"
                 side="right"
                 sideOffset="8"
                 align="start"
