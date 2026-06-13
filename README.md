@@ -92,74 +92,22 @@ component are served at `https://radix-ng.com/components/<name>.md`.
 
 ## Components
 
-**Status:** ✅ Completed · 🚀 In Progress · 🛠 In Review
+Browse every component — with live examples, the `data-*` styling contract, and a full API
+reference — in the docs: **[radix-ng.com](https://radix-ng.com)** (plain-Markdown for each component
+is served at `radix-ng.com/components/<name>.md`). The site is generated from the source, so it is
+always the current list of what's available.
 
-<details>
-<summary><strong>Core primitives</strong></summary>
+### Roadmap
 
-| Primitive       | Status |
-| --------------- | ------ |
-| Accordion       | ✅     |
-| Alert Dialog    | beta   |
-| Avatar          | ✅     |
-| Aspect Ratio    | ✅     |
-| Button          | ✅     |
-| Checkbox        | ✅     |
-| Collapsible     | ✅     |
-| Context Menu    | ✅     |
-| Dialog          | ✅     |
-| DropdownMenu    | ✅     |
-| Form            | ?      |
-| Hover Card      | ✅     |
-| Label           | ✅     |
-| Menubar         | ✅     |
-| Navigation Menu | ✅     |
-| Popover         | ✅     |
-| Progress        | ✅     |
-| Radio           | ✅     |
-| Select          | beta   |
-| Separator       | ✅     |
-| Slider          | ✅     |
-| Switch          | ✅     |
-| Tabs            | ✅     |
-| Toast           |        |
-| Toggle          | ✅     |
-| Toggle Group    | ✅     |
-| Toolbar         | ✅     |
-| Tooltip         | ✅     |
+Planned, not yet available:
 
-</details>
+- Date Picker
+- Date Range Field
+- Date Range Picker
+- Range Calendar
 
-<details>
-<summary><strong>Dates & inputs</strong></summary>
-
-| Primitive         | Status |
-| ----------------- | ------ |
-| Calendar          | ✅     |
-| Date Field        | ✅     |
-| Date Picker       |        |
-| Date Range Field  |        |
-| Date Range Picker |        |
-| Editable          | ✅     |
-| Number Field      | ✅     |
-| Pagination        | ✅     |
-| Range Calendar    |        |
-| Stepper           | ✅     |
-| Time Field        | ✅     |
-
-</details>
-
-<details>
-<summary><strong>Utilities</strong></summary>
-
-| Primitive          | Status |
-| ------------------ | ------ |
-| FocusOutside       | ✅     |
-| PointerDownOutside | ✅     |
-| FocusGuards        |        |
-| FocusScope         |        |
-
-</details>
+Want something else? Open an [issue](https://github.com/radix-ng/primitives/issues) or start a
+[discussion](https://github.com/radix-ng/primitives/discussions).
 
 ## Ecosystem
 

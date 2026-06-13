@@ -7,7 +7,7 @@ metadata:
 
 # Radix NG Primitives
 
-**Package:** `@radix-ng/primitives` (v1.0.0-beta.0; last stable 0.51.0)
+**Package:** `@radix-ng/primitives` (v1.0.0-beta.2; last stable 0.51.0)
 **npm:** published, tree-shakeable secondary entries (`@radix-ng/primitives/<name>`)
 
 ## What it is

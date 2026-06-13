@@ -44,13 +44,16 @@ Controlled from the Storybook toolbar (not OS `prefers-color-scheme`). The previ
 
 ## Animation patterns
 
-| Scenario                             | API to use                                                                      |
-| ------------------------------------ | ------------------------------------------------------------------------------- |
-| Always-mounted parts                 | CSS transitions driven by `data-state`                                          |
-| App-owned `@if` DOM                  | Angular 21+ `animate.enter` / `animate.leave`                                   |
-| `RdxPresenceDirective`-mounted parts | Exit CSS `@keyframes` driven by `data-state`; presence waits for `animationend` |
+| Scenario                                 | API to use                                                                                                   |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Always-mounted parts                     | CSS transitions driven by `data-state`                                                                       |
+| App-owned `@if` DOM                      | Angular 21+ `animate.enter` / `animate.leave`                                                                |
+| Presence / `*rdxXxxPortal`-mounted parts | Exit `@keyframes` (`data-closed`) **or** transition (`data-ending-style`), on the root **or any descendant** |
 
-Do not use `@angular/animations` (legacy). Do not mix transition + animation for presence-managed elements.
+Since ADR 0011 the presence machine detects the exit via the Web Animations API across the watched
+root **and its subtree**, so the exit can be a `@keyframes` or a transition and can live on the
+positioner or the popup nested inside it — no positioner "decoy" keyframe is needed. Do not use
+`@angular/animations` (legacy).
 
 ## Accessibility in demos
 
