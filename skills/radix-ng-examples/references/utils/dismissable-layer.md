@@ -100,7 +100,7 @@ const ACCENT = {
     }
 } as const;
 
-const ROWS = ['Atlas API', 'Billing', 'Webhooks', 'Members', 'Audit log', 'Domains', 'Tokens', 'Integrations'];
+const ROWS = ['Atlas API', 'Billing', 'Webhooks', 'Integrations'];
 
 /** The three engines, as the header cards present them (each maps to one ADR). */
 const ENGINE_CARDS = [
