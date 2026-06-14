@@ -12,8 +12,9 @@ import { provideFloatingTree, RDX_FLOATING_TREE, resolveFloatingTree } from '../
 // ─── RdxFloatingRegistrationContext ──────────────────────────────────────────
 
 describe('RdxFloatingRegistrationContext', () => {
-    it('starts with tree and node both null', () => {
+    it('starts pending, with tree and node both null', () => {
         const ctx = new RdxFloatingRegistrationContext();
+        expect(ctx.status()).toBe('pending');
         expect(ctx.tree()).toBeNull();
         expect(ctx.node()).toBeNull();
     });
@@ -86,14 +87,77 @@ describe('RdxFloatingRegistrationContext', () => {
         ctx.clear();
         expect(derivedTree()).toBeNull();
     });
+
+    // ─── tri-state lifecycle: pending | detached | registered ────────────────
+
+    it('register() transitions status to "registered"', () => {
+        const ctx = new RdxFloatingRegistrationContext();
+        const tree = new RdxFloatingTree();
+        const node = tree.register({ id: 'root', parent: null, context: null });
+
+        ctx.register(tree, node);
+        expect(ctx.status()).toBe('registered');
+    });
+
+    it('markDetached() resolves to "detached" with no node (node-optional)', () => {
+        const ctx = new RdxFloatingRegistrationContext();
+
+        ctx.markDetached();
+
+        expect(ctx.status()).toBe('detached');
+        // resolved, but deliberately node-less — readers treat this parent as absent, not pending
+        expect(ctx.tree()).toBeNull();
+        expect(ctx.node()).toBeNull();
+    });
+
+    it('distinguishes pending (still resolving) from detached (resolved, no node)', () => {
+        const ctx = new RdxFloatingRegistrationContext();
+
+        // both report node() === null, but the STATUS lets a child decide wait-vs-fallback
+        expect(ctx.status()).toBe('pending');
+        expect(ctx.node()).toBeNull();
+
+        ctx.markDetached();
+        expect(ctx.status()).toBe('detached');
+        expect(ctx.node()).toBeNull();
+    });
+
+    it('clear() reverts to "pending" (not detached) — the onCleanup phase before re-resolution', () => {
+        const ctx = new RdxFloatingRegistrationContext();
+        const tree = new RdxFloatingTree();
+        const node = tree.register({ id: 'root', parent: null, context: null });
+
+        ctx.register(tree, node);
+        ctx.clear();
+
+        expect(ctx.status()).toBe('pending');
+        expect(ctx.tree()).toBeNull();
+        expect(ctx.node()).toBeNull();
+    });
+
+    it('status() is reactive across every transition (pending → registered → pending → detached)', () => {
+        const ctx = new RdxFloatingRegistrationContext();
+        const tree = new RdxFloatingTree();
+        const node = tree.register({ id: 'root', parent: null, context: null });
+
+        const derivedStatus = computed(() => ctx.status());
+
+        expect(derivedStatus()).toBe('pending');
+        ctx.register(tree, node);
+        expect(derivedStatus()).toBe('registered');
+        ctx.clear();
+        expect(derivedStatus()).toBe('pending');
+        ctx.markDetached();
+        expect(derivedStatus()).toBe('detached');
+    });
 });
 
 // ─── provideFloatingRegistration ──────────────────────────────────────────────
 
 describe('provideFloatingRegistration()', () => {
     it('creates a fresh RdxFloatingRegistrationContext per injector', () => {
-        const injA = Injector.create({ providers: [provideFloatingRegistration()] });
-        const injB = Injector.create({ providers: [provideFloatingRegistration()] });
+        const injA = Injector.create({ providers: [...provideFloatingRegistration()] });
+        const injB = Injector.create({ providers: [...provideFloatingRegistration()] });
 
         const ctxA = injA.get(RDX_FLOATING_REGISTRATION);
         const ctxB = injB.get(RDX_FLOATING_REGISTRATION);
@@ -103,6 +167,22 @@ describe('provideFloatingRegistration()', () => {
         expect(ctxA).not.toBe(ctxB);
     });
 
+    it('owner injects the concrete writer; the reader token aliases the SAME instance (one instance, two views)', () => {
+        const inj = Injector.create({ providers: [...provideFloatingRegistration()] });
+
+        // The owning directive injects the concrete class — the WRITER side.
+        const writer = inj.get(RdxFloatingRegistrationContext);
+        // Descendants inject the reader-typed token — `useExisting` resolves to the same instance.
+        const reader = inj.get(RDX_FLOATING_REGISTRATION);
+
+        expect(reader).toBe(writer);
+        // The reader surface (status/tree/node) is present and reactive; write-protection of the
+        // reader view is enforced at the type level (RDX_FLOATING_REGISTRATION is reader-typed).
+        expect(reader.status()).toBe('pending');
+        expect(reader.tree()).toBeNull();
+        expect(reader.node()).toBeNull();
+    });
+
     it('a child injector resolves its own handle (not the parent handle)', () => {
         const parentCtx = new RdxFloatingRegistrationContext();
         const parentInj = Injector.create({
@@ -110,7 +190,7 @@ describe('provideFloatingRegistration()', () => {
         });
 
         const childInj = Injector.create({
-            providers: [provideFloatingRegistration()],
+            providers: [...provideFloatingRegistration()],
             parent: parentInj
         });
 
@@ -130,7 +210,7 @@ describe('provideFloatingRegistration()', () => {
         });
 
         const childInj = Injector.create({
-            providers: [provideFloatingRegistration()],
+            providers: [...provideFloatingRegistration()],
             parent: parentInj
         });
 

@@ -960,32 +960,61 @@ mix of legacy and migrated consumers, so the mixed-state failure modes cannot oc
   **Angular DI propagation — handle pattern (decided; do not use dynamic token replacement).**
   Angular injectors are sealed at creation time: a directive cannot change what `RDX_FLOATING_TREE`
   resolves to for descendants after it processes runtime inputs. Instead, the directive provides a
-  `RdxFloatingRegistrationContext` (a stable DI handle with a **single atomic state signal** — not two
-  independent `WritableSignal` fields) via `provideFloatingRegistration()` **in its `providers` array**
-  (at injector creation). After resolving inputs in an `effect()`, the directive calls
-  `selfReg.register(resolvedTree, registeredNode)`. Descendants inject the handle with
-  `{ optional: true, skipSelf: true }` and read `parentReg.tree()` / `parentReg.node()` reactively.
+  `RdxFloatingRegistrationContext` (a stable DI handle with a **single atomic state signal** holding a
+  **three-state lifecycle** — `pending | detached | registered` — not two independent `WritableSignal`
+  fields) via `provideFloatingRegistration()` **in its `providers` array** (at injector creation). After
+  resolving inputs in an `effect()`, the directive calls `selfReg.register(resolvedTree, registeredNode)`
+  (→ `registered`) or `selfReg.markDetached()` (→ `detached`, node-optional). Descendants inject the
+  handle with `{ optional: true, skipSelf: true }` and read `parentReg.status()` / `parentReg.tree()` /
+  `parentReg.node()` reactively.
+
+  **Reader / writer split.** `provideFloatingRegistration()` returns **two** providers over **one**
+  instance: the concrete `RdxFloatingRegistrationContext` (the writer — `register` / `markDetached` /
+  `clear`) and a `useExisting` alias under the reader-typed `RDX_FLOATING_REGISTRATION` token. The owning
+  directive injects the **class** (writer) for its own handle; a descendant injects the **token**
+  (`RdxFloatingRegistrationReader`: only `status` / `tree` / `node`). So a descendant cannot clear or
+  re-point its parent's registration — the reader/writer boundary is enforced at the type level.
+
+  **Why three states (not nullable).** A child must distinguish a parent that is **still resolving**
+  (`pending`) from one that **resolved with no node** (`detached`, node-optional). Both report
+  `node() === null`, so a two-state `null | {tree,node}` handle conflates them: a child seeing the
+  initial `null` could fall back to the ambient tree and **transiently register as a root in the wrong
+  tree** before the parent finishes resolving. With `status()`, a child **waits** on `pending` (its
+  effect re-runs reactively when the parent flips) and only treats `detached` as "no parent".
+
+  **Only `inherit` waits — which is also why a destroyed parent never strands a child.** The wait is
+  gated on `override.kind === 'inherit'`: a `root` / `node` override does not depend on the DI parent and
+  registers immediately (waiting on a `pending` DI parent would wrongly stall it, or — once that parent
+  is destroyed and its handle is fixed at `pending` by the final `clear()` — strand it forever). And an
+  `inherit` node is by definition a **DI descendant** of the parent whose handle it reads, so Angular
+  tears it down together with (before) that parent: it can never survive to observe the parent's
+  post-destroy `pending`. So the only handle that ever waits is one guaranteed to die with its parent —
+  `clear()`'s transient `pending` is safe, and no extra terminal/destroyed state is needed.
 
   Concrete sequence in `providers` + `constructor`:
   1. `providers: [provideFloatingRegistration()]` — seals the stable handle at injector creation.
   2. Inject at construction time (injection context):
-     `selfReg = inject(RDX_FLOATING_REGISTRATION)`,
-     `parentReg = inject(RDX_FLOATING_REGISTRATION, { optional: true, skipSelf: true })`,
+     `selfReg = inject(RdxFloatingRegistrationContext)` (the concrete writer, own handle),
+     `parentReg = inject(RDX_FLOATING_REGISTRATION, { optional: true, skipSelf: true })` (reader),
      `ambientTree = inject(RDX_FLOATING_TREE, { optional: true })`.
-  3. In `effect((onCleanup) => { … })`: read `this.externalTreeInput()` (an `input()` signal), then
-     resolve `tree = externalTree ?? parentReg?.tree() ?? ambientTree`. For `inherit`, resolve
-     `parentNode = parentReg?.node() ?? null`; for `root` override, `parentNode = null`; for `node`
-     override, `parentNode = override.parent`.
+  3. In `effect((onCleanup) => { … })`: resolve `override` first, then wait **only for `inherit`** —
+     `if (override.kind === 'inherit' && parentReg?.status() === 'pending') return;` (reading `status()`
+     subscribes us, so the effect re-runs on the parent's next transition). `root` / `node` overrides are
+     independent of the DI ancestor and proceed immediately. Then resolve `parentNode`: `inherit` →
+     `parentReg?.node() ?? null` (a `detached` parent reads `null` → this node becomes a root in its
+     tree); `root` → `null`; `node` → `override.parent`. Resolve the tree:
+     `tree = (override.kind === 'node' ? override.parent.tree : undefined) ?? externalTree ??
+parentReg?.tree() ?? ambientTree`.
   4. If tree is non-null: `const node = tree.register(…)`, then `selfReg.register(tree, node)`;
-     cleanup on `onCleanup(() => { tree.unregister(node); selfReg.clear(); })`.
-  5. If tree is null: node-optional mode — capability runs without a tree node; only root context is
-     injected. `selfReg.tree()` stays `null`.
+     cleanup on `onCleanup(() => { tree.unregister(node); selfReg.clear(); })` (→ back to `pending`).
+  5. If tree is null: node-optional mode — `selfReg.markDetached()`; the capability runs without a tree
+     node, reading only the root context. `selfReg.status()` is `detached`, `selfReg.tree()` is `null`.
 
   `inject()` is **not** available inside `effect()` (no injection context there), so all DI resolution
   (`inject(RDX_FLOATING_REGISTRATION, …)`, `inject(RDX_FLOATING_TREE, …)`) happens in the constructor.
-  The handle's `parentReg.node()` is the single mechanism for parent resolution — there is no separate
-  `resolveFloatingParent` / `RDX_FLOATING_NODE` API (those were removed from the foundation; the handle
-  subsumes them).
+  The handle's `parentReg.status()` / `parentReg.node()` is the single mechanism for parent resolution —
+  there is no separate `resolveFloatingParent` / `RDX_FLOATING_NODE` API (those were removed from the
+  foundation; the handle subsumes them).
 
 - Build the dismissal-ownership resolution within the capability using
   `tree.children(node, { onlyOpen: true }).some(isBlocking)` — the `hasBlockingChild` pattern lives in

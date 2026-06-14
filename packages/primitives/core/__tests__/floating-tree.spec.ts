@@ -400,6 +400,17 @@ describe('RdxFloatingRootContext', () => {
             expect(ctx.triggers.contains(foreignTrigger)).toBe(true);
             expect(ctx.triggers.hasElement(document.createElement('button'))).toBe(false);
         });
+
+        it('contains() tolerates a non-Node EventTarget (e.g. window) without throwing', () => {
+            const ctx = createFloatingRootContext({ ownerDocument: document });
+            ctx.triggers.add(document.createElement('button'));
+
+            // A DOM event target can be `window` (a non-Node EventTarget); Node.contains() would throw
+            // on it, so contains() must guard and report `false`, not blow up the dismissal handler.
+            const win = document.defaultView as unknown as EventTarget;
+            expect(() => ctx.triggers.contains(win)).not.toThrow();
+            expect(ctx.triggers.contains(win)).toBe(false);
+        });
     });
 });
 

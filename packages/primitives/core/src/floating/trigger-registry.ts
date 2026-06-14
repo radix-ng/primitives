@@ -55,6 +55,18 @@ export class RdxTriggerRegistry {
 
     /** `true` when `target` is a registered trigger or lives inside one. */
     contains(target: EventTarget | Node | null): boolean {
-        return this.hasElement(target) || this.hasMatchingElement(target as Node | null);
+        if (this.hasElement(target)) {
+            return true;
+        }
+        // `hasMatchingElement` calls `Node.contains()`, which requires a real `Node`. An `EventTarget`
+        // that is not a `Node` (e.g. `window`, a `MediaQueryList`) reaches here from a DOM event target
+        // and would make `contains()` throw — so duck-type `nodeType` and skip the ancestor match
+        // otherwise (a non-`Node` can never be a descendant of a registered element anyway).
+        return this.hasMatchingElement(isNode(target) ? target : null);
     }
+}
+
+/** Narrows an `EventTarget` to `Node` by duck-typing `nodeType` (cross-realm-safe; no `instanceof`). */
+function isNode(target: EventTarget | Node | null): target is Node {
+    return target !== null && typeof (target as Node).nodeType === 'number';
 }
