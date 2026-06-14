@@ -1,7 +1,17 @@
 // @vitest-environment jsdom
+import { Injector } from '@angular/core';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createFloatingRootContext, RdxFloatingRootContext } from '../src/floating/floating-root-context';
 import { RdxFloatingNode, RdxFloatingTree } from '../src/floating/floating-tree';
+import { provideFloatingTree, RDX_FLOATING_TREE } from '../src/floating/provide-floating-tree';
+
+// Test-only augmentation: add a synthetic tree-level event so we can exercise the tree's
+// event channel without landing a real capability event first.
+declare module '../src/floating/floating-events' {
+    interface RdxFloatingEventMap {
+        test: { value: number };
+    }
+}
 
 function context(open = false, ownerDocument: Document = document): RdxFloatingRootContext {
     return new RdxFloatingRootContext({ ownerDocument, open: () => open });
@@ -96,33 +106,6 @@ describe('RdxFloatingTree', () => {
         });
     });
 
-    describe('deepestOpen()', () => {
-        it('returns the deepest open descendant (topmost within the tree)', () => {
-            const root = register(tree, 'root', null, true);
-            const a = register(tree, 'a', root, true);
-            const aa = register(tree, 'aa', a, true);
-
-            expect(tree.deepestOpen(root)).toBe(aa);
-        });
-
-        it('ignores closed branches when choosing the deepest', () => {
-            const root = register(tree, 'root', null, true);
-            const shallowOpen = register(tree, 'shallow', root, true);
-            const deepClosedParent = register(tree, 'deep-closed', root, false);
-            register(tree, 'deep-open', deepClosedParent, true);
-
-            // the deep branch is gated behind a closed node, so the shallow open node wins
-            expect(tree.deepestOpen(root)).toBe(shallowOpen);
-        });
-
-        it('returns null when there is no open descendant', () => {
-            const root = register(tree, 'root', null, true);
-            register(tree, 'closed', root, false);
-
-            expect(tree.deepestOpen(root)).toBeNull();
-        });
-    });
-
     describe('open() lives on the context and drives traversal', () => {
         it('reflects a live open-state accessor on the context', () => {
             const root = register(tree, 'root', null, true);
@@ -137,7 +120,6 @@ describe('RdxFloatingTree', () => {
 
             childOpen = true;
             expect(tree.children(root, { onlyOpen: true })).toEqual([child]);
-            expect(tree.deepestOpen(root)).toBe(child);
         });
     });
 
@@ -194,6 +176,18 @@ describe('RdxFloatingTree', () => {
             expect(() => tree.setParent(root, a)).toThrow(/cycle/i);
         });
 
+        it('is a no-op when the parent is unchanged — preserves sibling registration order', () => {
+            const root = register(tree, 'root', null, true);
+            const a = register(tree, 'a', root, true);
+            const b = register(tree, 'b', root, true);
+            const c = register(tree, 'c', root, true);
+
+            // Re-affirming a's existing parent must NOT move it to the end of the sibling list.
+            tree.setParent(a, root);
+
+            expect(tree.children(root, { onlyOpen: false })).toEqual([a, b, c]);
+        });
+
         it('validates the WHOLE subtree against the new ancestor, not just the first descendant', () => {
             const otherDoc = document.implementation.createHTMLDocument('other');
             const newParent = register(tree, 'new-parent', null, true); // document
@@ -238,7 +232,6 @@ describe('RdxFloatingTree', () => {
             expect(() => tree.setContext(foreign, context())).toThrow(/belong/i);
             expect(() => tree.children(foreign)).toThrow(/belong/i);
             expect(() => tree.ancestors(foreign)).toThrow(/belong/i);
-            expect(() => tree.deepestOpen(foreign)).toThrow(/belong/i);
         });
 
         it('rejects operating on an already-unregistered node', () => {
@@ -256,6 +249,39 @@ describe('RdxFloatingTree', () => {
 
             expect(() => tree.register({ id: 'late', parent, context: context() })).toThrow(/registered/i);
             expect(() => tree.setParent(child, parent)).toThrow(/registered/i);
+        });
+    });
+
+    describe('adjacency index cleanup (no node retention)', () => {
+        // White-box: the adjacency map keys are STRONG refs to nodes. If an empty child list is left
+        // behind, its key node is retained → node → context → DOM elements leak. Assert the map is
+        // fully drained after teardown, in both teardown orders.
+        const childrenOfSize = (t: RdxFloatingTree): number =>
+            (t as unknown as { childrenOf: Map<unknown, unknown> }).childrenOf.size;
+
+        it('prunes empty child lists on leaf-up teardown (no lingering map keys)', () => {
+            const root = register(tree, 'root', null, true);
+            const child = register(tree, 'child', root, true);
+            const grandchild = register(tree, 'grandchild', child, true);
+
+            tree.unregister(grandchild);
+            tree.unregister(child);
+            tree.unregister(root);
+
+            expect(childrenOfSize(tree)).toBe(0);
+            expect(tree.all).toEqual([]);
+        });
+
+        it('prunes the parent key once its last orphan unregisters (parent-first order)', () => {
+            const root = register(tree, 'root', null, true);
+            const child = register(tree, 'child', root, true);
+
+            // Parent first — child becomes an orphan but keeps its parent ref...
+            tree.unregister(root);
+            // ...then the orphan; this empties root's child list and must drop root's key.
+            tree.unregister(child);
+
+            expect(childrenOfSize(tree)).toBe(0);
         });
     });
 
@@ -277,6 +303,28 @@ describe('RdxFloatingTree', () => {
                 /ownerDocument/i
             );
         });
+    });
+});
+
+describe('provideFloatingTree (inherit-or-create)', () => {
+    it('creates a tree at the top boundary and inherits it in nested roots', () => {
+        const top = Injector.create({ providers: [provideFloatingTree()] });
+        const topTree = top.get(RDX_FLOATING_TREE);
+        expect(topTree).toBeInstanceOf(RdxFloatingTree);
+
+        // a nested root that also provides the tree inherits the ancestor's instance (no split)
+        const nested = Injector.create({ providers: [provideFloatingTree()], parent: top });
+        expect(nested.get(RDX_FLOATING_TREE)).toBe(topTree);
+
+        // a deeper nested root still resolves to the same top tree
+        const deeper = Injector.create({ providers: [provideFloatingTree()], parent: nested });
+        expect(deeper.get(RDX_FLOATING_TREE)).toBe(topTree);
+    });
+
+    it('an independent top-level root creates its own tree (no cross-root sharing)', () => {
+        const a = Injector.create({ providers: [provideFloatingTree()] });
+        const b = Injector.create({ providers: [provideFloatingTree()] });
+        expect(a.get(RDX_FLOATING_TREE)).not.toBe(b.get(RDX_FLOATING_TREE));
     });
 });
 
@@ -356,16 +404,69 @@ describe('RdxFloatingRootContext', () => {
 });
 
 describe('RdxFloatingTree events', () => {
-    it('exposes a typed event channel private to the tree', () => {
+    it('exposes a typed tree-level event channel (verified with augmented test event)', () => {
         const tree = new RdxFloatingTree();
-        const received: { open: boolean }[] = [];
-        const listener = (data: { open: boolean }) => received.push(data);
+        const received: { value: number }[] = [];
+        const listener = (data: { value: number }) => received.push(data);
 
-        tree.events.on('openchange', listener);
-        tree.events.emit('openchange', { open: true });
-        tree.events.off('openchange', listener);
-        tree.events.emit('openchange', { open: false });
+        tree.events.on('test', listener);
+        tree.events.emit('test', { value: 1 });
+        tree.events.off('test', listener);
+        tree.events.emit('test', { value: 2 }); // should be ignored — listener removed
 
-        expect(received).toEqual([{ open: true }]);
+        expect(received).toEqual([{ value: 1 }]);
+    });
+
+    it('dispatches to multiple listeners and survives listener removal during dispatch', () => {
+        const tree = new RdxFloatingTree();
+        const received: number[] = [];
+
+        const listenerA = () => {
+            received.push(1);
+            tree.events.off('test', listenerA); // remove self during dispatch
+        };
+        const listenerB = () => received.push(2);
+
+        tree.events.on('test', listenerA);
+        tree.events.on('test', listenerB);
+        tree.events.emit('test', { value: 0 });
+
+        // Both listeners ran once (snapshot prevents skip); listenerA is gone for the next emit.
+        expect(received).toEqual([1, 2]);
+
+        tree.events.emit('test', { value: 0 });
+        expect(received).toEqual([1, 2, 2]); // only listenerB ran
+    });
+});
+
+describe('RdxFloatingRootContext events', () => {
+    it('exposes a per-popup openchange event channel (Base UI FloatingRootStore.events parity)', () => {
+        const ctx = createFloatingRootContext({ ownerDocument: document });
+        const received: { open: boolean; reason?: string }[] = [];
+        const listener = (data: { open: boolean; reason?: string }) => received.push(data);
+
+        ctx.events.on('openchange', listener);
+        ctx.events.emit('openchange', { open: true, reason: 'trigger' });
+        ctx.events.emit('openchange', { open: false });
+        ctx.events.off('openchange', listener);
+        ctx.events.emit('openchange', { open: true }); // should be ignored
+
+        expect(received).toEqual([{ open: true, reason: 'trigger' }, { open: false }]);
+    });
+
+    it('each root context has an independent event channel (no cross-popup bleed)', () => {
+        const ctxA = createFloatingRootContext({ ownerDocument: document });
+        const ctxB = createFloatingRootContext({ ownerDocument: document });
+        const fromA: boolean[] = [];
+        const fromB: boolean[] = [];
+
+        ctxA.events.on('openchange', (d) => fromA.push(d.open));
+        ctxB.events.on('openchange', (d) => fromB.push(d.open));
+
+        ctxA.events.emit('openchange', { open: true });
+        ctxB.events.emit('openchange', { open: false });
+
+        expect(fromA).toEqual([true]);
+        expect(fromB).toEqual([false]);
     });
 });

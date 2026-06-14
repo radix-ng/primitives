@@ -1,5 +1,6 @@
 import { isDevMode } from '@angular/core';
 import { rdxDevError } from '../dev/diagnostics';
+import { createFloatingEvents, RdxFloatingEvents, RdxFloatingRootContextEventMap } from './floating-events';
 import { RdxTriggerRegistry } from './trigger-registry';
 
 const DOCS = 'utils/floating-tree';
@@ -34,6 +35,13 @@ export class RdxFloatingRootContext {
     readonly open: () => boolean;
     /** Per-popup trigger registry (Base UI `triggerElements`), read by both dismissal and focus. */
     readonly triggers = new RdxTriggerRegistry();
+    /**
+     * Per-popup typed event channel (Base UI `FloatingRootStore.events`). Scoped to this popup,
+     * so open-change events carry no cross-popup bleed. Use `events.emit('openchange', …)` when
+     * the popup's `open` state changes; dismissal / focus manager subscribe here, not on the tree.
+     */
+    readonly events: RdxFloatingEvents<RdxFloatingRootContextEventMap> =
+        createFloatingEvents<RdxFloatingRootContextEventMap>();
 
     private floatingElementRef: HTMLElement | null = null;
     private referenceElementRef: Element | null = null;

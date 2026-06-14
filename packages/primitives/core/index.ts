@@ -16,6 +16,7 @@ export * from './src/types';
 
 export * from './src/floating/floating-events';
 export * from './src/floating/floating-lifecycle';
+export * from './src/floating/floating-registration';
 export * from './src/floating/floating-root-context';
 export * from './src/floating/floating-tree';
 export * from './src/floating/provide-floating-tree';

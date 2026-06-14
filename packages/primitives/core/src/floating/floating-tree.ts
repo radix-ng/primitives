@@ -99,16 +99,18 @@ function nodeIsOpen(node: RdxFloatingNode): boolean {
 /**
  * The shared floating tree (node store) — the Angular counterpart of Base UI's `FloatingTreeStore`.
  *
- * It owns a flat list of {@link RdxFloatingNode | nodes} linked by `parent` and a neutral typed
- * {@link RdxFloatingEvents | event channel}. It owns **neither** trigger registries **nor** `open`
- * state — those live per-popup on each {@link RdxFloatingRootContext} (Base UI keeps them on the root
- * store, not the tree store). Dismissal (ADR 0015) and the focus manager (ADR 0017) read the **same**
- * nodes, traversal, and events; neither owns the tree.
+ * It owns a flat set of {@link RdxFloatingNode | nodes} linked by `parent`, an adjacency index for
+ * O(1) child lookup, and a neutral typed {@link RdxFloatingEvents | event channel}. It owns **neither**
+ * trigger registries **nor** `open` state — those live per-popup on each {@link RdxFloatingRootContext}
+ * (Base UI keeps them on the root store, not the tree store). Dismissal (ADR 0015) and the focus
+ * manager (ADR 0017) read the **same** nodes, traversal, and events; neither owns the tree.
  *
  * Ancestry is **logical** (DI-derived), not DOM-derived, so portal relocation never changes ownership
- * (ADR 0015 §1). "Topmost within a tree" is the deepest open descendant — resolved here, never from
- * DOM or construction order. Independent roots are **not** coordinated against each other (Base UI
- * parity): the tree only answers questions *within* itself.
+ * (ADR 0015 §1). Independent roots are **not** coordinated against each other (Base UI parity): the
+ * tree only answers questions *within* itself.
+ *
+ * **Performance:** `isRegistered()` is O(1) via `nodeSet`; `directChildren()` is O(1) via the
+ * `childrenOf` adjacency map; `ancestors()` is O(depth); `children()` is O(n) total.
  */
 export class RdxFloatingTree {
     /**
@@ -118,7 +120,17 @@ export class RdxFloatingTree {
      */
     readonly events: RdxFloatingEvents = createFloatingEvents();
 
-    private readonly nodes: RdxFloatingNode[] = [];
+    /** O(1) membership test and snapshot for `all`. */
+    private readonly nodeSet = new Set<RdxFloatingNode>();
+
+    /**
+     * Adjacency index: maps each node (or `null` for root nodes) to its direct children in
+     * registration order. Maintained in sync by `register`, `unregister`, and `setParent`.
+     * Eliminates the O(n) `filter` per node in recursive traversal. Invariant: only **non-empty**
+     * arrays are stored — an entry is pruned the moment its last child leaves, so a key never
+     * outlives its node (see `removeFromChildrenOf`).
+     */
+    private readonly childrenOf = new Map<RdxFloatingNode | null, RdxFloatingNode[]>();
 
     /** Registers a new node. `init.parent` must already be resolved (DI layer handles `inherit`). */
     register(init: RdxFloatingNodeInit): RdxFloatingNode {
@@ -132,7 +144,8 @@ export class RdxFloatingTree {
         }
 
         const node = new RdxFloatingNode(NODE_CONSTRUCT_KEY, init.id, this, init.parent, init.context);
-        this.nodes.push(node);
+        this.nodeSet.add(node);
+        this.addToChildrenOf(init.parent, node);
         return node;
     }
 
@@ -141,10 +154,13 @@ export class RdxFloatingTree {
         if (isDevMode()) {
             this.assertOwnedNode(node);
         }
-        const index = this.nodes.indexOf(node);
-        if (index !== -1) {
-            this.nodes.splice(index, 1);
-        }
+        this.nodeSet.delete(node);
+        this.removeFromChildrenOf(node.parent, node);
+        // `childrenOf.get(node)` (this node's OWN child list) is intentionally NOT cleared here while
+        // it still has registered children: those orphans keep their `parent` ref and must be able to
+        // remove themselves later. The key is pruned automatically once the last orphan unregisters
+        // (removeFromChildrenOf deletes empty lists), so the node is not retained. Orphans are never
+        // reached by traversal meanwhile, since isRegistered(node) = false.
     }
 
     /**
@@ -160,8 +176,8 @@ export class RdxFloatingTree {
         if (isDevMode() && context !== null) {
             // dev-only: expensive ancestry/subtree document validation.
             this.assertContextDocument(context, this.nearestContext(node.parent));
-            for (const descendantContext of this.descendantContexts(node)) {
-                this.assertContextDocument(context, descendantContext);
+            for (const dc of this.descendantContexts(node)) {
+                this.assertContextDocument(context, dc);
             }
         }
 
@@ -174,11 +190,19 @@ export class RdxFloatingTree {
         this.assertOwnedNode(node);
         this.assertRegisterableParent(parent);
 
-        // The cycle check is ALSO structural — a cycle would make traversal (children / deepestOpen /
-        // ancestors / nearestContext) recurse/loop forever — so it runs in production too. Walk the
+        // No-op reparent: the parent is unchanged, so there is nothing to do — and crucially we must
+        // NOT fall through, because removeFromChildrenOf + addToChildrenOf would move `node` to the
+        // END of its sibling list, silently changing traversal/focus order (Base UI keeps node order
+        // stable). The guards above still run, so a foreign/unregistered node is rejected first.
+        if (node.parent === parent) {
+            return;
+        }
+
+        // The cycle check is ALSO structural — a cycle would make traversal (children / ancestors /
+        // nearestContext) recurse/loop forever — so it runs in production too. Walk the
         // prospective parent chain (stopping at an unregistered node, like `ancestors`); reaching `node`
         // means an ancestry cycle. O(depth).
-        for (let ancestor = parent; ancestor !== null && this.isRegistered(ancestor); ancestor = ancestor.parent) {
+        for (let ancestor = parent; ancestor !== null && this.nodeSet.has(ancestor); ancestor = ancestor.parent) {
             if (ancestor === node) {
                 rdxDevError(
                     'floating/parent-cycle',
@@ -189,18 +213,14 @@ export class RdxFloatingTree {
         }
 
         if (isDevMode()) {
-            // dev-only: expensive full-subtree owner-document validation. The node's ENTIRE subtree must
-            // stay document-consistent with the new ancestry — check the node's own context AND every
-            // descendant context (a contextless subtree may hold several documents until a context
-            // bridges them).
-            const ancestorContext = this.nearestContext(parent);
-            this.assertContextDocument(node.context, ancestorContext);
-            for (const descendantContext of this.descendantContexts(node)) {
-                this.assertContextDocument(descendantContext, ancestorContext);
-            }
+            // dev-only: validate the WHOLE subtree against the new ancestry.
+            this.assertSubtreeDocuments(node, parent);
         }
 
+        const oldParent = node.parent; // capture before updating internals
         nodeInternals.get(node)!.parent = parent;
+        this.removeFromChildrenOf(oldParent, node);
+        this.addToChildrenOf(parent, node);
     }
 
     /**
@@ -209,10 +229,11 @@ export class RdxFloatingTree {
      * at a closed node, so a keep-mounted/closed parent never hides an open grandchild (Base UI
      * `getNodeChildren`, ADR 0015 §1 traversal contract).
      *
-     * Dismissal and focus-out **containment** pass `onlyOpen: true` (Base UI `movedToUnrelatedNode`
-     * walks `getNodeChildren` with the default `onlyOpen=true`); only the focus-return / unmount path
-     * passes `onlyOpen: false`, so focus inside a mounted-but-closed descendant still counts as inside
-     * the tree (ADR 0017 #4 / #8, Base UI `FloatingFocusManager.tsx:842`).
+     * Dismissal children queries pass `onlyOpen: true` (the `hasBlockingChild` pattern in the
+     * capability). The focus manager's focus-return check passes `onlyOpen: false` explicitly (Base UI
+     * `FloatingFocusManager.tsx:842`) — so focus inside a closed-but-mounted descendant still counts as
+     * "inside the tree". Always pass `onlyOpen` explicitly for non-dismissal paths; do not inherit the
+     * default.
      */
     children(node: RdxFloatingNode, options: { onlyOpen?: boolean } = {}): RdxFloatingNode[] {
         if (isDevMode()) {
@@ -240,69 +261,63 @@ export class RdxFloatingTree {
      * unregistered node**: Base UI resolves ancestry by `parentId` lookup in the live nodes array, so
      * unregistering a parent breaks the chain (a removed middle node truncates ancestry — its children
      * keep the raw `parent` identity but it no longer appears as an ancestor). This avoids a "ghost"
-     * ancestor lingering in DI-ownership / document / dismissal traversal when Angular destroys a parent
-     * before its child.
+     * ancestor lingering in DI-ownership / document / dismissal/focus traversal when Angular destroys a
+     * parent before its child.
      */
     ancestors(node: RdxFloatingNode): RdxFloatingNode[] {
         if (isDevMode()) {
             this.assertOwnedNode(node);
         }
         const result: RdxFloatingNode[] = [];
-        for (let current = node.parent; current !== null && this.isRegistered(current); current = current.parent) {
+        for (let current = node.parent; current !== null && this.nodeSet.has(current); current = current.parent) {
             result.push(current);
         }
         return result;
     }
 
-    /**
-     * The deepest **open** descendant of `node` — "topmost within the tree" for Escape/outside-press
-     * ownership (Base UI `getDeepestNode`). Returns `null` when `node` has no open descendant.
-     */
-    deepestOpen(node: RdxFloatingNode): RdxFloatingNode | null {
-        if (isDevMode()) {
-            this.assertOwnedNode(node);
-        }
-        let deepest: RdxFloatingNode | null = null;
-        let maxDepth = -1;
-
-        const visit = (current: RdxFloatingNode, depth: number): void => {
-            if (depth > maxDepth) {
-                maxDepth = depth;
-                deepest = current;
-            }
-            for (const child of this.directChildren(current)) {
-                if (nodeIsOpen(child)) {
-                    visit(child, depth + 1);
-                }
-            }
-        };
-
-        // Start below `node`: only its own open descendants qualify as "topmost".
-        for (const child of this.directChildren(node)) {
-            if (nodeIsOpen(child)) {
-                visit(child, 0);
-            }
-        }
-
-        return deepest;
-    }
-
-    /** Snapshot of all registered nodes (debugging / diagnostics). */
+    /** Snapshot of all registered nodes (debugging / diagnostics). Registration order is preserved. */
     get all(): readonly RdxFloatingNode[] {
-        return this.nodes;
+        return [...this.nodeSet];
     }
 
-    /** Direct children of `node`, in registration order. */
-    private directChildren(node: RdxFloatingNode): RdxFloatingNode[] {
-        return this.nodes.filter((candidate) => candidate.parent === node);
+    // ─── Private adjacency helpers ───────────────────────────────────────────
+
+    /** Direct children of `parent` in registration order. O(1) via the adjacency map. */
+    private directChildren(parent: RdxFloatingNode): RdxFloatingNode[] {
+        return this.childrenOf.get(parent) ?? [];
     }
+
+    private addToChildrenOf(parent: RdxFloatingNode | null, node: RdxFloatingNode): void {
+        let children = this.childrenOf.get(parent);
+        if (!children) {
+            children = [];
+            this.childrenOf.set(parent, children);
+        }
+        children.push(node);
+    }
+
+    private removeFromChildrenOf(parent: RdxFloatingNode | null, node: RdxFloatingNode): void {
+        const children = this.childrenOf.get(parent);
+        if (!children) return;
+        const idx = children.indexOf(node);
+        if (idx !== -1) children.splice(idx, 1);
+        // Prune the now-empty list so its `parent` key (a STRONG ref to a node) is released. Without
+        // this an unregistered node that ever had a child lingers as a map key forever — retaining the
+        // node → context → floating/reference DOM elements (a leak that grows on every nested
+        // mount/unmount). `childrenOf` therefore only ever holds non-empty arrays.
+        if (children.length === 0) {
+            this.childrenOf.delete(parent);
+        }
+    }
+
+    // ─── Private traversal helpers ───────────────────────────────────────────
 
     /**
      * Nearest context-bearing node walking up from `node` (inclusive), skipping contextless ancestors.
      * Stops at an unregistered node (same ghost-ancestry rule as {@link ancestors}).
      */
     private nearestContext(node: RdxFloatingNode | null): RdxFloatingRootContext | null {
-        for (let current = node; current !== null && this.isRegistered(current); current = current.parent) {
+        for (let current = node; current !== null && this.nodeSet.has(current); current = current.parent) {
             if (current.context !== null) {
                 return current.context;
             }
@@ -318,17 +333,32 @@ export class RdxFloatingTree {
     }
 
     /**
+     * Dev-only: validates every context in `node`'s subtree (node + transitive descendants) against
+     * the nearest context-bearing ancestor walking up from `newParent`. Shared between `setParent`
+     * (moves a subtree under a new parent) to keep the document-consistency rule in one place.
+     */
+    private assertSubtreeDocuments(node: RdxFloatingNode, newParent: RdxFloatingNode | null): void {
+        const ancestorCtx = this.nearestContext(newParent);
+        this.assertContextDocument(node.context, ancestorCtx);
+        for (const dc of this.descendantContexts(node)) {
+            this.assertContextDocument(dc, ancestorCtx);
+        }
+    }
+
+    // ─── Private invariant guards ─────────────────────────────────────────────
+
+    /** Whether `node` is currently registered in this tree. O(1). */
+    private isRegistered(node: RdxFloatingNode): boolean {
+        return this.nodeSet.has(node);
+    }
+
+    /**
      * Guards that `node` actually belongs to **this** tree and is still registered — so a tree can
      * never mutate/traverse a node owned by another tree (which would leave `node.tree` pointing
      * elsewhere while its ancestry leads here) or one that was already unregistered.
      */
-    /** Whether `node` is currently registered in this tree. */
-    private isRegistered(node: RdxFloatingNode): boolean {
-        return this.nodes.includes(node);
-    }
-
     private assertOwnedNode(node: RdxFloatingNode): void {
-        if (node.tree !== this || !this.isRegistered(node)) {
+        if (node.tree !== this || !this.nodeSet.has(node)) {
             rdxDevError(
                 'floating/foreign-node',
                 'This node does not belong to this tree (or was already unregistered).',
@@ -343,7 +373,7 @@ export class RdxFloatingTree {
             if (parent.tree !== this) {
                 rdxDevError('floating/cross-tree-parent', 'A floating node parent must belong to the same tree.', DOCS);
             }
-            if (!this.isRegistered(parent)) {
+            if (!this.nodeSet.has(parent)) {
                 rdxDevError(
                     'floating/unregistered-parent',
                     'A floating node parent must be currently registered in the tree.',

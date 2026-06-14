@@ -102,34 +102,53 @@ Each mounted floating element registers a **neutral** node in a **shared floatin
 
 ```ts
 // Shared floating infrastructure (a core/floating package) — see "Shared infrastructure" below.
+// Base UI splits the lightweight tree NODE from the per-popup ROOT STORE; we mirror that exactly.
 interface RdxFloatingTree {
   /* node store; register/unregister, query children/ancestors (traversal below) */
   // Typed event channel — Base UI's `FloatingTreeStore.events`, used for hover-close, virtual
   // focus, menu open/close coordination, and list navigation. Neutral, not dismissal-specific.
   events: RdxFloatingEvents;
-  triggers: RdxTriggerRegistry; // shared trigger registry (§2) — read by dismissal AND focus
+  // NOTE: neither `triggers` nor `open` live on the tree — both are per-popup on RdxFloatingRootContext.
 }
 
+// Lightweight node = tree membership only (Base UI `FloatingNode`: id, parentId, context?).
 interface RdxFloatingNode {
   id: string;
   tree: RdxFloatingTree; // which store this node belongs to (Base UI `externalTree`)
   parent: RdxFloatingNode | null; // resolved logical parent (resolution rules below)
-  element: HTMLElement | null;
+  context: RdxFloatingRootContext | null; // per-popup store; `null` for a contextless intermediate.
+  // Associated AFTER registration and re-settable (Base UI attaches the context once the element
+  // resolves) via tree.setContext(node, ctx) — lifecycle `null → context → null`, owner-`Document`
+  // validated across ancestry AND subtree (so a contextless node can't bridge two documents).
+}
+
+// Per-popup root store (Base UI `FloatingRootStore` / `FloatingRootContext`). CAN EXIST WITHOUT A NODE
+// (`getEmptyRootContext()` analog) — this is what makes the node-optional NavMenu case work.
+interface RdxFloatingRootContext {
   ownerDocument: Document;
-  // NOTE: no `open` / `active` field — open-ness is a per-capability property (below).
+  open: () => boolean; // ONE neutral popup open-state; traversal's `onlyOpen` reads `node.context?.open()`
+  triggers: RdxTriggerRegistry; // per-popup (§2) — read by both dismissal and focus of THIS popup
+  floatingElement: HTMLElement | null; // read-only; assigned via validated setter (owner-Document checked)
+  referenceElement: Element | null; // read-only; assigned via validated setter
 }
 ```
 
-**The node is mounted-state; "open/active" is a per-capability property — they are not the same.** Base
-UI keeps `open` on a node's `context` (capability), not the node, so a popup can be **mounted but closed**
-(keep-mounted / animated exit) or a node can be a contextless intermediate. Each capability exposes its
-own `open`/`active`:
+**Node vs root context — they are distinct, exactly as in Base UI.** A node is **mounted** iff it is
+registered (so a popup can be **mounted but closed** — keep-mounted / animated exit — or be a contextless
+intermediate). Open-ness, the trigger registry, and the elements all live on the **root context**, not the
+node; tree traversal's `onlyOpen` filter reads **`node.context?.open()`**, **never** an OR over attached
+capabilities (that conflates independent capabilities — an early foundation bug, fixed). A capability's
+**own** active-ness (does _this_ capability handle events) is a separate `active()` it owns, distinct from
+the popup's `open()`. The split is what keeps the **node-optional** case sound: a capability references a
+**root context mandatorily** and a **node optionally**, so Navigation Menu can read `open()`/`triggers`
+from a standalone context while its tree node is temporarily absent.
 
 ```ts
-// 0015-owned capability attached to an RdxFloatingNode.
+// 0015-owned capability. References a ROOT CONTEXT (mandatory) + a NODE (optional, #8/NavMenu).
 interface RdxDismissableCapability {
-  node: RdxFloatingNode | null; // node-OPTIONAL: may be absent in a contextless/transient state (#8, NavMenu)
-  open: () => boolean; // active-ness lives on the capability, not the node
+  context: RdxFloatingRootContext; // mandatory — open/triggers/elements live here, node-or-not
+  node: RdxFloatingNode | null; // node-OPTIONAL: absent in a contextless/transient state (#8, NavMenu)
+  active: () => boolean; // this capability's active-ness (≈ context.open() && enabled)
   layer: RdxDismissableLayer;
   branches: Set<Element>;
   policy: RdxDismissableLayerPolicy;
@@ -203,15 +222,35 @@ _result_ yet the walk **still descends into its children** (so a keep-mounted/cl
 open grandchild). Mirroring Base UI's `getNodeChildren(nodes, id, onlyOpenChildren)`:
 
 ```ts
-// filters the *result* by open-capability; recursion continues regardless.
+// filters the *result* by node.context?.open(); recursion continues regardless.
 children(node, { onlyOpen?: boolean }): RdxFloatingNode[];
 ancestors(node): RdxFloatingNode[];
-deepestOpen(node): RdxFloatingNode | null; // topmost-within-tree = deepest open descendant (§1)
 ```
 
+**Dismissal ownership is per-node, not a global selector (verified `useDismiss.ts:170,214`).** Base UI
+does **not** pick one deepest/"topmost" node. Every open node's `useDismiss` handler runs and closes
+**unless** `!escapeKeyBubbles && hasBlockingChild('__escapeKeyBubbles')` — i.e. it defers only when it
+has its **own** open descendant that does not bubble. Two open **siblings** in one tree **both** respond
+to Escape / outside-press. `hasBlockingChild` is a **local function inside `useDismiss`** (`useDismiss.ts:170`),
+not a tree API — in Angular it lives in `RdxDismissableCapability` as:
+`tree.children(node, { onlyOpen: true }).some(isBlocking)`. A global `deepestOpen` selector would
+reintroduce the old single-active-layer stack under a new name and must not be added. (`getDeepestNode`
+exists in Base UI's `nodes.ts:18` but is deliberately **not** called by `useDismiss` — confirmed.)
+
+**Unregister lifecycle — no ghost ancestry (verified against `getNodeAncestors`).** Base UI resolves
+ancestry by `parentId` lookup in the **live** nodes array (`nodes.find(n => n.id === currentParentId)`,
+`nodes.ts:45`), so unregistering a node **breaks the chain**: a removed middle node truncates its
+descendants' ancestry (they keep the raw `parent` identity but it is no longer a traversable ancestor —
+the walk **stops**, it does not skip to the grandparent). We match this: `ancestors()` / `nearestContext()`
+**stop at an unregistered node**, so a parent that Angular destroys before its child cannot linger as a
+ghost ancestor influencing DI-ownership, document context, or dismissal/focus traversal. Correspondingly,
+`register()` / `setParent()` **reject an unregistered (or foreign) parent** — you cannot attach under a node
+that has already left the tree.
+
 **Focus-return uses `onlyOpen: false` — it must include closed-but-mounted descendants (#4, verified).**
-The `onlyOpen` filter is **not** one global default. Dismissal "topmost"/children queries use
-`onlyOpen: true`, but the focus manager's **focus-inside-tree** check on unmount/close walks
+`tree.children()` defaults `onlyOpen` to `true` (the dismissal default), but the focus manager's
+**focus-inside-tree** check
+on unmount/close walks
 `getNodeChildren(tree, nodeId, false)` (`FloatingFocusManager.tsx:842`) — `onlyOpen=false`, so focus living
 inside a **mounted-but-closed** descendant still counts as "inside the floating tree" and can govern whether
 return-focus runs. The shared traversal must therefore expose **both** filters and the ADR 0017 focus-return
@@ -251,19 +290,39 @@ type RdxFloatingParentOverride =
 The point is that "no override" (`inherit`) and "explicit independent root" (`root`) are **distinct** —
 they must not both reduce to `parent == null`.
 
+**`{ kind: 'root' }` is NOT tree isolation — it is `parent = null` _within the current tree_.** Tree
+selection is a **separate** contract: `resolveFloatingTree(externalTree?)` = `externalTree ?? nearest
+injected RDX_FLOATING_TREE` (Base UI `externalTree ?? contextTree`). The parent override **never** selects
+the tree. Two consequences pinned for the implementation: (a) a node made `{ kind: 'root' }` is still a node
+of the **same** tree (it just has no parent there) — to put a node in a genuinely separate store, supply an
+explicit `externalTree`; (b) for a detached `{ kind: 'node', parent }` from a **sibling injector**, the
+nearest injected tree may be absent or a different tree than `parent.tree`, so the registrant **must** pass
+`externalTree = parent.tree` (so the node joins its parent's tree and the cross-tree invariant holds) —
+relying on the nearest injected tree would throw `cross-tree-parent` or mis-place the node.
+
 This override applies to **floating nodes only**. A detached _trigger_ is a different mechanism: it has
 no node and no parent — it registers as an inside-element with the layer it controls through the scoped
 registrar of §2, so pressing or focusing it does not dismiss its popup. Do not register a trigger as a
 node parent; the two paths must stay distinct in the implementation.
 
-**Tree/document invariants (dev-mode diagnostics).** Detached-composition mistakes must surface as
-**early diagnostics**, not as wrong dismissal/focus ownership later. The registration API must reject (or
-`rdxDevError`):
+**Tree/document invariants — split by whether a violation corrupts structure.** Detached-composition
+mistakes must surface as **early diagnostics**, not as wrong dismissal/focus ownership later. But the
+checks are **not** uniformly dev-only: a check whose violation would **corrupt the tree's internal
+structure** runs in **every** build (production included), because skipping it leaves a broken tree, not
+just an undiagnosed misuse. Only the **expensive** correctness checks are gated behind `isDevMode()`.
 
-- a `parent` that belongs to a **different `tree`**;
-- a `parent` in a **different `ownerDocument`**;
-- an **ancestry cycle** (the new parent chain reaching back to the node);
-- registering one node in **more than one tree** at a time.
+- **Always-on (structural integrity)** — a node passed to a mutator (`setParent`/`setContext`) must
+  belong to **this** tree and still be **registered**; a `parent` (`register`/`setParent`) must belong to
+  this tree and be registered; and `setParent` must **reject an ancestry cycle**. Violating any of these
+  corrupts the tree: a foreign/ghost parent, a mutation of another tree's node, or — for a cycle — a
+  `children`/`ancestors`/`nearestContext` traversal that **recurses/loops forever**. The cycle walk is
+  O(depth), cheap enough to keep on in production.
+- **Dev-only (`isDevMode`)** — the **owner-`Document`** consistency check across the ancestry **and**
+  subtree (O(subtree)), and registering one node in more than one tree. These catch misuse without being
+  load-bearing for structural integrity.
+
+(Read-only traversal — `children`/`ancestors` — keeps its ownership check dev-only: a foreign node
+there yields a wrong result, not corruption.)
 
 **Owner-`Document` relocation rule (single normative decision).** Moving a portal's nodes **within the
 same `Document`** is allowed (that is the normal portal case, and DI ancestry is unaffected).
@@ -289,20 +348,25 @@ exit. Our `RdxPopperContentWrapper.autoUpdate` already lives for the directive's
 **parity, kept as-is**: no `active` input and no freeze-on-`open=false`. If a future primitive needs a frozen
 exit, that becomes a separate Popper capability, not a dismissal concern.
 
-**The portal registry is DOM-inside-checks only — it does not define ancestry.** The scoped portal registry
-(ADR 0017 §6a) exists so a parent can read its descendant portals' DOM roots for keep-sets / outside-press
-containment. It does **not** establish logical floating ancestry: `RdxFloatingNode.parent` (DI-derived)
-remains the **sole** source of dismissal ownership, independent of where nodes are appended in the DOM.
+**The portal registry is for `markOthers` keep-sets only — never for dismissal.** The scoped portal registry
+(ADR 0017 §6a) exists so a parent can read its descendant portals' DOM roots for **`markOthers` / aria-hidden
+keep-sets** (ADR 0017). It is **not** a dismissal-inside source and **not** used for outside-press containment
+(§4: "inside" is the floating tree + trigger/branch/marker, **never** portal-registry membership — Base UI
+`useDismiss.ts` reads no `PortalContext`), and it does **not** establish logical floating ancestry:
+`RdxFloatingNode.parent` (DI-derived) remains the **sole** source of dismissal ownership, independent of
+where nodes are appended in the DOM.
 
-`RdxFloatingNode.parent` (logical ancestry) drives all dismissal ownership. Within a logical
-tree, "topmost" is the deepest active descendant, resolved from the tree (ancestry + blocking-child) —
-never from DOM or construction order.
+`RdxFloatingNode.parent` (logical ancestry) drives all dismissal ownership. Each open node handles
+its own Escape and outside-press; a node defers **only** when it has a non-bubbling open descendant
+(`hasBlockingChild` pattern, implemented in the capability — **not** a tree API and **not** a global
+"deepest open" selector).
 
 **Independent roots are not coordinated by the engine — strict Base UI parity.** Base UI's `useDismiss`
 does not coordinate independent floating trees against each other: each open independent root handles
 its own Escape and outside-press. We deliberately match that and add **no** document-scoped activation
-order across unrelated roots. The engine resolves "topmost" only **within** a tree; ordering between
-independent roots is the concern of the owning primitive or the application, not the dismissal engine.
+order across unrelated roots. Each open node within a tree handles its own event independently — there
+is no global "topmost" selector; ordering between independent roots is the concern of the owning
+primitive or the application, not the dismissal engine.
 
 This is an intentional change from the current `RdxDismissableLayer`, whose shared `layersRoot` makes
 Escape close only the last-registered layer across **all** roots. Dropping that shared order means: with
@@ -313,8 +377,7 @@ primitive layer), exactly as Base UI leaves it to the consumer.
 
 The engine must answer these questions without querying all `[data-dismissable-layer]` elements:
 
-- Is this layer the topmost active layer **within its tree**? (logical ancestry, not cross-root order)
-- Does this layer have an active blocking descendant?
+- Does this node have an open, non-bubbling descendant (`hasBlockingChild` pattern in the capability) that should handle the event instead?
 - Is an event inside this layer, one of its branches, its trigger, or an active descendant?
 - Should Escape or outside press propagate to an ancestor?
 
@@ -329,10 +392,15 @@ node store:
 
 1. **Neutral nodes** — `RdxFloatingTree` / `RdxFloatingNode` (no dismissal name, no baked-in
    `layer: RdxDismissableLayer`).
-2. **Typed capabilities** bound to a node — dismissal (`RdxDismissableCapability`, this ADR), focus (ADR
-   0017), and future hover/list-navigation each attach their own; each owns its `open`/`active`.
-3. **A shared trigger registry** on the tree/root (Base UI `context.triggerElements`, §2) — read by
-   **both** dismissal and the focus manager, so they never keep divergent inside-element lists.
+2. **Typed capabilities** that reference a node — dismissal (`RdxDismissableCapability`, this ADR), focus
+   (ADR 0017), and future hover/list-navigation each own their `active()`, distinct from the node's single
+   `open()` lifecycle.
+3. **A per-popup trigger registry** (Base UI `triggerElements` on each `FloatingRootStore`, §2) — one per
+   **root context** (`RdxFloatingRootContext`, which can exist without a node), read by **both** that
+   popup's dismissal and focus, so they never keep divergent inside-element lists. It is **not** tree-wide
+   (that would leak one popup's trigger into an unrelated popup's inside-set) and **not** on the node
+   (the context outlives / precedes the node). Membership matching is **cross-realm-safe** (reference
+   identity, not `instanceof`), for triggers in another `Window`/iframe.
 4. **Typed event channels** — Base UI's `FloatingTreeStore.events` (hover-close, virtual focus, menu
    open/close coordination, list navigation). Pin a neutral typed emitter on the tree now, rather than
    bolting one on later (which would change the fundamental tree API).
@@ -433,8 +501,9 @@ cancelable while silently ignoring `preventDefault()`.
 Defaults preserve intended current public behavior, except where this ADR explicitly fixes observable
 bugs:
 
-- Within a tree, Escape dismisses only the topmost blocking layer. Independent roots are not
-  coordinated by the engine (§1) — each handles its own Escape.
+- Within a tree, each open node handles Escape unless it has a non-bubbling open descendant
+  (`hasBlockingChild` pattern, capability-owned). Independent roots are not coordinated by the engine
+  (§1) — each handles its own Escape.
 - Pointer interaction inside a child layer does not dismiss its ancestors. This holds today only for
   modal children (via pointer-events layering); the tree makes it hold for non-modal children too,
   fixing the latent bug captured by the Phase 0 known-bug target.
@@ -786,16 +855,17 @@ non-parity transitional behavior.
 
 ## Implementation Plan
 
-### Phase -1: Document-scope `core/useScrollLock` (prerequisite)
+### Phase -1: Document-scope `core/useScrollLock` (prerequisite) — ✅ LANDED
 
-- Convert `packages/primitives/core/src/dom/use-scroll-lock.ts` from module-level `original` /
-  `scrollLockCount` to `WeakMap<Document, ScrollLockState>` with a browser guard. **All** mutable state
-  (the saved original, the count — and, once ADR 0016 lands the behavioral port, snapshots/timers/frames/
-  restore) lives on the per-`Document` state, never at module scope (ADR 0016 §1).
-- Verify scroll locking is isolated per document and SSR-safe for **every** `useScrollLock` caller:
-  Dialog, Menu, Popover, Select, Combobox, and Autocomplete.
-- This may land as its own small change before Phase 1; the dismissal engine's per-`Document` isolation
-  is incomplete without it.
+- ✅ **Done.** `packages/primitives/core/src/dom/use-scroll-lock.ts` converted from module-level `original` /
+  `scrollLockCount` to `WeakMap<Document, ScrollLockState>` (`{ original, count }` per `Document`) with an
+  `isPlatformBrowser(PLATFORM_ID)` guard (no-op on the server). **All** mutable state lives on the
+  per-`Document` state, never at module scope (ADR 0016 §1); the behavioral-parity additions
+  (snapshots/timers/frames/restore) land on the same state in ADR 0016.
+- ✅ Tested (`core/__tests__/use-scroll-lock.spec.ts`): lock/restore, per-`Document` isolation (an iframe
+  document lock does not touch the main document), shared per-document count composition (nested overlays),
+  and server no-op. Covers all `useScrollLock` callers (Dialog, Menu, Popover, Select, Combobox,
+  Autocomplete) since they share the one utility.
 - Scope: **per-`Document` correctness only.** Base UI scroll-lock behavioral parity (scroll-position,
   gutter, resize, pinch-zoom, owner element) is ADR 0016 (§6/§9), not this phase.
 
@@ -804,14 +874,16 @@ non-parity transitional behavior.
 Split the tests by whether they describe behavior that currently passes or a known bug. Do not assert a
 single blanket "nested child does not dismiss the parent" — that holds today only for some variants.
 
-**Characterization (must pass against current code, must keep passing):**
+**Characterization (must pass against current code, must keep passing) — ✅ baseline LANDED:**
 
-- topmost Escape dismissal;
-- branch pointer and focus interaction;
-- associated trigger interaction does not dismiss its popup;
-- nested **modal** child: pointer interaction does not dismiss the parent (protected today by
-  pointer-events layering);
-- stacked `disableOutsidePointerEvents` restoration.
+- ✅ topmost Escape dismissal (`dismissable-layer-stack.spec.ts`);
+- ✅ branch pointer and focus interaction (`dismissable-layer-characterization.spec.ts`);
+- ✅ associated trigger interaction does not dismiss its popup (registered as a branch today, same spec);
+- ✅ nested **modal** child: pointer interaction does not dismiss the parent (same spec; protected today by
+  pointer-events layering + DOM nesting);
+- ✅ stacked `disableOutsidePointerEvents` restoration (`dismissable-layer-stack.spec.ts`).
+
+These now lock the pre-refactor behavior so Phase 1 can be proven behavior-preserving.
 
 **Known-bug targets — the suite must stay green, so these are NOT committed as failing tests:**
 
@@ -835,15 +907,99 @@ commit, with the corrected behavior asserted the moment the fix lands.
 Nested portal, scrollbar, and real pointer-gesture cases belong in Playwright behavior tests because
 jsdom does not provide trustworthy layout or pointer behavior.
 
-### Phase 1: Explicit tree and document registry
+### Phase 1: Dismissal capability on the shared tree + document registry
 
-- Add the layer-node/context and document-scoped registry.
-- Replace DOM-order `isLayerExist`.
-- Derive ancestry and within-tree "topmost" from the logical tree. Add **no** cross-root activation
-  order — independent roots stay independent (Base UI parity).
-- Add the explicit parent-override registration handle for detached composition.
-- Scope branches to their owner.
-- Replace the global body pointer-events variable with the document registry.
+> The neutral shared floating **foundation already exists** in `@radix-ng/primitives/core`
+> (`core/src/floating`): `RdxFloatingTree` / `RdxFloatingNode` / `RdxFloatingRootContext`, traversal
+> `children`/`ancestors`, `RdxTriggerRegistry`, `RdxFloatingEvents`, the DI seams
+> (`RDX_FLOATING_TREE`, `RDX_FLOATING_ROOT_CONTEXT`, `resolveFloatingTree`, `injectFloatingRootContext`,
+> `RdxFloatingRegistrationContext`, `RDX_FLOATING_REGISTRATION`, `provideFloatingRegistration`), and the
+> structural/dev invariants. Phase 1 **consumes** it — do **not** re-implement the
+> node/context/tree/ancestry/parent-override or the handle propagation contract.
+
+**Root-context ownership (decided — Base UI parity, `useDismiss.ts:117`).** `useDismiss` **receives** an
+existing `FloatingRootContext`; it never creates one. So a **primitive root** (Dialog/Popover/Menu/…)
+creates **one** `RdxFloatingRootContext` and provides it via `provideFloatingRootContext`; the dismissal
+capability **and** the focus manager (ADR 0017) read that **same** context (one `open` / `triggers` /
+elements). A **standalone** `rdxDismissableLayer` creates a fallback context **only when none is provided**
+(`injectFloatingRootContext(fallback)`). `RDX_FLOATING_TREE` is **optional**: with no enclosing tree the
+capability runs **node-optional** (`node === null`), reading its context directly.
+
+**Standalone fallback-context lifecycle (decided — must not be inert).** `createFloatingRootContext()`
+defaults `open: () => false`, so the fallback **must** be configured or a bare `rdxDismissableLayer` would
+never dismiss. The fallback is built with: **`open: () => true` for the directive's lifetime** (a standalone
+layer has no separate open-state — it is active whenever mounted; if a consumer needs to toggle it, that is
+an explicit `enabled`/`open` input, not the default), **`ownerDocument` = the host element's
+`ownerDocument`**, and **`floatingElement` = the host element** (via `setFloatingElement`). So a standalone
+layer is active-while-mounted with its own element as the inside-surface.
+
+**Provider migration vs the legacy stack (decided — no broken intermediate).** Replacing `layersRoot` is
+**unsafe until** each primitive root provides `provideFloatingTree()` + `provideFloatingRootContext()` —
+otherwise every layer resolves `node === null`, becomes an independent root, and **loses nested ownership**
+(parent Dialog/Menu would no longer stop responding while a nested child is open). A **per-primitive
+incremental** switchover would also create unsound mixed states — legacy-parent + migrated-child,
+migrated-parent + legacy-child, or a branch registered only in the new capability while the **legacy** engine
+still reads events — so "no broken intermediate" would not hold automatically.
+
+**Decision: ATOMIC cutover — no dual-run, no compatibility bridge.** Phases 1–3 build the new tree/capability
+engine **in parallel**, unit-tested standalone, **without altering the live legacy path**: the legacy
+`RdxDismissableLayer` + `layersRoot` + global `context.branches` stay authoritative and untouched, and the
+new capability uses its **own** branch store / event handling that is **not yet wired** to behavior. **Phase
+4 performs a single atomic cutover** — every primitive root gains its providers (`provideFloatingTree()`
+inherit-or-create + `provideFloatingRootContext()`), branch registration moves to the capabilities, event
+handling switches to the tree, and `layersRoot` / `isLayerExist` / the global branch array are removed — **in
+one change**. Before the flip the tree drives nothing; after it, the tree drives everything. There is never a
+mix of legacy and migrated consumers, so the mixed-state failure modes cannot occur.
+
+- Build the **dismissal capability** (`RdxDismissableCapability`, §1) that references the root context
+  (mandatory) + node (optional), with `active()` tied to `context.open()`.
+- Build the **registration directive** for `rdxDismissableLayer`. It accepts two options:
+  `externalTree?: RdxFloatingTree` (explicit tree for detached sibling composition; same as Base UI's
+  `externalTree`) and `parentOverride?: RdxFloatingParentOverride` (defaults to `{ kind: 'inherit' }`).
+
+  **Angular DI propagation — handle pattern (decided; do not use dynamic token replacement).**
+  Angular injectors are sealed at creation time: a directive cannot change what `RDX_FLOATING_TREE`
+  resolves to for descendants after it processes runtime inputs. Instead, the directive provides a
+  `RdxFloatingRegistrationContext` (a stable DI handle with a **single atomic state signal** — not two
+  independent `WritableSignal` fields) via `provideFloatingRegistration()` **in its `providers` array**
+  (at injector creation). After resolving inputs in an `effect()`, the directive calls
+  `selfReg.register(resolvedTree, registeredNode)`. Descendants inject the handle with
+  `{ optional: true, skipSelf: true }` and read `parentReg.tree()` / `parentReg.node()` reactively.
+
+  Concrete sequence in `providers` + `constructor`:
+  1. `providers: [provideFloatingRegistration()]` — seals the stable handle at injector creation.
+  2. Inject at construction time (injection context):
+     `selfReg = inject(RDX_FLOATING_REGISTRATION)`,
+     `parentReg = inject(RDX_FLOATING_REGISTRATION, { optional: true, skipSelf: true })`,
+     `ambientTree = inject(RDX_FLOATING_TREE, { optional: true })`.
+  3. In `effect((onCleanup) => { … })`: read `this.externalTreeInput()` (an `input()` signal), then
+     resolve `tree = externalTree ?? parentReg?.tree() ?? ambientTree`. For `inherit`, resolve
+     `parentNode = parentReg?.node() ?? null`; for `root` override, `parentNode = null`; for `node`
+     override, `parentNode = override.parent`.
+  4. If tree is non-null: `const node = tree.register(…)`, then `selfReg.register(tree, node)`;
+     cleanup on `onCleanup(() => { tree.unregister(node); selfReg.clear(); })`.
+  5. If tree is null: node-optional mode — capability runs without a tree node; only root context is
+     injected. `selfReg.tree()` stays `null`.
+
+  `inject()` is **not** available inside `effect()` (no injection context there), so all DI resolution
+  (`inject(RDX_FLOATING_REGISTRATION, …)`, `inject(RDX_FLOATING_TREE, …)`) happens in the constructor.
+  The handle's `parentReg.node()` is the single mechanism for parent resolution — there is no separate
+  `resolveFloatingParent` / `RDX_FLOATING_NODE` API (those were removed from the foundation; the handle
+  subsumes them).
+
+- Build the dismissal-ownership resolution within the capability using
+  `tree.children(node, { onlyOpen: true }).some(isBlocking)` — the `hasBlockingChild` pattern lives in
+  `RdxDismissableCapability` (Base UI `useDismiss.ts:170` is a local function, **not** a tree method);
+  the tree stays neutral. Add **no** cross-root activation order — independent roots stay independent
+  (Base UI parity). **Do not remove DOM-order `isLayerExist` / the `layersRoot` stack here** — it stays
+  authoritative until the per-primitive Phase 4 switchover (see "Provider migration" above), so nested
+  ownership is never broken mid-migration.
+- Give the new capability its **own** branch store (`branches: Set<Element>`), scoped to it — **leave the
+  legacy global `context.branches` array in place** (the legacy engine still reads it); the move is part of
+  the Phase 4 atomic cutover.
+- Build the per-`Document` body `pointer-events` registry (`WeakMap<Document, …>`, replacing the
+  module-global variable) on the new engine, building on the Phase -1 `useScrollLock` document-scope
+  precedent — wired in at the Phase 4 cutover.
 - Preserve owner-document and SSR-safe listener behavior.
 
 ### Phase 2: Event policy, propagation, and focus ownership
@@ -852,8 +1008,9 @@ jsdom does not provide trustworthy layout or pointer behavior.
 - Block parent dismissal while a non-bubbling child is active.
 - Migrate Menu's existing `closeParentOnEsc` (submenu re-emit) onto `escapeKeyBubbles`; keep
   `menu.spec.ts` green and the observable submenu-Escape behavior unchanged.
-- Move focus-out detection and closing into each owning primitive; remove focus-out from the shared
-  dismissal engine while preserving primitive behavior and compatibility outputs.
+- **Focus-out is NOT removed in this phase** — only Escape/outside policy + propagation land here. The
+  shared engine keeps driving focus-out (unchanged) until the **coordinated migration (Phase 4)**, so there
+  is never a window with no focus-out close. Removal is sequenced after the replacement exists (see Phase 4).
 
 ### Phase 3: Press and IME hardening
 
@@ -867,6 +1024,18 @@ jsdom does not provide trustworthy layout or pointer behavior.
 
 ### Phase 4: Directive API cleanup and internal consumer migration
 
+> **Cross-ADR ordering (hard dependency):** the focus-out **removal + rewiring** below requires the
+> replacement to already exist — i.e. **ADR 0017 Phase 3** (close-on-focus-out) must be landed for the FFM
+> primitives, and the package-internal `useFocusOutside` must exist for the three non-FFM primitives. Until
+> then the shared engine keeps driving focus-out (ADR 0015 Phase 2). This is the single coordinated phase
+> where focus-out moves; it is **not** removed earlier.
+
+- **Atomic cutover to the tree (decided above — done in ONE change, all consumers at once).** Every
+  primitive root gains `provideFloatingTree()` (**inherit-or-create**, so a top Menu/Dialog creates the tree
+  and a nested one inherits it — `MenuRoot.tsx:533` parity) + `provideFloatingRootContext()`; branch
+  registration moves to the capabilities; event handling switches from the legacy stack to the tree; and the
+  `layersRoot` stack + DOM-order `isLayerExist` + the global branch array are removed — **simultaneously**.
+  No mixed legacy/migrated state ever exists (no per-primitive interim).
 - Introduce the discriminated `dismissRequest`.
 - Remove raw helper directives and implementation-detail tokens from the public barrel.
 - Migrate Dialog, Popover, Menu, Select, Combobox, Autocomplete, Preview Card, Tooltip, Navigation
@@ -967,18 +1136,27 @@ portaled child's logical parent or configurable propagation through nested float
 
 This ADR can move to Accepted when:
 
-1. Logical ancestry and within-tree "topmost" never depend on `[data-dismissable-layer]` DOM order or
-   directive construction order. The engine adds no cross-root activation order — independent roots each
-   handle their own Escape/outside-press, matching Base UI.
+1. Logical ancestry and per-node blocking-child ownership never depend on `[data-dismissable-layer]` DOM
+   order or directive construction order. The engine adds no cross-root activation order — independent
+   roots each handle their own Escape/outside-press, matching Base UI.
 2. A layer node can declare an explicit logical parent, so a detached/cross-injector-subtree popup
    resolves to the correct owner; detached triggers resolve as scoped inside-elements (§2), not layer
    parents.
-3. The shared floating infrastructure (§1) ships all **four** pillars from the start — neutral nodes,
-   typed per-capability state (with `open`/`active` on the capability, not the node), a **shared trigger
-   registry** (`hasElement`/`hasMatchingElement`), and **typed event channels** — read by both this ADR
-   and ADR 0017. Tree traversal **filters** by open-capability but **does not abort recursion** at a
-   closed node (a closed parent never hides an open descendant). Tree/document invariants are enforced as
-   dev diagnostics (§1).
+3. The shared floating infrastructure (§1) ships all **four** pillars from the start — a lightweight
+   neutral **node** (`id`/`parent`/`context`) distinct from the per-popup **root context**
+   (`RdxFloatingRootContext`: `open()`, `triggers`, elements) which can exist **without** a node
+   (`getEmptyRootContext` analog, for node-optional NavMenu); typed capabilities that **reference** a root
+   context (mandatory) + node (optional) and own their `active()`; a **per-popup trigger registry**
+   (`hasElement`/`hasMatchingElement`, on the root context, **not** tree-wide); and **typed event
+   channels** (neutral, private per tree) — all read by both this ADR and ADR 0017. The tree is
+   **scoped-by-default** (one per coordinating root via `provideFloatingTree()`, no application-root
+   singleton — Base UI parity), so its events never leak across unrelated popups. Tree traversal
+   **filters** by `node.context?.open()` (never an OR over capabilities) but **does not abort recursion**
+   at a closed node (a closed parent never hides an open descendant). Tree invariants are enforced by
+   severity (§1): the **structural** checks — node/parent belongs to this tree and is registered, and **no
+   ancestry cycle** — run in **every build** (a violation corrupts the tree or hangs traversal); the
+   **expensive** correctness checks — owner-`Document` consistency across the ancestry **and subtree**
+   (through contextless intermediates) — are **dev-only** (`isDevMode`).
 4. Parent layers remain open while interacting with active child layers or scoped branches.
 5. Escape closes the correct layer and does not dismiss during IME composition.
 6. Outside press implements the **full `RdxOutsidePressStrategy` contract** (`PressType | { mouse, touch } |
@@ -1008,9 +1186,13 @@ lazy fn`, resolved per-pointer per-press), with the per-primitive `outsidePressE
      one.
 10. Standalone `RdxDismissableLayer` performs no focus-out dismissal. Focus-out ownership splits: FFM
     primitives → **ADR 0017** (which owns the parity table — its acceptance gate, not 0015's); the three
-    non-FFM primitives (Tooltip, Preview Card, Navigation Menu) **re-wire their own focus-out via
-    `useFocusOutside`** so their current behavior is preserved (§3, Phase 4). Every retained `focusOutside`
-    output has documented cancellation semantics (§3) instead of a no-op `preventDefault()`.
+    non-FFM primitives (Tooltip, Preview Card, Navigation Menu) **re-wire their own focus-out to match
+    Base UI's own close behavior** via `useFocusOutside` **only where Base UI installs a focus-out path**
+    (§3, Phase 4). This is a **normative breaking change, not preservation**: the Radix-only divergences are
+    **deleted** (e.g. Preview Card's blanket `focusOutside` close → Base UI hover-interaction close; Navigation
+    Menu's shared-layer close → its own `useDismiss`/`REASONS.focusOut`; Tooltip's manual `preventDefault`
+    workaround disappears). Every retained `focusOutside` output has documented cancellation semantics (§3)
+    instead of a no-op `preventDefault()`.
 11. Editable no longer depends on the removed `RdxFocusOutside` / `RdxPointerDownOutside` directives and
     retains its current click-outside / focus-out commit behavior.
 12. `RdxDismissableLayersContextToken`, raw helper directives, and global branch mutation are no longer

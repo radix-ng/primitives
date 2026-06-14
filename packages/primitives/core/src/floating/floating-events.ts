@@ -1,49 +1,67 @@
 /**
- * The typed event map for the shared floating channel. Neutral by design: it ships only the base
- * `openchange` event, and each capability (hover-close, virtual focus, menu coordination, list
- * navigation) **augments** this interface via module augmentation rather than emitting untyped strings:
+ * The typed event map for the **shared tree-level coordination channel** on {@link RdxFloatingTree}.
+ * Neutral by design — it ships no events initially. Each capability (hover-close, virtual focus, menu
+ * coordination, list navigation) **augments** this interface via module augmentation rather than
+ * emitting untyped strings:
  *
  * ```ts
  * declare module '@radix-ng/primitives/core' {
  *   interface RdxFloatingEventMap {
- *     'virtualfocus': { id: string; element: HTMLElement | null };
+ *     virtualfocus: { id: string; element: HTMLElement | null };
  *   }
  * }
  * ```
  *
- * Pinning the map up front (ADR 0015 §1, pillar 4) is what lets later consumers extend the channel
- * type-safely instead of changing the fundamental tree API once `any` payloads have spread.
+ * **`openchange` belongs here only per-popup, not per-tree.** Base UI emits `openchange` on the
+ * per-popup `FloatingRootStore.events` (`FloatingRootStore.ts:121`), not on the shared
+ * `FloatingTreeStore.events`. For open-state changes, use {@link RdxFloatingRootContextEventMap} on
+ * the popup's {@link RdxFloatingRootContext.events}, not this tree-level channel.
  */
-export interface RdxFloatingEventMap {
-    /**
-     * The popup's open-state changed. Neutral, matching Base UI's tree events — the tree is
-     * scoped-by-default (one per coordinating root, not application-wide), so events do not leak
-     * across unrelated popups and an event need not carry node identity. `reason` mirrors Base UI's
-     * open-change reason strings.
-     */
+// Intentionally empty: an augmentation seed. Capabilities add keys via `declare module` augmentation,
+// which only works on an `interface` — so this must stay an interface and starts with no members.
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface RdxFloatingEventMap {}
+
+/**
+ * The typed event map for the **per-popup events channel** on {@link RdxFloatingRootContext} —
+ * the Angular counterpart of Base UI's `FloatingRootStore.events` (`FloatingRootStore.ts:121`).
+ * Unlike the tree channel (one per coordinating root shared by all nested popups), this channel
+ * lives **on the root context** so each popup has its own scoped emitter with no cross-popup bleed.
+ */
+export interface RdxFloatingRootContextEventMap {
+    /** The popup's open-state changed. `reason` mirrors Base UI open-change reason strings. */
     openchange: { open: boolean; reason?: string; event?: Event };
 }
 
 /**
- * Neutral typed event channel shared by every floating capability — the Angular counterpart of Base
- * UI's `FloatingTreeStore.events` (`createEventEmitter`), keyed by {@link RdxFloatingEventMap}.
+ * Neutral typed event channel — the Angular counterpart of Base UI's `createEventEmitter()`, typed
+ * over `M` (a {@link RdxFloatingEventMap} sub-type for tree-level or a
+ * {@link RdxFloatingRootContextEventMap} sub-type for per-popup).
  */
-export interface RdxFloatingEvents {
-    emit<K extends keyof RdxFloatingEventMap>(event: K, data: RdxFloatingEventMap[K]): void;
-    on<K extends keyof RdxFloatingEventMap>(event: K, listener: (data: RdxFloatingEventMap[K]) => void): void;
-    off<K extends keyof RdxFloatingEventMap>(event: K, listener: (data: RdxFloatingEventMap[K]) => void): void;
+export interface RdxFloatingEvents<M extends object = RdxFloatingEventMap> {
+    emit<K extends keyof M>(event: K, data: M[K]): void;
+    on<K extends keyof M>(event: K, listener: (data: M[K]) => void): void;
+    off<K extends keyof M>(event: K, listener: (data: M[K]) => void): void;
 }
 
 /**
- * Creates a {@link RdxFloatingEvents} emitter backed by a `Map<event, Set<listener>>`, mirroring Base
- * UI's implementation exactly: synchronous dispatch, set-deduplicated listeners, no replay.
+ * Creates an {@link RdxFloatingEvents} emitter backed by `Map<event, Set<listener>>`, mirroring Base
+ * UI's implementation: synchronous dispatch, set-deduplicated listeners, no replay.
+ *
+ * **Snapshot dispatch:** `emit()` snapshots the listener set before iterating so that a listener
+ * calling `on()`/`off()` during dispatch does not cause skip/revisit issues.
  */
-export function createFloatingEvents(): RdxFloatingEvents {
+export function createFloatingEvents<M extends object = RdxFloatingEventMap>(): RdxFloatingEvents<M> {
     const listeners = new Map<string, Set<(data: never) => void>>();
 
     return {
         emit(event, data) {
-            listeners.get(event as string)?.forEach((listener) => listener(data as never));
+            const set = listeners.get(event as string);
+            if (!set) return;
+            // Snapshot avoids mutation-during-dispatch (on()/off() in a listener).
+            for (const listener of [...set]) {
+                listener(data as never);
+            }
         },
         on(event, listener) {
             let set = listeners.get(event as string);
