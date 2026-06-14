@@ -378,3 +378,23 @@ added spec asserting `<div rdxXxxPortal>` misuse throws in dev mode.
   `apps/radix-storybook/docs/guides/animation.docs.mdx` (its "lifecycle owner" table references
   `RdxPresenceDirective` mounting — add the structural portal case) and
   `apps/radix-storybook/docs/guides/ssr.docs.mdx` (portal no-op on server wording).
+
+## Follow-up clarification (boundaries for ADR 0015/0017)
+
+This ADR is **Implemented** and is not reopened; this is a non-normative clarification so later work does
+not bolt dismissal/focus ownership onto the portal. Per the floating-stack split (ADR 0015 dismissal,
+ADR 0017 focus manager):
+
+- A structural portal **keeps the declaration-site injector ancestry** — moving the host nodes does not
+  change DI, which is exactly what makes the shared floating tree's logical parent survive portaling
+  (ADR 0015 §1).
+- The portal is a **DOM-relocation primitive only**; it does **not** own dismissal or focus. Do **not**
+  add Escape/outside-press or focus-trap logic to `RdxPortal` / `RdxPortalPresence`.
+- The focus-integration functions Base UI's `FloatingPortal` performs (inner/outer guards, portal-subtree
+  tabbability, `aria-owns`, outer-guard focus-out close) belong to the **portal-focus bridge of ADR 0017
+  §6a** — which reads the portal's **multiple** `Element` roots (text/comment nodes ignored), owner
+  document, and `mounted`/`open` lifecycle. The portal exposes those; it does not act on them.
+- **Cross-`Document` container relocation is not supported** (ADR 0015 §1 invariant) — only same-document
+  container moves.
+- If strict Base UI parity later includes **Shadow DOM**, the portal's **container contract** must be
+  extended separately to accept a `ShadowRoot` container; that is out of this ADR's shipped scope.
