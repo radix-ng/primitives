@@ -128,7 +128,7 @@ own `open`/`active`:
 ```ts
 // 0015-owned capability attached to an RdxFloatingNode.
 interface RdxDismissableCapability {
-  node: RdxFloatingNode;
+  node: RdxFloatingNode | null; // node-OPTIONAL: may be absent in a contextless/transient state (#8, NavMenu)
   open: () => boolean; // active-ness lives on the capability, not the node
   layer: RdxDismissableLayer;
   branches: Set<Element>;
@@ -136,11 +136,23 @@ interface RdxDismissableCapability {
 }
 ```
 
+**The capability is node-optional (verified against Navigation Menu).** Base UI's Navigation Menu runs
+`useDismiss` with a **fallback empty floating context**, enabling interactions only when a positioner/value
+exists (`NavigationMenuList.tsx`). So the dismissal API must support a **contextless mode**: either the root
+registers a floating node **only when a popup exists**, or the capability tolerates `node === null`
+temporarily — a primitive must **not** be forced to register a full node in every state (ADR 0017 Phase 0
+#12).
+
 **Shared `mounted` / `open` / `preventUnmountOnClose` lifecycle — cross-cutting across all three ADRs
 (verified `DialogStore` / `popupStoreUtils`).** Base UI's close event-details carry a
 **`preventUnmountOnClose()`** that a consumer calls in the open-change handler to keep the popup **mounted
 after close** (not just during an exit animation). This is a **tri-state** — `open`, `closed+mounted`,
 `unmounted` — and it changes behavior owned by **all three** ADRs:
+
+- the tree capability's `open` vs the node's mounted-state (this §1);
+- how long the focus manager + **marker** stay alive, and **when return-focus fires** (ADR 0017);
+- the **internal-backdrop** lifecycle (ADR 0017 §5 — already "mounted but `inert` when `!open`");
+- the **scroll-lock predicate** keys off `open`, not mounted (ADR 0016).
 
 **It is a per-close one-shot, NOT a persistent `keepMounted` boolean (#3, verified).** Base UI attaches
 `preventUnmountOnClose` to the **specific close event's details**: `attachPreventUnmountOnClose(eventDetails)`
@@ -152,11 +164,6 @@ first prevented close — a mounted-popup leak). The contract is **close-transac
 request creates event details → the handler may hold **only that** close → reopen resets the hold → the
 next close begins un-held. Phase 0 pins how this maps onto `RdxPortalPresence`.
 
-- the tree capability's `open` vs the node's mounted-state (this §1);
-- how long the focus manager + **marker** stay alive, and **when return-focus fires** (ADR 0017);
-- the **internal-backdrop** lifecycle (ADR 0017 §5 — already "mounted but `inert` when `!open`");
-- the **scroll-lock predicate** keys off `open`, not mounted (ADR 0016).
-
 **Decision:** model this in the **shared lifecycle contract** as `mounted()` + `open()` on the capability
 (every consumer reads `open()` for behavior, `mounted()` for presence). Whether Radix exposes a public
 `preventUnmountOnClose()` or maps it onto `RdxPortalPresence` (keep-mounted) is a Phase-0 decision; if the
@@ -167,6 +174,20 @@ lifecycle, ADR 0017 §6a — _not_ "everything off"): **no dismissal** (capabili
 return-focus persist until unmount** (Base UI's `FloatingFocusManager` is `disabled={!mounted}`, so the
 trap survives the exit; ADR 0017 §3/§6a). It must not be left implicit — it changes observable timing in
 three ADRs.
+
+**Hover-open (`openReason === triggerHover`) is a shared policy input with DIFFERENT per-ADR effects —
+NOT a single `enabled=false` (cross-ADR invariant, verified against `PopoverPositioner`/`PopoverPopup`).**
+Base UI keeps a hover-opened Popover/Menu **dismissable** while turning off the modal machinery. So the
+hover reason is one input fanned out to **opposite** effects, and no ADR may collapse it into a blanket
+disable:
+
+- **dismissal stays ACTIVE** (ADR 0015) — `useDismiss` is unaffected by hover;
+- **focus manager / marker / `aria-hidden` are OFF** (ADR 0017 — `disabled={!mounted || openReason === triggerHover}`, `PopoverPopup.tsx:135`);
+- **internal backdrop is NOT rendered** (ADR 0017 §5 — `modal === true && openReason !== triggerHover`, `PopoverPositioner.tsx:157`);
+- **scroll lock is OFF** (ADR 0016 — `openReason !== triggerHover`).
+
+Each ADR consumes the same `openReason`/hover input but applies its own effect; treating it as `enabled=false`
+everywhere would wrongly kill dismissal on hover popovers.
 
 **Dismissal capability goes inactive _immediately_ on `open=false` — not at unmount.** A mounted-but-closed
 popup stays registered as a neutral floating node, but its **dismissal capability becomes inactive the
@@ -369,15 +390,26 @@ Focus-out behavior moves out of `RdxDismissableLayer` during this migration. The
     on `modal`, reference/floating elements, focus guards, typeable-combobox mode, nested-tree position,
     `disablePointerDismissal`).
   - **Primitives with no focus manager** — Tooltip, Preview Card, Navigation Menu (verified: no Base UI
-    `FloatingFocusManager`, ADR 0017 §1) → focus-out stays a **per-primitive concern owned by that
-    primitive**. They keep their current close-on-focus-out behavior by consuming the package-internal
-    `useFocusOutside` utility (§7) directly. **This is an explicit task of the 0015 migration** (Phase 4)
-    — when the layer stops driving focus-out, those primitives must re-wire it locally so the behavior is
-    not lost.
-- The current Radix behavior is recorded only as the **as-is baseline** — useful for spotting where
-  matching Base UI is a breaking change, not as the target. As of today that baseline is: Dialog,
-  Popover, Navigation Menu, Preview Card close on focus-out; Select and Tooltip do not. Where the parity
-  audit shows a divergence, the table wins and the breaking change is documented.
+    `FloatingFocusManager`, ADR 0017 §1) → focus-out is **whatever their own `useDismiss` + hover/focus
+    interactions do in Base UI — _not_ a generic layer focus-out, and _not_ preserved-as-is.** Base UI
+    closes these through their interaction hooks (Tooltip: `useDismiss` + hover/focus; Preview Card:
+    `useDismiss` + hover; Navigation Menu: `useDismiss` + its own navigation/focus logic with per-trigger
+    `REASONS.focusOut`), **never** through a shared `FloatingFocusManager.closeOnFocusOut`. So this is a
+    **normative breaking change, not a preservation task**: the migration must **delete** the Radix
+    behaviors that diverge and re-implement each primitive's close to match Base UI exactly. Confirmed
+    divergences to **remove**, not keep:
+    - **Preview Card** currently closes on **any** `focusOutside` and reports reason `'none'` → replace with
+      Base UI's hover-interaction close (no blanket focus-out, correct reason);
+    - **Navigation Menu** currently closes via the **shared layer** `focusOutside` → replace with its own
+      `useDismiss` + navigation/focus logic emitting `REASONS.focusOut` per trigger/link;
+    - **Tooltip** currently **manually prevents** the shared `focusOutside` → that workaround disappears
+      with the shared listener; Tooltip closes via its own `useDismiss` + hover/focus.
+      A primitive may consume the package-internal `useFocusOutside` utility (§7) **only where Base UI's own
+      hook actually installs a focus-out path** — not to reproduce a removed Radix behavior.
+- The current Radix behavior is recorded only as the **as-is baseline** to locate breaking changes — it is
+  **never** the target. A **per-primitive strict-parity table** (Phase 0) is mandatory for these three:
+  each row is _Base UI's actual close mechanism and reason_, and any Radix-only focus-out path absent from
+  Base UI is **deleted**. The table wins; the breaking change is documented.
 - Existing primitive popup `focusOutside` outputs may remain as compatibility APIs, but are emitted by
   the primitive's focus policy rather than the dismissal engine.
 - Standalone `RdxDismissableLayer` no longer provides focus-out dismissal.
@@ -408,11 +440,24 @@ bugs:
   fixing the latent bug captured by the Phase 0 known-bug target.
 - Branch interaction counts as inside.
 
-Primitive-specific policy remains owned by the consuming primitive. For example, Dialog's
-`disablePointerDismissal` rejects pointer dismissal while still allowing Escape — and, matching Base UI's
-`closeOnFocusOut={!disablePointerDismissal}`, it also suppresses **focus-out** close, not just pointer
-(our `dialog-popup.ts` already gates both `outside-press` and `focus-out` on it). The parity table (§3
-focus-out bullet) must capture that this one input governs two axes. Menu **already** ships
+Primitive-specific policy is **owned by the root / interaction context, not the popup/layer (decided,
+verified).** In Base UI `useDismiss` is invoked by the **root-level interaction owner**, which is the only
+place with enough context: Dialog knows nested-dialog counts / backdrop refs / `isTopmost`
+(`useDialogRoot.ts`); Menu knows `parent.type`, the context-menu open event, and `closeParentOnEsc`;
+Combobox knows clear/chips/input-group/trigger; Navigation Menu knows its trigger list. The popup/layer has
+none of this. So the normative rule is: **the root/interaction context _computes_ the
+`RdxOutsidePressPolicy` / `outsidePressGuard` / Escape policy; the dismissal capability only _executes_
+it.** Migrating existing popup code must **move this logic up to the root**, not re-assemble business logic
+inside the layer (the failure mode this guards against).
+
+**Dialog `disablePointerDismissal` is one public input governing two axes — keep it fused (decided,
+verified against `DialogPopup` / `useDialogRoot`).** It is **not** pointer-only despite the name. Base UI
+wires the same input to **both** `closeOnFocusOut={!disablePointerDismissal}` (`DialogPopup.tsx:124`) **and**
+outside-press (`outsidePress`: `isTopmost && !disablePointerDismissal`, `useDialogRoot.ts:103`); our
+`dialog-popup.ts` already gates both. Even with breaking changes allowed, this stays a **single public
+behavioral contract** — it must **not** be split into separate pointer/focus flags for "API cleanliness",
+since that would change Base UI's user-observable behavior. The §3 parity table records that this one input
+governs two axes. Menu **already** ships
 `closeParentOnEsc`
 (`menu-root.ts`, consumed by `menu-popup.ts`, covered by `menu.spec.ts`): a submenu currently re-emits
 Escape to its parent through ad-hoc context wiring. This ADR must **migrate that existing behavior**
@@ -459,7 +504,9 @@ Outside-press parity is mandatory (Phase 3), not optional polish. The hardened i
 
 ```ts
 type RdxPressType = 'intentional' | 'sloppy';
-type RdxOutsidePressEvent =
+// The per-pointer + lazy STRATEGY (Base UI's `outsidePressEvent` prop). Distinct from the native
+// `RdxOutsidePressEvent` DOM-event union defined in §7 — do not conflate the two names.
+type RdxOutsidePressStrategy =
   | RdxPressType
   | { mouse: RdxPressType; touch: RdxPressType }
   | (() => RdxPressType | { mouse: RdxPressType; touch: RdxPressType }); // lazy, re-read per press
@@ -481,10 +528,11 @@ Phase 3, verified against each root) pins the value — already confirmed:
 **Per-primitive `outsidePressGuard(event)` policy (not generic containment only).** Beyond tree/branch
 containment, Base UI primitives run their **own** `outsidePress(event)` callback: Dialog checks topmost,
 `disablePointerDismissal`, its own backdrop, and nested-dialog counts; Combobox excludes the trigger,
-clear, chips container, and input group. These are **primitive policy**, not engine logic. The engine
-must therefore accept a per-primitive `outsidePressGuard(event): boolean` and **migrate each primitive's
-existing guard conditions** via a Phase 4 table — otherwise unification silently drops existing/Base UI
-guards.
+clear, chips container, and input group. These are **primitive policy computed by the root/interaction
+context** (above), not engine logic and not popup logic. The engine must therefore accept a per-primitive
+`outsidePressGuard(event): boolean` **supplied by the root**, and **migrate each primitive's existing guard
+conditions up to the root** via a Phase 4 table — otherwise unification silently drops existing/Base UI
+guards, or (worse) re-collects them inside the layer where the needed context is absent.
 
 **Outside-press enablement must support runtime suspension, not a static boolean (verified:
 `outsidePressEnabledRef` + `DrawerSwipeArea`).** Base UI keeps a **mutable** `outsidePressEnabledRef` that
@@ -496,9 +544,9 @@ suspension handle** plus a **lazy/signal `enabled`** (re-read per press):
 
 ```ts
 interface RdxOutsidePressPolicy {
-  event: RdxOutsidePressEvent; // the per-pointer + lazy contract above
+  strategy: RdxOutsidePressStrategy; // the per-pointer + lazy contract above (Base UI `outsidePressEvent`)
   enabled: () => boolean; // re-read per press — signal-based
-  guard?: (event: RdxOutsidePressEvent) => boolean; // per-primitive containment policy
+  guard?: (event: RdxOutsidePressEvent) => boolean; // receives the NATIVE event (§7 union), not the strategy
   // Drawer holds this across a swipe; releasing re-enables on the NEXT MACROTASK (Safari workaround).
   suspend(): RdxSuspensionHandle; // handle.release() restores after a macrotask
 }
@@ -601,7 +649,8 @@ interface RdxDismissRequestBase {
 }
 
 // Outside press is detected across mouse/pointer/touch (intentional + sloppy modes), matching Base UI,
-// so the native event is not always a PointerEvent.
+// so the native event is not always a PointerEvent. This is the NATIVE DOM-event union — distinct from
+// the §4 `RdxOutsidePressStrategy` (the intentional/sloppy resolution policy).
 export type RdxOutsidePressEvent = MouseEvent | PointerEvent | TouchEvent;
 
 export type RdxDismissRequest =
@@ -932,9 +981,10 @@ This ADR can move to Accepted when:
    dev diagnostics (§1).
 4. Parent layers remain open while interacting with active child layers or scoped branches.
 5. Escape closes the correct layer and does not dismiss during IME composition.
-6. Outside press implements the **full `RdxOutsidePressEvent` contract** (`PressType | { mouse, touch } |
+6. Outside press implements the **full `RdxOutsidePressStrategy` contract** (`PressType | { mouse, touch } |
 lazy fn`, resolved per-pointer per-press), with the per-primitive `outsidePressEvent` table and a
-   per-primitive `outsidePressGuard(event)` policy; ignores non-primary buttons, scrollbars, drag-out, and
+   per-primitive `outsidePressGuard(event)` policy (the guard receives the native `RdxOutsidePressEvent`);
+   ignores non-primary buttons, scrollbars, drag-out, and
    canceled gestures; and treats registered logical descendants as inside. Outside-press **enablement is
    runtime-suspendable via a scoped `suspend()` handle** (signal-based) so Drawer can disable it for a
    whole swipe and re-enable on the **next macrotask** (Safari workaround, §4). (The _unregistered_

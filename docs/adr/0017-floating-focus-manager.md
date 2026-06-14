@@ -394,9 +394,32 @@ Select, Combobox, Autocomplete. Columns include the **internal-backdrop lifecycl
 while **mounted**, becomes **`inert` when `!open`** — preserving the exit animation while killing
 interaction):
 
-| Primitive                                                 | what intercepts a background press | internal backdrop when none provided? | trigger/input cutout | lifecycle (mounted vs open) | interactive predicate (`inert` when `!open`) | state during animated exit | behavior with **no** backdrop | ⇒ drop the body toggle? |
-| --------------------------------------------------------- | ---------------------------------- | ------------------------------------- | -------------------- | --------------------------- | -------------------------------------------- | -------------------------- | ----------------------------- | ----------------------- |
-| _(Phase 0 fills each row from Base UI source + Chromium)_ |                                    |                                       |                      |                             |                                              |                            |                               |                         |
+**Menu must be split by `parent.type`, not one row (#5, verified against `MenuPositioner`).** Base UI's
+backdrop predicate is `parent.type !== 'menu' && ((parent.type !== 'menubar' && modal && reason !== triggerHover) || (parent.type === 'menubar' && parent.context.modal))` (`MenuPositioner.tsx:285–287`).
+So the table needs a **distinct row per Menu shape** — `effectiveModal = modal && !isSubmenu` is **not**
+enough for strict parity:
+
+| Menu shape          | internal backdrop?                              |
+| ------------------- | ----------------------------------------------- |
+| **submenu**         | **no** (`parent.type === 'menu'`)               |
+| **root menu**       | yes if `modal && reason !== triggerHover`       |
+| **hover-open root** | **no** (`reason === triggerHover`)              |
+| **menubar child**   | yes iff `parent.context.modal` (menubar's flag) |
+| **context menu**    | yes if `modal`                                  |
+
+| Primitive                                                                       | what intercepts a background press | internal backdrop when none provided? | trigger/input cutout | lifecycle (mounted vs open) | interactive predicate (`inert` when `!open`) | state during animated exit | behavior with **no** backdrop | ⇒ drop the body toggle? |
+| ------------------------------------------------------------------------------- | ---------------------------------- | ------------------------------------- | -------------------- | --------------------------- | -------------------------------------------- | -------------------------- | ----------------------------- | ----------------------- |
+| Dialog / Popover (click) / Select / Combobox / Autocomplete                     |                                    |                                       |                      |                             |                                              |                            |                               |                         |
+| Menu (submenu / root / hover-root / menubar-child / context) — **one row each** |                                    |                                       |                      |                             |                                              |                            |                               |                         |
+| _(Phase 0 fills each row from Base UI source + Chromium)_                       |                                    |                                       |                      |                             |                                              |                            |                               |                         |
+
+**The backdrop primitive is infra, but the _decision to render it_ is per-primitive policy (#7, verified).**
+`RdxInternalBackdrop` is shared infrastructure (above), but **who renders it, where, and with what cutout
+differs per primitive** and must **not** become "every modal floating node auto-gets a backdrop" (that would
+break hover Popover, submenus, and menubar). Verified placements: **Dialog renders it in the portal**;
+**Popover / Menu / Select / Combobox render it from the positioner** with their own predicate and cutout
+target. So the render decision (predicate + cutout element + host: portal vs positioner) is owned by each
+primitive's policy; the primitive only **reuses** the shared `RdxInternalBackdrop` mechanism.
 
 **Acceptance gate:** the body toggle (`disableOutsidePointerEvents` + `DocumentPointerEventsState`) is
 removed from `RdxDismissableLayer` **only for primitives whose row proves pointer-interaction parity**
@@ -714,11 +737,27 @@ complete.**
    **replace** this mechanism — pointer inside a portaled child while a document-capture listener is armed,
    child handler `preventDefault`s, parent must **not** dismiss, including when dispatch moves/removes the
    target. If they do not fully cover it, define the explicit capture-marker analog before Phase 1.
-10. **Safari/WebKit blur-before-unmount (#6 — browser matrix).** Base UI force-`blur()`s a focused input
+10. **Safari/WebKit blur-before-unmount (browser matrix).** Base UI force-`blur()`s a focused input
     inside a closing popup on WebKit before unmount to avoid a random scroll-to-bottom
     (`FloatingFocusManager.tsx:885–899`, gated `platform.engine.webkit && !open && floating`). **Gate:** the
     WebKit browser matrix asserts closing a popup with a focused inner input does **not** scroll the page and
     that return-focus stays correct.
+11. **Combobox input-inside vs input-outside — migrate the two layouts separately (#6, verified).** Base UI
+    sets `focusManagerModal = !inputInsidePopup || modal` (`ComboboxPopup.tsx:117`), so an **input-outside**
+    Combobox uses **modal** focus-manager behavior **even when `modal === false`**, with `returnFocus = false`
+    (`resolvedFinalFocus = inputInsidePopup ? undefined : false`, `:114`) because focus already stays in the
+    external input, the role is `dialog` vs `presentation` (`:81`), and the internal dismiss buttons render
+    iff `focusManagerModal` (`:134`). The current `combobox-popup.ts` comment — _"does not trap focus — focus
+    stays in the input throughout"_ — is therefore **not** full parity for the input-outside layout. **Gate:**
+    the migration characterizes **both** layouts independently — `focusManagerModal`, `returnFocus`,
+    `role`, the start/end dismiss buttons, and `getInsideElements` — and reconciles the popup's
+    "does-not-trap" claim with Base UI's modal-for-input-outside behavior.
+12. **Navigation Menu may run dismissal without a full floating node (#8, verified).** Base UI's Navigation
+    Menu uses `useDismiss` with a **fallback empty floating context**, enabling interactions only when a
+    positioner/value exists (`NavigationMenuList.tsx`). **Gate:** the shared dismissal API (ADR 0015) must
+    support a **contextless / node-optional** mode for migration — either the root registers a floating node
+    **only when a popup exists**, or the capability tolerates a temporarily-absent node — so Navigation Menu
+    is not forced to register a full node in every state.
 
 ### Phase 1: `RdxFloatingFocusManager` skeleton
 

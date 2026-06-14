@@ -1,5 +1,6 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as Stories from './dismissable-layer.stories';
+import * as FloatingOverlaysStories from './floating-overlays.stories';
 import { RdxDismissableLayer } from '../src/dismissable-layer';
 
 <Meta title="Utilities/Dismissable Layer" />
@@ -40,6 +41,16 @@ Prevent an individual dismiss reason by calling `preventDefault()` on the corres
 ```
 
 ## Examples
+
+### Floating overlays — the three engines
+
+A dialog, menu, popover, or tooltip is a _floating_ layer on top of the page. To behave correctly,
+something has to decide three things — **dismissal** ([ADR 0015](https://github.com/radix-ng/primitives/blob/main/docs/adr/0015-base-ui-aligned-dismissal-engine.md)), **scroll-lock** ([ADR 0016](https://github.com/radix-ng/primitives/blob/main/docs/adr/0016-scroll-lock-parity-and-activation-policy.md)), and **focus management** ([ADR 0017](https://github.com/radix-ng/primitives/blob/main/docs/adr/0017-floating-focus-manager.md)) — each owned by its own engine reading from **one shared layer tree**. The explainer below walks through how they coordinate; open the dialog → menu → submenu, then press **Escape** or click outside and watch the live panel.
+
+<Canvas sourceState="hidden" of={FloatingOverlaysStories.Default} />
+
+This demo is a self-contained simulation of how those engines coordinate; the real behavior is composed
+from `RdxDismissableLayer` plus the scroll-lock and focus-manager primitives.
 
 ### Nested Layers
 
