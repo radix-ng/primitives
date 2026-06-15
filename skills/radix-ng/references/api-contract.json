@@ -3037,14 +3037,12 @@
           "inputs": [
             {
               "name": "closeOnFocusOut",
-              "type": "boolean",
-              "default": "true",
+              "default": "undefined",
               "description": "Whether a **non-modal** popup closes when focus leaves to an unrelated node (Base UI\n`closeOnFocusOut`, default `true`; Dialog sets it to `!disablePointerDismissal`). Modal popups\nnever close on focus-out (the trap keeps focus in)."
             },
             {
               "name": "enabled",
-              "type": "boolean",
-              "default": "true",
+              "default": "undefined",
               "description": "Manager active-ness (ADR 0017 §2): the popup is mounted **and** not hover-opened."
             },
             {
@@ -3055,8 +3053,7 @@
             },
             {
               "name": "modal",
-              "type": "boolean",
-              "default": "false",
+              "default": "undefined",
               "description": "Modal popup → focus trap. Combined with `enabled` to drive the composed `RdxFocusScope`."
             },
             {

@@ -4,6 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { FOCUS_GUARD_ATTR } from '@radix-ng/primitives/focus-scope';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
+    provideFloatingFocusManagerConfig,
     RdxFloatingFocusManager,
     RdxInitialFocus,
     RdxReturnFocus,
@@ -123,6 +124,38 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
         outside.focus();
 
         expect(document.activeElement).toBe(inside);
+    });
+
+    it('a primitive config drives the gates when the matching input is unset', async () => {
+        @Component({
+            imports: [RdxFloatingFocusManager],
+            providers: [provideFloatingFocusManagerConfig(() => ({ modal: () => true }))],
+            template: `
+                <div #scope rdxFloatingFocusManager>
+                    <button #a>A</button>
+                </div>
+            `
+        })
+        class ConfigHost {
+            readonly scope = viewChild.required('scope', { read: ElementRef });
+            readonly a = viewChild.required('a', { read: ElementRef });
+        }
+
+        const outside = document.createElement('button');
+        document.body.appendChild(outside);
+        appended.push(outside);
+
+        const fixture = TestBed.createComponent(ConfigHost);
+        fixture.autoDetectChanges();
+        await flush();
+
+        const inside = fixture.componentInstance.a().nativeElement as HTMLElement;
+        inside.focus();
+        outside.focus();
+
+        // config `modal: () => true` (no `[modal]` input) → the manager traps focus
+        expect(document.activeElement).toBe(inside);
+        outside.remove();
     });
 
     // ─── markOthers passes (ADR 0017 §3) ─────────────────────────────────────

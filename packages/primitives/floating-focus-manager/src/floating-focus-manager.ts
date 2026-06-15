@@ -7,6 +7,7 @@ import {
     effect,
     ElementRef,
     inject,
+    InjectionToken,
     input,
     output,
     PLATFORM_ID,
@@ -77,6 +78,31 @@ export function resolveReturnFocus(
 }
 
 /**
+ * DI seam for a **composing primitive** (Dialog / Popover / Menu) to drive the manager's gates from its
+ * own root context instead of template-bound inputs (which a primitive cannot set). Each field falls
+ * back to the manager's input, then to the documented default. Mirrors {@link RdxFocusScopeConfig}.
+ */
+export interface RdxFloatingFocusManagerConfig {
+    modal?: () => boolean;
+    enabled?: () => boolean;
+    closeOnFocusOut?: () => boolean;
+}
+
+export const RDX_FLOATING_FOCUS_MANAGER_CONFIG = new InjectionToken<RdxFloatingFocusManagerConfig>(
+    'RdxFloatingFocusManagerConfig'
+);
+
+/** Provides a {@link RdxFloatingFocusManagerConfig} for an enclosing primitive's focus manager. */
+export function provideFloatingFocusManagerConfig(factory: () => RdxFloatingFocusManagerConfig): Provider {
+    return { provide: RDX_FLOATING_FOCUS_MANAGER_CONFIG, useFactory: factory };
+}
+
+/** Coerces a boolean-ish input while preserving `undefined` ("not set" → fall back to the config). */
+function coerceOptionalBoolean(value: BooleanInput | undefined): boolean | undefined {
+    return value === undefined ? undefined : booleanAttribute(value);
+}
+
+/**
  * Provides a {@link RdxFocusScopeConfig} whose `trapped` is a **writable** signal, so the enclosing
  * {@link RdxFloatingFocusManager} can drive it from its `modal`/`enabled` policy after construction. The
  * factory has **no** dependency on the manager instance, so it cannot deadlock the host-directive
@@ -111,10 +137,10 @@ function provideManagedFocusScopeConfig(): Provider {
 })
 export class RdxFloatingFocusManager {
     /** Manager active-ness (ADR 0017 §2): the popup is mounted **and** not hover-opened. */
-    readonly enabled = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
+    readonly enabled = input(undefined, { transform: coerceOptionalBoolean });
 
     /** Modal popup → focus trap. Combined with `enabled` to drive the composed `RdxFocusScope`. */
-    readonly modal = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+    readonly modal = input(undefined, { transform: coerceOptionalBoolean });
 
     /** Where focus goes when the popup opens (ADR 0017 §2). */
     readonly initialFocus = input<RdxInitialFocus>(null);
@@ -127,7 +153,7 @@ export class RdxFloatingFocusManager {
      * `closeOnFocusOut`, default `true`; Dialog sets it to `!disablePointerDismissal`). Modal popups
      * never close on focus-out (the trap keeps focus in).
      */
-    readonly closeOnFocusOut = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
+    readonly closeOnFocusOut = input(undefined, { transform: coerceOptionalBoolean });
 
     /**
      * Emitted when focus leaves a non-modal popup to a node **unrelated** to the floating tree (ADR 0017
@@ -136,8 +162,18 @@ export class RdxFloatingFocusManager {
      */
     readonly focusOut = output<FocusEvent>();
 
+    /** Optional DI config a composing primitive provides to drive the gates (input wins over config). */
+    private readonly config = inject(RDX_FLOATING_FOCUS_MANAGER_CONFIG, { optional: true });
+
+    /** Effective gates: `input ?? config ?? default`. */
+    readonly effectiveEnabled = computed(() => this.enabled() ?? this.config?.enabled?.() ?? true);
+    readonly effectiveModal = computed(() => this.modal() ?? this.config?.modal?.() ?? false);
+    readonly effectiveCloseOnFocusOut = computed(
+        () => this.closeOnFocusOut() ?? this.config?.closeOnFocusOut?.() ?? true
+    );
+
     /** The effective trap state the composed `RdxFocusScope` reads via its config token. */
-    readonly trapped = computed(() => this.enabled() && this.modal());
+    readonly trapped = computed(() => this.effectiveEnabled() && this.effectiveModal());
 
     // The config this directive provides — its `trapped` signal is writable so we can drive it.
     private readonly focusScopeConfig = inject(RdxFocusScopeConfigToken) as { trapped: WritableSignal<boolean> };
@@ -164,7 +200,7 @@ export class RdxFloatingFocusManager {
         // Marker pass (ADR 0017 §3) — applied to outside elements whenever the manager is **active**,
         // independent of `modal`. Read by ADR 0015's outside-press guard.
         effect((onCleanup) => {
-            if (!this.enabled()) {
+            if (!this.effectiveEnabled()) {
                 return;
             }
             onCleanup(markOthers([this.host], { ariaHidden: false, mark: true }));
@@ -173,7 +209,7 @@ export class RdxFloatingFocusManager {
         // Accessibility-isolation pass (ADR 0017 §3) — `aria-hidden` outside elements, but **only** for a
         // modal (later: typeable-combobox) popup, so Select/Menu-root get none.
         effect((onCleanup) => {
-            if (!this.enabled() || !this.modal()) {
+            if (!this.effectiveEnabled() || !this.effectiveModal()) {
                 return;
             }
             onCleanup(markOthers([this.host], { ariaHidden: true, mark: false }));
@@ -240,7 +276,7 @@ export class RdxFloatingFocusManager {
             pointerDown = false;
         };
         const onFocusOut = (event: FocusEvent): void => {
-            if (!this.enabled() || !this.closeOnFocusOut() || this.modal() || pointerDown) {
+            if (!this.effectiveEnabled() || !this.effectiveCloseOnFocusOut() || this.effectiveModal() || pointerDown) {
                 return;
             }
             const relatedTarget = event.relatedTarget as Node | null;
