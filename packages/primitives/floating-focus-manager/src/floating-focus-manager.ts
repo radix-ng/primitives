@@ -2,18 +2,27 @@ import { isPlatformBrowser } from '@angular/common';
 import {
     booleanAttribute,
     computed,
+    DestroyRef,
     Directive,
     effect,
     ElementRef,
     inject,
     input,
+    output,
     PLATFORM_ID,
     Provider,
     signal,
     WritableSignal
 } from '@angular/core';
-import { BooleanInput } from '@radix-ng/primitives/core';
 import {
+    BooleanInput,
+    RDX_FLOATING_REGISTRATION,
+    RDX_FLOATING_ROOT_CONTEXT,
+    RdxFloatingRootContext
+} from '@radix-ng/primitives/core';
+import {
+    composedContains,
+    FOCUS_GUARD_ATTR,
     provideRdxFocusScopeConfig,
     RdxFocusScope,
     RdxFocusScopeConfig,
@@ -101,6 +110,20 @@ export class RdxFloatingFocusManager {
     /** Where focus returns when the popup closes (ADR 0017 §2). */
     readonly returnFocus = input<RdxReturnFocus>(true);
 
+    /**
+     * Whether a **non-modal** popup closes when focus leaves to an unrelated node (Base UI
+     * `closeOnFocusOut`, default `true`; Dialog sets it to `!disablePointerDismissal`). Modal popups
+     * never close on focus-out (the trap keeps focus in).
+     */
+    readonly closeOnFocusOut = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
+
+    /**
+     * Emitted when focus leaves a non-modal popup to a node **unrelated** to the floating tree (ADR 0017
+     * §3) — the consumer should close the popup. This is the focus-manager's focus-out close (it reads
+     * the shared tree), replacing the dismissal capability's focus-out at the ADR 0015 Phase-4 cutover.
+     */
+    readonly focusOut = output<FocusEvent>();
+
     /** The effective trap state the composed `RdxFocusScope` reads via its config token. */
     readonly trapped = computed(() => this.enabled() && this.modal());
 
@@ -110,11 +133,16 @@ export class RdxFloatingFocusManager {
     private readonly host = inject(ElementRef).nativeElement as HTMLElement;
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
+    /** The shared per-popup context (open / triggers / elements), if a primitive root provides one. */
+    private readonly rootContext = inject(RDX_FLOATING_ROOT_CONTEXT, { optional: true });
+    /** The registration handle for this node, used to read the shared tree (ancestors / descendants). */
+    private readonly registration = inject(RDX_FLOATING_REGISTRATION, { optional: true });
+
     constructor() {
         effect(() => this.focusScopeConfig.trapped.set(this.trapped()));
 
         if (!this.isBrowser) {
-            return; // SSR: no DOM marking.
+            return; // SSR: no DOM marking / listeners.
         }
 
         // Marker pass (ADR 0017 §3) — applied to outside elements whenever the manager is **active**,
@@ -134,5 +162,87 @@ export class RdxFloatingFocusManager {
             }
             onCleanup(markOthers([this.host], { ariaHidden: true, mark: false }));
         });
+
+        this.wireCloseOnFocusOut();
+    }
+
+    /**
+     * Close-on-focus-out (ADR 0017 §3): a **non-modal** active popup closes when focus moves to a node
+     * unrelated to the floating tree — not the popup, its trigger(s), a focus guard, or an ancestor /
+     * descendant popup — and not during a pointer press (a drag must not close it). Mirrors Base UI's
+     * `FloatingFocusManager` `!modal` branch (`movedToUnrelatedNode`).
+     */
+    private wireCloseOnFocusOut(): void {
+        const ownerDocument = this.host.ownerDocument;
+        let pointerDown = false;
+
+        const onPointerDown = (): void => {
+            pointerDown = true;
+        };
+        const onPointerUp = (): void => {
+            pointerDown = false;
+        };
+        const onFocusOut = (event: FocusEvent): void => {
+            if (!this.enabled() || !this.closeOnFocusOut() || this.modal() || pointerDown) {
+                return;
+            }
+            const relatedTarget = event.relatedTarget as Node | null;
+            if (!relatedTarget) {
+                return; // focus left to nothing (tab-away / window blur) — let the browser handle it
+            }
+            if (relatedTarget instanceof Element && relatedTarget.hasAttribute(FOCUS_GUARD_ATTR)) {
+                return; // moved onto a focus guard — still inside the focus system
+            }
+            if (this.isRelatedTargetInside(relatedTarget)) {
+                return; // moved to a related node (trigger / ancestor / descendant) — keep open
+            }
+            this.focusOut.emit(event);
+        };
+
+        ownerDocument.addEventListener('pointerdown', onPointerDown, true);
+        ownerDocument.addEventListener('pointerup', onPointerUp, true);
+        ownerDocument.addEventListener('focusout', onFocusOut, true);
+
+        inject(DestroyRef).onDestroy(() => {
+            ownerDocument.removeEventListener('pointerdown', onPointerDown, true);
+            ownerDocument.removeEventListener('pointerup', onPointerUp, true);
+            ownerDocument.removeEventListener('focusout', onFocusOut, true);
+        });
+    }
+
+    /** Whether `relatedTarget` is inside the popup, its trigger(s), or an ancestor / descendant popup. */
+    private isRelatedTargetInside(relatedTarget: Node): boolean {
+        const floating = this.rootContext?.floatingElement ?? this.host;
+        if (composedContains(floating, relatedTarget)) {
+            return true;
+        }
+        if (this.rootContext && this.contextContains(this.rootContext, relatedTarget)) {
+            return true;
+        }
+
+        const node = this.registration?.node() ?? null;
+        if (node) {
+            for (const ancestor of node.tree.ancestors(node)) {
+                if (ancestor.context && this.contextContains(ancestor.context, relatedTarget)) {
+                    return true;
+                }
+            }
+            for (const child of node.tree.children(node, { onlyOpen: true })) {
+                if (child.context && this.contextContains(child.context, relatedTarget)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private contextContains(context: RdxFloatingRootContext, relatedTarget: Node): boolean {
+        if (context.floatingElement && composedContains(context.floatingElement, relatedTarget)) {
+            return true;
+        }
+        if (context.referenceElement && composedContains(context.referenceElement, relatedTarget)) {
+            return true;
+        }
+        return context.triggers.contains(relatedTarget);
     }
 }

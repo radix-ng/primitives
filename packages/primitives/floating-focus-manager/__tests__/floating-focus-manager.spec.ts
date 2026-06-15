@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { Component, ElementRef, signal, viewChild } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { FOCUS_GUARD_ATTR } from '@radix-ng/primitives/focus-scope';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { RdxFloatingFocusManager, resolveFocusTarget, resolveInitialFocus } from '../src/floating-focus-manager';
 import { RDX_FLOATING_MARKER } from '../src/mark-others';
@@ -10,7 +11,13 @@ const flush = (): Promise<void> => new Promise((resolve) => requestAnimationFram
 @Component({
     imports: [RdxFloatingFocusManager],
     template: `
-        <div #scope [modal]="modal()" [enabled]="enabled()" rdxFloatingFocusManager>
+        <div
+            #scope
+            [modal]="modal()"
+            [enabled]="enabled()"
+            [closeOnFocusOut]="closeOnFocusOut()"
+            rdxFloatingFocusManager
+        >
             <button #a>A</button>
             <button #b>B</button>
         </div>
@@ -19,9 +26,11 @@ const flush = (): Promise<void> => new Promise((resolve) => requestAnimationFram
 class ManagerHost {
     readonly modal = signal(false);
     readonly enabled = signal(true);
+    readonly closeOnFocusOut = signal(true);
     readonly scope = viewChild.required('scope', { read: ElementRef });
     readonly a = viewChild.required('a', { read: ElementRef });
     readonly b = viewChild.required('b', { read: ElementRef });
+    readonly manager = viewChild.required(RdxFloatingFocusManager);
 }
 
 describe('RdxFloatingFocusManager (skeleton)', () => {
@@ -150,6 +159,106 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
 
         expect(sibling.hasAttribute(RDX_FLOATING_MARKER)).toBe(false);
         expect(sibling.getAttribute('aria-hidden')).toBeNull();
+    });
+
+    // ─── close-on-focus-out (ADR 0017 §3) ────────────────────────────────────
+
+    function focusOutTo(host: HTMLElement, relatedTarget: EventTarget | null): void {
+        host.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget }));
+    }
+
+    async function setupManager(): Promise<{
+        host: HTMLElement;
+        emitted: () => boolean;
+        fixture: ReturnType<typeof TestBed.createComponent<ManagerHost>>;
+    }> {
+        const fixture = TestBed.createComponent(ManagerHost);
+        fixture.autoDetectChanges();
+        await flush();
+        let emitted = false;
+        fixture.componentInstance.manager().focusOut.subscribe(() => (emitted = true));
+        return { host: fixture.componentInstance.scope().nativeElement, emitted: () => emitted, fixture };
+    }
+
+    it('emits focusOut when a non-modal popup loses focus to an unrelated node', async () => {
+        const outside = document.createElement('button');
+        document.body.appendChild(outside);
+        appended.push(outside);
+
+        const { host, emitted } = await setupManager();
+        focusOutTo(host, outside);
+
+        expect(emitted()).toBe(true);
+    });
+
+    it('does NOT emit when focus stays inside the popup', async () => {
+        const { host, emitted, fixture } = await setupManager();
+        focusOutTo(host, fixture.componentInstance.a().nativeElement);
+        expect(emitted()).toBe(false);
+    });
+
+    it('does NOT emit for a modal popup (the trap keeps focus in)', async () => {
+        const outside = document.createElement('button');
+        document.body.appendChild(outside);
+        appended.push(outside);
+
+        const fixture = TestBed.createComponent(ManagerHost);
+        fixture.componentInstance.modal.set(true);
+        fixture.autoDetectChanges();
+        await flush();
+        let emitted = false;
+        fixture.componentInstance.manager().focusOut.subscribe(() => (emitted = true));
+
+        focusOutTo(fixture.componentInstance.scope().nativeElement, outside);
+        expect(emitted).toBe(false);
+    });
+
+    it('does NOT emit when relatedTarget is null (tab-away / window blur)', async () => {
+        const { host, emitted } = await setupManager();
+        focusOutTo(host, null);
+        expect(emitted()).toBe(false);
+    });
+
+    it('does NOT emit when relatedTarget is a focus guard', async () => {
+        const guard = document.createElement('span');
+        guard.setAttribute(FOCUS_GUARD_ATTR, '');
+        document.body.appendChild(guard);
+        appended.push(guard);
+
+        const { host, emitted } = await setupManager();
+        focusOutTo(host, guard);
+        expect(emitted()).toBe(false);
+    });
+
+    it('does NOT emit during a pointer press (a drag must not close)', async () => {
+        const outside = document.createElement('button');
+        document.body.appendChild(outside);
+        appended.push(outside);
+
+        const { host, emitted } = await setupManager();
+        document.dispatchEvent(new Event('pointerdown'));
+        focusOutTo(host, outside);
+        expect(emitted()).toBe(false);
+
+        document.dispatchEvent(new Event('pointerup'));
+        focusOutTo(host, outside);
+        expect(emitted()).toBe(true); // after the press ends, focus-out closes again
+    });
+
+    it('does NOT emit when closeOnFocusOut is false', async () => {
+        const outside = document.createElement('button');
+        document.body.appendChild(outside);
+        appended.push(outside);
+
+        const fixture = TestBed.createComponent(ManagerHost);
+        fixture.componentInstance.closeOnFocusOut.set(false);
+        fixture.autoDetectChanges();
+        await flush();
+        let emitted = false;
+        fixture.componentInstance.manager().focusOut.subscribe(() => (emitted = true));
+
+        focusOutTo(fixture.componentInstance.scope().nativeElement, outside);
+        expect(emitted).toBe(false);
     });
 
     // ─── policy resolvers (§2 contract) ───────────────────────────────────────
