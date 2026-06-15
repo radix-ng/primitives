@@ -1,4 +1,4 @@
-import { computed, DestroyRef, Directive, effect, ElementRef, inject, output, signal } from '@angular/core';
+import { computed, DestroyRef, Directive, effect, ElementRef, inject, output } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
 import {
     RDX_FLOATING_REGISTRATION,
@@ -35,9 +35,13 @@ function getFocusableItems(popup: HTMLElement): HTMLElement[] {
     exportAs: 'rdxMenuPopup',
     hostDirectives: [RdxPopperContent, RdxFloatingNodeRegistration, RdxFocusScope],
     providers: [
-        provideRdxFocusScopeConfig(() => ({
-            trapped: signal(false)
-        }))
+        // Only a (modal) **context menu** traps focus — Base UI's `FloatingFocusManager modal` is true
+        // for `context-menu` alone (a standalone dropdown / menubar menu / submenu does not trap; they
+        // close on focus-out instead, wired on the capability below).
+        provideRdxFocusScopeConfig(() => {
+            const rootContext = injectRdxMenuRootContext();
+            return { trapped: computed(() => rootContext.parentType() === 'context-menu') };
+        })
     ],
     host: {
         role: 'menu',
@@ -98,9 +102,21 @@ export class RdxMenuPopup {
     readonly closeAutoFocus = outputFromObservable(outputToObservable(this.focusScope.unmountAutoFocus));
 
     constructor() {
-        // Keep the page locked for the popup's whole mounted lifetime, including exit animations.
-        // Nested menus expose an effective non-modal value from their root context.
-        useScrollLock(this.rootContext.modal);
+        // Page scroll lock (Base UI `MenuPositioner`): only while **open** and **modal**, and a hover-open
+        // dropdown / context menu does NOT lock (a menubar menu always does when modal). A submenu never
+        // locks — its `modal` is already effectively false. (The touch-only "lock only a near-fullscreen
+        // popup" refinement is not ported yet — it needs touch-open tracking + a width measure.)
+        useScrollLock(
+            computed(() => {
+                if (!this.rootContext.isOpen() || !this.rootContext.modal()) {
+                    return false;
+                }
+                if (this.rootContext.parentType() === 'menubar') {
+                    return true;
+                }
+                return this.rootContext.lastOpenChangeReason() !== 'trigger-hover';
+            })
+        );
 
         // The popup is this layer's floating element (the inside-surface for containment checks). A
         // submenu is a child node in the shared tree, so the capability's logical containment treats an
@@ -121,10 +137,16 @@ export class RdxMenuPopup {
         // yields to an open child, so Escape closes only the innermost menu — unless `closeParentOnEsc`
         // makes it bubble up the whole chain.
         new RdxDismissableCapability(this.floatingContext, () => this.registration?.node() ?? null, {
+            // A disabled menu does not dismiss (Base UI `useDismiss({ enabled: !disabled })`): if an open
+            // menu becomes disabled it stays put rather than closing on Escape / outside-press / focus-out.
+            enabled: () => !this.rootContext.disabled(),
             escapeKey: () => true,
             escapeKeyBubbles: () => this.rootContext.closeParentOnEsc(),
             outsidePress: () => true,
-            focusOutside: () => true,
+            // A context menu traps focus (above), so it must NOT also close on focus-out; every other kind
+            // (standalone / menubar / submenu) is non-trapping and closes when focus leaves to an unrelated
+            // node. Mirrors Base UI: focus-out close runs only where `FloatingFocusManager modal` is false.
+            focusOutside: () => this.rootContext.parentType() !== 'context-menu',
             onEscapeKeyDown: (event) => this.escapeKeyDown.emit(event),
             onPointerDownOutside: (event) => {
                 this.pointerDownOutside.emit(event);

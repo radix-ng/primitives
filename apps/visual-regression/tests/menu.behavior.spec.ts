@@ -73,6 +73,22 @@ test('modal menu trigger stays interactive and closes the open menu on click', a
     await expect(page.locator('[rdxMenuPopup]')).toHaveCount(0);
 });
 
+test('a standalone menu closes when focus leaves to an unrelated element (finding #3)', async ({ page }) => {
+    await gotoStory(page, 'primitives-menu--default');
+    await page.locator('[rdxMenuTrigger]').first().click();
+    await expect(page.locator('[rdxMenuPopup]')).toBeVisible();
+
+    // A standalone menu does NOT trap focus (only a context menu does) — moving focus to an unrelated
+    // element closes it.
+    await page.evaluate(() => {
+        const b = document.createElement('button');
+        b.id = 'm-outside';
+        document.body.appendChild(b);
+        b.focus();
+    });
+    await expect(page.locator('[rdxMenuPopup]')).toHaveCount(0);
+});
+
 test('animated menu keeps the popup mounted through the exit animation, then unmounts it', async ({ page }) => {
     await gotoStory(page, 'primitives-menu--animated');
 

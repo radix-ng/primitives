@@ -190,8 +190,16 @@ describe('RdxDismissableCapability', () => {
         expect(onDismiss).toHaveBeenCalledWith('outside-press', expect.any(Event));
     });
 
+    // ─── Touch outside-press hardening (#7) ──────────────────────────────────
+    function touchEvent(type: string, x: number, y: number): Event {
+        const event = new Event(type, { bubbles: true });
+        Object.defineProperty(event, 'touches', { value: [{ clientX: x, clientY: y }] });
+        return event;
+    }
+
     it('outsidePressEvent map resolves per pointer type (mouse → intentional, touch → sloppy)', async () => {
         const onDismiss = vi.fn();
+        const target = el('button');
         build(
             context(() => true, el()),
             () => null,
@@ -203,13 +211,79 @@ describe('RdxDismissableCapability', () => {
         // mouse → intentional → a bare pointerdown does not close (waits for the click).
         const mouse = new Event('pointerdown', { bubbles: true });
         Object.defineProperty(mouse, 'pointerType', { value: 'mouse' });
-        el('button').dispatchEvent(mouse);
+        target.dispatchEvent(mouse);
         expect(onDismiss).not.toHaveBeenCalled();
 
-        // touch → sloppy → pointerdown closes immediately.
+        // touch → sloppy → a tap closes (via the touch machine + synthetic mousedown).
+        target.dispatchEvent(touchEvent('touchstart', 20, 20));
+        target.dispatchEvent(touchEvent('touchend', 20, 20));
+        target.dispatchEvent(new Event('mousedown', { bubbles: true }));
+        expect(onDismiss).toHaveBeenCalledWith('outside-press', expect.any(Event));
+    });
+
+    it('a touch sloppy outside-press does NOT dismiss on the initial pointerdown', async () => {
+        const onDismiss = vi.fn();
+        build(
+            context(() => true, el()),
+            () => null,
+            onDismiss
+        );
+        await flush();
+
         const touch = new Event('pointerdown', { bubbles: true });
         Object.defineProperty(touch, 'pointerType', { value: 'touch' });
         el('button').dispatchEvent(touch);
+
+        expect(onDismiss).not.toHaveBeenCalled(); // decided by the touch machine, not pointerdown
+    });
+
+    it('a touch tap (touchstart → touchend → synthetic mousedown) dismisses', async () => {
+        const onDismiss = vi.fn();
+        const target = el('button');
+        build(
+            context(() => true, el()),
+            () => null,
+            onDismiss
+        );
+        await flush();
+
+        target.dispatchEvent(touchEvent('touchstart', 20, 20));
+        target.dispatchEvent(touchEvent('touchend', 20, 20));
+        expect(onDismiss).not.toHaveBeenCalled(); // a plain tap waits for the synthetic mousedown
+
+        target.dispatchEvent(new Event('mousedown', { bubbles: true }));
+        expect(onDismiss).toHaveBeenCalledWith('outside-press', expect.any(Event));
+    });
+
+    it('a touch swipe away (> 10px) dismisses immediately on touchmove', async () => {
+        const onDismiss = vi.fn();
+        const target = el('button');
+        build(
+            context(() => true, el()),
+            () => null,
+            onDismiss
+        );
+        await flush();
+
+        target.dispatchEvent(touchEvent('touchstart', 0, 0));
+        target.dispatchEvent(touchEvent('touchmove', 30, 30)); // distance > 10
+        expect(onDismiss).toHaveBeenCalledWith('outside-press', expect.any(Event));
+    });
+
+    it('a real mouse press is unaffected — still dismisses on pointerdown (no touch state)', async () => {
+        const onDismiss = vi.fn();
+        build(
+            context(() => true, el()),
+            () => null,
+            onDismiss
+        );
+        await flush();
+
+        const mouse = new Event('pointerdown', { bubbles: true });
+        Object.defineProperty(mouse, 'pointerType', { value: 'mouse' });
+        el('button').dispatchEvent(mouse);
+        // The synthetic-mousedown handler is a no-op without a touch in progress → single dismiss.
+        expect(onDismiss).toHaveBeenCalledTimes(1);
         expect(onDismiss).toHaveBeenCalledWith('outside-press', expect.any(Event));
     });
 

@@ -42,6 +42,22 @@ test('a modal context menu renders an internal backdrop (finding #1)', async ({ 
     await expect(page.locator('[data-rdx-menu-internal-backdrop]')).toHaveCount(1);
 });
 
+test('a modal context menu traps focus — a focus-out does not close it (finding #3)', async ({ page }) => {
+    await gotoStory(page, 'primitives-context-menu--default');
+    await openAtTrigger(page);
+
+    // Programmatically move focus to an element outside the menu. A context menu is the one menu kind
+    // that TRAPS focus (Base UI `FloatingFocusManager modal`), so focus is pulled back and it stays open.
+    await page.evaluate(() => {
+        const b = document.createElement('button');
+        b.id = 'cm-outside';
+        document.body.appendChild(b);
+        b.focus();
+    });
+    await page.waitForTimeout(120); // let the async focus-out check settle
+    await expect(page.locator(popup)).toBeVisible();
+});
+
 test('an outside press closes the context menu', async ({ page }) => {
     await gotoStory(page, 'primitives-context-menu--default');
     await openAtTrigger(page);

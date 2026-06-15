@@ -240,6 +240,23 @@ export class RdxDismissableCapability {
         let pressStartedInside = false;
         // Pointer type of the active press, used to resolve a per-pointer-type `outsidePressEvent` map.
         let currentPointerType: 'mouse' | 'touch' | 'pen' | '' = '';
+        // Touch outside-press hardening (Base UI `useDismiss`). For touch, a `sloppy` outside-press is
+        // NOT decided on the initial `pointerdown` (that would dismiss the moment a finger lands, even on
+        // the start of a scroll): a small drag (>5px) arms a close on `touchend`, a larger one (>10px)
+        // closes immediately (the user is scrolling away), and a plain tap closes via the synthetic
+        // `mousedown` that follows — unless the finger is held past a 1s grace window (a long-press).
+        let touchState: {
+            startX: number;
+            startY: number;
+            dismissOnTouchEnd: boolean;
+            dismissOnMouseDown: boolean;
+        } | null = null;
+        let touchGraceTimer: ReturnType<Window['setTimeout']> | undefined;
+        let touchClearTimer: ReturnType<Window['setTimeout']> | undefined;
+        const clearTouchTimers = (): void => {
+            ownerWindow.clearTimeout(touchGraceTimer);
+            ownerWindow.clearTimeout(touchClearTimer);
+        };
 
         // Resolve `outsidePressEvent` to a concrete mode for the active pointer type (pen / unknown → mouse).
         const resolveOutsidePressEvent = (): RdxOutsidePressEvent => {
@@ -317,6 +334,9 @@ export class RdxDismissableCapability {
             if (resolveOutsidePressEvent() !== 'sloppy') {
                 return; // `intentional` dismisses on click, not pointerdown
             }
+            if ((event as PointerEvent).pointerType === 'touch') {
+                return; // touch is decided by the touchstart/move/end + synthetic-mousedown machine below
+            }
             tryOutsidePress(event);
         };
         const handleClick = (event: Event): void => {
@@ -329,6 +349,85 @@ export class RdxDismissableCapability {
                 return;
             }
             tryOutsidePress(event);
+        };
+
+        // ─── Touch sloppy-mode hardening (Base UI `useDismiss`) ───────────────────
+        const handleTouchStart = (event: Event): void => {
+            currentPointerType = 'touch'; // a touch's pointer type, independent of pointerdown ordering
+            if (resolveOutsidePressEvent() !== 'sloppy' || !this.active() || this.isInside(event.target)) {
+                return;
+            }
+            const touch = (event as TouchEvent).touches?.[0];
+            if (!touch) {
+                return;
+            }
+            clearTouchTimers();
+            touchState = {
+                startX: touch.clientX,
+                startY: touch.clientY,
+                dismissOnTouchEnd: false,
+                dismissOnMouseDown: true
+            };
+            // After 1s the press is a long-press, not a dismissal — disarm both the touchend and the
+            // synthetic-mousedown close.
+            touchGraceTimer = ownerWindow.setTimeout(() => {
+                if (touchState) {
+                    touchState.dismissOnTouchEnd = false;
+                    touchState.dismissOnMouseDown = false;
+                }
+            }, 1000);
+        };
+        const handleTouchMove = (event: Event): void => {
+            if (!touchState || resolveOutsidePressEvent() !== 'sloppy' || this.isInside(event.target)) {
+                return;
+            }
+            const touch = (event as TouchEvent).touches?.[0];
+            if (!touch) {
+                return;
+            }
+            const dx = touch.clientX - touchState.startX;
+            const dy = touch.clientY - touchState.startY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance > 5) {
+                touchState.dismissOnTouchEnd = true; // a deliberate drag — close when the finger lifts
+            }
+            if (distance > 10) {
+                tryOutsidePress(event); // scrolling away — close now
+                clearTouchTimers();
+                touchState = null;
+            }
+        };
+        const handleTouchEnd = (event: Event): void => {
+            if (!touchState || resolveOutsidePressEvent() !== 'sloppy' || this.isInside(event.target)) {
+                return;
+            }
+            if (touchState.dismissOnTouchEnd) {
+                tryOutsidePress(event);
+                clearTouchTimers();
+                touchState = null;
+                return;
+            }
+            // A plain tap: defer to the synthetic `mousedown` (which also lets us absorb the click-through),
+            // but drop the state shortly after in case no mouse event follows on this platform.
+            ownerWindow.clearTimeout(touchClearTimer);
+            touchClearTimer = ownerWindow.setTimeout(() => {
+                touchState = null;
+            }, 400);
+        };
+        const handleMouseDown = (event: Event): void => {
+            // Only the synthetic `mousedown` that follows a touch is handled here — a real mouse leaves
+            // `touchState` null and is dismissed by `handlePointerDown` instead (no double-close).
+            if (!touchState || resolveOutsidePressEvent() !== 'sloppy') {
+                return;
+            }
+            if (!touchState.dismissOnMouseDown) {
+                touchState = null; // grace expired (long-press) — do not dismiss
+                clearTouchTimers();
+                return;
+            }
+            tryOutsidePress(event);
+            clearTouchTimers();
+            touchState = null;
         };
 
         const handleFocusIn = (event: FocusEvent): void => {
@@ -359,6 +458,10 @@ export class RdxDismissableCapability {
         const pointerTimer = ownerWindow.setTimeout(() => {
             ownerDocument.addEventListener('pointerdown', handlePointerDown);
             ownerDocument.addEventListener('click', handleClick);
+            ownerDocument.addEventListener('touchstart', handleTouchStart, { capture: true, passive: true });
+            ownerDocument.addEventListener('touchmove', handleTouchMove, { capture: true, passive: true });
+            ownerDocument.addEventListener('touchend', handleTouchEnd, { capture: true, passive: true });
+            ownerDocument.addEventListener('mousedown', handleMouseDown, { capture: true });
         }, 0);
 
         destroyRef.onDestroy(() => {
@@ -371,6 +474,11 @@ export class RdxDismissableCapability {
             ownerDocument.removeEventListener('pointercancel', handlePointerCancel, { capture: true });
             ownerDocument.removeEventListener('pointerdown', handlePointerDown);
             ownerDocument.removeEventListener('click', handleClick);
+            ownerDocument.removeEventListener('touchstart', handleTouchStart, { capture: true });
+            ownerDocument.removeEventListener('touchmove', handleTouchMove, { capture: true });
+            ownerDocument.removeEventListener('touchend', handleTouchEnd, { capture: true });
+            ownerDocument.removeEventListener('mousedown', handleMouseDown, { capture: true });
+            clearTouchTimers();
         });
     }
 

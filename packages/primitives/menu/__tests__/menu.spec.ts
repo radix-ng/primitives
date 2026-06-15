@@ -481,6 +481,52 @@ describe('Menu', () => {
             expect(document.body.style.overflow).toBe('');
         });
 
+        it('does not lock page scrolling when opened by hover (Base UI excludes trigger-hover)', async () => {
+            fixture.destroy(); // release the click-opened menu's lock first
+            TestBed.resetTestingModule();
+            TestBed.configureTestingModule({ imports: [HoverMenuComponent] });
+            const hoverFixture = TestBed.createComponent(HoverMenuComponent);
+            hoverFixture.detectChanges();
+
+            const hoverTrigger: HTMLButtonElement = hoverFixture.nativeElement.querySelector('[rdxMenuTrigger]');
+            const pointerEnter = new Event('pointerenter');
+            Object.defineProperty(pointerEnter, 'pointerType', { value: 'mouse' });
+            hoverTrigger.dispatchEvent(pointerEnter);
+
+            await new Promise((resolve) => setTimeout(resolve, 130));
+            hoverFixture.detectChanges();
+            expect(hoverTrigger.getAttribute('aria-expanded')).toBe('true');
+
+            // Modal by default, but a hover-open does NOT lock page scroll.
+            expect(document.documentElement.style.overflow).toBe('');
+            expect(document.body.style.overflow).toBe('');
+            hoverFixture.destroy();
+        });
+
+        it('does not dismiss a menu that became disabled while open (Base UI enabled: !disabled)', async () => {
+            fixture.destroy();
+            TestBed.resetTestingModule();
+            TestBed.configureTestingModule({ imports: [DisabledRootMenuComponent] });
+            const disabledFixture = TestBed.createComponent(DisabledRootMenuComponent);
+            disabledFixture.componentInstance.disabled = false;
+            disabledFixture.detectChanges();
+
+            disabledFixture.nativeElement.querySelector('[rdxMenuTrigger]').click();
+            disabledFixture.detectChanges();
+            await disabledFixture.whenStable();
+            expect(disabledFixture.nativeElement.querySelector('[rdxMenuPopup]')).not.toBeNull();
+
+            // Disable while open, then press Escape — the dismissal capability is gated off, so it stays open.
+            disabledFixture.componentInstance.disabled = true;
+            disabledFixture.changeDetectorRef.markForCheck();
+            disabledFixture.detectChanges();
+            document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+            disabledFixture.detectChanges();
+
+            expect(disabledFixture.nativeElement.querySelector('[rdxMenuPopup]')).not.toBeNull();
+            disabledFixture.destroy();
+        });
+
         it('items have role="menuitem" and tabindex="-1"', () => {
             const items: NodeListOf<HTMLElement> = fixture.nativeElement.querySelectorAll('[rdxMenuItem]');
             items.forEach((item) => {
