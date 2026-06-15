@@ -65,6 +65,18 @@ export function resolveInitialFocus(
 }
 
 /**
+ * Resolves an {@link RdxReturnFocus} policy against how the popup closed. `false` = do not return focus;
+ * `true` = the default (return to the previously-focused element); an element = return there.
+ */
+export function resolveReturnFocus(
+    policy: RdxReturnFocus,
+    closeInteractionType: RdxInteractionType
+): HTMLElement | boolean | null {
+    const resolved = typeof policy === 'function' ? policy(closeInteractionType) : policy;
+    return typeof resolved === 'boolean' ? resolved : resolveFocusTarget(resolved);
+}
+
+/**
  * Provides a {@link RdxFocusScopeConfig} whose `trapped` is a **writable** signal, so the enclosing
  * {@link RdxFloatingFocusManager} can drive it from its `modal`/`enabled` policy after construction. The
  * factory has **no** dependency on the manager instance, so it cannot deadlock the host-directive
@@ -138,6 +150,10 @@ export class RdxFloatingFocusManager {
     /** The registration handle for this node, used to read the shared tree (ancestors / descendants). */
     private readonly registration = inject(RDX_FLOATING_REGISTRATION, { optional: true });
 
+    private readonly _interactionType = signal<RdxInteractionType>('');
+    /** How the popup was most recently interacted with — fed to the initial/return focus policy callbacks. */
+    readonly interactionType = this._interactionType.asReadonly();
+
     constructor() {
         effect(() => this.focusScopeConfig.trapped.set(this.trapped()));
 
@@ -163,7 +179,48 @@ export class RdxFloatingFocusManager {
             onCleanup(markOthers([this.host], { ariaHidden: true, mark: false }));
         });
 
+        this.trackInteractionType();
         this.wireCloseOnFocusOut();
+        this.wireFocusOrchestration();
+    }
+
+    /** Records the most recent open/close interaction (pointer type or keyboard) for the focus policies. */
+    private trackInteractionType(): void {
+        const ownerDocument = this.host.ownerDocument;
+        const onPointer = (event: Event): void => {
+            this._interactionType.set(((event as PointerEvent).pointerType || 'mouse') as RdxInteractionType);
+        };
+        const onKey = (): void => this._interactionType.set('keyboard');
+
+        ownerDocument.addEventListener('pointerdown', onPointer, true);
+        ownerDocument.addEventListener('keydown', onKey, true);
+        inject(DestroyRef).onDestroy(() => {
+            ownerDocument.removeEventListener('pointerdown', onPointer, true);
+            ownerDocument.removeEventListener('keydown', onKey, true);
+        });
+    }
+
+    /**
+     * Initial-focus orchestration (ADR 0017 §2). The manager owns the focus *policy*; it intercepts the
+     * composed {@link RdxFocusScope}'s preventable `mountAutoFocus` (its designed extension point) and
+     * applies the `initialFocus` policy, falling back to the scope's first-tabbable default when the
+     * policy is `null`.
+     *
+     * @remarks `returnFocus` is **typed** ({@link resolveReturnFocus}) but not orchestrated here:
+     * overriding the scope's return-focus would mean intercepting `unmountAutoFocus`, which fires during
+     * teardown after the output subscription is already torn down (unreliable). A robust `returnFocus`
+     * override is deferred to the Phase-4 integration, where the manager can own return-focus directly.
+     */
+    private wireFocusOrchestration(): void {
+        const focusScope = inject(RdxFocusScope);
+
+        focusScope.mountAutoFocus.subscribe((event) => {
+            const target = resolveInitialFocus(this.initialFocus(), this._interactionType());
+            if (target) {
+                event.preventDefault(); // override the scope's first-tabbable default
+                target.focus();
+            }
+        });
     }
 
     /**

@@ -3036,6 +3036,12 @@
           ],
           "inputs": [
             {
+              "name": "closeOnFocusOut",
+              "type": "boolean",
+              "default": "true",
+              "description": "Whether a **non-modal** popup closes when focus leaves to an unrelated node (Base UI\n`closeOnFocusOut`, default `true`; Dialog sets it to `!disablePointerDismissal`). Modal popups\nnever close on focus-out (the trap keeps focus in)."
+            },
+            {
               "name": "enabled",
               "type": "boolean",
               "default": "true",
@@ -3060,7 +3066,13 @@
               "description": "Where focus returns when the popup closes (ADR 0017 §2)."
             }
           ],
-          "outputs": []
+          "outputs": [
+            {
+              "name": "focusOut",
+              "type": "FocusEvent",
+              "description": "Emitted when focus leaves a non-modal popup to a node **unrelated** to the floating tree (ADR 0017\n§3) — the consumer should close the popup. This is the focus-manager's focus-out close (it reads\nthe shared tree), replacing the dismissal capability's focus-out at the ADR 0015 Phase-4 cutover."
+            }
+          ]
         }
       ]
     },

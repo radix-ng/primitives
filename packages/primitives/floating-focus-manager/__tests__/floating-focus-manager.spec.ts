@@ -3,7 +3,14 @@ import { Component, ElementRef, signal, viewChild } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { FOCUS_GUARD_ATTR } from '@radix-ng/primitives/focus-scope';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { RdxFloatingFocusManager, resolveFocusTarget, resolveInitialFocus } from '../src/floating-focus-manager';
+import {
+    RdxFloatingFocusManager,
+    RdxInitialFocus,
+    RdxReturnFocus,
+    resolveFocusTarget,
+    resolveInitialFocus,
+    resolveReturnFocus
+} from '../src/floating-focus-manager';
 import { RDX_FLOATING_MARKER } from '../src/mark-others';
 
 const flush = (): Promise<void> => new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
@@ -16,6 +23,8 @@ const flush = (): Promise<void> => new Promise((resolve) => requestAnimationFram
             [modal]="modal()"
             [enabled]="enabled()"
             [closeOnFocusOut]="closeOnFocusOut()"
+            [initialFocus]="initialFocus()"
+            [returnFocus]="returnFocus()"
             rdxFloatingFocusManager
         >
             <button #a>A</button>
@@ -27,6 +36,8 @@ class ManagerHost {
     readonly modal = signal(false);
     readonly enabled = signal(true);
     readonly closeOnFocusOut = signal(true);
+    readonly initialFocus = signal<RdxInitialFocus>(null);
+    readonly returnFocus = signal<RdxReturnFocus>(true);
     readonly scope = viewChild.required('scope', { read: ElementRef });
     readonly a = viewChild.required('a', { read: ElementRef });
     readonly b = viewChild.required('b', { read: ElementRef });
@@ -261,6 +272,39 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
         expect(emitted).toBe(false);
     });
 
+    // ─── initial / return focus orchestration (ADR 0017 §2) ──────────────────
+
+    it('initialFocus overrides the scope default — focuses the specified element on open', async () => {
+        const fixture = TestBed.createComponent(ManagerHost);
+        // resolve B lazily (it exists by the time mountAutoFocus fires)
+        fixture.componentInstance.initialFocus.set(() => fixture.componentInstance.b().nativeElement);
+        fixture.autoDetectChanges();
+        await flush();
+
+        expect(document.activeElement).toBe(fixture.componentInstance.b().nativeElement);
+    });
+
+    it('falls back to the scope default (first tabbable) when initialFocus is null', async () => {
+        const fixture = TestBed.createComponent(ManagerHost);
+        fixture.autoDetectChanges();
+        await flush();
+
+        expect(document.activeElement).toBe(fixture.componentInstance.a().nativeElement);
+    });
+
+    it('tracks the interaction type (keyboard / pointer)', async () => {
+        const fixture = TestBed.createComponent(ManagerHost);
+        fixture.autoDetectChanges();
+        await flush();
+        const manager = fixture.componentInstance.manager();
+
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab' }));
+        expect(manager.interactionType()).toBe('keyboard');
+
+        document.dispatchEvent(new Event('pointerdown'));
+        expect(manager.interactionType()).toBe('mouse');
+    });
+
     // ─── policy resolvers (§2 contract) ───────────────────────────────────────
 
     describe('policy resolvers', () => {
@@ -282,6 +326,15 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
             expect(resolveInitialFocus(policy, 'mouse')).toBe(pointerEl);
             // a plain target ignores the interaction type
             expect(resolveInitialFocus(keyboardEl, 'mouse')).toBe(keyboardEl);
+        });
+
+        it('resolveReturnFocus passes through booleans and resolves targets', () => {
+            const el = document.createElement('button');
+            expect(resolveReturnFocus(true, '')).toBe(true);
+            expect(resolveReturnFocus(false, '')).toBe(false);
+            expect(resolveReturnFocus(el, '')).toBe(el);
+            expect(resolveReturnFocus(() => false, 'keyboard')).toBe(false);
+            expect(resolveReturnFocus((type) => (type === 'keyboard' ? el : false), 'keyboard')).toBe(el);
         });
     });
 });
