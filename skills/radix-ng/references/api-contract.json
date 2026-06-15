@@ -2010,6 +2010,33 @@
       ]
     },
     {
+      "slug": "core",
+      "section": "components",
+      "parts": [
+        {
+          "directive": "RdxFloatingNodeRegistration",
+          "selector": "[rdxFloatingNode]",
+          "exportAs": "rdxFloatingNode",
+          "description": "Registers a {@link RdxFloatingNode} into the shared {@link RdxFloatingTree} for its DI subtree and\npropagates the registration handle to descendants — the reusable Angular counterpart of mounting a\nBase UI `<FloatingNode>` (ADR 0015 §1, Phase 1). It is the **single** place that runs the handle\npattern; the dismissal capability (ADR 0015) and the focus manager (ADR 0017) **consume** the node /\ncontext / tree it registers, they do not re-implement registration.\n\n**What it owns vs. what it reads.** It provides its own {@link RdxFloatingRegistrationContext} (so\ndescendants resolve it with `skipSelf`) and registers/unregisters a node reactively. It does **not**\ncreate the tree or the root context — a coordination-boundary primitive root supplies those\n(`provideFloatingTree()` inherit-or-create + `provideFloatingRootContext()`); this directive injects\nthem. With **no** enclosing tree it runs **node-optional** (`status() === 'detached'`, `node() ===\nnull`), reading its context directly — the standalone `rdxDismissableLayer` case.\n\n**Resolution (per {@link RdxFloatingParentOverride}).** Only an `inherit` node depends on the DI\nparent, so only it waits on a `pending` parent; `root` / `node` overrides are independent and register\nimmediately. The node carries the injected {@link RDX_FLOATING_ROOT_CONTEXT} (or `null` for a\ncontextless intermediate). All teardown (re-resolution **and** destroy) unregisters the node and\nreverts the handle.",
+          "inputs": [
+            {
+              "name": "externalTree",
+              "type": "RdxFloatingTree | null",
+              "default": "null",
+              "description": "Explicit tree for detached sibling composition — Base UI's `externalTree`."
+            },
+            {
+              "name": "parentOverride",
+              "type": "RdxFloatingParentOverride",
+              "default": "{ kind: 'inherit' }",
+              "description": "How this node's logical parent is resolved. Defaults to `inherit` (nearest DI ancestor)."
+            }
+          ],
+          "outputs": []
+        }
+      ]
+    },
+    {
       "slug": "cropper",
       "section": "components",
       "parts": [

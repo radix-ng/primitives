@@ -7,6 +7,29 @@ export const EVENT_OPTIONS = { bubbles: false, cancelable: true };
 type FocusableTarget = HTMLElement | { focus: () => void };
 
 /**
+ * The real target of a (possibly retargeted) event, piercing shadow boundaries via `composedPath()`.
+ * Falls back to `event.target` when `composedPath` is unavailable.
+ */
+export function getEventTarget(event: Event): EventTarget | null {
+    return event.composedPath?.()[0] ?? event.target;
+}
+
+/**
+ * Shadow-DOM-aware containment: whether `node` is `container` or lives inside it, crossing shadow roots
+ * via their `host` (unlike `Node.contains`, which stops at a shadow boundary).
+ */
+export function composedContains(container: Node, node: Node | null): boolean {
+    let current: Node | null = node;
+    while (current) {
+        if (current === container) {
+            return true;
+        }
+        current = current instanceof ShadowRoot ? current.host : current.parentNode;
+    }
+    return false;
+}
+
+/**
  * Attempts focusing the first element in a list of candidates.
  * Stops when focus has actually moved.
  */
@@ -32,7 +55,7 @@ export function focusFirst(candidates: HTMLElement[], { select = false } = {}) {
  */
 export function getTabbableCandidates(container: HTMLElement) {
     const nodes: HTMLElement[] = [];
-    const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
+    const walker = container.ownerDocument.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
         acceptNode: (node: any) => {
             const isHiddenInput = node.tagName === 'INPUT' && node.type === 'hidden';
             if (node.disabled || node.hidden || isHiddenInput) return NodeFilter.FILTER_SKIP;
@@ -49,11 +72,15 @@ export function getTabbableCandidates(container: HTMLElement) {
 }
 
 export function isHidden(node: HTMLElement, { upTo }: { upTo?: HTMLElement }) {
-    if (getComputedStyle(node).visibility === 'hidden') return true;
+    const view = node.ownerDocument.defaultView;
+    if (!view) {
+        return false; // no view (detached / SSR) — cannot resolve computed styles, treat as visible
+    }
+    if (view.getComputedStyle(node).visibility === 'hidden') return true;
     while (node) {
         // we stop at `upTo` (excluding it)
         if (upTo !== undefined && node === upTo) return false;
-        if (getComputedStyle(node).display === 'none') return true;
+        if (view.getComputedStyle(node).display === 'none') return true;
         node = node.parentElement as HTMLElement;
     }
     return false;
