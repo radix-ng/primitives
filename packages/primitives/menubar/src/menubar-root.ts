@@ -9,7 +9,7 @@ import {
     signal,
     Signal
 } from '@angular/core';
-import { BooleanInput, createContext } from '@radix-ng/primitives/core';
+import { BooleanInput, createContext, provideFloatingTree } from '@radix-ng/primitives/core';
 import { RdxMenuRoot, RdxMenuTriggerInteraction } from '@radix-ng/primitives/menu';
 
 export type RdxMenubarOrientation = 'horizontal' | 'vertical';
@@ -71,7 +71,14 @@ let nextMenubarItemId = 0;
 @Directive({
     selector: '[rdxMenubarRoot]',
     exportAs: 'rdxMenubarRoot',
-    providers: [provideRdxMenubarContext(contextFactory)],
+    providers: [
+        provideRdxMenubarContext(contextFactory),
+        // One shared floating tree for all child menus (Base UI `Menubar` wraps them in a single
+        // `FloatingTree`). Each `RdxMenuRoot`'s own `provideFloatingTree()` inherits this via skipSelf, so
+        // sibling menubar menus live in the same tree — the dismissal / focus engine can see their
+        // relationships instead of each menu owning an isolated tree.
+        provideFloatingTree()
+    ],
     host: {
         role: 'menubar',
         tabindex: '0',

@@ -53,7 +53,7 @@ const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();
         '[attr.data-label]': 'label() ?? undefined',
         '(focus)': 'onFocus()',
         '(blur)': 'onBlur()',
-        '(click)': 'onClick()',
+        '(click)': 'onClick($event)',
         '(keydown.arrowright)': 'onArrowRight($event)',
         '(pointermove)': 'onPointerMove($event)',
         '(pointerleave)': 'onPointerLeave()',
@@ -133,7 +133,8 @@ export class RdxMenuSubTrigger {
             }
 
             const reference = this.elementRef.nativeElement;
-            const scope = reference.closest<HTMLElement>('[rdxMenuPopup]') ?? document.body;
+            const ownerDocument = reference.ownerDocument;
+            const scope = reference.closest<HTMLElement>('[rdxMenuPopup]') ?? ownerDocument.body;
             const unregisterOpen = registerOpenSubmenu(reference, popup);
             let removeTunnel: (() => void) | undefined = applyPointerTunnel(scope, reference, popup);
 
@@ -153,9 +154,9 @@ export class RdxMenuSubTrigger {
                 }
             });
 
-            document.addEventListener('mousemove', handler);
+            ownerDocument.addEventListener('mousemove', handler);
             onCleanup(() => {
-                document.removeEventListener('mousemove', handler);
+                ownerDocument.removeEventListener('mousemove', handler);
                 dispose();
                 removeTunnel?.();
                 unregisterOpen();
@@ -190,14 +191,30 @@ export class RdxMenuSubTrigger {
         this.isFocused.set(false);
     }
 
-    protected onClick(): void {
+    protected onClick(event: MouseEvent): void {
         if (this.effectiveDisabled()) return;
+
+        // When the submenu opens on hover (default), hover owns its open/close, so a real **mouse** click
+        // is ignored — otherwise it would toggle a just-hover-opened submenu shut (a visible flicker).
+        // Base UI: `ignoreMouse: openOnHover`. A keyboard-activated click (`detail === 0`) still opens.
+        const isMouseClick = event.detail > 0;
+        if (this.openOnHover() && isMouseClick) {
+            return;
+        }
+
         this.openedByHover = false;
         this.clearSiblingHighlights();
-        if (!this.submenuContext.isOpen()) {
-            this.closeSiblingSubmenus();
+
+        if (this.submenuContext.isOpen()) {
+            // Toggle (close) only for a click-driven submenu (Base UI `toggle: !openOnHover`).
+            if (!this.openOnHover()) {
+                this.submenuContext.close();
+            }
+            return;
         }
-        this.submenuContext.toggle();
+
+        this.closeSiblingSubmenus();
+        this.submenuContext.show();
     }
 
     protected onArrowRight(event: Event): void {
@@ -217,8 +234,9 @@ export class RdxMenuSubTrigger {
 
         this.lastPointer = { x: event.clientX, y: event.clientY };
         this.clearSiblingHighlights();
-        if (this.submenuContext.highlightItemOnHover() && document.activeElement !== this.elementRef.nativeElement) {
-            this.elementRef.nativeElement.focus({ preventScroll: true });
+        const el = this.elementRef.nativeElement;
+        if (this.submenuContext.highlightItemOnHover() && el.ownerDocument.activeElement !== el) {
+            el.focus({ preventScroll: true });
         }
 
         if (!this.submenuContext.isOpen()) {

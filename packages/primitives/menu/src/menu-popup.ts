@@ -212,7 +212,7 @@ export class RdxMenuPopup {
     protected handleKeydown(event: KeyboardEvent): void {
         const el = this.elementRef.nativeElement;
         const items = getFocusableItems(el);
-        const current = document.activeElement as HTMLElement;
+        const current = el.ownerDocument.activeElement as HTMLElement;
         const currentIndex = items.indexOf(current);
 
         switch (event.key) {

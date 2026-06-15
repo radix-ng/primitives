@@ -61,7 +61,7 @@ export class RdxMenuItem {
         if (this.rootContext && !this.rootContext.highlightItemOnHover()) {
             return;
         }
-        if (document.activeElement !== this.elementRef.nativeElement) {
+        if (this.elementRef.nativeElement.ownerDocument.activeElement !== this.elementRef.nativeElement) {
             this.elementRef.nativeElement.focus({ preventScroll: true });
         }
     }
@@ -72,7 +72,7 @@ export class RdxMenuItem {
         }
         // Clear highlight when the pointer leaves: move focus back to the popup. A subsequent
         // pointermove on a sibling item re-focuses it, so moving between items still works.
-        if (document.activeElement === this.elementRef.nativeElement) {
+        if (this.elementRef.nativeElement.ownerDocument.activeElement === this.elementRef.nativeElement) {
             this.elementRef.nativeElement.closest<HTMLElement>('[rdxMenuPopup]')?.focus({ preventScroll: true });
         }
     }
@@ -80,13 +80,13 @@ export class RdxMenuItem {
     onItemClick(): void {
         if (this.effectiveDisabled()) return;
         this.onSelect.emit();
-        if (this.closeOnClick()) this.rootContext?.close();
+        if (this.closeOnClick()) this.rootContext?.closeEntireMenu();
     }
 
     protected onActivate(event: Event): void {
         if (this.effectiveDisabled()) return;
         event.preventDefault();
         this.onSelect.emit();
-        if (this.closeOnClick()) this.rootContext?.close();
+        if (this.closeOnClick()) this.rootContext?.closeEntireMenu();
     }
 }

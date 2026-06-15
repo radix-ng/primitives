@@ -60,7 +60,7 @@ export class RdxMenuLinkItem {
         if (this.rootContext && !this.rootContext.highlightItemOnHover()) {
             return;
         }
-        if (document.activeElement !== this.elementRef.nativeElement) {
+        if (this.elementRef.nativeElement.ownerDocument.activeElement !== this.elementRef.nativeElement) {
             this.elementRef.nativeElement.focus({ preventScroll: true });
         }
     }
@@ -69,7 +69,7 @@ export class RdxMenuLinkItem {
         if (event.pointerType !== 'mouse') {
             return;
         }
-        if (document.activeElement === this.elementRef.nativeElement) {
+        if (this.elementRef.nativeElement.ownerDocument.activeElement === this.elementRef.nativeElement) {
             this.elementRef.nativeElement.closest<HTMLElement>('[rdxMenuPopup]')?.focus({ preventScroll: true });
         }
     }
@@ -80,7 +80,7 @@ export class RdxMenuLinkItem {
             return;
         }
         this.onSelect.emit();
-        if (this.closeOnClick()) this.rootContext?.close();
+        if (this.closeOnClick()) this.rootContext?.closeEntireMenu();
     }
 
     protected onActivate(event: Event): void {
@@ -89,6 +89,6 @@ export class RdxMenuLinkItem {
             return;
         }
         this.onSelect.emit();
-        if (this.closeOnClick()) this.rootContext?.close();
+        if (this.closeOnClick()) this.rootContext?.closeEntireMenu();
     }
 }

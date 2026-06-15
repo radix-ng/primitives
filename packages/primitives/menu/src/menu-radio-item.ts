@@ -101,7 +101,7 @@ export class RdxMenuRadioItem<T = unknown> {
         if (this.rootContext && !this.rootContext.highlightItemOnHover()) {
             return;
         }
-        if (document.activeElement !== this.elementRef.nativeElement) {
+        if (this.elementRef.nativeElement.ownerDocument.activeElement !== this.elementRef.nativeElement) {
             this.elementRef.nativeElement.focus({ preventScroll: true });
         }
     }
@@ -110,7 +110,7 @@ export class RdxMenuRadioItem<T = unknown> {
         if (event.pointerType !== 'mouse') {
             return;
         }
-        if (document.activeElement === this.elementRef.nativeElement) {
+        if (this.elementRef.nativeElement.ownerDocument.activeElement === this.elementRef.nativeElement) {
             this.elementRef.nativeElement.closest<HTMLElement>('[rdxMenuPopup]')?.focus({ preventScroll: true });
         }
     }
@@ -134,6 +134,6 @@ export class RdxMenuRadioItem<T = unknown> {
         const v = this.value();
         this.radioGroupContext.selectValue(v);
         this.onSelect.emit(v);
-        if (this.closeOnClick()) this.rootContext?.close();
+        if (this.closeOnClick()) this.rootContext?.closeEntireMenu();
     }
 }

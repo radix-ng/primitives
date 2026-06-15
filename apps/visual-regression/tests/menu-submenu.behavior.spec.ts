@@ -113,6 +113,29 @@ test('an outside press closes the whole open menu chain (tree containment)', asy
     await expect(page.locator('[rdxMenuPopup]')).toHaveCount(0);
 });
 
+test('a mouse click on a hover-opened submenu trigger does not close it (no flicker)', async ({ page }) => {
+    await openEditMenu(page);
+    await openFindSubmenu(page); // hover opens the Find submenu
+    await expect(page.locator(findSubmenu)).toBeVisible();
+
+    // A real mouse click on the (hover-driven) sub-trigger is ignored, so the submenu stays open instead
+    // of toggling shut (Base UI `ignoreMouse: openOnHover`).
+    await page.locator(findTrigger).click();
+    await page.waitForTimeout(60);
+    await expect(page.locator(findSubmenu)).toBeVisible();
+});
+
+test('selecting an item inside a submenu closes the whole menu chain, not just the submenu', async ({ page }) => {
+    await openEditMenu(page);
+    await openFindSubmenu(page);
+    await expect(page.locator('[rdxMenuPopup]')).toHaveCount(2);
+
+    // Click an item in the Find submenu — selecting an item dismisses the entire menu (root + submenu),
+    // not just the innermost popup.
+    await page.locator(findSubmenu).locator('[rdxMenuItem]').first().click();
+    await expect(page.locator('[rdxMenuPopup]')).toHaveCount(0);
+});
+
 test('moving straight down to the sibling switches submenus', async ({ page }) => {
     await openEditMenu(page);
     await openFindSubmenu(page);

@@ -82,6 +82,8 @@ export interface RdxMenuRootContext {
     popupElement: Signal<HTMLElement | undefined>;
     transitionStatus: Signal<RdxMenuTransitionStatus>;
     close: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
+    /** Close this menu and every ancestor — used by item selection (the whole menu dismisses). */
+    closeEntireMenu: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
     toggle: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
     show: (autoFocus?: RdxMenuAutoFocusInput, reason?: RdxMenuOpenChangeReason, event?: Event) => void;
     /** Open the menu without moving focus into the popup (used for menubar hover-switching). */
@@ -135,6 +137,7 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         popupElement: instance.popupElement.asReadonly(),
         transitionStatus: instance.transitionStatus,
         close: (reason, event) => instance.close(reason, event),
+        closeEntireMenu: (reason, event) => instance.closeEntireMenu(reason, event),
         toggle: (reason, event) => instance.toggle(reason, event),
         show: (autoFocus, reason, event) => instance.show(autoFocus, reason, event),
         showWithoutAutoFocus: (reason, event) => instance.show(false, reason, event),
@@ -325,6 +328,15 @@ export class RdxMenuRoot {
 
     markAsContextMenu(): void {
         this.isContextMenu.set(true);
+    }
+
+    /**
+     * Close this menu **and every ancestor menu** in the chain. Selecting an item dismisses the whole
+     * menu, not just the innermost submenu (a submenu's `close()` would leave its parents open).
+     */
+    closeEntireMenu(reason: RdxMenuOpenChangeReason = 'none', event?: Event): void {
+        this.close(reason, event);
+        this.parentRoot?.closeEntireMenu(reason, event);
     }
 
     registerTrigger(el: HTMLElement): () => void {

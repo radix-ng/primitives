@@ -108,7 +108,8 @@ export class RdxMenuTrigger {
             }
 
             const trigger = this.elementRef.nativeElement;
-            let removeTunnel: (() => void) | undefined = applyPointerTunnel(document.body, trigger, popup);
+            const ownerDocument = trigger.ownerDocument;
+            let removeTunnel: (() => void) | undefined = applyPointerTunnel(ownerDocument.body, trigger, popup);
             const { handler, dispose } = createSafePolygonHandler({
                 reference: trigger,
                 floating: popup,
@@ -124,9 +125,9 @@ export class RdxMenuTrigger {
                 }
             });
 
-            document.addEventListener('mousemove', handler);
+            ownerDocument.addEventListener('mousemove', handler);
             onCleanup(() => {
-                document.removeEventListener('mousemove', handler);
+                ownerDocument.removeEventListener('mousemove', handler);
                 dispose();
                 removeTunnel?.();
                 this.clearCloseTimer();
