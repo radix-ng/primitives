@@ -1,10 +1,13 @@
+import { isPlatformBrowser } from '@angular/common';
 import {
     booleanAttribute,
     computed,
     Directive,
     effect,
+    ElementRef,
     inject,
     input,
+    PLATFORM_ID,
     Provider,
     signal,
     WritableSignal
@@ -16,6 +19,7 @@ import {
     RdxFocusScopeConfig,
     RdxFocusScopeConfigToken
 } from '@radix-ng/primitives/focus-scope';
+import { markOthers } from './mark-others';
 
 /**
  * How a popup was opened / closed (Base UI `InteractionType`). `null` = a **programmatic** open (prefer
@@ -103,7 +107,32 @@ export class RdxFloatingFocusManager {
     // The config this directive provides — its `trapped` signal is writable so we can drive it.
     private readonly focusScopeConfig = inject(RdxFocusScopeConfigToken) as { trapped: WritableSignal<boolean> };
 
+    private readonly host = inject(ElementRef).nativeElement as HTMLElement;
+    private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
     constructor() {
         effect(() => this.focusScopeConfig.trapped.set(this.trapped()));
+
+        if (!this.isBrowser) {
+            return; // SSR: no DOM marking.
+        }
+
+        // Marker pass (ADR 0017 §3) — applied to outside elements whenever the manager is **active**,
+        // independent of `modal`. Read by ADR 0015's outside-press guard.
+        effect((onCleanup) => {
+            if (!this.enabled()) {
+                return;
+            }
+            onCleanup(markOthers([this.host], { ariaHidden: false, mark: true }));
+        });
+
+        // Accessibility-isolation pass (ADR 0017 §3) — `aria-hidden` outside elements, but **only** for a
+        // modal (later: typeable-combobox) popup, so Select/Menu-root get none.
+        effect((onCleanup) => {
+            if (!this.enabled() || !this.modal()) {
+                return;
+            }
+            onCleanup(markOthers([this.host], { ariaHidden: true, mark: false }));
+        });
     }
 }

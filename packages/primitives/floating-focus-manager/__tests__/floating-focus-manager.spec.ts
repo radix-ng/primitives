@@ -3,6 +3,7 @@ import { Component, ElementRef, signal, viewChild } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { RdxFloatingFocusManager, resolveFocusTarget, resolveInitialFocus } from '../src/floating-focus-manager';
+import { RDX_FLOATING_MARKER } from '../src/mark-others';
 
 const flush = (): Promise<void> => new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
 
@@ -102,6 +103,53 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
         outside.focus();
 
         expect(document.activeElement).toBe(inside);
+    });
+
+    // ─── markOthers passes (ADR 0017 §3) ─────────────────────────────────────
+
+    it('marks outside elements while active, but does NOT aria-hide them when non-modal', async () => {
+        const sibling = document.createElement('div');
+        document.body.appendChild(sibling);
+        appended.push(sibling);
+
+        const fixture = TestBed.createComponent(ManagerHost);
+        fixture.autoDetectChanges();
+        await flush();
+
+        expect(sibling.hasAttribute(RDX_FLOATING_MARKER)).toBe(true);
+        expect(sibling.getAttribute('aria-hidden')).toBeNull(); // non-modal → no a11y isolation
+    });
+
+    it('aria-hides outside elements when modal', async () => {
+        const sibling = document.createElement('div');
+        document.body.appendChild(sibling);
+        appended.push(sibling);
+
+        const fixture = TestBed.createComponent(ManagerHost);
+        fixture.componentInstance.modal.set(true);
+        fixture.autoDetectChanges();
+        await flush();
+
+        expect(sibling.getAttribute('aria-hidden')).toBe('true');
+        expect(sibling.hasAttribute(RDX_FLOATING_MARKER)).toBe(true); // marker still applied (active)
+    });
+
+    it('clears the marks when the manager is disabled', async () => {
+        const sibling = document.createElement('div');
+        document.body.appendChild(sibling);
+        appended.push(sibling);
+
+        const fixture = TestBed.createComponent(ManagerHost);
+        fixture.componentInstance.modal.set(true);
+        fixture.autoDetectChanges();
+        await flush();
+        expect(sibling.hasAttribute(RDX_FLOATING_MARKER)).toBe(true);
+
+        fixture.componentInstance.enabled.set(false);
+        await flush();
+
+        expect(sibling.hasAttribute(RDX_FLOATING_MARKER)).toBe(false);
+        expect(sibling.getAttribute('aria-hidden')).toBeNull();
     });
 
     // ─── policy resolvers (§2 contract) ───────────────────────────────────────
