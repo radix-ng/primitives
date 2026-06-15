@@ -108,6 +108,61 @@ export function getTabbableEdges(container: HTMLElement) {
     return [first, last] as const;
 }
 
+/** Visible tabbable elements of `root` in document order (the basis for tab-order navigation). */
+function visibleTabbablesIn(root: HTMLElement): HTMLElement[] {
+    return getTabbableCandidates(root).filter((el) => !isHidden(el, { upTo: root }));
+}
+
+/** The tabbable one step (`dir`) from the document's active element, within `container`. */
+function getTabbableIn(container: HTMLElement, dir: 1 | -1): HTMLElement | undefined {
+    const list = visibleTabbablesIn(container);
+    if (list.length === 0) {
+        return undefined;
+    }
+    const active = getActiveElement(container.ownerDocument) as HTMLElement | null;
+    const index = active ? list.indexOf(active) : -1;
+    const nextIndex = index === -1 ? (dir === 1 ? 0 : list.length - 1) : index + dir;
+    return list[nextIndex];
+}
+
+/**
+ * The next tabbable in the document after the current focus (Base UI `getNextTabbable`) — used by the
+ * portal-focus bridge's trailing guard to step focus past the popup. Falls back to `reference`.
+ */
+export function getNextTabbable(reference: Element | null): HTMLElement | null {
+    const body = (reference?.ownerDocument ?? document).body;
+    return getTabbableIn(body, 1) ?? (reference as HTMLElement | null);
+}
+
+/** The previous tabbable in the document before the current focus (Base UI `getPreviousTabbable`). */
+export function getPreviousTabbable(reference: Element | null): HTMLElement | null {
+    const body = (reference?.ownerDocument ?? document).body;
+    return getTabbableIn(body, -1) ?? (reference as HTMLElement | null);
+}
+
+/** The tabbable `dir` steps from `reference` in the document, wrapping around. */
+function getTabbableNearElement(reference: Element | null, dir: 1 | -1): HTMLElement | null {
+    if (!reference) {
+        return null;
+    }
+    const list = visibleTabbablesIn(reference.ownerDocument.body);
+    const index = list.indexOf(reference as HTMLElement);
+    if (list.length === 0 || index === -1) {
+        return null;
+    }
+    return list[(index + dir + list.length) % list.length];
+}
+
+/** The tabbable immediately after `reference` in the document, wrapping (Base UI `getTabbableAfterElement`). */
+export function getTabbableAfterElement(reference: Element | null): HTMLElement | null {
+    return getTabbableNearElement(reference, 1);
+}
+
+/** The tabbable immediately before `reference` in the document, wrapping (Base UI `getTabbableBeforeElement`). */
+export function getTabbableBeforeElement(reference: Element | null): HTMLElement | null {
+    return getTabbableNearElement(reference, -1);
+}
+
 export function isSelectableInput(element: any): element is FocusableTarget & { select: () => void } {
     return element instanceof HTMLInputElement && 'select' in element;
 }
