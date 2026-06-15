@@ -196,10 +196,14 @@ test.describe('Dialog — new floating engine migration', () => {
         await page.locator(trigger).first().click();
         await expect(page.locator(popup)).toBeVisible();
 
-        // Tab focus out of the popup to a page element unrelated to the dialog → focus-out close (§3).
-        await page.locator('body').press('Tab');
-        await page.evaluate(() => (document.activeElement as HTMLElement)?.blur());
-        // (Browser session: assert the dialog closes once focus lands on an unrelated tabbable.)
+        // Move focus to a real element OUTSIDE the dialog (relatedTarget set, unrelated node) → the
+        // focus manager's focus-out close fires (§3). A null relatedTarget (bare blur) does NOT close.
+        await page.evaluate(() => {
+            const button = document.createElement('button');
+            button.id = 'rdx-focus-out-target';
+            document.body.appendChild(button);
+            button.focus();
+        });
         await expect(page.locator(popup)).toHaveCount(0);
     });
 

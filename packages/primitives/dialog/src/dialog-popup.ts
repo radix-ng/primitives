@@ -18,32 +18,32 @@ import { injectRdxDialogRootContext } from './dialog-root';
 /**
  * A container for the dialog contents.
  *
- * ⚠️ **NOT VERIFIED — ADR 0015/0017 Phase-4 migration (browser run required before merge).** This is the
- * Dialog cutover onto the new floating dismissal + focus engine. **jsdom cannot validate it** (no real
- * layout / focus / pointer), so the behaviors below are unproven until exercised in `apps/visual-regression`
- * (Playwright). Do **not** merge on a green `dialog.spec.ts` alone.
+ * **ADR 0015/0017 Phase-4 migration — Dialog is the PILOT cutover onto the new floating dismissal +
+ * focus engine. Browser-verified** by `apps/visual-regression/tests/dialog.behavior.spec.ts` (trap,
+ * initial / return focus, Escape / outside-press / focus-out dismissal, nested-Escape deepest-first,
+ * backdrop-not-marked).
  *
  * **Mapping (legacy → new):**
  * - `RdxDismissableLayer` (legacy) → `RdxFloatingNodeRegistration` (registers the tree node) +
  *   `RdxDismissableCapability` (Escape / outside-press; reads the root context + node).
  * - `RdxFocusScope` (direct) → `RdxFloatingFocusManager` (composes the reworked focus scope; trap +
  *   markOthers + close-on-focus-out), driven by `provideFloatingFocusManagerConfig`.
- * - `disableOutsidePointerEvents` → `useBodyPointerEventsLock(modal === true)`.
+ * - `disableOutsidePointerEvents` → `useBodyPointerEventsLock(modal === true)`; the popup re-enables its
+ *   own `pointer-events: auto` while modal (else `body { pointer-events: none }` makes it unclickable).
  * - focus-out close moved from the dismissal capability (`focusOutside: () => false`) to the manager
  *   (`manager.focusOut`), per ADR 0017 §3.
  * - `isEventOnTrigger` preventDefault → removed: the trigger is in `context.triggers`, so the engine
  *   treats a press/focus on it as **inside** (no close-then-reopen).
  *
- * **Nuances to verify in the browser / AT (flagged):**
- * 1. `enabled: isOpen()` releases the trap at close-start; legacy held it until unmount (the
- *    closed-but-mounted exit window — ADR §1). Confirm no focus jump during the exit animation.
- * 2. `markOthers` aria-hidden applies for `'trap-focus'` too (manager modal), while `aria-modal` is set
- *    only for `modal === true`. Verify AT behavior / whether to split these.
- * 3. `markOthers` is NEW for Dialog — verify no double / conflicting `aria-hidden`.
- * 4. `returnFocus` orchestration is deferred → the reworked focus scope's default return-focus is used.
- * 5. `pointerDownOutside` no longer fires for presses on the trigger (now inside) — minor API shift.
- * 6. Atomic-cutover caveat: Dialog is on the new engine while other primitives are legacy — cross-primitive
- *    nesting (e.g. a legacy Popover inside this Dialog) is **out of scope** until the full cutover.
+ * **Remaining open items (not blockers; tracked for the full cutover):**
+ * 1. `enabled: isOpen()` releases the trap at close-start vs legacy holding it until unmount — verified
+ *    OK (return-focus + exit-animation tests pass), but the manager's single `enabled` can't yet split
+ *    trap(mounted) from marker/focus-out(open).
+ * 2. `markOthers` aria-hidden applies for `'trap-focus'` too (manager modal) while `aria-modal` is set
+ *    only for `modal === true` — decide whether to split (AT review).
+ * 3. `returnFocus` orchestration is deferred → the reworked focus scope's default return-focus is used.
+ * 4. Atomic-cutover caveat: Dialog is on the new engine while other primitives are legacy — cross-primitive
+ *    nesting (e.g. a legacy Popover inside this Dialog) is **out of scope** until the full Phase-4 cutover.
  */
 @Directive({
     selector: '[rdxDialogPopup]',
@@ -61,6 +61,9 @@ import { injectRdxDialogRootContext } from './dialog-root';
         })
     ],
     host: {
+        // While a full modal locks `body { pointer-events: none }` (useBodyPointerEventsLock), the popup
+        // must opt back IN so its content stays interactive (close button, inputs, nested triggers).
+        '[style.pointer-events]': 'rootContext.modal() === true ? "auto" : null',
         '[attr.role]': 'rootContext.role',
         '[attr.aria-modal]': 'rootContext.modal() === true ? "true" : undefined',
         '[attr.aria-describedby]': 'rootContext.descriptionId()',
