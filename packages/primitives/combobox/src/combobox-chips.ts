@@ -1,5 +1,5 @@
 import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
-import { RdxDismissableLayerBranch } from '@radix-ng/primitives/dismissable-layer';
+import { RdxFloatingInsideElement } from '@radix-ng/primitives/dismissable-layer';
 import { injectComboboxRootContext } from './combobox-root';
 
 /**
@@ -13,7 +13,7 @@ import { injectComboboxRootContext } from './combobox-root';
 @Directive({
     selector: '[rdxComboboxChips]',
     exportAs: 'rdxComboboxChips',
-    hostDirectives: [RdxDismissableLayerBranch],
+    hostDirectives: [RdxFloatingInsideElement],
     host: {
         role: 'toolbar'
     }

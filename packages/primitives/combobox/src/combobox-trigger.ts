@@ -1,5 +1,5 @@
 import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
-import { RdxDismissableLayerBranch } from '@radix-ng/primitives/dismissable-layer';
+import { RdxFloatingInsideElement } from '@radix-ng/primitives/dismissable-layer';
 import { injectComboboxRootContext } from './combobox-root';
 
 /**
@@ -20,7 +20,7 @@ import { injectComboboxRootContext } from './combobox-root';
 @Directive({
     selector: 'button[rdxComboboxTrigger]',
     exportAs: 'rdxComboboxTrigger',
-    hostDirectives: [RdxDismissableLayerBranch],
+    hostDirectives: [RdxFloatingInsideElement],
     host: {
         type: 'button',
         '[attr.tabindex]': 'rootContext.inputLayout() === "outside" ? "-1" : "0"',

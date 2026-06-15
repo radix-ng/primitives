@@ -1474,7 +1474,7 @@
           "exportAs": "rdxComboboxChips",
           "description": "Container for the selected-value chips in `multiple` mode. Sits before the input and coordinates\narrow-key navigation across the chips (the chips themselves handle the key events). Uses\n`role=\"toolbar\"` (Base UI): it keeps NVDA in focus mode while arrow-navigating the chips, where a\nplain `list` would drop into browse mode.",
           "hostDirectives": [
-            "RdxDismissableLayerBranch"
+            "RdxFloatingInsideElement"
           ],
           "inputs": [],
           "outputs": []
@@ -1485,7 +1485,7 @@
           "exportAs": "rdxComboboxClear",
           "description": "Clears the current selection and the input text. Hidden when there is nothing to clear.",
           "hostDirectives": [
-            "RdxDismissableLayerBranch"
+            "RdxFloatingInsideElement"
           ],
           "inputs": [
             {
@@ -1543,7 +1543,7 @@
           "description": "The combobox text input. Holds DOM focus at all times; the highlighted option is referenced via\n`aria-activedescendant`. Integrates with Field for labeling, description, and validation state.",
           "hostDirectives": [
             "RdxPopperAnchor",
-            "RdxDismissableLayerBranch"
+            "RdxFloatingInsideElement"
           ],
           "inputs": [
             {
@@ -1622,7 +1622,7 @@
           "description": "The popup surface. Composes the popper content (for `data-side` / `data-align`) and a dismissable\nlayer for outside-dismiss. It does **not** trap focus — focus stays in the input throughout.",
           "hostDirectives": [
             "RdxPopperContent",
-            "RdxDismissableLayer"
+            "RdxFloatingNodeRegistration"
           ],
           "inputs": [],
           "outputs": []
@@ -1950,7 +1950,7 @@
           "exportAs": "rdxComboboxTrigger",
           "description": "Toggles the combobox popup. Its semantics depend on the layout (Base UI's `inputInsidePopup`):\n\n- **Input outside the popup** (default): a `tabindex=\"-1\"` toggle button (`aria-haspopup=\"listbox\"`)\n  that never steals focus from the input — `Tab` lands directly on the input.\n- **Input inside the popup** (e.g. a command palette / emoji picker): the trigger becomes the primary\n  `role=\"combobox\"` control — `tabindex=\"0\"` (reachable via `Tab`), `aria-haspopup=\"dialog\"`, and\n  `ArrowDown`/`ArrowUp` open the popup (which moves focus to the inner input and highlights an item).\n\nThe trigger stays `Tab`-reachable by default and is demoted to `tabindex=\"-1\"` only once an input is\ndetected *outside* the popup — so a trigger whose input lives in a not-yet-opened popup is focusable\nfrom the first render (`inputLayout` is `unknown` until that input mounts).",
           "hostDirectives": [
-            "RdxDismissableLayerBranch"
+            "RdxFloatingInsideElement"
           ],
           "inputs": [],
           "outputs": []
@@ -2498,6 +2498,14 @@
               "description": "Event handler called when a `pointerdown` event happens outside of the `DismissableLayer`.\nCan be prevented."
             }
           ]
+        },
+        {
+          "directive": "RdxFloatingInsideElement",
+          "selector": "[rdxFloatingInside]",
+          "exportAs": "rdxFloatingInside",
+          "description": "Marks its host as **inside** the enclosing floating layer (ADR 0015): a pointer / focus interaction on\nit does not count as \"outside\", so it never dismisses the popup. It registers the host into the\nfloating root context's trigger registry — the dismissal capability's `isInside` check reads it.\n\nThis is the new-engine replacement for the legacy `RdxDismissableLayerBranch`, for an element that\nlives **outside** the popup DOM but logically belongs to the layer — e.g. a Combobox input / trigger /\nchips / clear button that keeps focus (or is clicked) while the listbox is open.",
+          "inputs": [],
+          "outputs": []
         },
         {
           "directive": "RdxEscapeKeyDown",
@@ -5849,11 +5857,22 @@
           "hostDirectives": [
             "RdxPopperContent",
             "RdxFocusScope",
-            "RdxDismissableLayer",
+            "RdxFloatingNodeRegistration",
             "RdxCollectionProvider"
           ],
           "inputs": [],
-          "outputs": []
+          "outputs": [
+            {
+              "name": "escapeKeyDown",
+              "type": "KeyboardEvent",
+              "description": "Event handler called when the escape key is down.\nCan be prevented."
+            },
+            {
+              "name": "pointerDownOutside",
+              "type": "PointerEvent",
+              "description": "Event handler called when a `pointerdown` event happens outside of the popup.\nCan be prevented."
+            }
+          ]
         },
         {
           "directive": "RdxSelectPortal",

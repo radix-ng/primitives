@@ -72,10 +72,16 @@ describe('Combobox modal', () => {
         expect(backdrop.hasAttribute('data-open')).toBe(true);
     });
 
-    it('keeps the popup itself interactive (pointer-events auto) while outside is inert', async () => {
+    it('renders an internal backdrop for a modal popup (Base UI; replaces the global body pointer-lock)', async () => {
         host.open.set(true);
         await settle();
+
+        // A modal combobox isolates the background with a full-viewport internal backdrop (the
+        // outside-press target) instead of a global `body { pointer-events: none }` lock.
+        expect(document.querySelector('[data-rdx-internal-backdrop]')).toBeTruthy();
+
+        // With no body lock, the popup needs no `pointer-events: auto` opt-back-in.
         const popup = document.querySelector('[rdxComboboxPopup]') as HTMLElement;
-        expect(popup.style.pointerEvents).toBe('auto');
+        expect(popup.style.pointerEvents).toBe('');
     });
 });

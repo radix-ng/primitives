@@ -20,6 +20,7 @@ export * from './src/floating/floating-node-registration';
 export * from './src/floating/floating-registration';
 export * from './src/floating/floating-root-context';
 export * from './src/floating/floating-tree';
+export * from './src/floating/internal-backdrop';
 export * from './src/floating/provide-floating-tree';
 export * from './src/floating/trigger-registry';
 

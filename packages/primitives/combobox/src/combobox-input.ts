@@ -9,7 +9,7 @@ import {
     input
 } from '@angular/core';
 import { BooleanInput, injectId } from '@radix-ng/primitives/core';
-import { RdxDismissableLayerBranch } from '@radix-ng/primitives/dismissable-layer';
+import { RdxFloatingInsideElement } from '@radix-ng/primitives/dismissable-layer';
 import { injectFieldRootContext } from '@radix-ng/primitives/field';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { RdxComboboxPositioner } from './combobox-positioner';
@@ -26,7 +26,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
 @Directive({
     selector: 'input[rdxComboboxInput]',
     exportAs: 'rdxComboboxInput',
-    hostDirectives: [RdxPopperAnchor, RdxDismissableLayerBranch],
+    hostDirectives: [RdxPopperAnchor, RdxFloatingInsideElement],
     host: {
         role: 'combobox',
         autocomplete: 'off',

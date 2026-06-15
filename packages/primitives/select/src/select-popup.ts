@@ -7,13 +7,21 @@ import {
     inject,
     InjectionToken,
     Injector,
+    output,
     OutputRef,
     signal
 } from '@angular/core';
-import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
 import { RdxCollectionItem, RdxCollectionProvider } from '@radix-ng/primitives/collection';
-import { AcceptableValue, createContext, useListHighlight, useScrollLock } from '@radix-ng/primitives/core';
-import { provideRdxDismissableLayerConfig, RdxDismissableLayer } from '@radix-ng/primitives/dismissable-layer';
+import {
+    AcceptableValue,
+    createContext,
+    RDX_FLOATING_REGISTRATION,
+    RDX_FLOATING_ROOT_CONTEXT,
+    RdxFloatingNodeRegistration,
+    useListHighlight,
+    useScrollLock
+} from '@radix-ng/primitives/core';
+import { RdxDismissableCapability } from '@radix-ng/primitives/dismissable-layer';
 import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import { RdxPopperContent } from '@radix-ng/primitives/popper';
 import { injectSelectRootContext } from './select-root';
@@ -98,15 +106,8 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
  */
 @Directive({
     selector: '[rdxSelectPopup]',
-    hostDirectives: [RdxPopperContent, RdxFocusScope, RdxDismissableLayer, RdxCollectionProvider],
-    providers: [
-        provideSelectPopupContext(context),
-        provideRdxDismissableLayerConfig(() => {
-            return {
-                disableOutsidePointerEvents: injectSelectRootContext().modal
-            };
-        })
-    ],
+    hostDirectives: [RdxPopperContent, RdxFocusScope, RdxFloatingNodeRegistration, RdxCollectionProvider],
+    providers: [provideSelectPopupContext(context)],
     host: {
         role: 'listbox',
         tabindex: '-1',
@@ -130,7 +131,8 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
     }
 })
 export class RdxSelectPopup {
-    private readonly dismissableLayer = inject(RdxDismissableLayer);
+    private readonly floatingContext = inject(RDX_FLOATING_ROOT_CONTEXT);
+    private readonly registration = inject(RDX_FLOATING_REGISTRATION, { optional: true });
     private readonly currentElement = inject(ElementRef);
     private readonly collection = inject(RdxCollectionProvider);
     private readonly injector = inject(Injector);
@@ -175,13 +177,13 @@ export class RdxSelectPopup {
      * Event handler called when the escape key is down.
      * Can be prevented.
      */
-    readonly escapeKeyDown = outputFromObservable(outputToObservable(this.dismissableLayer.escapeKeyDown));
+    readonly escapeKeyDown = output<KeyboardEvent>();
 
     /**
-     * Event handler called when a `pointerdown` event happens outside of the `DismissableLayer`.
+     * Event handler called when a `pointerdown` event happens outside of the popup.
      * Can be prevented.
      */
-    readonly pointerDownOutside = outputFromObservable(outputToObservable(this.dismissableLayer.pointerDownOutside));
+    readonly pointerDownOutside = output<PointerEvent>();
 
     readonly content = signal<HTMLElement | null>(null);
 
@@ -226,9 +228,20 @@ export class RdxSelectPopup {
         const unregisterTransition = this.rootContext.registerTransitionElement(this.currentElement.nativeElement);
         inject(DestroyRef).onDestroy(unregisterTransition);
 
-        this.dismissableLayer.focusOutside.subscribe((e) => e.preventDefault());
+        // The popup (listbox) is this layer's floating element — the inside surface for containment.
+        this.floatingContext.setFloatingElement(this.currentElement.nativeElement);
 
-        this.dismissableLayer.dismiss.subscribe(() => this.rootContext.onOpenChange(false));
+        // Dismissal (ADR 0015): Escape or an outside press closes the select. Focus-out does NOT close it
+        // — the listbox holds focus while open (items are navigated virtually), so a focus-out is not a
+        // dismissal (the legacy preventDefaulted it too).
+        new RdxDismissableCapability(this.floatingContext, () => this.registration?.node() ?? null, {
+            escapeKey: () => true,
+            outsidePress: () => true,
+            focusOutside: () => false,
+            onEscapeKeyDown: (event) => this.escapeKeyDown.emit(event),
+            onPointerDownOutside: (event) => this.pointerDownOutside.emit(event),
+            onDismiss: () => this.rootContext.onOpenChange(false)
+        });
 
         const focusScope = inject(RdxFocusScope);
 

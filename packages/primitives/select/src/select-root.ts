@@ -3,6 +3,7 @@ import {
     computed,
     Directive,
     effect,
+    ElementRef,
     inject,
     input,
     model,
@@ -13,9 +14,13 @@ import {
 import {
     AcceptableValue,
     createContext,
+    createFloatingRootContext,
     Direction,
     isNullish,
     ItemValueComparator,
+    provideFloatingRootContext,
+    provideFloatingTree,
+    RdxFloatingRootContext,
     useTransitionStatus
 } from '@radix-ng/primitives/core';
 import { RdxPopper } from '@radix-ng/primitives/popper';
@@ -84,11 +89,22 @@ export const [injectSelectRootContext, provideSelectRootContext] = createContext
 @Directive({
     selector: '[rdxSelectRoot]',
     exportAs: 'rdxSelectRoot',
-    providers: [provideSelectRootContext(context)],
+    providers: [
+        provideSelectRootContext(context),
+        // New floating foundation (ADR 0015/0017) — the dismissal capability reads this shared context.
+        provideFloatingTree(),
+        provideFloatingRootContext(() => inject(RdxSelectRoot).floatingContext)
+    ],
     hostDirectives: [RdxPopper]
 })
 export class RdxSelectRoot {
     readonly open = model<boolean>(false);
+
+    /** Per-popup floating root context (ADR 0015) — `open` / `triggers` / reference for the dismissal engine. */
+    readonly floatingContext: RdxFloatingRootContext = createFloatingRootContext({
+        ownerDocument: inject(ElementRef).nativeElement.ownerDocument,
+        open: () => this.open()
+    });
 
     readonly value = model<AcceptableValue | AcceptableValue[]>();
 
@@ -135,6 +151,17 @@ export class RdxSelectRoot {
             }
             previousOpen = open;
             untracked(() => this.transition.start(open));
+        });
+
+        // Bridge the trigger into the floating context: the dismissal capability treats a press on the
+        // trigger (the reference) as "inside", and uses it for positioning containment (ADR 0015).
+        effect((onCleanup) => {
+            const trigger = this.triggerElement();
+            this.floatingContext.setReferenceElement(trigger);
+            if (trigger) {
+                this.floatingContext.triggers.add(trigger);
+                onCleanup(() => this.floatingContext.triggers.delete(trigger));
+            }
         });
     }
 

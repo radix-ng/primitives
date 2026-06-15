@@ -1,5 +1,5 @@
 import { booleanAttribute, computed, Directive, input } from '@angular/core';
-import { RdxDismissableLayerBranch } from '@radix-ng/primitives/dismissable-layer';
+import { RdxFloatingInsideElement } from '@radix-ng/primitives/dismissable-layer';
 import { injectComboboxRootContext } from './combobox-root';
 
 /**
@@ -10,7 +10,7 @@ import { injectComboboxRootContext } from './combobox-root';
 @Directive({
     selector: 'button[rdxComboboxClear]',
     exportAs: 'rdxComboboxClear',
-    hostDirectives: [RdxDismissableLayerBranch],
+    hostDirectives: [RdxFloatingInsideElement],
     host: {
         type: 'button',
         tabindex: '-1',

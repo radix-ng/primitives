@@ -31,6 +31,32 @@ test('autocomplete teleports the positioner directly into <body> with no wrapper
 });
 
 /**
+ * ADR 0015/0017 Phase-4 migration of Combobox onto the new floating dismissal engine.
+ */
+test.describe('Combobox — new floating engine migration', () => {
+    const input = '[rdxComboboxInput]';
+    const popup = '[rdxComboboxPopup]';
+
+    test('Escape closes the combobox', async ({ page }) => {
+        await gotoStory(page, 'primitives-combobox--default');
+        await page.locator(input).click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        await page.keyboard.press('Escape');
+        await expect(page.locator(popup)).toHaveCount(0);
+    });
+
+    test('an outside press closes the combobox', async ({ page }) => {
+        await gotoStory(page, 'primitives-combobox--default');
+        await page.locator(input).click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        await page.mouse.click(5, 5);
+        await expect(page.locator(popup)).toHaveCount(0);
+    });
+});
+
+/**
  * Regression: in multiple mode, once focus has stepped into the chips (ArrowLeft from the input),
  * ArrowDown / ArrowUp must hand focus back to the input and engage the list — otherwise the popup
  * is unreachable from a chip and `aria-activedescendant` navigation is dead (jsdom can't catch this
