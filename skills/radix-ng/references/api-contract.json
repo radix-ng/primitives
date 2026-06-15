@@ -3486,11 +3486,32 @@
           "description": "A container for the menu contents.",
           "hostDirectives": [
             "RdxPopperContent",
-            "RdxDismissableLayer",
+            "RdxFloatingNodeRegistration",
             "RdxFocusScope"
           ],
           "inputs": [],
-          "outputs": []
+          "outputs": [
+            {
+              "name": "escapeKeyDown",
+              "type": "KeyboardEvent",
+              "description": "Event handler called when the escape key is pressed. Can be prevented."
+            },
+            {
+              "name": "focusOutside",
+              "type": "FocusEvent",
+              "description": "Event handler called when focus moves outside of the popup. Can be prevented."
+            },
+            {
+              "name": "interactOutside",
+              "type": "PointerEvent | FocusEvent",
+              "description": "Event handler called when an interaction happens outside of the popup. Can be prevented."
+            },
+            {
+              "name": "pointerDownOutside",
+              "type": "PointerEvent",
+              "description": "Event handler called when a pointerdown event happens outside of the popup. Can be prevented."
+            }
+          ]
         },
         {
           "directive": "RdxMenuPortal",
@@ -3778,8 +3799,7 @@
           "exportAs": "rdxMenuSubTrigger",
           "description": "An item inside a parent menu that opens a nested submenu.\n\nPlace this inside `ng-container rdxMenuRoot` that wraps both the trigger\nand the submenu positioner. The inner root provides the submenu context;\nthe outer popup discovers this element via `[rdxMenuSubTrigger]` in its\nITEM_SELECTOR and includes it in keyboard navigation.",
           "hostDirectives": [
-            "RdxPopperAnchor",
-            "RdxDismissableLayerBranch"
+            "RdxPopperAnchor"
           ],
           "inputs": [
             {

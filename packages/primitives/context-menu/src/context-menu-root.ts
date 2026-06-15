@@ -52,6 +52,12 @@ export class RdxContextMenuRoot {
     readonly menuRoot = inject(RdxMenuRoot);
     private readonly popper = inject(RdxPopper);
 
+    constructor() {
+        // Tell the composed menu root it is a Context Menu, so its per-kind policy (modal focus trap,
+        // backdrop, outside-press grace) differs from a plain dropdown (Base UI `MenuParent.type`).
+        this.menuRoot.markAsContextMenu();
+    }
+
     /**
      * Open the menu with the popup anchored at the given viewport coordinates.
      *

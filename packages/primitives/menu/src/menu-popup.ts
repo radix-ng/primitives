@@ -1,14 +1,15 @@
-import { computed, DestroyRef, Directive, effect, ElementRef, inject, signal } from '@angular/core';
+import { computed, DestroyRef, Directive, effect, ElementRef, inject, output, signal } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
-import { useScrollLock } from '@radix-ng/primitives/core';
 import {
-    provideRdxDismissableLayerConfig,
-    RdxDismissableLayer,
-    RdxDismissableLayersContextToken
-} from '@radix-ng/primitives/dismissable-layer';
+    RDX_FLOATING_REGISTRATION,
+    RDX_FLOATING_ROOT_CONTEXT,
+    RdxFloatingNodeRegistration,
+    useScrollLock
+} from '@radix-ng/primitives/core';
+import { RdxDismissableCapability } from '@radix-ng/primitives/dismissable-layer';
 import { provideRdxFocusScopeConfig, RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
-import { injectRdxMenuRootContext } from './menu-root';
+import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
 
 /** Selector for focusable menu items within the popup. */
 const ITEM_SELECTOR = [
@@ -32,14 +33,8 @@ function getFocusableItems(popup: HTMLElement): HTMLElement[] {
 @Directive({
     selector: '[rdxMenuPopup]',
     exportAs: 'rdxMenuPopup',
-    hostDirectives: [RdxPopperContent, RdxDismissableLayer, RdxFocusScope],
+    hostDirectives: [RdxPopperContent, RdxFloatingNodeRegistration, RdxFocusScope],
     providers: [
-        provideRdxDismissableLayerConfig(() => {
-            const rootContext = injectRdxMenuRootContext();
-            return {
-                disableOutsidePointerEvents: computed(() => rootContext.modal())
-            };
-        }),
         provideRdxFocusScopeConfig(() => ({
             trapped: signal(false)
         }))
@@ -61,11 +56,11 @@ function getFocusableItems(popup: HTMLElement): HTMLElement[] {
 })
 export class RdxMenuPopup {
     protected readonly rootContext = injectRdxMenuRootContext();
-    private readonly dismissableLayer = inject(RdxDismissableLayer);
+    private readonly floatingContext = inject(RDX_FLOATING_ROOT_CONTEXT);
+    private readonly registration = inject(RDX_FLOATING_REGISTRATION, { optional: true });
     private readonly focusScope = inject(RdxFocusScope);
     private readonly wrapper = inject(RdxPopperContentWrapper, { optional: true });
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
-    private readonly dismissableLayersContext = inject(RdxDismissableLayersContextToken);
     private search = '';
     private searchTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -75,22 +70,22 @@ export class RdxMenuPopup {
     /**
      * Event handler called when the escape key is pressed. Can be prevented.
      */
-    readonly escapeKeyDown = outputFromObservable(outputToObservable(this.dismissableLayer.escapeKeyDown));
+    readonly escapeKeyDown = output<KeyboardEvent>();
 
     /**
      * Event handler called when a pointerdown event happens outside of the popup. Can be prevented.
      */
-    readonly pointerDownOutside = outputFromObservable(outputToObservable(this.dismissableLayer.pointerDownOutside));
+    readonly pointerDownOutside = output<PointerEvent>();
 
     /**
      * Event handler called when focus moves outside of the popup. Can be prevented.
      */
-    readonly focusOutside = outputFromObservable(outputToObservable(this.dismissableLayer.focusOutside));
+    readonly focusOutside = output<FocusEvent>();
 
     /**
      * Event handler called when an interaction happens outside of the popup. Can be prevented.
      */
-    readonly interactOutside = outputFromObservable(outputToObservable(this.dismissableLayer.interactOutside));
+    readonly interactOutside = output<PointerEvent | FocusEvent>();
 
     /**
      * Event handler called before focus moves into the popup. Can be prevented.
@@ -107,6 +102,11 @@ export class RdxMenuPopup {
         // Nested menus expose an effective non-modal value from their root context.
         useScrollLock(this.rootContext.modal);
 
+        // The popup is this layer's floating element (the inside-surface for containment checks). A
+        // submenu is a child node in the shared tree, so the capability's logical containment treats an
+        // open submenu as "inside" its parent automatically — replacing the legacy `branches` registry.
+        this.floatingContext.setFloatingElement(this.elementRef.nativeElement);
+
         const unregister = this.rootContext.registerTransitionElement(this.elementRef.nativeElement);
         const unregisterPopup = this.rootContext.registerPopup(this.elementRef.nativeElement);
         inject(DestroyRef).onDestroy(() => {
@@ -115,22 +115,47 @@ export class RdxMenuPopup {
             clearTimeout(this.searchTimer);
         });
 
-        effect((onCleanup) => {
-            if (!this.rootContext.isSubmenu()) {
-                return;
+        // Dismissal (ADR 0015): Escape, an outside press, or focus moving outside closes the menu.
+        // Escape is owned by the capability (a document-level listener — it works regardless of where
+        // focus currently sits, matching Base UI `useDismiss`). Deepest-first: a non-bubbling layer
+        // yields to an open child, so Escape closes only the innermost menu — unless `closeParentOnEsc`
+        // makes it bubble up the whole chain.
+        new RdxDismissableCapability(this.floatingContext, () => this.registration?.node() ?? null, {
+            escapeKey: () => true,
+            escapeKeyBubbles: () => this.rootContext.closeParentOnEsc(),
+            outsidePress: () => true,
+            focusOutside: () => true,
+            onEscapeKeyDown: (event) => this.escapeKeyDown.emit(event),
+            onPointerDownOutside: (event) => {
+                this.pointerDownOutside.emit(event);
+                this.interactOutside.emit(event);
+            },
+            onFocusOutside: (event) => {
+                this.focusOutside.emit(event);
+                this.interactOutside.emit(event);
+            },
+            onDismiss: (reason, event) => {
+                // Forward the dismissal reason + native event into the menu's open-change channel.
+                const menuReason: RdxMenuOpenChangeReason =
+                    reason === 'escape-key' ? 'escape-key' : reason === 'focus-outside' ? 'focus-out' : 'outside-press';
+                this.rootContext.close(menuReason, event);
+                // Escape restores focus to the trigger (Base UI returns focus on keyboard dismissal).
+                if (reason === 'escape-key') {
+                    this.rootContext.trigger()?.focus({ preventScroll: true });
+                }
             }
-
-            const element = this.elementRef.nativeElement;
-            this.dismissableLayersContext.branches.update((branches) => [...branches, element]);
-            onCleanup(() => {
-                this.dismissableLayersContext.branches.update((branches) =>
-                    branches.filter((branch) => branch !== element)
-                );
-            });
         });
 
-        this.dismissableLayer.dismiss.subscribe(() => {
-            this.rootContext.close();
+        // Suppress the composed focus scope's auto-focus when the popup mounts **closed** — i.e. an
+        // always-mounted popup rendered before its menu opens. Otherwise every closed sibling popup's
+        // scope would grab focus to itself on mount and a freshly opened menu would see that as a
+        // focus-out and immediately close. When the popup mounts already open (the normal mount-on-open
+        // case), the scope's auto-focus is allowed so focus lands in the popup (Escape / typeahead work);
+        // the effect below then refines it per `autoFocus`.
+        this.focusScope.mountAutoFocus.subscribe((event) => {
+            if (!this.rootContext.isOpen()) {
+                event.preventDefault();
+            }
         });
 
         // Move focus into the popup when the menu opens — unless the opener suppressed it
@@ -229,16 +254,9 @@ export class RdxMenuPopup {
                 }
                 break;
             }
-            case 'Escape': {
-                event.preventDefault();
-                event.stopPropagation();
-                this.rootContext.close();
-                if (this.rootContext.isSubmenu() && this.rootContext.closeParentOnEsc()) {
-                    this.rootContext.closeParent();
-                }
-                this.rootContext.trigger()?.focus({ preventScroll: true });
-                break;
-            }
+            // Escape is owned by the dismissal capability (a document-level listener that works
+            // regardless of focus position); it closes the menu, restores focus to the trigger, and
+            // cascades up the chain when `closeParentOnEsc` is set.
             case 'Tab': {
                 // Close on tab to allow natural tab navigation
                 this.rootContext.close();

@@ -79,6 +79,40 @@ test('RTL: diagonal traversal toward a left-placed submenu keeps it open', async
     await expect(page.locator(spellingRtlSubmenu)).toHaveCount(0);
 });
 
+test('Escape closes only the deepest submenu, keeping the parent menu open (tree deepest-first)', async ({ page }) => {
+    await openEditMenu(page);
+    await openFindSubmenu(page);
+
+    // The Find submenu is the deepest open layer. Escape (a document-level dismissal) closes only it —
+    // the parent Edit menu stays open because the open submenu node blocks the parent's Escape.
+    await page.keyboard.press('Escape');
+    await expect(page.locator(findSubmenu)).toHaveCount(0);
+    await expect(page.locator('[rdxMenuPopup]').first()).toBeVisible();
+
+    // A second Escape now closes the parent.
+    await page.keyboard.press('Escape');
+    await expect(page.locator('[rdxMenuPopup]')).toHaveCount(0);
+});
+
+test('a submenu renders no internal backdrop (only the root modal menu does, finding #1)', async ({ page }) => {
+    await openEditMenu(page); // root menu opened by click → modal → one internal backdrop
+    await expect(page.locator('[data-rdx-menu-internal-backdrop]')).toHaveCount(1);
+
+    await openFindSubmenu(page); // submenu (parent.type === 'menu') → adds no backdrop of its own
+    await expect(page.locator('[data-rdx-menu-internal-backdrop]')).toHaveCount(1);
+});
+
+test('an outside press closes the whole open menu chain (tree containment)', async ({ page }) => {
+    await openEditMenu(page);
+    await openFindSubmenu(page);
+    await expect(page.locator('[rdxMenuPopup]')).toHaveCount(2);
+
+    // A press far outside both popups closes the entire stack — the submenu is logically "inside" the
+    // parent via the shared floating tree, so neither survives.
+    await page.mouse.click(5, 5);
+    await expect(page.locator('[rdxMenuPopup]')).toHaveCount(0);
+});
+
 test('moving straight down to the sibling switches submenus', async ({ page }) => {
     await openEditMenu(page);
     await openFindSubmenu(page);

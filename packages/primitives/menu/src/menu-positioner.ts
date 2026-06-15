@@ -1,10 +1,11 @@
-import { Directive } from '@angular/core';
+import { afterNextRender, Directive, ElementRef, inject, Injector } from '@angular/core';
 import {
     legacyPopperVars,
     provideRdxPopperContentConfig,
     provideRdxPopperContentWrapper,
     RdxPopperContentWrapper
 } from '@radix-ng/primitives/popper';
+import { setupMenuInternalBackdrop } from './menu-internal-backdrop';
 import { injectRdxMenuRootContext } from './menu-root';
 
 /**
@@ -32,4 +33,13 @@ import { injectRdxMenuRootContext } from './menu-root';
 export class RdxMenuPositioner extends RdxPopperContentWrapper {
     protected readonly rootContext = injectRdxMenuRootContext();
     protected readonly legacyVars = legacyPopperVars('menu');
+
+    constructor() {
+        super();
+        const injector = inject(Injector);
+        const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+        // After the structural portal has relocated this positioner into the portal container, set up the
+        // modal internal backdrop (finding #1) as a sibling before it.
+        afterNextRender(() => setupMenuInternalBackdrop(host, this.rootContext, injector));
+    }
 }

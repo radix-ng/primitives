@@ -265,7 +265,7 @@ export class RdxMenubarRoot {
                 }
 
                 trigger.focus({ preventScroll: true });
-                root.show(false);
+                root.show(false, 'trigger-hover');
                 this.activateItem(id);
                 return true;
             }

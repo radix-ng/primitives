@@ -12,7 +12,6 @@ import {
     PLATFORM_ID
 } from '@angular/core';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
-import { RdxDismissableLayersContextToken } from '@radix-ng/primitives/dismissable-layer';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { injectRdxMenuRootContext } from './menu-root';
 import { applyPointerTunnel, createSafePolygonHandler, hasOpenChildSubmenu, MenuSide } from './menu-safe-polygon';
@@ -58,7 +57,6 @@ export class RdxMenuTrigger {
     protected readonly rootContext = injectRdxMenuRootContext();
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly destroyRef = inject(DestroyRef);
-    private readonly dismissableLayersContext = inject(RdxDismissableLayersContextToken);
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
     private openTimer: ReturnType<typeof setTimeout> | undefined;
     private closeTimer: ReturnType<typeof setTimeout> | undefined;
@@ -135,23 +133,9 @@ export class RdxMenuTrigger {
             });
         });
 
-        // Keep coordinated triggers and the active trigger of a modal menu interactive. Registering
-        // them as a dismissable-layer branch prevents pointer/focus interaction on the trigger from
-        // dismissing the popup before the trigger's own click can toggle it.
-        effect((onCleanup) => {
-            if (
-                !this.rootContext.hasTriggerInteractionHandler() &&
-                !(this.rootContext.isOpen() && this.rootContext.modal())
-            ) {
-                return;
-            }
-
-            const el = this.elementRef.nativeElement;
-            this.dismissableLayersContext.branches.update((branches) => [...branches, el]);
-            onCleanup(() => {
-                this.dismissableLayersContext.branches.update((branches) => branches.filter((b) => b !== el));
-            });
-        });
+        // (A press/focus on the trigger no longer needs a dismissable-layer branch to avoid
+        // self-dismissal: the trigger is registered in the menu's floating context, so the dismissal
+        // capability already treats it as "inside" — ADR 0015 trigger registry replaces the branch.)
 
         this.destroyRef.onDestroy(() => {
             this.clearOpenTimer();
@@ -239,14 +223,14 @@ export class RdxMenuTrigger {
         const delay = this.delay() ?? 100;
         if (delay <= 0) {
             this.openedByHover = true;
-            this.rootContext.show();
+            this.rootContext.show('first', 'trigger-hover');
             return;
         }
 
         this.openTimer = setTimeout(() => {
             this.openTimer = undefined;
             this.openedByHover = true;
-            this.rootContext.show();
+            this.rootContext.show('first', 'trigger-hover');
         }, delay);
     }
 

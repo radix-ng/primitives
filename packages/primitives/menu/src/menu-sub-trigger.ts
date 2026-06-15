@@ -13,7 +13,6 @@ import {
     signal
 } from '@angular/core';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
-import { RdxDismissableLayerBranch } from '@radix-ng/primitives/dismissable-layer';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { injectRdxMenuRootContext, RdxMenuRoot } from './menu-root';
 import {
@@ -38,7 +37,7 @@ const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();
 @Directive({
     selector: '[rdxMenuSubTrigger]',
     exportAs: 'rdxMenuSubTrigger',
-    hostDirectives: [RdxPopperAnchor, RdxDismissableLayerBranch],
+    hostDirectives: [RdxPopperAnchor],
     host: {
         '[attr.type]': 'nativeButtonState() ? "button" : undefined',
         role: 'menuitem',
@@ -227,7 +226,7 @@ export class RdxMenuSubTrigger {
             this.closeSiblingSubmenus();
             this.openTimer = setTimeout(() => {
                 this.openedByHover = true;
-                this.submenuContext.show(false);
+                this.submenuContext.show(false, 'trigger-hover');
             }, this.delay() ?? 100);
         }
     }

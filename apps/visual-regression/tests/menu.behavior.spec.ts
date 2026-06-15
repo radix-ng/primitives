@@ -34,6 +34,34 @@ test('menu locks page scrolling by default and releases it when closed', async (
     expect(await htmlOverflow()).toBe('');
 });
 
+test('a modal menu renders an internal backdrop that blocks the background and is the outside-press target (finding #1)', async ({
+    page
+}) => {
+    await gotoStory(page, 'primitives-menu--default');
+
+    // A fixed background button in the far corner that must NOT receive clicks while the modal menu is
+    // open — the internal backdrop has to intercept them.
+    await page.evaluate(() => {
+        const b = document.createElement('button');
+        b.id = 'rdx-bg-btn';
+        b.style.cssText = 'position:fixed; left:2px; top:2px; width:40px; height:40px';
+        b.addEventListener('click', () => {
+            (window as { __bgHits?: number }).__bgHits = ((window as { __bgHits?: number }).__bgHits || 0) + 1;
+        });
+        document.body.appendChild(b);
+    });
+
+    await page.locator('[rdxMenuTrigger]').first().click();
+    await expect(page.locator('[rdxMenuPopup]')).toBeVisible();
+    await expect(page.locator('[data-rdx-menu-internal-backdrop]')).toHaveCount(1);
+
+    // A press in the far corner lands on the backdrop (over the background button): the button must not
+    // fire (background blocked) and the menu closes (the backdrop is the outside-press target).
+    await page.mouse.click(10, 10);
+    await expect(page.locator('[rdxMenuPopup]')).toHaveCount(0);
+    expect(await page.evaluate(() => (window as { __bgHits?: number }).__bgHits || 0)).toBe(0);
+});
+
 test('modal menu trigger stays interactive and closes the open menu on click', async ({ page }) => {
     await gotoStory(page, 'primitives-menu--default');
 
