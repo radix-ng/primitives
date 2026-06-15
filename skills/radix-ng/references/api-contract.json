@@ -2273,13 +2273,34 @@
           "directive": "RdxDialogPopup",
           "selector": "[rdxDialogPopup]",
           "exportAs": "rdxDialogPopup",
-          "description": "A container for the dialog contents.",
+          "description": "A container for the dialog contents.\n\n⚠️ **NOT VERIFIED — ADR 0015/0017 Phase-4 migration (browser run required before merge).** This is the\nDialog cutover onto the new floating dismissal + focus engine. **jsdom cannot validate it** (no real\nlayout / focus / pointer), so the behaviors below are unproven until exercised in `apps/visual-regression`\n(Playwright). Do **not** merge on a green `dialog.spec.ts` alone.\n\n**Mapping (legacy → new):**\n- `RdxDismissableLayer` (legacy) → `RdxFloatingNodeRegistration` (registers the tree node) +\n  `RdxDismissableCapability` (Escape / outside-press; reads the root context + node).\n- `RdxFocusScope` (direct) → `RdxFloatingFocusManager` (composes the reworked focus scope; trap +\n  markOthers + close-on-focus-out), driven by `provideFloatingFocusManagerConfig`.\n- `disableOutsidePointerEvents` → `useBodyPointerEventsLock(modal === true)`.\n- focus-out close moved from the dismissal capability (`focusOutside: () => false`) to the manager\n  (`manager.focusOut`), per ADR 0017 §3.\n- `isEventOnTrigger` preventDefault → removed: the trigger is in `context.triggers`, so the engine\n  treats a press/focus on it as **inside** (no close-then-reopen).\n\n**Nuances to verify in the browser / AT (flagged):**\n1. `enabled: isOpen()` releases the trap at close-start; legacy held it until unmount (the\n   closed-but-mounted exit window — ADR §1). Confirm no focus jump during the exit animation.\n2. `markOthers` aria-hidden applies for `'trap-focus'` too (manager modal), while `aria-modal` is set\n   only for `modal === true`. Verify AT behavior / whether to split these.\n3. `markOthers` is NEW for Dialog — verify no double / conflicting `aria-hidden`.\n4. `returnFocus` orchestration is deferred → the reworked focus scope's default return-focus is used.\n5. `pointerDownOutside` no longer fires for presses on the trigger (now inside) — minor API shift.\n6. Atomic-cutover caveat: Dialog is on the new engine while other primitives are legacy — cross-primitive\n   nesting (e.g. a legacy Popover inside this Dialog) is **out of scope** until the full cutover.",
           "hostDirectives": [
-            "RdxDismissableLayer",
-            "RdxFocusScope"
+            "RdxFloatingNodeRegistration",
+            "RdxFloatingFocusManager"
           ],
           "inputs": [],
-          "outputs": []
+          "outputs": [
+            {
+              "name": "escapeKeyDown",
+              "type": "KeyboardEvent",
+              "description": "Event handler called when the escape key is down. Can be prevented."
+            },
+            {
+              "name": "focusOutside",
+              "type": "FocusEvent",
+              "description": "Event handler called when focus moves outside of the popup. Can be prevented."
+            },
+            {
+              "name": "interactOutside",
+              "type": "PointerEvent | FocusEvent",
+              "description": "Event handler called when an interaction (pointer / focus) happens outside of the popup."
+            },
+            {
+              "name": "pointerDownOutside",
+              "type": "PointerEvent",
+              "description": "Event handler called when a pointerdown event happens outside of the popup. Can be prevented."
+            }
+          ]
         },
         {
           "directive": "RdxDialogPortal",

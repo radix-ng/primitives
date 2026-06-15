@@ -133,6 +133,104 @@ test.describe('Dialog outside-scroll (custom scroll area)', () => {
 });
 
 /**
+ * ⚠️ **NOT YET VERIFIED — ADR 0015/0017 Phase-4 Dialog migration onto the new floating engine.** These
+ * are the browser checks the migrated `RdxDialogPopup` must pass before merge (jsdom cannot exercise
+ * focus trap / live focus / focus-out / aria-hidden). Run with `pnpm test-visual` (or the local loop
+ * against `:4400`). Some tests below intentionally encode **known gaps** in the first-cut wiring — see
+ * the `KNOWN GAP` notes; they are expected to FAIL until the wiring is fixed in the verification session.
+ */
+test.describe('Dialog — new floating engine migration', () => {
+    const closeButton = '[rdxDialogClose][aria-label="Close"]';
+
+    const focusInsidePopup = (page: Page) =>
+        page.locator(popup).evaluate((el) => el.contains(el.ownerDocument.activeElement));
+
+    test('modal dialog moves focus into the popup on open', async ({ page }) => {
+        await gotoStory(page, 'primitives-dialog--default');
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        expect(await focusInsidePopup(page)).toBe(true);
+    });
+
+    test('modal dialog traps focus — Tab keeps focus inside the popup', async ({ page }) => {
+        await gotoStory(page, 'primitives-dialog--default');
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        // Tab repeatedly: focus must cycle within the popup, never escaping to the trigger / page.
+        for (let i = 0; i < 8; i++) {
+            await page.keyboard.press('Tab');
+            expect(await focusInsidePopup(page)).toBe(true);
+        }
+    });
+
+    test('returns focus to the trigger after closing', async ({ page }) => {
+        await gotoStory(page, 'primitives-dialog--default');
+        const triggerEl = page.locator(trigger).first();
+        await triggerEl.click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        await page.keyboard.press('Escape');
+        await expect(page.locator(popup)).toHaveCount(0);
+
+        await expect(triggerEl).toBeFocused();
+    });
+
+    test('Escape and outside-press still close (dismissal regression)', async ({ page }) => {
+        await gotoStory(page, 'primitives-dialog--default');
+
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+        await page.keyboard.press('Escape');
+        await expect(page.locator(popup)).toHaveCount(0);
+
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+        await page.locator(closeButton).click();
+        await expect(page.locator(popup)).toHaveCount(0);
+    });
+
+    test('non-modal dialog closes when focus leaves to an unrelated element', async ({ page }) => {
+        await gotoStory(page, 'primitives-dialog--non-modal');
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        // Tab focus out of the popup to a page element unrelated to the dialog → focus-out close (§3).
+        await page.locator('body').press('Tab');
+        await page.evaluate(() => (document.activeElement as HTMLElement)?.blur());
+        // (Browser session: assert the dialog closes once focus lands on an unrelated tabbable.)
+        await expect(page.locator(popup)).toHaveCount(0);
+    });
+
+    test('nested dialog: Escape closes only the inner dialog (deepest-first ownership)', async ({ page }) => {
+        await gotoStory(page, 'primitives-dialog--nested');
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup).first()).toBeVisible();
+
+        // Open the nested dialog from inside the first.
+        await page.locator(popup).first().locator(trigger).first().click();
+        await expect(page.locator(popup)).toHaveCount(2);
+
+        // Escape closes the deepest (inner) layer only — the outer stays open.
+        await page.keyboard.press('Escape');
+        await expect(page.locator(popup)).toHaveCount(1);
+    });
+
+    test('KNOWN GAP: the dialog backdrop must NOT be aria-hidden/marked (avoid set misses it)', async ({ page }) => {
+        await gotoStory(page, 'primitives-dialog--default');
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        // The backdrop is a second portal root (sibling of the popup), so the manager's
+        // markOthers avoid set = [popup] wrongly marks it. EXPECTED TO FAIL until the avoid set
+        // includes every dialog root (backdrop + popup).
+        await expect(page.locator(backdrop)).not.toHaveAttribute('aria-hidden', 'true');
+        await expect(page.locator(backdrop)).not.toHaveAttribute('data-rdx-floating-inert', '');
+    });
+});
+
+/**
  * The "uncontained" story renders the close button outside the visible content card while keeping it
  * inside the popup (and thus inside the focus trap). Guards the layout (close above the card) and that
  * every dismissal path still works in a modal where the popup is a viewport-filling frame.
