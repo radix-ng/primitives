@@ -45,3 +45,55 @@ test.describe('Popover structural portal', () => {
         await expect(page.locator(popup)).toHaveCount(0);
     });
 });
+
+/**
+ * ADR 0015/0017 Phase-4 migration of Popover onto the new floating engine (same pattern as Dialog).
+ * Browser-only: trap / live focus / dismissal need a real browser.
+ */
+test.describe('Popover — new floating engine migration', () => {
+    const focusInsidePopup = (page: Page) =>
+        page.locator(popup).evaluate((el) => el.contains(el.ownerDocument.activeElement));
+
+    test('Escape closes the popover', async ({ page }) => {
+        await gotoStory(page, 'primitives-popover--default');
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        await page.keyboard.press('Escape');
+        await expect(page.locator(popup)).toHaveCount(0);
+    });
+
+    test('an outside press closes the popover', async ({ page }) => {
+        await gotoStory(page, 'primitives-popover--default');
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        // Far top-left corner — outside the trigger and the popup.
+        await page.mouse.click(5, 5);
+        await expect(page.locator(popup)).toHaveCount(0);
+    });
+
+    test('a hover-opened popover does NOT pull focus into the popup (Base UI parity)', async ({ page }) => {
+        await gotoStory(page, 'primitives-popover--hover');
+        await page.locator(trigger).first().hover();
+        await expect(page.locator(popup)).toBeVisible();
+
+        // Hover-open disables the focus manager → no auto-focus into the popup.
+        expect(await focusInsidePopup(page)).toBe(false);
+    });
+
+    test('a modal popover traps focus once it is inside — Tab keeps it in', async ({ page }) => {
+        await gotoStory(page, 'primitives-popover--modal');
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        // Like the legacy, a positioned popover does not auto-focus into the popup on open; once focus
+        // is inside, the trap holds it there on Tab. (Auto-focus-on-open + Tab-from-trigger redirection
+        // would need the deferred portal-focus bridge / guards.)
+        await page.locator('[rdxPopoverClose]').focus();
+        for (let i = 0; i < 4; i++) {
+            await page.keyboard.press('Tab');
+            expect(await focusInsidePopup(page)).toBe(true);
+        }
+    });
+});

@@ -5,22 +5,30 @@
  * ancestor chain — leaving the popup, its ancestors, and any `[aria-live]` region untouched.
  *
  * Two independent passes (Base UI makes two separate calls, never bundling them):
- * - **`ariaHidden`** — `aria-hidden="true"` for AT isolation (applied only for modal / typeable popups).
+ * - **control attribute** — either `inert` (the real attribute: non-interactive **and** removed from the
+ *   a11y tree) or `aria-hidden="true"` (AT-only). `inert` takes precedence and is what replaces the
+ *   global body pointer-lock for modal isolation (ADR 0017 §3 / finding #4): it blocks pointer + focus
+ *   on outside content **scoped** to siblings of the popup's ancestor chain, so independent overlays at a
+ *   higher layer are unaffected (unlike `body { pointer-events: none }`).
  * - **`mark`** — a neutral marker attribute ({@link RDX_FLOATING_MARKER}) applied whenever the focus
  *   manager is active; read by ADR 0015's outside-press guard to detect third-party-injected subtrees.
  *
- * Per-**element** ref-counting (`WeakMap<Element, number>`) lets overlapping popups compose: an element
- * marked by two popups is only cleared when both undo. An element that was **already** `aria-hidden`
- * before the call is recorded and left in place on undo. `inert` is deliberately **not** ported — no Base
- * UI focus-manager consumer passes it (ADR 0017 §3).
+ * Per-**element**, per-**attribute** ref-counting (`WeakMap<Element, number>`) lets overlapping popups
+ * compose: an element controlled by two popups is only cleared when both undo. An element that already
+ * carried the control attribute before the call is recorded and left in place on undo.
  *
  * @returns an `Undo` that reverses exactly what this call applied.
  */
 export type Undo = () => void;
 
 export interface MarkOthersOptions {
-    /** Apply `aria-hidden="true"` to outside elements (AT isolation). */
+    /** Apply `aria-hidden="true"` to outside elements (AT-only isolation). Ignored when `inert` is set. */
     ariaHidden?: boolean;
+    /**
+     * Apply the real `inert` attribute to outside elements — non-interactive **and** a11y-hidden in one.
+     * Takes precedence over `ariaHidden`; this is the scoped replacement for the body pointer-lock.
+     */
+    inert?: boolean;
     /** Apply the neutral {@link RDX_FLOATING_MARKER} to outside elements. Default `true`. */
     mark?: boolean;
 }
@@ -28,13 +36,20 @@ export interface MarkOthersOptions {
 /** The neutral "outside the active floating layer" marker (Base UI `data-base-ui-inert`). */
 export const RDX_FLOATING_MARKER = 'data-rdx-floating-inert';
 
-const ARIA_HIDDEN = 'aria-hidden';
+/** The mutually-exclusive control attribute (Base UI: `inert` wins over `aria-hidden`). */
+type ControlAttribute = 'inert' | 'aria-hidden';
 
-/** Per-element ref-counts. Keyed by element, so they are naturally per-`Document`. */
-let ariaHiddenCounters = new WeakMap<Element, number>();
+/** Per-element, per-attribute ref-counts. Keyed by element, so they are naturally per-`Document`. */
+const controlCounters: Record<ControlAttribute, WeakMap<Element, number>> = {
+    inert: new WeakMap(),
+    'aria-hidden': new WeakMap()
+};
+/** Elements that already carried the control attribute before we touched them — left in place on undo. */
+const preExistingControlled: Record<ControlAttribute, WeakSet<Element>> = {
+    inert: new WeakSet(),
+    'aria-hidden': new WeakSet()
+};
 let markerCounters = new WeakMap<Element, number>();
-/** Elements that were already `aria-hidden` before we touched them — left in place on undo. */
-let preExistingHidden = new WeakSet<Element>();
 let lockCount = 0;
 
 function unwrapHost(node: Node | null): Element | null {
@@ -93,7 +108,7 @@ function collectOutsideElements(root: HTMLElement, keep: Set<Node>, stop: Set<No
 }
 
 export function markOthers(avoidElements: Element[], options: MarkOthersOptions = {}): Undo {
-    const { ariaHidden = false, mark = true } = options;
+    const { ariaHidden = false, inert = false, mark = true } = options;
     const first = avoidElements[0];
     if (!first) {
         return () => {};
@@ -101,27 +116,31 @@ export function markOthers(avoidElements: Element[], options: MarkOthersOptions 
     const body = first.ownerDocument.body;
     const avoid = correctElements(body, avoidElements);
 
-    const hiddenElements: Element[] = [];
+    // `inert` wins over `aria-hidden` (it already removes the subtree from the a11y tree, Base UI).
+    const controlAttribute: ControlAttribute | null = inert ? 'inert' : ariaHidden ? 'aria-hidden' : null;
+    const controlledElements: Element[] = [];
     const markedElements: Element[] = [];
 
-    if (ariaHidden) {
-        // `aria-live` regions stay announceable, so keep them out of the hidden set too.
+    if (controlAttribute) {
+        const counters = controlCounters[controlAttribute];
+        const preExisting = preExistingControlled[controlAttribute];
+        // `aria-live` regions stay announceable, so keep them out of the controlled set too.
         const live = correctElements(body, Array.from(body.querySelectorAll('[aria-live]')));
         const controlElements = avoid.concat(live);
         const targets = collectOutsideElements(body, buildKeepSet(controlElements), new Set<Node>(controlElements));
 
         targets.forEach((node) => {
-            const attr = node.getAttribute(ARIA_HIDDEN);
-            const alreadyHidden = attr !== null && attr !== 'false';
-            const count = (ariaHiddenCounters.get(node) ?? 0) + 1;
-            ariaHiddenCounters.set(node, count);
-            hiddenElements.push(node);
+            const attr = node.getAttribute(controlAttribute);
+            const already = attr !== null && attr !== 'false';
+            const count = (counters.get(node) ?? 0) + 1;
+            counters.set(node, count);
+            controlledElements.push(node);
 
-            if (count === 1 && alreadyHidden) {
-                preExistingHidden.add(node);
+            if (count === 1 && already) {
+                preExisting.add(node);
             }
-            if (!alreadyHidden) {
-                node.setAttribute(ARIA_HIDDEN, 'true');
+            if (!already) {
+                node.setAttribute(controlAttribute, controlAttribute === 'inert' ? '' : 'true');
             }
         });
     }
@@ -141,16 +160,20 @@ export function markOthers(avoidElements: Element[], options: MarkOthersOptions 
     lockCount += 1;
 
     return () => {
-        hiddenElements.forEach((element) => {
-            const count = (ariaHiddenCounters.get(element) ?? 0) - 1;
-            ariaHiddenCounters.set(element, count);
-            if (count === 0) {
-                if (!preExistingHidden.has(element)) {
-                    element.removeAttribute(ARIA_HIDDEN);
+        if (controlAttribute) {
+            const counters = controlCounters[controlAttribute];
+            const preExisting = preExistingControlled[controlAttribute];
+            controlledElements.forEach((element) => {
+                const count = (counters.get(element) ?? 0) - 1;
+                counters.set(element, count);
+                if (count === 0) {
+                    if (!preExisting.has(element)) {
+                        element.removeAttribute(controlAttribute);
+                    }
+                    preExisting.delete(element);
                 }
-                preExistingHidden.delete(element);
-            }
-        });
+            });
+        }
 
         markedElements.forEach((element) => {
             const count = (markerCounters.get(element) ?? 0) - 1;
@@ -163,9 +186,11 @@ export function markOthers(avoidElements: Element[], options: MarkOthersOptions 
         lockCount -= 1;
         if (lockCount === 0) {
             // No active locks anywhere — drop the ref-count tables so detached elements can be GC'd.
-            ariaHiddenCounters = new WeakMap();
+            controlCounters.inert = new WeakMap();
+            controlCounters['aria-hidden'] = new WeakMap();
+            preExistingControlled.inert = new WeakSet();
+            preExistingControlled['aria-hidden'] = new WeakSet();
             markerCounters = new WeakMap();
-            preExistingHidden = new WeakSet();
         }
     };
 }

@@ -153,6 +153,66 @@ describe('RdxDismissableCapability', () => {
         expect(onDismiss).toHaveBeenCalledWith('outside-press', expect.any(Event));
     });
 
+    it('outsidePress receives the press event and can veto per target (event-aware predicate)', async () => {
+        const onDismiss = vi.fn();
+        const allowed = el('button');
+        const blocked = el('button');
+        build(
+            context(() => true, el()),
+            () => null,
+            onDismiss,
+            { outsidePress: (event) => event.target === allowed }
+        );
+        await flush();
+
+        blocked.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+        expect(onDismiss).not.toHaveBeenCalled();
+
+        allowed.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+        expect(onDismiss).toHaveBeenCalledWith('outside-press', expect.any(Event));
+    });
+
+    it('outsidePressEvent "intentional" closes on click, not on the bare pointerdown', async () => {
+        const onDismiss = vi.fn();
+        build(
+            context(() => true, el()),
+            () => null,
+            onDismiss,
+            { outsidePressEvent: () => 'intentional' }
+        );
+        await flush();
+
+        const target = el('button');
+        target.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+        expect(onDismiss).not.toHaveBeenCalled();
+
+        target.dispatchEvent(new Event('click', { bubbles: true }));
+        expect(onDismiss).toHaveBeenCalledWith('outside-press', expect.any(Event));
+    });
+
+    it('outsidePressEvent map resolves per pointer type (mouse → intentional, touch → sloppy)', async () => {
+        const onDismiss = vi.fn();
+        build(
+            context(() => true, el()),
+            () => null,
+            onDismiss,
+            { outsidePressEvent: () => ({ mouse: 'intentional', touch: 'sloppy' }) }
+        );
+        await flush();
+
+        // mouse → intentional → a bare pointerdown does not close (waits for the click).
+        const mouse = new Event('pointerdown', { bubbles: true });
+        Object.defineProperty(mouse, 'pointerType', { value: 'mouse' });
+        el('button').dispatchEvent(mouse);
+        expect(onDismiss).not.toHaveBeenCalled();
+
+        // touch → sloppy → pointerdown closes immediately.
+        const touch = new Event('pointerdown', { bubbles: true });
+        Object.defineProperty(touch, 'pointerType', { value: 'touch' });
+        el('button').dispatchEvent(touch);
+        expect(onDismiss).toHaveBeenCalledWith('outside-press', expect.any(Event));
+    });
+
     it('does not dismiss when the press lands inside the floating element', async () => {
         const onDismiss = vi.fn();
         const floating = el();

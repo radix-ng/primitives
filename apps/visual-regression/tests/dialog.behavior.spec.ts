@@ -48,12 +48,14 @@ test.describe('Dialog structural portal', () => {
         await expect(page.locator(popup)).toHaveCount(0);
     });
 
-    test('holds the scroll lock through the exit animation, releasing it only on unmount', async ({ page }) => {
+    test('releases the scroll lock at close-start, before the exit animation finishes (Base UI parity)', async ({
+        page
+    }) => {
         await gotoStory(page, 'primitives-dialog--default');
 
         // Slow the 150ms exit keyframes to a comfortable window so the transitional state below is
-        // observable without a race (the bug — releasing the lock the instant `isOpen` flips — would
-        // restore `overflow` synchronously, well before the animation finishes).
+        // observable without a race: the lock must already be released while the popup is still
+        // mounted-and-animating-out (`open && modal` gating, not mounted-lifetime gating).
         await page.addStyleTag({
             content: `[rdxDialogBackdrop][data-closed], [rdxDialogPopup][data-closed] { animation-duration: 2000ms !important; }`
         });
@@ -67,12 +69,13 @@ test.describe('Dialog structural portal', () => {
 
         await page.locator('[rdxDialogClose][aria-label="Close"]').click();
 
-        // Mid-exit: the popup is closing but still mounted — the scroll lock must stay held so the
-        // page scrollbar doesn't reappear and reflow the page (the judder) while the dialog animates.
+        // Mid-exit: the popup is closing but still mounted, yet the scroll lock is already released
+        // (Base UI gates it on `open && modal === true`). `useScrollLock` compensates the scrollbar
+        // width with padding, so no content reflow accompanies the release.
         await expect(page.locator(popup)).toHaveAttribute('data-closed', '');
-        expect(await htmlOverflow()).toBe('hidden');
+        expect(await htmlOverflow()).toBe('');
 
-        // Only once the view unmounts does the lock release and the original overflow return.
+        // Still released after unmount.
         await expect(page.locator(popup)).toHaveCount(0);
         expect(await htmlOverflow()).toBe('');
     });
@@ -207,6 +210,27 @@ test.describe('Dialog — new floating engine migration', () => {
         await expect(page.locator(popup)).toHaveCount(0);
     });
 
+    test('an outside press onto an interactive element keeps focus there, not back on the trigger (finding #3)', async ({
+        page
+    }) => {
+        await gotoStory(page, 'primitives-dialog--non-modal');
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        // A real focusable control outside the non-modal dialog. Pressing it dismisses the dialog AND
+        // moves focus onto it — the return-focus must not yank focus back to the trigger.
+        await page.evaluate(() => {
+            const button = document.createElement('button');
+            button.id = 'rdx-outside-target';
+            button.textContent = 'Outside';
+            document.body.appendChild(button);
+        });
+        await page.locator('#rdx-outside-target').click();
+
+        await expect(page.locator(popup)).toHaveCount(0);
+        await expect(page.locator('#rdx-outside-target')).toBeFocused();
+    });
+
     test('nested dialog: Escape closes only the inner dialog (deepest-first ownership)', async ({ page }) => {
         await gotoStory(page, 'primitives-dialog--nested');
         await page.locator(trigger).first().click();
@@ -221,6 +245,21 @@ test.describe('Dialog — new floating engine migration', () => {
         await expect(page.locator(popup)).toHaveCount(1);
     });
 
+    test('nested dialog: an outside press closes only the topmost dialog (finding #1)', async ({ page }) => {
+        await gotoStory(page, 'primitives-dialog--nested');
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup).first()).toBeVisible();
+
+        await page.locator(popup).first().locator(trigger).first().click();
+        await expect(page.locator(popup)).toHaveCount(2);
+
+        // A press in the far corner lands on the (parent) backdrop. Only the topmost (inner) dialog
+        // dismisses — the parent, which has an open nested dialog, must NOT self-close.
+        await page.mouse.click(5, 5);
+        await expect(page.locator(popup)).toHaveCount(1);
+        await expect(page.locator(popup)).toBeVisible();
+    });
+
     test('does not aria-hide / mark the dialog backdrop (it is an owned root)', async ({ page }) => {
         await gotoStory(page, 'primitives-dialog--default');
         await page.locator(trigger).first().click();
@@ -230,6 +269,47 @@ test.describe('Dialog — new floating engine migration', () => {
         // element, so the manager's markOthers keep-set covers it (Fix #1).
         await expect(page.locator(backdrop)).not.toHaveAttribute('aria-hidden', 'true');
         await expect(page.locator(backdrop)).not.toHaveAttribute('data-rdx-floating-inert', '');
+    });
+
+    test('a modal dialog inerts outside content, not the global body pointer-events (finding #4)', async ({ page }) => {
+        await gotoStory(page, 'primitives-dialog--default');
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        // No global `body { pointer-events: none }` lock anymore — independent overlays keep working.
+        expect(await page.evaluate(() => document.body.style.pointerEvents)).toBe('');
+
+        // Outside content (the app root that holds the trigger) is a body sibling of the portal → it gets
+        // the real `inert` attribute: non-interactive AND removed from the a11y tree, scoped to it.
+        expect(await page.locator('#storybook-root').evaluate((el) => el.hasAttribute('inert'))).toBe(true);
+
+        // On close the isolation lifts.
+        await page.keyboard.press('Escape');
+        await expect(page.locator(popup)).toHaveCount(0);
+        expect(await page.locator('#storybook-root').evaluate((el) => el.hasAttribute('inert'))).toBe(false);
+    });
+
+    test('the backdrop is decorative — role="presentation" (Base UI parity)', async ({ page }) => {
+        await gotoStory(page, 'primitives-dialog--default');
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        await expect(page.locator(backdrop)).toHaveAttribute('role', 'presentation');
+    });
+
+    test('a nested dialog renders no second backdrop (only the parent dims the page)', async ({ page }) => {
+        await gotoStory(page, 'primitives-dialog--nested');
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup).first()).toBeVisible();
+        await expect(page.locator(`${backdrop}:visible`)).toHaveCount(1);
+
+        // Open the nested dialog from inside the parent.
+        await page.locator(popup).first().locator(trigger).first().click();
+        await expect(page.locator(popup)).toHaveCount(2);
+
+        // Both backdrops are in the DOM, but the nested one is `[hidden]` — exactly one stays visible.
+        await expect(page.locator(backdrop)).toHaveCount(2);
+        await expect(page.locator(`${backdrop}:visible`)).toHaveCount(1);
     });
 });
 

@@ -10,6 +10,18 @@ export type RdxDismissReason = 'escape-key' | 'outside-press' | 'focus-outside';
  * read (reactive) or a plain predicate. The `on*` pre-hooks are **preventable**: call
  * `event.preventDefault()` inside one to veto that dismissal (the layer then stays open).
  */
+/** When an outside press dismisses: `'sloppy'` closes on `pointerdown`, `'intentional'` on `click`. */
+export type RdxOutsidePressEvent = 'sloppy' | 'intentional';
+
+/**
+ * `outsidePressEvent` config (Base UI). Either a single mode for every pointer type, or a per-pointer-type
+ * map (`{ mouse, touch, pen }`) resolved against the pointer type of the active press. A missing key falls
+ * back to `'sloppy'`.
+ */
+export type RdxOutsidePressEventConfig =
+    | RdxOutsidePressEvent
+    | { mouse?: RdxOutsidePressEvent; touch?: RdxOutsidePressEvent; pen?: RdxOutsidePressEvent };
+
 export interface RdxDismissableConfig {
     /** Whole-capability gate (on top of `context.open()`). Default `() => true`. */
     enabled?: () => boolean;
@@ -21,15 +33,20 @@ export interface RdxDismissableConfig {
      * Menu's `closeParentOnEsc`: a submenu's Escape also closes the parent menu).
      */
     escapeKeyBubbles?: () => boolean;
-    /** Whether an outside pointer press requests dismissal. Default `() => true`. */
-    outsidePress?: () => boolean;
+    /**
+     * Whether an outside pointer press requests dismissal. Default `() => true`. Receives the press
+     * **event**, so a layer can decide per target / button / pointer (e.g. Dialog: only the topmost
+     * dialog dismisses; only its own backdrop counts).
+     */
+    outsidePress?: (event: Event) => boolean;
     /**
      * When an outside press dismisses (Base UI `outsidePressEvent`). `'sloppy'` (default) closes on
      * `pointerdown` — immediate, OS-like. `'intentional'` closes on `click` — requires a full
      * press-and-release on the same outside target, and suppresses the click when the press **started
-     * inside** (so selecting text and dragging out does not dismiss).
+     * inside** (so selecting text and dragging out does not dismiss). May be a per-pointer-type map
+     * resolved against the active press (`{ mouse: 'intentional', touch: 'sloppy' }`).
      */
-    outsidePressEvent?: () => 'sloppy' | 'intentional';
+    outsidePressEvent?: () => RdxOutsidePressEventConfig;
     /**
      * Whether this layer's outside-press **bubbles** to ancestor layers (Base UI `bubbles.outsidePress`).
      * Default `() => true` — an outside press closes the whole stack. `false` makes an open non-bubbling
@@ -57,6 +74,31 @@ function isNode(target: EventTarget | null): target is Node {
     return target !== null && typeof (target as Node).nodeType === 'number';
 }
 
+/**
+ * Owner-document-safe `HTMLElement` check. A raw `target instanceof HTMLElement` is realm-sensitive — it
+ * returns `false` for an element from another document (iframe / popup window) because that realm has its
+ * own `HTMLElement` constructor. Resolve the constructor from the node's own `defaultView` (Base UI
+ * `isHTMLElement`).
+ */
+function isHTMLElement(target: EventTarget | null): target is HTMLElement {
+    if (!isNode(target)) {
+        return false;
+    }
+    const view = target.ownerDocument?.defaultView;
+    return view ? target instanceof view.HTMLElement : target instanceof HTMLElement;
+}
+
+/**
+ * Whether `window` is a WebKit (Safari / any iOS browser) engine — its IME `compositionend`/`keydown`
+ * ordering needs a longer guard. Requires the `Safari` token and excludes desktop Blink (Chrome /
+ * Edge / Android), so jsdom (`AppleWebKit/537.36 … jsdom`, no `Safari`) is correctly **not** WebKit and
+ * the unit timing stays 0ms.
+ */
+function isWebKit(window: { navigator: Navigator }): boolean {
+    const ua = window.navigator.userAgent;
+    return /AppleWebKit/i.test(ua) && /Safari/i.test(ua) && !/Chrome|Chromium|Edg|Android/i.test(ua);
+}
+
 /** Only a primary (left / default) press dismisses — a non-primary mouse button is ignored. */
 function isPrimaryButton(event: Event): boolean {
     return !('button' in event) || (event as MouseEvent).button === 0;
@@ -72,7 +114,7 @@ function isPrimaryButton(event: Event): boolean {
  */
 function isScrollbarPress(event: Event): boolean {
     const target = event.target;
-    if (!(target instanceof HTMLElement) || 'touches' in event || typeof (event as MouseEvent).offsetX !== 'number') {
+    if (!isHTMLElement(target) || 'touches' in event || typeof (event as MouseEvent).offsetX !== 'number') {
         return false;
     }
     const view = target.ownerDocument.defaultView;
@@ -196,6 +238,18 @@ export class RdxDismissableCapability {
         let isComposing = false;
         // Press-start-inside tracking (drag-out suppression for `intentional` mode).
         let pressStartedInside = false;
+        // Pointer type of the active press, used to resolve a per-pointer-type `outsidePressEvent` map.
+        let currentPointerType: 'mouse' | 'touch' | 'pen' | '' = '';
+
+        // Resolve `outsidePressEvent` to a concrete mode for the active pointer type (pen / unknown → mouse).
+        const resolveOutsidePressEvent = (): RdxOutsidePressEvent => {
+            const value = outsidePressEvent();
+            if (typeof value === 'string') {
+                return value;
+            }
+            const type = currentPointerType === 'pen' || currentPointerType === '' ? 'mouse' : currentPointerType;
+            return value[type] ?? 'sloppy';
+        };
 
         const handleKeyDown = (event: KeyboardEvent): void => {
             if (event.key !== 'Escape' || !this.active() || !escapeKey() || isComposing) {
@@ -221,14 +275,18 @@ export class RdxDismissableCapability {
             isComposing = true;
         };
         const handleCompositionEnd = (): void => {
-            // Safari fires `compositionend` before `keydown`, so clear on the next tick (Base UI).
-            ownerWindow.setTimeout(() => {
-                isComposing = false;
-            }, 0);
+            // Safari fires `compositionend` before `keydown`, so clear on a later tick. 0ms/1ms are
+            // unreliable in Safari — WebKit needs ~5ms; other engines stay at 0ms (Base UI `useDismiss`).
+            ownerWindow.setTimeout(
+                () => {
+                    isComposing = false;
+                },
+                isWebKit(ownerWindow) ? 5 : 0
+            );
         };
 
         const tryOutsidePress = (event: Event): void => {
-            if (!this.active() || !outsidePress() || !isPrimaryButton(event) || this.isInside(event.target)) {
+            if (!this.active() || !isPrimaryButton(event) || this.isInside(event.target) || !outsidePress(event)) {
                 return;
             }
             if (isScrollbarPress(event)) {
@@ -245,22 +303,24 @@ export class RdxDismissableCapability {
             }
         };
 
-        // Capture-phase, so it records where the press began before any dismiss handler runs.
+        // Capture-phase, so it records where the press began (and its pointer type) before any dismiss
+        // handler runs.
         const handlePressStart = (event: Event): void => {
             pressStartedInside = this.isInside(event.target);
+            currentPointerType = ((event as PointerEvent).pointerType as 'mouse' | 'touch' | 'pen') || '';
         };
         const handlePointerCancel = (): void => {
             pressStartedInside = false;
         };
 
         const handlePointerDown = (event: Event): void => {
-            if (outsidePressEvent() !== 'sloppy') {
+            if (resolveOutsidePressEvent() !== 'sloppy') {
                 return; // `intentional` dismisses on click, not pointerdown
             }
             tryOutsidePress(event);
         };
         const handleClick = (event: Event): void => {
-            if (outsidePressEvent() !== 'intentional') {
+            if (resolveOutsidePressEvent() !== 'intentional') {
                 return;
             }
             // A press that started inside (text selection dragged out) consumes its one outside click.

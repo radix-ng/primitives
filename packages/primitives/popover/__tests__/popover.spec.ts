@@ -586,41 +586,50 @@ describe('Popover', () => {
     });
 
     it('updates modal behavior while the popover is open', async () => {
+        // An outside sibling: a full modal isolates the background with real `inert` (finding #4),
+        // not a global body pointer-lock. `trap-focus` isolates focus but does not lock page scroll.
+        const sibling = document.createElement('div');
+        document.body.appendChild(sibling);
         const modalFixture = TestBed.createComponent(ModalHostComponent);
-        modalFixture.detectChanges();
 
-        const modalTrigger: HTMLButtonElement = modalFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
-        modalTrigger.click();
-        modalFixture.detectChanges();
-        await modalFixture.whenStable();
+        try {
+            modalFixture.detectChanges();
 
-        const focusScope = modalFixture.debugElement.query(By.directive(RdxFocusScope)).injector.get(RdxFocusScope);
+            const modalTrigger: HTMLButtonElement = modalFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
+            modalTrigger.click();
+            modalFixture.detectChanges();
+            await modalFixture.whenStable();
 
-        modalFixture.componentInstance.modal = true;
-        modalFixture.changeDetectorRef.markForCheck();
-        modalFixture.detectChanges();
-        await modalFixture.whenStable();
+            const focusScope = modalFixture.debugElement.query(By.directive(RdxFocusScope)).injector.get(RdxFocusScope);
 
-        expect(document.body.style.overflow).toBe('hidden');
-        expect(document.body.style.pointerEvents).toBe('none');
-        expect(focusScope.isTrapped()).toBe(true);
+            modalFixture.componentInstance.modal = true;
+            modalFixture.changeDetectorRef.markForCheck();
+            modalFixture.detectChanges();
+            await modalFixture.whenStable();
 
-        modalFixture.componentInstance.modal = 'trap-focus';
-        modalFixture.changeDetectorRef.markForCheck();
-        modalFixture.detectChanges();
-        await modalFixture.whenStable();
+            expect(document.body.style.overflow).toBe('hidden');
+            expect(sibling.hasAttribute('inert')).toBe(true);
+            expect(focusScope.isTrapped()).toBe(true);
 
-        expect(document.body.style.overflow).toBe('');
-        expect(document.body.style.pointerEvents).toBe('');
-        expect(focusScope.isTrapped()).toBe(true);
+            modalFixture.componentInstance.modal = 'trap-focus';
+            modalFixture.changeDetectorRef.markForCheck();
+            modalFixture.detectChanges();
+            await modalFixture.whenStable();
 
-        modalFixture.componentInstance.modal = false;
-        modalFixture.changeDetectorRef.markForCheck();
-        modalFixture.detectChanges();
+            expect(document.body.style.overflow).toBe('');
+            expect(sibling.hasAttribute('inert')).toBe(true); // trap-focus still isolates the background
+            expect(focusScope.isTrapped()).toBe(true);
 
-        expect(focusScope.isTrapped()).toBe(false);
+            modalFixture.componentInstance.modal = false;
+            modalFixture.changeDetectorRef.markForCheck();
+            modalFixture.detectChanges();
 
-        modalFixture.destroy();
+            expect(focusScope.isTrapped()).toBe(false);
+            expect(sibling.hasAttribute('inert')).toBe(false);
+        } finally {
+            sibling.remove();
+            modalFixture.destroy();
+        }
     });
 
     it('switches the active anchor between triggers inside one root', () => {

@@ -242,14 +242,20 @@ describe('Dialog', () => {
         expect(fixture.componentInstance.changes.at(-1)?.reason).toBe('escape-key');
     });
 
-    it('closes when a pointerdown happens outside (modal, dismissible)', async () => {
+    it('closes when an outside press completes (modal with backdrop → intentional, closes on click)', async () => {
         trigger.click();
         fixture.detectChanges();
         await new Promise((resolve) => setTimeout(resolve));
 
+        // A modal dialog with a backdrop uses `intentional` outside-press (Base UI): it closes on the
+        // full `click`, not the bare `pointerdown` (so a text-selection drag out of the popup can't
+        // dismiss it). A lone pointerdown must NOT close it.
         document.body.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }));
         fixture.detectChanges();
+        expect(fixture.componentInstance.open).toBe(true);
 
+        document.body.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        fixture.detectChanges();
         expect(fixture.componentInstance.open).toBe(false);
     });
 

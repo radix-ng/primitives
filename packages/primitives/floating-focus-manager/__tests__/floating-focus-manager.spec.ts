@@ -174,7 +174,7 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
         expect(sibling.getAttribute('aria-hidden')).toBeNull(); // non-modal → no a11y isolation
     });
 
-    it('aria-hides outside elements when modal', async () => {
+    it('inerts outside elements when modal (non-interactive + a11y-hidden in one — finding #4)', async () => {
         const sibling = document.createElement('div');
         document.body.appendChild(sibling);
         appended.push(sibling);
@@ -184,7 +184,8 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
         fixture.autoDetectChanges();
         await flush();
 
-        expect(sibling.getAttribute('aria-hidden')).toBe('true');
+        // `inert` replaces both the body pointer-lock and the separate `aria-hidden` pass.
+        expect(sibling.hasAttribute('inert')).toBe(true);
         expect(sibling.hasAttribute(RDX_FLOATING_MARKER)).toBe(true); // marker still applied (active)
     });
 
@@ -234,7 +235,7 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
         await flush();
 
         expect(sibling.hasAttribute(RDX_FLOATING_MARKER)).toBe(false);
-        expect(sibling.getAttribute('aria-hidden')).toBeNull();
+        expect(sibling.hasAttribute('inert')).toBe(false);
     });
 
     // ─── close-on-focus-out (ADR 0017 §3) ────────────────────────────────────

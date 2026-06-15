@@ -206,13 +206,17 @@ export class RdxFloatingFocusManager {
             onCleanup(markOthers(this.avoidElements(), { ariaHidden: false, mark: true }));
         });
 
-        // Accessibility-isolation pass (ADR 0017 §3) — `aria-hidden` outside elements, but **only** for a
-        // modal (later: typeable-combobox) popup, so Select/Menu-root get none.
+        // Modal isolation pass (ADR 0017 §3 / finding #4) — apply the real `inert` attribute to outside
+        // elements for a modal popup. `inert` is non-interactive **and** a11y-hidden in one, so it both
+        // replaces the old global `body { pointer-events: none }` lock (now scoped to siblings of the
+        // popup's ancestor chain — independent overlays at a higher layer keep working) and supplies the
+        // AT isolation the separate `aria-hidden` pass used to. Non-modal popups (Select / Menu root) get
+        // none.
         effect((onCleanup) => {
             if (!this.effectiveEnabled() || !this.effectiveModal()) {
                 return;
             }
-            onCleanup(markOthers(this.avoidElements(), { ariaHidden: true, mark: false }));
+            onCleanup(markOthers(this.avoidElements(), { inert: true, mark: false }));
         });
 
         this.trackInteractionType();
@@ -251,12 +255,31 @@ export class RdxFloatingFocusManager {
         const focusScope = inject(RdxFocusScope);
 
         focusScope.mountAutoFocus.subscribe((event) => {
-            const target = resolveInitialFocus(this.initialFocus(), this._interactionType());
+            const interactionType = this._interactionType();
+            const target =
+                resolveInitialFocus(this.initialFocus(), interactionType) ?? this.defaultInitialFocus(interactionType);
             if (target) {
                 event.preventDefault(); // override the scope's first-tabbable default
                 target.focus();
             }
         });
+    }
+
+    /**
+     * Base UI's `defaultInitialFocus`: on a **touch** open, focus the popup itself instead of its first
+     * tabbable control, so a soft keyboard (Android) does not pop up over the popup. Any other interaction
+     * returns `null`, keeping the focus scope's first-tabbable default. The popup is made programmatically
+     * focusable (`tabindex="-1"`) if it isn't already.
+     */
+    private defaultInitialFocus(interactionType: RdxInteractionType): HTMLElement | null {
+        if (interactionType !== 'touch') {
+            return null;
+        }
+        const popup = (this.rootContext?.floatingElement ?? this.host) as HTMLElement;
+        if (!popup.hasAttribute('tabindex')) {
+            popup.setAttribute('tabindex', '-1');
+        }
+        return popup;
     }
 
     /**

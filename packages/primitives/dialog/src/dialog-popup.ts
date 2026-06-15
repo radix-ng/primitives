@@ -4,7 +4,6 @@ import {
     RDX_FLOATING_REGISTRATION,
     RDX_FLOATING_ROOT_CONTEXT,
     RdxFloatingNodeRegistration,
-    useBodyPointerEventsLock,
     useScrollLock
 } from '@radix-ng/primitives/core';
 import { RdxDismissableCapability } from '@radix-ng/primitives/dismissable-layer';
@@ -14,6 +13,9 @@ import {
 } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import { injectRdxDialogRootContext } from './dialog-root';
+
+/** Composite navigation keys a Dialog popup keeps to itself, so they never reach an enclosing Menu / Composite. */
+const COMPOSITE_KEYS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End']);
 
 /**
  * A container for the dialog contents.
@@ -28,8 +30,9 @@ import { injectRdxDialogRootContext } from './dialog-root';
  *   `RdxDismissableCapability` (Escape / outside-press; reads the root context + node).
  * - `RdxFocusScope` (direct) → `RdxFloatingFocusManager` (composes the reworked focus scope; trap +
  *   markOthers + close-on-focus-out), driven by `provideFloatingFocusManagerConfig`.
- * - `disableOutsidePointerEvents` → `useBodyPointerEventsLock(modal === true)`; the popup re-enables its
- *   own `pointer-events: auto` while modal (else `body { pointer-events: none }` makes it unclickable).
+ * - `disableOutsidePointerEvents` → the focus manager's `inert` pass marks outside elements
+ *   non-interactive for a modal (finding #4), scoped to siblings of the popup's ancestor chain instead
+ *   of a global `body { pointer-events: none }` lock — so the popup needs no `pointer-events: auto`.
  * - focus-out close moved from the dismissal capability (`focusOutside: () => false`) to the manager
  *   (`manager.focusOut`), per ADR 0017 §3.
  * - `isEventOnTrigger` preventDefault → removed: the trigger is in `context.triggers`, so the engine
@@ -61,9 +64,6 @@ import { injectRdxDialogRootContext } from './dialog-root';
         })
     ],
     host: {
-        // While a full modal locks `body { pointer-events: none }` (useBodyPointerEventsLock), the popup
-        // must opt back IN so its content stays interactive (close button, inputs, nested triggers).
-        '[style.pointer-events]': 'rootContext.modal() === true ? "auto" : null',
         '[attr.role]': 'rootContext.role',
         '[attr.aria-modal]': 'rootContext.modal() === true ? "true" : undefined',
         '[attr.aria-describedby]': 'rootContext.descriptionId()',
@@ -75,7 +75,8 @@ import { injectRdxDialogRootContext } from './dialog-root';
         '[attr.data-state]': 'rootContext.isOpen() ? "open" : "closed"',
         '[attr.data-nested]': 'rootContext.nested ? "" : undefined',
         '[attr.data-nested-dialog-open]': 'rootContext.nestedDialogOpen() ? "" : undefined',
-        '[id]': 'rootContext.contentId'
+        '[id]': 'rootContext.contentId',
+        '(keydown)': 'onKeyDown($event)'
     }
 })
 export class RdxDialogPopup {
@@ -108,20 +109,24 @@ export class RdxDialogPopup {
         // The popup element is this layer's floating element (inside-surface for containment checks).
         this.floatingContext.setFloatingElement(this.host);
 
-        // Lock scroll / outside pointer events for a full modal, held for the whole mounted lifetime (not
-        // just while open) so the page doesn't reflow by the scrollbar width mid-exit-animation.
-        const isFullyModal = computed(() => this.rootContext.modal() === true);
-        useScrollLock(isFullyModal);
-        useBodyPointerEventsLock(isFullyModal);
+        // Scroll lock follows Base UI (`open && modal === true`): released at close-start so the page is
+        // scrollable again as the exit animation plays. Background pointer/AT isolation is no longer a
+        // global body lock — the focus manager applies real `inert` to outside elements (finding #4).
+        useScrollLock(computed(() => this.rootContext.modal() === true && this.rootContext.isOpen()));
 
         const unregisterTransitionElement = this.rootContext.registerTransitionElement(this.host);
         inject(DestroyRef).onDestroy(unregisterTransitionElement);
 
-        // Dismissal: Escape always closes; outside-press only when pointer dismissal is enabled. Focus-out
-        // is owned by the focus manager (below), so the capability's own focus-out is disabled.
+        // Dismissal (Base UI Dialog outside-press policy, finding #1): Escape always closes; an outside
+        // press closes only the **topmost** dialog (a parent with an open nested dialog never self-closes)
+        // and only when pointer dismissal is enabled. With a backdrop the press is `intentional` (closes
+        // on `click`, so a text-selection drag out of the popup doesn't dismiss); without one it stays
+        // `sloppy` (immediate `pointerdown`). Focus-out is owned by the focus manager (below).
         new RdxDismissableCapability(this.floatingContext, () => this.registration?.node() ?? null, {
             escapeKey: () => true,
-            outsidePress: () => !this.rootContext.disablePointerDismissal(),
+            outsidePress: () => this.isTopmost() && !this.rootContext.disablePointerDismissal(),
+            outsidePressEvent: () =>
+                this.rootContext.modal() === true && this.hasBackdrop() ? 'intentional' : 'sloppy',
             focusOutside: () => false,
             onEscapeKeyDown: (event) => this.escapeKeyDown.emit(event),
             onPointerDownOutside: (event) => {
@@ -142,5 +147,31 @@ export class RdxDialogPopup {
                 this.rootContext.close('focus-out', event);
             }
         });
+    }
+
+    /** This dialog is the topmost (deepest open) one — it has no open nested dialog above it. */
+    private isTopmost(): boolean {
+        return this.rootContext.isOpen() && !this.rootContext.nestedDialogOpen();
+    }
+
+    /** Whether this dialog owns a backdrop element (a registered root sibling that isn't the popup). */
+    private hasBackdrop(): boolean {
+        for (const element of this.floatingContext.floatingElements) {
+            if (element !== this.host) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Composite navigation keys (arrows / Home / End) are kept inside the dialog (Base UI `DialogPopup`):
+     * a dialog opened from inside a Menu / Menubar / Composite must not let an arrow press bubble out and
+     * move the outer collection's active item.
+     */
+    protected onKeyDown(event: KeyboardEvent): void {
+        if (COMPOSITE_KEYS.has(event.key)) {
+            event.stopPropagation();
+        }
     }
 }

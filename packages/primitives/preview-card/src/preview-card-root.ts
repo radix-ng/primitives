@@ -4,6 +4,7 @@ import {
     DestroyRef,
     Directive,
     effect,
+    ElementRef,
     inject,
     input,
     model,
@@ -12,7 +13,16 @@ import {
     signal,
     untracked
 } from '@angular/core';
-import { BooleanInput, createContext, injectId, useTransitionStatus } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    createContext,
+    createFloatingRootContext,
+    injectId,
+    provideFloatingRootContext,
+    provideFloatingTree,
+    RdxFloatingRootContext,
+    useTransitionStatus
+} from '@radix-ng/primitives/core';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 import { RdxPreviewCardHandle } from './preview-card-handle';
 
@@ -88,12 +98,26 @@ export type RdxPreviewCardTransitionStatus = 'starting' | 'ending' | undefined;
 @Directive({
     selector: '[rdxPreviewCardRoot]',
     exportAs: 'rdxPreviewCardRoot',
-    providers: [provideRdxPreviewCardRootContext(context)],
+    providers: [
+        provideRdxPreviewCardRootContext(context),
+        provideFloatingTree(),
+        provideFloatingRootContext(() => inject(RdxPreviewCardRoot).floatingContext)
+    ],
     hostDirectives: [RdxPopper]
 })
 export class RdxPreviewCardRoot {
     private readonly popper = inject(RdxPopper);
     private readonly destroyRef = inject(DestroyRef);
+
+    /**
+     * Per-popup floating root context (ADR 0015) — the shared store the popup's dismissal capability
+     * reads (`open`, `triggers`, the reference/floating elements). The tree node is registered by the
+     * popup; this context exists independently so dismissal can read `open()`.
+     */
+    readonly floatingContext: RdxFloatingRootContext = createFloatingRootContext({
+        ownerDocument: inject(ElementRef).nativeElement.ownerDocument,
+        open: () => this.open()
+    });
 
     /** Shared open/close transition state machine (completes on the real animationend). */
     private readonly transition = useTransitionStatus((open) => {
@@ -194,6 +218,10 @@ export class RdxPreviewCardRoot {
         });
 
         effect(() => this.popper.anchorOverride.set(this.trigger()));
+
+        // Sync the dismissal reference (the active trigger) so an outside-press on the trigger counts
+        // as "inside" and never dismisses (ADR 0015).
+        effect(() => this.floatingContext.setReferenceElement(this.trigger() ?? null));
 
         this.destroyRef.onDestroy(() => {
             this.clearHoverTimers();
@@ -316,6 +344,7 @@ export class RdxPreviewCardRoot {
     registerTrigger(id: string, trigger: HTMLElement, payload: () => unknown) {
         this.registeredTriggers.set(id, { element: trigger, payload });
         this.triggers.update((triggers) => (triggers.includes(trigger) ? triggers : [...triggers, trigger]));
+        this.floatingContext.triggers.add(trigger);
 
         if (this.triggerId() === id) {
             this.trigger.set(trigger);
@@ -331,6 +360,7 @@ export class RdxPreviewCardRoot {
             }
 
             this.triggers.update((triggers) => triggers.filter((candidate) => candidate !== trigger));
+            this.floatingContext.triggers.delete(trigger);
 
             if (this.destroyRef.destroyed) {
                 return;

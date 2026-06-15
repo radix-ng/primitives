@@ -239,7 +239,7 @@ export class RdxFocusScope {
                         // so it runs after the unmounting paint settles (ADR 0017 Phase 1a queued focus).
                         const view = this.ownerDocument.defaultView ?? globalThis;
                         view.requestAnimationFrame(() => {
-                            if (!unmountEvent.defaultPrevented) {
+                            if (!unmountEvent.defaultPrevented && !this.shouldPreserveMovedFocus()) {
                                 focus(previouslyFocusedElement ?? this.ownerDocument.body, { select: true });
                             }
 
@@ -253,6 +253,21 @@ export class RdxFocusScope {
                 { injector: this.injector }
             );
         });
+    }
+
+    /**
+     * Whether the interaction that unmounted this scope already moved focus to a legitimate element
+     * **outside** it — e.g. an outside press onto an interactive control in a non-modal layer (ADR 0017
+     * §2, finding #3). Returning focus to the previously-focused element would then *steal* it back from
+     * what the user just acted on. Focus that fell to `<body>` / `null` (a backdrop press, Escape, or the
+     * focused element being removed) is **not** "moved" — return focus normally so keyboard users land
+     * back on the trigger. The page never scroll-jumps either way: {@link focus} uses `preventScroll`.
+     */
+    private shouldPreserveMovedFocus(): boolean {
+        const active = getActiveElement(this.ownerDocument) as HTMLElement | null;
+        return (
+            !!active && active !== this.ownerDocument.body && !composedContains(this.elementRef.nativeElement, active)
+        );
     }
 
     handleKeyDown(event: KeyboardEvent) {

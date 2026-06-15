@@ -4,6 +4,7 @@ import {
     DestroyRef,
     Directive,
     effect,
+    ElementRef,
     inject,
     input,
     model,
@@ -14,7 +15,17 @@ import {
     untracked
 } from '@angular/core';
 import type { ReferenceElement } from '@floating-ui/dom';
-import { BooleanInput, createContext, injectId, NumberInput, watch } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    createContext,
+    createFloatingRootContext,
+    injectId,
+    NumberInput,
+    provideFloatingRootContext,
+    provideFloatingTree,
+    RdxFloatingRootContext,
+    watch
+} from '@radix-ng/primitives/core';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 import { RdxTooltipHandle } from './tooltip-handle';
 import { injectRdxTooltipProviderContext } from './tooltip-provider';
@@ -56,7 +67,11 @@ const context = () => contextFor(inject(RdxTooltip));
 @Directive({
     selector: '[rdxTooltip]',
     exportAs: 'rdxTooltip',
-    providers: [provideRdxTooltipContext(context)],
+    providers: [
+        provideRdxTooltipContext(context),
+        provideFloatingTree(),
+        provideFloatingRootContext(() => inject(RdxTooltip).floatingContext)
+    ],
     hostDirectives: [RdxPopper]
 })
 export class RdxTooltip {
@@ -65,6 +80,16 @@ export class RdxTooltip {
     private readonly popper = inject(RdxPopper);
     private readonly destroyRef = inject(DestroyRef);
     private hasAppliedDefaultOpen = false;
+
+    /**
+     * Per-popup floating root context (ADR 0015) — the shared store the positioner's dismissal
+     * capability reads (`open`, `triggers`, the reference/floating elements). The tree node is
+     * registered by the positioner; this context exists independently so dismissal can read `open()`.
+     */
+    readonly floatingContext: RdxFloatingRootContext = createFloatingRootContext({
+        ownerDocument: inject(ElementRef).nativeElement.ownerDocument,
+        open: () => this.open()
+    });
 
     /**
      * Whether the tooltip is currently open.
@@ -218,6 +243,10 @@ export class RdxTooltip {
         // Keep the popper anchored to the active trigger, or to the cursor while tracking.
         effect(() => this.popper.anchorOverride.set(this.virtualAnchor()));
 
+        // Sync the dismissal reference (the active trigger) so an outside-press on the trigger counts
+        // as "inside" and never dismisses (ADR 0015).
+        effect(() => this.floatingContext.setReferenceElement(this.trigger() ?? null));
+
         watch(
             [this.open],
             ([isOpen]) => {
@@ -287,6 +316,7 @@ export class RdxTooltip {
 
     registerTrigger(trigger: HTMLElement) {
         this.triggers.update((triggers) => (triggers.includes(trigger) ? triggers : [...triggers, trigger]));
+        this.floatingContext.triggers.add(trigger);
 
         if (!this.trigger()) {
             this.trigger.set(trigger);
@@ -294,6 +324,7 @@ export class RdxTooltip {
 
         return () => {
             this.triggers.update((triggers) => triggers.filter((candidate) => candidate !== trigger));
+            this.floatingContext.triggers.delete(trigger);
 
             if (this.trigger() === trigger) {
                 const nextTrigger = this.triggers()[0];
