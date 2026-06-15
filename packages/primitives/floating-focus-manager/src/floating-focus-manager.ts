@@ -203,7 +203,7 @@ export class RdxFloatingFocusManager {
             if (!this.effectiveEnabled()) {
                 return;
             }
-            onCleanup(markOthers([this.host], { ariaHidden: false, mark: true }));
+            onCleanup(markOthers(this.avoidElements(), { ariaHidden: false, mark: true }));
         });
 
         // Accessibility-isolation pass (ADR 0017 §3) — `aria-hidden` outside elements, but **only** for a
@@ -212,7 +212,7 @@ export class RdxFloatingFocusManager {
             if (!this.effectiveEnabled() || !this.effectiveModal()) {
                 return;
             }
-            onCleanup(markOthers([this.host], { ariaHidden: true, mark: false }));
+            onCleanup(markOthers(this.avoidElements(), { ariaHidden: true, mark: false }));
         });
 
         this.trackInteractionType();
@@ -301,6 +301,16 @@ export class RdxFloatingFocusManager {
             ownerDocument.removeEventListener('pointerup', onPointerUp, true);
             ownerDocument.removeEventListener('focusout', onFocusOut, true);
         });
+    }
+
+    /**
+     * The `markOthers` keep-set: this manager's own host **plus** any extra root elements the layer owns
+     * (e.g. a Dialog backdrop relocated as a separate body sibling, registered on the root context). Using
+     * only `[host]` would wrongly mark those sibling roots as outside content.
+     */
+    private avoidElements(): Element[] {
+        const extra = this.rootContext ? [...this.rootContext.floatingElements] : [];
+        return [this.host, ...extra.filter((element) => element !== this.host)];
     }
 
     /** Whether `relatedTarget` is inside the popup, its trigger(s), or an ancestor / descendant popup. */

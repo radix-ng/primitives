@@ -348,6 +348,27 @@ describe('RdxFloatingRootContext', () => {
         expect(() => ctx.setFloatingElement(foreign)).toThrow(/ownerDocument/i);
     });
 
+    it('tracks all owned root elements in floatingElements (popup + extras), with cleanup', () => {
+        const ctx = new RdxFloatingRootContext({ ownerDocument: document, open: () => true });
+        const popup = document.createElement('div');
+        const backdrop = document.createElement('div');
+
+        ctx.setFloatingElement(popup); // the popup is also an owned root
+        ctx.addFloatingElement(backdrop); // an extra root (e.g. a dialog backdrop)
+
+        expect([...ctx.floatingElements]).toEqual(expect.arrayContaining([popup, backdrop]));
+        expect(ctx.floatingElements.size).toBe(2);
+
+        // replacing the popup drops the old one from the set
+        const newPopup = document.createElement('div');
+        ctx.setFloatingElement(newPopup);
+        expect(ctx.floatingElements.has(popup)).toBe(false);
+        expect(ctx.floatingElements.has(newPopup)).toBe(true);
+
+        ctx.removeFloatingElement(backdrop);
+        expect(ctx.floatingElements.has(backdrop)).toBe(false);
+    });
+
     it('createFloatingRootContext builds a node-optional context (getEmptyRootContext analog)', () => {
         const ctx = createFloatingRootContext({ ownerDocument: document });
 

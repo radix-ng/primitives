@@ -217,14 +217,13 @@ test.describe('Dialog — new floating engine migration', () => {
         await expect(page.locator(popup)).toHaveCount(1);
     });
 
-    test('KNOWN GAP: the dialog backdrop must NOT be aria-hidden/marked (avoid set misses it)', async ({ page }) => {
+    test('does not aria-hide / mark the dialog backdrop (it is an owned root)', async ({ page }) => {
         await gotoStory(page, 'primitives-dialog--default');
         await page.locator(trigger).first().click();
         await expect(page.locator(popup)).toBeVisible();
 
-        // The backdrop is a second portal root (sibling of the popup), so the manager's
-        // markOthers avoid set = [popup] wrongly marks it. EXPECTED TO FAIL until the avoid set
-        // includes every dialog root (backdrop + popup).
+        // The backdrop is a second portal root (sibling of the popup); it registers as an owned floating
+        // element, so the manager's markOthers keep-set covers it (Fix #1).
         await expect(page.locator(backdrop)).not.toHaveAttribute('aria-hidden', 'true');
         await expect(page.locator(backdrop)).not.toHaveAttribute('data-rdx-floating-inert', '');
     });

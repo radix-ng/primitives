@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { Component, ElementRef, signal, viewChild } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { createFloatingRootContext, provideFloatingRootContext } from '@radix-ng/primitives/core';
 import { FOCUS_GUARD_ATTR } from '@radix-ng/primitives/focus-scope';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
@@ -185,6 +186,37 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
 
         expect(sibling.getAttribute('aria-hidden')).toBe('true');
         expect(sibling.hasAttribute(RDX_FLOATING_MARKER)).toBe(true); // marker still applied (active)
+    });
+
+    it('keeps additional owned root elements from the context (e.g. a Dialog backdrop)', async () => {
+        const backdrop = document.createElement('div');
+        document.body.appendChild(backdrop);
+        appended.push(backdrop);
+        const unrelated = document.createElement('div');
+        document.body.appendChild(unrelated);
+        appended.push(unrelated);
+
+        const context = createFloatingRootContext({ ownerDocument: document, open: () => true });
+        context.addFloatingElement(backdrop);
+
+        @Component({
+            imports: [RdxFloatingFocusManager],
+            providers: [provideFloatingRootContext(() => context)],
+            template: `
+                <div #scope rdxFloatingFocusManager></div>
+            `
+        })
+        class BackdropHost {
+            readonly scope = viewChild.required('scope', { read: ElementRef });
+        }
+
+        const fixture = TestBed.createComponent(BackdropHost);
+        fixture.autoDetectChanges();
+        await flush();
+
+        // The backdrop is an owned root → NOT marked; an unrelated sibling IS.
+        expect(backdrop.hasAttribute(RDX_FLOATING_MARKER)).toBe(false);
+        expect(unrelated.hasAttribute(RDX_FLOATING_MARKER)).toBe(true);
     });
 
     it('clears the marks when the manager is disabled', async () => {

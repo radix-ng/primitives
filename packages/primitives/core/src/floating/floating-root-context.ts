@@ -45,6 +45,7 @@ export class RdxFloatingRootContext {
 
     private floatingElementRef: HTMLElement | null = null;
     private referenceElementRef: Element | null = null;
+    private readonly floatingElementsRef = new Set<Element>();
 
     constructor(init: RdxFloatingRootContextInit) {
         this.ownerDocument = init.ownerDocument;
@@ -67,10 +68,37 @@ export class RdxFloatingRootContext {
         return this.referenceElementRef;
     }
 
-    /** Assigns the floating element, validating it shares this context's `ownerDocument`. */
+    /**
+     * **All** of this layer's own root elements — the popup plus any extra roots a primitive owns (e.g.
+     * a Dialog backdrop relocated as a separate body sibling). This is the `markOthers` **keep-set**: an
+     * isolation pass must never `aria-hidden` / mark the layer's own DOM. Distinct from
+     * {@link floatingElement} (the single popup, used for press / focus containment).
+     */
+    get floatingElements(): ReadonlySet<Element> {
+        return this.floatingElementsRef;
+    }
+
+    /** Assigns the floating (popup) element, validating it shares this context's `ownerDocument`. */
     setFloatingElement(element: HTMLElement | null): void {
         this.assertSameDocument(element);
+        if (this.floatingElementRef) {
+            this.floatingElementsRef.delete(this.floatingElementRef);
+        }
         this.floatingElementRef = element;
+        if (element) {
+            this.floatingElementsRef.add(element);
+        }
+    }
+
+    /** Registers an additional owned root element (e.g. a backdrop) into {@link floatingElements}. */
+    addFloatingElement(element: Element): void {
+        this.assertSameDocument(element);
+        this.floatingElementsRef.add(element);
+    }
+
+    /** Removes a previously {@link addFloatingElement | added} owned root element. */
+    removeFloatingElement(element: Element): void {
+        this.floatingElementsRef.delete(element);
     }
 
     /** Assigns the reference element, validating it shares this context's `ownerDocument`. */
