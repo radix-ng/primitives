@@ -3023,6 +3023,48 @@
       ]
     },
     {
+      "slug": "floating-focus-manager",
+      "section": "components",
+      "parts": [
+        {
+          "directive": "RdxFloatingFocusManager",
+          "selector": "[rdxFloatingFocusManager]",
+          "exportAs": "rdxFloatingFocusManager",
+          "description": "`RdxFloatingFocusManager` (ADR 0017 Phase 1b skeleton) — the Angular counterpart of Base UI's\n`FloatingFocusManager`. It is a **coordinator** that composes three low-level focus parts (it never\ninherits them, which would re-fuse trap + popup policy): the **reworked {@link RdxFocusScope}** (the\ntrap, via `hostDirectives`), the portal-focus bridge, and owner-`Document` guards. Per ADR 0017 §1/§2\nits policies are **independent**, none derived from `modal`.\n\n**This skeleton wires the composition + lifecycle gates:**\n- `enabled` — the manager's active-ness (`mounted && !hover-open`). When off, **no trap** (and, later,\n  no aria-hidden / no marker — Phase 2).\n- `modal` → `RdxFocusScope.trapped`: the effective trap is `enabled() && modal()`, pushed into the\n  composed focus scope through its config token (the composition seam).\n- `loop` is forwarded to `RdxFocusScope`.\n- `initialFocus` / `returnFocus` are **typed** here (the §2 policy contract, incl. the interaction-type\n  callback forms); their full orchestration + the portal-bridge wiring + close-on-focus-out land in\n  later phases.",
+          "hostDirectives": [
+            "RdxFocusScope"
+          ],
+          "inputs": [
+            {
+              "name": "enabled",
+              "type": "boolean",
+              "default": "true",
+              "description": "Manager active-ness (ADR 0017 §2): the popup is mounted **and** not hover-opened."
+            },
+            {
+              "name": "initialFocus",
+              "type": "RdxInitialFocus",
+              "default": "null",
+              "description": "Where focus goes when the popup opens (ADR 0017 §2)."
+            },
+            {
+              "name": "modal",
+              "type": "boolean",
+              "default": "false",
+              "description": "Modal popup → focus trap. Combined with `enabled` to drive the composed `RdxFocusScope`."
+            },
+            {
+              "name": "returnFocus",
+              "type": "RdxReturnFocus",
+              "default": "true",
+              "description": "Where focus returns when the popup closes (ADR 0017 §2)."
+            }
+          ],
+          "outputs": []
+        }
+      ]
+    },
+    {
       "slug": "focus-guards",
       "section": "components",
       "parts": [
