@@ -3,6 +3,7 @@ import {
     computed,
     Directive,
     effect,
+    ElementRef,
     inject,
     input,
     model,
@@ -11,7 +12,17 @@ import {
     Signal,
     untracked
 } from '@angular/core';
-import { BooleanInput, createContext, useTransitionStatus } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    createContext,
+    createFloatingRootContext,
+    Direction,
+    provideFloatingRootContext,
+    provideFloatingTree,
+    RdxFloatingRootContext,
+    useTransitionStatus
+} from '@radix-ng/primitives/core';
+import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 
 export type RdxMenuTransitionStatus = 'starting' | 'ending' | undefined;
@@ -26,6 +37,40 @@ export type RdxMenuAutoFocus = 'first' | 'last' | 'popup' | false;
 export type RdxMenuAutoFocusInput = boolean | RdxMenuAutoFocus;
 export type RdxMenuOrientation = 'horizontal' | 'vertical';
 
+/**
+ * What kind of parent a menu has (Base UI `MenuParent.type`). Drives the per-kind dismissal / focus /
+ * backdrop / scroll-lock policy:
+ * - `'menu'` — a **submenu** (its parent is another menu).
+ * - `'menubar'` — a menu coordinated by a `Menubar`.
+ * - `'context-menu'` — the root of a `ContextMenu` (opened at the pointer).
+ * - `undefined` — a standalone menu (a plain dropdown).
+ */
+export type RdxMenuParentType = 'menu' | 'menubar' | 'context-menu' | undefined;
+
+/**
+ * Why a menu's open state changed (Base UI open-change `reason`). Read by the per-kind policy — e.g. a
+ * `'trigger-hover'` open suppresses the modal backdrop / scroll-lock, and the dismissal reason decides
+ * return-focus.
+ */
+export type RdxMenuOpenChangeReason =
+    | 'trigger-press'
+    | 'trigger-hover'
+    | 'trigger-focus'
+    | 'list-navigation'
+    | 'sibling-open'
+    | 'escape-key'
+    | 'outside-press'
+    | 'cancel-open'
+    | 'focus-out'
+    | 'none';
+
+export interface RdxMenuOpenChange {
+    open: boolean;
+    trigger: HTMLElement | undefined;
+    reason: RdxMenuOpenChangeReason;
+    event: Event;
+}
+
 export interface RdxMenuRootContext {
     isOpen: Signal<boolean>;
     disabled: Signal<boolean>;
@@ -33,26 +78,42 @@ export interface RdxMenuRootContext {
     loopFocus: Signal<boolean>;
     highlightItemOnHover: Signal<boolean>;
     orientation: Signal<RdxMenuOrientation>;
+    dir: Signal<Direction>;
     closeParentOnEsc: Signal<boolean>;
     /** Whether the popup should focus its first item when it opens. */
     autoFocus: Signal<RdxMenuAutoFocus>;
     isSubmenu: Signal<boolean>;
+    /** What kind of parent this menu has (ADR 0015/0017 parity) — drives the per-kind policy. */
+    parentType: Signal<RdxMenuParentType>;
+    /** The reason for the most recent open-change (Base UI open-change `reason`). */
+    lastOpenChangeReason: Signal<RdxMenuOpenChangeReason>;
+    /** Whether a trigger-originated press may activate an item on the following mouseup. */
+    allowMouseUpTrigger: Signal<boolean>;
+    /** Whether the current open was initiated by touch (ADR 0016 §3 — gates the anchored scroll lock). */
+    openedByTouch: Signal<boolean>;
+    openInteractionType: Signal<RdxInteractionType>;
+    closeInteractionType: Signal<RdxInteractionType>;
     hasTriggerInteractionHandler: Signal<boolean>;
     trigger: Signal<HTMLElement | undefined>;
     /** The popup element, once mounted. Used by submenu safe-polygon geometry. */
     popupElement: Signal<HTMLElement | undefined>;
     transitionStatus: Signal<RdxMenuTransitionStatus>;
-    close: () => void;
-    toggle: () => void;
-    show: (autoFocus?: RdxMenuAutoFocusInput) => void;
+    close: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
+    /** Close this menu and every ancestor — used by item selection (the whole menu dismisses). */
+    closeEntireMenu: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
+    toggle: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
+    show: (autoFocus?: RdxMenuAutoFocusInput, reason?: RdxMenuOpenChangeReason, event?: Event) => void;
     /** Open the menu without moving focus into the popup (used for menubar hover-switching). */
-    showWithoutAutoFocus: () => void;
+    showWithoutAutoFocus: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
     registerTrigger: (el: HTMLElement) => () => void;
     registerPopup: (el: HTMLElement) => () => void;
     registerTransitionElement: (element: HTMLElement) => () => void;
     registerPopupArrowNavigationHandler: (handler: (offset: 1 | -1) => boolean) => () => void;
     registerTriggerInteractionHandler: (handler: RdxMenuTriggerInteractionHandler) => () => void;
     markAsSubmenu: () => void;
+    /** Marks this menu as the root of a Context Menu (called by `RdxContextMenuRoot`). */
+    markAsContextMenu: () => void;
+    setAllowMouseUpTrigger: (value: boolean) => void;
     closeParent: () => void;
     handlePopupArrowNavigation: (offset: 1 | -1) => boolean;
     handleTriggerInteraction: (interaction: RdxMenuTriggerInteraction) => boolean;
@@ -60,6 +121,8 @@ export interface RdxMenuRootContext {
 
 export type RdxMenuTriggerInteraction =
     | { type: 'click' }
+    | { type: 'enter'; event: Event }
+    | { type: 'space'; event: Event }
     | { type: 'pointerenter'; event: PointerEvent }
     | { type: 'arrowdown'; event: Event }
     | { type: 'arrowup'; event: Event }
@@ -84,23 +147,33 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         loopFocus: instance.loopFocus,
         highlightItemOnHover: instance.highlightItemOnHover,
         orientation: instance.orientation,
+        dir: instance.dir,
         closeParentOnEsc: instance.closeParentOnEsc,
         autoFocus: instance.autoFocus.asReadonly(),
         isSubmenu: instance.isSubmenu.asReadonly(),
+        parentType: instance.parentType,
+        lastOpenChangeReason: instance.lastOpenChangeReason.asReadonly(),
+        allowMouseUpTrigger: instance.allowMouseUpTrigger,
+        openedByTouch: instance.openedByTouch.asReadonly(),
+        openInteractionType: instance.openInteractionType.asReadonly(),
+        closeInteractionType: instance.closeInteractionType.asReadonly(),
         hasTriggerInteractionHandler: instance.hasTriggerInteractionHandler.asReadonly(),
         trigger: instance.trigger.asReadonly(),
         popupElement: instance.popupElement.asReadonly(),
         transitionStatus: instance.transitionStatus,
-        close: () => instance.close(),
-        toggle: () => instance.toggle(),
-        show: (autoFocus) => instance.show(autoFocus),
-        showWithoutAutoFocus: () => instance.show(false),
+        close: (reason, event) => instance.close(reason, event),
+        closeEntireMenu: (reason, event) => instance.closeEntireMenu(reason, event),
+        toggle: (reason, event) => instance.toggle(reason, event),
+        show: (autoFocus, reason, event) => instance.show(autoFocus, reason, event),
+        showWithoutAutoFocus: (reason, event) => instance.show(false, reason, event),
         registerTrigger: (el) => instance.registerTrigger(el),
         registerPopup: (el) => instance.registerPopup(el),
         registerTransitionElement: (el) => instance.registerTransitionElement(el),
         registerPopupArrowNavigationHandler: (handler) => instance.registerPopupArrowNavigationHandler(handler),
         registerTriggerInteractionHandler: (handler) => instance.registerTriggerInteractionHandler(handler),
         markAsSubmenu: () => instance.markAsSubmenu(),
+        markAsContextMenu: () => instance.markAsContextMenu(),
+        setAllowMouseUpTrigger: (value) => instance.setAllowMouseUpTrigger(value),
         closeParent: () => instance.closeParent(),
         handlePopupArrowNavigation: (offset) => instance.handlePopupArrowNavigation(offset),
         handleTriggerInteraction: (interaction) => instance.handleTriggerInteraction(interaction)
@@ -115,12 +188,28 @@ const contextFactory = () => buildContext(inject(RdxMenuRoot));
 @Directive({
     selector: '[rdxMenuRoot],[rdxMenuSubmenuRoot]',
     exportAs: 'rdxMenuRoot',
-    providers: [provideRdxMenuRootContext(contextFactory)],
+    providers: [
+        provideRdxMenuRootContext(contextFactory),
+        // New floating foundation (ADR 0015/0017). Inherit-or-create the tree so a submenu shares its
+        // parent menu's tree; the per-popup root context bridges open / triggers / reference.
+        provideFloatingTree(),
+        provideFloatingRootContext(() => inject(RdxMenuRoot).floatingContext)
+    ],
     hostDirectives: [RdxPopper]
 })
 export class RdxMenuRoot {
     private readonly popper = inject(RdxPopper);
     private readonly parentRoot = inject(RdxMenuRoot, { optional: true, skipSelf: true });
+
+    /**
+     * The shared per-popup floating context (ADR 0015 §1) — `open` mirrors this menu's open state, the
+     * trigger registry is bridged from {@link registerTrigger}, and the reference / floating elements are
+     * set by the trigger / popup. The new dismissal engine reads this once the popup migrates.
+     */
+    readonly floatingContext: RdxFloatingRootContext = createFloatingRootContext({
+        ownerDocument: inject(ElementRef).nativeElement.ownerDocument,
+        open: () => this.open()
+    });
 
     /** Shared open/close transition state machine (completes on the real animationend). */
     private readonly transition = useTransitionStatus((open) => this.onOpenChangeComplete.emit(open));
@@ -154,11 +243,14 @@ export class RdxMenuRoot {
     /** The menu orientation. */
     readonly orientation = input<RdxMenuOrientation>('vertical');
 
+    /** Text direction for submenu arrow-key behavior. Inherited by nested submenu roots. */
+    readonly dirInput = input<Direction | undefined>(undefined, { alias: 'dir' });
+
     /** Whether pressing Escape inside a submenu closes the whole menu chain. */
     readonly closeParentOnEsc = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /** Emits when the open state changes. */
-    readonly onOpenChange = output<boolean>();
+    readonly onOpenChange = output<RdxMenuOpenChange>();
 
     /** Emits when the open/close CSS transition or animation finishes. */
     readonly onOpenChangeComplete = output<boolean>();
@@ -169,11 +261,47 @@ export class RdxMenuRoot {
     /** Whether the popup grabs focus when it opens. Set false for menubar hover-switching. */
     readonly autoFocus = signal<RdxMenuAutoFocus>('first');
     readonly isSubmenu = signal(false);
+    /** Set by `RdxContextMenuRoot` (it composes this root) — distinguishes a context menu from a dropdown. */
+    readonly isContextMenu = signal(false);
+    readonly hasTriggerInteractionHandler = signal(false);
+
+    /**
+     * What kind of parent this menu has (Base UI `MenuParent.type`). A submenu wins over everything (its
+     * parent is a menu); otherwise a context-menu marker, then a menubar (detected by the trigger
+     * interaction handler the menubar registers), else a standalone dropdown.
+     */
+    readonly parentType: Signal<RdxMenuParentType> = computed(() => {
+        if (this.isSubmenu()) {
+            return 'menu';
+        }
+        if (this.isContextMenu()) {
+            return 'context-menu';
+        }
+        if (this.hasTriggerInteractionHandler()) {
+            return 'menubar';
+        }
+        return undefined;
+    });
+
+    /** The reason for the most recent open-change (Base UI open-change `reason`), for the per-kind policy. */
+    readonly lastOpenChangeReason = signal<RdxMenuOpenChangeReason>('none');
+    private readonly localAllowMouseUpTrigger = signal(false);
+    readonly allowMouseUpTrigger: Signal<boolean> = computed(
+        () => this.parentRoot?.allowMouseUpTrigger() ?? this.localAllowMouseUpTrigger()
+    );
+
+    /** Whether the current open was initiated by **touch** (ADR 0016 §3 — gates the anchored scroll lock). */
+    readonly openedByTouch = signal(false);
+    readonly openInteractionType = signal<RdxInteractionType>(null);
+    readonly closeInteractionType = signal<RdxInteractionType>(null);
+
     readonly effectiveDisabled: Signal<boolean> = computed(
         () => this.disabled() || (this.parentRoot?.effectiveDisabled() ?? false)
     );
+    readonly dir: Signal<Direction> = computed(() => {
+        return this.dirInput() ?? this.parentRoot?.dir() ?? this.readDocumentDirection();
+    });
     readonly effectiveModal = computed(() => this.modal() && !this.isSubmenu());
-    readonly hasTriggerInteractionHandler = signal(false);
     readonly state = computed(() => (this.open() ? 'open' : 'closed'));
 
     constructor() {
@@ -188,6 +316,10 @@ export class RdxMenuRoot {
 
         effect(() => this.popper.anchorOverride.set(this.trigger()));
 
+        // Keep the dismissal reference (the active trigger) in sync so an outside-press / focus on the
+        // trigger counts as "inside" and never dismisses (ADR 0015).
+        effect(() => this.floatingContext.setReferenceElement(this.trigger() ?? null));
+
         let previousOpen = this.open();
         effect(() => {
             const open = this.open();
@@ -198,41 +330,77 @@ export class RdxMenuRoot {
         });
     }
 
-    show(autoFocus: RdxMenuAutoFocusInput = 'first') {
+    show(autoFocus: RdxMenuAutoFocusInput = 'first', reason: RdxMenuOpenChangeReason = 'none', event?: Event) {
         if (this.effectiveDisabled()) {
             return;
         }
 
         this.autoFocus.set(autoFocus === true ? 'first' : autoFocus);
         if (!this.open()) {
+            this.lastOpenChangeReason.set(reason);
+            // Record whether this open came from touch (ADR 0016 §3). Hover / mouse / keyboard all resolve
+            // to false (no `'touch'` pointer type), so only a genuine touch open gates the anchored lock.
+            this.openedByTouch.set((event as PointerEvent | undefined)?.pointerType === 'touch');
+            this.openInteractionType.set(getInteractionTypeFromEvent(event));
             this.open.set(true);
-            this.onOpenChange.emit(true);
+            this.emitOpenChange(true, reason, event);
+            // Publish reason + native event on the per-popup floating channel (Base UI open-change) so the
+            // dismissal / future focus policy can read why the menu opened (e.g. hover vs press).
+            this.floatingContext.events.emit('openchange', { open: true, reason, event });
         }
     }
 
-    close() {
+    close(reason: RdxMenuOpenChangeReason = 'none', event?: Event) {
         if (this.open()) {
+            this.setAllowMouseUpTrigger(false);
+            this.lastOpenChangeReason.set(reason);
+            this.closeInteractionType.set(getInteractionTypeFromEvent(event));
             this.open.set(false);
-            this.onOpenChange.emit(false);
+            this.emitOpenChange(false, reason, event);
+            this.floatingContext.events.emit('openchange', { open: false, reason, event });
         }
     }
 
-    toggle() {
+    toggle(reason: RdxMenuOpenChangeReason = 'trigger-press', event?: Event) {
         if (this.effectiveDisabled()) {
             return;
         }
 
         if (this.open()) {
-            this.close();
+            this.close(reason, event);
         } else {
-            this.show();
+            this.show('first', reason, event);
         }
+    }
+
+    markAsContextMenu(): void {
+        this.isContextMenu.set(true);
+    }
+
+    setAllowMouseUpTrigger(value: boolean): void {
+        if (this.parentRoot) {
+            this.parentRoot.setAllowMouseUpTrigger(value);
+            return;
+        }
+
+        this.localAllowMouseUpTrigger.set(value);
+    }
+
+    /**
+     * Close this menu **and every ancestor menu** in the chain. Selecting an item dismisses the whole
+     * menu, not just the innermost submenu (a submenu's `close()` would leave its parents open).
+     */
+    closeEntireMenu(reason: RdxMenuOpenChangeReason = 'none', event?: Event): void {
+        this.close(reason, event);
+        this.parentRoot?.closeEntireMenu(reason, event);
     }
 
     registerTrigger(el: HTMLElement): () => void {
         this.registeredTrigger = el;
         this.trigger.set(el);
+        this.floatingContext.triggers.add(el);
         return () => {
+            this.floatingContext.triggers.delete(el);
             if (this.registeredTrigger === el) {
                 this.registeredTrigger = undefined;
                 this.trigger.set(undefined);
@@ -289,5 +457,20 @@ export class RdxMenuRoot {
 
     closeParent(): void {
         this.trigger()?.dispatchEvent(new CustomEvent('rdx-menu-close-parent', { bubbles: true }));
+    }
+
+    private emitOpenChange(open: boolean, reason: RdxMenuOpenChangeReason, event?: Event): void {
+        this.onOpenChange.emit({
+            open,
+            trigger: this.trigger(),
+            reason,
+            event: event ?? new Event('menu.open-change')
+        });
+    }
+
+    private readDocumentDirection(): Direction {
+        const ownerDocument = this.floatingContext.ownerDocument;
+        const explicitDir = ownerDocument.documentElement.dir;
+        return explicitDir === 'rtl' ? 'rtl' : 'ltr';
     }
 }

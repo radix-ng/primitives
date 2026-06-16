@@ -3,6 +3,7 @@ import {
     computed,
     Directive,
     effect,
+    ElementRef,
     inject,
     Injector,
     input,
@@ -26,11 +27,15 @@ import {
 import {
     AcceptableValue,
     BooleanInput,
+    createFloatingRootContext,
     itemToStringLabel as defaultItemToStringLabel,
     Direction,
     isItemEqualToValue as itemsEqual,
     ItemValueComparator,
-    rdxDevWarning
+    provideFloatingRootContext,
+    provideFloatingTree,
+    rdxDevWarning,
+    RdxFloatingRootContext
 } from '@radix-ng/primitives/core';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 
@@ -182,7 +187,10 @@ function coerceAutoHighlight(value: BooleanInput | 'always'): boolean | 'always'
     exportAs: 'rdxAutocompleteRoot',
     providers: [
         provideComboboxRootContext(context),
-        { provide: NG_VALUE_ACCESSOR, useExisting: RdxAutocompleteRoot, multi: true }
+        { provide: NG_VALUE_ACCESSOR, useExisting: RdxAutocompleteRoot, multi: true },
+        // New floating foundation (ADR 0015/0017) — the dismissal capability reads this shared context.
+        provideFloatingTree(),
+        provideFloatingRootContext(() => inject(RdxAutocompleteRoot).floatingContext)
     ],
     hostDirectives: [RdxPopper],
     host: {
@@ -191,6 +199,12 @@ function coerceAutoHighlight(value: BooleanInput | 'always'): boolean | 'always'
 })
 export class RdxAutocompleteRoot implements ControlValueAccessor {
     private readonly injector = inject(Injector);
+
+    /** Per-popup floating root context (ADR 0015) — `open` / `triggers` / reference for the dismissal engine. */
+    readonly floatingContext: RdxFloatingRootContext = createFloatingRootContext({
+        ownerDocument: inject(ElementRef).nativeElement.ownerDocument,
+        open: () => this.open()
+    });
 
     /** The input text. This is the form value (controlled / uncontrolled via {@link defaultValue}). */
     readonly value = model<string>('');
@@ -408,6 +422,10 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
 
     constructor() {
         engineRegistry.set(this, this.engine);
+
+        // Keep the dismissal reference in sync with the input (the anchor) so a press / focus on it counts
+        // as "inside" and never dismisses (ADR 0015).
+        effect(() => this.floatingContext.setReferenceElement(this.engine.inputElement() ?? null));
 
         // Apply uncontrolled defaults once.
         effect(() => {

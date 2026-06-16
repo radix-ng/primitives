@@ -62,7 +62,7 @@ export interface RdxNavigationMenuRootContext {
     close(reason?: RdxNavigationMenuOpenChangeReason, event?: Event): void;
     toggle(value: string, trigger: HTMLElement, event?: Event): void;
     openOnHover(value: string, trigger: HTMLElement, event: PointerEvent): void;
-    closeOnHover(): void;
+    closeOnHover(event?: PointerEvent): void;
     cancelHoverOpen(): void;
     cancelHoverClose(): void;
 

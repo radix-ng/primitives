@@ -1,4 +1,5 @@
-import { Directive } from '@angular/core';
+import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
+import { RDX_FLOATING_ROOT_CONTEXT } from '@radix-ng/primitives/core';
 import { injectRdxPopoverRootContext } from './popover-root';
 
 /**
@@ -17,4 +18,15 @@ import { injectRdxPopoverRootContext } from './popover-root';
 })
 export class RdxPopoverBackdrop {
     protected readonly rootContext = injectRdxPopoverRootContext();
+
+    constructor() {
+        // Register the backdrop as owned DOM footprint for primitive-specific checks. The focus manager's
+        // marker keep-set stays narrow and does not keep sibling backdrop roots.
+        const floatingContext = inject(RDX_FLOATING_ROOT_CONTEXT, { optional: true });
+        if (floatingContext) {
+            const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+            floatingContext.addFloatingElement(host);
+            inject(DestroyRef).onDestroy(() => floatingContext.removeFloatingElement(host));
+        }
+    }
 }

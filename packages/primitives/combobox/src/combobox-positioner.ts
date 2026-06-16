@@ -1,9 +1,11 @@
-import { Directive } from '@angular/core';
+import { afterNextRender, Directive, ElementRef, inject, Injector } from '@angular/core';
+import { setupInternalBackdrop } from '@radix-ng/primitives/core';
 import {
     provideRdxPopperContentConfig,
     provideRdxPopperContentWrapper,
     RdxPopperContentWrapper
 } from '@radix-ng/primitives/popper';
+import { injectComboboxRootContext } from './combobox-root';
 
 /**
  * Positions the combobox popup relative to the input anchor using the popper engine.
@@ -24,4 +26,20 @@ import {
         provideRdxPopperContentConfig({ sideOffset: 4, align: 'start' })
     ]
 })
-export class RdxComboboxPositioner extends RdxPopperContentWrapper {}
+export class RdxComboboxPositioner extends RdxPopperContentWrapper {
+    constructor() {
+        super();
+        const rootContext = injectComboboxRootContext();
+        const injector = inject(Injector);
+        const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+        // A modal combobox isolates the background with an internal backdrop (Base UI); the input stays
+        // clickable through a cutout. (Combobox is non-modal by default — usually no backdrop.)
+        afterNextRender(() =>
+            setupInternalBackdrop(host, injector, {
+                isOpen: () => rootContext.open(),
+                shouldRender: () => rootContext.modal(),
+                cutout: () => rootContext.inputElement() ?? null
+            })
+        );
+    }
+}

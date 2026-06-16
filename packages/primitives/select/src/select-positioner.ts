@@ -1,4 +1,5 @@
-import { Directive, forwardRef } from '@angular/core';
+import { afterNextRender, Directive, ElementRef, forwardRef, inject, Injector } from '@angular/core';
+import { setupInternalBackdrop } from '@radix-ng/primitives/core';
 import {
     legacyPopperVars,
     provideRdxPopperContentConfig,
@@ -6,6 +7,7 @@ import {
     RdxPopperContentWrapper
 } from '@radix-ng/primitives/popper';
 import { RDX_SELECT_POSITIONER_TOKEN, RdxPositionerImpl } from './select-popup';
+import { injectSelectRootContext } from './select-root';
 
 /**
  * Positions the select popup against the trigger using the popper engine.
@@ -31,4 +33,20 @@ import { RDX_SELECT_POSITIONER_TOKEN, RdxPositionerImpl } from './select-popup';
 })
 export class RdxSelectPositioner extends RdxPopperContentWrapper implements RdxPositionerImpl {
     protected readonly positionerStyle = { boxSizing: 'border-box', ...legacyPopperVars('select') };
+
+    constructor() {
+        super();
+        const rootContext = injectSelectRootContext();
+        const injector = inject(Injector);
+        const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+        // Modal select isolates the background with an internal backdrop (finding #1 / Base UI) instead of
+        // a global pointer lock; the trigger stays clickable through a cutout (toggle-close).
+        afterNextRender(() =>
+            setupInternalBackdrop(host, injector, {
+                isOpen: () => rootContext.open(),
+                shouldRender: () => rootContext.modal(),
+                cutout: () => rootContext.triggerElement()
+            })
+        );
+    }
 }

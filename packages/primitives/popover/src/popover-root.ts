@@ -4,6 +4,7 @@ import {
     DestroyRef,
     Directive,
     effect,
+    ElementRef,
     inject,
     input,
     model,
@@ -15,7 +16,11 @@ import {
 import {
     BooleanInput,
     createContext,
+    createFloatingRootContext,
     injectId,
+    provideFloatingRootContext,
+    provideFloatingTree,
+    RdxFloatingRootContext,
     RdxTransitionStatus,
     useTransitionStatus
 } from '@radix-ng/primitives/core';
@@ -65,6 +70,8 @@ export interface RdxPopoverRootContext {
     instant: Signal<boolean>;
     openChangeReason: Signal<RdxPopoverOpenChangeReason>;
     isPointerDownOnTrigger: Signal<boolean>;
+    /** Whether the current open was initiated by touch (ADR 0016 §3 — gates the anchored scroll lock). */
+    openedByTouch: Signal<boolean>;
     close: (reason?: RdxPopoverOpenChangeReason, event?: Event) => void;
     cancelHoverClose: () => void;
     cancelHoverOpen: () => void;
@@ -82,6 +89,7 @@ export interface RdxPopoverRootContext {
     setDescriptionId: (id: string | undefined) => void;
     setTitleId: (id: string | undefined) => void;
     setPointerDownOnTrigger: (pointerDown: boolean) => void;
+    setOpenedByTouch: (value: boolean) => void;
     setHoverDelays: (delay: number, closeDelay: number) => void;
     registerPopupClose: () => () => void;
     registerTransitionElement: (element: HTMLElement) => () => void;
@@ -103,12 +111,24 @@ export type RdxPopoverTransitionStatus = RdxTransitionStatus;
 @Directive({
     selector: '[rdxPopoverRoot]',
     exportAs: 'rdxPopoverRoot',
-    providers: [provideRdxPopoverRootContext(context)],
+    providers: [
+        provideRdxPopoverRootContext(context),
+        // New floating foundation (ADR 0015/0017 migration). Inherit-or-create tree (nested sharing);
+        // the per-popup root context bridges open / triggers / reference.
+        provideFloatingTree(),
+        provideFloatingRootContext(() => inject(RdxPopoverRoot).floatingContext)
+    ],
     hostDirectives: [RdxPopper]
 })
 export class RdxPopoverRoot {
     private readonly popper = inject(RdxPopper);
     private readonly destroyRef = inject(DestroyRef);
+
+    /** Shared per-popup floating context (ADR 0015 §1): `open`, trigger registry, reference / floating els. */
+    readonly floatingContext: RdxFloatingRootContext = createFloatingRootContext({
+        ownerDocument: inject(ElementRef).nativeElement.ownerDocument,
+        open: () => this.open()
+    });
     private hasAppliedDefaultOpen = false;
     private hasAppliedDefaultTriggerId = false;
     private openTimer: ReturnType<typeof setTimeout> | undefined;
@@ -162,6 +182,9 @@ export class RdxPopoverRoot {
     readonly triggers = signal<HTMLElement[]>([]);
     readonly payload = signal<unknown>(undefined);
     readonly isPointerDownOnTrigger = signal(false);
+
+    /** Whether the current open was initiated by touch (ADR 0016 §3 — gates the anchored scroll lock). */
+    readonly openedByTouch = signal(false);
     readonly popupCloseCount = signal(0);
     readonly onOpenChange = output<RdxPopoverOpenChange>();
     readonly onOpenChangeComplete = output<boolean>();
@@ -172,6 +195,9 @@ export class RdxPopoverRoot {
 
     constructor() {
         let previousOpen = this.open();
+
+        // Keep the floating context's reference element in sync with the active trigger.
+        effect(() => this.floatingContext.setReferenceElement(this.trigger() ?? null));
 
         effect(
             () => {
@@ -284,6 +310,7 @@ export class RdxPopoverRoot {
     close(reason: RdxPopoverOpenChangeReason = 'none', event = new Event('popover.open-change')) {
         this.clearHoverTimers();
         this.isHoverActive.set(false);
+        this.openedByTouch.set(false);
 
         if (!this.open()) {
             return;
@@ -350,6 +377,8 @@ export class RdxPopoverRoot {
     registerTrigger(id: string, trigger: HTMLElement, payload: () => unknown) {
         this.registeredTriggers.set(id, { element: trigger, payload });
         this.triggers.update((triggers) => (triggers.includes(trigger) ? triggers : [...triggers, trigger]));
+        // Bridge into the floating context's trigger registry (new dismissal/focus inside-element checks).
+        this.floatingContext.triggers.add(trigger);
 
         if (this.triggerId() === id) {
             this.trigger.set(trigger);
@@ -365,6 +394,7 @@ export class RdxPopoverRoot {
             }
 
             this.triggers.update((triggers) => triggers.filter((candidate) => candidate !== trigger));
+            this.floatingContext.triggers.delete(trigger);
 
             if (this.destroyRef.destroyed) {
                 return;
@@ -484,6 +514,7 @@ function contextFor(root: RdxPopoverRoot): RdxPopoverRootContext {
         instant: root.instant.asReadonly(),
         openChangeReason: root.openChangeReason.asReadonly(),
         isPointerDownOnTrigger: root.isPointerDownOnTrigger.asReadonly(),
+        openedByTouch: root.openedByTouch.asReadonly(),
         close: (reason?: RdxPopoverOpenChangeReason, event?: Event) => root.close(reason, event),
         cancelHoverClose: () => root.cancelHoverClose(),
         cancelHoverOpen: () => root.cancelHoverOpen(),
@@ -494,6 +525,7 @@ function contextFor(root: RdxPopoverRoot): RdxPopoverRootContext {
         setDescriptionId: (id: string | undefined) => root.descriptionId.set(id),
         setTitleId: (id: string | undefined) => root.titleId.set(id),
         setPointerDownOnTrigger: (pointerDown: boolean) => root.isPointerDownOnTrigger.set(pointerDown),
+        setOpenedByTouch: (value: boolean) => root.openedByTouch.set(value),
         setHoverDelays: (delay: number, closeDelay: number) => root.setHoverDelays(delay, closeDelay),
         registerPopupClose: () => {
             root.popupCloseCount.update((count) => count + 1);

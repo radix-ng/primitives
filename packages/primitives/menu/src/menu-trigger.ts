@@ -12,8 +12,8 @@ import {
     PLATFORM_ID
 } from '@angular/core';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
-import { RdxDismissableLayersContextToken } from '@radix-ng/primitives/dismissable-layer';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
+import { getFocusableMenuItems } from './menu-focus';
 import { injectRdxMenuRootContext } from './menu-root';
 import { applyPointerTunnel, createSafePolygonHandler, hasOpenChildSubmenu, MenuSide } from './menu-safe-polygon';
 
@@ -39,7 +39,8 @@ const numberOrUndefined = (value: NumberInput | undefined) => (value == null ? u
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
         '[attr.data-popup-open]': 'rootContext.isOpen() ? "" : undefined',
         '[style.pointer-events]': 'rootContext.isOpen() && rootContext.modal() ? "auto" : undefined',
-        '(click)': 'handleClick()',
+        '(mousedown)': 'handleMouseDown($event)',
+        '(click)': 'handleClick($event)',
         '(pointerenter)': 'handlePointerEnter($event)',
         '(pointermove)': 'handlePointerMove($event)',
         '(pointerleave)': 'handlePointerLeave($event)',
@@ -58,12 +59,29 @@ export class RdxMenuTrigger {
     protected readonly rootContext = injectRdxMenuRootContext();
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly destroyRef = inject(DestroyRef);
-    private readonly dismissableLayersContext = inject(RdxDismissableLayersContextToken);
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
     private openTimer: ReturnType<typeof setTimeout> | undefined;
     private closeTimer: ReturnType<typeof setTimeout> | undefined;
+    private allowMouseUpTriggerTimer: ReturnType<typeof setTimeout> | undefined;
     private lastPointer: { x: number; y: number } | null = null;
     private openedByHover = false;
+    private ignoreNextClick: 'mouse' | 'keyboard' | null = null;
+    private readonly handleDocumentMouseUp = (event: MouseEvent): void => {
+        this.allowMouseUpTriggerTimer = undefined;
+        this.rootContext.setAllowMouseUpTrigger(false);
+
+        const trigger = this.elementRef.nativeElement;
+        const target = event.target as Node | null;
+        const popup = this.rootContext.popupElement();
+
+        if (target && (trigger.contains(target) || popup?.contains(target))) {
+            return;
+        }
+
+        if (this.rootContext.isOpen()) {
+            this.rootContext.close('cancel-open', event);
+        }
+    };
 
     /** Whether this trigger should be treated as a native button. Auto-detected for `<button>`. */
     readonly nativeButton = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
@@ -110,7 +128,8 @@ export class RdxMenuTrigger {
             }
 
             const trigger = this.elementRef.nativeElement;
-            let removeTunnel: (() => void) | undefined = applyPointerTunnel(document.body, trigger, popup);
+            const ownerDocument = trigger.ownerDocument;
+            let removeTunnel: (() => void) | undefined = applyPointerTunnel(ownerDocument.body, trigger, popup);
             const { handler, dispose } = createSafePolygonHandler({
                 reference: trigger,
                 floating: popup,
@@ -126,50 +145,85 @@ export class RdxMenuTrigger {
                 }
             });
 
-            document.addEventListener('mousemove', handler);
+            ownerDocument.addEventListener('mousemove', handler);
             onCleanup(() => {
-                document.removeEventListener('mousemove', handler);
+                ownerDocument.removeEventListener('mousemove', handler);
                 dispose();
                 removeTunnel?.();
                 this.clearCloseTimer();
             });
         });
 
-        // Keep coordinated triggers and the active trigger of a modal menu interactive. Registering
-        // them as a dismissable-layer branch prevents pointer/focus interaction on the trigger from
-        // dismissing the popup before the trigger's own click can toggle it.
-        effect((onCleanup) => {
-            if (
-                !this.rootContext.hasTriggerInteractionHandler() &&
-                !(this.rootContext.isOpen() && this.rootContext.modal())
-            ) {
-                return;
-            }
-
-            const el = this.elementRef.nativeElement;
-            this.dismissableLayersContext.branches.update((branches) => [...branches, el]);
-            onCleanup(() => {
-                this.dismissableLayersContext.branches.update((branches) => branches.filter((b) => b !== el));
-            });
-        });
+        // (A press/focus on the trigger no longer needs a dismissable-layer branch to avoid
+        // self-dismissal: the trigger is registered in the menu's floating context, so the dismissal
+        // capability already treats it as "inside" — ADR 0015 trigger registry replaces the branch.)
 
         this.destroyRef.onDestroy(() => {
             this.clearOpenTimer();
             this.clearCloseTimer();
+            this.clearMouseUpGuard();
         });
     }
 
-    protected handleClick(): void {
+    protected handleMouseDown(event: MouseEvent): void {
+        if (this.isDisabled() || event.button !== 0) {
+            return;
+        }
+
+        if (this.rootContext.hasTriggerInteractionHandler()) {
+            return;
+        }
+
+        if (
+            this.openOnHover() &&
+            this.rootContext.isOpen() &&
+            this.rootContext.lastOpenChangeReason() === 'trigger-hover'
+        ) {
+            return;
+        }
+
+        const wasOpen = this.rootContext.isOpen();
+        this.clearMouseUpGuard();
+        this.ignoreNextClick = 'mouse';
+        this.openedByHover = false;
+        this.rootContext.toggle('trigger-press', event);
+
+        if (!wasOpen && this.rootContext.isOpen()) {
+            this.armMouseUpGuard(event.currentTarget as HTMLElement);
+        }
+    }
+
+    protected handleClick(event: MouseEvent): void {
         if (this.isDisabled()) {
             return;
         }
 
+        const wasOpen = this.rootContext.isOpen();
+
         if (this.rootContext.handleTriggerInteraction({ type: 'click' })) {
+            if (event.detail === 0 && !wasOpen && this.rootContext.isOpen()) {
+                this.restoreKeyboardPopupFocus();
+            }
+            return;
+        }
+
+        if (
+            this.ignoreNextClick &&
+            ((this.ignoreNextClick === 'mouse' && event.detail > 0) ||
+                (this.ignoreNextClick === 'keyboard' && event.detail === 0))
+        ) {
+            if (this.ignoreNextClick === 'keyboard') {
+                this.restoreKeyboardPopupFocus();
+            }
+            this.ignoreNextClick = null;
             return;
         }
 
         this.openedByHover = false;
-        this.rootContext.toggle();
+        this.rootContext.toggle('trigger-press', event);
+        if (event.detail === 0 && !wasOpen && this.rootContext.isOpen()) {
+            this.restoreKeyboardPopupFocus();
+        }
     }
 
     protected handleArrowDown(event: Event): void {
@@ -215,12 +269,30 @@ export class RdxMenuTrigger {
     }
 
     protected handleKeyboardToggle(event: Event): void {
-        if (this.nativeButtonState()) {
+        const wasOpen = this.rootContext.isOpen();
+        const interactionType = event instanceof KeyboardEvent && event.key === ' ' ? 'space' : 'enter';
+
+        if (this.nativeButtonState() && !this.rootContext.hasTriggerInteractionHandler()) {
+            return;
+        }
+
+        if (this.rootContext.handleTriggerInteraction({ type: interactionType, event })) {
+            event.preventDefault();
+            this.ignoreNextClick = this.nativeButtonState() ? 'keyboard' : null;
+            this.openedByHover = false;
+            if (!wasOpen && this.rootContext.isOpen()) {
+                this.restoreKeyboardPopupFocus();
+            }
             return;
         }
 
         event.preventDefault();
-        this.handleClick();
+        this.ignoreNextClick = this.nativeButtonState() ? 'keyboard' : null;
+        this.openedByHover = false;
+        this.rootContext.toggle('trigger-press', event);
+        if (!wasOpen && this.rootContext.isOpen()) {
+            this.restoreKeyboardPopupFocus();
+        }
     }
 
     protected handlePointerEnter(event: PointerEvent): void {
@@ -239,14 +311,14 @@ export class RdxMenuTrigger {
         const delay = this.delay() ?? 100;
         if (delay <= 0) {
             this.openedByHover = true;
-            this.rootContext.show();
+            this.rootContext.show('first', 'trigger-hover');
             return;
         }
 
         this.openTimer = setTimeout(() => {
             this.openTimer = undefined;
             this.openedByHover = true;
-            this.rootContext.show();
+            this.rootContext.show('first', 'trigger-hover');
         }, delay);
     }
 
@@ -286,5 +358,56 @@ export class RdxMenuTrigger {
     private clearCloseTimer(): void {
         clearTimeout(this.closeTimer);
         this.closeTimer = undefined;
+    }
+
+    private armMouseUpGuard(trigger: HTMLElement): void {
+        this.rootContext.setAllowMouseUpTrigger(false);
+        this.allowMouseUpTriggerTimer = setTimeout(() => {
+            this.allowMouseUpTriggerTimer = undefined;
+            this.rootContext.setAllowMouseUpTrigger(true);
+        }, 200);
+
+        trigger.ownerDocument.addEventListener('mouseup', this.handleDocumentMouseUp, { once: true });
+    }
+
+    private clearMouseUpGuard(): void {
+        clearTimeout(this.allowMouseUpTriggerTimer);
+        this.allowMouseUpTriggerTimer = undefined;
+        this.rootContext.setAllowMouseUpTrigger(false);
+        this.elementRef.nativeElement.ownerDocument.removeEventListener('mouseup', this.handleDocumentMouseUp);
+    }
+
+    private restoreKeyboardPopupFocus(attempt = 0): void {
+        const maxAttempts = 3;
+        const ownerDocument = this.elementRef.nativeElement.ownerDocument;
+
+        const run = () => {
+            if (!this.rootContext.isOpen()) {
+                return;
+            }
+
+            const popup = this.rootContext.popupElement();
+            const activeElement = ownerDocument.activeElement;
+
+            if (!popup || getFocusableMenuItems(popup).length === 0) {
+                if (attempt < maxAttempts) {
+                    this.restoreKeyboardPopupFocus(attempt + 1);
+                }
+                return;
+            }
+
+            if (activeElement && popup.contains(activeElement)) {
+                return;
+            }
+
+            const firstItem = getFocusableMenuItems(popup)[0];
+            (firstItem ?? popup).focus({ preventScroll: true });
+        };
+
+        if (this.isBrowser) {
+            requestAnimationFrame(run);
+        } else {
+            setTimeout(run);
+        }
     }
 }

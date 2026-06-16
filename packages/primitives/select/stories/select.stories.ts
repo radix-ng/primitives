@@ -91,3 +91,16 @@ export const AlignedPositionWithScroll: Story = {
         `
     })
 };
+
+/**
+ * A **non-modal** item-aligned select. Base UI still locks page scroll for an item-aligned popup even
+ * when `modal === false` (the popup overlays the trigger, so the page must not scroll behind it).
+ */
+export const AlignedPositionNonModal: Story = {
+    parameters: source(alignedPositionSource),
+    render: () => ({
+        template: html`
+            <select-aligned-position [modal]="false" />
+        `
+    })
+};

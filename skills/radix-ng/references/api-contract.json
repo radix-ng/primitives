@@ -344,7 +344,7 @@
           "exportAs": "rdxAutocompleteClear",
           "description": "Clears the input value. Hidden when there is nothing to clear.",
           "hostDirectives": [
-            "RdxDismissableLayerBranch"
+            "RdxFloatingInsideElement"
           ],
           "inputs": [],
           "outputs": []
@@ -405,7 +405,7 @@
           "description": "The autocomplete text input. Holds DOM focus at all times; the highlighted option is referenced via\n`aria-activedescendant`. In `both` / `inline` modes it shows the active item's inline completion\nwith the completed suffix selected. Integrates with Field for labeling and validation state.",
           "hostDirectives": [
             "RdxPopperAnchor",
-            "RdxDismissableLayerBranch"
+            "RdxFloatingInsideElement"
           ],
           "inputs": [
             {
@@ -490,7 +490,7 @@
           "description": "The popup surface. Composes the popper content (for `data-side` / `data-align`) and a dismissable\nlayer for outside-dismiss. It does **not** trap focus — focus stays in the input throughout. When\nthe input lives **inside** the popup (the \"input in popup\" / emoji-picker pattern), it moves focus\nto the input once the popup is positioned.",
           "hostDirectives": [
             "RdxPopperContent",
-            "RdxDismissableLayer"
+            "RdxFloatingNodeRegistration"
           ],
           "inputs": [],
           "outputs": []
@@ -1474,7 +1474,7 @@
           "exportAs": "rdxComboboxChips",
           "description": "Container for the selected-value chips in `multiple` mode. Sits before the input and coordinates\narrow-key navigation across the chips (the chips themselves handle the key events). Uses\n`role=\"toolbar\"` (Base UI): it keeps NVDA in focus mode while arrow-navigating the chips, where a\nplain `list` would drop into browse mode.",
           "hostDirectives": [
-            "RdxDismissableLayerBranch"
+            "RdxFloatingInsideElement"
           ],
           "inputs": [],
           "outputs": []
@@ -1485,7 +1485,7 @@
           "exportAs": "rdxComboboxClear",
           "description": "Clears the current selection and the input text. Hidden when there is nothing to clear.",
           "hostDirectives": [
-            "RdxDismissableLayerBranch"
+            "RdxFloatingInsideElement"
           ],
           "inputs": [
             {
@@ -1543,7 +1543,7 @@
           "description": "The combobox text input. Holds DOM focus at all times; the highlighted option is referenced via\n`aria-activedescendant`. Integrates with Field for labeling, description, and validation state.",
           "hostDirectives": [
             "RdxPopperAnchor",
-            "RdxDismissableLayerBranch"
+            "RdxFloatingInsideElement"
           ],
           "inputs": [
             {
@@ -1622,7 +1622,7 @@
           "description": "The popup surface. Composes the popper content (for `data-side` / `data-align`) and a dismissable\nlayer for outside-dismiss. It does **not** trap focus — focus stays in the input throughout.",
           "hostDirectives": [
             "RdxPopperContent",
-            "RdxDismissableLayer"
+            "RdxFloatingNodeRegistration"
           ],
           "inputs": [],
           "outputs": []
@@ -1950,7 +1950,7 @@
           "exportAs": "rdxComboboxTrigger",
           "description": "Toggles the combobox popup. Its semantics depend on the layout (Base UI's `inputInsidePopup`):\n\n- **Input outside the popup** (default): a `tabindex=\"-1\"` toggle button (`aria-haspopup=\"listbox\"`)\n  that never steals focus from the input — `Tab` lands directly on the input.\n- **Input inside the popup** (e.g. a command palette / emoji picker): the trigger becomes the primary\n  `role=\"combobox\"` control — `tabindex=\"0\"` (reachable via `Tab`), `aria-haspopup=\"dialog\"`, and\n  `ArrowDown`/`ArrowUp` open the popup (which moves focus to the inner input and highlights an item).\n\nThe trigger stays `Tab`-reachable by default and is demoted to `tabindex=\"-1\"` only once an input is\ndetected *outside* the popup — so a trigger whose input lives in a not-yet-opened popup is focusable\nfrom the first render (`inputLayout` is `unknown` until that input mounts).",
           "hostDirectives": [
-            "RdxDismissableLayerBranch"
+            "RdxFloatingInsideElement"
           ],
           "inputs": [],
           "outputs": []
@@ -2003,6 +2003,33 @@
               "type": "number",
               "default": "500",
               "description": "How long (ms) a touch must be held before the menu opens."
+            }
+          ],
+          "outputs": []
+        }
+      ]
+    },
+    {
+      "slug": "core",
+      "section": "components",
+      "parts": [
+        {
+          "directive": "RdxFloatingNodeRegistration",
+          "selector": "[rdxFloatingNode]",
+          "exportAs": "rdxFloatingNode",
+          "description": "Registers a {@link RdxFloatingNode} into the shared {@link RdxFloatingTree} for its DI subtree and\npropagates the registration handle to descendants — the reusable Angular counterpart of mounting a\nBase UI `<FloatingNode>` (ADR 0015 §1, Phase 1). It is the **single** place that runs the handle\npattern; the dismissal capability (ADR 0015) and the focus manager (ADR 0017) **consume** the node /\ncontext / tree it registers, they do not re-implement registration.\n\n**What it owns vs. what it reads.** It provides its own {@link RdxFloatingRegistrationContext} (so\ndescendants resolve it with `skipSelf`) and registers/unregisters a node reactively. It does **not**\ncreate the tree or the root context — a coordination-boundary primitive root supplies those\n(`provideFloatingTree()` inherit-or-create + `provideFloatingRootContext()`); this directive injects\nthem. With **no** enclosing tree it runs **node-optional** (`status() === 'detached'`, `node() ===\nnull`), reading its context directly — the standalone `rdxDismissableLayer` case.\n\n**Resolution (per {@link RdxFloatingParentOverride}).** Only an `inherit` node depends on the DI\nparent, so only it waits on a `pending` parent; `root` / `node` overrides are independent and register\nimmediately. The node carries the injected {@link RDX_FLOATING_ROOT_CONTEXT} (or `null` for a\ncontextless intermediate). All teardown (re-resolution **and** destroy) unregisters the node and\nreverts the handle.",
+          "inputs": [
+            {
+              "name": "externalTree",
+              "type": "RdxFloatingTree | null",
+              "default": "null",
+              "description": "Explicit tree for detached sibling composition — Base UI's `externalTree`."
+            },
+            {
+              "name": "parentOverride",
+              "type": "RdxFloatingParentOverride",
+              "default": "{ kind: 'inherit' }",
+              "description": "How this node's logical parent is resolved. Defaults to `inherit` (nearest DI ancestor)."
             }
           ],
           "outputs": []
@@ -2222,8 +2249,15 @@
           "directive": "RdxDialogBackdrop",
           "selector": "[rdxDialogBackdrop]",
           "exportAs": "rdxDialogBackdrop",
-          "description": "An overlay displayed beneath the dialog popup.",
-          "inputs": [],
+          "description": "An overlay displayed beneath the dialog popup.\n\nDecorative-only, so it carries `role=\"presentation\"` (Base UI `DialogBackdrop`). By default a **nested**\ndialog renders no backdrop — the parent's already dims the page; stacking a second one double-darkens\nand intercepts the parent's outside-press. Set `forceRender` to opt back in.",
+          "inputs": [
+            {
+              "name": "forceRender",
+              "type": "boolean",
+              "default": "false",
+              "description": "Render the backdrop even for a nested dialog (off by default, matching Base UI)."
+            }
+          ],
           "outputs": []
         },
         {
@@ -2246,13 +2280,34 @@
           "directive": "RdxDialogPopup",
           "selector": "[rdxDialogPopup]",
           "exportAs": "rdxDialogPopup",
-          "description": "A container for the dialog contents.",
+          "description": "A container for the dialog contents.\n\n**ADR 0015/0017 Phase-4 migration — Dialog is the PILOT cutover onto the new floating dismissal +\nfocus engine. Browser-verified** by `apps/visual-regression/tests/dialog.behavior.spec.ts` (trap,\ninitial / return focus, Escape / outside-press / focus-out dismissal, nested-Escape deepest-first,\nbackdrop-not-marked).\n\n**Mapping (legacy → new):**\n- `RdxDismissableLayer` (legacy) → `RdxFloatingNodeRegistration` (registers the tree node) +\n  `RdxDismiss` (Escape / outside-press; reads the root context + node).\n- `RdxFocusScope` (direct) → `RdxFloatingFocusManager` (composes the reworked focus scope; trap +\n  markOthers + close-on-focus-out), driven by `provideFloatingFocusManagerConfig`.\n- `disableOutsidePointerEvents` → the focus manager's `inert` pass marks outside elements\n  non-interactive for a modal (finding #4), scoped to siblings of the popup's ancestor chain instead\n  of a global `body { pointer-events: none }` lock — so the popup needs no `pointer-events: auto`.\n- focus-out close moved from the dismissal capability (`focusOutside: () => false`) to the manager\n  (`manager.focusOut`), per ADR 0017 §3.\n- `isEventOnTrigger` preventDefault → removed: the trigger is in `context.triggers`, so the engine\n  treats a press/focus on it as **inside** (no close-then-reopen).\n\n**Parity notes:**\n- **Lifecycle split (resolved 2026-06-16):** `enabled` is `open || transitionStatus === 'ending'`, so\n  the trap / return-focus machinery survives the exit animation, while the manager's marker + isolation\n  passes additionally key off `open` and release at close-start (Base UI `markOthers` gating).\n- **`trap-focus` split:** the manager traps focus for `modal === true` and `'trap-focus'`, but applies\n  real `inert` isolation only for `modal === true`, matching Base UI's public contract that\n  `modal=\"trap-focus\"` leaves outside pointer interaction enabled.\n- **`returnFocus` orchestration (resolved 2026-06-16):** the manager now owns the return-focus *target*\n  via the focus scope's `returnFocus` config seam (the scope owns the *timing* — its queued post-unmount\n  frame). Dialog leaves it at the default (`returnFocus: true` → return to the element focused before\n  open), so behavior is unchanged; a consumer can now also pass `false` / an element / a callback.",
           "hostDirectives": [
-            "RdxDismissableLayer",
-            "RdxFocusScope"
+            "RdxFloatingNodeRegistration",
+            "RdxFloatingFocusManager"
           ],
           "inputs": [],
-          "outputs": []
+          "outputs": [
+            {
+              "name": "escapeKeyDown",
+              "type": "KeyboardEvent",
+              "description": "Event handler called when the escape key is down. Can be prevented."
+            },
+            {
+              "name": "focusOutside",
+              "type": "FocusEvent",
+              "description": "Event handler called when focus moves outside of the popup. Can be prevented."
+            },
+            {
+              "name": "interactOutside",
+              "type": "RdxOutsidePressDomEvent | FocusEvent",
+              "description": "Event handler called when an interaction (pointer / focus) happens outside of the popup."
+            },
+            {
+              "name": "pointerDownOutside",
+              "type": "RdxOutsidePressDomEvent",
+              "description": "Event handler called when a pointerdown event happens outside of the popup. Can be prevented."
+            }
+          ]
         },
         {
           "directive": "RdxDialogPortal",
@@ -2394,55 +2449,12 @@
       "section": "utils",
       "parts": [
         {
-          "directive": "RdxDismissableLayerBranch",
-          "selector": "[rdxDismissableLayerBranch]",
+          "directive": "RdxFloatingInsideElement",
+          "selector": "[rdxFloatingInside]",
+          "exportAs": "rdxFloatingInside",
+          "description": "Marks its host as **inside** the enclosing floating layer (ADR 0015): a pointer / focus interaction on\nit does not count as \"outside\", so it never dismisses the popup. It registers the host into the\nfloating root context's trigger registry — {@link RdxDismiss}'s `isInside` check reads it.\n\nUse it for an element that lives **outside** the popup DOM but logically belongs to the layer — e.g. a\nCombobox input / trigger / chips / clear button that keeps focus (or is clicked) while the listbox is\nopen.",
           "inputs": [],
           "outputs": []
-        },
-        {
-          "directive": "RdxDismissableLayer",
-          "selector": "[rdxDismissableLayer]",
-          "exportAs": "rdxDismissableLayer",
-          "hostDirectives": [
-            "RdxPointerDownOutside",
-            "RdxFocusOutside",
-            "RdxEscapeKeyDown"
-          ],
-          "inputs": [
-            {
-              "name": "disableOutsidePointerEvents",
-              "type": "boolean | undefined",
-              "default": "undefined",
-              "description": "When `true`, hover/focus/click interactions will be disabled on elements outside\nthe `DismissableLayer`. Users will need to click twice on outside elements to\ninteract with them: once to close the `DismissableLayer`, and again to trigger the element."
-            }
-          ],
-          "outputs": [
-            {
-              "name": "dismiss",
-              "type": "void",
-              "description": "Handler called when the `DismissableLayer` should be dismissed"
-            },
-            {
-              "name": "escapeKeyDown",
-              "type": "KeyboardEvent",
-              "description": "Event handler called when the escape key is down.\nCan be prevented."
-            },
-            {
-              "name": "focusOutside",
-              "type": "FocusEvent",
-              "description": "Event handler called when the focus moves outside of the `DismissableLayer`.\nCan be prevented."
-            },
-            {
-              "name": "interactOutside",
-              "type": "PointerEvent | FocusEvent",
-              "description": "Event handler called when an interaction happens outside the `DismissableLayer`.\nSpecifically, when a `pointerdown` event happens outside or focus moves outside of it.\nCan be prevented."
-            },
-            {
-              "name": "pointerDownOutside",
-              "type": "PointerEvent",
-              "description": "Event handler called when a `pointerdown` event happens outside of the `DismissableLayer`.\nCan be prevented."
-            }
-          ]
         },
         {
           "directive": "RdxEscapeKeyDown",
@@ -2996,6 +3008,62 @@
       ]
     },
     {
+      "slug": "floating-focus-manager",
+      "section": "components",
+      "parts": [
+        {
+          "directive": "RdxFloatingFocusManager",
+          "selector": "[rdxFloatingFocusManager]",
+          "exportAs": "rdxFloatingFocusManager",
+          "description": "`RdxFloatingFocusManager` (ADR 0017 Phase 1b skeleton) — the Angular counterpart of Base UI's\n`FloatingFocusManager`. It is a **coordinator** that composes three low-level focus parts (it never\ninherits them, which would re-fuse trap + popup policy): the **reworked {@link RdxFocusScope}** (the\ntrap, via `hostDirectives`), the portal-focus bridge, and owner-`Document` guards. Per ADR 0017 §1/§2\nits policies are **independent**, none derived from `modal`.\n\n**This skeleton wires the composition + lifecycle gates:**\n- `enabled` — the manager's active-ness (`mounted && !hover-open`). When off, **no trap** (and, later,\n  no aria-hidden / no marker — Phase 2).\n- `modal` → `RdxFocusScope.trapped`: the effective trap is `enabled() && modal()`, pushed into the\n  composed focus scope through its config token (the composition seam).\n- `loop` is forwarded to `RdxFocusScope`.\n- `initialFocus` / `returnFocus` are **orchestrated** here (the §2 policy contract, incl. the\n  interaction-type callback forms): `initialFocus` via the scope's `mountAutoFocus` hook, `returnFocus`\n  via the scope's `returnFocus` config seam (resolved at the scope's queued post-unmount frame). The\n  portal-focus bridge remains a later-phase dependency.",
+          "hostDirectives": [
+            "RdxFocusScope"
+          ],
+          "inputs": [
+            {
+              "name": "closeOnFocusOut",
+              "default": "undefined",
+              "description": "Whether a **non-modal** popup closes when focus leaves to an unrelated node (Base UI\n`closeOnFocusOut`, default `true`; Dialog sets it to `!disablePointerDismissal`). Modal popups\nnever close on focus-out (the trap keeps focus in)."
+            },
+            {
+              "name": "enabled",
+              "default": "undefined",
+              "description": "Manager active-ness (ADR 0017 §2): the popup is mounted **and** not hover-opened."
+            },
+            {
+              "name": "inert",
+              "default": "undefined",
+              "description": "Whether outside elements receive the real `inert` attribute. Defaults to the effective `modal` value,\nbut primitives can split focus trapping from pointer/AT isolation (Base UI `modal=\"trap-focus\"`)."
+            },
+            {
+              "name": "initialFocus",
+              "type": "RdxInitialFocus | undefined",
+              "default": "undefined",
+              "description": "Where focus goes when the popup opens (ADR 0017 §2)."
+            },
+            {
+              "name": "modal",
+              "default": "undefined",
+              "description": "Modal popup → focus trap. Combined with `enabled` to drive the composed `RdxFocusScope`."
+            },
+            {
+              "name": "returnFocus",
+              "type": "RdxReturnFocus | undefined",
+              "default": "undefined",
+              "description": "Where focus returns when the popup closes (ADR 0017 §2)."
+            }
+          ],
+          "outputs": [
+            {
+              "name": "focusOut",
+              "type": "FocusEvent",
+              "description": "Emitted when focus leaves a non-modal popup to a node **unrelated** to the floating tree (ADR 0017\n§3) — the consumer should close the popup. This is the focus-manager's focus-out close (it reads\nthe shared tree), replacing the dismissal capability's focus-out at the ADR 0015 Phase-4 cutover."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "slug": "focus-guards",
       "section": "components",
       "parts": [
@@ -3380,11 +3448,32 @@
           "description": "A container for the menu contents.",
           "hostDirectives": [
             "RdxPopperContent",
-            "RdxDismissableLayer",
-            "RdxFocusScope"
+            "RdxFloatingNodeRegistration",
+            "RdxFloatingFocusManager"
           ],
           "inputs": [],
-          "outputs": []
+          "outputs": [
+            {
+              "name": "escapeKeyDown",
+              "type": "KeyboardEvent",
+              "description": "Event handler called when the escape key is pressed. Can be prevented."
+            },
+            {
+              "name": "focusOutside",
+              "type": "FocusEvent",
+              "description": "Event handler called when focus moves outside of the popup. Can be prevented."
+            },
+            {
+              "name": "interactOutside",
+              "type": "RdxOutsidePressDomEvent | FocusEvent",
+              "description": "Event handler called when an interaction happens outside of the popup. Can be prevented."
+            },
+            {
+              "name": "pointerDownOutside",
+              "type": "RdxOutsidePressDomEvent",
+              "description": "Event handler called when a pointerdown event happens outside of the popup. Can be prevented."
+            }
+          ]
         },
         {
           "directive": "RdxMenuPortal",
@@ -3607,6 +3696,12 @@
               "description": "Whether the menu is initially open."
             },
             {
+              "name": "dir",
+              "type": "Direction | undefined",
+              "default": "undefined",
+              "description": "Text direction for submenu arrow-key behavior. Inherited by nested submenu roots."
+            },
+            {
               "name": "disabled",
               "type": "boolean",
               "default": "false",
@@ -3645,7 +3740,7 @@
           "outputs": [
             {
               "name": "onOpenChange",
-              "type": "boolean",
+              "type": "RdxMenuOpenChange",
               "description": "Emits when the open state changes."
             },
             {
@@ -3672,8 +3767,7 @@
           "exportAs": "rdxMenuSubTrigger",
           "description": "An item inside a parent menu that opens a nested submenu.\n\nPlace this inside `ng-container rdxMenuRoot` that wraps both the trigger\nand the submenu positioner. The inner root provides the submenu context;\nthe outer popup discovers this element via `[rdxMenuSubTrigger]` in its\nITEM_SELECTOR and includes it in keyboard navigation.",
           "hostDirectives": [
-            "RdxPopperAnchor",
-            "RdxDismissableLayerBranch"
+            "RdxPopperAnchor"
           ],
           "inputs": [
             {
@@ -3993,11 +4087,26 @@
           "selector": "[rdxNavigationMenuPopup]",
           "description": "The shared container for the active item's content.",
           "hostDirectives": [
-            "RdxPopperContent",
-            "RdxDismissableLayer"
+            "RdxPopperContent"
           ],
           "inputs": [],
-          "outputs": []
+          "outputs": [
+            {
+              "name": "escapeKeyDown",
+              "type": "KeyboardEvent",
+              "description": "Event handler called when the escape key is down. Can be prevented."
+            },
+            {
+              "name": "focusOutside",
+              "type": "FocusEvent",
+              "description": "Event handler called when focus moves outside the popup. Can be prevented."
+            },
+            {
+              "name": "pointerDownOutside",
+              "type": "RdxOutsidePressDomEvent",
+              "description": "Event handler called when a pointerdown event happens outside the popup. Can be prevented."
+            }
+          ]
         },
         {
           "directive": "RdxNavigationMenuPortal",
@@ -4113,7 +4222,8 @@
           "exportAs": "rdxNavigationMenuRoot",
           "description": "Groups all parts of the navigation menu.\n\nHolds the shared open state: `value` identifies the currently open item, and the menu is open\nwhenever `value` is non-null. A single popup (Portal → Positioner → Popup → Viewport) is shared\nbetween every item and anchored to the active trigger.",
           "hostDirectives": [
-            "RdxPopper"
+            "RdxPopper",
+            "RdxFloatingNodeRegistration"
           ],
           "inputs": [
             {
@@ -4587,14 +4697,35 @@
         {
           "directive": "RdxPopoverPopup",
           "selector": "[rdxPopoverPopup]",
-          "description": "A container for the popover contents.",
+          "description": "A container for the popover contents.\n\n**ADR 0015/0017 Phase-4 migration** onto the new floating dismissal + focus engine (same pattern as\nDialog; browser-verified via `popover.behavior` Playwright). Popover-specific:\n- **Hover-open disables the manager** (`enabled = isOpen && !isHoverActive`) — Base UI parity\n  (`disabled={!mounted || openReason === triggerHover}`); a hover-opened popover does not trap / mark.\n  (The legacy only suppressed auto-focus while still trapping — that Radix divergence is dropped.)\n- Trap = `'trap-focus' || (modal === true && hasPopupClose())`; scroll lock + real outside `inert`\n  isolation key off the full modal (`modal === true`).\n- No `disablePointerDismissal` — outside-press + focus-out always close.\n\nNote: a positioned popover does **not** auto-focus into the popup on open (pre-existing — the legacy\nbehaved the same; verified). The trap holds focus once it is inside. Auto-focus-on-open + redirecting a\nTab from the trigger into the popup needs the deferred portal-focus bridge / guards (ADR 0017 §6a).",
           "hostDirectives": [
             "RdxPopperContent",
-            "RdxDismissableLayer",
-            "RdxFocusScope"
+            "RdxFloatingNodeRegistration",
+            "RdxFloatingFocusManager"
           ],
           "inputs": [],
-          "outputs": []
+          "outputs": [
+            {
+              "name": "escapeKeyDown",
+              "type": "KeyboardEvent",
+              "description": "Event handler called when the escape key is down. Can be prevented."
+            },
+            {
+              "name": "focusOutside",
+              "type": "FocusEvent",
+              "description": "Event handler called when focus moves outside of the popup. Can be prevented."
+            },
+            {
+              "name": "interactOutside",
+              "type": "RdxOutsidePressDomEvent | FocusEvent",
+              "description": "Event handler called when an interaction (pointer / focus) happens outside of the popup."
+            },
+            {
+              "name": "pointerDownOutside",
+              "type": "RdxOutsidePressDomEvent",
+              "description": "Event handler called when a pointerdown event happens outside of the popup. Can be prevented."
+            }
+          ]
         },
         {
           "directive": "RdxPopoverPortal",
@@ -4998,13 +5129,34 @@
         {
           "directive": "RdxPreviewCardPopup",
           "selector": "[rdxPreviewCardPopup]",
-          "description": "A container for the preview-card contents.",
+          "description": "A container for the preview-card contents.\n\n**ADR 0015 migration** onto the new floating dismissal engine (dismissal-only — a preview-card has\nno focus manager, ADR 0017 §1). Escape, an outside press, and a focus-out all close it (the legacy's\ntrigger-press preventDefault is now automatic: the trigger is the registered reference, so a press on\nit is \"inside\" and never fires `pointerDownOutside`). A focus-out while a pointer is held on the\ntrigger is still vetoed.",
           "hostDirectives": [
             "RdxPopperContent",
-            "RdxDismissableLayer"
+            "RdxFloatingNodeRegistration"
           ],
           "inputs": [],
-          "outputs": []
+          "outputs": [
+            {
+              "name": "escapeKeyDown",
+              "type": "KeyboardEvent",
+              "description": "Event handler called when the escape key is down. Can be prevented."
+            },
+            {
+              "name": "focusOutside",
+              "type": "FocusEvent",
+              "description": "Event handler called when focus moves outside of the popup. Can be prevented."
+            },
+            {
+              "name": "interactOutside",
+              "type": "RdxOutsidePressDomEvent | FocusEvent",
+              "description": "Event handler called when an interaction happens outside of the popup. Can be prevented."
+            },
+            {
+              "name": "pointerDownOutside",
+              "type": "RdxOutsidePressDomEvent",
+              "description": "Event handler called when a pointerdown event happens outside of the popup. Can be prevented."
+            }
+          ]
         },
         {
           "directive": "RdxPreviewCardPortal",
@@ -5681,11 +5833,22 @@
           "hostDirectives": [
             "RdxPopperContent",
             "RdxFocusScope",
-            "RdxDismissableLayer",
+            "RdxFloatingNodeRegistration",
             "RdxCollectionProvider"
           ],
           "inputs": [],
-          "outputs": []
+          "outputs": [
+            {
+              "name": "escapeKeyDown",
+              "type": "KeyboardEvent",
+              "description": "Event handler called when the escape key is down.\nCan be prevented."
+            },
+            {
+              "name": "pointerDownOutside",
+              "type": "RdxOutsidePressDomEvent",
+              "description": "Event handler called when a `pointerdown` event happens outside of the popup.\nCan be prevented."
+            }
+          ]
         },
         {
           "directive": "RdxSelectPortal",
@@ -7124,9 +7287,9 @@
         {
           "directive": "RdxTooltipPositioner",
           "selector": "[rdxTooltipPositioner]",
-          "description": "Positions the tooltip popup against its trigger (or a custom anchor).\n\nA \"thin\" positioner (ADR 0012): it inherits the popper positioning surface (inputs, `placed`\noutput, unified vars + placement attrs) from {@link RdxPopperContentWrapper} and adds tooltip's own\nconcerns — Base UI-aligned defaults (`side: 'top'`) via the config provider, dismiss handling\n(composing {@link RdxDismissableLayer}), the cursor-follow pointer-through behavior (via the\ninherited `nonInteractive` signal), the open/closed state attributes, and the hover grace area.",
+          "description": "Positions the tooltip popup against its trigger (or a custom anchor).\n\nA \"thin\" positioner (ADR 0012): it inherits the popper positioning surface (inputs, `placed`\noutput, unified vars + placement attrs) from {@link RdxPopperContentWrapper} and adds tooltip's own\nconcerns — Base UI-aligned defaults (`side: 'top'`) via the config provider, dismiss handling\n(ADR 0015 — inline {@link RdxDismiss} on the shared floating tree, dismissal-only with\nno focus manager), the cursor-follow pointer-through behavior (via the inherited `nonInteractive`\nsignal), the open/closed state attributes, and the hover grace area.",
           "hostDirectives": [
-            "RdxDismissableLayer"
+            "RdxFloatingNodeRegistration"
           ],
           "inputs": [
             {
@@ -7207,6 +7370,16 @@
             }
           ],
           "outputs": [
+            {
+              "name": "escapeKeyDown",
+              "type": "KeyboardEvent",
+              "description": "Event handler called when the escape key is down. Can be prevented."
+            },
+            {
+              "name": "pointerDownOutside",
+              "type": "RdxOutsidePressDomEvent",
+              "description": "Event handler called when a `pointerdown` event happens outside of the popup. Can be prevented."
+            },
             {
               "name": "placed",
               "type": "void",

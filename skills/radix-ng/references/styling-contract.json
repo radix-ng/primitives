@@ -518,10 +518,10 @@
       "name": "Dismissable Layer",
       "slug": "dismissable-layer",
       "section": "utils",
-      "description": "Detects interactions outside a layer and provides the low-level behavior used by dialogs, popovers, and menus.",
+      "description": "Dismissable Layer",
       "doc": "radix-ng-examples/references/utils/dismissable-layer.md",
       "storybook": "https://radix-ng.com/?path=/docs/primitives-dismissable-layer--docs",
-      "anatomy": "<div (dismiss)=\"close()\" rdxDismissableLayer>\n  Layer content\n</div>",
+      "anatomy": "",
       "dataAttributes": []
     },
     {

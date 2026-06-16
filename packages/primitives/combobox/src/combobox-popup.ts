@@ -1,6 +1,11 @@
-import { afterRenderEffect, DestroyRef, Directive, ElementRef, inject } from '@angular/core';
-import { useScrollLock } from '@radix-ng/primitives/core';
-import { provideRdxDismissableLayerConfig, RdxDismissableLayer } from '@radix-ng/primitives/dismissable-layer';
+import { afterRenderEffect, computed, DestroyRef, Directive, ElementRef, inject } from '@angular/core';
+import {
+    RDX_FLOATING_REGISTRATION,
+    RDX_FLOATING_ROOT_CONTEXT,
+    RdxFloatingNodeRegistration,
+    useAnchoredScrollLock
+} from '@radix-ng/primitives/core';
+import { RdxDismiss } from '@radix-ng/primitives/dismissable-layer';
 import { injectPopperContentWrapperContext, RdxPopperContent } from '@radix-ng/primitives/popper';
 import { injectComboboxRootContext } from './combobox-root';
 
@@ -13,11 +18,7 @@ import { injectComboboxRootContext } from './combobox-root';
 @Directive({
     selector: '[rdxComboboxPopup]',
     exportAs: 'rdxComboboxPopup',
-    hostDirectives: [RdxPopperContent, RdxDismissableLayer],
-    providers: [
-        // In modal mode, make content outside the popup inert (Base UI's `modal`).
-        provideRdxDismissableLayerConfig(() => ({ disableOutsidePointerEvents: injectComboboxRootContext().modal }))
-    ],
+    hostDirectives: [RdxPopperContent, RdxFloatingNodeRegistration],
     host: {
         // Base UI: a `dialog` (focusable, tabindex -1) when the input lives inside the popup, otherwise
         // a presentational wrapper around the `listbox` (the List part owns the listbox role).
@@ -33,14 +34,24 @@ import { injectComboboxRootContext } from './combobox-root';
 })
 export class RdxComboboxPopup {
     protected readonly rootContext = injectComboboxRootContext();
-    private readonly dismissableLayer = inject(RdxDismissableLayer);
+    private readonly floatingContext = inject(RDX_FLOATING_ROOT_CONTEXT);
+    private readonly registration = inject(RDX_FLOATING_REGISTRATION, { optional: true });
     private readonly popper = injectPopperContentWrapperContext();
     private readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
     constructor() {
-        // The popup mounts only while open, so locking on `modal` locks scroll for as long as a modal
-        // popup is open and releases it on close.
-        useScrollLock(this.rootContext.modal);
+        // Activation policy (ADR 0016 §2 + §3): lock page scroll while a modal popup is OPEN. The gate
+        // keys on `open` (not mounted), so the lock releases at close-start — before the exit animation
+        // finishes — even though the popup stays mounted through it. For a **touch** open the anchored
+        // helper only locks when the popup is effectively viewport-width, so a small dropdown stays
+        // swipe-to-dismissable on mobile (§3).
+        useAnchoredScrollLock(
+            computed(() => this.rootContext.open() && this.rootContext.modal()),
+            {
+                touchOpen: () => this.rootContext.openedByTouch(),
+                element: () => this.element
+            }
+        );
 
         // The popup's animation determines when the open/close transition (onOpenChangeComplete) is done.
         const unregister = this.rootContext.registerTransitionElement(this.element);
@@ -51,10 +62,19 @@ export class RdxComboboxPopup {
             this.rootContext.setPopupMounted(false);
         });
 
-        // The input keeps focus while the popup is open; it is registered as a layer branch, so
-        // focus/pointer interactions on it don't count as "outside" and won't self-dismiss. Escape
-        // is handled by the input (which calls preventDefault), so the layer won't dismiss for it.
-        this.dismissableLayer.dismiss.subscribe(() => this.rootContext.closePopup(true));
+        // The popup is this layer's floating element (the inside surface for containment checks).
+        this.floatingContext.setFloatingElement(this.element);
+
+        // Dismissal (ADR 0015): an outside press, or focus leaving everything, closes the combobox. The
+        // input / trigger / chips / clear are registered as "inside" (RdxFloatingInsideElement), so the
+        // input keeping focus — or a press on those parts — never self-dismisses. Escape is owned by the
+        // input (it preventDefaults + closes), so the capability does not handle it (`escapeKey: false`).
+        new RdxDismiss(this.floatingContext, () => this.registration?.node() ?? null, {
+            escapeKey: () => false,
+            outsidePress: () => true,
+            focusOutside: () => true,
+            onDismiss: () => this.rootContext.closePopup(true)
+        });
 
         // For the "input inside the popup" pattern, move focus to the input once the popup is
         // positioned. Use `afterRenderEffect` (not `effect`): when `isPositioned` flips true the

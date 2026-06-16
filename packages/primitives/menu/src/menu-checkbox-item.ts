@@ -48,6 +48,7 @@ const checkboxItemContextFactory = (): RdxMenuCheckboxItemContext => {
         '(blur)': 'onBlur()',
         '(pointermove)': 'onPointerMove($event)',
         '(pointerleave)': 'onPointerLeave($event)',
+        '(mouseup)': 'onMouseUp($event)',
         '(click)': 'onItemClick()',
         '(keydown.enter)': 'onActivate($event)',
         '(keydown.space)': 'onActivate($event)'
@@ -97,7 +98,7 @@ export class RdxMenuCheckboxItem {
         if (this.rootContext && !this.rootContext.highlightItemOnHover()) {
             return;
         }
-        if (document.activeElement !== this.elementRef.nativeElement) {
+        if (this.elementRef.nativeElement.ownerDocument.activeElement !== this.elementRef.nativeElement) {
             this.elementRef.nativeElement.focus({ preventScroll: true });
         }
     }
@@ -106,7 +107,7 @@ export class RdxMenuCheckboxItem {
         if (event.pointerType !== 'mouse') {
             return;
         }
-        if (document.activeElement === this.elementRef.nativeElement) {
+        if (this.elementRef.nativeElement.ownerDocument.activeElement === this.elementRef.nativeElement) {
             this.elementRef.nativeElement.closest<HTMLElement>('[rdxMenuPopup]')?.focus({ preventScroll: true });
         }
     }
@@ -114,14 +115,23 @@ export class RdxMenuCheckboxItem {
     onItemClick(): void {
         if (this.effectiveDisabled()) return;
         this.toggleChecked();
-        if (this.closeOnClick()) this.rootContext?.close();
+        if (this.closeOnClick()) this.rootContext?.closeEntireMenu();
+    }
+
+    onMouseUp(event: MouseEvent): void {
+        if (this.effectiveDisabled() || event.button !== 0 || !this.rootContext?.allowMouseUpTrigger()) {
+            return;
+        }
+
+        this.rootContext.setAllowMouseUpTrigger(false);
+        this.elementRef.nativeElement.click();
     }
 
     protected onActivate(event: Event): void {
         if (this.effectiveDisabled()) return;
         event.preventDefault();
         this.toggleChecked();
-        if (this.closeOnClick()) this.rootContext?.close();
+        if (this.closeOnClick()) this.rootContext?.closeEntireMenu();
     }
 
     private toggleChecked(): void {

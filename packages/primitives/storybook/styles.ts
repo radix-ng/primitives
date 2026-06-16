@@ -436,7 +436,7 @@ export const demoNavigationMenu = {
     // (ADR 0011 — subtree-aware), so the positioner needs no opacity "decoy" keyframe.
     popup: cn(
         demoCard,
-        'relative overflow-hidden p-0 origin-[var(--transform-origin)]',
+        'relative p-0 origin-[var(--transform-origin)]',
         'data-[starting-style]:animate-navigation-menu-popup-in data-[ending-style]:animate-navigation-menu-popup-out'
     ),
     arrow: demoArrow('text-card'),
@@ -498,13 +498,13 @@ export const demoMenu = {
     ),
     item: cn(
         'relative flex w-full cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none',
-        'data-[highlighted]:bg-muted',
+        'data-[highlighted]:bg-muted data-[highlighted]:outline data-[highlighted]:outline-1 data-[highlighted]:outline-border',
         'data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
     ),
     /** Checkbox / radio items need left padding for the indicator. */
     selectableItem: cn(
         'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none',
-        'data-[highlighted]:bg-muted',
+        'data-[highlighted]:bg-muted data-[highlighted]:outline data-[highlighted]:outline-1 data-[highlighted]:outline-border',
         'data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
     ),
     /** Absolute-positioned span wrapping the check/dot icon. */

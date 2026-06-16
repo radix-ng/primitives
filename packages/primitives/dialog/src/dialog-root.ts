@@ -4,6 +4,7 @@ import {
     DestroyRef,
     Directive,
     effect,
+    ElementRef,
     inject,
     input,
     model,
@@ -15,7 +16,11 @@ import {
 import {
     BooleanInput,
     createContext,
+    createFloatingRootContext,
     injectId,
+    provideFloatingRootContext,
+    provideFloatingTree,
+    RdxFloatingRootContext,
     RdxTransitionStatus,
     useTransitionStatus
 } from '@radix-ng/primitives/core';
@@ -96,7 +101,13 @@ export const [injectRdxDialogRootContext, provideRdxDialogRootContext] = createC
 @Directive({
     selector: '[rdxDialogRoot]',
     exportAs: 'rdxDialogRoot',
-    providers: [provideRdxDialogRootContext(context)]
+    providers: [
+        provideRdxDialogRootContext(context),
+        // New floating foundation (ADR 0015/0017 migration). Inherit-or-create tree so a nested dialog
+        // shares its parent's tree; the per-popup root context bridges open / triggers / reference.
+        provideFloatingTree(),
+        provideFloatingRootContext(() => inject(RdxDialogRoot).floatingContext)
+    ]
 })
 export class RdxDialogRoot {
     private readonly destroyRef = inject(DestroyRef);
@@ -180,7 +191,20 @@ export class RdxDialogRoot {
         () => this.disablePointerDismissal() || this.variant.forcePointerDismissalDisabled
     );
 
+    /**
+     * The shared per-popup floating context (ADR 0015 §1) — `open` mirrors the dialog's open state, the
+     * trigger registry is bridged from {@link registerTrigger}, and the reference / floating elements are
+     * set by the trigger / popup. The new dismissal + focus engines read this once the popup migrates.
+     */
+    readonly floatingContext: RdxFloatingRootContext = createFloatingRootContext({
+        ownerDocument: inject(ElementRef).nativeElement.ownerDocument,
+        open: () => this.open()
+    });
+
     constructor() {
+        // Keep the floating context's reference element in sync with the active trigger.
+        effect(() => this.floatingContext.setReferenceElement(this.trigger() ?? null));
+
         let previousOpen = this.open();
 
         effect(() => {
@@ -283,6 +307,9 @@ export class RdxDialogRoot {
     registerTrigger(id: string, trigger: HTMLElement, payload: () => unknown) {
         this.registeredTriggers.set(id, { element: trigger, payload });
         this.triggers.update((triggers) => (triggers.includes(trigger) ? triggers : [...triggers, trigger]));
+        // Bridge into the floating context's trigger registry — the new dismissal/focus engines read it
+        // for inside-element checks (a press/focus on the trigger counts as inside, ADR 0015 §2).
+        this.floatingContext.triggers.add(trigger);
 
         if (this.triggerId() === id || (!this.trigger() && this.triggerId() === null)) {
             this.trigger.set(trigger);
@@ -295,6 +322,7 @@ export class RdxDialogRoot {
             }
 
             this.triggers.update((triggers) => triggers.filter((candidate) => candidate !== trigger));
+            this.floatingContext.triggers.delete(trigger);
 
             if (!this.destroyRef.destroyed && this.trigger() === trigger) {
                 const next = this.registeredTriggers.entries().next().value;

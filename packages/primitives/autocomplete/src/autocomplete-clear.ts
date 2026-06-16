@@ -1,5 +1,5 @@
 import { computed, Directive, inject } from '@angular/core';
-import { RdxDismissableLayerBranch } from '@radix-ng/primitives/dismissable-layer';
+import { RdxFloatingInsideElement } from '@radix-ng/primitives/dismissable-layer';
 import { RdxAutocompleteRoot } from './autocomplete-root';
 
 /**
@@ -10,7 +10,7 @@ import { RdxAutocompleteRoot } from './autocomplete-root';
 @Directive({
     selector: 'button[rdxAutocompleteClear]',
     exportAs: 'rdxAutocompleteClear',
-    hostDirectives: [RdxDismissableLayerBranch],
+    hostDirectives: [RdxFloatingInsideElement],
     host: {
         type: 'button',
         tabindex: '-1',

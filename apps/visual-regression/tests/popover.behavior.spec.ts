@@ -45,3 +45,119 @@ test.describe('Popover structural portal', () => {
         await expect(page.locator(popup)).toHaveCount(0);
     });
 });
+
+/**
+ * ADR 0015/0017 Phase-4 migration of Popover onto the new floating engine (same pattern as Dialog).
+ * Browser-only: trap / live focus / dismissal need a real browser.
+ */
+test.describe('Popover — new floating engine migration', () => {
+    const focusInsidePopup = (page: Page) =>
+        page.locator(popup).evaluate((el) => el.contains(el.ownerDocument.activeElement));
+
+    test('Escape closes the popover', async ({ page }) => {
+        await gotoStory(page, 'primitives-popover--default');
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        await page.keyboard.press('Escape');
+        await expect(page.locator(popup)).toHaveCount(0);
+    });
+
+    test('an outside press closes the popover', async ({ page }) => {
+        await gotoStory(page, 'primitives-popover--default');
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        // Far top-left corner — outside the trigger and the popup.
+        await page.mouse.click(5, 5);
+        await expect(page.locator(popup)).toHaveCount(0);
+    });
+
+    test('a hover-opened popover does NOT pull focus into the popup (Base UI parity)', async ({ page }) => {
+        await gotoStory(page, 'primitives-popover--hover');
+        await page.locator(trigger).first().hover();
+        await expect(page.locator(popup)).toBeVisible();
+
+        // Hover-open disables the focus manager → no auto-focus into the popup.
+        expect(await focusInsidePopup(page)).toBe(false);
+    });
+
+    test('a modal popover traps focus once it is inside — Tab keeps it in', async ({ page }) => {
+        await gotoStory(page, 'primitives-popover--modal');
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        // Like the legacy, a positioned popover does not auto-focus into the popup on open; once focus
+        // is inside, the trap holds it there on Tab. (Auto-focus-on-open + Tab-from-trigger redirection
+        // would need the deferred portal-focus bridge / guards.)
+        await page.locator('[rdxPopoverClose]').focus();
+        for (let i = 0; i < 4; i++) {
+            await page.keyboard.press('Tab');
+            expect(await focusInsidePopup(page)).toBe(true);
+        }
+    });
+
+    test('releases marker and inert at close-start, before the exit animation finishes', async ({ page }) => {
+        await gotoStory(page, 'primitives-popover--modal');
+
+        // The modal demo popup has no exit animation by default — inject a slow one so the mid-exit
+        // mounted-but-closing window (the presence machine holds it while the keyframe runs) is observable.
+        await page.addStyleTag({
+            content: `@keyframes rdx-test-out { to { opacity: 0 } }
+                [rdxPopoverPopup][data-closed] { animation: rdx-test-out 2000ms forwards }`
+        });
+
+        const rootState = () =>
+            page.locator('#storybook-root').evaluate((el) => ({
+                inert: el.hasAttribute('inert'),
+                marked: el.hasAttribute('data-rdx-floating-inert')
+            }));
+
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+        // A modal popover marks and inerts outside content while open (background isolation), like Dialog.
+        expect(await rootState()).toEqual({ inert: true, marked: true });
+
+        await page.locator('[rdxPopoverClose]').click();
+
+        // Mid-exit: the popup is closing (`data-closed`) but still mounted. Base UI keeps the focus manager
+        // mounted for trap / return-focus, but releases marker + isolation when `open` flips false.
+        await expect(page.locator(popup)).toHaveAttribute('data-closed', '');
+        expect(await rootState()).toEqual({ inert: false, marked: false });
+
+        // Still released after unmount.
+        await expect(page.locator(popup)).toHaveCount(0);
+        expect(await rootState()).toEqual({ inert: false, marked: false });
+    });
+
+    test('releases the scroll lock at close-start, before the exit animation finishes (ADR 0016 §2)', async ({
+        page
+    }) => {
+        await gotoStory(page, 'primitives-popover--modal');
+
+        // Slow the exit so the mid-exit (mounted-but-closing) window is observable without a race.
+        await page.addStyleTag({
+            content: `@keyframes rdx-test-out { to { opacity: 0 } }
+                [rdxPopoverPopup][data-closed] { animation: rdx-test-out 2000ms forwards }`
+        });
+
+        // `useScrollLock` marks `<html>` with `data-rdx-scroll-locked` (strategy-independent).
+        const scrollLocked = () => page.locator('html').evaluate((el) => el.hasAttribute('data-rdx-scroll-locked'));
+
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+        // A modal popover locks page scroll while open.
+        expect(await scrollLocked()).toBe(true);
+
+        await page.locator('[rdxPopoverClose]').click();
+
+        // Mid-exit: the popup is closing (`data-closed`) but still mounted. The scroll lock is already
+        // released because the predicate gates on `open` (not mounted). Base UI parity.
+        await expect(page.locator(popup)).toHaveAttribute('data-closed', '');
+        expect(await scrollLocked()).toBe(false);
+
+        // Still released after unmount.
+        await expect(page.locator(popup)).toHaveCount(0);
+        expect(await scrollLocked()).toBe(false);
+    });
+});

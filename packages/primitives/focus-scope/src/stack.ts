@@ -1,21 +1,30 @@
 import { signal, WritableSignal } from '@angular/core';
 
-export function createGlobalState<T>(factory: () => T): () => T {
-    const state = factory();
-    return () => state;
-}
-
 export interface FocusScopeAPI {
     paused: WritableSignal<boolean>;
     pause(): void;
     resume(): void;
 }
 
-const useFocusStackState = createGlobalState(() => signal<FocusScopeAPI[]>([]));
+/**
+ * The active-scope stack pauses/resumes scopes, so it **is** cross-document coordination state — keyed
+ * per owner `Document` (a `WeakMap`) rather than process-global (ADR 0017 Phase 1a): opening a scope in
+ * document B must not pause document A's scope.
+ */
+const stacksByDocument = new WeakMap<Document, WritableSignal<FocusScopeAPI[]>>();
 
-export function createFocusScopesStack() {
-    /** A stack of focus scopes, with the active one at the top */
-    const stack = useFocusStackState();
+function getFocusStackState(document: Document): WritableSignal<FocusScopeAPI[]> {
+    let state = stacksByDocument.get(document);
+    if (!state) {
+        state = signal<FocusScopeAPI[]>([]);
+        stacksByDocument.set(document, state);
+    }
+    return state;
+}
+
+export function createFocusScopesStack(document: Document) {
+    /** A stack of focus scopes for this document, with the active one at the top */
+    const stack = getFocusStackState(document);
 
     return {
         add(focusScope: FocusScopeAPI) {

@@ -1,7 +1,7 @@
 import { Directive, inject, Signal } from '@angular/core';
 import type { VirtualElement } from '@floating-ui/dom';
 import { createContext } from '@radix-ng/primitives/core';
-import { RdxMenuAutoFocusInput, RdxMenuRoot } from '@radix-ng/primitives/menu';
+import { RdxMenuAutoFocusInput, RdxMenuOpenChangeReason, RdxMenuRoot } from '@radix-ng/primitives/menu';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 
 export interface RdxContextMenuRootContext {
@@ -10,9 +10,9 @@ export interface RdxContextMenuRootContext {
     /** Whether the whole menu is disabled. */
     disabled: Signal<boolean>;
     /** Open the menu anchored at the given viewport coordinates. */
-    openAt: (clientX: number, clientY: number, autoFocus?: RdxMenuAutoFocusInput) => void;
+    openAt: (clientX: number, clientY: number, autoFocus?: RdxMenuAutoFocusInput, event?: Event) => void;
     /** Close the menu. */
-    close: () => void;
+    close: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
 }
 
 export const [injectRdxContextMenuRootContext, provideRdxContextMenuRootContext] =
@@ -23,8 +23,8 @@ const contextFactory = (): RdxContextMenuRootContext => {
     return {
         isOpen: root.menuRoot.open,
         disabled: root.menuRoot.disabled,
-        openAt: (clientX, clientY, autoFocus) => root.openAt(clientX, clientY, autoFocus),
-        close: () => root.menuRoot.close()
+        openAt: (clientX, clientY, autoFocus, event) => root.openAt(clientX, clientY, autoFocus, event),
+        close: (reason, event) => root.menuRoot.close(reason, event)
     };
 };
 
@@ -52,13 +52,21 @@ export class RdxContextMenuRoot {
     readonly menuRoot = inject(RdxMenuRoot);
     private readonly popper = inject(RdxPopper);
 
+    constructor() {
+        // Tell the composed menu root it is a Context Menu, so its per-kind policy (modal focus trap,
+        // backdrop, outside-press grace) differs from a plain dropdown (Base UI `MenuParent.type`).
+        this.menuRoot.markAsContextMenu();
+    }
+
     /**
      * Open the menu with the popup anchored at the given viewport coordinates.
      *
      * `autoFocus` defaults to `'popup'` so a right-click opens with the popup focused but no item
-     * highlighted (matching Base UI's pointer behavior). Pass `'first'` for keyboard opening.
+     * highlighted (matching Base UI's pointer behavior). Pass `'first'` for keyboard opening. `event` is
+     * the originating pointer event (threaded to the menu so a touch long-press is recorded for the
+     * anchored scroll-lock policy, ADR 0016 §3).
      */
-    openAt(clientX: number, clientY: number, autoFocus: RdxMenuAutoFocusInput = 'popup'): void {
+    openAt(clientX: number, clientY: number, autoFocus: RdxMenuAutoFocusInput = 'popup', event?: Event): void {
         if (this.menuRoot.disabled()) {
             return;
         }
@@ -80,6 +88,6 @@ export class RdxContextMenuRoot {
 
         this.popper.anchorOverride.set(anchor);
         // Move focus into the popup so keyboard navigation and outside-dismiss work immediately.
-        this.menuRoot.show(autoFocus);
+        this.menuRoot.show(autoFocus, 'trigger-press', event);
     }
 }

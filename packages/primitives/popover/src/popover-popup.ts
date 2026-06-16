@@ -1,34 +1,55 @@
-import { computed, DestroyRef, Directive, ElementRef, inject } from '@angular/core';
+import { computed, DestroyRef, Directive, ElementRef, inject, output } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
-import { useScrollLock } from '@radix-ng/primitives/core';
-import { provideRdxDismissableLayerConfig, RdxDismissableLayer } from '@radix-ng/primitives/dismissable-layer';
-import { provideRdxFocusScopeConfig, RdxFocusScope } from '@radix-ng/primitives/focus-scope';
+import {
+    RDX_FLOATING_REGISTRATION,
+    RDX_FLOATING_ROOT_CONTEXT,
+    RdxFloatingNodeRegistration,
+    useAnchoredScrollLock
+} from '@radix-ng/primitives/core';
+import { RdxDismiss, RdxOutsidePressDomEvent } from '@radix-ng/primitives/dismissable-layer';
+import {
+    provideFloatingFocusManagerConfig,
+    RdxFloatingFocusManager
+} from '@radix-ng/primitives/floating-focus-manager';
+import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
-import { injectRdxPopoverRootContext, RdxPopoverOpenChangeReason } from './popover-root';
+import { injectRdxPopoverRootContext } from './popover-root';
 
 /**
  * A container for the popover contents.
+ *
+ * **ADR 0015/0017 Phase-4 migration** onto the new floating dismissal + focus engine (same pattern as
+ * Dialog; browser-verified via `popover.behavior` Playwright). Popover-specific:
+ * - **Hover-open disables the manager** (`enabled = isOpen && !isHoverActive`) — Base UI parity
+ *   (`disabled={!mounted || openReason === triggerHover}`); a hover-opened popover does not trap / mark.
+ *   (The legacy only suppressed auto-focus while still trapping — that Radix divergence is dropped.)
+ * - Trap = `'trap-focus' || (modal === true && hasPopupClose())`; scroll lock + real outside `inert`
+ *   isolation key off the full modal (`modal === true`).
+ * - No `disablePointerDismissal` — outside-press + focus-out always close.
+ *
+ * Note: a positioned popover does **not** auto-focus into the popup on open (pre-existing — the legacy
+ * behaved the same; verified). The trap holds focus once it is inside. Auto-focus-on-open + redirecting a
+ * Tab from the trigger into the popup needs the deferred portal-focus bridge / guards (ADR 0017 §6a).
  */
 @Directive({
     selector: '[rdxPopoverPopup]',
-    hostDirectives: [RdxPopperContent, RdxDismissableLayer, RdxFocusScope],
+    hostDirectives: [RdxPopperContent, RdxFloatingNodeRegistration, RdxFloatingFocusManager],
     providers: [
-        provideRdxDismissableLayerConfig(() => {
+        provideFloatingFocusManagerConfig(() => {
             const rootContext = injectRdxPopoverRootContext();
-
             return {
-                disableOutsidePointerEvents: computed(() => rootContext.modal() === true)
-            };
-        }),
-        provideRdxFocusScopeConfig(() => {
-            const rootContext = injectRdxPopoverRootContext();
-
-            return {
-                trapped: computed(
-                    () =>
-                        rootContext.modal() === 'trap-focus' ||
-                        (rootContext.modal() === true && rootContext.hasPopupClose())
-                )
+                modal: () =>
+                    rootContext.modal() === 'trap-focus' ||
+                    (rootContext.modal() === true && rootContext.hasPopupClose()),
+                // Full modal blocks outside pointer interaction; `trap-focus` only traps focus.
+                inert: () => rootContext.modal() === true && rootContext.hasPopupClose(),
+                // Active for the whole MOUNTED lifetime (Base UI `disabled={!mounted}`, not `open`) for
+                // trap/return-focus. Marker + isolation are additionally gated on `open` inside the
+                // manager, so they release at close-start. Still suppressed while hover-opened and for a
+                // closed-but-never-opened mount (no `isOpen`, no `ending` transition).
+                enabled: () =>
+                    (rootContext.isOpen() || rootContext.transitionStatus() === 'ending') &&
+                    !rootContext.isHoverActive()
             };
         })
     ],
@@ -50,84 +71,86 @@ import { injectRdxPopoverRootContext, RdxPopoverOpenChangeReason } from './popov
 })
 export class RdxPopoverPopup {
     protected readonly rootContext = injectRdxPopoverRootContext();
-    private readonly dismissableLayer = inject(RdxDismissableLayer);
+    private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+    private readonly floatingContext = inject(RDX_FLOATING_ROOT_CONTEXT);
+    private readonly registration = inject(RDX_FLOATING_REGISTRATION, { optional: true });
+    private readonly focusManager = inject(RdxFloatingFocusManager);
     private readonly focusScope = inject(RdxFocusScope);
     private readonly wrapper = inject(RdxPopperContentWrapper, { optional: true });
     protected readonly align = computed(() => this.wrapper?.placedAlign());
     protected readonly side = computed(() => this.wrapper?.placedSide());
-    private dismissDetails: { reason: RdxPopoverOpenChangeReason; event: Event } = {
-        reason: 'none',
-        event: new Event('popover.dismiss')
-    };
 
-    /**
-     * Event handler called when the escape key is down. Can be prevented.
-     */
-    readonly escapeKeyDown = outputFromObservable(outputToObservable(this.dismissableLayer.escapeKeyDown));
+    /** Event handler called when the escape key is down. Can be prevented. */
+    readonly escapeKeyDown = output<KeyboardEvent>();
 
-    /**
-     * Event handler called when a pointerdown event happens outside of the popup. Can be prevented.
-     */
-    readonly pointerDownOutside = outputFromObservable(outputToObservable(this.dismissableLayer.pointerDownOutside));
+    /** Event handler called when a pointerdown event happens outside of the popup. Can be prevented. */
+    readonly pointerDownOutside = output<RdxOutsidePressDomEvent>();
 
-    /**
-     * Event handler called when focus moves outside of the popup. Can be prevented.
-     */
-    readonly focusOutside = outputFromObservable(outputToObservable(this.dismissableLayer.focusOutside));
+    /** Event handler called when focus moves outside of the popup. Can be prevented. */
+    readonly focusOutside = output<FocusEvent>();
 
-    /**
-     * Event handler called when an interaction happens outside of the popup. Can be prevented.
-     */
-    readonly interactOutside = outputFromObservable(outputToObservable(this.dismissableLayer.interactOutside));
+    /** Event handler called when an interaction (pointer / focus) happens outside of the popup. */
+    readonly interactOutside = output<RdxOutsidePressDomEvent | FocusEvent>();
 
-    /**
-     * Event handler called before focus moves into the popup. Can be prevented.
-     */
+    /** Event handler called before focus moves into the popup. Can be prevented. */
     readonly openAutoFocus = outputFromObservable(outputToObservable(this.focusScope.mountAutoFocus));
 
-    /**
-     * Event handler called before focus returns after the popup is removed. Can be prevented.
-     */
+    /** Event handler called before focus returns after the popup is removed. Can be prevented. */
     readonly closeAutoFocus = outputFromObservable(outputToObservable(this.focusScope.unmountAutoFocus));
 
     constructor() {
-        useScrollLock(computed(() => this.rootContext.modal() === true));
+        this.floatingContext.setFloatingElement(this.host);
 
-        const unregisterTransitionElement = this.rootContext.registerTransitionElement(
-            inject<ElementRef<HTMLElement>>(ElementRef).nativeElement
+        // Background pointer/AT isolation for a full modal is the focus manager's `inert` pass (finding
+        // #4), not a global body lock; only the page scroll lock stays here. Activation policy (ADR 0016
+        // §2): lock only while a `modal === true` popover is OPEN and was **not** hover-opened, gated on
+        // `open` (not mounted) so it releases at close-start. For a **touch** open the anchored helper only
+        // locks when the popup is effectively viewport-width (a small popover stays swipe-to-dismissable on
+        // mobile, §3).
+        useAnchoredScrollLock(
+            computed(
+                () =>
+                    this.rootContext.isOpen() && this.rootContext.modal() === true && !this.rootContext.isHoverActive()
+            ),
+            {
+                touchOpen: () => this.rootContext.openedByTouch(),
+                element: () => this.host
+            }
         );
 
+        const unregisterTransitionElement = this.rootContext.registerTransitionElement(this.host);
         inject(DestroyRef).onDestroy(unregisterTransitionElement);
 
-        this.dismissableLayer.pointerDownOutside.subscribe((event) => {
-            this.dismissDetails = { reason: 'outside-press', event };
-
-            if (this.rootContext.triggers().some((trigger) => trigger.contains(event.target as Node))) {
-                event.preventDefault();
-            }
-        });
-
-        this.dismissableLayer.focusOutside.subscribe((event) => {
-            this.dismissDetails = { reason: 'focus-out', event };
-
-            if (this.rootContext.isPointerDownOnTrigger()) {
-                event.preventDefault();
-            }
-        });
-
-        this.dismissableLayer.escapeKeyDown.subscribe((event) => {
-            this.dismissDetails = { reason: 'escape-key', event };
-        });
-
+        // A hover-opened popover must not steal focus — suppress the composed focus scope's auto-focus.
         this.focusScope.mountAutoFocus.subscribe((event) => {
             if (this.rootContext.isHoverActive()) {
                 event.preventDefault();
             }
         });
 
-        this.dismissableLayer.dismiss.subscribe(() => {
-            this.rootContext.close(this.dismissDetails.reason, this.dismissDetails.event);
-            this.dismissDetails = { reason: 'none', event: new Event('popover.dismiss') };
+        // Dismissal: Escape + outside-press always close (no pointer-dismissal opt-out). Focus-out is
+        // owned by the focus manager (below), so the capability's own focus-out is disabled.
+        new RdxDismiss(this.floatingContext, () => this.registration?.node() ?? null, {
+            escapeKey: () => true,
+            outsidePress: () => true,
+            focusOutside: () => false,
+            onEscapeKeyDown: (event) => this.escapeKeyDown.emit(event),
+            onPointerDownOutside: (event) => {
+                this.pointerDownOutside.emit(event);
+                this.interactOutside.emit(event);
+            },
+            onDismiss: (reason, event) => {
+                this.rootContext.close(reason === 'escape-key' ? 'escape-key' : 'outside-press', event);
+            }
+        });
+
+        // Focus-out close (ADR 0017 §3) — re-expose as `focusOutside` (preventable) and close unless vetoed.
+        this.focusManager.focusOut.subscribe((event) => {
+            this.focusOutside.emit(event);
+            this.interactOutside.emit(event);
+            if (!event.defaultPrevented) {
+                this.rootContext.close('focus-out', event);
+            }
         });
     }
 }

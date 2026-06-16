@@ -4,6 +4,7 @@ import {
     DestroyRef,
     Directive,
     effect,
+    ElementRef,
     inject,
     input,
     model,
@@ -12,7 +13,17 @@ import {
     signal,
     untracked
 } from '@angular/core';
-import { BooleanInput, NumberInput, useTransitionStatus } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    createFloatingRootContext,
+    NumberInput,
+    provideFloatingRootContext,
+    provideFloatingTree,
+    RDX_FLOATING_REGISTRATION,
+    RdxFloatingNodeRegistration,
+    RdxFloatingRootContext,
+    useTransitionStatus
+} from '@radix-ng/primitives/core';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 import {
     NavigationMenuDirection,
@@ -37,8 +48,17 @@ const context = () => contextFor(inject(RdxNavigationMenuRoot));
 @Directive({
     selector: '[rdxNavigationMenuRoot]',
     exportAs: 'rdxNavigationMenuRoot',
-    providers: [provideNavigationMenuRootContext(context)],
-    hostDirectives: [RdxPopper],
+    providers: [
+        provideNavigationMenuRootContext(context),
+        // Base UI wraps every NavigationMenu.Root in a FloatingNode and only creates FloatingTree at the
+        // top boundary. `provideFloatingTree()` is inherit-or-create, so nested navigation menus join the
+        // parent's tree while the top-level menu starts the coordination store.
+        provideFloatingTree(),
+        // New floating foundation (ADR 0015/0017) — dismissal reads this shared root context, while the
+        // root-level node above gives nested navigation menus real parent/child ownership.
+        provideFloatingRootContext(() => inject(RdxNavigationMenuRoot).floatingContext)
+    ],
+    hostDirectives: [RdxPopper, RdxFloatingNodeRegistration],
     host: {
         role: 'navigation',
         'aria-label': 'Main',
@@ -50,6 +70,13 @@ export class RdxNavigationMenuRoot {
     private readonly popper = inject(RdxPopper);
     private readonly destroyRef = inject(DestroyRef);
     private readonly parentRoot = inject(RdxNavigationMenuRoot, { optional: true, skipSelf: true });
+    private readonly registration = inject(RDX_FLOATING_REGISTRATION, { optional: true });
+
+    /** Per-popup floating root context (ADR 0015) — `open` / `triggers` / reference for the dismissal engine. */
+    readonly floatingContext: RdxFloatingRootContext = createFloatingRootContext({
+        ownerDocument: inject(ElementRef).nativeElement.ownerDocument,
+        open: () => this.isOpen()
+    });
 
     /** Whether this root is nested inside another navigation menu's content. */
     readonly nested = !!this.parentRoot;
@@ -155,6 +182,10 @@ export class RdxNavigationMenuRoot {
         // Anchor the shared popper to the active trigger.
         effect(() => this.popper.anchorOverride.set(this.trigger()));
 
+        // Keep the dismissal reference in sync with the active trigger (the anchor) so a press / focus on
+        // it counts as "inside" (ADR 0015). The full trigger registry is maintained in `registerTrigger`.
+        effect(() => this.floatingContext.setReferenceElement(this.trigger() ?? null));
+
         this.destroyRef.onDestroy(() => {
             this.clearHoverTimers();
 
@@ -253,7 +284,12 @@ export class RdxNavigationMenuRoot {
         this.openTimer = setTimeout(() => this.open(value, trigger, 'trigger-hover', event), this.delay());
     }
 
-    closeOnHover() {
+    closeOnHover(event?: PointerEvent) {
+        if (event && this.isInsideOpenChild(event.relatedTarget)) {
+            this.cancelHoverClose();
+            return;
+        }
+
         this.clearOpenTimer();
         this.clearCloseTimer();
         this.closeTimer = setTimeout(
@@ -273,6 +309,9 @@ export class RdxNavigationMenuRoot {
     registerTrigger(value: string, trigger: HTMLElement) {
         this.registeredTriggers.set(value, trigger);
         this.triggers.update((triggers) => (triggers.includes(trigger) ? triggers : [...triggers, trigger]));
+        // Mark every trigger as "inside" the floating layer (ADR 0015): a press / focus on a sibling
+        // trigger (to switch items) or back on the active trigger must not count as an outside dismissal.
+        this.floatingContext.triggers.add(trigger);
 
         if (this.value() === value) {
             this.trigger.set(trigger);
@@ -284,6 +323,7 @@ export class RdxNavigationMenuRoot {
             }
 
             this.triggers.update((triggers) => triggers.filter((candidate) => candidate !== trigger));
+            this.floatingContext.triggers.delete(trigger);
 
             if (this.destroyRef.destroyed || this.value() !== value) {
                 return;
@@ -364,6 +404,25 @@ export class RdxNavigationMenuRoot {
             this.closeTimer = undefined;
         }
     }
+
+    private isInsideOpenChild(target: EventTarget | null): boolean {
+        if (!(target instanceof Node)) {
+            return false;
+        }
+
+        const node = this.registration?.node();
+
+        if (!node) {
+            return false;
+        }
+
+        return node.tree.children(node, { onlyOpen: true }).some((child) => {
+            const context = child.context;
+            const floating = context?.floatingElement;
+
+            return !!floating && floating.contains(target);
+        });
+    }
 }
 
 function contextFor(root: RdxNavigationMenuRoot): RdxNavigationMenuRootContext {
@@ -388,7 +447,7 @@ function contextFor(root: RdxNavigationMenuRoot): RdxNavigationMenuRootContext {
         close: (reason, event) => root.close(reason, event),
         toggle: (value, trigger, event) => root.toggle(value, trigger, event),
         openOnHover: (value, trigger, event) => root.openOnHover(value, trigger, event),
-        closeOnHover: () => root.closeOnHover(),
+        closeOnHover: (event) => root.closeOnHover(event),
         cancelHoverOpen: () => root.cancelHoverOpen(),
         cancelHoverClose: () => root.cancelHoverClose(),
         registerTrigger: (value, trigger) => root.registerTrigger(value, trigger),

@@ -1,5 +1,6 @@
 import {
     afterNextRender,
+    computed,
     contentChild,
     Directive,
     ElementRef,
@@ -44,6 +45,13 @@ export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
 
     readonly placed = output();
 
+    /**
+     * Whether item-aligned positioning is active (Base UI `alignItemWithTriggerActive`): open **and not**
+     * touch-opened. A touch open falls back to a plain anchored dropdown ({@link positionBelowTrigger}).
+     * Read by the popup's scroll-lock policy — an active item-aligned popup locks even when `modal=false`.
+     */
+    readonly alignItemWithTriggerActive = computed(() => this.rootContext.open() && !this.rootContext.openedByTouch());
+
     readonly contentZIndex = signal('');
 
     readonly shouldExpandOnScrollRef = signal(false);
@@ -73,6 +81,13 @@ export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
     }
 
     position() {
+        // Base UI parity: a touch-opened select does NOT align the item with the trigger (the macOS-style
+        // overlay is awkward on mobile). Fall back to a plain anchored dropdown below the trigger.
+        if (!this.alignItemWithTriggerActive()) {
+            this.positionBelowTrigger();
+            return;
+        }
+
         if (
             this.rootContext.triggerElement() &&
             this.rootContext.valueElement() &&
@@ -197,5 +212,30 @@ export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
             // so we explicitly turn it on only after they've registered.
             requestAnimationFrame(() => this.shouldExpandOnScrollRef.set(true));
         }
+    }
+
+    /**
+     * Touch fallback (Base UI disables item-alignment on touch): position the popup as a plain anchored
+     * dropdown just below the trigger, clamped to the viewport, with no item alignment or pre-scroll.
+     */
+    private positionBelowTrigger() {
+        const trigger = this.rootContext.triggerElement();
+        const wrapper = this.contentWrapperElement();
+        if (!trigger || !wrapper) {
+            return;
+        }
+        const triggerRect = trigger.getBoundingClientRect();
+        const availableHeight = window.innerHeight - CONTENT_MARGIN * 2;
+        const maxLeft = Math.max(CONTENT_MARGIN, window.innerWidth - CONTENT_MARGIN - triggerRect.width);
+
+        wrapper.style.left = `${clamp(triggerRect.left, CONTENT_MARGIN, maxLeft)}px`;
+        wrapper.style.top = `${triggerRect.bottom}px`;
+        wrapper.style.bottom = '';
+        wrapper.style.height = '';
+        wrapper.style.margin = `${CONTENT_MARGIN}px 0`;
+        wrapper.style.minWidth = `${triggerRect.width}px`;
+        wrapper.style.maxHeight = `${availableHeight}px`;
+
+        this.placed.emit();
     }
 }

@@ -42,6 +42,7 @@ export class RdxMenuDefaultComponent {
 
 - ✅ Opens and closes from a trigger button with click or arrow-key interaction.
 - ✅ Supports uncontrolled state, `defaultOpen`, and two-way binding with `[(open)]`.
+- ✅ `onOpenChange` reports the new `open` state together with `reason`, `trigger`, and source `event`.
 - ✅ Positions the popup with the shared Floating UI-based Popper primitive.
 - ✅ Optional visual arrow connecting the popup to its trigger (`rdxMenuArrow`).
 - ✅ Optional backdrop overlay behind the popup (`rdxMenuBackdrop`).
@@ -343,7 +344,7 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <div dir="rtl">
-            <ng-container #root="rdxMenuRoot" rdxMenuRoot>
+            <ng-container #root="rdxMenuRoot" dir="rtl" rdxMenuRoot>
                 <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>تحرير</button>
 
                 <div *rdxMenuPortal [class]="m.positioner" side="bottom" align="end" sideOffset="4" rdxMenuPositioner>
@@ -738,6 +739,9 @@ finishes.
 ## API Reference
 
 ### RdxMenuRoot
+
+`RdxMenuRoot` owns the shared open state. Use `[(open)]` for plain state syncing, or bind
+`(onOpenChange)` when you need the full change details object.
 
 ### RdxMenuTrigger
 

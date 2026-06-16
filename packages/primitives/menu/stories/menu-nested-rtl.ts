@@ -12,7 +12,7 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <div dir="rtl">
-            <ng-container #root="rdxMenuRoot" rdxMenuRoot>
+            <ng-container #root="rdxMenuRoot" dir="rtl" rdxMenuRoot>
                 <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>تحرير</button>
 
                 <div *rdxMenuPortal [class]="m.positioner" side="bottom" align="end" sideOffset="4" rdxMenuPositioner>

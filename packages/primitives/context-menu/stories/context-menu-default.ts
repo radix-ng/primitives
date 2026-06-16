@@ -77,8 +77,8 @@ import { cn, demoMenu } from '../../storybook/styles';
 
                     <div [class]="m.separator" rdxMenuSeparator></div>
 
-                    <div [class]="m.groupLabel" rdxMenuGroupLabel>People</div>
                     <div [(value)]="person" rdxMenuRadioGroup>
+                        <div [class]="m.groupLabel" rdxMenuGroupLabel>People</div>
                         <label [class]="m.selectableItem" value="pedro" rdxMenuRadioItem>
                             <span [class]="m.itemIndicator" rdxMenuRadioItemIndicator>
                                 <svg [size]="10" strokeWidth="5" lucideDot></svg>

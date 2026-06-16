@@ -35,6 +35,55 @@ test('select teleports the positioner directly into <body> with no wrapper eleme
 });
 
 /**
+ * ADR 0015/0017 Phase-4 migration of Select onto the new floating dismissal engine.
+ */
+test.describe('Select — new floating engine migration', () => {
+    const trigger = '[rdxSelectTrigger]';
+    const popup = '[rdxSelectPopup]';
+
+    test('Escape closes the select', async ({ page }) => {
+        await gotoStory(page, 'primitives-select--default');
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        await page.keyboard.press('Escape');
+        await expect(page.locator(popup)).toHaveCount(0);
+    });
+
+    test('an outside press closes the select', async ({ page }) => {
+        await gotoStory(page, 'primitives-select--default');
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        await page.mouse.click(5, 5);
+        await expect(page.locator(popup)).toHaveCount(0);
+    });
+
+    test('a modal select renders an internal backdrop that blocks the background (finding #1)', async ({ page }) => {
+        await gotoStory(page, 'primitives-select--default');
+        await page.evaluate(() => {
+            const b = document.createElement('button');
+            b.id = 'sel-bg';
+            b.style.cssText = 'position:fixed; left:2px; top:2px; width:40px; height:40px';
+            b.addEventListener('click', () => {
+                (window as { __selBg?: number }).__selBg = ((window as { __selBg?: number }).__selBg || 0) + 1;
+            });
+            document.body.appendChild(b);
+        });
+
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+        await expect(page.locator('[data-rdx-internal-backdrop]')).toHaveCount(1);
+
+        // A press over the background button lands on the backdrop: the button must not fire and the
+        // select closes (the backdrop is the outside-press target).
+        await page.mouse.click(10, 10);
+        await expect(page.locator(popup)).toHaveCount(0);
+        expect(await page.evaluate(() => (window as { __selBg?: number }).__selBg || 0)).toBe(0);
+    });
+});
+
+/**
  * Regression for ADR 0010 §6 (select restructure: positioner outer, popup inner). After the swap the
  * popup is a `display:flex` column and `rdxSelectList` (which carries an inline `flex: 1`) became its
  * direct flex child. The list's inline flex overrode the demo's fixed viewport height, so the viewport
@@ -83,6 +132,23 @@ test('aligned-position opens without provider/runtime errors', async ({ page }) 
     await expect(page.locator('[rdxSelectPopup]')).toBeVisible();
     expect(await page.locator('[rdxSelectItem]').count()).toBeGreaterThan(0);
     expect(errors).toEqual([]);
+});
+
+test('aligned-position locks page scroll even when modal=false (ADR 0016 AC #3)', async ({ page }) => {
+    await gotoStory(page, 'primitives-select--aligned-position-non-modal');
+    const scrollLocked = () => page.locator('html').evaluate((el) => el.hasAttribute('data-rdx-scroll-locked'));
+
+    expect(await scrollLocked()).toBe(false);
+
+    await page.locator('[rdxSelectTrigger]').first().click();
+    await expect(page.locator('[rdxSelectPopup]')).toBeVisible();
+    // A non-modal item-aligned select still locks (Base UI `(alignItemWithTriggerActive || modal) && open`)
+    // — the popup overlays the trigger, so the page must not scroll behind it.
+    expect(await scrollLocked()).toBe(true);
+
+    await page.keyboard.press('Escape');
+    await expect(page.locator('[rdxSelectPopup]')).toHaveCount(0);
+    expect(await scrollLocked()).toBe(false);
 });
 
 test('aligned-position-with-scroll: viewport overflows and scroll buttons toggle on scroll', async ({ page }) => {

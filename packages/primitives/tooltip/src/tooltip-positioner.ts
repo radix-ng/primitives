@@ -1,7 +1,11 @@
-import { afterNextRender, DestroyRef, Directive, effect, ElementRef, inject, signal } from '@angular/core';
-import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
-import { useGraceArea } from '@radix-ng/primitives/core';
-import { RdxDismissableLayer } from '@radix-ng/primitives/dismissable-layer';
+import { afterNextRender, DestroyRef, Directive, effect, ElementRef, inject, output, signal } from '@angular/core';
+import {
+    RDX_FLOATING_REGISTRATION,
+    RDX_FLOATING_ROOT_CONTEXT,
+    RdxFloatingNodeRegistration,
+    useGraceArea
+} from '@radix-ng/primitives/core';
+import { RdxDismiss, RdxOutsidePressDomEvent } from '@radix-ng/primitives/dismissable-layer';
 import {
     provideRdxPopperContentConfig,
     provideRdxPopperContentWrapper,
@@ -15,8 +19,9 @@ import { injectRdxTooltipContext } from './tooltip';
  * A "thin" positioner (ADR 0012): it inherits the popper positioning surface (inputs, `placed`
  * output, unified vars + placement attrs) from {@link RdxPopperContentWrapper} and adds tooltip's own
  * concerns — Base UI-aligned defaults (`side: 'top'`) via the config provider, dismiss handling
- * (composing {@link RdxDismissableLayer}), the cursor-follow pointer-through behavior (via the
- * inherited `nonInteractive` signal), the open/closed state attributes, and the hover grace area.
+ * (ADR 0015 — inline {@link RdxDismiss} on the shared floating tree, dismissal-only with
+ * no focus manager), the cursor-follow pointer-through behavior (via the inherited `nonInteractive`
+ * signal), the open/closed state attributes, and the hover grace area.
  */
 @Directive({
     selector: '[rdxTooltipPositioner]',
@@ -24,7 +29,7 @@ import { injectRdxTooltipContext } from './tooltip';
         ...provideRdxPopperContentWrapper(RdxTooltipPositioner),
         provideRdxPopperContentConfig({ side: 'top', arrowPadding: 5, collisionPadding: 5 })
     ],
-    hostDirectives: [RdxDismissableLayer],
+    hostDirectives: [RdxFloatingNodeRegistration],
     host: {
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""'
@@ -35,18 +40,19 @@ import { injectRdxTooltipContext } from './tooltip';
 export class RdxTooltipPositioner extends RdxPopperContentWrapper {
     protected readonly rootContext = injectRdxTooltipContext();
     private readonly destroyRef = inject(DestroyRef);
-    private readonly dismissableLayer = inject(RdxDismissableLayer);
+    private readonly floatingContext = inject(RDX_FLOATING_ROOT_CONTEXT);
+    private readonly registration = inject(RDX_FLOATING_REGISTRATION, { optional: true });
     private readonly containerRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
     /**
      * Event handler called when the escape key is down. Can be prevented.
      */
-    readonly escapeKeyDown = outputFromObservable(outputToObservable(this.dismissableLayer.escapeKeyDown));
+    readonly escapeKeyDown = output<KeyboardEvent>();
 
     /**
-     * Event handler called when a `pointerdown` event happens outside of the `DismissableLayer`. Can be prevented.
+     * Event handler called when a `pointerdown` event happens outside of the popup. Can be prevented.
      */
-    readonly pointerDownOutside = outputFromObservable(outputToObservable(this.dismissableLayer.pointerDownOutside));
+    readonly pointerDownOutside = output<RdxOutsidePressDomEvent>();
 
     private readonly triggerEl = signal<HTMLElement | null>(null);
     private readonly containerEl = signal<HTMLElement | null>(null);
@@ -85,9 +91,20 @@ export class RdxTooltipPositioner extends RdxPopperContentWrapper {
     constructor() {
         super();
 
-        this.dismissableLayer.focusOutside.subscribe((e) => e.preventDefault());
+        // Register as the floating element so dismissal containment (outside-press / focus) treats the
+        // popup as "inside".
+        this.floatingContext.setFloatingElement(this.containerRef.nativeElement);
 
-        this.dismissableLayer.dismiss.subscribe(() => this.rootContext.close());
+        // Dismissal-only (ADR 0017 §1 — a tooltip has no focus manager): Escape and an outside press
+        // close it; focus-out is intentionally a no-op (a tooltip never traps or follows focus).
+        new RdxDismiss(this.floatingContext, () => this.registration?.node() ?? null, {
+            escapeKey: () => true,
+            outsidePress: () => true,
+            focusOutside: () => false,
+            onEscapeKeyDown: (event) => this.escapeKeyDown.emit(event),
+            onPointerDownOutside: (event) => this.pointerDownOutside.emit(event),
+            onDismiss: () => this.rootContext.close()
+        });
 
         // While following the cursor the popup sits right under the pointer; if it could intercept
         // the pointer it would steal hover from the trigger and the tooltip would flicker. Render it

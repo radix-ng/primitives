@@ -14,6 +14,42 @@ const visibleItems = '[rdxAutocompleteItem]:not([hidden])';
 const highlighted = '[rdxAutocompleteItem][data-highlighted]';
 const popup = '[rdxAutocompletePopup]';
 
+/**
+ * ADR 0015/0017 Phase-4 migration of Autocomplete onto the new floating dismissal engine.
+ */
+test.describe('Autocomplete — new floating engine migration', () => {
+    test('Escape closes the autocomplete', async ({ page }) => {
+        await gotoStory(page, 'primitives-autocomplete--default');
+        await page.locator(input).click();
+        await page.locator(input).pressSequentially('f');
+        await expect(page.locator(popup)).toBeVisible();
+
+        await page.keyboard.press('Escape');
+        await expect(page.locator(popup)).toHaveCount(0);
+    });
+
+    test('an outside press closes the autocomplete', async ({ page }) => {
+        await gotoStory(page, 'primitives-autocomplete--default');
+        await page.locator(input).click();
+        await page.locator(input).pressSequentially('f');
+        await expect(page.locator(popup)).toBeVisible();
+
+        await page.mouse.click(5, 5);
+        await expect(page.locator(popup)).toHaveCount(0);
+    });
+
+    test('a press on the input keeps the popup open (the input is registered inside)', async ({ page }) => {
+        await gotoStory(page, 'primitives-autocomplete--default');
+        await page.locator(input).click();
+        await page.locator(input).pressSequentially('f');
+        await expect(page.locator(popup)).toBeVisible();
+
+        // Clicking the input again must not self-dismiss — it is "inside" the floating layer.
+        await page.locator(input).click();
+        await expect(page.locator(popup)).toBeVisible();
+    });
+});
+
 test.describe('Autocomplete auto highlight', () => {
     test('typing a full match highlights the item so Enter selects it', async ({ page }) => {
         await gotoStory(page, 'primitives-autocomplete--auto-highlight');

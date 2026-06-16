@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RdxContextMenuModule } from '@radix-ng/primitives/context-menu';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
+import { afterEach, vi } from 'vitest';
 
 function rightClick(target: Element, clientX = 120, clientY = 80) {
     target.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX, clientY }));
@@ -18,6 +19,10 @@ function keydown(target: Element, key: string) {
 function flushRaf() {
     return new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 }
+
+afterEach(() => {
+    vi.useRealTimers();
+});
 
 @Component({
     imports: [RdxContextMenuModule, RdxMenuModule],
@@ -113,6 +118,36 @@ describe('ContextMenu', () => {
         fixture.detectChanges();
 
         expect(event.defaultPrevented).toBe(true);
+    });
+
+    it('does not cancel opening on mouseup before the 500ms grace window elapses', () => {
+        vi.useFakeTimers();
+
+        pointerDown(trigger);
+        rightClick(trigger);
+        fixture.detectChanges();
+
+        vi.advanceTimersByTime(499);
+        document.body.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+        fixture.detectChanges();
+
+        expect(trigger.getAttribute('data-state')).toBe('open');
+        expect(fixture.nativeElement.querySelector('[rdxMenuPopup]')).not.toBeNull();
+    });
+
+    it('cancels opening on mouseup outside after the 500ms grace window', () => {
+        vi.useFakeTimers();
+
+        pointerDown(trigger);
+        rightClick(trigger);
+        fixture.detectChanges();
+
+        vi.advanceTimersByTime(500);
+        document.body.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+        fixture.detectChanges();
+
+        expect(trigger.getAttribute('data-state')).toBe('closed');
+        expect(fixture.nativeElement.querySelector('[rdxMenuPopup]')).toBeNull();
     });
 
     it('closes on Escape and stays closed', () => {

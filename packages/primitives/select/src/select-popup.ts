@@ -1,5 +1,6 @@
 import {
     afterNextRender,
+    computed,
     DestroyRef,
     Directive,
     effect,
@@ -7,13 +8,22 @@ import {
     inject,
     InjectionToken,
     Injector,
+    output,
     OutputRef,
-    signal
+    signal,
+    Signal
 } from '@angular/core';
-import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
 import { RdxCollectionItem, RdxCollectionProvider } from '@radix-ng/primitives/collection';
-import { AcceptableValue, createContext, useListHighlight, useScrollLock } from '@radix-ng/primitives/core';
-import { provideRdxDismissableLayerConfig, RdxDismissableLayer } from '@radix-ng/primitives/dismissable-layer';
+import {
+    AcceptableValue,
+    createContext,
+    RDX_FLOATING_REGISTRATION,
+    RDX_FLOATING_ROOT_CONTEXT,
+    RdxFloatingNodeRegistration,
+    useAnchoredScrollLock,
+    useListHighlight
+} from '@radix-ng/primitives/core';
+import { RdxDismiss, RdxOutsidePressDomEvent } from '@radix-ng/primitives/dismissable-layer';
 import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import { RdxPopperContent } from '@radix-ng/primitives/popper';
 import { injectSelectRootContext } from './select-root';
@@ -79,6 +89,13 @@ export const [injectSelectPopupContext, provideSelectPopupContext] = createConte
 
 export interface RdxPositionerImpl {
     placed: OutputRef<any>;
+    /**
+     * Whether **item-aligned** positioning is currently active (Base UI `alignItemWithTriggerActive`).
+     * `true` only for the item-aligned positioner while open **and not touch-opened** — a touch open
+     * falls back to a plain anchored dropdown. The popper positioner omits this (always `false`). The
+     * scroll-lock policy locks an item-aligned popup even when `modal === false` (ADR 0016 §2 / AC #3).
+     */
+    alignItemWithTriggerActive?: Signal<boolean>;
 }
 
 export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>('RDX_SELECT_POSITIONER_TOKEN');
@@ -98,15 +115,8 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
  */
 @Directive({
     selector: '[rdxSelectPopup]',
-    hostDirectives: [RdxPopperContent, RdxFocusScope, RdxDismissableLayer, RdxCollectionProvider],
-    providers: [
-        provideSelectPopupContext(context),
-        provideRdxDismissableLayerConfig(() => {
-            return {
-                disableOutsidePointerEvents: injectSelectRootContext().modal
-            };
-        })
-    ],
+    hostDirectives: [RdxPopperContent, RdxFocusScope, RdxFloatingNodeRegistration, RdxCollectionProvider],
+    providers: [provideSelectPopupContext(context)],
     host: {
         role: 'listbox',
         tabindex: '-1',
@@ -130,7 +140,8 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
     }
 })
 export class RdxSelectPopup {
-    private readonly dismissableLayer = inject(RdxDismissableLayer);
+    private readonly floatingContext = inject(RDX_FLOATING_ROOT_CONTEXT);
+    private readonly registration = inject(RDX_FLOATING_REGISTRATION, { optional: true });
     private readonly currentElement = inject(ElementRef);
     private readonly collection = inject(RdxCollectionProvider);
     private readonly injector = inject(Injector);
@@ -175,13 +186,13 @@ export class RdxSelectPopup {
      * Event handler called when the escape key is down.
      * Can be prevented.
      */
-    readonly escapeKeyDown = outputFromObservable(outputToObservable(this.dismissableLayer.escapeKeyDown));
+    readonly escapeKeyDown = output<KeyboardEvent>();
 
     /**
-     * Event handler called when a `pointerdown` event happens outside of the `DismissableLayer`.
+     * Event handler called when a `pointerdown` event happens outside of the popup.
      * Can be prevented.
      */
-    readonly pointerDownOutside = outputFromObservable(outputToObservable(this.dismissableLayer.pointerDownOutside));
+    readonly pointerDownOutside = output<RdxOutsidePressDomEvent>();
 
     readonly content = signal<HTMLElement | null>(null);
 
@@ -219,16 +230,39 @@ export class RdxSelectPopup {
             }
         });
 
-        // Lock page scroll while a modal popup is open (content mounts only while open).
-        useScrollLock(this.rootContext.modal);
+        // Activation policy (ADR 0016 §2 + §3). Lock page scroll while the popup is OPEN and either modal
+        // **or** item-aligned — Base UI `(alignItemWithTriggerActive || modal) && open` (AC #3): an
+        // item-aligned select overlays the trigger, so the page must not scroll behind it even when
+        // `modal === false`. The gate keys on `open` (not mounted) so it releases at close-start. A
+        // **touch** open never uses item-aligned mode (the positioner falls back), so the lock there is
+        // driven by `modal` alone and the anchored helper only engages when the popup is viewport-width (§3).
+        const itemAlignedActive = computed(() => this.positioner?.alignItemWithTriggerActive?.() ?? false);
+        useAnchoredScrollLock(
+            computed(() => (itemAlignedActive() || this.rootContext.modal()) && this.rootContext.open()),
+            {
+                touchOpen: () => this.rootContext.openedByTouch(),
+                element: () => this.currentElement.nativeElement
+            }
+        );
 
         // The popup's animation determines when the open/close transition (onOpenChangeComplete) is done.
         const unregisterTransition = this.rootContext.registerTransitionElement(this.currentElement.nativeElement);
         inject(DestroyRef).onDestroy(unregisterTransition);
 
-        this.dismissableLayer.focusOutside.subscribe((e) => e.preventDefault());
+        // The popup (listbox) is this layer's floating element — the inside surface for containment.
+        this.floatingContext.setFloatingElement(this.currentElement.nativeElement);
 
-        this.dismissableLayer.dismiss.subscribe(() => this.rootContext.onOpenChange(false));
+        // Dismissal (ADR 0015): Escape or an outside press closes the select. Focus-out does NOT close it
+        // — the listbox holds focus while open (items are navigated virtually), so a focus-out is not a
+        // dismissal (the legacy preventDefaulted it too).
+        new RdxDismiss(this.floatingContext, () => this.registration?.node() ?? null, {
+            escapeKey: () => true,
+            outsidePress: () => true,
+            focusOutside: () => false,
+            onEscapeKeyDown: (event) => this.escapeKeyDown.emit(event),
+            onPointerDownOutside: (event) => this.pointerDownOutside.emit(event),
+            onDismiss: () => this.rootContext.onOpenChange(false)
+        });
 
         const focusScope = inject(RdxFocusScope);
 

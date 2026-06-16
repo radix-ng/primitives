@@ -13,8 +13,8 @@ import {
     signal
 } from '@angular/core';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
-import { RdxDismissableLayerBranch } from '@radix-ng/primitives/dismissable-layer';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
+import { getFocusableMenuItems } from './menu-focus';
 import { injectRdxMenuRootContext, RdxMenuRoot } from './menu-root';
 import {
     applyPointerTunnel,
@@ -38,7 +38,7 @@ const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();
 @Directive({
     selector: '[rdxMenuSubTrigger]',
     exportAs: 'rdxMenuSubTrigger',
-    hostDirectives: [RdxPopperAnchor, RdxDismissableLayerBranch],
+    hostDirectives: [RdxPopperAnchor],
     host: {
         '[attr.type]': 'nativeButtonState() ? "button" : undefined',
         role: 'menuitem',
@@ -54,7 +54,9 @@ const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();
         '[attr.data-label]': 'label() ?? undefined',
         '(focus)': 'onFocus()',
         '(blur)': 'onBlur()',
-        '(click)': 'onClick()',
+        '(click)': 'onClick($event)',
+        '(keydown.enter)': 'onEnter($event)',
+        '(keydown.arrowleft)': 'onArrowLeft($event)',
         '(keydown.arrowright)': 'onArrowRight($event)',
         '(pointermove)': 'onPointerMove($event)',
         '(pointerleave)': 'onPointerLeave()',
@@ -74,6 +76,7 @@ export class RdxMenuSubTrigger {
     private lastPointer: { x: number; y: number } | null = null;
     /** Whether the current open was initiated by hover (vs keyboard / click). */
     private openedByHover = false;
+    private ignoreNextKeyboardClick = false;
 
     /** Whether this trigger (and therefore the submenu) is disabled. */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
@@ -134,7 +137,8 @@ export class RdxMenuSubTrigger {
             }
 
             const reference = this.elementRef.nativeElement;
-            const scope = reference.closest<HTMLElement>('[rdxMenuPopup]') ?? document.body;
+            const ownerDocument = reference.ownerDocument;
+            const scope = reference.closest<HTMLElement>('[rdxMenuPopup]') ?? ownerDocument.body;
             const unregisterOpen = registerOpenSubmenu(reference, popup);
             let removeTunnel: (() => void) | undefined = applyPointerTunnel(scope, reference, popup);
 
@@ -154,9 +158,9 @@ export class RdxMenuSubTrigger {
                 }
             });
 
-            document.addEventListener('mousemove', handler);
+            ownerDocument.addEventListener('mousemove', handler);
             onCleanup(() => {
-                document.removeEventListener('mousemove', handler);
+                ownerDocument.removeEventListener('mousemove', handler);
                 dispose();
                 removeTunnel?.();
                 unregisterOpen();
@@ -191,17 +195,64 @@ export class RdxMenuSubTrigger {
         this.isFocused.set(false);
     }
 
-    protected onClick(): void {
+    protected onClick(event: MouseEvent): void {
         if (this.effectiveDisabled()) return;
+
+        if (this.ignoreNextKeyboardClick && event.detail === 0) {
+            this.ignoreNextKeyboardClick = false;
+            return;
+        }
+
+        const wasOpen = this.submenuContext.isOpen();
+        // When the submenu opens on hover (default), hover owns its open/close, so a real **mouse** click
+        // is ignored — otherwise it would toggle a just-hover-opened submenu shut (a visible flicker).
+        // Base UI: `ignoreMouse: openOnHover`. A keyboard-activated click (`detail === 0`) still opens.
+        const isMouseClick = event.detail > 0;
+        if (this.openOnHover() && isMouseClick) {
+            return;
+        }
+
         this.openedByHover = false;
         this.clearSiblingHighlights();
+
+        if (this.submenuContext.isOpen()) {
+            // Toggle (close) only for a click-driven submenu (Base UI `toggle: !openOnHover`).
+            if (!this.openOnHover()) {
+                this.submenuContext.close();
+            }
+            return;
+        }
+
+        this.closeSiblingSubmenus();
+        this.submenuContext.show('first', 'none', event);
+
+        if (event.detail === 0 && !wasOpen && this.submenuContext.isOpen()) {
+            this.focusFirstSubmenuItem();
+        }
+    }
+
+    protected onEnter(event: Event): void {
+        if (this.effectiveDisabled()) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+        this.ignoreNextKeyboardClick = true;
+        this.openedByHover = false;
+        this.clearSiblingHighlights();
+
         if (!this.submenuContext.isOpen()) {
             this.closeSiblingSubmenus();
+            this.submenuContext.show('first', 'none', event);
         }
-        this.submenuContext.toggle();
+
+        this.focusFirstSubmenuItem();
     }
 
     protected onArrowRight(event: Event): void {
+        if (this.submenuContext.dir() === 'rtl') {
+            return;
+        }
+
         if (this.effectiveDisabled()) return;
         event.preventDefault();
         event.stopPropagation();
@@ -209,7 +260,25 @@ export class RdxMenuSubTrigger {
         this.clearSiblingHighlights();
         if (!this.submenuContext.isOpen()) {
             this.closeSiblingSubmenus();
-            this.submenuContext.show();
+            this.submenuContext.show('first', 'none', event);
+            this.focusFirstSubmenuItem();
+        }
+    }
+
+    protected onArrowLeft(event: Event): void {
+        if (this.submenuContext.dir() !== 'rtl') {
+            return;
+        }
+
+        if (this.effectiveDisabled()) return;
+        event.preventDefault();
+        event.stopPropagation();
+        this.openedByHover = false;
+        this.clearSiblingHighlights();
+        if (!this.submenuContext.isOpen()) {
+            this.closeSiblingSubmenus();
+            this.submenuContext.show('first', 'none', event);
+            this.focusFirstSubmenuItem();
         }
     }
 
@@ -218,8 +287,9 @@ export class RdxMenuSubTrigger {
 
         this.lastPointer = { x: event.clientX, y: event.clientY };
         this.clearSiblingHighlights();
-        if (this.submenuContext.highlightItemOnHover() && document.activeElement !== this.elementRef.nativeElement) {
-            this.elementRef.nativeElement.focus({ preventScroll: true });
+        const el = this.elementRef.nativeElement;
+        if (this.submenuContext.highlightItemOnHover() && el.ownerDocument.activeElement !== el) {
+            el.focus({ preventScroll: true });
         }
 
         if (!this.submenuContext.isOpen()) {
@@ -227,7 +297,7 @@ export class RdxMenuSubTrigger {
             this.closeSiblingSubmenus();
             this.openTimer = setTimeout(() => {
                 this.openedByHover = true;
-                this.submenuContext.show(false);
+                this.submenuContext.show(false, 'trigger-hover');
             }, this.delay() ?? 100);
         }
     }
@@ -269,5 +339,43 @@ export class RdxMenuSubTrigger {
 
             trigger.dispatchEvent(new CustomEvent('rdx-menu-subtrigger-clear-highlight'));
         });
+    }
+
+    private focusFirstSubmenuItem(attempt = 0): void {
+        const maxAttempts = 10;
+        const ownerDocument = this.elementRef.nativeElement.ownerDocument;
+
+        const run = () => {
+            if (!this.submenuContext.isOpen()) {
+                return;
+            }
+
+            const popup = this.submenuContext.popupElement();
+            if (!popup) {
+                if (attempt < maxAttempts) {
+                    this.focusFirstSubmenuItem(attempt + 1);
+                }
+                return;
+            }
+
+            const items = getFocusableMenuItems(popup);
+            if (items.length === 0) {
+                if (attempt < maxAttempts) {
+                    this.focusFirstSubmenuItem(attempt + 1);
+                }
+                return;
+            }
+
+            const firstItem = items[0];
+            if (ownerDocument.activeElement !== firstItem) {
+                firstItem?.focus({ preventScroll: true });
+            }
+        };
+
+        if (this.isBrowser) {
+            requestAnimationFrame(run);
+        } else {
+            setTimeout(run);
+        }
     }
 }

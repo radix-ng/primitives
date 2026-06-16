@@ -11,6 +11,19 @@
 > focus-policy set. Architectural decisions are settled below; Phase 0 fills two parity-characterization
 > tables before implementation.
 
+> **Implementation status (2026-06-16): core landed; a few parity items open.** `RdxFloatingFocusManager`
+> (entry `@radix-ng/primitives/floating-focus-manager`) composes the reworked `RdxFocusScope` and owns the
+> independent policies — `enabled`/`modal`→trap, the `markOthers` aria-hidden + `inert` passes (§3),
+> close-on-focus-out (§3), `initialFocus` (§2), and now **`returnFocus` (§2) — DONE**: the manager owns the
+> return _target_ (resolving `true`/`false`/element/callback against the close interaction) via the focus
+> scope's `returnFocus` config seam, while the scope owns the _timing_ (its queued post-unmount frame).
+> Used by Dialog / Popover / Menu. **Still open (none blocking day-to-day use):** the **`aria-modal`
+> attribute** AT-review (we set it only for `modal === true`; Base UI emits none and relies on `inert` — see
+> the Dialog parity notes); the **Select `aria-activedescendant` focus-out divergence** (recorded breaking
+> change, needs real-AT confirmation); the `markOthers` **`inert` internal variant** (deferred — no Base UI
+> consumer passes it); and the **Phase-5 WebKit / screen-reader matrices** (Tier-B confirmations before
+> Acceptance). The portal-focus bridge / focus-guards toolkit exist; full portal tab-order is a later phase.
+
 ## Context
 
 Base UI co-locates a cluster of behaviors in **one** component, `FloatingFocusManager`, under **one
@@ -335,8 +348,9 @@ the typeable-combobox ancestor, and focus-out ownership. So `RdxFloatingFocusMan
 infrastructure"), attaching its own focus capability to a node — **not** a second focus-only tree, and
 **not** the dismissal capability. Specifically it reads, from the shared infra:
 
-- the **traversal** API (`ancestors`, `children({ onlyOpen })`, `deepestOpen`) — same open-filtering /
-  recurse-through-closed semantics as dismissal (ADR 0015 §1);
+- the **traversal** API (`ancestors`, `children({ onlyOpen })` — the focus-return path uses
+  `onlyOpen: false`) — same open-filtering / recurse-through-closed semantics as dismissal (ADR 0015 §1);
+  it does **not** use the dismissal-only `hasBlockingChild`;
 - the **shared trigger registry** (`triggerElements`, ADR 0015 §2) for its inside-element checks — so
   focus and dismissal never compute divergent inside-sets;
 - the **typed event channels** (`tree.events`) for cross-mechanism coordination (hover, list-navigation).
@@ -407,11 +421,32 @@ enough for strict parity:
 | **menubar child**   | yes iff `parent.context.modal` (menubar's flag) |
 | **context menu**    | yes if `modal`                                  |
 
-| Primitive                                                                       | what intercepts a background press | internal backdrop when none provided? | trigger/input cutout | lifecycle (mounted vs open) | interactive predicate (`inert` when `!open`) | state during animated exit | behavior with **no** backdrop | ⇒ drop the body toggle? |
-| ------------------------------------------------------------------------------- | ---------------------------------- | ------------------------------------- | -------------------- | --------------------------- | -------------------------------------------- | -------------------------- | ----------------------------- | ----------------------- |
-| Dialog / Popover (click) / Select / Combobox / Autocomplete                     |                                    |                                       |                      |                             |                                              |                            |                               |                         |
-| Menu (submenu / root / hover-root / menubar-child / context) — **one row each** |                                    |                                       |                      |                             |                                              |                            |                               |                         |
-| _(Phase 0 fills each row from Base UI source + Chromium)_                       |                                    |                                       |                      |                             |                                              |                            |                               |                         |
+**Filled (source-derived against `mui/base-ui` master; paths relative to `packages/react/src/`).** The
+single decisive finding: **Base UI uses no `body { pointer-events }` toggle anywhere.** Modal popups block
+the background **only** via a full-viewport `InternalBackdrop` (clipPath cutout around the anchor); non-modal
+/ hover popups **never block** the background — outside-press only _dismisses_ (floating-ui `useDismiss`),
+it does not intercept. So the Radix body toggle can be dropped for **every** row, conditional on porting
+`RdxInternalBackdrop`-with-cutout for the modal cases.
+
+| Primitive               | what intercepts a background press                                                                                                                                                                         | internal backdrop when none provided?                  | trigger/input cutout                                                                                             | lifecycle (mounted vs open)          | interactive predicate (`inert` when `!open`) | state during animated exit | behavior with **no** backdrop                                  | ⇒ drop the body toggle?                                   |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------ | -------------------------------------------- | -------------------------- | -------------------------------------------------------------- | --------------------------------------------------------- |
+| Dialog (modal)          | `InternalBackdrop` `position:fixed; inset:0`, rendered in the **portal** when `mounted && modal===true` (`dialog/portal/DialogPortal.tsx:35`)                                                              | yes — always for modal, independent of user `Backdrop` | **none** — full-viewport, no `cutout` passed (`DialogPortal.tsx:36`)                                             | rendered while `mounted` (thru exit) | yes — `inert={inertValue(!open)}` (`:36`)    | mounted but `inert`        | non-modal Dialog → no backdrop; outside-press via `useDismiss` | **yes** — port `InternalBackdrop`                         |
+| Popover (click / modal) | `InternalBackdrop` from the **positioner** when `mounted && modal===true && reason!==triggerHover` (`popover/positioner/PopoverPositioner.tsx:157`)                                                        | yes — independent of user `Backdrop`                   | **trigger** — `cutout={triggerElement}` (`:161`) ⟶ clipPath hole (`utils/InternalBackdrop.tsx:12`)               | while `mounted`                      | yes (`:160`)                                 | mounted but `inert`        | non-modal → none; `useDismiss` outside-press                   | **yes** (with trigger cutout)                             |
+| Popover (hover-open)    | **nothing** — backdrop excluded (`reason!==triggerHover`, `:157`); user `Backdrop` forced `pointer-events:none` (`popover/backdrop/PopoverBackdrop.tsx:49`); dismissal via `useDismiss`                    | no                                                     | n/a                                                                                                              | n/a                                  | n/a                                          | n/a                        | nothing blocks the background by design                        | **yes / N/A** — hover never blocked                       |
+| Select                  | `InternalBackdrop` from the positioner when `mounted && modal` (`select/positioner/SelectPositioner.tsx:245`); `modal` default `true` (`select/root/SelectRoot.tsx:70`)                                    | yes — independent of user `Backdrop`                   | **trigger** — `cutout={triggerElement}` (`:245`)                                                                 | while `mounted`                      | yes (`:245`)                                 | mounted but `inert`        | non-modal → none                                               | **yes** (with trigger cutout)                             |
+| Combobox / Autocomplete | `InternalBackdrop` **only if `modal`** — default **`false`** (`combobox/positioner/ComboboxPositioner.tsx:129`; default `combobox/root/AriaCombobox.tsx:115`); else `useDismiss` (`AriaCombobox.tsx:1030`) | only when `modal` set `true`                           | **input/group** — `cutout={inputGroupElement ?? inputElement ?? triggerElement}` (`ComboboxPositioner.tsx:132`)  | while `mounted`                      | yes (`:131`)                                 | mounted but `inert`        | default non-modal: no backdrop, background interactive         | **conditional** — yes when modal; default needs no toggle |
+| Menu — root             | `InternalBackdrop` when `parent.type===undefined && modal && reason!==triggerHover` (`menu/positioner/MenuPositioner.tsx:283`); `modal` default `true` (`menu/root/MenuRoot.tsx:567`)                      | yes                                                    | **trigger** — `backdropCutout=triggerElement` (`:294,307`)                                                       | while `mounted`                      | yes (`:306`)                                 | mounted but `inert`        | non-modal root → none                                          | **yes** (with trigger cutout)                             |
+| Menu — submenu          | **nothing** — backdrop never rendered (`parent.type==='menu'`, `:285`); outside-press via the tree / `useDismiss`                                                                                          | no                                                     | n/a                                                                                                              | n/a                                  | n/a                                          | n/a                        | submenu never blocks the background                            | **yes** (no backdrop needed)                              |
+| Menubar — child         | `InternalBackdrop` when `parent.type==='menubar' && parent.context.modal` (`MenuPositioner.tsx:286`)                                                                                                       | yes (when menubar modal)                               | **menubar content** — `backdropCutout=parent.context.contentElement` (`:292`) so all bar triggers stay hoverable | while `mounted`                      | yes (`:306`)                                 | mounted but `inert`        | non-modal menubar → none                                       | **yes** (with content-element cutout)                     |
+| Context Menu            | `InternalBackdrop` when `modal`, ref wired to `parent.context.internalBackdropRef` (`MenuPositioner.tsx:301`)                                                                                              | yes                                                    | **none** — `backdropCutout` stays `null` for context-menu (`:290`); anchored at the cursor                       | while `mounted`                      | yes (`:306`)                                 | mounted but `inert`        | n/a (modal by default)                                         | **yes** (full-viewport, no cutout)                        |
+
+> **Source-derived; browser-verify pending (jsdom cannot resolve clipPath / `getBoundingClientRect` /
+> `inert` hit-testing):** that the clipPath cutout actually passes the pointer through to the
+> trigger/input while blocking the rest (`InternalBackdrop.tsx:12`); that the menubar content-element
+> cutout keeps every bar trigger hoverable for menu-switching (`:292`); that the input-group cutout keeps a
+> modal Combobox typeable; that `inert` truly disables the backdrop during the animated exit; and that the
+> cutout (computed once from `getBoundingClientRect`) does not go stale as the anchor moves/scrolls. These
+> are the `RdxInternalBackdrop` acceptance checks for the Phase 5 Chromium matrix.
 
 **The backdrop primitive is infra, but the _decision to render it_ is per-primitive policy (#7, verified).**
 `RdxInternalBackdrop` is shared infrastructure (above), but **who renders it, where, and with what cutout
@@ -660,88 +695,275 @@ while a nested popup is open leaves dismissal **and** focus ownership unchanged 
 
 ### Phase 0: Parity characterization (mandatory — gates later phases)
 
-Fill the source-derived + Chromium-verified tables/audit below. **No implementation starts until they are
-complete.**
+Fill the tables/audit below. **Two gate tiers** (they are sequenced differently, so do not conflate them):
 
-0. **Low-level primitive parity audit (§6).** Audit `RdxFocusScope`, `RdxPortal` / `RdxPortalPresence`,
-   and `RdxFocusGuards` against Base UI's `FloatingFocusManager` + `FloatingPortal` + `FocusGuard`. Record
-   per primitive: owner-`Document` vs global `document`, module-global state, `contains()` vs
-   `composedPath`/Shadow DOM, `setTimeout` vs queued focus, portal guard/tabbability/`aria-owns`, and the
-   needed rework (focus-scope rework, the portal-focus bridge, owner-document guards). **Gate:** the
-   coordination contract and rework scope are decided before Phase 1.
-1. **Pointer-interaction parity table** (§5) — per primitive: what intercepts a background press, internal
-   vs user backdrop, trigger/input cutout, backdrop **lifecycle (mounted vs open) / inert-when-`!open` /
-   animated-exit**, no-backdrop behavior. **It may conclude — and is expected to — that a shared
-   `RdxInternalBackdrop` primitive is required, with an assigned owner.** **Gate:**
-   `disableOutsidePointerEvents` is removed only for rows that prove parity (incl. a working
-   `RdxInternalBackdrop` where needed; §5 acceptance gate).
-2. **Focus-out parity table** — per primitive **and modal/non-modal**, the **resulting observable focus
-   transition**, not the `closeOnFocusOut` input. It must also cover the `restoreFocus` edge cases Base UI
-   handles separately (critical for Presence / animated unmount and dynamic Menu/Combobox items):
+- **Tier A — source-derived decisions.** Every item's `Resolution` is decided from `~/git/base-ui` source +
+  an audit of our code. **These gate Phase 1**: no implementation starts until Tier A is complete (it now
+  is). Phase 1 proceeds on the Tier-A decision and its documented **fallback**.
+- **Tier B — browser/AT verification** (the `‡` / "browser-pending" items: #3 `aria-owns`, #9 capture-race,
+  #10 WebKit blur). A real browser/AT/Safari is not available at characterization time, so these are
+  **pre-Acceptance gates verified in the Phase 5 matrix**, **not** Phase 1/2 blockers. Implementation builds
+  the Tier-A choice; the documented fallback is applied **only if** Phase 5 verification fails. The Tier-B
+  gate sentences below therefore read "**before Acceptance**" (decision + contingency recorded now; browser/AT
+  _confirmation_ in the Phase 5 matrix gates Acceptance) — they are **not** Phase 1/2 blockers.
 
-   | Primitive / mode                                      | focus → trigger/reference | focus → child popup | focus → outside | pointer-induced focus move | focused element **removed** | popup **kept-mounted while closed** | close during **queued initial-focus** frame | closes? |
-   | ----------------------------------------------------- | ------------------------- | ------------------- | --------------- | -------------------------- | --------------------------- | ----------------------------------- | ------------------------------------------- | ------- |
-   | _(Phase 0 fills each from Base UI source + Chromium)_ |                           |                     |                 |                            |                             |                                     |                                             |         |
+**Status (all 12 items resolved — each has a `Resolution` below, source-derived against `~/git/base-ui` +
+an audit of our code).** Classification:
 
-   **Gate:** each primitive's focus policy must match its row; the known Base-UI-Select-closes-on-focus-out
-   vs Radix-prevents divergence is recorded with its resolution.
+- **Source-resolved / satisfied by the foundation** — #1, #2 (filled tables), #4 (positioner exit = parity,
+  no change), #6 (dismissal-inside = tree/registry, not portal), #8 (`children({onlyOpen:false})` exists),
+  #12 (`createFloatingRootContext` + node-optional capability exist).
+- **Decided, needs net-new infra (Phase 1/4)** — #0 (rework `RdxFocusScope`; build the portal-focus bridge
+  / `RdxFocusGuards`), #5 (`resolveRegisteredContainerParent` + portal registry), #7 (pin the focus-host
+  marker), #11 (migrate the two Combobox layouts).
+- **Source-derived, decision/behavior browser-or-AT-pending (pre-Acceptance gate, verified in Phase 5)** —
+  #3 (single `aria-owns` anchor vs multi-IDREF — AT), #9 (capture-timing race — Playwright; fallback =
+  explicit capture marker), #10 (WebKit blur-before-unmount — Safari matrix).
 
-3. **`aria-owns` / content-roots audit (§6a, #4) — multi-IDREF is an Angular _adaptation_, not literal
-   parity.** Base UI emits a **single** `<span aria-owns={portalNode.id} />` pointing at the **one wrapper**
-   that owns the whole portal subtree (`FloatingPortal.tsx:267`). We have **no wrapper**, so listing
-   several `contentRootElements` IDREFs is a _reasonable adaptation_ — but **not proven equivalent**.
-   Phase 0 must validate in a real browser/AT, not assume: (a) do multiple IDREFs reproduce the intended
-   reading/tab order; (b) are descendants that live under a **non-content** root (e.g. inside the
-   positioner) lost; (c) is an **invisible semantic portal anchor** (one element wrapping the content roots,
-   mirroring Base UI's single wrapper) better than enumerating roots. Also record **who mints/owns the
-   stable IDs** (IDREF targets need SSR-stable `injectId` ids) and the `aria-owns` behavior on a
-   **container move**. A backdrop is a DOM root but is **never** `aria-owns`'d. **Gate:**
-   `contentRootElements` is defined separately from `ownRootElements`, and the IDREF-vs-anchor decision is
-   made from browser/AT evidence, before Phase 2; the backdrop is proven absent from any `aria-owns` set.
-4. **Positioner lifecycle during animated exit (§6a, #6 — follow-up to ADR 0012).** Confirm Base UI's
-   positioning lifecycle on close (`useAnchorPositioning` runs `autoUpdate` while `mounted`, gated
-   `open: mounted` — `useAnchorPositioning.ts:441,507`) and decide our parity: **keep `autoUpdate` running
-   until unmount** (current `RdxPopperContentWrapper` behavior = parity, no `active` input) vs freeze on
-   `open=false`. If kept, characterize whether a late `flip`/`shift` can visibly jump the popup mid-exit and
-   whether any primitive needs to **pin the placement/transform for the exit** (a Popper capability, **not**
-   a dismissal/focus concern). **Gate:** the positioner's exit-time behavior is decided and, if "keep
-   running", a test asserts the exit animation is not broken by a placement change.
-5. **Portal-ancestry vs custom-container audit (§6a, #1).** Characterize, per portaled primitive, the
-   resolved `portalParent`: implicit nesting (falls back to the enclosing portal context) vs an explicit
-   custom `container`. Verify against Base UI's `container ?? parentPortalNode ?? body` that a
-   custom-container child is **not** physically inside the parent portal subtree, and confirm our
-   `resolveRegisteredContainerParent(container)` returns the container's registration (or `null`), so the
-   parent's keep-sets exclude it. **Gate:** the resolved-parent algorithm is implemented and a child with
-   an explicit body-level container is **not** a keep-set descendant of its logical parent.
-6. **Dismissal-inside vs portal-inside audit (§6a, #2).** Confirm `useDismiss` computes outside-press
-   "inside" from floating element + reference + **floating-tree children** + **trigger registry** +
-   **markers** (`useDismiss.ts:173,345,388,393`), **not** `PortalContext` descendants. **Gate:** the
-   dismissal engine (ADR 0015) treats portal-registry membership as **non-authoritative** for outside-press
-   — a contextless portal kept for `markOthers` is dismissal-inside **only** via floating descendant or
-   trigger/branch/inside-element registration.
-7. **Focus-host resolution audit (§3, #1).** Pin the focusable marker (`FOCUSABLE_ATTRIBUTE` analog) and
-   the `getFloatingFocusElement(floating)` algorithm per primitive: where `floatingElement` ===
-   `floatingFocusElement` (popup carries handlers) and where they **diverge** (positioner-is-floating,
-   Select item-aligned, wrapper compositions). **Gate:** the manager resolves the focus host explicitly
-   (trap / `initialFocus` / `returnFocus` / `tabIndex` operate on `floatingFocusElement`; tree/dismissal on
-   `floatingElement`); a divergent case (focus host is a child of the floating element) is covered by a test.
-8. **Focus-return traversal filter (#4).** Confirm the focus-inside-tree check on unmount/close walks
-   descendants with `onlyOpen=false` (`FloatingFocusManager.tsx:842`), so focus inside a closed-but-mounted
-   descendant still counts as inside the tree. **Gate:** the return-focus path calls the shared traversal
-   with `onlyOpen: false` (ADR 0015 §1), never the dismissal default `onlyOpen: true`; tested with a
-   keep-mounted closed child holding focus.
-9. **`insideReactTree`-analog capture audit (#5).** Base UI keeps an `insideReactTree` capture marker
-   (`useDismiss.ts:167,234,367`) separate from DOM/floating tree, guarding document-capture timing and
-   logical-tree interactions. Our Angular bubbling after DOM relocation does **not** follow the declaration
-   tree. **Gate:** prove (with tests) that the shared floating tree + owner-`Document` host listeners
-   **replace** this mechanism — pointer inside a portaled child while a document-capture listener is armed,
-   child handler `preventDefault`s, parent must **not** dismiss, including when dispatch moves/removes the
-   target. If they do not fully cover it, define the explicit capture-marker analog before Phase 1.
+Audit facts behind these: `RdxFocusScope` uses global `document` / module-global stack / `contains()` /
+`setTimeout`; `RdxFocusGuards`, the portal-focus bridge, `resolveRegisteredContainerParent`,
+`RdxInternalBackdrop`, `markOthers`, and the `contentRootElements`/`ownRootElements`/`descendantPortalRoots`
+roles are **ADR-only (not yet implemented)**; the foundation already ships the floating tree, per-root-context
+trigger registry, `children({onlyOpen})`, and `createFloatingRootContext`.
+
+0.  **Low-level primitive parity audit (§6).** Audit `RdxFocusScope`, `RdxPortal` / `RdxPortalPresence`,
+    and `RdxFocusGuards` against Base UI's `FloatingFocusManager` + `FloatingPortal` + `FocusGuard`. Record
+    per primitive: owner-`Document` vs global `document`, module-global state, `contains()` vs
+    `composedPath`/Shadow DOM, `setTimeout` vs queued focus, portal guard/tabbability/`aria-owns`, and the
+    needed rework (focus-scope rework, the portal-focus bridge, owner-document guards). **Gate:** the
+    coordination contract and rework scope are decided before Phase 1.
+
+    **Resolution (source-derived; audited our code + Base UI).** Base UI's `FloatingPortal` **is an active
+    focus participant** — it renders visually-hidden `tabindex=0` `FocusGuard` spans (marked
+    `data-base-ui-focus-guard`, `utils/FocusGuard.tsx:33`) **only when non-modal + open**
+    (`FloatingPortal.tsx:189`), toggles inside-tabbability via capture-phase `focusin`/`focusout`
+    (`:195–223`), and emits the single `aria-owns` span (`:266`). `FloatingFocusManager` uses the
+    **owner document** (`ownerDocument(floating)`, `FFM:338…893`), **queued** focus (`queueMicrotask` +
+    `enqueueFocus`→`requestAnimationFrame`), shadow-aware `getTarget`/`contains`, and a module-global
+    `previouslyFocusedElements` WeakRef list. **Our audit:** `RdxFocusScope` uses **global `document`**
+    (`focus-scope.ts:179`), a **module-global stack** (`stack.ts:14`), plain `container.contains()` (no
+    `composedPath`/shadow), and `setTimeout` return-focus (`:233`); **`RdxFocusGuards` does not exist**;
+    `RdxPortal`/`RdxPortalPresence` are **pure DOM movers** (no guards, no `aria-owns`, no focus
+    participation). **Decisions / rework scope:** (a) **rework `RdxFocusScope`** to owner-`Document`,
+    shadow/`composedPath`-aware containment, and queued (rAF/`afterRenderEffect`) focus — the module-global
+    stack is acceptable but its return-focus must be owner-document-scoped; (b) **build a new portal-focus
+    bridge** (`RdxFocusGuards` analog: leading/trailing guard spans + capture-phase tabbability toggle +
+    the `aria-owns` anchor) tied to `RdxPortal`/`RdxPortalPresence` — it does **not** exist today; (c) the
+    manager **composes** these three (trap + portal-focus bridge + owner-document) rather than extending
+    `RdxFocusScope`. Tab-order/focus behavior is **browser-verify pending** (Phase 5).
+
+1.  **Pointer-interaction parity table** (§5) — per primitive: what intercepts a background press, internal
+    vs user backdrop, trigger/input cutout, backdrop **lifecycle (mounted vs open) / inert-when-`!open` /
+    animated-exit**, no-backdrop behavior. **It may conclude — and is expected to — that a shared
+    `RdxInternalBackdrop` primitive is required, with an assigned owner.** **Gate:**
+    `disableOutsidePointerEvents` is removed only for rows that prove parity (incl. a working
+    `RdxInternalBackdrop` where needed; §5 acceptance gate).
+2.  **Focus-out parity table** — per primitive **and modal/non-modal**, the **resulting observable focus
+    transition**, not the `closeOnFocusOut` input. It must also cover the `restoreFocus` edge cases Base UI
+    handles separately (critical for Presence / animated unmount and dynamic Menu/Combobox items):
+
+    **Filled (source-derived against `mui/base-ui` master).** Legend: **FFM** =
+    `floating-ui-react/components/FloatingFocusManager.tsx`; the close decision is the `!modal` branch at
+    `FFM:531–547` (requires a set `relatedTarget`, a move to an _unrelated_ node, and `!isPointerDownRef`),
+    focus-out is **not** a `useDismiss` concern. ‡ = restore/timing cell that is source-correct but
+    **browser-verify pending** (needs real layout/focus, see below).
+
+    **Two distinct tree walks — do not conflate (drives the Phase 3 traversal choice).** Focus-out
+    **containment** ("did focus move to an _unrelated_ node?", `movedToUnrelatedNode`) walks
+    `getNodeChildren` with the **default `onlyOpen=true`** + `getNodeAncestors` (`FFM:454–478`), so focus
+    moving into an **open** child popup is "related" and the parent stays open. The separate `onlyOpen=false`
+    walk (`FFM:842`) is **only** the focus-return / unmount path (it must also count a closed-but-mounted
+    descendant as inside, ADR 0015 §1). So the "focus → child popup" column cites **`FFM:466`** (containment),
+    **not** `FFM:842`. (`triggerElements` here is `store.context.triggerElements`, `FFM:439` — per-root, not
+    the shared tree, confirming the per-root-context trigger registry.)
+
+    | Primitive / mode                               | focus → trigger/reference                                                                                                                                                                                                    | focus → child popup                                             | focus → outside                                                                        | pointer-induced focus move | focused element **removed**                                  | popup **kept-mounted while closed**                                                               | close during **queued initial-focus** frame | closes?                                                  |
+    | ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- | ------------------------------------------- | -------------------------------------------------------- |
+    | Dialog (modal)                                 | trapped — guards block it (`modal=true`, `FFM:935`)                                                                                                                                                                          | stays — containment walk `onlyOpen=true` (`FFM:466`)            | suppressed (`!modal` false, `FFM:532`)                                                 | suppressed (`FFM:535`)     | `restoreFocus="popup"` re-focuses popup ‡ (`FFM:499`)        | manager **enabled** (`disabled={!mounted}`); trap + return-focus persist; close moot              | `restoreFocusFrame.request` ‡ (`FFM:504`)   | **No**                                                   |
+    | Dialog (non-modal / `disablePointerDismissal`) | `closeOnFocusOut=!disablePointerDismissal`; if disabled, listener never attaches (`FFM:411`)                                                                                                                                 | stays (`FFM:466`)                                               | plain non-modal → closes (`FFM:531`); `disablePointerDismissal` → no close (`FFM:411`) | suppressed (`FFM:535`)     | `restoreFocus="popup"` ‡                                     | manager enabled; return-focus persists; close moot                                                | `restoreFocusFrame` ‡                       | **only** if `closeOnFocusOut` & focus left tree          |
+    | Popover (click)                                | modal → trapped; non-modal → trigger counts inside (`FFM:454`)                                                                                                                                                               | stays (`FFM:466`)                                               | modal suppressed (`FFM:532`); non-modal closes (`FFM:531`)                             | suppressed (`FFM:535`)     | `restoreFocus="popup"` ‡ (`PopoverPopup:138`)                | manager enabled (`disabled={!mounted‖hover}`); trap (if modal) + return-focus persist; close moot | `restoreFocusFrame` ‡                       | non-modal+left-tree **Yes**; modal **No**                |
+    | Popover (hover-open)                           | manager fully `disabled` (`reason===triggerHover`) — no focus-out path                                                                                                                                                       | n/a (manager off)                                               | no focus-manager close (hover/`useDismiss` drives close)                               | n/a                        | no restore (manager off)                                     | n/a                                                                                               | n/a                                         | **No** (via FFM; hover-driven)                           |
+    | Menu root                                      | trigger counts inside (`previousFocusableElement=activeTrigger`, `FFM:462`)                                                                                                                                                  | stays — open submenu via containment walk (`FFM:466`)           | closes (`!modal`, `FFM:531`)                                                           | suppressed (`FFM:535`)     | `restoreFocus=true` → prev/last tabbable/popup ‡ (`FFM:511`) | manager enabled; return-focus persists; close moot                                                | re-focus popup ‡ (`FFM:518`)                | **Yes** to unrelated                                     |
+    | Menu submenu                                   | parent menu is an ancestor → focus→parent is inside (`FFM:471`)                                                                                                                                                              | stays (`FFM:466`)                                               | closes (`FFM:531`)                                                                     | suppressed                 | `restoreFocus=true` ‡                                        | manager enabled; return-focus persists; close moot                                                | re-focus popup ‡                            | **Yes** to unrelated; **No** to ancestor                 |
+    | Context Menu                                   | trapped (`modal=true`, `MenuPopup:139`)                                                                                                                                                                                      | stays (`FFM:466`)                                               | suppressed (modal, `FFM:532`)                                                          | suppressed                 | `restoreFocus=true` ‡                                        | manager enabled; trap + return-focus persist; close moot                                          | re-focus popup ‡                            | **No** (modal)                                           |
+    | Menubar child                                  | trigger registered inside → focus→trigger inside (`FFM:462`)                                                                                                                                                                 | stays (`FFM:466`)                                               | closes (`FFM:531`)                                                                     | suppressed                 | `restoreFocus=true` ‡                                        | manager enabled; return-focus persists; close moot                                                | re-focus popup ‡                            | **Yes** to unrelated                                     |
+    | **Select**                                     | `modal=false`, `closeOnFocusOut` default **true** (`FFM:260`); trigger is `domReference`, inside (`FFM:454`)                                                                                                                 | n/a                                                             | **closes** — non-modal + unrelated + `relatedTarget` set (`FFM:531`)                   | suppressed (`FFM:535`)     | `restoreFocus=true` ‡ (`SelectPopup:525`)                    | manager enabled; return-focus persists; close moot                                                | re-focus popup ‡                            | **Yes** — Base-UI-vs-Radix divergence (below)            |
+    | Combobox input-inside                          | `inputInsidePopup=true` → `focusManagerModal=modal` (default **`false`**) → **non-modal, untrapped**; typeable ⇒ `isUntrappedTypeableCombobox` (`ComboboxPopup:117`, `FFM:284`); input is `domReference`, inside (`FFM:454`) | stays (`FFM:466`)                                               | **closes** — untrapped typeable forces close to unrelated (`FFM:543`)                  | suppressed (`FFM:535`)     | `restoreFocus` default `false` → none                        | manager enabled; return-focus persists; close moot                                                | n/a                                         | **Yes** to unrelated                                     |
+    | Combobox input-outside                         | `inputInsidePopup=false` → `focusManagerModal=true` **even when `modal=false`** (`ComboboxPopup:117`); role `presentation`, `resolvedFinalFocus=false` (`:114`) → **modal, trapped**                                         | stays (`FFM:466` + dismiss buttons inside, `ComboboxPopup:127`) | suppressed — modal (`FFM:532`)                                                         | suppressed                 | `restoreFocus=false` → none (focus stays in external input)  | manager enabled; trap persists; close moot                                                        | n/a                                         | **No** (modal) — closes via outside-press, not focus-out |
+    | Autocomplete                                   | = Combobox per its `inputInsidePopup` (config-dependent ‡): input-inside ⇒ non-modal/untrapped; input-outside ⇒ modal/trapped                                                                                                | stays (`FFM:466`)                                               | input-inside ⇒ **closes** (`FFM:543`); input-outside ⇒ suppressed (`FFM:532`)          | suppressed                 | `restoreFocus=false` → none                                  | manager enabled; close moot                                                                       | n/a                                         | input-inside **Yes**; input-outside **No** ‡             |
+
+    **Resolution — Select focus-out divergence (gate).** Base UI Select **closes** on focus-out
+    (`modal=false`, `closeOnFocusOut` defaults `true`, `FFM:260` → the `!modal` close branch `FFM:531`);
+    Radix Select currently `preventDefault()`s focus-out and stays open. **Decision: adopt Base UI parity —
+    `RdxFloatingFocusManager` for Select uses `closeOnFocusOut` default `true` and closes on focus-out to an
+    unrelated node.** This is a deliberate breaking change for Radix Select, recorded here; the Phase 3
+    focus-out implementation drops the Radix `preventDefault()`. (Focus returning to the trigger, staying in
+    the popup, a pointer-induced move, or a null `relatedTarget` still do **not** close — `FFM:454/535`.)
+
+    **Browser-verify pending (‡ cells):** every `restoreFocus` / `restoreFocusFrame` final-landing outcome
+    depends on real layout (`isElementVisible`, `activeElement===body`, `FFM:488`) and animation-frame
+    timing; the WebKit blur-before-unmount (`FFM:889`) is Safari-only; "trigger counts inside" for
+    non-modal Popover / Menu / Menubar relies on runtime trigger-registration + `previousFocusableElement`
+    wiring; and **Autocomplete's layout** (`inputInsidePopup`) is set by the root config, not the popup, so
+    which row it follows (and thus whether it closes on focus-out) must be confirmed per usage. Source-derived
+    above; confirmed in the Phase 5 Chromium/WebKit matrix.
+
+    **Gate:** each primitive's focus policy must match its row; the known Base-UI-Select-closes-on-focus-out
+    vs Radix-prevents divergence is recorded with its resolution (above).
+
+3.  **`aria-owns` / content-roots audit (§6a, #4) — multi-IDREF is an Angular _adaptation_, not literal
+    parity.** Base UI emits a **single** `<span aria-owns={portalNode.id} />` pointing at the **one wrapper**
+    that owns the whole portal subtree (`FloatingPortal.tsx:267`). We have **no wrapper**, so listing
+    several `contentRootElements` IDREFs is a _reasonable adaptation_ — but **not proven equivalent**.
+    Phase 0 must validate in a real browser/AT, not assume: (a) do multiple IDREFs reproduce the intended
+    reading/tab order; (b) are descendants that live under a **non-content** root (e.g. inside the
+    positioner) lost; (c) is an **invisible semantic portal anchor** (one element wrapping the content roots,
+    mirroring Base UI's single wrapper) better than enumerating roots. Also record **who mints/owns the
+    stable IDs** (IDREF targets need SSR-stable `injectId` ids) and the `aria-owns` behavior on a
+    **container move**. A backdrop is a DOM root but is **never** `aria-owns`'d. **Gate:**
+    `contentRootElements` is defined separately from `ownRootElements`, and the IDREF-vs-anchor decision is
+    made from browser/AT evidence (Tier B — recorded now, AT-confirmed before Acceptance in the Phase 5
+    matrix); the backdrop is proven absent from any `aria-owns` set.
+
+    **Resolution (source-derived; AT decision browser-pending).** Confirmed: Base UI emits a **single**
+    `<span aria-owns={portalNode.id}>` (`FloatingPortal.tsx:266`) pointing at **one** wrapper
+    `<div data-base-ui-portal id={useId}>` (`:131`), and only in the **non-modal-open** state. We have **no
+    wrapper** today (`RdxPortalPresence` relocates root nodes with none). **Decision (preferred, source-
+    derived): adopt the single invisible semantic anchor** (option c) — mint **one** stable-id anchor
+    (`injectId`, SSR-stable) that owns the content roots, mirroring Base UI's single wrapper, **rather than**
+    enumerating multiple `contentRootElements` IDREFs (unproven for reading/tab order, and loses descendants
+    under non-content roots). `contentRootElements` is defined **separately** from `ownRootElements`
+    (footprint), and a **backdrop is never in any `aria-owns` set**. **Browser/AT-verify pending:** the
+    single-anchor-vs-multi-IDREF reading/tab-order equivalence and container-move behavior must be confirmed
+    against a real screen reader **before Acceptance** (Tier B, Phase 5 AT matrix); if multi-IDREF proves
+    necessary, that is the fallback.
+
+4.  **Positioner lifecycle during animated exit (§6a, #6 — follow-up to ADR 0012).** Confirm Base UI's
+    positioning lifecycle on close (`useAnchorPositioning` runs `autoUpdate` while `mounted`, gated
+    `open: mounted` — `useAnchorPositioning.ts:441,507`) and decide our parity: **keep `autoUpdate` running
+    until unmount** (current `RdxPopperContentWrapper` behavior = parity, no `active` input) vs freeze on
+    `open=false`. If kept, characterize whether a late `flip`/`shift` can visibly jump the popup mid-exit and
+    whether any primitive needs to **pin the placement/transform for the exit** (a Popper capability, **not**
+    a dismissal/focus concern). **Gate:** the positioner's exit-time behavior is decided and, if "keep
+    running", a test asserts the exit animation is not broken by a placement change.
+
+    **Resolution (source-derived; DECIDED).** Confirmed: Base UI keys positioning on **`mounted`, never
+    `open`** — `whileElementsMounted: autoUpdate` with `open: undefined` (default) and, for `keepMounted`, a
+    manual `autoUpdate` effect gated `keepMounted && mounted && reference && floating`
+    (`useAnchorPositioning.ts:441,506–511`) — so `flip`/`shift` continue through the exit. **Decision: keep
+    `autoUpdate` running until unmount** = parity, **no change** — our `RdxPopperContentWrapper.autoUpdate`
+    already lives for the directive's whole lifetime (ADR 0012), no `active` input, no freeze-on-`open=false`.
+    A "pin placement/transform for the exit" is an explicit **Popper** capability (out of scope here, not a
+    dismissal/focus concern) and is **not** added unless a primitive needs it. **Browser-verify pending:** a
+    visual-regression test that a late `flip`/`shift` does not visibly break the exit animation (layout-
+    dependent → Phase 5 Playwright).
+
+5.  **Portal-ancestry vs custom-container audit (§6a, #1).** Characterize, per portaled primitive, the
+    resolved `portalParent`: implicit nesting (falls back to the enclosing portal context) vs an explicit
+    custom `container`. Verify against Base UI's `container ?? parentPortalNode ?? body` that a
+    custom-container child is **not** physically inside the parent portal subtree, and confirm our
+    `resolveRegisteredContainerParent(container)` returns the container's registration (or `null`), so the
+    parent's keep-sets exclude it. **Gate:** the resolved-parent algorithm is implemented and a child with
+    an explicit body-level container is **not** a keep-set descendant of its logical parent.
+
+    **Resolution (source-derived; needs new infra).** Confirmed Base UI:
+    `resolvedContainer = container ?? parentPortalNode ?? document.body` (`FloatingPortal.tsx:110–113`) — an
+    explicit `container` is the portal target directly, so a custom-container child is **physically inside
+    that container, not the parent portal subtree**. **Our audit:** `resolveRegisteredContainerParent` **does
+    not exist**; the portal only has the stateless `resolvePortalContainer` (no registry tracking container
+    parents). **Decision:** mirror `container ?? parentPortal ?? body`, and **build** a portal registry +
+    `resolveRegisteredContainerParent(container)` that returns the container's registered owner node (or
+    `null`) so a parent's keep-sets exclude an explicit-body-container child. This is **net-new portal infra**
+    (Phase 1/4), not present today. Source-derived; the keep-set exclusion is asserted in a Phase 5 test.
+
+6.  **Dismissal-inside vs portal-inside audit (§6a, #2).** Confirm `useDismiss` computes outside-press
+    "inside" from floating element + reference + **floating-tree children** + **trigger registry** +
+    **markers** (`useDismiss.ts:173,345,388,393`), **not** `PortalContext` descendants. **Gate:** the
+    dismissal engine (ADR 0015) treats portal-registry membership as **non-authoritative** for outside-press
+    — a contextless portal kept for `markOthers` is dismissal-inside **only** via floating descendant or
+    trigger/branch/inside-element registration.
+
+    **Resolution (source-derived; satisfied by the foundation).** Confirmed: `useDismiss` computes
+    outside-press "inside" from floating + reference (`composedPath`, `useDismiss.ts:181`), **floating-tree
+    children** (`getNodeChildren`, `:344`), the **trigger registry** (`store.context.triggerElements`,
+    `:382`), and **inert markers** (`:373`) — there is **no `PortalContext`** reference in `useDismiss`.
+    **Decision:** the ADR 0015 engine treats portal-registry membership as **non-authoritative** for
+    outside-press. This already matches our foundation: containment reads `RdxFloatingTree.children()` +
+    the per-root-context `RdxTriggerRegistry`, never portal membership. A contextless portal kept only for
+    `markOthers` is dismissal-inside **only** via a floating descendant (tree child) or
+    trigger/branch/inside-element registration. Source-derived; gate met by the foundation's design.
+
+7.  **Focus-host resolution audit (§3, #1).** Pin the focusable marker (`FOCUSABLE_ATTRIBUTE` analog) and
+    the `getFloatingFocusElement(floating)` algorithm per primitive: where `floatingElement` ===
+    `floatingFocusElement` (popup carries handlers) and where they **diverge** (positioner-is-floating,
+    Select item-aligned, wrapper compositions). **Gate:** the manager resolves the focus host explicitly
+    (trap / `initialFocus` / `returnFocus` / `tabIndex` operate on `floatingFocusElement`; tree/dismissal on
+    `floatingElement`); a divergent case (focus host is a child of the floating element) is covered by a test.
+
+    **Resolution (source-derived).** Confirmed: `getFloatingFocusElement(floating)` returns the floating
+    element when it `hasAttribute(FOCUSABLE_ATTRIBUTE)`, else its `querySelector([FOCUSABLE_ATTRIBUTE])`
+    match, else the floating element itself (`utils/element.ts:82`); `FOCUSABLE_ATTRIBUTE` is
+    `data-base-ui-focusable` (`utils/constants.ts:1`). **Decision:** pin a Radix focusable marker (e.g.
+    `data-rdx-focus-host`) and the identical resolution; the manager resolves the host **explicitly** — trap,
+    `initialFocus`, `returnFocus`, and `tabIndex` operate on **`floatingFocusElement`**, while tree/dismissal operate on
+    **`floatingElement`** (distinct roles, §6a five-role list). **Our divergent cases (audited):** Select's
+    popup **is** the floating element and the focus host (traps via `RdxFocusScope`, `select-popup.ts:101`),
+    with the positioner a separate geometry ancestor; **item-aligned** Select has no wrapper; Combobox does
+    **not** trap (host stays the input). A divergent case (focus host nested below the floating element) gets
+    a Phase-5 test. Source-derived; the marker name is our choice.
+
+8.  **Focus-return traversal filter (#4).** Confirm the focus-inside-tree check on unmount/close walks
+    descendants with `onlyOpen=false` (`FloatingFocusManager.tsx:842`), so focus inside a closed-but-mounted
+    descendant still counts as inside the tree. **Gate:** the return-focus path calls the shared traversal
+    with `onlyOpen: false` (ADR 0015 §1), never the dismissal default `onlyOpen: true`; tested with a
+    keep-mounted closed child holding focus.
+
+    **Resolution (source-derived; satisfied by the foundation).** Confirmed: the return-focus walk is
+    `getNodeChildren(tree, id, false)` at `FFM:842` (vs the default `onlyOpen=true` containment walk at
+    `FFM:466`). **Already implemented:** `RdxFloatingTree.children(node, { onlyOpen: false })` exists and is
+    documented for exactly this focus-return path (the dismissal default stays `onlyOpen: true`). The
+    Phase-3 return-focus path calls it with `onlyOpen: false`; a unit test covers a keep-mounted closed
+    child holding focus still counting as inside the tree. Gate met by the foundation.
+
+9.  **`insideReactTree`-analog capture audit (#5).** Base UI keeps an `insideReactTree` capture marker
+    (`useDismiss.ts:167,234,367`) separate from DOM/floating tree, guarding document-capture timing and
+    logical-tree interactions. Our Angular bubbling after DOM relocation does **not** follow the declaration
+    tree. **Gate:** prove (with tests) that the shared floating tree + owner-`Document` host listeners
+    **replace** this mechanism — pointer inside a portaled child while a document-capture listener is armed,
+    child handler `preventDefault`s, parent must **not** dismiss, including when dispatch moves/removes the
+    target. If Phase 5 proves they do not fully cover it, add the explicit capture-marker analog as a
+    contingency (Tier B — before Acceptance, not a Phase 1 blocker).
+
+    **Resolution (source-derived; capture-timing browser-pending).** Confirmed: Base UI's
+    `insideReactTree` is a **boolean on `dataRef.current`** set `true` by **capture-phase** handlers
+    (`onPointerDownCapture`/`onMouseDownCapture`/… on the floating element, `useDismiss.ts:729–740`),
+    auto-cleared on a `0ms` timeout (`:233`), and consulted by the document-level outside-press listener
+    (`if (insideReactTree) { clear(); return; }`, `:367`) — it suppresses one outside-press that bubbled
+    through the floating React subtree even across portals. **Decision:** for the **common** case the shared
+    floating tree (logical DI children via `RdxFloatingTree.children()`) + per-root-context trigger registry +
+    owner-`Document` host listeners **replace** it — an outside-press whose target is inside a portaled
+    **logical** child is "inside" via the tree walk regardless of DOM relocation. **Browser-pending (gated):**
+    the specific race it guards — a document-capture listener firing in the **same gesture** where a child
+    handler `preventDefault`s **and** the target is moved/removed mid-dispatch — is **not** proven by tree
+    membership alone and must be validated with a Playwright test in Phase 5; **if** it fails, an explicit
+    capture-marker analog is added as a contingency **before Acceptance** (Tier B, Phase 5). Recorded as the
+    gate condition.
+
 10. **Safari/WebKit blur-before-unmount (browser matrix).** Base UI force-`blur()`s a focused input
     inside a closing popup on WebKit before unmount to avoid a random scroll-to-bottom
     (`FloatingFocusManager.tsx:885–899`, gated `platform.engine.webkit && !open && floating`). **Gate:** the
     WebKit browser matrix asserts closing a popup with a focused inner input does **not** scroll the page and
     that return-focus stays correct.
+
+    **Resolution (source-derived; browser-pending — WebKit only).** Confirmed: gate
+    `if (!platform.engine.webkit || open || !floating) return;` then blur the active element iff it is a
+    **typeable** element `contains`ed by `floating` (`FFM:889–900`). **Decision: adopt** — on WebKit only,
+    when `!open() && floatingElement` and `document.activeElement` is a typeable element inside the floating
+    element, the manager calls `.blur()` before unmount (platform detection via our browser guard). This is
+    **inherently WebKit/Safari-only**, so it is **browser-verify pending** — asserted in the Phase 5
+    WebKit matrix (closing a popup with a focused inner input does not scroll the page; return-focus stays
+    correct). Source-derived.
+
 11. **Combobox input-inside vs input-outside — migrate the two layouts separately (#6, verified).** Base UI
     sets `focusManagerModal = !inputInsidePopup || modal` (`ComboboxPopup.tsx:117`), so an **input-outside**
     Combobox uses **modal** focus-manager behavior **even when `modal === false`**, with `returnFocus = false`
@@ -752,6 +974,20 @@ complete.**
     the migration characterizes **both** layouts independently — `focusManagerModal`, `returnFocus`,
     `role`, the start/end dismiss buttons, and `getInsideElements` — and reconciles the popup's
     "does-not-trap" claim with Base UI's modal-for-input-outside behavior.
+
+    **Resolution (source-derived).** Confirmed in `ComboboxPopup.tsx`: the focus-manager modality is
+    `!inputInsidePopup || modal` (`:117`); the resolved final focus is `undefined` for input-inside and
+    `false` for input-outside (`:114`); the role is `dialog` for input-inside, `presentation` otherwise
+    (`:81`); inside-elements are the start/end dismiss refs (`:127`); and the trailing dismiss button
+    renders only when the focus manager is modal (`:134`). **Our audit:** `combobox-popup.ts` does **not**
+    trap and carries the comment _"focus stays in the input throughout"_ — correct for input-**inside**
+    (non-modal/untrapped) but **wrong for input-outside**. **Decision (matches the corrected focus-out
+    table rows):** migrate the two layouts independently — **input-inside** is non-modal/untrapped
+    (`role=dialog`, default return focus); **input-outside** is modal/trapped even when `modal` is
+    false (`role=presentation`, return focus `false` so focus stays in the external input), and renders the
+    start/end dismiss buttons. The Radix "does-not-trap" comment is corrected in the Phase 4 migration.
+    Source-derived; reconciled with item #2.
+
 12. **Navigation Menu may run dismissal without a full floating node (#8, verified).** Base UI's Navigation
     Menu uses `useDismiss` with a **fallback empty floating context**, enabling interactions only when a
     positioner/value exists (`NavigationMenuList.tsx`). **Gate:** the shared dismissal API (ADR 0015) must
@@ -759,9 +995,38 @@ complete.**
     **only when a popup exists**, or the capability tolerates a temporarily-absent node — so Navigation Menu
     is not forced to register a full node in every state.
 
-### Phase 1: `RdxFloatingFocusManager` skeleton
+    **Resolution (source-derived; satisfied by the foundation).** Confirmed: Base UI's NavMenu runs
+    `useDismiss` with a **fallback empty floating context** (`getEmptyRootContext()` — a `FloatingRootStore`
+    with **no** tree node), enabling interactions only when a positioner/value exists. **Already
+    implemented:** the foundation provides `createFloatingRootContext()` (the `getEmptyRootContext` analog)
+    and the **node-optional capability model** — `RdxDismissableCapability` references a **root context
+    mandatorily** and a **node optionally** (ADR 0015 §1). So NavMenu registers a tree node **only when a
+    popup exists** and otherwise runs dismissal off a standalone root context with `node === null`. Gate met
+    by the foundation; the wiring lands in the Phase 4 migration.
 
-- Implement the independent policy set (§1, §2) composing `RdxFocusScope`; wire focus lifecycle + enabled.
+### Phase 1: Low-level focus foundation, then the `RdxFloatingFocusManager` skeleton
+
+This phase has **two ordered steps** — the foundation lands **before** the skeleton, and both before any
+primitive migration (Phase 4). It is the home for the Phase 0 #0 / §6 rework, which today **does not exist**.
+
+**1a — low-level foundation (build / rework first):**
+
+- **Rework `RdxFocusScope`** (Phase 0 #0): owner-`Document` (not global `document`), shadow/`composedPath`-aware
+  containment (not bare `contains()`), and queued focus (rAF / `afterRenderEffect`, not `setTimeout`). The
+  **active-scope stack moves to `WeakMap<Document, FocusScopeStack>`** — it pauses/resumes scopes, so it **is**
+  cross-document state (opening a scope in document B must not pause document A's scope) and cannot stay
+  process-global. Only a **passive** previously-focused-element history (a WeakRef list, no pause/resume
+  coordination) may remain module-global — that, not the active stack, is the true Base UI
+  `previouslyFocusedElements` analogue.
+- **Build the portal-focus bridge + `RdxFocusGuards`** (Phase 0 #0 / §6 — net-new): leading/trailing
+  visually-hidden `tabindex=0` guard spans + capture-phase inside-tabbability toggle + the single `aria-owns`
+  anchor, tied to `RdxPortal` / `RdxPortalPresence`.
+- Owner-`Document` focus guards (§6).
+
+**1b — manager skeleton:**
+
+- Implement the independent policy set (§1, §2) by **composing** the three low-level parts (reworked
+  `RdxFocusScope` + portal-focus bridge + owner-document guards); wire focus lifecycle + `enabled`.
 
 ### Phase 2: aria-hidden + marker passes
 
@@ -936,9 +1201,15 @@ complete.**
 10. `RdxFloatingFocusManager` reads the **shared** floating infrastructure (ADR 0015 §1) — nodes,
     traversal, the shared **trigger registry** (§2), and the typed **event channels** — not a focus-only
     tree or a duplicate trigger list.
-11. Focus scope, focus guards, and portal-focus coordination are **owner-`Document`-scoped** (no
-    module-global `count`/`document`/stack), verified with two-document/iframe tests (§6) — the same
-    isolation this trilogy applies to pointer-events and scroll lock.
+11. Focus scope, focus guards, and portal-focus coordination are **owner-`Document`-scoped**: no
+    module-global **`document` / `document.body`** references (listeners, return-focus fallbacks, and
+    tabbable queries all key off the owner document), verified with two-document/iframe tests (§6). The
+    **active-scope stack** (which pauses/resumes scopes) is **per-`Document`** — `WeakMap<Document,
+FocusScopeStack>`, **not** process-global — because pausing document A's scope when a scope opens in
+    document B is exactly the cross-document corruption this forbids. Only a **passive** previously-focused
+    history (a WeakRef list, no pause/resume coordination) may stay module-global; that is the real Base UI
+    `previouslyFocusedElements` analogue, **not** the active stack. The hard isolation requirement is the
+    same one this trilogy applies to pointer-events and scroll lock: per-`Document`, not process-global.
 12. The **per-effect lifecycle split** is honored exactly (verified line-by-line, §3/§6a): **focus-trap
     structure, close-on-focus-out, and return-focus follow `mounted`** (persist while mounted-but-closed,
     return-focus fires on that lifecycle, not the raw `open` flip), while **marker, `aria-hidden`,
