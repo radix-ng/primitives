@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { RdxComboboxOpenChange } from '@radix-ng/primitives/combobox';
 import { axe } from 'jest-axe';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { _importsAutocomplete } from '../index';
@@ -16,6 +17,7 @@ import { AutocompleteFilter, AutocompleteValueChangeDetails, RdxAutocompleteRoot
             [autoHighlight]="autoHighlight()"
             [openOnInputClick]="openOnInputClick()"
             (onValueChange)="changes.push($event)"
+            (onOpenChange)="handleOpenChange($event)"
             rdxAutocompleteRoot
         >
             <label rdxAutocompleteLabel>Fruit</label>
@@ -44,6 +46,22 @@ class HostComponent {
     readonly filter = signal<AutocompleteFilter | null | undefined>(undefined);
     readonly fruits = signal(['Apple', 'Banana', 'Grape']);
     readonly changes: AutocompleteValueChangeDetails[] = [];
+    readonly openChanges: RdxComboboxOpenChange[] = [];
+    cancelNextOpenChange = false;
+    keepMountedOnClose = false;
+
+    handleOpenChange(change: RdxComboboxOpenChange): void {
+        this.openChanges.push(change);
+
+        if (this.cancelNextOpenChange) {
+            change.eventDetails.cancel();
+            this.cancelNextOpenChange = false;
+        }
+
+        if (!change.open && this.keepMountedOnClose) {
+            change.eventDetails.preventUnmountOnClose();
+        }
+    }
 }
 
 describe('Autocomplete', () => {
@@ -102,6 +120,7 @@ describe('Autocomplete', () => {
             inputEl().dispatchEvent(new Event('click', { bubbles: true }));
             await settle();
             expect(host.open()).toBe(true);
+            expect(host.openChanges.at(-1)?.reason).toBe('input-press');
         });
 
         it('toggles via the trigger', async () => {
@@ -119,6 +138,20 @@ describe('Autocomplete', () => {
             key('Escape');
             await settle();
             expect(host.open()).toBe(false);
+            expect(host.openChanges.at(-1)?.reason).toBe('escape-key');
+        });
+
+        it('lets onOpenChange cancel opening before state commits', async () => {
+            host.openOnInputClick.set(true);
+            host.cancelNextOpenChange = true;
+            await settle();
+
+            inputEl().dispatchEvent(new MouseEvent('click', { bubbles: true }));
+            await settle();
+
+            expect(host.open()).toBe(false);
+            expect(host.openChanges.at(-1)?.open).toBe(true);
+            expect(host.openChanges.at(-1)?.eventDetails.isCanceled()).toBe(true);
         });
     });
 
@@ -136,6 +169,19 @@ describe('Autocomplete', () => {
             await settle();
             expect(host.value()).toBe('Banana');
             expect(host.open()).toBe(false);
+            expect(host.openChanges.at(-1)?.reason).toBe('item-press');
+        });
+
+        it('keeps the popup mounted when close requests preventUnmountOnClose', async () => {
+            host.open.set(true);
+            host.keepMountedOnClose = true;
+            await settle();
+
+            visibleItems()[0].click();
+            await settle();
+
+            expect(host.open()).toBe(false);
+            expect(document.querySelector('[rdxAutocompletePopup]')).not.toBeNull();
         });
 
         it('clear empties the value', async () => {

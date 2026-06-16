@@ -163,6 +163,59 @@ class ViewportHostComponent {}
 
 @Component({
     imports: [
+        RdxPreviewCardPopup,
+        RdxPreviewCardPortal,
+        RdxPreviewCardPositioner,
+        RdxPreviewCardRoot,
+        RdxPreviewCardTrigger
+    ],
+    template: `
+        <ng-container
+            #root="rdxPreviewCardRoot"
+            [(open)]="open"
+            (onOpenChange)="handleOpenChange($event)"
+            rdxPreviewCardRoot
+        >
+            <a href="#" rdxPreviewCardTrigger>Open</a>
+
+            <div *rdxPreviewCardPortal rdxPreviewCardPositioner>
+                <div rdxPreviewCardPopup>Preview</div>
+            </div>
+        </ng-container>
+    `
+})
+class PreviewCardCancelableHostComponent {
+    @ViewChild(RdxPreviewCardRoot)
+    root!: RdxPreviewCardRoot;
+
+    open = false;
+    cancelNextOpen = false;
+    cancelNextClose = false;
+    preventUnmountOnNextClose = false;
+    readonly changes: RdxPreviewCardOpenChange[] = [];
+
+    handleOpenChange(change: RdxPreviewCardOpenChange) {
+        if (change.open && this.cancelNextOpen) {
+            change.eventDetails.cancel();
+            this.cancelNextOpen = false;
+        }
+
+        if (!change.open && this.cancelNextClose) {
+            change.eventDetails.cancel();
+            this.cancelNextClose = false;
+        }
+
+        if (!change.open && this.preventUnmountOnNextClose) {
+            change.eventDetails.preventUnmountOnClose();
+            this.preventUnmountOnNextClose = false;
+        }
+
+        this.changes.push(change);
+    }
+}
+
+@Component({
+    imports: [
         RdxPreviewCardArrow,
         RdxPreviewCardPopup,
         RdxPreviewCardPositioner,
@@ -518,6 +571,71 @@ describe('PreviewCard', () => {
         expect(controlledFixture.componentInstance.triggerId).toBe('controlled-two');
         expect(controlledFixture.componentInstance.changes[0].reason).toBe('trigger-hover');
         expect(controlledFixture.componentInstance.changes[0].trigger).toBe(triggers[1]);
+        expect(controlledFixture.componentInstance.changes[0].eventDetails.reason).toBe('trigger-hover');
+    });
+
+    it('lets onOpenChange cancel an opening request', () => {
+        vi.useFakeTimers();
+        const cancelFixture = TestBed.createComponent(PreviewCardCancelableHostComponent);
+        cancelFixture.detectChanges();
+
+        const trigger: HTMLAnchorElement = cancelFixture.nativeElement.querySelector('[rdxPreviewCardTrigger]');
+        cancelFixture.componentInstance.cancelNextOpen = true;
+        trigger.dispatchEvent(pointerEvent('pointerenter'));
+        vi.advanceTimersByTime(600);
+        cancelFixture.detectChanges();
+
+        expect(cancelFixture.componentInstance.open).toBe(false);
+        expect(document.body.querySelector('[rdxPreviewCardPopup]')).toBeNull();
+        expect(cancelFixture.componentInstance.changes[0].eventDetails.isCanceled()).toBe(true);
+    });
+
+    it('lets onOpenChange cancel a close request', () => {
+        vi.useFakeTimers();
+        const cancelFixture = TestBed.createComponent(PreviewCardCancelableHostComponent);
+        cancelFixture.detectChanges();
+
+        const trigger: HTMLAnchorElement = cancelFixture.nativeElement.querySelector('[rdxPreviewCardTrigger]');
+        trigger.dispatchEvent(pointerEvent('pointerenter'));
+        vi.advanceTimersByTime(600);
+        cancelFixture.detectChanges();
+
+        cancelFixture.componentInstance.cancelNextClose = true;
+        cancelFixture.componentInstance.root.close('imperative-action', new Event('preview-card.test-close'));
+        cancelFixture.detectChanges();
+
+        expect(cancelFixture.componentInstance.open).toBe(true);
+        expect(document.body.querySelector('[rdxPreviewCardPopup]')).not.toBeNull();
+        expect(cancelFixture.componentInstance.changes.at(-1)?.eventDetails.isCanceled()).toBe(true);
+    });
+
+    it('keeps the portal mounted after close when preventUnmountOnClose is requested', () => {
+        vi.useFakeTimers();
+        const preventFixture = TestBed.createComponent(PreviewCardCancelableHostComponent);
+        preventFixture.detectChanges();
+
+        const trigger: HTMLAnchorElement = preventFixture.nativeElement.querySelector('[rdxPreviewCardTrigger]');
+        trigger.dispatchEvent(pointerEvent('pointerenter'));
+        vi.advanceTimersByTime(600);
+        preventFixture.detectChanges();
+
+        preventFixture.componentInstance.preventUnmountOnNextClose = true;
+        preventFixture.componentInstance.root.close('imperative-action', new Event('preview-card.test-close'));
+        preventFixture.detectChanges();
+
+        expect(preventFixture.componentInstance.open).toBe(false);
+        expect(document.body.querySelector('[rdxPreviewCardPopup]')).not.toBeNull();
+
+        trigger.dispatchEvent(pointerEvent('pointerenter'));
+        vi.advanceTimersByTime(600);
+        preventFixture.detectChanges();
+        expect(preventFixture.componentInstance.open).toBe(true);
+
+        preventFixture.componentInstance.root.close('imperative-action', new Event('preview-card.test-close'));
+        preventFixture.detectChanges();
+
+        expect(preventFixture.componentInstance.open).toBe(false);
+        expect(document.body.querySelector('[rdxPreviewCardPopup]')).toBeNull();
     });
 
     it('throws in dev mode when rdxPreviewCardPortal is used as an attribute instead of structurally', () => {

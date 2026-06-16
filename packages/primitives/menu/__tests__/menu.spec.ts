@@ -9,6 +9,7 @@ import {
     RdxMenuGroupLabel,
     RdxMenuItem,
     RdxMenuLinkItem,
+    RdxMenuOpenChange,
     RdxMenuPopup,
     RdxMenuPortal,
     RdxMenuPortalMisuseGuard,
@@ -2112,7 +2113,13 @@ describe('Menu', () => {
                 `
             })
             class Host {
-                events: Array<{ open: boolean; reason: string; trigger: HTMLElement | undefined; event: Event }> = [];
+                events: Array<{
+                    open: boolean;
+                    reason: string;
+                    trigger: HTMLElement | undefined;
+                    event: Event;
+                    eventDetails: { reason: string; isCanceled: () => boolean };
+                }> = [];
             }
 
             TestBed.configureTestingModule({ imports: [Host] });
@@ -2136,6 +2143,155 @@ describe('Menu', () => {
                 reason: 'trigger-press',
                 trigger: openTrigger
             });
+            expect((f.componentInstance as Host).events[0].eventDetails.reason).toBe('trigger-press');
+        });
+
+        it('lets onOpenChange cancel an opening request', () => {
+            @Component({
+                imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
+                template: `
+                    <div [(open)]="open" (onOpenChange)="handleOpenChange($event)" rdxMenuRoot>
+                        <button rdxMenuTrigger>Open</button>
+                        @if (open) {
+                            <div rdxMenuPositioner>
+                                <div rdxMenuPopup>
+                                    <button rdxMenuItem>Item</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                `
+            })
+            class Host {
+                open = false;
+                cancelNextOpen = false;
+                readonly events: RdxMenuOpenChange[] = [];
+
+                handleOpenChange(change: RdxMenuOpenChange) {
+                    if (change.open && this.cancelNextOpen) {
+                        change.eventDetails.cancel();
+                        this.cancelNextOpen = false;
+                    }
+
+                    this.events.push(change);
+                }
+            }
+
+            TestBed.configureTestingModule({ imports: [Host] });
+            const f = TestBed.createComponent(Host);
+            f.detectChanges();
+
+            const openTrigger: HTMLButtonElement = f.nativeElement.querySelector('[rdxMenuTrigger]');
+            f.componentInstance.cancelNextOpen = true;
+            openTrigger.click();
+            f.detectChanges();
+
+            expect(f.componentInstance.open).toBe(false);
+            expect(f.nativeElement.querySelector('[rdxMenuPopup]')).toBeNull();
+            expect(f.componentInstance.events[0].eventDetails.isCanceled()).toBe(true);
+        });
+
+        it('lets onOpenChange cancel a close request', () => {
+            @Component({
+                imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
+                template: `
+                    <div #root="rdxMenuRoot" [(open)]="open" (onOpenChange)="handleOpenChange($event)" rdxMenuRoot>
+                        <button rdxMenuTrigger>Open</button>
+                        @if (open) {
+                            <div rdxMenuPositioner>
+                                <div rdxMenuPopup>
+                                    <button rdxMenuItem>Item</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                `
+            })
+            class Host {
+                open = false;
+                cancelNextClose = false;
+                readonly events: RdxMenuOpenChange[] = [];
+
+                handleOpenChange(change: RdxMenuOpenChange) {
+                    if (!change.open && this.cancelNextClose) {
+                        change.eventDetails.cancel();
+                        this.cancelNextClose = false;
+                    }
+
+                    this.events.push(change);
+                }
+            }
+
+            TestBed.configureTestingModule({ imports: [Host] });
+            const f = TestBed.createComponent(Host);
+            f.detectChanges();
+
+            const openTrigger: HTMLButtonElement = f.nativeElement.querySelector('[rdxMenuTrigger]');
+            openTrigger.click();
+            f.detectChanges();
+
+            f.componentInstance.cancelNextClose = true;
+            openTrigger.click();
+            f.detectChanges();
+
+            expect(f.componentInstance.open).toBe(true);
+            expect(f.nativeElement.querySelector('[rdxMenuPopup]')).not.toBeNull();
+            expect(f.componentInstance.events.at(-1)?.eventDetails.isCanceled()).toBe(true);
+        });
+
+        it('keeps the portal mounted after close when preventUnmountOnClose is requested', () => {
+            @Component({
+                imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPortal, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
+                template: `
+                    <div #root="rdxMenuRoot" [(open)]="open" (onOpenChange)="handleOpenChange($event)" rdxMenuRoot>
+                        <button rdxMenuTrigger>Open</button>
+                        <div *rdxMenuPortal rdxMenuPositioner>
+                            <div rdxMenuPopup>
+                                <button rdxMenuItem>Item</button>
+                            </div>
+                        </div>
+                    </div>
+                `
+            })
+            class Host {
+                open = false;
+                preventUnmountOnNextClose = false;
+                readonly events: RdxMenuOpenChange[] = [];
+
+                handleOpenChange(change: RdxMenuOpenChange) {
+                    if (!change.open && this.preventUnmountOnNextClose) {
+                        change.eventDetails.preventUnmountOnClose();
+                        this.preventUnmountOnNextClose = false;
+                    }
+
+                    this.events.push(change);
+                }
+            }
+
+            TestBed.configureTestingModule({ imports: [Host] });
+            const f = TestBed.createComponent(Host);
+            f.detectChanges();
+
+            const openTrigger: HTMLButtonElement = f.nativeElement.querySelector('[rdxMenuTrigger]');
+            openTrigger.click();
+            f.detectChanges();
+
+            f.componentInstance.preventUnmountOnNextClose = true;
+            openTrigger.click();
+            f.detectChanges();
+
+            expect(f.componentInstance.open).toBe(false);
+            expect(document.body.querySelector('[rdxMenuPopup]')).not.toBeNull();
+
+            openTrigger.click();
+            f.detectChanges();
+            expect(f.componentInstance.open).toBe(true);
+
+            openTrigger.click();
+            f.detectChanges();
+
+            expect(f.componentInstance.open).toBe(false);
+            expect(document.body.querySelector('[rdxMenuPopup]')).toBeNull();
         });
     });
 

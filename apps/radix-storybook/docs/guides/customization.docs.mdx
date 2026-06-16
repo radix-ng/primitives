@@ -43,9 +43,21 @@ trackOpenChange(open: boolean) {
 }
 ```
 
-Change outputs currently emit the new value. Unlike Base UI's React API, Radix NG does not provide
-a shared `eventDetails` object with `reason`, `cancel()`, or `allowPropagation()` across all
-primitives.
+Simple value outputs often emit the next value directly (`boolean`, `string`, etc.). Popup
+primitives are richer: `Dialog`, `Popover`, `Menu`, `Combobox`, `Autocomplete`, and
+`Navigation Menu` emit an object with `open`, `reason`, the originating DOM `event`, and
+cancellable `eventDetails`.
+
+```ts
+handleDialogChange(change: { open: boolean; reason: string; eventDetails: { cancel(): void } }) {
+    if (!change.open && this.blockClose) {
+        change.eventDetails.cancel();
+        return;
+    }
+
+    this.open.set(change.open);
+}
+```
 
 ## Controlling components with state
 

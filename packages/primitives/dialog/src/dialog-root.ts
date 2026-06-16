@@ -15,11 +15,13 @@ import {
 } from '@angular/core';
 import {
     BooleanInput,
+    createCancelableChangeEventDetails,
     createContext,
     createFloatingRootContext,
     injectId,
     provideFloatingRootContext,
     provideFloatingTree,
+    RdxCancelableChangeEventDetails,
     RdxFloatingRootContext,
     RdxTransitionStatus,
     useTransitionStatus
@@ -39,12 +41,15 @@ export type RdxDialogOpenChangeReason =
     | 'imperative-action'
     | 'none';
 
+export type RdxDialogOpenChangeEventDetails = RdxCancelableChangeEventDetails<RdxDialogOpenChangeReason>;
+
 export interface RdxDialogOpenChange {
     open: boolean;
     triggerId: string | null;
     trigger: HTMLElement | undefined;
     reason: RdxDialogOpenChangeReason;
     event: Event;
+    eventDetails: RdxDialogOpenChangeEventDetails;
 }
 
 interface RdxDialogRegisteredTrigger {
@@ -62,6 +67,7 @@ export interface RdxDialogRootContext {
     titleId: Signal<string | undefined>;
     descriptionId: Signal<string | undefined>;
     isOpen: Signal<boolean>;
+    present: Signal<boolean>;
     /** Effective modality (the variant can pin this to `true`). */
     modal: Signal<RdxDialogModal>;
     /** Effective outside-press / focus-out dismissal flag (the variant can force it on). */
@@ -176,6 +182,9 @@ export class RdxDialogRoot {
     readonly triggers = signal<HTMLElement[]>([]);
     readonly payload = signal<unknown>(undefined);
     readonly nestedOpenCount = signal(0);
+    private readonly preventUnmountOnClose = signal(false);
+
+    readonly present = computed(() => this.open() || this.preventUnmountOnClose());
 
     /** Whether this dialog is rendered inside another dialog. Fixed at construction. */
     readonly nested = !!this.parentRoot;
@@ -204,6 +213,12 @@ export class RdxDialogRoot {
     constructor() {
         // Keep the floating context's reference element in sync with the active trigger.
         effect(() => this.floatingContext.setReferenceElement(this.trigger() ?? null));
+
+        effect(() => {
+            if (this.open() && this.preventUnmountOnClose()) {
+                this.preventUnmountOnClose.set(false);
+            }
+        });
 
         let previousOpen = this.open();
 
@@ -264,6 +279,33 @@ export class RdxDialogRoot {
         reason: RdxDialogOpenChangeReason = 'none',
         event = new Event('dialog.open-change')
     ) {
+        const shouldAdoptPayload = trigger !== undefined || payload !== undefined;
+
+        if (this.open()) {
+            if (trigger) {
+                this.trigger.set(trigger);
+            }
+
+            if (triggerId !== undefined) {
+                this.triggerId.set(triggerId);
+            }
+
+            // Only adopt the payload when a trigger context is actually provided, so a bare
+            // imperative re-show on an already-open dialog doesn't clobber the live payload.
+            if (shouldAdoptPayload) {
+                this.payload.set(payload);
+            }
+
+            return;
+        }
+
+        const change = this.createOpenChangeEvent(true, reason, event, trigger, triggerId ?? this.triggerId());
+        this.onOpenChange.emit(change.payload);
+
+        if (change.eventDetails.isCanceled()) {
+            return;
+        }
+
         if (trigger) {
             this.trigger.set(trigger);
         }
@@ -272,18 +314,13 @@ export class RdxDialogRoot {
             this.triggerId.set(triggerId);
         }
 
-        // Only adopt the payload when a trigger context is actually provided, so a bare
-        // imperative re-show on an already-open dialog doesn't clobber the live payload.
-        if (trigger !== undefined || payload !== undefined) {
+        if (shouldAdoptPayload) {
             this.payload.set(payload);
         }
 
-        if (this.open()) {
-            return;
-        }
-
+        this.preventUnmountOnClose.set(false);
         this.open.set(true);
-        this.emitOpenChange(true, reason, event);
+        this.floatingContext.events.emit('openchange', { open: true, reason, event: change.eventDetails.event });
     }
 
     close(reason: RdxDialogOpenChangeReason = 'none', event = new Event('dialog.open-change')) {
@@ -291,8 +328,16 @@ export class RdxDialogRoot {
             return;
         }
 
+        const change = this.createOpenChangeEvent(false, reason, event, this.trigger(), this.triggerId());
+        this.onOpenChange.emit(change.payload);
+
+        if (change.eventDetails.isCanceled()) {
+            return;
+        }
+
+        this.preventUnmountOnClose.set(change.shouldPreventUnmountOnClose());
         this.open.set(false);
-        this.emitOpenChange(false, reason, event);
+        this.floatingContext.events.emit('openchange', { open: false, reason, event: change.eventDetails.event });
     }
 
     toggle(triggerId: string, trigger: HTMLElement, payload?: unknown, event = new Event('dialog.open-change')) {
@@ -362,14 +407,27 @@ export class RdxDialogRoot {
         }
     }
 
-    private emitOpenChange(open: boolean, reason: RdxDialogOpenChangeReason, event: Event) {
-        this.onOpenChange.emit({
-            open,
-            triggerId: this.triggerId(),
-            trigger: this.trigger(),
-            reason,
-            event
-        });
+    private createOpenChangeEvent(
+        open: boolean,
+        reason: RdxDialogOpenChangeReason,
+        event: Event,
+        trigger: HTMLElement | undefined,
+        triggerId: string | null
+    ) {
+        const change = createCancelableChangeEventDetails(reason, event, trigger);
+
+        return {
+            eventDetails: change.eventDetails,
+            shouldPreventUnmountOnClose: change.shouldPreventUnmountOnClose,
+            payload: {
+                open,
+                triggerId,
+                trigger: change.eventDetails.trigger,
+                reason: change.eventDetails.reason,
+                event: change.eventDetails.event,
+                eventDetails: change.eventDetails
+            } satisfies RdxDialogOpenChange
+        };
     }
 
     private emitOpenChangeComplete(open: boolean) {
@@ -385,6 +443,7 @@ function contextFor(root: RdxDialogRoot): RdxDialogRootContext {
         titleId: root.titleId.asReadonly(),
         descriptionId: root.descriptionId.asReadonly(),
         isOpen: root.open,
+        present: root.present,
         modal: root.effectiveModal,
         disablePointerDismissal: root.effectiveDisablePointerDismissal,
         role: root.role,

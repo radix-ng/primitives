@@ -55,7 +55,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
         '[attr.data-filled]': 'dataAttr(filledState())',
         '[attr.data-focused]': 'dataAttr(focusedState())',
         '(input)': 'onInput($event)',
-        '(click)': 'onClick()',
+        '(click)': 'onClick($event)',
         '(focus)': 'onFocus()',
         '(blur)': 'onBlur()',
         '(keydown)': 'onKeydown($event)',
@@ -131,33 +131,33 @@ export class RdxComboboxInput {
         if (this.composing || (event as InputEvent).isComposing) {
             return;
         }
-        this.commitInput((event.target as HTMLInputElement).value);
+        this.commitInput((event.target as HTMLInputElement).value, event);
     }
 
     onCompositionEnd(event: CompositionEvent): void {
         this.composing = false;
-        this.commitInput((event.target as HTMLInputElement).value);
+        this.commitInput((event.target as HTMLInputElement).value, event);
     }
 
-    private commitInput(value: string): void {
+    private commitInput(value: string, event: Event): void {
         // Base UI: clearing the field closes the popup only when the input is OUTSIDE it (and doesn't
         // open on click). When the input lives inside the popup, emptying the search must keep the popup
         // open (closing it would dismiss the field the user is typing in); otherwise typing (including
         // down to empty in browse mode) opens it.
         if (value === '' && !this.rootContext.openOnInputClick() && this.rootContext.inputLayout() !== 'inside') {
-            this.rootContext.closePopup(false);
+            this.rootContext.closePopup(false, 'input-clear', event);
         } else if (!this.rootContext.open() && value.trim() !== '') {
             // Base UI opens on input only for a non-empty trimmed value — whitespace alone won't open it.
-            this.rootContext.openPopup();
+            this.rootContext.openPopup('input-change', event);
         }
         // setInputValue applies any autoHighlight (deferred until items mount) and, in single mode,
         // deselects when the field is emptied.
         this.rootContext.setInputValue(value);
     }
 
-    onClick(): void {
+    onClick(event: MouseEvent): void {
         if (this.rootContext.openOnInputClick()) {
-            this.rootContext.openForBrowse();
+            this.rootContext.openForBrowse('input-press', event);
         }
     }
 
@@ -186,11 +186,11 @@ export class RdxComboboxInput {
         switch (event.key) {
             case 'ArrowDown':
                 event.preventDefault();
-                this.rootContext.navigateByKeyboard(1);
+                this.rootContext.navigateByKeyboard(1, event);
                 break;
             case 'ArrowUp':
                 event.preventDefault();
-                this.rootContext.navigateByKeyboard(-1);
+                this.rootContext.navigateByKeyboard(-1, event);
                 break;
             case 'Enter':
                 if (open) {
@@ -200,10 +200,10 @@ export class RdxComboboxInput {
                     if (hasHighlight) {
                         // Select the highlighted item (and prevent an accidental form submit).
                         event.preventDefault();
-                        this.rootContext.selectHighlighted();
+                        this.rootContext.selectHighlighted(event);
                     } else {
                         // Nothing highlighted: just close, and let the form submit.
-                        this.rootContext.closePopup(true);
+                        this.rootContext.closePopup(true, 'none', event);
                     }
                 }
                 break;
@@ -211,7 +211,7 @@ export class RdxComboboxInput {
                 if (open) {
                     // Close the popup, reverting the in-progress query; keep the selection.
                     event.preventDefault();
-                    this.rootContext.closePopup(true);
+                    this.rootContext.closePopup(true, 'escape-key', event);
                 } else if (!this.rootContext.popupMounted()) {
                     // Base UI: Escape on a closed combobox clears the input text and the selection
                     // (`clearSelection` resets both, a no-op while read-only / disabled). Guard on
@@ -225,7 +225,7 @@ export class RdxComboboxInput {
                 // Tab dismisses a real popup and lets focus move on. With no popup mounted (an always-open
                 // inline layout) Tab must NOT close — it just moves focus on. Guard on `popupMounted`.
                 if (open && this.rootContext.popupMounted()) {
-                    this.rootContext.closePopup(true);
+                    this.rootContext.closePopup(true, 'none', event);
                 }
                 break;
             case 'ArrowRight':

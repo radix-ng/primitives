@@ -60,7 +60,7 @@ export const [injectComboboxItemContext, provideComboboxItemContext] = createCon
         '(pointerdown)': 'onPointerDown($event)',
         '(mousedown)': 'onMouseDown($event)',
         '(mouseup)': 'onMouseUp($event)',
-        '(click)': 'onClick()',
+        '(click)': 'onClick($event)',
         '(pointermove)': 'onPointerMove()',
         '(pointerleave)': 'onPointerLeave($event)'
     }
@@ -203,19 +203,19 @@ export class RdxComboboxItem implements ComboboxItemRef {
         if (event.button !== 0 || startedHere || !this.isHighlighted()) {
             return;
         }
-        this.commitSelection();
+        this.commitSelection(event);
     }
 
-    onClick(): void {
+    onClick(event: MouseEvent): void {
         // Primary selection trigger; also fires for programmatic `.click()`.
-        this.commitSelection();
+        this.commitSelection(event);
     }
 
-    private commitSelection(): void {
+    private commitSelection(event: Event): void {
         if (this.virtualized()) {
-            this.rootContext.selectIndex(this.index() ?? -1);
+            this.rootContext.selectIndex(this.index() ?? -1, event);
         } else {
-            this.rootContext.select(this);
+            this.rootContext.select(this, event);
         }
     }
 

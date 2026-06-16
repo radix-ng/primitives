@@ -64,12 +64,11 @@ const DIALOG_INTERNAL_BACKDROP_ATTR = 'data-rdx-dialog-internal-backdrop';
                 modal: () => rootContext.modal() === true || rootContext.modal() === 'trap-focus',
                 // Full modal blocks outside pointer interaction; `trap-focus` only traps focus.
                 inert: () => rootContext.modal() === true,
-                // Active for the whole MOUNTED lifetime — including the close (exit) animation — matching
-                // Base UI's `FloatingFocusManager disabled={!mounted}` (NOT `open`) for trap/return-focus.
-                // Marker + isolation are additionally gated on `open` inside the manager. A
-                // closed-but-never-opened mount (`forceMount`) stays disabled (`isOpen` false, no `ending`
-                // transition) so it never traps a hidden dialog.
-                enabled: () => rootContext.isOpen() || rootContext.transitionStatus() === 'ending',
+                // Active for the whole MOUNTED lifetime — including an explicit
+                // `preventUnmountOnClose()` cycle after the exit transition — matching Base UI's
+                // `FloatingFocusManager disabled={!mounted}` (NOT `open`) for trap/return-focus.
+                // Marker + isolation are additionally gated on `open` inside the manager.
+                enabled: () => rootContext.present(),
                 closeOnFocusOut: () => !rootContext.disablePointerDismissal()
             };
         })

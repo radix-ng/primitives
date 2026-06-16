@@ -18,6 +18,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import {
     AcceptableValue,
     BooleanInput,
+    createCancelableChangeEventDetails,
     createContext,
     createFloatingRootContext,
     itemToStringLabel as defaultItemToStringLabel,
@@ -27,6 +28,7 @@ import {
     ItemValueComparator,
     provideFloatingRootContext,
     provideFloatingTree,
+    RdxCancelableChangeEventDetails,
     RdxFloatingRootContext
 } from '@radix-ng/primitives/core';
 import { RdxPopper } from '@radix-ng/primitives/popper';
@@ -42,6 +44,36 @@ import {
 
 /** The value a combobox can hold: a single value, an array (multiple mode), or nothing. */
 export type ComboboxValue = AcceptableValue | AcceptableValue[];
+
+export type RdxComboboxOpenChangeReason =
+    | 'trigger-press'
+    | 'input-press'
+    | 'list-navigation'
+    | 'input-change'
+    | 'input-clear'
+    | 'item-press'
+    | 'outside-press'
+    | 'focus-out'
+    | 'escape-key'
+    | 'close-press'
+    | 'cancel-open'
+    | 'none';
+
+export type RdxComboboxOpenChangeEventDetails = RdxCancelableChangeEventDetails<RdxComboboxOpenChangeReason>;
+
+export interface RdxComboboxOpenChange {
+    open: boolean;
+    reason: RdxComboboxOpenChangeReason;
+    event: Event;
+    trigger: HTMLElement | undefined;
+    eventDetails: RdxComboboxOpenChangeEventDetails;
+}
+
+interface RdxComboboxOpenChangeTransaction {
+    payload: RdxComboboxOpenChange;
+    eventDetails: RdxComboboxOpenChangeEventDetails;
+    shouldPreventUnmountOnClose: () => boolean;
+}
 
 // Re-exported so consumers (and the autocomplete engine bridge) keep importing these from the
 // combobox entry point; the definitions now live with the shared engine.
@@ -68,6 +100,7 @@ const context = () => {
         value: root.value,
         inputValue: root.inputValue,
         open: root.open,
+        present: root.present,
         multiple: root.multiple,
         selectionMode: root.mode,
         disabledState: root.disabledState,
@@ -113,15 +146,17 @@ const context = () => {
         setPopupMounted: (value: boolean) => engine.setPopupMounted(value),
         registerTrigger: (el: HTMLElement | null) => engine.setTrigger(el),
         focusInput: () => engine.focusInput(),
-        openPopup: () => root.setOpen(true),
-        openForBrowse: () => root.openForBrowse(),
-        closePopup: (revert = true) => root.closePopup(revert),
+        openPopup: (reason?: RdxComboboxOpenChangeReason, event?: Event) => root.setOpen(true, reason, event),
+        openForBrowse: (reason?: RdxComboboxOpenChangeReason, event?: Event) => root.openForBrowse(reason, event),
+        closePopup: (revert = true, reason?: RdxComboboxOpenChangeReason, event?: Event) =>
+            root.closePopup(revert, reason, event),
         setInputValue: (value: string) => root.setInputValue(value),
-        openAndHighlight: (edge: 'first' | 'last') => root.openAndHighlight(edge),
-        navigateByKeyboard: (direction: 1 | -1) => root.navigateByKeyboard(direction),
-        select: (item: ComboboxItemRef) => root.handleSelect(item),
-        selectIndex: (index: number) => root.selectIndex(index),
-        selectHighlighted: () => root.selectHighlighted(),
+        openAndHighlight: (edge: 'first' | 'last', reason?: RdxComboboxOpenChangeReason, event?: Event) =>
+            root.openAndHighlight(edge, reason, event),
+        navigateByKeyboard: (direction: 1 | -1, event?: Event) => root.navigateByKeyboard(direction, event),
+        select: (item: ComboboxItemRef, event?: Event) => root.handleSelect(item, event),
+        selectIndex: (index: number, event?: Event) => root.selectIndex(index, event),
+        selectHighlighted: (event?: Event) => root.selectHighlighted(event),
         clearSelection: () => root.clearSelection(),
         removeValue: (value: AcceptableValue) => root.removeValue(value),
         removeLastValue: () => root.removeLastValue(),
@@ -322,7 +357,7 @@ export class RdxComboboxRoot implements ControlValueAccessor {
     readonly onInputValueChange = output<string>();
 
     /** Emits when the popup opens or closes. */
-    readonly onOpenChange = output<boolean>();
+    readonly onOpenChange = output<RdxComboboxOpenChange>();
 
     /**
      * Emits as the highlight moves, with the item's value, its index in {@link filteredItems}, and the
@@ -336,6 +371,8 @@ export class RdxComboboxRoot implements ControlValueAccessor {
     private readonly cvaDisabled = signal(false);
     readonly disabledState = computed(() => this.disabled() || this.cvaDisabled());
     readonly requiredState = computed(() => this.required());
+    private readonly preventUnmountOnClose = signal(false);
+    readonly present = computed(() => this.open() || this.preventUnmountOnClose());
 
     /**
      * Whether the input text is a fresh user query rather than the current selection's label. While
@@ -372,7 +409,7 @@ export class RdxComboboxRoot implements ControlValueAccessor {
         inlineMode: this.noInline,
         itemToString: (value) => this.labelFor(value),
         onItemHighlighted: (details) => this.onItemHighlighted.emit(details),
-        onOpenChange: (open) => this.onOpenChange.emit(open),
+        onOpenChange: () => {},
         onOpenChangeComplete: (open) => this.onOpenChangeComplete.emit(open)
     });
 
@@ -450,11 +487,14 @@ export class RdxComboboxRoot implements ControlValueAccessor {
     }
 
     /** Opens the popup for browsing (resets the query to "pristine" and selects the input text). */
-    openForBrowse(): void {
+    openForBrowse(
+        reason: RdxComboboxOpenChangeReason = 'none',
+        event: Event = new Event('combobox.open-change')
+    ): void {
         if (!this.open()) {
             this.typed.set(false);
         }
-        this.setOpen(true);
+        this.setOpen(true, reason, event);
         this.engine.selectInputText();
         if (this.autoHighlightMode() === 'always') {
             this.engine.setPendingHighlightEdge('first');
@@ -462,11 +502,15 @@ export class RdxComboboxRoot implements ControlValueAccessor {
     }
 
     /** Opens the popup and highlights the given edge once the list mounts. */
-    openAndHighlight(edge: 'first' | 'last'): void {
+    openAndHighlight(
+        edge: 'first' | 'last',
+        reason: RdxComboboxOpenChangeReason = 'list-navigation',
+        event: Event = new Event('combobox.open-change')
+    ): void {
         if (!this.open()) {
             this.typed.set(false);
         }
-        this.setOpen(true);
+        this.setOpen(true, reason, event);
         this.engine.selectInputText();
         this.engine.setPendingHighlightEdge(edge);
     }
@@ -476,10 +520,10 @@ export class RdxComboboxRoot implements ControlValueAccessor {
      * leading/trailing edge when closed, otherwise steps the highlight. `direction` is `1` (down) or
      * `-1` (up). Centralized so the input and chip key handlers can't drift apart.
      */
-    navigateByKeyboard(direction: 1 | -1): void {
+    navigateByKeyboard(direction: 1 | -1, event: Event = new Event('combobox.open-change')): void {
         this.engine.setKeyboardActive(true);
         if (!this.open()) {
-            this.openAndHighlight(direction === 1 ? 'first' : 'last');
+            this.openAndHighlight(direction === 1 ? 'first' : 'last', 'list-navigation', event);
         } else if (direction === 1) {
             this.engine.highlightNext();
         } else {
@@ -498,18 +542,44 @@ export class RdxComboboxRoot implements ControlValueAccessor {
         return !isNullish(current) && itemsEqual(current as AcceptableValue, value, this.isItemEqualToValue());
     }
 
-    setOpen(open: boolean): void {
-        if (this.disabledState() || this.readOnly()) {
-            return;
+    setOpen(
+        open: boolean,
+        reason: RdxComboboxOpenChangeReason = 'none',
+        event: Event = new Event('combobox.open-change')
+    ): boolean {
+        if (open === this.open()) {
+            return true;
         }
+
+        if (open && (this.disabledState() || this.readOnly())) {
+            return false;
+        }
+
+        const change = this.createOpenChangeEvent(open, reason, event);
+        this.onOpenChange.emit(change.payload);
+
+        if (change.eventDetails.isCanceled()) {
+            return false;
+        }
+
+        this.preventUnmountOnClose.set(open ? false : change.shouldPreventUnmountOnClose());
         this.open.set(open);
+        return true;
     }
 
-    closePopup(revert = true): void {
+    closePopup(
+        revert = true,
+        reason: RdxComboboxOpenChangeReason = 'none',
+        event: Event = new Event('combobox.open-change')
+    ): void {
         if (!this.open()) {
             return;
         }
-        this.open.set(false);
+
+        if (!this.setOpen(false, reason, event)) {
+            return;
+        }
+
         this.engine.clearHighlightState();
         if (revert) {
             this.revertInputValue();
@@ -566,15 +636,15 @@ export class RdxComboboxRoot implements ControlValueAccessor {
         return item ? item.textValue() : defaultItemToStringLabel(value);
     }
 
-    handleSelect(item: ComboboxItemRef): void {
+    handleSelect(item: ComboboxItemRef, event: Event = new Event('combobox.item-press')): void {
         if (this.disabledState() || this.readOnly() || item.disabled()) {
             return;
         }
-        this.handleSelectValue(item.value(), item.textValue() || this.labelFor(item.value()));
+        this.handleSelectValue(item.value(), item.textValue() || this.labelFor(item.value()), event);
     }
 
     /** Selects the filtered item at `index` (virtualized mode). The label comes from {@link labelFor}. */
-    selectIndex(index: number): void {
+    selectIndex(index: number, event: Event = new Event('combobox.item-press')): void {
         if (this.disabledState() || this.readOnly()) {
             return;
         }
@@ -582,11 +652,15 @@ export class RdxComboboxRoot implements ControlValueAccessor {
         if (value === undefined) {
             return;
         }
-        this.handleSelectValue(value, this.labelFor(value));
+        this.handleSelectValue(value, this.labelFor(value), event);
     }
 
     /** Commits a selection from a resolved value/label, independent of whether a DOM item exists. */
-    private handleSelectValue(value: AcceptableValue, textValue: string): void {
+    private handleSelectValue(
+        value: AcceptableValue,
+        textValue: string,
+        event: Event = new Event('combobox.item-press')
+    ): void {
         // Capture focus *before* emitting `onValueChange` so focus restoration can be skipped when the
         // consumer moves focus in that callback (e.g. focusing an external field after an emoji press).
         const activeBefore = typeof document !== 'undefined' ? document.activeElement : null;
@@ -598,8 +672,7 @@ export class RdxComboboxRoot implements ControlValueAccessor {
             if (this.fillInputOnItemPress()) {
                 this.setLabel(textValue);
             }
-            this.open.set(false);
-            this.engine.clearHighlightState();
+            this.closePopup(false, 'item-press', event);
             this.engine.restoreFocusAfterSelect(activeBefore);
             this.maybeSubmit();
             return;
@@ -622,8 +695,7 @@ export class RdxComboboxRoot implements ControlValueAccessor {
         } else {
             this.commitValue(value);
             this.setLabel(textValue);
-            this.open.set(false);
-            this.engine.clearHighlightState();
+            this.closePopup(false, 'item-press', event);
             this.engine.restoreFocusAfterSelect(activeBefore);
         }
 
@@ -637,17 +709,17 @@ export class RdxComboboxRoot implements ControlValueAccessor {
         }
     }
 
-    selectHighlighted(): void {
+    selectHighlighted(event: Event = new Event('combobox.item-press')): void {
         if (this.virtualized()) {
             const index = this.engine.highlightedIndex();
             if (index >= 0) {
-                this.selectIndex(index);
+                this.selectIndex(index, event);
             }
             return;
         }
         const item = this.engine.highlightedItem();
         if (item) {
-            this.handleSelect(item);
+            this.handleSelect(item, event);
         }
     }
 
@@ -718,6 +790,36 @@ export class RdxComboboxRoot implements ControlValueAccessor {
         this.value.set(value);
         this.onValueChange.emit(value);
         this.onChange?.(value);
+    }
+
+    private createOpenChangeEvent(
+        open: boolean,
+        reason: RdxComboboxOpenChangeReason,
+        event: Event
+    ): RdxComboboxOpenChangeTransaction {
+        const change = createCancelableChangeEventDetails(reason, event, this.resolveOpenChangeTrigger(event));
+
+        return {
+            payload: {
+                open,
+                reason,
+                event: change.eventDetails.event,
+                trigger: change.eventDetails.trigger,
+                eventDetails: change.eventDetails
+            },
+            eventDetails: change.eventDetails,
+            shouldPreventUnmountOnClose: change.shouldPreventUnmountOnClose
+        };
+    }
+
+    private resolveOpenChangeTrigger(event: Event): HTMLElement | undefined {
+        const target = event.target;
+
+        if (target instanceof HTMLElement) {
+            return target;
+        }
+
+        return this.engine.triggerElement ?? this.engine.inputElement() ?? undefined;
     }
 
     // ControlValueAccessor

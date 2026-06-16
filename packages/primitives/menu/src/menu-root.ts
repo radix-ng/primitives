@@ -14,11 +14,13 @@ import {
 } from '@angular/core';
 import {
     BooleanInput,
+    createCancelableChangeEventDetails,
     createContext,
     createFloatingRootContext,
     Direction,
     provideFloatingRootContext,
     provideFloatingTree,
+    RdxCancelableChangeEventDetails,
     RdxFloatingRootContext,
     useTransitionStatus
 } from '@radix-ng/primitives/core';
@@ -64,15 +66,19 @@ export type RdxMenuOpenChangeReason =
     | 'focus-out'
     | 'none';
 
+export type RdxMenuOpenChangeEventDetails = RdxCancelableChangeEventDetails<RdxMenuOpenChangeReason>;
+
 export interface RdxMenuOpenChange {
     open: boolean;
     trigger: HTMLElement | undefined;
     reason: RdxMenuOpenChangeReason;
     event: Event;
+    eventDetails: RdxMenuOpenChangeEventDetails;
 }
 
 export interface RdxMenuRootContext {
     isOpen: Signal<boolean>;
+    present: Signal<boolean>;
     disabled: Signal<boolean>;
     modal: Signal<boolean>;
     loopFocus: Signal<boolean>;
@@ -142,6 +148,7 @@ export const [injectRdxMenuRootContext, provideRdxMenuRootContext] = createConte
 function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
     return {
         isOpen: instance.open,
+        present: instance.present,
         disabled: instance.effectiveDisabled,
         modal: instance.effectiveModal,
         loopFocus: instance.loopFocus,
@@ -264,6 +271,7 @@ export class RdxMenuRoot {
     /** Set by `RdxContextMenuRoot` (it composes this root) — distinguishes a context menu from a dropdown. */
     readonly isContextMenu = signal(false);
     readonly hasTriggerInteractionHandler = signal(false);
+    private readonly preventUnmountOnClose = signal(false);
 
     /**
      * What kind of parent this menu has (Base UI `MenuParent.type`). A submenu wins over everything (its
@@ -303,6 +311,7 @@ export class RdxMenuRoot {
     });
     readonly effectiveModal = computed(() => this.modal() && !this.isSubmenu());
     readonly state = computed(() => (this.open() ? 'open' : 'closed'));
+    readonly present = computed(() => this.open() || this.preventUnmountOnClose());
 
     constructor() {
         effect(() => {
@@ -319,6 +328,12 @@ export class RdxMenuRoot {
         // Keep the dismissal reference (the active trigger) in sync so an outside-press / focus on the
         // trigger counts as "inside" and never dismisses (ADR 0015).
         effect(() => this.floatingContext.setReferenceElement(this.trigger() ?? null));
+
+        effect(() => {
+            if (this.open() && this.preventUnmountOnClose()) {
+                this.preventUnmountOnClose.set(false);
+            }
+        });
 
         let previousOpen = this.open();
         effect(() => {
@@ -337,27 +352,41 @@ export class RdxMenuRoot {
 
         this.autoFocus.set(autoFocus === true ? 'first' : autoFocus);
         if (!this.open()) {
+            const change = this.createOpenChangeEvent(true, reason, event);
+            this.onOpenChange.emit(change.payload);
+
+            if (change.eventDetails.isCanceled()) {
+                return;
+            }
+
             this.lastOpenChangeReason.set(reason);
             // Record whether this open came from touch (ADR 0016 §3). Hover / mouse / keyboard all resolve
             // to false (no `'touch'` pointer type), so only a genuine touch open gates the anchored lock.
             this.openedByTouch.set((event as PointerEvent | undefined)?.pointerType === 'touch');
             this.openInteractionType.set(getInteractionTypeFromEvent(event));
+            this.preventUnmountOnClose.set(false);
             this.open.set(true);
-            this.emitOpenChange(true, reason, event);
             // Publish reason + native event on the per-popup floating channel (Base UI open-change) so the
             // dismissal / future focus policy can read why the menu opened (e.g. hover vs press).
-            this.floatingContext.events.emit('openchange', { open: true, reason, event });
+            this.floatingContext.events.emit('openchange', { open: true, reason, event: change.eventDetails.event });
         }
     }
 
     close(reason: RdxMenuOpenChangeReason = 'none', event?: Event) {
         if (this.open()) {
+            const change = this.createOpenChangeEvent(false, reason, event);
+            this.onOpenChange.emit(change.payload);
+
+            if (change.eventDetails.isCanceled()) {
+                return;
+            }
+
             this.setAllowMouseUpTrigger(false);
             this.lastOpenChangeReason.set(reason);
             this.closeInteractionType.set(getInteractionTypeFromEvent(event));
+            this.preventUnmountOnClose.set(change.shouldPreventUnmountOnClose());
             this.open.set(false);
-            this.emitOpenChange(false, reason, event);
-            this.floatingContext.events.emit('openchange', { open: false, reason, event });
+            this.floatingContext.events.emit('openchange', { open: false, reason, event: change.eventDetails.event });
         }
     }
 
@@ -459,13 +488,24 @@ export class RdxMenuRoot {
         this.trigger()?.dispatchEvent(new CustomEvent('rdx-menu-close-parent', { bubbles: true }));
     }
 
-    private emitOpenChange(open: boolean, reason: RdxMenuOpenChangeReason, event?: Event): void {
-        this.onOpenChange.emit({
-            open,
-            trigger: this.trigger(),
+    private createOpenChangeEvent(open: boolean, reason: RdxMenuOpenChangeReason, event?: Event) {
+        const change = createCancelableChangeEventDetails(
             reason,
-            event: event ?? new Event('menu.open-change')
-        });
+            event ?? new Event('menu.open-change'),
+            this.trigger()
+        );
+
+        return {
+            eventDetails: change.eventDetails,
+            shouldPreventUnmountOnClose: change.shouldPreventUnmountOnClose,
+            payload: {
+                open,
+                trigger: change.eventDetails.trigger,
+                reason: change.eventDetails.reason,
+                event: change.eventDetails.event,
+                eventDetails: change.eventDetails
+            } satisfies RdxMenuOpenChange
+        };
     }
 
     private readDocumentDirection(): Direction {

@@ -15,6 +15,7 @@ import {
 } from '@angular/core';
 import {
     BooleanInput,
+    createCancelableChangeEventDetails,
     createFloatingRootContext,
     NumberInput,
     provideFloatingRootContext,
@@ -31,6 +32,7 @@ import {
     provideNavigationMenuRootContext,
     RdxNavigationMenuContentEntry,
     RdxNavigationMenuOpenChange,
+    RdxNavigationMenuOpenChangeEventDetails,
     RdxNavigationMenuOpenChangeReason,
     RdxNavigationMenuRootContext
 } from './navigation-menu-root-context';
@@ -146,6 +148,8 @@ export class RdxNavigationMenuRoot {
     readonly transitionStatus = this.transition.status;
     readonly previousValue = signal<string | null>(null);
     readonly isOpen = computed(() => this.value() !== null);
+    private readonly preventUnmountOnClose = signal(false);
+    readonly present = computed(() => this.isOpen() || this.preventUnmountOnClose());
     readonly trigger = signal<HTMLElement | undefined>(undefined);
     readonly triggers = signal<HTMLElement[]>([]);
     readonly contents = signal<Map<string, RdxNavigationMenuContentEntry>>(new Map());
@@ -218,6 +222,13 @@ export class RdxNavigationMenuRoot {
         const nextTrigger = value ? this.registeredTriggers.get(value) : undefined;
         const changedTriggerWhileOpen = previous !== null && value !== null && previousTrigger !== nextTrigger;
 
+        const change = this.createOpenChangeEvent(value, reason, event, nextTrigger ?? previousTrigger);
+        this.onOpenChange.emit(change.payload);
+
+        if (change.eventDetails.isCanceled()) {
+            return;
+        }
+
         this.instant.set(changedTriggerWhileOpen || reason === 'trigger-focus');
 
         if (changedTriggerWhileOpen) {
@@ -233,9 +244,9 @@ export class RdxNavigationMenuRoot {
         }
 
         this.previousValue.set(previous);
+        this.preventUnmountOnClose.set(value === null ? change.shouldPreventUnmountOnClose() : false);
         this.value.set(value);
         this.onValueChange.emit(value);
-        this.onOpenChange.emit({ value, open: value !== null, reason, event });
     }
 
     open(value: string, trigger: HTMLElement, reason: RdxNavigationMenuOpenChangeReason = 'none', event?: Event) {
@@ -372,6 +383,15 @@ export class RdxNavigationMenuRoot {
         return () => this.viewportTriggerChange.delete(onTriggerChange);
     }
 
+    private createOpenChangeEvent(
+        value: string | null,
+        reason: RdxNavigationMenuOpenChangeReason,
+        event: Event,
+        trigger?: HTMLElement
+    ): RdxNavigationMenuOpenChangeTransaction {
+        return createNavigationMenuOpenChangeEvent(value, reason, event, trigger);
+    }
+
     private scheduleInstantReset() {
         if (this.instantFrame !== undefined) {
             cancelAnimationFrame(this.instantFrame);
@@ -435,6 +455,7 @@ function contextFor(root: RdxNavigationMenuRoot): RdxNavigationMenuRootContext {
         value: root.value,
         previousValue: root.previousValue.asReadonly(),
         isOpen: root.isOpen,
+        present: root.present,
         instant: root.instant.asReadonly(),
         transitionStatus: root.transitionStatus,
         trigger: root.trigger.asReadonly(),
@@ -454,5 +475,33 @@ function contextFor(root: RdxNavigationMenuRoot): RdxNavigationMenuRootContext {
         registerContent: (entry) => root.registerContent(entry),
         registerTransitionElement: (element) => root.registerTransitionElement(element),
         registerViewport: (onTriggerChange) => root.registerViewport(onTriggerChange)
+    };
+}
+
+interface RdxNavigationMenuOpenChangeTransaction {
+    payload: RdxNavigationMenuOpenChange;
+    eventDetails: RdxNavigationMenuOpenChangeEventDetails;
+    shouldPreventUnmountOnClose: () => boolean;
+}
+
+function createNavigationMenuOpenChangeEvent(
+    value: string | null,
+    reason: RdxNavigationMenuOpenChangeReason,
+    event: Event,
+    trigger?: HTMLElement
+): RdxNavigationMenuOpenChangeTransaction {
+    const change = createCancelableChangeEventDetails(reason, event, trigger);
+
+    return {
+        payload: {
+            value,
+            open: value !== null,
+            reason,
+            event: change.eventDetails.event,
+            trigger,
+            eventDetails: change.eventDetails
+        },
+        eventDetails: change.eventDetails,
+        shouldPreventUnmountOnClose: change.shouldPreventUnmountOnClose
     };
 }

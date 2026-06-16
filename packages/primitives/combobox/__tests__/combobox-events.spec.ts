@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { _importsCombobox } from '../index';
+import { RdxComboboxOpenChange } from '../src/combobox-root';
 
 @Component({
     imports: [_importsCombobox],
@@ -48,6 +49,45 @@ class CompleteHost {
     readonly open = signal(false);
     readonly completed = signal<boolean | '__init__'>('__init__');
     readonly fruits = ['Apple', 'Banana'];
+}
+
+@Component({
+    imports: [_importsCombobox],
+    template: `
+        <div [(open)]="open" (onOpenChange)="handleOpenChange($event)" rdxComboboxRoot>
+            <input rdxComboboxInput aria-label="Fruit" />
+            <button rdxComboboxTrigger>Toggle</button>
+            <div *rdxComboboxPortal rdxComboboxPositioner>
+                <div rdxComboboxPopup>
+                    <div rdxComboboxList aria-label="Fruits">
+                        @for (fruit of fruits; track fruit) {
+                            <div [value]="fruit" rdxComboboxItem>{{ fruit }}</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+})
+class OpenChangeHost {
+    readonly open = signal(false);
+    readonly fruits = ['Apple', 'Banana'];
+    readonly events = signal<RdxComboboxOpenChange[]>([]);
+    readonly cancelNext = signal(false);
+    readonly keepMountedOnClose = signal(false);
+
+    handleOpenChange(change: RdxComboboxOpenChange): void {
+        this.events.update((events) => [...events, change]);
+
+        if (this.cancelNext()) {
+            change.eventDetails.cancel();
+            this.cancelNext.set(false);
+        }
+
+        if (!change.open && this.keepMountedOnClose()) {
+            change.eventDetails.preventUnmountOnClose();
+        }
+    }
 }
 
 async function frame(): Promise<void> {
@@ -115,5 +155,54 @@ describe('Combobox onOpenChangeComplete', () => {
         await frame();
         await settle();
         expect(host.completed()).toBe(false);
+    });
+});
+
+describe('Combobox onOpenChange contract', () => {
+    let fixture: ComponentFixture<OpenChangeHost>;
+    let host: OpenChangeHost;
+
+    async function settle(): Promise<void> {
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+    }
+
+    beforeEach(async () => {
+        TestBed.configureTestingModule({ imports: [OpenChangeHost] });
+        fixture = TestBed.createComponent(OpenChangeHost);
+        host = fixture.componentInstance;
+        await settle();
+    });
+
+    it('emits input-press details and lets the handler cancel opening', async () => {
+        host.cancelNext.set(true);
+
+        const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+        input.click();
+        await settle();
+
+        const change = host.events().at(-1);
+        expect(change?.open).toBe(true);
+        expect(change?.reason).toBe('input-press');
+        expect(change?.eventDetails.isCanceled()).toBe(true);
+        expect(host.open()).toBe(false);
+    });
+
+    it('emits item-press with the real DOM event and honors preventUnmountOnClose', async () => {
+        host.open.set(true);
+        host.keepMountedOnClose.set(true);
+        await settle();
+
+        const item = document.querySelector('[rdxComboboxItem]') as HTMLElement;
+        item.click();
+        await settle();
+
+        const change = host.events().at(-1);
+        expect(change?.open).toBe(false);
+        expect(change?.reason).toBe('item-press');
+        expect(change?.event instanceof MouseEvent).toBe(true);
+        expect(host.open()).toBe(false);
+        expect(document.querySelector('[rdxComboboxPopup]')).not.toBeNull();
     });
 });

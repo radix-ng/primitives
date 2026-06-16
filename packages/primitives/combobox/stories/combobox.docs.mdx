@@ -32,6 +32,7 @@ selection when closed. For free-form entry whose value is the typed text, reach 
 - ✅ WAI-ARIA `combobox` / `listbox` semantics with `aria-activedescendant` (focus never leaves the input).
 - ✅ `RdxComboboxValue` renders the selection in a trigger; `onItemHighlighted` reports the active item.
 - ✅ Optional `modal` mode: locks page scroll and makes outside content inert, with a `Backdrop` part.
+- ✅ `onOpenChange` is cancellable and emits `{ open, reason, event, trigger, eventDetails }`; a controlled combobox can reject a close or keep the popup mounted during exit.
 - ✅ `submitOnItemClick` to submit the form on selection; `onOpenChangeComplete` fires after the transition.
 - ✅ `limit` caps how many matches show; arrow-key navigation never fights a resting mouse cursor.
 - ✅ Hover behavior: `highlightItemOnHover` (default `true`) and `keepHighlight` (keep the highlight when the pointer leaves the list).
@@ -194,6 +195,28 @@ With `modal`, page scroll is locked and content outside the popup is inert while
 clicking it dismisses.
 
 <Canvas of={Stories.Modal} />
+
+### Controlled open state
+
+Use `[open]` + `(onOpenChange)` when the application needs to inspect or veto open-state changes.
+The change payload includes `reason`, the originating DOM `event`, and `eventDetails.cancel()`.
+
+```ts
+protected readonly open = signal(false);
+
+protected onOpenChange(change: { open: boolean; eventDetails: { cancel(): void } }) {
+  if (!change.open && this.hasUnsavedSelection) {
+    change.eventDetails.cancel();
+    return;
+  }
+
+  this.open.set(change.open);
+}
+```
+
+Live demo:
+
+<Canvas of={Stories.OpenChange} />
 
 ### Reactive forms
 

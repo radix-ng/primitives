@@ -282,6 +282,55 @@ class ControlledMultipleTriggersHostComponent {
     readonly changes: RdxPopoverOpenChange[] = [];
 }
 
+@Component({
+    imports: [
+        RdxPopoverClose,
+        RdxPopoverPopup,
+        RdxPopoverPortal,
+        RdxPopoverPositioner,
+        RdxPopoverRoot,
+        RdxPopoverTrigger
+    ],
+    template: `
+        <div [(open)]="open" (onOpenChange)="handleOpenChange($event)" rdxPopoverRoot>
+            <button rdxPopoverTrigger>Open</button>
+
+            <div *rdxPopoverPortal rdxPopoverPositioner>
+                <div rdxPopoverPopup>
+                    Popup
+                    <button rdxPopoverClose>Close</button>
+                </div>
+            </div>
+        </div>
+    `
+})
+class PopoverCancelableHostComponent {
+    open = false;
+    cancelNextOpen = false;
+    cancelNextClose = false;
+    preventUnmountOnNextClose = false;
+    readonly changes: RdxPopoverOpenChange[] = [];
+
+    handleOpenChange(change: RdxPopoverOpenChange) {
+        if (change.open && this.cancelNextOpen) {
+            change.eventDetails.cancel();
+            this.cancelNextOpen = false;
+        }
+
+        if (!change.open && this.cancelNextClose) {
+            change.eventDetails.cancel();
+            this.cancelNextClose = false;
+        }
+
+        if (!change.open && this.preventUnmountOnNextClose) {
+            change.eventDetails.preventUnmountOnClose();
+            this.preventUnmountOnNextClose = false;
+        }
+
+        this.changes.push(change);
+    }
+}
+
 function pointerEvent(type: string, pointerType = 'mouse', clientX = 0, clientY = 0) {
     const event = new Event(type, { bubbles: true });
     Object.defineProperty(event, 'pointerType', { value: pointerType });
@@ -365,6 +414,72 @@ describe('Popover', () => {
         fixture.detectChanges();
 
         expect(fixture.componentInstance.open).toBe(false);
+    });
+
+    it('lets onOpenChange cancel an opening request', () => {
+        const cancelFixture = TestBed.createComponent(PopoverCancelableHostComponent);
+        cancelFixture.detectChanges();
+
+        const cancelTrigger: HTMLButtonElement = cancelFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
+        cancelFixture.componentInstance.cancelNextOpen = true;
+        cancelTrigger.click();
+        cancelFixture.detectChanges();
+
+        expect(cancelFixture.componentInstance.open).toBe(false);
+        expect(document.body.querySelector('[rdxPopoverPopup]')).toBeNull();
+        expect(cancelFixture.componentInstance.changes[0].eventDetails.isCanceled()).toBe(true);
+
+        cancelFixture.destroy();
+    });
+
+    it('lets onOpenChange cancel a close request', () => {
+        const cancelFixture = TestBed.createComponent(PopoverCancelableHostComponent);
+        cancelFixture.detectChanges();
+
+        const cancelTrigger: HTMLButtonElement = cancelFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
+        cancelTrigger.click();
+        cancelFixture.detectChanges();
+
+        const close: HTMLButtonElement = document.body.querySelector('[rdxPopoverClose]')!;
+        cancelFixture.componentInstance.cancelNextClose = true;
+        close.click();
+        cancelFixture.detectChanges();
+
+        expect(cancelFixture.componentInstance.open).toBe(true);
+        expect(document.body.querySelector('[rdxPopoverPopup]')).not.toBeNull();
+        expect(cancelFixture.componentInstance.changes.at(-1)?.eventDetails.isCanceled()).toBe(true);
+
+        cancelFixture.destroy();
+    });
+
+    it('keeps the portal mounted after close when preventUnmountOnClose is requested', () => {
+        const preventFixture = TestBed.createComponent(PopoverCancelableHostComponent);
+        preventFixture.detectChanges();
+
+        const preventTrigger: HTMLButtonElement = preventFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
+        preventTrigger.click();
+        preventFixture.detectChanges();
+
+        preventFixture.componentInstance.preventUnmountOnNextClose = true;
+        const close: HTMLButtonElement = document.body.querySelector('[rdxPopoverClose]')!;
+        close.click();
+        preventFixture.detectChanges();
+
+        expect(preventFixture.componentInstance.open).toBe(false);
+        expect(document.body.querySelector('[rdxPopoverPopup]')).not.toBeNull();
+
+        preventTrigger.click();
+        preventFixture.detectChanges();
+        expect(preventFixture.componentInstance.open).toBe(true);
+
+        const closeAgain: HTMLButtonElement = document.body.querySelector('[rdxPopoverClose]')!;
+        closeAgain.click();
+        preventFixture.detectChanges();
+
+        expect(preventFixture.componentInstance.open).toBe(false);
+        expect(document.body.querySelector('[rdxPopoverPopup]')).toBeNull();
+
+        preventFixture.destroy();
     });
 
     it('uses defaultOpen for uncontrolled state', () => {

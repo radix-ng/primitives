@@ -56,7 +56,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
         '[attr.data-filled]': 'dataAttr(filledState())',
         '[attr.data-focused]': 'dataAttr(focusedState())',
         '(input)': 'onInput($event)',
-        '(click)': 'onClick()',
+        '(click)': 'onClick($event)',
         '(focus)': 'onFocus()',
         '(blur)': 'onBlur()',
         '(keydown)': 'onKeydown($event)',
@@ -139,25 +139,25 @@ export class RdxAutocompleteInput {
         if (this.composing || (event as InputEvent).isComposing) {
             return;
         }
-        this.commitInput((event.target as HTMLInputElement).value);
+        this.commitInput((event.target as HTMLInputElement).value, event);
     }
 
     onCompositionEnd(event: CompositionEvent): void {
         this.composing = false;
-        this.commitInput((event.target as HTMLInputElement).value);
+        this.commitInput((event.target as HTMLInputElement).value, event);
     }
 
-    private commitInput(value: string): void {
+    private commitInput(value: string, event: Event): void {
         // Base UI opens on input only for a non-empty trimmed value — whitespace alone won't open it.
         if (!this.root.open() && value.trim() !== '') {
-            this.root.setOpen(true);
+            this.root.setOpen(true, 'input-change', event);
         }
         this.root.setQuery(value);
     }
 
-    onClick(): void {
+    onClick(event: MouseEvent): void {
         if (this.root.openOnInputClick()) {
-            this.root.openForBrowse();
+            this.root.openForBrowse('input-press', event);
         }
     }
 
@@ -188,7 +188,7 @@ export class RdxAutocompleteInput {
                 event.preventDefault();
                 this.root.setKeyboardActive(true);
                 if (!open) {
-                    this.root.openAndHighlight('first');
+                    this.root.openAndHighlight('first', 'list-navigation', event);
                 } else {
                     this.root.moveDown();
                 }
@@ -197,7 +197,7 @@ export class RdxAutocompleteInput {
                 event.preventDefault();
                 this.root.setKeyboardActive(true);
                 if (!open) {
-                    this.root.openAndHighlight('last');
+                    this.root.openAndHighlight('last', 'list-navigation', event);
                 } else {
                     this.root.moveUp();
                 }
@@ -239,18 +239,18 @@ export class RdxAutocompleteInput {
                         : this.root.highlightedItem() !== null;
                     if (hasHighlight) {
                         event.preventDefault();
-                        this.root.selectHighlighted();
+                        this.root.selectHighlighted(event);
                     } else if (!this.root.inlineMode()) {
                         // Non-inline: close and let native form submission proceed. Inline modes keep the
                         // popup open on Enter without a highlight (matches Base UI).
-                        this.root.closePopup(true);
+                        this.root.closePopup(true, 'none', event);
                     }
                 }
                 break;
             case 'Escape':
                 if (open) {
                     event.preventDefault();
-                    this.root.closePopup(true);
+                    this.root.closePopup(true, 'escape-key', event);
                 } else if (!this.root.popupMounted()) {
                     // Base UI: Escape on a closed autocomplete clears the input value (a no-op while
                     // read-only / disabled). Guard on `popupMounted` so the same Escape that just closed
@@ -263,7 +263,7 @@ export class RdxAutocompleteInput {
                 // inline "command palette" layout), Tab must NOT close — it just moves focus within the
                 // surrounding dialog. Guard on `popupMounted` so closing doesn't tear down that dialog.
                 if (open && this.root.popupMounted()) {
-                    this.root.closePopup(true);
+                    this.root.closePopup(true, 'none', event);
                 }
                 break;
         }

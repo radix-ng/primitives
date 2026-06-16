@@ -107,6 +107,7 @@ export class AutocompleteDefault {
 - ✅ Inline list (command palette): render `List` directly without `Portal` / `Positioner` / `Popup` for an always-open list.
 - ✅ WAI-ARIA `combobox` / `listbox` semantics with `aria-activedescendant` (focus never leaves the input).
 - ✅ Optional `modal` mode: locks page scroll and makes outside content inert, with a `Backdrop` part.
+- ✅ `onOpenChange` is cancellable and emits `{ open, reason, event, trigger, eventDetails }`; controlled autocomplete can inspect or reject close/open requests.
 - ✅ `limit` caps how many matches show; arrow-key navigation never fights a resting mouse cursor.
 - ✅ External virtualization: `virtualized` + `[items]` drives index navigation and exposes `filteredItems()`.
 - ✅ Forms: `ControlValueAccessor` on the root (value = input string), plus Field integration on the input.
@@ -1472,6 +1473,25 @@ export class AutocompleteGrid {
             this.search.set('');
         }
     }
+}
+```
+
+### Controlled open state
+
+When the app owns `open`, listen to `(onOpenChange)` instead of treating it like a plain boolean
+output. Popup primitives emit a change object with `reason`, `event`, and cancellable
+`eventDetails`.
+
+```ts
+protected readonly open = signal(false);
+
+protected onOpenChange(change: { open: boolean; eventDetails: { cancel(): void } }) {
+  if (!change.open && this.shouldStayOpenWhileLoading) {
+    change.eventDetails.cancel();
+    return;
+  }
+
+  this.open.set(change.open);
 }
 ```
 

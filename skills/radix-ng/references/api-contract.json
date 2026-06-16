@@ -742,7 +742,7 @@
             },
             {
               "name": "onOpenChange",
-              "type": "boolean",
+              "type": "RdxComboboxOpenChange",
               "description": "Emits when the popup opens or closes."
             },
             {
@@ -1900,7 +1900,7 @@
             },
             {
               "name": "onOpenChange",
-              "type": "boolean",
+              "type": "RdxComboboxOpenChange",
               "description": "Emits when the popup opens or closes."
             },
             {

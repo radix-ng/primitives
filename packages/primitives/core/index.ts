@@ -14,6 +14,7 @@ export * from './src/provide-token';
 export * from './src/signal-forms/form-control';
 export * from './src/types';
 
+export * from './src/floating/cancelable-change-event-details';
 export * from './src/floating/floating-events';
 export * from './src/floating/floating-lifecycle';
 export * from './src/floating/floating-node-registration';

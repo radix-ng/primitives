@@ -15,11 +15,13 @@ import {
 } from '@angular/core';
 import {
     BooleanInput,
+    createCancelableChangeEventDetails,
     createContext,
     createFloatingRootContext,
     injectId,
     provideFloatingRootContext,
     provideFloatingTree,
+    RdxCancelableChangeEventDetails,
     RdxFloatingRootContext,
     RdxTransitionStatus,
     useTransitionStatus
@@ -39,12 +41,15 @@ export type RdxPopoverOpenChangeReason =
     | 'imperative-action'
     | 'none';
 
+export type RdxPopoverOpenChangeEventDetails = RdxCancelableChangeEventDetails<RdxPopoverOpenChangeReason>;
+
 export interface RdxPopoverOpenChange {
     open: boolean;
     triggerId: string | null;
     trigger: HTMLElement | undefined;
     reason: RdxPopoverOpenChangeReason;
     event: Event;
+    eventDetails: RdxPopoverOpenChangeEventDetails;
 }
 
 interface RdxPopoverRegisteredTrigger {
@@ -61,6 +66,7 @@ export interface RdxPopoverRootContext {
     contentId: string;
     descriptionId: Signal<string | undefined>;
     isOpen: Signal<boolean>;
+    present: Signal<boolean>;
     modal: Signal<RdxPopoverModal>;
     titleId: Signal<string | undefined>;
     trigger: Signal<HTMLElement | undefined>;
@@ -186,18 +192,31 @@ export class RdxPopoverRoot {
     /** Whether the current open was initiated by touch (ADR 0016 §3 — gates the anchored scroll lock). */
     readonly openedByTouch = signal(false);
     readonly popupCloseCount = signal(0);
+    private readonly preventUnmountOnClose = signal(false);
     readonly onOpenChange = output<RdxPopoverOpenChange>();
     readonly onOpenChangeComplete = output<boolean>();
     private readonly registeredTriggers = new Map<string, RdxPopoverRegisteredTrigger>();
     private readonly viewportTriggerChange = new Set<(previous: HTMLElement, next: HTMLElement) => void>();
 
     readonly state = computed(() => (this.open() ? 'open' : 'closed'), { debugName: 'RdxPopoverRoot.state' });
+    readonly present = computed(() => this.open() || this.preventUnmountOnClose(), {
+        debugName: 'RdxPopoverRoot.present'
+    });
 
     constructor() {
         let previousOpen = this.open();
 
         // Keep the floating context's reference element in sync with the active trigger.
         effect(() => this.floatingContext.setReferenceElement(this.trigger() ?? null));
+
+        effect(
+            () => {
+                if (this.open() && this.preventUnmountOnClose()) {
+                    this.preventUnmountOnClose.set(false);
+                }
+            },
+            { debugName: 'RdxPopoverRoot.clearPreventUnmountOnOpen' }
+        );
 
         effect(
             () => {
@@ -276,10 +295,29 @@ export class RdxPopoverRoot {
         fromHover = false
     ) {
         this.clearHoverTimers();
-        this.isHoverActive.set(fromHover);
-        this.openChangeReason.set(reason);
         const previousTrigger = this.trigger();
         const changedTriggerWhileOpen = this.open() && previousTrigger !== trigger;
+        const changed = !this.open() || previousTrigger !== trigger;
+
+        if (!changed) {
+            this.isHoverActive.set(fromHover);
+            this.openChangeReason.set(reason);
+            if (triggerId !== undefined) {
+                this.triggerId.set(triggerId);
+            }
+            this.payload.set(payload);
+            return;
+        }
+
+        const change = this.createOpenChangeEvent(true, reason, event, trigger, triggerId ?? this.triggerId());
+        this.onOpenChange.emit(change.payload);
+
+        if (change.eventDetails.isCanceled()) {
+            return;
+        }
+
+        this.isHoverActive.set(fromHover);
+        this.openChangeReason.set(reason);
         this.instant.set(changedTriggerWhileOpen || reason === 'trigger-focus');
 
         if (changedTriggerWhileOpen) {
@@ -299,27 +337,32 @@ export class RdxPopoverRoot {
         }
 
         this.payload.set(payload);
-        const changed = !this.open() || previousTrigger !== trigger;
+        this.preventUnmountOnClose.set(false);
         this.open.set(true);
-
-        if (changed) {
-            this.emitOpenChange(true, reason, event);
-        }
+        this.floatingContext.events.emit('openchange', { open: true, reason, event: change.eventDetails.event });
     }
 
     close(reason: RdxPopoverOpenChangeReason = 'none', event = new Event('popover.open-change')) {
         this.clearHoverTimers();
-        this.isHoverActive.set(false);
-        this.openedByTouch.set(false);
 
         if (!this.open()) {
             return;
         }
 
+        const change = this.createOpenChangeEvent(false, reason, event, this.trigger(), this.triggerId());
+        this.onOpenChange.emit(change.payload);
+
+        if (change.eventDetails.isCanceled()) {
+            return;
+        }
+
+        this.isHoverActive.set(false);
+        this.openedByTouch.set(false);
         this.instant.set(reason !== 'none' && reason !== 'trigger-hover');
         this.openChangeReason.set(reason);
+        this.preventUnmountOnClose.set(change.shouldPreventUnmountOnClose());
         this.open.set(false);
-        this.emitOpenChange(false, reason, event);
+        this.floatingContext.events.emit('openchange', { open: false, reason, event: change.eventDetails.event });
     }
 
     toggle(triggerId: string, trigger: HTMLElement, payload?: unknown, event?: Event) {
@@ -455,14 +498,27 @@ export class RdxPopoverRoot {
         this.payload.set(trigger.payload());
     }
 
-    private emitOpenChange(open: boolean, reason: RdxPopoverOpenChangeReason, event: Event) {
-        this.onOpenChange.emit({
-            open,
-            triggerId: this.triggerId(),
-            trigger: this.trigger(),
-            reason,
-            event
-        });
+    private createOpenChangeEvent(
+        open: boolean,
+        reason: RdxPopoverOpenChangeReason,
+        event: Event,
+        trigger: HTMLElement | undefined,
+        triggerId: string | null
+    ) {
+        const change = createCancelableChangeEventDetails(reason, event, trigger);
+
+        return {
+            eventDetails: change.eventDetails,
+            shouldPreventUnmountOnClose: change.shouldPreventUnmountOnClose,
+            payload: {
+                open,
+                triggerId,
+                trigger: change.eventDetails.trigger,
+                reason: change.eventDetails.reason,
+                event: change.eventDetails.event,
+                eventDetails: change.eventDetails
+            } satisfies RdxPopoverOpenChange
+        };
     }
 
     private clearHoverTimers() {
@@ -504,6 +560,7 @@ function contextFor(root: RdxPopoverRoot): RdxPopoverRootContext {
         contentId: root.contentId,
         descriptionId: root.descriptionId.asReadonly(),
         isOpen: root.open,
+        present: root.present,
         modal: root.modal,
         titleId: root.titleId.asReadonly(),
         trigger: root.trigger.asReadonly(),

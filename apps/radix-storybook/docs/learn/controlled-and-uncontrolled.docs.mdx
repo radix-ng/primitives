@@ -62,8 +62,13 @@ from elsewhere, persist it, or veto a change. Stateful primitives expose the val
 export class Profile {
   protected readonly open = signal(false);
 
-  protected onOpenChange(event: { open: boolean }) {
-    this.open.set(event.open);
+  protected onOpenChange(change: { open: boolean; eventDetails: { cancel(): void } }) {
+    if (!change.open && this.hasUnsavedChanges) {
+      change.eventDetails.cancel();
+      return;
+    }
+
+    this.open.set(change.open);
   }
 }
 ```
@@ -77,7 +82,8 @@ Because it's a `model()`, two-way binding works too when every change should be 
 ```
 
 Use the long form (`[open]` + `(onOpenChange)`) when you want to **inspect or reject** a change
-before applying it; use `[(open)]` when you simply want your signal kept in sync.
+before applying it; popup primitives emit a change object, not just a bare boolean. Use `[(open)]`
+when you simply want your signal kept in sync.
 
 ## The mental rule
 

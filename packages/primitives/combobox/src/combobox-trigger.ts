@@ -35,7 +35,7 @@ import { injectComboboxRootContext } from './combobox-root';
         '[attr.data-popup-open]': 'rootContext.open() ? "" : undefined',
         '[attr.data-disabled]': 'rootContext.disabledState() ? "" : undefined',
         '(pointerdown)': 'onPointerDown($event)',
-        '(click)': 'onClick()',
+        '(click)': 'onClick($event)',
         '(keydown)': 'onKeydown($event)'
     }
 })
@@ -54,12 +54,12 @@ export class RdxComboboxTrigger {
         this.rootContext.setOpenedByTouch(event.pointerType === 'touch');
     }
 
-    onClick(): void {
+    onClick(event: MouseEvent): void {
         if (this.rootContext.open()) {
-            this.rootContext.closePopup(true);
+            this.rootContext.closePopup(true, 'trigger-press', event);
         } else {
             this.rootContext.focusInput();
-            this.rootContext.openForBrowse();
+            this.rootContext.openForBrowse('trigger-press', event);
         }
     }
 
@@ -73,7 +73,7 @@ export class RdxComboboxTrigger {
             event.preventDefault();
             // A keyboard open must focus the input, not the popup — clear any prior touch flag.
             this.rootContext.setOpenedByTouch(false);
-            this.rootContext.openAndHighlight(event.key === 'ArrowUp' ? 'last' : 'first');
+            this.rootContext.openAndHighlight(event.key === 'ArrowUp' ? 'last' : 'first', 'list-navigation', event);
         }
     }
 }

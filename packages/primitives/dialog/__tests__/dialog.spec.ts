@@ -90,6 +90,47 @@ class NoBackdropHostComponent {
 }
 
 @Component({
+    imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPopup, RdxDialogClose],
+    template: `
+        <div [(open)]="open" (onOpenChange)="handleOpenChange($event)" rdxDialogRoot>
+            <button rdxDialogTrigger>Open</button>
+            <ng-template rdxDialogPortal>
+                <div rdxDialogPopup>
+                    Popup
+                    <button rdxDialogClose>Close</button>
+                </div>
+            </ng-template>
+        </div>
+    `
+})
+class DialogCancelableHostComponent {
+    open = false;
+    cancelNextOpen = false;
+    cancelNextClose = false;
+    preventUnmountOnNextClose = false;
+    readonly changes: RdxDialogOpenChange[] = [];
+
+    handleOpenChange(change: RdxDialogOpenChange) {
+        if (change.open && this.cancelNextOpen) {
+            change.eventDetails.cancel();
+            this.cancelNextOpen = false;
+        }
+
+        if (!change.open && this.cancelNextClose) {
+            change.eventDetails.cancel();
+            this.cancelNextClose = false;
+        }
+
+        if (!change.open && this.preventUnmountOnNextClose) {
+            change.eventDetails.preventUnmountOnClose();
+            this.preventUnmountOnNextClose = false;
+        }
+
+        this.changes.push(change);
+    }
+}
+
+@Component({
     imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPopup],
     template: `
         <div #root="rdxDialogRoot" [(open)]="open" [(triggerId)]="triggerId" rdxDialogRoot>
@@ -256,6 +297,7 @@ describe('Dialog', () => {
 
         expect(fixture.componentInstance.open).toBe(false);
         expect(fixture.componentInstance.changes.at(-1)?.reason).toBe('escape-key');
+        expect(fixture.componentInstance.changes.at(-1)?.eventDetails.reason).toBe('escape-key');
     });
 
     it('closes when an outside press completes (modal with backdrop → intentional, closes on click)', async () => {
@@ -296,8 +338,75 @@ describe('Dialog', () => {
         noBackdropFixture.detectChanges();
         expect(noBackdropFixture.componentInstance.open).toBe(false);
         expect(noBackdropFixture.componentInstance.changes.at(-1)?.reason).toBe('outside-press');
+        expect(noBackdropFixture.componentInstance.changes.at(-1)?.eventDetails.reason).toBe('outside-press');
 
         noBackdropFixture.destroy();
+    });
+
+    it('lets onOpenChange cancel an opening request', () => {
+        const cancelFixture = TestBed.createComponent(DialogCancelableHostComponent);
+        cancelFixture.detectChanges();
+
+        const cancelTrigger: HTMLButtonElement = cancelFixture.nativeElement.querySelector('[rdxDialogTrigger]');
+        cancelFixture.componentInstance.cancelNextOpen = true;
+        cancelTrigger.click();
+        cancelFixture.detectChanges();
+
+        expect(cancelFixture.componentInstance.open).toBe(false);
+        expect(popup()).toBeNull();
+        expect(cancelFixture.componentInstance.changes[0].eventDetails.isCanceled()).toBe(true);
+
+        cancelFixture.destroy();
+    });
+
+    it('lets onOpenChange cancel a close request', () => {
+        const cancelFixture = TestBed.createComponent(DialogCancelableHostComponent);
+        cancelFixture.detectChanges();
+
+        const cancelTrigger: HTMLButtonElement = cancelFixture.nativeElement.querySelector('[rdxDialogTrigger]');
+        cancelTrigger.click();
+        cancelFixture.detectChanges();
+
+        const close: HTMLButtonElement = document.body.querySelector('[rdxDialogClose]')!;
+        cancelFixture.componentInstance.cancelNextClose = true;
+        close.click();
+        cancelFixture.detectChanges();
+
+        expect(cancelFixture.componentInstance.open).toBe(true);
+        expect(popup()).not.toBeNull();
+        expect(cancelFixture.componentInstance.changes.at(-1)?.eventDetails.isCanceled()).toBe(true);
+
+        cancelFixture.destroy();
+    });
+
+    it('keeps the portal mounted after close when preventUnmountOnClose is requested', () => {
+        const preventFixture = TestBed.createComponent(DialogCancelableHostComponent);
+        preventFixture.detectChanges();
+
+        const preventTrigger: HTMLButtonElement = preventFixture.nativeElement.querySelector('[rdxDialogTrigger]');
+        preventTrigger.click();
+        preventFixture.detectChanges();
+
+        preventFixture.componentInstance.preventUnmountOnNextClose = true;
+        const close: HTMLButtonElement = document.body.querySelector('[rdxDialogClose]')!;
+        close.click();
+        preventFixture.detectChanges();
+
+        expect(preventFixture.componentInstance.open).toBe(false);
+        expect(popup()).not.toBeNull();
+
+        preventTrigger.click();
+        preventFixture.detectChanges();
+        expect(preventFixture.componentInstance.open).toBe(true);
+
+        const closeAgain: HTMLButtonElement = document.body.querySelector('[rdxDialogClose]')!;
+        closeAgain.click();
+        preventFixture.detectChanges();
+
+        expect(preventFixture.componentInstance.open).toBe(false);
+        expect(popup()).toBeNull();
+
+        preventFixture.destroy();
     });
 
     it('does not close on outside pointerdown when disablePointerDismissal is set', async () => {

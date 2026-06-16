@@ -44,12 +44,10 @@ import { injectRdxPopoverRootContext } from './popover-root';
                 // Full modal blocks outside pointer interaction; `trap-focus` only traps focus.
                 inert: () => rootContext.modal() === true && rootContext.hasPopupClose(),
                 // Active for the whole MOUNTED lifetime (Base UI `disabled={!mounted}`, not `open`) for
-                // trap/return-focus. Marker + isolation are additionally gated on `open` inside the
-                // manager, so they release at close-start. Still suppressed while hover-opened and for a
-                // closed-but-never-opened mount (no `isOpen`, no `ending` transition).
-                enabled: () =>
-                    (rootContext.isOpen() || rootContext.transitionStatus() === 'ending') &&
-                    !rootContext.isHoverActive()
+                // trap/return-focus — including an explicit `preventUnmountOnClose()` cycle after the
+                // exit transition. Marker + isolation are additionally gated on `open` inside the
+                // manager. Still suppressed while hover-opened.
+                enabled: () => rootContext.present() && !rootContext.isHoverActive()
             };
         })
     ],

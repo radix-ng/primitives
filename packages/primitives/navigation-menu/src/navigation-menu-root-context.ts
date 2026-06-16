@@ -1,5 +1,5 @@
 import { Signal, TemplateRef } from '@angular/core';
-import { createContext, RdxTransitionStatus } from '@radix-ng/primitives/core';
+import { createContext, RdxCancelableChangeEventDetails, RdxTransitionStatus } from '@radix-ng/primitives/core';
 
 export type NavigationMenuOrientation = 'horizontal' | 'vertical';
 export type NavigationMenuDirection = 'ltr' | 'rtl';
@@ -8,6 +8,7 @@ export type RdxNavigationMenuOpenChangeReason =
     | 'trigger-hover'
     | 'trigger-focus'
     | 'trigger-press'
+    | 'list-navigation'
     | 'outside-press'
     | 'focus-out'
     | 'escape-key'
@@ -15,11 +16,16 @@ export type RdxNavigationMenuOpenChangeReason =
     | 'list-leave'
     | 'none';
 
+export type RdxNavigationMenuOpenChangeEventDetails =
+    RdxCancelableChangeEventDetails<RdxNavigationMenuOpenChangeReason>;
+
 export interface RdxNavigationMenuOpenChange {
     value: string | null;
     open: boolean;
     reason: RdxNavigationMenuOpenChangeReason;
     event: Event;
+    trigger: HTMLElement | undefined;
+    eventDetails: RdxNavigationMenuOpenChangeEventDetails;
 }
 
 /**
@@ -46,6 +52,7 @@ export interface RdxNavigationMenuRootContext {
     /** Value of the previously open item (used for slide-direction morphing). */
     readonly previousValue: Signal<string | null>;
     readonly isOpen: Signal<boolean>;
+    readonly present: Signal<boolean>;
     readonly instant: Signal<boolean>;
     readonly transitionStatus: Signal<RdxTransitionStatus>;
 

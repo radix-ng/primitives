@@ -24,6 +24,8 @@ import { ComboboxModal } from './combobox-modal';
 import modalSource from './combobox-modal?raw';
 import { ComboboxMultiple } from './combobox-multiple';
 import multipleSource from './combobox-multiple?raw';
+import { ComboboxOpenChange } from './combobox-open-change';
+import openChangeSource from './combobox-open-change?raw';
 import { ComboboxReactiveForms } from './combobox-reactive-forms';
 import reactiveFormsSource from './combobox-reactive-forms?raw';
 import { ComboboxVirtualizedExample } from './combobox-virtualized';
@@ -45,6 +47,7 @@ export default {
                 ComboboxGrouped,
                 ComboboxGrid,
                 ComboboxMultiple,
+                ComboboxOpenChange,
                 ComboboxAsync,
                 ComboboxAsyncMultiple,
                 ComboboxCreatable,
@@ -148,6 +151,15 @@ export const Modal: Story = {
     render: () => ({
         template: html`
             <combobox-modal />
+        `
+    })
+};
+
+export const OpenChange: Story = {
+    parameters: source(openChangeSource),
+    render: () => ({
+        template: html`
+            <combobox-open-change />
         `
     })
 };

@@ -18,7 +18,7 @@ import { injectComboboxRootContext } from './combobox-root';
     selector: 'ng-template[rdxComboboxPortal]',
     exportAs: 'rdxComboboxPortal',
     hostDirectives: [{ directive: RdxPortalPresence, inputs: ['container'] }],
-    providers: [provideRdxPresenceContext(() => ({ present: injectComboboxRootContext().open }))]
+    providers: [provideRdxPresenceContext(() => ({ present: injectComboboxRootContext().present }))]
 })
 export class RdxComboboxPortal {
     /**

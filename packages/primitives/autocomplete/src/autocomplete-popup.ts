@@ -73,7 +73,8 @@ export class RdxAutocompletePopup {
             escapeKey: () => false,
             outsidePress: () => true,
             focusOutside: () => true,
-            onDismiss: () => this.root.closePopup(true)
+            onDismiss: (reason, event) =>
+                this.root.closePopup(true, reason === 'focus-outside' ? 'focus-out' : 'outside-press', event)
         });
 
         // For the "input inside the popup" pattern, move focus to the input once positioned. Use

@@ -18,7 +18,7 @@ import { injectNavigationMenuRootContext } from './navigation-menu-root-context'
     selector: 'ng-template[rdxNavigationMenuPortal]',
     exportAs: 'rdxNavigationMenuPortal',
     hostDirectives: [{ directive: RdxPortalPresence, inputs: ['container'] }],
-    providers: [provideRdxPresenceContext(() => ({ present: injectNavigationMenuRootContext().isOpen }))]
+    providers: [provideRdxPresenceContext(() => ({ present: injectNavigationMenuRootContext().present }))]
 })
 export class RdxNavigationMenuPortal {}
 

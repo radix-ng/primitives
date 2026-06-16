@@ -1,12 +1,21 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { navigationMenuImports, RdxNavigationMenuRoot } from '@radix-ng/primitives/navigation-menu';
+import {
+    navigationMenuImports,
+    RdxNavigationMenuOpenChange,
+    RdxNavigationMenuRoot
+} from '@radix-ng/primitives/navigation-menu';
 
 @Component({
     imports: [...navigationMenuImports],
     template: `
-        <nav #root="rdxNavigationMenuRoot" [defaultValue]="defaultValue" rdxNavigationMenuRoot>
+        <nav
+            #root="rdxNavigationMenuRoot"
+            [defaultValue]="defaultValue"
+            (onOpenChange)="handleOpenChange($event)"
+            rdxNavigationMenuRoot
+        >
             <ul rdxNavigationMenuList>
                 <li rdxNavigationMenuItem value="one">
                     <button rdxNavigationMenuTrigger>One</button>
@@ -35,6 +44,21 @@ import { navigationMenuImports, RdxNavigationMenuRoot } from '@radix-ng/primitiv
 })
 class HostComponent {
     defaultValue: string | null = null;
+    cancelClose = false;
+    keepMountedOnClose = false;
+    events: RdxNavigationMenuOpenChange[] = [];
+
+    handleOpenChange(change: RdxNavigationMenuOpenChange) {
+        this.events.push(change);
+
+        if (!change.open && this.cancelClose) {
+            change.eventDetails.cancel();
+        }
+
+        if (!change.open && this.keepMountedOnClose) {
+            change.eventDetails.preventUnmountOnClose();
+        }
+    }
 }
 
 describe('RdxNavigationMenu', () => {
@@ -179,6 +203,44 @@ describe('RdxNavigationMenu', () => {
         document.body.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
         fixture.detectChanges();
         expect(root().isOpen()).toBe(false);
+    });
+
+    it('lets onOpenChange cancel closing before the value commits', () => {
+        createComponent();
+        const host = fixture.componentInstance;
+        const [one] = triggers();
+
+        one.click();
+        fixture.detectChanges();
+
+        host.cancelClose = true;
+        one.click();
+        fixture.detectChanges();
+
+        expect(root().value()).toBe('one');
+        expect(root().isOpen()).toBe(true);
+        expect(host.events.at(-1)?.eventDetails.reason).toBe('trigger-press');
+    });
+
+    it('keeps the portal present when close requests preventUnmountOnClose', async () => {
+        createComponent();
+        const host = fixture.componentInstance;
+        const [one] = triggers();
+
+        one.click();
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        host.keepMountedOnClose = true;
+        one.click();
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        expect(root().isOpen()).toBe(false);
+        expect(root().present()).toBe(true);
+        expect(document.querySelector('[data-test-popup]')).not.toBeNull();
     });
 });
 

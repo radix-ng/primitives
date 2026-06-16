@@ -15,11 +15,13 @@ import {
 } from '@angular/core';
 import {
     BooleanInput,
+    createCancelableChangeEventDetails,
     createContext,
     createFloatingRootContext,
     injectId,
     provideFloatingRootContext,
     provideFloatingTree,
+    RdxCancelableChangeEventDetails,
     RdxFloatingRootContext,
     useTransitionStatus
 } from '@radix-ng/primitives/core';
@@ -35,12 +37,15 @@ export type RdxPreviewCardOpenChangeReason =
     | 'imperative-action'
     | 'none';
 
+export type RdxPreviewCardOpenChangeEventDetails = RdxCancelableChangeEventDetails<RdxPreviewCardOpenChangeReason>;
+
 export interface RdxPreviewCardOpenChange {
     open: boolean;
     triggerId: string | null;
     trigger: HTMLElement | undefined;
     reason: RdxPreviewCardOpenChangeReason;
     event: Event;
+    eventDetails: RdxPreviewCardOpenChangeEventDetails;
 }
 
 interface RdxPreviewCardRegisteredTrigger {
@@ -53,6 +58,7 @@ const context = () => contextFor(inject(RdxPreviewCardRoot));
 export interface RdxPreviewCardRootContext {
     contentId: string;
     isOpen: Signal<boolean>;
+    present: Signal<boolean>;
     trigger: Signal<HTMLElement | undefined>;
     triggers: Signal<HTMLElement[]>;
     isHoverActive: Signal<boolean>;
@@ -167,12 +173,14 @@ export class RdxPreviewCardRoot {
     readonly triggers = signal<HTMLElement[]>([]);
     readonly payload = signal<unknown>(undefined);
     readonly isPointerDownOnTrigger = signal(false);
+    private readonly preventUnmountOnClose = signal(false);
     readonly onOpenChange = output<RdxPreviewCardOpenChange>();
     readonly onOpenChangeComplete = output<boolean>();
     private readonly registeredTriggers = new Map<string, RdxPreviewCardRegisteredTrigger>();
     private readonly viewportTriggerChange = new Set<(previous: HTMLElement, next: HTMLElement) => void>();
 
     readonly state = computed(() => (this.open() ? 'open' : 'closed'));
+    readonly present = computed(() => this.open() || this.preventUnmountOnClose());
 
     constructor() {
         let previousOpen = this.open();
@@ -223,6 +231,12 @@ export class RdxPreviewCardRoot {
         // as "inside" and never dismisses (ADR 0015).
         effect(() => this.floatingContext.setReferenceElement(this.trigger() ?? null));
 
+        effect(() => {
+            if (this.open() && this.preventUnmountOnClose()) {
+                this.preventUnmountOnClose.set(false);
+            }
+        });
+
         this.destroyRef.onDestroy(() => {
             this.clearHoverTimers();
 
@@ -241,10 +255,29 @@ export class RdxPreviewCardRoot {
         fromHover = false
     ) {
         this.clearHoverTimers();
-        this.isHoverActive.set(fromHover);
-        this.openChangeReason.set(reason);
         const previousTrigger = this.trigger();
         const changedTriggerWhileOpen = this.open() && previousTrigger !== trigger;
+        const changed = !this.open() || previousTrigger !== trigger;
+
+        if (!changed) {
+            this.isHoverActive.set(fromHover);
+            this.openChangeReason.set(reason);
+            if (triggerId !== undefined) {
+                this.triggerId.set(triggerId);
+            }
+            this.payload.set(payload);
+            return;
+        }
+
+        const change = this.createOpenChangeEvent(true, reason, event, trigger, triggerId ?? this.triggerId());
+        this.onOpenChange.emit(change.payload);
+
+        if (change.eventDetails.isCanceled()) {
+            return;
+        }
+
+        this.isHoverActive.set(fromHover);
+        this.openChangeReason.set(reason);
         this.instant.set(changedTriggerWhileOpen || reason === 'trigger-focus');
 
         if (changedTriggerWhileOpen) {
@@ -264,26 +297,31 @@ export class RdxPreviewCardRoot {
         }
 
         this.payload.set(payload);
-        const changed = !this.open() || previousTrigger !== trigger;
+        this.preventUnmountOnClose.set(false);
         this.open.set(true);
-
-        if (changed) {
-            this.emitOpenChange(true, reason, event);
-        }
+        this.floatingContext.events.emit('openchange', { open: true, reason, event: change.eventDetails.event });
     }
 
     close(reason: RdxPreviewCardOpenChangeReason = 'none', event = new Event('preview-card.open-change')) {
         this.clearHoverTimers();
-        this.isHoverActive.set(false);
 
         if (!this.open()) {
             return;
         }
 
+        const change = this.createOpenChangeEvent(false, reason, event, this.trigger(), this.triggerId());
+        this.onOpenChange.emit(change.payload);
+
+        if (change.eventDetails.isCanceled()) {
+            return;
+        }
+
+        this.isHoverActive.set(false);
         this.instant.set(reason !== 'none' && reason !== 'trigger-hover');
         this.openChangeReason.set(reason);
+        this.preventUnmountOnClose.set(change.shouldPreventUnmountOnClose());
         this.open.set(false);
-        this.emitOpenChange(false, reason, event);
+        this.floatingContext.events.emit('openchange', { open: false, reason, event: change.eventDetails.event });
     }
 
     toggle(triggerId: string, trigger: HTMLElement, payload?: unknown, event?: Event) {
@@ -421,14 +459,27 @@ export class RdxPreviewCardRoot {
         this.payload.set(trigger.payload());
     }
 
-    private emitOpenChange(open: boolean, reason: RdxPreviewCardOpenChangeReason, event: Event) {
-        this.onOpenChange.emit({
-            open,
-            triggerId: this.triggerId(),
-            trigger: this.trigger(),
-            reason,
-            event
-        });
+    private createOpenChangeEvent(
+        open: boolean,
+        reason: RdxPreviewCardOpenChangeReason,
+        event: Event,
+        trigger: HTMLElement | undefined,
+        triggerId: string | null
+    ) {
+        const change = createCancelableChangeEventDetails(reason, event, trigger);
+
+        return {
+            eventDetails: change.eventDetails,
+            shouldPreventUnmountOnClose: change.shouldPreventUnmountOnClose,
+            payload: {
+                open,
+                triggerId,
+                trigger: change.eventDetails.trigger,
+                reason: change.eventDetails.reason,
+                event: change.eventDetails.event,
+                eventDetails: change.eventDetails
+            } satisfies RdxPreviewCardOpenChange
+        };
     }
 
     private clearHoverTimers() {
@@ -469,6 +520,7 @@ function contextFor(root: RdxPreviewCardRoot): RdxPreviewCardRootContext {
     return {
         contentId: root.contentId,
         isOpen: root.open.asReadonly(),
+        present: root.present,
         trigger: root.trigger.asReadonly(),
         triggers: root.triggers.asReadonly(),
         payload: root.payload.asReadonly(),

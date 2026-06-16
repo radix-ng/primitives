@@ -16,7 +16,7 @@ import { injectRdxPopoverRootContext } from './popover-root';
     selector: 'ng-template[rdxPopoverPortal]',
     exportAs: 'rdxPopoverPortal',
     hostDirectives: [{ directive: RdxPortalPresence, inputs: ['container'] }],
-    providers: [provideRdxPresenceContext(() => ({ present: injectRdxPopoverRootContext().isOpen }))]
+    providers: [provideRdxPresenceContext(() => ({ present: injectRdxPopoverRootContext().present }))]
 })
 export class RdxPopoverPortal {}
 
