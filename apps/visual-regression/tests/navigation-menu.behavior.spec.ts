@@ -18,3 +18,43 @@ test('navigation menu teleports the positioner directly into <body> with no wrap
     const parentTag = await page.locator('[rdxNavigationMenuPositioner]').evaluate((el) => el.parentElement?.tagName);
     expect(parentTag).toBe('BODY');
 });
+
+/**
+ * ADR 0015/0017 Phase-4 migration of Navigation Menu onto the new floating dismissal engine
+ * (node-optional capability: one shared popup, `node === null`).
+ */
+test.describe('Navigation Menu — new floating engine migration', () => {
+    const trigger = '[rdxNavigationMenuTrigger]';
+    const popup = '[rdxNavigationMenuPopup]';
+
+    test('Escape closes the menu and returns focus to the trigger', async ({ page }) => {
+        await gotoStory(page, 'primitives-navigation-menu--default');
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        await page.keyboard.press('Escape');
+        await expect(page.locator(popup)).toHaveCount(0);
+        await expect(page.locator(trigger).first()).toBeFocused();
+    });
+
+    test('an outside press closes the menu', async ({ page }) => {
+        await gotoStory(page, 'primitives-navigation-menu--default');
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        await page.mouse.click(5, 5);
+        await expect(page.locator(popup)).toHaveCount(0);
+    });
+
+    test('pressing a sibling trigger switches items instead of dismissing', async ({ page }) => {
+        await gotoStory(page, 'primitives-navigation-menu--default');
+        const triggers = page.locator(trigger);
+        await triggers.first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        // A sibling trigger is a registered "inside" element, so opening it switches the shared popup
+        // rather than counting as an outside press / focus-out that would dismiss.
+        await triggers.nth(1).click();
+        await expect(page.locator(popup)).toBeVisible();
+    });
+});

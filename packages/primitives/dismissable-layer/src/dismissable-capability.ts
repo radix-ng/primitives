@@ -251,8 +251,8 @@ export class RdxDismissableCapability {
             dismissOnTouchEnd: boolean;
             dismissOnMouseDown: boolean;
         } | null = null;
-        let touchGraceTimer: ReturnType<Window['setTimeout']> | undefined;
-        let touchClearTimer: ReturnType<Window['setTimeout']> | undefined;
+        let touchGraceTimer: ReturnType<typeof ownerWindow.setTimeout> | undefined;
+        let touchClearTimer: ReturnType<typeof ownerWindow.setTimeout> | undefined;
         const clearTouchTimers = (): void => {
             ownerWindow.clearTimeout(touchGraceTimer);
             ownerWindow.clearTimeout(touchClearTimer);

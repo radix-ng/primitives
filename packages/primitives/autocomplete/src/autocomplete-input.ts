@@ -10,7 +10,7 @@ import {
     input
 } from '@angular/core';
 import { BooleanInput, injectId } from '@radix-ng/primitives/core';
-import { RdxDismissableLayerBranch } from '@radix-ng/primitives/dismissable-layer';
+import { RdxFloatingInsideElement } from '@radix-ng/primitives/dismissable-layer';
 import { injectFieldRootContext } from '@radix-ng/primitives/field';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { RdxAutocompletePositioner } from './autocomplete-positioner';
@@ -28,7 +28,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
 @Directive({
     selector: 'input[rdxAutocompleteInput]',
     exportAs: 'rdxAutocompleteInput',
-    hostDirectives: [RdxPopperAnchor, RdxDismissableLayerBranch],
+    hostDirectives: [RdxPopperAnchor, RdxFloatingInsideElement],
     host: {
         role: 'combobox',
         autocomplete: 'off',
@@ -254,7 +254,7 @@ export class RdxAutocompleteInput {
                 } else if (!this.root.popupMounted()) {
                     // Base UI: Escape on a closed autocomplete clears the input value (a no-op while
                     // read-only / disabled). Guard on `popupMounted` so the same Escape that just closed
-                    // an open popup (dismissable layer, capture phase) doesn't also clear.
+                    // an open popup (the `open` branch above) doesn't also clear.
                     this.root.clearValue();
                 }
                 break;

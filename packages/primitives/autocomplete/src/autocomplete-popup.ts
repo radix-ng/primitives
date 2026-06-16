@@ -1,6 +1,11 @@
 import { afterRenderEffect, DestroyRef, Directive, ElementRef, inject } from '@angular/core';
-import { useScrollLock } from '@radix-ng/primitives/core';
-import { provideRdxDismissableLayerConfig, RdxDismissableLayer } from '@radix-ng/primitives/dismissable-layer';
+import {
+    RDX_FLOATING_REGISTRATION,
+    RDX_FLOATING_ROOT_CONTEXT,
+    RdxFloatingNodeRegistration,
+    useScrollLock
+} from '@radix-ng/primitives/core';
+import { RdxDismissableCapability } from '@radix-ng/primitives/dismissable-layer';
 import { injectPopperContentWrapperContext, RdxPopperContent } from '@radix-ng/primitives/popper';
 import { RdxAutocompleteRoot } from './autocomplete-root';
 
@@ -15,12 +20,7 @@ import { RdxAutocompleteRoot } from './autocomplete-root';
 @Directive({
     selector: '[rdxAutocompletePopup]',
     exportAs: 'rdxAutocompletePopup',
-    hostDirectives: [RdxPopperContent, RdxDismissableLayer],
-    providers: [
-        provideRdxDismissableLayerConfig(() => ({
-            disableOutsidePointerEvents: inject(RdxAutocompleteRoot).modal
-        }))
-    ],
+    hostDirectives: [RdxPopperContent, RdxFloatingNodeRegistration],
     host: {
         // Base UI: a `dialog` (focusable, tabindex -1) when the input lives inside the popup, otherwise
         // a presentational wrapper around the `listbox` (the List part owns the listbox role).
@@ -36,7 +36,8 @@ import { RdxAutocompleteRoot } from './autocomplete-root';
 })
 export class RdxAutocompletePopup {
     protected readonly root = inject(RdxAutocompleteRoot);
-    private readonly dismissableLayer = inject(RdxDismissableLayer);
+    private readonly floatingContext = inject(RDX_FLOATING_ROOT_CONTEXT);
+    private readonly registration = inject(RDX_FLOATING_REGISTRATION, { optional: true });
     private readonly popper = injectPopperContentWrapperContext();
     private readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
@@ -51,7 +52,19 @@ export class RdxAutocompletePopup {
             this.root.setPopupMounted(false);
         });
 
-        this.dismissableLayer.dismiss.subscribe(() => this.root.closePopup(true));
+        // The popup is this layer's floating element (the inside surface for containment checks).
+        this.floatingContext.setFloatingElement(this.element);
+
+        // Dismissal (ADR 0015): an outside press, or focus leaving everything, closes the autocomplete. The
+        // input / trigger / clear are registered as "inside" (RdxFloatingInsideElement), so the input keeping
+        // focus — or a press on those parts — never self-dismisses. Escape is owned by the input (it
+        // preventDefaults + closes), so the capability does not handle it (`escapeKey: false`).
+        new RdxDismissableCapability(this.floatingContext, () => this.registration?.node() ?? null, {
+            escapeKey: () => false,
+            outsidePress: () => true,
+            focusOutside: () => true,
+            onDismiss: () => this.root.closePopup(true)
+        });
 
         // For the "input inside the popup" pattern, move focus to the input once positioned. Use
         // `afterRenderEffect` (not `effect`): when `isPositioned` flips true the popup's final

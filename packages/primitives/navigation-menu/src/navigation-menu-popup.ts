@@ -1,7 +1,6 @@
-import { computed, DestroyRef, Directive, effect, ElementRef, inject, untracked } from '@angular/core';
-import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
-import { ARROW_DOWN, ARROW_UP, END, HOME } from '@radix-ng/primitives/core';
-import { RdxDismissableLayer, RdxDismissableLayersContextToken } from '@radix-ng/primitives/dismissable-layer';
+import { computed, DestroyRef, Directive, ElementRef, inject, output } from '@angular/core';
+import { ARROW_DOWN, ARROW_UP, END, HOME, RDX_FLOATING_ROOT_CONTEXT } from '@radix-ng/primitives/core';
+import { RdxDismissableCapability } from '@radix-ng/primitives/dismissable-layer';
 import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
 import { injectNavigationMenuRootContext, RdxNavigationMenuOpenChangeReason } from './navigation-menu-root-context';
 import { focusFirst, getTabbableCandidates } from './utils';
@@ -11,7 +10,7 @@ import { focusFirst, getTabbableCandidates } from './utils';
  */
 @Directive({
     selector: '[rdxNavigationMenuPopup]',
-    hostDirectives: [RdxPopperContent, RdxDismissableLayer],
+    hostDirectives: [RdxPopperContent],
     host: {
         role: 'menu',
         tabindex: '-1',
@@ -31,9 +30,8 @@ import { focusFirst, getTabbableCandidates } from './utils';
 })
 export class RdxNavigationMenuPopup {
     protected readonly rootContext = injectNavigationMenuRootContext();
-    private readonly dismissableLayer = inject(RdxDismissableLayer);
+    private readonly floatingContext = inject(RDX_FLOATING_ROOT_CONTEXT);
     private readonly wrapper = inject(RdxPopperContentWrapper, { optional: true });
-    private readonly layersContext = inject(RdxDismissableLayersContextToken);
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
     protected readonly side = computed(() => this.wrapper?.placedSide());
@@ -45,23 +43,20 @@ export class RdxNavigationMenuPopup {
         return value ? this.rootContext.triggerId(value) : undefined;
     });
 
-    private dismissReason: RdxNavigationMenuOpenChangeReason = 'none';
-    private dismissEvent: Event = new Event('navigation-menu.dismiss');
-
     /**
      * Event handler called when the escape key is down. Can be prevented.
      */
-    readonly escapeKeyDown = outputFromObservable(outputToObservable(this.dismissableLayer.escapeKeyDown));
+    readonly escapeKeyDown = output<KeyboardEvent>();
 
     /**
      * Event handler called when a pointerdown event happens outside the popup. Can be prevented.
      */
-    readonly pointerDownOutside = outputFromObservable(outputToObservable(this.dismissableLayer.pointerDownOutside));
+    readonly pointerDownOutside = output<PointerEvent>();
 
     /**
      * Event handler called when focus moves outside the popup. Can be prevented.
      */
-    readonly focusOutside = outputFromObservable(outputToObservable(this.dismissableLayer.focusOutside));
+    readonly focusOutside = output<FocusEvent>();
 
     constructor() {
         const destroyRef = inject(DestroyRef);
@@ -69,52 +64,31 @@ export class RdxNavigationMenuPopup {
 
         destroyRef.onDestroy(unregisterTransitionElement);
 
-        // Register the triggers as dismissable-layer branches so a pointer-down or (async) focus move
-        // onto a trigger counts as "inside" — otherwise focusing a sibling trigger to switch items,
-        // or returning focus to the trigger, would dismiss the menu. See dismissable-layer gotcha.
-        effect(() => {
-            const triggers = this.rootContext.triggers();
+        // The popup is this layer's floating element (the inside surface for containment checks). The
+        // triggers are registered as "inside" on the shared root context (in `registerTrigger`), so a
+        // press / focus on a sibling trigger to switch items — or back on the active trigger — never
+        // counts as an outside dismissal. This replaces the legacy dismissable-layer `branches` registry.
+        this.floatingContext.setFloatingElement(this.elementRef.nativeElement);
 
-            untracked(() =>
-                this.layersContext.branches.update((branches) => {
-                    const next = new Set(branches);
-                    triggers.forEach((trigger) => next.add(trigger));
-                    return [...next];
-                })
-            );
-        });
+        // Dismissal (ADR 0015): Escape, an outside press, or focus moving outside closes the menu.
+        // Navigation Menu is node-optional (one shared popup) — the capability runs with `node === null`.
+        // It does not trap focus, so it closes on focus-out like a non-modal menu.
+        new RdxDismissableCapability(this.floatingContext, () => null, {
+            escapeKey: () => true,
+            outsidePress: () => true,
+            focusOutside: () => true,
+            onEscapeKeyDown: (event) => this.escapeKeyDown.emit(event),
+            onPointerDownOutside: (event) => this.pointerDownOutside.emit(event),
+            onFocusOutside: (event) => this.focusOutside.emit(event),
+            onDismiss: (reason, event) => {
+                const navReason: RdxNavigationMenuOpenChangeReason =
+                    reason === 'escape-key' ? 'escape-key' : reason === 'focus-outside' ? 'focus-out' : 'outside-press';
+                this.rootContext.close(navReason, event);
 
-        destroyRef.onDestroy(() => {
-            const triggers = this.rootContext.triggers();
-            this.layersContext.branches.update((branches) => branches.filter((el) => !triggers.includes(el)));
-        });
-
-        this.dismissableLayer.escapeKeyDown.subscribe((event) => {
-            this.dismissReason = 'escape-key';
-            this.dismissEvent = event;
-        });
-
-        this.dismissableLayer.pointerDownOutside.subscribe((event) => {
-            this.dismissReason = 'outside-press';
-            this.dismissEvent = event;
-        });
-
-        this.dismissableLayer.focusOutside.subscribe((event) => {
-            this.dismissReason = 'focus-out';
-            this.dismissEvent = event;
-        });
-
-        this.dismissableLayer.dismiss.subscribe(() => {
-            const reason = this.dismissReason;
-            const event = this.dismissEvent;
-            this.dismissReason = 'none';
-            this.dismissEvent = new Event('navigation-menu.dismiss');
-
-            this.rootContext.close(reason, event);
-
-            // Return focus to the trigger after an Escape dismissal.
-            if (reason === 'escape-key') {
-                this.rootContext.trigger()?.focus();
+                // Return focus to the trigger after an Escape dismissal.
+                if (reason === 'escape-key') {
+                    this.rootContext.trigger()?.focus();
+                }
             }
         });
     }
@@ -130,7 +104,7 @@ export class RdxNavigationMenuPopup {
     /**
      * Keyboard navigation inside the open panel: Down/Up move between the panel's focusable items in
      * DOM order, Home/End jump to the first/last, and Up from the first item returns focus to the
-     * trigger. (Tab keeps working natively; Escape is handled by the dismissable layer.)
+     * trigger. (Tab keeps working natively; Escape is handled by the dismissal capability.)
      */
     protected onKeydown(event: KeyboardEvent) {
         if (event.key !== ARROW_DOWN && event.key !== ARROW_UP && event.key !== HOME && event.key !== END) {
