@@ -1495,8 +1495,8 @@ interface ComboboxOpenChangeLogEntry {
                         <div class="grid gap-2 pt-3">
                             <button
                                 class="border-border bg-background text-foreground hover:bg-muted inline-flex h-8 items-center justify-between rounded-md border px-3 text-xs"
-                                type="button"
                                 (click)="cancelClose.update((value) => !value)"
+                                type="button"
                             >
                                 <span>Cancel close</span>
                                 <span class="text-muted-foreground">{{ cancelClose() ? 'on' : 'off' }}</span>
@@ -1504,8 +1504,8 @@ interface ComboboxOpenChangeLogEntry {
 
                             <button
                                 class="border-border bg-background text-foreground hover:bg-muted inline-flex h-8 items-center justify-between rounded-md border px-3 text-xs"
-                                type="button"
                                 (click)="keepMountedOnClose.update((value) => !value)"
+                                type="button"
                             >
                                 <span>Keep mounted on close</span>
                                 <span class="text-muted-foreground">{{ keepMountedOnClose() ? 'on' : 'off' }}</span>
@@ -1537,8 +1537,8 @@ interface ComboboxOpenChangeLogEntry {
                         </div>
                         <button
                             class="text-muted-foreground hover:text-foreground inline-flex h-7 items-center rounded-md px-2 text-xs"
-                            type="button"
                             (click)="logs.set([])"
+                            type="button"
                         >
                             Clear
                         </button>

@@ -24,6 +24,7 @@ import {
     RdxFloatingRootContext,
     useTransitionStatus
 } from '@radix-ng/primitives/core';
+import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 import { compare, valueComparator } from './utils';
@@ -182,7 +183,8 @@ export class RdxSelectRoot {
     /** Whether the popup is modal: locks page scroll and makes outside content inert while open. */
     readonly modal = input(true, { transform: booleanAttribute });
 
-    readonly dir = input<Direction>('ltr');
+    readonly dirInput = input<Direction | undefined>(undefined, { alias: 'dir' });
+    readonly dir: Signal<Direction> = injectDirection(this.dirInput);
 
     /** How item values are compared for equality — a function `(a, b) => boolean` or an object key. */
     readonly isItemEqualToValue = input<ItemValueComparator<AcceptableValue>>();

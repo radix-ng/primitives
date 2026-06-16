@@ -20,6 +20,7 @@ import {
     Month,
     watch
 } from '@radix-ng/primitives/core';
+import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { calendar, calendarState } from './calendar';
 import { CALENDAR_ROOT_CONTEXT } from './calendar-context.token';
 
@@ -95,7 +96,8 @@ export class RdxCalendarRootDirective {
     /**
      * The reading direction of the calendar when applicable.
      */
-    readonly dir = input<'ltr' | 'rtl'>('ltr');
+    readonly dirInput = input<'ltr' | 'rtl' | undefined>(undefined, { alias: 'dir' });
+    readonly dir = injectDirection(this.dirInput);
 
     /**
      * The minimum date that can be selected

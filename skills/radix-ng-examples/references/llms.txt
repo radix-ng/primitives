@@ -55,6 +55,7 @@ Generated from `@radix-ng/primitives@1.0.0-beta.3` — if the installed version 
 
 ## Utilities
 
+- [Direction Provider](https://radix-ng.com/utils/direction-provider.md): Provides reading direction to descendant primitives through Angular DI.
 - [Dismissable Layer](https://radix-ng.com/utils/dismissable-layer.md): Dismissable Layer
 - [Focus Scope](https://radix-ng.com/utils/focus-scope.md): Manages focus within a component boundary with support for trapping and looping focus navigation.
 - [injectId](https://radix-ng.com/utils/inject-id.md): Generates unique, SSR-stable element IDs — the Angular counterpart of React's `useId`.

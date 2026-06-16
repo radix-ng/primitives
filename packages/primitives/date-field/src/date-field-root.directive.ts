@@ -35,6 +35,7 @@ import {
     syncSegmentValues,
     watch
 } from '@radix-ng/primitives/core';
+import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { DATE_FIELDS_ROOT_CONTEXT } from './date-field-context.token';
 import { RdxDateFieldInputDirective } from './date-field-input.directive';
 
@@ -80,7 +81,8 @@ export class RdxDateFieldRootDirective {
      */
     readonly locale = input<string>('en');
 
-    readonly dir = input<Direction>('ltr');
+    readonly dirInput = input<Direction | undefined>(undefined, { alias: 'dir' });
+    readonly dir = injectDirection(this.dirInput);
 
     /**
      * The minimum valid date that can be entered.

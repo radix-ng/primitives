@@ -1,5 +1,6 @@
 import { booleanAttribute, Directive, effect, inject, input } from '@angular/core';
 import { BooleanInput, provideValueAccessor } from '@radix-ng/primitives/core';
+import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { Direction, RdxRovingFocusGroupDirective } from '@radix-ng/primitives/roving-focus';
 import { RdxToggleGroupBase, toggleGroupContext } from './toggle-group-base';
 import { provideToggleGroupContext } from './toggle-group-context';
@@ -21,7 +22,8 @@ import { provideToggleGroupContext } from './toggle-group-context';
 })
 export class RdxToggleGroup extends RdxToggleGroupBase {
     /** Text direction for arrow-key navigation. */
-    readonly dir = input<Direction>('ltr');
+    readonly dirInput = input<Direction | undefined>(undefined, { alias: 'dir' });
+    readonly dir = injectDirection(this.dirInput);
 
     /**
      * Whether keyboard navigation should loop from the last item back to the first.

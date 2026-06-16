@@ -1,5 +1,6 @@
 import { booleanAttribute, Directive, effect, inject, input } from '@angular/core';
 import { BooleanInput, DataOrientation } from '@radix-ng/primitives/core';
+import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { Direction, RdxRovingFocusGroupDirective } from '@radix-ng/primitives/roving-focus';
 import { provideToolbarRootContext, RdxToolbarRootContext } from './toolbar-context';
 
@@ -38,7 +39,8 @@ export class RdxToolbarRoot {
     readonly orientation = input<DataOrientation>('horizontal');
 
     /** Text direction for arrow-key navigation. */
-    readonly dir = input<Direction>('ltr');
+    readonly dirInput = input<Direction | undefined>(undefined, { alias: 'dir' });
+    readonly dir = injectDirection(this.dirInput);
 
     /**
      * Whether keyboard navigation should loop from the last item back to the first.

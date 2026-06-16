@@ -5,9 +5,13 @@ import {
     makeEnvironmentProviders,
     provideAppInitializer
 } from '@angular/core';
+import { RDX_DIRECTION } from '@radix-ng/primitives/direction-provider';
 import { RadixNG, type RadixNGConfig } from './config';
 
-export const RADIX_NG_CONFIG = new InjectionToken<RadixNGConfig>('RADIX_NG_CONFIG');
+export const RADIX_NG_CONFIG = new InjectionToken<readonly RadixNGConfig[]>('RADIX_NG_CONFIG', {
+    providedIn: 'root',
+    factory: () => []
+});
 
 /**
  * Provides RadixNG configuration as environment providers.
@@ -19,7 +23,7 @@ export function provideRadixNG(...features: RadixNGConfig[]): EnvironmentProvide
     const providers = features?.map((feature) => ({
         provide: RADIX_NG_CONFIG,
         useValue: feature,
-        multi: false
+        multi: true
     }));
 
     /**
@@ -28,9 +32,15 @@ export function provideRadixNG(...features: RadixNGConfig[]): EnvironmentProvide
      */
     const initializer = provideAppInitializer(() => {
         const config = inject(RadixNG);
-        features?.forEach((feature) => config.setConfig(feature));
+        const configs = inject(RADIX_NG_CONFIG);
+
+        configs.forEach((feature) => config.setConfig(feature));
         return;
     });
 
-    return makeEnvironmentProviders([...providers, initializer]);
+    return makeEnvironmentProviders([
+        ...providers,
+        { provide: RDX_DIRECTION, useFactory: () => inject(RadixNG).dir },
+        initializer
+    ]);
 }

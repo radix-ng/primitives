@@ -21,10 +21,11 @@ import {
     Direction,
     injectId
 } from '@radix-ng/primitives/core';
+import { injectDirection } from '@radix-ng/primitives/direction-provider';
 
 export type AccordionRootContext = {
     disabled: InputSignalWithTransform<boolean, BooleanInput>;
-    direction: InputSignal<Direction>;
+    direction: Signal<Direction>;
     orientation: InputSignal<DataOrientation>;
     value: ModelSignal<AcceptableValue | AcceptableValue[] | undefined>;
     collapsible: Signal<boolean>;
@@ -79,7 +80,8 @@ export class RdxAccordionRootDirective {
      *
      * @group Props
      */
-    readonly dir = input<Direction>('ltr');
+    readonly dirInput = input<Direction | undefined>(undefined, { alias: 'dir' });
+    readonly dir: Signal<Direction> = injectDirection(this.dirInput);
 
     /** Whether the Accordion is disabled.
      * @defaultValue false

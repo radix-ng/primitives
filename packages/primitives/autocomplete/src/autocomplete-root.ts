@@ -41,6 +41,7 @@ import {
     rdxDevWarning,
     RdxFloatingRootContext
 } from '@radix-ng/primitives/core';
+import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 
 /** The shared engine instance shape (the `ComboboxEngine` type is not part of combobox's public API). */
@@ -237,7 +238,8 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
     readonly mode = input<AutocompleteMode>('list');
 
     /** Text direction. */
-    readonly dir = input<Direction>('ltr');
+    readonly dirInput = input<Direction | undefined>(undefined, { alias: 'dir' });
+    readonly dir = injectDirection(this.dirInput);
 
     /** Whether the autocomplete is disabled. */
     readonly disabled = input(false, { transform: booleanAttribute });

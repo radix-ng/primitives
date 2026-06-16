@@ -34,6 +34,7 @@ import {
     TimeValue,
     watch
 } from '@radix-ng/primitives/core';
+import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { TIME_FIELDS_ROOT_CONTEXT } from './time-field-context.token';
 import { RdxTimeFieldInputDirective } from './time-field-input.directive';
 
@@ -100,7 +101,8 @@ export class RdxTimeFieldRootDirective {
      */
     readonly locale = input<string>('en');
 
-    readonly dir = input<Direction>('ltr');
+    readonly dirInput = input<Direction | undefined>(undefined, { alias: 'dir' });
+    readonly dir = injectDirection(this.dirInput);
 
     /**
      * The minimum valid date that can be entered.

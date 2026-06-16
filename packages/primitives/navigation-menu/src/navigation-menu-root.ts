@@ -25,6 +25,7 @@ import {
     RdxFloatingRootContext,
     useTransitionStatus
 } from '@radix-ng/primitives/core';
+import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 import {
     NavigationMenuDirection,
@@ -102,7 +103,8 @@ export class RdxNavigationMenuRoot {
     /**
      * The reading direction of the navigation menu.
      */
-    readonly dir = input<NavigationMenuDirection>('ltr');
+    readonly dirInput = input<NavigationMenuDirection | undefined>(undefined, { alias: 'dir' });
+    readonly dir = injectDirection(this.dirInput);
 
     /**
      * Whether keyboard navigation loops from the last item back to the first and vice versa.

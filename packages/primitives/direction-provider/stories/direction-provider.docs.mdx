@@ -1,0 +1,67 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './direction-provider.stories';
+
+<Meta title="Utilities/DirectionProvider" />
+
+# Direction Provider
+
+#### Provides reading direction to descendant primitives through Angular DI.
+
+<Canvas sourceState="hidden" of={Stories.Slider} />
+
+## Features
+
+- ✅ Provides primitive behavior direction through `RDX_DIRECTION`.
+- ✅ Supports local subtree direction with `[rdxDirectionProvider]`.
+- ✅ Supports app-level direction through `provideRadixNG({ dir })`.
+- ✅ Local primitive `[dir]` inputs still override provider direction.
+
+## Import
+
+```typescript
+import { RdxDirectionProvider, provideDirection } from '@radix-ng/primitives/direction-provider';
+```
+
+## Usage
+
+### App-level direction
+
+Set a global primitive direction in your application config:
+
+```typescript
+import { ApplicationConfig } from '@angular/core';
+import { provideRadixNG } from '@radix-ng/primitives/config';
+
+export const appConfig: ApplicationConfig = {
+    providers: [provideRadixNG({ dir: 'rtl' })]
+};
+```
+
+All primitives that read direction inherit this value unless they receive a local `[dir]` override or a
+nearer direction provider.
+
+### Subtree direction
+
+```html
+<section dir="rtl" direction="rtl" rdxDirectionProvider>
+    <div rdxSliderRoot>
+        <!-- Slider parts -->
+    </div>
+</section>
+```
+
+`rdxDirectionProvider` controls primitive behavior. Use the native `dir` attribute or CSS direction when
+the DOM itself should render right-to-left.
+
+### DI direction
+
+For a feature boundary, provide direction directly through DI:
+
+```typescript
+import { provideDirection } from '@radix-ng/primitives/direction-provider';
+
+@Component({
+    providers: [provideDirection('rtl')]
+})
+export class RtlFeature {}
+```

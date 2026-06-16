@@ -17,6 +17,7 @@ import {
     NumberInput,
     RdxControlValueAccessor
 } from '@radix-ng/primitives/core';
+import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { provideSliderRootContext } from './slider-context';
 import {
     areValuesEqual,
@@ -129,7 +130,8 @@ export class RdxSliderRoot {
      * The reading direction. Mirrors the horizontal axis when set to `'rtl'`.
      * @default 'ltr'
      */
-    readonly dir = input<'ltr' | 'rtl'>('ltr');
+    readonly dirInput = input<'ltr' | 'rtl' | undefined>(undefined, { alias: 'dir' });
+    readonly dir = injectDirection(this.dirInput);
 
     /**
      * How thumbs behave when they meet in a range slider.

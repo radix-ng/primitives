@@ -515,6 +515,16 @@
       "dataAttributes": []
     },
     {
+      "name": "Direction Provider",
+      "slug": "direction-provider",
+      "section": "utils",
+      "description": "Provides reading direction to descendant primitives through Angular DI.",
+      "doc": "radix-ng-examples/references/utils/direction-provider.md",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-direction-provider--docs",
+      "anatomy": "",
+      "dataAttributes": []
+    },
+    {
       "name": "Dismissable Layer",
       "slug": "dismissable-layer",
       "section": "utils",

@@ -12,6 +12,7 @@ import {
     signal
 } from '@angular/core';
 import { BooleanInput, Direction, NumberInput, RdxLiveAnnouncer } from '@radix-ng/primitives/core';
+import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { STEPPER_ROOT_CONTEXT, StepperRootContext } from './stepper-root-context.token';
 
 @Directive({
@@ -39,7 +40,8 @@ export class RdxStepperRootDirective implements StepperRootContext {
 
     readonly linear = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
 
-    readonly dir = input<Direction>('ltr');
+    readonly dirInput = input<Direction | undefined>(undefined, { alias: 'dir' });
+    readonly dir = injectDirection(this.dirInput);
 
     readonly orientation = input<'vertical' | 'horizontal'>('horizontal');
 

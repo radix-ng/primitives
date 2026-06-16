@@ -31,6 +31,7 @@ import {
     RdxCancelableChangeEventDetails,
     RdxFloatingRootContext
 } from '@radix-ng/primitives/core';
+import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 import {
     ComboboxEngine,
@@ -254,7 +255,8 @@ export class RdxComboboxRoot implements ControlValueAccessor {
     readonly fillInputOnItemPress = input(true, { transform: booleanAttribute });
 
     /** Text direction. */
-    readonly dir = input<Direction>('ltr');
+    readonly dirInput = input<Direction | undefined>(undefined, { alias: 'dir' });
+    readonly dir = injectDirection(this.dirInput);
 
     /** Whether the combobox is disabled. */
     readonly disabled = input(false, { transform: booleanAttribute });

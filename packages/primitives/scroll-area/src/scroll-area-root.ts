@@ -1,5 +1,6 @@
 import { computed, DestroyRef, Directive, ElementRef, inject, input, signal, Signal } from '@angular/core';
 import { createContext, Direction } from '@radix-ng/primitives/core';
+import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { SCROLL_TIMEOUT } from './constants';
 import { getOffset } from './utils';
 
@@ -137,8 +138,8 @@ export class RdxScrollAreaRoot {
     readonly rootId = `rdx-scroll-area-${idCounter++}`;
 
     /** Text direction of the scroll area. Affects horizontal (RTL) scroll math. */
-    readonly dir = input<Direction>('ltr');
-    readonly direction: Signal<Direction> = this.dir;
+    readonly dirInput = input<Direction | undefined>(undefined, { alias: 'dir' });
+    readonly direction: Signal<Direction> = injectDirection(this.dirInput);
 
     /**
      * The threshold in pixels that must be passed before the overflow edge attributes are applied.

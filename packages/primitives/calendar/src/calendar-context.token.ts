@@ -8,7 +8,7 @@ export interface CalendarRootContextToken {
     isNextButtonDisabled: (nextPageFunc?: (date: DateValue) => DateValue) => boolean;
     isPrevButtonDisabled: (prevPageFunc?: (date: DateValue) => DateValue) => boolean;
     headingValue: Signal<string>;
-    dir: InputSignal<'ltr' | 'rtl'>;
+    dir: Signal<'ltr' | 'rtl'>;
     readonly: Signal<boolean>;
     numberOfMonths: InputSignal<number>;
     placeholder: ModelSignal<DateValue>;

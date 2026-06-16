@@ -14,6 +14,7 @@ import {
     signal
 } from '@angular/core';
 import { BooleanInput, createContext } from '@radix-ng/primitives/core';
+import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { Direction, ENTRY_FOCUS, EVENT_OPTIONS, focusFirst, Orientation, sortByDocumentPosition } from './utils';
 
 const rootContext = () => {
@@ -71,7 +72,8 @@ export class RdxRovingFocusGroupDirective {
     /**
      * The direction of navigation between items.
      */
-    readonly dirInput = input<Direction>('ltr', { alias: 'dir' });
+    readonly dirInput = input<Direction | undefined>(undefined, { alias: 'dir' });
+    private readonly effectiveDir = injectDirection(this.dirInput);
 
     /**
      * Whether keyboard navigation should loop around
@@ -107,7 +109,7 @@ export class RdxRovingFocusGroupDirective {
     private readonly _orientation = linkedSignal(() => this.orientationInput());
     readonly orientation = this._orientation.asReadonly();
 
-    private readonly _dir = linkedSignal(() => this.dirInput());
+    private readonly _dir = linkedSignal(() => this.effectiveDir());
     readonly dir = this._dir.asReadonly();
 
     private readonly _loop = linkedSignal(() => this.loopInput());

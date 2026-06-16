@@ -24,6 +24,7 @@ import {
     RdxFloatingRootContext,
     useTransitionStatus
 } from '@radix-ng/primitives/core';
+import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 
@@ -207,6 +208,7 @@ const contextFactory = () => buildContext(inject(RdxMenuRoot));
 export class RdxMenuRoot {
     private readonly popper = inject(RdxPopper);
     private readonly parentRoot = inject(RdxMenuRoot, { optional: true, skipSelf: true });
+    private readonly providedDirection = injectDirection();
 
     /**
      * The shared per-popup floating context (ADR 0015 §1) — `open` mirrors this menu's open state, the
@@ -307,7 +309,7 @@ export class RdxMenuRoot {
         () => this.disabled() || (this.parentRoot?.effectiveDisabled() ?? false)
     );
     readonly dir: Signal<Direction> = computed(() => {
-        return this.dirInput() ?? this.parentRoot?.dir() ?? this.readDocumentDirection();
+        return this.dirInput() ?? this.parentRoot?.dir() ?? this.providedDirection();
     });
     readonly effectiveModal = computed(() => this.modal() && !this.isSubmenu());
     readonly state = computed(() => (this.open() ? 'open' : 'closed'));
@@ -506,11 +508,5 @@ export class RdxMenuRoot {
                 eventDetails: change.eventDetails
             } satisfies RdxMenuOpenChange
         };
-    }
-
-    private readDocumentDirection(): Direction {
-        const ownerDocument = this.floatingContext.ownerDocument;
-        const explicitDir = ownerDocument.documentElement.dir;
-        return explicitDir === 'rtl' ? 'rtl' : 'ltr';
     }
 }

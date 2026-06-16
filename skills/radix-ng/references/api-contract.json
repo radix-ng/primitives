@@ -75,8 +75,8 @@
             },
             {
               "name": "dir",
-              "type": "Direction",
-              "default": "'ltr'",
+              "type": "Direction | undefined",
+              "default": "undefined",
               "description": "The reading direction of the accordion when applicable. If omitted, assumes LTR (left-to-right) reading mode."
             },
             {
@@ -630,8 +630,8 @@
             },
             {
               "name": "dir",
-              "type": "Direction",
-              "default": "'ltr'",
+              "type": "Direction | undefined",
+              "default": "undefined",
               "description": "Text direction."
             },
             {
@@ -1020,8 +1020,8 @@
             },
             {
               "name": "dir",
-              "type": "\"ltr\" | \"rtl\"",
-              "default": "'ltr'",
+              "type": "'ltr' | 'rtl' | undefined",
+              "default": "undefined",
               "description": "The reading direction of the calendar when applicable."
             },
             {
@@ -1768,8 +1768,8 @@
             },
             {
               "name": "dir",
-              "type": "Direction",
-              "default": "'ltr'",
+              "type": "Direction | undefined",
+              "default": "undefined",
               "description": "Text direction."
             },
             {
@@ -2164,8 +2164,8 @@
           "inputs": [
             {
               "name": "dir",
-              "type": "Direction",
-              "default": "'ltr'"
+              "type": "Direction | undefined",
+              "default": "undefined"
             },
             {
               "name": "disabled",
@@ -2440,6 +2440,33 @@
           "exportAs": "rdxDialogViewport",
           "description": "A positioning container for the dialog popup that can be made scrollable.\n\nPlace it inside the portal, around the popup, to scroll the popup when it is taller than the\nviewport (outside scroll). Pointer events pass through while the dialog is closed.",
           "inputs": [],
+          "outputs": []
+        }
+      ]
+    },
+    {
+      "slug": "direction-provider",
+      "section": "components",
+      "parts": [
+        {
+          "directive": "RdxDirectionProvider",
+          "selector": "[rdxDirectionProvider]",
+          "exportAs": "rdxDirectionProvider",
+          "description": "Provides a reading direction for descendant primitives.\n\nThis controls primitive behavior only. Set the native `dir` attribute or CSS `direction`\nseparately when the DOM itself should render right-to-left.",
+          "inputs": [
+            {
+              "name": "direction",
+              "type": "Direction | undefined",
+              "default": "undefined",
+              "description": "The reading direction for descendant primitives."
+            },
+            {
+              "name": "dir",
+              "type": "Direction | undefined",
+              "default": "undefined",
+              "description": "Alias for Angular templates that prefer `[dir]`."
+            }
+          ],
           "outputs": []
         }
       ]
@@ -4246,8 +4273,8 @@
             },
             {
               "name": "dir",
-              "type": "NavigationMenuDirection",
-              "default": "'ltr'",
+              "type": "NavigationMenuDirection | undefined",
+              "default": "undefined",
               "description": "The reading direction of the navigation menu."
             },
             {
@@ -5589,8 +5616,8 @@
             },
             {
               "name": "dir",
-              "type": "Direction",
-              "default": "'ltr'",
+              "type": "Direction | undefined",
+              "default": "undefined",
               "description": "The direction of navigation between items."
             },
             {
@@ -5683,8 +5710,8 @@
           "inputs": [
             {
               "name": "dir",
-              "type": "Direction",
-              "default": "'ltr'",
+              "type": "Direction | undefined",
+              "default": "undefined",
               "description": "Text direction of the scroll area. Affects horizontal (RTL) scroll math."
             },
             {
@@ -5968,8 +5995,8 @@
           "inputs": [
             {
               "name": "dir",
-              "type": "Direction",
-              "default": "'ltr'"
+              "type": "Direction | undefined",
+              "default": "undefined"
             },
             {
               "name": "disabled",
@@ -6156,8 +6183,8 @@
             },
             {
               "name": "dir",
-              "type": "\"ltr\" | \"rtl\"",
-              "default": "'ltr'",
+              "type": "'ltr' | 'rtl' | undefined",
+              "default": "undefined",
               "description": "The reading direction. Mirrors the horizontal axis when set to `'rtl'`."
             },
             {
@@ -6366,8 +6393,8 @@
             },
             {
               "name": "dir",
-              "type": "Direction",
-              "default": "'ltr'"
+              "type": "Direction | undefined",
+              "default": "undefined"
             },
             {
               "name": "linear",
@@ -6664,8 +6691,8 @@
           "inputs": [
             {
               "name": "dir",
-              "type": "Direction",
-              "default": "'ltr'"
+              "type": "Direction | undefined",
+              "default": "undefined"
             },
             {
               "name": "disabled",
@@ -7063,8 +7090,8 @@
           "inputs": [
             {
               "name": "dir",
-              "type": "Direction",
-              "default": "'ltr'",
+              "type": "Direction | undefined",
+              "default": "undefined",
               "description": "Text direction for arrow-key navigation."
             },
             {
@@ -7215,8 +7242,8 @@
           "inputs": [
             {
               "name": "dir",
-              "type": "Direction",
-              "default": "'ltr'",
+              "type": "Direction | undefined",
+              "default": "undefined",
               "description": "Text direction for arrow-key navigation."
             },
             {
