@@ -58,3 +58,51 @@ test.describe('Navigation Menu — new floating engine migration', () => {
         await expect(page.locator(popup)).toBeVisible();
     });
 });
+
+test('nested navigation menu keeps parent and nested popups open when hovering the last nested trigger', async ({
+    page
+}) => {
+    await gotoStory(page, 'primitives-navigation-menu--nested');
+
+    await page.locator('[rdxNavigationMenuTrigger]:has-text("Company")').hover();
+    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("About")')).toBeVisible();
+
+    await page.locator('[rdxNavigationMenuTrigger]:has-text("Press")').hover();
+    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("News")')).toBeVisible();
+
+    await page.waitForTimeout(120);
+    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("About")')).toBeVisible();
+    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("News")')).toBeVisible();
+});
+
+test('nested navigation menu keeps parent popup open when hovering a nested popup link', async ({ page }) => {
+    await gotoStory(page, 'primitives-navigation-menu--nested');
+
+    await page.locator('[rdxNavigationMenuTrigger]:has-text("Company")').hover();
+    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("About")')).toBeVisible();
+
+    await page.locator('[rdxNavigationMenuTrigger]:has-text("About")').hover();
+    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("Mission")')).toBeVisible();
+
+    await page.locator('[rdxNavigationMenuLink]:has-text("Mission")').hover();
+    await page.waitForTimeout(120);
+
+    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("About")')).toBeVisible();
+    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("Mission")')).toBeVisible();
+});
+
+test('nested inline navigation menu keeps the parent popup open when hovering the last nested trigger', async ({
+    page
+}) => {
+    await gotoStory(page, 'primitives-navigation-menu--nested-inline');
+
+    await page.locator('[rdxNavigationMenuTrigger]:has-text("Browse")').hover();
+    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("Learn")')).toBeVisible();
+
+    await page.locator('[rdxNavigationMenuTrigger]:has-text("Resources")').hover();
+    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("Blog")')).toBeVisible();
+
+    await page.waitForTimeout(120);
+    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("Resources")')).toBeVisible();
+    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("Blog")')).toBeVisible();
+});

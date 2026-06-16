@@ -1,5 +1,12 @@
 import { computed, DestroyRef, Directive, ElementRef, inject, output } from '@angular/core';
-import { ARROW_DOWN, ARROW_UP, END, HOME, RDX_FLOATING_ROOT_CONTEXT } from '@radix-ng/primitives/core';
+import {
+    ARROW_DOWN,
+    ARROW_UP,
+    END,
+    HOME,
+    RDX_FLOATING_REGISTRATION,
+    RDX_FLOATING_ROOT_CONTEXT
+} from '@radix-ng/primitives/core';
 import { RdxDismiss, RdxOutsidePressDomEvent } from '@radix-ng/primitives/dismissable-layer';
 import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
 import { injectNavigationMenuRootContext, RdxNavigationMenuOpenChangeReason } from './navigation-menu-root-context';
@@ -31,6 +38,7 @@ import { focusFirst, getTabbableCandidates } from './utils';
 export class RdxNavigationMenuPopup {
     protected readonly rootContext = injectNavigationMenuRootContext();
     private readonly floatingContext = inject(RDX_FLOATING_ROOT_CONTEXT);
+    private readonly registration = inject(RDX_FLOATING_REGISTRATION, { optional: true });
     private readonly wrapper = inject(RdxPopperContentWrapper, { optional: true });
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
@@ -71,9 +79,11 @@ export class RdxNavigationMenuPopup {
         this.floatingContext.setFloatingElement(this.elementRef.nativeElement);
 
         // Dismissal (ADR 0015): Escape, an outside press, or focus moving outside closes the menu.
-        // Navigation Menu is node-optional (one shared popup) — the capability runs with `node === null`.
+        // Navigation Menu registers its FloatingNode on the root, matching Base UI's
+        // NavigationMenuRoot → FloatingNode wiring. This lets nested roots participate in parent/child
+        // ownership even though each root has one shared popup.
         // It does not trap focus, so it closes on focus-out like a non-modal menu.
-        new RdxDismiss(this.floatingContext, () => null, {
+        new RdxDismiss(this.floatingContext, () => this.registration?.node() ?? null, {
             escapeKey: () => true,
             outsidePress: () => true,
             outsidePressEvent: () => 'intentional',
@@ -99,7 +109,7 @@ export class RdxNavigationMenuPopup {
             return;
         }
 
-        this.rootContext.closeOnHover();
+        this.rootContext.closeOnHover(event);
     }
 
     /**

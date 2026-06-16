@@ -436,7 +436,7 @@ export const demoNavigationMenu = {
     // (ADR 0011 — subtree-aware), so the positioner needs no opacity "decoy" keyframe.
     popup: cn(
         demoCard,
-        'relative overflow-hidden p-0 origin-[var(--transform-origin)]',
+        'relative p-0 origin-[var(--transform-origin)]',
         'data-[starting-style]:animate-navigation-menu-popup-in data-[ending-style]:animate-navigation-menu-popup-out'
     ),
     arrow: demoArrow('text-card'),

@@ -4216,7 +4216,8 @@
           "exportAs": "rdxNavigationMenuRoot",
           "description": "Groups all parts of the navigation menu.\n\nHolds the shared open state: `value` identifies the currently open item, and the menu is open\nwhenever `value` is non-null. A single popup (Portal → Positioner → Popup → Viewport) is shared\nbetween every item and anchored to the active trigger.",
           "hostDirectives": [
-            "RdxPopper"
+            "RdxPopper",
+            "RdxFloatingNodeRegistration"
           ],
           "inputs": [
             {

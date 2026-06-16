@@ -31,6 +31,6 @@ export class RdxNavigationMenuList {
             return;
         }
 
-        this.rootContext.closeOnHover();
+        this.rootContext.closeOnHover(event);
     }
 }
