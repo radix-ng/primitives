@@ -73,7 +73,9 @@ import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
                     }
 
                     return false;
-                }
+                },
+                openInteractionType: () => rootContext.openInteractionType(),
+                closeInteractionType: () => rootContext.closeInteractionType()
             };
         })
     ],
@@ -171,14 +173,19 @@ export class RdxMenuPopup {
             clearTimeout(this.searchTimer);
         });
 
-        this.scheduleInitialFocusFallback();
-
+        // Base UI moves focus into a keyboard-opened submenu via its list-navigation layer, not via the
+        // focus manager (`initialFocus={false}` for submenus). In Angular, the popup itself is the first
+        // point where the submenu DOM definitely exists, so complete the keyboard handoff here.
         effect(() => {
-            if (!this.rootContext.isOpen()) {
+            if (
+                !this.rootContext.isOpen() ||
+                this.rootContext.parentType() !== 'menu' ||
+                this.rootContext.openInteractionType() !== 'keyboard'
+            ) {
                 return;
             }
 
-            this.scheduleInitialFocusFallback();
+            this.scheduleSubmenuKeyboardFocus();
         });
 
         // Dismissal (ADR 0015): Escape, an outside press, or focus moving outside closes the menu.
@@ -283,6 +290,14 @@ export class RdxMenuPopup {
                     break;
                 }
 
+                if (this.rootContext.dir() === 'rtl') {
+                    if (this.rootContext.handlePopupArrowNavigation(-1)) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    break;
+                }
+
                 // Close this popup and return focus to the trigger (used by submenus).
                 event.preventDefault();
                 event.stopPropagation();
@@ -291,6 +306,15 @@ export class RdxMenuPopup {
                 break;
             }
             case 'ArrowRight': {
+                const trigger = this.rootContext.trigger();
+                if (trigger?.hasAttribute('rdxMenuSubTrigger') && this.rootContext.dir() === 'rtl') {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    this.rootContext.close();
+                    trigger.focus({ preventScroll: true });
+                    break;
+                }
+
                 if (this.rootContext.handlePopupArrowNavigation(1)) {
                     event.preventDefault();
                     event.stopPropagation();
@@ -332,41 +356,32 @@ export class RdxMenuPopup {
         }
     }
 
-    private scheduleInitialFocusFallback(attempt = 0): void {
+    private scheduleSubmenuKeyboardFocus(attempt = 0): void {
         const view = this.elementRef.nativeElement.ownerDocument.defaultView ?? globalThis;
-        view.requestAnimationFrame(() => this.applyInitialFocusFallback(attempt));
+        view.requestAnimationFrame(() => this.applySubmenuKeyboardFocus(attempt));
     }
 
-    private applyInitialFocusFallback(attempt: number): void {
+    private applySubmenuKeyboardFocus(attempt: number): void {
+        const maxAttempts = 10;
         const popup = this.elementRef.nativeElement;
-        const activeElement = popup.ownerDocument.activeElement;
 
-        if (!this.rootContext.isOpen() || this.rootContext.parentType() === 'menu' || popup.contains(activeElement)) {
+        if (!this.rootContext.isOpen() || this.rootContext.parentType() !== 'menu') {
             return;
         }
 
-        const autoFocus = this.rootContext.autoFocus();
-
-        if (autoFocus === false) {
-            return;
-        }
-
-        if (autoFocus === 'popup') {
-            popup.focus({ preventScroll: true });
+        const activeElement = popup.ownerDocument.activeElement as HTMLElement | null;
+        if (activeElement && popup.contains(activeElement)) {
             return;
         }
 
         const items = getFocusableMenuItems(popup);
-        if (items.length === 0 && attempt < 2) {
-            this.scheduleInitialFocusFallback(attempt + 1);
+        if (items.length === 0) {
+            if (attempt < maxAttempts) {
+                this.scheduleSubmenuKeyboardFocus(attempt + 1);
+            }
             return;
         }
 
-        const target = autoFocus === 'last' ? (items.at(-1) ?? popup) : (items[0] ?? popup);
-        target.focus({ preventScroll: true });
-
-        if (attempt < 2 && !popup.contains(popup.ownerDocument.activeElement)) {
-            this.scheduleInitialFocusFallback(attempt + 1);
-        }
+        items[0]?.focus({ preventScroll: true });
     }
 }

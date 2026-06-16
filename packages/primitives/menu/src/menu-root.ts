@@ -16,11 +16,13 @@ import {
     BooleanInput,
     createContext,
     createFloatingRootContext,
+    Direction,
     provideFloatingRootContext,
     provideFloatingTree,
     RdxFloatingRootContext,
     useTransitionStatus
 } from '@radix-ng/primitives/core';
+import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 
 export type RdxMenuTransitionStatus = 'starting' | 'ending' | undefined;
@@ -76,6 +78,7 @@ export interface RdxMenuRootContext {
     loopFocus: Signal<boolean>;
     highlightItemOnHover: Signal<boolean>;
     orientation: Signal<RdxMenuOrientation>;
+    dir: Signal<Direction>;
     closeParentOnEsc: Signal<boolean>;
     /** Whether the popup should focus its first item when it opens. */
     autoFocus: Signal<RdxMenuAutoFocus>;
@@ -88,6 +91,8 @@ export interface RdxMenuRootContext {
     allowMouseUpTrigger: Signal<boolean>;
     /** Whether the current open was initiated by touch (ADR 0016 §3 — gates the anchored scroll lock). */
     openedByTouch: Signal<boolean>;
+    openInteractionType: Signal<RdxInteractionType>;
+    closeInteractionType: Signal<RdxInteractionType>;
     hasTriggerInteractionHandler: Signal<boolean>;
     trigger: Signal<HTMLElement | undefined>;
     /** The popup element, once mounted. Used by submenu safe-polygon geometry. */
@@ -142,6 +147,7 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         loopFocus: instance.loopFocus,
         highlightItemOnHover: instance.highlightItemOnHover,
         orientation: instance.orientation,
+        dir: instance.dir,
         closeParentOnEsc: instance.closeParentOnEsc,
         autoFocus: instance.autoFocus.asReadonly(),
         isSubmenu: instance.isSubmenu.asReadonly(),
@@ -149,6 +155,8 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         lastOpenChangeReason: instance.lastOpenChangeReason.asReadonly(),
         allowMouseUpTrigger: instance.allowMouseUpTrigger,
         openedByTouch: instance.openedByTouch.asReadonly(),
+        openInteractionType: instance.openInteractionType.asReadonly(),
+        closeInteractionType: instance.closeInteractionType.asReadonly(),
         hasTriggerInteractionHandler: instance.hasTriggerInteractionHandler.asReadonly(),
         trigger: instance.trigger.asReadonly(),
         popupElement: instance.popupElement.asReadonly(),
@@ -235,6 +243,9 @@ export class RdxMenuRoot {
     /** The menu orientation. */
     readonly orientation = input<RdxMenuOrientation>('vertical');
 
+    /** Text direction for submenu arrow-key behavior. Inherited by nested submenu roots. */
+    readonly dirInput = input<Direction | undefined>(undefined, { alias: 'dir' });
+
     /** Whether pressing Escape inside a submenu closes the whole menu chain. */
     readonly closeParentOnEsc = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
@@ -281,10 +292,15 @@ export class RdxMenuRoot {
 
     /** Whether the current open was initiated by **touch** (ADR 0016 §3 — gates the anchored scroll lock). */
     readonly openedByTouch = signal(false);
+    readonly openInteractionType = signal<RdxInteractionType>(null);
+    readonly closeInteractionType = signal<RdxInteractionType>(null);
 
     readonly effectiveDisabled: Signal<boolean> = computed(
         () => this.disabled() || (this.parentRoot?.effectiveDisabled() ?? false)
     );
+    readonly dir: Signal<Direction> = computed(() => {
+        return this.dirInput() ?? this.parentRoot?.dir() ?? this.readDocumentDirection();
+    });
     readonly effectiveModal = computed(() => this.modal() && !this.isSubmenu());
     readonly state = computed(() => (this.open() ? 'open' : 'closed'));
 
@@ -325,6 +341,7 @@ export class RdxMenuRoot {
             // Record whether this open came from touch (ADR 0016 §3). Hover / mouse / keyboard all resolve
             // to false (no `'touch'` pointer type), so only a genuine touch open gates the anchored lock.
             this.openedByTouch.set((event as PointerEvent | undefined)?.pointerType === 'touch');
+            this.openInteractionType.set(getInteractionTypeFromEvent(event));
             this.open.set(true);
             this.emitOpenChange(true, reason, event);
             // Publish reason + native event on the per-popup floating channel (Base UI open-change) so the
@@ -337,6 +354,7 @@ export class RdxMenuRoot {
         if (this.open()) {
             this.setAllowMouseUpTrigger(false);
             this.lastOpenChangeReason.set(reason);
+            this.closeInteractionType.set(getInteractionTypeFromEvent(event));
             this.open.set(false);
             this.emitOpenChange(false, reason, event);
             this.floatingContext.events.emit('openchange', { open: false, reason, event });
@@ -448,5 +466,11 @@ export class RdxMenuRoot {
             reason,
             event: event ?? new Event('menu.open-change')
         });
+    }
+
+    private readDocumentDirection(): Direction {
+        const ownerDocument = this.floatingContext.ownerDocument;
+        const explicitDir = ownerDocument.documentElement.dir;
+        return explicitDir === 'rtl' ? 'rtl' : 'ltr';
     }
 }

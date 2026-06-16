@@ -3696,6 +3696,12 @@
               "description": "Whether the menu is initially open."
             },
             {
+              "name": "dir",
+              "type": "Direction | undefined",
+              "default": "undefined",
+              "description": "Text direction for submenu arrow-key behavior. Inherited by nested submenu roots."
+            },
+            {
               "name": "disabled",
               "type": "boolean",
               "default": "false",

@@ -1588,14 +1588,27 @@ describe('Menu', () => {
             expect(subTrigger.hasAttribute('data-popup-open')).toBe(true);
         });
 
-        it('keeps focus on the submenu trigger when the submenu opens', async () => {
+        it('moves focus to the first submenu item when the submenu opens from the keyboard', async () => {
             subTrigger.focus();
             keydown(subTrigger, 'ArrowRight');
             fixture.detectChanges();
             await nextFrame();
 
+            const firstSubmenuItem = fixture.nativeElement.querySelectorAll<HTMLElement>('[rdxMenuItem]')[1];
             expect(subTrigger.getAttribute('aria-expanded')).toBe('true');
-            expect(document.activeElement).toBe(subTrigger);
+            expect(document.activeElement).toBe(firstSubmenuItem);
+        });
+
+        it('moves focus to the first submenu item after opening with Enter', async () => {
+            subTrigger.focus();
+            keydown(subTrigger, 'Enter');
+            fixture.detectChanges();
+            await nextFrame();
+            fixture.detectChanges();
+
+            const firstSubmenuItem = fixture.nativeElement.querySelectorAll<HTMLElement>('[rdxMenuItem]')[1];
+            expect(subTrigger.getAttribute('aria-expanded')).toBe('true');
+            expect(document.activeElement).toBe(firstSubmenuItem);
         });
 
         it('opens submenu on hover after the configured delay', async () => {
@@ -1622,6 +1635,62 @@ describe('Menu', () => {
 
             expect(subTrigger.getAttribute('aria-expanded')).toBe('false');
             expect((fixture.nativeElement as HTMLElement).querySelectorAll('[rdxMenuPopup]').length).toBe(1);
+        });
+
+        it('opens submenu on ArrowLeft in RTL and closes it with ArrowRight', () => {
+            fixture.destroy();
+
+            @Component({
+                imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem, RdxMenuSubTrigger],
+                template: `
+                    <div #root="rdxMenuRoot" dir="rtl" rdxMenuRoot>
+                        <button rdxMenuTrigger>Open</button>
+                        @if (root.open()) {
+                            <div rdxMenuPositioner>
+                                <div rdxMenuPopup>
+                                    <button rdxMenuItem>Item A</button>
+                                    <ng-container #sub="rdxMenuRoot" rdxMenuRoot>
+                                        <button rdxMenuSubTrigger>Sub ›</button>
+                                        @if (sub.open()) {
+                                            <div side="left" rdxMenuPositioner>
+                                                <div rdxMenuPopup>
+                                                    <button rdxMenuItem>Sub item 1</button>
+                                                    <button rdxMenuItem>Sub item 2</button>
+                                                </div>
+                                            </div>
+                                        }
+                                    </ng-container>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                `
+            })
+            class RtlHost {}
+
+            TestBed.resetTestingModule();
+            TestBed.configureTestingModule({ imports: [RtlHost] });
+            const rtlFixture = TestBed.createComponent(RtlHost);
+            rtlFixture.detectChanges();
+
+            const rtlTrigger = rtlFixture.nativeElement.querySelector('[rdxMenuTrigger]') as HTMLButtonElement;
+            rtlTrigger.click();
+            rtlFixture.detectChanges();
+
+            const rtlSubTrigger = rtlFixture.nativeElement.querySelector('[rdxMenuSubTrigger]') as HTMLButtonElement;
+            rtlSubTrigger.focus();
+            keydown(rtlSubTrigger, 'ArrowLeft');
+            rtlFixture.detectChanges();
+
+            expect(rtlSubTrigger.getAttribute('aria-expanded')).toBe('true');
+
+            const rtlSubPopups: HTMLElement[] = Array.from(rtlFixture.nativeElement.querySelectorAll('[rdxMenuPopup]'));
+            const rtlSubPopup = rtlSubPopups[rtlSubPopups.length - 1];
+            keydown(rtlSubPopup, 'ArrowRight');
+            rtlFixture.detectChanges();
+
+            expect(rtlSubTrigger.getAttribute('aria-expanded')).toBe('false');
+            expect(rtlFixture.nativeElement.querySelectorAll('[rdxMenuPopup]').length).toBe(1);
         });
 
         it('Escape closes submenu and returns focus to subTrigger', () => {

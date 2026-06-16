@@ -53,6 +53,27 @@ export type RdxReturnFocus =
     | boolean
     | ((closeInteractionType: RdxInteractionType) => RdxFocusTarget | boolean);
 
+/** Normalizes a DOM event into Base UI-like interaction intent for focus policy decisions. */
+export function getInteractionTypeFromEvent(event?: Event): RdxInteractionType {
+    if (!event) {
+        return null;
+    }
+
+    if (typeof KeyboardEvent !== 'undefined' && event instanceof KeyboardEvent) {
+        return 'keyboard';
+    }
+
+    if ('pointerType' in event && typeof event.pointerType === 'string') {
+        return (event.pointerType || 'mouse') as RdxInteractionType;
+    }
+
+    if (typeof MouseEvent !== 'undefined' && event instanceof MouseEvent) {
+        return event.detail === 0 ? 'keyboard' : 'mouse';
+    }
+
+    return '';
+}
+
 /** Resolves an {@link RdxFocusTarget} (element | getter | null) to a concrete element. */
 export function resolveFocusTarget(target: RdxFocusTarget): HTMLElement | null {
     return typeof target === 'function' ? target() : target;
@@ -93,6 +114,8 @@ export interface RdxFloatingFocusManagerConfig {
     closeOnFocusOut?: () => boolean;
     initialFocus?: () => RdxInitialFocus;
     returnFocus?: () => RdxReturnFocus;
+    openInteractionType?: () => RdxInteractionType;
+    closeInteractionType?: () => RdxInteractionType;
 }
 
 export const RDX_FLOATING_FOCUS_MANAGER_CONFIG = new InjectionToken<RdxFloatingFocusManagerConfig>(
@@ -192,6 +215,12 @@ export class RdxFloatingFocusManager {
     readonly effectiveReturnFocus = computed(() =>
         this.returnFocus() !== undefined ? this.returnFocus()! : (this.config?.returnFocus?.() ?? true)
     );
+    readonly effectiveOpenInteractionType = computed(
+        () => this.config?.openInteractionType?.() ?? this._interactionType()
+    );
+    readonly effectiveCloseInteractionType = computed(
+        () => this.config?.closeInteractionType?.() ?? this._interactionType()
+    );
 
     /** The effective trap state the composed `RdxFocusScope` reads via its config token. */
     readonly trapped = computed(() => this.effectiveEnabled() && this.effectiveModal());
@@ -249,6 +278,7 @@ export class RdxFloatingFocusManager {
         this.trackInteractionType();
         this.wireCloseOnFocusOut();
         this.wireFocusOrchestration();
+        this.wireInitialFocusFallback();
     }
 
     /** Records the most recent open/close interaction (pointer type or keyboard) for the focus policies. */
@@ -278,7 +308,7 @@ export class RdxFloatingFocusManager {
         const focusScope = inject(RdxFocusScope);
 
         focusScope.mountAutoFocus.subscribe((event) => {
-            const interactionType = this._interactionType();
+            const interactionType = this.effectiveOpenInteractionType();
             const target =
                 resolveInitialFocus(this.effectiveInitialFocus(), interactionType) ??
                 this.defaultInitialFocus(interactionType);
@@ -302,7 +332,7 @@ export class RdxFloatingFocusManager {
      *   "focus moved elsewhere" guard).
      */
     private resolveReturnFocusTarget(): HTMLElement | false | undefined {
-        const resolved = resolveReturnFocus(this.effectiveReturnFocus(), this._interactionType());
+        const resolved = resolveReturnFocus(this.effectiveReturnFocus(), this.effectiveCloseInteractionType());
         if (resolved === false) {
             return false;
         }
@@ -327,6 +357,54 @@ export class RdxFloatingFocusManager {
             popup.setAttribute('tabindex', '-1');
         }
         return popup;
+    }
+
+    /**
+     * Manager-owned post-open fallback. Some popup types open from a trigger event that fired before the
+     * manager existed, and some policies resolve their final target only after a couple of renders. Re-run
+     * the initial-focus policy for a few animation frames while the popup is open so the target can settle.
+     */
+    private wireInitialFocusFallback(): void {
+        effect(() => {
+            if (!this.effectiveEnabled() || !this.isFloatingOpen()) {
+                return;
+            }
+
+            this.scheduleInitialFocusFallback();
+        });
+    }
+
+    private scheduleInitialFocusFallback(attempt = 0): void {
+        const view = this.host.ownerDocument.defaultView ?? globalThis;
+        view.requestAnimationFrame(() => this.applyInitialFocusFallback(attempt));
+    }
+
+    private applyInitialFocusFallback(attempt: number): void {
+        if (!this.effectiveEnabled() || !this.isFloatingOpen()) {
+            return;
+        }
+
+        const popup = (this.rootContext?.floatingElement ?? this.host) as HTMLElement;
+        const activeElement = this.host.ownerDocument.activeElement;
+
+        if (activeElement instanceof HTMLElement && popup.contains(activeElement)) {
+            return;
+        }
+
+        const interactionType = this.effectiveOpenInteractionType();
+        const resolved = resolveInitialFocus(this.effectiveInitialFocus(), interactionType);
+        if (resolved === false) {
+            return;
+        }
+
+        const target = resolved ?? this.defaultInitialFocus(interactionType);
+        if (target && activeElement !== target) {
+            target.focus({ preventScroll: true });
+        }
+
+        if (attempt < 2) {
+            this.scheduleInitialFocusFallback(attempt + 1);
+        }
     }
 
     /**

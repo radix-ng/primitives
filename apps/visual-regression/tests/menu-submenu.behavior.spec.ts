@@ -69,14 +69,39 @@ test('RTL: diagonal traversal toward a left-placed submenu keeps it open', async
     const submenu = await page.locator(findRtlSubmenu).boundingBox();
     if (!find || !submenu) throw new Error('missing layout boxes');
 
-    // Exit from the LEFT edge of "بحث" and descend into the left-placed submenu's near (right) edge,
-    // past the trigger's bottom so the path crosses the sibling row. This exercises the safe-polygon
-    // 'left' geometry (the popup resolves `data-side="left"`). Few, large steps keep pointer velocity
-    // above the slow-cursor close threshold.
+    // Exit from the LEFT edge of "بحث" into the left-placed submenu's near (right) lower edge. Mirror
+    // the LTR diagonal in the opposite direction so we still cross the sibling row while staying on a
+    // realistic path toward the popup, regardless of the popup's measured height.
     await page.mouse.move(find.x + 4, find.y + find.height / 2);
-    await page.mouse.move(submenu.x + submenu.width - 8, submenu.y + 70, { steps: 5 });
+    await page.mouse.move(submenu.x + submenu.width - 8, submenu.y + submenu.height - 8, { steps: 5 });
     await expect(page.locator(findRtlSubmenu)).toBeVisible();
     await expect(page.locator(spellingRtlSubmenu)).toHaveCount(0);
+});
+
+test('RTL: ArrowLeft opens a submenu trigger and ArrowRight closes it', async ({ page }) => {
+    const findRtl = '[rdxMenuSubTrigger]:has-text("بحث")';
+    const findRtlSubmenu = '[rdxMenuPopup][data-side="left"]:has-text("بحث في الويب")';
+
+    await gotoStory(page, 'primitives-menu--nested-rtl');
+
+    const trigger = page.locator('[rdxMenuTrigger]').first();
+    const rootItems = page.locator('[rdxMenuPopup]').first().locator('[rdxMenuItem], [rdxMenuSubTrigger]');
+
+    await trigger.focus();
+    await page.keyboard.press('Enter');
+    await expect(rootItems.first()).toBeFocused();
+
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('ArrowDown');
+    await expect(page.locator(findRtl)).toBeFocused();
+
+    await page.keyboard.press('ArrowLeft');
+    await expect(page.locator(findRtlSubmenu)).toBeVisible();
+    await expect(page.locator(findRtlSubmenu).locator('[rdxMenuItem]').first()).toBeFocused();
+
+    await page.keyboard.press('ArrowRight');
+    await expect(page.locator(findRtlSubmenu)).toHaveCount(0);
+    await expect(page.locator(findRtl)).toBeFocused();
 });
 
 test('Escape closes only the deepest submenu, keeping the parent menu open (tree deepest-first)', async ({ page }) => {
@@ -92,6 +117,26 @@ test('Escape closes only the deepest submenu, keeping the parent menu open (tree
     // A second Escape now closes the parent.
     await page.keyboard.press('Escape');
     await expect(page.locator('[rdxMenuPopup]')).toHaveCount(0);
+});
+
+test('Enter on a focused submenu trigger moves focus into the nested popup', async ({ page }) => {
+    await gotoStory(page, 'primitives-menu--nested');
+
+    const trigger = page.locator('[rdxMenuTrigger]').first();
+    const rootItems = page.locator('[rdxMenuPopup]').first().locator('[rdxMenuItem], [rdxMenuSubTrigger]');
+    const nestedItems = page.locator(findSubmenu).locator('[rdxMenuItem]');
+
+    await trigger.focus();
+    await page.keyboard.press('Enter');
+    await expect(rootItems.first()).toBeFocused();
+
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('ArrowDown');
+    await expect(page.locator(findTrigger)).toBeFocused();
+
+    await page.keyboard.press('Enter');
+    await expect(page.locator(findSubmenu)).toBeVisible();
+    await expect(nestedItems.first()).toBeFocused();
 });
 
 test('a submenu renders no internal backdrop (only the root modal menu does, finding #1)', async ({ page }) => {
