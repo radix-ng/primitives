@@ -1,0 +1,69 @@
+# Dismissable Layer
+
+`RdxDismiss` is the low-level dismissal engine used by popups, menus, dialogs, popovers, tooltips, and
+other floating primitives. Most product code should not instantiate it directly; primitives compose it
+with a floating root context, a floating tree node, focus management, and optional backdrops.
+
+```html
+<rdx-dismissable-layer-demo />
+```
+
+## What The Demo Shows
+
+The demo creates a standalone `RdxFloatingRootContext`, registers the reference button as
+`context.referenceElement`, registers the visible panel as `context.floatingElement`, and constructs
+`RdxDismiss` in the component injection context.
+
+`RdxDismiss` then owns the document-level listeners for:
+
+- Escape key dismissal.
+- Outside pointer press dismissal.
+- Focus moving outside the logical layer.
+
+Before a layer closes, the matching preventable hook runs first. Calling `event.preventDefault()` inside
+`onEscapeKeyDown`, `onPointerDownOutside`, or `onFocusOutside` keeps the layer open.
+
+## Internal Pipeline
+
+1. `active()` checks both `context.open()` and the optional `enabled()` predicate.
+2. The target is classified as inside or outside the logical layer.
+3. Inside checks include the floating element, registered triggers, descendant floating nodes, and manual
+   branches.
+4. Outside press ignores non-primary buttons, scrollbar drags, and third-party DOM injected after inert
+   marking.
+5. The preventable pre-hook runs.
+6. If the event was not prevented, `onDismiss(reason, event)` is called with `escape-key`,
+   `outside-press`, or `focus-outside`.
+
+## Outside Press Timing
+
+`outsidePressEvent` controls when a pointer interaction becomes a dismiss request:
+
+- `sloppy` closes on `pointerdown` for mouse and pen interactions.
+- `intentional` closes on `click`, so a press that starts inside and drags outside does not dismiss.
+- A per-pointer map can choose different timing for mouse, touch, and pen.
+
+Touch sloppy mode has extra hardening for long press and scroll gestures, matching the Base UI behavior
+that this package ports into Angular.
+
+## Floating Tree Ownership
+
+For nested floating UI, `RdxDismiss` can receive a `RdxFloatingNode`. That lets an ancestor treat open
+descendants as logically inside even when portals move them elsewhere in the DOM. It also lets Escape and
+outside-press bubbling follow the same ownership rules as Base UI instead of relying on DOM order.
+
+## Minimal Shape
+
+```ts
+new RdxDismiss(floatingContext, () => floatingNodeOrNull, {
+    outsidePressEvent: () => 'intentional',
+    onPointerDownOutside: (event) => {
+        if (shouldKeepOpen(event)) {
+            event.preventDefault();
+        }
+    },
+    onDismiss: (reason, event) => {
+        setOpen(false);
+    }
+});
+```

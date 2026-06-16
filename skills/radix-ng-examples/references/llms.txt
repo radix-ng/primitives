@@ -55,6 +55,7 @@ Generated from `@radix-ng/primitives@1.0.0-beta.3` — if the installed version 
 
 ## Utilities
 
+- [Dismissable Layer](https://radix-ng.com/utils/dismissable-layer.md): Dismissable Layer
 - [Focus Scope](https://radix-ng.com/utils/focus-scope.md): Manages focus within a component boundary with support for trapping and looping focus navigation.
 - [injectId](https://radix-ng.com/utils/inject-id.md): Generates unique, SSR-stable element IDs — the Angular counterpart of React's `useId`.
 - [LiveAnnouncer](https://radix-ng.com/utils/live-announcer.md): Announces messages to screen readers through an `aria-live` region, without moving focus.

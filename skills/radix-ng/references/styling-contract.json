@@ -515,6 +515,16 @@
       "dataAttributes": []
     },
     {
+      "name": "Dismissable Layer",
+      "slug": "dismissable-layer",
+      "section": "utils",
+      "description": "Dismissable Layer",
+      "doc": "radix-ng-examples/references/utils/dismissable-layer.md",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-dismissable-layer--docs",
+      "anatomy": "",
+      "dataAttributes": []
+    },
+    {
       "name": "Focus Scope",
       "slug": "focus-scope",
       "section": "utils",
