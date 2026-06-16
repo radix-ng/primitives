@@ -11,6 +11,19 @@
 > focus-policy set. Architectural decisions are settled below; Phase 0 fills two parity-characterization
 > tables before implementation.
 
+> **Implementation status (2026-06-16): core landed; a few parity items open.** `RdxFloatingFocusManager`
+> (entry `@radix-ng/primitives/floating-focus-manager`) composes the reworked `RdxFocusScope` and owns the
+> independent policies — `enabled`/`modal`→trap, the `markOthers` aria-hidden + `inert` passes (§3),
+> close-on-focus-out (§3), `initialFocus` (§2), and now **`returnFocus` (§2) — DONE**: the manager owns the
+> return _target_ (resolving `true`/`false`/element/callback against the close interaction) via the focus
+> scope's `returnFocus` config seam, while the scope owns the _timing_ (its queued post-unmount frame).
+> Used by Dialog / Popover / Menu. **Still open (none blocking day-to-day use):** the **`aria-modal`
+> attribute** AT-review (we set it only for `modal === true`; Base UI emits none and relies on `inert` — see
+> the Dialog parity notes); the **Select `aria-activedescendant` focus-out divergence** (recorded breaking
+> change, needs real-AT confirmation); the `markOthers` **`inert` internal variant** (deferred — no Base UI
+> consumer passes it); and the **Phase-5 WebKit / screen-reader matrices** (Tier-B confirmations before
+> Acceptance). The portal-focus bridge / focus-guards toolkit exist; full portal tab-order is a later phase.
+
 ## Context
 
 Base UI co-locates a cluster of behaviors in **one** component, `FloatingFocusManager`, under **one

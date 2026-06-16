@@ -239,8 +239,16 @@ export class RdxFocusScope {
                         // so it runs after the unmounting paint settles (ADR 0017 Phase 1a queued focus).
                         const view = this.ownerDocument.defaultView ?? globalThis;
                         view.requestAnimationFrame(() => {
-                            if (!unmountEvent.defaultPrevented && !this.shouldPreserveMovedFocus()) {
-                                focus(previouslyFocusedElement ?? this.ownerDocument.body, { select: true });
+                            // An enclosing focus manager can override the return target (ADR 0017
+                            // `returnFocus`): `false` suppresses it, an element returns there explicitly
+                            // (bypassing the moved-focus guard), `undefined` keeps the default behavior.
+                            const override = this.config.returnFocus?.();
+                            if (override !== false && !unmountEvent.defaultPrevented) {
+                                if (override) {
+                                    focus(override, { select: true });
+                                } else if (!this.shouldPreserveMovedFocus()) {
+                                    focus(previouslyFocusedElement ?? this.ownerDocument.body, { select: true });
+                                }
                             }
 
                             // we need to remove the listener after we `dispatchEvent`

@@ -403,4 +403,75 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
             expect(resolveReturnFocus((type) => (type === 'keyboard' ? el : false), 'keyboard')).toBe(el);
         });
     });
+
+    // ─── returnFocus orchestration (ADR 0017 §2 — the manager drives the scope's return target) ───
+    describe('returnFocus orchestration', () => {
+        async function mount(returnFocus: RdxReturnFocus, opener: HTMLElement) {
+            opener.focus(); // the "element focused before open" the scope captures on mount
+            const fixture = TestBed.createComponent(ManagerHost);
+            // Non-modal: no focus trap, so the post-close `document.activeElement` is determined solely by
+            // the return-focus policy (jsdom has no layout, so a real trap's mutation/focus machinery would
+            // otherwise muddy it). The manager still owns `returnFocus` regardless of `modal`.
+            fixture.componentInstance.modal.set(false);
+            fixture.componentInstance.returnFocus.set(returnFocus);
+            fixture.autoDetectChanges();
+            await flush();
+            // Park focus on `<body>` so the return-focus policy acts from a clean, deterministic state.
+            (document.activeElement as HTMLElement | null)?.blur();
+            return fixture;
+        }
+
+        it('returnFocus=true (default) returns focus to the element focused before open', async () => {
+            const opener = document.createElement('button');
+            document.body.appendChild(opener);
+            appended.push(opener);
+
+            const fixture = await mount(true, opener);
+            fixture.destroy();
+            await flush();
+
+            expect(document.activeElement).toBe(opener);
+        });
+
+        it('returnFocus=false does NOT return focus on close', async () => {
+            const opener = document.createElement('button');
+            document.body.appendChild(opener);
+            appended.push(opener);
+
+            const fixture = await mount(false, opener);
+            fixture.destroy();
+            await flush();
+
+            expect(document.activeElement).not.toBe(opener);
+            expect(document.activeElement).toBe(document.body);
+        });
+
+        it('returnFocus=<element> returns focus to that element explicitly', async () => {
+            const opener = document.createElement('button');
+            const target = document.createElement('button');
+            document.body.append(opener, target);
+            appended.push(opener, target);
+
+            const fixture = await mount(target, opener);
+            fixture.destroy();
+            await flush();
+
+            expect(document.activeElement).toBe(target);
+        });
+
+        it('returnFocus callback receives the close interaction type', async () => {
+            const opener = document.createElement('button');
+            const keyboardTarget = document.createElement('button');
+            document.body.append(opener, keyboardTarget);
+            appended.push(opener, keyboardTarget);
+
+            // The manager records `'keyboard'` as the last interaction from the open-time keydown below.
+            const fixture = await mount((type) => (type === 'keyboard' ? keyboardTarget : false), opener);
+            document.dispatchEvent(new KeyboardEvent('keydown'));
+            fixture.destroy();
+            await flush();
+
+            expect(document.activeElement).toBe(keyboardTarget);
+        });
+    });
 });

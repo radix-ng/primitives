@@ -48,9 +48,10 @@ const COMPOSITE_KEYS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight
  *   `aria-modal="true"` attribute is set only for `modal === true` (Base UI does not emit `aria-modal`
  *   at all and relies on the isolation pass); whether to drop / extend the attribute is the one open
  *   **AT-review** decision here.
- * - **`returnFocus` orchestration is deferred** → the reworked focus scope's default return-focus is
- *   used (overriding it means intercepting `unmountAutoFocus`, which fires during teardown after the
- *   output subscription is gone; a robust override is a focus-manager follow-up — see ADR 0017 §2).
+ * - **`returnFocus` orchestration (resolved 2026-06-16):** the manager now owns the return-focus *target*
+ *   via the focus scope's `returnFocus` config seam (the scope owns the *timing* — its queued post-unmount
+ *   frame). Dialog leaves it at the default (`returnFocus: true` → return to the element focused before
+ *   open), so behavior is unchanged; a consumer can now also pass `false` / an element / a callback.
  */
 @Directive({
     selector: '[rdxDialogPopup]',

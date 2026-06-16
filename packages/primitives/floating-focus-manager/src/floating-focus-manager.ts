@@ -125,9 +125,10 @@ function provideManagedFocusScopeConfig(): Provider {
  * - `modal` → `RdxFocusScope.trapped`: the effective trap is `enabled() && modal()`, pushed into the
  *   composed focus scope through its config token (the composition seam).
  * - `loop` is forwarded to `RdxFocusScope`.
- * - `initialFocus` / `returnFocus` are **typed** here (the §2 policy contract, incl. the interaction-type
- *   callback forms); their full orchestration + the portal-bridge wiring + close-on-focus-out land in
- *   later phases.
+ * - `initialFocus` / `returnFocus` are **orchestrated** here (the §2 policy contract, incl. the
+ *   interaction-type callback forms): `initialFocus` via the scope's `mountAutoFocus` hook, `returnFocus`
+ *   via the scope's `returnFocus` config seam (resolved at the scope's queued post-unmount frame). The
+ *   portal-focus bridge remains a later-phase dependency.
  */
 @Directive({
     selector: '[rdxFloatingFocusManager]',
@@ -175,8 +176,12 @@ export class RdxFloatingFocusManager {
     /** The effective trap state the composed `RdxFocusScope` reads via its config token. */
     readonly trapped = computed(() => this.effectiveEnabled() && this.effectiveModal());
 
-    // The config this directive provides — its `trapped` signal is writable so we can drive it.
-    private readonly focusScopeConfig = inject(RdxFocusScopeConfigToken) as { trapped: WritableSignal<boolean> };
+    // The config this directive provides — its `trapped` signal is writable so we can drive it, and we
+    // attach a `returnFocus` resolver the composed focus scope calls at unmount (ADR 0017 `returnFocus`).
+    private readonly focusScopeConfig = inject(RdxFocusScopeConfigToken) as {
+        trapped: WritableSignal<boolean>;
+        returnFocus?: () => HTMLElement | false | undefined;
+    };
 
     private readonly host = inject(ElementRef).nativeElement as HTMLElement;
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -192,6 +197,10 @@ export class RdxFloatingFocusManager {
 
     constructor() {
         effect(() => this.focusScopeConfig.trapped.set(this.trapped()));
+
+        // Own the return-focus *target* (the composed focus scope owns the *timing*): the scope calls this
+        // in its queued post-unmount frame, resolving the `returnFocus` policy against the close interaction.
+        this.focusScopeConfig.returnFocus = () => this.resolveReturnFocusTarget();
 
         if (!this.isBrowser) {
             return; // SSR: no DOM marking / listeners.
@@ -244,12 +253,8 @@ export class RdxFloatingFocusManager {
      * Initial-focus orchestration (ADR 0017 §2). The manager owns the focus *policy*; it intercepts the
      * composed {@link RdxFocusScope}'s preventable `mountAutoFocus` (its designed extension point) and
      * applies the `initialFocus` policy, falling back to the scope's first-tabbable default when the
-     * policy is `null`.
-     *
-     * @remarks `returnFocus` is **typed** ({@link resolveReturnFocus}) but not orchestrated here:
-     * overriding the scope's return-focus would mean intercepting `unmountAutoFocus`, which fires during
-     * teardown after the output subscription is already torn down (unreliable). A robust `returnFocus`
-     * override is deferred to the Phase-4 integration, where the manager can own return-focus directly.
+     * policy is `null`. (`returnFocus` is orchestrated separately via the config seam — see
+     * {@link resolveReturnFocusTarget} — because it must run during the scope's queued *post-unmount* frame.)
      */
     private wireFocusOrchestration(): void {
         const focusScope = inject(RdxFocusScope);
@@ -263,6 +268,25 @@ export class RdxFloatingFocusManager {
                 target.focus();
             }
         });
+    }
+
+    /**
+     * Resolves the {@link returnFocus} policy against the **close** interaction type for the composed
+     * focus scope to apply at unmount (ADR 0017 §2). Mirrors Base UI's `getReturnElement`:
+     * - `false` → `false` (the scope suppresses return-focus);
+     * - `true` / `null` → `undefined` (the scope's default — return to the element focused before mount);
+     * - an element (direct or from a callback) → that element (returned **explicitly**, bypassing the
+     *   "focus moved elsewhere" guard).
+     */
+    private resolveReturnFocusTarget(): HTMLElement | false | undefined {
+        const resolved = resolveReturnFocus(this.returnFocus(), this._interactionType());
+        if (resolved === false) {
+            return false;
+        }
+        if (resolved === true || resolved == null) {
+            return undefined;
+        }
+        return resolved;
     }
 
     /**
