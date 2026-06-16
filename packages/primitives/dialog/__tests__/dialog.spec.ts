@@ -281,17 +281,17 @@ describe('Dialog', () => {
     });
 
     it('locks body scroll while a modal dialog is open and restores it on close', () => {
-        expect(document.body.style.overflow).toBe('');
+        expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
 
         trigger.click();
         fixture.detectChanges();
 
-        expect(document.body.style.overflow).toBe('hidden');
+        expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(true);
 
         trigger.click();
         fixture.detectChanges();
 
-        expect(document.body.style.overflow).toBe('');
+        expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
     });
 
     it('does not lock body scroll for a non-modal dialog', () => {
@@ -302,7 +302,7 @@ describe('Dialog', () => {
         trigger.click();
         fixture.detectChanges();
 
-        expect(document.body.style.overflow).toBe('');
+        expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
 
         const dialog = popup()!;
         expect(dialog.hasAttribute('aria-modal')).toBe(false);

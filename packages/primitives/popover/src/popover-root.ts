@@ -70,6 +70,8 @@ export interface RdxPopoverRootContext {
     instant: Signal<boolean>;
     openChangeReason: Signal<RdxPopoverOpenChangeReason>;
     isPointerDownOnTrigger: Signal<boolean>;
+    /** Whether the current open was initiated by touch (ADR 0016 §3 — gates the anchored scroll lock). */
+    openedByTouch: Signal<boolean>;
     close: (reason?: RdxPopoverOpenChangeReason, event?: Event) => void;
     cancelHoverClose: () => void;
     cancelHoverOpen: () => void;
@@ -87,6 +89,7 @@ export interface RdxPopoverRootContext {
     setDescriptionId: (id: string | undefined) => void;
     setTitleId: (id: string | undefined) => void;
     setPointerDownOnTrigger: (pointerDown: boolean) => void;
+    setOpenedByTouch: (value: boolean) => void;
     setHoverDelays: (delay: number, closeDelay: number) => void;
     registerPopupClose: () => () => void;
     registerTransitionElement: (element: HTMLElement) => () => void;
@@ -179,6 +182,9 @@ export class RdxPopoverRoot {
     readonly triggers = signal<HTMLElement[]>([]);
     readonly payload = signal<unknown>(undefined);
     readonly isPointerDownOnTrigger = signal(false);
+
+    /** Whether the current open was initiated by touch (ADR 0016 §3 — gates the anchored scroll lock). */
+    readonly openedByTouch = signal(false);
     readonly popupCloseCount = signal(0);
     readonly onOpenChange = output<RdxPopoverOpenChange>();
     readonly onOpenChangeComplete = output<boolean>();
@@ -304,6 +310,7 @@ export class RdxPopoverRoot {
     close(reason: RdxPopoverOpenChangeReason = 'none', event = new Event('popover.open-change')) {
         this.clearHoverTimers();
         this.isHoverActive.set(false);
+        this.openedByTouch.set(false);
 
         if (!this.open()) {
             return;
@@ -507,6 +514,7 @@ function contextFor(root: RdxPopoverRoot): RdxPopoverRootContext {
         instant: root.instant.asReadonly(),
         openChangeReason: root.openChangeReason.asReadonly(),
         isPointerDownOnTrigger: root.isPointerDownOnTrigger.asReadonly(),
+        openedByTouch: root.openedByTouch.asReadonly(),
         close: (reason?: RdxPopoverOpenChangeReason, event?: Event) => root.close(reason, event),
         cancelHoverClose: () => root.cancelHoverClose(),
         cancelHoverOpen: () => root.cancelHoverOpen(),
@@ -517,6 +525,7 @@ function contextFor(root: RdxPopoverRoot): RdxPopoverRootContext {
         setDescriptionId: (id: string | undefined) => root.descriptionId.set(id),
         setTitleId: (id: string | undefined) => root.titleId.set(id),
         setPointerDownOnTrigger: (pointerDown: boolean) => root.isPointerDownOnTrigger.set(pointerDown),
+        setOpenedByTouch: (value: boolean) => root.openedByTouch.set(value),
         setHoverDelays: (delay: number, closeDelay: number) => root.setHoverDelays(delay, closeDelay),
         registerPopupClose: () => {
             root.popupCloseCount.update((count) => count + 1);

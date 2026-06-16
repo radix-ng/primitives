@@ -239,11 +239,11 @@ describe('Drawer', () => {
     it('locks body scroll while open when modal', () => {
         trigger.click();
         fixture.detectChanges();
-        expect(document.body.style.overflow).toBe('hidden');
+        expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(true);
 
         (document.body.querySelector('[rdxDrawerClose]') as HTMLButtonElement).click();
         fixture.detectChanges();
-        expect(document.body.style.overflow).toBe('');
+        expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
     });
 
     it('does not lock scroll and drops aria-modal when made non-modal', () => {
@@ -252,7 +252,7 @@ describe('Drawer', () => {
         fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
-        expect(document.body.style.overflow).toBe('');
+        expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
         expect(popup()!.getAttribute('aria-modal')).toBeNull();
     });
 

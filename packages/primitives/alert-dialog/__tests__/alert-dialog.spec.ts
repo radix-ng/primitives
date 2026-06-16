@@ -137,16 +137,18 @@ describe('AlertDialog', () => {
     });
 
     it('locks body scroll while open (always modal)', () => {
-        expect(document.body.style.overflow).toBe('');
+        // `useScrollLock` marks `<html>` with `data-rdx-scroll-locked` (strategy-independent signal).
+        const locked = () => document.documentElement.hasAttribute('data-rdx-scroll-locked');
+        expect(locked()).toBe(false);
 
         trigger.click();
         fixture.detectChanges();
-        expect(document.body.style.overflow).toBe('hidden');
+        expect(locked()).toBe(true);
 
         const close: HTMLButtonElement = document.body.querySelector('[rdxAlertDialogClose]')!;
         close.click();
         fixture.detectChanges();
-        expect(document.body.style.overflow).toBe('');
+        expect(locked()).toBe(false);
     });
 
     it('supports controlled open via the model', () => {

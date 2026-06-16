@@ -60,24 +60,25 @@ test.describe('Dialog structural portal', () => {
             content: `[rdxDialogBackdrop][data-closed], [rdxDialogPopup][data-closed] { animation-duration: 2000ms !important; }`
         });
 
-        const htmlOverflow = () => page.locator('html').evaluate((el) => el.style.overflow);
+        // `useScrollLock` marks `<html>` with `data-rdx-scroll-locked` (strategy-independent).
+        const scrollLocked = () => page.locator('html').evaluate((el) => el.hasAttribute('data-rdx-scroll-locked'));
 
         await page.locator(trigger).first().click();
         await expect(page.locator(popup)).toBeVisible();
         // Modal dialog locks page scroll while open.
-        expect(await htmlOverflow()).toBe('hidden');
+        expect(await scrollLocked()).toBe(true);
 
         await page.locator('[rdxDialogClose][aria-label="Close"]').click();
 
         // Mid-exit: the popup is closing but still mounted, yet the scroll lock is already released
-        // (Base UI gates it on `open && modal === true`). `useScrollLock` compensates the scrollbar
-        // width with padding, so no content reflow accompanies the release.
+        // (Base UI gates it on `open && modal === true`). The inset-scrollbar strategy reserves the
+        // scrollbar gutter, so no content reflow accompanies the release.
         await expect(page.locator(popup)).toHaveAttribute('data-closed', '');
-        expect(await htmlOverflow()).toBe('');
+        expect(await scrollLocked()).toBe(false);
 
         // Still released after unmount.
         await expect(page.locator(popup)).toHaveCount(0);
-        expect(await htmlOverflow()).toBe('');
+        expect(await scrollLocked()).toBe(false);
     });
 });
 

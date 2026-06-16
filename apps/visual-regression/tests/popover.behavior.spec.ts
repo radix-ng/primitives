@@ -127,4 +127,36 @@ test.describe('Popover — new floating engine migration', () => {
         await expect(page.locator(popup)).toHaveCount(0);
         expect(await rootInert()).toBe(false);
     });
+
+    test('releases the scroll lock at close-start, before the exit animation finishes (ADR 0016 §2)', async ({
+        page
+    }) => {
+        await gotoStory(page, 'primitives-popover--modal');
+
+        // Slow the exit so the mid-exit (mounted-but-closing) window is observable without a race.
+        await page.addStyleTag({
+            content: `@keyframes rdx-test-out { to { opacity: 0 } }
+                [rdxPopoverPopup][data-closed] { animation: rdx-test-out 2000ms forwards }`
+        });
+
+        // `useScrollLock` marks `<html>` with `data-rdx-scroll-locked` (strategy-independent).
+        const scrollLocked = () => page.locator('html').evaluate((el) => el.hasAttribute('data-rdx-scroll-locked'));
+
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+        // A modal popover locks page scroll while open.
+        expect(await scrollLocked()).toBe(true);
+
+        await page.locator('[rdxPopoverClose]').click();
+
+        // Mid-exit: the popup is closing (`data-closed`) but still mounted — unlike the focus manager's
+        // `inert` isolation (held until unmount), the scroll lock is already RELEASED, because the
+        // predicate gates on `open` (not mounted). Base UI parity.
+        await expect(page.locator(popup)).toHaveAttribute('data-closed', '');
+        expect(await scrollLocked()).toBe(false);
+
+        // Still released after unmount.
+        await expect(page.locator(popup)).toHaveCount(0);
+        expect(await scrollLocked()).toBe(false);
+    });
 });

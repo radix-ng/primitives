@@ -23,15 +23,17 @@ test('menu teleports the positioner directly into <body> with no wrapper element
 test('menu locks page scrolling by default and releases it when closed', async ({ page }) => {
     await gotoStory(page, 'primitives-menu--default');
 
-    const htmlOverflow = () => page.locator('html').evaluate((el) => el.style.overflow);
+    // `useScrollLock` marks `<html>` with `data-rdx-scroll-locked` (strategy-independent: the inset and
+    // overlay-scrollbar strategies set different overflow properties, but both set the marker).
+    const scrollLocked = () => page.locator('html').evaluate((el) => el.hasAttribute('data-rdx-scroll-locked'));
 
     await page.locator('[rdxMenuTrigger]').first().click();
     await expect(page.locator('[rdxMenuPopup]')).toBeVisible();
-    expect(await htmlOverflow()).toBe('hidden');
+    expect(await scrollLocked()).toBe(true);
 
     await page.keyboard.press('Escape');
     await expect(page.locator('[rdxMenuPopup]')).toHaveCount(0);
-    expect(await htmlOverflow()).toBe('');
+    expect(await scrollLocked()).toBe(false);
 });
 
 test('a modal menu renders an internal backdrop that blocks the background and is the outside-press target (finding #1)', async ({

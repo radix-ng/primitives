@@ -85,6 +85,9 @@ export class RdxSelectTrigger {
 
     handlePointerOpen(event: Event) {
         const pointerEvent = event as PointerEvent;
+        // Record whether this open was a touch (ADR 0016 §3 — gates the anchored scroll lock). Mouse
+        // resets it to false; a keyboard open never reaches here, so it keeps the reset-on-close default.
+        this.rootContext.openedByTouch.set(pointerEvent.pointerType === 'touch');
         this.handleOpen();
         this.rootContext.triggerPointerDownPosRef.set({
             x: Math.round(pointerEvent.pageX),

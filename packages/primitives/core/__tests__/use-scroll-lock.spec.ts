@@ -3,13 +3,16 @@ import { DOCUMENT } from '@angular/common';
 import { PLATFORM_ID, signal, WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { useScrollLock } from '../src/dom/use-scroll-lock';
+import { RDX_SCROLL_LOCKED_ATTR, useAnchoredScrollLock, useScrollLock } from '../src/dom/use-scroll-lock';
 
 function resetScroller(doc: Document): void {
-    doc.documentElement.style.overflow = '';
-    doc.documentElement.style.paddingRight = '';
-    doc.body.style.overflow = '';
+    const html = doc.documentElement;
+    html.removeAttribute(RDX_SCROLL_LOCKED_ATTR);
+    html.style.cssText = '';
+    doc.body.style.cssText = '';
 }
+
+const locked = (doc: Document) => doc.documentElement.hasAttribute(RDX_SCROLL_LOCKED_ATTR);
 
 describe('useScrollLock', () => {
     beforeEach(() => {
@@ -34,20 +37,32 @@ describe('useScrollLock', () => {
         TestBed.runInInjectionContext(() => useScrollLock(active));
     }
 
-    it('locks and restores the scroller', () => {
+    it('locks (marks + hides overflow) and restores the original inline styles', () => {
         configure(document);
+        const html = document.documentElement;
+        const body = document.body;
+        // A page that already has some inline styles — the lock must restore them on release.
+        body.style.overflowY = 'auto';
+
         const active = signal(false);
         lock(active);
 
         active.set(true);
         TestBed.tick();
-        expect(document.body.style.overflow).toBe('hidden');
-        expect(document.documentElement.style.overflow).toBe('hidden');
+        expect(locked(document)).toBe(true);
+        // Inset strategy (jsdom reports inset scrollbars): the scroller's overflow is hidden and the body
+        // is parked at `position: relative` (the scroll-position-preserving box).
+        expect(html.style.overflowY).toBe('hidden');
+        expect(body.style.overflowY).toBe('hidden');
+        expect(body.style.position).toBe('relative');
 
         active.set(false);
         TestBed.tick();
-        expect(document.body.style.overflow).toBe('');
-        expect(document.documentElement.style.overflow).toBe('');
+        expect(locked(document)).toBe(false);
+        // Round-trip: the lock's own styles are cleared and the author's `overflow-y: auto` is restored.
+        expect(html.style.overflowY).toBe('');
+        expect(body.style.position).toBe('');
+        expect(body.style.overflowY).toBe('auto');
     });
 
     it('shares a per-document lock count across callers (nested overlays compose)', () => {
@@ -60,16 +75,16 @@ describe('useScrollLock', () => {
         a.set(true);
         b.set(true);
         TestBed.tick();
-        expect(document.body.style.overflow).toBe('hidden');
+        expect(locked(document)).toBe(true);
 
-        // releasing one lock keeps the page locked while the other is still active
+        // Releasing one lock keeps the page locked while the other is still active.
         a.set(false);
         TestBed.tick();
-        expect(document.body.style.overflow).toBe('hidden');
+        expect(locked(document)).toBe(true);
 
         b.set(false);
         TestBed.tick();
-        expect(document.body.style.overflow).toBe('');
+        expect(locked(document)).toBe(false);
     });
 
     it('isolates lock state per document — an iframe lock does not corrupt the main document', () => {
@@ -81,11 +96,31 @@ describe('useScrollLock', () => {
         active.set(true);
         TestBed.tick();
 
-        // the other document is locked...
-        expect(otherDoc.body.style.overflow).toBe('hidden');
-        // ...while the main document's scroller is untouched (separate WeakMap state)
+        // The other document is locked...
+        expect(locked(otherDoc)).toBe(true);
+        // ...while the main document's scroller is untouched (separate per-Document locker / WeakMap).
+        expect(locked(document)).toBe(false);
         expect(document.body.style.overflow).toBe('');
-        expect(document.documentElement.style.overflow).toBe('');
+    });
+
+    it('respects an author overflow lock on <html> — applies no strategy, leaves styles untouched', () => {
+        configure(document);
+        const html = document.documentElement;
+        html.style.overflowY = 'hidden'; // the site author already locked the page
+        const htmlBefore = html.style.cssText;
+
+        const active = signal(true);
+        lock(active);
+        TestBed.tick();
+
+        // The lock is observable (marker) but it changed nothing else — the author's styles stand.
+        expect(locked(document)).toBe(true);
+        expect(html.style.cssText).toBe(htmlBefore);
+
+        active.set(false);
+        TestBed.tick();
+        expect(locked(document)).toBe(false);
+        expect(html.style.cssText).toBe(htmlBefore);
     });
 
     it('is a no-op on the server (non-browser platform)', () => {
@@ -99,6 +134,85 @@ describe('useScrollLock', () => {
         lock(active);
         TestBed.tick();
 
+        expect(locked(document)).toBe(false);
         expect(document.body.style.overflow).toBe('');
+    });
+});
+
+describe('useAnchoredScrollLock (touch near-fullscreen gate)', () => {
+    /** Stubs `<html>`'s `clientWidth` (jsdom reports 0 — no layout). Returns a cleanup. */
+    function stubViewportWidth(width: number): () => void {
+        Object.defineProperty(document.documentElement, 'clientWidth', { value: width, configurable: true });
+        return () => delete (document.documentElement as unknown as Record<string, unknown>)['clientWidth'];
+    }
+
+    /** A detached element with a stubbed `offsetWidth` (jsdom reports 0). */
+    function popupOfWidth(width: number): HTMLElement {
+        const el = document.createElement('div');
+        Object.defineProperty(el, 'offsetWidth', { value: width, configurable: true });
+        return el;
+    }
+
+    let restoreViewport: () => void = () => undefined;
+
+    beforeEach(() => {
+        TestBed.resetTestingModule();
+        document.documentElement.removeAttribute(RDX_SCROLL_LOCKED_ATTR);
+        TestBed.configureTestingModule({
+            providers: [
+                { provide: DOCUMENT, useValue: document },
+                { provide: PLATFORM_ID, useValue: 'browser' }
+            ]
+        });
+    });
+
+    afterEach(() => {
+        restoreViewport();
+        document.documentElement.removeAttribute(RDX_SCROLL_LOCKED_ATTR);
+    });
+
+    function anchoredLock(
+        enabled: WritableSignal<boolean>,
+        touchOpen: WritableSignal<boolean>,
+        element: HTMLElement | null
+    ): void {
+        TestBed.runInInjectionContext(() =>
+            useAnchoredScrollLock(enabled, { touchOpen: () => touchOpen(), element: () => element })
+        );
+    }
+
+    it('locks on a non-touch open regardless of popup width', () => {
+        restoreViewport = stubViewportWidth(1000);
+        anchoredLock(signal(true), signal(false), popupOfWidth(200));
+        TestBed.tick();
+        expect(locked(document)).toBe(true);
+    });
+
+    it('locks on a touch open only when the popup is effectively viewport-width (≤ 20px gutter)', () => {
+        restoreViewport = stubViewportWidth(1000);
+        // 990 >= 1000 - 20 → near-fullscreen → locks.
+        anchoredLock(signal(true), signal(true), popupOfWidth(990));
+        TestBed.tick();
+        expect(locked(document)).toBe(true);
+    });
+
+    it('does NOT lock on a touch open when the popup is narrow (swipe-to-dismiss stays possible)', () => {
+        restoreViewport = stubViewportWidth(1000);
+        // 500 < 1000 - 20 → not near-fullscreen → no lock.
+        anchoredLock(signal(true), signal(true), popupOfWidth(500));
+        TestBed.tick();
+        expect(locked(document)).toBe(false);
+    });
+
+    it('re-evaluates the touch gate when the open state flips', () => {
+        restoreViewport = stubViewportWidth(1000);
+        const enabled = signal(false);
+        anchoredLock(enabled, signal(true), popupOfWidth(500));
+        TestBed.tick();
+        expect(locked(document)).toBe(false);
+
+        enabled.set(true);
+        TestBed.tick();
+        expect(locked(document)).toBe(false); // narrow touch popup still does not lock
     });
 });

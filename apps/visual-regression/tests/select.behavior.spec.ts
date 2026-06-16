@@ -134,6 +134,23 @@ test('aligned-position opens without provider/runtime errors', async ({ page }) 
     expect(errors).toEqual([]);
 });
 
+test('aligned-position locks page scroll even when modal=false (ADR 0016 AC #3)', async ({ page }) => {
+    await gotoStory(page, 'primitives-select--aligned-position-non-modal');
+    const scrollLocked = () => page.locator('html').evaluate((el) => el.hasAttribute('data-rdx-scroll-locked'));
+
+    expect(await scrollLocked()).toBe(false);
+
+    await page.locator('[rdxSelectTrigger]').first().click();
+    await expect(page.locator('[rdxSelectPopup]')).toBeVisible();
+    // A non-modal item-aligned select still locks (Base UI `(alignItemWithTriggerActive || modal) && open`)
+    // — the popup overlays the trigger, so the page must not scroll behind it.
+    expect(await scrollLocked()).toBe(true);
+
+    await page.keyboard.press('Escape');
+    await expect(page.locator('[rdxSelectPopup]')).toHaveCount(0);
+    expect(await scrollLocked()).toBe(false);
+});
+
 test('aligned-position-with-scroll: viewport overflows and scroll buttons toggle on scroll', async ({ page }) => {
     await gotoStory(page, 'primitives-select--aligned-position-with-scroll');
     await page.locator('[rdxSelectTrigger]').first().click();

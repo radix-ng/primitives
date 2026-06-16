@@ -46,6 +46,7 @@ const context = () => {
         isItemEqualToValue: context.isItemEqualToValue,
         itemToStringLabel: context.itemToStringLabel,
         open: context.open,
+        openedByTouch: context.openedByTouch,
         disabled: context.disabled,
         modal: context.modal,
         isEmptyModelValue: context.isEmptyModelValue,
@@ -100,6 +101,9 @@ export const [injectSelectRootContext, provideSelectRootContext] = createContext
 export class RdxSelectRoot {
     readonly open = model<boolean>(false);
 
+    /** Whether the current open was initiated by **touch** (ADR 0016 §3 — gates the anchored scroll lock). */
+    readonly openedByTouch = signal(false);
+
     /** Per-popup floating root context (ADR 0015) — `open` / `triggers` / reference for the dismissal engine. */
     readonly floatingContext: RdxFloatingRootContext = createFloatingRootContext({
         ownerDocument: inject(ElementRef).nativeElement.ownerDocument,
@@ -151,6 +155,13 @@ export class RdxSelectRoot {
             }
             previousOpen = open;
             untracked(() => this.transition.start(open));
+        });
+
+        // A fresh open starts non-touch; the trigger flips it on a touch open. Reset whenever it closes.
+        effect(() => {
+            if (!this.open()) {
+                untracked(() => this.openedByTouch.set(false));
+            }
         });
 
         // Bridge the trigger into the floating context: the dismissal capability treats a press on the

@@ -76,6 +76,8 @@ export interface RdxMenuRootContext {
     parentType: Signal<RdxMenuParentType>;
     /** The reason for the most recent open-change (Base UI open-change `reason`). */
     lastOpenChangeReason: Signal<RdxMenuOpenChangeReason>;
+    /** Whether the current open was initiated by touch (ADR 0016 §3 — gates the anchored scroll lock). */
+    openedByTouch: Signal<boolean>;
     hasTriggerInteractionHandler: Signal<boolean>;
     trigger: Signal<HTMLElement | undefined>;
     /** The popup element, once mounted. Used by submenu safe-polygon geometry. */
@@ -132,6 +134,7 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         isSubmenu: instance.isSubmenu.asReadonly(),
         parentType: instance.parentType,
         lastOpenChangeReason: instance.lastOpenChangeReason.asReadonly(),
+        openedByTouch: instance.openedByTouch.asReadonly(),
         hasTriggerInteractionHandler: instance.hasTriggerInteractionHandler.asReadonly(),
         trigger: instance.trigger.asReadonly(),
         popupElement: instance.popupElement.asReadonly(),
@@ -257,6 +260,9 @@ export class RdxMenuRoot {
     /** The reason for the most recent open-change (Base UI open-change `reason`), for the per-kind policy. */
     readonly lastOpenChangeReason = signal<RdxMenuOpenChangeReason>('none');
 
+    /** Whether the current open was initiated by **touch** (ADR 0016 §3 — gates the anchored scroll lock). */
+    readonly openedByTouch = signal(false);
+
     readonly effectiveDisabled: Signal<boolean> = computed(
         () => this.disabled() || (this.parentRoot?.effectiveDisabled() ?? false)
     );
@@ -297,6 +303,9 @@ export class RdxMenuRoot {
         this.autoFocus.set(autoFocus === true ? 'first' : autoFocus);
         if (!this.open()) {
             this.lastOpenChangeReason.set(reason);
+            // Record whether this open came from touch (ADR 0016 §3). Hover / mouse / keyboard all resolve
+            // to false (no `'touch'` pointer type), so only a genuine touch open gates the anchored lock.
+            this.openedByTouch.set((event as PointerEvent | undefined)?.pointerType === 'touch');
             this.open.set(true);
             this.onOpenChange.emit(true);
             // Publish reason + native event on the per-popup floating channel (Base UI open-change) so the

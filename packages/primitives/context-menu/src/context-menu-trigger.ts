@@ -52,7 +52,8 @@ export class RdxContextMenuTrigger {
         // pointerdown, so it opens with the first item highlighted; a pointer opens the popup
         // without highlighting an item.
         const fromKeyboard = event.timeStamp - this.lastPointerDownTime > 300;
-        this.rootContext.openAt(event.clientX, event.clientY, fromKeyboard ? 'first' : 'popup');
+        // A right-click `contextmenu` event has no `pointerType`, so this records a non-touch open.
+        this.rootContext.openAt(event.clientX, event.clientY, fromKeyboard ? 'first' : 'popup', event);
     }
 
     protected onPointerDown(event: PointerEvent): void {
@@ -67,7 +68,8 @@ export class RdxContextMenuTrigger {
         this.cancelLongPress();
         this.longPressTimer = setTimeout(() => {
             this.longPressTimer = undefined;
-            this.rootContext.openAt(clientX, clientY);
+            // Pass the touch pointer event so the menu records a touch open (ADR 0016 §3).
+            this.rootContext.openAt(clientX, clientY, 'popup', event);
         }, this.longPressDelay());
     }
 

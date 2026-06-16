@@ -4,7 +4,7 @@ import {
     RDX_FLOATING_REGISTRATION,
     RDX_FLOATING_ROOT_CONTEXT,
     RdxFloatingNodeRegistration,
-    useScrollLock
+    useAnchoredScrollLock
 } from '@radix-ng/primitives/core';
 import { RdxDismiss } from '@radix-ng/primitives/dismissable-layer';
 import {
@@ -100,8 +100,21 @@ export class RdxPopoverPopup {
         this.floatingContext.setFloatingElement(this.host);
 
         // Background pointer/AT isolation for a full modal is the focus manager's `inert` pass (finding
-        // #4), not a global body lock; only the page scroll lock stays here.
-        useScrollLock(computed(() => this.rootContext.modal() === true));
+        // #4), not a global body lock; only the page scroll lock stays here. Activation policy (ADR 0016
+        // §2): lock only while a `modal === true` popover is OPEN and was **not** hover-opened, gated on
+        // `open` (not mounted) so it releases at close-start. For a **touch** open the anchored helper only
+        // locks when the popup is effectively viewport-width (a small popover stays swipe-to-dismissable on
+        // mobile, §3).
+        useAnchoredScrollLock(
+            computed(
+                () =>
+                    this.rootContext.isOpen() && this.rootContext.modal() === true && !this.rootContext.isHoverActive()
+            ),
+            {
+                touchOpen: () => this.rootContext.openedByTouch(),
+                element: () => this.host
+            }
+        );
 
         const unregisterTransitionElement = this.rootContext.registerTransitionElement(this.host);
         inject(DestroyRef).onDestroy(unregisterTransitionElement);

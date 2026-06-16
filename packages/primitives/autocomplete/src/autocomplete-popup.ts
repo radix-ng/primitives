@@ -1,9 +1,9 @@
-import { afterRenderEffect, DestroyRef, Directive, ElementRef, inject } from '@angular/core';
+import { afterRenderEffect, computed, DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 import {
     RDX_FLOATING_REGISTRATION,
     RDX_FLOATING_ROOT_CONTEXT,
     RdxFloatingNodeRegistration,
-    useScrollLock
+    useAnchoredScrollLock
 } from '@radix-ng/primitives/core';
 import { RdxDismiss } from '@radix-ng/primitives/dismissable-layer';
 import { injectPopperContentWrapperContext, RdxPopperContent } from '@radix-ng/primitives/popper';
@@ -42,7 +42,17 @@ export class RdxAutocompletePopup {
     private readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
     constructor() {
-        useScrollLock(this.root.modal);
+        // Activation policy (ADR 0016 §2 + §3): lock page scroll while a modal popup is OPEN, gated on
+        // `open` (not mounted) so the lock releases at close-start. For a **touch** open the anchored
+        // helper only locks when the popup is effectively viewport-width (a small dropdown stays
+        // swipe-to-dismissable on mobile, §3).
+        useAnchoredScrollLock(
+            computed(() => this.root.open() && this.root.modal()),
+            {
+                touchOpen: () => this.root.openedByTouch(),
+                element: () => this.element
+            }
+        );
 
         const unregister = this.root.registerTransitionElement(this.element);
         // Track mounted state so Escape can tell "closing this open popup" from "already closed".

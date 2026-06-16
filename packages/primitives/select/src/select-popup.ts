@@ -1,5 +1,6 @@
 import {
     afterNextRender,
+    computed,
     DestroyRef,
     Directive,
     effect,
@@ -9,7 +10,8 @@ import {
     Injector,
     output,
     OutputRef,
-    signal
+    signal,
+    Signal
 } from '@angular/core';
 import { RdxCollectionItem, RdxCollectionProvider } from '@radix-ng/primitives/collection';
 import {
@@ -18,8 +20,8 @@ import {
     RDX_FLOATING_REGISTRATION,
     RDX_FLOATING_ROOT_CONTEXT,
     RdxFloatingNodeRegistration,
-    useListHighlight,
-    useScrollLock
+    useAnchoredScrollLock,
+    useListHighlight
 } from '@radix-ng/primitives/core';
 import { RdxDismiss } from '@radix-ng/primitives/dismissable-layer';
 import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
@@ -87,6 +89,13 @@ export const [injectSelectPopupContext, provideSelectPopupContext] = createConte
 
 export interface RdxPositionerImpl {
     placed: OutputRef<any>;
+    /**
+     * Whether **item-aligned** positioning is currently active (Base UI `alignItemWithTriggerActive`).
+     * `true` only for the item-aligned positioner while open **and not touch-opened** — a touch open
+     * falls back to a plain anchored dropdown. The popper positioner omits this (always `false`). The
+     * scroll-lock policy locks an item-aligned popup even when `modal === false` (ADR 0016 §2 / AC #3).
+     */
+    alignItemWithTriggerActive?: Signal<boolean>;
 }
 
 export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>('RDX_SELECT_POSITIONER_TOKEN');
@@ -221,8 +230,20 @@ export class RdxSelectPopup {
             }
         });
 
-        // Lock page scroll while a modal popup is open (content mounts only while open).
-        useScrollLock(this.rootContext.modal);
+        // Activation policy (ADR 0016 §2 + §3). Lock page scroll while the popup is OPEN and either modal
+        // **or** item-aligned — Base UI `(alignItemWithTriggerActive || modal) && open` (AC #3): an
+        // item-aligned select overlays the trigger, so the page must not scroll behind it even when
+        // `modal === false`. The gate keys on `open` (not mounted) so it releases at close-start. A
+        // **touch** open never uses item-aligned mode (the positioner falls back), so the lock there is
+        // driven by `modal` alone and the anchored helper only engages when the popup is viewport-width (§3).
+        const itemAlignedActive = computed(() => this.positioner?.alignItemWithTriggerActive?.() ?? false);
+        useAnchoredScrollLock(
+            computed(() => (itemAlignedActive() || this.rootContext.modal()) && this.rootContext.open()),
+            {
+                touchOpen: () => this.rootContext.openedByTouch(),
+                element: () => this.currentElement.nativeElement
+            }
+        );
 
         // The popup's animation determines when the open/close transition (onOpenChangeComplete) is done.
         const unregisterTransition = this.rootContext.registerTransitionElement(this.currentElement.nativeElement);

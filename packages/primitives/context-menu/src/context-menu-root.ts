@@ -10,7 +10,7 @@ export interface RdxContextMenuRootContext {
     /** Whether the whole menu is disabled. */
     disabled: Signal<boolean>;
     /** Open the menu anchored at the given viewport coordinates. */
-    openAt: (clientX: number, clientY: number, autoFocus?: RdxMenuAutoFocusInput) => void;
+    openAt: (clientX: number, clientY: number, autoFocus?: RdxMenuAutoFocusInput, event?: Event) => void;
     /** Close the menu. */
     close: () => void;
 }
@@ -23,7 +23,7 @@ const contextFactory = (): RdxContextMenuRootContext => {
     return {
         isOpen: root.menuRoot.open,
         disabled: root.menuRoot.disabled,
-        openAt: (clientX, clientY, autoFocus) => root.openAt(clientX, clientY, autoFocus),
+        openAt: (clientX, clientY, autoFocus, event) => root.openAt(clientX, clientY, autoFocus, event),
         close: () => root.menuRoot.close()
     };
 };
@@ -62,9 +62,11 @@ export class RdxContextMenuRoot {
      * Open the menu with the popup anchored at the given viewport coordinates.
      *
      * `autoFocus` defaults to `'popup'` so a right-click opens with the popup focused but no item
-     * highlighted (matching Base UI's pointer behavior). Pass `'first'` for keyboard opening.
+     * highlighted (matching Base UI's pointer behavior). Pass `'first'` for keyboard opening. `event` is
+     * the originating pointer event (threaded to the menu so a touch long-press is recorded for the
+     * anchored scroll-lock policy, ADR 0016 §3).
      */
-    openAt(clientX: number, clientY: number, autoFocus: RdxMenuAutoFocusInput = 'popup'): void {
+    openAt(clientX: number, clientY: number, autoFocus: RdxMenuAutoFocusInput = 'popup', event?: Event): void {
         if (this.menuRoot.disabled()) {
             return;
         }
@@ -86,6 +88,6 @@ export class RdxContextMenuRoot {
 
         this.popper.anchorOverride.set(anchor);
         // Move focus into the popup so keyboard navigation and outside-dismiss work immediately.
-        this.menuRoot.show(autoFocus);
+        this.menuRoot.show(autoFocus, 'trigger-press', event);
     }
 }

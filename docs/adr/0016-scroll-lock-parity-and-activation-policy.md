@@ -1,7 +1,7 @@
 # ADR 0016: Scroll-lock parity and activation policy
 
-- Status: Proposed
-- Date: 2026-06-14
+- Status: Accepted
+- Date: 2026-06-14 (accepted 2026-06-16)
 - Decision owners: Radix NG maintainers
 - Related: ADR 0015 (dismissal engine — scopes these concerns out in its §9), ADR 0017 (floating focus
   manager — owns aria-hidden isolation, marker, focus trap; sibling to this ADR), ADR 0005 (owned
@@ -71,6 +71,26 @@ mutable algorithm state — style/scroll-position **snapshots**, scrollbar-gutte
 `ScrollLocker` instance**, with nothing left at module scope. (This sharpens ADR 0015 Phase -1, which only
 required the lock counter to be document-scoped.)
 
+> **§1 status (2026-06-16): LANDED.** `core/src/dom/use-scroll-lock.ts` is now a faithful port of Base UI's
+> `useScrollLock` — the two strategies (`preventScrollOverlayScrollbars` for iOS / overlay-scrollbar
+> documents, `preventScrollInsetScrollbars` for inset scrollbars), html-vs-body scroller selection
+> (`isOverflowElement`), scroll-position save/restore, `scrollbar-gutter: stable` feature-detect with the
+> `body { position: relative; width/height: calc(...) }` compensation fallback, WebKit pinch-zoom bail-out,
+> and resize re-lock. **Divergence from Base UI (intentional, per the paragraph above):** every snapshot
+> (`originalHtmlStyles` / `originalBodyStyles` / `originalHtmlScrollBehavior`) is **closure-local** and the
+> ref count + restore callback live on a per-`Document` `ScrollLocker` (Base UI keeps the snapshots at
+> module scope) — iframe-safe. Two small **deliberate omissions**: the `setTimeout(0)` lock/unlock
+> coalescing (a React-render micro-optimization; our signal effect locks/unlocks once per `active()` edge),
+> and the body `overflow` short-hand is written as `overflowX`/`overflowY` long-hands so the snapshot
+> restores symmetrically. A strategy-independent `data-rdx-scroll-locked` marker on `<html>` exposes the
+> lock (the inset and overlay strategies set different overflow properties). Verified: unit
+> (`use-scroll-lock.spec.ts` — marker, overflow applied, exact restore round-trip, ref-count, per-document
+> isolation, SSR no-op, respect-author-overflow) + browser (the marker-based lock/release tests across
+> Dialog / Popover / Menu, 92 behavior tests green). **Not done:** `referenceElement` / non-DI owner-element
+> support (we resolve the owner document from `inject(DOCUMENT)`); the **scroll-position-preservation**
+> behavior is the verbatim Base UI port (which has its own tests) but is **not** browser-asserted here — the
+> Storybook iframe positions `#storybook-root` out of body flow, so it is not a usable scroll harness.
+
 ### 2. Scroll-lock **activation policy** — not just the utility
 
 Base UI gates **whether** to lock per primitive/mode/open-reason/interaction, via
@@ -110,6 +130,21 @@ the computed predicate below. Verified against `mui/base-ui` master (References)
 | Combobox         | `useScrollLock(modal)`           | Add `&& open` + touch                                                                                                                                                                               |
 | Autocomplete     | `useScrollLock(root.modal)`      | Same as Combobox                                                                                                                                                                                    |
 
+> **§2 status (2026-06-16): the `&& open` gating is LANDED for all six popups.** Dialog (`open && modal === true`)
+> and Menu/Menubar/Context Menu (`open && (menubarModal ‖ popupModal)`, hover-excluded) were already gated;
+> Popover (`open && modal === true && !hover`), Combobox / Autocomplete (`open && modal`), and Select
+> (`(alignItemWithTriggerActive || modal) && open`) were migrated off the plain `useScrollLock(modal)`. Each
+> predicate keys on `open()` so the lock releases at **close-start** even when an exit animation keeps the
+> popup mounted — verified by the `popover.behavior` "releases the scroll lock at close-start" Playwright
+> test (mirrors the Dialog one). **Select `alignItemWithTrigger` — RESOLVED (AC #3, 2026-06-16):** we keep
+> the two structural positioner directives (`[rdxSelectPositioner]` popper vs `[rdxSelectItemAlignedPosition]`
+> item-aligned) but made the item-aligned one Base-UI-faithful in **behavior** — it exposes
+> `alignItemWithTriggerActive = open && !openedByTouch` (the positioner falls back to a plain anchored
+> dropdown on touch, Base UI parity), and the popup locks scroll whenever it is active **even if
+> `modal === false`** (the item-aligned popup overlays the trigger, so the page must not scroll behind it).
+> Verified by `select.behavior` "aligned-position locks page scroll even when modal=false". The **touch**
+> near-fullscreen opt-out is §3 (status below).
+
 ### 3. Anchored-popup touch / near-fullscreen policy
 
 `useAnchoredPopupScrollLock`'s second argument is `openMethod === 'touch'`: a **touch-opened anchored
@@ -119,6 +154,22 @@ popup does not lock scroll** unless it is **near-fullscreen**.
 the viewport. This is a **single anchored-popup policy** in `useAnchoredPopupScrollLock`, **not** a
 per-primitive threshold — Select/Combobox/Menu all inherit it. (Confirm the exact 20px constant against
 the Base UI source during Phase 1.)
+
+> **§3 status (2026-06-16): LANDED and wired into every anchored popup.** `core`'s
+> **`useAnchoredScrollLock(enabled, { touchOpen, element })`** is the reusable Base UI
+> `useAnchoredPopupScrollLock` (the `VIEWPORT_WIDTH_TOLERANCE_PX = 20` constant confirmed against source):
+> a non-touch open locks while `enabled()`; a **touch** open locks only when `popupWidth >= viewportWidth -
+20px`. The gate is unit-tested (`use-scroll-lock.spec.ts` — stubbing `offsetWidth` / `clientWidth`, since
+> jsdom has no layout). **Wired into Combobox, Autocomplete, Select, Menu / Menubar / Context Menu, and
+> Popover** — every popup measures its own element. Each primitive now plumbs an `openedByTouch` signal
+> through its open path and resets it on close: Combobox / Autocomplete via the shared engine; **Select**
+> (trigger `handlePointerOpen` records the `pointerType`); **Menu** family (`RdxMenuRoot.show()` derives it
+> from the open event's `pointerType`, so hover / mouse / keyboard all read non-touch; **Context Menu**
+> threads the touch long-press event through `openAt → show`); **Popover** (trigger captures the
+> `pointerdown` `pointerType`, with a `detail === 0` guard so a keyboard-activated click reads non-touch).
+> A non-touch open is byte-for-byte the old `useScrollLock` behavior (verified: full unit suite + the
+> mouse-driven browser suites across all consumers stay green). The **touch** path itself is unit-only
+> (our Playwright suite has no touch-open harness).
 
 ## Out of scope (owned elsewhere)
 
@@ -192,6 +243,15 @@ This ADR can move to Accepted when:
 4. SSR access of browser globals is correct; no scroll-lock side effects on the server.
    (`disableOutsidePointerEvents` removal is **not** a gate here — it depends on ADR 0017 only, see
    Context.)
+
+> **Acceptance status (2026-06-16): all four criteria met → Accepted.** (1) `core/use-scroll-lock.ts` is
+> the full Base UI port with per-`Document` `ScrollLocker` state (see §1 status). (2) All six call sites use
+> the `open`-gated activation policy; the touch near-fullscreen opt-out is `useAnchoredScrollLock` (§2/§3
+> statuses). (3) Select `alignItemWithTrigger` resolved — item-aligned mode kept as a structural directive
+> but made Base-UI-faithful (`alignItemWithTriggerActive = open && !openedByTouch`, touch falls back to a
+> plain dropdown, and it locks even when `modal === false`; see the §2 status). (4) `useScrollLock` is an
+> `isPlatformBrowser`-guarded no-op on the server. Remaining future polish (non-gating): `referenceElement` /
+> owner-element support, and a touch / scroll-position browser harness (our Playwright suite has neither).
 
 ## Base UI References
 

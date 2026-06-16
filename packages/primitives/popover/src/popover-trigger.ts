@@ -33,7 +33,7 @@ import { injectRdxPopoverRootContext } from './popover-root';
         '(click)': 'handleClick($event)',
         '(pointerenter)': 'handlePointerEnter($event)',
         '(pointerleave)': 'handlePointerLeave($event)',
-        '(pointerdown)': 'handlePointerDown()',
+        '(pointerdown)': 'handlePointerDown($event)',
         '(pointerup)': 'handlePointerUp()',
         '(pointercancel)': 'handlePointerUp()'
     }
@@ -41,6 +41,9 @@ import { injectRdxPopoverRootContext } from './popover-root';
 export class RdxPopoverTrigger {
     private readonly parentRootContext = injectRdxPopoverRootContext(true);
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+
+    /** Pointer type of the most recent `pointerdown`, used to detect a touch open (ADR 0016 §3). */
+    private lastPointerType = '';
 
     /**
      * Associates this trigger with a detached popover root.
@@ -114,6 +117,9 @@ export class RdxPopoverTrigger {
             return;
         }
 
+        // Record whether this open is a touch tap (ADR 0016 §3). `detail === 0` is a keyboard-activated
+        // click (no preceding pointerdown), which must read non-touch regardless of the last pointer type.
+        this.rootContext()?.setOpenedByTouch(event.detail !== 0 && this.lastPointerType === 'touch');
         this.rootContext()?.setPointerDownOnTrigger(false);
 
         if (this.handle()) {
@@ -142,7 +148,8 @@ export class RdxPopoverTrigger {
         this.rootContext()?.cancelHoverOpen();
     }
 
-    protected handlePointerDown() {
+    protected handlePointerDown(event: PointerEvent) {
+        this.lastPointerType = event.pointerType;
         this.rootContext()?.setPointerDownOnTrigger(true);
     }
 

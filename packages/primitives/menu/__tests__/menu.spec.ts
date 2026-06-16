@@ -457,14 +457,12 @@ describe('Menu', () => {
         });
 
         it('locks page scrolling by default and restores it when closed', () => {
-            expect(document.documentElement.style.overflow).toBe('hidden');
-            expect(document.body.style.overflow).toBe('hidden');
+            expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(true);
 
             trigger.click();
             fixture.detectChanges();
 
-            expect(document.documentElement.style.overflow).toBe('');
-            expect(document.body.style.overflow).toBe('');
+            expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
         });
 
         it('does not lock page scrolling when modal=false', () => {
@@ -477,8 +475,7 @@ describe('Menu', () => {
             nonModalFixture.nativeElement.querySelector('[rdxMenuTrigger]').click();
             nonModalFixture.detectChanges();
 
-            expect(document.documentElement.style.overflow).toBe('');
-            expect(document.body.style.overflow).toBe('');
+            expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
         });
 
         it('does not lock page scrolling when opened by hover (Base UI excludes trigger-hover)', async () => {
@@ -498,8 +495,7 @@ describe('Menu', () => {
             expect(hoverTrigger.getAttribute('aria-expanded')).toBe('true');
 
             // Modal by default, but a hover-open does NOT lock page scroll.
-            expect(document.documentElement.style.overflow).toBe('');
-            expect(document.body.style.overflow).toBe('');
+            expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
             hoverFixture.destroy();
         });
 
@@ -1518,8 +1514,7 @@ describe('Menu', () => {
             nonModalFixture.detectChanges();
 
             expect(nonModalFixture.nativeElement.querySelectorAll('[rdxMenuPopup]').length).toBe(2);
-            expect(document.documentElement.style.overflow).toBe('');
-            expect(document.body.style.overflow).toBe('');
+            expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
         });
 
         it('opens submenu on ArrowRight', () => {

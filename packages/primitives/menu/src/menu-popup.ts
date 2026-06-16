@@ -4,7 +4,7 @@ import {
     RDX_FLOATING_REGISTRATION,
     RDX_FLOATING_ROOT_CONTEXT,
     RdxFloatingNodeRegistration,
-    useScrollLock
+    useAnchoredScrollLock
 } from '@radix-ng/primitives/core';
 import { RdxDismiss } from '@radix-ng/primitives/dismissable-layer';
 import { provideRdxFocusScopeConfig, RdxFocusScope } from '@radix-ng/primitives/focus-scope';
@@ -104,9 +104,10 @@ export class RdxMenuPopup {
     constructor() {
         // Page scroll lock (Base UI `MenuPositioner`): only while **open** and **modal**, and a hover-open
         // dropdown / context menu does NOT lock (a menubar menu always does when modal). A submenu never
-        // locks — its `modal` is already effectively false. (The touch-only "lock only a near-fullscreen
-        // popup" refinement is not ported yet — it needs touch-open tracking + a width measure.)
-        useScrollLock(
+        // locks — its `modal` is already effectively false. For a **touch** open the anchored helper only
+        // locks when the popup is effectively viewport-width (ADR 0016 §3), so a small menu stays
+        // swipe-to-dismissable on mobile.
+        useAnchoredScrollLock(
             computed(() => {
                 if (!this.rootContext.isOpen() || !this.rootContext.modal()) {
                     return false;
@@ -115,7 +116,11 @@ export class RdxMenuPopup {
                     return true;
                 }
                 return this.rootContext.lastOpenChangeReason() !== 'trigger-hover';
-            })
+            }),
+            {
+                touchOpen: () => this.rootContext.openedByTouch(),
+                element: () => this.elementRef.nativeElement
+            }
         );
 
         // The popup is this layer's floating element (the inside-surface for containment checks). A

@@ -544,11 +544,11 @@ describe('Popover', () => {
 
         const focusScope = modalFixture.debugElement.query(By.directive(RdxFocusScope)).injector.get(RdxFocusScope);
 
-        expect(document.body.style.overflow).toBe('hidden');
+        expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(true);
         expect(focusScope.isTrapped()).toBe(true);
 
         modalFixture.destroy();
-        expect(document.body.style.overflow).toBe('');
+        expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
     });
 
     it('does not trap focus for modal=true without a close button', () => {
@@ -579,7 +579,7 @@ describe('Popover', () => {
 
         const focusScope = modalFixture.debugElement.query(By.directive(RdxFocusScope)).injector.get(RdxFocusScope);
 
-        expect(document.body.style.overflow).toBe('');
+        expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
         expect(focusScope.isTrapped()).toBe(true);
 
         modalFixture.destroy();
@@ -607,7 +607,7 @@ describe('Popover', () => {
             modalFixture.detectChanges();
             await modalFixture.whenStable();
 
-            expect(document.body.style.overflow).toBe('hidden');
+            expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(true);
             expect(sibling.hasAttribute('inert')).toBe(true);
             expect(focusScope.isTrapped()).toBe(true);
 
@@ -616,7 +616,7 @@ describe('Popover', () => {
             modalFixture.detectChanges();
             await modalFixture.whenStable();
 
-            expect(document.body.style.overflow).toBe('');
+            expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
             expect(sibling.hasAttribute('inert')).toBe(true); // trap-focus still isolates the background
             expect(focusScope.isTrapped()).toBe(true);
 

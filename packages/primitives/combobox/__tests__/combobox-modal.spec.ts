@@ -47,13 +47,13 @@ describe('Combobox modal', () => {
     });
 
     it('locks body scroll while a modal popup is open and restores it on close', async () => {
-        expect(document.body.style.overflow).not.toBe('hidden');
+        expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
         host.open.set(true);
         await settle();
-        expect(document.body.style.overflow).toBe('hidden');
+        expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(true);
         host.open.set(false);
         await settle();
-        expect(document.body.style.overflow).not.toBe('hidden');
+        expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
     });
 
     it('does not lock scroll when not modal', async () => {
@@ -61,7 +61,7 @@ describe('Combobox modal', () => {
         await settle();
         host.open.set(true);
         await settle();
-        expect(document.body.style.overflow).not.toBe('hidden');
+        expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
     });
 
     it('renders a backdrop with data-open while open', async () => {

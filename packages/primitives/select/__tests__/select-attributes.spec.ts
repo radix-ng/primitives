@@ -83,13 +83,13 @@ describe('Select data attributes', () => {
     });
 
     it('modal locks body scroll while open and restores on close', async () => {
-        expect(document.documentElement.style.overflow).not.toBe('hidden');
+        expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
         host.open.set(true);
         await settle();
-        expect(document.documentElement.style.overflow).toBe('hidden');
+        expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(true);
         host.open.set(false);
         await settle();
-        expect(document.documentElement.style.overflow).not.toBe('hidden');
+        expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
     });
 
     it('non-modal does not lock scroll', async () => {
@@ -97,7 +97,7 @@ describe('Select data attributes', () => {
         await settle();
         host.open.set(true);
         await settle();
-        expect(document.documentElement.style.overflow).not.toBe('hidden');
+        expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
     });
 });
 
