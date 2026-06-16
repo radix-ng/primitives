@@ -697,7 +697,7 @@ The popup opens aligned to the selected item, mirroring native `<select>` behavi
 value is pre-selected so the alignment is immediately visible.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { booleanAttribute, Component, input, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectGroupLabel } from '../src/select-group-label';
@@ -733,7 +733,7 @@ import { RdxSelectValue } from '../src/select-value';
         RdxSelectItemIndicator
     ],
     template: `
-        <ng-container [value]="fruit()" rdxSelectRoot>
+        <ng-container [value]="fruit()" [modal]="modal()" rdxSelectRoot>
             <button
                 class="border-border bg-background text-foreground data-[placeholder]:text-muted-foreground hover:bg-muted focus-visible:ring-ring focus-visible:ring-offset-background inline-flex h-9 min-w-40 items-center justify-between gap-2 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 aria-label="Customise options"
@@ -799,6 +799,9 @@ import { RdxSelectValue } from '../src/select-value';
     `
 })
 export class SelectAlignedPosition {
+    /** Whether the select is modal. Exposed so a story can demonstrate the non-modal item-aligned lock. */
+    readonly modal = input(true, { transform: booleanAttribute });
+
     readonly fruit = signal('Apple');
 
     readonly options = ['Apple', 'Banana', 'Blueberry', 'Grapes', 'Pineapple'];
